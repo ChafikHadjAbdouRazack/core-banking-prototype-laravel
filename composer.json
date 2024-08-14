@@ -1,11 +1,17 @@
 {
-    "name": "laravel/laravel",
+    "name": "YOzaz/finaegis",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
-    "keywords": ["laravel", "framework"],
+    "description": "Core Banking as a Service",
+    "keywords": ["core banking", "fintech"],
     "license": "MIT",
+    "authors": [
+        {
+            "name": "Marijus Planciunas",
+            "email": "yozaz.mandac@gmail.com"
+        }
+    ],
     "require": {
-        "php": "^8.2",
+        "php": "^8.3",
         "laravel/framework": "^11.9",
         "laravel/jetstream": "^5.1",
         "laravel/sanctum": "^4.0",
