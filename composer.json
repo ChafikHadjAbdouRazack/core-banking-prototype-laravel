@@ -12,13 +12,16 @@
     ],
     "require": {
         "php": "^8.3",
+        "ext-pdo": "*",
         "laravel/cashier": "^15.4",
         "laravel/framework": "^11.9",
+        "laravel/horizon": "^5.27",
         "laravel/jetstream": "^5.1",
         "laravel/passport": "^12.0",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
-        "livewire/livewire": "^3.0"
+        "livewire/livewire": "^3.0",
+        "spatie/laravel-event-sourcing": "^7.7"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
