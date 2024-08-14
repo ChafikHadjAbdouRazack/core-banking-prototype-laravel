@@ -2,7 +2,10 @@
     "name": "yozaz/finaegis",
     "type": "project",
     "description": "Core Banking as a Service",
-    "keywords": ["core banking", "fintech"],
+    "keywords": [
+        "core banking",
+        "fintech"
+    ],
     "license": "MIT",
     "authors": [
         {
@@ -13,6 +16,9 @@
     "require": {
         "php": "^8.3",
         "ext-pdo": "*",
+        "ext-mbstring": "*",
+        "ext-intl": "*",
+        "filament/filament": "^3.2",
         "laravel/cashier": "^15.4",
         "laravel/framework": "^11.9",
         "laravel/horizon": "^5.27",
@@ -47,7 +53,8 @@
     "scripts": {
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
-            "@php artisan package:discover --ansi"
+            "@php artisan package:discover --ansi",
+            "@php artisan filament:upgrade"
         ],
         "post-update-cmd": [
             "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
