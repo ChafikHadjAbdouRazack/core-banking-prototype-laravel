@@ -35,7 +35,8 @@
         "livewire/livewire": "^3.0",
         "meilisearch/meilisearch-php": "^1.9",
         "predis/predis": "^2.2",
-        "spatie/laravel-event-sourcing": "^7.7"
+        "spatie/laravel-event-sourcing": "^7.7",
+        "spatie/laravel-permission": "^6.9"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
