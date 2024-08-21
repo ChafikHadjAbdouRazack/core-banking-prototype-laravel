@@ -72,9 +72,11 @@ class CreateNewUser implements CreatesNewUsers
             $table->increments('id');
             $table->string('uuid');
             $table->string('name');
-            $table->integer('user_id');
+            $table->integer('user_uuid');
             $table->integer('balance')->default(0);
             $table->timestamps();
+
+            $table->foreign('user_uuid')->references('uuid')->on('users');
         });
 
         Schema::create("snapshots_{$uuid}", function (Blueprint $table) {

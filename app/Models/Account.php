@@ -17,42 +17,11 @@ class Account extends Model
     public $guarded = [];
 
     /**
-     * @param array $attributes
-     * @param $customerId
-     */
-    public function __construct( array $attributes = [], $customerId = null)
-    {
-        parent::__construct($attributes);
-        $this->setTable( 'accounts_' . $this->getCustomerId($customerId));
-    }
-
-    /**
-     * @return void
-     */
-    protected static function boot(): void
-    {
-        parent::boot();
-
-        static::creating(function ($account) {
-            if ($customerId = $this->getCustomerId()) {
-                $account->setTable('accounts_' . $customerId);
-            } else {
-                throw new \Exception('Could not determine customer id');
-            }
-        });
-    }
-
-    /**
      * @return string
      */
     public function getTable(): string
     {
-        // Ensure that the dynamic table name is always set
-        if (!$this->table) {
-            $this->setTable('accounts_' . $this->getCustomerId());
-        }
-
-        return parent::getTable();
+        return 'accounts_' . $this->getCustomerId();
     }
 
     /**
@@ -71,7 +40,9 @@ class Account extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(
-            related: User::class
+            related: User::class,
+            foreignKey: 'user_uuid',
+            ownerKey: 'uuid'
         );
     }
 

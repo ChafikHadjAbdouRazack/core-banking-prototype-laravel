@@ -16,10 +16,6 @@ trait HasDynamicClientTable
             return $customerId;
         }
 
-        if ($this->user()) {
-            return $this->user->uuid;
-        }
-
-        return auth()->user()->uuid;
+        return $this->user_uuid ?? auth()->user()->uuid;
     }
 }

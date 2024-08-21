@@ -34,7 +34,7 @@ final readonly class Account implements DataObjectContract
     }
 
     /**
-     * @return array|mixed[]
+     * @return array
      */
     public function toArray(): array
     {

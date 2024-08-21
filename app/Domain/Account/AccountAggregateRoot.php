@@ -25,7 +25,9 @@ class AccountAggregateRoot extends AggregateRoot
      */
     protected function getStoredEventRepository(): StoredEventRepository
     {
-        return app()->make(TransactionsRepository::class);
+        return app()->make(
+            abstract: TransactionsRepository::class
+        );
     }
 
     /**
