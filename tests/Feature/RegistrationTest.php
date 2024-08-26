@@ -1,5 +1,6 @@
 <?php
 
+use Database\Seeders\RolesSeeder;
 use Laravel\Fortify\Features;
 use Laravel\Jetstream\Jetstream;
 
@@ -20,6 +21,8 @@ test('registration screen cannot be rendered if support is disabled', function (
 }, 'Registration support is enabled.');
 
 test('new users can register', function () {
+    $this->seed(RolesSeeder::class);
+
     $response = $this->post('/register', [
         'name' => 'Test User',
         'email' => 'test@example.com',
@@ -36,6 +39,8 @@ test('new users can register', function () {
 }, 'Registration support is not enabled.');
 
 test('new business users can register', function () {
+    $this->seed(RolesSeeder::class);
+
     $response = $this->post('/register', [
         'name' => 'Test User',
         'email' => 'test@example.com',

@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\Team;
 use App\Models\User;
+use App\Values\UserRoles;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -38,6 +39,29 @@ class UserFactory extends Factory
             'profile_photo_path' => null,
             'current_team_id' => null,
         ];
+    }
+
+    /**
+     * @return $this
+     */
+    public function configure(): static
+    {
+        return $this->afterCreating(
+            function(User $user) {
+                $user->assignRole(UserRoles::PRIVATE);
+            }
+        );
+    }
+
+    /**
+     * @return $this
+     */
+    public function withBusinessRole(): static
+    {
+        return $this->afterCreating(function (User $user) {
+            // Remove the 'private' role and assign the 'business' role
+            $user->syncRoles([UserRoles::BUSINESS]);
+        });
     }
 
     /**

@@ -10,8 +10,15 @@ class RolesSeeder extends Seeder
 {
     public function run()
     {
-        Role::create(['name' => UserRoles::PRIVATE]);
-        Role::create(['name' => UserRoles::BUSINESS]);
-        Role::create(['name' => UserRoles::ADMIN]);
+        $roles = [
+            UserRoles::BUSINESS->value,
+            UserRoles::PRIVATE->value,
+            UserRoles::ADMIN->value,
+        ];
+
+        // Seed each role into the database
+        foreach ($roles as $role) {
+            Role::firstOrCreate(['name' => $role]);
+        }
     }
 }
