@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Laravel\Jetstream\Features;
+use App\Models\Role;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
@@ -46,21 +47,10 @@ class UserFactory extends Factory
      */
     public function configure(): static
     {
-        return $this->afterCreating(
-            function(User $user) {
-                $user->assignRole(UserRoles::PRIVATE);
-            }
-        );
-    }
-
-    /**
-     * @return $this
-     */
-    public function withBusinessRole(): static
-    {
-        return $this->afterCreating(function (User $user) {
-            // Remove the 'private' role and assign the 'business' role
-            $user->syncRoles([UserRoles::BUSINESS]);
+        return $this->afterMaking(function (User $user) {
+            // Default role assignment using RoleFactory
+            $role = Role::factory()->withRole(UserRoles::PRIVATE)->make();
+            $user->setRelation('roles', collect([$role]));
         });
     }
 
@@ -72,6 +62,22 @@ class UserFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'email_verified_at' => null,
         ]);
+    }
+
+    public function withBusinessRole(): static
+    {
+        return $this->afterMaking(function (User $user) {
+            $role = Role::factory()->withRole(UserRoles::BUSINESS)->make();
+            $user->setRelation('roles', collect([$role]));
+        });
+    }
+
+    public function withAdminRole(): static
+    {
+        return $this->afterMaking(function (User $user) {
+            $role = Role::factory()->withRole(UserRoles::ADMIN)->make();
+            $user->setRelation('roles', collect([$role]));
+        });
     }
 
     /**

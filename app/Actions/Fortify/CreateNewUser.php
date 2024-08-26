@@ -64,6 +64,11 @@ class CreateNewUser implements CreatesNewUsers
         ]));
     }
 
+    /**
+     * @param string $uuid
+     *
+     * @return void
+     */
     protected function createEventTables(string $uuid): void
     {
         if (!Schema::hasTable("accounts_{$uuid}"))
