@@ -21,17 +21,7 @@ class Account extends Model
      */
     public function getTable(): string
     {
-        return 'accounts_' . $this->getCustomerId();
-    }
-
-    /**
-     * @param string $uuid
-     *
-     * @return self
-     */
-    public static function uuid( string $uuid): self
-    {
-        return static::where('uuid', $uuid)->first();
+        return collect(['accounts', $this->getCustomerId()])->implode('_');
     }
 
     /**

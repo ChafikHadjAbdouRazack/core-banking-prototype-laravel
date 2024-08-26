@@ -10,11 +10,11 @@ final readonly class Account implements DataObjectContract
 {
     /**
      * @param string $name
-     * @param int $userId
+     * @param int $user_id
      */
     public function __construct(
         private string $name,
-        private int    $userId
+        private int    $user_id
     ) {}
 
     /**
@@ -30,7 +30,7 @@ final readonly class Account implements DataObjectContract
      */
     public function userId(): int
     {
-        return $this->userId;
+        return $this->user_id;
     }
 
     /**
@@ -40,7 +40,7 @@ final readonly class Account implements DataObjectContract
     {
         return [
             'name'   => $this->name,
-            'userId' => $this->userId,
+            'userId' => $this->user_id,
         ];
     }
 }

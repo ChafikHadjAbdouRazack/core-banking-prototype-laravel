@@ -15,6 +15,6 @@ class Transaction extends EloquentStoredEvent
      */
     public function getTable(): string
     {
-        return 'transactions_' . $this->getCustomerId();
+        return collect(['transactions', $this->getCustomerId()])->implode('_');
     }
 }

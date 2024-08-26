@@ -2,6 +2,7 @@
 
 namespace App\Domain\Account\Projectors;
 
+use App\Domain\Account\Repositories\AccountRepository;
 use App\Models\Account;
 use App\Domain\Account\Events\AccountCreated;
 use App\Domain\Account\Events\AccountDeleted;
@@ -11,35 +12,61 @@ use Spatie\EventSourcing\EventHandlers\Projectors\Projector;
 
 class AccountProjector extends Projector
 {
-    public function onAccountCreated(AccountCreated $event)
+    public function __construct(
+        protected AccountRepository $accountRepository
+    )
     {
-        Account::create([
+    }
+
+    /**
+     * @param AccountCreated $event
+     *
+     * @return void
+     */
+    public function onAccountCreated( AccountCreated $event): void
+    {
+        $this->accountRepository->create([
             'uuid' => $event->aggregateRootUuid(),
-            'name' => $event->name,
-            'user_id' => $event->userId,
+            'name' => $event->account->name(),
+            'user_id' => $event->account->userId(),
         ]);
     }
 
-    public function onMoneyAdded(MoneyAdded $event)
+    /**
+     * @param MoneyAdded $event
+     *
+     * @return void
+     */
+    public function onMoneyAdded( MoneyAdded $event): void
     {
-        $account = Account::uuid($event->aggregateRootUuid());
+        $account = $this->accountRepository->findByUuid($event->aggregateRootUuid());
 
-        $account->balance += $event->amount;
+        $account->balance += $event->money->amount();
 
         $account->save();
     }
 
-    public function onMoneySubtracted(MoneySubtracted $event)
+    /**
+     * @param MoneySubtracted $event
+     *
+     * @return void
+     */
+    public function onMoneySubtracted( MoneySubtracted $event): void
     {
-        $account = Account::uuid($event->aggregateRootUuid());
+        $account = $this->accountRepository->findByUuid($event->aggregateRootUuid());
 
-        $account->balance -= $event->amount;
+        $account->balance -= $event->money->amount();
 
         $account->save();
     }
 
-    public function onAccountDeleted(AccountDeleted $event)
+    /**
+     * @param AccountDeleted $event
+     *
+     * @return void
+     */
+    public function onAccountDeleted( AccountDeleted $event): void
     {
-        Account::uuid($event->aggregateRootUuid())->delete();
+        $this->accountRepository->findByUuid($event->aggregateRootUuid())->delete();
     }
 }

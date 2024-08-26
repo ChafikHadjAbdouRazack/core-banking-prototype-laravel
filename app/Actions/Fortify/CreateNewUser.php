@@ -2,13 +2,11 @@
 
 namespace App\Actions\Fortify;
 
+use App\Events\BusinessUserCreated;
 use App\Models\Team;
 use App\Models\User;
 use App\Values\UserRoles;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
 use Laravel\Fortify\Contracts\CreatesNewUsers;
 use Laravel\Jetstream\Jetstream;
@@ -44,7 +42,6 @@ class CreateNewUser implements CreatesNewUsers
 
         if ($input['is_business_customer']) {
             $user->assignRole(UserRoles::BUSINESS);
-            $this->createEventTables($user->uuid);
         } else {
             $user->assignRole(UserRoles::PRIVATE);
         }
@@ -62,60 +59,5 @@ class CreateNewUser implements CreatesNewUsers
             'name' => explode(' ', $user->name, 2)[0]."'s Team",
             'personal_team' => true,
         ]));
-    }
-
-    /**
-     * @param string $uuid
-     *
-     * @return void
-     */
-    protected function createEventTables(string $uuid): void
-    {
-        if (!Schema::hasTable("accounts_{$uuid}"))
-        {
-            Schema::create("accounts_{$uuid}", function (Blueprint $table) {
-                $table->increments('id');
-                $table->uuid();
-                $table->string('name');
-                $table->uuid('user_uuid');
-                $table->integer('balance')->default(0);
-                $table->timestamps();
-
-                $table->foreign('user_uuid', 'accounts_user')->references('uuid')->on('users');
-            });
-        }
-
-        if (!Schema::hasTable("snapshots_{$uuid}"))
-        {
-            Schema::create("snapshots_{$uuid}", function (Blueprint $table) {
-                $table->bigIncrements('id');
-                $table->uuid('aggregate_uuid');
-                $table->unsignedInteger('aggregate_version');
-                $table->jsonb('state');
-
-                $table->timestamps();
-
-                $table->index('aggregate_uuid', 'aggregate_uuid');
-            });
-        }
-
-        if (!Schema::hasTable("transactions_{$uuid}"))
-        {
-            Schema::create("transactions_{$uuid}", function (Blueprint $table) {
-                $table->bigIncrements('id');
-                $table->uuid('aggregate_uuid')->nullable();
-                $table->unsignedBigInteger('aggregate_version')->nullable();
-                $table->integer('event_version')->default(1);
-                $table->string('event_class');
-                $table->jsonb('event_properties');
-                $table->jsonb('meta_data');
-                $table->timestamp('created_at');
-
-                $table->index('event_class', 'event_class');
-                $table->index('aggregate_uuid' ,'aggregate_uuid');
-
-                $table->unique(['aggregate_uuid', 'aggregate_version'], 'aggregate_uuid_version');
-            });
-        }
     }
 }
