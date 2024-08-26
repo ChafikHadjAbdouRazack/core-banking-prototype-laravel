@@ -2,8 +2,8 @@
 
 namespace App\Values;
 
-class UserRoles {
-    public const string BUSINESS = 'business';
-    public const string PRIVATE  = 'private';
-    public const string ADMIN    = 'admin';
+enum UserRoles: string {
+    case BUSINESS = 'business';
+    case PRIVATE  = 'private';
+    case ADMIN    = 'admin';
 }

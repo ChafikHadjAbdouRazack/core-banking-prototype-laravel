@@ -20,8 +20,12 @@
             </div>
 
             <div class="mt-4">
-                <x-jet-label for="is_business_customer" value="{{ __('Register as Business Customer') }}" />
-                <x-jet-checkbox id="is_business_customer" wire:model.defer="is_business_customer" />
+                <x-label for="is_business_customer">
+                    <div class="flex items-center">
+                        <x-checkbox name="is_business_customer" id="is_business_customer" :checked="old('is_business_customer')" />
+                        <div class="ms-2">{{ __('Register as Business Customer') }}</div>
+                    </div>
+                </x-label>
             </div>
 
             <div class="mt-4">
@@ -38,7 +42,7 @@
                 <div class="mt-4">
                     <x-label for="terms">
                         <div class="flex items-center">
-                            <x-checkbox name="terms" id="terms" required />
+                            <x-checkbox name="terms" id="terms" required :checked="old('terms')" />
 
                             <div class="ms-2">
                                 {!! __('I agree to the :terms_of_service and :privacy_policy', [
