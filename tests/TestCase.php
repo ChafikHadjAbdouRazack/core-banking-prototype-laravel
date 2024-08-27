@@ -21,6 +21,8 @@ abstract class TestCase extends BaseTestCase
 
     protected User $user;
 
+    protected User $business_user;
+
     protected Account $account;
 
     /**
@@ -33,8 +35,8 @@ abstract class TestCase extends BaseTestCase
         $this->createRoles();
 
         $this->user = User::factory()->create();
-
-        $this->account = $this->createAccount();
+        $this->business_user = User::factory()->withBusinessRole()->create();
+        $this->account = $this->createAccount($this->business_user);
     }
 
     /**
@@ -57,9 +59,11 @@ abstract class TestCase extends BaseTestCase
     }
 
     /**
-     * @return \App\Models\Account
+     * @param User $user
+     *
+     * @return Account
      */
-    protected function createAccount(): Account
+    protected function createAccount(User $user): Account
     {
         $uuid = Str::uuid();
 
@@ -69,7 +73,7 @@ abstract class TestCase extends BaseTestCase
                     class: \App\Domain\Account\DataObjects\Account::class,
                     properties: [
                         'name' => DefaultAccountNames::default(),
-                        'user_id' => $this->user->id,
+                        'user_id' => $user->id,
                     ]
                 )
             )->persist();

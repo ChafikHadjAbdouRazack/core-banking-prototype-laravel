@@ -42,6 +42,7 @@ class CreateNewUser implements CreatesNewUsers
 
         if ($input['is_business_customer']) {
             $user->assignRole(UserRoles::BUSINESS);
+            event(new BusinessUserCreated($user));
         } else {
             $user->assignRole(UserRoles::PRIVATE);
         }

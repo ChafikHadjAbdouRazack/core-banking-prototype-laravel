@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Events\BusinessUserCreated;
 use App\Models\Team;
 use App\Models\User;
 use App\Values\UserRoles;
@@ -69,6 +70,7 @@ class UserFactory extends Factory
         return $this->afterMaking(function (User $user) {
             $role = Role::factory()->withRole(UserRoles::BUSINESS)->make();
             $user->setRelation('roles', collect([$role]));
+            event(new BusinessUserCreated($user));
         });
     }
 
