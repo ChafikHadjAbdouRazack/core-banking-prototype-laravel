@@ -3,7 +3,15 @@
 use Faker\Factory;
 use Faker\Generator;
 
-function faker(): Generator
+if (!function_exists('faker') )
 {
-    return Factory::create();
+    /**
+     * A shorthand for faker factory
+     *
+     * @return \Faker\Generator
+     */
+    function faker(): Generator
+    {
+        return Factory::create();
+    }
 }
