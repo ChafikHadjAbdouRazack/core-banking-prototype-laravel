@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Domain\Account\Projectors\AccountProjector;
 use Illuminate\Support\ServiceProvider;
+use Spatie\EventSourcing\Facades\Projectionist;
 
 class AccountServiceProvider extends ServiceProvider
 {

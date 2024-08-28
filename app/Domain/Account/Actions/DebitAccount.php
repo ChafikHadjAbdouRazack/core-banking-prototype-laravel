@@ -3,17 +3,18 @@
 namespace App\Domain\Account\Actions;
 
 use App\Domain\Account\Events\MoneySubtracted;
+use App\Models\Account;
 
 class DebitAccount extends AccountAction
 {
     /**
      * @param \App\Domain\Account\Events\MoneySubtracted $event
      *
-     * @return void
+     * @return \App\Models\Account
      */
-    public function __invoke(MoneySubtracted $event): void
+    public function __invoke(MoneySubtracted $event): Account
     {
-        $this->accountRepository->findByUuid(
+        return $this->accountRepository->findByUuid(
             $event->aggregateRootUuid()
         )->subtractMoney(
             $event->money->amount()

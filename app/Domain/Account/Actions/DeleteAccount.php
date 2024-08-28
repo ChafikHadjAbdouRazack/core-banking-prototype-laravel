@@ -9,11 +9,11 @@ class DeleteAccount extends AccountAction
     /**
      * @param \App\Domain\Account\Events\AccountDeleted $event
      *
-     * @return void
+     * @return bool|null
      */
-    public function __invoke(AccountDeleted $event): void
+    public function __invoke(AccountDeleted $event): ?bool
     {
-        $this->accountRepository->findByUuid(
+        return $this->accountRepository->findByUuid(
             $event->aggregateRootUuid()
         )->delete();
     }

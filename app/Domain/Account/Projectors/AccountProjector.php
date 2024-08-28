@@ -6,6 +6,7 @@ use App\Domain\Account\Actions\CreateAccount;
 use App\Domain\Account\Actions\CreditAccount;
 use App\Domain\Account\Actions\DebitAccount;
 use App\Domain\Account\Actions\DeleteAccount;
+use App\Models\Account;
 use App\Domain\Account\Events\AccountCreated;
 use App\Domain\Account\Events\AccountDeleted;
 use App\Domain\Account\Events\MoneyAdded;
@@ -14,10 +15,43 @@ use Spatie\EventSourcing\EventHandlers\Projectors\Projector;
 
 class AccountProjector extends Projector
 {
-    protected array $handlesEvents = [
-        AccountCreated::class => CreateAccount::class,
-        MoneyAdded::class => CreditAccount::class,
-        MoneySubtracted::class => DebitAccount::class,
-        AccountDeleted::class => DeleteAccount::class,
-    ];
+    /**
+     * @param AccountCreated $event
+     *
+     * @return void
+     */
+    public function onAccountCreated(AccountCreated $event): void
+    {
+        app( CreateAccount::class )($event);
+    }
+
+    /**
+     * @param MoneyAdded $event
+     *
+     * @return void
+     */
+    public function onMoneyAdded(MoneyAdded $event): void
+    {
+        app( CreditAccount::class )($event);
+    }
+
+    /**
+     * @param MoneySubtracted $event
+     *
+     * @return void
+     */
+    public function onMoneySubtracted(MoneySubtracted $event): void
+    {
+        app( DebitAccount::class )($event);
+    }
+
+    /**
+     * @param AccountDeleted $event
+     *
+     * @return void
+     */
+    public function onAccountDeleted(AccountDeleted $event): void
+    {
+        app( DeleteAccount::class )($event);
+    }
 }

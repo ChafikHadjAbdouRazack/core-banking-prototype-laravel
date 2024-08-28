@@ -29,22 +29,26 @@ class Account extends Model
     /**
      * @param int $amount
      *
-     * @return void
+     * @return static
      */
-    public function addMoney(int $amount): void
+    public function addMoney(int $amount): static
     {
         $this->balance += $amount;
         $this->save();
+
+        return $this;
     }
 
     /**
      * @param int $amount
      *
-     * @return void
+     * @return static
      */
-    public function subtractMoney(int $amount): void
+    public function subtractMoney(int $amount): static
     {
         $this->balance -= $amount;
         $this->save();
+
+        return $this;
     }
 }

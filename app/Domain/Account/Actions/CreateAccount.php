@@ -3,17 +3,18 @@
 namespace App\Domain\Account\Actions;
 
 use App\Domain\Account\Events\AccountCreated;
+use App\Models\Account;
 
 class CreateAccount extends AccountAction
 {
     /**
      * @param \App\Domain\Account\Events\AccountCreated $event
      *
-     * @return void
+     * @return \App\Models\Account
      */
-    public function __invoke(AccountCreated $event): void
+    public function __invoke(AccountCreated $event): Account
     {
-        $this->accountRepository->create(
+        return $this->accountRepository->create(
             $event->account->withUuid(
                 $event->aggregateRootUuid()
             )
