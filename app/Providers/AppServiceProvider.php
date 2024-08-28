@@ -9,17 +9,6 @@ use Illuminate\Support\ServiceProvider;
 class AppServiceProvider extends ServiceProvider
 {
     /**
-     * The event listener mappings for the application.
-     *
-     * @var array
-     */
-    protected $listen = [
-        BusinessUserCreated::class => [
-            CreateBusinessUserTables::class,
-        ],
-    ];
-
-    /**
      * Register any application services.
      */
     public function register(): void

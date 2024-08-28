@@ -14,7 +14,8 @@ final readonly class Account implements DataObjectContract
      */
     public function __construct(
         private string $name,
-        private int    $user_id
+        private int    $user_id,
+        private ?string $uuid = null
     ) {}
 
     /**
@@ -34,13 +35,22 @@ final readonly class Account implements DataObjectContract
     }
 
     /**
+     * @return string|null
+     */
+    public function uuid(): ?string
+    {
+        return $this->uuid;
+    }
+
+    /**
      * @return array
      */
     public function toArray(): array
     {
         return [
-            'name'   => $this->name,
-            'userId' => $this->user_id,
+            'name'      => $this->name,
+            'user_id'   => $this->user_id,
+            'uuid'      => $this->uuid,
         ];
     }
 }

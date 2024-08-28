@@ -70,7 +70,6 @@ class UserFactory extends Factory
         return $this->afterMaking(function (User $user) {
             $role = Role::factory()->withRole(UserRoles::BUSINESS)->make();
             $user->setRelation('roles', collect([$role]));
-            event(new BusinessUserCreated($user));
         });
     }
 

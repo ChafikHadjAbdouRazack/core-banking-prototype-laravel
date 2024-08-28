@@ -3,20 +3,22 @@
 namespace App\Domain\Account\Repositories;
 
 use App\Models\Account;
+use \App\Domain\Account\DataObjects\Account as AccountDTO;
 
-final class AccountRepository implements Repository
+final class AccountRepository
 {
-    public function __construct()
-    {}
+    public function __construct(
+        protected Account $account
+    ) {}
 
     /**
-     * @param array $data
+     * @param AccountDTO $account
      *
      * @return Account
      */
-    public function create(array $data): Account
+    public function create(AccountDTO $account): Account
     {
-        return Account::create($data);
+        return $this->account->create($account->toArray());
     }
 
     /**
@@ -26,6 +28,6 @@ final class AccountRepository implements Repository
      */
     public function findByUuid(string $uuid): Account
     {
-        return Account::where('uuid', $uuid)->first();
+        return $this->account->where('uuid', $uuid)->first();
     }
 }

@@ -1,20 +1,17 @@
 <?php
 
-namespace App\Domain\Account;
+namespace App\Domain\Account\Services;
 
-use App\Domain\Account\DataObjects\Account;
 use App\Domain\Account\DataObjects\Money;
-use App\Domain\Account\Events\AccountCreated;
-use App\Domain\Account\Events\AccountDeleted;
 use App\Domain\Account\Events\AccountLimitHit;
 use App\Domain\Account\Events\MoneyAdded;
 use App\Domain\Account\Events\MoneySubtracted;
 use App\Domain\Account\Exceptions\NotEnoughFunds;
 use App\Domain\Account\Repositories\TransactionRepository;
+use App\Domain\Account\Repositories\TransactionSnapshotRepository;
 use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
-use \App\Domain\Account\Repositories\SnapshotRepository;
 
-class AccountAggregateRoot extends AggregateRoot
+class TransactionService extends AggregateRoot
 {
     protected int $balance = 0;
 
@@ -34,27 +31,11 @@ class AccountAggregateRoot extends AggregateRoot
     /**
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
-    protected function getSnapshotRepository(): SnapshotRepository
+    protected function getSnapshotRepository(): TransactionSnapshotRepository
     {
         return app()->make(
-            abstract: SnapshotRepository::class
+            abstract: TransactionSnapshotRepository::class
         );
-    }
-
-    /**
-     * @param \App\Domain\Account\DataObjects\Account $account
-     *
-     * @return $this
-     */
-    public function createAccount(Account $account): static
-    {
-        $this->recordThat(
-            domainEvent: new AccountCreated(
-                account: $account
-            )
-        );
-
-        return $this;
     }
 
     /**
@@ -62,7 +43,7 @@ class AccountAggregateRoot extends AggregateRoot
      *
      * @return $this
      */
-    public function addMoney(Money $money): static
+    public function credit(Money $money): static
     {
         $this->recordThat(
             domainEvent: new MoneyAdded(
@@ -88,7 +69,7 @@ class AccountAggregateRoot extends AggregateRoot
      *
      * @return void
      */
-    public function subtractMoney(Money $money): void
+    public function debit(Money $money): void
     {
         if (!$this->hasSufficientFundsToSubtractAmount($money)) {
             $this->recordThat(new AccountLimitHit());
@@ -109,16 +90,6 @@ class AccountAggregateRoot extends AggregateRoot
     public function applyMoneySubtracted(MoneySubtracted $event): void
     {
         $this->balance -= $event->money->amount();
-    }
-
-    /**
-     * @return $this
-     */
-    public function deleteAccount(): static
-    {
-        $this->recordThat(new AccountDeleted());
-
-        return $this;
     }
 
     /**

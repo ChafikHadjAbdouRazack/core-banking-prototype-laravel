@@ -3,7 +3,6 @@
 namespace App\Domain\Account\Projectors;
 
 use App\Domain\Account\Repositories\AccountRepository;
-use App\Models\Account;
 use App\Domain\Account\Events\AccountCreated;
 use App\Domain\Account\Events\AccountDeleted;
 use App\Domain\Account\Events\MoneyAdded;
@@ -23,13 +22,18 @@ class AccountProjector extends Projector
      *
      * @return void
      */
-    public function onAccountCreated( AccountCreated $event): void
+    public function onAccountCreated(AccountCreated $event): void
     {
-        $this->accountRepository->create([
-            'uuid' => $event->aggregateRootUuid(),
-            'name' => $event->account->name(),
-            'user_id' => $event->account->userId(),
-        ]);
+        $this->accountRepository->create(
+            account: hydrate(
+                 class: \App\Domain\Account\DataObjects\Account::class,
+                 properties: [
+                     'uuid' => $event->aggregateRootUuid(),
+                     'name' => $event->account->name(),
+                     'user_id' => $event->account->userId(),
+                 ]
+             )
+        );
     }
 
     /**
@@ -37,13 +41,13 @@ class AccountProjector extends Projector
      *
      * @return void
      */
-    public function onMoneyAdded( MoneyAdded $event): void
+    public function onMoneyAdded(MoneyAdded $event): void
     {
-        $account = $this->accountRepository->findByUuid($event->aggregateRootUuid());
-
-        $account->balance += $event->money->amount();
-
-        $account->save();
+        $this->accountRepository->findByUuid(
+            $event->aggregateRootUuid()
+        )->addMoney(
+            $event->money->amount()
+        );
     }
 
     /**
@@ -51,13 +55,13 @@ class AccountProjector extends Projector
      *
      * @return void
      */
-    public function onMoneySubtracted( MoneySubtracted $event): void
+    public function onMoneySubtracted(MoneySubtracted $event): void
     {
-        $account = $this->accountRepository->findByUuid($event->aggregateRootUuid());
-
-        $account->balance -= $event->money->amount();
-
-        $account->save();
+        $this->accountRepository->findByUuid(
+            $event->aggregateRootUuid()
+        )->subtractMoney(
+            $event->money->amount()
+        );
     }
 
     /**
@@ -65,8 +69,10 @@ class AccountProjector extends Projector
      *
      * @return void
      */
-    public function onAccountDeleted( AccountDeleted $event): void
+    public function onAccountDeleted(AccountDeleted $event): void
     {
-        $this->accountRepository->findByUuid($event->aggregateRootUuid())->delete();
+        $this->accountRepository->findByUuid(
+            $event->aggregateRootUuid()
+        )->delete();
     }
 }
