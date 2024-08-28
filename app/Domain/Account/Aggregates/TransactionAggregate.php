@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Domain\Account\Services;
+namespace App\Domain\Account\Aggregates;
 
 use App\Domain\Account\DataObjects\Money;
 use App\Domain\Account\Events\AccountLimitHit;
@@ -11,7 +11,7 @@ use App\Domain\Account\Repositories\TransactionRepository;
 use App\Domain\Account\Repositories\TransactionSnapshotRepository;
 use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
 
-class TransactionService extends AggregateRoot
+class TransactionAggregate extends AggregateRoot
 {
     protected int $balance = 0;
 
@@ -69,7 +69,7 @@ class TransactionService extends AggregateRoot
      *
      * @return void
      */
-    public function debit(Money $money): void
+    public function debit(Money $money): static
     {
         if (!$this->hasSufficientFundsToSubtractAmount($money)) {
             $this->recordThat(new AccountLimitHit());
@@ -80,6 +80,8 @@ class TransactionService extends AggregateRoot
         }
 
         $this->recordThat(new MoneySubtracted($money));
+
+        return $this;
     }
 
     /**

@@ -2,7 +2,6 @@
 
 namespace Database\Factories;
 
-use App\Events\BusinessUserCreated;
 use App\Models\Team;
 use App\Models\User;
 use App\Values\UserRoles;

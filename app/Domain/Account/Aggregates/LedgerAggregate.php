@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Domain\Account\Services;
+namespace App\Domain\Account\Aggregates;
 
 use App\Domain\Account\DataObjects\Account;
 use App\Domain\Account\Events\AccountCreated;
@@ -9,7 +9,7 @@ use App\Domain\Account\Repositories\LedgerRepository;
 use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
 use \App\Domain\Account\Repositories\LedgerSnapshotRepository;
 
-class LedgerService extends AggregateRoot
+class LedgerAggregate extends AggregateRoot
 {
     /**
      * @return LedgerRepository
