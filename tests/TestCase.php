@@ -2,8 +2,8 @@
 
 namespace Tests;
 
-use App\Domain\Account\AccountAggregateRoot;
 use App\Domain\Account\Repositories\AccountRepository;
+use App\Domain\Account\Services\LedgerService;
 use App\Models\Account;
 use App\Models\Role;
 use App\Models\User;
@@ -67,13 +67,13 @@ abstract class TestCase extends BaseTestCase
     {
         $uuid = Str::uuid();
 
-        $aggregate = AccountAggregateRoot::retrieve($uuid)
+        $aggregate = LedgerService::retrieve($uuid)
             ->createAccount(
                 account: hydrate(
                     class: \App\Domain\Account\DataObjects\Account::class,
                     properties: [
-                        'name' => DefaultAccountNames::default(),
-                        'user_id' => $user->id,
+                        'name'      => DefaultAccountNames::default(),
+                        'user_uuid' => $user->uuid,
                     ]
                 )
             )->persist();

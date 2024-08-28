@@ -10,11 +10,12 @@ final readonly class Account implements DataObjectContract
 {
     /**
      * @param string $name
-     * @param int $user_id
+     * @param string $user_uuid
+     * @param string|null $uuid
      */
     public function __construct(
-        private string $name,
-        private int    $user_id,
+        private string  $name,
+        private string  $user_uuid,
         private ?string $uuid = null
     ) {}
 
@@ -27,11 +28,11 @@ final readonly class Account implements DataObjectContract
     }
 
     /**
-     * @return int
+     * @return string
      */
-    public function userId(): int
+    public function userUuid(): string
     {
-        return $this->user_id;
+        return $this->user_uuid;
     }
 
     /**
@@ -43,13 +44,27 @@ final readonly class Account implements DataObjectContract
     }
 
     /**
+     * @param string $uuid
+     *
+     * @return \App\Domain\Account\DataObjects\Account
+     */
+    public function withUuid(string $uuid): self
+    {
+        return new self(
+            name: $this->name,
+            user_uuid: $this->user_uuid,
+            uuid: $uuid,
+        );
+    }
+
+    /**
      * @return array
      */
     public function toArray(): array
     {
         return [
             'name'      => $this->name,
-            'user_id'   => $this->user_id,
+            'user_uuid' => $this->user_uuid,
             'uuid'      => $this->uuid,
         ];
     }

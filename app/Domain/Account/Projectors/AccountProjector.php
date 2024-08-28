@@ -25,14 +25,9 @@ class AccountProjector extends Projector
     public function onAccountCreated(AccountCreated $event): void
     {
         $this->accountRepository->create(
-            account: hydrate(
-                 class: \App\Domain\Account\DataObjects\Account::class,
-                 properties: [
-                     'uuid' => $event->aggregateRootUuid(),
-                     'name' => $event->account->name(),
-                     'user_id' => $event->account->userId(),
-                 ]
-             )
+            $event->account->withUuid(
+                $event->aggregateRootUuid()
+            )
         );
     }
 
