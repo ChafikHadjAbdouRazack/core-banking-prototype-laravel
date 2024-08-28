@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Models\User;
-use App\Traits\HasDynamicClientTable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -12,17 +11,8 @@ use Illuminate\Support\Facades\Auth;
 class Account extends Model
 {
     use HasFactory;
-    use HasDynamicClientTable;
 
     public $guarded = [];
-
-    /**
-     * @return string
-     */
-    public function getTable(): string
-    {
-        return collect(['accounts', $this->getCustomerId()])->implode('_');
-    }
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -44,10 +34,7 @@ class Account extends Model
     public function addMoney(int $amount): void
     {
         $this->balance += $amount;
-
         $this->save();
-
-        return;
     }
 
     /**
@@ -58,9 +45,6 @@ class Account extends Model
     public function subtractMoney(int $amount): void
     {
         $this->balance -= $amount;
-
         $this->save();
-
-        return;
     }
 }

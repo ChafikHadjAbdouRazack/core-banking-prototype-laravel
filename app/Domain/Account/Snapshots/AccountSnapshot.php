@@ -7,10 +7,4 @@ use Spatie\EventSourcing\Snapshots\EloquentSnapshot;
 
 class AccountSnapshot extends EloquentSnapshot
 {
-    use HasDynamicClientTable;
-
-    public function getTable(): string
-    {
-        return 'snapshots_' . $this->getCustomerId();
-    }
 }

@@ -87,14 +87,20 @@ return [
      * corresponding alias defined. Otherwise, an exception is thrown
      * if you try to persist an event without alias.
      */
-    'enforce_event_class_map' => false,
+    'enforce_event_class_map' => true,
 
     /*
      * Similar to Relation::morphMap() you can define which alias responds to which
      * event class. This allows you to change the namespace or class names
      * of your events but still handle older events correctly.
      */
-    'event_class_map' => [],
+    'event_class_map' => [
+        'account_created'   => App\Domain\Account\Events\AccountCreated::class,
+        'account_deleted'   => App\Domain\Account\Events\AccountDeleted::class,
+        'account_limit_hit' => App\Domain\Account\Events\AccountLimitHit::class,
+        'money_added'       => App\Domain\Account\Events\MoneyAdded::class,
+        'money_subtracted'  => App\Domain\Account\Events\MoneySubtracted::class,
+    ],
 
     /*
      * This class is responsible for serializing events. By default an event will be serialized

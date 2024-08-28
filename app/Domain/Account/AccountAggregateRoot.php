@@ -10,9 +10,9 @@ use App\Domain\Account\Events\AccountLimitHit;
 use App\Domain\Account\Events\MoneyAdded;
 use App\Domain\Account\Events\MoneySubtracted;
 use App\Domain\Account\Exceptions\NotEnoughFunds;
-use App\Domain\Account\Repositories\TransactionsRepository;
+use App\Domain\Account\Repositories\TransactionRepository;
 use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
-use Spatie\EventSourcing\StoredEvents\Repositories\StoredEventRepository;
+use \App\Domain\Account\Repositories\SnapshotRepository;
 
 class AccountAggregateRoot extends AggregateRoot
 {
@@ -21,12 +21,23 @@ class AccountAggregateRoot extends AggregateRoot
     protected int $accountLimit = 0;
 
     /**
+     * @return TransactionRepository
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
-    protected function getStoredEventRepository(): StoredEventRepository
+    protected function getStoredEventRepository(): TransactionRepository
     {
         return app()->make(
-            abstract: TransactionsRepository::class
+            abstract: TransactionRepository::class
+        );
+    }
+
+    /**
+     * @throws \Illuminate\Contracts\Container\BindingResolutionException
+     */
+    protected function getSnapshotRepository(): SnapshotRepository
+    {
+        return app()->make(
+            abstract: SnapshotRepository::class
         );
     }
 

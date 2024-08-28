@@ -18,19 +18,6 @@ class CreateBusinessUserTables
     {
         $uuid = $event->user->uuid;
 
-        if (!Schema::hasTable("accounts_{$uuid}")) {
-            Schema::create("accounts_{$uuid}", function (Blueprint $table) {
-                $table->increments('id');
-                $table->uuid();
-                $table->string('name');
-                $table->uuid('user_uuid');
-                $table->integer('balance')->default(0);
-                $table->timestamps();
-
-                $table->foreign('user_uuid', 'accounts_user')->references('uuid')->on('users');
-            });
-        }
-
         if (!Schema::hasTable("snapshots_{$uuid}")) {
             Schema::create("snapshots_{$uuid}", function (Blueprint $table) {
                 $table->bigIncrements('id');
