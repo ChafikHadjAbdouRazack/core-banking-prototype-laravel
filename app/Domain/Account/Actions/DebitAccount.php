@@ -17,7 +17,7 @@ class DebitAccount extends AccountAction
         return $this->accountRepository->findByUuid(
             $event->aggregateRootUuid()
         )->subtractMoney(
-            $event->money->amount()
+            $event->money->getAmount()
         );
     }
 }

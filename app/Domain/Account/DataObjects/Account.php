@@ -6,23 +6,23 @@ namespace App\Domain\Account\DataObjects;
 
 use JustSteveKing\DataObjects\Contracts\DataObjectContract;
 
-final readonly class Account implements DataObjectContract
+final readonly class Account extends DataObject implements DataObjectContract
 {
     /**
      * @param string $name
-     * @param string $user_uuid
+     * @param string $userUuid
      * @param string|null $uuid
      */
     public function __construct(
         private string  $name,
-        private string  $user_uuid,
+        private string  $userUuid,
         private ?string $uuid = null
     ) {}
 
     /**
      * @return string
      */
-    public function name(): string
+    public function getName(): string
     {
         return $this->name;
     }
@@ -30,15 +30,15 @@ final readonly class Account implements DataObjectContract
     /**
      * @return string
      */
-    public function userUuid(): string
+    public function getUserUuid(): string
     {
-        return $this->user_uuid;
+        return $this->userUuid;
     }
 
     /**
      * @return string|null
      */
-    public function uuid(): ?string
+    public function getUuid(): ?string
     {
         return $this->uuid;
     }
@@ -52,7 +52,7 @@ final readonly class Account implements DataObjectContract
     {
         return new self(
             name: $this->name,
-            user_uuid: $this->user_uuid,
+            userUuid: $this->userUuid,
             uuid: $uuid,
         );
     }
@@ -64,7 +64,7 @@ final readonly class Account implements DataObjectContract
     {
         return [
             'name'      => $this->name,
-            'user_uuid' => $this->user_uuid,
+            'user_uuid' => $this->userUuid,
             'uuid'      => $this->uuid,
         ];
     }

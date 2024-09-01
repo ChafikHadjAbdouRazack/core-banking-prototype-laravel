@@ -17,7 +17,7 @@ class CreditAccount extends AccountAction
         return $this->accountRepository->findByUuid(
             $event->aggregateRootUuid()
         )->addMoney(
-            $event->money->amount()
+            $event->money->getAmount()
         );
     }
 }

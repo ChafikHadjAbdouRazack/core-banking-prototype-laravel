@@ -57,17 +57,19 @@ class TransactionAggregate extends AggregateRoot
     /**
      * @param \App\Domain\Account\Events\MoneyAdded $event
      *
-     * @return void
+     * @return \App\Domain\Account\Aggregates\TransactionAggregate
      */
-    public function applyMoneyAdded(MoneyAdded $event): void
+    public function applyMoneyAdded(MoneyAdded $event): static
     {
-        $this->balance += $event->money->amount();
+        $this->balance += $event->money->getAmount();
+
+        return $this;
     }
 
     /**
      * @param \App\Domain\Account\DataObjects\Money $money
      *
-     * @return void
+     * @return \App\Domain\Account\Aggregates\TransactionAggregate
      */
     public function debit(Money $money): static
     {
@@ -87,11 +89,13 @@ class TransactionAggregate extends AggregateRoot
     /**
      * @param \App\Domain\Account\Events\MoneySubtracted $event
      *
-     * @return void
+     * @return \App\Domain\Account\Aggregates\TransactionAggregate
      */
-    public function applyMoneySubtracted(MoneySubtracted $event): void
+    public function applyMoneySubtracted(MoneySubtracted $event): static
     {
-        $this->balance -= $event->money->amount();
+        $this->balance -= $event->money->getAmount();
+
+        return $this;
     }
 
     /**
@@ -99,8 +103,8 @@ class TransactionAggregate extends AggregateRoot
      *
      * @return bool
      */
-    private function hasSufficientFundsToSubtractAmount(Money $money): bool
+    protected function hasSufficientFundsToSubtractAmount(Money $money): bool
     {
-        return $this->balance - $money->amount() >= $this->accountLimit;
+        return $this->balance - $money->getAmount() >= $this->accountLimit;
     }
 }

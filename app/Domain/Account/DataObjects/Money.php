@@ -6,7 +6,7 @@ namespace App\Domain\Account\DataObjects;
 
 use JustSteveKing\DataObjects\Contracts\DataObjectContract;
 
-final readonly class Money implements DataObjectContract
+final readonly class Money extends DataObject implements DataObjectContract
 {
     /**
      * @param int $amount
@@ -18,7 +18,7 @@ final readonly class Money implements DataObjectContract
     /**
      * @return int
      */
-    public function amount(): int
+    public function getAmount(): int
     {
         return $this->amount;
     }
