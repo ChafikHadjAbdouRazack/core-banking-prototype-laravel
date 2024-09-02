@@ -7,6 +7,7 @@ use App\Domain\Account\Aggregates\TransactionAggregate;
 use App\Domain\Account\DataObjects\Money;
 use App\Domain\Account\Events\MoneyAdded;
 use App\Domain\Account\Repositories\TransactionRepository;
+use App\Domain\Account\Utils\ValidatesHash;
 use App\Models\Account;
 use App\Models\Ledger;
 use App\Models\Transaction;
@@ -14,6 +15,8 @@ use Tests\TestCase;
 
 class AccountProjectorTest extends TestCase
 {
+    use ValidatesHash;
+
     /** @test */
     public function test_create(): void
     {
@@ -29,6 +32,7 @@ class AccountProjectorTest extends TestCase
     public function test_add_money(): void
     {
         $this->assertEquals(0, $this->account->balance);
+        $this->resetHash();
 
         TransactionAggregate::retrieve($this->account->uuid)
             ->credit(
@@ -45,11 +49,15 @@ class AccountProjectorTest extends TestCase
     public function test_subtract_money(): void
     {
         $this->assertEquals(0, $this->account->balance);
+        $this->resetHash();
 
         $this->account->addMoney(20);
 
         TransactionAggregate::retrieve($this->account->uuid)
-            ->applyMoneyAdded( new MoneyAdded( hydrate( Money::class, ['amount' => 20] ) ) )
+            ->applyMoneyAdded( new MoneyAdded(
+                money: $money = hydrate( Money::class, ['amount' => 20] ),
+                hash: $this->generateHash($money)
+            ) )
             ->debit(
                 hydrate( Money::class, ['amount' => 10] )
             )->persist();
