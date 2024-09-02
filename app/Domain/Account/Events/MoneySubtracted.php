@@ -7,7 +7,7 @@ use App\Domain\Account\DataObjects\Money;
 use App\Values\EventQueues;
 use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 
-class MoneySubtracted extends ShouldBeStored
+class MoneySubtracted extends ShouldBeStored implements HasHash
 {
     /**
      * @var string
@@ -16,6 +16,7 @@ class MoneySubtracted extends ShouldBeStored
 
     /**
      * @param \App\Domain\Account\DataObjects\Money $money
+     * @param \App\Domain\Account\DataObjects\Hash $hash
      */
     public function __construct(
         public readonly Money $money,

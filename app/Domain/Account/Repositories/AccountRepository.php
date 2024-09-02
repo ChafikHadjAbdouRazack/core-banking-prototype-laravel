@@ -4,6 +4,7 @@ namespace App\Domain\Account\Repositories;
 
 use App\Models\Account;
 use \App\Domain\Account\DataObjects\Account as AccountDTO;
+use Illuminate\Support\LazyCollection;
 
 final class AccountRepository
 {
@@ -29,5 +30,13 @@ final class AccountRepository
     public function findByUuid(string $uuid): Account
     {
         return $this->account->where('uuid', $uuid)->first();
+    }
+
+    /**
+     * @return LazyCollection
+     */
+    public function getAllByCursor(): LazyCollection
+    {
+        return $this->account->cursor();
     }
 }
