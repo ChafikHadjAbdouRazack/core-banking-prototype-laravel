@@ -18,13 +18,13 @@ class TransactionAggregate extends AggregateRoot
 {
     use ValidatesHash;
 
+    protected const int ACCOUNT_LIMIT = 0;
+
     /**
      * @param int $balance
-     * @param int $accountLimit
      */
     public function __construct(
-        protected int $balance = 0,
-        protected int $accountLimit = 0,
+        public int $balance = 0,
     ) {
     }
 
@@ -139,6 +139,6 @@ class TransactionAggregate extends AggregateRoot
      */
     protected function hasSufficientFundsToSubtractAmount( Money $money ): bool
     {
-        return $this->balance - $money->getAmount() >= $this->accountLimit;
+        return $this->balance - $money->getAmount() >= self::ACCOUNT_LIMIT;
     }
 }

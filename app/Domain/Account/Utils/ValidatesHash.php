@@ -10,7 +10,7 @@ trait ValidatesHash
 {
     private const string HASH_ALGORITHM = 'sha256';
 
-    protected string $currentHash = '';
+    public string $currentHash = '';
 
     /**
      * @param \App\Domain\Account\DataObjects\Money|null $money
