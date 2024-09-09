@@ -95,11 +95,12 @@ return [
      * of your events but still handle older events correctly.
      */
     'event_class_map' => [
-        'account_created'   => App\Domain\Account\Events\AccountCreated::class,
-        'account_deleted'   => App\Domain\Account\Events\AccountDeleted::class,
-        'account_limit_hit' => App\Domain\Account\Events\AccountLimitHit::class,
-        'money_added'       => App\Domain\Account\Events\MoneyAdded::class,
-        'money_subtracted'  => App\Domain\Account\Events\MoneySubtracted::class,
+        'account_created'               => App\Domain\Account\Events\AccountCreated::class,
+        'account_deleted'               => App\Domain\Account\Events\AccountDeleted::class,
+        'account_limit_hit'             => App\Domain\Account\Events\AccountLimitHit::class,
+        'money_added'                   => App\Domain\Account\Events\MoneyAdded::class,
+        'money_subtracted'              => App\Domain\Account\Events\MoneySubtracted::class,
+        'transaction_threshold_reached' => App\Domain\Account\Events\TransactionThresholdReached::class,
     ],
 
     /*
