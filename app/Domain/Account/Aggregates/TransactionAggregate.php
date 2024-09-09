@@ -7,6 +7,7 @@ use App\Domain\Account\DataObjects\Money;
 use App\Domain\Account\Events\AccountLimitHit;
 use App\Domain\Account\Events\MoneyAdded;
 use App\Domain\Account\Events\MoneySubtracted;
+use App\Domain\Account\Events\TransactionThresholdReached;
 use App\Domain\Account\Exceptions\InvalidHashException;
 use App\Domain\Account\Exceptions\NotEnoughFunds;
 use App\Domain\Account\Repositories\TransactionRepository;
@@ -18,13 +19,16 @@ class TransactionAggregate extends AggregateRoot
 {
     use ValidatesHash;
 
-    protected const int ACCOUNT_LIMIT = 0;
+    protected const int ACCOUNT_LIMIT   = 0;
+
+    public const int    COUNT_THRESHOLD = 1000;
 
     /**
      * @param int $balance
      */
     public function __construct(
         public int $balance = 0,
+        public int $count = 0,
     ) {
     }
 
@@ -79,6 +83,14 @@ class TransactionAggregate extends AggregateRoot
         );
 
         $this->balance += $event->money->getAmount();
+
+        if ( ++$this->count >= self::COUNT_THRESHOLD )
+        {
+            $this->recordThat(
+                domainEvent: new TransactionThresholdReached()
+            );
+            $this->count = 0;
+        }
 
         $this->storeHash( $event->hash );
 

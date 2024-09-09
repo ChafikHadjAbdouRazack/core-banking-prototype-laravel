@@ -31,9 +31,6 @@ class TransactionAggregateTest extends TestCase
     public function can_add_money(): void
     {
         TransactionAggregate::fake( self::ACCOUNT_UUID )
-                            ->given( [
-                                new AccountCreated( $this->fakeAccount() ),
-                            ] )
                             ->when(
                                 function ( TransactionAggregate $transactions
                                 ): void {
@@ -59,7 +56,6 @@ class TransactionAggregateTest extends TestCase
 
         TransactionAggregate::fake( self::ACCOUNT_UUID )
                             ->given( [
-                                new AccountCreated( $this->fakeAccount() ),
                                 new MoneyAdded(
                                     $added_money,
                                     $added_hash
@@ -86,9 +82,6 @@ class TransactionAggregateTest extends TestCase
     public function cannot_subtract_money_when_money_below_account_limit(): void
     {
         TransactionAggregate::fake( self::ACCOUNT_UUID )
-                            ->given( [
-                                new AccountCreated( $this->fakeAccount() ),
-                            ] )
                             ->when(
                                 function ( TransactionAggregate $transactions
                                 ): void {
@@ -103,7 +96,6 @@ class TransactionAggregateTest extends TestCase
                                 }
                             )
                             ->assertApplied( [
-                                new AccountCreated( $this->fakeAccount() ),
                                 new AccountLimitHit(),
                             ] )
                             ->assertNotRecorded( MoneySubtracted::class );
@@ -119,7 +111,6 @@ class TransactionAggregateTest extends TestCase
 
         TransactionAggregate::fake( self::ACCOUNT_UUID )
                             ->given( [
-                                new AccountCreated( $this->fakeAccount() ),
                                 new MoneyAdded(
                                     $initialMoney,
                                     $validHash
@@ -153,7 +144,6 @@ class TransactionAggregateTest extends TestCase
 
         TransactionAggregate::fake( self::ACCOUNT_UUID )
                             ->given( [
-                                new AccountCreated( $this->fakeAccount() ),
                                 new MoneyAdded(
                                     $initialMoney,
                                     $validHash
@@ -176,21 +166,6 @@ class TransactionAggregateTest extends TestCase
                                     );
                                 }
                             );
-    }
-
-
-    /**
-     * @return \App\Domain\Account\DataObjects\Account
-     */
-    protected function fakeAccount(): Account
-    {
-        return hydrate(
-            Account::class,
-            [
-                'name' => self::ACCOUNT_NAME,
-                'user_uuid' => $this->business_user->uuid,
-            ]
-        );
     }
 
     /**
