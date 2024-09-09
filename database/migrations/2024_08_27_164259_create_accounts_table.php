@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('accounts', function (Blueprint $table) {
             $table->id();
-            $table->uuid();
+            $table->uuid()->unique()->nullable();
             $table->string('name');
             $table->uuid('user_uuid');
             $table->integer('balance')->default(0);

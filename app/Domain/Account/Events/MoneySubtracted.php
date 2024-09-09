@@ -7,7 +7,7 @@ use App\Domain\Account\DataObjects\Money;
 use App\Values\EventQueues;
 use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 
-class MoneySubtracted extends ShouldBeStored implements HasHash
+class MoneySubtracted extends ShouldBeStored implements HasHash, HasMoney
 {
     /**
      * @var string

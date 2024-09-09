@@ -24,6 +24,16 @@ final readonly class Money extends DataObject implements DataObjectContract
     }
 
     /**
+     * @return self
+     */
+    public function invert(): self
+    {
+        return new self(
+            amount: $this->amount * -1,
+        );
+    }
+
+    /**
      * @return int[]
      */
     public function toArray(): array
