@@ -8,10 +8,18 @@ use Spatie\EventSourcing\EventHandlers\Reactors\Reactor;
 
 class SnapshotTransactionsReactor extends Reactor
 {
+    /**
+     * @param \App\Domain\Account\Aggregates\TransactionAggregate $transactions
+     */
+    public function __construct(
+        protected TransactionAggregate $transactions,
+    ) {
+    }
+
     public function onTransactionThresholdReached(
         TransactionThresholdReached $event
     ): void {
-        $aggregate = TransactionAggregate::retrieve(
+        $aggregate = $this->transactions->loadUuid(
             $event->aggregateRootUuid()
         );
         $aggregate->snapshot();  // Take the snapshot

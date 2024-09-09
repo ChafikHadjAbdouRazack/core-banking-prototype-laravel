@@ -5,6 +5,9 @@ namespace Tests\Domain\Account\Reactors;
 use App\Domain\Account\Aggregates\TransactionAggregate;
 use App\Domain\Account\DataObjects\Money;
 use App\Domain\Account\Events\TransactionThresholdReached;
+use App\Domain\Account\Reactors\SnapshotTransactionsReactor;
+use Mockery;
+use Mockery\MockInterface;
 use Tests\TestCase;
 
 class SnapshotTransactionsReactorTest extends TestCase
@@ -21,8 +24,9 @@ class SnapshotTransactionsReactorTest extends TestCase
                             ->when(
                                 function ( TransactionAggregate $transactions
                                 ): void {
-                                    for ( $i = 0; $i <=
-                                                  TransactionAggregate::COUNT_THRESHOLD;
+                                    for (
+                                        $i = 0; $i <=
+                                                TransactionAggregate::COUNT_THRESHOLD;
                                         $i++
                                     )
                                     {
@@ -35,6 +39,33 @@ class SnapshotTransactionsReactorTest extends TestCase
                             ->assertEventRecorded(
                                 new TransactionThresholdReached()
                             );
+    }
+
+    /** @test */
+    public function triggers_snapshot_on_threshold_reached(): void
+    {
+        // Create a mock for the TransactionAggregate using PHPUnit's mock builder
+        $aggregateMock = $this->createMock( TransactionAggregate::class );
+
+        // Set the expectation that 'loadUuid' is called with ACCOUNT_UUID and returns the mock itself
+        $aggregateMock->expects( $this->once() )
+                      ->method( 'loadUuid' )
+                      ->with( self::ACCOUNT_UUID )
+                      ->willReturnSelf();
+
+        // Set the expectation that 'snapshot' method is called exactly once
+        $aggregateMock->expects( $this->once() )
+                      ->method( 'snapshot' );
+
+        // Inject the mocked TransactionAggregate into the reactor
+        $reactor = new SnapshotTransactionsReactor( $aggregateMock );
+
+        // Dispatch the event and call the reactor's handler
+        $reactor->onTransactionThresholdReached(
+            ( new TransactionThresholdReached() )->setAggregateRootUuid(
+                self::ACCOUNT_UUID
+            )
+        );
     }
 
     /**
