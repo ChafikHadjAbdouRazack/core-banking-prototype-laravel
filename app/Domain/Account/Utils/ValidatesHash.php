@@ -4,7 +4,10 @@ namespace App\Domain\Account\Utils;
 
 use App\Domain\Account\DataObjects\Hash;
 use App\Domain\Account\DataObjects\Money;
+use App\Domain\Account\Events\HasHash;
+use App\Domain\Account\Events\HasMoney;
 use App\Domain\Account\Exceptions\InvalidHashException;
+use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 
 trait ValidatesHash
 {
@@ -62,5 +65,20 @@ trait ValidatesHash
     protected function resetHash( ?string $hash = null ): void
     {
         $this->currentHash = $hash ?? '';
+    }
+
+    /**
+     * @param \App\Domain\Account\Events\HasHash&\App\Domain\Account\Events\HasMoney $event
+     *
+     * @return $this
+     */
+    public function applyEvents( HasHash&HasMoney $event ): static
+    {
+        $this->validateHash(
+            hash: $event->getHash(),
+            money: $event->getMoney()
+        );
+
+        return $this;
     }
 }

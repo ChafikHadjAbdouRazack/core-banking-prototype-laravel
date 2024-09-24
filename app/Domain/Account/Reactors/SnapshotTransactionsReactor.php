@@ -16,6 +16,11 @@ class SnapshotTransactionsReactor extends Reactor
     ) {
     }
 
+    /**
+     * @param \App\Domain\Account\Events\TransactionThresholdReached $event
+     *
+     * @return void
+     */
     public function onTransactionThresholdReached(
         TransactionThresholdReached $event
     ): void {

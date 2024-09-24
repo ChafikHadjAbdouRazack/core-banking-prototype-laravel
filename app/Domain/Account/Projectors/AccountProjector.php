@@ -6,14 +6,14 @@ use App\Domain\Account\Actions\CreateAccount;
 use App\Domain\Account\Actions\CreditAccount;
 use App\Domain\Account\Actions\DebitAccount;
 use App\Domain\Account\Actions\DeleteAccount;
-use App\Models\Account;
 use App\Domain\Account\Events\AccountCreated;
 use App\Domain\Account\Events\AccountDeleted;
 use App\Domain\Account\Events\MoneyAdded;
 use App\Domain\Account\Events\MoneySubtracted;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Spatie\EventSourcing\EventHandlers\Projectors\Projector;
 
-class AccountProjector extends Projector
+class AccountProjector extends Projector implements ShouldQueue
 {
     /**
      * @param AccountCreated $event

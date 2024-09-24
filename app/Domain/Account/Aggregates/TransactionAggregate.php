@@ -25,6 +25,7 @@ class TransactionAggregate extends AggregateRoot
 
     /**
      * @param int $balance
+     * @param int $count
      */
     public function __construct(
         public int $balance = 0,

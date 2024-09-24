@@ -7,6 +7,8 @@ enum EventQueues: string {
     case LEDGER = 'ledger';
     case TRANSACTIONS = 'transactions';
 
+    case TRANSFERS = 'transfers';
+
     /**
      * @return self
      */
