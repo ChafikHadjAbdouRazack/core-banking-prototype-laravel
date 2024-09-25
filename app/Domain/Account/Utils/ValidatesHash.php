@@ -66,19 +66,4 @@ trait ValidatesHash
     {
         $this->currentHash = $hash ?? '';
     }
-
-    /**
-     * @param \App\Domain\Account\Events\HasHash&\App\Domain\Account\Events\HasMoney $event
-     *
-     * @return $this
-     */
-    public function applyEvents( HasHash&HasMoney $event ): static
-    {
-        $this->validateHash(
-            hash: $event->getHash(),
-            money: $event->getMoney()
-        );
-
-        return $this;
-    }
 }

@@ -5,11 +5,7 @@ namespace App\Domain\Account\Aggregates;
 use App\Domain\Account\DataObjects\AccountUuid;
 use App\Domain\Account\DataObjects\Money;
 use App\Domain\Account\Events\MoneyTransferred;
-use App\Domain\Account\Events\TransactionThresholdReached;
-use App\Domain\Account\Exceptions\InvalidHashException;
-use App\Domain\Account\Exceptions\NotEnoughFunds;
-use App\Domain\Account\Repositories\TransactionRepository;
-use App\Domain\Account\Repositories\TransactionSnapshotRepository;
+use App\Domain\Account\Events\TransferThresholdReached;
 use App\Domain\Account\Repositories\TransferRepository;
 use App\Domain\Account\Repositories\TransferSnapshotRepository;
 use App\Domain\Account\Utils\ValidatesHash;
@@ -86,7 +82,7 @@ class TransferAggregate extends AggregateRoot
         if ( ++$this->count >= self::COUNT_THRESHOLD )
         {
             $this->recordThat(
-                domainEvent: new TransactionThresholdReached()
+                domainEvent: new TransferThresholdReached()
             );
             $this->count = 0;
         }
