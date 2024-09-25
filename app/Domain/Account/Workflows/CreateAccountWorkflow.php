@@ -10,8 +10,10 @@ class CreateAccountWorkflow extends Workflow
 {
     /**
      * @param \App\Domain\Account\DataObjects\Account $account
+     *
+     * @return \Generator
      */
-    public function execute( Account $account )
+    public function execute( Account $account ): \Generator
     {
         return yield ActivityStub::make(
             CreateAccountActivity::class,
