@@ -7,6 +7,8 @@ use App\Domain\Account\Aggregates\TransactionAggregate;
 use App\Domain\Account\Aggregates\TransferAggregate;
 use App\Domain\Account\DataObjects\Account;
 use App\Domain\Account\Workflows\CreateAccountWorkflow;
+use App\Domain\Account\Workflows\DepositAccountWorkflow;
+use App\Domain\Account\Workflows\WithdrawAccountWorkflow;
 use App\Domain\Account\Workflows\DestroyAccountWorkflow;
 use Workflow\WorkflowStub;
 
@@ -41,7 +43,7 @@ class AccountService
     public function destroy( mixed $uuid ): void
     {
         $workflow = WorkflowStub::make( DestroyAccountWorkflow::class );
-        $workflow->start( __account__uuid( $uuid ) );
+        $workflow->start( __account_uuid( $uuid ) );
     }
 
     /**
@@ -52,9 +54,8 @@ class AccountService
      */
     public function deposit( mixed $uuid, mixed $amount ): void
     {
-        $this->transaction->retrieve( __account__uuid( $uuid ) )
-                          ->credit( __money( $amount ) )
-                          ->persist();
+        $workflow = WorkflowStub::make( DepositAccountWorkflow::class );
+        $workflow->start( __account_uuid( $uuid ), __money( $amount ) );
     }
 
     /**
@@ -65,9 +66,8 @@ class AccountService
      */
     public function withdraw( mixed $uuid, mixed $amount ): void
     {
-        $this->transaction->retrieve( __account__uuid( $uuid ) )
-                          ->debit( __money( $amount ) )
-                          ->persist();
+        $workflow = WorkflowStub::make( WithdrawAccountWorkflow::class );
+        $workflow->start( __account_uuid( $uuid ), __money( $amount ) );
     }
 
     /**

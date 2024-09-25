@@ -3,22 +3,23 @@
 namespace App\Domain\Account\Workflows;
 
 use App\Domain\Account\Aggregates\LedgerAggregate;
+use App\Domain\Account\DataObjects\AccountUuid;
 use Workflow\Activity;
 
 class DestroyAccountActivity extends Activity
 {
     /**
-     * @param string $uuid
+     * @param \App\Domain\Account\DataObjects\AccountUuid $uuid
      * @param \App\Domain\Account\Aggregates\LedgerAggregate $ledger
      *
-     * @return string
+     * @return bool
      */
-    public function execute( string $uuid, LedgerAggregate $ledger ): string
+    public function execute( AccountUuid $uuid, LedgerAggregate $ledger ): bool
     {
-        $ledger->retrieve( $uuid )
+        $ledger->retrieve( $uuid->getUuid() )
                ->deleteAccount()
                ->persist();
 
-        return $uuid;
+        return true;
     }
 }
