@@ -35,14 +35,14 @@ class TransactionAggregateTest extends TestCase
                                 function ( TransactionAggregate $transactions
                                 ): void {
                                     $transactions->credit(
-                                        $this->money( 10 )
+                                        money: $this->money( 10 )
                                     );
                                 }
                             )
                             ->assertRecorded( [
                                 new MoneyAdded(
-                                    $money = $this->money( 10 ),
-                                    $this->generateHash( $money )
+                                    money: $money = $this->money( 10 ),
+                                    hash: $this->generateHash( $money )
                                 ),
                             ] );
     }
@@ -103,7 +103,7 @@ class TransactionAggregateTest extends TestCase
     }
 
     /** @test */
-    public function throws_exception_on_invalid_hash(): void
+    public function throws_exception_on_invalid_transaction_hash(): void
     {
         $initialMoney = $this->money( 10 );
         $validHash = $this->generateHash( $initialMoney );
@@ -112,8 +112,8 @@ class TransactionAggregateTest extends TestCase
         TransactionAggregate::fake( self::ACCOUNT_UUID )
                             ->given( [
                                 new MoneyAdded(
-                                    $initialMoney,
-                                    $validHash
+                                    money: $initialMoney,
+                                    hash: $validHash
                                 ),
                             ] )
                             ->when(
@@ -123,8 +123,8 @@ class TransactionAggregateTest extends TestCase
                                         function () use ( $transactions ) {
                                             $transactions->applyMoneyAdded(
                                                 new MoneyAdded(
-                                                    $this->money( 10 ),
-                                                    $this->hash(
+                                                    money: $this->money( 10 ),
+                                                    hash: $this->hash(
                                                         'invalid-hash'
                                                     ),
                                                 )
@@ -145,8 +145,8 @@ class TransactionAggregateTest extends TestCase
         TransactionAggregate::fake( self::ACCOUNT_UUID )
                             ->given( [
                                 new MoneyAdded(
-                                    $initialMoney,
-                                    $validHash
+                                    money: $initialMoney,
+                                    hash: $validHash
                                 ),
                             ] )
                             ->when(
@@ -156,8 +156,8 @@ class TransactionAggregateTest extends TestCase
                                         function () use ( $transactions ) {
                                             $transactions->recordThat(
                                                 new MoneyAdded(
-                                                    $this->money( 10 ),
-                                                    $this->hash(
+                                                    money: $this->money( 10 ),
+                                                    hash: $this->hash(
                                                         'invalid-hash'
                                                     ),
                                                 )
