@@ -21,6 +21,7 @@
         "filament/filament": "^3.2",
         "http-interop/http-factory-guzzle": "^1.2",
         "juststeveking/laravel-data-object-tools": "^2.0",
+        "laravel-workflow/laravel-workflow": "^1.0",
         "laravel/cashier": "^15.4",
         "laravel/framework": "^11.9",
         "laravel/horizon": "^5.27",

@@ -4,37 +4,32 @@ namespace App\Domain\Account\Services;
 
 use App\Domain\Account\Aggregates\LedgerAggregate;
 use App\Domain\Account\Aggregates\TransactionAggregate;
+use App\Domain\Account\Aggregates\TransferAggregate;
 use App\Domain\Account\DataObjects\Account;
-use App\Domain\Account\DataObjects\Money;
-use App\Models\Account as AccountModel;
-use Illuminate\Support\Str;
+use App\Domain\Account\Workflows\CreateAccountWorkflow;
+use Workflow\WorkflowStub;
 
 class AccountService
 {
     /**
      * @param \App\Domain\Account\Aggregates\LedgerAggregate $ledger
      * @param \App\Domain\Account\Aggregates\TransactionAggregate $transaction
+     * @param \App\Domain\Account\Aggregates\TransferAggregate $transfer
      */
     public function __construct(
         protected LedgerAggregate      $ledger,
-        protected TransactionAggregate $transaction
+        protected TransactionAggregate $transaction,
+        protected TransferAggregate    $transfer
     ) {
     }
 
     /**
      * @param mixed $account
-     *
-     * @return string
      */
-    public function create( Account|array $account ): string
+    public function create( Account|array $account ): void
     {
-        $uuid = Str::uuid();
-
-        $this->ledger->retrieve( $uuid )
-                     ->createAccount( self::getAccount( $account ) )
-                     ->persist();
-
-        return $uuid;
+        $workflow = WorkflowStub::make( CreateAccountWorkflow::class );
+        $workflow->start( __account( $account ) );
     }
 
     /**
@@ -44,7 +39,7 @@ class AccountService
      */
     public function destroy( mixed $uuid ): void
     {
-        $this->ledger->retrieve( self::getUuid( $uuid ) )
+        $this->ledger->retrieve( __account_uuid( $uuid ) )
                      ->deleteAccount()
                      ->persist();
     }
@@ -57,8 +52,8 @@ class AccountService
      */
     public function deposit( mixed $uuid, mixed $amount ): void
     {
-        $this->transaction->retrieve( self::getUuid( $uuid ) )
-                          ->credit( self::getMoney( $amount ) )
+        $this->transaction->retrieve( __account_uuid( $uuid ) )
+                          ->credit( __money( $amount ) )
                           ->persist();
     }
 
@@ -70,8 +65,8 @@ class AccountService
      */
     public function withdraw( mixed $uuid, mixed $amount ): void
     {
-        $this->transaction->retrieve( self::getUuid( $uuid ) )
-                          ->debit( self::getMoney( $amount ) )
+        $this->transaction->retrieve( __account_uuid( $uuid ) )
+                          ->debit( __money( $amount ) )
                           ->persist();
     }
 
@@ -84,70 +79,13 @@ class AccountService
      */
     public function transfer( mixed $from, mixed $to, mixed $amount ): void
     {
-        $debiting = $this->transaction->loadUuid( self::getUuid( $from ) )
-                                      ->debit( self::getMoney( $amount ) );
+        $debiting = $this->transfer->loadUuid( __account_uuid( $from ) )
+                                      ->debit( __money( $amount ) );
 
-        $crediting = $this->transaction->loadUuid( self::getUuid( $to ) )
-                                       ->credit( self::getMoney( $amount ) );
+        $crediting = $this->transfer->loadUuid( __account_uuid( $to ) )
+                                       ->credit( __money( $amount ) );
 
         $debiting->persist();
         $crediting->persist();
-    }
-
-    /**
-     * @param \App\Domain\Account\DataObjects\Account|\App\Models\Account|string $uuid
-     *
-     * @return string
-     */
-    protected static function getUuid( Account|AccountModel|string $uuid ): string {
-        if ( $uuid instanceof Account )
-        {
-            return $uuid->uuid();
-        }
-
-        if ( $uuid instanceof AccountModel )
-        {
-            return $uuid->uuid;
-        }
-
-        return $uuid;
-    }
-
-    /**
-     * @param \App\Domain\Account\DataObjects\Money|int $amount
-     *
-     * @return \App\Domain\Account\DataObjects\Money
-     */
-    protected static function getMoney( Money|int $amount ): Money
-    {
-        if ( $amount instanceof Money )
-        {
-            return $amount;
-        }
-
-        return hydrate(
-            class: Money::class,
-            properties: [
-                'amount' => $amount,
-            ]
-        );
-    }
-
-    /**
-     * @param Account|array $account
-     *
-     * @return Account
-     */
-    protected function getAccount( Account|array $account ): Account
-    {
-        if ( $account instanceof Account )
-        {
-            return $account;
-        }
-
-        return hydrate(
-            class: Account::class,
-            properties: $account
-        );
     }
 }
