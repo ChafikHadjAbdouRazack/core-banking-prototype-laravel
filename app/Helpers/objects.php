@@ -1,6 +1,7 @@
 <?php
 
 use App\Domain\Account\DataObjects\Account;
+use App\Domain\Account\DataObjects\AccountUuid;
 use App\Domain\Account\DataObjects\Money;
 use App\Models\Account as AccountModel;
 use JustSteveKing\DataObjects\Contracts\DataObjectContract;
@@ -77,9 +78,37 @@ if (!function_exists('__account_uuid') )
     /**
      * @param \App\Domain\Account\DataObjects\Account|\App\Models\Account|string $uuid
      *
+     * @return AccountUuid
+     */
+    function __account_uuid( Account|AccountModel|string $uuid ): AccountUuid
+    {
+        if ( $uuid instanceof Account )
+        {
+            $uuid = $uuid->uuid();
+        }
+
+        if ( $uuid instanceof AccountModel )
+        {
+            $uuid = $uuid->uuid;
+        }
+
+        return hydrate(
+            class: AccountUuid::class,
+            properties: [
+                'uuid' => $uuid,
+            ]
+        );
+    }
+}
+
+if (!function_exists('__account__uuid') )
+{
+    /**
+     * @param \App\Domain\Account\DataObjects\Account|\App\Models\Account|string $uuid
+     *
      * @return string
      */
-    function __account_uuid( Account|AccountModel|string $uuid ): string
+    function __account__uuid( Account|AccountModel|string $uuid ): string
     {
         if ( $uuid instanceof Account )
         {

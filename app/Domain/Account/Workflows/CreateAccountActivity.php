@@ -9,6 +9,12 @@ use Workflow\Activity;
 
 class CreateAccountActivity extends Activity
 {
+    /**
+     * @param \App\Domain\Account\DataObjects\Account $account
+     * @param \App\Domain\Account\Aggregates\LedgerAggregate $ledger
+     *
+     * @return string
+     */
     public function execute( Account $account, LedgerAggregate $ledger ): string
     {
         $uuid = Str::uuid();

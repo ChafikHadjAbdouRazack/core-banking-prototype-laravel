@@ -2,6 +2,7 @@
 
 namespace Tests;
 
+use App\Domain\Account\Aggregates\LedgerAggregate;
 use App\Domain\Account\Repositories\AccountRepository;
 use App\Domain\Account\Services\AccountService;
 use App\Models\Account;
@@ -11,6 +12,8 @@ use App\Values\DefaultAccountNames;
 use App\Values\UserRoles;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
+use Illuminate\Support\Str;
+use Tests\Domain\Account\Aggregates\LedgerAggregateTest;
 use Throwable;
 
 abstract class TestCase extends BaseTestCase
@@ -64,17 +67,22 @@ abstract class TestCase extends BaseTestCase
      */
     protected function createAccount(User $user): Account
     {
-        $uuid = app(AccountService::class)->create(
-            hydrate(
-                class: \App\Domain\Account\DataObjects\Account::class,
-                properties: [
-                    'name'      => DefaultAccountNames::default(),
-                    'user_uuid' => $user->uuid,
-                ]
-            )
-        );
+        $uuid = Str::uuid();
 
-        return app(AccountRepository::class)->findByUuid($uuid);
+        app( LedgerAggregate::class )->retrieve( $uuid )
+                                     ->createAccount(
+                                         hydrate(
+                                             class: \App\Domain\Account\DataObjects\Account::class,
+                                             properties: [
+                                                 'name'      => DefaultAccountNames::default(
+                                                 ),
+                                                 'user_uuid' => $user->uuid,
+                                             ]
+                                         )
+                                     )
+                                     ->persist();
+
+        return app( AccountRepository::class )->findByUuid( $uuid );
     }
 
     /**

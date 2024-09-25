@@ -7,6 +7,7 @@ use App\Domain\Account\Aggregates\TransactionAggregate;
 use App\Domain\Account\Aggregates\TransferAggregate;
 use App\Domain\Account\DataObjects\Account;
 use App\Domain\Account\Workflows\CreateAccountWorkflow;
+use App\Domain\Account\Workflows\DestroyAccountWorkflow;
 use Workflow\WorkflowStub;
 
 class AccountService
@@ -39,9 +40,8 @@ class AccountService
      */
     public function destroy( mixed $uuid ): void
     {
-        $this->ledger->retrieve( __account_uuid( $uuid ) )
-                     ->deleteAccount()
-                     ->persist();
+        $workflow = WorkflowStub::make( DestroyAccountWorkflow::class );
+        $workflow->start( __account__uuid( $uuid ) );
     }
 
     /**
@@ -52,7 +52,7 @@ class AccountService
      */
     public function deposit( mixed $uuid, mixed $amount ): void
     {
-        $this->transaction->retrieve( __account_uuid( $uuid ) )
+        $this->transaction->retrieve( __account__uuid( $uuid ) )
                           ->credit( __money( $amount ) )
                           ->persist();
     }
@@ -65,7 +65,7 @@ class AccountService
      */
     public function withdraw( mixed $uuid, mixed $amount ): void
     {
-        $this->transaction->retrieve( __account_uuid( $uuid ) )
+        $this->transaction->retrieve( __account__uuid( $uuid ) )
                           ->debit( __money( $amount ) )
                           ->persist();
     }
@@ -79,13 +79,10 @@ class AccountService
      */
     public function transfer( mixed $from, mixed $to, mixed $amount ): void
     {
-        $debiting = $this->transfer->loadUuid( __account_uuid( $from ) )
-                                      ->debit( __money( $amount ) );
-
-        $crediting = $this->transfer->loadUuid( __account_uuid( $to ) )
-                                       ->credit( __money( $amount ) );
-
-        $debiting->persist();
-        $crediting->persist();
+        $this->transfer->transfer(
+            from: __account_uuid( $from ),
+            to: __account_uuid( $to ),
+            money: __money( $amount )
+        );
     }
 }
