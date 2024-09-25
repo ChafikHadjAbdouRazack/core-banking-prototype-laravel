@@ -20,7 +20,7 @@
         "ext-pdo": "*",
         "filament/filament": "^3.2",
         "http-interop/http-factory-guzzle": "^1.2",
-        "juststeveking/laravel-data-object-tools": "dev-laravel-11",
+        "juststeveking/laravel-data-object-tools": "^2.0",
         "laravel/cashier": "^15.4",
         "laravel/framework": "^11.9",
         "laravel/horizon": "^5.27",
@@ -47,12 +47,6 @@
         "pestphp/pest": "^2.0",
         "pestphp/pest-plugin-laravel": "^2.0"
     },
-	"repositories": [
-        {
-            "url": "https://github.com/YOzaz/laravel-data-object-tools",
-            "type": "git"
-        }
-	],
     "autoload": {
         "psr-4": {
             "App\\": "app/",

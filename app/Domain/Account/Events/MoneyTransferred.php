@@ -15,6 +15,8 @@ class MoneyTransferred extends ShouldBeStored implements HasHash, HasMoney
      */
     public string $queue = EventQueues::TRANSFERS->value;
 
+    use HashValidatorProvider;
+
     /**
      * @param \App\Domain\Account\DataObjects\AccountUuid $from
      * @param \App\Domain\Account\DataObjects\AccountUuid $to
