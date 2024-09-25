@@ -17,7 +17,7 @@ class SnapshotTransactionsReactorTest extends TestCase
     private const string ACCOUNT_NAME = 'fake-account';
 
     /** @test */
-    public function fires_transaction_threshold_reached_event_when_threshold_is_met(
+    public function fires_transaction_threshold_reached_event_when_transactions_threshold_is_met(
     ): void
     {
         TransactionAggregate::fake( self::ACCOUNT_UUID )
@@ -42,7 +42,7 @@ class SnapshotTransactionsReactorTest extends TestCase
     }
 
     /** @test */
-    public function triggers_snapshot_on_threshold_reached(): void
+    public function triggers_snapshot_on_transactions_threshold_reached(): void
     {
         // Create a mock for the TransactionAggregate using PHPUnit's mock builder
         $aggregateMock = $this->createMock( TransactionAggregate::class );
