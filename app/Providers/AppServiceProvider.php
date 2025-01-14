@@ -2,8 +2,6 @@
 
 namespace App\Providers;
 
-use App\Events\BusinessUserCreated;
-use App\Listeners\CreateBusinessUserTables;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -13,7 +11,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        if ($this->app->environment() !== 'testing') {
+            $this->app->register( WaterlineServiceProvider::class);
+        }
     }
 
     /**
