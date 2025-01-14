@@ -76,12 +76,17 @@ if (!function_exists('__money') )
 if (!function_exists('__account_uuid') )
 {
     /**
-     * @param \App\Domain\Account\DataObjects\Account|\App\Models\Account|string $uuid
+     * @param \App\Domain\Account\DataObjects\Account|\App\Models\Account|\App\Domain\Account\DataObjects\AccountUuid|string $uuid
      *
      * @return AccountUuid
      */
-    function __account_uuid( Account|AccountModel|string $uuid ): AccountUuid
+    function __account_uuid( Account|AccountModel|AccountUuid|string $uuid ): AccountUuid
     {
+        if ( $uuid instanceof AccountUuid )
+        {
+            return $uuid;
+        }
+
         if ( $uuid instanceof Account )
         {
             $uuid = $uuid->uuid();
@@ -104,12 +109,17 @@ if (!function_exists('__account_uuid') )
 if (!function_exists('__account__uuid') )
 {
     /**
-     * @param \App\Domain\Account\DataObjects\Account|\App\Models\Account|string $uuid
+     * @param \App\Domain\Account\DataObjects\Account|\App\Models\Account|\App\Domain\Account\DataObjects\AccountUuid|string $uuid
      *
      * @return string
      */
-    function __account__uuid( Account|AccountModel|string $uuid ): string
+    function __account__uuid( Account|AccountModel|AccountUuid|string $uuid ): string
     {
+        if ( $uuid instanceof AccountUuid )
+        {
+            return $uuid->getUuid();
+        }
+
         if ( $uuid instanceof Account )
         {
             return $uuid->uuid();
