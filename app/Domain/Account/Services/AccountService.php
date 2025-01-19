@@ -10,7 +10,6 @@ use App\Domain\Account\Workflows\CreateAccountWorkflow;
 use App\Domain\Account\Workflows\DepositAccountWorkflow;
 use App\Domain\Account\Workflows\WithdrawAccountWorkflow;
 use App\Domain\Account\Workflows\DestroyAccountWorkflow;
-use App\Domain\Account\Workflows\TransferWorkflow;
 use Workflow\WorkflowStub;
 
 class AccountService
@@ -69,18 +68,5 @@ class AccountService
     {
         $workflow = WorkflowStub::make( WithdrawAccountWorkflow::class );
         $workflow->start( __account_uuid( $uuid ), __money( $amount ) );
-    }
-
-    /**
-     * @param mixed $from
-     * @param mixed $to
-     * @param mixed $amount
-     *
-     * @return void
-     */
-    public function transfer( mixed $from, mixed $to, mixed $amount ): void
-    {
-        $workflow = WorkflowStub::make( TransferWorkflow::class );
-        $workflow->start( __account_uuid( $from ), __account_uuid( $to ), __money( $amount ) );
     }
 }

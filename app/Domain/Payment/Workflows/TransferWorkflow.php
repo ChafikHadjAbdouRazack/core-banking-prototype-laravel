@@ -1,9 +1,11 @@
 <?php
 
-namespace App\Domain\Account\Workflows;
+namespace App\Domain\Payment\Workflows;
 
 use App\Domain\Account\DataObjects\AccountUuid;
 use App\Domain\Account\DataObjects\Money;
+use App\Domain\Account\Workflows\DepositAccountWorkflow;
+use App\Domain\Account\Workflows\WithdrawAccountWorkflow;
 use Workflow\Workflow;
 use Workflow\ChildWorkflowStub;
 
