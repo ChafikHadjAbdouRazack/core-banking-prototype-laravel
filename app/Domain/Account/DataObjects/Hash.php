@@ -6,6 +6,7 @@ namespace App\Domain\Account\DataObjects;
 
 use InvalidArgumentException;
 use JustSteveKing\DataObjects\Contracts\DataObjectContract;
+use App\Domain\Account\Utils\ValidatesHash;
 
 final readonly class Hash extends DataObject implements DataObjectContract
 {
@@ -40,7 +41,8 @@ final readonly class Hash extends DataObject implements DataObjectContract
      */
     private function isValidHash( string $hash ): bool
     {
-        return ctype_xdigit( $hash );
+        // SHA3-512 produces a 128-character hexadecimal string
+        return ctype_xdigit( $hash ) && strlen($hash) === ValidatesHash::getHashLength();
     }
 
     /**

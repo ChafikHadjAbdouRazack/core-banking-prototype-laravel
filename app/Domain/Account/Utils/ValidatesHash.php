@@ -11,7 +11,8 @@ use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 
 trait ValidatesHash
 {
-    private const string HASH_ALGORITHM = 'sha256';
+    private const string HASH_ALGORITHM = 'sha3-512';
+	private const int    HASH_LENGTH    = 128;         // SHA3-512 produces a 128-character hexadecimal string
 
     public string $currentHash = '';
 
@@ -65,5 +66,15 @@ trait ValidatesHash
     protected function resetHash( ?string $hash = null ): void
     {
         $this->currentHash = $hash ?? '';
+    }
+	
+	/**
+     * Get the expected length of the hash.
+     *
+     * @return int
+     */
+    public static function getHashLength(): int
+    {
+        return self::HASH_LENGTH;
     }
 }
