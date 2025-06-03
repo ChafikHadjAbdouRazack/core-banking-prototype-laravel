@@ -3,11 +3,11 @@
 [![Tests](https://github.com/finaegis/core-banking-prototype-laravel/actions/workflows/test.yml/badge.svg)](https://github.com/finaegis/core-banking-prototype-laravel/actions/workflows/test.yml)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![PHP Version](https://img.shields.io/badge/php-%3E%3D8.3-8892BF.svg)](https://php.net/)
-[![Laravel Version](https://img.shields.io/badge/Laravel-11.x-FF2D20.svg)](https://laravel.com/)
+[![Laravel Version](https://img.shields.io/badge/Laravel-12.x-FF2D20.svg)](https://laravel.com/)
 
 **Open Source Core Banking as a Service**
 
-FinAegis is a modern, scalable, and secure core banking platform built with Laravel 11, featuring event sourcing, domain-driven design, workflow orchestration, and quantum-resistant security measures.
+FinAegis is a modern, scalable, and secure core banking platform built with Laravel 12, featuring event sourcing, domain-driven design, workflow orchestration, and quantum-resistant security measures.
 
 **🤖 AI-Friendly Architecture**: This project welcomes contributions from AI coding assistants (Claude Code, GitHub Copilot, Cursor, etc.). The comprehensive documentation and well-structured patterns make it easy for AI agents to understand and contribute meaningfully to the codebase.
 
@@ -18,6 +18,7 @@ FinAegis provides a complete foundation for banking operations with:
 - **Event Sourcing Architecture**: Complete audit trail of all transactions
 - **Saga Pattern Workflows**: Reliable business process orchestration with compensation
 - **Domain-Driven Design**: Clean, maintainable code architecture
+- **Modern UUID v7**: Time-ordered UUIDs for optimal database performance
 - **Quantum-Resistant Security**: SHA3-512 cryptographic hashing
 - **Real-time Processing**: High-performance transaction processing
 - **Regulatory Compliance**: Built-in audit trails and compliance features
@@ -27,7 +28,7 @@ FinAegis provides a complete foundation for banking operations with:
 ### Prerequisites
 
 - PHP 8.3+
-- Laravel 11
+- Laravel 12
 - MySQL 8.0+ or PostgreSQL 13+
 - Redis 6.0+
 - Node.js 18+ (for asset compilation)
@@ -296,7 +297,7 @@ We welcome contributions from the community, including **AI coding assistants an
 
 ## 🛠️ Tech Stack
 
-- **Backend**: Laravel 11, PHP 8.3+
+- **Backend**: Laravel 12, PHP 8.3+
 - **Event Sourcing**: Spatie Event Sourcing
 - **Workflows**: Laravel Workflow
 - **Database**: MySQL 8.0+/PostgreSQL 13+
