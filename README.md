@@ -18,6 +18,7 @@ FinAegis provides a complete foundation for banking operations with:
 - **Event Sourcing Architecture**: Complete audit trail of all transactions
 - **Saga Pattern Workflows**: Reliable business process orchestration with compensation
 - **Domain-Driven Design**: Clean, maintainable code architecture
+- **Modern UUID v7**: Time-ordered UUIDs for optimal database performance
 - **Quantum-Resistant Security**: SHA3-512 cryptographic hashing
 - **Real-time Processing**: High-performance transaction processing
 - **Regulatory Compliance**: Built-in audit trails and compliance features
