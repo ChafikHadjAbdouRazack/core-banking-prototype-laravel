@@ -1,7 +1,7 @@
 # FinAegis Core Banking Platform
 
 [![Tests](https://github.com/finaegis/core-banking-laravel/actions/workflows/tests.yml/badge.svg)](https://github.com/finaegis/core-banking-laravel/actions/workflows/tests.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![PHP Version](https://img.shields.io/badge/php-%3E%3D8.3-8892BF.svg)](https://php.net/)
 [![Laravel Version](https://img.shields.io/badge/Laravel-11.x-FF2D20.svg)](https://laravel.com/)
 
@@ -327,7 +327,7 @@ We welcome contributions from the community, including **AI coding assistants an
 
 ## 📄 License
 
-This project is open-sourced software licensed under the [MIT license](LICENSE).
+This project is open-sourced software licensed under the [Apache License 2.0](LICENSE).
 
 ## 🙏 Acknowledgments
 
