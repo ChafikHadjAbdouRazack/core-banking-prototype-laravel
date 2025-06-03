@@ -7,6 +7,12 @@
         "fintech"
     ],
     "license": "MIT",
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/YOzaz/laravel-data-object-tools"
+        }
+    ],
     "authors": [
         {
             "name": "Marijus Planciunas",
@@ -20,11 +26,11 @@
         "ext-pdo": "*",
         "filament/filament": "^3.2",
         "http-interop/http-factory-guzzle": "^1.2",
-        "juststeveking/laravel-data-object-tools": "^2.0",
+        "juststeveking/laravel-data-object-tools": "dev-main",
         "laravel-workflow/laravel-workflow": "^1.0",
         "laravel-workflow/waterline": "^1.0",
         "laravel/cashier": "^15.4",
-        "laravel/framework": "^11.9",
+        "laravel/framework": "^12.0",
         "laravel/horizon": "^5.27",
         "laravel/jetstream": "^5.1",
         "laravel/passport": "^12.0",
@@ -46,8 +52,8 @@
         "laravel/sail": "^1.26",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.0",
-        "pestphp/pest": "^2.0",
-        "pestphp/pest-plugin-laravel": "^2.0"
+        "pestphp/pest": "^3.0",
+        "pestphp/pest-plugin-laravel": "^3.0"
     },
     "autoload": {
         "psr-4": {

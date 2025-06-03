@@ -2,7 +2,7 @@
 
 ## Overview
 
-FinAegis is an open-source Core Banking as a Service platform built with Laravel 11, featuring event sourcing, domain-driven design, and workflow orchestration. This platform provides a robust foundation for banking operations with quantum-resistant security measures.
+FinAegis is an open-source Core Banking as a Service platform built with Laravel 12, featuring event sourcing, domain-driven design, and workflow orchestration. This platform provides a robust foundation for banking operations with quantum-resistant security measures.
 
 **🤖 AI-Friendly Development**: This project actively welcomes contributions from AI coding assistants including Claude Code, GitHub Copilot, Cursor, and other vibe coding tools. The well-structured architecture, comprehensive documentation, and clear patterns make it easy for AI agents to understand the codebase and contribute meaningfully.
 
@@ -82,7 +82,7 @@ The platform uses Laravel Workflow for saga pattern implementation:
 ### Prerequisites
 
 - PHP 8.3+
-- Laravel 11
+- Laravel 12
 - MySQL/PostgreSQL
 - Redis (for queues)
 - Node.js (for asset compilation)
