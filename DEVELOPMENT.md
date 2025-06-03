@@ -4,6 +4,8 @@
 
 FinAegis is an open-source Core Banking as a Service platform built with Laravel 11, featuring event sourcing, domain-driven design, and workflow orchestration. This platform provides a robust foundation for banking operations with quantum-resistant security measures.
 
+**🤖 AI-Friendly Development**: This project actively welcomes contributions from AI coding assistants including Claude Code, GitHub Copilot, Cursor, and other vibe coding tools. The well-structured architecture, comprehensive documentation, and clear patterns make it easy for AI agents to understand the codebase and contribute meaningfully.
+
 ## Architecture
 
 ### Domain-Driven Design (DDD)
@@ -422,11 +424,16 @@ php artisan queue:work --queue=events,ledger,transactions,transfers
 
 ## Contributing
 
-1. Follow PSR-12 coding standards
-2. Write comprehensive tests for new features
-3. Update documentation for API changes
-4. Use conventional commit messages
-5. Ensure all tests pass before submitting PRs
+### All Contributors (Human & AI)
+1. **Full test coverage required**: Every new feature, workflow, or significant change must include comprehensive tests
+2. **Complete documentation**: Update relevant documentation files and add inline documentation for complex logic
+3. **Follow PSR-12 coding standards**
+4. **Maintain architectural patterns**: Follow existing DDD, event sourcing, and saga patterns
+5. **Use conventional commit messages**
+6. **Ensure all tests pass before submitting PRs** (`./vendor/bin/pest`)
+
+### AI Coding Assistant Contributions
+This project is specifically designed to work well with AI coding tools. AI agents typically understand the codebase structure very well due to the clear patterns and comprehensive documentation. All AI-generated code must meet the same quality standards as human-written code.
 
 ## Support
 

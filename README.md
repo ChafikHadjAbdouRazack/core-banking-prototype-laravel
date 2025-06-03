@@ -9,6 +9,8 @@
 
 FinAegis is a modern, scalable, and secure core banking platform built with Laravel 11, featuring event sourcing, domain-driven design, workflow orchestration, and quantum-resistant security measures.
 
+**🤖 AI-Friendly Architecture**: This project welcomes contributions from AI coding assistants (Claude Code, GitHub Copilot, Cursor, etc.). The comprehensive documentation and well-structured patterns make it easy for AI agents to understand and contribute meaningfully to the codebase.
+
 ## 🏛️ Platform Overview
 
 FinAegis provides a complete foundation for banking operations with:
@@ -258,7 +260,9 @@ services:
 
 ## 🤝 Contributing
 
-We welcome contributions from the community! Please read our contributing guidelines:
+We welcome contributions from the community, including **AI coding assistants and vibe coding tools**! This project is designed to be highly compatible with AI agents like Claude Code, GitHub Copilot, Cursor, and similar tools. The domain-driven design and comprehensive documentation make it easy for AI agents to understand and contribute meaningfully.
+
+### Contributing Guidelines:
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
@@ -269,11 +273,12 @@ We welcome contributions from the community! Please read our contributing guidel
 7. Push to the branch (`git push origin feature/amazing-feature`)
 8. Open a Pull Request
 
-### Development Standards
-- Follow PSR-12 coding standards
-- Write comprehensive tests
-- Document new features
-- Maintain backward compatibility
+### Development Standards (Human & AI Contributors)
+- **Full test coverage**: Every new feature must have comprehensive tests
+- **Complete documentation**: Update relevant docs and add inline documentation
+- **Follow PSR-12 coding standards**
+- **Maintain architectural patterns**: Follow existing DDD, event sourcing, and saga patterns
+- **Maintain backward compatibility**
 
 ## 📊 Performance
 
