@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "description": "Core Banking as a Service",
     "author": "Marijus Planciunas <yozaz.mandac@gmail.com>",
-    "private": true,
+    "license": "Apache-2.0",
     "repository": {
         "type": "git",
         "url": "https://github.com/YOzaz/finaegis"
