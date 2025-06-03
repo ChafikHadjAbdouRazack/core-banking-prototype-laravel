@@ -15,6 +15,8 @@ use Tests\TestCase;
 */
 
 uses(TestCase::class, RefreshDatabase::class)->in('Feature');
+uses(TestCase::class, RefreshDatabase::class)->in('Domain');
+uses(TestCase::class, RefreshDatabase::class)->in('Console');
 
 /*
 |--------------------------------------------------------------------------
