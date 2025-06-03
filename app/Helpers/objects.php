@@ -89,7 +89,7 @@ if (!function_exists('__account_uuid') )
 
         if ( $uuid instanceof Account )
         {
-            $uuid = $uuid->uuid();
+            $uuid = $uuid->getUuid();
         }
 
         if ( $uuid instanceof AccountModel )
@@ -122,7 +122,7 @@ if (!function_exists('__account__uuid') )
 
         if ( $uuid instanceof Account )
         {
-            return $uuid->uuid();
+            return $uuid->getUuid();
         }
 
         if ( $uuid instanceof AccountModel )

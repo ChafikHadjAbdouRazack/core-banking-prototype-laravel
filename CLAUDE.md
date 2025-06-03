@@ -22,10 +22,32 @@ All contributions (human or AI-generated) must include:
 # Run specific test suites
 ./vendor/bin/pest tests/Domain/         # Domain layer tests
 ./vendor/bin/pest tests/Feature/        # Feature tests
-./vendor/bin/pest --coverage           # Run with coverage report
+./vendor/bin/pest --coverage --min=50  # Run with coverage report (50% minimum)
 
 # Run single test file
 ./vendor/bin/pest tests/Domain/Account/Aggregates/LedgerAggregateTest.php
+```
+
+### CI/CD and GitHub Actions
+The project includes comprehensive GitHub Actions workflows:
+
+```bash
+# Workflows are triggered on:
+# - Pull requests to main branch
+# - Pushes to main branch
+
+# Test Workflow (.github/workflows/test.yml):
+# - Sets up PHP 8.3, MySQL 8.0, Redis 7, Node.js 20
+# - Installs Composer and NPM dependencies
+# - Builds frontend assets
+# - Runs database migrations and seeders
+# - Executes all tests with 50% coverage requirement
+# - Uploads coverage reports to Codecov
+
+# Security Workflow (.github/workflows/security.yml):
+# - Uses Gitleaks to scan for exposed secrets
+# - Scans entire git history for security vulnerabilities
+# - Mandatory for all PRs to prevent secret leaks
 ```
 
 ### Building and Assets
@@ -193,6 +215,23 @@ it('can record money added event', function () {
     expect($aggregate->getStoredEvents())->toHaveCount(1);
     expect($aggregate->getStoredEvents()[0])->toBeInstanceOf(MoneyAdded::class);
 });
+```
+
+### Model Factory Testing
+```php
+// AccountFactory provides realistic test data
+it('can create account with factory', function () {
+    $account = Account::factory()->create();
+    
+    expect($account->uuid)->toBeString();
+    expect($account->user_uuid)->toBeString();
+    expect($account->balance)->toBeInt();
+});
+
+// Factory states for specific scenarios
+$zeroAccount = Account::factory()->zeroBalance()->create();
+$richAccount = Account::factory()->withBalance(100000)->create();
+$userAccount = Account::factory()->forUser($user)->create();
 ```
 
 ## Important Files and Locations
