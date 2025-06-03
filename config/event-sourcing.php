@@ -97,10 +97,14 @@ return [
     'event_class_map' => [
         'account_created'               => App\Domain\Account\Events\AccountCreated::class,
         'account_deleted'               => App\Domain\Account\Events\AccountDeleted::class,
+        'account_frozen'                => App\Domain\Account\Events\AccountFrozen::class,
+        'account_unfrozen'              => App\Domain\Account\Events\AccountUnfrozen::class,
         'account_limit_hit'             => App\Domain\Account\Events\AccountLimitHit::class,
         'money_added'                   => App\Domain\Account\Events\MoneyAdded::class,
         'money_subtracted'              => App\Domain\Account\Events\MoneySubtracted::class,
+        'money_transferred'             => App\Domain\Account\Events\MoneyTransferred::class,
         'transaction_threshold_reached' => App\Domain\Account\Events\TransactionThresholdReached::class,
+        'transfer_threshold_reached'    => App\Domain\Account\Events\TransferThresholdReached::class,
     ],
 
     /*

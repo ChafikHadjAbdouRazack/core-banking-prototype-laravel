@@ -15,4 +15,13 @@ class MoneyAdded extends ShouldBeStored implements HasHash, HasMoney
     public string $queue = EventQueues::TRANSACTIONS->value;
 
     use HashValidatorProvider;
+
+    /**
+     * @param Money $money
+     * @param Hash $hash
+     */
+    public function __construct(
+        public readonly Money $money,
+        public readonly Hash $hash
+    ) {}
 }
