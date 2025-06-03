@@ -42,7 +42,7 @@ final readonly class Hash extends DataObject implements DataObjectContract
     private function isValidHash( string $hash ): bool
     {
         // SHA3-512 produces a 128-character hexadecimal string
-        return ctype_xdigit( $hash ) && strlen($hash) === ValidatesHash::getHashLength();
+        return ctype_xdigit( $hash ) && strlen($hash) === 128; // SHA3-512 length
     }
 
     /**
