@@ -1,6 +1,6 @@
 # FinAegis Core Banking Platform
 
-[![Tests](https://github.com/finaegis/core-banking-laravel/actions/workflows/tests.yml/badge.svg)](https://github.com/finaegis/core-banking-laravel/actions/workflows/tests.yml)
+[![Tests](https://github.com/finaegis/core-banking-prototype-laravel/actions/workflows/test.yml/badge.svg)](https://github.com/finaegis/core-banking-prototype-laravel/actions/workflows/test.yml)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![PHP Version](https://img.shields.io/badge/php-%3E%3D8.3-8892BF.svg)](https://php.net/)
 [![Laravel Version](https://img.shields.io/badge/Laravel-11.x-FF2D20.svg)](https://laravel.com/)
