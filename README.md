@@ -199,6 +199,7 @@ The platform includes comprehensive test coverage:
 - **[System Architecture](ARCHITECTURE.md)**: Technical architecture overview
 - **[Workflow Patterns](WORKFLOW_PATTERNS.md)**: Saga patterns and best practices
 - **[API Implementation](API_IMPLEMENTATION.md)**: Complete API layer documentation
+- **[BIAN API Documentation](BIAN_API_DOCUMENTATION.md)**: BIAN-compliant API following banking industry standards
 
 ### API Documentation
 
