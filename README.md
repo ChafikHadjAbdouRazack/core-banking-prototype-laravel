@@ -22,6 +22,7 @@ FinAegis provides a complete foundation for banking operations with:
 - **Quantum-Resistant Security**: SHA3-512 cryptographic hashing
 - **Real-time Processing**: High-performance transaction processing
 - **Regulatory Compliance**: Built-in audit trails and compliance features
+- **RESTful API**: Complete API layer for all banking operations
 
 ## 🚀 Quick Start
 
@@ -197,6 +198,7 @@ The platform includes comprehensive test coverage:
 - **[Development Guide](DEVELOPMENT.md)**: Complete developer documentation
 - **[System Architecture](ARCHITECTURE.md)**: Technical architecture overview
 - **[Workflow Patterns](WORKFLOW_PATTERNS.md)**: Saga patterns and best practices
+- **[API Implementation](API_IMPLEMENTATION.md)**: Complete API layer documentation
 
 ### API Documentation
 
