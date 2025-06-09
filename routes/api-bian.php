@@ -27,21 +27,21 @@ Route::middleware('auth:sanctum')->prefix('bian')->group(function () {
     // Control Record Operations
     Route::prefix('current-account')->group(function () {
         Route::post('initiate', [CurrentAccountController::class, 'initiate']);
-        Route::get('{cr-reference-id}/retrieve', [CurrentAccountController::class, 'retrieve']);
-        Route::put('{cr-reference-id}/update', [CurrentAccountController::class, 'update']);
-        Route::put('{cr-reference-id}/control', [CurrentAccountController::class, 'control']);
+        Route::get('{crReferenceId}/retrieve', [CurrentAccountController::class, 'retrieve']);
+        Route::put('{crReferenceId}/update', [CurrentAccountController::class, 'update']);
+        Route::put('{crReferenceId}/control', [CurrentAccountController::class, 'control']);
         
         // Behavior Qualifier: Payment
-        Route::post('{cr-reference-id}/payment/execute', [CurrentAccountController::class, 'executePayment']);
+        Route::post('{crReferenceId}/payment/execute', [CurrentAccountController::class, 'executePayment']);
         
         // Behavior Qualifier: Deposit
-        Route::post('{cr-reference-id}/deposit/execute', [CurrentAccountController::class, 'executeDeposit']);
+        Route::post('{crReferenceId}/deposit/execute', [CurrentAccountController::class, 'executeDeposit']);
         
         // Behavior Qualifier: Account Balance
-        Route::get('{cr-reference-id}/account-balance/retrieve', [CurrentAccountController::class, 'retrieveAccountBalance']);
+        Route::get('{crReferenceId}/account-balance/retrieve', [CurrentAccountController::class, 'retrieveAccountBalance']);
         
         // Behavior Qualifier: Transaction Report
-        Route::get('{cr-reference-id}/transaction-report/retrieve', [CurrentAccountController::class, 'retrieveTransactionReport']);
+        Route::get('{crReferenceId}/transaction-report/retrieve', [CurrentAccountController::class, 'retrieveTransactionReport']);
     });
     
     /*
@@ -55,14 +55,14 @@ Route::middleware('auth:sanctum')->prefix('bian')->group(function () {
     // Control Record Operations
     Route::prefix('payment-initiation')->group(function () {
         Route::post('initiate', [PaymentInitiationController::class, 'initiate']);
-        Route::get('{cr-reference-id}/retrieve', [PaymentInitiationController::class, 'retrieve']);
-        Route::put('{cr-reference-id}/update', [PaymentInitiationController::class, 'update']);
-        Route::post('{cr-reference-id}/execute', [PaymentInitiationController::class, 'execute']);
+        Route::get('{crReferenceId}/retrieve', [PaymentInitiationController::class, 'retrieve']);
+        Route::put('{crReferenceId}/update', [PaymentInitiationController::class, 'update']);
+        Route::post('{crReferenceId}/execute', [PaymentInitiationController::class, 'execute']);
         
         // Behavior Qualifier: Payment Status
-        Route::post('{cr-reference-id}/payment-status/request', [PaymentInitiationController::class, 'requestPaymentStatus']);
+        Route::post('{crReferenceId}/payment-status/request', [PaymentInitiationController::class, 'requestPaymentStatus']);
         
         // Behavior Qualifier: Payment History
-        Route::get('{account-reference}/payment-history/retrieve', [PaymentInitiationController::class, 'retrievePaymentHistory']);
+        Route::get('{accountReference}/payment-history/retrieve', [PaymentInitiationController::class, 'retrievePaymentHistory']);
     });
 });

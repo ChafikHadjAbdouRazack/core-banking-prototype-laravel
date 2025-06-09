@@ -33,3 +33,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/accounts/{uuid}/balance', [BalanceController::class, 'show']);
     Route::get('/accounts/{uuid}/balance/summary', [BalanceController::class, 'summary']);
 });
+
+// Include BIAN-compliant routes
+require __DIR__.'/api-bian.php';

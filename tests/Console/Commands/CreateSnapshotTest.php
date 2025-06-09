@@ -27,12 +27,13 @@ it('creates only transfer snapshots when specified', function () {
 });
 
 it('creates only ledger snapshots when specified', function () {
+    // Create 5 accounts (plus 1 from TestCase setup = 6 total)
     Account::factory()->count(5)->create();
 
     $this->artisan('snapshot:create --type=ledger')
         ->expectsOutput('Starting snapshot creation process...')
         ->expectsOutput('Creating ledger snapshots...')
-        ->expectsOutput('Created ledger snapshots for 5 accounts.')
+        ->expectsOutput('Created ledger snapshots for 6 accounts.')
         ->expectsOutput('Snapshot creation completed successfully!')
         ->assertSuccessful();
 });
@@ -53,7 +54,7 @@ it('creates snapshots below threshold with force flag', function () {
 });
 
 it('handles empty database gracefully', function () {
-    // No accounts or transactions exist
+    // TestCase setup creates 1 account
 
     $this->artisan('snapshot:create')
         ->expectsOutput('Starting snapshot creation process...')
@@ -62,7 +63,7 @@ it('handles empty database gracefully', function () {
         ->expectsOutput('Creating transfer snapshots...')
         ->expectsOutputToContain('Created 0 transfer snapshots')
         ->expectsOutput('Creating ledger snapshots...')
-        ->expectsOutput('Created ledger snapshots for 0 accounts.')
+        ->expectsOutput('Created ledger snapshots for 1 accounts.')
         ->expectsOutput('Snapshot creation completed successfully!')
         ->assertSuccessful();
 });

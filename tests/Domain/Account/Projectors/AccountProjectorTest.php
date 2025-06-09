@@ -12,12 +12,13 @@ use App\Models\Account;
 use App\Models\Ledger;
 use App\Models\Transaction;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 class AccountProjectorTest extends TestCase
 {
     use ValidatesHash;
 
-    /** @test */
+    #[Test]
     public function test_create(): void
     {
         $this->assertDatabaseHas((new Account())->getTable(), [
@@ -28,7 +29,7 @@ class AccountProjectorTest extends TestCase
         $this->assertTrue($this->account->user->is($this->business_user));
     }
 
-    /** @test */
+    #[Test]
     public function test_add_money(): void
     {
         $this->assertEquals(0, $this->account->balance);
@@ -45,7 +46,7 @@ class AccountProjectorTest extends TestCase
         $this->assertEquals(10, $this->account->balance);
     }
 
-    /** @test */
+    #[Test]
     public function test_subtract_money(): void
     {
         $this->assertEquals(0, $this->account->balance);
@@ -67,7 +68,7 @@ class AccountProjectorTest extends TestCase
         $this->assertEquals(10, $this->account->balance);
     }
 
-    /** @test */
+    #[Test]
     public function test_delete_account(): void
     {
         LedgerAggregate::retrieve($this->account->uuid)

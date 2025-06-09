@@ -75,13 +75,13 @@ Authorization: Bearer {token}
 
 ##### Retrieve Current Account
 ```http
-GET /api/bian/current-account/{cr-reference-id}/retrieve
+GET /api/bian/current-account/{crReferenceId}/retrieve
 Authorization: Bearer {token}
 ```
 
 ##### Update Current Account
 ```http
-PUT /api/bian/current-account/{cr-reference-id}/update
+PUT /api/bian/current-account/{crReferenceId}/update
 Content-Type: application/json
 Authorization: Bearer {token}
 
@@ -93,7 +93,7 @@ Authorization: Bearer {token}
 
 ##### Control Current Account
 ```http
-PUT /api/bian/current-account/{cr-reference-id}/control
+PUT /api/bian/current-account/{crReferenceId}/control
 Content-Type: application/json
 Authorization: Bearer {token}
 
@@ -107,7 +107,7 @@ Authorization: Bearer {token}
 
 ##### Execute Payment (BQ: Payment)
 ```http
-POST /api/bian/current-account/{cr-reference-id}/payment/execute
+POST /api/bian/current-account/{crReferenceId}/payment/execute
 Content-Type: application/json
 Authorization: Bearer {token}
 
@@ -120,7 +120,7 @@ Authorization: Bearer {token}
 
 ##### Execute Deposit (BQ: Deposit)
 ```http
-POST /api/bian/current-account/{cr-reference-id}/deposit/execute
+POST /api/bian/current-account/{crReferenceId}/deposit/execute
 Content-Type: application/json
 Authorization: Bearer {token}
 
@@ -133,13 +133,13 @@ Authorization: Bearer {token}
 
 ##### Retrieve Account Balance (BQ: AccountBalance)
 ```http
-GET /api/bian/current-account/{cr-reference-id}/account-balance/retrieve
+GET /api/bian/current-account/{crReferenceId}/account-balance/retrieve
 Authorization: Bearer {token}
 ```
 
 ##### Retrieve Transaction Report (BQ: TransactionReport)
 ```http
-GET /api/bian/current-account/{cr-reference-id}/transaction-report/retrieve?fromDate=2024-01-01&toDate=2024-01-31&transactionType=all
+GET /api/bian/current-account/{crReferenceId}/transaction-report/retrieve?fromDate=2024-01-01&toDate=2024-01-31&transactionType=all
 Authorization: Bearer {token}
 ```
 
@@ -198,7 +198,7 @@ Authorization: Bearer {token}
 
 ##### Update Payment
 ```http
-PUT /api/bian/payment-initiation/{cr-reference-id}/update
+PUT /api/bian/payment-initiation/{crReferenceId}/update
 Content-Type: application/json
 Authorization: Bearer {token}
 
@@ -210,7 +210,7 @@ Authorization: Bearer {token}
 
 ##### Execute Payment
 ```http
-POST /api/bian/payment-initiation/{cr-reference-id}/execute
+POST /api/bian/payment-initiation/{crReferenceId}/execute
 Content-Type: application/json
 Authorization: Bearer {token}
 
@@ -223,13 +223,13 @@ Authorization: Bearer {token}
 
 ##### Request Payment Status (BQ: PaymentStatus)
 ```http
-POST /api/bian/payment-initiation/{cr-reference-id}/payment-status/request
+POST /api/bian/payment-initiation/{crReferenceId}/payment-status/request
 Authorization: Bearer {token}
 ```
 
 ##### Retrieve Payment History (BQ: PaymentHistory)
 ```http
-GET /api/bian/payment-initiation/{account-reference}/payment-history/retrieve?fromDate=2024-01-01&toDate=2024-01-31&paymentDirection=all
+GET /api/bian/payment-initiation/{accountReference}/payment-history/retrieve?fromDate=2024-01-01&toDate=2024-01-31&paymentDirection=all
 Authorization: Bearer {token}
 ```
 
@@ -325,11 +325,11 @@ To migrate from the legacy API to BIAN-compliant endpoints:
 
 2. **Deposits**:
    - Legacy: `POST /api/accounts/{uuid}/deposit`
-   - BIAN: `POST /api/bian/current-account/{cr-reference-id}/deposit/execute`
+   - BIAN: `POST /api/bian/current-account/{crReferenceId}/deposit/execute`
 
 3. **Withdrawals**:
    - Legacy: `POST /api/accounts/{uuid}/withdraw`
-   - BIAN: `POST /api/bian/current-account/{cr-reference-id}/payment/execute`
+   - BIAN: `POST /api/bian/current-account/{crReferenceId}/payment/execute`
 
 4. **Transfers**:
    - Legacy: `POST /api/transfers`
@@ -337,7 +337,7 @@ To migrate from the legacy API to BIAN-compliant endpoints:
 
 5. **Balance Inquiry**:
    - Legacy: `GET /api/accounts/{uuid}/balance`
-   - BIAN: `GET /api/bian/current-account/{cr-reference-id}/account-balance/retrieve`
+   - BIAN: `GET /api/bian/current-account/{crReferenceId}/account-balance/retrieve`
 
 ## Future Service Domains
 

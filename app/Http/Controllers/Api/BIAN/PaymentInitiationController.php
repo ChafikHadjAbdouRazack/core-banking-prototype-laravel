@@ -255,8 +255,8 @@ class PaymentInitiationController extends Controller
             ->where('event_class', 'App\Domain\Account\Events\MoneyTransferred')
             ->where(function ($q) use ($accountReference) {
                 $q->where('aggregate_uuid', $accountReference)
-                  ->orWhereRaw("event_properties->>'$.to_uuid' = ?", [$accountReference])
-                  ->orWhereRaw("event_properties->>'$.from_uuid' = ?", [$accountReference]);
+                  ->orWhereRaw("JSON_EXTRACT(event_properties, '$.to_uuid') = ?", [$accountReference])
+                  ->orWhereRaw("JSON_EXTRACT(event_properties, '$.from_uuid') = ?", [$accountReference]);
             });
 
         if (isset($validated['fromDate'])) {

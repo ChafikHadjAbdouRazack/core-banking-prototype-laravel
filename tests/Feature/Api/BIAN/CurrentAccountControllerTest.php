@@ -60,7 +60,7 @@ it('can retrieve current account details', function () {
                 'dateType',
             ],
         ])
-        ->assertJsonPath('currentAccountFulfillmentArrangement.crReferenceId', $account->uuid)
+        ->assertJsonPath('currentAccountFulfillmentArrangement.crReferenceId', $account->uuid->toString())
         ->assertJsonPath('currentAccountFulfillmentArrangement.accountBalance.amount', 2000);
 });
 
