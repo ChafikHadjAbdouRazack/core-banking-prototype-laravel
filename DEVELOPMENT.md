@@ -120,11 +120,14 @@ The platform uses Laravel Workflow for saga pattern implementation:
 
 ### Testing
 
-The platform includes comprehensive test coverage:
+The platform includes comprehensive test coverage with support for parallel test execution:
 
 ```bash
 # Run all tests
 ./vendor/bin/pest
+
+# Run all tests in parallel (recommended for faster execution)
+./vendor/bin/pest --parallel
 
 # Run specific test suites
 ./vendor/bin/pest tests/Domain/
@@ -132,7 +135,34 @@ The platform includes comprehensive test coverage:
 
 # Run with coverage
 ./vendor/bin/pest --coverage
+
+# Run tests in parallel with coverage (used in CI/CD)
+./vendor/bin/pest --parallel --coverage --min=50
+
+# Control parallel processes
+./vendor/bin/pest --parallel --processes=4
 ```
+
+#### Parallel Testing
+
+The test suite is configured for parallel execution to significantly reduce test run times:
+
+1. **Automatic Database Isolation**: Each test process gets its own database (e.g., `test_db_1`, `test_db_2`)
+2. **Redis/Cache Isolation**: Each test process uses unique prefixes for Redis and cache keys
+3. **Event Sourcing Isolation**: Event storage is isolated per test process
+4. **CI/CD Integration**: GitHub Actions runs tests in parallel by default
+
+**Benefits**:
+- 2-4x faster test execution on multi-core systems
+- Improved CI/CD pipeline performance
+- No test interference or shared state issues
+
+**Requirements**:
+- Sufficient database connections for parallel processes
+- Adequate system memory for concurrent test execution
+- Database user must have CREATE/DROP database permissions for test databases
+
+**Note**: If you encounter database permission errors locally, ensure your database user has permission to create databases, or run tests without the `--parallel` flag.
 
 ## Core Concepts
 

@@ -19,13 +19,22 @@ All contributions (human or AI-generated) must include:
 # Run all tests
 ./vendor/bin/pest
 
+# Run all tests in parallel (faster execution)
+./vendor/bin/pest --parallel
+
 # Run specific test suites
 ./vendor/bin/pest tests/Domain/         # Domain layer tests
 ./vendor/bin/pest tests/Feature/        # Feature tests
 ./vendor/bin/pest --coverage --min=50  # Run with coverage report (50% minimum)
 
+# Run tests in parallel with coverage
+./vendor/bin/pest --parallel --coverage --min=50
+
 # Run single test file
 ./vendor/bin/pest tests/Domain/Account/Aggregates/LedgerAggregateTest.php
+
+# Run tests with specific number of processes
+./vendor/bin/pest --parallel --processes=4
 ```
 
 ### CI/CD and GitHub Actions
@@ -41,7 +50,7 @@ The project includes comprehensive GitHub Actions workflows:
 # - Installs Composer and NPM dependencies
 # - Builds frontend assets
 # - Runs database migrations and seeders
-# - Executes all tests with 50% coverage requirement
+# - Executes all tests in parallel with 50% coverage requirement
 # - Uploads coverage reports to Codecov
 
 # Security Workflow (.github/workflows/security.yml):

@@ -94,7 +94,7 @@ jobs:
       run: php artisan db:seed --force
 
     - name: Run tests
-      run: ./vendor/bin/pest --coverage --min=50
+      run: ./vendor/bin/pest --parallel --coverage --min=50
 
     - name: Upload coverage reports to Codecov
       if: success()
