@@ -32,5 +32,7 @@
         <env name="QUEUE_CONNECTION" value="sync"/>
         <env name="SESSION_DRIVER" value="array"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
+        <!-- Parallel testing configuration -->
+        <env name="PEST_PARALLEL" value="true"/>
     </php>
 </phpunit>

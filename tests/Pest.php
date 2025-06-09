@@ -20,6 +20,21 @@ uses(TestCase::class, RefreshDatabase::class)->in('Console');
 
 /*
 |--------------------------------------------------------------------------
+| Parallel Testing Configuration
+|--------------------------------------------------------------------------
+|
+| Configure parallel testing to ensure proper isolation between test processes.
+| This is especially important for event sourcing and Redis-based features.
+|
+*/
+
+// Ensure database transactions are properly isolated in parallel tests
+beforeEach(function () {
+    // Additional setup for parallel testing can be added here if needed
+})->in('Feature', 'Domain', 'Console');
+
+/*
+|--------------------------------------------------------------------------
 | Expectations
 |--------------------------------------------------------------------------
 |

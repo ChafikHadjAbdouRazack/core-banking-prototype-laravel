@@ -12,6 +12,7 @@ use App\Values\DefaultAccountNames;
 use App\Values\UserRoles;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
+use Illuminate\Support\Facades\ParallelTesting;
 use Illuminate\Support\Str;
 use Tests\Domain\Account\Aggregates\LedgerAggregateTest;
 use Throwable;
@@ -33,6 +34,9 @@ abstract class TestCase extends BaseTestCase
     protected function setUp(): void
     {
         parent::setUp();
+
+        // Set up parallel testing tokens for isolated Redis and cache prefixes
+        $this->setUpParallelTesting();
 
         $this->createRoles();
 
@@ -93,5 +97,29 @@ abstract class TestCase extends BaseTestCase
         collect(UserRoles::cases())->each(
             fn ($role) => Role::factory()->withRole($role)->create()
         );
+    }
+
+    /**
+     * Set up parallel testing isolation for Redis and cache.
+     *
+     * @return void
+     */
+    protected function setUpParallelTesting(): void
+    {
+        $token = ParallelTesting::token();
+        
+        if ($token) {
+            // Prefix Redis connections for isolation
+            config([
+                'database.redis.options.prefix' => 'test_' . $token . ':',
+                'cache.prefix' => 'test_' . $token,
+                'horizon.prefix' => 'test_' . $token . '_horizon:',
+            ]);
+
+            // Ensure event sourcing uses isolated storage
+            config([
+                'event-sourcing.storage_prefix' => 'test_' . $token,
+            ]);
+        }
     }
 }
