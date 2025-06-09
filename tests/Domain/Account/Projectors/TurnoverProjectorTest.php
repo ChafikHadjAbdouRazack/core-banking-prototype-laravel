@@ -9,12 +9,13 @@ use App\Domain\Account\Utils\ValidatesHash;
 use App\Models\Turnover;
 use Illuminate\Support\Carbon;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 class TurnoverProjectorTest extends TestCase
 {
     use ValidatesHash;
 
-    /** @test */
+    #[Test]
     public function test_calculate_today_turnover(): void
     {
         $this->resetHash();
@@ -39,7 +40,7 @@ class TurnoverProjectorTest extends TestCase
         Carbon::setTestNow();
     }
 
-    /** @test */
+    #[Test]
     public function test_calculate_tomorrow_turnover(): void
     {
         $this->resetHash();

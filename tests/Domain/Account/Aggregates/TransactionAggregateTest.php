@@ -18,6 +18,7 @@ use App\Domain\Account\Utils\ValidatesHash;
 use App\Models\User;
 use Carbon\Carbon;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 class TransactionAggregateTest extends TestCase
 {
@@ -27,7 +28,7 @@ class TransactionAggregateTest extends TestCase
 
     private const string ACCOUNT_NAME = 'fake-account';
 
-    /** @test */
+    #[Test]
     public function can_add_money(): void
     {
         TransactionAggregate::fake( self::ACCOUNT_UUID )
@@ -47,7 +48,7 @@ class TransactionAggregateTest extends TestCase
                             ] );
     }
 
-    /** @test */
+    #[Test]
     public function can_subtract_money(): void
     {
         $added_money = $this->money( 10 );
@@ -78,7 +79,7 @@ class TransactionAggregateTest extends TestCase
                             ->assertNotRecorded( AccountLimitHit::class );
     }
 
-    /** @test */
+    #[Test]
     public function cannot_subtract_money_when_money_below_account_limit(): void
     {
         TransactionAggregate::fake( self::ACCOUNT_UUID )
@@ -102,7 +103,7 @@ class TransactionAggregateTest extends TestCase
 
     }
 
-    /** @test */
+    #[Test]
     public function throws_exception_on_invalid_transaction_hash(): void
     {
         $initialMoney = $this->money( 10 );
@@ -135,7 +136,7 @@ class TransactionAggregateTest extends TestCase
                             );
     }
 
-    /** @test */
+    #[Test]
     public function cannot_record_event_with_invalid_hash(): void
     {
         $initialMoney = $this->money( 10 );

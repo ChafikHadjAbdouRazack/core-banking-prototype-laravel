@@ -13,6 +13,7 @@ use App\Domain\Account\Reactors\SnapshotTransfersReactor;
 use Mockery;
 use Mockery\MockInterface;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 class SnapshotTransfersReactorTest extends TestCase
 {
@@ -22,7 +23,7 @@ class SnapshotTransfersReactorTest extends TestCase
 
     private const string ACCOUNT_NAME = 'fake-account';
 
-    /** @test */
+    #[Test]
     public function fires_transaction_threshold_reached_event_when_transfers_threshold_is_met(
     ): void
     {
@@ -53,7 +54,7 @@ class SnapshotTransfersReactorTest extends TestCase
                             );
     }
 
-    /** @test */
+    #[Test]
     public function triggers_snapshot_on_transfers_threshold_reached(): void
     {
         // Create a mock for the TransactionAggregate using PHPUnit's mock builder

@@ -6,6 +6,7 @@ use App\Domain\Account\Aggregates\LedgerAggregate;
 use App\Domain\Account\DataObjects\Account;
 use App\Domain\Account\Events\AccountCreated;
 use App\Domain\Account\Events\AccountDeleted;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class LedgerAggregateTest extends TestCase
@@ -14,7 +15,7 @@ class LedgerAggregateTest extends TestCase
 
     private const string ACCOUNT_NAME = 'fake-account';
 
-    /** @test */
+    #[Test]
     public function can_create(): void
     {
         LedgerAggregate::fake(self::ACCOUNT_UUID)
@@ -31,7 +32,7 @@ class LedgerAggregateTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function can_delete_account(): void
     {
         LedgerAggregate::fake(self::ACCOUNT_UUID)

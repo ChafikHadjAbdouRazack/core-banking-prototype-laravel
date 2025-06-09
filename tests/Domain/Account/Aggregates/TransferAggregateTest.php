@@ -12,6 +12,7 @@ use App\Domain\Account\Exceptions\InvalidHashException;
 
 use App\Domain\Account\Utils\ValidatesHash;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 class TransferAggregateTest extends TestCase
 {
@@ -23,7 +24,7 @@ class TransferAggregateTest extends TestCase
 
     private const string ACCOUNT_NAME = 'fake-account';
 
-    /** @test */
+    #[Test]
     public function can_transfer_money(): void
     {
         TransferAggregate::fake( self::TRANSFER_UUID )
@@ -48,7 +49,7 @@ class TransferAggregateTest extends TestCase
                             ] );
     }
 
-    /** @test */
+    #[Test]
     public function throws_exception_on_invalid_transfer_hash(): void
     {
         $initialMoney = $this->money( 10 );
@@ -85,7 +86,7 @@ class TransferAggregateTest extends TestCase
                             );
     }
 
-    /** @test */
+    #[Test]
     public function cannot_record_event_with_invalid_hash(): void
     {
         $initialMoney = $this->money( 10 );

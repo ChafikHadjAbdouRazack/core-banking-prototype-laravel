@@ -7,6 +7,7 @@ use App\Domain\Account\DataObjects\Account;
 use App\Domain\Account\Workflows\CreateAccountActivity;
 use App\Domain\Account\Workflows\CreateAccountWorkflow;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 use Workflow\WorkflowStub;
 
 class CreateAccountWorkflowTest extends TestCase
@@ -15,7 +16,7 @@ class CreateAccountWorkflowTest extends TestCase
 
     private const string ACCOUNT_NAME = 'fake-account';
 
-    /** @test */
+    #[Test]
     public function it_calls_account_creation_activity(): void
     {
         WorkflowStub::fake();

@@ -8,6 +8,7 @@ use App\Domain\Account\Workflows\CreateAccountActivity;
 use App\Domain\Account\Workflows\CreateAccountWorkflow;
 use Mockery;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 use Workflow\Models\StoredWorkflow;
 use Workflow\WorkflowStub;
 
@@ -17,7 +18,7 @@ class CreateAccountActivityTest extends TestCase
 
     private const string ACCOUNT_NAME = 'fake-account';
 
-    /** @test */
+    #[Test]
     public function it_creates_account_using_ledger(): void
     {
         $ledgerMock = Mockery::mock( LedgerAggregate::class );
