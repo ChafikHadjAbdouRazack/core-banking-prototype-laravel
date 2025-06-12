@@ -18,7 +18,52 @@ use Workflow\WorkflowStub;
 class TransactionController extends Controller
 {
     /**
-     * Deposit money to an account
+     * @OA\Post(
+     *     path="/api/accounts/{uuid}/deposit",
+     *     operationId="depositToAccount",
+     *     tags={"Transactions"},
+     *     summary="Deposit money to an account",
+     *     description="Deposits money into a specified account",
+     *     security={{"sanctum":{}}},
+     *     @OA\Parameter(
+     *         name="uuid",
+     *         in="path",
+     *         description="Account UUID",
+     *         required=true,
+     *         @OA\Schema(type="string", format="uuid")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"amount"},
+     *             @OA\Property(property="amount", type="integer", example=10000, minimum=1, description="Amount in cents"),
+     *             @OA\Property(property="description", type="string", example="Monthly salary", maxLength=255)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Deposit successful",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="data", type="object",
+     *                 @OA\Property(property="account_uuid", type="string", format="uuid"),
+     *                 @OA\Property(property="new_balance", type="integer", example=60000),
+     *                 @OA\Property(property="amount_deposited", type="integer", example=10000),
+     *                 @OA\Property(property="transaction_type", type="string", example="deposit")
+     *             ),
+     *             @OA\Property(property="message", type="string", example="Deposit successful")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Cannot deposit to frozen account",
+     *         @OA\JsonContent(ref="#/components/schemas/Error")
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Account not found",
+     *         @OA\JsonContent(ref="#/components/schemas/Error")
+     *     )
+     * )
      */
     public function deposit(Request $request, string $uuid): JsonResponse
     {
@@ -29,7 +74,12 @@ class TransactionController extends Controller
 
         $account = Account::where('uuid', $uuid)->firstOrFail();
 
-        // Skip frozen check since the column doesn't exist
+        if ($account->frozen) {
+            return response()->json([
+                'message' => 'Cannot deposit to frozen account',
+                'error' => 'ACCOUNT_FROZEN',
+            ], 422);
+        }
 
         $accountUuid = new AccountUuid($uuid);
         $money = new Money($validated['amount']);
@@ -51,7 +101,52 @@ class TransactionController extends Controller
     }
 
     /**
-     * Withdraw money from an account
+     * @OA\Post(
+     *     path="/api/accounts/{uuid}/withdraw",
+     *     operationId="withdrawFromAccount",
+     *     tags={"Transactions"},
+     *     summary="Withdraw money from an account",
+     *     description="Withdraws money from a specified account",
+     *     security={{"sanctum":{}}},
+     *     @OA\Parameter(
+     *         name="uuid",
+     *         in="path",
+     *         description="Account UUID",
+     *         required=true,
+     *         @OA\Schema(type="string", format="uuid")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"amount"},
+     *             @OA\Property(property="amount", type="integer", example=5000, minimum=1, description="Amount in cents"),
+     *             @OA\Property(property="description", type="string", example="ATM withdrawal", maxLength=255)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Withdrawal successful",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="data", type="object",
+     *                 @OA\Property(property="account_uuid", type="string", format="uuid"),
+     *                 @OA\Property(property="new_balance", type="integer", example=45000),
+     *                 @OA\Property(property="amount_withdrawn", type="integer", example=5000),
+     *                 @OA\Property(property="transaction_type", type="string", example="withdrawal")
+     *             ),
+     *             @OA\Property(property="message", type="string", example="Withdrawal successful")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Insufficient balance or frozen account",
+     *         @OA\JsonContent(ref="#/components/schemas/Error")
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Account not found",
+     *         @OA\JsonContent(ref="#/components/schemas/Error")
+     *     )
+     * )
      */
     public function withdraw(Request $request, string $uuid): JsonResponse
     {
@@ -62,7 +157,12 @@ class TransactionController extends Controller
 
         $account = Account::where('uuid', $uuid)->firstOrFail();
 
-        // Skip frozen check since the column doesn't exist
+        if ($account->frozen) {
+            return response()->json([
+                'message' => 'Cannot deposit to frozen account',
+                'error' => 'ACCOUNT_FROZEN',
+            ], 422);
+        }
 
         if ($account->balance < $validated['amount']) {
             return response()->json([

@@ -18,7 +18,43 @@ use Workflow\WorkflowStub;
 class TransferController extends Controller
 {
     /**
-     * Create a new transfer between accounts
+     * @OA\Post(
+     *     path="/api/transfers",
+     *     operationId="createTransfer",
+     *     tags={"Transfers"},
+     *     summary="Create a money transfer",
+     *     description="Transfers money from one account to another",
+     *     security={{"sanctum":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"from_account_uuid", "to_account_uuid", "amount"},
+     *             @OA\Property(property="from_account_uuid", type="string", format="uuid", example="550e8400-e29b-41d4-a716-446655440000"),
+     *             @OA\Property(property="to_account_uuid", type="string", format="uuid", example="660e8400-e29b-41d4-a716-446655440000"),
+     *             @OA\Property(property="amount", type="integer", example=5000, minimum=1, description="Amount in cents"),
+     *             @OA\Property(property="description", type="string", example="Payment for services", maxLength=255)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Transfer initiated successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="data", type="object",
+     *                 @OA\Property(property="transfer_uuid", type="string", format="uuid"),
+     *                 @OA\Property(property="from_account_uuid", type="string", format="uuid"),
+     *                 @OA\Property(property="to_account_uuid", type="string", format="uuid"),
+     *                 @OA\Property(property="amount", type="integer", example=5000),
+     *                 @OA\Property(property="status", type="string", example="pending")
+     *             ),
+     *             @OA\Property(property="message", type="string", example="Transfer initiated successfully")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error or business rule violation",
+     *         @OA\JsonContent(ref="#/components/schemas/Error")
+     *     )
+     * )
      */
     public function store(Request $request): JsonResponse
     {
@@ -32,7 +68,19 @@ class TransferController extends Controller
         $fromAccount = Account::where('uuid', $validated['from_account_uuid'])->first();
         $toAccount = Account::where('uuid', $validated['to_account_uuid'])->first();
 
-        // Skip frozen checks since the column doesn't exist
+        if ($fromAccount && $fromAccount->frozen) {
+            return response()->json([
+                'message' => 'Cannot transfer from frozen account',
+                'error' => 'SOURCE_ACCOUNT_FROZEN',
+            ], 422);
+        }
+
+        if ($toAccount && $toAccount->frozen) {
+            return response()->json([
+                'message' => 'Cannot transfer to frozen account',
+                'error' => 'DESTINATION_ACCOUNT_FROZEN',
+            ], 422);
+        }
 
         if ($fromAccount->balance < $validated['amount']) {
             return response()->json([

@@ -96,7 +96,7 @@ app/Domain/
 ### Account Management
 - Account creation, modification, and closure
 - Balance inquiries with audit trails
-- Account freezing/unfreezing for compliance
+- Account freezing/unfreezing for compliance (fully implemented)
 - Multi-currency support (planned)
 
 ### Transaction Processing
@@ -194,11 +194,26 @@ The platform includes comprehensive test coverage:
 
 ## 📖 Documentation
 
+### API Documentation
+
+The platform includes comprehensive API documentation powered by OpenAPI/Swagger:
+
+- **Access Documentation**: Navigate to `/api/documentation` when the server is running
+- **OpenAPI Specification**: Available at `/docs/api-docs.json`
+- **Interactive Testing**: Test API endpoints directly from the documentation interface
+
+```bash
+# Generate/update API documentation
+php artisan l5-swagger:generate
+```
+
+### Additional Resources
+
 - **[Development Guide](DEVELOPMENT.md)**: Complete developer documentation
 - **[System Architecture](ARCHITECTURE.md)**: Technical architecture overview
 - **[Workflow Patterns](WORKFLOW_PATTERNS.md)**: Saga patterns and best practices
 
-### API Documentation
+### API Endpoints
 
 The platform provides RESTful APIs for all banking operations:
 

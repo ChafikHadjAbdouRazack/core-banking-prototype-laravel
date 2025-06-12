@@ -33,6 +33,7 @@ class AccountFactory extends Factory
                 return User::factory()->create()->uuid;
             },
             'balance' => fake()->numberBetween(0, 100000),
+            'frozen' => false,
         ];
     }
 
@@ -63,6 +64,16 @@ class AccountFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'user_uuid' => $user->uuid,
+        ]);
+    }
+
+    /**
+     * Create a frozen account.
+     */
+    public function frozen(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'frozen' => true,
         ]);
     }
 }

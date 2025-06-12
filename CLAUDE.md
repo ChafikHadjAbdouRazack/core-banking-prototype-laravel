@@ -11,6 +11,7 @@ All contributions (human or AI-generated) must include:
 - **Full test coverage**: Every new feature, workflow, or significant change must have comprehensive tests
 - **Complete documentation**: Update relevant documentation files and add inline documentation for complex logic
 - **Code quality**: Follow existing patterns and maintain the established architecture principles
+- **Always update or create new tests and update documentation whenever you're doing something**
 
 ## Development Commands
 
@@ -70,6 +71,16 @@ npm run dev
 # Install dependencies
 composer install
 npm install
+```
+
+### API Documentation
+```bash
+# Generate/update API documentation
+php artisan l5-swagger:generate
+
+# Access documentation at:
+# http://localhost:8000/api/documentation
+# http://localhost:8000/docs/api-docs.json (raw OpenAPI spec)
 ```
 
 ### Database Operations
@@ -252,3 +263,4 @@ $userAccount = Account::factory()->forUser($user)->create();
 - Aggregates: `app/Domain/*/Aggregates/`
 - Workflows: `app/Domain/*/Workflows/`
 - Activities: `app/Domain/*/Workflows/*Activity.php`
+```

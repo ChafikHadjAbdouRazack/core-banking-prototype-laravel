@@ -24,6 +24,7 @@
         "ext-intl": "*",
         "ext-mbstring": "*",
         "ext-pdo": "*",
+        "darkaonline/l5-swagger": "^9.0",
         "filament/filament": "^3.2",
         "http-interop/http-factory-guzzle": "^1.2",
         "juststeveking/laravel-data-object-tools": "dev-main",
