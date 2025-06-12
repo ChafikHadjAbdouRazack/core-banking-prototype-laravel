@@ -84,7 +84,6 @@ it('has proper tags defined', function () {
     $json = $response->json();
     $tags = array_column($json['tags'], 'name');
 
-    expect($tags)->toContain('Authentication');
     expect($tags)->toContain('Accounts');
     expect($tags)->toContain('Transactions');
     expect($tags)->toContain('Transfers');

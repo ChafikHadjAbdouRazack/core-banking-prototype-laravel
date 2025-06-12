@@ -22,5 +22,5 @@ Route::get('/docs/api-docs.json', function () {
     if (!file_exists($path)) {
         abort(404, 'API documentation not found. Run: php artisan l5-swagger:generate');
     }
-    return response()->file($path);
+    return response()->json(json_decode(file_get_contents($path), true));
 });
