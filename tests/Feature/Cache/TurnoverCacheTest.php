@@ -1,0 +1,97 @@
+<?php
+
+declare(strict_types=1);
+
+use App\Domain\Account\Services\Cache\TurnoverCacheService;
+use App\Models\Account;
+use App\Models\Turnover;
+use Illuminate\Support\Facades\Cache;
+
+beforeEach(function () {
+    Cache::flush();
+});
+
+it('caches latest turnover', function () {
+    $account = Account::factory()->create();
+    $turnover = Turnover::factory()->create([
+        'account_uuid' => $account->uuid,
+        'debit' => 1000,
+        'credit' => 2000,
+    ]);
+    
+    $cacheService = app(TurnoverCacheService::class);
+    
+    // First call should hit the database
+    $cachedTurnover = $cacheService->getLatest($account->uuid);
+    
+    expect($cachedTurnover)->toBeInstanceOf(Turnover::class);
+    expect($cachedTurnover->id)->toBe($turnover->id);
+    
+    // Delete from database
+    $turnover->delete();
+    
+    // Should still return from cache
+    $cachedTurnover2 = $cacheService->getLatest($account->uuid);
+    
+    expect($cachedTurnover2)->toBeInstanceOf(Turnover::class);
+    expect($cachedTurnover2->id)->toBe($turnover->id);
+});
+
+it('caches turnover statistics', function () {
+    $account = Account::factory()->create();
+    
+    // Create multiple turnovers
+    Turnover::factory()->count(3)->create([
+        'account_uuid' => $account->uuid,
+        'debit' => 1000,
+        'credit' => 2000,
+    ]);
+    
+    $cacheService = app(TurnoverCacheService::class);
+    
+    $statistics = $cacheService->getStatistics($account->uuid);
+    
+    expect($statistics)->toBeArray();
+    expect($statistics['total_debit'])->toBe(3000);
+    expect($statistics['total_credit'])->toBe(6000);
+    expect($statistics['average_monthly_debit'])->toBe(1000.0);
+    expect($statistics['average_monthly_credit'])->toBe(2000.0);
+    expect($statistics['months_analyzed'])->toBe(3);
+});
+
+it('invalidates turnover cache', function () {
+    $account = Account::factory()->create();
+    $turnover = Turnover::factory()->create([
+        'account_uuid' => $account->uuid,
+    ]);
+    
+    $cacheService = app(TurnoverCacheService::class);
+    
+    // Cache the data
+    $cacheService->getLatest($account->uuid);
+    $cacheService->getStatistics($account->uuid);
+    
+    // Delete from database
+    $turnover->delete();
+    
+    // Invalidate cache
+    $cacheService->forget($account->uuid);
+    
+    // Should return null for latest
+    $result = $cacheService->getLatest($account->uuid);
+    
+    expect($result)->toBeNull();
+});
+
+it('returns empty statistics for account without turnovers', function () {
+    $account = Account::factory()->create();
+    $cacheService = app(TurnoverCacheService::class);
+    
+    $statistics = $cacheService->getStatistics($account->uuid);
+    
+    expect($statistics['total_debit'])->toBe(0);
+    expect($statistics['total_credit'])->toBe(0);
+    expect($statistics['average_monthly_debit'])->toBe(0);
+    expect($statistics['average_monthly_credit'])->toBe(0);
+    expect($statistics['months_analyzed'])->toBe(0);
+});

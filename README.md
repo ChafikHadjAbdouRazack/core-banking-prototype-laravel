@@ -123,6 +123,7 @@ app/Domain/
 - Real-time balance calculations
 - Automated snapshot creation
 - Performance monitoring
+- Redis caching layer for optimized performance
 
 ## 🔧 Usage Examples
 

@@ -95,6 +95,23 @@ php artisan db:seed
 php artisan migrate:fresh --seed
 ```
 
+### Cache Management
+```bash
+# Warm up cache for all accounts
+php artisan cache:warmup
+
+# Warm up specific accounts
+php artisan cache:warmup --account=uuid1 --account=uuid2
+
+# Clear all caches
+php artisan cache:clear
+
+# Monitor cache performance (check headers)
+# X-Cache-Hits: Number of cache hits
+# X-Cache-Misses: Number of cache misses
+# X-Cache-Hit-Rate: Percentage hit rate
+```
+
 ### Queue Management
 ```bash
 # Start queue workers for event processing
@@ -126,6 +143,16 @@ php artisan verify:transaction-hashes
 - **Account Domain** (`app/Domain/Account/`): Core banking account management
 - **Payment Domain** (`app/Domain/Payment/`): Transfer and payment processing
 - Each domain has Aggregates, Events, Workflows, Activities, Projectors, Reactors, and Services
+
+### Caching Architecture
+- **Redis-based caching** for high-performance data access
+- **Cache Services**: `AccountCacheService`, `TransactionCacheService`, `TurnoverCacheService`
+- **Cache Manager**: Centralized cache coordination with automatic invalidation
+- **TTL Strategy**: Different cache durations based on data volatility
+  - Accounts: 1 hour
+  - Balances: 5 minutes
+  - Transactions: 30 minutes
+  - Turnovers: 2 hours
 
 ### Event Sourcing Architecture
 - **Aggregates**: `LedgerAggregate`, `TransactionAggregate`, `TransferAggregate`
