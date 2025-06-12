@@ -138,7 +138,7 @@ it('can freeze an account', function () {
 it('can unfreeze an account', function () {
     $user = User::factory()->create();
     Sanctum::actingAs($user);
-    $account = Account::factory()->create();
+    $account = Account::factory()->create(['frozen' => true]);
 
     $response = $this->postJson("/api/accounts/{$account->uuid}/unfreeze", [
         'reason' => 'Issue resolved',

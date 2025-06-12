@@ -1,0 +1,1157 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "FinAegis Core Banking API",
+        "description": "Open Source Core Banking as a Service - A modern, scalable, and secure core banking platform built with Laravel 12, featuring event sourcing, domain-driven design, workflow orchestration, and quantum-resistant security measures.",
+        "contact": {
+            "name": "FinAegis Support",
+            "email": "support@finaegis.com"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://my-default-host.com",
+            "description": "API Server"
+        }
+    ],
+    "paths": {
+        "/api/accounts": {
+            "post": {
+                "tags": [
+                    "Accounts"
+                ],
+                "summary": "Create a new account",
+                "description": "Creates a new bank account for a user with an optional initial balance",
+                "operationId": "createAccount",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "user_uuid",
+                                    "name"
+                                ],
+                                "properties": {
+                                    "user_uuid": {
+                                        "type": "string",
+                                        "format": "uuid",
+                                        "example": "660e8400-e29b-41d4-a716-446655440000"
+                                    },
+                                    "name": {
+                                        "type": "string",
+                                        "maxLength": 255,
+                                        "example": "Savings Account"
+                                    },
+                                    "initial_balance": {
+                                        "description": "Initial balance in cents",
+                                        "type": "integer",
+                                        "minimum": 0,
+                                        "example": 10000
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Account created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/Account"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Account created successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/accounts/{uuid}": {
+            "get": {
+                "tags": [
+                    "Accounts"
+                ],
+                "summary": "Get account details",
+                "description": "Retrieves detailed information about a specific account",
+                "operationId": "getAccount",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "description": "Account UUID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Account details",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/Account"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Account not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Accounts"
+                ],
+                "summary": "Delete an account",
+                "description": "Deletes an account. Account must have zero balance and not be frozen.",
+                "operationId": "deleteAccount",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "description": "Account UUID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Account deletion initiated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Account deletion initiated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Cannot delete account",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Account not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/accounts/{uuid}/freeze": {
+            "post": {
+                "tags": [
+                    "Accounts"
+                ],
+                "summary": "Freeze an account",
+                "description": "Freezes an account to prevent any transactions",
+                "operationId": "freezeAccount",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "description": "Account UUID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "reason"
+                                ],
+                                "properties": {
+                                    "reason": {
+                                        "type": "string",
+                                        "maxLength": 255,
+                                        "example": "Suspicious activity detected"
+                                    },
+                                    "authorized_by": {
+                                        "type": "string",
+                                        "maxLength": 255,
+                                        "example": "admin@example.com"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Account frozen successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Account frozen successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Account already frozen",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/accounts/{uuid}/unfreeze": {
+            "post": {
+                "tags": [
+                    "Accounts"
+                ],
+                "summary": "Unfreeze an account",
+                "description": "Unfreezes a previously frozen account",
+                "operationId": "unfreezeAccount",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "description": "Account UUID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "reason"
+                                ],
+                                "properties": {
+                                    "reason": {
+                                        "type": "string",
+                                        "maxLength": 255,
+                                        "example": "Investigation completed"
+                                    },
+                                    "authorized_by": {
+                                        "type": "string",
+                                        "maxLength": 255,
+                                        "example": "admin@example.com"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Account unfrozen successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Account unfrozen successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Account not frozen",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/accounts/{uuid}/balance": {
+            "get": {
+                "tags": [
+                    "Balance"
+                ],
+                "summary": "Get account balance",
+                "description": "Retrieves the current balance and turnover information for an account",
+                "operationId": "getAccountBalance",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "description": "Account UUID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Balance information retrieved",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/Balance"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Account not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/accounts/{uuid}/balance/summary": {
+            "get": {
+                "tags": [
+                    "Balance"
+                ],
+                "summary": "Get account balance summary",
+                "description": "Retrieves detailed balance statistics including 12-month turnover data",
+                "operationId": "getAccountBalanceSummary",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "description": "Account UUID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Balance summary retrieved",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "properties": {
+                                                "account_uuid": {
+                                                    "type": "string",
+                                                    "format": "uuid"
+                                                },
+                                                "current_balance": {
+                                                    "type": "integer",
+                                                    "example": 50000
+                                                },
+                                                "frozen": {
+                                                    "type": "boolean",
+                                                    "example": false
+                                                },
+                                                "statistics": {
+                                                    "properties": {
+                                                        "total_debit_12_months": {
+                                                            "type": "integer",
+                                                            "example": 120000
+                                                        },
+                                                        "total_credit_12_months": {
+                                                            "type": "integer",
+                                                            "example": 170000
+                                                        },
+                                                        "average_monthly_debit": {
+                                                            "type": "number",
+                                                            "example": 10000
+                                                        },
+                                                        "average_monthly_credit": {
+                                                            "type": "number",
+                                                            "example": 14166.67
+                                                        },
+                                                        "months_analyzed": {
+                                                            "type": "integer",
+                                                            "example": 12
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "monthly_turnovers": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "month": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            },
+                                                            "year": {
+                                                                "type": "integer",
+                                                                "example": 2024
+                                                            },
+                                                            "debit": {
+                                                                "type": "integer",
+                                                                "example": 10000
+                                                            },
+                                                            "credit": {
+                                                                "type": "integer",
+                                                                "example": 15000
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Account not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/accounts/{uuid}/deposit": {
+            "post": {
+                "tags": [
+                    "Transactions"
+                ],
+                "summary": "Deposit money to an account",
+                "description": "Deposits money into a specified account",
+                "operationId": "depositToAccount",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "description": "Account UUID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "amount"
+                                ],
+                                "properties": {
+                                    "amount": {
+                                        "description": "Amount in cents",
+                                        "type": "integer",
+                                        "minimum": 1,
+                                        "example": 10000
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "maxLength": 255,
+                                        "example": "Monthly salary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Deposit successful",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "properties": {
+                                                "account_uuid": {
+                                                    "type": "string",
+                                                    "format": "uuid"
+                                                },
+                                                "new_balance": {
+                                                    "type": "integer",
+                                                    "example": 60000
+                                                },
+                                                "amount_deposited": {
+                                                    "type": "integer",
+                                                    "example": 10000
+                                                },
+                                                "transaction_type": {
+                                                    "type": "string",
+                                                    "example": "deposit"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Deposit successful"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Cannot deposit to frozen account",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Account not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/accounts/{uuid}/withdraw": {
+            "post": {
+                "tags": [
+                    "Transactions"
+                ],
+                "summary": "Withdraw money from an account",
+                "description": "Withdraws money from a specified account",
+                "operationId": "withdrawFromAccount",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "description": "Account UUID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "amount"
+                                ],
+                                "properties": {
+                                    "amount": {
+                                        "description": "Amount in cents",
+                                        "type": "integer",
+                                        "minimum": 1,
+                                        "example": 5000
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "maxLength": 255,
+                                        "example": "ATM withdrawal"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Withdrawal successful",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "properties": {
+                                                "account_uuid": {
+                                                    "type": "string",
+                                                    "format": "uuid"
+                                                },
+                                                "new_balance": {
+                                                    "type": "integer",
+                                                    "example": 45000
+                                                },
+                                                "amount_withdrawn": {
+                                                    "type": "integer",
+                                                    "example": 5000
+                                                },
+                                                "transaction_type": {
+                                                    "type": "string",
+                                                    "example": "withdrawal"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Withdrawal successful"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Insufficient balance or frozen account",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Account not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/transfers": {
+            "post": {
+                "tags": [
+                    "Transfers"
+                ],
+                "summary": "Create a money transfer",
+                "description": "Transfers money from one account to another",
+                "operationId": "createTransfer",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "from_account_uuid",
+                                    "to_account_uuid",
+                                    "amount"
+                                ],
+                                "properties": {
+                                    "from_account_uuid": {
+                                        "type": "string",
+                                        "format": "uuid",
+                                        "example": "550e8400-e29b-41d4-a716-446655440000"
+                                    },
+                                    "to_account_uuid": {
+                                        "type": "string",
+                                        "format": "uuid",
+                                        "example": "660e8400-e29b-41d4-a716-446655440000"
+                                    },
+                                    "amount": {
+                                        "description": "Amount in cents",
+                                        "type": "integer",
+                                        "minimum": 1,
+                                        "example": 5000
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "maxLength": 255,
+                                        "example": "Payment for services"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Transfer initiated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "properties": {
+                                                "transfer_uuid": {
+                                                    "type": "string",
+                                                    "format": "uuid"
+                                                },
+                                                "from_account_uuid": {
+                                                    "type": "string",
+                                                    "format": "uuid"
+                                                },
+                                                "to_account_uuid": {
+                                                    "type": "string",
+                                                    "format": "uuid"
+                                                },
+                                                "amount": {
+                                                    "type": "integer",
+                                                    "example": 5000
+                                                },
+                                                "status": {
+                                                    "type": "string",
+                                                    "example": "pending"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Transfer initiated successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error or business rule violation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Account": {
+                "title": "Account",
+                "required": [
+                    "uuid",
+                    "user_uuid",
+                    "name",
+                    "balance",
+                    "frozen"
+                ],
+                "properties": {
+                    "uuid": {
+                        "type": "string",
+                        "format": "uuid",
+                        "example": "550e8400-e29b-41d4-a716-446655440000"
+                    },
+                    "user_uuid": {
+                        "type": "string",
+                        "format": "uuid",
+                        "example": "660e8400-e29b-41d4-a716-446655440000"
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Savings Account"
+                    },
+                    "balance": {
+                        "description": "Balance in cents",
+                        "type": "integer",
+                        "example": 50000
+                    },
+                    "frozen": {
+                        "description": "Whether the account is frozen",
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T00:00:00Z"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T00:00:00Z"
+                    }
+                },
+                "type": "object"
+            },
+            "Transaction": {
+                "title": "Transaction",
+                "required": [
+                    "uuid",
+                    "account_uuid",
+                    "type",
+                    "amount",
+                    "balance_after",
+                    "description",
+                    "hash"
+                ],
+                "properties": {
+                    "uuid": {
+                        "type": "string",
+                        "format": "uuid",
+                        "example": "770e8400-e29b-41d4-a716-446655440000"
+                    },
+                    "account_uuid": {
+                        "type": "string",
+                        "format": "uuid",
+                        "example": "550e8400-e29b-41d4-a716-446655440000"
+                    },
+                    "type": {
+                        "type": "string",
+                        "enum": [
+                            "deposit",
+                            "withdrawal"
+                        ],
+                        "example": "deposit"
+                    },
+                    "amount": {
+                        "description": "Amount in cents",
+                        "type": "integer",
+                        "example": 10000
+                    },
+                    "balance_after": {
+                        "description": "Balance after transaction in cents",
+                        "type": "integer",
+                        "example": 60000
+                    },
+                    "description": {
+                        "type": "string",
+                        "example": "Monthly salary deposit"
+                    },
+                    "hash": {
+                        "description": "SHA3-512 transaction hash",
+                        "type": "string",
+                        "example": "3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T00:00:00Z"
+                    }
+                },
+                "type": "object"
+            },
+            "Transfer": {
+                "title": "Transfer",
+                "required": [
+                    "uuid",
+                    "from_account_uuid",
+                    "to_account_uuid",
+                    "amount",
+                    "description",
+                    "status",
+                    "hash"
+                ],
+                "properties": {
+                    "uuid": {
+                        "type": "string",
+                        "format": "uuid",
+                        "example": "880e8400-e29b-41d4-a716-446655440000"
+                    },
+                    "from_account_uuid": {
+                        "type": "string",
+                        "format": "uuid",
+                        "example": "550e8400-e29b-41d4-a716-446655440000"
+                    },
+                    "to_account_uuid": {
+                        "type": "string",
+                        "format": "uuid",
+                        "example": "660e8400-e29b-41d4-a716-446655440000"
+                    },
+                    "amount": {
+                        "description": "Amount in cents",
+                        "type": "integer",
+                        "example": 5000
+                    },
+                    "description": {
+                        "type": "string",
+                        "example": "Payment for services"
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "pending",
+                            "completed",
+                            "failed"
+                        ],
+                        "example": "completed"
+                    },
+                    "hash": {
+                        "description": "SHA3-512 transfer hash",
+                        "type": "string",
+                        "example": "4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T00:00:00Z"
+                    },
+                    "completed_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T00:00:01Z",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "Balance": {
+                "title": "Balance",
+                "required": [
+                    "account_uuid",
+                    "balance",
+                    "frozen"
+                ],
+                "properties": {
+                    "account_uuid": {
+                        "type": "string",
+                        "format": "uuid",
+                        "example": "550e8400-e29b-41d4-a716-446655440000"
+                    },
+                    "balance": {
+                        "description": "Current balance in cents",
+                        "type": "integer",
+                        "example": 50000
+                    },
+                    "frozen": {
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "last_updated": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T00:00:00Z"
+                    },
+                    "turnover": {
+                        "properties": {
+                            "total_debit": {
+                                "type": "integer",
+                                "example": 100000
+                            },
+                            "total_credit": {
+                                "type": "integer",
+                                "example": 150000
+                            },
+                            "month": {
+                                "type": "integer",
+                                "example": 1
+                            },
+                            "year": {
+                                "type": "integer",
+                                "example": 2024
+                            }
+                        },
+                        "type": "object",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "Error": {
+                "title": "Error Response",
+                "required": [
+                    "message"
+                ],
+                "properties": {
+                    "message": {
+                        "type": "string",
+                        "example": "The given data was invalid."
+                    },
+                    "error": {
+                        "type": "string",
+                        "example": "VALIDATION_ERROR",
+                        "nullable": true
+                    },
+                    "errors": {
+                        "type": "object",
+                        "nullable": true,
+                        "additionalProperties": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "securitySchemes": {
+            "sanctum": {
+                "type": "http",
+                "description": "Enter token in format: Bearer {token}",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Accounts",
+            "description": "Account management operations"
+        },
+        {
+            "name": "Transactions",
+            "description": "Transaction operations (deposits and withdrawals)"
+        },
+        {
+            "name": "Transfers",
+            "description": "Money transfer operations between accounts"
+        },
+        {
+            "name": "Balance",
+            "description": "Balance inquiry and account statistics"
+        }
+    ]
+}
