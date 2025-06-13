@@ -31,6 +31,7 @@ class Account extends Model
      */
     protected $casts = [
         'frozen' => 'boolean',
+        'balance' => 'integer',
     ];
 
     /**

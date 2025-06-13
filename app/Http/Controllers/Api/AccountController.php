@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Api;
 use App\Domain\Account\DataObjects\AccountUuid;
 use App\Domain\Account\DataObjects\Money;
 use App\Domain\Account\Services\AccountService;
+use App\Domain\Account\Services\Cache\AccountCacheService;
 use App\Domain\Account\Workflows\CreateAccountWorkflow;
 use App\Domain\Account\Workflows\DepositAccountWorkflow;
 use App\Domain\Account\Workflows\DestroyAccountWorkflow;
@@ -22,7 +23,8 @@ use Workflow\WorkflowStub;
 class AccountController extends Controller
 {
     public function __construct(
-        private readonly AccountService $accountService
+        private readonly AccountService $accountService,
+        private readonly AccountCacheService $accountCache
     ) {}
 
     /**
@@ -144,7 +146,12 @@ class AccountController extends Controller
      */
     public function show(string $uuid): JsonResponse
     {
-        $account = Account::where('uuid', $uuid)->firstOrFail();
+        // Try to get from cache first
+        $account = $this->accountCache->get($uuid);
+        
+        if (!$account) {
+            abort(404, 'Account not found');
+        }
 
         return response()->json([
             'data' => [

@@ -14,6 +14,7 @@ use App\Domain\Account\Events\AccountFrozen;
 use App\Domain\Account\Events\AccountUnfrozen;
 use App\Domain\Account\Events\MoneyAdded;
 use App\Domain\Account\Events\MoneySubtracted;
+use App\Domain\Account\Services\Cache\CacheManager;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Spatie\EventSourcing\EventHandlers\Projectors\Projector;
 
@@ -37,6 +38,11 @@ class AccountProjector extends Projector implements ShouldQueue
     public function onMoneyAdded(MoneyAdded $event): void
     {
         app( CreditAccount::class )($event);
+        
+        // Invalidate cache after balance update
+        if ($account = \App\Models\Account::where('uuid', $event->aggregateRootUuid())->first()) {
+            app(CacheManager::class)->onAccountUpdated($account);
+        }
     }
 
     /**
@@ -47,6 +53,11 @@ class AccountProjector extends Projector implements ShouldQueue
     public function onMoneySubtracted(MoneySubtracted $event): void
     {
         app( DebitAccount::class )($event);
+        
+        // Invalidate cache after balance update
+        if ($account = \App\Models\Account::where('uuid', $event->aggregateRootUuid())->first()) {
+            app(CacheManager::class)->onAccountUpdated($account);
+        }
     }
 
     /**
@@ -57,6 +68,9 @@ class AccountProjector extends Projector implements ShouldQueue
     public function onAccountDeleted(AccountDeleted $event): void
     {
         app( DeleteAccount::class )($event);
+        
+        // Clear all caches for deleted account
+        app(CacheManager::class)->onAccountDeleted($event->aggregateRootUuid());
     }
 
     /**

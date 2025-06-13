@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api;
 
 use App\Domain\Account\DataObjects\AccountUuid;
+use App\Domain\Account\Services\Cache\AccountCacheService;
+use App\Domain\Account\Services\Cache\TurnoverCacheService;
 use App\Domain\Account\Workflows\BalanceInquiryWorkflow;
 use App\Http\Controllers\Controller;
 use App\Models\Account;
@@ -14,6 +16,11 @@ use Workflow\WorkflowStub;
 
 class BalanceController extends Controller
 {
+    public function __construct(
+        private readonly AccountCacheService $accountCache,
+        private readonly TurnoverCacheService $turnoverCache
+    ) {}
+
     /**
      * @OA\Get(
      *     path="/api/accounts/{uuid}/balance",
@@ -45,17 +52,20 @@ class BalanceController extends Controller
      */
     public function show(string $uuid): JsonResponse
     {
-        $account = Account::where('uuid', $uuid)->firstOrFail();
+        // Get account from cache
+        $account = $this->accountCache->get($uuid);
+        
+        if (!$account) {
+            abort(404, 'Account not found');
+        }
         
         $accountUuid = new AccountUuid($uuid);
         
-        // For now, just use the account balance directly
-        // The workflow would typically be used in a more complex scenario
-        $balance = $account->balance;
+        // Get cached balance
+        $balance = $this->accountCache->getBalance($uuid) ?? $account->balance;
 
-        $turnover = Turnover::where('account_uuid', $uuid)
-            ->orderBy('created_at', 'desc')
-            ->first();
+        // Get cached turnover
+        $turnover = $this->turnoverCache->getLatest($uuid);
 
         return response()->json([
             'data' => [
@@ -123,17 +133,18 @@ class BalanceController extends Controller
      */
     public function summary(string $uuid): JsonResponse
     {
-        $account = Account::where('uuid', $uuid)->firstOrFail();
+        // Get account from cache
+        $account = $this->accountCache->get($uuid);
         
-        $turnovers = Turnover::where('account_uuid', $uuid)
-            ->orderBy('created_at', 'desc')
-            ->take(12)
-            ->get();
-
-        $totalDebit = $turnovers->sum('debit');
-        $totalCredit = $turnovers->sum('credit');
-        $averageMonthlyDebit = $turnovers->count() > 0 ? $totalDebit / $turnovers->count() : 0;
-        $averageMonthlyCredit = $turnovers->count() > 0 ? $totalCredit / $turnovers->count() : 0;
+        if (!$account) {
+            abort(404, 'Account not found');
+        }
+        
+        // Get cached turnovers
+        $turnovers = $this->turnoverCache->getLastMonths($uuid, 12);
+        
+        // Get cached statistics
+        $statistics = $this->turnoverCache->getStatistics($uuid);
 
         return response()->json([
             'data' => [
@@ -141,11 +152,11 @@ class BalanceController extends Controller
                 'current_balance' => $account->balance,
                 'frozen' => $account->frozen ?? false,
                 'statistics' => [
-                    'total_debit_12_months' => $totalDebit,
-                    'total_credit_12_months' => $totalCredit,
-                    'average_monthly_debit' => (int) $averageMonthlyDebit,
-                    'average_monthly_credit' => (int) $averageMonthlyCredit,
-                    'months_analyzed' => $turnovers->count(),
+                    'total_debit_12_months' => $statistics['total_debit'],
+                    'total_credit_12_months' => $statistics['total_credit'],
+                    'average_monthly_debit' => (int) $statistics['average_monthly_debit'],
+                    'average_monthly_credit' => (int) $statistics['average_monthly_credit'],
+                    'months_analyzed' => $statistics['months_analyzed'],
                 ],
                 'monthly_turnovers' => $turnovers->map(function ($turnover) {
                     return [
