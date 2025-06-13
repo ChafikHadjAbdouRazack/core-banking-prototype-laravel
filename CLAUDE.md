@@ -122,6 +122,22 @@ php artisan horizon
 
 # Clear failed jobs
 php artisan queue:clear
+
+# Create admin user for Filament dashboard
+php artisan make:filament-user
+```
+
+### Admin Dashboard Management
+```bash
+# Create admin user
+php artisan make:filament-user
+
+# Access dashboard at:
+# http://localhost:8000/admin
+
+# Clear Filament cache after resource changes
+php artisan filament:clear-cached-components
+php artisan view:clear
 ```
 
 ### Event Sourcing
@@ -177,6 +193,13 @@ Events are processed through separate queues:
 - **Quantum-resistant hashing**: SHA3-512 for all transactions
 - **Event integrity**: Cryptographic validation using `Hash` value objects
 - **Audit trails**: Complete event history for all operations
+
+### Admin Dashboard (Filament)
+- **Account Management**: Full CRUD operations with real-time balance updates
+- **Transaction Monitoring**: View transaction history with advanced filtering
+- **Bulk Operations**: Freeze/unfreeze multiple accounts simultaneously
+- **Real-time Statistics**: Account overview widgets with key metrics
+- **Security**: Role-based access control for admin operations
 
 ## Key Development Patterns
 
@@ -281,13 +304,74 @@ $richAccount = Account::factory()->withBalance(100000)->create();
 $userAccount = Account::factory()->forUser($user)->create();
 ```
 
+### Filament Resource Testing
+```php
+// Test admin dashboard resources
+it('can list accounts in admin panel', function () {
+    $accounts = Account::factory()->count(5)->create();
+    
+    livewire(AccountResource\Pages\ListAccounts::class)
+        ->assertCanSeeTableRecords($accounts);
+});
+
+// Test account operations
+it('can deposit money through admin panel', function () {
+    $account = Account::factory()->create();
+    
+    livewire(AccountResource\Pages\ListAccounts::class)
+        ->callTableAction('deposit', $account, data: [
+            'amount' => 50.00,
+        ])
+        ->assertHasNoTableActionErrors();
+});
+```
+
+### Admin Dashboard Development
+When working with Filament resources:
+```php
+// Creating custom actions
+Tables\Actions\Action::make('custom_action')
+    ->label('Custom Action')
+    ->icon('heroicon-o-star')
+    ->action(function (Model $record): void {
+        // Action logic here
+    })
+    ->visible(fn (Model $record): bool => $record->canPerformAction());
+
+// Adding bulk operations
+Tables\Actions\BulkAction::make('bulk_process')
+    ->action(function (Collection $records): void {
+        foreach ($records as $record) {
+            // Process each record
+        }
+    })
+    ->requiresConfirmation();
+
+// Custom widgets
+class CustomWidget extends BaseWidget
+{
+    protected function getStats(): array
+    {
+        return [
+            Stat::make('Label', 'Value')
+                ->description('Description')
+                ->color('success'),
+        ];
+    }
+}
+```
+
 ## Important Files and Locations
 - Event configuration: `config/event-sourcing.php`
 - Workflow configuration: `config/workflows.php`
 - Queue configuration: `config/queue.php`
+- Cache configuration: `config/domain-cache.php`
 - Domain models: `app/Models/`
 - Domain events: `app/Domain/*/Events/`
 - Aggregates: `app/Domain/*/Aggregates/`
 - Workflows: `app/Domain/*/Workflows/`
 - Activities: `app/Domain/*/Workflows/*Activity.php`
+- Cache services: `app/Domain/*/Services/Cache/`
+- Filament resources: `app/Filament/Admin/Resources/`
+- Filament tests: `tests/Feature/Filament/`
 ```

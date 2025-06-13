@@ -125,6 +125,17 @@ app/Domain/
 - Performance monitoring
 - Redis caching layer for optimized performance
 
+### Admin Dashboard
+- Comprehensive admin interface powered by Filament v3
+- Real-time account management and monitoring
+- Transaction history and analytics
+- Account operations (deposit, withdraw, freeze/unfreeze)
+- Advanced filtering and search capabilities
+- Bulk operations support for account management
+- Account statistics and turnover monitoring
+- User management interface
+- Role-based access control
+
 ## 🔧 Usage Examples
 
 ### Account Operations
@@ -187,6 +198,9 @@ The platform includes comprehensive test coverage:
 # Run specific test suites
 ./vendor/bin/pest tests/Domain/
 ./vendor/bin/pest tests/Feature/
+
+# Run admin dashboard tests
+./vendor/bin/pest tests/Feature/Filament/
 ```
 
 ### Test Structure
@@ -209,6 +223,23 @@ The platform includes comprehensive API documentation powered by OpenAPI/Swagger
 php artisan l5-swagger:generate
 ```
 
+### Admin Dashboard
+
+The platform includes a powerful admin dashboard built with Filament:
+
+- **Access Dashboard**: Navigate to `/admin` when the server is running
+- **Default Credentials**: Create an admin user with `php artisan make:filament-user`
+- **Features**:
+  - Account management with real-time operations (deposit, withdraw, freeze/unfreeze)
+  - Transaction monitoring and history with detailed views
+  - Turnover statistics and analytics
+  - Account balance tracking with automatic updates
+  - System health monitoring
+  - Advanced filtering and search by status, balance, and name
+  - Bulk operations support (freeze multiple accounts)
+  - User management interface
+  - Export capabilities (planned enhancement)
+
 ### Additional Resources
 
 - **[Development Guide](DEVELOPMENT.md)**: Complete developer documentation
@@ -216,6 +247,7 @@ php artisan l5-swagger:generate
 - **[Workflow Patterns](WORKFLOW_PATTERNS.md)**: Saga patterns and best practices
 - **[API Implementation](API_IMPLEMENTATION.md)**: Complete API layer documentation
 - **[BIAN API Documentation](BIAN_API_DOCUMENTATION.md)**: BIAN-compliant API following banking industry standards
+- **[Admin Dashboard Guide](docs/ADMIN_DASHBOARD.md)**: Comprehensive admin interface documentation
 
 ### API Endpoints
 
@@ -323,6 +355,7 @@ We welcome contributions from the community, including **AI coding assistants an
 - **Cache/Queue**: Redis 6.0+
 - **Testing**: Pest PHP
 - **Frontend**: Laravel Jetstream, Livewire, Tailwind CSS
+- **Admin Panel**: Filament v3
 
 ## 📈 Roadmap
 

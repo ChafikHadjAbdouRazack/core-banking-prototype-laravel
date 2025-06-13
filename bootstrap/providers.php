@@ -10,5 +10,4 @@ return [
     App\Providers\HorizonServiceProvider::class,
     App\Providers\JetstreamServiceProvider::class,
     App\Providers\TelescopeServiceProvider::class,
-    // App\Providers\WaterlineServiceProvider::class,
 ];

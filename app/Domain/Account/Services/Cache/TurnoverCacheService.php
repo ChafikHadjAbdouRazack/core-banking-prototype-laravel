@@ -25,6 +25,7 @@ class TurnoverCacheService
      */
     public function getLatest(string $accountUuid): ?Turnover
     {
+        $accountUuid = (string) $accountUuid;
         return Cache::remember(
             $this->getCacheKey($accountUuid, 'latest'),
             self::CACHE_TTL,
@@ -39,6 +40,7 @@ class TurnoverCacheService
      */
     public function getLastMonths(string $accountUuid, int $months = 12): Collection
     {
+        $accountUuid = (string) $accountUuid;
         return Cache::remember(
             $this->getCacheKey($accountUuid, "last_{$months}_months"),
             self::CACHE_TTL,
@@ -54,6 +56,7 @@ class TurnoverCacheService
      */
     public function getStatistics(string $accountUuid): array
     {
+        $accountUuid = (string) $accountUuid;
         return Cache::remember(
             $this->getCacheKey($accountUuid, 'statistics'),
             self::CACHE_TTL,
@@ -76,6 +79,7 @@ class TurnoverCacheService
      */
     public function forget(string $accountUuid): void
     {
+        $accountUuid = (string) $accountUuid;
         // Clear all turnover-related cache for this account
         Cache::forget($this->getCacheKey($accountUuid, 'latest'));
         Cache::forget($this->getCacheKey($accountUuid, 'last_12_months'));
@@ -88,7 +92,7 @@ class TurnoverCacheService
     public function put(Turnover $turnover): void
     {
         // Invalidate cache to force refresh on next request
-        $this->forget($turnover->account_uuid);
+        $this->forget((string) $turnover->account_uuid);
     }
 
     /**
