@@ -34,17 +34,24 @@ it('caches balance separately with shorter TTL', function () {
     $account = Account::factory()->withBalance(5000)->create();
     $cacheService = app(AccountCacheService::class);
     
-    // Cache the balance
+    // Cache the balance explicitly first
     $balance = $cacheService->getBalance((string) $account->uuid);
-    
     expect($balance)->toBe(5000);
+    
+    // Ensure the balance is actually cached by checking the cache directly
+    $cacheKey = 'account:' . $account->uuid . ':balance';
+    $cachedValue = Cache::get($cacheKey);
+    expect($cachedValue)->not->toBeNull();
     
     // Update account balance in database using raw query to avoid any model events
     \DB::table('accounts')
         ->where('uuid', $account->uuid)
         ->update(['balance' => 10000]);
     
-    // Should still return cached balance since we didn't go through the model
+    // Clear any model caches that might exist, but NOT the balance cache
+    Cache::forget('account:' . $account->uuid);
+    
+    // Should still return cached balance since we didn't clear the balance cache
     $cachedBalance = $cacheService->getBalance((string) $account->uuid);
     
     // The service should return an integer even if cache stores a string

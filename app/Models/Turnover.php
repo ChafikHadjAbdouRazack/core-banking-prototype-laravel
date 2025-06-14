@@ -16,6 +16,8 @@ class Turnover extends Model
             'account_uuid',
             'count',
             'amount',
+            'debit',
+            'credit',
         ];
 
     protected $casts
