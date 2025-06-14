@@ -9,6 +9,7 @@ use App\Domain\Account\Exceptions\InvalidHashException;
 use App\Domain\Account\Repositories\AccountRepository;
 use App\Domain\Account\Repositories\TransactionRepository;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 
 class VerifyTransactionHashes extends Command
 {
@@ -97,7 +98,19 @@ class VerifyTransactionHashes extends Command
                 }
                 catch ( InvalidHashException $e )
                 {
-                    // @todo: log this error
+                    // Log the hash validation error with full context
+                    Log::error('Transaction hash validation failed', [
+                        'aggregate_uuid' => $aggregate->uuid(),
+                        'event_class' => get_class($event),
+                        'event_uuid' => method_exists($event, 'aggregateRootUuid') ? $event->aggregateRootUuid() : null,
+                        'event_hash' => $event->hash->toString(),
+                        'money_amount' => $event->money->getAmount(),
+                        'money_currency' => $event->money->getCurrency()->getCode(),
+                        'exception_message' => $e->getMessage(),
+                        'exception_code' => $e->getCode(),
+                        'timestamp' => now()->toISOString(),
+                    ]);
+                    
                     $this->erroneous_transactions[] = $event;
 
                     throw $e;

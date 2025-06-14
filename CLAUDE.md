@@ -169,6 +169,7 @@ php artisan verify:transaction-hashes
   - Balances: 5 minutes
   - Transactions: 30 minutes
   - Turnovers: 2 hours
+- **Schema Updates**: Turnover model now supports separate `debit` and `credit` fields for proper accounting
 
 ### Event Sourcing Architecture
 - **Aggregates**: `LedgerAggregate`, `TransactionAggregate`, `TransferAggregate`
@@ -181,6 +182,8 @@ php artisan verify:transaction-hashes
 - **Transaction Processing**: `DepositAccountWorkflow`, `WithdrawAccountWorkflow`, `TransactionReversalWorkflow`
 - **Transfer Operations**: `TransferWorkflow`, `BulkTransferWorkflow` (with compensation)
 - **System Operations**: `BalanceInquiryWorkflow`, `AccountValidationWorkflow`, `BatchProcessingWorkflow`
+- **Enhanced Validation**: Comprehensive KYC, address verification, identity checks, and compliance screening
+- **Batch Processing**: Daily turnover calculation, statement generation, interest processing, compliance checks, regulatory reporting
 
 ### Queue Configuration
 Events are processed through separate queues:
@@ -193,6 +196,8 @@ Events are processed through separate queues:
 - **Quantum-resistant hashing**: SHA3-512 for all transactions
 - **Event integrity**: Cryptographic validation using `Hash` value objects
 - **Audit trails**: Complete event history for all operations
+- **Enhanced error logging**: Comprehensive error tracking with context for hash validation failures
+- **Compliance monitoring**: Automated detection of suspicious patterns, sanctions screening, and regulatory compliance
 
 ### Admin Dashboard (Filament)
 - **Account Management**: Full CRUD operations with real-time balance updates
@@ -200,6 +205,42 @@ Events are processed through separate queues:
 - **Bulk Operations**: Freeze/unfreeze multiple accounts simultaneously
 - **Real-time Statistics**: Account overview widgets with key metrics
 - **Security**: Role-based access control for admin operations
+
+## Recent Improvements (Feature Branch: immediate-priority-fixes)
+
+### Schema Enhancements
+- **Turnover Model Refactoring**: Upgraded from simple `count`/`amount` fields to proper accounting with separate `debit` and `credit` fields
+- **Database Migration**: Added backward-compatible migration that preserves existing data while adding new fields
+- **Factory Updates**: Enhanced `TurnoverFactory` to generate realistic test data with proper debit/credit relationships
+
+### Enhanced Security & Monitoring
+- **Hash Validation Logging**: Implemented comprehensive error logging for transaction hash validation failures in `VerifyTransactionHashes` command
+- **Contextual Error Tracking**: Added structured logging with aggregate UUIDs, event details, and cryptographic context for security incidents
+
+### Advanced Workflow Activities
+- **Account Validation**: Replaced placeholder implementations with production-ready validation logic including:
+  - KYC document verification with field validation and email format checking
+  - Address verification with domain validation and temporary email detection
+  - Identity verification with name validation, email uniqueness checks, and fraud detection
+  - Compliance screening with sanctions list matching, domain risk assessment, and transaction pattern analysis
+
+- **Batch Processing**: Enhanced batch operations with realistic banking functionality:
+  - Daily turnover calculation with proper debit/credit accounting
+  - Account statement generation with transaction history and balance calculations
+  - Interest processing with daily compounding for savings accounts
+  - Compliance monitoring with suspicious activity detection and regulatory flagging
+  - Regulatory reporting including CTR, SAR candidates, and monthly summaries
+  - Archive management for transaction data retention
+
+### Testing Infrastructure
+- **Comprehensive Test Coverage**: Added full test suites for enhanced validation and batch processing activities
+- **Schema Migration Testing**: Verified backward compatibility and data integrity through turnover cache tests
+- **Reflection-based Testing**: Implemented thorough class structure validation following framework patterns
+
+### Documentation & Code Quality
+- **Enhanced Documentation**: Updated CLAUDE.md with detailed implementation notes and architectural improvements
+- **Code Comments**: Added comprehensive inline documentation for complex validation and compliance logic
+- **Type Safety**: Ensured proper type hints and return types throughout enhanced activities
 
 ## Key Development Patterns
 

@@ -48,6 +48,8 @@ final class TurnoverRepository
                 'account_uuid' => $accountUuid,
                 'count'        => 0,
                 'amount'       => 0,
+                'debit'        => 0,
+                'credit'       => 0,
             ]
         );
 
@@ -64,6 +66,13 @@ final class TurnoverRepository
     ): Turnover {
         $turnover->count += 1;
         $turnover->amount += $amount;
+        
+        // Update debit/credit fields for proper accounting
+        if ($amount > 0) {
+            $turnover->credit += $amount;
+        } else {
+            $turnover->debit += abs($amount);
+        }
 
         // Save the changes in a single query
         $turnover->save();

@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Cache;
 
 beforeEach(function () {
     Cache::flush();
-})->skip('Turnover model schema mismatch - needs refactoring from count/amount to debit/credit');
+});
 
 it('caches latest turnover', function () {
     $account = Account::factory()->create();
@@ -22,7 +22,7 @@ it('caches latest turnover', function () {
     $cacheService = app(TurnoverCacheService::class);
     
     // First call should hit the database
-    $cachedTurnover = $cacheService->getLatest($account->uuid);
+    $cachedTurnover = $cacheService->getLatest((string) $account->uuid);
     
     expect($cachedTurnover)->toBeInstanceOf(Turnover::class);
     expect($cachedTurnover->id)->toBe($turnover->id);
@@ -31,7 +31,7 @@ it('caches latest turnover', function () {
     $turnover->delete();
     
     // Should still return from cache
-    $cachedTurnover2 = $cacheService->getLatest($account->uuid);
+    $cachedTurnover2 = $cacheService->getLatest((string) $account->uuid);
     
     expect($cachedTurnover2)->toBeInstanceOf(Turnover::class);
     expect($cachedTurnover2->id)->toBe($turnover->id);
@@ -49,11 +49,11 @@ it('caches turnover statistics', function () {
     
     $cacheService = app(TurnoverCacheService::class);
     
-    $statistics = $cacheService->getStatistics($account->uuid);
+    $statistics = $cacheService->getStatistics((string) $account->uuid);
     
     expect($statistics)->toBeArray();
-    expect($statistics['total_debit'])->toBe(3000);
-    expect($statistics['total_credit'])->toBe(6000);
+    expect($statistics['total_debit'])->toBe(3000.0);
+    expect($statistics['total_credit'])->toBe(6000.0);
     expect($statistics['average_monthly_debit'])->toBe(1000.0);
     expect($statistics['average_monthly_credit'])->toBe(2000.0);
     expect($statistics['months_analyzed'])->toBe(3);
@@ -68,17 +68,17 @@ it('invalidates turnover cache', function () {
     $cacheService = app(TurnoverCacheService::class);
     
     // Cache the data
-    $cacheService->getLatest($account->uuid);
-    $cacheService->getStatistics($account->uuid);
+    $cacheService->getLatest((string) $account->uuid);
+    $cacheService->getStatistics((string) $account->uuid);
     
     // Delete from database
     $turnover->delete();
     
     // Invalidate cache
-    $cacheService->forget($account->uuid);
+    $cacheService->forget((string) $account->uuid);
     
     // Should return null for latest
-    $result = $cacheService->getLatest($account->uuid);
+    $result = $cacheService->getLatest((string) $account->uuid);
     
     expect($result)->toBeNull();
 });
