@@ -104,5 +104,37 @@ it('supports all expected batch operations', function () {
     expect($performOperationMethod->getReturnType()->getName())->toBe('array');
 });
 
-// Note: Workflow Activity classes cannot be instantiated directly in tests
-// as they require workflow context. Tests focus on class structure validation.
+// Coverage tests - test method accessibility and parameter validation
+it('can access execute method through reflection', function () {
+    $reflection = new ReflectionClass(BatchProcessingActivity::class);
+    $method = $reflection->getMethod('execute');
+    
+    expect($method->isPublic())->toBeTrue();
+    expect($method->getNumberOfParameters())->toBe(2);
+    expect($method->getReturnType()->getName())->toBe('array');
+});
+
+it('validates all batch processing methods exist', function () {
+    $reflection = new ReflectionClass(BatchProcessingActivity::class);
+    
+    $expectedMethods = [
+        'performOperation',
+        'calculateDailyTurnover',
+        'generateAccountStatements',
+        'processInterestCalculations',
+        'performComplianceChecks',
+        'archiveOldTransactions',
+        'generateRegulatoryReports'
+    ];
+    
+    foreach ($expectedMethods as $methodName) {
+        expect($reflection->hasMethod($methodName))->toBeTrue();
+    }
+});
+
+it('can verify batch processing class structure', function () {
+    expect(class_exists(BatchProcessingActivity::class))->toBeTrue();
+    
+    $reflection = new ReflectionClass(BatchProcessingActivity::class);
+    expect($reflection->getParentClass()->getName())->toBe('Workflow\Activity');
+});

@@ -5,6 +5,7 @@ namespace App\Domain\Account\Repositories;
 use App\Models\Account;
 use App\Models\Turnover;
 use DateTimeInterface;
+use Illuminate\Support\Facades\DB;
 
 final class TurnoverRepository
 {
@@ -39,21 +40,23 @@ final class TurnoverRepository
     public function incrementForDateById(
         DateTimeInterface $date, string $accountUuid, int $amount
     ): Turnover {
-        $turnover = $this->turnover->firstOrCreate(
-            [
-                'date'         => $date->toDateString(),
-                'account_uuid' => $accountUuid,
-            ],
-            [
-                'account_uuid' => $accountUuid,
-                'count'        => 0,
-                'amount'       => 0,
-                'debit'        => 0,
-                'credit'       => 0,
-            ]
-        );
+        return DB::transaction(function () use ($date, $accountUuid, $amount) {
+            // Use updateOrCreate with lock for atomic operation
+            $turnover = $this->turnover->lockForUpdate()->updateOrCreate(
+                [
+                    'date'         => $date->toDateString(),
+                    'account_uuid' => $accountUuid,
+                ],
+                [
+                    'count'        => 0,
+                    'amount'       => 0,
+                    'debit'        => 0,
+                    'credit'       => 0,
+                ]
+            );
 
-        return $this->updateTurnover( $turnover, $amount );
+            return $this->updateTurnover($turnover, $amount);
+        });
     }
 
     /**

@@ -98,5 +98,37 @@ it('validation methods return arrays', function () {
     }
 });
 
-// Note: Workflow Activity classes cannot be instantiated directly in tests
-// as they require workflow context. Tests focus on class structure validation.
+// Coverage tests - test method accessibility and parameter validation
+it('can access execute method through reflection', function () {
+    $reflection = new ReflectionClass(AccountValidationActivity::class);
+    $method = $reflection->getMethod('execute');
+    
+    expect($method->isPublic())->toBeTrue();
+    expect($method->getNumberOfParameters())->toBe(3);
+    expect($method->getReturnType()->getName())->toBe('array');
+});
+
+it('validates all required validation methods exist', function () {
+    $reflection = new ReflectionClass(AccountValidationActivity::class);
+    
+    $expectedMethods = [
+        'execute',
+        'performValidationCheck',
+        'validateKycDocuments',
+        'validateAddress',
+        'validateIdentity',
+        'performComplianceScreening',
+        'logValidation'
+    ];
+    
+    foreach ($expectedMethods as $methodName) {
+        expect($reflection->hasMethod($methodName))->toBeTrue();
+    }
+});
+
+it('can create data object instances for validation testing', function () {
+    $uuid = new AccountUuid('validation-test-uuid');
+    
+    expect($uuid->getUuid())->toBe('validation-test-uuid');
+    expect(class_exists(AccountValidationActivity::class))->toBeTrue();
+});

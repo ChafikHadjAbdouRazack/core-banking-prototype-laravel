@@ -23,7 +23,7 @@ return new class extends Migration
             $table->index('event_class');
             $table->index('aggregate_uuid');
 
-            $table->unique(['aggregate_uuid', 'aggregate_version'], 'aggregate_uuid_version');
+            $table->unique(['aggregate_uuid', 'aggregate_version'], 'ledgers_aggregate_uuid_version');
         });
     }
 

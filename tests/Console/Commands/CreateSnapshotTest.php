@@ -92,3 +92,22 @@ it('handles accounts with transfers on both sides', function () {
     // Skip this test as it requires event sourcing setup
     $this->markTestSkipped('Requires event sourcing setup with stored_events table');
 });
+
+it('has correct command signature', function () {
+    $command = new \App\Console\Commands\CreateSnapshot();
+    
+    expect($command->getName())->toBe('snapshot:create');
+    expect($command->getDescription())->toBe('Create snapshots for aggregates to improve performance');
+});
+
+it('has required method structure', function () {
+    expect(method_exists(\App\Console\Commands\CreateSnapshot::class, 'handle'))->toBeTrue();
+    expect(method_exists(\App\Console\Commands\CreateSnapshot::class, 'createTransactionSnapshots'))->toBeTrue();
+    expect(method_exists(\App\Console\Commands\CreateSnapshot::class, 'createTransferSnapshots'))->toBeTrue();
+    expect(method_exists(\App\Console\Commands\CreateSnapshot::class, 'createLedgerSnapshots'))->toBeTrue();
+});
+
+it('has proper inheritance', function () {
+    $reflection = new ReflectionClass(\App\Console\Commands\CreateSnapshot::class);
+    expect($reflection->getParentClass()->getName())->toBe('Illuminate\Console\Command');
+});

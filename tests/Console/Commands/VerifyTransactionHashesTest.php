@@ -64,3 +64,28 @@ it('can be constructed with repository dependencies', function () {
     expect($transactionRepo->getValue($this->command))->toBeInstanceOf(TransactionRepository::class);
     expect($accountRepo->getValue($this->command))->toBeInstanceOf(AccountRepository::class);
 });
+
+it('extends Command class', function () {
+    $reflection = new ReflectionClass(VerifyTransactionHashes::class);
+    expect($reflection->getParentClass()->getName())->toBe('Illuminate\Console\Command');
+});
+
+it('has protected property types', function () {
+    $reflection = new ReflectionClass(VerifyTransactionHashes::class);
+    
+    expect($reflection->hasProperty('signature'))->toBeTrue();
+    expect($reflection->hasProperty('description'))->toBeTrue();
+    expect($reflection->hasProperty('erroneous_accounts'))->toBeTrue();
+    expect($reflection->hasProperty('erroneous_transactions'))->toBeTrue();
+});
+
+it('has required private methods', function () {
+    $reflection = new ReflectionClass(VerifyTransactionHashes::class);
+    
+    expect($reflection->hasMethod('verifyAggregateHashes'))->toBeTrue();
+    expect($reflection->hasMethod('handle'))->toBeTrue();
+    
+    $handleMethod = $reflection->getMethod('handle');
+    expect($handleMethod->isPublic())->toBeTrue();
+    expect($handleMethod->getReturnType()?->getName())->toBe('int');
+});

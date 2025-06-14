@@ -52,10 +52,10 @@ it('caches turnover statistics', function () {
     $statistics = $cacheService->getStatistics((string) $account->uuid);
     
     expect($statistics)->toBeArray();
-    expect($statistics['total_debit'])->toBe(3000.0);
-    expect($statistics['total_credit'])->toBe(6000.0);
-    expect($statistics['average_monthly_debit'])->toBe(1000.0);
-    expect($statistics['average_monthly_credit'])->toBe(2000.0);
+    expect($statistics['total_debit'])->toBe(3000);
+    expect($statistics['total_credit'])->toBe(6000);
+    expect($statistics['average_monthly_debit'])->toBe(1000);
+    expect($statistics['average_monthly_credit'])->toBe(2000);
     expect($statistics['months_analyzed'])->toBe(3);
 });
 

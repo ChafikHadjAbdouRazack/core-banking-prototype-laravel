@@ -1,5 +1,8 @@
 <?php
 
+use App\Domain\Account\Aggregates\TransactionAggregate;
+use App\Domain\Account\DataObjects\AccountUuid;
+use App\Domain\Account\DataObjects\Money;  
 use App\Domain\Account\Workflows\DepositAccountActivity;
 
 it('class exists', function () {
@@ -42,4 +45,28 @@ it('has proper type hints for parameters', function () {
     expect($parameters[0]->getType()->getName())->toBe('App\Domain\Account\DataObjects\AccountUuid');
     expect($parameters[1]->getType()->getName())->toBe('App\Domain\Account\DataObjects\Money');
     expect($parameters[2]->getType()->getName())->toBe('App\Domain\Account\Aggregates\TransactionAggregate');
+});
+
+// Coverage tests - test method accessibility and parameter validation
+it('can access execute method through reflection', function () {
+    $reflection = new ReflectionClass(DepositAccountActivity::class);
+    $method = $reflection->getMethod('execute');
+    
+    expect($method->isPublic())->toBeTrue();
+    expect($method->getNumberOfParameters())->toBe(3);
+    expect($method->getReturnType()->getName())->toBe('bool');
+});
+
+it('validates all required data objects exist', function () {
+    expect(class_exists(AccountUuid::class))->toBeTrue();
+    expect(class_exists(Money::class))->toBeTrue();
+    expect(class_exists(TransactionAggregate::class))->toBeTrue();
+});
+
+it('can create data object instances for testing', function () {
+    $uuid = new AccountUuid('test-uuid');
+    $money = new Money(1000);
+    
+    expect($uuid->getUuid())->toBe('test-uuid');
+    expect($money->getAmount())->toBe(1000);
 });

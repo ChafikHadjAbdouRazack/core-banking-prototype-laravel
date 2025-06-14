@@ -20,6 +20,7 @@ it('has default method', function () {
 it('default returns MAIN', function () {
     $default = DefaultAccountNames::default();
     expect($default)->toBe(DefaultAccountNames::MAIN);
+    expect($default->value)->toBe('Main');
 });
 
 it('has label method', function () {
@@ -50,4 +51,16 @@ it('can convert to string', function () {
     expect((string) DefaultAccountNames::MAIN->value)->toBe('Main');
     expect((string) DefaultAccountNames::SAVINGS->value)->toBe('Savings');
     expect((string) DefaultAccountNames::LOAN->value)->toBe('Loan');
+});
+
+it('enum values are accessible', function () {
+    expect(DefaultAccountNames::MAIN)->toBeInstanceOf(DefaultAccountNames::class);
+    expect(DefaultAccountNames::SAVINGS)->toBeInstanceOf(DefaultAccountNames::class);
+    expect(DefaultAccountNames::LOAN)->toBeInstanceOf(DefaultAccountNames::class);
+});
+
+it('can access value property', function () {
+    expect(DefaultAccountNames::MAIN->value)->toBe('Main');
+    expect(DefaultAccountNames::SAVINGS->value)->toBe('Savings');
+    expect(DefaultAccountNames::LOAN->value)->toBe('Loan');
 });
