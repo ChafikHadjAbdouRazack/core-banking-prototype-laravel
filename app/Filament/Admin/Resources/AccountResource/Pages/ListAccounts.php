@@ -3,6 +3,7 @@
 namespace App\Filament\Admin\Resources\AccountResource\Pages;
 
 use App\Filament\Admin\Resources\AccountResource;
+use App\Filament\Exports\AccountExporter;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 
@@ -14,6 +15,11 @@ class ListAccounts extends ListRecords
     {
         return [
             Actions\CreateAction::make(),
+            Actions\ExportAction::make()
+                ->exporter(AccountExporter::class)
+                ->label('Export Accounts')
+                ->icon('heroicon-o-arrow-down-tray')
+                ->color('success'),
         ];
     }
 }

@@ -205,6 +205,7 @@ Events are processed through separate queues:
 - **Bulk Operations**: Freeze/unfreeze multiple accounts simultaneously
 - **Real-time Statistics**: Account overview widgets with key metrics
 - **Security**: Role-based access control for admin operations
+- **Data Export**: Export account data to CSV/XLSX with customizable columns and formatting
 
 ## Recent Improvements (Feature Branch: immediate-priority-fixes)
 
@@ -397,6 +398,34 @@ class CustomWidget extends BaseWidget
             Stat::make('Label', 'Value')
                 ->description('Description')
                 ->color('success'),
+        ];
+    }
+}
+
+// Export functionality
+use Filament\Actions\ExportAction;
+use Filament\Actions\Exports\Exporter;
+use Filament\Actions\Exports\ExportColumn;
+
+// Add export to table header actions
+Actions\ExportAction::make()
+    ->exporter(AccountExporter::class)
+    ->label('Export Accounts')
+    ->icon('heroicon-o-arrow-down-tray')
+    ->color('success');
+
+// Create exporter class
+class AccountExporter extends Exporter
+{
+    protected static ?string $model = Account::class;
+
+    public static function getColumns(): array
+    {
+        return [
+            ExportColumn::make('uuid')->label('Account ID'),
+            ExportColumn::make('balance')
+                ->label('Balance (USD)')
+                ->formatStateUsing(fn ($state) => number_format($state / 100, 2)),
         ];
     }
 }
