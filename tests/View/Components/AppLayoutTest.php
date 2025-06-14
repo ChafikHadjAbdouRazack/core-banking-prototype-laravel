@@ -21,3 +21,10 @@ it('render method returns View', function () {
 it('can be instantiated', function () {
     expect(new AppLayout())->toBeInstanceOf(AppLayout::class);
 });
+
+it('has correct class structure', function () {
+    $reflection = new ReflectionClass(AppLayout::class);
+    expect($reflection->isAbstract())->toBeFalse();
+    expect($reflection->isFinal())->toBeFalse();
+    expect($reflection->getNamespaceName())->toBe('App\View\Components');
+});
