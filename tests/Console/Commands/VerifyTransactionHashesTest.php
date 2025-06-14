@@ -30,6 +30,13 @@ it('has handle method', function () {
     expect(method_exists($this->command, 'handle'))->toBeTrue();
 });
 
+it('handle method returns integer', function () {
+    $reflection = new ReflectionClass($this->command);
+    $method = $reflection->getMethod('handle');
+    
+    expect($method->getReturnType()->getName())->toBe('int');
+});
+
 it('has verifyAggregateHashes method', function () {
     $reflection = new ReflectionClass($this->command);
     $method = $reflection->getMethod('verifyAggregateHashes');
