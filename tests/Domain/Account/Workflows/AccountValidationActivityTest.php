@@ -1,6 +1,9 @@
 <?php
 
+use App\Domain\Account\DataObjects\AccountUuid;
 use App\Domain\Account\Workflows\AccountValidationActivity;
+use App\Models\Account;
+use App\Models\User;
 
 it('class exists', function () {
     expect(class_exists(AccountValidationActivity::class))->toBeTrue();
@@ -94,3 +97,6 @@ it('validation methods return arrays', function () {
         expect($method->getReturnType()->getName())->toBe('array');
     }
 });
+
+// Note: Workflow Activity classes cannot be instantiated directly in tests
+// as they require workflow context. Tests focus on class structure validation.

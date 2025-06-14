@@ -103,3 +103,6 @@ it('supports all expected batch operations', function () {
     expect($performOperationMethod->isPrivate())->toBeTrue();
     expect($performOperationMethod->getReturnType()->getName())->toBe('array');
 });
+
+// Note: Workflow Activity classes cannot be instantiated directly in tests
+// as they require workflow context. Tests focus on class structure validation.
