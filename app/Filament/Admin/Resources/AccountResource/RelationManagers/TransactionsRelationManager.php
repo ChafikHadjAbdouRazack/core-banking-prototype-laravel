@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Resources\AccountResource\RelationManagers;
 
+use App\Filament\Exports\TransactionExporter;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -68,7 +69,13 @@ class TransactionsRelationManager extends RelationManager
                         'transfer_out' => 'Transfer Out',
                     ]),
             ])
-            ->headerActions([])
+            ->headerActions([
+                Tables\Actions\ExportAction::make()
+                    ->exporter(TransactionExporter::class)
+                    ->label('Export Transactions')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->color('success'),
+            ])
             ->actions([
                 Tables\Actions\ViewAction::make()
                     ->modalHeading('Transaction Details')

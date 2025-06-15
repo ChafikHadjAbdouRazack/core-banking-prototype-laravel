@@ -115,7 +115,7 @@ php artisan cache:clear
 ### Queue Management
 ```bash
 # Start queue workers for event processing
-php artisan queue:work --queue=events,ledger,transactions,transfers
+php artisan queue:work --queue=events,ledger,transactions,transfers,webhooks
 
 # Monitor queues with Horizon
 php artisan horizon
@@ -191,6 +191,7 @@ Events are processed through separate queues:
 - `ledger`: Account lifecycle events
 - `transactions`: Money movement events
 - `transfers`: Transfer-specific events
+- `webhooks`: Webhook delivery processing
 
 ### Security Features
 - **Quantum-resistant hashing**: SHA3-512 for all transactions
@@ -205,8 +206,79 @@ Events are processed through separate queues:
 - **Bulk Operations**: Freeze/unfreeze multiple accounts simultaneously
 - **Real-time Statistics**: Account overview widgets with key metrics
 - **Security**: Role-based access control for admin operations
+- **Enhanced Analytics**:
+  - **Balance Trends**: Track total and average balance over time with configurable periods
+  - **Transaction Volume**: Analyze deposits, withdrawals, and transfers with bar charts
+  - **Cash Flow Analysis**: Monitor debit/credit flows with net calculations
+  - **Growth Metrics**: Track new account creation and cumulative growth
+  - **System Health**: Real-time monitoring of services, cache, and queues
+- **Export Functionality**: Export accounts, transactions, and users to CSV/XLSX formats
+- **Webhook Management**: Configure and monitor webhook endpoints for real-time event notifications
 
-## Recent Improvements (Feature Branch: immediate-priority-fixes)
+## Recent Improvements (Feature Branch: analytics-charts)
+
+### Enhanced Analytics Dashboard
+- **Chart.js Integration**: Leverages Filament's built-in Chart.js support for rich visualizations
+- **Real-time Updates**: All charts support configurable polling intervals (10s-60s)
+- **Interactive Filters**: Time-based filtering for different analysis periods
+- **Performance Optimized**: Efficient queries with proper indexing and caching
+
+### Analytics Widgets
+- **Account Balance Chart**:
+  - Dual-line chart showing total and average balance trends
+  - Time filters: 24h (hourly), 7d, 30d, 90d (daily intervals)
+  - Simulated historical data for demonstration
+  - Green/blue color scheme for visual distinction
+
+- **Transaction Volume Chart**:
+  - Bar chart with transaction type breakdown
+  - Separate bars for deposits, withdrawals, and transfers
+  - Zero-fill for complete time series visualization
+  - Automatic grouping based on selected period
+
+- **Turnover Flow Chart**:
+  - Combined bar and line chart for cash flow analysis
+  - Red bars for debits, green for credits
+  - Blue trend line showing net flow
+  - Monthly aggregation with 3-24 month views
+
+- **Account Growth Chart**:
+  - Dual-axis visualization for new vs. cumulative accounts
+  - Adaptive time grouping (daily/weekly/monthly)
+  - Growth rate insights for business metrics
+  - Historical comparison capabilities
+
+- **System Health Widget**:
+  - Real-time service monitoring (DB, Redis, Queues)
+  - Transaction processing rate per minute
+  - Cache hit rate with performance indicators
+  - Queue status with pending job counts
+  - Mini sparkline charts for trends
+
+## Previous Improvements (Feature Branch: export-and-webhooks)
+
+### Export Functionality
+- **Account Export**: Export account data with formatted balances and status information
+- **Transaction Export**: Export transaction history with proper formatting and account relationships
+- **User Export**: Export user data with account counts and registration information
+- **Format Support**: Both CSV and XLSX formats supported out of the box
+- **Background Processing**: Large exports processed in background with notifications
+- **Custom Formatting**: Balance amounts converted from cents to dollars, status fields humanized
+
+### Webhook System
+- **Event-Driven Architecture**: Automatic webhook triggers for all major banking events
+- **Flexible Configuration**: Subscribe to specific events with custom headers and retry policies
+- **Security**: HMAC-SHA256 signature verification for webhook payloads
+- **Reliability**: Automatic retries with exponential backoff, delivery tracking
+- **Admin UI**: Full webhook management interface in Filament dashboard
+- **Event Types**:
+  - Account events: created, updated, frozen, unfrozen, closed
+  - Transaction events: created, reversed
+  - Transfer events: created, completed, failed
+  - Balance alerts: low balance, negative balance
+- **Monitoring**: Track delivery history, success rates, and failure reasons
+
+## Previous Improvements (Feature Branch: immediate-priority-fixes)
 
 ### Schema Enhancements
 - **Turnover Model Refactoring**: Upgraded from simple `count`/`amount` fields to proper accounting with separate `debit` and `credit` fields
@@ -241,6 +313,71 @@ Events are processed through separate queues:
 - **Enhanced Documentation**: Updated CLAUDE.md with detailed implementation notes and architectural improvements
 - **Code Comments**: Added comprehensive inline documentation for complex validation and compliance logic
 - **Type Safety**: Ensured proper type hints and return types throughout enhanced activities
+
+### Webhook Implementation Examples
+
+```php
+// Creating a webhook via admin UI or programmatically
+$webhook = Webhook::create([
+    'name' => 'Payment Gateway Webhook',
+    'url' => 'https://api.example.com/webhooks/banking',
+    'events' => ['account.created', 'transaction.created', 'transfer.completed'],
+    'headers' => ['X-API-Key' => 'your-api-key'],
+    'secret' => 'webhook-secret-key',
+    'retry_attempts' => 3,
+    'timeout_seconds' => 30,
+]);
+
+// Webhook payload example
+{
+    "event": "account.created",
+    "timestamp": "2025-01-14T10:30:00Z",
+    "account_uuid": "01234567-89ab-cdef-0123-456789abcdef",
+    "name": "John Doe Savings",
+    "user_uuid": "fedcba98-7654-3210-fedc-ba9876543210",
+    "balance": 0
+}
+
+// Verifying webhook signature in your application
+$signature = $_SERVER['HTTP_X_WEBHOOK_SIGNATURE'];
+$payload = file_get_contents('php://input');
+$expectedSignature = 'sha256=' . hash_hmac('sha256', $payload, $webhookSecret);
+
+if (!hash_equals($expectedSignature, $signature)) {
+    throw new UnauthorizedException('Invalid webhook signature');
+}
+```
+
+### Export Implementation Examples
+
+```php
+// Adding export to a Filament resource
+use App\Filament\Exports\AccountExporter;
+
+protected function getHeaderActions(): array
+{
+    return [
+        Actions\ExportAction::make()
+            ->exporter(AccountExporter::class)
+            ->label('Export Accounts')
+            ->icon('heroicon-o-arrow-down-tray')
+            ->color('success'),
+    ];
+}
+
+// Creating a custom exporter
+class AccountExporter extends Exporter
+{
+    public static function getColumns(): array
+    {
+        return [
+            ExportColumn::make('balance')
+                ->label('Balance (USD)')
+                ->formatStateUsing(fn ($state) => number_format($state / 100, 2)),
+        ];
+    }
+}
+```
 
 ## Key Development Patterns
 
@@ -397,6 +534,34 @@ class CustomWidget extends BaseWidget
             Stat::make('Label', 'Value')
                 ->description('Description')
                 ->color('success'),
+        ];
+    }
+}
+
+// Export functionality
+use Filament\Actions\ExportAction;
+use Filament\Actions\Exports\Exporter;
+use Filament\Actions\Exports\ExportColumn;
+
+// Add export to table header actions
+Actions\ExportAction::make()
+    ->exporter(AccountExporter::class)
+    ->label('Export Accounts')
+    ->icon('heroicon-o-arrow-down-tray')
+    ->color('success');
+
+// Create exporter class
+class AccountExporter extends Exporter
+{
+    protected static ?string $model = Account::class;
+
+    public static function getColumns(): array
+    {
+        return [
+            ExportColumn::make('uuid')->label('Account ID'),
+            ExportColumn::make('balance')
+                ->label('Balance (USD)')
+                ->formatStateUsing(fn ($state) => number_format($state / 100, 2)),
         ];
     }
 }

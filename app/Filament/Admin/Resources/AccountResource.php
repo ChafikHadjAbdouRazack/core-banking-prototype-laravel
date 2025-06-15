@@ -360,6 +360,11 @@ class AccountResource extends Resource
     {
         return [
             AccountResource\Widgets\AccountStatsOverview::class,
+            AccountResource\Widgets\AccountBalanceChart::class,
+            AccountResource\Widgets\RecentTransactionsChart::class,
+            AccountResource\Widgets\TurnoverTrendChart::class,
+            AccountResource\Widgets\AccountGrowthChart::class,
+            AccountResource\Widgets\SystemHealthWidget::class,
         ];
     }
 
