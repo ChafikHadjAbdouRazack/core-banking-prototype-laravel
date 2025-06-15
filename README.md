@@ -63,7 +63,7 @@ npm run build
 php artisan serve
 
 # Start queue workers (in separate terminals)
-php artisan queue:work --queue=events,ledger,transactions,transfers
+php artisan queue:work --queue=events,ledger,transactions,transfers,webhooks
 ```
 
 ## 🏗️ Architecture
@@ -135,6 +135,8 @@ app/Domain/
 - Account statistics and turnover monitoring
 - User management interface
 - Role-based access control
+- CSV/XLSX export for accounts, transactions, and users
+- Webhook configuration and monitoring
 
 ## 🔧 Usage Examples
 
@@ -238,7 +240,8 @@ The platform includes a powerful admin dashboard built with Filament:
   - Advanced filtering and search by status, balance, and name
   - Bulk operations support (freeze multiple accounts)
   - User management interface
-  - Export capabilities (planned enhancement)
+  - Export capabilities (CSV/XLSX)
+  - Webhook management for real-time event notifications
 
 ### Additional Resources
 
@@ -248,6 +251,7 @@ The platform includes a powerful admin dashboard built with Filament:
 - **[API Implementation](API_IMPLEMENTATION.md)**: Complete API layer documentation
 - **[BIAN API Documentation](BIAN_API_DOCUMENTATION.md)**: BIAN-compliant API following banking industry standards
 - **[Admin Dashboard Guide](docs/ADMIN_DASHBOARD.md)**: Comprehensive admin interface documentation
+- **[Webhook Integration Guide](docs/WEBHOOK_INTEGRATION.md)**: Webhook configuration and integration documentation
 
 ### API Endpoints
 
