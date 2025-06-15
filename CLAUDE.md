@@ -215,9 +215,9 @@ Events are processed through separate queues:
 - **Export Functionality**: Export accounts, transactions, and users to CSV/XLSX formats
 - **Webhook Management**: Configure and monitor webhook endpoints for real-time event notifications
 
-## Recent Improvements (Feature Branch: feature/phase1-multi-asset-foundation)
+## Recent Improvements
 
-### Phase 1: Multi-Asset Foundation Implementation
+### Phase 1: Multi-Asset Foundation Implementation (Merged)
 - **Asset Domain Structure**:
   - Created comprehensive Asset model supporting fiat, crypto, and commodity types
   - Implemented asset metadata storage for extensibility
@@ -246,6 +246,46 @@ Events are processed through separate queues:
   - Modified cache services to work with multi-asset balances
   - Fixed account factory to create USD balances automatically
   - All existing tests pass without modification
+
+### Phase 2: Exchange Rates and Multi-Asset Transactions (Current Branch: feature/phase2-exchange-rates)
+
+- **Exchange Rate Management**:
+  - Created ExchangeRate model with validation, expiration, and source tracking
+  - Implemented ExchangeRateService with caching and provider support
+  - Added support for fiat, crypto, and commodity rate providers
+  - Implemented rate history tracking and stale rate refreshing
+  - Added identity rates for same-asset conversions
+
+- **Multi-Asset Transaction Engine**:
+  - Created AssetTransactionCreated, AssetTransferInitiated/Completed/Failed events
+  - Implemented AssetTransactionAggregate and AssetTransferAggregate for event sourcing
+  - Added projectors for asset events (AssetTransactionProjector, AssetTransferProjector, ExchangeRateProjector)
+  - Built comprehensive event sourcing infrastructure for multi-asset operations
+
+- **Enhanced Workflow System**:
+  - Created AssetDepositWorkflow and AssetWithdrawWorkflow for single asset operations
+  - Implemented AssetTransferWorkflow with cross-asset support and compensation logic
+  - Added activities: DepositAssetActivity, WithdrawAssetActivity, InitiateAssetTransferActivity
+  - Integrated ValidateExchangeRateActivity for cross-asset transfers
+  - Built CompleteAssetTransferActivity and FailAssetTransferActivity for saga completion
+
+- **API and Controller Updates**:
+  - Updated PaymentInitiationController to use AssetTransferWorkflow
+  - Maintained BIAN compliance while adding multi-asset support
+  - Enhanced error handling and status reporting
+  - All existing API endpoints remain backward compatible
+
+- **Database Schema Enhancements**:
+  - Added exchange_rates table with comprehensive indexing
+  - Implemented foreign key constraints to assets table
+  - Added rate source tracking, expiration, and metadata support
+  - Created unique constraints for rate pairs and time validity
+
+- **Factory and Testing Infrastructure**:
+  - Created AssetFactory and ExchangeRateFactory with realistic test data
+  - Added comprehensive test coverage for new asset features
+  - Implemented proper factory states for different asset types
+  - Created test utilities for exchange rate scenarios
 
 - **Testing Infrastructure**:
   - Comprehensive test coverage for Asset and AccountBalance models

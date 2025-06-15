@@ -1,0 +1,88 @@
+<?php
+
+declare(strict_types=1);
+
+use App\Domain\Asset\Models\Asset;
+use App\Domain\Asset\Models\ExchangeRate;
+
+it('can create exchange rate', function () {
+    $fromAsset = Asset::factory()->create(['code' => 'USD']);
+    $toAsset = Asset::factory()->create(['code' => 'EUR']);
+    
+    $rate = ExchangeRate::factory()
+        ->between('USD', 'EUR')
+        ->create();
+    
+    expect($rate->from_asset_code)->toBe('USD');
+    expect($rate->to_asset_code)->toBe('EUR');
+    expect($rate->rate)->toBeFloat();
+    expect($rate->isValid())->toBeTrue();
+});
+
+it('can convert amounts using exchange rate', function () {
+    $rate = ExchangeRate::factory()
+        ->between('USD', 'EUR')
+        ->create(['rate' => 0.85]);
+    
+    $usdAmount = 10000; // $100.00 in cents
+    $eurAmount = $rate->convert($usdAmount);
+    
+    expect($eurAmount)->toBe(8500); // €85.00 in cents
+});
+
+it('can calculate inverse rate', function () {
+    $rate = ExchangeRate::factory()
+        ->between('USD', 'EUR')
+        ->create(['rate' => 0.85]);
+    
+    $inverseRate = $rate->getInverseRate();
+    
+    expect($inverseRate)->toBeCloseTo(1.176, 2);
+});
+
+it('can check if rate is expired', function () {
+    $expiredRate = ExchangeRate::factory()
+        ->expired()
+        ->create();
+    
+    $validRate = ExchangeRate::factory()
+        ->valid()
+        ->create();
+    
+    expect($expiredRate->isExpired())->toBeTrue();
+    expect($expiredRate->isValid())->toBeFalse();
+    expect($validRate->isExpired())->toBeFalse();
+    expect($validRate->isValid())->toBeTrue();
+});
+
+it('can scope to valid rates', function () {
+    ExchangeRate::factory()->expired()->count(2)->create();
+    ExchangeRate::factory()->valid()->count(3)->create();
+    
+    $validRates = ExchangeRate::valid()->get();
+    
+    expect($validRates)->toHaveCount(3);
+    foreach ($validRates as $rate) {
+        expect($rate->isValid())->toBeTrue();
+    }
+});
+
+it('can scope between specific assets', function () {
+    ExchangeRate::factory()->between('USD', 'EUR')->create();
+    ExchangeRate::factory()->between('USD', 'GBP')->create();
+    ExchangeRate::factory()->between('EUR', 'GBP')->create();
+    
+    $usdEurRates = ExchangeRate::between('USD', 'EUR')->get();
+    
+    expect($usdEurRates)->toHaveCount(1);
+    expect($usdEurRates->first()->from_asset_code)->toBe('USD');
+    expect($usdEurRates->first()->to_asset_code)->toBe('EUR');
+});
+
+it('can get age in minutes', function () {
+    $rate = ExchangeRate::factory()
+        ->create(['valid_at' => now()->subMinutes(30)]);
+    
+    expect($rate->getAgeInMinutes())->toBeGreaterThanOrEqual(29);
+    expect($rate->getAgeInMinutes())->toBeLessThanOrEqual(31);
+});
