@@ -46,13 +46,16 @@ class PaymentInitiationController extends Controller
         $payerAccount = Account::where('uuid', $validated['payerReference'])->first();
         $payeeAccount = Account::where('uuid', $validated['payeeReference'])->first();
 
-        if ($payerAccount->balance < $validated['paymentAmount']) {
+        // For backward compatibility, use USD balance
+        $payerBalance = $payerAccount->getBalance('USD');
+        
+        if ($payerBalance < $validated['paymentAmount']) {
             return response()->json([
                 'paymentInitiationTransaction' => [
                     'crReferenceId' => Str::uuid()->toString(),
                     'paymentStatus' => 'rejected',
                     'statusReason' => 'Insufficient funds',
-                    'payerAvailableBalance' => $payerAccount->balance,
+                    'payerAvailableBalance' => $payerBalance,
                     'requestedAmount' => $validated['paymentAmount'],
                 ],
             ], 422);
@@ -100,8 +103,8 @@ class PaymentInitiationController extends Controller
                     'valueDate' => $validated['valueDate'] ?? now()->toDateString(),
                 ],
                 'balanceAfterPayment' => [
-                    'payerBalance' => $payerAccount->balance,
-                    'payeeBalance' => $payeeAccount->balance,
+                    'payerBalance' => $payerAccount->getBalance('USD'),
+                    'payeeBalance' => $payeeAccount->getBalance('USD'),
                 ],
             ],
         ], 201);

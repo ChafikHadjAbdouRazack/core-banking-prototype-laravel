@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\Account;
 use App\Models\User;
+use App\Models\AccountBalance;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
@@ -75,5 +76,27 @@ class AccountFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'frozen' => true,
         ]);
+    }
+    
+    /**
+     * Configure the model factory.
+     */
+    public function configure(): static
+    {
+        return $this->afterCreating(function (Account $account) {
+            // Get the balance from the raw attributes to avoid the accessor
+            $rawBalance = \DB::table('accounts')
+                ->where('id', $account->id)
+                ->value('balance');
+                
+            // Create USD balance for backward compatibility
+            if ($rawBalance && $rawBalance > 0) {
+                AccountBalance::create([
+                    'account_uuid' => $account->uuid,
+                    'asset_code' => 'USD',
+                    'balance' => $rawBalance,
+                ]);
+            }
+        });
     }
 }

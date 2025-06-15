@@ -82,11 +82,14 @@ class TransferController extends Controller
             ], 422);
         }
 
-        if ($fromAccount->balance < $validated['amount']) {
+        // For backward compatibility, use USD balance
+        $fromBalance = $fromAccount->getBalance('USD');
+        
+        if ($fromBalance < $validated['amount']) {
             return response()->json([
                 'message' => 'Insufficient funds',
                 'error' => 'INSUFFICIENT_FUNDS',
-                'current_balance' => $fromAccount->balance,
+                'current_balance' => $fromBalance,
                 'requested_amount' => $validated['amount'],
             ], 422);
         }
@@ -118,8 +121,8 @@ class TransferController extends Controller
                 'from_account_uuid' => $validated['from_account_uuid'],
                 'to_account_uuid' => $validated['to_account_uuid'],
                 'amount' => $validated['amount'],
-                'from_account_new_balance' => $fromAccount->balance,
-                'to_account_new_balance' => $toAccount->balance,
+                'from_account_new_balance' => $fromAccount->getBalance('USD'),
+                'to_account_new_balance' => $toAccount->getBalance('USD'),
                 'status' => 'completed',
                 'created_at' => now(),
             ],

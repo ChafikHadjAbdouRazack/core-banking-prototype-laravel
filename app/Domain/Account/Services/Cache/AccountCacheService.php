@@ -78,7 +78,16 @@ class AccountCacheService
             300, // 5 minutes for balance
             function () use ($uuid) {
                 $account = Account::where('uuid', $uuid)->first();
-                return $account ? $account->balance : null;
+                if (!$account) {
+                    return null;
+                }
+                
+                // For backward compatibility, return USD balance
+                $usdBalance = $account->balances()
+                    ->where('asset_code', 'USD')
+                    ->first();
+                
+                return $usdBalance ? $usdBalance->balance : 0;
             }
         );
         
