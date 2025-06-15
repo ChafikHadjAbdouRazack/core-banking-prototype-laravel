@@ -1,28 +1,45 @@
-# FinAegis Core Banking Platform
+# FinAegis: Decentralized Asset Management & Governance Platform
 
 [![Tests](https://github.com/finaegis/core-banking-prototype-laravel/actions/workflows/test.yml/badge.svg)](https://github.com/finaegis/core-banking-prototype-laravel/actions/workflows/test.yml)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![PHP Version](https://img.shields.io/badge/php-%3E%3D8.3-8892BF.svg)](https://php.net/)
 [![Laravel Version](https://img.shields.io/badge/Laravel-12.x-FF2D20.svg)](https://laravel.com/)
 
-**Open Source Core Banking as a Service**
+**Next-Generation Financial Infrastructure for Multi-Asset Management**
 
-FinAegis is a modern, scalable, and secure core banking platform built with Laravel 12, featuring event sourcing, domain-driven design, workflow orchestration, and quantum-resistant security measures.
+FinAegis is evolving from a traditional core banking platform to a comprehensive **decentralized asset management and governance platform**. Built with Laravel 12, it features event sourcing, domain-driven design, multi-custodian support, and user-driven governance—all while maintaining enterprise-grade security and compliance.
 
 **🤖 AI-Friendly Architecture**: This project welcomes contributions from AI coding assistants (Claude Code, GitHub Copilot, Cursor, etc.). The comprehensive documentation and well-structured patterns make it easy for AI agents to understand and contribute meaningfully to the codebase.
 
-## 🏛️ Platform Overview
+## 🏛️ Platform Vision
 
-FinAegis provides a complete foundation for banking operations with:
+FinAegis is building the foundation for next-generation financial products that require:
 
+### Core Banking Excellence
 - **Event Sourcing Architecture**: Complete audit trail of all transactions
 - **Saga Pattern Workflows**: Reliable business process orchestration with compensation
 - **Domain-Driven Design**: Clean, maintainable code architecture
-- **Modern UUID v7**: Time-ordered UUIDs for optimal database performance
 - **Quantum-Resistant Security**: SHA3-512 cryptographic hashing
-- **Real-time Processing**: High-performance transaction processing
+- **Real-time Processing**: High-performance transaction processing (10,000+ TPS)
 - **Regulatory Compliance**: Built-in audit trails and compliance features
-- **RESTful API**: Complete API layer for all banking operations
+
+### Multi-Asset Capabilities (Coming Soon)
+- **Asset-Agnostic Ledger**: Support for fiat, crypto, commodities, and custom assets
+- **Multi-Currency Operations**: Seamless cross-currency transactions with real-time rates
+- **Exchange Rate Management**: Pluggable rate providers with caching
+- **Composite Assets**: Support for baskets and complex financial instruments
+
+### Decentralized Architecture (Roadmap)
+- **Multi-Custodian Support**: Funds distributed across multiple financial institutions
+- **Custodian Abstraction**: Unified interface for banks, payment providers, and exchanges
+- **Automated Reconciliation**: Real-time balance verification across custodians
+- **Risk Distribution**: Configurable allocation strategies
+
+### Democratic Governance (Future)
+- **User Voting System**: On-chain style governance for platform decisions
+- **Configurable Voting Power**: One-user-one-vote or stake-weighted voting
+- **Automated Execution**: Poll results trigger system workflows
+- **Transparency**: Complete audit trail of all governance actions
 
 ## 🚀 Quick Start
 
@@ -369,17 +386,27 @@ We welcome contributions from the community, including **AI coding assistants an
 
 ## 📈 Roadmap
 
-### Version 2.0 (Q2 2025)
-- [ ] Multi-currency support
-- [ ] International wire transfers
-- [ ] Advanced fraud detection
-- [ ] Mobile SDK
+See our comprehensive [Development Roadmap](ROADMAP.md) for detailed implementation phases.
 
-### Version 2.1 (Q3 2025)
-- [ ] Machine learning risk scoring
-- [ ] Real-time analytics dashboard
-- [ ] Blockchain integration
-- [ ] Open banking APIs
+### Current Focus: Multi-Asset Platform Foundation (Q1-Q2 2025)
+- [ ] Asset-centric ledger architecture
+- [ ] Multi-currency account balances
+- [ ] Exchange rate service
+- [ ] Custodian abstraction layer
+- [ ] Governance polling engine
+
+### Recently Completed
+- [x] Export functionality (CSV/XLSX)
+- [x] Webhook system for real-time events
+- [x] Enhanced analytics dashboard
+- [x] System health monitoring
+
+### Future Milestones
+- [ ] Production custodian integrations (Paysera, Santander)
+- [ ] Democratic governance implementation
+- [ ] Composite asset support
+- [ ] Advanced fraud detection with ML
+- [ ] Mobile SDK
 
 ## 🆘 Support
 

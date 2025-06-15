@@ -567,6 +567,259 @@ class AccountExporter extends Exporter
 }
 ```
 
+## Multi-Asset Development Patterns
+
+### Asset Management
+When implementing multi-asset support:
+```php
+// Creating Asset entity
+namespace App\Domain\Asset\Models;
+
+class Asset extends Model
+{
+    protected $primaryKey = 'code';
+    public $incrementing = false;
+    protected $keyType = 'string';
+    
+    protected $fillable = [
+        'code',      // 'USD', 'EUR', 'BTC', 'XAU'
+        'name',      // 'US Dollar', 'Euro', 'Bitcoin', 'Gold'
+        'type',      // 'fiat', 'crypto', 'commodity'
+        'precision', // Decimal places (2 for USD, 8 for BTC)
+        'is_active',
+    ];
+}
+
+// Account with multi-asset balances
+class Account extends Model
+{
+    public function balances(): HasMany
+    {
+        return $this->hasMany(AccountBalance::class, 'account_uuid', 'uuid');
+    }
+    
+    public function getBalance(string $asset_code): int
+    {
+        return $this->balances()
+            ->where('asset_code', $asset_code)
+            ->value('balance') ?? 0;
+    }
+    
+    public function addBalance(string $asset_code, int $amount): void
+    {
+        $balance = $this->balances()->firstOrCreate(
+            ['asset_code' => $asset_code],
+            ['balance' => 0]
+        );
+        
+        $balance->increment('balance', $amount);
+    }
+}
+```
+
+### Multi-Asset Events
+Update events to include asset information:
+```php
+// Before (single currency)
+class MoneyAdded extends ShouldBeStored
+{
+    public function __construct(
+        public readonly Money $money,
+        public readonly Hash $hash
+    ) {}
+}
+
+// After (multi-asset)
+class MoneyAdded extends ShouldBeStored
+{
+    public function __construct(
+        public readonly string $asset_code,
+        public readonly int $amount,
+        public readonly Hash $hash,
+        public readonly ?array $metadata = []
+    ) {}
+}
+```
+
+### Custodian Integration
+Implementing custodian connectors:
+```php
+// Base connector implementation
+abstract class BaseCustodianConnector implements ICustodianConnector
+{
+    protected array $config;
+    protected HttpClient $client;
+    
+    public function __construct(array $config)
+    {
+        $this->config = $config;
+        $this->client = Http::baseUrl($config['base_url'])
+            ->withHeaders($this->getHeaders())
+            ->timeout(30);
+    }
+    
+    abstract protected function getHeaders(): array;
+}
+
+// Mock implementation for testing
+class MockBankConnector extends BaseCustodianConnector
+{
+    private array $balances = [];
+    private array $transactions = [];
+    
+    public function getBalance(string $asset_code): Money
+    {
+        $amount = $this->balances[$asset_code] ?? 0;
+        return new Money($amount, $asset_code);
+    }
+    
+    public function initiateTransfer(
+        string $from,
+        string $to,
+        string $asset_code,
+        int $amount,
+        array $metadata = []
+    ): TransactionReceipt {
+        // Simulate transfer with delay
+        sleep(1);
+        
+        $this->transactions[] = [
+            'id' => Str::uuid(),
+            'from' => $from,
+            'to' => $to,
+            'asset' => $asset_code,
+            'amount' => $amount,
+            'status' => 'completed',
+            'timestamp' => now(),
+        ];
+        
+        return new TransactionReceipt(
+            id: end($this->transactions)['id'],
+            status: 'completed'
+        );
+    }
+}
+```
+
+### Exchange Rate Service
+Working with exchange rates:
+```php
+// Usage in workflows
+class CrossAssetTransferWorkflow extends Workflow
+{
+    public function execute(
+        AccountUuid $from,
+        AccountUuid $to,
+        string $from_asset,
+        string $to_asset,
+        int $amount
+    ): \Generator {
+        // Get exchange rate
+        $rate = yield ActivityStub::make(
+            GetExchangeRateActivity::class,
+            $from_asset,
+            $to_asset
+        );
+        
+        // Calculate converted amount
+        $converted_amount = (int) round($amount * $rate);
+        
+        // Perform transfers
+        yield from $this->executeTransfers(
+            $from,
+            $to,
+            $from_asset,
+            $to_asset,
+            $amount,
+            $converted_amount
+        );
+    }
+}
+
+// Caching exchange rates
+class ExchangeRateService
+{
+    public function getRate(string $from, string $to): float
+    {
+        return Cache::remember(
+            "rate:{$from}:{$to}",
+            300, // 5 minutes
+            fn() => $this->fetchRateFromProvider($from, $to)
+        );
+    }
+}
+```
+
+### Governance Implementation
+Building polling system:
+```php
+// Creating a poll
+$poll = Poll::create([
+    'title' => 'Add support for Japanese Yen?',
+    'type' => 'single_choice',
+    'options' => [
+        ['id' => 'yes', 'label' => 'Yes, add JPY support'],
+        ['id' => 'no', 'label' => 'No, not needed'],
+    ],
+    'start_date' => now(),
+    'end_date' => now()->addDays(7),
+    'voting_power_strategy' => OneUserOneVoteStrategy::class,
+    'execution_workflow' => AddAssetWorkflow::class,
+]);
+
+// Voting
+class VoteController extends Controller
+{
+    public function store(Poll $poll, Request $request)
+    {
+        $validated = $request->validate([
+            'option_id' => 'required|string',
+        ]);
+        
+        $votingPower = app($poll->voting_power_strategy)
+            ->calculatePower($request->user(), $poll);
+        
+        Vote::create([
+            'poll_id' => $poll->id,
+            'user_uuid' => $request->user()->uuid,
+            'selected_options' => [$validated['option_id']],
+            'voting_power' => $votingPower,
+        ]);
+        
+        return response()->json(['message' => 'Vote recorded']);
+    }
+}
+```
+
+### Testing Multi-Asset Features
+```php
+// Test multi-asset account
+test('account can hold multiple asset balances', function () {
+    $account = Account::factory()->create();
+    
+    $account->addBalance('USD', 10000);    // $100.00
+    $account->addBalance('EUR', 5000);     // €50.00
+    $account->addBalance('BTC', 100000000); // 1 BTC
+    
+    expect($account->getBalance('USD'))->toBe(10000);
+    expect($account->getBalance('EUR'))->toBe(5000);
+    expect($account->getBalance('BTC'))->toBe(100000000);
+    expect($account->balances)->toHaveCount(3);
+});
+
+// Test custodian integration
+test('can transfer through custodian', function () {
+    $custodian = new MockBankConnector(['base_url' => 'https://mock.bank']);
+    app(CustodianRegistry::class)->register('mock', $custodian);
+    
+    $workflow = WorkflowStub::make(CustodianTransferWorkflow::class);
+    $result = $workflow->start('from_account', 'to_account', 'USD', 10000, 'mock');
+    
+    expect($result)->toBeInstanceOf(TransactionReceipt::class);
+    expect($result->status)->toBe('completed');
+});
+```
+
 ## Important Files and Locations
 - Event configuration: `config/event-sourcing.php`
 - Workflow configuration: `config/workflows.php`
@@ -580,4 +833,11 @@ class AccountExporter extends Exporter
 - Cache services: `app/Domain/*/Services/Cache/`
 - Filament resources: `app/Filament/Admin/Resources/`
 - Filament tests: `tests/Feature/Filament/`
+
+### New Multi-Asset Locations
+- Asset domain: `app/Domain/Asset/`
+- Custodian connectors: `app/Domain/Custodian/Connectors/`
+- Exchange rate providers: `app/Domain/Exchange/Providers/`
+- Governance domain: `app/Domain/Governance/`
+- Multi-asset migrations: `database/migrations/multi_asset/`
 ```
