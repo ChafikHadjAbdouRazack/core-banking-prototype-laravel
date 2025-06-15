@@ -236,12 +236,18 @@ The platform includes a powerful admin dashboard built with Filament:
   - Transaction monitoring and history with detailed views
   - Turnover statistics and analytics
   - Account balance tracking with automatic updates
-  - System health monitoring
+  - System health monitoring with real-time metrics
   - Advanced filtering and search by status, balance, and name
   - Bulk operations support (freeze multiple accounts)
   - User management interface
   - Export capabilities (CSV/XLSX)
   - Webhook management for real-time event notifications
+  - **Enhanced Analytics Dashboard**:
+    - Account balance trend charts (daily/weekly/monthly views)
+    - Transaction volume analysis by type
+    - Turnover flow visualization with net calculations
+    - Account growth tracking over time
+    - System health monitoring with performance metrics
 
 ### Additional Resources
 

@@ -206,10 +206,56 @@ Events are processed through separate queues:
 - **Bulk Operations**: Freeze/unfreeze multiple accounts simultaneously
 - **Real-time Statistics**: Account overview widgets with key metrics
 - **Security**: Role-based access control for admin operations
+- **Enhanced Analytics**:
+  - **Balance Trends**: Track total and average balance over time with configurable periods
+  - **Transaction Volume**: Analyze deposits, withdrawals, and transfers with bar charts
+  - **Cash Flow Analysis**: Monitor debit/credit flows with net calculations
+  - **Growth Metrics**: Track new account creation and cumulative growth
+  - **System Health**: Real-time monitoring of services, cache, and queues
 - **Export Functionality**: Export accounts, transactions, and users to CSV/XLSX formats
 - **Webhook Management**: Configure and monitor webhook endpoints for real-time event notifications
 
-## Recent Improvements (Feature Branch: export-and-webhooks)
+## Recent Improvements (Feature Branch: analytics-charts)
+
+### Enhanced Analytics Dashboard
+- **Chart.js Integration**: Leverages Filament's built-in Chart.js support for rich visualizations
+- **Real-time Updates**: All charts support configurable polling intervals (10s-60s)
+- **Interactive Filters**: Time-based filtering for different analysis periods
+- **Performance Optimized**: Efficient queries with proper indexing and caching
+
+### Analytics Widgets
+- **Account Balance Chart**:
+  - Dual-line chart showing total and average balance trends
+  - Time filters: 24h (hourly), 7d, 30d, 90d (daily intervals)
+  - Simulated historical data for demonstration
+  - Green/blue color scheme for visual distinction
+
+- **Transaction Volume Chart**:
+  - Bar chart with transaction type breakdown
+  - Separate bars for deposits, withdrawals, and transfers
+  - Zero-fill for complete time series visualization
+  - Automatic grouping based on selected period
+
+- **Turnover Flow Chart**:
+  - Combined bar and line chart for cash flow analysis
+  - Red bars for debits, green for credits
+  - Blue trend line showing net flow
+  - Monthly aggregation with 3-24 month views
+
+- **Account Growth Chart**:
+  - Dual-axis visualization for new vs. cumulative accounts
+  - Adaptive time grouping (daily/weekly/monthly)
+  - Growth rate insights for business metrics
+  - Historical comparison capabilities
+
+- **System Health Widget**:
+  - Real-time service monitoring (DB, Redis, Queues)
+  - Transaction processing rate per minute
+  - Cache hit rate with performance indicators
+  - Queue status with pending job counts
+  - Mini sparkline charts for trends
+
+## Previous Improvements (Feature Branch: export-and-webhooks)
 
 ### Export Functionality
 - **Account Export**: Export account data with formatted balances and status information

@@ -3,9 +3,9 @@
 namespace App\Filament\Admin\Pages;
 
 use App\Filament\Admin\Resources\AccountResource\Widgets\AccountStatsOverview;
-use App\Filament\Admin\Widgets\RecentTransactionsChart;
-use App\Filament\Admin\Widgets\AccountBalanceChart;
-use App\Filament\Admin\Widgets\SystemHealthWidget;
+use App\Filament\Admin\Resources\AccountResource\Widgets\RecentTransactionsChart;
+use App\Filament\Admin\Resources\AccountResource\Widgets\AccountBalanceChart;
+use App\Filament\Admin\Resources\AccountResource\Widgets\SystemHealthWidget;
 use Filament\Pages\Dashboard as BaseDashboard;
 
 class Dashboard extends BaseDashboard

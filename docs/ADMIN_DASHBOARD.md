@@ -67,6 +67,52 @@ Shows real-time metrics:
 - **Average Balance**: Per account calculation
 - **Frozen Accounts**: Count and percentage
 
+#### Advanced Analytics Charts
+
+##### Account Balance Trends
+- **Real-time balance tracking** over time
+- **Dual metrics**: Total balance and average balance per account
+- **Time filters**: Last 24 hours, 7 days, 30 days, or 90 days
+- **Interactive line chart** with hover tooltips
+- **Auto-refresh**: Updates every 30 seconds
+
+##### Transaction Volume Chart
+- **Transaction breakdown** by type (deposits, withdrawals, transfers)
+- **Bar chart visualization** with stacked or grouped view
+- **Time-based filtering**: Hourly for 24h view, daily for longer periods
+- **Color coding**: Green for deposits, red for withdrawals, blue for transfers
+- **Zero-fill**: Shows days with no transactions for complete picture
+
+##### Turnover Flow Analysis
+- **Monthly cash flow visualization**
+- **Triple metric display**:
+  - Debit (outflows) in red bars
+  - Credit (inflows) in green bars
+  - Net flow as blue trend line
+- **Period selection**: 3, 6, 12, or 24 months
+- **Currency formatting** with thousand separators
+- **Trend analysis** for financial planning
+
+##### Account Growth Chart
+- **New account tracking** over time
+- **Dual-axis visualization**:
+  - Bar chart for new accounts per period
+  - Line chart for cumulative total
+- **Adaptive grouping**: Daily, weekly, or monthly based on period
+- **Growth rate insights** for business metrics
+- **Historical comparison** capabilities
+
+##### System Health Monitor
+- **Real-time system status** with operational indicators
+- **Key metrics tracked**:
+  - Database and Redis connectivity
+  - Transaction processing rate per minute
+  - Cache hit rate percentage
+  - Queue processing status
+- **Visual indicators**: Color-coded status badges
+- **Performance charts**: Mini sparklines for trends
+- **Auto-refresh**: Updates every 10 seconds
+
 #### Individual Account Stats
 When viewing a specific account:
 - **Current Balance** with status indicator
