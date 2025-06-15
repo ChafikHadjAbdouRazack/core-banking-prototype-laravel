@@ -7,11 +7,14 @@ namespace App\Domain\Asset\Aggregates;
 use App\Domain\Account\DataObjects\AccountUuid;
 use App\Domain\Account\DataObjects\Money;
 use App\Domain\Account\DataObjects\Hash;
+use App\Domain\Account\Utils\ValidatesHash;
 use App\Domain\Asset\Events\AssetTransactionCreated;
 use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
 
 class AssetTransactionAggregate extends AggregateRoot
 {
+    use ValidatesHash;
+    
     private ?AccountUuid $accountUuid = null;
     private ?string $assetCode = null;
     private ?Money $money = null;
@@ -28,7 +31,7 @@ class AssetTransactionAggregate extends AggregateRoot
         ?string $description = null,
         ?array $metadata = null
     ): self {
-        $hash = Hash::make();
+        $hash = $this->generateHash($money);
         
         $this->recordThat(new AssetTransactionCreated(
             accountUuid: $accountUuid,
@@ -53,7 +56,7 @@ class AssetTransactionAggregate extends AggregateRoot
         ?string $description = null,
         ?array $metadata = null
     ): self {
-        $hash = Hash::make();
+        $hash = $this->generateHash($money);
         
         $this->recordThat(new AssetTransactionCreated(
             accountUuid: $accountUuid,

@@ -6,16 +6,19 @@ use App\Domain\Asset\Models\Asset;
 use App\Domain\Asset\Models\ExchangeRate;
 
 it('can create exchange rate', function () {
-    $fromAsset = Asset::factory()->create(['code' => 'USD']);
-    $toAsset = Asset::factory()->create(['code' => 'EUR']);
+    // Assets are already seeded in migrations
     
     $rate = ExchangeRate::factory()
         ->between('USD', 'EUR')
-        ->create();
+        ->valid()
+        ->create([
+            'valid_at' => now()->subMinutes(10),
+            'expires_at' => now()->addHours(1),
+        ]);
     
     expect($rate->from_asset_code)->toBe('USD');
     expect($rate->to_asset_code)->toBe('EUR');
-    expect($rate->rate)->toBeFloat();
+    expect($rate->rate)->toBeString(); // Decimal cast returns string
     expect($rate->isValid())->toBeTrue();
 });
 
@@ -37,7 +40,7 @@ it('can calculate inverse rate', function () {
     
     $inverseRate = $rate->getInverseRate();
     
-    expect($inverseRate)->toBeCloseTo(1.176, 2);
+    expect(round($inverseRate, 3))->toBe(1.176);
 });
 
 it('can check if rate is expired', function () {

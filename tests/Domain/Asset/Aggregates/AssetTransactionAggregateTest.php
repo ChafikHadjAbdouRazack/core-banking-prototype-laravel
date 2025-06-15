@@ -15,7 +15,7 @@ it('can create credit transaction', function () {
     $aggregate = AssetTransactionAggregate::retrieve($uuid)
         ->credit($accountUuid, 'USD', $money, 'Test deposit');
     
-    $events = $aggregate->getStoredEvents();
+    $events = $aggregate->getRecordedEvents();
     
     expect($events)->toHaveCount(1);
     expect($events[0])->toBeInstanceOf(AssetTransactionCreated::class);
@@ -35,7 +35,7 @@ it('can create debit transaction', function () {
     $aggregate = AssetTransactionAggregate::retrieve($uuid)
         ->debit($accountUuid, 'EUR', $money, 'Test withdrawal');
     
-    $events = $aggregate->getStoredEvents();
+    $events = $aggregate->getRecordedEvents();
     
     expect($events)->toHaveCount(1);
     expect($events[0])->toBeInstanceOf(AssetTransactionCreated::class);

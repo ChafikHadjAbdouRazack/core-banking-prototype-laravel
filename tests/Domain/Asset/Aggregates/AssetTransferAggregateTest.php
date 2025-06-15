@@ -28,7 +28,7 @@ it('can initiate asset transfer', function () {
             'Test cross-asset transfer'
         );
     
-    $events = $aggregate->getStoredEvents();
+    $events = $aggregate->getRecordedEvents();
     
     expect($events)->toHaveCount(1);
     expect($events[0])->toBeInstanceOf(AssetTransferInitiated::class);
@@ -51,7 +51,7 @@ it('can complete asset transfer', function () {
         ->initiate($fromAccount, $toAccount, 'USD', 'USD', $fromAmount, $toAmount)
         ->complete('transfer-123');
     
-    $events = $aggregate->getStoredEvents();
+    $events = $aggregate->getRecordedEvents();
     
     expect($events)->toHaveCount(2);
     expect($events[0])->toBeInstanceOf(AssetTransferInitiated::class);
@@ -70,7 +70,7 @@ it('can fail asset transfer', function () {
         ->initiate($fromAccount, $toAccount, 'USD', 'EUR', $fromAmount, $toAmount)
         ->fail('Insufficient balance', 'transfer-456');
     
-    $events = $aggregate->getStoredEvents();
+    $events = $aggregate->getRecordedEvents();
     
     expect($events)->toHaveCount(2);
     expect($events[0])->toBeInstanceOf(AssetTransferInitiated::class);

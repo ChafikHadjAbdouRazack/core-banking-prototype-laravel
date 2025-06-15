@@ -7,6 +7,7 @@ namespace App\Domain\Asset\Aggregates;
 use App\Domain\Account\DataObjects\AccountUuid;
 use App\Domain\Account\DataObjects\Money;
 use App\Domain\Account\DataObjects\Hash;
+use App\Domain\Account\Utils\ValidatesHash;
 use App\Domain\Asset\Events\AssetTransferInitiated;
 use App\Domain\Asset\Events\AssetTransferCompleted;
 use App\Domain\Asset\Events\AssetTransferFailed;
@@ -14,6 +15,8 @@ use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
 
 class AssetTransferAggregate extends AggregateRoot
 {
+    use ValidatesHash;
+    
     private ?AccountUuid $fromAccountUuid = null;
     private ?AccountUuid $toAccountUuid = null;
     private ?string $fromAssetCode = null;
@@ -39,7 +42,7 @@ class AssetTransferAggregate extends AggregateRoot
         ?string $description = null,
         ?array $metadata = null
     ): self {
-        $hash = Hash::make();
+        $hash = $this->generateHash($fromAmount);
         
         $this->recordThat(new AssetTransferInitiated(
             fromAccountUuid: $fromAccountUuid,

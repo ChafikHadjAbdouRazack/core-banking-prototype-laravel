@@ -148,7 +148,7 @@ class ExchangeRate extends Model
      */
     public function getAgeInMinutes(): int
     {
-        return $this->valid_at->diffInMinutes(now());
+        return (int) $this->valid_at->diffInMinutes(now());
     }
     
     /**

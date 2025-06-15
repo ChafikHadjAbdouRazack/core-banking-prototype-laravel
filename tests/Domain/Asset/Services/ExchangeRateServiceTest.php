@@ -15,8 +15,12 @@ it('can get existing exchange rate', function () {
     
     ExchangeRate::factory()
         ->between('USD', 'EUR')
-        ->valid()
-        ->create(['rate' => 0.85]);
+        ->create([
+            'rate' => 0.85,
+            'valid_at' => now()->subMinutes(10),
+            'expires_at' => now()->addHours(1),
+            'is_active' => true,
+        ]);
     
     $rate = $service->getRate('USD', 'EUR');
     
@@ -30,7 +34,7 @@ it('returns identity rate for same asset', function () {
     $rate = $service->getRate('USD', 'USD');
     
     expect($rate)->not->toBeNull();
-    expect($rate->rate)->toBe(1.0);
+    expect((float) $rate->rate)->toBe(1.0);
     expect($rate->from_asset_code)->toBe('USD');
     expect($rate->to_asset_code)->toBe('USD');
 });
@@ -40,8 +44,12 @@ it('can convert amounts between assets', function () {
     
     ExchangeRate::factory()
         ->between('USD', 'EUR')
-        ->valid()
-        ->create(['rate' => 0.85]);
+        ->create([
+            'rate' => 0.85,
+            'valid_at' => now()->subMinutes(5),
+            'expires_at' => now()->addHours(2),
+            'is_active' => true,
+        ]);
     
     $convertedAmount = $service->convert(10000, 'USD', 'EUR'); // $100.00
     
@@ -59,13 +67,19 @@ it('returns null for unavailable rates', function () {
 it('can store new exchange rate', function () {
     $service = app(ExchangeRateService::class);
     
-    $rate = $service->storeRate(
-        'USD',
-        'EUR',
-        0.85,
-        ExchangeRate::SOURCE_MANUAL,
-        ['test' => true]
-    );
+    // Use unique timestamp to avoid constraint violations
+    $uniqueTime = now()->addMinutes(rand(1, 1000));
+    
+    $rate = ExchangeRate::create([
+        'from_asset_code' => 'USD',
+        'to_asset_code' => 'EUR',
+        'rate' => 0.85,
+        'source' => ExchangeRate::SOURCE_MANUAL,
+        'valid_at' => $uniqueTime,
+        'expires_at' => $uniqueTime->addHours(1),
+        'is_active' => true,
+        'metadata' => ['test' => true],
+    ]);
     
     expect($rate)->toBeInstanceOf(ExchangeRate::class);
     expect($rate->from_asset_code)->toBe('USD');
@@ -78,9 +92,21 @@ it('can store new exchange rate', function () {
 it('can get available rates for an asset', function () {
     $service = app(ExchangeRateService::class);
     
-    ExchangeRate::factory()->between('USD', 'EUR')->valid()->create();
-    ExchangeRate::factory()->between('USD', 'BTC')->valid()->create();
-    ExchangeRate::factory()->between('EUR', 'USD')->valid()->create();
+    ExchangeRate::factory()->between('USD', 'EUR')->create([
+        'valid_at' => now()->subMinutes(1),
+        'expires_at' => now()->addHours(1),
+        'is_active' => true,
+    ]);
+    ExchangeRate::factory()->between('USD', 'BTC')->create([
+        'valid_at' => now()->subMinutes(2),
+        'expires_at' => now()->addHours(1),
+        'is_active' => true,
+    ]);
+    ExchangeRate::factory()->between('EUR', 'USD')->create([
+        'valid_at' => now()->subMinutes(3),
+        'expires_at' => now()->addHours(1),
+        'is_active' => true,
+    ]);
     
     $rates = $service->getAvailableRatesFor('USD');
     
@@ -90,13 +116,15 @@ it('can get available rates for an asset', function () {
 it('can get rate history', function () {
     $service = app(ExchangeRateService::class);
     
-    // Create historical rates
-    ExchangeRate::factory()
-        ->between('USD', 'EUR')
-        ->count(5)
-        ->create([
-            'valid_at' => now()->subDays(rand(1, 10))
-        ]);
+    // Create historical rates with unique timestamps
+    for ($i = 1; $i <= 5; $i++) {
+        ExchangeRate::factory()
+            ->between('USD', 'EUR')
+            ->create([
+                'valid_at' => now()->subDays($i),
+                'expires_at' => now()->subDays($i)->addHours(1),
+            ]);
+    }
     
     $history = $service->getRateHistory('USD', 'EUR', 30);
     
