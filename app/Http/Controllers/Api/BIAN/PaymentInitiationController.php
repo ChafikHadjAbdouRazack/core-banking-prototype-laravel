@@ -6,7 +6,7 @@ namespace App\Http\Controllers\Api\BIAN;
 
 use App\Domain\Account\DataObjects\AccountUuid;
 use App\Domain\Account\DataObjects\Money;
-use App\Domain\Payment\Workflows\TransferWorkflow;
+use App\Domain\Asset\Workflows\AssetTransferWorkflow;
 use App\Http\Controllers\Controller;
 use App\Models\Account;
 use Illuminate\Http\JsonResponse;
@@ -71,8 +71,15 @@ class PaymentInitiationController extends Controller
             $money = new Money($validated['paymentAmount']);
 
             try {
-                $workflow = WorkflowStub::make(TransferWorkflow::class);
-                $workflow->start($fromUuid, $toUuid, $money);
+                $workflow = WorkflowStub::make(AssetTransferWorkflow::class);
+                $workflow->start(
+                    $fromUuid, 
+                    $toUuid, 
+                    'USD', // fromAssetCode
+                    'USD', // toAssetCode (same asset transfer)
+                    $money,
+                    $validated['paymentPurpose'] ?? 'BIAN Payment Initiation'
+                );
                 $status = 'completed';
             } catch (\Exception $e) {
                 $status = 'failed';

@@ -108,6 +108,11 @@ return [
         'asset_balance_added'           => App\Domain\Account\Events\AssetBalanceAdded::class,
         'asset_balance_subtracted'      => App\Domain\Account\Events\AssetBalanceSubtracted::class,
         'asset_transferred'             => App\Domain\Account\Events\AssetTransferred::class,
+        'asset_transaction_created'     => App\Domain\Asset\Events\AssetTransactionCreated::class,
+        'asset_transfer_initiated'      => App\Domain\Asset\Events\AssetTransferInitiated::class,
+        'asset_transfer_completed'      => App\Domain\Asset\Events\AssetTransferCompleted::class,
+        'asset_transfer_failed'         => App\Domain\Asset\Events\AssetTransferFailed::class,
+        'exchange_rate_updated'         => App\Domain\Asset\Events\ExchangeRateUpdated::class,
     ],
 
     /*
