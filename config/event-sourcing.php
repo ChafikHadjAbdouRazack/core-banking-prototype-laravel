@@ -105,6 +105,9 @@ return [
         'money_transferred'             => App\Domain\Account\Events\MoneyTransferred::class,
         'transaction_threshold_reached' => App\Domain\Account\Events\TransactionThresholdReached::class,
         'transfer_threshold_reached'    => App\Domain\Account\Events\TransferThresholdReached::class,
+        'asset_balance_added'           => App\Domain\Account\Events\AssetBalanceAdded::class,
+        'asset_balance_subtracted'      => App\Domain\Account\Events\AssetBalanceSubtracted::class,
+        'asset_transferred'             => App\Domain\Account\Events\AssetTransferred::class,
     ],
 
     /*

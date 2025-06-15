@@ -92,7 +92,7 @@ class TransactionController extends Controller
         return response()->json([
             'data' => [
                 'account_uuid' => $updatedAccount->uuid,
-                'new_balance' => $updatedAccount->balance,
+                'new_balance' => $updatedAccount->getBalance('USD'),
                 'amount_deposited' => $validated['amount'],
                 'transaction_type' => 'deposit',
             ],
@@ -164,11 +164,14 @@ class TransactionController extends Controller
             ], 422);
         }
 
-        if ($account->balance < $validated['amount']) {
+        // For backward compatibility, use USD balance
+        $usdBalance = $account->getBalance('USD');
+        
+        if ($usdBalance < $validated['amount']) {
             return response()->json([
                 'message' => 'Insufficient funds',
                 'error' => 'INSUFFICIENT_FUNDS',
-                'current_balance' => $account->balance,
+                'current_balance' => $usdBalance,
                 'requested_amount' => $validated['amount'],
             ], 422);
         }
@@ -191,7 +194,7 @@ class TransactionController extends Controller
         return response()->json([
             'data' => [
                 'account_uuid' => $updatedAccount->uuid,
-                'new_balance' => $updatedAccount->balance,
+                'new_balance' => $updatedAccount->getBalance('USD'),
                 'amount_withdrawn' => $validated['amount'],
                 'transaction_type' => 'withdrawal',
             ],
