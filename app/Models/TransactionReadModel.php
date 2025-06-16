@@ -58,6 +58,12 @@ class TransactionReadModel extends Model
     public const STATUS_REVERSED = 'reversed';
 
     /**
+     * Transaction directions
+     */
+    public const DIRECTION_CREDIT = 'credit';
+    public const DIRECTION_DEBIT = 'debit';
+
+    /**
      * Get the account that owns the transaction
      */
     public function account(): BelongsTo
@@ -79,6 +85,14 @@ class TransactionReadModel extends Model
     public function initiator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'initiated_by', 'uuid');
+    }
+
+    /**
+     * Get the related account (for transfers)
+     */
+    public function relatedAccount(): BelongsTo
+    {
+        return $this->belongsTo(Account::class, 'related_account_uuid', 'uuid');
     }
 
     /**
@@ -126,8 +140,25 @@ class TransactionReadModel extends Model
      */
     public function getFormattedAmount(): string
     {
-        $amount = $this->amount / 100;
-        return number_format($amount, 2) . ' ' . $this->asset_code;
+        // Get asset precision, default to 2 for fiat currencies
+        $precision = $this->asset ? $this->asset->precision : 2;
+        $divisor = pow(10, $precision);
+        
+        $amount = $this->amount / $divisor;
+        
+        // Add currency symbol for common currencies
+        $symbol = match ($this->asset_code) {
+            'USD' => '$',
+            'EUR' => '€',
+            'GBP' => '£',
+            default => ''
+        };
+        
+        if ($symbol) {
+            return $symbol . number_format($amount, $precision);
+        }
+        
+        return number_format($amount, $precision) . ' ' . $this->asset_code;
     }
 
     /**
@@ -136,8 +167,32 @@ class TransactionReadModel extends Model
     public function getDirection(): string
     {
         return in_array($this->type, [self::TYPE_DEPOSIT, self::TYPE_TRANSFER_IN]) 
-            ? 'credit' 
-            : 'debit';
+            ? self::DIRECTION_CREDIT 
+            : self::DIRECTION_DEBIT;
+    }
+
+    /**
+     * Check if transaction is a credit
+     */
+    public function isCredit(): bool
+    {
+        return $this->getDirection() === self::DIRECTION_CREDIT;
+    }
+
+    /**
+     * Check if transaction is a debit
+     */
+    public function isDebit(): bool
+    {
+        return $this->getDirection() === self::DIRECTION_DEBIT;
+    }
+
+    /**
+     * Check if transaction involves cross-asset conversion
+     */
+    public function isCrossAsset(): bool
+    {
+        return !is_null($this->reference_currency) && $this->reference_currency !== $this->asset_code;
     }
 
     /**
@@ -186,6 +241,46 @@ class TransactionReadModel extends Model
     public function scopeDateRange($query, $from, $to)
     {
         return $query->whereBetween('processed_at', [$from, $to]);
+    }
+
+    /**
+     * Scope for specific asset
+     */
+    public function scopeForAsset($query, string $assetCode)
+    {
+        return $query->where('asset_code', $assetCode);
+    }
+
+    /**
+     * Scope for specific status
+     */
+    public function scopeWithStatus($query, string $status)
+    {
+        return $query->where('status', $status);
+    }
+
+    /**
+     * Scope for credit transactions
+     */
+    public function scopeCredits($query)
+    {
+        return $query->whereIn('type', [self::TYPE_DEPOSIT, self::TYPE_TRANSFER_IN]);
+    }
+
+    /**
+     * Scope for debit transactions
+     */
+    public function scopeDebits($query)
+    {
+        return $query->whereIn('type', [self::TYPE_WITHDRAWAL, self::TYPE_TRANSFER_OUT]);
+    }
+
+    /**
+     * Scope for transfer transactions
+     */
+    public function scopeTransfers($query)
+    {
+        return $query->whereIn('type', [self::TYPE_TRANSFER_IN, self::TYPE_TRANSFER_OUT]);
     }
 
     /**

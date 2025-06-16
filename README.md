@@ -23,23 +23,24 @@ FinAegis is building the foundation for next-generation financial products that 
 - **Real-time Processing**: High-performance transaction processing (10,000+ TPS)
 - **Regulatory Compliance**: Built-in audit trails and compliance features
 
-### Multi-Asset Capabilities (Coming Soon)
+### Multi-Asset Capabilities (✅ Implemented)
 - **Asset-Agnostic Ledger**: Support for fiat, crypto, commodities, and custom assets
 - **Multi-Currency Operations**: Seamless cross-currency transactions with real-time rates
 - **Exchange Rate Management**: Pluggable rate providers with caching
-- **Composite Assets**: Support for baskets and complex financial instruments
+- **Account Balance System**: Per-asset balance tracking with automatic USD creation
 
-### Decentralized Architecture (Roadmap)
-- **Multi-Custodian Support**: Funds distributed across multiple financial institutions
-- **Custodian Abstraction**: Unified interface for banks, payment providers, and exchanges
-- **Automated Reconciliation**: Real-time balance verification across custodians
-- **Risk Distribution**: Configurable allocation strategies
+### Decentralized Architecture (🔧 In Development)
+- **Custodian Abstraction**: Unified interface implemented (MockBankConnector available)
+- **Multi-Custodian Support**: Foundation laid for multiple financial institutions
+- **Automated Reconciliation**: Framework in place for real-time balance verification
+- **Risk Distribution**: Configurable allocation strategies (planned)
 
-### Democratic Governance (Future)
-- **User Voting System**: On-chain style governance for platform decisions
-- **Configurable Voting Power**: One-user-one-vote or stake-weighted voting
-- **Automated Execution**: Poll results trigger system workflows
+### Democratic Governance (✅ Implemented)
+- **User Voting System**: Complete polling system for platform decisions
+- **Configurable Voting Power**: One-user-one-vote and asset-weighted voting strategies
+- **Automated Execution**: Poll results trigger system workflows (AddAssetWorkflow, etc.)
 - **Transparency**: Complete audit trail of all governance actions
+- **Admin Interface**: Full poll management and vote monitoring in admin dashboard
 
 ## 🚀 Quick Start
 
@@ -102,26 +103,46 @@ app/Domain/
 │   ├── Events/        # Domain events
 │   ├── Workflows/     # Business process workflows
 │   ├── Activities/    # Individual workflow steps
-│   ├── Projectors/    # Read model builders
-│   └── Services/      # Domain services
-└── Payment/           # Payment processing domain
-    ├── Services/      # Payment services
-    └── Workflows/     # Payment workflows
+│   ├── Projectors/    # Read model builders (including TransactionProjector)
+│   └── Services/      # Domain services and cache layers
+├── Asset/            # Multi-asset management
+│   ├── Models/       # Asset and ExchangeRate models
+│   ├── Aggregates/   # Asset transaction aggregates
+│   ├── Events/       # Asset-specific events
+│   ├── Workflows/    # Asset deposit/withdraw/transfer workflows
+│   └── Services/     # Exchange rate services
+├── Exchange/         # Exchange rate providers
+│   ├── Providers/    # Rate provider implementations
+│   └── Services/     # Enhanced exchange rate services
+├── Custodian/        # External custodian integration
+│   ├── Connectors/   # Custodian connector implementations
+│   └── Services/     # Custodian registry and management
+├── Governance/       # Democratic governance system
+│   ├── Models/       # Poll and Vote models
+│   ├── Strategies/   # Voting power strategies
+│   ├── Workflows/    # Governance execution workflows
+│   └── Services/     # Governance services
+└── Payment/          # Payment processing domain
+    ├── Services/     # Payment services
+    └── Workflows/    # Payment workflows
 ```
 
 ## 💼 Key Features
 
 ### Account Management
 - Account creation, modification, and closure
+- Multi-asset balance tracking per account
 - Balance inquiries with audit trails
-- Account freezing/unfreezing for compliance (fully implemented)
-- Multi-currency support (planned)
+- Account freezing/unfreezing for compliance
+- Real-time balance calculations with caching
 
 ### Transaction Processing
-- Real-time money deposits and withdrawals
+- Real-time money deposits and withdrawals (single-asset and multi-asset)
+- Transaction read model with comprehensive history
 - Transaction reversal with compensation
 - Automated threshold monitoring
 - Quantum-resistant transaction hashing
+- Transaction projector for event-sourced data
 
 ### Transfer Operations
 - Peer-to-peer transfers with saga pattern
@@ -144,16 +165,16 @@ app/Domain/
 
 ### Admin Dashboard
 - Comprehensive admin interface powered by Filament v3
-- Real-time account management and monitoring
-- Transaction history and analytics
-- Account operations (deposit, withdraw, freeze/unfreeze)
-- Advanced filtering and search capabilities
-- Bulk operations support for account management
-- Account statistics and turnover monitoring
-- User management interface
-- Role-based access control
-- CSV/XLSX export for accounts, transactions, and users
-- Webhook configuration and monitoring
+- **Account Management**: Real-time operations (deposit, withdraw, freeze/unfreeze)
+- **Transaction History**: Complete transaction monitoring with projector-based data
+- **Multi-Asset Support**: Asset management (CRUD) and exchange rate monitoring
+- **Governance Interface**: Poll creation, vote tracking, and result management
+- **Analytics Widgets**: Account balance trends, transaction volume, cash flow analysis
+- **Advanced Filtering**: By status, balance, date range, asset type, transaction type
+- **Bulk Operations**: Freeze/unfreeze accounts, update exchange rates
+- **Export Functionality**: CSV/XLSX export for accounts, transactions, assets
+- **Webhook Management**: Configuration, monitoring, and delivery tracking
+- **User Management**: Complete user administration with role-based access
 
 ## 🔧 Usage Examples
 
@@ -281,12 +302,36 @@ The platform includes a powerful admin dashboard built with Filament:
 The platform provides RESTful APIs for all banking operations:
 
 ```http
-POST   /api/accounts              # Create account
-GET    /api/accounts/{uuid}       # Get account details
-POST   /api/accounts/{uuid}/deposit    # Deposit money
-POST   /api/accounts/{uuid}/withdraw   # Withdraw money
-POST   /api/transfers              # Create transfer
-GET    /api/accounts/{uuid}/balance    # Balance inquiry
+# Account Management
+POST   /api/accounts                    # Create account
+GET    /api/accounts/{uuid}             # Get account details
+DELETE /api/accounts/{uuid}             # Delete account
+POST   /api/accounts/{uuid}/freeze      # Freeze account
+POST   /api/accounts/{uuid}/unfreeze    # Unfreeze account
+
+# Transaction Operations
+POST   /api/accounts/{uuid}/deposit     # Deposit money
+POST   /api/accounts/{uuid}/withdraw    # Withdraw money
+GET    /api/accounts/{uuid}/transactions # Transaction history
+POST   /api/transfers                   # Create transfer
+GET    /api/transfers/{uuid}            # Get transfer details
+
+# Multi-Asset Support
+GET    /api/assets                      # List all assets
+GET    /api/assets/{code}               # Get asset details
+GET    /api/accounts/{uuid}/balances    # Multi-asset balances
+GET    /api/exchange-rates              # Current exchange rates
+POST   /api/exchange-rates/convert      # Currency conversion
+
+# Governance APIs
+GET    /api/polls                       # List polls
+POST   /api/polls                       # Create poll
+POST   /api/polls/{id}/vote             # Submit vote
+GET    /api/polls/{id}/results          # View results
+
+# BIAN-Compliant APIs
+POST   /api/bian/current-account        # BIAN current account
+POST   /api/bian/payment-initiation     # BIAN payment processing
 ```
 
 ## 🔒 Security
@@ -388,25 +433,32 @@ We welcome contributions from the community, including **AI coding assistants an
 
 See our comprehensive [Development Roadmap](ROADMAP.md) for detailed implementation phases.
 
-### Current Focus: Multi-Asset Platform Foundation (Q1-Q2 2025)
-- [ ] Asset-centric ledger architecture
-- [ ] Multi-currency account balances
-- [ ] Exchange rate service
-- [ ] Custodian abstraction layer
-- [ ] Governance polling engine
+### Current Status: Multi-Asset Platform Complete (Q4 2024 - Q1 2025)
+- [x] **Asset-centric ledger architecture**: Complete with Asset and AccountBalance models
+- [x] **Multi-currency account balances**: Per-asset balance tracking implemented
+- [x] **Exchange rate service**: Multiple providers with caching and validation
+- [x] **Custodian abstraction layer**: Interface and mock implementation ready
+- [x] **Governance polling engine**: Full voting system with configurable strategies
+- [x] **Transaction read model**: Event-sourced transaction history
+- [x] **Admin dashboard**: Complete platform management interface
 
 ### Recently Completed
-- [x] Export functionality (CSV/XLSX)
-- [x] Webhook system for real-time events
-- [x] Enhanced analytics dashboard
-- [x] System health monitoring
+- [x] **Phase 1-3**: Multi-asset foundation and platform integration
+- [x] **Transaction Read Model**: Event-sourced transaction history with projector
+- [x] **Governance System**: Complete polling and voting system with admin interface
+- [x] **Asset Management**: Full asset CRUD with exchange rate management
+- [x] **Export functionality**: CSV/XLSX for all major entities
+- [x] **Webhook system**: Real-time event notifications with HMAC security
+- [x] **Enhanced analytics dashboard**: Charts, widgets, and real-time statistics
+- [x] **System health monitoring**: Performance metrics and queue monitoring
 
-### Future Milestones
-- [ ] Production custodian integrations (Paysera, Santander)
-- [ ] Democratic governance implementation
-- [ ] Composite asset support
-- [ ] Advanced fraud detection with ML
-- [ ] Mobile SDK
+### Next Phase: Production Integrations (Q1-Q2 2025)
+- [ ] **Production custodian integrations**: Paysera, Santander connectors
+- [ ] **Advanced asset types**: Composite assets and basket instruments
+- [ ] **Enhanced compliance**: Automated regulatory reporting
+- [ ] **Advanced fraud detection**: ML-based risk scoring
+- [ ] **Mobile SDK**: Native mobile development kit
+- [ ] **Performance optimization**: Microservices architecture readiness
 
 ## 🆘 Support
 

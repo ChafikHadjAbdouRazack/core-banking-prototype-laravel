@@ -9,7 +9,7 @@ on:
 jobs:
   gitleaks:
     name: Secret Detection
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:

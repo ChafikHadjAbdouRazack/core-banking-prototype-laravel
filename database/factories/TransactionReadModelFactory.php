@@ -41,6 +41,7 @@ class TransactionReadModelFactory extends Factory
             'reference_amount' => null,
             'description' => $this->generateDescription($type),
             'related_transaction_uuid' => null,
+            'related_account_uuid' => null,
             'initiated_by' => User::factory(),
             'status' => $status,
             'metadata' => [],
