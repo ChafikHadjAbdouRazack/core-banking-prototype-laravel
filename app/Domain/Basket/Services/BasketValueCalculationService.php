@@ -135,7 +135,7 @@ class BasketValueCalculationService
             throw new \Exception("No exchange rate available for {$assetCode} to USD");
         }
 
-        return $rate->rate;
+        return (float) $rate->rate;
     }
 
     /**

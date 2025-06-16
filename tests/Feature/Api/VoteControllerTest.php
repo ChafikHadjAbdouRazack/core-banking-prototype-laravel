@@ -1,8 +1,8 @@
 <?php
 
-use App\Models\Poll;
+use App\Domain\Governance\Models\Poll;
 use App\Models\User;
-use App\Models\Vote;
+use App\Domain\Governance\Models\Vote;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\Sanctum;
 
