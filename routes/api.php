@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AccountController;
 use App\Http\Controllers\Api\AccountBalanceController;
 use App\Http\Controllers\Api\AssetController;
 use App\Http\Controllers\Api\BalanceController;
+use App\Http\Controllers\Api\CustodianController;
 use App\Http\Controllers\Api\ExchangeRateController;
 use App\Http\Controllers\Api\TransactionController;
 use App\Http\Controllers\Api\TransferController;
@@ -39,6 +40,16 @@ Route::middleware('auth:sanctum')->group(function () {
     // Multi-asset balance endpoints
     Route::get('/accounts/{uuid}/balances', [AccountBalanceController::class, 'show']);
     Route::get('/balances', [AccountBalanceController::class, 'index']);
+    
+    // Custodian integration endpoints
+    Route::prefix('custodians')->group(function () {
+        Route::get('/', [CustodianController::class, 'index']);
+        Route::get('/{custodian}/account-info', [CustodianController::class, 'accountInfo']);
+        Route::get('/{custodian}/balance', [CustodianController::class, 'balance']);
+        Route::post('/{custodian}/transfer', [CustodianController::class, 'transfer']);
+        Route::get('/{custodian}/transactions', [CustodianController::class, 'transactionHistory']);
+        Route::get('/{custodian}/transactions/{transactionId}', [CustodianController::class, 'transactionStatus']);
+    });
 });
 
 // Public asset and exchange rate endpoints (no auth required for read-only access)
