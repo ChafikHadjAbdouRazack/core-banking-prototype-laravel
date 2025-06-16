@@ -251,10 +251,10 @@ class BasketAccountService
      */
     public function getBasketHoldingsValue(Account $account): array
     {
+        // Get balances for assets that have corresponding basket assets
+        $basketCodes = BasketAsset::pluck('code');
         $basketBalances = $account->balances()
-            ->whereHas('asset', function ($query) {
-                $query->where('is_basket', true);
-            })
+            ->whereIn('asset_code', $basketCodes)
             ->get();
 
         $holdings = [];
