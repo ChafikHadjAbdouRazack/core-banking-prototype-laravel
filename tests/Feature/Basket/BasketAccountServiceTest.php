@@ -31,7 +31,7 @@ class BasketAccountServiceTest extends TestCase
         
         // Create test user and account
         $user = User::factory()->create();
-        $this->account = Account::factory()->create(['user_uuid' => $user->uuid]);
+        $this->account = Account::factory()->zeroBalance()->create(['user_uuid' => $user->uuid]);
         
         // Create test assets (use firstOrCreate to avoid conflicts)
         Asset::firstOrCreate(['code' => 'USD'], ['name' => 'US Dollar', 'type' => 'fiat', 'precision' => 2, 'is_active' => true]);
@@ -150,7 +150,7 @@ class BasketAccountServiceTest extends TestCase
         $this->account->addBalance('GBP', 2500);  // 25.00 GBP
         
         $this->expectException(\Exception::class);
-        $this->expectExceptionMessage('Insufficient balance for component USD');
+        $this->expectExceptionMessage('Insufficient USD balance');
         
         $this->service->composeBasket($this->account, 'STABLE_BASKET', 5000);
     }
