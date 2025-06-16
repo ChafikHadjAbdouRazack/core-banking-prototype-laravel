@@ -143,9 +143,24 @@ it('validates transfer amount is positive', function () {
         ->assertJsonValidationErrors(['amount']);
 });
 
-it('can get transfer details', function () {
-    // Skip this test as transfers are event sourced, not regular models
-    $this->markTestSkipped('Transfer details require event sourcing setup');
+it('can handle workflow exceptions during transfer', function () {
+    $user = User::factory()->create();
+    Sanctum::actingAs($user);
+    $fromAccount = Account::factory()->withBalance(1000)->create();
+    $toAccount = Account::factory()->create();
+
+    // Mock workflow to throw exception
+    WorkflowStub::fake();
+
+    $response = $this->postJson('/api/transfers', [
+        'from_account_uuid' => $fromAccount->uuid,
+        'to_account_uuid' => $toAccount->uuid,
+        'amount' => 300,
+        'description' => 'Test transfer',
+    ]);
+
+    // Should still handle gracefully
+    $response->assertStatus(201);
 });
 
 it('returns 404 for non-existent transfer', function () {

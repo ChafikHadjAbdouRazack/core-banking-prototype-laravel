@@ -51,3 +51,13 @@ it('has correct casts', function () {
     expect($casts)->toHaveKey('password');
     expect($casts['password'])->toBe('hashed');
 });
+
+it('can check if user can access panel', function () {
+    $adminUser = User::factory()->create(['role' => 'admin']);
+    $regularUser = User::factory()->create(['role' => 'user']);
+    
+    $panel = app(\Filament\Panel::class);
+    
+    expect($adminUser->canAccessPanel($panel))->toBeTrue();
+    expect($regularUser->canAccessPanel($panel))->toBeFalse();
+});

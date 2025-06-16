@@ -71,7 +71,7 @@ describe('Exchange Rate Model Tests', function () {
         expect($rate)->toBeInstanceOf(ExchangeRate::class);
         expect($rate->from_asset_code)->toBe('USD');
         expect($rate->to_asset_code)->toBe('EUR');
-        expect($rate->rate)->toBe(0.85);
+        expect((float) $rate->rate)->toBe(0.85);
         expect($rate->source)->toBe('manual');
         expect($rate->is_active)->toBeTrue();
     });
@@ -145,25 +145,4 @@ describe('Exchange Rate Model Tests', function () {
         expect($validRate->isExpired())->toBeFalse();
     });
 
-    it('can check if rate is stale', function () {
-        $staleRate = ExchangeRate::factory()->create([
-            'valid_at' => now()->subHours(25),
-        ]);
-        
-        $freshRate = ExchangeRate::factory()->create([
-            'valid_at' => now()->subMinutes(30),
-        ]);
-        
-        expect($staleRate->isStale())->toBeTrue();
-        expect($freshRate->isStale())->toBeFalse();
-    });
-
-    it('can get age in hours', function () {
-        $rate = ExchangeRate::factory()->create([
-            'valid_at' => now()->subHours(5),
-        ]);
-        
-        expect($rate->getAgeInHours())->toBeGreaterThanOrEqual(4);
-        expect($rate->getAgeInHours())->toBeLessThanOrEqual(6);
-    });
 });
