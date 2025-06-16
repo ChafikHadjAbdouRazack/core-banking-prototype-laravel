@@ -169,7 +169,7 @@ class BasketAccountServiceTest extends TestCase
             'rebalance_frequency' => 'never',
         ]);
         
-        Asset::factory()->create(['code' => 'CRYPTO_BASKET', 'name' => 'Crypto Basket', 'type' => 'basket']);
+        Asset::firstOrCreate(['code' => 'CRYPTO_BASKET'], ['name' => 'Crypto Basket', 'type' => 'custom', 'precision' => 4, 'is_active' => true]);
         
         $cryptoBasket->components()->create([
             'asset_code' => 'USD',
