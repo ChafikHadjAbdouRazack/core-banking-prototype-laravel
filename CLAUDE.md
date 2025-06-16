@@ -26,10 +26,10 @@ All contributions (human or AI-generated) must include:
 # Run specific test suites
 ./vendor/bin/pest tests/Domain/         # Domain layer tests
 ./vendor/bin/pest tests/Feature/        # Feature tests
-./vendor/bin/pest --coverage --min=40  # Run with coverage report (40% minimum)
+./vendor/bin/pest --coverage --min=50  # Run with coverage report (50% minimum)
 
 # Run tests in parallel with coverage
-./vendor/bin/pest --parallel --coverage --min=40
+./vendor/bin/pest --parallel --coverage --min=50
 
 # Run single test file
 ./vendor/bin/pest tests/Domain/Account/Aggregates/LedgerAggregateTest.php
@@ -52,11 +52,13 @@ The project includes comprehensive GitHub Actions workflows:
 # - Builds frontend assets
 # - Runs database migrations and seeders
 # - Executes all tests in parallel with 50% coverage requirement
+# - Uses self-hosted runners for improved performance
 # - Uploads coverage reports to Codecov
 
 # Security Workflow (.github/workflows/security.yml):
 # - Uses Gitleaks to scan for exposed secrets
 # - Scans entire git history for security vulnerabilities
+# - Uses self-hosted runners for improved performance
 # - Mandatory for all PRs to prevent secret leaks
 ```
 
@@ -145,6 +147,10 @@ php artisan view:clear
 # Replay events to projectors
 php artisan event-sourcing:replay AccountProjector
 php artisan event-sourcing:replay TurnoverProjector
+php artisan event-sourcing:replay TransactionProjector
+php artisan event-sourcing:replay AssetTransactionProjector
+php artisan event-sourcing:replay AssetTransferProjector
+php artisan event-sourcing:replay ExchangeRateProjector
 
 # Create snapshots
 php artisan snapshot:create
@@ -156,7 +162,11 @@ php artisan verify:transaction-hashes
 ## Architecture Overview
 
 ### Domain-Driven Design Structure
-- **Account Domain** (`app/Domain/Account/`): Core banking account management
+- **Account Domain** (`app/Domain/Account/`): Core banking account management with multi-asset support
+- **Asset Domain** (`app/Domain/Asset/`): Multi-asset ledger, exchange rates, and asset management
+- **Exchange Domain** (`app/Domain/Exchange/`): Exchange rate providers and currency conversion
+- **Custodian Domain** (`app/Domain/Custodian/`): External custodian integration framework
+- **Governance Domain** (`app/Domain/Governance/`): Democratic governance and polling system
 - **Payment Domain** (`app/Domain/Payment/`): Transfer and payment processing
 - Each domain has Aggregates, Events, Workflows, Activities, Projectors, Reactors, and Services
 
@@ -172,16 +182,19 @@ php artisan verify:transaction-hashes
 - **Schema Updates**: Turnover model now supports separate `debit` and `credit` fields for proper accounting
 
 ### Event Sourcing Architecture
-- **Aggregates**: `LedgerAggregate`, `TransactionAggregate`, `TransferAggregate`
-- **Events**: `AccountCreated`, `MoneyAdded`, `MoneySubtracted`, `MoneyTransferred`
-- **Projectors**: Build read models from events (`AccountProjector`, `TurnoverProjector`)
+- **Aggregates**: `LedgerAggregate`, `TransactionAggregate`, `TransferAggregate`, `AssetTransactionAggregate`, `AssetTransferAggregate`
+- **Events**: `AccountCreated`, `MoneyAdded`, `MoneySubtracted`, `MoneyTransferred`, `AssetBalanceAdded`, `AssetBalanceSubtracted`, `AssetTransferred`, `AssetTransactionCreated`, `AssetTransferInitiated/Completed/Failed`, `ExchangeRateUpdated`
+- **Projectors**: Build read models from events (`AccountProjector`, `TurnoverProjector`, `TransactionProjector`, `AssetTransactionProjector`, `AssetTransferProjector`, `ExchangeRateProjector`)
 - **Reactors**: Handle side effects (`SnapshotTransactionsReactor`, `SnapshotTransfersReactor`)
 
 ### Workflow Orchestration (Saga Pattern)
-- **Account Management**: `CreateAccountWorkflow`, `FreezeAccountWorkflow`, `DestroyAccountWorkflow`
+- **Account Management**: `CreateAccountWorkflow`, `FreezeAccountWorkflow`, `UnfreezeAccountWorkflow`, `DestroyAccountWorkflow`
 - **Transaction Processing**: `DepositAccountWorkflow`, `WithdrawAccountWorkflow`, `TransactionReversalWorkflow`
+- **Multi-Asset Operations**: `AssetDepositWorkflow`, `AssetWithdrawWorkflow`, `AssetTransferWorkflow`
 - **Transfer Operations**: `TransferWorkflow`, `BulkTransferWorkflow` (with compensation)
 - **System Operations**: `BalanceInquiryWorkflow`, `AccountValidationWorkflow`, `BatchProcessingWorkflow`
+- **Custodian Integration**: `CustodianTransferWorkflow` for external custodian operations
+- **Governance Operations**: `AddAssetWorkflow`, `FeatureToggleWorkflow`, `UpdateConfigurationWorkflow`
 - **Enhanced Validation**: Comprehensive KYC, address verification, identity checks, and compliance screening
 - **Batch Processing**: Daily turnover calculation, statement generation, interest processing, compliance checks, regulatory reporting
 
@@ -201,23 +214,30 @@ Events are processed through separate queues:
 - **Compliance monitoring**: Automated detection of suspicious patterns, sanctions screening, and regulatory compliance
 
 ### Admin Dashboard (Filament)
-- **Account Management**: Full CRUD operations with real-time balance updates
-- **Transaction Monitoring**: View transaction history with advanced filtering
-- **Bulk Operations**: Freeze/unfreeze multiple accounts simultaneously
-- **Real-time Statistics**: Account overview widgets with key metrics
-- **Security**: Role-based access control for admin operations
-- **Enhanced Analytics**:
+- **Account Management**: Full CRUD operations with real-time multi-asset balance updates
+- **Transaction History**: Enhanced event-sourced transaction API with direct event store querying
+- **Asset Management**: Asset CRUD with type filtering, precision validation, and metadata management
+- **Exchange Rate Monitoring**: Real-time rate tracking with age indicators and bulk operations
+- **Governance Interface**: Poll management, vote tracking, and governance analytics
+- **Bulk Operations**: Freeze/unfreeze accounts, update exchange rates, activate/deactivate assets
+- **Real-time Statistics**: 
+  - **Account Widgets**: Balance trends, growth metrics, and account overview
+  - **Transaction Widgets**: Daily volume, transaction type distribution, net cash flow
+  - **Asset Widgets**: Asset distribution, exchange rate statistics
+  - **System Health**: Real-time monitoring of services, cache, queues, and system performance
+- **Advanced Analytics**:
   - **Balance Trends**: Track total and average balance over time with configurable periods
-  - **Transaction Volume**: Analyze deposits, withdrawals, and transfers with bar charts
+  - **Transaction Volume**: Analyze deposits, withdrawals, and transfers with interactive charts
   - **Cash Flow Analysis**: Monitor debit/credit flows with net calculations
   - **Growth Metrics**: Track new account creation and cumulative growth
-  - **System Health**: Real-time monitoring of services, cache, and queues
-- **Export Functionality**: Export accounts, transactions, and users to CSV/XLSX formats
+  - **Governance Analytics**: Poll activity, voting patterns, and governance statistics
+- **Export Functionality**: Export accounts, transactions, assets, exchange rates, and users to CSV/XLSX formats
 - **Webhook Management**: Configure and monitor webhook endpoints for real-time event notifications
+- **Search & Filtering**: Advanced search across all entities with multiple filter criteria
 
-## Recent Improvements
+## Implementation Phases (All Completed)
 
-### Phase 1: Multi-Asset Foundation Implementation (Merged)
+### Phase 1: Multi-Asset Foundation Implementation ✅ Completed
 - **Asset Domain Structure**:
   - Created comprehensive Asset model supporting fiat, crypto, and commodity types
   - Implemented asset metadata storage for extensibility
@@ -247,449 +267,37 @@ Events are processed through separate queues:
   - Fixed account factory to create USD balances automatically
   - All existing tests pass without modification
 
-### Phase 2: Exchange Rates and Multi-Asset Transactions (Current Branch: feature/phase2-exchange-rates)
+### Phase 2: Exchange Rates and Multi-Asset Transactions ✅ Completed
+- **Exchange Rate Management**: ExchangeRate model with validation, provider support, and caching
+- **Multi-Asset Transaction Engine**: Asset-aware events, aggregates, and projectors
+- **Enhanced Workflow System**: AssetDepositWorkflow, AssetWithdrawWorkflow, AssetTransferWorkflow with compensation
+- **API Layer**: REST APIs for exchange rates, currency conversion, and asset transfers
+- **Database Schema**: exchange_rates table with comprehensive indexing and constraints
+- **Testing**: Complete test coverage for all asset and exchange rate features
 
-- **Exchange Rate Management**:
-  - Created ExchangeRate model with validation, expiration, and source tracking
-  - Implemented ExchangeRateService with caching and provider support
-  - Added support for fiat, crypto, and commodity rate providers
-  - Implemented rate history tracking and stale rate refreshing
-  - Added identity rates for same-asset conversions
-
-- **Multi-Asset Transaction Engine**:
-  - Created AssetTransactionCreated, AssetTransferInitiated/Completed/Failed events
-  - Implemented AssetTransactionAggregate and AssetTransferAggregate for event sourcing
-  - Added projectors for asset events (AssetTransactionProjector, AssetTransferProjector, ExchangeRateProjector)
-  - Built comprehensive event sourcing infrastructure for multi-asset operations
-
-- **Enhanced Workflow System**:
-  - Created AssetDepositWorkflow and AssetWithdrawWorkflow for single asset operations
-  - Implemented AssetTransferWorkflow with cross-asset support and compensation logic
-  - Added activities: DepositAssetActivity, WithdrawAssetActivity, InitiateAssetTransferActivity
-  - Integrated ValidateExchangeRateActivity for cross-asset transfers
-  - Built CompleteAssetTransferActivity and FailAssetTransferActivity for saga completion
-
-- **API and Controller Updates**:
-  - Updated PaymentInitiationController to use AssetTransferWorkflow
-  - Maintained BIAN compliance while adding multi-asset support
-  - Enhanced error handling and status reporting
-  - All existing API endpoints remain backward compatible
-
-- **Database Schema Enhancements**:
-  - Added exchange_rates table with comprehensive indexing
-  - Implemented foreign key constraints to assets table
-  - Added rate source tracking, expiration, and metadata support
-  - Created unique constraints for rate pairs and time validity
-
-- **Factory and Testing Infrastructure**:
-  - Created AssetFactory and ExchangeRateFactory with realistic test data
-  - Added comprehensive test coverage for new asset features
-  - Implemented proper factory states for different asset types
-  - Created test utilities for exchange rate scenarios
-
-- **Testing Infrastructure**:
-  - Comprehensive test coverage for Asset and AccountBalance models
-  - Full test suites for new aggregates
-  - Verified backward compatibility with existing test suite
-
-## Previous Improvements (Feature Branch: analytics-charts)
-
-### Enhanced Analytics Dashboard
-- **Chart.js Integration**: Leverages Filament's built-in Chart.js support for rich visualizations
-- **Real-time Updates**: All charts support configurable polling intervals (10s-60s)
-- **Interactive Filters**: Time-based filtering for different analysis periods
-- **Performance Optimized**: Efficient queries with proper indexing and caching
-
-### Analytics Widgets
-- **Account Balance Chart**:
-  - Dual-line chart showing total and average balance trends
-  - Time filters: 24h (hourly), 7d, 30d, 90d (daily intervals)
-  - Simulated historical data for demonstration
-  - Green/blue color scheme for visual distinction
-
-- **Transaction Volume Chart**:
-  - Bar chart with transaction type breakdown
-  - Separate bars for deposits, withdrawals, and transfers
-  - Zero-fill for complete time series visualization
-  - Automatic grouping based on selected period
-
-- **Turnover Flow Chart**:
-  - Combined bar and line chart for cash flow analysis
-  - Red bars for debits, green for credits
-  - Blue trend line showing net flow
-  - Monthly aggregation with 3-24 month views
-
-- **Account Growth Chart**:
-  - Dual-axis visualization for new vs. cumulative accounts
-  - Adaptive time grouping (daily/weekly/monthly)
-  - Growth rate insights for business metrics
-  - Historical comparison capabilities
-
-- **System Health Widget**:
-  - Real-time service monitoring (DB, Redis, Queues)
-  - Transaction processing rate per minute
-  - Cache hit rate with performance indicators
-  - Queue status with pending job counts
-  - Mini sparkline charts for trends
-
-## Multi-Asset Platform Implementation (Phases 1-2)
-
-### Phase 1: Multi-Asset Foundation
-- **Asset Domain**: Comprehensive asset management with support for fiat, crypto, and commodity assets
-- **Account Balance Structure**: Per-asset balance tracking with automatic USD creation for backward compatibility
-- **Database Schema**: Efficient asset and account_balances tables with proper indexing
-- **Event Sourcing Extensions**: Asset-specific events (AssetBalanceAdded, AssetBalanceSubtracted, AssetTransferred)
-- **Domain Services**: Asset management and validation services with comprehensive caching
-- **API Compatibility**: Maintained backward compatibility for existing account endpoints
-- **Test Coverage**: Comprehensive test suite covering all asset domain functionality
-
-### Phase 2: Exchange Rates and Cross-Asset Transactions
-- **Exchange Rate Management**: Real-time exchange rate storage with multiple provider support
-- **Rate Validation**: Active status checking, expiration handling, and age-based validation
-- **Cross-Asset Transactions**: Support for transfers between different asset types
-- **Event Sourcing**: Asset transaction and transfer aggregates with proper hash validation
-- **Cache Integration**: Exchange rate caching with TTL management and invalidation
-- **Workflow Orchestration**: Asset transfer workflows with compensation logic
-- **API Endpoints**: REST API for exchange rate management and asset transfers
-- **Security**: Quantum-resistant hash validation for all asset transactions
-
-### Technical Specifications
-- **Supported Assets**: USD, EUR, GBP (fiat), BTC, ETH (crypto), XAU, XAG (commodities)
-- **Exchange Rate Sources**: Manual, API, Oracle, Market data with metadata tracking
-- **Decimal Precision**: 10 decimal places for exchange rates, proper type casting
-- **Database Constraints**: Unique constraints for asset pairs and timestamps
-- **Backward Compatibility**: Existing account endpoints continue to work with USD balances
-- **Performance**: Efficient queries with proper indexing and caching strategies
-
-### Phase 3: Platform Integration and Admin Dashboard (Merged)
+### Phase 3: Platform Integration with Admin Dashboard and REST APIs ✅ Completed
 - **Filament Admin Resources**: Complete asset and exchange rate management interfaces
-  - **AssetResource**: Full CRUD operations with type filtering, precision validation, and metadata management
-  - **ExchangeRateResource**: Real-time monitoring with age tracking, status indicators, and bulk operations
-  - **Interactive Dashboards**: Color-coded status widgets and comprehensive data tables
-
 - **REST API Layer**: Production-ready APIs for external platform integration
-  - **Asset Management APIs**: Public endpoints for asset listing, details, and search functionality
-  - **Exchange Rate APIs**: Rate retrieval, currency conversion, and filtering with caching
-  - **Account Balance APIs**: Multi-asset balance queries with formatted output and statistics
-  - **Authentication**: Sanctum-based API authentication for protected endpoints
-
-- **Enhanced Admin Dashboard Features**:
-  - **Asset Management**: Create, edit, and manage asset types with precision and metadata support
-  - **Exchange Rate Monitoring**: Real-time rate tracking with age indicators and validation status
-  - **Dashboard Widgets**: Exchange rate statistics, asset distribution, and system health monitoring
-
-### Phase 6: Governance & Polling Engine (Current)
-- **Governance Domain Architecture**: Comprehensive polling and voting system
-  - **Poll Management**: Support for multiple poll types (yes/no, single choice, multiple choice, weighted, ranked choice)
-  - **Voting Power Strategies**: Pluggable voting power calculation (one-user-one-vote, asset-weighted)
-  - **Vote Integrity**: Cryptographic signature verification and tamper detection
-  - **Poll Lifecycle**: Draft → Active → Completed/Cancelled with automatic expiration handling
-
-- **REST API Layer**: Full governance API for poll management and voting
-  - **Poll Operations**: Create, activate, vote, and retrieve poll results
-  - **Vote Management**: User voting history, vote verification, and statistics
-  - **Voting Power**: Real-time voting power calculation and eligibility checks
-  - **Authentication**: Sanctum-based authentication for all governance operations
-
-- **Workflow Integration**: Automated execution of governance decisions
-  - **AddAssetWorkflow**: Automatically add new assets based on successful polls
-  - **FeatureToggleWorkflow**: Enable/disable platform features via governance
-  - **UpdateConfigurationWorkflow**: Modify system configurations through voting
-  - **Execution Conditions**: Participation thresholds and winning criteria validation
-
-- **Caching Architecture**: High-performance governance data access
-  - **Poll Caching**: Efficient caching of poll data, results, and user voting status
-  - **Voting Power Caching**: Cached voting power calculations for performance
-  - **Active Polls**: Dedicated caching for active polls with short TTL
-  - **Cache Invalidation**: Smart cache invalidation on vote casting and poll completion
-
-- **Security & Integrity**:
-  - **Vote Signatures**: HMAC-SHA256 signatures for vote integrity verification
-  - **Double Voting Prevention**: Database constraints and service-level checks
-  - **Configuration Limits**: Whitelist of allowed configuration changes via governance
-  - **Audit Logging**: Comprehensive logging of all governance actions and workflow executions
-
-- **Technical Implementation**:
-  - **Domain Models**: Poll and Vote models with comprehensive relationships and validations
-  - **Value Objects**: PollOption, PollResult for type safety and encapsulation
-  - **Service Layer**: GovernanceService for business logic and PollCacheService for performance
-  - **Factory Support**: Comprehensive test factories for Poll and Vote models
-  - **Test Coverage**: Full test suite covering domain logic, API endpoints, and workflow integration
-  - **Bulk Operations**: Mass update exchange rates, activate/deactivate assets
-  - **Data Export**: Export asset and exchange rate data for reporting
-
+- **Enhanced Admin Dashboard**: Asset management, exchange rate monitoring, dashboard widgets
 - **API Documentation**: OpenAPI/Swagger documentation for all endpoints
-  - **Endpoint Coverage**: Comprehensive documentation for all asset, exchange rate, and balance APIs
-  - **Request/Response Examples**: Detailed schemas with example payloads and responses
-  - **Authentication Guide**: Clear instructions for API key usage and authentication flows
-  - **Error Handling**: Standardized error responses with appropriate HTTP status codes
+- **Authentication**: Sanctum-based API authentication for protected endpoints
 
-- **Performance & Reliability**:
-  - **Caching Strategy**: Efficient caching for exchange rates and asset metadata
-  - **Query Optimization**: Optimized database queries with proper indexing
-  - **Error Handling**: Comprehensive error handling with user-friendly messages
-  - **Type Safety**: Strict type handling for Stringable objects and API responses
-  - **Test Coverage**: 100% test coverage for all new API endpoints and admin interfaces
+### Phase 4: Enhanced Transaction Architecture ✅ Completed
+- **Event-First Transaction History**: Direct querying of stored events for transaction data
+- **Multi-Asset Event Support**: Proper handling of AssetBalanceAdded, AssetTransferred events
+- **Filament Transaction Interface**: Transaction history with analytics, filtering, and export
+- **Multi-Asset Support**: Exchange rate tracking and cross-asset transaction support
 
-- **Governance Admin Dashboard**: Comprehensive Filament admin interfaces for governance management
-  - **Poll Management**: Full CRUD operations with poll lifecycle management
-    - **Comprehensive Forms**: Dynamic poll creation with reactive option management
-    - **Bulk Operations**: Mass activate, cancel, or complete multiple polls
-    - **Action Controls**: Context-sensitive actions based on poll status (activate drafts, complete expired polls)
-    - **Status Management**: Visual status indicators and smart filtering
-  - **Vote Monitoring**: Complete vote tracking and verification tools
-    - **Vote Verification**: Real-time signature verification and validity checking
-    - **Voting Analytics**: Voting power calculations and participation tracking
-    - **User Filtering**: Filter by poll, user, voting power, and validation status
-    - **Integrity Checks**: Bulk signature verification and tamper detection
-  - **Governance Analytics**: Real-time dashboard widgets and statistics
-    - **Statistics Overview**: Poll creation trends, voting activity, and participation rates
-    - **Activity Charts**: 30-day governance activity with polls created and votes cast
-    - **Performance Metrics**: Average participation rates and voting power distribution
-    - **Growth Tracking**: Month-over-month poll creation and vote activity trends
-  - **Advanced Features**:
-    - **Global Search**: Search across polls, votes, and users
-    - **Smart Filtering**: Pre-configured filters for active polls, recent votes, high voting power
-    - **Export Capabilities**: Export governance data for reporting and analysis
-    - **Audit Trail**: Complete tracking of poll actions and administrative changes
+### Phase 5: Governance & Polling Engine ✅ Completed
+- **Core Governance System**: Poll and Vote models with configurable voting strategies
+- **Workflow Integration**: Automated execution of governance decisions (AddAssetWorkflow, etc.)
+- **Admin Interface**: Complete poll management and vote tracking with analytics
+- **Security & Integrity**: Vote signatures, double voting prevention, audit logging
 
-### Phase 4: Custodian Integration (Current - feature/phase4-custodian-integration)
-- **Custodian Domain Structure**: Complete domain-driven design for custodian operations
-  - **Contracts**: ICustodianConnector interface defining standard custodian operations
-  - **Value Objects**: TransactionReceipt, AccountInfo, TransferRequest for type safety
-  - **Base Connector**: Abstract BaseCustodianConnector with common HTTP client logic
-  - **Mock Connector**: Full-featured MockBankConnector for testing and development
-
-- **Custodian Operations**:
-  - **Account Management**: Get account info, validate accounts, check balances
-  - **Transfer Operations**: Initiate transfers, verify completion, handle failures
-  - **Transaction History**: Query transaction history with pagination
-  - **Multi-Asset Support**: Full support for all asset types (fiat, crypto, commodities)
-
-- **Workflow Integration**:
-  - **CustodianTransferWorkflow**: Orchestrates transfers between internal and custodian accounts
-  - **Compensation Logic**: Automatic rollback on failures with saga pattern
-  - **Activity Pattern**: InitiateCustodianTransferActivity, VerifyCustodianTransferActivity
-  - **Bi-directional Transfers**: Support for both deposits and withdrawals
-
-- **Service Layer**:
-  - **CustodianRegistry**: Manages multiple custodian connectors dynamically
-  - **Service Provider**: Auto-registers custodians from configuration
-  - **Default Custodian**: Configurable default custodian selection
-  - **Asset Filtering**: Find custodians by supported assets
-
-- **REST API Endpoints**:
-  - `GET /api/custodians` - List available custodians
-  - `GET /api/custodians/{custodian}/account-info` - Get account information
-  - `GET /api/custodians/{custodian}/balance` - Check account balance
-  - `POST /api/custodians/{custodian}/transfer` - Transfer funds
-  - `GET /api/custodians/{custodian}/transactions` - Transaction history
-  - `GET /api/custodians/{custodian}/transactions/{id}` - Transaction status
-
-- **Configuration & Extensibility**:
-  - **Provider Configuration**: Easy addition of new custodian providers
-  - **Environment Variables**: Secure API key and credential management
-  - **Rate Limiting**: Configurable rate limits per custodian
-  - **Caching**: Optional caching for balance and account info queries
-  - **SSL Verification**: Configurable SSL verification per provider
-
-- **Testing Infrastructure**:
-  - **Comprehensive Unit Tests**: All value objects, connectors, and services tested
-  - **API Integration Tests**: Full coverage of custodian API endpoints
-  - **Mock Implementation**: Realistic mock bank with balance tracking
-  - **Type Safety**: Strict PHP type declarations throughout
-
-### Phase 5: Exchange Rate Providers (Current - feature/phase5-exchange-rate-providers)
-- **Provider Interface Design**: Comprehensive IExchangeRateProvider interface for multiple rate sources
-  - **Core Operations**: getRate(), getRates(), getAllRatesForBase() with error handling
-  - **Provider Capabilities**: getSupportedCurrencies(), supportsPair(), getCapabilities() with metadata
-  - **Provider Management**: isAvailable(), getPriority() for dynamic provider selection
-  - **Bulk Operations**: Efficient batch rate retrieval with parallel processing support
-
-- **Value Objects & Type Safety**: Immutable data structures for exchange rate operations
-  - **ExchangeRateQuote**: Comprehensive quote object with bid/ask spreads, volume, and metadata
-  - **RateProviderCapabilities**: Provider feature flags for real-time rates, historical data, and currencies
-  - **Exception Handling**: Specific RateProviderException and RateNotFoundException classes
-
-- **Provider Implementations**: Production-ready and testing providers
-  - **MockExchangeRateProvider**: Full-featured mock with realistic rates and identity handling
-  - **FixerIoProvider**: Real-world Fixer.io integration with API key authentication
-  - **BaseExchangeRateProvider**: Abstract base class with HTTP client, rate limiting, and caching
-
-- **Provider Registry System**: Dynamic provider management and aggregation
-  - **ExchangeRateProviderRegistry**: Centralized provider registry with priority-based selection
-  - **Provider Discovery**: Automatic provider registration from configuration
-  - **Fallback Logic**: Primary/fallback provider chains with error recovery
-  - **Rate Aggregation**: Multi-provider rate averaging and comparison
-
-- **Enhanced Exchange Rate Service**: Extended functionality with provider integration
-  - **EnhancedExchangeRateService**: Extends existing service with external provider support
-  - **Fallback Strategy**: Database-first with external provider fallback for stale rates
-  - **Rate Storage**: Automatic storage of external rates with bid/ask columns
-  - **Rate Validation**: Quote validation against historical data and spread thresholds
-
-- **REST API Endpoints**: Comprehensive API for provider management and rate operations
-  - **Provider Listing**: `GET /api/v1/exchange-providers` - List all available providers
-  - **Single Provider Rates**: `GET /api/v1/exchange-providers/{provider}/rate` - Get rate from specific provider
-  - **Rate Comparison**: `GET /api/v1/exchange-providers/compare` - Compare rates across providers
-  - **Aggregated Rates**: `GET /api/v1/exchange-providers/aggregated` - Get weighted average rates
-  - **Rate Refresh**: `POST /api/v1/exchange-providers/refresh` - Refresh specific currency pairs
-  - **Historical Data**: `GET /api/v1/exchange-providers/historical` - Get historical rate data
-  - **Rate Validation**: `POST /api/v1/exchange-providers/validate` - Validate quote data
-
-- **Configuration & Extensibility**: Flexible configuration system for multiple providers
-  - **Provider Configuration**: Comprehensive config/exchange.php with per-provider settings
-  - **Environment Variables**: Secure API key management and provider enablement
-  - **Rate Limiting**: Per-provider rate limiting with Redis-based counters
-  - **Caching Strategy**: Multi-level caching with provider-specific TTL settings
-  - **Auto-refresh Jobs**: Scheduled rate refresh with configurable frequencies
-
-- **Database Schema Enhancements**: Extended exchange_rates table for provider data
-  - **Bid/Ask Columns**: Added decimal(20,10) columns for spread tracking
-  - **Index Optimization**: Historical and active rate indexes for performance
-  - **Schema Safety**: Table existence checks for backward compatibility
-
-- **Job System**: Background processing for rate updates and maintenance
-  - **RefreshExchangeRatesJob**: Automated rate refresh from all providers
-  - **Scheduled Execution**: Configurable frequency (minute, hourly, daily)
-  - **Error Handling**: Comprehensive error tracking and retry logic
-  - **Batch Processing**: Efficient bulk rate updates with transaction safety
-
-- **Testing Infrastructure**: Comprehensive test coverage for all provider functionality
-  - **Unit Tests**: All value objects, providers, and services fully tested
-  - **Integration Tests**: API endpoints with authentication and validation
-  - **Mock Providers**: Realistic test data with configurable scenarios
-  - **Floating Point Precision**: Proper handling of decimal precision in tests
-
-- **Service Provider Integration**: Seamless Laravel service container integration
-  - **ExchangeRateProviderServiceProvider**: Automatic provider registration and configuration
-  - **Dependency Injection**: Proper container bindings for enhanced services
-  - **Bootstrap Process**: Provider discovery and default provider selection
-  - **Rate Scheduling**: Optional scheduled rate refresh configuration
-
-## Previous Improvements (Feature Branch: export-and-webhooks)
-
-### Export Functionality
-- **Account Export**: Export account data with formatted balances and status information
-- **Transaction Export**: Export transaction history with proper formatting and account relationships
-- **User Export**: Export user data with account counts and registration information
-- **Format Support**: Both CSV and XLSX formats supported out of the box
-- **Background Processing**: Large exports processed in background with notifications
-- **Custom Formatting**: Balance amounts converted from cents to dollars, status fields humanized
-
-### Webhook System
-- **Event-Driven Architecture**: Automatic webhook triggers for all major banking events
-- **Flexible Configuration**: Subscribe to specific events with custom headers and retry policies
-- **Security**: HMAC-SHA256 signature verification for webhook payloads
-- **Reliability**: Automatic retries with exponential backoff, delivery tracking
-- **Admin UI**: Full webhook management interface in Filament dashboard
-- **Event Types**:
-  - Account events: created, updated, frozen, unfrozen, closed
-  - Transaction events: created, reversed
-  - Transfer events: created, completed, failed
-  - Balance alerts: low balance, negative balance
-- **Monitoring**: Track delivery history, success rates, and failure reasons
-
-## Previous Improvements (Feature Branch: immediate-priority-fixes)
-
-### Schema Enhancements
-- **Turnover Model Refactoring**: Upgraded from simple `count`/`amount` fields to proper accounting with separate `debit` and `credit` fields
-- **Database Migration**: Added backward-compatible migration that preserves existing data while adding new fields
-- **Factory Updates**: Enhanced `TurnoverFactory` to generate realistic test data with proper debit/credit relationships
-
-### Enhanced Security & Monitoring
-- **Hash Validation Logging**: Implemented comprehensive error logging for transaction hash validation failures in `VerifyTransactionHashes` command
-- **Contextual Error Tracking**: Added structured logging with aggregate UUIDs, event details, and cryptographic context for security incidents
-
-### Advanced Workflow Activities
-- **Account Validation**: Replaced placeholder implementations with production-ready validation logic including:
-  - KYC document verification with field validation and email format checking
-  - Address verification with domain validation and temporary email detection
-  - Identity verification with name validation, email uniqueness checks, and fraud detection
-  - Compliance screening with sanctions list matching, domain risk assessment, and transaction pattern analysis
-
-- **Batch Processing**: Enhanced batch operations with realistic banking functionality:
-  - Daily turnover calculation with proper debit/credit accounting
-  - Account statement generation with transaction history and balance calculations
-  - Interest processing with daily compounding for savings accounts
-  - Compliance monitoring with suspicious activity detection and regulatory flagging
-  - Regulatory reporting including CTR, SAR candidates, and monthly summaries
-  - Archive management for transaction data retention
-
-### Testing Infrastructure
-- **Comprehensive Test Coverage**: Added full test suites for enhanced validation and batch processing activities
-- **Schema Migration Testing**: Verified backward compatibility and data integrity through turnover cache tests
-- **Reflection-based Testing**: Implemented thorough class structure validation following framework patterns
-
-### Documentation & Code Quality
-- **Enhanced Documentation**: Updated CLAUDE.md with detailed implementation notes and architectural improvements
-- **Code Comments**: Added comprehensive inline documentation for complex validation and compliance logic
-- **Type Safety**: Ensured proper type hints and return types throughout enhanced activities
-
-### Webhook Implementation Examples
-
-```php
-// Creating a webhook via admin UI or programmatically
-$webhook = Webhook::create([
-    'name' => 'Payment Gateway Webhook',
-    'url' => 'https://api.example.com/webhooks/banking',
-    'events' => ['account.created', 'transaction.created', 'transfer.completed'],
-    'headers' => ['X-API-Key' => 'your-api-key'],
-    'secret' => 'webhook-secret-key',
-    'retry_attempts' => 3,
-    'timeout_seconds' => 30,
-]);
-
-// Webhook payload example
-{
-    "event": "account.created",
-    "timestamp": "2025-01-14T10:30:00Z",
-    "account_uuid": "01234567-89ab-cdef-0123-456789abcdef",
-    "name": "John Doe Savings",
-    "user_uuid": "fedcba98-7654-3210-fedc-ba9876543210",
-    "balance": 0
-}
-
-// Verifying webhook signature in your application
-$signature = $_SERVER['HTTP_X_WEBHOOK_SIGNATURE'];
-$payload = file_get_contents('php://input');
-$expectedSignature = 'sha256=' . hash_hmac('sha256', $payload, $webhookSecret);
-
-if (!hash_equals($expectedSignature, $signature)) {
-    throw new UnauthorizedException('Invalid webhook signature');
-}
-```
-
-### Export Implementation Examples
-
-```php
-// Adding export to a Filament resource
-use App\Filament\Exports\AccountExporter;
-
-protected function getHeaderActions(): array
-{
-    return [
-        Actions\ExportAction::make()
-            ->exporter(AccountExporter::class)
-            ->label('Export Accounts')
-            ->icon('heroicon-o-arrow-down-tray')
-            ->color('success'),
-    ];
-}
-
-// Creating a custom exporter
-class AccountExporter extends Exporter
-{
-    public static function getColumns(): array
-    {
-        return [
-            ExportColumn::make('balance')
-                ->label('Balance (USD)')
-                ->formatStateUsing(fn ($state) => number_format($state / 100, 2)),
-        ];
-    }
-}
-```
+### Phase 6: Documentation and Testing Overhaul ✅ In Progress
+- **Comprehensive Documentation Review**: Updated all documentation to match current implementation
+- **Test Coverage Enhancement**: Adding missing tests and fixing existing test gaps
+- **API Documentation**: Complete OpenAPI specification with all endpoints documented
 
 ## Key Development Patterns
 
@@ -932,17 +540,8 @@ class Account extends Model
 ### Multi-Asset Events
 Update events to include asset information:
 ```php
-// Before (single currency)
-class MoneyAdded extends ShouldBeStored
-{
-    public function __construct(
-        public readonly Money $money,
-        public readonly Hash $hash
-    ) {}
-}
-
-// After (multi-asset)
-class MoneyAdded extends ShouldBeStored
+// Multi-asset event example
+class AssetBalanceAdded extends ShouldBeStored
 {
     public function __construct(
         public readonly string $asset_code,
@@ -950,66 +549,6 @@ class MoneyAdded extends ShouldBeStored
         public readonly Hash $hash,
         public readonly ?array $metadata = []
     ) {}
-}
-```
-
-### Custodian Integration
-Implementing custodian connectors:
-```php
-// Base connector implementation
-abstract class BaseCustodianConnector implements ICustodianConnector
-{
-    protected array $config;
-    protected HttpClient $client;
-    
-    public function __construct(array $config)
-    {
-        $this->config = $config;
-        $this->client = Http::baseUrl($config['base_url'])
-            ->withHeaders($this->getHeaders())
-            ->timeout(30);
-    }
-    
-    abstract protected function getHeaders(): array;
-}
-
-// Mock implementation for testing
-class MockBankConnector extends BaseCustodianConnector
-{
-    private array $balances = [];
-    private array $transactions = [];
-    
-    public function getBalance(string $asset_code): Money
-    {
-        $amount = $this->balances[$asset_code] ?? 0;
-        return new Money($amount, $asset_code);
-    }
-    
-    public function initiateTransfer(
-        string $from,
-        string $to,
-        string $asset_code,
-        int $amount,
-        array $metadata = []
-    ): TransactionReceipt {
-        // Simulate transfer with delay
-        sleep(1);
-        
-        $this->transactions[] = [
-            'id' => Str::uuid(),
-            'from' => $from,
-            'to' => $to,
-            'asset' => $asset_code,
-            'amount' => $amount,
-            'status' => 'completed',
-            'timestamp' => now(),
-        ];
-        
-        return new TransactionReceipt(
-            id: end($this->transactions)['id'],
-            status: 'completed'
-        );
-    }
 }
 ```
 
@@ -1118,18 +657,6 @@ test('account can hold multiple asset balances', function () {
     expect($account->getBalance('BTC'))->toBe(100000000);
     expect($account->balances)->toHaveCount(3);
 });
-
-// Test custodian integration
-test('can transfer through custodian', function () {
-    $custodian = new MockBankConnector(['base_url' => 'https://mock.bank']);
-    app(CustodianRegistry::class)->register('mock', $custodian);
-    
-    $workflow = WorkflowStub::make(CustodianTransferWorkflow::class);
-    $result = $workflow->start('from_account', 'to_account', 'USD', 10000, 'mock');
-    
-    expect($result)->toBeInstanceOf(TransactionReceipt::class);
-    expect($result->status)->toBe('completed');
-});
 ```
 
 ## Important Files and Locations
@@ -1148,8 +675,6 @@ test('can transfer through custodian', function () {
 
 ### New Multi-Asset Locations
 - Asset domain: `app/Domain/Asset/`
-- Custodian connectors: `app/Domain/Custodian/Connectors/`
 - Exchange rate providers: `app/Domain/Exchange/Providers/`
 - Governance domain: `app/Domain/Governance/`
-- Multi-asset migrations: `database/migrations/multi_asset/`
-```
+- Multi-asset migrations: `database/migrations/`

@@ -546,6 +546,492 @@
                 ]
             }
         },
+        "/api/polls": {
+            "get": {
+                "tags": [
+                    "Governance - Polls"
+                ],
+                "summary": "List all polls",
+                "description": "Retrieve a paginated list of polls with optional filtering",
+                "operationId": "6e193446b08121fa820e77c1a32e6c5d",
+                "parameters": [
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "description": "Filter by poll status",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "draft",
+                                "active",
+                                "completed",
+                                "cancelled"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "description": "Filter by poll type",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "single_choice",
+                                "multiple_choice",
+                                "weighted_choice",
+                                "yes_no",
+                                "ranked_choice"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Number of polls per page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 15,
+                            "maximum": 100,
+                            "minimum": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of polls",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Poll"
+                                            }
+                                        },
+                                        "meta": {
+                                            "type": "object"
+                                        },
+                                        "links": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Governance - Polls"
+                ],
+                "summary": "Create a new poll",
+                "description": "Create a new governance poll",
+                "operationId": "cfe7460dbf9e8b80cc0122d588147993",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "title",
+                                    "type",
+                                    "options",
+                                    "start_date",
+                                    "end_date"
+                                ],
+                                "properties": {
+                                    "title": {
+                                        "type": "string",
+                                        "example": "Should we add support for Japanese Yen?"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Proposal to add JPY as supported currency"
+                                    },
+                                    "type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "single_choice",
+                                            "multiple_choice",
+                                            "weighted_choice",
+                                            "yes_no",
+                                            "ranked_choice"
+                                        ]
+                                    },
+                                    "options": {
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "string"
+                                                },
+                                                "label": {
+                                                    "type": "string"
+                                                },
+                                                "description": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "start_date": {
+                                        "type": "string",
+                                        "format": "date-time"
+                                    },
+                                    "end_date": {
+                                        "type": "string",
+                                        "format": "date-time"
+                                    },
+                                    "required_participation": {
+                                        "type": "integer",
+                                        "example": 30
+                                    },
+                                    "voting_power_strategy": {
+                                        "type": "string",
+                                        "enum": [
+                                            "one_user_one_vote",
+                                            "asset_weighted_vote"
+                                        ]
+                                    },
+                                    "execution_workflow": {
+                                        "type": "string",
+                                        "example": "AddAssetWorkflow"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Poll created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/Poll"
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/polls/active": {
+            "get": {
+                "tags": [
+                    "Governance - Polls"
+                ],
+                "summary": "Get active polls",
+                "description": "Retrieve all currently active polls that are available for voting",
+                "operationId": "f13be49b1a672f49c8513b45c4d9fe46",
+                "responses": {
+                    "200": {
+                        "description": "List of active polls",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Poll"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/polls/{uuid}": {
+            "get": {
+                "tags": [
+                    "Governance - Polls"
+                ],
+                "summary": "Get poll details",
+                "description": "Retrieve detailed information about a specific poll",
+                "operationId": "4a5d22fa28a78c7c00336312b7e412d6",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Poll details",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/Poll"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Poll not found"
+                    }
+                }
+            }
+        },
+        "/api/polls/{uuid}/activate": {
+            "post": {
+                "tags": [
+                    "Governance - Polls"
+                ],
+                "summary": "Activate a poll",
+                "description": "Activate a draft poll to make it available for voting",
+                "operationId": "1f3250511c8a2af8828834d02eda9f57",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Poll activated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/Poll"
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Poll cannot be activated"
+                    },
+                    "404": {
+                        "description": "Poll not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/polls/{uuid}/vote": {
+            "post": {
+                "tags": [
+                    "Governance - Polls"
+                ],
+                "summary": "Cast a vote",
+                "description": "Cast a vote in an active poll",
+                "operationId": "2efbbf8861a1235c1015ed44b7d9b056",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "selected_options"
+                                ],
+                                "properties": {
+                                    "selected_options": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Vote cast successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/Vote"
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Cannot vote in this poll"
+                    },
+                    "404": {
+                        "description": "Poll not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/polls/{uuid}/results": {
+            "get": {
+                "tags": [
+                    "Governance - Polls"
+                ],
+                "summary": "Get poll results",
+                "description": "Retrieve current results for a poll",
+                "operationId": "e4386a648a2adc9a8b8e2c77e409ea96",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Poll results",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/PollResult"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Poll not found"
+                    }
+                }
+            }
+        },
+        "/api/polls/{uuid}/voting-power": {
+            "get": {
+                "tags": [
+                    "Governance - Polls"
+                ],
+                "summary": "Get user's voting power",
+                "description": "Check the authenticated user's voting power for a specific poll",
+                "operationId": "5a581e2bc5f798877c24ec9c8c8d8ed8",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User's voting power",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "voting_power": {
+                                            "type": "integer"
+                                        },
+                                        "can_vote": {
+                                            "type": "boolean"
+                                        },
+                                        "has_voted": {
+                                            "type": "boolean"
+                                        },
+                                        "strategy": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Poll not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
         "/api/accounts/{uuid}/deposit": {
             "post": {
                 "tags": [
@@ -875,6 +1361,216 @@
                     }
                 ]
             }
+        },
+        "/api/votes": {
+            "get": {
+                "tags": [
+                    "Governance - Votes"
+                ],
+                "summary": "Get user's voting history",
+                "description": "Retrieve the authenticated user's voting history",
+                "operationId": "552d3ad7dc75be8e39bc19d16c5fa972",
+                "parameters": [
+                    {
+                        "name": "poll_id",
+                        "in": "query",
+                        "description": "Filter by specific poll ID",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Number of votes per page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 15,
+                            "maximum": 100,
+                            "minimum": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User's voting history",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Vote"
+                                            }
+                                        },
+                                        "meta": {
+                                            "type": "object"
+                                        },
+                                        "links": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/votes/{id}": {
+            "get": {
+                "tags": [
+                    "Governance - Votes"
+                ],
+                "summary": "Get vote details",
+                "description": "Retrieve detailed information about a specific vote",
+                "operationId": "c2a9b1dfbe3ec738a52437c63f1be8ba",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Vote details",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/Vote"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Vote not found"
+                    },
+                    "403": {
+                        "description": "Access denied"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/votes/{id}/verify": {
+            "post": {
+                "tags": [
+                    "Governance - Votes"
+                ],
+                "summary": "Verify vote integrity",
+                "description": "Verify the cryptographic signature of a vote",
+                "operationId": "8f09df8ed257cc1fa8e0a0da6d92ae92",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Vote verification result",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "verified": {
+                                            "type": "boolean"
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Vote not found"
+                    },
+                    "403": {
+                        "description": "Access denied"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/votes/stats": {
+            "get": {
+                "tags": [
+                    "Governance - Votes"
+                ],
+                "summary": "Get user's voting statistics",
+                "description": "Retrieve statistics about the user's voting activity",
+                "operationId": "f2be71d66073ac97b0a5bc8166b53aeb",
+                "responses": {
+                    "200": {
+                        "description": "User's voting statistics",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "total_votes": {
+                                            "type": "integer"
+                                        },
+                                        "total_voting_power": {
+                                            "type": "integer"
+                                        },
+                                        "recent_votes": {
+                                            "description": "Votes in last 30 days",
+                                            "type": "integer"
+                                        },
+                                        "avg_voting_power": {
+                                            "type": "number",
+                                            "format": "float"
+                                        },
+                                        "participation_rate": {
+                                            "type": "number",
+                                            "format": "float"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
         }
     },
     "components": {
@@ -1099,6 +1795,422 @@
                 },
                 "type": "object"
             },
+            "Asset": {
+                "title": "Asset",
+                "required": [
+                    "code",
+                    "name",
+                    "type",
+                    "precision",
+                    "is_active"
+                ],
+                "properties": {
+                    "code": {
+                        "description": "Asset code (e.g., USD, EUR, BTC)",
+                        "type": "string",
+                        "example": "USD"
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "US Dollar"
+                    },
+                    "type": {
+                        "type": "string",
+                        "enum": [
+                            "fiat",
+                            "crypto",
+                            "commodity",
+                            "custom"
+                        ],
+                        "example": "fiat"
+                    },
+                    "precision": {
+                        "description": "Number of decimal places",
+                        "type": "integer",
+                        "example": 2
+                    },
+                    "is_active": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "metadata": {
+                        "description": "Additional asset metadata",
+                        "type": "object",
+                        "nullable": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T00:00:00Z"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T00:00:00Z"
+                    }
+                },
+                "type": "object"
+            },
+            "ExchangeRate": {
+                "title": "Exchange Rate",
+                "required": [
+                    "from_asset_code",
+                    "to_asset_code",
+                    "rate",
+                    "is_active"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "from_asset_code": {
+                        "type": "string",
+                        "example": "USD"
+                    },
+                    "to_asset_code": {
+                        "type": "string",
+                        "example": "EUR"
+                    },
+                    "rate": {
+                        "description": "Exchange rate with 10 decimal precision",
+                        "type": "string",
+                        "example": "0.8500000000"
+                    },
+                    "bid": {
+                        "type": "string",
+                        "example": "0.8495000000",
+                        "nullable": true
+                    },
+                    "ask": {
+                        "type": "string",
+                        "example": "0.8505000000",
+                        "nullable": true
+                    },
+                    "source": {
+                        "description": "Rate source",
+                        "type": "string",
+                        "example": "manual"
+                    },
+                    "is_active": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "expires_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    },
+                    "valid_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T00:00:00Z"
+                    },
+                    "metadata": {
+                        "type": "object",
+                        "nullable": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T00:00:00Z"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T00:00:00Z"
+                    }
+                },
+                "type": "object"
+            },
+            "AccountBalance": {
+                "title": "Account Balance",
+                "required": [
+                    "account_uuid",
+                    "asset_code",
+                    "balance"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "account_uuid": {
+                        "type": "string",
+                        "format": "uuid",
+                        "example": "550e8400-e29b-41d4-a716-446655440000"
+                    },
+                    "asset_code": {
+                        "type": "string",
+                        "example": "USD"
+                    },
+                    "balance": {
+                        "description": "Balance in smallest unit (cents for USD)",
+                        "type": "integer",
+                        "example": 50000
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T00:00:00Z"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T00:00:00Z"
+                    },
+                    "asset": {
+                        "$ref": "#/components/schemas/Asset"
+                    },
+                    "account": {
+                        "$ref": "#/components/schemas/Account"
+                    }
+                },
+                "type": "object"
+            },
+            "Poll": {
+                "title": "Poll",
+                "required": [
+                    "id",
+                    "title",
+                    "type",
+                    "status",
+                    "options",
+                    "start_date",
+                    "end_date"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "title": {
+                        "type": "string",
+                        "example": "Should we add support for Japanese Yen?"
+                    },
+                    "description": {
+                        "type": "string",
+                        "example": "This poll determines whether to add JPY support to the platform",
+                        "nullable": true
+                    },
+                    "type": {
+                        "type": "string",
+                        "enum": [
+                            "single_choice",
+                            "multiple_choice",
+                            "weighted_choice",
+                            "yes_no",
+                            "ranked_choice"
+                        ],
+                        "example": "yes_no"
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "draft",
+                            "active",
+                            "completed",
+                            "cancelled"
+                        ],
+                        "example": "active"
+                    },
+                    "options": {
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "id": {
+                                    "type": "string",
+                                    "example": "yes"
+                                },
+                                "label": {
+                                    "type": "string",
+                                    "example": "Yes, add JPY support"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    },
+                    "voting_power_strategy": {
+                        "type": "string",
+                        "example": "OneUserOneVoteStrategy"
+                    },
+                    "execution_workflow": {
+                        "type": "string",
+                        "example": "AddAssetWorkflow",
+                        "nullable": true
+                    },
+                    "min_participation": {
+                        "type": "integer",
+                        "example": 100,
+                        "nullable": true
+                    },
+                    "winning_threshold": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 0.5,
+                        "nullable": true
+                    },
+                    "start_date": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T00:00:00Z"
+                    },
+                    "end_date": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-08T00:00:00Z"
+                    },
+                    "created_by": {
+                        "type": "string",
+                        "format": "uuid",
+                        "example": "660e8400-e29b-41d4-a716-446655440000"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T00:00:00Z"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T00:00:00Z"
+                    },
+                    "votes_count": {
+                        "description": "Total number of votes",
+                        "type": "integer",
+                        "example": 150
+                    },
+                    "total_voting_power": {
+                        "description": "Total voting power cast",
+                        "type": "integer",
+                        "example": 500
+                    }
+                },
+                "type": "object"
+            },
+            "Vote": {
+                "title": "Vote",
+                "required": [
+                    "id",
+                    "poll_id",
+                    "user_uuid",
+                    "selected_options",
+                    "voting_power",
+                    "voted_at"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "poll_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "user_uuid": {
+                        "type": "string",
+                        "format": "uuid",
+                        "example": "660e8400-e29b-41d4-a716-446655440000"
+                    },
+                    "selected_options": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "example": [
+                            "yes"
+                        ]
+                    },
+                    "voting_power": {
+                        "type": "integer",
+                        "example": 10
+                    },
+                    "signature": {
+                        "type": "string",
+                        "example": "abc123def456",
+                        "nullable": true
+                    },
+                    "voted_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T12:00:00Z"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T12:00:00Z"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T12:00:00Z"
+                    },
+                    "poll": {
+                        "$ref": "#/components/schemas/Poll"
+                    }
+                },
+                "type": "object"
+            },
+            "PollResult": {
+                "title": "Poll Result",
+                "required": [
+                    "poll",
+                    "results",
+                    "participation"
+                ],
+                "properties": {
+                    "poll": {
+                        "$ref": "#/components/schemas/Poll"
+                    },
+                    "results": {
+                        "description": "Vote results by option",
+                        "type": "object",
+                        "example": {
+                            "yes": {
+                                "votes": 75,
+                                "voting_power": 250
+                            },
+                            "no": {
+                                "votes": 25,
+                                "voting_power": 100
+                            }
+                        }
+                    },
+                    "participation": {
+                        "properties": {
+                            "total_votes": {
+                                "type": "integer",
+                                "example": 100
+                            },
+                            "total_voting_power": {
+                                "type": "integer",
+                                "example": 350
+                            },
+                            "participation_rate": {
+                                "type": "number",
+                                "format": "float",
+                                "example": 0.25
+                            },
+                            "winning_option": {
+                                "type": "string",
+                                "example": "yes",
+                                "nullable": true
+                            },
+                            "meets_threshold": {
+                                "type": "boolean",
+                                "example": true
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "calculated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T12:00:00Z"
+                    }
+                },
+                "type": "object"
+            },
             "Error": {
                 "title": "Error Response",
                 "required": [
@@ -1152,6 +2264,14 @@
         {
             "name": "Balance",
             "description": "Balance inquiry and account statistics"
+        },
+        {
+            "name": "Governance - Polls",
+            "description": "Poll management and voting operations"
+        },
+        {
+            "name": "Governance - Votes",
+            "description": "Vote management and history operations"
         }
     ]
 }

@@ -12,9 +12,6 @@ beforeEach(function () {
 });
 
 it('caches latest turnover', function () {
-    // Skip this test as Turnover doesn't have a factory
-    $this->markTestSkipped('Turnover model does not have a factory');
-    
     $account = Account::factory()->create();
     $turnover = Turnover::factory()->create([
         'account_uuid' => $account->uuid,

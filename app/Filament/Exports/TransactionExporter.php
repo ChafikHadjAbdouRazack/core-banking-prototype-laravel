@@ -2,37 +2,51 @@
 
 namespace App\Filament\Exports;
 
-use App\Models\Transaction;
+use App\Models\TransactionReadModel;
 use Filament\Actions\Exports\ExportColumn;
 use Filament\Actions\Exports\Exporter;
 use Filament\Actions\Exports\Models\Export;
 
 class TransactionExporter extends Exporter
 {
-    protected static ?string $model = Transaction::class;
+    protected static ?string $model = TransactionReadModel::class;
 
     public static function getColumns(): array
     {
         return [
-            ExportColumn::make('uuid')
-                ->label('Transaction ID'),
+            ExportColumn::make('processed_at')
+                ->label('Date'),
             ExportColumn::make('account.name')
-                ->label('Account Name'),
+                ->label('Account'),
             ExportColumn::make('type')
                 ->label('Type')
-                ->formatStateUsing(fn ($state) => ucwords(str_replace('_', ' ', $state))),
+                ->formatStateUsing(fn (string $state): string => match ($state) {
+                    TransactionReadModel::TYPE_DEPOSIT => 'Deposit',
+                    TransactionReadModel::TYPE_WITHDRAWAL => 'Withdrawal',
+                    TransactionReadModel::TYPE_TRANSFER_IN => 'Transfer In',
+                    TransactionReadModel::TYPE_TRANSFER_OUT => 'Transfer Out',
+                    default => $state,
+                }),
             ExportColumn::make('amount')
-                ->label('Amount (USD)')
-                ->formatStateUsing(fn ($state) => '$' . number_format($state / 100, 2)),
-            ExportColumn::make('balance_after')
-                ->label('Balance After (USD)')
-                ->formatStateUsing(fn ($state) => '$' . number_format($state / 100, 2)),
-            ExportColumn::make('reference')
-                ->label('Reference'),
+                ->label('Amount')
+                ->formatStateUsing(function ($state, $record) {
+                    $formatted = number_format($state / 100, 2);
+                    $sign = $record->getDirection() === 'credit' ? '+' : '-';
+                    return $sign . $formatted;
+                }),
+            ExportColumn::make('asset_code')
+                ->label('Currency'),
+            ExportColumn::make('description')
+                ->label('Description'),
+            ExportColumn::make('status')
+                ->label('Status')
+                ->formatStateUsing(fn (string $state): string => ucfirst($state)),
+            ExportColumn::make('initiator.name')
+                ->label('Initiated By'),
+            ExportColumn::make('uuid')
+                ->label('Transaction ID'),
             ExportColumn::make('hash')
-                ->label('Security Hash'),
-            ExportColumn::make('created_at')
-                ->label('Transaction Date'),
+                ->label('Hash'),
         ];
     }
 
