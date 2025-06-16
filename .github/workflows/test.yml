@@ -9,7 +9,7 @@ on:
 jobs:
   test:
     name: Test Coverage
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     services:
       mysql:
