@@ -215,7 +215,7 @@ Events are processed through separate queues:
 
 ### Admin Dashboard (Filament)
 - **Account Management**: Full CRUD operations with real-time multi-asset balance updates
-- **Transaction History**: Complete transaction read model with event-sourced data and advanced analytics
+- **Transaction History**: Enhanced event-sourced transaction API with direct event store querying
 - **Asset Management**: Asset CRUD with type filtering, precision validation, and metadata management
 - **Exchange Rate Monitoring**: Real-time rate tracking with age indicators and bulk operations
 - **Governance Interface**: Poll management, vote tracking, and governance analytics
@@ -282,9 +282,9 @@ Events are processed through separate queues:
 - **API Documentation**: OpenAPI/Swagger documentation for all endpoints
 - **Authentication**: Sanctum-based API authentication for protected endpoints
 
-### Phase 4: Transaction Read Model Implementation ✅ Completed
-- **Transaction Read Model Architecture**: Comprehensive transactions table with denormalized data
-- **Event Sourcing Integration**: TransactionProjector to populate read model from domain events
+### Phase 4: Enhanced Transaction Architecture ✅ Completed
+- **Event-First Transaction History**: Direct querying of stored events for transaction data
+- **Multi-Asset Event Support**: Proper handling of AssetBalanceAdded, AssetTransferred events
 - **Filament Transaction Interface**: Transaction history with analytics, filtering, and export
 - **Multi-Asset Support**: Exchange rate tracking and cross-asset transaction support
 

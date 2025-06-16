@@ -283,41 +283,53 @@ class CreateAccountCommand
 }
 ```
 
-### Query Side (Read Model)
+### Query Side (Direct Event Store Queries)
 
 ```php
-// Read Models
-class TransactionReadModel extends Model
+// Transaction History Service
+class TransactionHistoryService
 {
-    protected $table = 'transactions';
-    
-    // Optimized for querying
-    public function scopeForAccount($query, string $accountUuid)
+    public function getAccountHistory(string $accountUuid, array $filters = []): Collection
     {
-        return $query->where('account_uuid', $accountUuid);
+        $eventClasses = [
+            'App\Domain\Account\Events\MoneyAdded',
+            'App\Domain\Account\Events\MoneySubtracted',
+            'App\Domain\Account\Events\AssetBalanceAdded',
+            'App\Domain\Account\Events\AssetTransferred',
+        ];
+
+        $events = DB::table('stored_events')
+            ->where('aggregate_uuid', $accountUuid)
+            ->whereIn('event_class', $eventClasses)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return $events->map(function ($event) {
+            return $this->transformEventToTransaction($event);
+        });
     }
-    
-    public function scopeCredits($query)
+
+    private function transformEventToTransaction($event): array
     {
-        return $query->whereIn('type', ['deposit', 'transfer_in']);
+        $properties = json_decode($event->event_properties, true);
+        
+        return [
+            'type' => $this->getTransactionType($event->event_class),
+            'amount' => $properties['amount'] ?? $properties['money']['amount'],
+            'asset_code' => $properties['assetCode'] ?? 'USD',
+            'hash' => $properties['hash']['hash'],
+            'created_at' => $event->created_at,
+        ];
     }
 }
 
-// Projectors
-class TransactionProjector extends Projector
+// Selective Read Models (Only Where Aggregation is Needed)
+class Turnover extends Model
 {
-    public function onMoneyAdded(MoneyAdded $event): void
-    {
-        TransactionReadModel::create([
-            'uuid' => Uuid::uuid4(),
-            'account_uuid' => $event->aggregateRootUuid(),
-            'type' => 'deposit',
-            'amount' => $event->money->getAmount(),
-            'hash' => $event->hash->toString(),
-            'status' => 'completed',
-        ]);
-    }
+    // Used for monthly/daily transaction summaries
+    // This aggregates events, doesn't duplicate them
 }
+```
 ```
 
 ---

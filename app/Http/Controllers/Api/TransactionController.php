@@ -203,35 +203,139 @@ class TransactionController extends Controller
     }
 
     /**
-     * Get transaction history for an account
+     * @OA\Get(
+     *     path="/api/accounts/{uuid}/transactions",
+     *     operationId="getAccountTransactions",
+     *     tags={"Transactions"},
+     *     summary="Get transaction history for an account",
+     *     description="Retrieves paginated transaction history from event store",
+     *     security={{"sanctum":{}}},
+     *     @OA\Parameter(
+     *         name="uuid",
+     *         in="path",
+     *         description="Account UUID",
+     *         required=true,
+     *         @OA\Schema(type="string", format="uuid")
+     *     ),
+     *     @OA\Parameter(
+     *         name="type",
+     *         in="query",
+     *         description="Filter by transaction type",
+     *         required=false,
+     *         @OA\Schema(type="string", enum={"credit", "debit"})
+     *     ),
+     *     @OA\Parameter(
+     *         name="asset_code",
+     *         in="query",
+     *         description="Filter by asset code",
+     *         required=false,
+     *         @OA\Schema(type="string", example="USD")
+     *     ),
+     *     @OA\Parameter(
+     *         name="per_page",
+     *         in="query",
+     *         description="Items per page",
+     *         required=false,
+     *         @OA\Schema(type="integer", minimum=1, maximum=100, default=50)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Transaction history retrieved successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/Transaction")),
+     *             @OA\Property(property="meta", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Account not found",
+     *         @OA\JsonContent(ref="#/components/schemas/Error")
+     *     )
+     * )
      */
-    public function history(string $uuid): JsonResponse
+    public function history(Request $request, string $uuid): JsonResponse
     {
+        $validated = $request->validate([
+            'type' => 'sometimes|string|in:credit,debit',
+            'asset_code' => 'sometimes|string|max:10',
+            'per_page' => 'sometimes|integer|min:1|max:100',
+        ]);
+
         $account = Account::where('uuid', $uuid)->firstOrFail();
         
-        // Since transactions are event sourced, we need to query stored_events
-        $events = \DB::table('stored_events')
-            ->where('aggregate_uuid', $uuid)
-            ->whereIn('event_class', [
-                'App\Domain\Account\Events\MoneyAdded',
-                'App\Domain\Account\Events\MoneySubtracted',
-            ])
-            ->orderBy('created_at', 'desc')
-            ->paginate(50);
+        // Build event classes to query based on filters
+        $eventClasses = [
+            'App\Domain\Account\Events\MoneyAdded',
+            'App\Domain\Account\Events\MoneySubtracted',
+            'App\Domain\Account\Events\MoneyTransferred',
+            'App\Domain\Account\Events\AssetBalanceAdded',
+            'App\Domain\Account\Events\AssetBalanceSubtracted', 
+            'App\Domain\Account\Events\AssetTransferred',
+        ];
 
-        // Transform events to transaction-like format
+        $query = \DB::table('stored_events')
+            ->where('aggregate_uuid', $uuid)
+            ->whereIn('event_class', $eventClasses)
+            ->orderBy('created_at', 'desc');
+
+        $events = $query->paginate($validated['per_page'] ?? 50);
+
+        // Transform events to transaction format
         $transactions = collect($events->items())->map(function ($event) {
             $properties = json_decode($event->event_properties, true);
             $eventClass = class_basename($event->event_class);
             
-            return [
-                'uuid' => $event->aggregate_uuid,
-                'type' => $eventClass === 'MoneyAdded' ? 'credit' : 'debit',
-                'amount' => $properties['money']['amount'] ?? 0,
+            // Default values
+            $transaction = [
+                'id' => $event->id,
+                'account_uuid' => $event->aggregate_uuid,
+                'type' => $this->getTransactionType($eventClass),
+                'amount' => 0,
+                'asset_code' => 'USD',
+                'description' => $this->getTransactionDescription($eventClass),
                 'hash' => $properties['hash']['hash'] ?? null,
                 'created_at' => $event->created_at,
+                'metadata' => [],
             ];
-        });
+
+            // Extract amount and asset based on event type
+            switch ($eventClass) {
+                case 'MoneyAdded':
+                case 'MoneySubtracted':
+                    $transaction['amount'] = $properties['money']['amount'] ?? 0;
+                    $transaction['asset_code'] = 'USD'; // Legacy events are USD
+                    break;
+                    
+                case 'AssetBalanceAdded':
+                case 'AssetBalanceSubtracted':
+                    $transaction['amount'] = $properties['amount'] ?? 0;
+                    $transaction['asset_code'] = $properties['assetCode'] ?? 'USD';
+                    break;
+                    
+                case 'MoneyTransferred':
+                case 'AssetTransferred':
+                    $transaction['amount'] = $properties['money']['amount'] ?? $properties['fromAmount'] ?? 0;
+                    $transaction['asset_code'] = $properties['fromAsset'] ?? 'USD';
+                    $transaction['metadata'] = [
+                        'to_account' => $properties['toAccount']['uuid'] ?? null,
+                        'from_account' => $properties['fromAccount']['uuid'] ?? null,
+                    ];
+                    break;
+            }
+
+            return $transaction;
+        })->filter(function ($transaction) use ($validated) {
+            // Apply filters
+            if (isset($validated['type']) && $transaction['type'] !== $validated['type']) {
+                return false;
+            }
+            
+            if (isset($validated['asset_code']) && $transaction['asset_code'] !== $validated['asset_code']) {
+                return false;
+            }
+            
+            return true;
+        })->values();
 
         return response()->json([
             'data' => $transactions,
@@ -240,7 +344,34 @@ class TransactionController extends Controller
                 'last_page' => $events->lastPage(),
                 'per_page' => $events->perPage(),
                 'total' => $events->total(),
+                'account_uuid' => $uuid,
             ],
         ]);
+    }
+
+    /**
+     * Get transaction type from event class
+     */
+    private function getTransactionType(string $eventClass): string
+    {
+        return match ($eventClass) {
+            'MoneyAdded', 'AssetBalanceAdded' => 'credit',
+            'MoneySubtracted', 'AssetBalanceSubtracted' => 'debit',
+            'MoneyTransferred', 'AssetTransferred' => 'transfer',
+            default => 'unknown',
+        };
+    }
+
+    /**
+     * Get transaction description from event class
+     */
+    private function getTransactionDescription(string $eventClass): string
+    {
+        return match ($eventClass) {
+            'MoneyAdded', 'AssetBalanceAdded' => 'Deposit',
+            'MoneySubtracted', 'AssetBalanceSubtracted' => 'Withdrawal',
+            'MoneyTransferred', 'AssetTransferred' => 'Transfer',
+            default => 'Transaction',
+        };
     }
 }

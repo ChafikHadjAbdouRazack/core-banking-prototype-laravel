@@ -189,10 +189,10 @@ This document provides a comprehensive overview of all features implemented in t
 - **Asset allocation** visualization
 
 ### Transaction Monitoring
-- **Transaction history** with comprehensive filtering
-- **Transaction details** with complete metadata
-- **Cross-asset transaction** tracking
-- **Transaction analytics** with trend analysis
+- **Event-sourced transaction history** queried directly from event store
+- **Multi-asset transaction support** with comprehensive filtering
+- **Real-time transaction data** without read model latency
+- **Complete audit trail** with cryptographic hash verification
 
 ### Governance Interface
 - **Poll creation** with rich form validation
@@ -290,23 +290,23 @@ POST   /api/custodians/{id}/reconcile   # Trigger reconciliation
 
 ## Transaction Processing
 
-### Event Sourcing
-- **Complete audit trail** of all financial operations
-- **Event replay** capability for system recovery
-- **Immutable event storage** for regulatory compliance
-- **Event versioning** for system evolution
+### Event Sourcing Architecture
+- **Complete audit trail** of all financial operations stored as immutable events
+- **Event replay** capability for system recovery and debugging
+- **Single source of truth** with events as the primary data store
+- **Event versioning** for backward compatibility during system evolution
 
-### CQRS Pattern
-- **Command side** for write operations
-- **Query side** with optimized read models
-- **Event projection** for building read models
-- **Eventual consistency** with proper synchronization
+### Transaction History from Events
+- **Direct event store queries** for real-time transaction history
+- **Multi-asset event support** with AssetBalanceAdded, AssetTransferred events
+- **Legacy compatibility** with MoneyAdded/MoneySubtracted events
+- **No read model duplication** - events are the authoritative source
 
-### Transaction Read Model
-- **Optimized queries** for transaction history
-- **Multi-asset support** with proper formatting
-- **Cross-asset transaction** linking
-- **Advanced filtering** and search capabilities
+### CQRS with Proper Projections
+- **Command side** for write operations via aggregates
+- **Selective read models** only where aggregation is needed (Turnover summaries)
+- **Event-first architecture** with queries directly from event store
+- **Account balance projections** for current state tracking
 
 ### Saga Pattern
 - **Distributed transaction coordination** across services
