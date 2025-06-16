@@ -6,8 +6,10 @@ use App\Http\Controllers\Api\AssetController;
 use App\Http\Controllers\Api\BalanceController;
 use App\Http\Controllers\Api\CustodianController;
 use App\Http\Controllers\Api\ExchangeRateController;
+use App\Http\Controllers\Api\PollController;
 use App\Http\Controllers\Api\TransactionController;
 use App\Http\Controllers\Api\TransferController;
+use App\Http\Controllers\Api\VoteController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -49,6 +51,25 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/{custodian}/transfer', [CustodianController::class, 'transfer']);
         Route::get('/{custodian}/transactions', [CustodianController::class, 'transactionHistory']);
         Route::get('/{custodian}/transactions/{transactionId}', [CustodianController::class, 'transactionStatus']);
+    });
+
+    // Governance endpoints
+    Route::prefix('polls')->group(function () {
+        Route::get('/', [PollController::class, 'index']);
+        Route::get('/active', [PollController::class, 'active']);
+        Route::post('/', [PollController::class, 'store']);
+        Route::get('/{uuid}', [PollController::class, 'show']);
+        Route::post('/{uuid}/activate', [PollController::class, 'activate']);
+        Route::post('/{uuid}/vote', [PollController::class, 'vote']);
+        Route::get('/{uuid}/results', [PollController::class, 'results']);
+        Route::get('/{uuid}/voting-power', [PollController::class, 'votingPower']);
+    });
+
+    Route::prefix('votes')->group(function () {
+        Route::get('/', [VoteController::class, 'index']);
+        Route::get('/stats', [VoteController::class, 'stats']);
+        Route::get('/{id}', [VoteController::class, 'show']);
+        Route::post('/{id}/verify', [VoteController::class, 'verify']);
     });
 });
 

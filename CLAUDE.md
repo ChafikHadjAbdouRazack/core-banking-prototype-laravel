@@ -377,6 +377,44 @@ Events are processed through separate queues:
   - **Asset Management**: Create, edit, and manage asset types with precision and metadata support
   - **Exchange Rate Monitoring**: Real-time rate tracking with age indicators and validation status
   - **Dashboard Widgets**: Exchange rate statistics, asset distribution, and system health monitoring
+
+### Phase 6: Governance & Polling Engine (Current)
+- **Governance Domain Architecture**: Comprehensive polling and voting system
+  - **Poll Management**: Support for multiple poll types (yes/no, single choice, multiple choice, weighted, ranked choice)
+  - **Voting Power Strategies**: Pluggable voting power calculation (one-user-one-vote, asset-weighted)
+  - **Vote Integrity**: Cryptographic signature verification and tamper detection
+  - **Poll Lifecycle**: Draft → Active → Completed/Cancelled with automatic expiration handling
+
+- **REST API Layer**: Full governance API for poll management and voting
+  - **Poll Operations**: Create, activate, vote, and retrieve poll results
+  - **Vote Management**: User voting history, vote verification, and statistics
+  - **Voting Power**: Real-time voting power calculation and eligibility checks
+  - **Authentication**: Sanctum-based authentication for all governance operations
+
+- **Workflow Integration**: Automated execution of governance decisions
+  - **AddAssetWorkflow**: Automatically add new assets based on successful polls
+  - **FeatureToggleWorkflow**: Enable/disable platform features via governance
+  - **UpdateConfigurationWorkflow**: Modify system configurations through voting
+  - **Execution Conditions**: Participation thresholds and winning criteria validation
+
+- **Caching Architecture**: High-performance governance data access
+  - **Poll Caching**: Efficient caching of poll data, results, and user voting status
+  - **Voting Power Caching**: Cached voting power calculations for performance
+  - **Active Polls**: Dedicated caching for active polls with short TTL
+  - **Cache Invalidation**: Smart cache invalidation on vote casting and poll completion
+
+- **Security & Integrity**:
+  - **Vote Signatures**: HMAC-SHA256 signatures for vote integrity verification
+  - **Double Voting Prevention**: Database constraints and service-level checks
+  - **Configuration Limits**: Whitelist of allowed configuration changes via governance
+  - **Audit Logging**: Comprehensive logging of all governance actions and workflow executions
+
+- **Technical Implementation**:
+  - **Domain Models**: Poll and Vote models with comprehensive relationships and validations
+  - **Value Objects**: PollOption, PollResult for type safety and encapsulation
+  - **Service Layer**: GovernanceService for business logic and PollCacheService for performance
+  - **Factory Support**: Comprehensive test factories for Poll and Vote models
+  - **Test Coverage**: Full test suite covering domain logic, API endpoints, and workflow integration
   - **Bulk Operations**: Mass update exchange rates, activate/deactivate assets
   - **Data Export**: Export asset and exchange rate data for reporting
 

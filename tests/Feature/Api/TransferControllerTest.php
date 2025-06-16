@@ -252,6 +252,14 @@ it('can include optional description in transfer', function () {
     $fromAccount = Account::factory()->withBalance(1000)->create();
     $toAccount = Account::factory()->create();
 
+    // Ensure accounts are properly persisted and refreshed
+    $fromAccount->refresh();
+    $toAccount->refresh();
+    
+    // Verify accounts exist in database
+    expect(Account::where('uuid', $fromAccount->uuid)->exists())->toBeTrue();
+    expect(Account::where('uuid', $toAccount->uuid)->exists())->toBeTrue();
+
     $response = $this->postJson('/api/transfers', [
         'from_account_uuid' => $fromAccount->uuid,
         'to_account_uuid' => $toAccount->uuid,
