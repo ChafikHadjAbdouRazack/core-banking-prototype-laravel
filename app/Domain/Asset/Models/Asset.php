@@ -106,6 +106,22 @@ class Asset extends Model
     }
     
     /**
+     * Get exchange rates where this asset is the source
+     */
+    public function exchangeRatesFrom(): HasMany
+    {
+        return $this->hasMany(ExchangeRate::class, 'from_asset_code', 'code');
+    }
+    
+    /**
+     * Get exchange rates where this asset is the target
+     */
+    public function exchangeRatesTo(): HasMany
+    {
+        return $this->hasMany(ExchangeRate::class, 'to_asset_code', 'code');
+    }
+    
+    /**
      * Get the symbol from metadata
      *
      * @return string|null
