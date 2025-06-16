@@ -15,6 +15,7 @@ use Spatie\Permission\Traits\HasRoles;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use App\Values\UserRoles;
+use App\Models\Account;
 
 class User extends Authenticatable implements FilamentUser
 {
@@ -97,5 +98,13 @@ class User extends Authenticatable implements FilamentUser
     public function canAccessPanel(Panel $panel): bool
     {
         return $this->hasRole(UserRoles::ADMIN->value);
+    }
+
+    /**
+     * Get the accounts for the user.
+     */
+    public function accounts()
+    {
+        return $this->hasMany(Account::class, 'user_uuid', 'uuid');
     }
 }
