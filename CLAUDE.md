@@ -361,7 +361,7 @@ Events are processed through separate queues:
 - **Backward Compatibility**: Existing account endpoints continue to work with USD balances
 - **Performance**: Efficient queries with proper indexing and caching strategies
 
-### Phase 3: Platform Integration and Admin Dashboard (Current)
+### Phase 3: Platform Integration and Admin Dashboard (Merged)
 - **Filament Admin Resources**: Complete asset and exchange rate management interfaces
   - **AssetResource**: Full CRUD operations with type filtering, precision validation, and metadata management
   - **ExchangeRateResource**: Real-time monitoring with age tracking, status indicators, and bulk operations
@@ -392,6 +392,52 @@ Events are processed through separate queues:
   - **Error Handling**: Comprehensive error handling with user-friendly messages
   - **Type Safety**: Strict type handling for Stringable objects and API responses
   - **Test Coverage**: 100% test coverage for all new API endpoints and admin interfaces
+
+### Phase 4: Custodian Integration (Current - feature/phase4-custodian-integration)
+- **Custodian Domain Structure**: Complete domain-driven design for custodian operations
+  - **Contracts**: ICustodianConnector interface defining standard custodian operations
+  - **Value Objects**: TransactionReceipt, AccountInfo, TransferRequest for type safety
+  - **Base Connector**: Abstract BaseCustodianConnector with common HTTP client logic
+  - **Mock Connector**: Full-featured MockBankConnector for testing and development
+
+- **Custodian Operations**:
+  - **Account Management**: Get account info, validate accounts, check balances
+  - **Transfer Operations**: Initiate transfers, verify completion, handle failures
+  - **Transaction History**: Query transaction history with pagination
+  - **Multi-Asset Support**: Full support for all asset types (fiat, crypto, commodities)
+
+- **Workflow Integration**:
+  - **CustodianTransferWorkflow**: Orchestrates transfers between internal and custodian accounts
+  - **Compensation Logic**: Automatic rollback on failures with saga pattern
+  - **Activity Pattern**: InitiateCustodianTransferActivity, VerifyCustodianTransferActivity
+  - **Bi-directional Transfers**: Support for both deposits and withdrawals
+
+- **Service Layer**:
+  - **CustodianRegistry**: Manages multiple custodian connectors dynamically
+  - **Service Provider**: Auto-registers custodians from configuration
+  - **Default Custodian**: Configurable default custodian selection
+  - **Asset Filtering**: Find custodians by supported assets
+
+- **REST API Endpoints**:
+  - `GET /api/custodians` - List available custodians
+  - `GET /api/custodians/{custodian}/account-info` - Get account information
+  - `GET /api/custodians/{custodian}/balance` - Check account balance
+  - `POST /api/custodians/{custodian}/transfer` - Transfer funds
+  - `GET /api/custodians/{custodian}/transactions` - Transaction history
+  - `GET /api/custodians/{custodian}/transactions/{id}` - Transaction status
+
+- **Configuration & Extensibility**:
+  - **Provider Configuration**: Easy addition of new custodian providers
+  - **Environment Variables**: Secure API key and credential management
+  - **Rate Limiting**: Configurable rate limits per custodian
+  - **Caching**: Optional caching for balance and account info queries
+  - **SSL Verification**: Configurable SSL verification per provider
+
+- **Testing Infrastructure**:
+  - **Comprehensive Unit Tests**: All value objects, connectors, and services tested
+  - **API Integration Tests**: Full coverage of custodian API endpoints
+  - **Mock Implementation**: Realistic mock bank with balance tracking
+  - **Type Safety**: Strict PHP type declarations throughout
 
 ## Previous Improvements (Feature Branch: export-and-webhooks)
 
