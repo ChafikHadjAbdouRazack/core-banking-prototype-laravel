@@ -103,6 +103,11 @@ class BasketAccountService
             throw new \Exception("Basket {$basketCode} is not active");
         }
 
+        // Validate positive amount
+        if ($amount <= 0) {
+            throw new \Exception("Amount must be positive");
+        }
+
         // Note: We don't validate weights here since this is an operational function
         // and users should be able to decompose even if basket weights are temporarily invalid
 
@@ -181,6 +186,11 @@ class BasketAccountService
         
         if (!$basket->is_active) {
             throw new \Exception("Basket {$basketCode} is not active");
+        }
+
+        // Validate positive amount
+        if ($amount <= 0) {
+            throw new \Exception("Amount must be positive");
         }
 
         // Validate basket weights

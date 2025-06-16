@@ -232,7 +232,7 @@ class BasketAccountServiceTest extends TestCase
         $this->basket->update(['is_active' => false]);
         
         $this->expectException(\Exception::class);
-        $this->expectExceptionMessage('Basket is not active: STABLE_BASKET');
+        $this->expectExceptionMessage('Basket STABLE_BASKET is not active');
         
         $this->service->decomposeBasket($this->account, 'STABLE_BASKET', 1000);
     }
