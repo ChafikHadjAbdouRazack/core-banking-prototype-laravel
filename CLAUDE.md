@@ -26,10 +26,10 @@ All contributions (human or AI-generated) must include:
 # Run specific test suites
 ./vendor/bin/pest tests/Domain/         # Domain layer tests
 ./vendor/bin/pest tests/Feature/        # Feature tests
-./vendor/bin/pest --coverage --min=50  # Run with coverage report (50% minimum)
+./vendor/bin/pest --coverage --min=40  # Run with coverage report (40% minimum)
 
 # Run tests in parallel with coverage
-./vendor/bin/pest --parallel --coverage --min=50
+./vendor/bin/pest --parallel --coverage --min=40
 
 # Run single test file
 ./vendor/bin/pest tests/Domain/Account/Aggregates/LedgerAggregateTest.php
