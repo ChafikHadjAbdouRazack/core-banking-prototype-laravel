@@ -1,20 +1,20 @@
 <?php
 
 use App\Domain\Asset\Services\ExchangeRateService;
-use App\Models\Asset;
-use App\Models\ExchangeRate;
+use App\Domain\Asset\Models\Asset;
+use App\Domain\Asset\Models\ExchangeRate;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 
 uses(RefreshDatabase::class);
 
 beforeEach(function () {
-    // Create test assets
-    Asset::create(['code' => 'USD', 'name' => 'US Dollar', 'type' => 'fiat', 'precision' => 2]);
-    Asset::create(['code' => 'EUR', 'name' => 'Euro', 'type' => 'fiat', 'precision' => 2]);
-    Asset::create(['code' => 'GBP', 'name' => 'British Pound', 'type' => 'fiat', 'precision' => 2]);
-    Asset::create(['code' => 'BTC', 'name' => 'Bitcoin', 'type' => 'crypto', 'precision' => 8]);
-    Asset::create(['code' => 'ETH', 'name' => 'Ethereum', 'type' => 'crypto', 'precision' => 8]);
+    // Create test assets (use firstOrCreate to avoid duplicates in parallel tests)
+    Asset::firstOrCreate(['code' => 'USD'], ['name' => 'US Dollar', 'type' => 'fiat', 'precision' => 2]);
+    Asset::firstOrCreate(['code' => 'EUR'], ['name' => 'Euro', 'type' => 'fiat', 'precision' => 2]);
+    Asset::firstOrCreate(['code' => 'GBP'], ['name' => 'British Pound', 'type' => 'fiat', 'precision' => 2]);
+    Asset::firstOrCreate(['code' => 'BTC'], ['name' => 'Bitcoin', 'type' => 'crypto', 'precision' => 8]);
+    Asset::firstOrCreate(['code' => 'ETH'], ['name' => 'Ethereum', 'type' => 'crypto', 'precision' => 8]);
 
     $this->service = new ExchangeRateService();
 });

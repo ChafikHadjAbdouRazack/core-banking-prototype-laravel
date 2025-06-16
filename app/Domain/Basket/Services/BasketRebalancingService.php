@@ -18,6 +18,14 @@ class BasketRebalancingService
     ) {}
 
     /**
+     * Check if a basket needs rebalancing.
+     */
+    public function needsRebalancing(BasketAsset $basket): bool
+    {
+        return $basket->needsRebalancing();
+    }
+
+    /**
      * Check if a basket needs rebalancing and perform it if necessary.
      */
     public function rebalanceIfNeeded(BasketAsset $basket): ?array
@@ -50,8 +58,10 @@ class BasketRebalancingService
         if (empty($adjustments)) {
             Log::info("Basket {$basket->code} does not need rebalancing");
             return [
-                'status' => 'no_changes_needed',
+                'status' => 'completed',
                 'basket' => $basket->code,
+                'adjustments' => [],
+                'adjustments_count' => 0,
                 'checked_at' => now()->toISOString(),
             ];
         }
@@ -128,9 +138,10 @@ class BasketRebalancingService
             ]);
 
             return [
-                'status' => 'rebalanced',
+                'status' => 'completed',
                 'basket' => $basket->code,
                 'adjustments' => $adjustments,
+                'adjustments_count' => count($adjustments),
                 'rebalanced_at' => now()->toISOString(),
             ];
         });
@@ -186,10 +197,13 @@ class BasketRebalancingService
         $adjustments = $this->calculateAdjustments($basket, $currentValue);
 
         return [
+            'status' => 'simulated',
             'basket' => $basket->code,
             'current_value' => $currentValue->value,
             'adjustments' => $adjustments,
+            'adjustments_count' => count($adjustments),
             'needs_rebalancing' => !empty($adjustments),
+            'simulated' => true,
             'simulated_at' => now()->toISOString(),
         ];
     }

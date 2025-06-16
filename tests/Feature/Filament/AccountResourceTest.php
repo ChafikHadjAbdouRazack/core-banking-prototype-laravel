@@ -18,6 +18,11 @@ describe('Filament Admin Dashboard', function () {
     beforeEach(function () {
         $this->user = User::factory()->create();
         actingAs($this->user);
+        
+        // Skip if Filament panel is not properly configured
+        if (!app(\Filament\FilamentManager::class)->getCurrentPanel()) {
+            $this->markTestSkipped('Filament panel not configured for testing');
+        }
     });
 
     it('can render account index page', function () {
@@ -202,4 +207,4 @@ describe('Filament Admin Dashboard', function () {
             ->assertSee('Total Balance')
             ->assertSee('$600.00'); // (5 * 100) + (2 * 50) = 600
     });
-})->skip('Filament tests require additional setup and authentication configuration');
+});

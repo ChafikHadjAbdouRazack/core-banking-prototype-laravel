@@ -229,6 +229,10 @@ class BasketValueCalculationService
 
         if (!$startValue || !$endValue) {
             return [
+                'start_value' => null,
+                'end_value' => null,
+                'absolute_change' => 0,
+                'percentage_change' => 0,
                 'error' => 'Insufficient data for performance calculation',
             ];
         }

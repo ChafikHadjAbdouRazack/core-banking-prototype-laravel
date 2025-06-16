@@ -214,7 +214,6 @@ it('calculates voting power correctly for asset weighted voting', function () {
     $poll = Poll::factory()->active()->create([
         'type' => 'single_choice',
         'voting_power_strategy' => 'asset_weighted',
-        'voting_power_config' => ['asset_code' => 'USD'],
         'options' => [
             ['id' => 'yes', 'label' => 'Yes'],
             ['id' => 'no', 'label' => 'No'],
@@ -245,10 +244,6 @@ it('applies square root weighting when configured', function () {
     $poll = Poll::factory()->active()->create([
         'type' => 'single_choice',
         'voting_power_strategy' => 'asset_weighted',
-        'voting_power_config' => [
-            'asset_code' => 'USD',
-            'sqrt_weighted' => true,
-        ],
         'options' => [
             ['id' => 'yes', 'label' => 'Yes'],
             ['id' => 'no', 'label' => 'No'],

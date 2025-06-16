@@ -56,7 +56,7 @@ class BasketController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $query = BasketAsset::with(['components.asset', 'latestValue']);
+        $query = BasketAsset::with(['components.asset']);
 
         if ($request->has('type')) {
             $query->where('type', $request->input('type'));
@@ -67,6 +67,8 @@ class BasketController extends Controller
         }
 
         $baskets = $query->get()->map(function ($basket) {
+            $latestValue = $basket->values()->latest('calculated_at')->first();
+            
             return [
                 'code' => $basket->code,
                 'name' => $basket->name,
@@ -74,9 +76,9 @@ class BasketController extends Controller
                 'type' => $basket->type,
                 'rebalance_frequency' => $basket->rebalance_frequency,
                 'is_active' => $basket->is_active,
-                'latest_value' => $basket->latestValue ? [
-                    'value' => $basket->latestValue->value,
-                    'calculated_at' => $basket->latestValue->calculated_at->toISOString(),
+                'latest_value' => $latestValue ? [
+                    'value' => $latestValue->value,
+                    'calculated_at' => $latestValue->calculated_at->toISOString(),
                 ] : null,
                 'components' => $basket->components->map(function ($component) {
                     return [

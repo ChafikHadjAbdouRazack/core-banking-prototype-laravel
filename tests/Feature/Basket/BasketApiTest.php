@@ -342,8 +342,8 @@ class BasketApiTest extends TestCase
     /** @test */
     public function it_requires_authentication_for_protected_endpoints()
     {
-        // Remove authentication
-        Sanctum::$actingAs = null;
+        // Don't authenticate (start fresh test instance)
+        $this->refreshApplication();
         
         $response = $this->postJson('/api/v2/baskets', [
             'code' => 'UNAUTH_BASKET',

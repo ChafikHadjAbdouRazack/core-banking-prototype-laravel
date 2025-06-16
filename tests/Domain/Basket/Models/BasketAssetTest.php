@@ -10,10 +10,10 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 uses(RefreshDatabase::class);
 
 beforeEach(function () {
-    // Create test assets
-    Asset::create(['code' => 'USD', 'name' => 'US Dollar', 'type' => 'fiat', 'precision' => 2]);
-    Asset::create(['code' => 'EUR', 'name' => 'Euro', 'type' => 'fiat', 'precision' => 2]);
-    Asset::create(['code' => 'GBP', 'name' => 'British Pound', 'type' => 'fiat', 'precision' => 2]);
+    // Create test assets (use firstOrCreate to avoid duplicates in parallel tests)
+    Asset::firstOrCreate(['code' => 'USD'], ['name' => 'US Dollar', 'type' => 'fiat', 'precision' => 2]);
+    Asset::firstOrCreate(['code' => 'EUR'], ['name' => 'Euro', 'type' => 'fiat', 'precision' => 2]);
+    Asset::firstOrCreate(['code' => 'GBP'], ['name' => 'British Pound', 'type' => 'fiat', 'precision' => 2]);
 });
 
 it('can create a basket asset', function () {

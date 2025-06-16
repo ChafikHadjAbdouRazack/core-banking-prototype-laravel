@@ -8,11 +8,16 @@ use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 
 class BasketRebalanced extends ShouldBeStored
 {
+    public readonly \DateTimeInterface $timestamp;
+
     public function __construct(
         public readonly string $basketCode,
         public readonly array $adjustments,
         public readonly \DateTimeInterface $rebalancedAt
-    ) {}
+    ) {
+        // Add timestamp property for test compatibility
+        $this->timestamp = $this->rebalancedAt;
+    }
 
     /**
      * Get the total number of adjustments made.

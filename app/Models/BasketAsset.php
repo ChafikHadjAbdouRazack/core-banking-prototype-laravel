@@ -6,6 +6,7 @@ use App\Domain\Asset\Models\Asset;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Collection;
 
@@ -68,9 +69,10 @@ class BasketAsset extends Model
     /**
      * Get the latest value of this basket.
      */
-    public function latestValue(): ?BasketValue
+    public function latestValue(): HasOne
     {
-        return $this->values()->latest('calculated_at')->first();
+        return $this->hasOne(BasketValue::class, 'basket_asset_code', 'code')
+            ->latest('calculated_at');
     }
 
     /**
@@ -123,7 +125,7 @@ class BasketAsset extends Model
             ['code' => $this->code],
             [
                 'name' => $this->name,
-                'type' => 'custom',
+                'type' => 'basket',
                 'precision' => 4,
                 'is_active' => $this->is_active ?? true,
                 'metadata' => [
