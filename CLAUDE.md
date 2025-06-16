@@ -235,7 +235,34 @@ Events are processed through separate queues:
 - **Webhook Management**: Configure and monitor webhook endpoints for real-time event notifications
 - **Search & Filtering**: Advanced search across all entities with multiple filter criteria
 
-## Implementation Phases (All Completed)
+## Implementation Phases
+
+### Phase 4: Basket Assets (Current Branch: feature/phase4-basket-assets) 🔄 IN PROGRESS
+
+- **Basket Asset Models**:
+  - Created `BasketAsset` model for defining composite assets with fixed/dynamic types
+  - Implemented `BasketComponent` model for weighted asset composition  
+  - Added `BasketValue` model for historical value tracking
+  - Integrated with existing Asset model via `is_basket` flag
+
+- **Services**:
+  - `BasketValueCalculationService`: Calculates basket values based on component weights and current exchange rates
+  - `BasketRebalancingService`: Handles dynamic basket rebalancing with configurable frequencies
+  - Caching support for performance optimization with 5-minute TTL
+
+- **Event Sourcing**:
+  - Created `BasketCreated`, `BasketRebalanced`, `BasketDecomposed` events
+  - Full audit trail for all basket operations
+
+- **Database Schema**:
+  - `basket_assets`: Main basket definitions with rebalancing configuration
+  - `basket_components`: Asset composition with weights and min/max bounds
+  - `basket_values`: Historical value tracking with component breakdowns
+
+- **Testing**:
+  - Comprehensive test coverage for models and services
+  - Factory support for generating test basket data
+  - Performance and edge case testing
 
 ### Phase 1: Multi-Asset Foundation Implementation ✅ Completed
 - **Asset Domain Structure**:
