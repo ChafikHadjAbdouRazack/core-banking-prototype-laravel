@@ -321,10 +321,20 @@ Events are processed through separate queues:
 - **Admin Interface**: Complete poll management and vote tracking with analytics
 - **Security & Integrity**: Vote signatures, double voting prevention, audit logging
 
-### Phase 6: Documentation and Testing Overhaul ✅ In Progress
+### Phase 6: Documentation and Testing Overhaul ✅ Completed
 - **Comprehensive Documentation Review**: Updated all documentation to match current implementation
 - **Test Coverage Enhancement**: Adding missing tests and fixing existing test gaps
 - **API Documentation**: Complete OpenAPI specification with all endpoints documented
+
+### Phase 4: Basket Assets Implementation ✅ Completed
+- **Basket Asset Domain**: Comprehensive basket asset management with support for fixed and dynamic composition
+- **Multi-Asset Integration**: Seamless integration with existing multi-asset platform infrastructure
+- **Value Calculation Service**: Real-time basket valuation using exchange rates and component weights
+- **Rebalancing Engine**: Automated rebalancing for dynamic baskets with configurable frequencies
+- **Account Integration**: Basket composition/decomposition operations on user accounts
+- **Admin Interface**: Complete Filament resources for basket management with performance analytics
+- **API Endpoints**: Full REST API support for basket operations, value queries, and performance tracking
+- **Comprehensive Testing**: Full test coverage for all basket functionality including edge cases
 
 ## Key Development Patterns
 
@@ -512,6 +522,265 @@ class AccountExporter extends Exporter
         ];
     }
 }
+```
+
+### Basket Asset Implementation
+Working with basket assets and complex financial instruments:
+```php
+// Creating a basket asset
+$basket = BasketAsset::create([
+    'code' => 'STABLE_BASKET',
+    'name' => 'Stable Currency Basket',
+    'type' => 'fixed', // or 'dynamic'
+    'rebalance_frequency' => 'monthly',
+    'is_active' => true,
+]);
+
+// Adding components with weights
+$basket->components()->createMany([
+    ['asset_code' => 'USD', 'weight' => 40.0],
+    ['asset_code' => 'EUR', 'weight' => 35.0],
+    ['asset_code' => 'GBP', 'weight' => 25.0],
+]);
+
+// For dynamic baskets, add weight ranges
+$basket->components()->create([
+    'asset_code' => 'USD',
+    'weight' => 40.0,
+    'min_weight' => 35.0,
+    'max_weight' => 45.0,
+]);
+
+// Create as tradeable asset
+$asset = $basket->toAsset();
+
+// Calculate current value
+$valueService = app(BasketValueCalculationService::class);
+$value = $valueService->calculateValue($basket);
+echo "Current value: \${$value->value}";
+
+// Rebalance dynamic basket
+$rebalancingService = app(BasketRebalancingService::class);
+if ($basket->needsRebalancing()) {
+    $result = $rebalancingService->rebalance($basket);
+    echo "Rebalanced {$result['adjustments_count']} components";
+}
+
+// Account operations
+$accountService = app(BasketAccountService::class);
+
+// Decompose basket into components
+$decomposition = $accountService->decomposeBasket($account, 'STABLE_BASKET', 10000);
+// Results in individual asset balances
+
+// Compose basket from components
+$composition = $accountService->composeBasket($account, 'STABLE_BASKET', 10000);
+// Results in basket asset balance
+
+// Get basket holdings value
+$holdings = $accountService->getBasketHoldingsValue($account);
+```
+
+### Basket Value Calculation
+Understanding basket valuation mechanics:
+```php
+// Manual calculation example
+$basket = BasketAsset::with('components.asset')->find('STABLE_BASKET');
+$totalValue = 0;
+
+foreach ($basket->components as $component) {
+    if (!$component->is_active) continue;
+    
+    // Get exchange rate to USD
+    $rate = $component->asset_code === 'USD' 
+        ? 1.0 
+        : ExchangeRate::getRate($component->asset_code, 'USD');
+    
+    // Calculate weighted contribution
+    $weightedValue = $rate * ($component->weight / 100);
+    $totalValue += $weightedValue;
+}
+
+// Automated calculation with caching
+$valueService = app(BasketValueCalculationService::class);
+$value = $valueService->calculateValue($basket, true); // Use cache
+
+// Get historical performance
+$performance = $valueService->calculatePerformance(
+    $basket,
+    now()->subMonth(),
+    now()
+);
+
+echo "30-day return: {$performance['percentage_change']}%";
+```
+
+### Dynamic Rebalancing Logic
+Implementing rebalancing strategies:
+```php
+class BasketRebalancingService
+{
+    public function rebalance(BasketAsset $basket): array
+    {
+        if ($basket->type !== 'dynamic') {
+            throw new \Exception('Only dynamic baskets can be rebalanced');
+        }
+        
+        $adjustments = [];
+        $activeComponents = $basket->components()->where('is_active', true)->get();
+        
+        foreach ($activeComponents as $component) {
+            $currentWeight = $component->weight;
+            $targetWeight = $this->calculateTargetWeight($component);
+            
+            // Check if adjustment needed
+            if (abs($currentWeight - $targetWeight) > 0.01) {
+                $adjustments[] = [
+                    'asset_code' => $component->asset_code,
+                    'old_weight' => $currentWeight,
+                    'new_weight' => $targetWeight,
+                    'adjustment' => $targetWeight - $currentWeight,
+                ];
+                
+                $component->update(['weight' => $targetWeight]);
+            }
+        }
+        
+        // Normalize weights to sum to 100%
+        $this->normalizeWeights($activeComponents);
+        
+        // Update rebalancing timestamp
+        $basket->update(['last_rebalanced_at' => now()]);
+        
+        // Fire event
+        event(new BasketRebalanced($basket->code, $adjustments));
+        
+        return [
+            'status' => 'completed',
+            'basket' => $basket->code,
+            'adjustments' => $adjustments,
+            'adjustments_count' => count($adjustments),
+        ];
+    }
+    
+    private function calculateTargetWeight(BasketComponent $component): float
+    {
+        // Clamp to min/max range
+        $target = $component->weight;
+        
+        if ($component->min_weight && $target < $component->min_weight) {
+            $target = $component->min_weight;
+        }
+        
+        if ($component->max_weight && $target > $component->max_weight) {
+            $target = $component->max_weight;
+        }
+        
+        return $target;
+    }
+}
+```
+
+### Basket API Integration
+Working with basket APIs:
+```php
+// List all baskets
+$response = Http::get('/api/v2/baskets', [
+    'type' => 'dynamic',
+    'active' => true,
+]);
+
+// Get basket details
+$basket = Http::get('/api/v2/baskets/STABLE_BASKET');
+
+// Create new basket
+$newBasket = Http::post('/api/v2/baskets', [
+    'code' => 'CRYPTO_BASKET',
+    'name' => 'Cryptocurrency Basket',
+    'type' => 'dynamic',
+    'rebalance_frequency' => 'daily',
+    'components' => [
+        ['asset_code' => 'BTC', 'weight' => 60.0, 'min_weight' => 50.0, 'max_weight' => 70.0],
+        ['asset_code' => 'ETH', 'weight' => 40.0, 'min_weight' => 30.0, 'max_weight' => 50.0],
+    ],
+]);
+
+// Get current value
+$value = Http::get('/api/v2/baskets/STABLE_BASKET/value');
+
+// Rebalance basket
+$rebalance = Http::post('/api/v2/baskets/STABLE_BASKET/rebalance');
+
+// Account operations
+$decompose = Http::post("/api/v2/accounts/{$accountUuid}/baskets/decompose", [
+    'basket_code' => 'STABLE_BASKET',
+    'amount' => 10000,
+]);
+
+$compose = Http::post("/api/v2/accounts/{$accountUuid}/baskets/compose", [
+    'basket_code' => 'STABLE_BASKET',
+    'amount' => 10000,
+]);
+
+// Get account basket holdings
+$holdings = Http::get("/api/v2/accounts/{$accountUuid}/baskets");
+```
+
+### Basket Admin Interface
+Managing baskets through Filament:
+```php
+// Custom basket action in Filament resource
+Tables\Actions\Action::make('rebalance')
+    ->label('Rebalance')
+    ->icon('heroicon-m-scale')
+    ->color('warning')
+    ->visible(fn (BasketAsset $record) => $record->type === 'dynamic')
+    ->action(function (BasketAsset $record) {
+        $service = app(BasketRebalancingService::class);
+        $result = $service->rebalance($record);
+        
+        Notification::make()
+            ->success()
+            ->title('Basket Rebalanced')
+            ->body("Adjusted {$result['adjustments_count']} components")
+            ->send();
+    });
+
+// Basket value widget
+class BasketValueChart extends ChartWidget
+{
+    public function getData(): array
+    {
+        $values = BasketValue::where('basket_code', $this->record->code)
+            ->where('calculated_at', '>=', now()->subDays(30))
+            ->orderBy('calculated_at')
+            ->get();
+            
+        return [
+            'datasets' => [[
+                'label' => 'Value (USD)',
+                'data' => $values->pluck('value'),
+                'borderColor' => 'rgb(75, 192, 192)',
+            ]],
+            'labels' => $values->pluck('calculated_at')->map(fn($date) => $date->format('M j')),
+        ];
+    }
+}
+
+// Component weight validation
+Forms\Components\Repeater::make('components')
+    ->afterStateUpdated(function (Forms\Get $get, Forms\Set $set) {
+        $components = $get('components') ?? [];
+        $totalWeight = collect($components)->sum('weight');
+        
+        if (abs($totalWeight - 100) > 0.01) {
+            Notification::make()
+                ->warning()
+                ->title('Weight Warning')
+                ->body("Total weight is {$totalWeight}%. Must sum to 100%.")
+                ->send();
+        }
+    });
 ```
 
 ## Multi-Asset Development Patterns
@@ -705,3 +974,14 @@ test('account can hold multiple asset balances', function () {
 - Exchange rate providers: `app/Domain/Exchange/Providers/`
 - Governance domain: `app/Domain/Governance/`
 - Multi-asset migrations: `database/migrations/`
+
+### Basket Asset Locations
+- Basket models: `app/Models/BasketAsset.php`, `app/Models/BasketComponent.php`, `app/Models/BasketValue.php`
+- Basket services: `app/Domain/Basket/Services/`
+- Basket events: `app/Domain/Basket/Events/`
+- Basket workflows: `app/Domain/Basket/Workflows/`
+- Basket API controllers: `app/Http/Controllers/Api/BasketController.php`, `app/Http/Controllers/Api/BasketAccountController.php`
+- Basket Filament resources: `app/Filament/Admin/Resources/BasketAssetResource/`
+- Basket tests: `tests/Feature/Basket/`
+- Basket migration: `database/migrations/2025_06_16_232847_create_basket_assets_tables.php`
+- Basket documentation: `docs/BASKET_ASSETS_DESIGN.md`

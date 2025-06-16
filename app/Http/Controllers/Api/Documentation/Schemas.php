@@ -213,6 +213,66 @@ namespace App\Http\Controllers\Api\Documentation;
  *         additionalProperties={"type":"array", "items":{"type":"string"}}
  *     )
  * )
+ * 
+ * @OA\Schema(
+ *     schema="BasketAsset",
+ *     type="object",
+ *     title="Basket Asset",
+ *     required={"code", "name", "type", "components"},
+ *     @OA\Property(property="code", type="string", example="STABLE_BASKET"),
+ *     @OA\Property(property="name", type="string", example="Stable Currency Basket"),
+ *     @OA\Property(property="description", type="string", example="A diversified basket of stable fiat currencies"),
+ *     @OA\Property(property="type", type="string", enum={"fixed", "dynamic"}, example="fixed"),
+ *     @OA\Property(property="rebalance_frequency", type="string", enum={"daily", "weekly", "monthly", "quarterly", "never"}, example="never"),
+ *     @OA\Property(property="last_rebalanced_at", type="string", format="date-time", nullable=true),
+ *     @OA\Property(property="is_active", type="boolean", example=true),
+ *     @OA\Property(property="created_at", type="string", format="date-time", example="2024-01-01T00:00:00Z"),
+ *     @OA\Property(
+ *         property="components",
+ *         type="array",
+ *         @OA\Items(ref="#/components/schemas/BasketComponent")
+ *     ),
+ *     @OA\Property(
+ *         property="latest_value",
+ *         type="object",
+ *         nullable=true,
+ *         @OA\Property(property="value", type="number", format="float", example=1.0975),
+ *         @OA\Property(property="calculated_at", type="string", format="date-time")
+ *     )
+ * )
+ * 
+ * @OA\Schema(
+ *     schema="BasketComponent",
+ *     type="object",
+ *     title="Basket Component",
+ *     required={"asset_code", "weight"},
+ *     @OA\Property(property="asset_code", type="string", example="USD"),
+ *     @OA\Property(property="asset_name", type="string", example="US Dollar"),
+ *     @OA\Property(property="weight", type="number", format="float", example=40.0, description="Weight percentage (0-100)"),
+ *     @OA\Property(property="min_weight", type="number", format="float", nullable=true, example=35.0),
+ *     @OA\Property(property="max_weight", type="number", format="float", nullable=true, example=45.0),
+ *     @OA\Property(property="is_active", type="boolean", default=true)
+ * )
+ * 
+ * @OA\Schema(
+ *     schema="BasketValue",
+ *     type="object",
+ *     title="Basket Value",
+ *     required={"basket_code", "value", "calculated_at"},
+ *     @OA\Property(property="basket_code", type="string", example="STABLE_BASKET"),
+ *     @OA\Property(property="value", type="number", format="float", example=1.0975, description="Current value in base currency (USD)"),
+ *     @OA\Property(property="calculated_at", type="string", format="date-time", example="2024-01-01T12:00:00Z"),
+ *     @OA\Property(
+ *         property="component_values",
+ *         type="object",
+ *         description="Breakdown of component values",
+ *         example={
+ *             "USD": {"value": 1.0, "weight": 40.0, "weighted_value": 0.4},
+ *             "EUR": {"value": 1.1, "weight": 35.0, "weighted_value": 0.385},
+ *             "GBP": {"value": 1.25, "weight": 25.0, "weighted_value": 0.3125}
+ *         }
+ *     )
+ * )
  */
 class Schemas
 {
