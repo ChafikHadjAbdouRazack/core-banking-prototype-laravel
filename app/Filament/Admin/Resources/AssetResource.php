@@ -279,7 +279,7 @@ class AssetResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        return static::getModel()::count();
+        return (string) static::getModel()::count();
     }
 
     public static function getNavigationBadgeColor(): string
