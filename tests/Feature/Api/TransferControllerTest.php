@@ -178,7 +178,6 @@ it('can get transfer history for account', function () {
 });
 
 it('requires authentication for all endpoints', function () {
-
     $uuid = Str::uuid()->toString();
 
     $this->postJson('/api/transfers', [
@@ -192,4 +191,68 @@ it('requires authentication for all endpoints', function () {
     
     $this->getJson("/api/accounts/{$uuid}/transfers")
         ->assertStatus(401);
+});
+
+it('validates that from and to accounts are different', function () {
+    $user = User::factory()->create();
+    Sanctum::actingAs($user);
+    $account = Account::factory()->create();
+
+    $response = $this->postJson('/api/transfers', [
+        'from_account_uuid' => $account->uuid,
+        'to_account_uuid' => $account->uuid,
+        'amount' => 100,
+        'description' => 'Invalid transfer',
+    ]);
+
+    $response->assertStatus(422)
+        ->assertJsonValidationErrors(['to_account_uuid']);
+});
+
+it('validates transfer amount minimum', function () {
+    $user = User::factory()->create();
+    Sanctum::actingAs($user);
+    $fromAccount = Account::factory()->create();
+    $toAccount = Account::factory()->create();
+
+    $response = $this->postJson('/api/transfers', [
+        'from_account_uuid' => $fromAccount->uuid,
+        'to_account_uuid' => $toAccount->uuid,
+        'amount' => 0.001, // Below minimum
+        'description' => 'Test transfer',
+    ]);
+
+    $response->assertStatus(422)
+        ->assertJsonValidationErrors(['amount']);
+});
+
+it('handles invalid account UUIDs gracefully', function () {
+    $user = User::factory()->create();
+    Sanctum::actingAs($user);
+
+    $response = $this->postJson('/api/transfers', [
+        'from_account_uuid' => 'invalid-uuid',
+        'to_account_uuid' => 'another-invalid-uuid',
+        'amount' => 100,
+    ]);
+
+    $response->assertStatus(422)
+        ->assertJsonValidationErrors(['from_account_uuid', 'to_account_uuid']);
+});
+
+it('can include optional description in transfer', function () {
+    $user = User::factory()->create();
+    Sanctum::actingAs($user);
+    $fromAccount = Account::factory()->withBalance(1000)->create();
+    $toAccount = Account::factory()->create();
+
+    $response = $this->postJson('/api/transfers', [
+        'from_account_uuid' => $fromAccount->uuid,
+        'to_account_uuid' => $toAccount->uuid,
+        'amount' => 250,
+        'description' => 'Salary payment',
+    ]);
+
+    $response->assertStatus(201)
+        ->assertJsonPath('data.description', 'Salary payment');
 });
