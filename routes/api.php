@@ -62,6 +62,17 @@ Route::prefix('v1')->group(function () {
     Route::get('/exchange-rates', [ExchangeRateController::class, 'index']);
     Route::get('/exchange-rates/{from}/{to}', [ExchangeRateController::class, 'show']);
     Route::get('/exchange-rates/{from}/{to}/convert', [ExchangeRateController::class, 'convert']);
+    
+    // Exchange rate provider endpoints
+    Route::prefix('exchange-providers')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Api\ExchangeRateProviderController::class, 'index']);
+        Route::get('/{provider}/rate', [\App\Http\Controllers\Api\ExchangeRateProviderController::class, 'getRate']);
+        Route::get('/compare', [\App\Http\Controllers\Api\ExchangeRateProviderController::class, 'compareRates']);
+        Route::get('/aggregated', [\App\Http\Controllers\Api\ExchangeRateProviderController::class, 'getAggregatedRate']);
+        Route::post('/refresh', [\App\Http\Controllers\Api\ExchangeRateProviderController::class, 'refresh'])->middleware('auth:sanctum');
+        Route::get('/historical', [\App\Http\Controllers\Api\ExchangeRateProviderController::class, 'historical']);
+        Route::post('/validate', [\App\Http\Controllers\Api\ExchangeRateProviderController::class, 'validate']);
+    });
 });
 
 // Include BIAN-compliant routes
