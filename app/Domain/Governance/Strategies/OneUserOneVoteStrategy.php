@@ -28,7 +28,7 @@ class OneUserOneVoteStrategy implements IVotingPowerStrategy
     public function canVote(User $user, Poll $poll): bool
     {
         // Basic requirements: user must exist and be active
-        return $user->exists;
+        return $user->exists();
     }
 
     public function getMaxVotingPower(Poll $poll): ?int

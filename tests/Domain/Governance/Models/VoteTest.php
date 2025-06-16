@@ -142,7 +142,9 @@ describe('Vote Signature Handling', function () {
     });
 
     it('fails verification with missing signature', function () {
-        $vote = Vote::factory()->create(['signature' => null]);
+        $vote = Vote::factory()->make(['signature' => null]);
+        $vote->skipSignatureGeneration = true;
+        $vote->save();
 
         expect($vote->verifySignature())->toBeFalse();
     });

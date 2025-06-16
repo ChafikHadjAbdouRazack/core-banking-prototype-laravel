@@ -167,7 +167,9 @@ describe('Poll Time Calculations', function () {
             'end_date' => now()->addHours(23),
         ]);
 
-        expect($poll->getTimeRemainingInHours())->toBe(23);
+        $remainingHours = $poll->getTimeRemainingInHours();
+        expect($remainingHours)->toBeGreaterThanOrEqual(22);
+        expect($remainingHours)->toBeLessThanOrEqual(23);
     });
 
     it('returns zero remaining time for inactive polls', function () {

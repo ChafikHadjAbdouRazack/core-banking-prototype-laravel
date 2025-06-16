@@ -60,7 +60,7 @@ class AssetWeightedVoteStrategy implements IVotingPowerStrategy
 
     public function canVote(User $user, Poll $poll): bool
     {
-        if (!$user->exists) {
+        if (!$user->exists()) {
             return false;
         }
 

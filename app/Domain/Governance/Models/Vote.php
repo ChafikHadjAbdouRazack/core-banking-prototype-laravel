@@ -15,6 +15,11 @@ class Vote extends Model
 {
     use HasFactory;
 
+    /**
+     * Flag to prevent auto-generation of signature during testing
+     */
+    public bool $skipSignatureGeneration = false;
+
     protected static function newFactory()
     {
         return VoteFactory::new();
@@ -45,10 +50,13 @@ class Vote extends Model
             if (empty($vote->voted_at)) {
                 $vote->voted_at = now();
             }
-            
-            // Generate signature for vote integrity
-            if (empty($vote->signature)) {
+        });
+        
+        static::created(function ($vote) {
+            // Generate signature after the vote is created and has an ID
+            if (!$vote->skipSignatureGeneration && empty($vote->signature)) {
                 $vote->signature = $vote->generateSignature();
+                $vote->saveQuietly(); // Save without triggering events
             }
         });
     }
@@ -93,7 +101,7 @@ class Vote extends Model
 
     public function verifySignature(): bool
     {
-        if (empty($this->signature)) {
+        if (is_null($this->signature) || empty($this->signature)) {
             return false;
         }
 

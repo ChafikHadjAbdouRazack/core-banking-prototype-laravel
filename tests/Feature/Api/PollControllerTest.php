@@ -241,7 +241,7 @@ describe('Poll Activation', function () {
 
 describe('Voting', function () {
     it('can cast vote in active poll', function () {
-        $poll = Poll::factory()->active()->yesNo()->create();
+        $poll = Poll::factory()->active()->yesNo()->oneUserOneVote()->create();
 
         $response = $this->postJson("/api/polls/{$poll->uuid}/vote", [
             'selected_options' => ['yes']
@@ -276,7 +276,7 @@ describe('Voting', function () {
     });
 
     it('cannot vote twice in same poll', function () {
-        $poll = Poll::factory()->active()->yesNo()->create();
+        $poll = Poll::factory()->active()->yesNo()->oneUserOneVote()->create();
 
         // First vote
         $this->postJson("/api/polls/{$poll->uuid}/vote", [
@@ -347,7 +347,7 @@ describe('Poll Results', function () {
 
 describe('Voting Power Check', function () {
     it('can check user voting power', function () {
-        $poll = Poll::factory()->oneUserOneVote()->create();
+        $poll = Poll::factory()->active()->oneUserOneVote()->create();
 
         $response = $this->getJson("/api/polls/{$poll->uuid}/voting-power");
 
@@ -366,7 +366,7 @@ describe('Voting Power Check', function () {
     });
 
     it('reflects voting status after voting', function () {
-        $poll = Poll::factory()->active()->yesNo()->create();
+        $poll = Poll::factory()->active()->yesNo()->oneUserOneVote()->create();
 
         // Check before voting
         $response = $this->getJson("/api/polls/{$poll->uuid}/voting-power");
@@ -392,8 +392,8 @@ describe('Voting Power Check', function () {
 
 describe('Authentication Required', function () {
     it('requires authentication for protected endpoints', function () {
-        // Test without authentication
-        $this->withoutAuthenticatedUser();
+        // Test without authentication - use $this but without actingAs
+        $this->app->make('auth')->forgetGuards();
         
         $response = $this->postJson('/api/polls', []);
         $response->assertStatus(401);

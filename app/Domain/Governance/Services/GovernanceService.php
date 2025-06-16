@@ -220,13 +220,13 @@ class GovernanceService
 
     public function getAvailableVotingStrategies(): array
     {
-        return array_map(
+        return array_values(array_map(
             fn (IVotingPowerStrategy $strategy) => [
                 'name' => $strategy->getName(),
                 'description' => $strategy->getDescription(),
             ],
             $this->votingStrategies
-        );
+        ));
     }
 
     private function validateSelectedOptions(Poll $poll, array $selectedOptions): void

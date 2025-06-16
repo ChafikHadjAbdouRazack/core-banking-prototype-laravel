@@ -139,8 +139,12 @@ describe('Voting', function () {
 
     it('validates single choice constraint', function () {
         $poll = Poll::factory()->active()->singleChoice()->oneUserOneVote()->create();
+        
+        // Get actual option IDs from the poll
+        $optionIds = array_column($poll->options, 'id');
+        $twoOptions = array_slice($optionIds, 0, 2);
 
-        expect(fn() => $this->governanceService->castVote($poll, $this->user, ['option1', 'option2']))
+        expect(fn() => $this->governanceService->castVote($poll, $this->user, $twoOptions))
             ->toThrow(InvalidArgumentException::class, 'Exactly one option must be selected for single choice polls');
     });
 });
@@ -169,7 +173,7 @@ describe('Voting Power', function () {
     });
 
     it('checks if user can vote', function () {
-        $poll = Poll::factory()->active()->create();
+        $poll = Poll::factory()->active()->oneUserOneVote()->create();
 
         $canVote = $this->governanceService->canUserVote($this->user, $poll);
 
@@ -177,7 +181,7 @@ describe('Voting Power', function () {
     });
 
     it('prevents voting if user already voted', function () {
-        $poll = Poll::factory()->active()->yesNo()->create();
+        $poll = Poll::factory()->active()->yesNo()->oneUserOneVote()->create();
         
         // Cast vote
         $this->governanceService->castVote($poll, $this->user, ['yes']);
