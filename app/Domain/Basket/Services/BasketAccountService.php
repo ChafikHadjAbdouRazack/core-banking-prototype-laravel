@@ -293,4 +293,22 @@ class BasketAccountService
             'calculated_at' => now()->toISOString(),
         ];
     }
+
+    /**
+     * Calculate the required component amounts for a given basket amount.
+     * Used for planning basket compositions.
+     */
+    public function calculateRequiredComponents(string $basketCode, int $amount): array
+    {
+        $basket = BasketAsset::where('code', $basketCode)->firstOrFail();
+        $components = $basket->activeComponents;
+        $required = [];
+
+        foreach ($components as $component) {
+            $requiredAmount = (int) round($amount * ($component->weight / 100));
+            $required[$component->asset_code] = $requiredAmount;
+        }
+
+        return $required;
+    }
 }
