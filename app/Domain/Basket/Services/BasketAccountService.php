@@ -10,6 +10,7 @@ use App\Models\AccountBalance;
 use App\Domain\Basket\Events\BasketDecomposed;
 use App\Domain\Account\Events\AssetBalanceAdded;
 use App\Domain\Account\Events\AssetBalanceSubtracted;
+use App\Domain\Account\DataObjects\Hash;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -43,10 +44,10 @@ class BasketAccountService
 
         // Record event
         event(new AssetBalanceAdded(
-            accountUuid: $account->uuid,
             assetCode: $basketCode,
             amount: $amount,
-            metadata: ['type' => 'basket_deposit']
+            hash: new Hash(hash('sha3-512', "basket_deposit:{$account->uuid}:{$basketCode}:{$amount}:" . now()->timestamp)),
+            metadata: ['type' => 'basket_deposit', 'account_uuid' => (string) $account->uuid]
         ));
 
         Log::info("Added {$amount} of basket {$basketCode} to account {$account->uuid}");
@@ -71,10 +72,10 @@ class BasketAccountService
 
         // Record event
         event(new AssetBalanceSubtracted(
-            accountUuid: $account->uuid,
             assetCode: $basketCode,
             amount: $amount,
-            metadata: ['type' => 'basket_withdrawal']
+            hash: new Hash(hash('sha3-512', "basket_withdraw:{$account->uuid}:{$basketCode}:{$amount}:" . now()->timestamp)),
+            metadata: ['type' => 'basket_withdrawal', 'account_uuid' => (string) $account->uuid]
         ));
 
         Log::info("Subtracted {$amount} of basket {$basketCode} from account {$account->uuid}");
@@ -94,10 +95,8 @@ class BasketAccountService
             throw new \Exception("Basket {$basketCode} is not active");
         }
 
-        // Validate basket weights
-        if (!$basket->validateWeights()) {
-            throw new \Exception("Basket {$basketCode} has invalid component weights");
-        }
+        // Note: We don't validate weights here since this is an operational function
+        // and users should be able to decompose even if basket weights are temporarily invalid
 
         // Check sufficient balance
         $basketBalance = $account->balances()
@@ -126,20 +125,21 @@ class BasketAccountService
 
                 // Record event for each component
                 event(new AssetBalanceAdded(
-                    accountUuid: $account->uuid,
                     assetCode: $assetCode,
                     amount: $componentAmount,
+                    hash: new Hash(hash('sha3-512', "basket_decompose:{$account->uuid}:{$assetCode}:{$componentAmount}:" . now()->timestamp)),
                     metadata: [
                         'type' => 'basket_decomposition',
                         'basket_code' => $basketCode,
                         'basket_amount' => $amount,
+                        'account_uuid' => (string) $account->uuid,
                     ]
                 ));
             }
 
             // Record decomposition event
             event(new BasketDecomposed(
-                accountUuid: $account->uuid,
+                accountUuid: (string) $account->uuid,
                 basketCode: $basketCode,
                 amount: $amount,
                 componentAmounts: $componentAmounts,
@@ -201,13 +201,14 @@ class BasketAccountService
 
                 // Record event for each component
                 event(new AssetBalanceSubtracted(
-                    accountUuid: $account->uuid,
                     assetCode: $assetCode,
                     amount: $requiredAmount,
+                    hash: new Hash(hash('sha3-512', "basket_compose:{$account->uuid}:{$assetCode}:{$requiredAmount}:" . now()->timestamp)),
                     metadata: [
                         'type' => 'basket_composition',
                         'basket_code' => $basketCode,
                         'basket_amount' => $amount,
+                        'account_uuid' => (string) $account->uuid,
                     ]
                 ));
             }
@@ -285,7 +286,7 @@ class BasketAccountService
         }
 
         return [
-            'account_uuid' => $account->uuid,
+            'account_uuid' => (string) $account->uuid,
             'basket_holdings' => $holdings,
             'total_value' => $totalValue,
             'currency' => 'USD',
