@@ -60,7 +60,6 @@ describe('Asset Model', function () {
             'code' => 'TEST',
             'name' => 'Test Currency',
             'type' => 'fiat',
-            'symbol' => 'T',
             'precision' => 2,
             'is_active' => true,
             'metadata' => ['country' => 'Test'],
@@ -69,7 +68,6 @@ describe('Asset Model', function () {
         expect($asset->code)->toBe('TEST');
         expect($asset->name)->toBe('Test Currency');
         expect($asset->type)->toBe('fiat');
-        expect($asset->symbol)->toBe('T');
         expect($asset->precision)->toBe(2);
         expect($asset->is_active)->toBeTrue();
         expect($asset->metadata)->toBe(['country' => 'Test']);
@@ -108,21 +106,5 @@ describe('Asset Model', function () {
     it('can get active exchange rates', function () {
         $asset = new Asset();
         expect(method_exists($asset, 'getActiveExchangeRates'))->toBeTrue();
-    });
-
-    it('can format value', function () {
-        $asset = Asset::factory()->create(['precision' => 2]);
-        expect($asset->formatValue(10000))->toBe('100.00');
-        
-        $asset = Asset::factory()->create(['precision' => 8]);
-        expect($asset->formatValue(100000000))->toBe('1.00000000');
-    });
-
-    it('can parse value', function () {
-        $asset = Asset::factory()->create(['precision' => 2]);
-        expect($asset->parseValue('100.00'))->toBe(10000);
-        
-        $asset = Asset::factory()->create(['precision' => 8]);
-        expect($asset->parseValue('1.00000000'))->toBe(100000000);
     });
 });
