@@ -25,7 +25,11 @@ class BasketAccountService
      */
     public function addBasketBalance(Account $account, string $basketCode, int $amount): AccountBalance
     {
-        $basket = BasketAsset::where('code', $basketCode)->firstOrFail();
+        $basket = BasketAsset::where('code', $basketCode)->first();
+        
+        if (!$basket) {
+            throw new \Exception("Basket not found: {$basketCode}");
+        }
         
         if (!$basket->is_active) {
             throw new \Exception("Basket {$basketCode} is not active");
@@ -89,7 +93,11 @@ class BasketAccountService
      */
     public function decomposeBasket(Account $account, string $basketCode, int $amount): array
     {
-        $basket = BasketAsset::where('code', $basketCode)->firstOrFail();
+        $basket = BasketAsset::where('code', $basketCode)->first();
+        
+        if (!$basket) {
+            throw new \Exception("Basket not found: {$basketCode}");
+        }
         
         if (!$basket->is_active) {
             throw new \Exception("Basket {$basketCode} is not active");
@@ -165,7 +173,11 @@ class BasketAccountService
      */
     public function composeBasket(Account $account, string $basketCode, int $amount): array
     {
-        $basket = BasketAsset::where('code', $basketCode)->firstOrFail();
+        $basket = BasketAsset::where('code', $basketCode)->first();
+        
+        if (!$basket) {
+            throw new \Exception("Basket not found: {$basketCode}");
+        }
         
         if (!$basket->is_active) {
             throw new \Exception("Basket {$basketCode} is not active");
@@ -300,7 +312,11 @@ class BasketAccountService
      */
     public function calculateRequiredComponents(string $basketCode, int $amount): array
     {
-        $basket = BasketAsset::where('code', $basketCode)->firstOrFail();
+        $basket = BasketAsset::where('code', $basketCode)->first();
+        
+        if (!$basket) {
+            throw new \Exception("Basket not found: {$basketCode}");
+        }
         $components = $basket->activeComponents;
         $required = [];
 
