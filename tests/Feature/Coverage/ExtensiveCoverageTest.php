@@ -112,10 +112,10 @@ it('can test existing model relationships', function () {
 
 // Test asset model methods comprehensively
 it('can test asset model methods extensively', function () {
-    $fiatAsset = Asset::factory()->fiat()->create();
-    $cryptoAsset = Asset::factory()->crypto()->create();
-    $commodityAsset = Asset::factory()->commodity()->create();
-    $inactiveAsset = Asset::factory()->create(['is_active' => false]);
+    $fiatAsset = Asset::factory()->fiat()->active()->create();
+    $cryptoAsset = Asset::factory()->crypto()->active()->create();
+    $commodityAsset = Asset::factory()->commodity()->active()->create();
+    $inactiveAsset = Asset::factory()->inactive()->create();
     
     // Test type checking methods
     expect($fiatAsset->isFiat())->toBeTrue();
