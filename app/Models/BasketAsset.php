@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Domain\Asset\Models\Asset;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -122,13 +123,13 @@ class BasketAsset extends Model
             ['code' => $this->code],
             [
                 'name' => $this->name,
-                'type' => 'basket',
-                'precision' => 2,
-                'is_active' => $this->is_active,
-                'is_basket' => true,
+                'type' => 'custom',
+                'precision' => 4,
+                'is_active' => $this->is_active ?? true,
                 'metadata' => [
                     'basket_id' => $this->id,
                     'basket_type' => $this->type,
+                    'asset_subtype' => 'basket',
                 ],
             ]
         );

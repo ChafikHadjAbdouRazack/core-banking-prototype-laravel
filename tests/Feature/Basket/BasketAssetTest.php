@@ -19,10 +19,19 @@ class BasketAssetTest extends TestCase
     {
         parent::setUp();
         
-        // Create test assets
-        Asset::factory()->create(['code' => 'USD', 'name' => 'US Dollar', 'type' => 'fiat', 'precision' => 2]);
-        Asset::factory()->create(['code' => 'EUR', 'name' => 'Euro', 'type' => 'fiat', 'precision' => 2]);
-        Asset::factory()->create(['code' => 'GBP', 'name' => 'British Pound', 'type' => 'fiat', 'precision' => 2]);
+        // Create test assets (use firstOrCreate to avoid conflicts)
+        Asset::firstOrCreate(
+            ['code' => 'USD'],
+            ['name' => 'US Dollar', 'type' => 'fiat', 'precision' => 2, 'is_active' => true]
+        );
+        Asset::firstOrCreate(
+            ['code' => 'EUR'],
+            ['name' => 'Euro', 'type' => 'fiat', 'precision' => 2, 'is_active' => true]
+        );
+        Asset::firstOrCreate(
+            ['code' => 'GBP'],
+            ['name' => 'British Pound', 'type' => 'fiat', 'precision' => 2, 'is_active' => true]
+        );
     }
 
     /** @test */
@@ -155,13 +164,13 @@ class BasketAssetTest extends TestCase
         $this->assertDatabaseHas('assets', [
             'code' => 'BASKET_ASSET',
             'name' => 'Basket Asset',
-            'type' => 'basket',
+            'type' => 'custom',
             'precision' => 4,
             'is_active' => true,
         ]);
 
         $this->assertEquals('BASKET_ASSET', $asset->code);
-        $this->assertEquals('basket', $asset->type);
+        $this->assertEquals('custom', $asset->type);
     }
 
     /** @test */
@@ -249,6 +258,6 @@ class BasketAssetTest extends TestCase
         // Test component relationship back to basket
         $component = $basket->components->first();
         $this->assertEquals($basket->id, $component->basket_asset_id);
-        $this->assertEquals($basket->code, $component->basketAsset->code);
+        $this->assertEquals($basket->code, $component->basket->code);
     }
 }

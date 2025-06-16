@@ -3,7 +3,7 @@
 use App\Models\BasketAsset;
 use App\Models\BasketComponent;
 use App\Models\BasketValue;
-use App\Models\Asset;
+use App\Domain\Asset\Models\Asset;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 

@@ -6,8 +6,8 @@ namespace Tests\Feature\Basket;
 
 use App\Models\BasketAsset;
 use App\Models\BasketComponent;
-use App\Models\Asset;
-use App\Models\ExchangeRate;
+use App\Domain\Asset\Models\Asset;
+use App\Domain\Asset\Models\ExchangeRate;
 use App\Domain\Basket\Services\BasketRebalancingService;
 use App\Domain\Basket\Events\BasketRebalanced;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -28,10 +28,10 @@ class BasketRebalancingServiceTest extends TestCase
         
         $this->service = app(BasketRebalancingService::class);
         
-        // Create test assets
-        Asset::factory()->create(['code' => 'USD', 'name' => 'US Dollar', 'type' => 'fiat']);
-        Asset::factory()->create(['code' => 'EUR', 'name' => 'Euro', 'type' => 'fiat']);
-        Asset::factory()->create(['code' => 'GBP', 'name' => 'British Pound', 'type' => 'fiat']);
+        // Create test assets (use firstOrCreate to avoid conflicts)
+        Asset::firstOrCreate(['code' => 'USD'], ['name' => 'US Dollar', 'type' => 'fiat', 'precision' => 2, 'is_active' => true]);
+        Asset::firstOrCreate(['code' => 'EUR'], ['name' => 'Euro', 'type' => 'fiat', 'precision' => 2, 'is_active' => true]);
+        Asset::firstOrCreate(['code' => 'GBP'], ['name' => 'British Pound', 'type' => 'fiat', 'precision' => 2, 'is_active' => true]);
         
         // Create exchange rates
         ExchangeRate::factory()->create([

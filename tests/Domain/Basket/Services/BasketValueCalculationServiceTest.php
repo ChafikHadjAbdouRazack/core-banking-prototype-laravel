@@ -2,8 +2,8 @@
 
 use App\Models\BasketAsset;
 use App\Models\BasketComponent;
-use App\Models\Asset;
-use App\Models\ExchangeRate;
+use App\Domain\Asset\Models\Asset;
+use App\Domain\Asset\Models\ExchangeRate;
 use App\Domain\Basket\Services\BasketValueCalculationService;
 use App\Domain\Asset\Services\ExchangeRateService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
