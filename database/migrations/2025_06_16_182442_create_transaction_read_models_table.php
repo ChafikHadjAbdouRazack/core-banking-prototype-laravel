@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('transactions', function (Blueprint $table) {
+        Schema::create('transaction_read_models', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->unique();
             $table->uuid('account_uuid');
@@ -52,6 +52,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('transactions');
+        Schema::dropIfExists('transaction_read_models');
     }
 };

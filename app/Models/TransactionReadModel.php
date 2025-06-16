@@ -13,7 +13,7 @@ class TransactionReadModel extends Model
 {
     use HasFactory;
 
-    protected $table = 'transactions';
+    protected $table = 'transaction_read_models';
 
     protected $fillable = [
         'uuid',
