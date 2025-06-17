@@ -157,6 +157,22 @@ class Account extends Model
     }
 
     /**
+     * Get the custodian accounts for this account
+     */
+    public function custodianAccounts(): HasMany
+    {
+        return $this->hasMany(CustodianAccount::class, 'account_uuid', 'uuid');
+    }
+
+    /**
+     * Get the primary custodian account
+     */
+    public function primaryCustodianAccount(): ?CustodianAccount
+    {
+        return $this->custodianAccounts()->where('is_primary', true)->first();
+    }
+
+    /**
      * Legacy method for backward compatibility
      * @deprecated Use addBalance('USD', $amount) instead
      * @param int $amount

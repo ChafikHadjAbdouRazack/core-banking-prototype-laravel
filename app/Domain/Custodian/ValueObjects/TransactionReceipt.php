@@ -15,7 +15,7 @@ final class TransactionReceipt
         public readonly ?string $toAccount = null,
         public readonly ?string $assetCode = null,
         public readonly ?int $amount = null,
-        public readonly ?float $fee = null,
+        public readonly ?int $fee = null,
         public readonly ?string $reference = null,
         public readonly ?Carbon $createdAt = null,
         public readonly ?Carbon $completedAt = null,

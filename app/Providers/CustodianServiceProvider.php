@@ -1,12 +1,10 @@
 <?php
 
-declare(strict_types=1);
-
 namespace App\Providers;
 
-use App\Domain\Custodian\Connectors\MockBankConnector;
 use App\Domain\Custodian\Services\CustodianRegistry;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Log;
 
 class CustodianServiceProvider extends ServiceProvider
 {
@@ -16,7 +14,9 @@ class CustodianServiceProvider extends ServiceProvider
     public function register(): void
     {
         // Register CustodianRegistry as singleton
-        $this->app->singleton(CustodianRegistry::class);
+        $this->app->singleton(CustodianRegistry::class, function ($app) {
+            return new CustodianRegistry();
+        });
     }
 
     /**
@@ -24,39 +24,52 @@ class CustodianServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Publish config file
+        $this->publishes([
+            __DIR__.'/../../config/custodians.php' => config_path('custodians.php'),
+        ], 'config');
+
+        // Register custodians from config
+        $this->registerCustodians();
+    }
+
+    /**
+     * Register all configured custodians
+     */
+    private function registerCustodians(): void
+    {
         $registry = app(CustodianRegistry::class);
-        
-        // Register mock custodian for testing
-        if (config('custodian.mock.enabled', true)) {
-            $mockConnector = new MockBankConnector(config('custodian.mock', [
-                'name' => 'Mock Bank',
-                'base_url' => 'https://mock-bank.local',
-                'timeout' => 30,
-                'debug' => true,
-            ]));
-            
-            $registry->register('mock', $mockConnector);
-        }
-        
-        // Register other custodians from config
-        foreach (config('custodian.providers', []) as $name => $config) {
-            if (!$config['enabled'] ?? false) {
+        $config = config('custodians.connectors', []);
+        $default = config('custodians.default');
+
+        foreach ($config as $name => $settings) {
+            if (!$settings['enabled'] ?? false) {
                 continue;
             }
-            
-            $connectorClass = $config['connector'];
-            
-            if (!class_exists($connectorClass)) {
-                continue;
+
+            try {
+                $connectorClass = $settings['class'] ?? null;
+                
+                if (!$connectorClass || !class_exists($connectorClass)) {
+                    Log::warning("Custodian connector class not found: {$connectorClass}");
+                    continue;
+                }
+
+                // Create connector instance with config
+                $connector = new $connectorClass($settings);
+                
+                // Register with the registry
+                $registry->register($name, $connector);
+                
+                // Set as default if specified
+                if ($name === $default) {
+                    $registry->setDefault($name);
+                }
+                
+                Log::info("Registered custodian connector: {$name}");
+            } catch (\Exception $e) {
+                Log::error("Failed to register custodian {$name}: " . $e->getMessage());
             }
-            
-            $connector = new $connectorClass($config);
-            $registry->register($name, $connector);
-        }
-        
-        // Set default custodian
-        if ($default = config('custodian.default')) {
-            $registry->setDefault($default);
         }
     }
 }
