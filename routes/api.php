@@ -123,5 +123,12 @@ Route::prefix('v2')->group(function () {
     });
 });
 
+// Custodian webhook endpoints (no auth required - signature verification is used instead)
+Route::prefix('webhooks/custodian')->group(function () {
+    Route::post('/paysera', [\App\Http\Controllers\Api\CustodianWebhookController::class, 'paysera']);
+    Route::post('/santander', [\App\Http\Controllers\Api\CustodianWebhookController::class, 'santander']);
+    Route::post('/mock', [\App\Http\Controllers\Api\CustodianWebhookController::class, 'mock']);
+});
+
 // Include BIAN-compliant routes
 require __DIR__.'/api-bian.php';

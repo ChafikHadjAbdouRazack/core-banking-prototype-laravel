@@ -52,6 +52,7 @@ return [
             'api_key' => env('SANTANDER_API_KEY'),
             'api_secret' => env('SANTANDER_API_SECRET'),
             'environment' => env('SANTANDER_ENVIRONMENT', 'production'),
+            'webhook_secret' => env('SANTANDER_WEBHOOK_SECRET'),
         ],
         
     ],
