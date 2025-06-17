@@ -29,7 +29,7 @@ final class AccountRepository
      */
     public function findByUuid(string $uuid): Account
     {
-        return $this->account->where('uuid', $uuid)->first();
+        return $this->account->where('uuid', $uuid)->firstOrFail();
     }
 
     /**

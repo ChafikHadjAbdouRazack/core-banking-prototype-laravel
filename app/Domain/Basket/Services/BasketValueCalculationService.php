@@ -247,7 +247,7 @@ class BasketValueCalculationService
             'end_date' => $endValue->calculated_at->toISOString(),
             'start_value' => $startValue->value,
             'end_value' => $endValue->value,
-            'change' => $change,
+            'absolute_change' => $change,
             'percentage_change' => round($percentageChange, 2),
             'days' => $startValue->calculated_at->diffInDays($endValue->calculated_at),
         ];
