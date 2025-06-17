@@ -146,13 +146,14 @@ FinAegis is evolving from a traditional core banking platform to a comprehensive
   - ✅ `GET /api/custodians/{id}/transactions` - Transaction history
 
 ### 🔮 Phase 4: Advanced Features (Q4 2025)
-**Status: Vision**
+**Status: 🔄 IN PROGRESS**
 
 #### 4.1 Complex Financial Products
-- [ ] **Basket Assets**
-  - Implement composite assets (e.g., currency baskets)
-  - Create rebalancing algorithms
-  - Add performance tracking
+- [x] **Basket Assets** 🔄 **IN PROGRESS**
+  - [x] Implement composite assets (e.g., currency baskets) ✅ **COMPLETED**
+  - [x] Create rebalancing algorithms ✅ **COMPLETED**
+  - [ ] Add performance tracking 🔄 **IN PROGRESS**
+  - **Progress**: Core models, services, and database schema implemented
 
 - [ ] **Stablecoin Support**
   - Build framework for stablecoin issuance

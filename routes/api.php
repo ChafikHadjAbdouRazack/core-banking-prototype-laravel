@@ -10,6 +10,8 @@ use App\Http\Controllers\Api\PollController;
 use App\Http\Controllers\Api\TransactionController;
 use App\Http\Controllers\Api\TransferController;
 use App\Http\Controllers\Api\VoteController;
+use App\Http\Controllers\Api\BasketController;
+use App\Http\Controllers\Api\BasketAccountController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -93,6 +95,31 @@ Route::prefix('v1')->group(function () {
         Route::post('/refresh', [\App\Http\Controllers\Api\ExchangeRateProviderController::class, 'refresh'])->middleware('auth:sanctum');
         Route::get('/historical', [\App\Http\Controllers\Api\ExchangeRateProviderController::class, 'historical']);
         Route::post('/validate', [\App\Http\Controllers\Api\ExchangeRateProviderController::class, 'validate']);
+    });
+});
+
+// Basket endpoints
+Route::prefix('v2')->group(function () {
+    // Public basket endpoints
+    Route::prefix('baskets')->group(function () {
+        Route::get('/', [BasketController::class, 'index']);
+        Route::get('/{code}', [BasketController::class, 'show']);
+        Route::get('/{code}/value', [BasketController::class, 'getValue']);
+        Route::get('/{code}/history', [BasketController::class, 'getHistory']);
+        Route::get('/{code}/performance', [BasketController::class, 'getPerformance']);
+    });
+    
+    // Protected basket endpoints
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::post('/baskets', [BasketController::class, 'store']);
+        Route::post('/baskets/{code}/rebalance', [BasketController::class, 'rebalance']);
+        
+        // Basket operations on accounts
+        Route::prefix('accounts/{uuid}/baskets')->group(function () {
+            Route::get('/', [BasketAccountController::class, 'getBasketHoldings']);
+            Route::post('/decompose', [BasketAccountController::class, 'decompose']);
+            Route::post('/compose', [BasketAccountController::class, 'compose']);
+        });
     });
 });
 
