@@ -26,7 +26,7 @@ it('can create transaction receipt', function () {
     expect($receipt->toAccount)->toBe('acc-2');
     expect($receipt->assetCode)->toBe('USD');
     expect($receipt->amount)->toBe(10000);
-    expect($receipt->fee)->toBe(100.0);
+    expect($receipt->fee)->toBe(100);
     expect($receipt->reference)->toBe('REF-123');
     expect($receipt->metadata)->toBe(['test' => true]);
 });
@@ -99,7 +99,7 @@ it('can convert to array', function () {
     expect($array['to_account'])->toBe('acc-2');
     expect($array['asset_code'])->toBe('USD');
     expect($array['amount'])->toBe(10000);
-    expect($array['fee'])->toBe(100.0);
+    expect($array['fee'])->toBe(100);
     expect($array['reference'])->toBe('REF-123');
     expect($array['created_at'])->toBe($createdAt->toISOString());
     expect($array['completed_at'])->toBe($completedAt->toISOString());
