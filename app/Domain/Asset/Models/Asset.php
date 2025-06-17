@@ -95,7 +95,6 @@ class Asset extends Model
             self::TYPE_CRYPTO,
             self::TYPE_COMMODITY,
             self::TYPE_CUSTOM,
-            self::TYPE_BASKET,
         ];
     }
     
