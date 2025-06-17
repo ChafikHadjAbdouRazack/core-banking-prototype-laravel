@@ -338,6 +338,34 @@ class PollController extends Controller
                 'message' => 'Vote cast successfully',
             ], 201);
         } catch (\InvalidArgumentException $e) {
+            // Check if this is an invalid option error
+            if (str_contains($e->getMessage(), 'Invalid option')) {
+                return response()->json([
+                    'message' => 'The given data was invalid.',
+                    'errors' => [
+                        'selected_options' => [$e->getMessage()]
+                    ]
+                ], 422);
+            }
+            
+            // Check if this is a validation error
+            $validationErrors = [
+                'Poll is not active for voting',
+                'Poll voting period has ended',
+                'You have already voted on this poll',
+                'already voted',
+                'not available for voting',
+                'not eligible to vote',
+            ];
+            
+            foreach ($validationErrors as $errorPattern) {
+                if (str_contains($e->getMessage(), $errorPattern)) {
+                    return response()->json([
+                        'message' => $e->getMessage(),
+                    ], 422);
+                }
+            }
+            
             return response()->json([
                 'message' => $e->getMessage(),
             ], 400);

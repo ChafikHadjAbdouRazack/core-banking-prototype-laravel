@@ -368,6 +368,10 @@ class BasketApiTest extends TestCase
             'amount' => 5000,
         ]);
         
+        if ($response->status() !== 200) {
+            dump($response->json());
+        }
+        
         $response->assertOk()
             ->assertJsonStructure([
                 'basket_code',
@@ -435,7 +439,7 @@ class BasketApiTest extends TestCase
                 'currency',
             ]);
         
-        $response->assertJsonPath('account_uuid', $this->account->uuid);
+        $response->assertJsonPath('account_uuid', (string)$this->account->uuid);
         $response->assertJsonCount(1, 'basket_holdings');
     }
 }

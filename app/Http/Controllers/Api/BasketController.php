@@ -242,7 +242,25 @@ class BasketController extends Controller
             return $basket;
         });
 
-        return response()->json($basket->load('components.asset'), 201);
+        $basket->load('components.asset');
+        
+        return response()->json([
+            'code' => $basket->code,
+            'name' => $basket->name,
+            'description' => $basket->description,
+            'type' => $basket->type,
+            'rebalance_frequency' => $basket->rebalance_frequency,
+            'is_active' => $basket->is_active,
+            'components' => $basket->components->map(function ($component) {
+                return [
+                    'asset_code' => $component->asset_code,
+                    'asset_name' => $component->asset->name ?? $component->asset_code,
+                    'weight' => $component->weight,
+                    'min_weight' => $component->min_weight,
+                    'max_weight' => $component->max_weight,
+                ];
+            }),
+        ], 201);
     }
 
     /**

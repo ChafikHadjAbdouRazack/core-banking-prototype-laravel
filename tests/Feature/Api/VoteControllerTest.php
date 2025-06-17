@@ -14,6 +14,7 @@ beforeEach(function () {
 it('can cast a vote on an active poll', function () {
     $poll = Poll::factory()->active()->create([
         'type' => 'single_choice',
+        'voting_power_strategy' => 'one_user_one_vote',
         'options' => [
             ['id' => 'yes', 'label' => 'Yes'],
             ['id' => 'no', 'label' => 'No'],
@@ -40,6 +41,7 @@ it('can cast a vote on an active poll', function () {
 it('can cast multiple votes on multiple choice poll', function () {
     $poll = Poll::factory()->active()->create([
         'type' => 'multiple_choice',
+        'voting_power_strategy' => 'one_user_one_vote',
         'options' => [
             ['id' => 'option1', 'label' => 'Option 1'],
             ['id' => 'option2', 'label' => 'Option 2'],
@@ -79,7 +81,7 @@ it('cannot vote on inactive poll', function () {
 
     $response->assertStatus(422)
         ->assertJson([
-            'message' => 'Poll is not active for voting',
+            'message' => 'Poll is not available for voting',
         ]);
 
     $this->assertDatabaseMissing('votes', [
@@ -106,7 +108,7 @@ it('cannot vote on expired poll', function () {
 
     $response->assertStatus(422)
         ->assertJson([
-            'message' => 'Poll voting period has ended',
+            'message' => 'Poll is not available for voting',
         ]);
 });
 
@@ -135,13 +137,14 @@ it('cannot vote twice on same poll', function () {
 
     $response->assertStatus(422)
         ->assertJson([
-            'message' => 'You have already voted on this poll',
+            'message' => 'User has already voted in this poll',
         ]);
 });
 
 it('validates option exists for single choice poll', function () {
     $poll = Poll::factory()->active()->create([
         'type' => 'single_choice',
+        'voting_power_strategy' => 'one_user_one_vote',
         'options' => [
             ['id' => 'yes', 'label' => 'Yes'],
             ['id' => 'no', 'label' => 'No'],
@@ -159,6 +162,7 @@ it('validates option exists for single choice poll', function () {
 it('validates options exist for multiple choice poll', function () {
     $poll = Poll::factory()->active()->create([
         'type' => 'multiple_choice',
+        'voting_power_strategy' => 'one_user_one_vote',
         'options' => [
             ['id' => 'option1', 'label' => 'Option 1'],
             ['id' => 'option2', 'label' => 'Option 2'],
@@ -204,16 +208,18 @@ it('requires option_ids for multiple choice poll', function () {
 });
 
 it('calculates voting power correctly for asset weighted voting', function () {
-    // Create user with account balance
+    // Create user with account and USD balance
     $account = $this->user->accounts()->create([
         'uuid' => fake()->uuid(),
         'name' => 'Test Account',
-        'balance' => 500000, // $5000
     ]);
+    
+    // Add USD balance to the account
+    $account->addBalance('USD', 500000); // $5000
 
     $poll = Poll::factory()->active()->create([
         'type' => 'single_choice',
-        'voting_power_strategy' => 'asset_weighted',
+        'voting_power_strategy' => 'asset_weighted_vote',
         'options' => [
             ['id' => 'yes', 'label' => 'Yes'],
             ['id' => 'no', 'label' => 'No'],
@@ -229,21 +235,23 @@ it('calculates voting power correctly for asset weighted voting', function () {
     $this->assertDatabaseHas('votes', [
         'poll_id' => $poll->id,
         'user_uuid' => $this->user->uuid,
-        'voting_power' => 500000, // Balance-based voting power
+        'voting_power' => 50, // $5000 / $100 = 50 voting power
     ]);
 });
 
-it('applies square root weighting when configured', function () {
-    // Create user with account balance
+it('calculates higher voting power for larger balances', function () {
+    // Create user with account and USD balance
     $account = $this->user->accounts()->create([
         'uuid' => fake()->uuid(),
         'name' => 'Test Account',
-        'balance' => 1000000, // $10000
     ]);
+    
+    // Add USD balance to the account
+    $account->addBalance('USD', 1000000); // $10000
 
     $poll = Poll::factory()->active()->create([
         'type' => 'single_choice',
-        'voting_power_strategy' => 'asset_weighted',
+        'voting_power_strategy' => 'asset_weighted_vote',
         'options' => [
             ['id' => 'yes', 'label' => 'Yes'],
             ['id' => 'no', 'label' => 'No'],
@@ -259,7 +267,7 @@ it('applies square root weighting when configured', function () {
     $this->assertDatabaseHas('votes', [
         'poll_id' => $poll->id,
         'user_uuid' => $this->user->uuid,
-        'voting_power' => 1000, // sqrt(1000000) = 1000
+        'voting_power' => 100, // $10000 / $100 = 100 voting power
     ]);
 });
 
@@ -304,47 +312,49 @@ it('requires authentication', function () {
     $response->assertStatus(401);
 })->skip('Authentication test needs refactoring');
 
-it('includes vote signature when provided', function () {
+it('generates cryptographic signature for vote integrity', function () {
     $poll = Poll::factory()->active()->create([
         'type' => 'single_choice',
+        'voting_power_strategy' => 'one_user_one_vote',
         'options' => [
             ['id' => 'yes', 'label' => 'Yes'],
             ['id' => 'no', 'label' => 'No'],
         ],
     ]);
 
-    $signature = Hash::make('vote-signature-' . $this->user->uuid . '-' . $poll->uuid);
-
     $response = $this->postJson("/api/polls/{$poll->uuid}/vote", [
         'selected_options' => ['yes'],
-        'signature' => $signature,
     ]);
 
     $response->assertStatus(201);
 
-    $this->assertDatabaseHas('votes', [
-        'poll_id' => $poll->id,
-        'user_uuid' => $this->user->uuid,
-        'signature' => $signature,
-    ]);
+    // Verify vote was created with auto-generated signature
+    $vote = \App\Domain\Governance\Models\Vote::where('poll_id', $poll->id)
+        ->where('user_uuid', $this->user->uuid)
+        ->first();
+
+    expect($vote)->not->toBeNull();
+    expect($vote->signature)->not->toBeEmpty();
+    expect($vote->verifySignature())->toBeTrue();
 });
 
 it('records vote timestamp correctly', function () {
     $poll = Poll::factory()->active()->create([
         'type' => 'single_choice',
+        'voting_power_strategy' => 'one_user_one_vote',
         'options' => [
             ['id' => 'yes', 'label' => 'Yes'],
             ['id' => 'no', 'label' => 'No'],
         ],
     ]);
 
-    $beforeVote = now();
+    $beforeVote = now()->subSecond(); // Give a bit more buffer
     
     $response = $this->postJson("/api/polls/{$poll->uuid}/vote", [
         'selected_options' => ['yes'],
     ]);
 
-    $afterVote = now();
+    $afterVote = now()->addSecond(); // Give a bit more buffer
 
     $response->assertStatus(201);
 

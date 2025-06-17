@@ -36,6 +36,27 @@ final readonly class AccountUuid extends DataObject implements DataObjectContrac
     }
 
     /**
+     * Create from string UUID.
+     *
+     * @param string $uuid
+     * @return \App\Domain\Account\DataObjects\AccountUuid
+     */
+    public static function fromString(string $uuid): self
+    {
+        return new self($uuid);
+    }
+
+    /**
+     * Convert to string.
+     *
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return $this->uuid;
+    }
+
+    /**
      * @return array
      */
     public function toArray(): array

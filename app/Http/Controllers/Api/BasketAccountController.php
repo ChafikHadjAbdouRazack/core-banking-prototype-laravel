@@ -75,9 +75,8 @@ class BasketAccountController extends Controller
         }
 
         try {
-            $workflow = WorkflowStub::make(DecomposeBasketWorkflow::class);
-            $result = $workflow->start(
-                $account->getAggregateUuid(),
+            $result = $this->basketAccountService->decomposeBasket(
+                $account,
                 $validated['basket_code'],
                 $validated['amount']
             );

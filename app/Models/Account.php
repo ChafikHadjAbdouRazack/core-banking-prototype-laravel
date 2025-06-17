@@ -179,4 +179,12 @@ class Account extends Model
         $this->subtractBalance('USD', $amount);
         return $this;
     }
+    
+    /**
+     * Get the account UUID as an AccountUuid value object.
+     */
+    public function getAggregateUuid(): \App\Domain\Account\DataObjects\AccountUuid
+    {
+        return \App\Domain\Account\DataObjects\AccountUuid::fromString($this->uuid);
+    }
 }

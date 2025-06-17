@@ -288,7 +288,7 @@ describe('Voting', function () {
             'selected_options' => ['no']
         ]);
 
-        $response->assertStatus(400)
+        $response->assertStatus(422)
             ->assertJsonStructure(['message']);
     });
 
@@ -299,7 +299,7 @@ describe('Voting', function () {
             'selected_options' => ['yes']
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
     });
 
     it('returns 404 for non-existent poll', function () {
