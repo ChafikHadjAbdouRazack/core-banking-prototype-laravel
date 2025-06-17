@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace App\Domain\Basket\Workflows;
 
-use App\Domain\Account\Aggregates\AccountUuid;
+use App\Domain\Account\DataObjects\AccountUuid;
 use App\Domain\Basket\Services\BasketAccountService;
 use App\Models\Account;
-use Workflow\Activity\ActivityStub;
+use Workflow\ActivityStub;
 use Workflow\Workflow;
+use Workflow\Activity;
 
 final class DecomposeBasketWorkflow extends Workflow
 {
@@ -28,17 +29,15 @@ final class DecomposeBasketWorkflow extends Workflow
         // Validate inputs
         yield ActivityStub::make(ValidateBasketDecompositionActivity::class, $accountUuid, $basketCode, $amount);
 
-        // Perform decomposition
-        $result = yield ActivityStub::make(DecomposeBasketActivity::class, $accountUuid, $basketCode, $amount);
-
-        return $result;
+        // Perform decomposition and return result
+        return yield ActivityStub::make(DecomposeBasketActivity::class, $accountUuid, $basketCode, $amount);
     }
 }
 
 /**
  * Activity to validate basket decomposition request.
  */
-class ValidateBasketDecompositionActivity
+class ValidateBasketDecompositionActivity extends Activity
 {
     public function execute(AccountUuid $accountUuid, string $basketCode, int $amount): void
     {
@@ -48,8 +47,8 @@ class ValidateBasketDecompositionActivity
 
         $account = Account::where('uuid', $accountUuid->__toString())->firstOrFail();
         
-        if ($account->status !== 'active') {
-            throw new \Exception('Account is not active');
+        if ($account->frozen) {
+            throw new \Exception('Account is frozen');
         }
 
         // Additional validation can be added here
@@ -59,7 +58,7 @@ class ValidateBasketDecompositionActivity
 /**
  * Activity to perform basket decomposition.
  */
-class DecomposeBasketActivity
+class DecomposeBasketActivity extends Activity
 {
     public function __construct(
         private readonly BasketAccountService $basketAccountService

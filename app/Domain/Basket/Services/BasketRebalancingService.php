@@ -81,30 +81,26 @@ class BasketRebalancingService
         $components = $basket->activeComponents;
 
         foreach ($components as $component) {
-            $currentWeight = $currentValue->getActualWeight($component->asset_code) ?? 0;
-            $targetWeight = $component->weight;
-
-            // Check if component is outside allowed bounds
+            $currentComponentWeight = $component->weight;
             $needsAdjustment = false;
-            $adjustmentTarget = $targetWeight;
+            $adjustmentTarget = $currentComponentWeight;
 
-            if ($component->min_weight !== null && $currentWeight < $component->min_weight) {
+            // Check if component weight is outside allowed bounds
+            if ($component->min_weight !== null && $currentComponentWeight < $component->min_weight) {
                 $needsAdjustment = true;
-                $adjustmentTarget = max($component->min_weight, $targetWeight);
-            } elseif ($component->max_weight !== null && $currentWeight > $component->max_weight) {
+                $adjustmentTarget = $component->min_weight;
+            } elseif ($component->max_weight !== null && $currentComponentWeight > $component->max_weight) {
                 $needsAdjustment = true;
-                $adjustmentTarget = min($component->max_weight, $targetWeight);
-            } elseif (abs($currentWeight - $targetWeight) > 1.0) { // 1% tolerance
-                $needsAdjustment = true;
+                $adjustmentTarget = $component->max_weight;
             }
 
             if ($needsAdjustment) {
                 $adjustments[] = [
                     'asset' => $component->asset_code,
-                    'current_weight' => round($currentWeight, 2),
+                    'current_weight' => round($currentComponentWeight, 2),
                     'target_weight' => round($adjustmentTarget, 2),
-                    'adjustment' => round($adjustmentTarget - $currentWeight, 2),
-                    'action' => $adjustmentTarget > $currentWeight ? 'increase' : 'decrease',
+                    'adjustment' => round($adjustmentTarget - $currentComponentWeight, 2),
+                    'action' => $adjustmentTarget > $currentComponentWeight ? 'increase' : 'decrease',
                 ];
             }
         }
@@ -118,12 +114,27 @@ class BasketRebalancingService
     private function executeRebalancing(BasketAsset $basket, array $adjustments): array
     {
         return DB::transaction(function () use ($basket, $adjustments) {
+            // Apply weight adjustments to components
+            foreach ($adjustments as $adjustment) {
+                $component = $basket->components()
+                    ->where('asset_code', $adjustment['asset'])
+                    ->first();
+                    
+                if ($component) {
+                    $component->update(['weight' => $adjustment['target_weight']]);
+                }
+            }
+
+            // Normalize weights to ensure they sum to 100%
+            $this->normalizeWeights($basket);
+
             // Record the rebalancing event
-            event(new BasketRebalanced(
+            $rebalancedEvent = new BasketRebalanced(
                 basketCode: $basket->code,
                 adjustments: $adjustments,
                 rebalancedAt: now()
-            ));
+            );
+            event($rebalancedEvent);
 
             // Update the basket's last rebalanced timestamp
             $basket->update(['last_rebalanced_at' => now()]);
@@ -145,6 +156,81 @@ class BasketRebalancingService
                 'rebalanced_at' => now()->toISOString(),
             ];
         });
+    }
+
+    /**
+     * Normalize component weights to sum to 100%.
+     */
+    private function normalizeWeights(BasketAsset $basket): void
+    {
+        $components = $basket->activeComponents()->get();
+        $totalWeight = $components->sum('weight');
+        
+        if (abs($totalWeight - 100) < 0.01) {
+            return; // Already normalized
+        }
+        
+        if ($totalWeight <= 0) {
+            return; // Cannot normalize zero or negative weights
+        }
+        
+        // Calculate the difference that needs to be distributed
+        $difference = 100 - $totalWeight;
+        
+        // Calculate available capacity for adjustment
+        $availableCapacity = 0;
+        $adjustableComponents = [];
+        
+        foreach ($components as $component) {
+            $capacity = 0;
+            
+            if ($difference > 0) { // Need to increase weights
+                $maxPossible = $component->max_weight ?? 100; // No limit = can go to 100%
+                $capacity = max(0, $maxPossible - $component->weight);
+            } else { // Need to decrease weights
+                $minPossible = $component->min_weight ?? 0; // No limit = can go to 0%
+                $capacity = max(0, $component->weight - $minPossible);
+            }
+            
+            if ($capacity > 0.01) { // Small threshold to avoid floating point issues
+                $adjustableComponents[] = [
+                    'component' => $component,
+                    'capacity' => $capacity,
+                ];
+                $availableCapacity += $capacity;
+            }
+        }
+        
+        if (empty($adjustableComponents) || $availableCapacity < abs($difference)) {
+            // Cannot adjust without violating constraints or insufficient capacity
+            // Use proportional scaling as fallback
+            $scaleFactor = 100 / $totalWeight;
+            foreach ($components as $component) {
+                $newWeight = $component->weight * $scaleFactor;
+                $component->update(['weight' => $newWeight]);
+            }
+            return;
+        }
+        
+        // Distribute the difference proportionally based on available capacity
+        foreach ($adjustableComponents as $adjustable) {
+            $component = $adjustable['component'];
+            $capacity = $adjustable['capacity'];
+            
+            // Calculate this component's share of the adjustment
+            $proportionalAdjustment = ($capacity / $availableCapacity) * $difference;
+            $newWeight = $component->weight + $proportionalAdjustment;
+            
+            // Clamp to bounds if they exist (should not be necessary but safety check)
+            if ($component->min_weight !== null) {
+                $newWeight = max($newWeight, $component->min_weight);
+            }
+            if ($component->max_weight !== null) {
+                $newWeight = min($newWeight, $component->max_weight);
+            }
+            
+            $component->update(['weight' => $newWeight]);
+        }
     }
 
     /**
