@@ -28,6 +28,7 @@ FinAegis is building the foundation for next-generation financial products that 
 - **Multi-Currency Operations**: Seamless cross-currency transactions with real-time rates
 - **Exchange Rate Management**: Pluggable rate providers with caching
 - **Account Balance System**: Per-asset balance tracking with automatic USD creation
+- **Basket Assets**: Composite assets with fixed/dynamic rebalancing and performance tracking
 
 ### Decentralized Architecture (🔧 In Development)
 - **Custodian Abstraction**: Unified interface implemented (MockBankConnector available)
@@ -323,6 +324,16 @@ GET    /api/accounts/{uuid}/balances    # Multi-asset balances
 GET    /api/exchange-rates              # Current exchange rates
 POST   /api/exchange-rates/convert      # Currency conversion
 
+# Basket Assets
+GET    /api/v2/baskets                  # List all baskets
+GET    /api/v2/baskets/{code}           # Get basket details
+POST   /api/v2/baskets                  # Create basket
+GET    /api/v2/baskets/{code}/value     # Get current value
+POST   /api/v2/baskets/{code}/rebalance # Rebalance basket
+GET    /api/v2/baskets/{code}/performance # Performance metrics
+POST   /api/v2/accounts/{uuid}/baskets/compose   # Compose basket
+POST   /api/v2/accounts/{uuid}/baskets/decompose # Decompose basket
+
 # Governance APIs
 GET    /api/polls                       # List polls
 POST   /api/polls                       # Create poll
@@ -444,9 +455,11 @@ See our comprehensive [Development Roadmap](ROADMAP.md) for detailed implementat
 
 ### Recently Completed
 - [x] **Phase 1-3**: Multi-asset foundation and platform integration
+- [x] **Phase 4**: Basket assets with dynamic rebalancing and performance tracking
 - [x] **Transaction Read Model**: Event-sourced transaction history with projector
 - [x] **Governance System**: Complete polling and voting system with admin interface
 - [x] **Asset Management**: Full asset CRUD with exchange rate management
+- [x] **Basket Assets**: Composite assets with fixed/dynamic rebalancing
 - [x] **Export functionality**: CSV/XLSX for all major entities
 - [x] **Webhook system**: Real-time event notifications with HMAC security
 - [x] **Enhanced analytics dashboard**: Charts, widgets, and real-time statistics
@@ -454,7 +467,6 @@ See our comprehensive [Development Roadmap](ROADMAP.md) for detailed implementat
 
 ### Next Phase: Production Integrations (Q1-Q2 2025)
 - [ ] **Production custodian integrations**: Paysera, Santander connectors
-- [ ] **Advanced asset types**: Composite assets and basket instruments
 - [ ] **Enhanced compliance**: Automated regulatory reporting
 - [ ] **Advanced fraud detection**: ML-based risk scoring
 - [ ] **Mobile SDK**: Native mobile development kit

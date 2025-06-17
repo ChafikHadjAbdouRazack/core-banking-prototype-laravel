@@ -267,7 +267,7 @@ it('can calculate basket performance', function () {
     
     expect($performance['start_value'])->toBe(1.00);
     expect($performance['end_value'])->toBe(1.10);
-    expect(round($performance['change'], 2))->toBe(0.10);
+    expect(round($performance['absolute_change'], 2))->toBe(0.10);
     expect($performance['percentage_change'])->toBe(10.0);
     expect($performance['days'])->toBe(7.0);
 });

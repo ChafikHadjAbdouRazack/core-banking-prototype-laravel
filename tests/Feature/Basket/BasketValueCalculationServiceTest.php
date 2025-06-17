@@ -280,12 +280,12 @@ class BasketValueCalculationServiceTest extends TestCase
         $this->assertIsArray($performance);
         $this->assertArrayHasKey('start_value', $performance);
         $this->assertArrayHasKey('end_value', $performance);
-        $this->assertArrayHasKey('change', $performance);
+        $this->assertArrayHasKey('absolute_change', $performance);
         $this->assertArrayHasKey('percentage_change', $performance);
         
         $this->assertEquals(1.00, $performance['start_value']);
         $this->assertEquals(1.10, $performance['end_value']);
-        $this->assertEquals(0.10, round($performance['change'], 2));
+        $this->assertEquals(0.10, round($performance['absolute_change'], 2));
         $this->assertEquals(10.0, $performance['percentage_change']);
     }
 
