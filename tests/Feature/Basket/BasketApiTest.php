@@ -207,7 +207,7 @@ class BasketApiTest extends TestCase
         
         $this->assertDatabaseHas('assets', [
             'code' => 'NEW_BASKET',
-            'type' => 'basket',
+            'type' => 'custom',
         ]);
     }
 

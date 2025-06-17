@@ -125,7 +125,7 @@ class BasketAsset extends Model
             ['code' => $this->code],
             [
                 'name' => $this->name,
-                'type' => 'basket',
+                'type' => 'custom',
                 'precision' => 4,
                 'is_active' => $this->is_active ?? true,
                 'metadata' => [

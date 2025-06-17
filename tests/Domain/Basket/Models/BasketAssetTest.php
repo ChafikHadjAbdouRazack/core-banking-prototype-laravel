@@ -64,8 +64,8 @@ it('validates that component weights sum to 100', function () {
 
     expect($basket->validateWeights())->toBeTrue();
 
-    // Add another component to break the 100% rule
-    $basket->components()->create(['asset_code' => 'USD', 'weight' => 10.0]);
+    // Add another component to break the 100% rule (using a different asset)
+    $basket->components()->create(['asset_code' => 'BTC', 'weight' => 10.0]);
     
     expect($basket->validateWeights())->toBeFalse();
 });
@@ -137,7 +137,7 @@ it('can convert basket to asset for compatibility', function () {
     expect($asset)->toBeInstanceOf(Asset::class);
     expect($asset->code)->toBe('STABLE_BASKET');
     expect($asset->name)->toBe('Stable Currency Basket');
-    expect($asset->type)->toBe('basket');
+    expect($asset->type)->toBe('custom');
     expect($asset->is_basket)->toBeTrue();
     expect($asset->metadata['basket_id'])->toBe($basket->id);
 });
@@ -149,7 +149,7 @@ it('can retrieve latest basket value', function () {
     ]);
 
     // No values yet
-    expect($basket->latestValue())->toBeNull();
+    expect($basket->latestValue()->first())->toBeNull();
 
     // Create some values
     BasketValue::create([
@@ -164,8 +164,8 @@ it('can retrieve latest basket value', function () {
         'calculated_at' => now(),
     ]);
 
-    expect($basket->latestValue()->id)->toBe($latestValue->id);
-    expect($basket->latestValue()->value)->toBe(1.05);
+    expect($basket->latestValue->id)->toBe($latestValue->id);
+    expect($basket->latestValue->value)->toBe(1.05);
 });
 
 it('can scope active baskets', function () {
@@ -236,7 +236,7 @@ it('can scope baskets that need rebalancing', function () {
         'last_rebalanced_at' => null,
     ]);
 
-    $needsRebalancing = BasketAsset::needsRebalancing()->get();
+    $needsRebalancing = BasketAsset::query()->needsRebalancing()->get();
 
     expect($needsRebalancing)->toHaveCount(3);
     expect($needsRebalancing->pluck('code')->toArray())->toContain('NEEDS_DAILY', 'NEEDS_WEEKLY', 'NEVER_DONE');

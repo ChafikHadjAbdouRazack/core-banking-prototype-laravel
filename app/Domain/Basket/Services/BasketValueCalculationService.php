@@ -73,6 +73,9 @@ class BasketValueCalculationService
 
         // Store the calculated value
         return DB::transaction(function () use ($basket, $totalValue, $componentValues, $errors) {
+            // Ensure the basket exists as an asset
+            $basket->toAsset();
+            
             $basketValue = BasketValue::create([
                 'basket_asset_code' => $basket->code,
                 'value' => $totalValue,
@@ -85,9 +88,6 @@ class BasketValueCalculationService
                     ],
                 ]),
             ]);
-
-            // Update the basket asset in the assets table
-            $basket->toAsset();
 
             return $basketValue;
         });

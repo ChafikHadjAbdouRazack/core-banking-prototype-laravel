@@ -81,6 +81,7 @@ class Asset extends Model
     public const TYPE_CRYPTO = 'crypto';
     public const TYPE_COMMODITY = 'commodity';
     public const TYPE_CUSTOM = 'custom';
+    public const TYPE_BASKET = 'basket';
     
     /**
      * Get all valid asset types
@@ -94,6 +95,7 @@ class Asset extends Model
             self::TYPE_CRYPTO,
             self::TYPE_COMMODITY,
             self::TYPE_CUSTOM,
+            self::TYPE_BASKET,
         ];
     }
     
@@ -222,5 +224,16 @@ class Asset extends Model
     public function scopeOfType($query, string $type)
     {
         return $query->where('type', $type);
+    }
+    
+    /**
+     * Check if the asset is a basket
+     *
+     * @return bool
+     */
+    public function getIsBasketAttribute(): bool
+    {
+        return $this->type === self::TYPE_CUSTOM && 
+               ($this->metadata['asset_subtype'] ?? null) === 'basket';
     }
 }
