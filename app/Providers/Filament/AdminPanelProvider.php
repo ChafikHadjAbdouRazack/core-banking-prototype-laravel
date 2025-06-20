@@ -27,7 +27,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
-            ->brandName('FinAegis Admin')
+            ->brandName($this->getBrandName())
             ->colors([
                 'primary' => Color::Blue,
                 'danger' => Color::Red,
@@ -60,5 +60,18 @@ class AdminPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
             ]);
+    }
+    
+    /**
+     * Get the brand name for the admin panel
+     */
+    protected function getBrandName(): string
+    {
+        // Show GCU if enabled, otherwise show FinAegis
+        if (config('app.gcu_enabled', false)) {
+            return config('app.gcu_basket_name', 'Global Currency Unit');
+        }
+        
+        return 'FinAegis Admin';
     }
 }

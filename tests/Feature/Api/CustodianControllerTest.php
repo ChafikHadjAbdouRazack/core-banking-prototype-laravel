@@ -119,7 +119,12 @@ it('can transfer funds from custodian to internal account', function () {
 
 it('can transfer funds from internal account to custodian', function () {
     \Workflow\WorkflowStub::fake();
-    $account = Account::factory()->withBalance(50000)->create(['user_uuid' => $this->user->uuid]);
+    
+    // Create a unique user for this test to avoid conflicts
+    $testUser = User::factory()->create();
+    Sanctum::actingAs($testUser);
+    
+    $account = Account::factory()->withBalance(50000)->create(['user_uuid' => $testUser->uuid]);
     
     $response = $this->postJson('/api/custodians/mock/transfer', [
         'internal_account_uuid' => $account->uuid,
