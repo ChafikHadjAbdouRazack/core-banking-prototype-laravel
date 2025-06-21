@@ -395,7 +395,7 @@ it('retrieves transaction history', function () {
     
     expect($history)->toHaveCount(2);
     expect($history[0]['id'])->toBe('TXN001');
-    expect($history[0]['amount'])->toBe(50000); // €500 in cents
+    expect($history[0]['amount'])->toBe(-50000); // €500 in cents (negative for debit)
     expect($history[1]['id'])->toBe('TXN002');
     expect($history[1]['amount'])->toBe(150000); // €1,500 in cents
 });

@@ -59,8 +59,6 @@ it('caches balance separately with shorter TTL', function () {
     
     // Should still return cached balance since we didn't clear the balance cache
     $cachedBalance = $cacheService->getBalance((string) $account->uuid);
-    
-    // The service should return an integer even if cache stores a string
     expect($cachedBalance)->toBe(5000);
     
     // Verify the account in database has new balance
