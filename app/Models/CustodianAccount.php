@@ -1,19 +1,42 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Str;
+use Carbon\Carbon;
 
+/**
+ * CustodianAccount Model
+ * 
+ * Represents the mapping between internal accounts and external custodian accounts.
+ * This enables multi-custodian support where a single internal account can have
+ * multiple external accounts across different custodians.
+ */
 class CustodianAccount extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, HasUuids;
 
+    /**
+     * Get the columns that should receive a unique identifier.
+     *
+     * @return array<int, string>
+     */
+    public function uniqueIds(): array
+    {
+        return ['uuid'];
+    }
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<string>
+     */
     protected $fillable = [
-        'uuid',
         'account_uuid',
         'custodian_name',
         'custodian_account_id',
@@ -23,28 +46,26 @@ class CustodianAccount extends Model
         'metadata',
     ];
 
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
     protected $casts = [
         'is_primary' => 'boolean',
         'metadata' => 'array',
     ];
 
-    protected $attributes = [
-        'status' => 'active',
-        'is_primary' => false,
-        'metadata' => '{}',
-    ];
-
-    protected static function booted(): void
-    {
-        static::creating(function (CustodianAccount $custodianAccount) {
-            if (empty($custodianAccount->uuid)) {
-                $custodianAccount->uuid = (string) Str::uuid();
-            }
-        });
-    }
+    /**
+     * Status constants
+     */
+    public const STATUS_ACTIVE = 'active';
+    public const STATUS_SUSPENDED = 'suspended';
+    public const STATUS_CLOSED = 'closed';
+    public const STATUS_PENDING = 'pending';
 
     /**
-     * Get the internal account associated with this custodian account
+     * Get the internal account
      */
     public function account(): BelongsTo
     {
@@ -52,74 +73,54 @@ class CustodianAccount extends Model
     }
 
     /**
-     * Check if this custodian account is active
+     * Scope a query to only include active accounts
+     */
+    public function scopeActive($query)
+    {
+        return $query->where('status', self::STATUS_ACTIVE);
+    }
+
+    /**
+     * Scope a query to only include primary accounts
+     */
+    public function scopePrimary($query)
+    {
+        return $query->where('is_primary', true);
+    }
+
+    /**
+     * Scope a query to only include accounts for a specific custodian
+     */
+    public function scopeForCustodian($query, string $custodianName)
+    {
+        return $query->where('custodian_name', $custodianName);
+    }
+
+
+    /**
+     * Check if the account is active
      */
     public function isActive(): bool
     {
-        return $this->status === 'active';
+        return $this->status === self::STATUS_ACTIVE;
     }
 
     /**
-     * Check if this custodian account is suspended
+     * Set this account as primary
      */
-    public function isSuspended(): bool
+    public function setAsPrimary(): void
     {
-        return $this->status === 'suspended';
-    }
-
-    /**
-     * Check if this custodian account is closed
-     */
-    public function isClosed(): bool
-    {
-        return $this->status === 'closed';
-    }
-
-    /**
-     * Activate this custodian account
-     */
-    public function activate(): self
-    {
-        $this->update(['status' => 'active']);
-        return $this;
-    }
-
-    /**
-     * Suspend this custodian account
-     */
-    public function suspend(): self
-    {
-        $this->update(['status' => 'suspended']);
-        return $this;
-    }
-
-    /**
-     * Close this custodian account
-     */
-    public function close(): self
-    {
-        $this->update(['status' => 'closed']);
-        return $this;
-    }
-
-    /**
-     * Set as primary custodian account for the internal account
-     */
-    public function setAsPrimary(): self
-    {
-        // First, unset any other primary accounts for this internal account
-        static::where('account_uuid', $this->account_uuid)
+        // Remove primary from other accounts
+        self::where('account_uuid', $this->account_uuid)
             ->where('id', '!=', $this->id)
             ->update(['is_primary' => false]);
         
-        // Then set this one as primary
+        // Set this as primary
         $this->update(['is_primary' => true]);
-        
-        return $this;
     }
 
     /**
-     * Get metadata value by key
+     * Get metadata value
      */
     public function getMetadata(string $key, $default = null)
     {
@@ -127,14 +128,13 @@ class CustodianAccount extends Model
     }
 
     /**
-     * Set metadata value by key
+     * Set metadata value
      */
-    public function setMetadata(string $key, $value): self
+    public function setMetadata(string $key, $value): void
     {
         $metadata = $this->metadata ?? [];
         data_set($metadata, $key, $value);
-        $this->update(['metadata' => $metadata]);
-        
-        return $this;
+        $this->metadata = $metadata;
+        $this->save();
     }
 }
