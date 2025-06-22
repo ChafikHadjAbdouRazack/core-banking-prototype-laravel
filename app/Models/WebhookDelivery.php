@@ -12,8 +12,11 @@ class WebhookDelivery extends Model
     use HasFactory, HasUuids;
 
     protected $primaryKey = 'uuid';
+    public $incrementing = false;
+    protected $keyType = 'string';
 
     protected $fillable = [
+        'uuid',
         'webhook_uuid',
         'event_type',
         'payload',
@@ -42,6 +45,7 @@ class WebhookDelivery extends Model
      * Delivery statuses
      */
     public const STATUS_PENDING = 'pending';
+    public const STATUS_SUCCESS = 'success';
     public const STATUS_DELIVERED = 'delivered';
     public const STATUS_FAILED = 'failed';
 

@@ -12,8 +12,11 @@ class Webhook extends Model
     use HasFactory, HasUuids;
 
     protected $primaryKey = 'uuid';
+    public $incrementing = false;
+    protected $keyType = 'string';
 
     protected $fillable = [
+        'uuid',
         'name',
         'description',
         'url',
