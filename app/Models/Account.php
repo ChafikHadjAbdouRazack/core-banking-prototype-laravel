@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Domain\Asset\Models\Asset;
+use App\Models\AccountBalance;
+use App\Domain\Account\DataObjects\Money;
 
 class Account extends Model
 {
@@ -96,41 +98,73 @@ class Account extends Model
     }
     
     /**
-     * Add balance for a specific asset
-     *
-     * @param string $assetCode
-     * @param int $amount
-     * @return AccountBalance
+     * Add balance to account (DEPRECATED - use event sourcing via services)
+     * @deprecated Use WalletService->deposit() instead
      */
-    public function addBalance(string $assetCode, int $amount): AccountBalance
+    public function addBalance(string $assetCode, mixed $amount): bool
     {
-        $balance = $this->balances()->firstOrCreate(
-            ['asset_code' => $assetCode],
+        $amount = (int) $amount; // Convert to integer
+        
+        if ($assetCode === 'USD') {
+            // Legacy USD balance
+            $this->balance += $amount;
+            $this->save();
+        }
+        
+        // Multi-asset balance
+        $balance = AccountBalance::firstOrCreate(
+            [
+                'account_uuid' => $this->uuid,
+                'asset_code' => $assetCode,
+            ],
             ['balance' => 0]
         );
         
-        $balance->credit($amount);
-        return $balance;
+        return $balance->credit($amount);
     }
     
     /**
-     * Subtract balance for a specific asset
-     *
-     * @param string $assetCode
-     * @param int $amount
-     * @return AccountBalance
-     * @throws \Exception if insufficient balance
+     * Subtract balance from account (DEPRECATED - use event sourcing via services)  
+     * @deprecated Use WalletService->withdraw() instead
      */
-    public function subtractBalance(string $assetCode, int $amount): AccountBalance
+    public function subtractBalance(string $assetCode, mixed $amount): bool
     {
-        $balance = $this->getBalanceForAsset($assetCode);
+        $amount = (int) $amount; // Convert to integer
         
-        if (!$balance || !$balance->hasSufficientBalance($amount)) {
-            throw new \Exception("Insufficient {$assetCode} balance");
+        if ($assetCode === 'USD') {
+            // Legacy USD balance
+            if ($this->balance < $amount) {
+                return false;
+            }
+            $this->balance -= $amount;
+            $this->save();
         }
         
-        $balance->debit($amount);
-        return $balance;
+        // Multi-asset balance
+        $balance = $this->getBalanceForAsset($assetCode);
+        if (!$balance || $balance->balance < $amount) {
+            return false;
+        }
+        
+        return $balance->debit($amount);
+    }
+    
+    /**
+     * Add money to account (DEPRECATED - use event sourcing via services)
+     * @deprecated Use WalletService->deposit() instead  
+     */
+    public function addMoney(Money $money, string $assetCode = 'USD'): bool
+    {
+        return $this->addBalance($assetCode, $money->getAmount());
+    }
+    
+    /**
+     * Subtract money from account (DEPRECATED - use event sourcing via services)
+     * @deprecated Use WalletService->withdraw() instead
+     */
+    public function subtractMoney(Money $money, string $assetCode = 'USD'): bool
+    {
+        return $this->subtractBalance($assetCode, $money->getAmount());
     }
     
     /**
@@ -172,29 +206,7 @@ class Account extends Model
         return $this->custodianAccounts()->where('is_primary', true)->first();
     }
 
-    /**
-     * Legacy method for backward compatibility
-     * @deprecated Use addBalance('USD', $amount) instead
-     * @param int $amount
-     * @return static
-     */
-    public function addMoney(int $amount): static
-    {
-        $this->addBalance('USD', $amount);
-        return $this;
-    }
-
-    /**
-     * Legacy method for backward compatibility
-     * @deprecated Use subtractBalance('USD', $amount) instead
-     * @param int $amount
-     * @return static
-     */
-    public function subtractMoney(int $amount): static
-    {
-        $this->subtractBalance('USD', $amount);
-        return $this;
-    }
+    // Legacy balance manipulation methods removed - use event sourcing via WalletService instead
     
     /**
      * Get the account UUID as an AccountUuid value object.
