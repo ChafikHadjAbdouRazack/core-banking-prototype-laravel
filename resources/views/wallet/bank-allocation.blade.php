@@ -208,18 +208,60 @@
                     this.loadTotalBalance();
                 },
                 
-                loadCurrentAllocation() {
-                    // In production, this would fetch from /api/user/bank-preferences
-                    // For now, using default values
+                async loadCurrentAllocation() {
+                    try {
+                        const response = await fetch('/api/users/{{ auth()->user()->uuid }}/bank-allocation', {
+                            headers: {
+                                'Authorization': 'Bearer {{ auth()->user()->createToken("bank-allocation")->plainTextToken }}',
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json',
+                            }
+                        });
+                        
+                        if (!response.ok) {
+                            throw new Error('Failed to fetch bank allocations');
+                        }
+                        
+                        const data = await response.json();
+                        
+                        if (data.data && data.data.length > 0) {
+                            // Update banks with current allocations
+                            data.data.forEach(pref => {
+                                const bank = this.banks.find(b => b.code === pref.bank_name.toLowerCase());
+                                if (bank) {
+                                    bank.allocation = pref.allocation_percentage;
+                                }
+                            });
+                        }
+                    } catch (error) {
+                        console.error('Error loading bank allocations:', error);
+                        // Keep default values
+                    }
                 },
                 
                 loadTotalBalance() {
-                    fetch('/api/accounts/{{ auth()->user()->accounts->first()->uuid ?? '' }}/balances')
-                        .then(response => response.json())
-                        .then(data => {
-                            // Convert USD equivalent to cents
-                            this.totalBalance = parseFloat(data.data.summary.total_usd_equivalent.replace(/,/g, '')) * 100;
-                        });
+                    @if(auth()->user()->accounts->first())
+                        fetch('/api/accounts/{{ auth()->user()->accounts->first()->uuid }}/balances')
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error('Failed to fetch balance');
+                                }
+                                return response.json();
+                            })
+                            .then(data => {
+                                // Convert USD equivalent to cents
+                                if (data.data && data.data.summary && data.data.summary.total_usd_equivalent) {
+                                    this.totalBalance = parseFloat(data.data.summary.total_usd_equivalent.replace(/[,$]/g, '')) * 100;
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error loading balance:', error);
+                                this.totalBalance = 0;
+                            });
+                    @else
+                        console.warn('No account found for user');
+                        this.totalBalance = 0;
+                    @endif
                 },
                 
                 updateAllocation(bank) {
@@ -248,18 +290,37 @@
                     this.saving = true;
                     
                     try {
-                        // In production, POST to /api/user/bank-preferences
-                        const allocations = {};
-                        this.banks.forEach(bank => {
-                            allocations[bank.code] = bank.allocation;
+                        const allocations = this.banks.map((bank, index) => ({
+                            bank_name: bank.name,
+                            allocation_percentage: bank.allocation,
+                            priority: index + 1,
+                        }));
+                        
+                        const response = await fetch('/api/users/{{ auth()->user()->uuid }}/bank-allocation', {
+                            method: 'PUT',
+                            headers: {
+                                'Authorization': 'Bearer {{ auth()->user()->createToken("bank-allocation")->plainTextToken }}',
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                            },
+                            body: JSON.stringify({ allocations })
                         });
                         
-                        // Simulate API call
-                        await new Promise(resolve => setTimeout(resolve, 1000));
+                        if (!response.ok) {
+                            throw new Error('Failed to save allocations');
+                        }
+                        
+                        const data = await response.json();
                         
                         // Show success message
                         alert('Bank allocation saved successfully!');
+                        
+                        // Reload current allocation to confirm changes
+                        await this.loadCurrentAllocation();
+                        
                     } catch (error) {
+                        console.error('Error saving allocation:', error);
                         alert('Failed to save allocation. Please try again.');
                     } finally {
                         this.saving = false;

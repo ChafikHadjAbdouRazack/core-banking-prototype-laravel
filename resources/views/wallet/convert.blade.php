@@ -13,7 +13,7 @@
                         <p class="text-gray-600 dark:text-gray-400">Create an account to get started with currency conversion</p>
                     </div>
                 @else
-                    <form method="POST" action="{{ route('wallet.convert.store') }}" class="space-y-6">
+                    <form id="convert-form" class="space-y-6">
                     @csrf
 
                     <div>
@@ -30,32 +30,35 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <x-label for="from_currency" value="{{ __('From Currency') }}" />
-                            <select id="from_currency" name="from_asset_code" class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm" required>
-                                <option value="USD">USD - US Dollar</option>
-                                <option value="EUR">EUR - Euro</option>
-                                <option value="GBP">GBP - British Pound</option>
-                                <option value="CHF">CHF - Swiss Franc</option>
-                                <option value="JPY">JPY - Japanese Yen</option>
-                                <option value="GCU">GCU - Global Currency Unit</option>
+                            <select id="from_currency" name="from_currency" class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm" required>
+                                @if($balances->count() > 0)
+                                    @foreach($balances as $balance)
+                                        <option value="{{ $balance->asset_code }}">
+                                            {{ $balance->asset_code }} - {{ $balance->asset->name }} ({{ $balance->formatted_balance }})
+                                        </option>
+                                    @endforeach
+                                @else
+                                    <option value="">No balances available</option>
+                                @endif
                             </select>
+                            <div id="from-currency-error" class="text-red-600 text-sm mt-1 hidden"></div>
                         </div>
 
                         <div>
                             <x-label for="to_currency" value="{{ __('To Currency') }}" />
-                            <select id="to_currency" name="to_asset_code" class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm" required>
-                                <option value="EUR">EUR - Euro</option>
-                                <option value="USD">USD - US Dollar</option>
-                                <option value="GBP">GBP - British Pound</option>
-                                <option value="CHF">CHF - Swiss Franc</option>
-                                <option value="JPY">JPY - Japanese Yen</option>
-                                <option value="GCU">GCU - Global Currency Unit</option>
+                            <select id="to_currency" name="to_currency" class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm" required>
+                                @foreach($assets as $asset)
+                                    <option value="{{ $asset->code }}">{{ $asset->code }} - {{ $asset->name }}</option>
+                                @endforeach
                             </select>
+                            <div id="to-currency-error" class="text-red-600 text-sm mt-1 hidden"></div>
                         </div>
                     </div>
 
                     <div>
                         <x-label for="amount" value="{{ __('Amount') }}" />
                         <x-input id="amount" type="number" step="0.01" min="0.01" name="amount" class="mt-1 block w-full" required />
+                        <div id="amount-error" class="text-red-600 text-sm mt-1 hidden"></div>
                     </div>
 
                     <!-- Exchange Rate Preview -->
@@ -87,8 +90,11 @@
                         </div>
                     </div>
 
+                    <div id="success-message" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded hidden"></div>
+                    <div id="error-message" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded hidden"></div>
+
                     <div class="flex items-center justify-end mt-6">
-                        <x-button>
+                        <x-button type="button" id="convert-btn">
                             {{ __('Convert Currency') }}
                         </x-button>
                     </div>
@@ -100,30 +106,24 @@
 
     @push('scripts')
     <script>
-        // Simple exchange rate preview (in production, this would fetch real rates)
         document.addEventListener('DOMContentLoaded', function() {
+            const convertForm = document.getElementById('convert-form');
+            const convertBtn = document.getElementById('convert-btn');
             const fromCurrency = document.getElementById('from_currency');
             const toCurrency = document.getElementById('to_currency');
             const amount = document.getElementById('amount');
             const exchangeRateDisplay = document.getElementById('exchange-rate');
             const convertedAmountDisplay = document.getElementById('converted-amount');
+            const successMessage = document.getElementById('success-message');
+            const errorMessage = document.getElementById('error-message');
 
-            function updatePreview() {
-                // Mock exchange rates (in production, fetch from API)
-                const rates = {
-                    'USD-EUR': 0.92,
-                    'EUR-USD': 1.09,
-                    'USD-GBP': 0.79,
-                    'GBP-USD': 1.27,
-                    'USD-GCU': 0.95,
-                    'GCU-USD': 1.05,
-                    'EUR-GBP': 0.86,
-                    'GBP-EUR': 1.16,
-                };
-
+            // Update exchange rate preview
+            async function updatePreview() {
                 const from = fromCurrency.value;
                 const to = toCurrency.value;
                 const amountValue = parseFloat(amount.value) || 0;
+
+                if (!from || !to) return;
 
                 if (from === to) {
                     exchangeRateDisplay.textContent = '1 ' + from + ' = 1 ' + to;
@@ -131,11 +131,111 @@
                     return;
                 }
 
-                const rateKey = from + '-' + to;
-                const rate = rates[rateKey] || 1;
+                try {
+                    const response = await fetch(`/api/exchange-rates?from=${from}&to=${to}`);
+                    if (response.ok) {
+                        const result = await response.json();
+                        if (result.data && result.data.length > 0) {
+                            const rate = parseFloat(result.data[0].rate);
+                            exchangeRateDisplay.textContent = '1 ' + from + ' = ' + rate.toFixed(4) + ' ' + to;
+                            convertedAmountDisplay.textContent = (amountValue * rate).toFixed(2) + ' ' + to;
+                        }
+                    }
+                } catch (error) {
+                    console.error('Failed to fetch exchange rate:', error);
+                    exchangeRateDisplay.textContent = '1 ' + from + ' = -- ' + to;
+                    convertedAmountDisplay.textContent = '--';
+                }
+            }
 
-                exchangeRateDisplay.textContent = '1 ' + from + ' = ' + rate.toFixed(4) + ' ' + to;
-                convertedAmountDisplay.textContent = (amountValue * rate).toFixed(2) + ' ' + to;
+            // Handle currency conversion
+            convertBtn.addEventListener('click', async function(e) {
+                e.preventDefault();
+                
+                clearErrors();
+                
+                const formData = new FormData(convertForm);
+                const accountUuid = formData.get('account_uuid');
+                
+                const requestData = {
+                    account_uuid: accountUuid,
+                    from_currency: formData.get('from_currency'),
+                    to_currency: formData.get('to_currency'),
+                    amount: parseFloat(formData.get('amount'))
+                };
+                
+                try {
+                    convertBtn.disabled = true;
+                    convertBtn.textContent = 'Converting...';
+                    
+                    const response = await fetch('/api/exchange/convert', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                            'Authorization': `Bearer {{ auth()->user()->currentAccessToken()->token ?? auth()->user()->createToken('wallet-access')->plainTextToken }}`
+                        },
+                        body: JSON.stringify(requestData)
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (response.ok) {
+                        showSuccess(result.message || 'Currency conversion completed successfully');
+                        convertForm.reset();
+                        setTimeout(() => {
+                            window.location.href = '{{ route("dashboard") }}';
+                        }, 2000);
+                    } else {
+                        if (result.errors) {
+                            showValidationErrors(result.errors);
+                        } else {
+                            showError(result.message || 'Currency conversion failed');
+                        }
+                    }
+                } catch (error) {
+                    showError('Network error occurred. Please try again.');
+                    console.error('Conversion error:', error);
+                } finally {
+                    convertBtn.disabled = false;
+                    convertBtn.textContent = 'Convert Currency';
+                }
+            });
+
+            function clearErrors() {
+                document.getElementById('from-currency-error').classList.add('hidden');
+                document.getElementById('to-currency-error').classList.add('hidden');
+                document.getElementById('amount-error').classList.add('hidden');
+                successMessage.classList.add('hidden');
+                errorMessage.classList.add('hidden');
+            }
+            
+            function showSuccess(message) {
+                successMessage.textContent = message;
+                successMessage.classList.remove('hidden');
+            }
+            
+            function showError(message) {
+                errorMessage.textContent = message;
+                errorMessage.classList.remove('hidden');
+            }
+            
+            function showValidationErrors(errors) {
+                if (errors.from_currency) {
+                    const error = document.getElementById('from-currency-error');
+                    error.textContent = errors.from_currency[0];
+                    error.classList.remove('hidden');
+                }
+                if (errors.to_currency) {
+                    const error = document.getElementById('to-currency-error');
+                    error.textContent = errors.to_currency[0];
+                    error.classList.remove('hidden');
+                }
+                if (errors.amount) {
+                    const error = document.getElementById('amount-error');
+                    error.textContent = errors.amount[0];
+                    error.classList.remove('hidden');
+                }
             }
 
             fromCurrency.addEventListener('change', updatePreview);

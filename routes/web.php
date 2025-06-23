@@ -111,18 +111,11 @@ Route::middleware([
             return view('wallet.transactions');
         })->name('transactions');
         
-        // Wallet transaction routes
+        // Wallet transaction routes (views only - operations handled via API)
         Route::get('/deposit', [App\Http\Controllers\WalletController::class, 'showDeposit'])->name('deposit');
-        Route::post('/deposit', [App\Http\Controllers\WalletController::class, 'deposit'])->name('deposit.store');
-        
         Route::get('/withdraw', [App\Http\Controllers\WalletController::class, 'showWithdraw'])->name('withdraw');
-        Route::post('/withdraw', [App\Http\Controllers\WalletController::class, 'withdraw'])->name('withdraw.store');
-        
         Route::get('/transfer', [App\Http\Controllers\WalletController::class, 'showTransfer'])->name('transfer');
-        Route::post('/transfer', [App\Http\Controllers\WalletController::class, 'transfer'])->name('transfer.store');
-        
         Route::get('/convert', [App\Http\Controllers\WalletController::class, 'showConvert'])->name('convert');
-        Route::post('/convert', [App\Http\Controllers\WalletController::class, 'convert'])->name('convert.store');
     });
 });
 

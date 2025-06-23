@@ -28,6 +28,18 @@ API documentation and integration guides
 - **[API_VOTING_ENDPOINTS.md](04-API/API_VOTING_ENDPOINTS.md)** - Governance API
 - **[WEBHOOK_INTEGRATION.md](04-API/WEBHOOK_INTEGRATION.md)** - Webhook system
 
+### [04-DEVELOPER](04-DEVELOPER/)
+Developer resources and tools
+- **[API-INTEGRATION-GUIDE.md](04-DEVELOPER/API-INTEGRATION-GUIDE.md)** - API integration guide
+- **[SDK-GUIDE.md](04-DEVELOPER/SDK-GUIDE.md)** - SDK documentation
+- **[API-EXAMPLES.md](04-DEVELOPER/API-EXAMPLES.md)** - API usage examples
+- **[finaegis-api-v2.postman_collection.json](04-DEVELOPER/finaegis-api-v2.postman_collection.json)** - Postman collection
+
+### [05-OPERATIONS](05-OPERATIONS/)
+Operations and performance guides
+- **[PERFORMANCE-OPTIMIZATION.md](05-OPERATIONS/PERFORMANCE-OPTIMIZATION.md)** - Performance guide
+- **[SECURITY-AUDIT-PREPARATION.md](05-OPERATIONS/SECURITY-AUDIT-PREPARATION.md)** - Security guide
+
 ### [05-TECHNICAL](05-TECHNICAL/)
 Technical specifications and implementation details
 - **[DATABASE_SCHEMA.md](05-TECHNICAL/DATABASE_SCHEMA.md)** - Database structure
@@ -42,6 +54,11 @@ Development guides and tools
 - **[BEHAT.md](06-DEVELOPMENT/BEHAT.md)** - BDD testing guide
 - **[DEMO.md](06-DEVELOPMENT/DEMO.md)** - Demo environment setup
 
+### [06-USER-GUIDES](06-USER-GUIDES/)
+End-user documentation
+- **[GETTING-STARTED.md](06-USER-GUIDES/GETTING-STARTED.md)** - User onboarding guide
+- **[GCU-USER-GUIDE.md](06-USER-GUIDES/GCU-USER-GUIDE.md)** - GCU platform guide
+
 ### [07-IMPLEMENTATION](07-IMPLEMENTATION/)
 Implementation details and phase documentation
 - **[API_IMPLEMENTATION.md](07-IMPLEMENTATION/API_IMPLEMENTATION.md)** - API implementation notes
@@ -50,26 +67,10 @@ Implementation details and phase documentation
 - **[PHASE_5.2_TRANSACTION_PROCESSING.md](07-IMPLEMENTATION/PHASE_5.2_TRANSACTION_PROCESSING.md)** - Transaction processing
 
 ### [08-OPERATIONS](08-OPERATIONS/)
-Operational procedures (planned)
+Operational procedures
 - Deployment guides (coming soon)
 - Monitoring setup (coming soon)
 - Backup procedures (coming soon)
-
-### [09-DEVELOPER](09-DEVELOPER/)
-Developer resources and tools
-- **[API-INTEGRATION-GUIDE.md](09-DEVELOPER/API-INTEGRATION-GUIDE.md)** - API integration guide
-- **[SDK-GUIDE.md](09-DEVELOPER/SDK-GUIDE.md)** - SDK documentation
-- **[finaegis-api-v2.postman_collection.json](09-DEVELOPER/finaegis-api-v2.postman_collection.json)** - Postman collection
-
-### [10-OPERATIONS](10-OPERATIONS/)
-Operations and performance guides
-- **[PERFORMANCE-OPTIMIZATION.md](10-OPERATIONS/PERFORMANCE-OPTIMIZATION.md)** - Performance guide
-- **[SECURITY-AUDIT-PREPARATION.md](10-OPERATIONS/SECURITY-AUDIT-PREPARATION.md)** - Security guide
-
-### [11-USER-GUIDES](11-USER-GUIDES/)
-End-user documentation
-- **[GETTING-STARTED.md](11-USER-GUIDES/GETTING-STARTED.md)** - User onboarding guide
-- **[GCU-USER-GUIDE.md](11-USER-GUIDES/GCU-USER-GUIDE.md)** - GCU platform guide
 
 ### [archive](archive/)
 Historical and deprecated documentation
@@ -79,11 +80,11 @@ Historical and deprecated documentation
 ### For Developers
 1. Start with [DEVELOPMENT.md](06-DEVELOPMENT/DEVELOPMENT.md) for setup
 2. Review [ARCHITECTURE.md](02-ARCHITECTURE/ARCHITECTURE.md) for system design
-3. Check [API-INTEGRATION-GUIDE.md](09-DEVELOPER/API-INTEGRATION-GUIDE.md) for API usage
+3. Check [API-INTEGRATION-GUIDE.md](04-DEVELOPER/API-INTEGRATION-GUIDE.md) for API usage
 
 ### For Users
-1. Begin with [GETTING-STARTED.md](11-USER-GUIDES/GETTING-STARTED.md)
-2. Learn about GCU in [GCU-USER-GUIDE.md](11-USER-GUIDES/GCU-USER-GUIDE.md)
+1. Begin with [GETTING-STARTED.md](06-USER-GUIDES/GETTING-STARTED.md)
+2. Learn about GCU in [GCU-USER-GUIDE.md](06-USER-GUIDES/GCU-USER-GUIDE.md)
 
 ### For AI Assistants
 1. Use [CLAUDE.md](06-DEVELOPMENT/CLAUDE.md) for development guidance
