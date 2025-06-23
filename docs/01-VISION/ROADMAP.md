@@ -353,17 +353,112 @@
 
 ---
 
+## 🚨 CRITICAL ARCHITECTURE ISSUES (Discovered Dec 2025) - STATUS UPDATE
+
+### ✅ FIXED - API-Frontend Architecture Disconnect (COMPLETED)
+**Problem**: Frontend bypassed APIs entirely, creating dual code paths
+- ✅ **Views now use API endpoints** via JavaScript/AJAX (wallet operations)
+- ✅ **WalletController cleaned up** - removed duplicate API logic
+- ✅ **Unified API-first architecture** - all operations go through APIs
+- ✅ **Mobile development ready** - clean API layer for apps
+
+**Impact**: Fundamental architectural violation **RESOLVED**
+
+**Solutions Implemented**:
+1. ✅ **COMPLETED**: Refactored wallet views to use API endpoints via JavaScript/AJAX
+2. ✅ **COMPLETED**: Removed duplicate logic from WalletController (kept view methods only)
+3. ✅ **COMPLETED**: Created unified API-first architecture
+4. ✅ **COMPLETED**: Updated all wallet forms to POST to API endpoints
+
+### ✅ FIXED - Missing API Endpoints for Core Features (COMPLETED)
+**Problem**: Backend services existed but no API exposure
+- ✅ **TransactionReversalController** - Created full API for financial error recovery
+- ✅ **BatchProcessingController** - Complete API for bulk operations and monitoring
+- ✅ **BankAllocationController** - Full API for user bank preferences and distribution
+- ✅ **Account Freeze/Unfreeze** - Already had API exposure
+
+**New API Endpoints Added**:
+- `POST /api/accounts/{uuid}/transactions/reverse` - Transaction reversal
+- `GET /api/accounts/{uuid}/transactions/reversals` - Reversal history
+- `GET /api/transactions/reversals/{reversalId}/status` - Reversal status
+- `POST /api/batch-operations/execute` - Execute batch operations
+- `GET /api/batch-operations/{batchId}/status` - Batch status monitoring
+- `GET /api/batch-operations` - Batch history
+- `POST /api/batch-operations/{batchId}/cancel` - Cancel batch operations
+- `GET /api/bank-allocations` - Get user bank allocations
+- `PUT /api/bank-allocations` - Update bank allocations
+- `POST /api/bank-allocations/banks` - Add bank to allocation
+- `DELETE /api/bank-allocations/banks/{bankCode}` - Remove bank
+- `PUT /api/bank-allocations/primary/{bankCode}` - Set primary bank
+- `GET /api/bank-allocations/available-banks` - Available banks
+- `POST /api/bank-allocations/distribution-preview` - Preview fund distribution
+
+### ✅ FIXED - Documentation Structure Chaos (COMPLETED)
+**Problem**: Duplicate and conflicting documentation
+- ✅ **Consolidated** `/docs/04-DEVELOPER/` (removed duplicate `/docs/09-DEVELOPER/`)
+- ✅ **Consolidated** `/docs/05-OPERATIONS/` (removed duplicate `/docs/10-OPERATIONS/`)
+- ✅ **Consolidated** `/docs/06-USER-GUIDES/` (removed duplicate `/docs/11-USER-GUIDES/`)
+- ✅ **Updated** main documentation index with clean structure
+- ✅ **Fixed** all internal documentation links
+
+### 🔴 CRITICAL - Missing View Files (404 Errors)
+**Problem**: Routes exist but views missing, causing 404s
+- ❌ `pricing.blade.php`, `developers/*.blade.php`, `legal/*.blade.php`
+- ❌ `blog/*.blade.php`, `partners.blade.php`, `status.blade.php`
+
+### 🔴 CRITICAL - Test Coverage Gaps
+**Problem**: Only 28% API test coverage for production financial system
+- ❌ **8 API tests** for **29 API controllers** = 28% coverage
+- ❌ **19 Workflow tests** for **36 Workflows** = 53% coverage
+- ❌ **5 Behat files** insufficient for complex financial workflows
+
+### 🔴 CRITICAL - Behat Scenario Insufficient
+**Problem**: Only 5 feature files for complex financial system
+- ❌ Missing end-to-end wallet operation scenarios
+- ❌ Missing saga/compensation pattern testing
+- ❌ Missing complex multi-step financial workflows
+- ❌ Missing compliance workflow scenarios
+
 ## Technical Debt & Improvements
 
-### Critical Issues (Fixed in this update)
-1. [x] ✅ **Missing BasketCreated event mapping** - **FIXED**
-   - Added to config/event-sourcing.php
-2. [x] ✅ **API documentation generation failure** - **FIXED**
-   - Added missing UserVotingPoll schema
-3. [x] ✅ **SQLite test compatibility** - **FIXED**
-   - Fixed TIMESTAMPDIFF usage in SettlementService and MultiCustodianTransferService
+### IMMEDIATE CRITICAL FIXES (Week 1 - Dec 2025)
+1. [ ] **🚨 URGENT: Fix API-Frontend Architecture**
+   - Convert wallet views to use API endpoints
+   - Remove WalletController duplication
+   - Create unified API-first architecture
+   
+2. [ ] **🚨 URGENT: Create Missing API Endpoints**
+   - TransactionReversalWorkflow API
+   - BatchProcessingWorkflow API  
+   - BankAllocationService API
+   - CircuitBreakerService monitoring API
 
-### High Priority Technical Debt (Q2 2025)
+3. [ ] **🚨 URGENT: Documentation Refactoring**
+   - Consolidate duplicate documentation directories
+   - Create single source of truth structure
+   - Fix broken internal links
+
+4. [ ] **🚨 URGENT: Create Missing Views**
+   - All public pages causing 404 errors
+   - Legal compliance pages (terms, privacy)
+   - Developer and pricing pages
+
+### HIGH PRIORITY FIXES (Week 2-3 - Dec 2025)
+1. [ ] **API Test Coverage to 90%+**
+   - Add 21 missing API controller tests
+   - Achieve production-grade test coverage
+   
+2. [ ] **Workflow Test Coverage to 90%+**
+   - Add 17 missing workflow tests
+   - Test saga compensation patterns
+
+3. [ ] **Expand Behat Scenarios**
+   - End-to-end wallet operations
+   - Complex financial workflows
+   - Error recovery scenarios
+   - Compliance workflows
+
+### High Priority Technical Debt (Q1 2026)
 1. [ ] **Add compensation to workflows**
    - AssetTransferWorkflow needs compensation for initiated transfers
    - DecomposeBasketWorkflow needs partial decomposition rollback
