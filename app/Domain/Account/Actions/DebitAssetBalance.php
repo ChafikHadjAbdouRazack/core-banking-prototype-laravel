@@ -4,22 +4,19 @@ namespace App\Domain\Account\Actions;
 
 use App\Domain\Account\Events\AssetBalanceSubtracted;
 use App\Models\Account;
+use App\Models\AccountBalance;
 
-class DebitAccount extends AccountAction
+class DebitAssetBalance extends AccountAction
 {
     /**
-     * @param \App\Domain\Account\Events\AssetBalanceSubtracted $event
-     *
-     * @return \App\Models\Account
+     * Handle asset balance debit event
      */
     public function __invoke(AssetBalanceSubtracted $event): Account
     {
-        $account = $this->accountRepository->findByUuid(
-            $event->aggregateRootUuid()
-        );
+        $account = $this->accountRepository->findByUuid($event->aggregateRootUuid());
         
         // Find existing asset balance
-        $balance = \App\Models\AccountBalance::where([
+        $balance = AccountBalance::where([
             'account_uuid' => $account->uuid,
             'asset_code' => $event->assetCode,
         ])->first();

@@ -4,22 +4,19 @@ namespace App\Domain\Account\Actions;
 
 use App\Domain\Account\Events\AssetBalanceAdded;
 use App\Models\Account;
+use App\Models\AccountBalance;
 
-class CreditAccount extends AccountAction
+class CreditAssetBalance extends AccountAction
 {
     /**
-     * @param \App\Domain\Account\Events\AssetBalanceAdded $event
-     *
-     * @return \App\Models\Account
+     * Handle asset balance credit event
      */
     public function __invoke(AssetBalanceAdded $event): Account
     {
-        $account = $this->accountRepository->findByUuid(
-            $event->aggregateRootUuid()
-        );
+        $account = $this->accountRepository->findByUuid($event->aggregateRootUuid());
         
         // Update or create asset balance using event data
-        $balance = \App\Models\AccountBalance::firstOrCreate(
+        $balance = AccountBalance::firstOrCreate(
             [
                 'account_uuid' => $account->uuid,
                 'asset_code' => $event->assetCode,
