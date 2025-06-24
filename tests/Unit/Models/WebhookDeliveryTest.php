@@ -27,7 +27,7 @@ class WebhookDeliveryTest extends TestCase
     {
         $delivery = WebhookDelivery::create([
             'uuid' => 'delivery-uuid',
-            'webhook_id' => $this->webhook->id,
+            'webhook_uuid' => $this->webhook->uuid,
             'event_type' => 'test.event',
             'event_id' => 'evt_123',
             'payload' => ['test' => 'data'],
@@ -45,7 +45,7 @@ class WebhookDeliveryTest extends TestCase
     public function it_belongs_to_webhook()
     {
         $delivery = WebhookDelivery::factory()->create([
-            'webhook_id' => $this->webhook->id,
+            'webhook_uuid' => $this->webhook->uuid,
         ]);
 
         $this->assertInstanceOf(Webhook::class, $delivery->webhook);
@@ -56,7 +56,7 @@ class WebhookDeliveryTest extends TestCase
     public function it_can_mark_as_delivered()
     {
         $delivery = WebhookDelivery::factory()->create([
-            'webhook_id' => $this->webhook->id,
+            'webhook_uuid' => $this->webhook->uuid,
             'status' => 'pending',
         ]);
 
@@ -72,7 +72,7 @@ class WebhookDeliveryTest extends TestCase
     public function it_can_mark_as_failed()
     {
         $delivery = WebhookDelivery::factory()->create([
-            'webhook_id' => $this->webhook->id,
+            'webhook_uuid' => $this->webhook->uuid,
             'status' => 'pending',
             'attempts' => 1,
         ]);
@@ -90,12 +90,12 @@ class WebhookDeliveryTest extends TestCase
     public function it_has_pending_scope()
     {
         WebhookDelivery::factory()->create([
-            'webhook_id' => $this->webhook->id,
+            'webhook_uuid' => $this->webhook->uuid,
             'status' => 'pending',
         ]);
 
         WebhookDelivery::factory()->create([
-            'webhook_id' => $this->webhook->id,
+            'webhook_uuid' => $this->webhook->uuid,
             'status' => 'delivered',
         ]);
 
@@ -109,12 +109,12 @@ class WebhookDeliveryTest extends TestCase
     public function it_has_failed_scope()
     {
         WebhookDelivery::factory()->create([
-            'webhook_id' => $this->webhook->id,
+            'webhook_uuid' => $this->webhook->uuid,
             'status' => 'failed',
         ]);
 
         WebhookDelivery::factory()->create([
-            'webhook_id' => $this->webhook->id,
+            'webhook_uuid' => $this->webhook->uuid,
             'status' => 'delivered',
         ]);
 
@@ -129,7 +129,7 @@ class WebhookDeliveryTest extends TestCase
     {
         $delivery = WebhookDelivery::create([
             'uuid' => 'test-uuid',
-            'webhook_id' => $this->webhook->id,
+            'webhook_uuid' => $this->webhook->uuid,
             'event_type' => 'test.event',
             'payload' => ['test' => 'data'],
             'status' => 'pending',

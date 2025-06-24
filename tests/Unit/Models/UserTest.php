@@ -53,8 +53,8 @@ it('has correct casts', function () {
 });
 
 it('can check if user can access panel', function () {
-    $adminUser = User::factory()->create(['role' => 'admin']);
-    $regularUser = User::factory()->create(['role' => 'user']);
+    $adminUser = User::factory()->withAdminRole()->create();
+    $regularUser = User::factory()->create(); // Uses default private role
     
     $panel = app(\Filament\Panel::class);
     
