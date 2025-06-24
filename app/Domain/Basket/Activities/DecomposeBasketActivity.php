@@ -3,38 +3,24 @@
 namespace App\Domain\Basket\Activities;
 
 use App\Domain\Account\DataObjects\AccountUuid;
-use App\Domain\Basket\Services\BasketAccountService;
-use App\Models\Account;
 use Workflow\Activity;
 
 class DecomposeBasketActivity extends Activity
 {
     public function __construct(
-        private BasketAccountService $basketAccountService
+        private DecomposeBasketBusinessActivity $businessActivity
     ) {}
 
     /**
-     * Execute basket decomposition activity.
+     * Execute basket decomposition activity using proper domain pattern.
      * 
-     * @param array $input Expected format: [
-     *   'account_uuid' => string,
-     *   'basket_code' => string,
-     *   'amount' => int
-     * ]
+     * @param AccountUuid $accountUuid
+     * @param string $basketCode
+     * @param int $amount
      * @return array
      */
-    public function execute(array $input): array
+    public function execute(AccountUuid $accountUuid, string $basketCode, int $amount): array
     {
-        $accountUuid = $input['account_uuid'] ?? null;
-        $basketCode = $input['basket_code'] ?? null;
-        $amount = $input['amount'] ?? null;
-
-        if (!$accountUuid || !$basketCode || !$amount) {
-            throw new \InvalidArgumentException('Missing required parameters: account_uuid, basket_code, amount');
-        }
-
-        $account = Account::where('uuid', $accountUuid)->firstOrFail();
-
-        return $this->basketAccountService->decomposeBasket($account, $basketCode, $amount);
+        return $this->businessActivity->execute($accountUuid, $basketCode, $amount);
     }
 }

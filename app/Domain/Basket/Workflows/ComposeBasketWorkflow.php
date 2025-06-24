@@ -2,27 +2,38 @@
 
 namespace App\Domain\Basket\Workflows;
 
+use App\Domain\Account\DataObjects\AccountUuid;
+use App\Domain\Basket\Activities\ComposeBasketActivity;
+use App\Domain\Basket\Activities\DecomposeBasketActivity;
 use Workflow\ActivityStub;
 use Workflow\Workflow;
 
 class ComposeBasketWorkflow extends Workflow
 {
-    public function execute(array $input): \Generator
+    /**
+     * Execute basket composition workflow.
+     * 
+     * @param AccountUuid $accountUuid
+     * @param string $basketCode
+     * @param int $amount
+     * @return \Generator
+     */
+    public function execute(AccountUuid $accountUuid, string $basketCode, int $amount): \Generator
     {
         try {
             $result = yield ActivityStub::make(
-                'App\Domain\Basket\Activities\ComposeBasketActivity',
-                $input
+                ComposeBasketActivity::class,
+                $accountUuid,
+                $basketCode,
+                $amount
             );
             
             // Add compensation to decompose the basket if composition fails later
             $this->addCompensation(fn() => ActivityStub::make(
-                'App\Domain\Basket\Activities\DecomposeBasketActivity',
-                [
-                    'account_uuid' => $input['account_uuid'],
-                    'basket_code' => $input['basket_code'],
-                    'amount' => $input['amount'], // Same amount that was composed
-                ]
+                DecomposeBasketActivity::class,
+                $accountUuid,
+                $basketCode,
+                $amount // Same amount that was composed
             ));
             
             return $result;
@@ -31,5 +42,4 @@ class ComposeBasketWorkflow extends Workflow
             throw $th;
         }
     }
-
 }
