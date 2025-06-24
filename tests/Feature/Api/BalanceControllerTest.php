@@ -146,13 +146,14 @@ class BalanceControllerTest extends TestCase
                     'account_uuid',
                     'current_balance',
                     'frozen',
-                    'summary' => [
-                        'total_credit',
-                        'total_debit',
-                        'net_flow',
-                        'transaction_count',
+                    'statistics' => [
+                        'total_debit_12_months',
+                        'total_credit_12_months',
+                        'average_monthly_debit',
+                        'average_monthly_credit',
+                        'months_analyzed',
                     ],
-                    'monthly_turnover',
+                    'monthly_turnovers',
                 ]
             ]);
     }
@@ -180,11 +181,10 @@ class BalanceControllerTest extends TestCase
             ->assertJson([
                 'data' => [
                     'account_uuid' => $this->account->uuid,
-                    'summary' => [
-                        'total_credit' => 3500,
-                        'total_debit' => 1500,
-                        'net_flow' => 2000,
-                        'transaction_count' => 2,
+                    'statistics' => [
+                        'total_credit_12_months' => 3500,
+                        'total_debit_12_months' => 1500,
+                        'months_analyzed' => 2,
                     ]
                 ]
             ]);
