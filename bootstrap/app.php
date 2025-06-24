@@ -18,7 +18,18 @@ return Application::configure(basePath: dirname(__DIR__))
         },
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+        // Register rate limiting middleware
+        $middleware->alias([
+            'api.rate_limit' => \App\Http\Middleware\ApiRateLimitMiddleware::class,
+            'transaction.rate_limit' => \App\Http\Middleware\TransactionRateLimitMiddleware::class,
+        ]);
+        
+        // Apply global API rate limiting to API routes
+        $middleware->group('api', [
+            \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
+            'throttle:60,1',
+            \Illuminate\Routing\Middleware\SubstituteBindings::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
