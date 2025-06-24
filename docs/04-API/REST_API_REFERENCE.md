@@ -12,6 +12,17 @@ This document consolidates all REST API endpoints for the FinAegis Core Banking 
 - [Governance & Voting](#governance--voting)
 - [Custodian Integration](#custodian-integration)
 - [Webhooks](#webhooks)
+- [Bank Allocation](#bank-allocation)
+- [Batch Processing](#batch-processing)
+- [Transaction Reversal](#transaction-reversal)
+- [Regulatory Reporting](#regulatory-reporting)
+- [Daily Reconciliation](#daily-reconciliation)
+- [Bank Alerting](#bank-alerting)
+- [Basket Performance](#basket-performance)
+- [Stablecoin Operations](#stablecoin-operations)
+- [User Voting](#user-voting)
+- [KYC Management](#kyc-management)
+- [GDPR Compliance](#gdpr-compliance)
 
 ## Authentication
 
@@ -807,4 +818,604 @@ Response:
   "next_poll_date": "2025-07-01"
 }
 ```
-EOF < /dev/null
+
+## Bank Allocation
+
+### Get User Bank Allocation
+```http
+GET /api/users/{uuid}/bank-allocation
+Authorization: Bearer {token}
+```
+
+Response:
+```json
+{
+  "data": {
+    "allocations": [
+      {
+        "bank_name": "Paysera",
+        "allocation_percentage": 40.0,
+        "priority": 1
+      },
+      {
+        "bank_name": "Deutsche Bank",
+        "allocation_percentage": 35.0,
+        "priority": 2
+      }
+    ]
+  }
+}
+```
+
+### Update User Bank Allocation
+```http
+PUT /api/users/{uuid}/bank-allocation
+Authorization: Bearer {token}
+Content-Type: application/json
+
+{
+  "allocations": [
+    {
+      "bank_name": "Paysera",
+      "allocation_percentage": 30.0,
+      "priority": 1
+    },
+    {
+      "bank_name": "Deutsche Bank",
+      "allocation_percentage": 40.0,
+      "priority": 2
+    },
+    {
+      "bank_name": "Santander",
+      "allocation_percentage": 30.0,
+      "priority": 3
+    }
+  ]
+}
+```
+
+### Get Available Banks
+```http
+GET /api/bank-allocation/banks
+Authorization: Bearer {token}
+```
+
+### Get Bank Health Status
+```http
+GET /api/bank-allocation/health
+Authorization: Bearer {token}
+```
+
+### Get Allocation Strategies
+```http
+GET /api/bank-allocation/strategies
+Authorization: Bearer {token}
+```
+
+### Get User Allocation History
+```http
+GET /api/users/{uuid}/bank-allocation/history
+Authorization: Bearer {token}
+```
+
+## Batch Processing
+
+### Create Batch Transaction
+```http
+POST /api/batch-processing/transactions
+Authorization: Bearer {token}
+Content-Type: application/json
+
+{
+  "batch_id": "BATCH_001",
+  "transactions": [
+    {
+      "from_account_uuid": "account1",
+      "to_account_uuid": "account2",
+      "amount": 1000,
+      "asset_code": "USD",
+      "reference": "TXN_001"
+    }
+  ]
+}
+```
+
+### Get Batch Status
+```http
+GET /api/batch-processing/batches/{batch_id}
+Authorization: Bearer {token}
+```
+
+### List User Batches
+```http
+GET /api/batch-processing/batches
+Authorization: Bearer {token}
+```
+
+### Get Batch Statistics
+```http
+GET /api/batch-processing/statistics
+Authorization: Bearer {token}
+```
+
+### Process Pending Batches (Admin)
+```http
+POST /api/batch-processing/process-pending
+Authorization: Bearer {token}
+```
+
+### Cancel Batch
+```http
+DELETE /api/batch-processing/batches/{batch_id}
+Authorization: Bearer {token}
+```
+
+## Transaction Reversal
+
+### Create Reversal Request
+```http
+POST /api/transaction-reversal/request
+Authorization: Bearer {token}
+Content-Type: application/json
+
+{
+  "transaction_id": "txn_123",
+  "reason": "duplicate_payment",
+  "description": "Accidental duplicate transaction"
+}
+```
+
+### Get Reversal Status
+```http
+GET /api/transaction-reversal/requests/{request_id}
+Authorization: Bearer {token}
+```
+
+### List User Reversal Requests
+```http
+GET /api/transaction-reversal/requests
+Authorization: Bearer {token}
+```
+
+### Approve Reversal (Admin)
+```http
+POST /api/transaction-reversal/requests/{request_id}/approve
+Authorization: Bearer {token}
+```
+
+### Reject Reversal (Admin)
+```http
+POST /api/transaction-reversal/requests/{request_id}/reject
+Authorization: Bearer {token}
+Content-Type: application/json
+
+{
+  "reason": "Transaction cannot be reversed after 24 hours"
+}
+```
+
+### Get Reversal Statistics (Admin)
+```http
+GET /api/transaction-reversal/statistics
+Authorization: Bearer {token}
+```
+
+## Regulatory Reporting
+
+### Generate CTR Report
+```http
+POST /api/regulatory-reporting/ctr
+Authorization: Bearer {token}
+Content-Type: application/json
+
+{
+  "start_date": "2025-06-01",
+  "end_date": "2025-06-30",
+  "threshold": 10000
+}
+```
+
+### Generate SAR Report
+```http
+POST /api/regulatory-reporting/sar
+Authorization: Bearer {token}
+Content-Type: application/json
+
+{
+  "user_uuid": "user123",
+  "suspicious_activities": [
+    {
+      "type": "structuring",
+      "description": "Multiple transactions just below reporting threshold"
+    }
+  ]
+}
+```
+
+### Get Compliance Summary
+```http
+GET /api/regulatory-reporting/compliance-summary
+Authorization: Bearer {token}
+```
+
+### Get KYC Report
+```http
+GET /api/regulatory-reporting/kyc-report
+Authorization: Bearer {token}
+```
+
+### List Reports
+```http
+GET /api/regulatory-reporting/reports
+Authorization: Bearer {token}
+```
+
+### Download Report
+```http
+GET /api/regulatory-reporting/reports/{report_id}/download
+Authorization: Bearer {token}
+```
+
+## Daily Reconciliation
+
+### Trigger Reconciliation
+```http
+POST /api/daily-reconciliation/trigger
+Authorization: Bearer {token}
+Content-Type: application/json
+
+{
+  "date": "2025-06-23",
+  "force": false
+}
+```
+
+### Get Reconciliation Status
+```http
+GET /api/daily-reconciliation/status
+Authorization: Bearer {token}
+```
+
+### Get Reconciliation Report
+```http
+GET /api/daily-reconciliation/report/{date}
+Authorization: Bearer {token}
+```
+
+### Get Discrepancies
+```http
+GET /api/daily-reconciliation/discrepancies
+Authorization: Bearer {token}
+```
+
+### Resolve Discrepancy
+```http
+POST /api/daily-reconciliation/discrepancies/{id}/resolve
+Authorization: Bearer {token}
+Content-Type: application/json
+
+{
+  "resolution": "manual_adjustment",
+  "notes": "Corrected posting error"
+}
+```
+
+### Get Historical Reports
+```http
+GET /api/daily-reconciliation/history
+Authorization: Bearer {token}
+```
+
+## Bank Alerting
+
+### Get Active Alerts
+```http
+GET /api/bank-alerting/alerts
+Authorization: Bearer {token}
+```
+
+### Create Alert Rule
+```http
+POST /api/bank-alerting/rules
+Authorization: Bearer {token}
+Content-Type: application/json
+
+{
+  "type": "balance_threshold",
+  "condition": "below",
+  "threshold": 10000,
+  "asset_code": "USD",
+  "notification_channels": ["email", "sms"]
+}
+```
+
+### Get Alert Rules
+```http
+GET /api/bank-alerting/rules
+Authorization: Bearer {token}
+```
+
+### Update Alert Rule
+```http
+PUT /api/bank-alerting/rules/{rule_id}
+Authorization: Bearer {token}
+Content-Type: application/json
+
+{
+  "is_active": false
+}
+```
+
+### Acknowledge Alert
+```http
+POST /api/bank-alerting/alerts/{alert_id}/acknowledge
+Authorization: Bearer {token}
+```
+
+### Get Alert Statistics
+```http
+GET /api/bank-alerting/statistics
+Authorization: Bearer {token}
+```
+
+## Basket Performance
+
+### Get Performance Metrics
+```http
+GET /api/basket-performance/{basket_code}/metrics
+Authorization: Bearer {token}
+```
+
+Response:
+```json
+{
+  "basket_code": "GCU",
+  "performance": {
+    "1d": 0.12,
+    "7d": 1.45,
+    "30d": 3.21,
+    "90d": 8.75,
+    "365d": 12.34
+  },
+  "volatility": {
+    "30d": 2.1,
+    "90d": 3.2
+  },
+  "sharpe_ratio": 1.85
+}
+```
+
+### Get Performance History
+```http
+GET /api/basket-performance/{basket_code}/history?period=30d
+Authorization: Bearer {token}
+```
+
+### Get Benchmark Comparison
+```http
+GET /api/basket-performance/{basket_code}/benchmark
+Authorization: Bearer {token}
+```
+
+### Generate Performance Report
+```http
+POST /api/basket-performance/{basket_code}/report
+Authorization: Bearer {token}
+Content-Type: application/json
+
+{
+  "start_date": "2025-05-01",
+  "end_date": "2025-06-01",
+  "format": "pdf"
+}
+```
+
+## Stablecoin Operations
+
+### Mint Stablecoins
+```http
+POST /api/stablecoin-operations/mint
+Authorization: Bearer {token}
+Content-Type: application/json
+
+{
+  "stablecoin_code": "FGUSDC",
+  "account_uuid": "account123",
+  "amount": 10000,
+  "collateral_asset_code": "USD",
+  "collateral_amount": 15000
+}
+```
+
+### Burn Stablecoins
+```http
+POST /api/stablecoin-operations/burn
+Authorization: Bearer {token}
+Content-Type: application/json
+
+{
+  "stablecoin_code": "FGUSDC",
+  "account_uuid": "account123",
+  "amount": 5000
+}
+```
+
+### Add Collateral
+```http
+POST /api/stablecoin-operations/add-collateral
+Authorization: Bearer {token}
+Content-Type: application/json
+
+{
+  "position_id": "pos123",
+  "collateral_asset_code": "USD",
+  "amount": 5000
+}
+```
+
+### Get Liquidation Opportunities
+```http
+GET /api/stablecoin-operations/liquidation/opportunities
+Authorization: Bearer {token}
+```
+
+### Execute Liquidation
+```http
+POST /api/stablecoin-operations/liquidation/execute
+Authorization: Bearer {token}
+Content-Type: application/json
+
+{
+  "position_id": "pos123",
+  "liquidation_amount": 2000
+}
+```
+
+### Get System Health
+```http
+GET /api/stablecoin-operations/system-health
+Authorization: Bearer {token}
+```
+
+## User Voting
+
+### Get Active Polls
+```http
+GET /api/user-voting/polls
+Authorization: Bearer {token}
+```
+
+### Submit Vote
+```http
+POST /api/user-voting/polls/{poll_uuid}/vote
+Authorization: Bearer {token}
+Content-Type: application/json
+
+{
+  "allocations": {
+    "USD": 35,
+    "EUR": 30,
+    "GBP": 20,
+    "CHF": 10,
+    "JPY": 3,
+    "XAU": 2
+  }
+}
+```
+
+### Get Voting Power
+```http
+GET /api/user-voting/polls/{poll_uuid}/voting-power
+Authorization: Bearer {token}
+```
+
+### Get Poll Results
+```http
+GET /api/user-voting/polls/{poll_uuid}/results
+Authorization: Bearer {token}
+```
+
+### Get Voting Dashboard
+```http
+GET /api/user-voting/dashboard
+Authorization: Bearer {token}
+```
+
+## KYC Management
+
+### Get KYC Status
+```http
+GET /api/kyc/status
+Authorization: Bearer {token}
+```
+
+### Submit KYC Documents
+```http
+POST /api/kyc/submit
+Authorization: Bearer {token}
+Content-Type: multipart/form-data
+
+documents[0][type]=passport
+documents[0][file]=@passport.jpg
+documents[1][type]=selfie
+documents[1][file]=@selfie.jpg
+```
+
+### Get KYC Requirements
+```http
+GET /api/kyc/requirements?level=enhanced
+Authorization: Bearer {token}
+```
+
+### Upload Document
+```http
+POST /api/kyc/documents
+Authorization: Bearer {token}
+Content-Type: multipart/form-data
+
+type=passport
+file=@document.jpg
+```
+
+### Get Document Status
+```http
+GET /api/kyc/documents/{document_id}
+Authorization: Bearer {token}
+```
+
+## GDPR Compliance
+
+### Get Consent Status
+```http
+GET /api/gdpr/consent
+Authorization: Bearer {token}
+```
+
+### Update Consent
+```http
+POST /api/gdpr/consent
+Authorization: Bearer {token}
+Content-Type: application/json
+
+{
+  "marketing": true,
+  "data_retention": true,
+  "analytics": false
+}
+```
+
+### Request Data Export
+```http
+POST /api/gdpr/export
+Authorization: Bearer {token}
+Content-Type: application/json
+
+{
+  "format": "json",
+  "include_transactions": true
+}
+```
+
+### Request Account Deletion
+```http
+POST /api/gdpr/delete
+Authorization: Bearer {token}
+Content-Type: application/json
+
+{
+  "confirm": true,
+  "reason": "No longer using the service"
+}
+```
+
+### Get Data Processing Activities
+```http
+GET /api/gdpr/processing-activities
+Authorization: Bearer {token}
+```
+
+### Get Privacy Settings
+```http
+GET /api/gdpr/privacy-settings
+Authorization: Bearer {token}
+```

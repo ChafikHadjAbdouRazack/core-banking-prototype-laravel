@@ -2,163 +2,311 @@
 
 declare(strict_types=1);
 
-use App\Models\Account;
 use App\Models\User;
-use Illuminate\Support\Str;
+use App\Models\Account;
 use Laravel\Sanctum\Sanctum;
+use Tests\TestCase;
 
-it('can create a new account', function () {
-    // Create a user to own the account
-    $user = User::factory()->create();
-    Sanctum::actingAs($user);
-    
-    $response = $this->postJson('/api/accounts', [
-        'user_uuid' => $user->uuid,
-        'name' => 'Test Account',
-        'initial_balance' => 1000,
-    ]);
+class AccountControllerTest extends TestCase
+{
+    protected User $user;
 
-    $response->assertStatus(201)
-        ->assertJsonStructure([
-            'data' => [
-                'uuid',
-                'name',
-                'balance',
-                'created_at',
-            ],
-            'message',
+    protected function setUp(): void
+    {
+        parent::setUp();
+        
+        $this->user = User::factory()->create();
+    }
+
+    public function test_can_create_account()
+    {
+        Sanctum::actingAs($this->user);
+
+        $response = $this->postJson('/api/accounts', [
+            'user_uuid' => $this->user->uuid,
+            'name' => 'Test Savings Account',
+            'initial_balance' => 10000,
         ]);
-});
 
-it('can create account without initial balance', function () {
-    $user = User::factory()->create();
-    Sanctum::actingAs($user);
-    
-    $response = $this->postJson('/api/accounts', [
-        'user_uuid' => $user->uuid,
-        'name' => 'Zero Balance Account',
-    ]);
+        $response->assertStatus(201)
+            ->assertJsonStructure([
+                'data' => [
+                    'uuid',
+                    'user_uuid',
+                    'name',
+                    'balance',
+                    'frozen',
+                    'created_at'
+                ],
+                'message'
+            ])
+            ->assertJson([
+                'data' => [
+                    'user_uuid' => $this->user->uuid,
+                    'name' => 'Test Savings Account',
+                    'frozen' => false,
+                ],
+                'message' => 'Account created successfully',
+            ]);
 
-    $response->assertStatus(201)
-        ->assertJson([
-            'data' => [
-                'balance' => 0,
-            ],
+        $this->assertDatabaseHas('accounts', [
+            'user_uuid' => $this->user->uuid,
+            'name' => 'Test Savings Account',
         ]);
-});
+    }
 
-it('validates required fields when creating account', function () {
-    $user = User::factory()->create();
-    Sanctum::actingAs($user);
-    
-    $response = $this->postJson('/api/accounts', []);
+    public function test_can_create_account_without_initial_balance()
+    {
+        Sanctum::actingAs($this->user);
 
-    $response->assertStatus(422)
-        ->assertJsonValidationErrors(['user_uuid', 'name']);
-});
-
-it('can get account details', function () {
-    $user = User::factory()->create();
-    Sanctum::actingAs($user);
-    $account = Account::factory()->create();
-
-    $response = $this->getJson("/api/accounts/{$account->uuid}");
-
-    $response->assertStatus(200)
-        ->assertJsonStructure([
-            'data' => [
-                'uuid',
-                'user_uuid',
-                'name',
-                'balance',
-                'frozen',
-                'created_at',
-                'updated_at',
-            ],
+        $response = $this->postJson('/api/accounts', [
+            'user_uuid' => $this->user->uuid,
+            'name' => 'Zero Balance Account',
         ]);
-});
 
-it('returns 404 for non-existent account', function () {
-    $user = User::factory()->create();
-    Sanctum::actingAs($user);
-    $fakeUuid = Str::uuid()->toString();
-    $response = $this->getJson("/api/accounts/{$fakeUuid}");
+        $response->assertStatus(201)
+            ->assertJsonStructure([
+                'data' => [
+                    'uuid',
+                    'user_uuid',
+                    'name',
+                    'balance',
+                    'frozen',
+                    'created_at'
+                ],
+                'message'
+            ]);
+    }
 
-    $response->assertStatus(404);
-});
+    public function test_validates_required_fields_for_account_creation()
+    {
+        Sanctum::actingAs($this->user);
 
-it('can delete account with zero balance', function () {
-    $user = User::factory()->create();
-    Sanctum::actingAs($user);
-    $account = Account::factory()->zeroBalance()->create();
+        $response = $this->postJson('/api/accounts', []);
 
-    $response = $this->deleteJson("/api/accounts/{$account->uuid}");
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['user_uuid', 'name']);
+    }
 
-    $response->assertStatus(200)
-        ->assertJson([
-            'message' => 'Account deletion initiated',
+    public function test_validates_uuid_format()
+    {
+        Sanctum::actingAs($this->user);
+
+        $response = $this->postJson('/api/accounts', [
+            'user_uuid' => 'invalid-uuid',
+            'name' => 'Test Account',
         ]);
-});
 
-it('cannot delete account with positive balance', function () {
-    $user = User::factory()->create();
-    Sanctum::actingAs($user);
-    $account = Account::factory()->withBalance(1000)->create();
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['user_uuid']);
+    }
 
-    $response = $this->deleteJson("/api/accounts/{$account->uuid}");
-
-    $response->assertStatus(422)
-        ->assertJson([
-            'message' => 'Cannot delete account with positive balance',
-            'error' => 'ACCOUNT_HAS_BALANCE',
+    public function test_can_show_account()
+    {
+        Sanctum::actingAs($this->user);
+        
+        $account = Account::factory()->forUser($this->user)->create([
+            'name' => 'Display Account',
+            'balance' => 5000,
         ]);
-});
 
-// Skipping frozen account test since frozen column doesn't exist in database
-// it('cannot delete frozen account', function () {
+        $response = $this->getJson("/api/accounts/{$account->uuid}");
 
-it('can freeze an account', function () {
-    $user = User::factory()->create();
-    Sanctum::actingAs($user);
-    $account = Account::factory()->create();
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                'data' => [
+                    'uuid',
+                    'user_uuid', 
+                    'name',
+                    'balance',
+                    'frozen',
+                    'created_at',
+                    'updated_at'
+                ]
+            ])
+            ->assertJson([
+                'data' => [
+                    'uuid' => $account->uuid,
+                    'user_uuid' => $this->user->uuid,
+                    'name' => 'Display Account',
+                    'balance' => 5000,
+                    'frozen' => false,
+                ]
+            ]);
+    }
 
-    $response = $this->postJson("/api/accounts/{$account->uuid}/freeze", [
-        'reason' => 'Suspicious activity detected',
-    ]);
+    public function test_returns_404_for_nonexistent_account()
+    {
+        Sanctum::actingAs($this->user);
 
-    $response->assertStatus(200)
-        ->assertJson([
-            'message' => 'Account frozen successfully',
+        $response = $this->getJson('/api/accounts/00000000-0000-0000-0000-000000000000');
+
+        $response->assertStatus(404);
+    }
+
+    public function test_can_delete_account_with_zero_balance()
+    {
+        Sanctum::actingAs($this->user);
+        
+        $account = Account::factory()->forUser($this->user)->create([
+            'balance' => 0,
+            'frozen' => false,
         ]);
-});
 
-// Skipping already frozen test since frozen column doesn't exist in database
-// it('cannot freeze already frozen account', function () {
+        $response = $this->deleteJson("/api/accounts/{$account->uuid}");
 
-it('can unfreeze an account', function () {
-    $user = User::factory()->create();
-    Sanctum::actingAs($user);
-    $account = Account::factory()->create(['frozen' => true]);
+        $response->assertStatus(200)
+            ->assertJson([
+                'message' => 'Account deletion initiated',
+            ]);
+    }
 
-    $response = $this->postJson("/api/accounts/{$account->uuid}/unfreeze", [
-        'reason' => 'Issue resolved',
-    ]);
-
-    $response->assertStatus(200)
-        ->assertJson([
-            'message' => 'Account unfrozen successfully',
+    public function test_cannot_delete_account_with_positive_balance()
+    {
+        Sanctum::actingAs($this->user);
+        
+        $account = Account::factory()->forUser($this->user)->create([
+            'balance' => 1000,
         ]);
-});
 
-// Skipping not frozen test since frozen column doesn't exist in database
-// it('cannot unfreeze account that is not frozen', function () {
+        $response = $this->deleteJson("/api/accounts/{$account->uuid}");
 
-it('requires authentication for all endpoints', function () {
-    $uuid = Str::uuid()->toString();
+        $response->assertStatus(422)
+            ->assertJson([
+                'message' => 'Cannot delete account with positive balance',
+                'error' => 'ACCOUNT_HAS_BALANCE',
+            ]);
+    }
 
-    $this->postJson('/api/accounts')->assertStatus(401);
-    $this->getJson("/api/accounts/{$uuid}")->assertStatus(401);
-    $this->deleteJson("/api/accounts/{$uuid}")->assertStatus(401);
-    $this->postJson("/api/accounts/{$uuid}/freeze")->assertStatus(401);
-    $this->postJson("/api/accounts/{$uuid}/unfreeze")->assertStatus(401);
-});
+    public function test_cannot_delete_frozen_account()
+    {
+        Sanctum::actingAs($this->user);
+        
+        $account = Account::factory()->forUser($this->user)->create([
+            'balance' => 0,
+            'frozen' => true,
+        ]);
+
+        $response = $this->deleteJson("/api/accounts/{$account->uuid}");
+
+        $response->assertStatus(422)
+            ->assertJson([
+                'message' => 'Cannot delete frozen account',
+                'error' => 'ACCOUNT_FROZEN',
+            ]);
+    }
+
+    public function test_can_freeze_account()
+    {
+        Sanctum::actingAs($this->user);
+        
+        $account = Account::factory()->forUser($this->user)->create([
+            'frozen' => false,
+        ]);
+
+        $response = $this->postJson("/api/accounts/{$account->uuid}/freeze", [
+            'reason' => 'Suspicious activity detected',
+            'authorized_by' => 'admin@example.com',
+        ]);
+
+        $response->assertStatus(200)
+            ->assertJson([
+                'message' => 'Account frozen successfully',
+            ]);
+    }
+
+    public function test_cannot_freeze_already_frozen_account()
+    {
+        Sanctum::actingAs($this->user);
+        
+        $account = Account::factory()->forUser($this->user)->create([
+            'frozen' => true,
+        ]);
+
+        $response = $this->postJson("/api/accounts/{$account->uuid}/freeze", [
+            'reason' => 'Additional freezing reason',
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJson([
+                'message' => 'Account is already frozen',
+                'error' => 'ACCOUNT_ALREADY_FROZEN',
+            ]);
+    }
+
+    public function test_validates_freeze_reason()
+    {
+        Sanctum::actingAs($this->user);
+        
+        $account = Account::factory()->forUser($this->user)->create();
+
+        $response = $this->postJson("/api/accounts/{$account->uuid}/freeze", []);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['reason']);
+    }
+
+    public function test_can_unfreeze_account()
+    {
+        Sanctum::actingAs($this->user);
+        
+        $account = Account::factory()->forUser($this->user)->create([
+            'frozen' => true,
+        ]);
+
+        $response = $this->postJson("/api/accounts/{$account->uuid}/unfreeze", [
+            'reason' => 'Investigation completed',
+            'authorized_by' => 'admin@example.com',
+        ]);
+
+        $response->assertStatus(200)
+            ->assertJson([
+                'message' => 'Account unfrozen successfully',
+            ]);
+    }
+
+    public function test_cannot_unfreeze_non_frozen_account()
+    {
+        Sanctum::actingAs($this->user);
+        
+        $account = Account::factory()->forUser($this->user)->create([
+            'frozen' => false,
+        ]);
+
+        $response = $this->postJson("/api/accounts/{$account->uuid}/unfreeze", [
+            'reason' => 'No need to unfreeze',
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJson([
+                'message' => 'Account is not frozen',
+                'error' => 'ACCOUNT_NOT_FROZEN',
+            ]);
+    }
+
+    public function test_validates_unfreeze_reason()
+    {
+        Sanctum::actingAs($this->user);
+        
+        $account = Account::factory()->forUser($this->user)->create([
+            'frozen' => true,
+        ]);
+
+        $response = $this->postJson("/api/accounts/{$account->uuid}/unfreeze", []);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['reason']);
+    }
+
+    public function test_requires_authentication_for_all_endpoints()
+    {
+        $account = Account::factory()->create();
+
+        // Test all endpoints require authentication
+        $this->postJson('/api/accounts', [])->assertStatus(401);
+        $this->getJson("/api/accounts/{$account->uuid}")->assertStatus(401);
+        $this->deleteJson("/api/accounts/{$account->uuid}")->assertStatus(401);
+        $this->postJson("/api/accounts/{$account->uuid}/freeze", [])->assertStatus(401);
+        $this->postJson("/api/accounts/{$account->uuid}/unfreeze", [])->assertStatus(401);
+    }
+}
