@@ -15,9 +15,22 @@ class CreateAccountWorkflow extends Workflow
      */
     public function execute( Account $account ): \Generator
     {
-        return yield ActivityStub::make(
-            CreateAccountActivity::class,
-            $account
-        );
+        try {
+            $result = yield ActivityStub::make(
+                CreateAccountActivity::class,
+                $account
+            );
+            
+            // Add compensation to delete the created account if workflow fails later
+            $this->addCompensation(fn() => ActivityStub::make(
+                DeleteAccountActivity::class,
+                $account
+            ));
+            
+            return $result;
+        } catch (\Throwable $th) {
+            yield from $this->compensate();
+            throw $th;
+        }
     }
 }
