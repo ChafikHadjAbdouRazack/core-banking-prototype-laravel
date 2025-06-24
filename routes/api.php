@@ -26,6 +26,7 @@ use App\Http\Controllers\Api\BankAllocationController;
 use App\Http\Controllers\Api\RegulatoryReportingController;
 use App\Http\Controllers\Api\DailyReconciliationController;
 use App\Http\Controllers\Api\BankAlertingController;
+use App\Http\Controllers\Api\WorkflowMonitoringController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -172,6 +173,18 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/alerts/config', [BankAlertingController::class, 'getAlertConfiguration']);
         Route::post('/alerts/test', [BankAlertingController::class, 'testAlert']);
         Route::post('/alerts/{alertId}/acknowledge', [BankAlertingController::class, 'acknowledgeAlert']);
+    });
+    
+    // Workflow/Saga Monitoring endpoints (admin only)
+    Route::prefix('workflows')->group(function () {
+        Route::get('/', [WorkflowMonitoringController::class, 'index']);
+        Route::get('/stats', [WorkflowMonitoringController::class, 'stats']);
+        Route::get('/metrics', [WorkflowMonitoringController::class, 'metrics']);
+        Route::get('/search', [WorkflowMonitoringController::class, 'search']);
+        Route::get('/status/{status}', [WorkflowMonitoringController::class, 'byStatus']);
+        Route::get('/failed', [WorkflowMonitoringController::class, 'failed']);
+        Route::get('/compensations', [WorkflowMonitoringController::class, 'compensations']);
+        Route::get('/{id}', [WorkflowMonitoringController::class, 'show']);
     });
 });
 
