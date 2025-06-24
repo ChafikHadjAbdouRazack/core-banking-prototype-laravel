@@ -35,7 +35,7 @@ class ProcessWebhookDeliveryTest extends TestCase
         ]);
         
         $this->delivery = WebhookDelivery::factory()->create([
-            'webhook_id' => $this->webhook->id,
+            'webhook_uuid' => $this->webhook->uuid,
             'event_type' => 'test.event',
             'payload' => ['test' => 'data'],
         ]);

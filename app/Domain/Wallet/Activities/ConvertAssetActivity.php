@@ -17,7 +17,7 @@ class ConvertAssetActivity extends Activity
      * @param int $amount
      * @param AssetTransferAggregate $assetTransfer
      *
-     * @return bool
+     * @return array
      */
     public function execute(
         AccountUuid $accountUuid,
@@ -25,7 +25,7 @@ class ConvertAssetActivity extends Activity
         string $toAssetCode,
         int $amount,
         AssetTransferAggregate $assetTransfer
-    ): bool {
+    ): array {
         $fromMoney = new Money($amount);
         
         // Get exchange rate
@@ -53,6 +53,14 @@ class ConvertAssetActivity extends Activity
             ->complete()
             ->persist();
 
-        return true;
+        return [
+            'success' => true,
+            'transfer_id' => $transferId,
+            'from_asset' => $fromAssetCode,
+            'to_asset' => $toAssetCode,
+            'original_amount' => $amount,
+            'converted_amount' => $convertedAmount,
+            'exchange_rate' => $exchangeRate,
+        ];
     }
 }
