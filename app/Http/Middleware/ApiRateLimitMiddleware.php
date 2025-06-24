@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
@@ -139,7 +140,7 @@ class ApiRateLimitMiddleware
     /**
      * Create rate limit exceeded response
      */
-    private function rateLimitExceededResponse(Request $request, array $config, ?\Carbon\Carbon $blockedUntil = null): Response
+    private function rateLimitExceededResponse(Request $request, array $config, ?\Carbon\Carbon $blockedUntil = null): JsonResponse
     {
         $retryAfter = $blockedUntil ? $blockedUntil->diffInSeconds(now()) : $config['window'];
         
