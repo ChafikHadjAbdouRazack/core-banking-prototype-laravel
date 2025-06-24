@@ -24,10 +24,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'transaction.rate_limit' => \App\Http\Middleware\TransactionRateLimitMiddleware::class,
         ]);
         
-        // Apply global API rate limiting to API routes
+        // Apply middleware to API routes (no global throttling - use custom rate limiting)
         $middleware->group('api', [
             \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
-            'throttle:60,1',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ]);
     })
