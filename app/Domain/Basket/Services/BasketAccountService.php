@@ -13,9 +13,6 @@ use App\Domain\Account\Events\AssetBalanceSubtracted;
 use App\Domain\Account\DataObjects\Hash;
 use App\Domain\Account\DataObjects\AccountUuid;
 use App\Domain\Wallet\Services\WalletService;
-use App\Domain\Basket\Workflows\ComposeBasketWorkflow;
-use App\Domain\Basket\Workflows\DecomposeBasketWorkflow;
-use Workflow\WorkflowStub;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -27,59 +24,206 @@ class BasketAccountService
     ) {}
 
     /**
-     * Add basket asset balance to an account using proper domain workflow.
+     * Add basket asset balance to an account.
      */
     public function addBasketBalance(Account $account, string $basketCode, int $amount): AccountBalance
     {
-        // Use WalletService which follows proper domain patterns
-        $accountUuid = AccountUuid::fromString($account->uuid);
-        $this->walletService->deposit($accountUuid, $basketCode, $amount);
+        $basket = BasketAsset::where('code', $basketCode)->first();
         
-        // Return updated balance
-        return $account->balances()->where('asset_code', $basketCode)->firstOrFail();
+        if (!$basket) {
+            throw new \Exception("Basket not found: {$basketCode}");
+        }
+        
+        if (!$basket->is_active) {
+            throw new \Exception("Basket {$basketCode} is not active");
+        }
+
+        // Ensure the basket exists as an asset
+        $basket->toAsset();
+
+        // Add balance like any other asset
+        $balance = $account->balances()->firstOrCreate(
+            ['asset_code' => $basketCode],
+            ['balance' => 0]
+        );
+
+        $balance->credit($amount);
+
+        // Record event
+        event(new AssetBalanceAdded(
+            assetCode: $basketCode,
+            amount: $amount,
+            hash: new Hash(hash('sha3-512', "basket_deposit:{$account->uuid}:{$basketCode}:{$amount}:" . now()->timestamp)),
+            metadata: ['type' => 'basket_deposit', 'account_uuid' => (string) $account->uuid]
+        ));
+
+        Log::info("Added {$amount} of basket {$basketCode} to account {$account->uuid}");
+
+        return $balance;
     }
 
     /**
-     * Subtract basket asset balance from an account using proper domain workflow.
+     * Subtract basket asset balance from an account.
      */
     public function subtractBasketBalance(Account $account, string $basketCode, int $amount): AccountBalance
     {
-        // Use WalletService which follows proper domain patterns
-        $accountUuid = AccountUuid::fromString($account->uuid);
-        $this->walletService->withdraw($accountUuid, $basketCode, $amount);
-        
-        // Return updated balance
-        return $account->balances()->where('asset_code', $basketCode)->firstOrFail();
+        $balance = $account->balances()
+            ->where('asset_code', $basketCode)
+            ->firstOrFail();
+
+        if ($balance->balance < $amount) {
+            throw new \Exception("Insufficient basket balance. Available: {$balance->balance}, Requested: {$amount}");
+        }
+
+        $balance->debit($amount);
+
+        // Record event
+        event(new AssetBalanceSubtracted(
+            assetCode: $basketCode,
+            amount: $amount,
+            hash: new Hash(hash('sha3-512', "basket_withdraw:{$account->uuid}:{$basketCode}:{$amount}:" . now()->timestamp)),
+            metadata: ['type' => 'basket_withdrawal', 'account_uuid' => (string) $account->uuid]
+        ));
+
+        Log::info("Subtracted {$amount} of basket {$basketCode} from account {$account->uuid}");
+
+        return $balance;
     }
 
     /**
-     * Decompose a basket into its component assets using proper domain workflow.
+     * Decompose a basket into its component assets.
+     * This converts basket holdings into individual asset holdings.
      */
     public function decomposeBasket(Account $account, string $basketCode, int $amount): array
     {
-        // Use workflow for proper domain pattern
-        $workflow = WorkflowStub::make(DecomposeBasketWorkflow::class);
+        $basket = BasketAsset::where('code', $basketCode)->first();
         
-        return $workflow->start([
-            'account_uuid' => (string) $account->uuid,
-            'basket_code' => $basketCode,
-            'amount' => $amount
-        ]);
+        if (!$basket) {
+            throw new \Exception("Basket not found: {$basketCode}");
+        }
+        
+        if (!$basket->is_active) {
+            throw new \Exception("Basket {$basketCode} is not active");
+        }
+
+        // Validate positive amount
+        if ($amount <= 0) {
+            throw new \Exception("Amount must be positive");
+        }
+
+        // Note: We don't validate weights here since this is an operational function
+        // and users should be able to decompose even if basket weights are temporarily invalid
+
+        // Check sufficient balance
+        $basketBalance = $account->balances()
+            ->where('asset_code', $basketCode)
+            ->first();
+
+        if (!$basketBalance || $basketBalance->balance < $amount) {
+            $availableBalance = $basketBalance ? $basketBalance->balance : 0;
+            throw new \Exception("Insufficient basket balance for decomposition. Required: {$amount}, Available: {$availableBalance}");
+        }
+
+        return DB::transaction(function () use ($account, $basket, $basketCode, $amount, $basketBalance) {
+            // Calculate component amounts based on weights
+            $componentAmounts = $this->calculateComponentAmounts($basket, $amount);
+
+            // Use WalletService for proper Service → Workflow → Activity → Aggregate architecture
+            $accountUuid = AccountUuid::fromString($account->uuid);
+            
+            // Subtract basket balance using WalletService
+            $this->walletService->withdraw($accountUuid, $basketCode, $amount);
+
+            // Add component balances using WalletService
+            foreach ($componentAmounts as $assetCode => $componentAmount) {
+                $this->walletService->deposit($accountUuid, $assetCode, $componentAmount);
+            }
+
+            // Record decomposition event
+            event(new BasketDecomposed(
+                accountUuid: (string) $account->uuid,
+                basketCode: $basketCode,
+                amount: $amount,
+                componentAmounts: $componentAmounts,
+                decomposedAt: now()
+            ));
+
+            Log::info("Decomposed {$amount} of basket {$basketCode} for account {$account->uuid}", [
+                'components' => $componentAmounts,
+            ]);
+
+            return [
+                'basket_code' => $basketCode,
+                'basket_amount' => $amount,
+                'components' => $componentAmounts,
+                'decomposed_at' => now()->toISOString(),
+            ];
+        });
     }
 
     /**
-     * Compose individual assets into a basket using proper domain workflow.
+     * Compose individual assets into a basket.
+     * This is the reverse of decomposition.
      */
     public function composeBasket(Account $account, string $basketCode, int $amount): array
     {
-        // Use workflow for proper domain pattern
-        $workflow = WorkflowStub::make(ComposeBasketWorkflow::class);
+        $basket = BasketAsset::where('code', $basketCode)->first();
         
-        return $workflow->start([
-            'account_uuid' => (string) $account->uuid,
-            'basket_code' => $basketCode,
-            'amount' => $amount
-        ]);
+        if (!$basket) {
+            throw new \Exception("Basket not found: {$basketCode}");
+        }
+        
+        if (!$basket->is_active) {
+            throw new \Exception("Basket {$basketCode} is not active");
+        }
+
+        // Validate positive amount
+        if ($amount <= 0) {
+            throw new \Exception("Amount must be positive");
+        }
+
+        // Validate basket weights
+        if (!$basket->validateWeights()) {
+            throw new \Exception("Basket {$basketCode} has invalid component weights");
+        }
+
+        return DB::transaction(function () use ($account, $basket, $basketCode, $amount) {
+            // Calculate required component amounts
+            $requiredAmounts = $this->calculateComponentAmounts($basket, $amount);
+
+            // Verify account has sufficient component balances
+            foreach ($requiredAmounts as $assetCode => $requiredAmount) {
+                $balance = $account->balances()
+                    ->where('asset_code', $assetCode)
+                    ->first();
+
+                if (!$balance || $balance->balance < $requiredAmount) {
+                    throw new \Exception("Insufficient {$assetCode} balance. Required: {$requiredAmount}, Available: " . ($balance ? $balance->balance : 0));
+                }
+            }
+
+            // Use WalletService for proper Service → Workflow → Activity → Aggregate architecture
+            $accountUuid = AccountUuid::fromString($account->uuid);
+            
+            // Subtract component balances using WalletService
+            foreach ($requiredAmounts as $assetCode => $requiredAmount) {
+                $this->walletService->withdraw($accountUuid, $assetCode, $requiredAmount);
+            }
+
+            // Add basket balance using WalletService
+            $this->walletService->deposit($accountUuid, $basketCode, $amount);
+
+            Log::info("Composed {$amount} of basket {$basketCode} for account {$account->uuid}", [
+                'components_used' => $requiredAmounts,
+            ]);
+
+            return [
+                'basket_code' => $basketCode,
+                'basket_amount' => $amount,
+                'components_used' => $requiredAmounts,
+                'composed_at' => now()->toISOString(),
+            ];
+        });
     }
 
     /**
