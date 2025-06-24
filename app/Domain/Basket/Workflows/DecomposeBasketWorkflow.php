@@ -2,27 +2,30 @@
 
 namespace App\Domain\Basket\Workflows;
 
+use App\Domain\Account\ValueObjects\AccountUuid;
+use App\Domain\Basket\Activities\ComposeBasketActivity;
+use App\Domain\Basket\Activities\DecomposeBasketActivity;
 use Workflow\ActivityStub;
 use Workflow\Workflow;
 
 class DecomposeBasketWorkflow extends Workflow
 {
-    public function execute(array $input): \Generator
+    public function execute(AccountUuid $accountUuid, string $basketCode, int $amount): \Generator
     {
         try {
             $result = yield ActivityStub::make(
-                'App\Domain\Basket\Activities\DecomposeBasketActivity',
-                $input
+                DecomposeBasketActivity::class,
+                $accountUuid,
+                $basketCode,
+                $amount
             );
             
             // Add compensation to recompose the basket if decomposition needs to be rolled back
             $this->addCompensation(fn() => ActivityStub::make(
-                'App\Domain\Basket\Activities\ComposeBasketActivity',
-                [
-                    'account_uuid' => $input['account_uuid'],
-                    'basket_code' => $input['basket_code'],
-                    'amount' => $input['amount'], // Same amount that was decomposed
-                ]
+                ComposeBasketActivity::class,
+                $accountUuid,
+                $basketCode,
+                $amount
             ));
             
             return $result;
@@ -31,5 +34,4 @@ class DecomposeBasketWorkflow extends Workflow
             throw $th;
         }
     }
-
 }
