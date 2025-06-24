@@ -94,7 +94,7 @@ class VoteController extends Controller
      *     @OA\Response(response=403, description="Access denied")
      * )
      */
-    public function show(int $id): JsonResponse
+    public function show(string $id): JsonResponse
     {
         $vote = Vote::with(['poll', 'user'])->find($id);
 
@@ -141,7 +141,7 @@ class VoteController extends Controller
      *     @OA\Response(response=403, description="Access denied")
      * )
      */
-    public function verify(int $id): JsonResponse
+    public function verify(string $id): JsonResponse
     {
         $vote = Vote::find($id);
 

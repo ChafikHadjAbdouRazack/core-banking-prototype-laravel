@@ -2,7 +2,7 @@
 
 namespace App\Domain\Basket\Workflows;
 
-use App\Domain\Account\DataObjects\AccountUuid;
+use App\Domain\Account\ValueObjects\AccountUuid;
 use App\Domain\Basket\Activities\ComposeBasketActivity;
 use App\Domain\Basket\Activities\DecomposeBasketActivity;
 use Workflow\ActivityStub;
@@ -10,14 +10,6 @@ use Workflow\Workflow;
 
 class DecomposeBasketWorkflow extends Workflow
 {
-    /**
-     * Execute basket decomposition workflow.
-     * 
-     * @param AccountUuid $accountUuid
-     * @param string $basketCode
-     * @param int $amount
-     * @return \Generator
-     */
     public function execute(AccountUuid $accountUuid, string $basketCode, int $amount): \Generator
     {
         try {
@@ -33,7 +25,7 @@ class DecomposeBasketWorkflow extends Workflow
                 ComposeBasketActivity::class,
                 $accountUuid,
                 $basketCode,
-                $amount // Same amount that was decomposed
+                $amount
             ));
             
             return $result;
@@ -42,5 +34,4 @@ class DecomposeBasketWorkflow extends Workflow
             throw $th;
         }
     }
-
 }
