@@ -8,6 +8,7 @@ use App\Models\Webhook;
 use App\Models\WebhookDelivery;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\Test;
 
 class WebhookDeliveryTest extends TestCase
 {
@@ -22,7 +23,7 @@ class WebhookDeliveryTest extends TestCase
         $this->webhook = Webhook::factory()->create();
     }
 
-    /** @test */
+    #[Test]
     public function it_can_create_a_webhook_delivery()
     {
         $delivery = WebhookDelivery::create([
@@ -41,7 +42,7 @@ class WebhookDeliveryTest extends TestCase
         $this->assertEquals(0, $delivery->attempts);
     }
 
-    /** @test */
+    #[Test]
     public function it_belongs_to_webhook()
     {
         $delivery = WebhookDelivery::factory()->create([
@@ -52,7 +53,7 @@ class WebhookDeliveryTest extends TestCase
         $this->assertEquals($this->webhook->id, $delivery->webhook->id);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_mark_as_delivered()
     {
         $delivery = WebhookDelivery::factory()->create([
@@ -68,7 +69,7 @@ class WebhookDeliveryTest extends TestCase
         $this->assertNotNull($delivery->delivered_at);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_mark_as_failed()
     {
         $delivery = WebhookDelivery::factory()->create([
@@ -86,7 +87,7 @@ class WebhookDeliveryTest extends TestCase
         $this->assertNotNull($delivery->last_attempt_at);
     }
 
-    /** @test */
+    #[Test]
     public function it_has_pending_scope()
     {
         WebhookDelivery::factory()->create([
@@ -105,7 +106,7 @@ class WebhookDeliveryTest extends TestCase
         $this->assertEquals('pending', $pending->first()->status);
     }
 
-    /** @test */
+    #[Test]
     public function it_has_failed_scope()
     {
         WebhookDelivery::factory()->create([
@@ -124,7 +125,7 @@ class WebhookDeliveryTest extends TestCase
         $this->assertEquals('failed', $failed->first()->status);
     }
 
-    /** @test */
+    #[Test]
     public function it_casts_attributes_correctly()
     {
         $delivery = WebhookDelivery::create([
