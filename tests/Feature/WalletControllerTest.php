@@ -23,7 +23,7 @@ class WalletControllerTest extends TestCase
     {
         parent::setUp();
         
-        $this->user = User::factory()->create();
+        $this->user = User::factory()->withPersonalTeam()->create();
         $this->account = Account::factory()->forUser($this->user)->create();
     }
 
@@ -48,7 +48,7 @@ class WalletControllerTest extends TestCase
 
     public function test_deposit_form_works_without_account()
     {
-        $userWithoutAccount = User::factory()->create();
+        $userWithoutAccount = User::factory()->withPersonalTeam()->create();
         Asset::factory()->create(['is_active' => true]);
 
         $response = $this->actingAs($userWithoutAccount)->get('/wallet/deposit');
@@ -92,7 +92,7 @@ class WalletControllerTest extends TestCase
 
     public function test_withdraw_form_works_without_account()
     {
-        $userWithoutAccount = User::factory()->create();
+        $userWithoutAccount = User::factory()->withPersonalTeam()->create();
 
         $response = $this->actingAs($userWithoutAccount)->get('/wallet/withdraw');
 
@@ -138,7 +138,7 @@ class WalletControllerTest extends TestCase
 
     public function test_transfer_form_works_without_account()
     {
-        $userWithoutAccount = User::factory()->create();
+        $userWithoutAccount = User::factory()->withPersonalTeam()->create();
 
         $response = $this->actingAs($userWithoutAccount)->get('/wallet/transfer');
 
@@ -208,7 +208,7 @@ class WalletControllerTest extends TestCase
 
     public function test_convert_form_works_without_account()
     {
-        $userWithoutAccount = User::factory()->create();
+        $userWithoutAccount = User::factory()->withPersonalTeam()->create();
         Asset::factory()->create(['is_active' => true]);
 
         // No need to create exchange rates for this test
