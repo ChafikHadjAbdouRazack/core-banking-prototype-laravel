@@ -4,11 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Account;
-use App\Domain\Basket\Services\BasketAccountService;
-use App\Domain\Basket\Workflows\DecomposeBasketWorkflow;
+use App\Domain\Basket\Services\BasketService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use Workflow\WorkflowStub;
 
 /**
  * @OA\Tag(
@@ -19,7 +17,7 @@ use Workflow\WorkflowStub;
 class BasketAccountController extends Controller
 {
     public function __construct(
-        private readonly BasketAccountService $basketAccountService
+        private readonly BasketService $basketService
     ) {}
 
     /**
@@ -75,8 +73,8 @@ class BasketAccountController extends Controller
         }
 
         try {
-            $result = $this->basketAccountService->decomposeBasket(
-                $account,
+            $result = $this->basketService->decomposeBasket(
+                $account->uuid,
                 $validated['basket_code'],
                 $validated['amount']
             );
@@ -142,8 +140,8 @@ class BasketAccountController extends Controller
         }
 
         try {
-            $result = $this->basketAccountService->composeBasket(
-                $account,
+            $result = $this->basketService->composeBasket(
+                $account->uuid,
                 $validated['basket_code'],
                 $validated['amount']
             );
@@ -197,7 +195,7 @@ class BasketAccountController extends Controller
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
-        $holdings = $this->basketAccountService->getBasketHoldingsValue($account);
+        $holdings = $this->basketService->getBasketHoldings($account->uuid);
 
         return response()->json($holdings);
     }
