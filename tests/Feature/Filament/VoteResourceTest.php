@@ -8,17 +8,6 @@ use App\Filament\Admin\Resources\VoteResource;
 use App\Filament\Admin\Resources\VoteResource\Pages\ListVotes;
 use App\Models\User;
 use Livewire\Livewire;
-
-beforeEach(function () {
-    $this->user = User::factory()->create();
-    $this->actingAs($this->user);
-    
-    // Skip if Filament panel is not properly configured
-    if (!app(\Filament\FilamentManager::class)->getCurrentPanel()) {
-        $this->markTestSkipped('Filament panel not configured for testing');
-    }
-});
-
 describe('Vote Resource', function () {
     it('can render vote index page', function () {
         $votes = Vote::factory()->count(5)->create();

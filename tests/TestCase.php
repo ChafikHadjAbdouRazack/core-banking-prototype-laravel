@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\ParallelTesting;
 use Illuminate\Support\Str;
 use Tests\Domain\Account\Aggregates\LedgerAggregateTest;
 use Throwable;
+use Filament\Facades\Filament;
 
 abstract class TestCase extends BaseTestCase
 {
@@ -51,6 +52,11 @@ abstract class TestCase extends BaseTestCase
         $this->user = User::factory()->create();
         $this->business_user = User::factory()->withBusinessRole()->create();
         $this->account = $this->createAccount($this->business_user);
+        
+        // Set up Filament panel if we're in a Filament test directory
+        if (str_contains(get_class($this), 'Filament') || str_contains($this->getName(), 'Filament')) {
+            $this->setUpFilament();
+        }
     }
 
     /**
@@ -141,6 +147,20 @@ abstract class TestCase extends BaseTestCase
             config([
                 'event-sourcing.storage_prefix' => 'test_' . $token,
             ]);
+        }
+    }
+    
+    /**
+     * Set up Filament for testing
+     */
+    protected function setUpFilament(): void
+    {
+        // Register and set the admin panel as current
+        $panel = Filament::getPanel('admin');
+        
+        if ($panel) {
+            Filament::setCurrentPanel($panel);
+            Filament::setServingStatus(true);
         }
     }
 }

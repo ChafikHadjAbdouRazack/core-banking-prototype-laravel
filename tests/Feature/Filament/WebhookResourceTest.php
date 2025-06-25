@@ -6,16 +6,6 @@ use App\Models\Webhook;
 use Filament\Actions\DeleteAction;
 use Filament\Tables\Actions\BulkAction;
 use function Pest\Livewire\livewire;
-
-beforeEach(function () {
-    $this->actingAs(User::factory()->create());
-    
-    // Skip if Filament panel is not properly configured
-    if (!app(\Filament\FilamentManager::class)->getCurrentPanel()) {
-        $this->markTestSkipped('Filament panel not configured for testing');
-    }
-});
-
 it('can render webhook resource page', function () {
     $this->get(WebhookResource::getUrl('index'))
         ->assertSuccessful();

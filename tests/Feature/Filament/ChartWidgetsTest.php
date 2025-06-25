@@ -12,17 +12,6 @@ use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
 use Livewire\Livewire;
-
-beforeEach(function () {
-    $this->user = User::factory()->create();
-    $this->actingAs($this->user);
-    
-    // Skip if Filament panel is not properly configured
-    if (!app(\Filament\FilamentManager::class)->getCurrentPanel()) {
-        $this->markTestSkipped('Filament panel not configured for testing');
-    }
-});
-
 describe('AccountBalanceChart', function () {
     it('can render the widget', function () {
         Account::factory()->count(5)->create();
