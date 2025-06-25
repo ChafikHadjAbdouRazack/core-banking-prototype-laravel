@@ -54,7 +54,8 @@ abstract class TestCase extends BaseTestCase
         $this->account = $this->createAccount($this->business_user);
         
         // Set up Filament panel if we're in a Filament test directory
-        if (str_contains(get_class($this), 'Filament') || str_contains($this->getName(), 'Filament')) {
+        $testFile = (new \ReflectionClass($this))->getFileName();
+        if (str_contains($testFile, '/Filament/') || str_contains($testFile, '\\Filament\\')) {
             $this->setUpFilament();
         }
     }
