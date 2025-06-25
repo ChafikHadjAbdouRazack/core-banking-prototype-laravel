@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Config;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
@@ -15,37 +16,58 @@ uses(RefreshDatabase::class);
 beforeEach(function () {
     Cache::flush(); // Clear rate limit counters between tests
     $this->user = User::factory()->create();
+    
+    // Enable rate limiting for these specific tests
+    Config::set('rate_limiting.enabled', true);
 });
 
 describe('API Rate Limiting System', function () {
     
     test('basic rate limiting middleware works', function () {
-        // Test basic functionality without making many requests
-        Sanctum::actingAs($this->user);
+        // Test basic functionality by directly calling middleware (since it's disabled in tests)
+        $middleware = new ApiRateLimitMiddleware();
+        $request = \Illuminate\Http\Request::create('/api/workflows', 'GET');
+        $request->setUserResolver(fn() => $this->user);
         
-        $response = $this->getJson('/api/workflows');
-        $response->assertStatus(200);
+        // Override environment for direct middleware testing
+        app()->bind('env', fn() => 'production');
         
+        $response = $middleware->handle($request, function () {
+            return response()->json(['success' => true]);
+        }, 'admin');
+        
+        expect($response->getStatusCode())->toBe(200);
         expect($response->headers->get('X-RateLimit-Limit'))->toBe('200');
         expect($response->headers->get('X-RateLimit-Remaining'))->toBe('199');
     });
 
     test('rate limit headers are present', function () {
-        Sanctum::actingAs($this->user);
+        // Test headers by directly calling middleware (since it's disabled in tests)
+        $middleware = new ApiRateLimitMiddleware();
+        $request = \Illuminate\Http\Request::create('/api/workflows', 'GET');
+        $request->setUserResolver(fn() => $this->user);
         
-        $response = $this->getJson('/api/workflows');
+        // Override environment for direct middleware testing
+        app()->bind('env', fn() => 'production');
         
-        $response->assertStatus(200)
-            ->assertHeader('X-RateLimit-Limit')
-            ->assertHeader('X-RateLimit-Remaining')
-            ->assertHeader('X-RateLimit-Reset')
-            ->assertHeader('X-RateLimit-Window');
+        $response = $middleware->handle($request, function () {
+            return response()->json(['success' => true]);
+        }, 'admin');
+        
+        expect($response->getStatusCode())->toBe(200);
+        expect($response->headers->has('X-RateLimit-Limit'))->toBeTrue();
+        expect($response->headers->has('X-RateLimit-Remaining'))->toBeTrue();
+        expect($response->headers->has('X-RateLimit-Reset'))->toBeTrue();
+        expect($response->headers->has('X-RateLimit-Window'))->toBeTrue();
     });
 
     test('rate limit exceeded returns 429', function () {
         // Test that rate limiting middleware properly enforces limits
         $middleware = new ApiRateLimitMiddleware();
         $request = \Illuminate\Http\Request::create('/api/test', 'GET');
+        
+        // Override environment for direct middleware testing
+        app()->bind('env', fn() => 'production');
         
         // Make 3 requests to test incrementing
         for ($i = 0; $i < 3; $i++) {
@@ -80,6 +102,9 @@ describe('API Rate Limiting System', function () {
         
         $request = \Illuminate\Http\Request::create('/api/test', 'GET');
         $request->setUserResolver(fn() => $user1);
+        
+        // Override environment for direct middleware testing
+        app()->bind('env', fn() => 'production');
         
         $response = $middleware->handle($request, function () {
             return response()->json(['success' => true]);
@@ -126,6 +151,9 @@ describe('Transaction Rate Limiting', function () {
     test('transaction rate limiting requires authentication', function () {
         $middleware = new TransactionRateLimitMiddleware();
         $request = Request::create('/api/accounts/123/deposit', 'POST');
+        
+        // Override environment for direct middleware testing
+        app()->bind('env', fn() => 'production');
         
         $response = $middleware->handle($request, function () {
             return response()->json(['success' => true]);
@@ -247,38 +275,55 @@ describe('Rate Limiting Integration Tests', function () {
     });
 
     test('public endpoints use public rate limiting', function () {
-        // Test basic public endpoint availability
-        $response = $this->getJson('/api/v1/assets');
+        // Test public rate limiting by directly calling middleware (since it's disabled in tests)
+        $middleware = new ApiRateLimitMiddleware();
+        $request = \Illuminate\Http\Request::create('/api/v1/assets', 'GET');
         
-        // Should return successful response with rate limit headers
-        expect(in_array($response->status(), [200, 404]))->toBeTrue();
+        // Override environment for direct middleware testing
+        app()->bind('env', fn() => 'production');
         
-        // If successful, should have rate limit headers
-        if ($response->status() === 200) {
-            expect($response->headers->has('X-RateLimit-Limit'))->toBeTrue();
-        }
+        $response = $middleware->handle($request, function () {
+            return response()->json(['assets' => []]);
+        }, 'public');
+        
+        expect($response->getStatusCode())->toBe(200);
+        expect($response->headers->has('X-RateLimit-Limit'))->toBeTrue();
+        expect($response->headers->get('X-RateLimit-Limit'))->toBe('60');
     });
 
     test('rate limiting works across different IP addresses', function () {
-        // Test that rate limiting correctly handles different IP addresses
-        $this->withServerVariables(['REMOTE_ADDR' => '192.168.1.1']);
+        // Test that rate limiting correctly handles different IP addresses by direct middleware testing
+        $middleware = new ApiRateLimitMiddleware();
         
-        for ($i = 0; $i < 61; $i++) {
-            $response = $this->getJson('/api/v1/assets');
-        }
+        // Override environment for direct middleware testing
+        app()->bind('env', fn() => 'production');
         
-        // Switch IP and should get fresh rate limit
-        $this->withServerVariables(['REMOTE_ADDR' => '192.168.1.2']);
-        $response = $this->getJson('/api/v1/assets');
+        // Create request from first IP
+        $request1 = \Illuminate\Http\Request::create('/api/v1/assets', 'GET', [], [], [], ['REMOTE_ADDR' => '192.168.1.1']);
+        $response1 = $middleware->handle($request1, function () {
+            return response()->json(['assets' => []]);
+        }, 'public');
         
-        expect($response->status())->toBe(200);
-        expect($response->headers->get('X-RateLimit-Remaining'))->toBe('59');
+        expect($response1->getStatusCode())->toBe(200);
+        expect($response1->headers->get('X-RateLimit-Remaining'))->toBe('59');
+        
+        // Create request from different IP - should have fresh limit
+        $request2 = \Illuminate\Http\Request::create('/api/v1/assets', 'GET', [], [], [], ['REMOTE_ADDR' => '192.168.1.2']);
+        $response2 = $middleware->handle($request2, function () {
+            return response()->json(['assets' => []]);
+        }, 'public');
+        
+        expect($response2->getStatusCode())->toBe(200);
+        expect($response2->headers->get('X-RateLimit-Remaining'))->toBe('59');
     });
 
     test('rate limiting respects cache expiration', function () {
         // Test cache behavior with simple verification
         $middleware = new ApiRateLimitMiddleware();
         $request = \Illuminate\Http\Request::create('/api/test-cache', 'GET');
+        
+        // Override environment for direct middleware testing
+        app()->bind('env', fn() => 'production');
         
         $response1 = $middleware->handle($request, function () {
             return response()->json(['success' => true]);

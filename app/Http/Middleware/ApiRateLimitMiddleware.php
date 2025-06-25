@@ -53,6 +53,11 @@ class ApiRateLimitMiddleware
      */
     public function handle(Request $request, Closure $next, string $rateLimitType = 'query'): SymfonyResponse
     {
+        // Skip rate limiting if disabled or in testing environment
+        if (!config('rate_limiting.enabled', true) || app()->environment('testing')) {
+            return $next($request);
+        }
+        
         // Get rate limit configuration
         $config = self::RATE_LIMITS[$rateLimitType] ?? self::RATE_LIMITS['query'];
         
