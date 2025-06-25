@@ -31,7 +31,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 // Authentication endpoints (public)
-Route::prefix('auth')->group(function () {
+Route::prefix('auth')->middleware('api.rate_limit:auth')->group(function () {
     Route::post('/register', [RegisterController::class, 'register']);
     Route::post('/login', [LoginController::class, 'login']);
     
@@ -49,33 +49,37 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::middleware('auth:sanctum')->group(function () {
-    // Account management endpoints
-    Route::post('/accounts', [AccountController::class, 'store']);
-    Route::get('/accounts/{uuid}', [AccountController::class, 'show']);
-    Route::delete('/accounts/{uuid}', [AccountController::class, 'destroy']);
-    Route::post('/accounts/{uuid}/freeze', [AccountController::class, 'freeze']);
-    Route::post('/accounts/{uuid}/unfreeze', [AccountController::class, 'unfreeze']);
+    // Account management endpoints (query rate limiting)
+    Route::middleware('api.rate_limit:query')->group(function () {
+        Route::post('/accounts', [AccountController::class, 'store']);
+        Route::get('/accounts/{uuid}', [AccountController::class, 'show']);
+        Route::delete('/accounts/{uuid}', [AccountController::class, 'destroy']);
+        Route::post('/accounts/{uuid}/freeze', [AccountController::class, 'freeze']);
+        Route::post('/accounts/{uuid}/unfreeze', [AccountController::class, 'unfreeze']);
+        Route::get('/accounts/{uuid}/transactions', [TransactionController::class, 'history']);
+    });
 
-    // Transaction endpoints
-    Route::post('/accounts/{uuid}/deposit', [TransactionController::class, 'deposit']);
-    Route::post('/accounts/{uuid}/withdraw', [TransactionController::class, 'withdraw']);
-    Route::get('/accounts/{uuid}/transactions', [TransactionController::class, 'history']);
+    // Transaction endpoints (transaction rate limiting)
+    Route::post('/accounts/{uuid}/deposit', [TransactionController::class, 'deposit'])->middleware('transaction.rate_limit:deposit');
+    Route::post('/accounts/{uuid}/withdraw', [TransactionController::class, 'withdraw'])->middleware('transaction.rate_limit:withdraw');
 
-    // Transfer endpoints
-    Route::post('/transfers', [TransferController::class, 'store']);
-    Route::get('/transfers/{uuid}', [TransferController::class, 'show']);
-    Route::get('/accounts/{uuid}/transfers', [TransferController::class, 'history']);
+    // Transfer endpoints (transaction rate limiting)
+    Route::post('/transfers', [TransferController::class, 'store'])->middleware('transaction.rate_limit:transfer');
+    Route::middleware('api.rate_limit:query')->group(function () {
+        Route::get('/transfers/{uuid}', [TransferController::class, 'show']);
+        Route::get('/accounts/{uuid}/transfers', [TransferController::class, 'history']);
 
-    // Balance inquiry endpoints (legacy)
-    Route::get('/accounts/{uuid}/balance', [BalanceController::class, 'show']);
-    Route::get('/accounts/{uuid}/balance/summary', [BalanceController::class, 'summary']);
+        // Balance inquiry endpoints (legacy)
+        Route::get('/accounts/{uuid}/balance', [BalanceController::class, 'show']);
+        Route::get('/accounts/{uuid}/balance/summary', [BalanceController::class, 'summary']);
+        
+        // Multi-asset balance endpoints
+        Route::get('/accounts/{uuid}/balances', [AccountBalanceController::class, 'show']);
+        Route::get('/balances', [AccountBalanceController::class, 'index']);
+    });
     
-    // Multi-asset balance endpoints
-    Route::get('/accounts/{uuid}/balances', [AccountBalanceController::class, 'show']);
-    Route::get('/balances', [AccountBalanceController::class, 'index']);
-    
-    // Currency conversion endpoint
-    Route::post('/exchange/convert', [ExchangeRateController::class, 'convertCurrency']);
+    // Currency conversion endpoint (transaction rate limiting)
+    Route::post('/exchange/convert', [ExchangeRateController::class, 'convertCurrency'])->middleware('transaction.rate_limit:convert');
     
     // Custodian integration endpoints
     Route::prefix('custodians')->group(function () {
@@ -87,32 +91,41 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{custodian}/transactions/{transactionId}', [CustodianController::class, 'transactionStatus']);
     });
 
-    // Governance endpoints
+    // Governance endpoints (query rate limiting for reads, vote rate limiting for votes)
     Route::prefix('polls')->group(function () {
-        Route::get('/', [PollController::class, 'index']);
-        Route::get('/active', [PollController::class, 'active']);
-        Route::post('/', [PollController::class, 'store']);
-        Route::get('/{uuid}', [PollController::class, 'show']);
-        Route::post('/{uuid}/activate', [PollController::class, 'activate']);
-        Route::post('/{uuid}/vote', [PollController::class, 'vote']);
-        Route::get('/{uuid}/results', [PollController::class, 'results']);
-        Route::get('/{uuid}/voting-power', [PollController::class, 'votingPower']);
+        Route::middleware('api.rate_limit:query')->group(function () {
+            Route::get('/', [PollController::class, 'index']);
+            Route::get('/active', [PollController::class, 'active']);
+            Route::get('/{uuid}', [PollController::class, 'show']);
+            Route::get('/{uuid}/results', [PollController::class, 'results']);
+            Route::get('/{uuid}/voting-power', [PollController::class, 'votingPower']);
+        });
+        
+        Route::middleware('api.rate_limit:admin')->group(function () {
+            Route::post('/', [PollController::class, 'store']);
+            Route::post('/{uuid}/activate', [PollController::class, 'activate']);
+        });
+        
+        Route::post('/{uuid}/vote', [PollController::class, 'vote'])->middleware('transaction.rate_limit:vote');
     });
 
-    Route::prefix('votes')->group(function () {
+    Route::prefix('votes')->middleware('api.rate_limit:query')->group(function () {
         Route::get('/', [VoteController::class, 'index']);
         Route::get('/stats', [VoteController::class, 'stats']);
         Route::get('/{id}', [VoteController::class, 'show']);
         Route::post('/{id}/verify', [VoteController::class, 'verify']);
     });
     
-    // User-friendly voting interface
+    // User-friendly voting interface (query rate limiting for reads, vote rate limiting for votes)
     Route::prefix('voting')->group(function () {
-        Route::get('/polls', [UserVotingController::class, 'getActivePolls']);
-        Route::get('/polls/upcoming', [UserVotingController::class, 'getUpcomingPolls']);
-        Route::get('/polls/history', [UserVotingController::class, 'getVotingHistory']);
-        Route::post('/polls/{uuid}/vote', [UserVotingController::class, 'submitBasketVote']);
-        Route::get('/dashboard', [UserVotingController::class, 'getDashboard']);
+        Route::middleware('api.rate_limit:query')->group(function () {
+            Route::get('/polls', [UserVotingController::class, 'getActivePolls']);
+            Route::get('/polls/upcoming', [UserVotingController::class, 'getUpcomingPolls']);
+            Route::get('/polls/history', [UserVotingController::class, 'getVotingHistory']);
+            Route::get('/dashboard', [UserVotingController::class, 'getDashboard']);
+        });
+        
+        Route::post('/polls/{uuid}/vote', [UserVotingController::class, 'submitBasketVote'])->middleware('transaction.rate_limit:vote');
     });
     
     // Transaction Reversal endpoints
@@ -175,8 +188,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/alerts/{alertId}/acknowledge', [BankAlertingController::class, 'acknowledgeAlert']);
     });
     
-    // Workflow/Saga Monitoring endpoints (admin only)
-    Route::prefix('workflows')->group(function () {
+    // Workflow/Saga Monitoring endpoints (admin only - admin rate limiting)
+    Route::prefix('workflows')->middleware('api.rate_limit:admin')->group(function () {
         Route::get('/', [WorkflowMonitoringController::class, 'index']);
         Route::get('/stats', [WorkflowMonitoringController::class, 'stats']);
         Route::get('/metrics', [WorkflowMonitoringController::class, 'metrics']);
@@ -188,11 +201,13 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 });
 
-// Public asset and exchange rate endpoints (no auth required for read-only access)
-Route::get('/exchange-rates', [ExchangeRateController::class, 'index']);
-Route::get('/exchange-rates/{from}/{to}', [ExchangeRateController::class, 'show']);
+// Public asset and exchange rate endpoints (no auth required for read-only access - public rate limiting)
+Route::middleware('api.rate_limit:public')->group(function () {
+    Route::get('/exchange-rates', [ExchangeRateController::class, 'index']);
+    Route::get('/exchange-rates/{from}/{to}', [ExchangeRateController::class, 'show']);
+});
 
-Route::prefix('v1')->group(function () {
+Route::prefix('v1')->middleware('api.rate_limit:public')->group(function () {
     // Asset management endpoints
     Route::get('/assets', [AssetController::class, 'index']);
     Route::get('/assets/{code}', [AssetController::class, 'show']);
@@ -306,8 +321,8 @@ Route::middleware('auth:sanctum')->prefix('compliance')->group(function () {
     });
 });
 
-// Custodian webhook endpoints (no auth required - signature verification is used instead)
-Route::prefix('webhooks/custodian')->group(function () {
+// Custodian webhook endpoints (no auth required - signature verification is used instead - webhook rate limiting)
+Route::prefix('webhooks/custodian')->middleware('api.rate_limit:webhook')->group(function () {
     Route::post('/paysera', [\App\Http\Controllers\Api\CustodianWebhookController::class, 'paysera']);
     Route::post('/santander', [\App\Http\Controllers\Api\CustodianWebhookController::class, 'santander']);
     Route::post('/mock', [\App\Http\Controllers\Api\CustodianWebhookController::class, 'mock']);

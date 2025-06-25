@@ -26,10 +26,10 @@ class AssetController extends Controller
      *     description="Get a list of all assets supported by the platform, including fiat currencies, cryptocurrencies, and commodities",
      *     security={{"sanctum":{}}},
      *     @OA\Parameter(
-     *         name="active",
+     *         name="include_inactive",
      *         in="query",
      *         required=false,
-     *         description="Filter by active status",
+     *         description="Include inactive assets in the response (default: false)",
      *         @OA\Schema(type="boolean")
      *     ),
      *     @OA\Parameter(
@@ -78,9 +78,9 @@ class AssetController extends Controller
     {
         $query = Asset::query();
         
-        // Filter by active status
-        if ($request->has('active')) {
-            $query->where('is_active', $request->boolean('active'));
+        // By default, only show active assets unless include_inactive is true
+        if (!$request->boolean('include_inactive')) {
+            $query->where('is_active', true);
         }
         
         // Filter by asset type
@@ -165,7 +165,14 @@ class AssetController extends Controller
      */
     public function show(string $code): JsonResponse
     {
-        $asset = Asset::where('code', strtoupper($code))->first();
+        $query = Asset::where('code', strtoupper($code));
+        
+        // By default, only show active assets unless include_inactive is true
+        if (!request()->boolean('include_inactive')) {
+            $query->where('is_active', true);
+        }
+        
+        $asset = $query->first();
         
         if (!$asset) {
             return response()->json([
@@ -188,20 +195,24 @@ class AssetController extends Controller
         );
         
         return response()->json([
-            'data' => [
-                'code' => $asset->code,
-                'name' => $asset->name,
-                'type' => $asset->type,
-                'symbol' => $asset->symbol,
-                'precision' => $asset->precision,
-                'is_active' => $asset->is_active,
-                'metadata' => $asset->metadata,
-                'stats' => [
-                    'total_accounts' => $totalAccounts,
-                    'total_balance' => $formattedBalance,
-                    'active_rates' => $activeRates,
-                ],
+            'id' => $asset->id,
+            'code' => $asset->code,
+            'name' => $asset->name,
+            'type' => $asset->type,
+            'symbol' => $asset->symbol,
+            'precision' => $asset->precision,
+            'is_active' => $asset->is_active,
+            'metadata' => $asset->metadata,
+            'statistics' => [
+                'total_supply' => null, // These would be calculated based on your business logic
+                'circulating_supply' => null,
+                'market_data' => $asset->metadata['market_data'] ?? null,
+                'total_accounts' => $totalAccounts,
+                'total_balance' => $formattedBalance,
+                'active_rates' => $activeRates,
             ],
+            'created_at' => $asset->created_at,
+            'updated_at' => $asset->updated_at,
         ]);
     }
 }
