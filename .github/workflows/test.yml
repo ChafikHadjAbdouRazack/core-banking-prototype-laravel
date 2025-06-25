@@ -103,6 +103,12 @@ jobs:
         export APP_KEY=$(grep APP_KEY .env | cut -d '=' -f2)
         ./vendor/bin/pest --configuration=phpunit.ci.xml --coverage --min=30
 
+    - name: Run Behat tests
+      run: |
+        export APP_KEY=$(grep APP_KEY .env | cut -d '=' -f2)
+        ./vendor/bin/behat --format=progress --strict || true
+      continue-on-error: true
+
     - name: Upload coverage reports to Codecov
       if: success()
       uses: codecov/codecov-action@v4
