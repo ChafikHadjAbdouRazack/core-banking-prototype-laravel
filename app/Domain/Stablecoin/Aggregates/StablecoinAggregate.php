@@ -12,6 +12,8 @@ use App\Domain\Stablecoin\Events\CollateralPositionUpdated;
 use App\Domain\Stablecoin\Events\CollateralReleased;
 use App\Domain\Stablecoin\Events\StablecoinBurned;
 use App\Domain\Stablecoin\Events\StablecoinMinted;
+use App\Domain\Stablecoin\Repositories\StablecoinEventRepository;
+use App\Domain\Stablecoin\Repositories\StablecoinSnapshotRepository;
 use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
 
 class StablecoinAggregate extends AggregateRoot
@@ -23,6 +25,28 @@ class StablecoinAggregate extends AggregateRoot
     private int $collateral_amount = 0;
     private int $debt_amount = 0;
     private string $status = 'active';
+
+    /**
+     * @return StablecoinEventRepository
+     * @throws \Illuminate\Contracts\Container\BindingResolutionException
+     */
+    protected function getStoredEventRepository(): StablecoinEventRepository
+    {
+        return app()->make(
+            abstract: StablecoinEventRepository::class
+        );
+    }
+
+    /**
+     * @return StablecoinSnapshotRepository
+     * @throws \Illuminate\Contracts\Container\BindingResolutionException
+     */
+    protected function getSnapshotRepository(): StablecoinSnapshotRepository
+    {
+        return app()->make(
+            abstract: StablecoinSnapshotRepository::class
+        );
+    }
 
     public function createPosition(
         string $account_uuid,
