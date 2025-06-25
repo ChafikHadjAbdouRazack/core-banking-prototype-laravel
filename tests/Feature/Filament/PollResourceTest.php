@@ -12,6 +12,11 @@ use App\Filament\Admin\Resources\PollResource\Pages\EditPoll;
 use App\Filament\Admin\Resources\PollResource\Pages\ListPolls;
 use App\Models\User;
 use Livewire\Livewire;
+
+beforeEach(function () {
+    $this->setUpFilamentWithAuth();
+});
+
 describe('Poll Resource', function () {
     it('can render poll index page', function () {
         $polls = Poll::factory()->count(5)->create();

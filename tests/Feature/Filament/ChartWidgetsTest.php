@@ -12,6 +12,11 @@ use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
 use Livewire\Livewire;
+
+beforeEach(function () {
+    $this->setUpFilamentWithAuth();
+});
+
 describe('AccountBalanceChart', function () {
     it('can render the widget', function () {
         Account::factory()->count(5)->create();

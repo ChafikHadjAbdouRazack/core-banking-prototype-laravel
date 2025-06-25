@@ -8,6 +8,11 @@ use App\Filament\Admin\Resources\VoteResource;
 use App\Filament\Admin\Resources\VoteResource\Pages\ListVotes;
 use App\Models\User;
 use Livewire\Livewire;
+
+beforeEach(function () {
+    $this->setUpFilamentWithAuth();
+});
+
 describe('Vote Resource', function () {
     it('can render vote index page', function () {
         $votes = Vote::factory()->count(5)->create();

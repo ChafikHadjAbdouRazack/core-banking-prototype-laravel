@@ -10,6 +10,11 @@ use Filament\Actions\DeleteAction;
 use function Pest\Laravel\get;
 use function Pest\Laravel\assertDatabaseHas;
 use function Pest\Livewire\livewire;
+
+beforeEach(function () {
+    $this->setUpFilamentWithAuth();
+});
+
 describe('Filament Admin Dashboard', function () {
 
     it('can render account index page', function () {

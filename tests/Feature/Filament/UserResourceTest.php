@@ -7,6 +7,11 @@ use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
 use function Pest\Livewire\livewire;
+
+beforeEach(function () {
+    $this->setUpFilamentWithAuth();
+});
+
 it('can render user resource page', function () {
     $this->get(UserResource::getUrl('index'))
         ->assertSuccessful();

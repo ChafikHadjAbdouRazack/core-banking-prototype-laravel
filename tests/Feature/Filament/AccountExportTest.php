@@ -5,6 +5,11 @@ use App\Filament\Exports\AccountExporter;
 use App\Models\Account;
 use Illuminate\Support\Facades\Queue;
 use Livewire\Livewire;
+
+beforeEach(function () {
+    $this->setUpFilamentWithAuth();
+});
+
 describe('Account Export Tests', function () {
 
 it('can export accounts', function () {
