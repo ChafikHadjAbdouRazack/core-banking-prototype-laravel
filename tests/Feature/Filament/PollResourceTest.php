@@ -12,17 +12,6 @@ use App\Filament\Admin\Resources\PollResource\Pages\EditPoll;
 use App\Filament\Admin\Resources\PollResource\Pages\ListPolls;
 use App\Models\User;
 use Livewire\Livewire;
-
-beforeEach(function () {
-    $this->user = User::factory()->create();
-    $this->actingAs($this->user);
-    
-    // Skip if Filament panel is not properly configured
-    if (!app(\Filament\FilamentManager::class)->getCurrentPanel()) {
-        $this->markTestSkipped('Filament panel not configured for testing');
-    }
-});
-
 describe('Poll Resource', function () {
     it('can render poll index page', function () {
         $polls = Poll::factory()->count(5)->create();
