@@ -8,11 +8,13 @@ use App\Domain\Account\DataObjects\Money;
 use App\Domain\Asset\Services\ExchangeRateService;
 use App\Domain\Wallet\Services\WalletService;
 use App\Domain\Account\DataObjects\AccountUuid;
+use App\Domain\Stablecoin\Aggregates\StablecoinAggregate;
 use App\Models\Account;
 use App\Models\Stablecoin;
 use App\Models\StablecoinCollateralPosition;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class StablecoinIssuanceService
 {
@@ -52,35 +54,57 @@ class StablecoinIssuanceService
         }
 
         return DB::transaction(function () use ($account, $stablecoin, $collateralAssetCode, $collateralAmount, $mintAmount) {
-            // Lock collateral from account
-            $accountUuid = AccountUuid::fromString($account->uuid);
-            $this->walletService->withdraw($accountUuid, $collateralAssetCode, $collateralAmount);
-
-            // Find or create collateral position
-            $position = StablecoinCollateralPosition::firstOrCreate([
-                'account_uuid' => $account->uuid,
-                'stablecoin_code' => $stablecoin->code,
-            ], [
-                'collateral_asset_code' => $collateralAssetCode,
-                'collateral_amount' => 0,
-                'debt_amount' => 0,
-                'collateral_ratio' => 0,
-                'status' => 'active',
-                'last_interaction_at' => now(),
-            ]);
-
-            // Update position
-            $position->collateral_amount += $collateralAmount;
-            $position->debt_amount += $mintAmount;
-            $position->last_interaction_at = now();
-            $position->updateCollateralRatio();
+            // Find existing position or generate new UUID
+            $existingPosition = StablecoinCollateralPosition::where('account_uuid', $account->uuid)
+                ->where('stablecoin_code', $stablecoin->code)
+                ->where('status', 'active')
+                ->first();
+            
+            $positionUuid = $existingPosition ? $existingPosition->uuid : (string) Str::uuid();
+            
+            // Use event sourcing aggregate
+            $aggregate = StablecoinAggregate::retrieve($positionUuid);
+            
+            if (!$existingPosition) {
+                // Calculate initial collateral ratio
+                $collateralValueInPegAsset = $this->collateralService->convertToPegAsset(
+                    $collateralAssetCode,
+                    $collateralAmount,
+                    $stablecoin->peg_asset_code
+                );
+                $collateralRatio = $collateralValueInPegAsset / $mintAmount;
+                
+                $aggregate->createPosition(
+                    $account->uuid,
+                    $stablecoin->code,
+                    $collateralAssetCode,
+                    $collateralAmount,
+                    $mintAmount,
+                    $collateralRatio
+                );
+            } else {
+                // Lock additional collateral and mint more
+                $aggregate->lockCollateral($collateralAmount)
+                    ->mintStablecoin($mintAmount);
+                
+                // Calculate new collateral ratio
+                $newCollateralAmount = $existingPosition->collateral_amount + $collateralAmount;
+                $newDebtAmount = $existingPosition->debt_amount + $mintAmount;
+                $collateralValueInPegAsset = $this->collateralService->convertToPegAsset(
+                    $collateralAssetCode,
+                    $newCollateralAmount,
+                    $stablecoin->peg_asset_code
+                );
+                $newRatio = $collateralValueInPegAsset / $newDebtAmount;
+                
+                $aggregate->updatePosition($newCollateralAmount, $newDebtAmount, $newRatio);
+            }
+            
+            $aggregate->persist();
 
             // Calculate and apply minting fee
             $fee = (int) ($mintAmount * $stablecoin->mint_fee);
             $netMintAmount = $mintAmount - $fee;
-
-            // Add stablecoin to account balance
-            $this->walletService->deposit($accountUuid, $stablecoin->code, $netMintAmount);
 
             // Update stablecoin global statistics
             $collateralValueInPegAsset = $this->collateralService->convertToPegAsset(
@@ -100,10 +124,11 @@ class StablecoinIssuanceService
                 'mint_amount' => $mintAmount,
                 'fee' => $fee,
                 'net_amount' => $netMintAmount,
-                'position_id' => $position->uuid,
+                'position_id' => $positionUuid,
             ]);
 
-            return $position;
+            // Return the updated position
+            return StablecoinCollateralPosition::where('uuid', $positionUuid)->firstOrFail();
         });
     }
 
@@ -143,9 +168,8 @@ class StablecoinIssuanceService
             $fee = (int) ($burnAmount * $stablecoin->burn_fee);
             $totalBurnAmount = $burnAmount + $fee;
 
-            // Burn stablecoins from account
-            $accountUuid = AccountUuid::fromString($account->uuid);
-            $this->walletService->withdraw($accountUuid, $stablecoin->code, $totalBurnAmount);
+            // Use event sourcing aggregate
+            $aggregate = StablecoinAggregate::retrieve($position->uuid);
 
             // Calculate proportional collateral release if not specified
             if ($collateralReleaseAmount === null) {
@@ -170,25 +194,29 @@ class StablecoinIssuanceService
                 }
             }
 
-            // Update position
-            $position->debt_amount = $newDebtAmount;
-            $position->collateral_amount = $newCollateralAmount;
-            $position->last_interaction_at = now();
-
-            // Release collateral back to account
-            $this->walletService->deposit($accountUuid, $position->collateral_asset_code, $collateralReleaseAmount);
-
+            // Record burn and collateral release
+            $aggregate->burnStablecoin($burnAmount)
+                ->releaseCollateral($collateralReleaseAmount);
+            
             // Close position if fully repaid
-            if ($position->debt_amount == 0) {
-                $position->status = 'closed';
+            if ($newDebtAmount == 0) {
+                $aggregate->closePosition('debt_repaid');
                 // Release any remaining collateral
-                if ($position->collateral_amount > 0) {
-                    $this->walletService->deposit($accountUuid, $position->collateral_asset_code, $position->collateral_amount);
-                    $position->collateral_amount = 0;
+                if ($newCollateralAmount > 0) {
+                    $aggregate->releaseCollateral($newCollateralAmount);
                 }
+            } else {
+                // Update position with new values
+                $collateralValueInPegAsset = $this->collateralService->convertToPegAsset(
+                    $position->collateral_asset_code,
+                    $newCollateralAmount,
+                    $stablecoin->peg_asset_code
+                );
+                $newRatio = $collateralValueInPegAsset / $newDebtAmount;
+                $aggregate->updatePosition($newCollateralAmount, $newDebtAmount, $newRatio);
             }
-
-            $position->updateCollateralRatio();
+            
+            $aggregate->persist();
 
             // Update stablecoin global statistics
             $collateralValueInPegAsset = $this->collateralService->convertToPegAsset(
@@ -207,10 +235,11 @@ class StablecoinIssuanceService
                 'fee' => $fee,
                 'collateral_released' => $collateralReleaseAmount,
                 'position_id' => $position->uuid,
-                'position_status' => $position->status,
+                'position_status' => $newDebtAmount == 0 ? 'closed' : 'active',
             ]);
 
-            return $position;
+            // Return the updated position
+            return StablecoinCollateralPosition::where('uuid', $position->uuid)->firstOrFail();
         });
     }
 
@@ -237,14 +266,24 @@ class StablecoinIssuanceService
         }
 
         return DB::transaction(function () use ($account, $position, $collateralAmount) {
-            // Transfer collateral from account
-            $accountUuid = AccountUuid::fromString($account->uuid);
-            $this->walletService->withdraw($accountUuid, $position->collateral_asset_code, $collateralAmount);
-
-            // Update position
-            $position->collateral_amount += $collateralAmount;
-            $position->last_interaction_at = now();
-            $position->updateCollateralRatio();
+            // Use event sourcing aggregate
+            $aggregate = StablecoinAggregate::retrieve($position->uuid);
+            
+            // Lock additional collateral
+            $aggregate->lockCollateral($collateralAmount);
+            
+            // Calculate new collateral ratio
+            $newCollateralAmount = $position->collateral_amount + $collateralAmount;
+            $stablecoin = $position->stablecoin;
+            $collateralValueInPegAsset = $this->collateralService->convertToPegAsset(
+                $position->collateral_asset_code,
+                $newCollateralAmount,
+                $stablecoin->peg_asset_code
+            );
+            $newRatio = $collateralValueInPegAsset / $position->debt_amount;
+            
+            $aggregate->updatePosition($newCollateralAmount, $position->debt_amount, $newRatio)
+                ->persist();
 
             // Update global collateral value
             $stablecoin = $position->stablecoin;
@@ -259,10 +298,11 @@ class StablecoinIssuanceService
                 'account_uuid' => $account->uuid,
                 'position_id' => $position->uuid,
                 'collateral_amount' => $collateralAmount,
-                'new_collateral_ratio' => $position->collateral_ratio,
+                'new_collateral_ratio' => $newRatio,
             ]);
 
-            return $position;
+            // Return the updated position
+            return StablecoinCollateralPosition::where('uuid', $position->uuid)->firstOrFail();
         });
     }
 
