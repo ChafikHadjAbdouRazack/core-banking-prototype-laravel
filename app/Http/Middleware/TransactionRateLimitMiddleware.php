@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
@@ -105,7 +106,7 @@ class TransactionRateLimitMiddleware
     /**
      * Check rate limit for a specific period
      */
-    private function checkRateLimit(int $userId, string $transactionType, string $period, int $limit, int $window): true|Response
+    private function checkRateLimit(int $userId, string $transactionType, string $period, int $limit, int $window): true|JsonResponse
     {
         $key = "tx_rate_limit:{$userId}:{$transactionType}:{$period}";
         $currentCount = Cache::get($key, 0);
@@ -140,7 +141,7 @@ class TransactionRateLimitMiddleware
     /**
      * Check amount-based rate limits
      */
-    private function checkAmountLimit(Request $request, int $userId, string $transactionType, array $config): true|Response
+    private function checkAmountLimit(Request $request, int $userId, string $transactionType, array $config): true|JsonResponse
     {
         $amount = $this->extractAmount($request);
         if ($amount === null) {
