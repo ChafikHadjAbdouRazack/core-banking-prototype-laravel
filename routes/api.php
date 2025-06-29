@@ -360,3 +360,6 @@ Route::prefix('v2')->middleware('ensure.json')->group(function () {
 
 // Include fraud detection routes
 require __DIR__.'/api/fraud.php';
+
+// Include enhanced regulatory routes
+require __DIR__.'/api/regulatory.php';
