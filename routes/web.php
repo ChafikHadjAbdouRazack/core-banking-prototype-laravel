@@ -165,6 +165,23 @@ Route::middleware([
         return view('compliance.kyc');
     })->name('compliance.kyc');
     
+    // Fraud Alerts Routes
+    Route::prefix('fraud')->name('fraud.')->group(function () {
+        Route::get('/alerts', [App\Http\Controllers\FraudAlertsController::class, 'index'])->name('alerts.index');
+        Route::get('/alerts/{fraudCase}', [App\Http\Controllers\FraudAlertsController::class, 'show'])->name('alerts.show');
+        Route::patch('/alerts/{fraudCase}/status', [App\Http\Controllers\FraudAlertsController::class, 'updateStatus'])->name('alerts.update-status');
+    });
+    
+    // Regulatory Reports Routes
+    Route::prefix('regulatory')->name('regulatory.')->group(function () {
+        Route::get('/reports', [App\Http\Controllers\RegulatoryReportsController::class, 'index'])->name('reports.index');
+        Route::get('/reports/create', [App\Http\Controllers\RegulatoryReportsController::class, 'create'])->name('reports.create');
+        Route::post('/reports', [App\Http\Controllers\RegulatoryReportsController::class, 'store'])->name('reports.store');
+        Route::get('/reports/{report}', [App\Http\Controllers\RegulatoryReportsController::class, 'show'])->name('reports.show');
+        Route::get('/reports/{report}/download', [App\Http\Controllers\RegulatoryReportsController::class, 'download'])->name('reports.download');
+        Route::post('/reports/{report}/submit', [App\Http\Controllers\RegulatoryReportsController::class, 'submit'])->name('reports.submit');
+    });
+    
     // GCU Wallet Routes
     Route::prefix('wallet')->name('wallet.')->group(function () {
         Route::get('/', [App\Http\Controllers\WalletController::class, 'index'])->name('index');
