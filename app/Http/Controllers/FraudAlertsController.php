@@ -16,27 +16,36 @@ class FraudAlertsController extends Controller
     {
         $user = Auth::user();
         
-        // For regular customers, show only their fraud alerts
-        if ($user->hasRole(['customer_private', 'customer_business'])) {
-            $fraudCases = FraudCase::whereHas('transaction', function ($query) use ($user) {
-                $query->whereHas('account', function ($q) use ($user) {
-                    $q->where('user_uuid', $user->uuid);
-                });
+        // Check if user has permission to view fraud alerts
+        if (!$user->can('view_fraud_alerts')) {
+            // For regular customers, show only their fraud alerts
+            $fraudCases = FraudCase::whereHas('subjectAccount', function ($query) use ($user) {
+                $query->where('user_uuid', $user->uuid);
             })->latest()->paginate(10);
         } else {
-            // For staff, show all fraud cases they have permission to see
-            $this->authorize('view_fraud_alerts');
-            $fraudCases = FraudCase::with(['transaction.account.user'])
-                ->latest()
-                ->paginate(20);
+            // For staff with permission, show fraud cases
+            // The BelongsToTeam trait will automatically filter by current team
+            $query = FraudCase::with(['subjectAccount.user']);
+            
+            // Super admins can see all teams' data
+            if ($user->hasRole('super_admin')) {
+                $query->allTeams();
+            }
+            
+            $fraudCases = $query->latest()->paginate(20);
         }
         
-        // Get fraud statistics
+        // Get fraud statistics (respecting team boundaries)
+        $statsQuery = FraudCase::query();
+        if ($user->hasRole('super_admin')) {
+            $statsQuery->allTeams();
+        }
+        
         $stats = [
             'total_cases' => $fraudCases->total(),
-            'pending_cases' => FraudCase::where('status', 'pending')->count(),
-            'confirmed_cases' => FraudCase::where('status', 'confirmed')->count(),
-            'false_positives' => FraudCase::where('status', 'false_positive')->count(),
+            'pending_cases' => (clone $statsQuery)->where('status', 'pending')->count(),
+            'confirmed_cases' => (clone $statsQuery)->where('status', 'confirmed')->count(),
+            'false_positives' => (clone $statsQuery)->where('status', 'false_positive')->count(),
         ];
         
         return view('fraud.alerts.index', compact('fraudCases', 'stats'));
@@ -52,7 +61,7 @@ class FraudAlertsController extends Controller
         // Check authorization
         if ($user->hasRole(['customer_private', 'customer_business'])) {
             // Customers can only view their own fraud cases
-            if ($fraudCase->transaction->account->user_uuid !== $user->uuid) {
+            if ($fraudCase->subjectAccount && $fraudCase->subjectAccount->user_uuid !== $user->uuid) {
                 abort(403);
             }
         } else {
