@@ -283,21 +283,59 @@ Route::middleware([
     })->name('accounts');
     
     Route::post('/accounts/create', function (Request $request) {
-        $request->validate([
-            'name' => 'required|string|max:255',
-        ]);
-        
-        $user = Auth::user();
-        
-        // Use the CreateAccountWorkflow to create the account
-        $workflow = app(\App\Domain\Account\Workflows\CreateAccountWorkflow::class);
-        $workflow->start([
-            'user_uuid' => $user->uuid,
-            'name' => $request->name,
-            'initial_balance' => 0,
-        ]);
-        
-        return response()->json(['success' => true]);
+        try {
+            $request->validate([
+                'name' => 'required|string|max:255',
+            ]);
+            
+            $user = Auth::user();
+            
+            \Log::info('Creating account for user', [
+                'user_id' => $user->id,
+                'user_uuid' => $user->uuid,
+                'account_name' => $request->name
+            ]);
+            
+            // Use the AccountService to create the account via event sourcing
+            $accountService = app(\App\Domain\Account\Services\AccountService::class);
+            $account = new \App\Domain\Account\DataObjects\Account(
+                name: $request->name,
+                userUuid: $user->uuid
+            );
+            
+            $accountService->create($account);
+            
+            // Process the workflow queue immediately
+            \Artisan::call('queue:work', [
+                '--stop-when-empty' => true,
+                '--queue' => 'default,events,ledger,transactions'
+            ]);
+            
+            // Verify account was created
+            $createdAccount = \App\Models\Account::where('user_uuid', $user->uuid)
+                ->where('name', $request->name)
+                ->first();
+                
+            \Log::info('Account creation result', [
+                'account_found' => $createdAccount ? true : false,
+                'account_id' => $createdAccount ? $createdAccount->id : null
+            ]);
+            
+            return response()->json([
+                'success' => true,
+                'account_created' => $createdAccount ? true : false
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Account creation failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to create account: ' . $e->getMessage()
+            ], 500);
+        }
     })->name('accounts.create');
     
     // Transaction History Route
