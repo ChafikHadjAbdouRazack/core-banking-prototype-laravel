@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 use App\Http\Controllers\StatusController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\GCUController;
@@ -170,10 +171,59 @@ Route::middleware([
     Route::resource('api-keys', App\Http\Controllers\ApiKeyController::class);
     Route::post('/api-keys/{apiKey}/regenerate', [App\Http\Controllers\ApiKeyController::class, 'regenerate'])->name('api-keys.regenerate');
     
-    // KYC route
-    Route::get('/compliance/kyc', function () {
-        return view('compliance.kyc');
-    })->name('compliance.kyc');
+    // Compliance Routes
+    Route::prefix('compliance')->name('compliance.')->group(function () {
+        // KYC route
+        Route::get('/kyc', function () {
+            return view('compliance.kyc');
+        })->name('kyc');
+        
+        // Compliance Metrics
+        Route::get('/metrics', function () {
+            $metrics = [
+                'overall_score' => 94.5,
+                'kyc_rate' => 98.2,
+                'pending_kyc' => 12,
+                'aml_alerts' => 23,
+                'resolved_alerts' => 18,
+                'sanctions_hits' => 2,
+                'risk_score' => 'Low'
+            ];
+            
+            return view('compliance.metrics', compact('metrics'));
+        })->name('metrics');
+        
+        // AML/BSA/OFAC Reporting
+        Route::get('/aml', function () {
+            $stats = [
+                'active_alerts' => 18,
+                'new_today' => 3,
+                'ofac_matches' => 2,
+                'bsa_reports' => 45,
+                'pending_bsa' => 5,
+                'risk_score' => 'Low'
+            ];
+            
+            return view('compliance.aml-reporting', compact('stats'));
+        })->name('aml');
+        Route::get('/aml/create', function () {
+            return redirect()->route('regulatory.reports.create');
+        })->name('aml.create');
+        Route::get('/bsa/create', function () {
+            return redirect()->route('regulatory.reports.create');
+        })->name('bsa.create');
+        Route::get('/risk/assessment', function () {
+            return redirect()->route('risk.analysis.index');
+        })->name('risk.assessment');
+    });
+    
+    // Audit Trail Routes
+    Route::prefix('audit')->name('audit.')->group(function () {
+        Route::get('/trail', function () {
+            $auditLogs = collect(); // Empty collection for now
+            return view('audit.trail', compact('auditLogs'));
+        })->name('trail');
+    });
     
     // Fraud Alerts Routes
     Route::prefix('fraud')->name('fraud.')->group(function () {
@@ -192,6 +242,78 @@ Route::middleware([
         Route::get('/reports/{report}/download', [App\Http\Controllers\RegulatoryReportsController::class, 'download'])->name('reports.download');
         Route::post('/reports/{report}/submit', [App\Http\Controllers\RegulatoryReportsController::class, 'submit'])->name('reports.submit');
     });
+    
+    // Risk Analysis Routes
+    Route::prefix('risk')->name('risk.')->group(function () {
+        Route::get('/analysis', function () {
+            // Mock data for demonstration
+            $stats = [
+                'low_risk' => 1243,
+                'medium_risk' => 567,
+                'high_risk' => 190,
+                'total_customers' => 2000,
+                'avg_risk_score' => 32.5,
+            ];
+            
+            $topRiskFactors = [
+                ['name' => 'High Transaction Volume', 'count' => 234, 'percentage' => 45],
+                ['name' => 'Geographic Risk', 'count' => 189, 'percentage' => 36],
+                ['name' => 'PEP Status', 'count' => 123, 'percentage' => 24],
+                ['name' => 'Unusual Transaction Patterns', 'count' => 98, 'percentage' => 19],
+                ['name' => 'Business Type Risk', 'count' => 87, 'percentage' => 17],
+            ];
+            
+            $highRiskCustomers = collect(); // Empty collection for now
+            
+            return view('risk.analysis.index', compact('stats', 'topRiskFactors', 'highRiskCustomers'));
+        })->name('analysis.index');
+    });
+    
+    // Transaction Monitoring Routes
+    Route::prefix('monitoring')->name('monitoring.')->group(function () {
+        Route::get('/transactions', function () {
+            return view('monitoring.transactions.index');
+        })->name('transactions.index');
+    });
+    
+    // Account Management Routes
+    Route::get('/accounts', function () {
+        $accounts = Auth::user()->accounts()->with('balances.asset')->get();
+        return view('accounts.index', compact('accounts'));
+    })->name('accounts');
+    
+    Route::post('/accounts/create', function (Request $request) {
+        $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
+        
+        $user = Auth::user();
+        
+        // Use the CreateAccountWorkflow to create the account
+        $workflow = app(\App\Domain\Account\Workflows\CreateAccountWorkflow::class);
+        $workflow->start([
+            'user_uuid' => $user->uuid,
+            'name' => $request->name,
+            'initial_balance' => 0,
+        ]);
+        
+        return response()->json(['success' => true]);
+    })->name('accounts.create');
+    
+    // Transaction History Route
+    Route::get('/transactions', function () {
+        return redirect()->route('wallet.transactions');
+    })->name('transactions');
+    
+    // Transfer Route
+    Route::get('/transfers', function () {
+        return redirect()->route('wallet.transfer');
+    })->name('transfers');
+    
+    // Exchange Route
+    Route::get('/exchange', function () {
+        return redirect()->route('wallet.convert');
+    })->name('exchange');
     
     // GCU Wallet Routes
     Route::prefix('wallet')->name('wallet.')->group(function () {
@@ -213,13 +335,47 @@ Route::middleware([
         Route::get('/transfer', [App\Http\Controllers\WalletController::class, 'showTransfer'])->name('transfer');
         Route::get('/convert', [App\Http\Controllers\WalletController::class, 'showConvert'])->name('convert');
         
-        // Card deposit routes (Stripe integration)
+        // Deposit routes
         Route::prefix('deposit')->name('deposit.')->group(function () {
+            // Card deposits (Stripe integration)
             Route::get('/card', [App\Http\Controllers\DepositController::class, 'create'])->name('create');
             Route::post('/card', [App\Http\Controllers\DepositController::class, 'store'])->name('store');
             Route::get('/confirm', [App\Http\Controllers\DepositController::class, 'confirm'])->name('confirm');
             Route::post('/payment-method', [App\Http\Controllers\DepositController::class, 'addPaymentMethod'])->name('payment-method.add');
             Route::delete('/payment-method/{id}', [App\Http\Controllers\DepositController::class, 'removePaymentMethod'])->name('payment-method.remove');
+            
+            // Bank deposits
+            Route::get('/bank', function () {
+                $account = Auth::user()->accounts()->first();
+                return view('wallet.deposit-bank', compact('account'));
+            })->name('bank');
+            
+            // Paysera deposits
+            Route::get('/paysera', function () {
+                $account = Auth::user()->accounts()->first();
+                return view('wallet.deposit-paysera', compact('account'));
+            })->name('paysera');
+            Route::post('/paysera/initiate', [App\Http\Controllers\PayseraDepositController::class, 'initiate'])->name('paysera.initiate');
+            Route::get('/paysera/callback', [App\Http\Controllers\PayseraDepositController::class, 'callback'])->name('paysera.callback');
+            
+            // Open Banking deposits
+            Route::get('/openbanking', function () {
+                $account = Auth::user()->accounts()->first();
+                return view('wallet.deposit-openbanking', compact('account'));
+            })->name('openbanking');
+            Route::post('/openbanking/initiate', [App\Http\Controllers\OpenBankingDepositController::class, 'initiate'])->name('openbanking.initiate');
+            Route::get('/openbanking/callback', [App\Http\Controllers\OpenBankingDepositController::class, 'callback'])->name('openbanking.callback');
+            
+            // Manual bank transfer
+            Route::get('/manual', function () {
+                $account = Auth::user()->accounts()->first();
+                return view('wallet.deposit-manual', compact('account'));
+            })->name('manual');
+            
+            // Crypto deposits (placeholder)
+            Route::get('/crypto', function () {
+                return view('wallet.deposit-crypto');
+            })->name('crypto');
         });
         
         // Bank withdrawal routes
