@@ -153,9 +153,7 @@ Route::prefix('gcu/voting')->name('gcu.voting.')->group(function () {
 
 // GCU Trading routes (authenticated)
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/gcu/trading', function () {
-        return Inertia\Inertia::render('GCU/Trading');
-    })->name('gcu.trading');
+    Route::get('/gcu/trading', [App\Http\Controllers\GcuTradingController::class, 'index'])->name('gcu.trading');
 });
 
 Route::middleware([
@@ -364,6 +362,13 @@ Route::middleware([
         Route::get('/{transactionId}/status', [App\Http\Controllers\TransactionStatusController::class, 'status'])->name('status');
         Route::post('/{transactionId}/cancel', [App\Http\Controllers\TransactionStatusController::class, 'cancel'])->name('cancel');
         Route::post('/{transactionId}/retry', [App\Http\Controllers\TransactionStatusController::class, 'retry'])->name('retry');
+    });
+    
+    // Fund Flow Visualization Routes
+    Route::prefix('fund-flow')->name('fund-flow.')->group(function () {
+        Route::get('/', [App\Http\Controllers\FundFlowController::class, 'index'])->name('index');
+        Route::get('/account/{accountUuid}', [App\Http\Controllers\FundFlowController::class, 'accountFlow'])->name('account');
+        Route::get('/data', [App\Http\Controllers\FundFlowController::class, 'data'])->name('data');
     });
     
     // Transfer Route
