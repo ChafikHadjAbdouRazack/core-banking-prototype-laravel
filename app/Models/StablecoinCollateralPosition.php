@@ -113,6 +113,22 @@ class StablecoinCollateralPosition extends Model
 
         return false;
     }
+    
+    /**
+     * Scope to get positions that should be auto-liquidated.
+     */
+    public function scopeShouldAutoLiquidate($query)
+    {
+        return $query->where('status', 'active')
+            ->where('auto_liquidation_enabled', true)
+            ->where(function ($q) {
+                $q->whereHas('stablecoin', function ($sq) {
+                    $sq->whereColumn('stablecoin_collateral_positions.collateral_ratio', '<=', 'stablecoins.min_collateral_ratio');
+                })
+                ->orWhereNotNull('stop_loss_ratio')
+                ->whereColumn('collateral_ratio', '<=', 'stop_loss_ratio');
+            });
+    }
 
     /**
      * Calculate the maximum amount of stablecoin that can be minted.
