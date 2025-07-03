@@ -13,6 +13,9 @@ use App\Mail\CgoNotificationReceived;
 use App\Mail\CgoInvestmentReceived;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use App\Services\Email\SubscriberEmailService;
+use App\Services\Cgo\StripePaymentService;
+use App\Services\Cgo\CoinbaseCommerceService;
+use App\Jobs\VerifyCgoPayment;
 
 class CgoController extends Controller
 {
@@ -49,62 +52,61 @@ class CgoController extends Controller
             try {
                 Mail::to($validated['email'])->send(new CgoNotificationReceived($validated['email']));
             } catch (\Exception $e) {
-                // Log error but don't fail the request
                 \Log::error('Failed to send CGO notification email: ' . $e->getMessage());
             }
         }
         
-        return redirect()->back()->with('success', 'Thank you! We\'ll notify you when the CGO launches.');
+        return redirect()->route('cgo.notify-success');
     }
     
-    public function showInvest()
+    public function notifySuccess()
     {
-        $currentRound = CgoPricingRound::getCurrentRound();
-        $userInvestments = auth()->user()->cgoInvestments()->orderBy('created_at', 'desc')->get();
-        
-        return view('cgo.invest', compact('currentRound', 'userInvestments'));
+        return view('cgo.notify-success');
     }
     
-    public function invest(Request $request)
+    public function invest()
     {
-        $validated = $request->validate([
-            'amount' => 'required|numeric|min:100',
-            'payment_method' => 'required|in:crypto,bank_transfer,card',
-            'crypto_currency' => 'required_if:payment_method,crypto|in:BTC,ETH,USDT,USDC',
-            'terms' => 'required|accepted',
-        ]);
-        
-        $currentRound = CgoPricingRound::getCurrentRound();
+        $currentRound = CgoPricingRound::where('is_active', true)->first();
         
         if (!$currentRound) {
-            return redirect()->back()->withErrors(['error' => 'No active investment round at the moment.']);
+            return view('cgo.closed');
         }
         
-        // Calculate shares and ownership
-        $shares = $validated['amount'] / $currentRound->share_price;
-        $totalShares = 1000000; // Total platform shares
-        $ownershipPercentage = ($shares / $totalShares) * 100;
+        return view('cgo.invest', [
+            'currentRound' => $currentRound,
+            'packages' => config('cgo.packages', []),
+        ]);
+    }
+    
+    public function processInvestment(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'phone' => 'required|string|max:50',
+            'package' => 'required|in:' . implode(',', array_keys(config('cgo.packages', []))),
+            'payment_method' => 'required|in:card,crypto,bank_transfer',
+            'crypto_currency' => 'required_if:payment_method,crypto|in:BTC,ETH,USDT,USDC',
+            'terms_accepted' => 'required|accepted',
+        ]);
         
-        // Check 1% max ownership rule
-        $userTotalOwnership = auth()->user()->cgoInvestments()
-            ->where('status', 'confirmed')
-            ->sum('ownership_percentage');
-            
-        if (($userTotalOwnership + $ownershipPercentage) > 1.0) {
-            return redirect()->back()->withErrors(['amount' => 'This investment would exceed the 1% maximum ownership limit per round.']);
+        $currentRound = CgoPricingRound::where('is_active', true)->first();
+        
+        if (!$currentRound) {
+            return redirect()->route('cgo')->withErrors(['error' => 'Investment round is currently closed.']);
         }
         
-        // Check available shares in round
-        if ($shares > $currentRound->remaining_shares) {
-            return redirect()->back()->withErrors(['amount' => 'Not enough shares available in this round.']);
+        $packages = config('cgo.packages', []);
+        
+        if (!isset($packages[$validated['package']])) {
+            return redirect()->back()->withErrors(['error' => 'Invalid package selected.']);
         }
         
-        // Determine tier
-        $tier = 'bronze';
-        if ($validated['amount'] >= 10000) {
-            $tier = 'gold';
-        } elseif ($validated['amount'] >= 1000) {
-            $tier = 'silver';
+        $packageAmount = $packages[$validated['package']]['amount'];
+        
+        // Check investment limits
+        if ($packageAmount < config('cgo.min_investment', 1000) || $packageAmount > config('cgo.max_investment', 1000000)) {
+            return redirect()->back()->withErrors(['error' => 'Investment amount is outside allowed limits.']);
         }
         
         DB::beginTransaction();
@@ -112,32 +114,36 @@ class CgoController extends Controller
         try {
             // Create investment record
             $investment = CgoInvestment::create([
-                'user_id' => auth()->id(),
-                'round_id' => $currentRound->id,
-                'amount' => $validated['amount'],
-                'currency' => 'USD',
-                'share_price' => $currentRound->share_price,
-                'shares_purchased' => $shares,
-                'ownership_percentage' => $ownershipPercentage,
-                'tier' => $tier,
-                'status' => 'pending',
+                'pricing_round_id' => $currentRound->id,
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+                'phone' => $validated['phone'],
+                'package' => $validated['package'],
+                'amount' => $packageAmount,
+                'tokens' => $packageAmount / $currentRound->token_price,
                 'payment_method' => $validated['payment_method'],
-                'metadata' => [
-                    'crypto_currency' => $validated['crypto_currency'] ?? null,
-                    'ip_address' => $request->ip(),
-                    'user_agent' => $request->userAgent(),
-                ],
+                'crypto_currency' => $validated['crypto_currency'] ?? null,
+                'status' => 'pending',
+                'terms_accepted_at' => now(),
+                'ip_address' => $request->ip(),
+                'user_agent' => $request->userAgent(),
             ]);
             
             DB::commit();
             
-            // Generate payment details based on method
-            if ($validated['payment_method'] === 'crypto') {
-                return $this->processCryptoPayment($investment, $validated['crypto_currency']);
-            } elseif ($validated['payment_method'] === 'bank_transfer') {
-                return $this->processBankTransfer($investment);
-            } else {
-                return $this->processCardPayment($investment);
+            // Process payment based on method
+            switch ($validated['payment_method']) {
+                case 'card':
+                    return $this->processCardPayment($investment);
+                    
+                case 'crypto':
+                    return $this->processCryptoPayment($investment, $validated['crypto_currency']);
+                    
+                case 'bank_transfer':
+                    return $this->processBankTransfer($investment);
+                    
+                default:
+                    throw new \Exception('Invalid payment method');
             }
             
         } catch (\Exception $e) {
@@ -149,8 +155,22 @@ class CgoController extends Controller
     
     private function processCryptoPayment($investment, $cryptoCurrency)
     {
+        // Check if Coinbase Commerce is enabled and configured
+        if (config('cgo.payment_processors.coinbase_commerce.enabled', false) && !empty(config('services.coinbase_commerce.api_key'))) {
+            try {
+                $coinbaseService = new CoinbaseCommerceService();
+                $charge = $coinbaseService->createCharge($investment);
+                
+                // Redirect to Coinbase Commerce hosted checkout
+                return redirect($charge['hosted_url']);
+            } catch (\Exception $e) {
+                \Log::error('Coinbase Commerce error: ' . $e->getMessage());
+                // Fall back to manual crypto payment
+            }
+        }
+        
+        // Manual crypto payment fallback
         // Get crypto addresses from environment configuration
-        // In production, these should be addresses from a payment processor like Coinbase Commerce
         $cryptoAddresses = [
             'BTC' => config('cgo.crypto_addresses.btc', 'NOT-CONFIGURED'),
             'ETH' => config('cgo.crypto_addresses.eth', 'NOT-CONFIGURED'),
@@ -167,20 +187,28 @@ class CgoController extends Controller
         
         // Additional safety for production
         if (app()->environment('production') && !config('cgo.production_crypto_enabled', false)) {
-            throw new \Exception('Crypto payments are not enabled for production. Set CGO_PRODUCTION_CRYPTO_ENABLED=true after proper payment processor integration.');
+            throw new \Exception("Crypto payments are not enabled in production. Please use card or bank transfer.");
+        }
+        
+        // Display warning in non-production environments
+        if (!app()->environment('production')) {
+            \Log::warning("CGO Crypto payment in non-production environment", [
+                'investment_id' => $investment->id,
+                'currency' => $cryptoCurrency,
+                'address' => $cryptoAddress,
+                'environment' => app()->environment()
+            ]);
         }
         
         $investment->update([
             'crypto_address' => $cryptoAddress,
         ]);
         
-        // In production, implement blockchain monitoring for payment confirmation
-        
         return view('cgo.crypto-payment', [
             'investment' => $investment,
             'cryptoCurrency' => $cryptoCurrency,
             'cryptoAddress' => $cryptoAddress,
-            'amount' => $investment->amount, // In production, convert to crypto amount based on current rates
+            'amount' => $investment->amount,
         ]);
     }
     
@@ -192,45 +220,97 @@ class CgoController extends Controller
         // Generate unique account number if not configured
         $accountNumber = $bankConfig['account_number'] ?: 'CGO-' . str_pad($investment->id, 8, '0', STR_PAD_LEFT);
         
+        // Store the bank transfer reference
+        $investment->update([
+            'bank_transfer_reference' => 'CGO-' . $investment->uuid,
+        ]);
+        
+        // Schedule payment verification job for bank transfers
+        // Check after 1 hour, then every 6 hours
+        VerifyCgoPayment::dispatch($investment)->delay(now()->addHour());
+        
         return view('cgo.bank-transfer', [
             'investment' => $investment,
             'bankDetails' => [
-                'bank_name' => $bankConfig['bank_name'],
-                'account_name' => $bankConfig['account_name'],
+                'bank_name' => $bankConfig['bank_name'] ?: 'Example Bank',
+                'account_name' => $bankConfig['account_name'] ?: 'FinAegis CGO Investment Account',
                 'account_number' => $accountNumber,
-                'routing_number' => $bankConfig['routing_number'],
-                'swift_code' => $bankConfig['swift_code'],
-                'iban' => $bankConfig['iban'],
-                'address' => $bankConfig['address'],
+                'sort_code' => $bankConfig['sort_code'] ?: '00-00-00',
                 'reference' => 'CGO-' . $investment->uuid,
             ],
         ]);
     }
     
-    private function processCardPayment($investment)
+    public function thankYou($investmentId)
     {
-        // In production, this would integrate with Stripe or similar
-        // For now, show a simple payment confirmation page
-        return view('cgo.card-payment', [
+        $investment = CgoInvestment::where('uuid', $investmentId)->firstOrFail();
+        
+        return view('cgo.thank-you', [
             'investment' => $investment,
-            'amount' => $investment->amount,
         ]);
     }
     
-    public function downloadCertificate($uuid)
+    private function processCardPayment($investment)
     {
-        $investment = CgoInvestment::where('uuid', $uuid)
-            ->where('user_id', auth()->id())
-            ->where('status', 'confirmed')
-            ->firstOrFail();
+        try {
+            $stripeService = new StripePaymentService();
+            $session = $stripeService->createCheckoutSession($investment);
             
-        if (!$investment->certificate_number) {
-            abort(404, 'Certificate not yet issued');
+            // Store the session ID for later verification
+            $investment->update([
+                'stripe_session_id' => $session->id,
+            ]);
+            
+            return redirect($session->url);
+        } catch (\Exception $e) {
+            \Log::error('Error creating Stripe checkout session: ' . $e->getMessage());
+            return redirect()->back()->withErrors(['error' => 'Unable to process card payment. Please try another payment method.']);
+        }
+    }
+    
+    public function paymentSuccess(Request $request, $investmentUuid)
+    {
+        $investment = CgoInvestment::where('uuid', $investmentUuid)->firstOrFail();
+        
+        // Verify the payment was successful
+        if ($investment->stripe_session_id) {
+            try {
+                $stripeService = new StripePaymentService();
+                if ($stripeService->verifyPayment($investment)) {
+                    $investment->update([
+                        'status' => 'confirmed',
+                        'confirmed_at' => now(),
+                    ]);
+                    
+                    // Send confirmation email
+                    try {
+                        Mail::to($investment->email)->send(new CgoInvestmentReceived($investment));
+                    } catch (\Exception $e) {
+                        \Log::error('Failed to send investment confirmation email: ' . $e->getMessage());
+                    }
+                }
+            } catch (\Exception $e) {
+                \Log::error('Error verifying Stripe payment: ' . $e->getMessage());
+            }
         }
         
-        // Generate PDF certificate (simplified version)
-        $pdf = \PDF::loadView('cgo.certificate', compact('investment'));
+        return view('cgo.payment-success', [
+            'investment' => $investment,
+        ]);
+    }
+    
+    public function paymentCancel(Request $request, $investmentUuid)
+    {
+        $investment = CgoInvestment::where('uuid', $investmentUuid)->firstOrFail();
         
-        return $pdf->download('FinAegis-CGO-Certificate-' . $investment->certificate_number . '.pdf');
+        // Update status to cancelled
+        $investment->update([
+            'status' => 'cancelled',
+            'cancelled_at' => now(),
+        ]);
+        
+        return view('cgo.payment-cancel', [
+            'investment' => $investment,
+        ]);
     }
 }

@@ -53,18 +53,26 @@
                     <div class="mb-6 text-center">
                         <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Or scan this QR code:</p>
                         <div class="inline-block p-4 bg-white rounded-lg">
-                            @if(class_exists('\SimpleSoftwareIO\QrCode\Facades\QrCode'))
-                                {!! QrCode::size(200)->generate($cryptoAddress) !!}
-                            @else
-                                <div class="w-[200px] h-[200px] bg-gray-200 flex items-center justify-center text-gray-500">
-                                    <div class="text-center">
-                                        <svg class="w-12 h-12 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path>
-                                        </svg>
-                                        <p class="text-sm">QR Code</p>
-                                    </div>
-                                </div>
-                            @endif
+                            @php
+                                try {
+                                    $qrCode = \Endroid\QrCode\Builder\Builder::create()
+                                        ->data($cryptoAddress)
+                                        ->size(200)
+                                        ->margin(10)
+                                        ->build();
+                                    echo '<img src="' . $qrCode->getDataUri() . '" alt="QR Code">';
+                                } catch (\Exception $e) {
+                                    // Fallback if endroid/qr-code is not available
+                                    echo '<div class="w-[200px] h-[200px] bg-gray-200 flex items-center justify-center text-gray-500">';
+                                    echo '<div class="text-center">';
+                                    echo '<svg class="w-12 h-12 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">';
+                                    echo '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path>';
+                                    echo '</svg>';
+                                    echo '<p class="text-sm">QR Code</p>';
+                                    echo '</div>';
+                                    echo '</div>';
+                                }
+                            @endphp
                         </div>
                     </div>
                     
