@@ -16,19 +16,22 @@ return new class extends Migration
             $table->uuid('uuid')->unique();
             $table->uuid('user_uuid');
             $table->string('name');
-            $table->enum('type', ['transfer', 'payment', 'conversion']);
-            $table->enum('status', ['pending', 'processing', 'completed', 'failed', 'cancelled', 'scheduled', 'partial', 'completed_with_errors'])->default('pending');
+            $table->string('type'); // transfer, payment, reconciliation, etc.
+            $table->string('status')->default('pending'); // pending, processing, completed, failed, cancelled
             $table->integer('total_items')->default(0);
             $table->integer('processed_items')->default(0);
             $table->integer('failed_items')->default(0);
+            $table->json('metadata')->nullable();
             $table->timestamp('scheduled_at')->nullable();
             $table->timestamp('started_at')->nullable();
             $table->timestamp('completed_at')->nullable();
-            $table->json('metadata')->nullable();
             $table->timestamps();
             
+            $table->index('uuid');
             $table->index('user_uuid');
+            $table->index('type');
             $table->index('status');
+            $table->index('scheduled_at');
             $table->index('created_at');
         });
     }
