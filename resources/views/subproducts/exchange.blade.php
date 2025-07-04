@@ -6,7 +6,7 @@
         <meta name="description" content="FinAegis Exchange - Professional trading platform for digital and traditional assets with institutional-grade infrastructure.">
         <meta name="keywords" content="FinAegis Exchange, crypto trading, forex, asset exchange, trading platform">
         
-        <title>FinAegis Exchange - Coming Soon</title>
+        <title>FinAegis Exchange - Multi-Asset Trading Platform</title>
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
@@ -31,8 +31,8 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
                 <div class="text-center">
                     <div class="inline-flex items-center px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full text-sm mb-6">
-                        <span class="w-2 h-2 bg-yellow-400 rounded-full mr-2 animate-pulse"></span>
-                        <span>Coming Soon</span>
+                        <span class="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></span>
+                        <span>Now Live</span>
                     </div>
                     <h1 class="text-5xl md:text-6xl font-bold mb-6">
                         FinAegis Exchange
@@ -40,6 +40,17 @@
                     <p class="text-xl md:text-2xl text-purple-100 max-w-3xl mx-auto mb-8">
                         Professional trading platform for digital and traditional assets with institutional-grade infrastructure
                     </p>
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                        <a href="{{ route('exchange.index') }}" class="inline-flex items-center px-8 py-4 bg-white text-purple-600 rounded-lg font-semibold hover:bg-purple-50 transition-colors">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path>
+                            </svg>
+                            Start Trading
+                        </a>
+                        <a href="#features" class="inline-flex items-center px-8 py-4 bg-transparent border-2 border-white text-white rounded-lg font-semibold hover:bg-white/10 transition-colors">
+                            Learn More
+                        </a>
+                    </div>
                 </div>
             </div>
             
@@ -55,9 +66,9 @@
         <section class="py-20 bg-white">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-16">
-                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">What's Coming</h2>
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Trading Features</h2>
                     <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-                        A comprehensive trading platform built on FinAegis infrastructure
+                        Professional trading platform with institutional-grade infrastructure
                     </p>
                 </div>
 
@@ -155,18 +166,18 @@
         <!-- CTA Section -->
         <section class="py-20 bg-gray-50">
             <div class="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
-                <h2 class="text-3xl font-bold text-gray-900 mb-6">Be First to Trade</h2>
+                <h2 class="text-3xl font-bold text-gray-900 mb-6">Start Trading Today</h2>
                 <p class="text-xl text-gray-600 mb-8">
-                    Join the waitlist to get early access when FinAegis Exchange launches
+                    Experience professional trading with institutional-grade infrastructure
                 </p>
-                <div class="inline-flex items-center px-6 py-3 bg-indigo-600 text-white rounded-lg font-semibold">
+                <a href="{{ route('exchange.index') }}" class="inline-flex items-center px-6 py-3 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition-colors">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path>
                     </svg>
-                    Coming Soon
-                </div>
+                    Start Trading Now
+                </a>
                 <p class="text-gray-500 mt-4">
-                    In the meantime, explore <a href="{{ route('gcu') }}" class="text-indigo-600 hover:text-indigo-700">Global Currency Unit (GCU)</a>
+                    Trade with <a href="{{ route('gcu') }}" class="text-indigo-600 hover:text-indigo-700">Global Currency Unit (GCU)</a> and other major assets
                 </p>
             </div>
         </section>
