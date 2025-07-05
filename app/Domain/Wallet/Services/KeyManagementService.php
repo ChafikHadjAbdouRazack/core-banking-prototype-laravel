@@ -2,7 +2,6 @@
 
 namespace App\Domain\Wallet\Services;
 
-use App\Domain\Wallet\Contracts\KeyManagementServiceInterface;
 use App\Domain\Wallet\Exceptions\KeyManagementException;
 use BitWasp\Bitcoin\Bitcoin;
 use BitWasp\Bitcoin\Key\Factory\HierarchicalKeyFactory;
@@ -13,9 +12,9 @@ use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Cache;
 use kornrunner\Keccak;
 
-class KeyManagementService implements KeyManagementServiceInterface
+class KeyManagementService
 {
-    protected EC $ec;
+    protected ?EC $ec = null;
     protected string $encryptionKey;
     
     // BIP44 derivation paths
@@ -28,7 +27,9 @@ class KeyManagementService implements KeyManagementServiceInterface
     
     public function __construct()
     {
-        $this->ec = new EC('secp256k1');
+        if (class_exists(EC::class)) {
+            $this->ec = new EC('secp256k1');
+        }
         $this->encryptionKey = config('app.key');
     }
     
