@@ -7,6 +7,40 @@
     
     <title>FAQ - Frequently Asked Questions | FinAegis</title>
 
+    @include('partials.favicon')
+    
+    {{-- Schema.org FAQ Markup --}}
+    @php
+    $faqData = [
+        [
+            'question' => 'What is the current status of FinAegis?',
+            'answer' => 'FinAegis is currently in alpha testing phase. This means no real money transactions are processed yet, no actual bank integrations are active, and the platform is for demonstration and testing purposes only. We expect to launch beta testing in Q2 2025 with limited real transactions.'
+        ],
+        [
+            'question' => 'Can I use real money on the platform now?',
+            'answer' => 'No, the platform currently does not support real money transactions. During the alpha phase, all balances and transactions are simulated, no real bank accounts are connected, and no actual currency conversions occur. This allows us to test and refine features safely before handling real funds.'
+        ],
+        [
+            'question' => 'How do I participate in alpha testing?',
+            'answer' => 'To participate in alpha testing, simply register for a free account on our platform. You can explore all features, test the interface, and provide feedback through our support channels.'
+        ],
+        [
+            'question' => 'What is the Global Currency Unit (GCU)?',
+            'answer' => 'The GCU is a basket currency concept where holders democratically vote on the composition of currencies backing the unit. Your actual funds remain in FDIC/government-insured bank accounts while you hold GCU tokens representing your share.'
+        ],
+        [
+            'question' => 'How does democratic voting work for GCU?',
+            'answer' => 'GCU holders can vote on the currency composition of the basket. The weight of your vote is proportional to your GCU holdings. Voting occurs periodically, and the basket rebalances based on community decisions.'
+        ]
+    ];
+    @endphp
+    <x-schema type="faq" :data="$faqData" />
+    <x-schema type="breadcrumb" :data="[
+        ['name' => 'Home', 'url' => url('/')],
+        ['name' => 'Support', 'url' => url('/support')],
+        ['name' => 'FAQ', 'url' => url('/support/faq')]
+    ]" />
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700,800&display=swap" rel="stylesheet" />

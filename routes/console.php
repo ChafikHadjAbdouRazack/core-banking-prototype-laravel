@@ -130,3 +130,22 @@ Schedule::command('sitemap:generate')
     ->daily()
     ->description('Generate sitemap.xml and robots.txt for SEO')
     ->appendOutputTo(storage_path('logs/sitemap-generation.log'));
+
+// Liquidity Pool Management
+Schedule::command('liquidity:distribute-rewards')
+    ->hourly()
+    ->description('Calculate and distribute rewards to liquidity providers')
+    ->appendOutputTo(storage_path('logs/liquidity-rewards.log'))
+    ->withoutOverlapping();
+
+Schedule::command('liquidity:rebalance')
+    ->everyThirtyMinutes()
+    ->description('Check and rebalance liquidity pools')
+    ->appendOutputTo(storage_path('logs/liquidity-rebalancing.log'))
+    ->withoutOverlapping();
+
+Schedule::command('liquidity:update-market-making --cancel-existing')
+    ->everyFiveMinutes()
+    ->description('Update automated market making orders')
+    ->appendOutputTo(storage_path('logs/liquidity-market-making.log'))
+    ->withoutOverlapping();

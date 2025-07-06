@@ -9,6 +9,13 @@
         <title>Pricing - FinAegis</title>
 
         @include('partials.favicon')
+        
+        {{-- Schema.org Markup --}}
+        <x-schema type="software" />
+        <x-schema type="breadcrumb" :data="[
+            ['name' => 'Home', 'url' => url('/')],
+            ['name' => 'Pricing', 'url' => url('/pricing')]
+        ]" />
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">

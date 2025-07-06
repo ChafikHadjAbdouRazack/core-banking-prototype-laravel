@@ -8,6 +8,17 @@
     <title>Security - Bank-Grade Protection | FinAegis</title>
 
     @include('partials.favicon')
+    
+    {{-- Schema.org Markup --}}
+    <x-schema type="service" :data="[
+        'name' => 'FinAegis Security Services',
+        'description' => 'Bank-grade security with quantum-resistant encryption and multi-factor authentication',
+        'category' => 'Financial Security'
+    ]" />
+    <x-schema type="breadcrumb" :data="[
+        ['name' => 'Home', 'url' => url('/')],
+        ['name' => 'Security', 'url' => url('/security')]
+    ]" />
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">

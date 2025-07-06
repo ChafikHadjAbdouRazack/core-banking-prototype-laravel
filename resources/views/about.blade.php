@@ -8,6 +8,13 @@
     <title>About FinAegis - Our Mission & Team</title>
 
     @include('partials.favicon')
+    
+    {{-- Schema.org Markup --}}
+    <x-schema type="organization" />
+    <x-schema type="breadcrumb" :data="[
+        ['name' => 'Home', 'url' => url('/')],
+        ['name' => 'About', 'url' => url('/about')]
+    ]" />
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">

@@ -219,6 +219,53 @@ php artisan gdpr:anonymize-user user-uuid-here
 # $schedule->command('compliance:generate-sar')->monthly();
 ```
 
+### Liquidity Pool Management
+```bash
+# Create a new liquidity pool
+php artisan tinker
+>>> $poolService = app(\App\Domain\Exchange\Services\LiquidityPoolService::class);
+>>> $poolId = $poolService->createPool('BTC', 'USD', '0.003');
+
+# Distribute rewards to liquidity providers
+php artisan liquidity:distribute-rewards
+php artisan liquidity:distribute-rewards --pool=pool-uuid --dry-run
+
+# Rebalance pools to maintain optimal ratios
+php artisan liquidity:rebalance
+php artisan liquidity:rebalance --pool=pool-uuid --strategy=aggressive
+
+# Update automated market making orders
+php artisan liquidity:update-market-making
+php artisan liquidity:update-market-making --pool=pool-uuid --cancel-existing
+
+# Scheduled tasks (already in console.php):
+# - Rewards distribution: Hourly
+# - Pool rebalancing: Every 30 minutes
+# - Market making updates: Every 5 minutes
+```
+
+### SEO and Schema Markup
+```bash
+# Schema.org structured data is implemented for better SEO
+# Available schema types via x-schema Blade component:
+# - organization: Company information
+# - website: Site search capabilities  
+# - software: Platform/application details
+# - gcu: Global Currency Unit product
+# - faq: Frequently asked questions
+# - breadcrumb: Navigation hierarchy
+# - service: Service offerings
+# - article: Blog/article content
+
+# Usage in Blade templates:
+# <x-schema type="organization" />
+# <x-schema type="breadcrumb" :data="[['name' => 'Home', 'url' => '/']]" />
+# <x-schema type="faq" :data="$faqArray" />
+
+# Helper class: App\Helpers\SchemaHelper
+# Generates JSON-LD structured data for search engines
+```
+
 ## Architecture Overview
 
 ### Domain-Driven Design Structure

@@ -9,6 +9,13 @@
         <title>Global Currency Unit (GCU) - FinAegis</title>
 
         @include('partials.favicon')
+        
+        {{-- Schema.org Markup --}}
+        <x-schema type="gcu" />
+        <x-schema type="breadcrumb" :data="[
+            ['name' => 'Home', 'url' => url('/')],
+            ['name' => 'Global Currency Unit', 'url' => url('/gcu')]
+        ]" />
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">

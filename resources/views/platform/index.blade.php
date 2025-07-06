@@ -9,6 +9,13 @@
         <title>FinAegis Platform - Open Banking for Developers</title>
 
         @include('partials.favicon')
+        
+        {{-- Schema.org Markup --}}
+        <x-schema type="software" />
+        <x-schema type="breadcrumb" :data="[
+            ['name' => 'Home', 'url' => url('/')],
+            ['name' => 'Platform', 'url' => url('/platform')]
+        ]" />
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">

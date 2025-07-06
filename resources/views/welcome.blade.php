@@ -15,6 +15,10 @@
         <title>FinAegis - The Enterprise Financial Platform</title>
 
         @include('partials.favicon')
+        
+        {{-- Schema.org Markup --}}
+        <x-schema type="organization" />
+        <x-schema type="website" />
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
