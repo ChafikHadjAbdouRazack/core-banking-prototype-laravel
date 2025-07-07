@@ -271,4 +271,64 @@ class KycController extends Controller
             $document->metadata['original_name'] ?? 'document'
         );
     }
+
+    /**
+     * Upload KYC document (legacy endpoint for backward compatibility)
+     */
+    public function upload(Request $request): JsonResponse
+    {
+        $request->validate([
+            'document' => 'required|file|mimes:jpg,jpeg,png,pdf|max:10240',
+            'type' => 'sometimes|string|in:passport,national_id,drivers_license,residence_permit,utility_bill,bank_statement,selfie,proof_of_income,other'
+        ]);
+
+        $user = Auth::user();
+        $file = $request->file('document');
+        $type = $request->input('type', 'other');
+
+        try {
+            // Store the document
+            $path = $file->store('kyc/' . $user->uuid, 'private');
+            
+            // Create document record
+            $document = $user->kycDocuments()->create([
+                'document_type' => $type,
+                'file_path' => $path,
+                'status' => 'pending',
+                'uploaded_at' => now(),
+                'metadata' => [
+                    'original_name' => $file->getClientOriginalName(),
+                    'mime_type' => $file->getMimeType(),
+                    'size' => $file->getSize(),
+                ],
+            ]);
+
+            AuditLog::log(
+                'kyc.document_uploaded',
+                $document,
+                null,
+                null,
+                ['document_type' => $type],
+                'kyc,document'
+            );
+
+            return response()->json([
+                'message' => 'Document uploaded successfully',
+                'document_id' => $document->id,
+            ]);
+        } catch (\Exception $e) {
+            AuditLog::log(
+                'kyc.upload_failed',
+                $user,
+                null,
+                null,
+                ['error' => $e->getMessage()],
+                'kyc,error'
+            );
+
+            return response()->json([
+                'error' => 'Failed to upload document',
+            ], 500);
+        }
+    }
 }

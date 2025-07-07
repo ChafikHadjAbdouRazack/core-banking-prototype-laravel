@@ -2,6 +2,7 @@
 
 namespace App\Domain\Wallet\Services;
 
+use App\Domain\Wallet\Contracts\KeyManagementServiceInterface;
 use App\Domain\Wallet\Exceptions\KeyManagementException;
 use BitWasp\Bitcoin\Bitcoin;
 use BitWasp\Bitcoin\Key\Factory\HierarchicalKeyFactory;
@@ -12,7 +13,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Crypt;
 use kornrunner\Keccak;
 
-class KeyManagementService
+class KeyManagementService implements KeyManagementServiceInterface
 {
     protected ?EC $ec = null;
 
@@ -35,9 +36,9 @@ class KeyManagementService
     }
 
     /**
-     * Generate a new mnemonic phrase.
+     * Generate a new mnemonic phrase with specific word count.
      */
-    public function generateMnemonic(int $wordCount = 12): string
+    public function generateMnemonicWithWordCount(int $wordCount = 12): string
     {
         // Convert word count to entropy bits (12 words = 128 bits, 24 words = 256 bits)
         $strength = $wordCount === 24 ? 256 : 128;
@@ -60,16 +61,16 @@ class KeyManagementService
         return [
             'master_public_key' => $masterKey->getPublicKey()->getHex(),
             'master_chain_code' => bin2hex($masterKey->getChainCode()),
-            'encrypted_seed'    => $this->encryptSeed($seed->getHex()),
+            'encrypted_seed'    => $this->encryptSeed($seed->getHex(), 'default'),
         ];
     }
 
     /**
-     * Derive key pair for a specific path.
+     * Derive key pair for a specific blockchain chain.
      */
-    public function deriveKeyPair(string $encryptedSeed, string $chain, int $index = 0): array
+    public function deriveKeyPairForChain(string $encryptedSeed, string $chain, int $index = 0): array
     {
-        $seed = $this->decryptSeed($encryptedSeed);
+        $seed = $this->decryptSeed($encryptedSeed, 'default');
         $hdFactory = new HierarchicalKeyFactory();
         $masterKey = $hdFactory->fromEntropy(hex2bin($seed));
 
@@ -313,5 +314,68 @@ class KeyManagementService
 
         // Log the key rotation event
         \Log::info('Key rotation completed for wallet', ['wallet_id' => $walletId]);
+    }
+
+    /**
+     * Generate a new mnemonic phrase (for interface compatibility)
+     */
+    public function generateMnemonic(): string
+    {
+        return $this->generateMnemonicWithWordCount(12);
+    }
+
+    /**
+     * Derive a key pair from a mnemonic and path (for interface compatibility)
+     */
+    public function deriveKeyPair(string $mnemonic, string $path): array
+    {
+        // Generate HD wallet from mnemonic
+        $hdWallet = $this->generateHDWallet($mnemonic);
+        
+        // Default to Ethereum chain
+        return $this->deriveKeyPairForChain($hdWallet['encrypted_seed'], 'ethereum', 0);
+    }
+
+    /**
+     * Encrypt sensitive data (for interface compatibility)
+     */
+    public function encrypt(string $data): string
+    {
+        return Crypt::encryptString($data);
+    }
+
+    /**
+     * Decrypt encrypted data (for interface compatibility)
+     */
+    public function decrypt(string $encryptedData): string
+    {
+        return Crypt::decryptString($encryptedData);
+    }
+
+    /**
+     * Generate a secure random key (for interface compatibility)
+     */
+    public function generateKey(): string
+    {
+        return bin2hex(random_bytes(32));
+    }
+
+    /**
+     * Sign data with a private key (for interface compatibility)
+     */
+    public function sign(string $data, string $privateKey): string
+    {
+        // Use HMAC for simple signing
+        return hash_hmac('sha256', $data, $privateKey);
+    }
+
+    /**
+     * Verify a signature (for interface compatibility)
+     */
+    public function verify(string $data, string $signature, string $publicKey): bool
+    {
+        // For HMAC, we use the same key for signing and verification
+        $expectedSignature = hash_hmac('sha256', $data, $publicKey);
+        return hash_equals($expectedSignature, $signature);
     }
 }

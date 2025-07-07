@@ -242,8 +242,11 @@ class CryptographySecurityTest extends TestCase
 
         // Test that sensitive fields are not exposed in API responses
         $response = $this->withToken($token)->getJson('/api/profile');
-
+        
+        $response->assertSuccessful();
         $data = $response->json('data');
+        
+        $this->assertNotNull($data, 'Profile data should not be null');
 
         // Should not expose sensitive fields
         $this->assertArrayNotHasKey('password', $data);
@@ -269,8 +272,10 @@ class CryptographySecurityTest extends TestCase
         if ($response->headers->has('set-cookie')) {
             $cookies = $response->headers->get('set-cookie');
 
-            // Session cookie should have secure attributes
-            $this->assertStringContainsString('HttpOnly', $cookies);
+            // Check for session cookie (not XSRF-TOKEN which needs to be readable by JS)
+            if (str_contains($cookies, 'laravel_session')) {
+                $this->assertStringContainsString('HttpOnly', $cookies);
+            }
 
             // In production, should also have Secure flag
             if (app()->environment('production')) {

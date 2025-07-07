@@ -48,6 +48,11 @@ class SecurityHeaders
         // Remove sensitive headers
         $response->headers->remove('X-Powered-By');
         $response->headers->remove('Server');
+        
+        // Ensure JSON responses have proper content type
+        if ($request->is('api/*') && $response->headers->get('Content-Type') === null) {
+            $response->headers->set('Content-Type', 'application/json');
+        }
 
         return $response;
     }

@@ -37,6 +37,10 @@ use App\Http\Controllers\StatusController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+// Legacy authentication routes for backward compatibility
+Route::post('/login', [LoginController::class, 'login'])->middleware('api.rate_limit:auth');
+Route::post('/register', [RegisterController::class, 'register'])->middleware('api.rate_limit:auth');
+
 // Authentication endpoints (public)
 Route::prefix('auth')->middleware('api.rate_limit:auth')->group(function () {
     Route::post('/register', [RegisterController::class, 'register']);
@@ -81,9 +85,39 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
+// Legacy profile route for backward compatibility
+Route::get('/profile', function (Request $request) {
+    $user = $request->user();
+    if (!$user) {
+        return response()->json(['message' => 'Unauthenticated.'], 401);
+    }
+    return response()->json([
+        'data' => [
+            'id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+            'uuid' => $user->uuid,
+            'created_at' => $user->created_at,
+            'updated_at' => $user->updated_at,
+        ]
+    ]);
+})->middleware('auth:sanctum');
+
 Route::middleware('auth:sanctum')->group(function () {
     // Sub-product status for authenticated users
     Route::get('/sub-products/enabled', [SubProductController::class, 'enabled']);
+
+    // Legacy accounts route for backward compatibility
+    Route::get('/accounts', [AccountController::class, 'index'])->middleware('api.rate_limit:query');
+    
+    // Versioned routes for backward compatibility
+    Route::prefix('v1')->middleware('api.rate_limit:query')->group(function () {
+        Route::get('/accounts', [AccountController::class, 'index']);
+    });
+
+    Route::prefix('v2')->middleware('api.rate_limit:query')->group(function () {
+        Route::get('/accounts', [AccountController::class, 'index']);
+    });
 
     // Account management endpoints (query rate limiting)
     Route::middleware('api.rate_limit:query')->group(function () {
@@ -306,6 +340,9 @@ Route::middleware('api.rate_limit:public')->group(function () {
 });
 
 Route::prefix('v1')->middleware('api.rate_limit:public')->group(function () {
+    // Versioned accounts endpoint (requires authentication)
+    Route::middleware('auth:sanctum')->get('/accounts', [AccountController::class, 'index']);
+    
     // Asset management endpoints
     Route::get('/assets', [AssetController::class, 'index']);
     Route::get('/assets/{code}', [AssetController::class, 'show']);
@@ -329,6 +366,9 @@ Route::prefix('v1')->middleware('api.rate_limit:public')->group(function () {
 
 // Basket endpoints
 Route::prefix('v2')->group(function () {
+    // V2 accounts endpoint (requires authentication)
+    Route::middleware('auth:sanctum')->get('/accounts', [AccountController::class, 'index']);
+    
     // Public basket endpoints
     Route::prefix('baskets')->group(function () {
         Route::get('/', [BasketController::class, 'index']);
@@ -399,6 +439,9 @@ Route::prefix('v2')->group(function () {
     });
 });
 
+// Legacy KYC documents endpoint for backward compatibility
+Route::middleware('auth:sanctum')->post('/kyc/documents', [KycController::class, 'upload']);
+
 // Compliance and KYC endpoints
 Route::middleware('auth:sanctum')->prefix('compliance')->group(function () {
     // KYC endpoints
@@ -406,6 +449,7 @@ Route::middleware('auth:sanctum')->prefix('compliance')->group(function () {
         Route::get('/status', [KycController::class, 'status']);
         Route::get('/requirements', [KycController::class, 'requirements']);
         Route::post('/submit', [KycController::class, 'submit']);
+        Route::post('/documents', [KycController::class, 'upload']);
         Route::get('/documents/{documentId}/download', [KycController::class, 'downloadDocument']);
     });
 

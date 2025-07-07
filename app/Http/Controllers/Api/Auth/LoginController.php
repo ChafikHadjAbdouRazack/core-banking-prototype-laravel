@@ -118,6 +118,7 @@ class LoginController extends Controller
                 'email_verified_at' => $user->email_verified_at,
             ],
             'access_token' => $token,
+            'token'        => $token, // For backward compatibility
             'token_type'   => 'Bearer',
             'expires_in'   => config('sanctum.expiration') ? config('sanctum.expiration') * 60 : null,
         ]);
