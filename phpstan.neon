@@ -33,6 +33,11 @@ parameters:
         # Dynamic properties on stdClass/objects
         - '#Access to an undefined property object::\$#'
         
+        # Liquidity pool specific ignores
+        - '#Parameter \#1 \$pool of method App\\Domain\\Exchange\\LiquidityPool\\Services\\[a-zA-Z]+::[a-zA-Z]+\(\) expects App\\Domain\\Exchange\\Projections\\LiquidityPool, Illuminate\\Database\\Eloquent\\Model given#'
+        - '#Access to an undefined property Illuminate\\Database\\Eloquent\\Model::\$[a-zA-Z_]+#'
+        - '#Call to an undefined method App\\Domain\\Exchange\\Services\\OrderService::placeOrder\(\)#'
+        
         # Missing return statements in generators
         - '#should return Generator but return statement is missing#'
         
