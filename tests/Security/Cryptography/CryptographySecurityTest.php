@@ -282,8 +282,8 @@ class CryptographySecurityTest extends TestCase
                 $this->assertStringContainsString('Secure', $cookies);
             }
 
-            // Should have SameSite attribute
-            $this->assertMatchesRegularExpression('/SameSite=(Lax|Strict)/', $cookies);
+            // Should have SameSite attribute (case insensitive)
+            $this->assertMatchesRegularExpression('/samesite=(lax|strict)/i', $cookies);
         }
     }
 
