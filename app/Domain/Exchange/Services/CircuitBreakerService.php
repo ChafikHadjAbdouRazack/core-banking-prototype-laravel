@@ -24,19 +24,16 @@ class CircuitBreakerService
                 if ($this->shouldAttemptReset($service)) {
                     $this->setState($service, 'half-open');
                     Cache::forget("circuit_breaker:{$service}:half_open_attempts");
-                    // Fall through to half-open case
-                    $state = 'half-open';
+                    // Continue execution in half-open state
                 } else {
                     throw new \RuntimeException("Circuit breaker is OPEN for service: {$service}");
                 }
-                // Fall through to half-open check
+                break;
 
             case 'half-open':
-                if ($state === 'half-open') {
-                    // Allow limited traffic through
-                    if ($this->isHalfOpenLimitReached($service)) {
-                        throw new \RuntimeException("Circuit breaker is HALF-OPEN with limit reached for service: {$service}");
-                    }
+                // Allow limited traffic through
+                if ($this->isHalfOpenLimitReached($service)) {
+                    throw new \RuntimeException("Circuit breaker is HALF-OPEN with limit reached for service: {$service}");
                 }
                 break;
         }
@@ -60,7 +57,7 @@ class CircuitBreakerService
     private function setState(string $service, string $state): void
     {
         Cache::put("circuit_breaker:{$service}:state", $state, self::TIMEOUT);
-        Cache::put("circuit_breaker:{$service}:state_changed_at", now(), self::TIMEOUT);
+        Cache::put("circuit_breaker:{$service}:state_changed_at", now()->toIso8601String(), self::TIMEOUT);
 
         Log::info('Circuit breaker state changed', [
             'service' => $service,
@@ -121,13 +118,20 @@ class CircuitBreakerService
             return true;
         }
 
-        return now()->diffInSeconds($stateChangedAt) >= self::HALF_OPEN_TIMEOUT;
+        $timestamp = is_string($stateChangedAt) ? \Carbon\Carbon::parse($stateChangedAt) : $stateChangedAt;
+        
+        return now()->diffInSeconds($timestamp) >= self::HALF_OPEN_TIMEOUT;
     }
 
     private function isHalfOpenLimitReached(string $service): bool
     {
-        $attempts = Cache::increment("circuit_breaker:{$service}:half_open_attempts");
-
-        return $attempts > 1; // Allow only 1 request in half-open state
+        $attempts = Cache::get("circuit_breaker:{$service}:half_open_attempts", 0);
+        
+        if ($attempts >= 1) {
+            return true; // Already have a request in progress
+        }
+        
+        Cache::increment("circuit_breaker:{$service}:half_open_attempts");
+        return false;
     }
 }
