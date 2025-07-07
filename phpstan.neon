@@ -27,6 +27,7 @@ parameters:
         - '#Call to an undefined method [a-zA-Z\\]+Workflow::#'
         - '#Call to an undefined method React\\Promise\\PromiseInterface::#'
         - '#Call to an undefined method Workflow\\WorkflowStub::#'
+        - '#Call to an undefined method Workflow\\ActivityStub::[a-zA-Z]+\(\)#'
         
         # RetryOptions temporarily commented out
         - '#has invalid return type Workflow\\Exception\\RetryOptions#'
