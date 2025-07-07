@@ -71,11 +71,13 @@ class EnhancedExchangeRateService extends ExchangeRateService
             // Store in database
             return $this->storeQuote($quote);
         } catch (\Exception $e) {
-            Log::error('Failed to fetch exchange rate', [
+            Log::error(
+                'Failed to fetch exchange rate', [
                 'from'  => $fromAsset,
                 'to'    => $toAsset,
                 'error' => $e->getMessage(),
-            ]);
+                ]
+            );
 
             return null;
         }
@@ -112,31 +114,37 @@ class EnhancedExchangeRateService extends ExchangeRateService
      */
     public function storeQuote(ExchangeRateQuote $quote): ExchangeRate
     {
-        return DB::transaction(function () use ($quote) {
-            // Deactivate old rates
-            ExchangeRate::where('from_asset_code', $quote->fromCurrency)
+        return DB::transaction(
+            function () use ($quote) {
+                // Deactivate old rates
+                ExchangeRate::where('from_asset_code', $quote->fromCurrency)
                 ->where('to_asset_code', $quote->toCurrency)
                 ->where('is_active', true)
                 ->update(['is_active' => false]);
 
-            // Create new rate
-            return ExchangeRate::create([
-                'from_asset_code' => $quote->fromCurrency,
-                'to_asset_code'   => $quote->toCurrency,
-                'rate'            => $quote->rate,
-                'bid'             => $quote->bid,
-                'ask'             => $quote->ask,
-                'source'          => $quote->provider,
-                'is_active'       => true,
-                'valid_at'        => now(),
-                'expires_at'      => now()->addMinutes(30),
-                'metadata'        => array_merge($quote->metadata, [
-                    'volume_24h' => $quote->volume24h,
-                    'change_24h' => $quote->change24h,
-                    'fetched_at' => $quote->timestamp->toISOString(),
-                ]),
-            ]);
-        });
+                // Create new rate
+                return ExchangeRate::create(
+                    [
+                    'from_asset_code' => $quote->fromCurrency,
+                    'to_asset_code'   => $quote->toCurrency,
+                    'rate'            => $quote->rate,
+                    'bid'             => $quote->bid,
+                    'ask'             => $quote->ask,
+                    'source'          => $quote->provider,
+                    'is_active'       => true,
+                    'valid_at'        => now(),
+                    'expires_at'      => now()->addMinutes(30),
+                    'metadata'        => array_merge(
+                        $quote->metadata, [
+                        'volume_24h' => $quote->volume24h,
+                        'change_24h' => $quote->change24h,
+                        'fetched_at' => $quote->timestamp->toISOString(),
+                        ]
+                    ),
+                    ]
+                );
+            }
+        );
     }
 
     /**
@@ -231,13 +239,15 @@ class EnhancedExchangeRateService extends ExchangeRateService
             ->whereBetween('created_at', [$startDate, $endDate])
             ->orderBy('created_at', 'asc')
             ->get()
-            ->map(fn ($rate) => [
+            ->map(
+                fn ($rate) => [
                 'rate'      => $rate->rate,
                 'bid'       => $rate->bid,
                 'ask'       => $rate->ask,
                 'source'    => $rate->source,
                 'timestamp' => $rate->created_at->toISOString(),
-            ])
+                ]
+            )
             ->toArray();
     }
 
