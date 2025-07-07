@@ -202,20 +202,20 @@ class FraudAlertsController extends Controller
 
             $query->orderBy('detected_at', 'desc')
                   ->chunk(100, function ($fraudCases) use ($file) {
-                    foreach ($fraudCases as $case) {
-                        fputcsv($file, [
-                            $case->case_number,
-                            $case->type,
-                            $case->status,
-                            $case->severity,
-                            $case->risk_score,
-                            $case->amount,
-                            $case->currency ?? 'USD',
-                            $case->detected_at->format('Y-m-d H:i:s'),
-                            $case->resolved_at?->format('Y-m-d H:i:s') ?? '',
-                            $case->description ?? '',
-                        ]);
-                    }
+                      foreach ($fraudCases as $case) {
+                          fputcsv($file, [
+                              $case->case_number,
+                              $case->type,
+                              $case->status,
+                              $case->severity,
+                              $case->risk_score,
+                              $case->amount,
+                              $case->currency ?? 'USD',
+                              $case->detected_at->format('Y-m-d H:i:s'),
+                              $case->resolved_at?->format('Y-m-d H:i:s') ?? '',
+                              $case->description ?? '',
+                          ]);
+                      }
                   });
 
             fclose($file);

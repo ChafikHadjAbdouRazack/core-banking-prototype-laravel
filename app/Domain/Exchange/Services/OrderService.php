@@ -3,7 +3,6 @@
 namespace App\Domain\Exchange\Services;
 
 use App\Domain\Exchange\Aggregates\Order;
-use Illuminate\Support\Str;
 
 class OrderService
 {
@@ -13,7 +12,7 @@ class OrderService
     }
 
     /**
-     * Place a new order
+     * Place a new order.
      *
      * @param string $accountId
      * @param string $type BUY or SELL
