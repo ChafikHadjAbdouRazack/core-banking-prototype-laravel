@@ -3,13 +3,17 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="description" content="FinAegis Pricing - Open source community edition or enterprise support. Start free, scale when ready.">
-        <meta name="keywords" content="FinAegis, pricing, open source, enterprise, support">
         
-        <title>Pricing - FinAegis</title>
+        <title>Pricing - Flexible Plans for Every Scale | FinAegis</title>
 
         @include('partials.favicon')
         
+        @include('partials.seo', [
+            'title' => 'Pricing - Flexible Plans for Every Scale',
+            'description' => 'FinAegis Pricing - Start with our free open-source community edition. Scale with enterprise support, custom features, and dedicated infrastructure when ready.',
+            'keywords' => 'FinAegis pricing, open source banking, enterprise support, core banking pricing, fintech platform cost, free banking software',
+        ])
+
         {{-- Schema.org Markup --}}
         <x-schema type="software" />
         <x-schema type="breadcrumb" :data="[

@@ -3,12 +3,17 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="FinAegis security measures - Bank-grade protection with quantum-resistant encryption, multi-factor authentication, and comprehensive security practices.">
     
     <title>Security - Bank-Grade Protection | FinAegis</title>
 
     @include('partials.favicon')
     
+    @include('partials.seo', [
+        'title' => 'Security - Bank-Grade Protection',
+        'description' => 'FinAegis security measures - Bank-grade protection with quantum-resistant encryption, multi-factor authentication, and comprehensive security practices.',
+        'keywords' => 'FinAegis security, bank-grade protection, quantum-resistant encryption, multi-factor authentication, SOC 2, PCI DSS, GDPR compliance, financial security',
+    ])
+
     {{-- Schema.org Markup --}}
     <x-schema type="service" :data="[
         'name' => 'FinAegis Security Services',
