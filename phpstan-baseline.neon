@@ -631,12 +631,6 @@ parameters:
 			path: app/Domain/Account/Services/AccountService.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\User\:\:\$uuid\.$#'
-			identifier: property.notFound
-			count: 4
-			path: app/Domain/Account/Services/BankAllocationService.php
-
-		-
 			message: '#^Access to an undefined property App\\Models\\Account\:\:\$uuid\.$#'
 			identifier: property.notFound
 			count: 1
@@ -1115,12 +1109,6 @@ parameters:
 			identifier: class.notFound
 			count: 1
 			path: app/Domain/Banking/Events/WithdrawalRequested.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\User\:\:\$uuid\.$#'
-			identifier: property.notFound
-			count: 13
-			path: app/Domain/Banking/Services/BankIntegrationService.php
 
 		-
 			message: '#^Call to an undefined static method App\\Models\\BankAccountModel\:\:create\(\)\.$#'
@@ -1909,12 +1897,6 @@ parameters:
 			path: app/Domain/Compliance/Services/CustomerRiskService.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\User\:\:\$kyc_level\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Domain/Compliance/Services/CustomerRiskService.php
-
-		-
 			message: '#^Call to an undefined static method App\\Models\\Account\:\:find\(\)\.$#'
 			identifier: staticMethod.notFound
 			count: 1
@@ -2041,24 +2023,6 @@ parameters:
 			path: app/Domain/Compliance/Services/GdprService.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\User\:\:\$kycDocuments\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Domain/Compliance/Services/GdprService.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\User\:\:\$kyc_level\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Domain/Compliance/Services/GdprService.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\User\:\:\$kyc_status\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Domain/Compliance/Services/GdprService.php
-
-		-
 			message: '#^Access to an undefined property App\\Models\\User\:\:\$marketing_consent_at\.$#'
 			identifier: property.notFound
 			count: 2
@@ -2080,12 +2044,6 @@ parameters:
 			message: '#^Access to an undefined property App\\Models\\User\:\:\$updated_at\.$#'
 			identifier: property.notFound
 			count: 1
-			path: app/Domain/Compliance/Services/GdprService.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\User\:\:\$uuid\.$#'
-			identifier: property.notFound
-			count: 7
 			path: app/Domain/Compliance/Services/GdprService.php
 
 		-
@@ -2111,30 +2069,6 @@ parameters:
 			identifier: property.onlyWritten
 			count: 1
 			path: app/Domain/Compliance/Services/IdentityVerificationService.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\User\:\:\$kyc_expires_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Domain/Compliance/Services/KycService.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\User\:\:\$kyc_level\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Domain/Compliance/Services/KycService.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\User\:\:\$kyc_status\.$#'
-			identifier: property.notFound
-			count: 3
-			path: app/Domain/Compliance/Services/KycService.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\User\:\:\$uuid\.$#'
-			identifier: property.notFound
-			count: 4
-			path: app/Domain/Compliance/Services/KycService.php
 
 		-
 			message: '#^Call to an undefined static method App\\Models\\AuditLog\:\:create\(\)\.$#'
@@ -3093,7 +3027,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property Brick\\Math\\BigDecimal\:\:\$rate\.$#'
 			identifier: property.notFound
-			count: 2
+			count: 1
 			path: app/Domain/Exchange/Services/EnhancedExchangeRateService.php
 
 		-
@@ -3124,12 +3058,6 @@ parameters:
 			message: '#^Method App\\Domain\\Exchange\\Services\\EnhancedExchangeRateService\:\:getRateWithFallback\(\) should return float but returns App\\Domain\\Asset\\Models\\ExchangeRate\|null\.$#'
 			identifier: return.type
 			count: 1
-			path: app/Domain/Exchange/Services/EnhancedExchangeRateService.php
-
-		-
-			message: '#^Parameter \#1 \$quote of method App\\Domain\\Exchange\\Services\\EnhancedExchangeRateService\:\:storeQuote\(\) expects App\\Domain\\Exchange\\ValueObjects\\ExchangeRateQuote, Brick\\Math\\BigDecimal\|null given\.$#'
-			identifier: argument.type
-			count: 2
 			path: app/Domain/Exchange/Services/EnhancedExchangeRateService.php
 
 		-
@@ -4087,12 +4015,6 @@ parameters:
 			path: app/Domain/Fraud/Services/FraudDetectionService.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\User\:\:\$kyc_level\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Domain/Fraud/Services/FraudDetectionService.php
-
-		-
 			message: '#^Access to an undefined property App\\Models\\User\:\:\$risk_rating\.$#'
 			identifier: property.notFound
 			count: 1
@@ -4273,12 +4195,6 @@ parameters:
 			path: app/Domain/Governance/Services/Cache/PollCacheService.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\User\:\:\$uuid\.$#'
-			identifier: property.notFound
-			count: 3
-			path: app/Domain/Governance/Services/GovernanceService.php
-
-		-
 			message: '#^Call to an undefined static method App\\Domain\\Governance\\Models\\Poll\:\:active\(\)\.$#'
 			identifier: staticMethod.notFound
 			count: 1
@@ -4327,12 +4243,6 @@ parameters:
 			path: app/Domain/Governance/Services/VotingTemplateService.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\User\:\:\$uuid\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Domain/Governance/Strategies/AssetWeightedVoteStrategy.php
-
-		-
 			message: '#^Call to an undefined method App\\Models\\User\:\:exists\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -4343,12 +4253,6 @@ parameters:
 			identifier: staticMethod.notFound
 			count: 1
 			path: app/Domain/Governance/Strategies/AssetWeightedVoteStrategy.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\User\:\:\$uuid\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Domain/Governance/Strategies/AssetWeightedVotingStrategy.php
 
 		-
 			message: '#^Call to an undefined static method App\\Models\\Account\:\:where\(\)\.$#'
@@ -5038,18 +4942,6 @@ parameters:
 			message: '#^Access to an undefined property App\\Models\\User\:\:\$created_at\.$#'
 			identifier: property.notFound
 			count: 2
-			path: app/Domain/Regulatory/Services/ThresholdMonitoringService.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\User\:\:\$kyc_level\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Domain/Regulatory/Services/ThresholdMonitoringService.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\User\:\:\$kyc_status\.$#'
-			identifier: property.notFound
-			count: 1
 			path: app/Domain/Regulatory/Services/ThresholdMonitoringService.php
 
 		-
@@ -5853,18 +5745,6 @@ parameters:
 		-
 			message: '#^Instantiated class BitWasp\\Bitcoin\\Mnemonic\\Bip39\\Bip39SeedGenerator not found\.$#'
 			identifier: class.notFound
-			count: 1
-			path: app/Domain/Wallet/Services/KeyManagementService.php
-
-		-
-			message: '#^Method App\\Domain\\Wallet\\Services\\KeyManagementService\:\:decryptSeed\(\) invoked with 1 parameter, 2 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: app/Domain/Wallet/Services/KeyManagementService.php
-
-		-
-			message: '#^Method App\\Domain\\Wallet\\Services\\KeyManagementService\:\:encryptSeed\(\) invoked with 1 parameter, 2 required\.$#'
-			identifier: arguments.count
 			count: 1
 			path: app/Domain/Wallet/Services/KeyManagementService.php
 
@@ -7957,42 +7837,6 @@ parameters:
 			path: app/Http/Controllers/Api/GdprController.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Contracts\\Auth\\Authenticatable\:\:\$kycDocuments\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/KycController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Contracts\\Auth\\Authenticatable\:\:\$kyc_approved_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/KycController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Contracts\\Auth\\Authenticatable\:\:\$kyc_expires_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/KycController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Contracts\\Auth\\Authenticatable\:\:\$kyc_level\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/KycController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Contracts\\Auth\\Authenticatable\:\:\$kyc_status\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Api/KycController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Contracts\\Auth\\Authenticatable\:\:\$kyc_submitted_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/KycController.php
-
-		-
 			message: '#^Access to an undefined property Illuminate\\Http\\Request\:\:\$documents\.$#'
 			identifier: property.notFound
 			count: 1
@@ -8005,32 +7849,8 @@ parameters:
 			path: app/Http/Controllers/Api/KycController.php
 
 		-
-			message: '#^Call to an undefined method Illuminate\\Contracts\\Auth\\Authenticatable\:\:kycDocuments\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Http/Controllers/Api/KycController.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Contracts\\Auth\\Authenticatable\:\:needsKyc\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Http/Controllers/Api/KycController.php
-
-		-
 			message: '#^Call to an undefined method Illuminate\\Contracts\\Filesystem\\Filesystem\:\:download\(\)\.$#'
 			identifier: method.notFound
-			count: 1
-			path: app/Http/Controllers/Api/KycController.php
-
-		-
-			message: '#^Parameter \#1 \$user of method App\\Domain\\Compliance\\Services\\KycService\:\:submitKyc\(\) expects App\\Models\\User, Illuminate\\Contracts\\Auth\\Authenticatable\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/KycController.php
-
-		-
-			message: '#^Parameter \#2 \$auditable of static method App\\Models\\AuditLog\:\:log\(\) expects Illuminate\\Database\\Eloquent\\Model\|null, Illuminate\\Contracts\\Auth\\Authenticatable\|null given\.$#'
-			identifier: argument.type
 			count: 1
 			path: app/Http/Controllers/Api/KycController.php
 
@@ -8360,18 +8180,6 @@ parameters:
 
 		-
 			message: '#^Access to an undefined property App\\Models\\KycVerification\:\:\$verification_number\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V2/ComplianceController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\User\:\:\$kyc_level\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Api/V2/ComplianceController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\User\:\:\$kyc_status\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Http/Controllers/Api/V2/ComplianceController.php
@@ -8983,12 +8791,6 @@ parameters:
 			path: app/Http/Controllers/BlockchainWalletController.php
 
 		-
-			message: '#^Call to method generateBackup\(\) on an unknown class App\\Domain\\Wallet\\Contracts\\KeyManagementServiceInterface\.$#'
-			identifier: class.notFound
-			count: 1
-			path: app/Http/Controllers/BlockchainWalletController.php
-
-		-
 			message: '#^Call to static method create\(\) on an unknown class App\\Models\\BlockchainAddress\.$#'
 			identifier: class.notFound
 			count: 1
@@ -9014,18 +8816,6 @@ parameters:
 
 		-
 			message: '#^Call to static method whereIn\(\) on an unknown class App\\Models\\BlockchainTransaction\.$#'
-			identifier: class.notFound
-			count: 1
-			path: app/Http/Controllers/BlockchainWalletController.php
-
-		-
-			message: '#^Parameter \$keyManagementService of method App\\Http\\Controllers\\BlockchainWalletController\:\:__construct\(\) has invalid type App\\Domain\\Wallet\\Contracts\\KeyManagementServiceInterface\.$#'
-			identifier: class.notFound
-			count: 1
-			path: app/Http/Controllers/BlockchainWalletController.php
-
-		-
-			message: '#^Property App\\Http\\Controllers\\BlockchainWalletController\:\:\$keyManagementService has unknown class App\\Domain\\Wallet\\Contracts\\KeyManagementServiceInterface as its type\.$#'
 			identifier: class.notFound
 			count: 1
 			path: app/Http/Controllers/BlockchainWalletController.php
@@ -11107,12 +10897,6 @@ parameters:
 			path: app/Models/ApiKey.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\User\:\:\$uuid\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Models/ApiKey.php
-
-		-
 			message: '#^Call to an undefined static method App\\Models\\ApiKey\:\:create\(\)\.$#'
 			identifier: staticMethod.notFound
 			count: 1
@@ -12073,12 +11857,6 @@ parameters:
 			path: app/Models/FraudCase.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\User\:\:\$uuid\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Models/FraudCase.php
-
-		-
 			message: '#^Access to an undefined property Illuminate\\Contracts\\Auth\\Authenticatable\:\:\$currentTeam\.$#'
 			identifier: property.notFound
 			count: 2
@@ -12943,18 +12721,6 @@ parameters:
 			path: app/Models/User.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\User\:\:\$kyc_expires_at\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Models/User.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\User\:\:\$kyc_status\.$#'
-			identifier: property.notFound
-			count: 3
-			path: app/Models/User.php
-
-		-
 			message: '#^Call to an undefined static method App\\Models\\UserBankPreference\:\:where\(\)\.$#'
 			identifier: staticMethod.notFound
 			count: 4
@@ -13112,30 +12878,6 @@ parameters:
 
 		-
 			message: '#^Access to an undefined property App\\Models\\User\:\:\$created_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/Cgo/CgoKycService.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\User\:\:\$kyc_approved_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/Cgo/CgoKycService.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\User\:\:\$kyc_expires_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/Cgo/CgoKycService.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\User\:\:\$kyc_level\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/Cgo/CgoKycService.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\User\:\:\$kyc_status\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Services/Cgo/CgoKycService.php
@@ -13853,12 +13595,6 @@ parameters:
 			identifier: property.onlyWritten
 			count: 1
 			path: app/Workflows/Activities/BlockchainDepositActivities.php
-
-		-
-			message: '#^Call to an undefined method App\\Domain\\Wallet\\Services\\KeyManagementService\:\:decrypt\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Workflows/Activities/BlockchainWithdrawalActivities.php
 
 		-
 			message: '#^Call to an undefined static method App\\Models\\User\:\:find\(\)\.$#'

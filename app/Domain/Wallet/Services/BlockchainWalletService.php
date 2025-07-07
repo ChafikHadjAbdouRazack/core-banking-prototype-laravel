@@ -144,7 +144,7 @@ class BlockchainWalletService
         $encryptedSeed = $this->retrieveEncryptedSeed($walletId);
 
         // Derive key pair
-        $keyPair = $this->keyManager->deriveKeyPair($encryptedSeed, $chain, $index);
+        $keyPair = $this->keyManager->deriveKeyPairForChain($encryptedSeed, $chain, $index);
 
         // Get connector for chain
         $connector = $this->getConnector($chain);

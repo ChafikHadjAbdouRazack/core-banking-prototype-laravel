@@ -15,6 +15,11 @@ interface KeyManagementServiceInterface
     public function deriveKeyPair(string $mnemonic, string $path): array;
 
     /**
+     * Derive key pair for a specific blockchain chain
+     */
+    public function deriveKeyPairForChain(string $encryptedSeed, string $chain, int $index = 0): array;
+
+    /**
      * Encrypt sensitive data
      */
     public function encrypt(string $data): string;
@@ -38,4 +43,9 @@ interface KeyManagementServiceInterface
      * Verify a signature
      */
     public function verify(string $data, string $signature, string $publicKey): bool;
+
+    /**
+     * Generate wallet backup
+     */
+    public function generateBackup(string $walletId): array;
 }

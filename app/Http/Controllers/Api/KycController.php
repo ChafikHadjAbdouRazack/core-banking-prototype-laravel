@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Api;
 use App\Domain\Compliance\Services\KycService;
 use App\Http\Controllers\Controller;
 use App\Models\AuditLog;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -59,6 +60,7 @@ class KycController extends Controller
      */
     public function status(): JsonResponse
     {
+        /** @var User $user */
         $user = Auth::user();
 
         return response()->json([
@@ -178,6 +180,7 @@ class KycController extends Controller
      */
     public function submit(Request $request): JsonResponse
     {
+        /** @var User $user */
         $user = Auth::user();
 
         if ($user->kyc_status === 'approved') {
@@ -202,10 +205,10 @@ class KycController extends Controller
         } catch (\Exception $e) {
             AuditLog::log(
                 'kyc.submission_failed',
-                $user,
                 null,
                 null,
-                ['error' => $e->getMessage()],
+                null,
+                ['error' => $e->getMessage(), 'user_uuid' => $user->uuid],
                 'kyc,error'
             );
 
@@ -250,6 +253,7 @@ class KycController extends Controller
      */
     public function downloadDocument(string $documentId): mixed
     {
+        /** @var User $user */
         $user = Auth::user();
         $document = $user->kycDocuments()->findOrFail($documentId);
 
@@ -282,6 +286,7 @@ class KycController extends Controller
             'type' => 'sometimes|string|in:passport,national_id,drivers_license,residence_permit,utility_bill,bank_statement,selfie,proof_of_income,other'
         ]);
 
+        /** @var User $user */
         $user = Auth::user();
         $file = $request->file('document');
         $type = $request->input('type', 'other');
@@ -319,10 +324,10 @@ class KycController extends Controller
         } catch (\Exception $e) {
             AuditLog::log(
                 'kyc.upload_failed',
-                $user,
                 null,
                 null,
-                ['error' => $e->getMessage()],
+                null,
+                ['error' => $e->getMessage(), 'user_uuid' => $user->uuid],
                 'kyc,error'
             );
 
