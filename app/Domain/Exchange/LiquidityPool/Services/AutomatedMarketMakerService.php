@@ -26,7 +26,8 @@ class AutomatedMarketMakerService
 
     public function __construct(
         private readonly PriceAggregatorInterface $priceAggregator
-    ) {}
+    ) {
+    }
 
     /**
      * Generate market making orders for a liquidity pool
@@ -56,7 +57,7 @@ class AutomatedMarketMakerService
     private function analyzeMarketConditions(LiquidityPool $pool): array
     {
         // Get external market data
-        $symbol = $pool->base_currency.'/'.$pool->quote_currency;
+        $symbol = $pool->base_currency . '/' . $pool->quote_currency;
         $priceData = $this->priceAggregator->getAggregatedPrice($symbol);
         $externalPrice = BigDecimal::of($priceData['price'] ?? '0');
 

@@ -17,7 +17,8 @@ class ExternalLiquidityService implements ExternalLiquidityServiceInterface
     public function __construct(
         private ExternalExchangeConnectorRegistry $connectorRegistry,
         private ExchangeService $exchangeService
-    ) {}
+    ) {
+    }
 
     /**
      * Find arbitrage opportunities between internal and external exchanges
@@ -56,7 +57,7 @@ class ExternalLiquidityService implements ExternalLiquidityServiceInterface
                     'external_price' => $askPrice->__toString(),
                     'internal_price' => $internalBestBid->__toString(),
                     'profit_percentage' => $profitPercentage->__toString(),
-                    'action' => 'Buy on '.$externalAsk['exchange'].' at '.$askPrice.', sell internally at '.$internalBestBid,
+                    'action' => 'Buy on ' . $externalAsk['exchange'] . ' at ' . $askPrice . ', sell internally at ' . $internalBestBid,
                 ];
             }
         }
@@ -76,7 +77,7 @@ class ExternalLiquidityService implements ExternalLiquidityServiceInterface
                     'external_price' => $bidPrice->__toString(),
                     'internal_price' => $internalBestAsk->__toString(),
                     'profit_percentage' => $profitPercentage->__toString(),
-                    'action' => 'Buy internally at '.$internalBestAsk.', sell on '.$externalBid['exchange'].' at '.$bidPrice,
+                    'action' => 'Buy internally at ' . $internalBestAsk . ', sell on ' . $externalBid['exchange'] . ' at ' . $bidPrice,
                 ];
             }
         }

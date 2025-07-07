@@ -10,11 +10,10 @@ use Workflow\Activity;
 /**
  * @property-read PoolProjection $pool
  */
-
 class CalculatePoolSharesActivity extends Activity
 {
     /**
-     * @param LiquidityAdditionInput|array{pool_id: string, operation: string, shares?: string} $input
+     * @param  LiquidityAdditionInput|array{pool_id: string, operation: string, shares?: string}  $input
      * @return array{shares?: string, share_price?: string, base_amount?: string, quote_amount?: string, base_currency?: string, quote_currency?: string, share_ratio?: string, pool_id?: string, base_reserve?: string, quote_reserve?: string, total_shares?: string, fee_rate?: string, is_active?: bool, provider_count?: int, total_volume_24h?: string}
      */
     public function execute($input): array

@@ -32,7 +32,7 @@ class EnhancedLiquidityManagementWorkflow extends Workflow
 
     public function __construct()
     {
-        $this->circuitBreaker = new CircuitBreakerService;
+        $this->circuitBreaker = new CircuitBreakerService();
     }
 
     public function addLiquidity(LiquidityAdditionInput $input): \Generator
@@ -349,14 +349,14 @@ class EnhancedLiquidityManagementWorkflow extends Workflow
                 'pool_id' => $poolId,
                 'reason' => $reason,
             ]);
-            
+
             yield; // Required for Generator return type
         } catch (\Exception $e) {
             Log::error('Failed to pause pool', [
                 'pool_id' => $poolId,
                 'error' => $e->getMessage(),
             ]);
-            
+
             yield; // Required for Generator return type
         }
     }

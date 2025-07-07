@@ -11,5 +11,6 @@ class OrderPartiallyFilled extends ShouldBeStored
         public readonly string $filledAmount,
         public readonly string $remainingAmount,
         public readonly array $metadata = []
-    ) {}
+    ) {
+    }
 }

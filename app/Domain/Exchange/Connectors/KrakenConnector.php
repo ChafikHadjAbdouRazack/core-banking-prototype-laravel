@@ -66,7 +66,7 @@ class KrakenConnector implements IExternalExchangeConnector
             $data = $response->json();
 
             if (isset($data['error']) && ! empty($data['error'])) {
-                throw new ExternalExchangeException('Kraken API error: '.implode(', ', $data['error']));
+                throw new ExternalExchangeException('Kraken API error: ' . implode(', ', $data['error']));
             }
 
             return collect($data['result'])
@@ -101,7 +101,7 @@ class KrakenConnector implements IExternalExchangeConnector
         $data = $response->json();
 
         if (isset($data['error']) && ! empty($data['error'])) {
-            throw new ExternalExchangeException('Kraken API error: '.implode(', ', $data['error']));
+            throw new ExternalExchangeException('Kraken API error: ' . implode(', ', $data['error']));
         }
 
         $tickerData = array_values($data['result'])[0];
@@ -119,7 +119,7 @@ class KrakenConnector implements IExternalExchangeConnector
                 ->minus($tickerData['o'])
                 ->dividedBy($tickerData['o'], 18)
                 ->multipliedBy(100),
-            timestamp: new \DateTimeImmutable,
+            timestamp: new \DateTimeImmutable(),
             exchange: $this->getName(),
             metadata: [
                 'pair' => $pair,
@@ -143,7 +143,7 @@ class KrakenConnector implements IExternalExchangeConnector
         $data = $response->json();
 
         if (isset($data['error']) && ! empty($data['error'])) {
-            throw new ExternalExchangeException('Kraken API error: '.implode(', ', $data['error']));
+            throw new ExternalExchangeException('Kraken API error: ' . implode(', ', $data['error']));
         }
 
         $bookData = array_values($data['result'])[0];
@@ -159,7 +159,7 @@ class KrakenConnector implements IExternalExchangeConnector
                 'price' => BigDecimal::of($ask[0]),
                 'amount' => BigDecimal::of($ask[1]),
             ]),
-            timestamp: new \DateTimeImmutable('@'.$bid[2]),
+            timestamp: new \DateTimeImmutable('@' . $bid[2]),
             exchange: $this->getName(),
             metadata: ['pair' => $pair]
         );
@@ -177,7 +177,7 @@ class KrakenConnector implements IExternalExchangeConnector
         $data = $response->json();
 
         if (isset($data['error']) && ! empty($data['error'])) {
-            throw new ExternalExchangeException('Kraken API error: '.implode(', ', $data['error']));
+            throw new ExternalExchangeException('Kraken API error: ' . implode(', ', $data['error']));
         }
 
         $tradesData = array_values($data['result'])[0];
@@ -191,7 +191,7 @@ class KrakenConnector implements IExternalExchangeConnector
                 price: BigDecimal::of($trade[0]),
                 amount: BigDecimal::of($trade[1]),
                 side: $trade[3] === 'b' ? 'buy' : 'sell',
-                timestamp: new \DateTimeImmutable('@'.$trade[2]),
+                timestamp: new \DateTimeImmutable('@' . $trade[2]),
                 exchange: $this->getName(),
                 metadata: [
                     'pair' => $pair,
@@ -232,7 +232,7 @@ class KrakenConnector implements IExternalExchangeConnector
         $response = $this->privateRequest('AddOrder', $params);
 
         if (isset($response['error']) && ! empty($response['error'])) {
-            throw new ExternalExchangeException('Failed to place order on Kraken: '.implode(', ', $response['error']));
+            throw new ExternalExchangeException('Failed to place order on Kraken: ' . implode(', ', $response['error']));
         }
 
         return $response['result'];
@@ -247,7 +247,7 @@ class KrakenConnector implements IExternalExchangeConnector
         $response = $this->privateRequest('CancelOrder', ['txid' => $orderId]);
 
         if (isset($response['error']) && ! empty($response['error'])) {
-            throw new ExternalExchangeException('Failed to cancel order on Kraken: '.implode(', ', $response['error']));
+            throw new ExternalExchangeException('Failed to cancel order on Kraken: ' . implode(', ', $response['error']));
         }
 
         return isset($response['result']['count']) && $response['result']['count'] > 0;
@@ -262,7 +262,7 @@ class KrakenConnector implements IExternalExchangeConnector
         $response = $this->privateRequest('QueryOrders', ['txid' => $orderId]);
 
         if (isset($response['error']) && ! empty($response['error'])) {
-            throw new ExternalExchangeException('Failed to get order status from Kraken: '.implode(', ', $response['error']));
+            throw new ExternalExchangeException('Failed to get order status from Kraken: ' . implode(', ', $response['error']));
         }
 
         return $response['result'];
@@ -277,7 +277,7 @@ class KrakenConnector implements IExternalExchangeConnector
         $response = $this->privateRequest('Balance');
 
         if (isset($response['error']) && ! empty($response['error'])) {
-            throw new ExternalExchangeException('Failed to get balance from Kraken: '.implode(', ', $response['error']));
+            throw new ExternalExchangeException('Failed to get balance from Kraken: ' . implode(', ', $response['error']));
         }
 
         return collect($response['result'])
@@ -318,7 +318,7 @@ class KrakenConnector implements IExternalExchangeConnector
         $base = $this->getKrakenAsset($baseCurrency);
         $quote = $this->getKrakenAsset($quoteCurrency);
 
-        return $base.$quote;
+        return $base . $quote;
     }
 
     private function getKrakenAsset(string $asset): string
@@ -328,7 +328,7 @@ class KrakenConnector implements IExternalExchangeConnector
             return 'XBT';
         }
         if (strlen($asset) === 3) {
-            return 'X'.$asset;
+            return 'X' . $asset;
         }
 
         return $asset;
@@ -352,12 +352,12 @@ class KrakenConnector implements IExternalExchangeConnector
 
     private function getPublicUrl(string $method): string
     {
-        return self::BASE_URL.'/0/public/'.$method;
+        return self::BASE_URL . '/0/public/' . $method;
     }
 
     private function getPrivateUrl(string $method): string
     {
-        return self::BASE_URL.'/0/private/'.$method;
+        return self::BASE_URL . '/0/private/' . $method;
     }
 
     private function privateRequest(string $method, array $params = []): array
@@ -368,10 +368,10 @@ class KrakenConnector implements IExternalExchangeConnector
         $params['nonce'] = $nonce;
         $postData = http_build_query($params);
 
-        $path = '/0/private/'.$method;
+        $path = '/0/private/' . $method;
         $sign = base64_encode(hash_hmac(
             'sha512',
-            $path.hash('sha256', $nonce.$postData, true),
+            $path . hash('sha256', $nonce . $postData, true),
             base64_decode($this->apiSecret),
             true
         ));

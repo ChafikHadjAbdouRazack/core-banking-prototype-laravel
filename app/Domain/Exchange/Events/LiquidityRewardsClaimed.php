@@ -11,5 +11,6 @@ class LiquidityRewardsClaimed extends ShouldBeStored
         public readonly string $providerId,
         public readonly array $rewards, // ['EUR' => '100.50', 'GCU' => '50.25']
         public readonly array $metadata = []
-    ) {}
+    ) {
+    }
 }

@@ -16,5 +16,6 @@ class LiquidityRemoved extends ShouldBeStored
         public readonly string $newQuoteReserve,
         public readonly string $newTotalShares,
         public readonly array $metadata = []
-    ) {}
+    ) {
+    }
 }

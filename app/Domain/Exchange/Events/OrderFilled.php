@@ -11,5 +11,6 @@ class OrderFilled extends ShouldBeStored
         public readonly string $totalExecutedAmount,
         public readonly string $averagePrice,
         public readonly array $metadata = []
-    ) {}
+    ) {
+    }
 }

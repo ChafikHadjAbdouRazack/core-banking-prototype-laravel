@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property array<string, mixed> $metadata
  * @property-read string $spot_price
  * @property-read string $total_value_locked
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|LiquidityPool where($column, $operator = null, $value = null, $boolean = 'and')
  * @method static LiquidityPool|null find($id, $columns = ['*'])
  * @method static LiquidityPool findOrFail($id, $columns = ['*'])

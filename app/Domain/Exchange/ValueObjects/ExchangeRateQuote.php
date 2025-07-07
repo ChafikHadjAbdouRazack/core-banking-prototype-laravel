@@ -19,7 +19,8 @@ final class ExchangeRateQuote
         public readonly ?float $volume24h = null,
         public readonly ?float $change24h = null,
         public readonly ?array $metadata = []
-    ) {}
+    ) {
+    }
 
     /**
      * Get the mid-market rate
