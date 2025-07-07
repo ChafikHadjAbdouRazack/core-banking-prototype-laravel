@@ -51,7 +51,7 @@ class ApiSecurityTest extends TestCase
                 $this->assertTrue(
                     $response->json('message') === 'Unauthenticated.' ||
                     $response->json('message') === 'Authentication required',
-                    "Expected authentication error message, got: " . $response->json('message')
+                    'Expected authentication error message, got: ' . $response->json('message')
                 );
             }
         }
@@ -89,14 +89,14 @@ class ApiSecurityTest extends TestCase
         $this->assertNotEquals(404, $response->status());
     }
 
-    #[Test] 
+    #[Test]
     public function test_api_rate_limiting_per_user()
     {
         // Skip this test for now - rate limiting middleware is not properly configured
         // The middleware checks for rate_limiting.enabled config which defaults to true,
         // but in testing it's disabled unless rate_limiting.force_in_tests is true
         $this->markTestSkipped('Rate limiting is disabled in testing environment - needs proper test setup');
-        
+
         // TODO: Fix rate limiting test by:
         // 1. Ensuring rate limiting middleware is properly registered
         // 2. Creating a dedicated test endpoint that has rate limiting enabled
@@ -265,7 +265,7 @@ class ApiSecurityTest extends TestCase
         if (config('app.debug')) {
             $this->markTestSkipped('Debug mode is enabled - error messages will contain sensitive information');
         }
-        
+
         $probes = [
             '/api/../../etc/passwd',
             '/api/accounts/../../admin',
@@ -359,7 +359,7 @@ class ApiSecurityTest extends TestCase
     {
         // Skip this test if transfers endpoint is not implemented
         $this->markTestSkipped('Transfer endpoint idempotency not implemented yet');
-        
+
         $account = Account::factory()->create([
             'user_uuid' => $this->user->uuid,
             'balance'   => 100000,

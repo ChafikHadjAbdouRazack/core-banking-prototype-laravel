@@ -34,7 +34,7 @@ class AuthorizationSecurityTest extends TestCase
         $this->user1 = User::factory()->create();
         $this->user2 = User::factory()->create();
         $this->admin = User::factory()->create();
-        
+
         // Assign admin role using Spatie permission
         $this->admin->assignRole('admin');
 
@@ -58,7 +58,7 @@ class AuthorizationSecurityTest extends TestCase
     public function test_users_cannot_access_other_users_accounts()
     {
         $this->markTestSkipped('Account authorization not implemented in API v1 - accounts are accessible by anyone');
-        
+
         // TODO: Implement proper authorization in AccountController
         // The API currently doesn't check if the account belongs to the authenticated user
         /*
@@ -85,7 +85,7 @@ class AuthorizationSecurityTest extends TestCase
     public function test_users_cannot_modify_other_users_accounts()
     {
         $this->markTestSkipped('Account authorization not implemented - API v1 has no update endpoint, delete has no auth check');
-        
+
         // TODO: Implement proper authorization checks in AccountController
         /*
         // Try to update another user's account
@@ -114,7 +114,7 @@ class AuthorizationSecurityTest extends TestCase
     public function test_users_cannot_transfer_from_others_accounts()
     {
         $this->markTestSkipped('Transfer authorization needs to be tested - endpoint may not validate from_account ownership');
-        
+
         // TODO: Verify TransferController checks account ownership
         /*
         $response = $this->withToken($this->userToken)
@@ -137,7 +137,7 @@ class AuthorizationSecurityTest extends TestCase
     public function test_privilege_escalation_via_parameter_pollution()
     {
         $this->markTestSkipped('Account listing endpoint not available in API v1');
-        
+
         // TODO: Test this with API v2 endpoints
         /*
         // Try to escalate privileges via parameter pollution
@@ -197,7 +197,7 @@ class AuthorizationSecurityTest extends TestCase
     public function test_mass_assignment_protection()
     {
         $this->markTestSkipped('Account creation accepts user_uuid from request - security vulnerability');
-        
+
         // TODO: Fix AccountController::store to only use authenticated user's UUID
         // Currently allows creating accounts for other users
         /*
@@ -252,7 +252,7 @@ class AuthorizationSecurityTest extends TestCase
     public function test_authorization_bypass_via_http_methods()
     {
         $this->markTestSkipped('Account authorization not implemented - relies on proper access control');
-        
+
         // TODO: Test once authorization is implemented
         /*
         $methods = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS'];
@@ -298,7 +298,7 @@ class AuthorizationSecurityTest extends TestCase
     public function test_api_scope_limitations()
     {
         $this->markTestSkipped('API scopes not enforced - no PUT endpoint, DELETE has no scope check');
-        
+
         // TODO: Implement scope-based authorization
         /*
         // Create limited scope token
@@ -327,7 +327,7 @@ class AuthorizationSecurityTest extends TestCase
     public function test_transaction_authorization_with_limits()
     {
         $this->markTestSkipped('Transaction limits not implemented - daily_limit and transaction_limit columns do not exist');
-        
+
         // TODO: Implement transaction limits feature
         /*
         // Create account with transaction limits

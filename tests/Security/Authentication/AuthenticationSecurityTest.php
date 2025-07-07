@@ -195,13 +195,13 @@ class AuthenticationSecurityTest extends TestCase
     public function test_token_expiration_is_enforced()
     {
         $this->markTestSkipped('Token expiration middleware is not applied to /api/auth routes');
-        
+
         // TODO: Apply check.token.expiration middleware to API routes
         // The middleware exists but is only used in api-v2 routes
         /*
         // Temporarily set short expiration for testing
         config(['sanctum.expiration' => 1]); // 1 minute
-        
+
         $user = User::factory()->create();
 
         // Create token
@@ -217,7 +217,7 @@ class AuthenticationSecurityTest extends TestCase
         // Token should be expired
         $response = $this->withToken($token)->getJson('/api/auth/user');
         $this->assertEquals(401, $response->status());
-        
+
         // Reset config
         config(['sanctum.expiration' => 60]);
         */
@@ -229,14 +229,14 @@ class AuthenticationSecurityTest extends TestCase
         // Skip this test as the API login endpoint doesn't use Fortify's rate limiting
         // The rate limiting is only applied to the web login route
         $this->markTestSkipped('API login endpoint does not implement rate limiting in current implementation');
-        
+
         // TODO: Implement rate limiting for API login endpoint
         // The following would be the test once implemented:
         /*
         // Enable rate limiting for this test
         config(['rate_limiting.enabled' => true]);
         config(['rate_limiting.force_in_tests' => true]);
-        
+
         // Clear any existing rate limits
         RateLimiter::clear('login');
 
@@ -249,7 +249,7 @@ class AuthenticationSecurityTest extends TestCase
                 'email'    => $user->email,
                 'password' => 'wrong-password',
             ]);
-            
+
             if ($response->status() === 429) {
                 $lockedOut = true;
                 break;
@@ -295,7 +295,7 @@ class AuthenticationSecurityTest extends TestCase
     public function test_user_enumeration_is_prevented()
     {
         $this->markTestSkipped('Password reset endpoint allows user enumeration - returns different status codes');
-        
+
         // TODO: Fix PasswordResetController to prevent user enumeration
         // Currently returns 200 for existing users and 422 for non-existing users
         /*
@@ -330,7 +330,7 @@ class AuthenticationSecurityTest extends TestCase
             'X-XSS-Protection'       => '1; mode=block',
             'Referrer-Policy'        => ['no-referrer', 'strict-origin-when-cross-origin'],
         ];
-        
+
         // Headers that are recommended but may not be present in dev/test environments
         $recommendedHeaders = [
             'Strict-Transport-Security' => 'max-age=',
@@ -355,18 +355,18 @@ class AuthenticationSecurityTest extends TestCase
                 $this->assertTrue($hasValidValue, "{$header} should contain valid value");
             }
         }
-        
+
         // Check recommended headers (note but don't fail)
         $missingRecommended = [];
         foreach ($recommendedHeaders as $header => $expectedValue) {
-            if (!$response->headers->has($header)) {
+            if (! $response->headers->has($header)) {
                 $missingRecommended[] = $header;
             }
         }
-        
-        if (!empty($missingRecommended)) {
+
+        if (! empty($missingRecommended)) {
             // Just assert true with a note - test still passes
-            $this->assertTrue(true, "Note: Recommended security headers missing: " . implode(', ', $missingRecommended) . ". These should be enabled in production.");
+            $this->assertTrue(true, 'Note: Recommended security headers missing: ' . implode(', ', $missingRecommended) . '. These should be enabled in production.');
         }
     }
 
@@ -374,7 +374,7 @@ class AuthenticationSecurityTest extends TestCase
     public function test_api_tokens_cannot_access_web_routes()
     {
         $this->markTestSkipped('Web routes with API tokens cause 500 error - needs investigation');
-        
+
         // TODO: Fix web routes to properly handle API token authentication attempts
         // Currently causes 500 error when accessing dashboard with API token
         /*
@@ -384,17 +384,17 @@ class AuthenticationSecurityTest extends TestCase
         // Laravel Sanctum allows API tokens to authenticate web routes by design when
         // EnsureFrontendRequestsAreStateful middleware is present. However, the application
         // should enforce proper separation. Let's test that API routes work correctly.
-        
+
         // Verify API token works for API routes
         $response = $this->withToken($token)->getJson('/api/auth/user');
         $this->assertEquals(200, $response->status(), 'API token should work for API routes');
-        
+
         // Test that web routes expecting session data would fail with just a token
         // (This is application-specific behavior, not a Sanctum limitation)
         $response = $this->withHeader('Authorization', "Bearer {$token}")
             ->withHeader('Accept', 'text/html')
             ->get('/dashboard');
-        
+
         // The dashboard requires session data and proper web authentication
         // With just an API token, it should redirect to login
         $this->assertEquals(302, $response->status(), 'Web routes should redirect when accessed with API token only');
@@ -406,7 +406,7 @@ class AuthenticationSecurityTest extends TestCase
     public function test_logout_invalidates_token()
     {
         $this->markTestSkipped('Token invalidation test is flaky in test environment due to caching');
-        
+
         // TODO: Fix token invalidation in test environment
         /*
         $user = User::factory()->create();
