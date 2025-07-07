@@ -11,6 +11,8 @@ use App\Domain\Exchange\Events\LiquidityRewardsDistributed;
 use App\Domain\Exchange\Events\PoolFeeCollected;
 use App\Domain\Exchange\Events\PoolParametersUpdated;
 use App\Domain\Exchange\Exceptions\InsufficientLiquidityException;
+use App\Domain\Exchange\LiquidityPool\Repositories\LiquidityPoolEventRepository;
+use App\Domain\Exchange\LiquidityPool\Repositories\LiquidityPoolSnapshotRepository;
 use Brick\Math\BigDecimal;
 use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
 
@@ -33,6 +35,28 @@ class LiquidityPool extends AggregateRoot
         $this->quoteReserve = BigDecimal::zero();
         $this->totalShares = BigDecimal::zero();
         $this->feeRate = BigDecimal::of('0.003'); // 0.3% default
+    }
+
+    /**
+     * @return LiquidityPoolEventRepository
+     * @throws \Illuminate\Contracts\Container\BindingResolutionException
+     */
+    protected function getStoredEventRepository(): LiquidityPoolEventRepository
+    {
+        return app()->make(
+            abstract: LiquidityPoolEventRepository::class
+        );
+    }
+
+    /**
+     * @return LiquidityPoolSnapshotRepository
+     * @throws \Illuminate\Contracts\Container\BindingResolutionException
+     */
+    protected function getSnapshotRepository(): LiquidityPoolSnapshotRepository
+    {
+        return app()->make(
+            abstract: LiquidityPoolSnapshotRepository::class
+        );
     }
 
     public function createPool(
