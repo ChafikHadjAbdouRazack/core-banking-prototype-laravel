@@ -54,7 +54,7 @@ class EnhancedExchangeRateService extends ExchangeRateService
     {
         try {
             $rate = $this->providerRegistry->getRate($fromAsset, $toAsset);
-            
+
             if ($rate === null) {
                 return null;
             }
@@ -72,7 +72,8 @@ class EnhancedExchangeRateService extends ExchangeRateService
             return $this->storeQuote($quote);
         } catch (\Exception $e) {
             Log::error(
-                'Failed to fetch exchange rate', [
+                'Failed to fetch exchange rate',
+                [
                 'from'  => $fromAsset,
                 'to'    => $toAsset,
                 'error' => $e->getMessage(),
@@ -89,7 +90,7 @@ class EnhancedExchangeRateService extends ExchangeRateService
     public function fetchRateAsFloat(string $from, string $to): float
     {
         $rate = $this->providerRegistry->getRate($from, $to);
-        
+
         if ($rate === null) {
             throw new \Exception("Failed to fetch exchange rate for {$from}/{$to}");
         }
@@ -135,7 +136,8 @@ class EnhancedExchangeRateService extends ExchangeRateService
                     'valid_at'        => now(),
                     'expires_at'      => now()->addMinutes(30),
                     'metadata'        => array_merge(
-                        $quote->metadata, [
+                        $quote->metadata,
+                        [
                         'volume_24h' => $quote->volume24h,
                         'change_24h' => $quote->change24h,
                         'fetched_at' => $quote->timestamp->toISOString(),
