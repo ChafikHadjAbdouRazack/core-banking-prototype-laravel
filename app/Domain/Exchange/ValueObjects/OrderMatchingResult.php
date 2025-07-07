@@ -11,6 +11,5 @@ class OrderMatchingResult
         public readonly ?string $status = null,
         public readonly ?string $filledAmount = null,
         public readonly array $trades = []
-    ) {
-    }
+    ) {}
 }

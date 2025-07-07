@@ -13,6 +13,5 @@ class LiquidityPoolRebalanced extends ShouldBeStored
         public readonly string $rebalanceAmount,
         public readonly string $rebalanceCurrency,
         public readonly array $metadata = []
-    ) {
-    }
+    ) {}
 }

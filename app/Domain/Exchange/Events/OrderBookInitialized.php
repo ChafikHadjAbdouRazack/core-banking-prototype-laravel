@@ -11,6 +11,5 @@ class OrderBookInitialized extends ShouldBeStored
         public readonly string $baseCurrency,
         public readonly string $quoteCurrency,
         public readonly array $metadata = []
-    ) {
-    }
+    ) {}
 }

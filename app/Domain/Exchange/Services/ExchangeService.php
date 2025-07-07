@@ -19,7 +19,7 @@ class ExchangeService implements ExchangeServiceInterface
 
     public function __construct()
     {
-        $this->feeCalculator = new FeeCalculator();
+        $this->feeCalculator = new FeeCalculator;
     }
 
     public function placeOrder(

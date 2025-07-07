@@ -12,6 +12,5 @@ class PoolFeeCollected extends ShouldBeStored
         public readonly string $feeAmount,
         public readonly string $swapVolume,
         public readonly array $metadata = []
-    ) {
-    }
+    ) {}
 }

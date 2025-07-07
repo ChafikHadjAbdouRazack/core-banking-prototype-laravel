@@ -10,6 +10,5 @@ class PoolParametersUpdated extends ShouldBeStored
         public readonly string $poolId,
         public readonly array $changes,
         public readonly array $metadata = []
-    ) {
-    }
+    ) {}
 }

@@ -14,6 +14,5 @@ class OrderBookSnapshotTaken extends ShouldBeStored
         public readonly ?string $bestAsk,
         public readonly ?string $lastPrice,
         public readonly array $metadata = []
-    ) {
-    }
+    ) {}
 }

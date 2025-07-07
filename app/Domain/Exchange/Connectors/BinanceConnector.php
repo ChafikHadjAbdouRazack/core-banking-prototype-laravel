@@ -46,7 +46,7 @@ class BinanceConnector implements IExternalExchangeConnector
 
     public function getName(): string
     {
-        return 'Binance' . ($this->isTestnet ? ' Testnet' : '');
+        return 'Binance'.($this->isTestnet ? ' Testnet' : '');
     }
 
     public function isAvailable(): bool
@@ -62,10 +62,10 @@ class BinanceConnector implements IExternalExchangeConnector
 
     public function getSupportedPairs(): Collection
     {
-        $cacheKey = 'binance:exchange_info:' . md5($this->baseUrl);
+        $cacheKey = 'binance:exchange_info:'.md5($this->baseUrl);
 
         return Cache::remember($cacheKey, 3600, function () {
-            $response = Http::get($this->baseUrl . '/api/v3/exchangeInfo');
+            $response = Http::get($this->baseUrl.'/api/v3/exchangeInfo');
 
             if (! $response->successful()) {
                 throw new ExternalExchangeException('Failed to get exchange info from Binance');
@@ -95,7 +95,7 @@ class BinanceConnector implements IExternalExchangeConnector
     public function getTicker(string $baseCurrency, string $quoteCurrency): ExternalTicker
     {
         $symbol = $this->formatSymbol($baseCurrency, $quoteCurrency);
-        $response = Http::get($this->baseUrl . '/api/v3/ticker/24hr', ['symbol' => $symbol]);
+        $response = Http::get($this->baseUrl.'/api/v3/ticker/24hr', ['symbol' => $symbol]);
 
         if (! $response->successful()) {
             throw new ExternalExchangeException("Failed to get ticker for $symbol from Binance");
@@ -113,7 +113,7 @@ class BinanceConnector implements IExternalExchangeConnector
             high24h: BigDecimal::of($data['highPrice']),
             low24h: BigDecimal::of($data['lowPrice']),
             change24h: BigDecimal::of($data['priceChangePercent']),
-            timestamp: new \DateTimeImmutable('@' . intval($data['closeTime'] / 1000)),
+            timestamp: new \DateTimeImmutable('@'.intval($data['closeTime'] / 1000)),
             exchange: $this->getName(),
             metadata: [
                 'symbol' => $symbol,
@@ -126,7 +126,7 @@ class BinanceConnector implements IExternalExchangeConnector
     public function getOrderBook(string $baseCurrency, string $quoteCurrency, int $depth = 20): ExternalOrderBook
     {
         $symbol = $this->formatSymbol($baseCurrency, $quoteCurrency);
-        $response = Http::get($this->baseUrl . '/api/v3/depth', [
+        $response = Http::get($this->baseUrl.'/api/v3/depth', [
             'symbol' => $symbol,
             'limit' => min($depth, 100),
         ]);
@@ -148,7 +148,7 @@ class BinanceConnector implements IExternalExchangeConnector
                 'price' => BigDecimal::of($ask[0]),
                 'amount' => BigDecimal::of($ask[1]),
             ]),
-            timestamp: new \DateTimeImmutable(),
+            timestamp: new \DateTimeImmutable,
             exchange: $this->getName(),
             metadata: [
                 'symbol' => $symbol,
@@ -160,7 +160,7 @@ class BinanceConnector implements IExternalExchangeConnector
     public function getRecentTrades(string $baseCurrency, string $quoteCurrency, int $limit = 100): Collection
     {
         $symbol = $this->formatSymbol($baseCurrency, $quoteCurrency);
-        $response = Http::get($this->baseUrl . '/api/v3/trades', [
+        $response = Http::get($this->baseUrl.'/api/v3/trades', [
             'symbol' => $symbol,
             'limit' => min($limit, 1000),
         ]);
@@ -178,7 +178,7 @@ class BinanceConnector implements IExternalExchangeConnector
             price: BigDecimal::of($trade['price']),
             amount: BigDecimal::of($trade['qty']),
             side: $trade['isBuyerMaker'] ? 'sell' : 'buy',
-            timestamp: new \DateTimeImmutable('@' . intval($trade['time'] / 1000)),
+            timestamp: new \DateTimeImmutable('@'.intval($trade['time'] / 1000)),
             exchange: $this->getName(),
             metadata: [
                 'symbol' => $symbol,
@@ -222,10 +222,10 @@ class BinanceConnector implements IExternalExchangeConnector
 
         $response = Http::withHeaders([
             'X-MBX-APIKEY' => $this->apiKey,
-        ])->post($this->baseUrl . '/api/v3/order', $params);
+        ])->post($this->baseUrl.'/api/v3/order', $params);
 
         if (! $response->successful()) {
-            throw new ExternalExchangeException('Failed to place order on Binance: ' . $response->body());
+            throw new ExternalExchangeException('Failed to place order on Binance: '.$response->body());
         }
 
         return $response->json();
@@ -268,7 +268,7 @@ class BinanceConnector implements IExternalExchangeConnector
 
         $response = Http::withHeaders([
             'X-MBX-APIKEY' => $this->apiKey,
-        ])->get($this->baseUrl . '/api/v3/account', $params);
+        ])->get($this->baseUrl.'/api/v3/account', $params);
 
         if (! $response->successful()) {
             throw new ExternalExchangeException('Failed to get balance from Binance');
@@ -301,7 +301,7 @@ class BinanceConnector implements IExternalExchangeConnector
 
     public function ping(): bool
     {
-        $response = Http::get($this->baseUrl . '/api/v3/ping');
+        $response = Http::get($this->baseUrl.'/api/v3/ping');
 
         return $response->successful();
     }
@@ -309,7 +309,7 @@ class BinanceConnector implements IExternalExchangeConnector
     private function formatSymbol(string $baseCurrency, string $quoteCurrency): string
     {
         // Binance uses concatenated symbols without separators
-        return strtoupper($baseCurrency . $quoteCurrency);
+        return strtoupper($baseCurrency.$quoteCurrency);
     }
 
     private function generateSignature(array $params): string

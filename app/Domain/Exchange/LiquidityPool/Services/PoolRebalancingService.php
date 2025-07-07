@@ -31,8 +31,7 @@ class PoolRebalancingService
     public function __construct(
         private readonly PriceAggregatorInterface $priceAggregator,
         private readonly ArbitrageService $arbitrageService
-    ) {
-    }
+    ) {}
 
     /**
      * Check all pools and rebalance if needed

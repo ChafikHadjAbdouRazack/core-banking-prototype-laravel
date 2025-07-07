@@ -14,6 +14,5 @@ final class PoolRatioDeviationDetected extends ShouldBeStored
         public readonly string $baseReserve,
         public readonly string $quoteReserve,
         public readonly array $metadata = []
-    ) {
-    }
+    ) {}
 }

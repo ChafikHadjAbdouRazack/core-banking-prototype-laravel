@@ -17,6 +17,5 @@ class OrderPlaced extends ShouldBeStored
         public readonly ?string $price = null, // null for market orders
         public readonly ?string $stopPrice = null,
         public readonly array $metadata = []
-    ) {
-    }
+    ) {}
 }

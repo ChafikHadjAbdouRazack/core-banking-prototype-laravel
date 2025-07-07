@@ -64,7 +64,7 @@ class FixerIoProvider extends BaseExchangeRateProvider
 
             if (! $data['success'] ?? false) {
                 throw new RateProviderException(
-                    'Fixer.io API error: ' . ($data['error']['info'] ?? 'Unknown error')
+                    'Fixer.io API error: '.($data['error']['info'] ?? 'Unknown error')
                 );
             }
 
@@ -133,7 +133,7 @@ class FixerIoProvider extends BaseExchangeRateProvider
     {
         $this->checkRateLimit();
 
-        $cacheKey = "rates:{$baseCurrency}:" . md5(implode(',', $symbols));
+        $cacheKey = "rates:{$baseCurrency}:".md5(implode(',', $symbols));
 
         return $this->remember($cacheKey, function () use ($baseCurrency, $symbols) {
             $endpoint = '/latest';
@@ -160,7 +160,7 @@ class FixerIoProvider extends BaseExchangeRateProvider
 
             if (! $data['success'] ?? false) {
                 throw new RateProviderException(
-                    'Fixer.io API error: ' . ($data['error']['info'] ?? 'Unknown error')
+                    'Fixer.io API error: '.($data['error']['info'] ?? 'Unknown error')
                 );
             }
 
@@ -228,6 +228,6 @@ class FixerIoProvider extends BaseExchangeRateProvider
 
     protected function getHealthCheckEndpoint(): string
     {
-        return '/latest?access_key=' . ($this->config['api_key'] ?? '') . '&base=USD&symbols=EUR';
+        return '/latest?access_key='.($this->config['api_key'] ?? '').'&base=USD&symbols=EUR';
     }
 }

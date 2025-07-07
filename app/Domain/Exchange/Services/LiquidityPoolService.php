@@ -18,8 +18,7 @@ class LiquidityPoolService implements LiquidityPoolServiceInterface
 {
     public function __construct(
         private readonly ExchangeService $exchangeService
-    ) {
-    }
+    ) {}
 
     /**
      * Create a new liquidity pool

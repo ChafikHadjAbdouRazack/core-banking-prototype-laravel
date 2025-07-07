@@ -35,8 +35,7 @@ class RefreshExchangeRatesJob implements ShouldQueue
     public function __construct(
         public readonly ?array $currencyPairs = null,
         public readonly bool $forceRefresh = false
-    ) {
-    }
+    ) {}
 
     /**
      * Execute the job.

@@ -15,7 +15,7 @@ class MatchOrderActivity extends Activity
 
     public function __construct()
     {
-        $this->feeCalculator = new FeeCalculator();
+        $this->feeCalculator = new FeeCalculator;
     }
 
     public function execute(string $orderId, int $maxIterations = 100): object

@@ -31,7 +31,7 @@ class EnhancedLiquidityManagementWorkflow extends Workflow
 
     public function __construct()
     {
-        $this->circuitBreaker = new CircuitBreakerService();
+        $this->circuitBreaker = new CircuitBreakerService;
     }
 
     public function addLiquidity(LiquidityAdditionInput $input): \Generator

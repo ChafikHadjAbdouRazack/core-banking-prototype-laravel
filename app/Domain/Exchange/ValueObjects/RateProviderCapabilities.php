@@ -17,8 +17,7 @@ final class RateProviderCapabilities
         public readonly array $supportedAssetTypes = ['fiat', 'crypto'],
         public readonly ?int $maxHistoricalDays = null,
         public readonly ?array $additionalFeatures = []
-    ) {
-    }
+    ) {}
 
     /**
      * Check if provider supports an asset type

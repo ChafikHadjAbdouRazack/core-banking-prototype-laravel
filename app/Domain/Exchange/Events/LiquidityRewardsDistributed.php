@@ -12,6 +12,5 @@ class LiquidityRewardsDistributed extends ShouldBeStored
         public readonly string $rewardCurrency,
         public readonly string $totalShares,
         public readonly array $metadata = []
-    ) {
-    }
+    ) {}
 }

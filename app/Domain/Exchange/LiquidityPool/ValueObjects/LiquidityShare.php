@@ -104,7 +104,7 @@ final readonly class LiquidityShare
     {
         return [
             'amount' => $this->amount->__toString(),
-            'percentage' => $this->percentage->toScale(2, RoundingMode::DOWN)->__toString() . '%',
+            'percentage' => $this->percentage->toScale(2, RoundingMode::DOWN)->__toString().'%',
         ];
     }
 }

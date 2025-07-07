@@ -12,6 +12,5 @@ class ExternalLiquidityProvided extends ShouldBeStored
         public readonly int $buyOrdersAdded,
         public readonly int $sellOrdersAdded,
         public readonly \DateTimeImmutable $timestamp
-    ) {
-    }
+    ) {}
 }

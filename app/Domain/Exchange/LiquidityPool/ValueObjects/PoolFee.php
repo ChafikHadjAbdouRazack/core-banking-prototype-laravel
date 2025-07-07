@@ -84,7 +84,7 @@ final readonly class PoolFee
         return [
             'rate' => $this->rate->toScale(4, RoundingMode::DOWN)->__toString(),
             'basis_points' => $this->getBasisPoints(),
-            'percentage' => $this->rate->multipliedBy(100)->toScale(2, RoundingMode::DOWN)->__toString() . '%',
+            'percentage' => $this->rate->multipliedBy(100)->toScale(2, RoundingMode::DOWN)->__toString().'%',
         ];
     }
 }

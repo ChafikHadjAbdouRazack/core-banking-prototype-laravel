@@ -15,6 +15,5 @@ class OrderMatched extends ShouldBeStored
         public readonly string $makerFee,
         public readonly string $takerFee,
         public readonly array $metadata = []
-    ) {
-    }
+    ) {}
 }
