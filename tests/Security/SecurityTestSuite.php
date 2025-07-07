@@ -2,15 +2,15 @@
 
 namespace Tests\Security;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class SecurityTestSuite extends TestCase
 {
     /**
      * Run all security tests and generate a security report.
-     *
-     * @test
      */
+    #[Test]
     public function test_complete_security_suite()
     {
         $this->markTestIncomplete('This is a meta-test for running the complete security suite');
@@ -19,9 +19,7 @@ class SecurityTestSuite extends TestCase
         // Run with: ./vendor/bin/pest tests/Security --parallel
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function test_security_headers_are_configured()
     {
         $response = $this->get('/');
@@ -61,9 +59,7 @@ class SecurityTestSuite extends TestCase
         }
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function test_environment_configuration_is_secure()
     {
         // APP_DEBUG should be false in production
@@ -87,9 +83,7 @@ class SecurityTestSuite extends TestCase
         $this->assertNotEquals('secret', config('database.connections.mysql.password'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function test_no_sensitive_files_are_exposed()
     {
         $sensitiveFiles = [
@@ -126,9 +120,7 @@ class SecurityTestSuite extends TestCase
         }
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function test_error_pages_dont_leak_information()
     {
         // Force production environment for this test
@@ -155,9 +147,7 @@ class SecurityTestSuite extends TestCase
         }
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function test_csrf_protection_is_enabled()
     {
         // For web routes
@@ -172,9 +162,7 @@ class SecurityTestSuite extends TestCase
         }
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function test_secure_password_hashing()
     {
         $hash = bcrypt('password');
@@ -190,9 +178,7 @@ class SecurityTestSuite extends TestCase
         $this->assertGreaterThanOrEqual(10, $cost, 'Bcrypt cost factor should be at least 10');
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function test_no_default_users_exist()
     {
         $defaultCredentials = [
@@ -214,9 +200,7 @@ class SecurityTestSuite extends TestCase
         }
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function test_session_security_configuration()
     {
         $sessionConfig = config('session');

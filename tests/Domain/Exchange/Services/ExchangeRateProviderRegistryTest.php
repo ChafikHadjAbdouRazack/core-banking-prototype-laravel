@@ -86,10 +86,10 @@ it('can get providers by priority', function () {
 
     $this->registry->register('low', $lowPriority);
     $this->registry->setPriority('low', 10);
-    
+
     $this->registry->register('high', $highPriority);
     $this->registry->setPriority('high', 100);
-    
+
     $this->registry->register('mid', $midPriority);
     $this->registry->setPriority('mid', 50);
 
@@ -116,7 +116,7 @@ it('can get rate from first available provider', function () {
 
     $rate = $this->registry->getRate('USD', 'EUR');
 
-    expect($rate)->toBeInstanceOf(\Brick\Math\BigDecimal::class);
+    expect($rate)->toBeInstanceOf(Brick\Math\BigDecimal::class);
     expect((string) $rate)->toBe('1.2000');
 });
 

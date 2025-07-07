@@ -6,6 +6,7 @@ use App\Models\Account;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
@@ -25,10 +26,8 @@ class SqlInjectionTest extends TestCase
         $this->token = $this->user->createToken('test-token')->plainTextToken;
     }
 
-    /**
-     * @test
-     * @dataProvider sqlInjectionPayloads
-     */
+    #[Test]
+    #[DataProvider('sqlInjectionPayloads')]
     public function test_account_search_is_protected_against_sql_injection($payload)
     {
         // Create test account
@@ -65,10 +64,8 @@ class SqlInjectionTest extends TestCase
         }
     }
 
-    /**
-     * @test
-     * @dataProvider sqlInjectionPayloads
-     */
+    #[Test]
+    #[DataProvider('sqlInjectionPayloads')]
     public function test_transaction_filters_are_protected_against_sql_injection($payload)
     {
         $account = Account::factory()->create([
@@ -98,10 +95,8 @@ class SqlInjectionTest extends TestCase
         }
     }
 
-    /**
-     * @test
-     * @dataProvider sqlInjectionPayloads
-     */
+    #[Test]
+    #[DataProvider('sqlInjectionPayloads')]
     public function test_user_login_is_protected_against_sql_injection($payload)
     {
         // Attempt SQL injection in login credentials
@@ -119,10 +114,8 @@ class SqlInjectionTest extends TestCase
         $this->assertStringNotContainsString('SQL syntax', $content);
     }
 
-    /**
-     * @test
-     * @dataProvider sqlInjectionPayloads
-     */
+    #[Test]
+    #[DataProvider('sqlInjectionPayloads')]
     public function test_account_creation_is_protected_against_sql_injection($payload)
     {
         $response = $this->withToken($this->token)
@@ -160,10 +153,8 @@ class SqlInjectionTest extends TestCase
         $response->assertStatus(404);
     }
 
-    /**
-     * @test
-     * @dataProvider sqlInjectionPayloads
-     */
+    #[Test]
+    #[DataProvider('sqlInjectionPayloads')]
     public function test_webhook_endpoints_are_protected_against_sql_injection($payload)
     {
         $response = $this->withToken($this->token)

@@ -5,6 +5,7 @@ namespace Tests\Security\Penetration;
 use App\Models\Account;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
@@ -24,10 +25,8 @@ class XssTest extends TestCase
         $this->token = $this->user->createToken('test-token')->plainTextToken;
     }
 
-    /**
-     * @test
-     * @dataProvider xssPayloads
-     */
+    #[Test]
+    #[DataProvider('xssPayloads')]
     public function test_account_name_is_protected_against_xss($payload)
     {
         // Create account with XSS payload
@@ -55,10 +54,8 @@ class XssTest extends TestCase
         }
     }
 
-    /**
-     * @test
-     * @dataProvider xssPayloads
-     */
+    #[Test]
+    #[DataProvider('xssPayloads')]
     public function test_transaction_description_is_protected_against_xss($payload)
     {
         $account = Account::factory()->create([
@@ -85,10 +82,8 @@ class XssTest extends TestCase
         }
     }
 
-    /**
-     * @test
-     * @dataProvider xssPayloads
-     */
+    #[Test]
+    #[DataProvider('xssPayloads')]
     public function test_user_profile_fields_are_protected_against_xss($payload)
     {
         // Attempt XSS in user profile update
@@ -113,10 +108,8 @@ class XssTest extends TestCase
         }
     }
 
-    /**
-     * @test
-     * @dataProvider xssPayloads
-     */
+    #[Test]
+    #[DataProvider('xssPayloads')]
     public function test_webhook_configuration_is_protected_against_xss($payload)
     {
         $response = $this->withToken($this->token)
@@ -164,10 +157,8 @@ class XssTest extends TestCase
         }
     }
 
-    /**
-     * @test
-     * @dataProvider xssPayloads
-     */
+    #[Test]
+    #[DataProvider('xssPayloads')]
     public function test_error_messages_are_protected_against_xss($payload)
     {
         // Trigger validation error with XSS payload
@@ -192,10 +183,8 @@ class XssTest extends TestCase
         }
     }
 
-    /**
-     * @test
-     * @dataProvider xssPayloads
-     */
+    #[Test]
+    #[DataProvider('xssPayloads')]
     public function test_search_parameters_are_protected_against_xss($payload)
     {
         // Create test data

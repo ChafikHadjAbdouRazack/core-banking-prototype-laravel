@@ -4,6 +4,8 @@ namespace Tests\Security\Vulnerabilities;
 
 use App\Models\Account;
 use App\Models\User;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class InputValidationTest extends TestCase
@@ -23,10 +25,8 @@ class InputValidationTest extends TestCase
         $this->token = $this->user->createToken('test-token')->plainTextToken;
     }
 
-    /**
-     * @test
-     * @dataProvider dangerousInputs
-     */
+    #[Test]
+    #[DataProvider('dangerousInputs')]
     public function test_account_creation_validates_dangerous_inputs($input, $field)
     {
         $response = $this->withToken($this->token)
@@ -52,10 +52,8 @@ class InputValidationTest extends TestCase
         }
     }
 
-    /**
-     * @test
-     * @dataProvider numericInputs
-     */
+    #[Test]
+    #[DataProvider('numericInputs')]
     public function test_numeric_field_validation($input, $field, $shouldBeValid)
     {
         $response = $this->withToken($this->token)
@@ -73,9 +71,7 @@ class InputValidationTest extends TestCase
         }
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function test_email_validation_with_dangerous_inputs()
     {
         $emails = [
@@ -113,9 +109,7 @@ class InputValidationTest extends TestCase
         }
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function test_json_payload_size_limits()
     {
         // Create a large payload
@@ -130,9 +124,7 @@ class InputValidationTest extends TestCase
         $this->assertContains($response->status(), [413, 422, 400, 404, 405]);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function test_nested_json_depth_limits()
     {
         // Create deeply nested JSON
@@ -153,9 +145,7 @@ class InputValidationTest extends TestCase
         $this->assertContains($response->status(), [201, 422, 400]);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function test_integer_overflow_protection()
     {
         $amounts = [
@@ -191,9 +181,7 @@ class InputValidationTest extends TestCase
         }
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function test_uuid_format_validation()
     {
         $uuids = [
@@ -236,9 +224,7 @@ class InputValidationTest extends TestCase
         }
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function test_date_input_validation()
     {
         $dates = [
@@ -273,9 +259,7 @@ class InputValidationTest extends TestCase
         }
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function test_array_input_validation()
     {
         $arrays = [
@@ -307,9 +291,7 @@ class InputValidationTest extends TestCase
         }
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function test_file_upload_validation()
     {
         $files = [
@@ -349,9 +331,7 @@ class InputValidationTest extends TestCase
         }
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function test_unicode_and_special_character_handling()
     {
         $inputs = [
@@ -391,9 +371,7 @@ class InputValidationTest extends TestCase
         }
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function test_header_injection_prevention()
     {
         $headers = [
@@ -411,9 +389,7 @@ class InputValidationTest extends TestCase
         }
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function test_boolean_input_validation()
     {
         $booleans = [

@@ -6,12 +6,11 @@ use App\Models\Account;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
 
-/**
- * @group security
- * @group memory-intensive
- */
+#[Group('security')]
+#[Group('memory-intensive')]
 class ComprehensiveSecurityTest extends TestCase
 {
     /**
@@ -311,10 +310,10 @@ class ComprehensiveSecurityTest extends TestCase
         // Test allowed file types
         $user = User::factory()->create();
         $this->actingAs($user);
-        
+
         $response = $this->postJson('/api/kyc/documents', [
             'document' => \Illuminate\Http\UploadedFile::fake()->image('passport.jpg', 800, 600),
-            'type' => 'passport',
+            'type'     => 'passport',
         ]);
 
         $response->assertSuccessful();
