@@ -18,7 +18,7 @@ final class EnhancedLiquidityAdded extends BasePoolEvent
         public readonly array $metadata = []
     ) {
         parent::__construct();
-        
+
         // Calculate and add detailed metrics
         $this->eventMetadata['liquidity_metrics'] = [
             'provider_share_percentage' => $this->calculateSharePercentage(),
@@ -56,10 +56,10 @@ final class EnhancedLiquidityAdded extends BasePoolEvent
                 BigDecimal::of($this->newBaseReserve)->minus($this->baseAmount),
                 18
             );
-        
+
         $newPrice = BigDecimal::of($this->newQuoteReserve)
             ->dividedBy($this->newBaseReserve, 18);
-        
+
         return $newPrice->minus($oldPrice)
             ->dividedBy($oldPrice, 18)
             ->abs()

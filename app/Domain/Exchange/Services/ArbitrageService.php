@@ -10,7 +10,7 @@ class ArbitrageService implements ArbitrageServiceInterface
     {
         return [];
     }
-    
+
     public function executeArbitrage(array $opportunity): array
     {
         return [
@@ -18,7 +18,7 @@ class ArbitrageService implements ArbitrageServiceInterface
             'message' => 'Arbitrage execution not implemented',
         ];
     }
-    
+
     public function calculateProfitability(array $opportunity): float
     {
         return 0.0;

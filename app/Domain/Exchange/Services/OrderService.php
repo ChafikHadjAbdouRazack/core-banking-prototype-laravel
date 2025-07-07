@@ -11,17 +11,17 @@ class OrderService
             'status' => 'created',
         ];
     }
-    
+
     public function updateOrder(string $orderId, array $data): bool
     {
         return true;
     }
-    
+
     public function cancelOrder(string $orderId): bool
     {
         return true;
     }
-    
+
     public function getOrder(string $orderId): ?array
     {
         return [

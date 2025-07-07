@@ -13,7 +13,7 @@ final class EnhancedLiquidityPoolCreated extends BasePoolEvent
         public readonly array $metadata = []
     ) {
         parent::__construct();
-        
+
         // Add pool-specific metadata
         $this->eventMetadata['pool_creation'] = [
             'pair' => "{$baseCurrency}/{$quoteCurrency}",

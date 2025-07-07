@@ -2,17 +2,16 @@
 
 namespace App\Domain\Exchange\Workflows;
 
-use App\Domain\Exchange\Activities\ValidateLiquidityActivity;
-use App\Domain\Exchange\Activities\LockLiquidityActivity;
-use App\Domain\Exchange\Activities\TransferLiquidityActivity;
-use App\Domain\Exchange\Activities\ReleaseLiquidityActivity;
 use App\Domain\Exchange\Activities\CalculatePoolSharesActivity;
+use App\Domain\Exchange\Activities\LockLiquidityActivity;
+use App\Domain\Exchange\Activities\ReleaseLiquidityActivity;
+use App\Domain\Exchange\Activities\TransferLiquidityActivity;
+use App\Domain\Exchange\Activities\ValidateLiquidityActivity;
 use App\Domain\Exchange\Aggregates\LiquidityPool;
 use App\Domain\Exchange\Events\EmergencyPoolPaused;
 use App\Domain\Exchange\Events\PoolSlippageExceeded;
 use App\Domain\Exchange\Services\CircuitBreakerService;
 use App\Domain\Exchange\ValueObjects\LiquidityAdditionInput;
-use App\Domain\Exchange\ValueObjects\LiquidityRemovalInput;
 use App\Domain\Exchange\Workflows\Policies\LiquidityRetryPolicy;
 use Brick\Math\BigDecimal;
 use Illuminate\Support\Facades\Log;
@@ -23,13 +22,16 @@ use Workflow\Workflow;
 class EnhancedLiquidityManagementWorkflow extends Workflow
 {
     private array $lockedBalances = [];
+
     private bool $liquidityTransferred = false;
+
     private array $compensationLog = [];
+
     private CircuitBreakerService $circuitBreaker;
 
     public function __construct()
     {
-        $this->circuitBreaker = new CircuitBreakerService();
+        $this->circuitBreaker = new CircuitBreakerService;
     }
 
     public function addLiquidity(LiquidityAdditionInput $input): \Generator
@@ -46,7 +48,7 @@ class EnhancedLiquidityManagementWorkflow extends Workflow
             // Step 1: Validate with circuit breaker
             yield from $this->executeWithCircuitBreaker(
                 'liquidity_validation',
-                fn() => ActivityStub::make(ValidateLiquidityActivity::class)
+                fn () => ActivityStub::make(ValidateLiquidityActivity::class)
                     ->withRetryOptions(LiquidityRetryPolicy::standard())
                     ->execute($input),
                 $context
@@ -97,7 +99,7 @@ class EnhancedLiquidityManagementWorkflow extends Workflow
             // Step 4: Transfer funds with circuit breaker
             yield from $this->executeWithCircuitBreaker(
                 'liquidity_transfer',
-                fn() => ActivityStub::make(TransferLiquidityActivity::class)
+                fn () => ActivityStub::make(TransferLiquidityActivity::class)
                     ->withRetryOptions(LiquidityRetryPolicy::critical())
                     ->execute([
                         'from_account_id' => $input->providerId,
@@ -114,7 +116,7 @@ class EnhancedLiquidityManagementWorkflow extends Workflow
             // Step 5: Update pool state with idempotency
             yield from $this->updatePoolStateWithRetry(
                 $input->poolId,
-                fn($pool) => $pool->addLiquidity(
+                fn ($pool) => $pool->addLiquidity(
                     providerId: $input->providerId,
                     baseAmount: $input->baseAmount,
                     quoteAmount: $input->quoteAmount,
@@ -148,7 +150,7 @@ class EnhancedLiquidityManagementWorkflow extends Workflow
 
             // Enhanced compensation with detailed logging
             yield from $this->compensateAddLiquidity($e, $context);
-            
+
             // Check if pool should be paused
             if ($this->shouldPausePool($e, $input->poolId)) {
                 yield from $this->pausePoolEmergency($input->poolId, $e->getMessage());
@@ -172,7 +174,7 @@ class EnhancedLiquidityManagementWorkflow extends Workflow
     ): \Generator {
         $maxAttempts = 3;
         $attempt = 0;
-        
+
         while ($attempt < $maxAttempts) {
             try {
                 return yield ActivityStub::make(LockLiquidityActivity::class)
@@ -186,7 +188,7 @@ class EnhancedLiquidityManagementWorkflow extends Workflow
                     ]);
             } catch (\Exception $e) {
                 $attempt++;
-                
+
                 if ($attempt >= $maxAttempts) {
                     throw $e;
                 }
@@ -207,17 +209,18 @@ class EnhancedLiquidityManagementWorkflow extends Workflow
     {
         $maxAttempts = 5;
         $attempt = 0;
-        
+
         while ($attempt < $maxAttempts) {
             try {
                 $pool = LiquidityPool::retrieve($poolId);
                 $operation($pool);
                 $pool->persist();
+
                 return;
             } catch (\Exception $e) {
                 $attempt++;
-                
-                if ($attempt >= $maxAttempts || !$this->isRetryableError($e)) {
+
+                if ($attempt >= $maxAttempts || ! $this->isRetryableError($e)) {
                     throw $e;
                 }
 
@@ -269,7 +272,7 @@ class EnhancedLiquidityManagementWorkflow extends Workflow
 
         // Execute releases in parallel
         $results = yield Activity::all($releaseActivities);
-        
+
         foreach ($results as $index => $result) {
             if ($result instanceof \Exception) {
                 $this->compensationLog[] = [

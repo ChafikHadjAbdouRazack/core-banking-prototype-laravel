@@ -2,7 +2,6 @@
 
 namespace App\Domain\Exchange\Events;
 
-
 use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 
 class OrderBookSnapshotTaken extends ShouldBeStored

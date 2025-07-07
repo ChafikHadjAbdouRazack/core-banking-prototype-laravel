@@ -10,15 +10,12 @@ use Spatie\EventSourcing\StoredEvents\Repositories\EloquentStoredEventRepository
 final class LiquidityPoolEventRepository extends EloquentStoredEventRepository
 {
     /**
-     * @param string $storedEventModel
-     *
      * @throws \Spatie\EventSourcing\AggregateRoots\Exceptions\InvalidEloquentStoredEventModel
      */
     public function __construct(
         protected string $storedEventModel = LiquidityPoolEvent::class
-    )
-    {
-        if (! new $this->storedEventModel() instanceof EloquentStoredEvent) {
+    ) {
+        if (! new $this->storedEventModel instanceof EloquentStoredEvent) {
             throw new InvalidEloquentStoredEventModel("The class {$this->storedEventModel} must extend EloquentStoredEvent");
         }
     }

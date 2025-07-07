@@ -4,9 +4,7 @@ namespace App\Domain\Exchange\Services;
 
 use App\Domain\Exchange\Aggregates\OrderAggregate;
 use App\Domain\Exchange\Contracts\ExternalLiquidityServiceInterface;
-use App\Domain\Exchange\Models\ExchangeRate;
 use App\Domain\Exchange\Models\Order;
-use App\Domain\Exchange\Models\OrderBook;
 use App\Domain\Exchange\Models\Trade;
 use Brick\Math\BigDecimal;
 use Brick\Math\RoundingMode;
@@ -29,7 +27,7 @@ class ExternalLiquidityService implements ExternalLiquidityServiceInterface
 
         // Get internal order book
         $internalOrderBook = $this->exchangeService->getOrderBook($baseCurrency, $quoteCurrency);
-        
+
         if (empty($internalOrderBook['buy_orders']) || empty($internalOrderBook['sell_orders'])) {
             return $opportunities;
         }
@@ -44,40 +42,40 @@ class ExternalLiquidityService implements ExternalLiquidityServiceInterface
         // Check for arbitrage opportunities
         foreach ($externalAsks as $externalAsk) {
             $askPrice = BigDecimal::of($externalAsk['price']);
-            
+
             // Buy external, sell internal
             if ($askPrice->isLessThan($internalBestBid)) {
                 $profitPercentage = $internalBestBid->minus($askPrice)
                     ->dividedBy($askPrice, 6, RoundingMode::HALF_UP)
                     ->multipliedBy('100');
-                
+
                 $opportunities[] = [
                     'type' => 'buy_external_sell_internal',
                     'external_exchange' => $externalAsk['exchange'],
                     'external_price' => $askPrice->__toString(),
                     'internal_price' => $internalBestBid->__toString(),
                     'profit_percentage' => $profitPercentage->__toString(),
-                    'action' => 'Buy on ' . $externalAsk['exchange'] . ' at ' . $askPrice . ', sell internally at ' . $internalBestBid,
+                    'action' => 'Buy on '.$externalAsk['exchange'].' at '.$askPrice.', sell internally at '.$internalBestBid,
                 ];
             }
         }
 
         foreach ($externalBids as $externalBid) {
             $bidPrice = BigDecimal::of($externalBid['price']);
-            
+
             // Buy internal, sell external
             if ($bidPrice->isGreaterThan($internalBestAsk)) {
                 $profitPercentage = $bidPrice->minus($internalBestAsk)
                     ->dividedBy($internalBestAsk, 6, RoundingMode::HALF_UP)
                     ->multipliedBy('100');
-                
+
                 $opportunities[] = [
                     'type' => 'buy_internal_sell_external',
                     'external_exchange' => $externalBid['exchange'],
                     'external_price' => $bidPrice->__toString(),
                     'internal_price' => $internalBestAsk->__toString(),
                     'profit_percentage' => $profitPercentage->__toString(),
-                    'action' => 'Buy internally at ' . $internalBestAsk . ', sell on ' . $externalBid['exchange'] . ' at ' . $bidPrice,
+                    'action' => 'Buy internally at '.$internalBestAsk.', sell on '.$externalBid['exchange'].' at '.$bidPrice,
                 ];
             }
         }
@@ -94,7 +92,7 @@ class ExternalLiquidityService implements ExternalLiquidityServiceInterface
             'success' => false,
             'orders_placed' => 0,
             'total_amount' => '0',
-            'message' => ''
+            'message' => '',
         ];
 
         // Get system account ID from config or use a default
@@ -107,8 +105,9 @@ class ExternalLiquidityService implements ExternalLiquidityServiceInterface
             $bestExternal = $this->connectorRegistry->getBestBid($baseCurrency, $quoteCurrency);
         }
 
-        if (!$bestExternal) {
+        if (! $bestExternal) {
             $result['message'] = 'No external liquidity available';
+
             return $result;
         }
 
@@ -127,11 +126,11 @@ class ExternalLiquidityService implements ExternalLiquidityServiceInterface
         ) {
             $requestedAmount = BigDecimal::of($amount);
             $basePrice = BigDecimal::of($bestExternal['price']);
-            
+
             // Split the requested amount into multiple orders for better liquidity distribution
             $orderCount = 5;
             $amountPerOrder = $requestedAmount->dividedBy($orderCount, 8, RoundingMode::FLOOR);
-            
+
             for ($i = 0; $i < $orderCount; $i++) {
                 // Adjust price based on side and order index
                 if ($side === 'buy') {
@@ -143,10 +142,10 @@ class ExternalLiquidityService implements ExternalLiquidityServiceInterface
                     $priceMultiplier = BigDecimal::of('1')->minus(BigDecimal::of('0.001')->multipliedBy($i));
                     $orderType = 'buy';
                 }
-                
+
                 $orderPrice = $basePrice->multipliedBy($priceMultiplier);
                 $orderId = Str::uuid()->toString();
-                
+
                 OrderAggregate::retrieve($orderId)
                     ->placeOrder(
                         accountId: $systemAccountId,
@@ -160,19 +159,19 @@ class ExternalLiquidityService implements ExternalLiquidityServiceInterface
                             'source' => 'external_liquidity',
                             'external_exchange' => $bestExternal['exchange'],
                             'external_price' => $basePrice->__toString(),
-                            'liquidity_side' => $side
+                            'liquidity_side' => $side,
                         ]
                     )
                     ->persist();
-                
+
                 $placedOrders[] = [
                     'order_id' => $orderId,
                     'type' => $orderType,
                     'amount' => $amountPerOrder->__toString(),
                     'price' => $orderPrice->__toString(),
-                    'exchange' => $bestExternal['exchange']
+                    'exchange' => $bestExternal['exchange'],
                 ];
-                
+
                 $totalAmount = $totalAmount->plus($amountPerOrder);
             }
         });
@@ -199,14 +198,15 @@ class ExternalLiquidityService implements ExternalLiquidityServiceInterface
             'external_best_ask' => null,
             'bid_deviation' => null,
             'ask_deviation' => null,
-            'actions_taken' => []
+            'actions_taken' => [],
         ];
 
         // Get internal prices
         $orderBook = $this->exchangeService->getOrderBook($baseCurrency, $quoteCurrency);
-        
+
         if (empty($orderBook['buy_orders']) || empty($orderBook['sell_orders'])) {
             $result['actions_taken'][] = 'No internal orders to align';
+
             return $result;
         }
 
@@ -217,8 +217,9 @@ class ExternalLiquidityService implements ExternalLiquidityServiceInterface
         $externalBestBid = $this->connectorRegistry->getBestBid($baseCurrency, $quoteCurrency);
         $externalBestAsk = $this->connectorRegistry->getBestAsk($baseCurrency, $quoteCurrency);
 
-        if (!$externalBestBid || !$externalBestAsk) {
+        if (! $externalBestBid || ! $externalBestAsk) {
             $result['actions_taken'][] = 'No external prices available';
+
             return $result;
         }
 
@@ -230,7 +231,7 @@ class ExternalLiquidityService implements ExternalLiquidityServiceInterface
             ->dividedBy($extBidPrice, 6, RoundingMode::HALF_UP)
             ->multipliedBy('100')
             ->abs();
-        
+
         $askDeviation = $internalBestAsk->minus($extAskPrice)
             ->dividedBy($extAskPrice, 6, RoundingMode::HALF_UP)
             ->multipliedBy('100')
@@ -244,12 +245,12 @@ class ExternalLiquidityService implements ExternalLiquidityServiceInterface
         $result['ask_deviation'] = $askDeviation->__toString();
 
         // Check if alignment is needed
-        $maxDeviation = BigDecimal::of((string)$maxDeviationPercentage);
-        
+        $maxDeviation = BigDecimal::of((string) $maxDeviationPercentage);
+
         if ($bidDeviation->isGreaterThan($maxDeviation) || $askDeviation->isGreaterThan($maxDeviation)) {
             // Place liquidity orders to align prices
             $systemAccountId = config('exchange.system_account_id', 'system-liquidity-provider');
-            
+
             if ($bidDeviation->isGreaterThan($maxDeviation)) {
                 // Place sell order at external bid price
                 $orderId = Str::uuid()->toString();
@@ -265,14 +266,14 @@ class ExternalLiquidityService implements ExternalLiquidityServiceInterface
                         metadata: [
                             'source' => 'price_alignment',
                             'reason' => 'bid_deviation',
-                            'deviation' => $bidDeviation->__toString()
+                            'deviation' => $bidDeviation->__toString(),
                         ]
                     )
                     ->persist();
-                
+
                 $result['actions_taken'][] = "Placed sell order at {$extBidPrice} to align bid";
             }
-            
+
             if ($askDeviation->isGreaterThan($maxDeviation)) {
                 // Place buy order at external ask price
                 $orderId = Str::uuid()->toString();
@@ -288,14 +289,14 @@ class ExternalLiquidityService implements ExternalLiquidityServiceInterface
                         metadata: [
                             'source' => 'price_alignment',
                             'reason' => 'ask_deviation',
-                            'deviation' => $askDeviation->__toString()
+                            'deviation' => $askDeviation->__toString(),
                         ]
                     )
                     ->persist();
-                
+
                 $result['actions_taken'][] = "Placed buy order at {$extAskPrice} to align ask";
             }
-            
+
             $result['aligned'] = true;
         } else {
             $result['actions_taken'][] = 'Prices are within acceptable deviation';
@@ -314,7 +315,7 @@ class ExternalLiquidityService implements ExternalLiquidityServiceInterface
         return [
             'executed' => false,
             'reason' => 'External exchange trading not yet implemented',
-            'opportunity' => $opportunity
+            'opportunity' => $opportunity,
         ];
     }
 
@@ -327,29 +328,29 @@ class ExternalLiquidityService implements ExternalLiquidityServiceInterface
             'bids' => [],
             'asks' => [],
             'total_bid_volume' => '0',
-            'total_ask_volume' => '0'
+            'total_ask_volume' => '0',
         ];
 
         // Aggregate order book data from all connected exchanges
         foreach ($this->connectorRegistry->getConnectors() as $connector) {
             try {
                 $externalBook = $connector->getOrderBook($baseCurrency, $quoteCurrency);
-                
+
                 // Merge bids
                 foreach ($externalBook['bids'] ?? [] as $bid) {
                     $depth['bids'][] = [
                         'exchange' => $connector->getName(),
                         'price' => $bid['price'],
-                        'amount' => $bid['amount']
+                        'amount' => $bid['amount'],
                     ];
                 }
-                
+
                 // Merge asks
                 foreach ($externalBook['asks'] ?? [] as $ask) {
                     $depth['asks'][] = [
                         'exchange' => $connector->getName(),
                         'price' => $ask['price'],
-                        'amount' => $ask['amount']
+                        'amount' => $ask['amount'],
                     ];
                 }
             } catch (\Exception $e) {
@@ -359,8 +360,8 @@ class ExternalLiquidityService implements ExternalLiquidityServiceInterface
         }
 
         // Sort by price
-        usort($depth['bids'], fn($a, $b) => BigDecimal::of($b['price'])->compareTo(BigDecimal::of($a['price'])));
-        usort($depth['asks'], fn($a, $b) => BigDecimal::of($a['price'])->compareTo(BigDecimal::of($b['price'])));
+        usort($depth['bids'], fn ($a, $b) => BigDecimal::of($b['price'])->compareTo(BigDecimal::of($a['price'])));
+        usort($depth['asks'], fn ($a, $b) => BigDecimal::of($a['price'])->compareTo(BigDecimal::of($b['price'])));
 
         // Calculate total volumes
         $totalBidVolume = BigDecimal::of('0');
@@ -398,7 +399,7 @@ class ExternalLiquidityService implements ExternalLiquidityServiceInterface
 
             // Get internal mid price
             $orderBook = $this->exchangeService->getOrderBook($baseCurrency, $quoteCurrency);
-            
+
             if (empty($orderBook['buy_orders']) || empty($orderBook['sell_orders'])) {
                 continue;
             }
@@ -416,7 +417,7 @@ class ExternalLiquidityService implements ExternalLiquidityServiceInterface
                         $bid = BigDecimal::of($ticker['bid']);
                         $ask = BigDecimal::of($ticker['ask']);
                         $mid = $bid->plus($ask)->dividedBy('2', 8, RoundingMode::HALF_UP);
-                        
+
                         $externalPrices[$connector->getName()] = [
                             'bid' => $bid->__toString(),
                             'ask' => $ask->__toString(),
@@ -424,7 +425,7 @@ class ExternalLiquidityService implements ExternalLiquidityServiceInterface
                             'divergence' => $mid->minus($internalMid)
                                 ->dividedBy($internalMid, 6, RoundingMode::HALF_UP)
                                 ->multipliedBy('100')
-                                ->__toString()
+                                ->__toString(),
                         ];
                     }
                 } catch (\Exception $e) {
@@ -432,10 +433,10 @@ class ExternalLiquidityService implements ExternalLiquidityServiceInterface
                 }
             }
 
-            if (!empty($externalPrices)) {
+            if (! empty($externalPrices)) {
                 $divergences["{$baseCurrency}/{$quoteCurrency}"] = [
                     'internal_mid' => $internalMid->__toString(),
-                    'external_prices' => $externalPrices
+                    'external_prices' => $externalPrices,
                 ];
             }
         }
@@ -453,7 +454,7 @@ class ExternalLiquidityService implements ExternalLiquidityServiceInterface
         return [
             'rebalanced' => false,
             'reason' => 'Cross-exchange fund transfers not yet implemented',
-            'target_distribution' => $targetDistribution
+            'target_distribution' => $targetDistribution,
         ];
     }
 
@@ -479,7 +480,7 @@ class ExternalLiquidityService implements ExternalLiquidityServiceInterface
             'total_volume' => '0',
             'total_profit' => '0',
             'by_exchange' => [],
-            'by_pair' => []
+            'by_pair' => [],
         ];
 
         $totalVolume = BigDecimal::of('0');
@@ -499,11 +500,11 @@ class ExternalLiquidityService implements ExternalLiquidityServiceInterface
 
             // Group by exchange
             $exchange = $trade->metadata['external_exchange'] ?? 'unknown';
-            if (!isset($byExchange[$exchange])) {
+            if (! isset($byExchange[$exchange])) {
                 $byExchange[$exchange] = [
                     'trades' => 0,
                     'volume' => BigDecimal::of('0'),
-                    'profit' => BigDecimal::of('0')
+                    'profit' => BigDecimal::of('0'),
                 ];
             }
             $byExchange[$exchange]['trades']++;
@@ -514,11 +515,11 @@ class ExternalLiquidityService implements ExternalLiquidityServiceInterface
 
             // Group by pair
             $pair = "{$trade->base_currency}/{$trade->quote_currency}";
-            if (!isset($byPair[$pair])) {
+            if (! isset($byPair[$pair])) {
                 $byPair[$pair] = [
                     'trades' => 0,
                     'volume' => BigDecimal::of('0'),
-                    'profit' => BigDecimal::of('0')
+                    'profit' => BigDecimal::of('0'),
                 ];
             }
             $byPair[$pair]['trades']++;
@@ -536,7 +537,7 @@ class ExternalLiquidityService implements ExternalLiquidityServiceInterface
             $stats['by_exchange'][$exchange] = [
                 'trades' => $data['trades'],
                 'volume' => $data['volume']->__toString(),
-                'profit' => $data['profit']->__toString()
+                'profit' => $data['profit']->__toString(),
             ];
         }
 
@@ -544,7 +545,7 @@ class ExternalLiquidityService implements ExternalLiquidityServiceInterface
             $stats['by_pair'][$pair] = [
                 'trades' => $data['trades'],
                 'volume' => $data['volume']->__toString(),
-                'profit' => $data['profit']->__toString()
+                'profit' => $data['profit']->__toString(),
             ];
         }
 

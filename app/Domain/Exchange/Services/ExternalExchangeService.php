@@ -10,12 +10,12 @@ class ExternalExchangeService implements ExternalExchangeServiceInterface
     {
         return true;
     }
-    
+
     public function disconnect(string $exchange): bool
     {
         return true;
     }
-    
+
     public function getMarketData(string $exchange, string $pair): array
     {
         return [
@@ -26,7 +26,7 @@ class ExternalExchangeService implements ExternalExchangeServiceInterface
             'timestamp' => now()->toIso8601String(),
         ];
     }
-    
+
     public function executeArbitrage(array $opportunity): array
     {
         return [
@@ -34,7 +34,7 @@ class ExternalExchangeService implements ExternalExchangeServiceInterface
             'message' => 'Arbitrage execution not implemented',
         ];
     }
-    
+
     public function getPriceAlignment(): array
     {
         return [
@@ -43,18 +43,18 @@ class ExternalExchangeService implements ExternalExchangeServiceInterface
             'pairs' => [],
         ];
     }
-    
+
     public function updatePriceAlignment(array $settings): bool
     {
         return true;
     }
-    
+
     // Additional methods used by the controller
     public function getConnectedExchanges(): array
     {
         return [];
     }
-    
+
     public function connectExchange(string $userUuid, string $exchange, array $credentials): array
     {
         return [
@@ -62,12 +62,12 @@ class ExternalExchangeService implements ExternalExchangeServiceInterface
             'exchange' => $exchange,
         ];
     }
-    
+
     public function disconnectExchange(string $userUuid, string $exchange): bool
     {
         return true;
     }
-    
+
     /**
      * Get balances from external exchange
      */

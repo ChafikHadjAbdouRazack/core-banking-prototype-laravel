@@ -8,8 +8,11 @@ use Illuminate\Support\Facades\Log;
 class CircuitBreakerService
 {
     private const FAILURE_THRESHOLD = 5;
+
     private const SUCCESS_THRESHOLD = 2;
+
     private const TIMEOUT = 60; // seconds
+
     private const HALF_OPEN_TIMEOUT = 30; // seconds
 
     public function call(string $service, callable $operation, array $context = []): mixed
@@ -20,15 +23,20 @@ class CircuitBreakerService
             case 'open':
                 if ($this->shouldAttemptReset($service)) {
                     $this->setState($service, 'half-open');
+                    Cache::forget("circuit_breaker:{$service}:half_open_attempts");
+                    // Fall through to half-open case
+                    $state = 'half-open';
                 } else {
                     throw new \RuntimeException("Circuit breaker is OPEN for service: {$service}");
                 }
-                break;
-            
+                // Fall through to half-open check
+                
             case 'half-open':
-                // Allow limited traffic through
-                if ($this->isHalfOpenLimitReached($service)) {
-                    throw new \RuntimeException("Circuit breaker is HALF-OPEN with limit reached for service: {$service}");
+                if ($state === 'half-open') {
+                    // Allow limited traffic through
+                    if ($this->isHalfOpenLimitReached($service)) {
+                        throw new \RuntimeException("Circuit breaker is HALF-OPEN with limit reached for service: {$service}");
+                    }
                 }
                 break;
         }
@@ -36,6 +44,7 @@ class CircuitBreakerService
         try {
             $result = $operation();
             $this->recordSuccess($service);
+
             return $result;
         } catch (\Exception $e) {
             $this->recordFailure($service, $e, $context);
@@ -52,8 +61,8 @@ class CircuitBreakerService
     {
         Cache::put("circuit_breaker:{$service}:state", $state, self::TIMEOUT);
         Cache::put("circuit_breaker:{$service}:state_changed_at", now(), self::TIMEOUT);
-        
-        Log::info("Circuit breaker state changed", [
+
+        Log::info('Circuit breaker state changed', [
             'service' => $service,
             'new_state' => $state,
         ]);
@@ -67,21 +76,37 @@ class CircuitBreakerService
         if ($this->getState($service) === 'half-open' && $successCount >= self::SUCCESS_THRESHOLD) {
             $this->setState($service, 'closed');
             Cache::forget("circuit_breaker:{$service}:success_count");
+            Cache::forget("circuit_breaker:{$service}:half_open_attempts");
         }
     }
 
     private function recordFailure(string $service, \Exception $exception, array $context): void
     {
+        $state = $this->getState($service);
+
+        if ($state === 'half-open') {
+            // Failure in half-open immediately opens the circuit again
+            $this->setState($service, 'open');
+            Cache::forget("circuit_breaker:{$service}:half_open_attempts");
+            Cache::forget("circuit_breaker:{$service}:success_count");
+            Log::warning('Circuit breaker failure in half-open state, reopening', [
+                'service' => $service,
+                'exception' => $exception->getMessage(),
+                'context' => $context,
+            ]);
+            return;
+        }
+
         $failureCount = Cache::increment("circuit_breaker:{$service}:failure_count");
-        
-        Log::warning("Circuit breaker failure recorded", [
+
+        Log::warning('Circuit breaker failure recorded', [
             'service' => $service,
             'failure_count' => $failureCount,
             'exception' => $exception->getMessage(),
             'context' => $context,
         ]);
 
-        if ($failureCount >= self::FAILURE_THRESHOLD && $this->getState($service) !== 'open') {
+        if ($failureCount >= self::FAILURE_THRESHOLD && $state !== 'open') {
             $this->setState($service, 'open');
             Cache::forget("circuit_breaker:{$service}:failure_count");
         }
@@ -90,8 +115,8 @@ class CircuitBreakerService
     private function shouldAttemptReset(string $service): bool
     {
         $stateChangedAt = Cache::get("circuit_breaker:{$service}:state_changed_at");
-        
-        if (!$stateChangedAt) {
+
+        if (! $stateChangedAt) {
             return true;
         }
 
@@ -101,6 +126,7 @@ class CircuitBreakerService
     private function isHalfOpenLimitReached(string $service): bool
     {
         $attempts = Cache::increment("circuit_breaker:{$service}:half_open_attempts");
+
         return $attempts > 1; // Allow only 1 request in half-open state
     }
 }

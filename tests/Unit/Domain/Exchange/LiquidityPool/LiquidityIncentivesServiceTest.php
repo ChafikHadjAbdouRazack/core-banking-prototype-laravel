@@ -5,7 +5,6 @@ namespace Tests\Unit\Domain\Exchange\LiquidityPool;
 use App\Domain\Exchange\LiquidityPool\Services\LiquidityIncentivesService;
 use App\Domain\Exchange\Projections\LiquidityPool;
 use App\Domain\Exchange\Projections\LiquidityProvider;
-use Brick\Math\BigDecimal;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -18,7 +17,7 @@ class LiquidityIncentivesServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->service = new LiquidityIncentivesService();
+        $this->service = new LiquidityIncentivesService;
     }
 
     public function test_calculates_pool_rewards_based_on_tvl()
@@ -41,9 +40,9 @@ class LiquidityIncentivesServiceTest extends TestCase
 
         // Base reward = TVL * 0.0001 = 400k * 0.0001 = 40 USD
         $this->assertEquals('400000', $rewards['tvl']);
-        $this->assertEquals(40, (float)$rewards['base_reward']); // Compare as float due to precision
+        $this->assertEquals(40, (float) $rewards['base_reward']); // Compare as float due to precision
         $this->assertEquals('USD', $rewards['reward_currency']);
-        $this->assertGreaterThan(0, (float)$rewards['total_rewards']);
+        $this->assertGreaterThan(0, (float) $rewards['total_rewards']);
     }
 
     public function test_applies_performance_multipliers()
@@ -81,8 +80,8 @@ class LiquidityIncentivesServiceTest extends TestCase
 
         // High volume pool should have higher multiplier
         $this->assertGreaterThan(
-            (float)$lowVolumeRewards['performance_multiplier'],
-            (float)$highVolumeRewards['performance_multiplier']
+            (float) $lowVolumeRewards['performance_multiplier'],
+            (float) $highVolumeRewards['performance_multiplier']
         );
     }
 
@@ -119,13 +118,13 @@ class LiquidityIncentivesServiceTest extends TestCase
         $rewards = $this->service->calculatePoolRewards($pool);
 
         $this->assertCount(2, $rewards['provider_rewards']);
-        
+
         // Provider 1 should get 60% of rewards
         $provider1Reward = $rewards['provider_rewards'][0];
         $provider2Reward = $rewards['provider_rewards'][1];
-        
-        $this->assertEquals(0.6, round((float)$provider1Reward['share_ratio'], 1));
-        $this->assertEquals(0.4, round((float)$provider2Reward['share_ratio'], 1));
+
+        $this->assertEquals(0.6, round((float) $provider1Reward['share_ratio'], 1));
+        $this->assertEquals(0.4, round((float) $provider2Reward['share_ratio'], 1));
     }
 
     public function test_applies_early_provider_bonus()
@@ -169,8 +168,8 @@ class LiquidityIncentivesServiceTest extends TestCase
 
         // Early provider should have bonus multiplier (or at least equal if both get same bonuses)
         $this->assertGreaterThanOrEqual(
-            (float)$lateProviderReward['bonus_multiplier'],
-            (float)$earlyProviderReward['bonus_multiplier']
+            (float) $lateProviderReward['bonus_multiplier'],
+            (float) $earlyProviderReward['bonus_multiplier']
         );
     }
 
@@ -199,8 +198,8 @@ class LiquidityIncentivesServiceTest extends TestCase
         $apy = $this->service->calculateProviderAPY($pool->pool_id, 'provider-1');
 
         $this->assertEquals('provider-1', $apy['provider_id']);
-        $this->assertEquals(40000, round((float)$apy['tvl'])); // 10% of 400k TVL
-        $this->assertGreaterThan(0, (float)$apy['fee_apy']); // Should have fee APY
+        $this->assertEquals(40000, round((float) $apy['tvl'])); // 10% of 400k TVL
+        $this->assertGreaterThan(0, (float) $apy['fee_apy']); // Should have fee APY
         $this->assertEquals('10%', $apy['share_ratio']);
     }
 }

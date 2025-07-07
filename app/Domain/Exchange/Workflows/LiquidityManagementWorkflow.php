@@ -2,24 +2,22 @@
 
 namespace App\Domain\Exchange\Workflows;
 
-use App\Domain\Account\Models\Account;
-use App\Domain\Account\Models\AccountBalance;
-use App\Domain\Exchange\Activities\ValidateLiquidityActivity;
-use App\Domain\Exchange\Activities\LockLiquidityActivity;
-use App\Domain\Exchange\Activities\TransferLiquidityActivity;
-use App\Domain\Exchange\Activities\ReleaseLiquidityActivity;
 use App\Domain\Exchange\Activities\CalculatePoolSharesActivity;
+use App\Domain\Exchange\Activities\LockLiquidityActivity;
+use App\Domain\Exchange\Activities\ReleaseLiquidityActivity;
+use App\Domain\Exchange\Activities\TransferLiquidityActivity;
+use App\Domain\Exchange\Activities\ValidateLiquidityActivity;
 use App\Domain\Exchange\Aggregates\LiquidityPool;
 use App\Domain\Exchange\ValueObjects\LiquidityAdditionInput;
 use App\Domain\Exchange\ValueObjects\LiquidityRemovalInput;
 use Brick\Math\BigDecimal;
-use Illuminate\Support\Str;
 use Workflow\Activity;
 use Workflow\Workflow;
 
 class LiquidityManagementWorkflow extends Workflow
 {
     private array $lockedBalances = [];
+
     private bool $liquidityTransferred = false;
 
     public function addLiquidity(LiquidityAdditionInput $input): \Generator
@@ -83,7 +81,7 @@ class LiquidityManagementWorkflow extends Workflow
         } catch (\Exception $e) {
             // Compensate on failure
             yield from $this->compensateAddLiquidity($e->getMessage());
-            
+
             return [
                 'success' => false,
                 'error' => $e->getMessage(),
@@ -156,14 +154,14 @@ class LiquidityManagementWorkflow extends Workflow
                 ->dividedBy($poolState['quote_reserve'], 18);
 
             $targetRatioDecimal = BigDecimal::of($targetRatio);
-            
+
             // Step 2: Calculate rebalancing requirements
             if ($currentRatio->isGreaterThan($targetRatioDecimal)) {
                 // Need to add more quote currency
                 $quoteNeeded = BigDecimal::of($poolState['base_reserve'])
                     ->dividedBy($targetRatioDecimal, 18)
                     ->minus($poolState['quote_reserve']);
-                
+
                 $rebalanceAmount = $quoteNeeded->__toString();
                 $rebalanceCurrency = $poolState['quote_currency'];
             } else {
@@ -171,7 +169,7 @@ class LiquidityManagementWorkflow extends Workflow
                 $baseNeeded = BigDecimal::of($poolState['quote_reserve'])
                     ->multipliedBy($targetRatioDecimal)
                     ->minus($poolState['base_reserve']);
-                
+
                 $rebalanceAmount = $baseNeeded->__toString();
                 $rebalanceCurrency = $poolState['base_currency'];
             }

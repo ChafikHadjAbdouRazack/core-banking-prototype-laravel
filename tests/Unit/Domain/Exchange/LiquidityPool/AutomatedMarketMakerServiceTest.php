@@ -5,7 +5,6 @@ namespace Tests\Unit\Domain\Exchange\LiquidityPool;
 use App\Domain\Exchange\Contracts\PriceAggregatorInterface;
 use App\Domain\Exchange\LiquidityPool\Services\AutomatedMarketMakerService;
 use App\Domain\Exchange\Projections\LiquidityPool;
-use Brick\Math\BigDecimal;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Mockery;
 use Tests\TestCase;
@@ -15,12 +14,13 @@ class AutomatedMarketMakerServiceTest extends TestCase
     use RefreshDatabase;
 
     private AutomatedMarketMakerService $service;
+
     private $priceAggregator;
 
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->priceAggregator = Mockery::mock(PriceAggregatorInterface::class);
         $this->service = new AutomatedMarketMakerService($this->priceAggregator);
     }
@@ -52,11 +52,11 @@ class AutomatedMarketMakerServiceTest extends TestCase
         // Assertions
         $this->assertNotEmpty($orders);
         $this->assertCount(10, $orders); // 5 buy + 5 sell orders
-        
+
         // Check buy orders
-        $buyOrders = array_filter($orders, fn($order) => $order['type'] === 'buy');
+        $buyOrders = array_filter($orders, fn ($order) => $order['type'] === 'buy');
         $this->assertCount(5, $buyOrders);
-        
+
         foreach ($buyOrders as $order) {
             $this->assertArrayHasKey('price', $order);
             $this->assertArrayHasKey('quantity', $order);
@@ -64,9 +64,9 @@ class AutomatedMarketMakerServiceTest extends TestCase
             $this->assertEquals('amm', $order['source']);
             $this->assertEquals($pool->pool_id, $order['pool_id']);
         }
-        
+
         // Check sell orders
-        $sellOrders = array_filter($orders, fn($order) => $order['type'] === 'sell');
+        $sellOrders = array_filter($orders, fn ($order) => $order['type'] === 'sell');
         $this->assertCount(5, $sellOrders);
     }
 
@@ -94,12 +94,12 @@ class AutomatedMarketMakerServiceTest extends TestCase
         $orders = $this->service->generateMarketMakingOrders($pool->pool_id);
 
         // In volatile conditions, spreads should be wider
-        $buyOrders = array_filter($orders, fn($order) => $order['type'] === 'buy');
+        $buyOrders = array_filter($orders, fn ($order) => $order['type'] === 'buy');
         $firstBuyOrder = array_values($buyOrders)[0];
         $poolPrice = 2000; // 200000 / 100
-        
+
         // Check that buy price is below pool price (at least 1% spread)
-        $this->assertLessThanOrEqual($poolPrice * 0.99, (float)$firstBuyOrder['price']);
+        $this->assertLessThanOrEqual($poolPrice * 0.99, (float) $firstBuyOrder['price']);
     }
 
     public function test_calculates_order_sizes_based_on_reserves()
@@ -121,12 +121,12 @@ class AutomatedMarketMakerServiceTest extends TestCase
         $orders = $this->service->generateMarketMakingOrders($pool->pool_id);
 
         // Check that order sizes are proportional to reserves (10% of reserves / 5 levels)
-        $sellOrders = array_filter($orders, fn($order) => $order['type'] === 'sell');
+        $sellOrders = array_filter($orders, fn ($order) => $order['type'] === 'sell');
         $firstSellOrder = array_values($sellOrders)[0];
-        
+
         // Each sell order should be ~2% of base reserves (10% / 5 levels)
         $expectedQuantity = 1000 * 0.1 / 5; // 20 ETH per order
-        $this->assertEquals(20, (float)$firstSellOrder['quantity']);
+        $this->assertEquals(20, (float) $firstSellOrder['quantity']);
     }
 
     public function test_adjusts_market_making_parameters()

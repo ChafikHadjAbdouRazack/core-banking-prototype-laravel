@@ -244,6 +244,55 @@ php artisan liquidity:update-market-making --pool=pool-uuid --cancel-existing
 # - Market making updates: Every 5 minutes
 ```
 
+#### Enhanced Liquidity Pool Patterns
+
+**Event Sourcing with Custom Repositories:**
+```php
+// Custom repository usage in aggregate
+protected function getStoredEventRepository(): LiquidityPoolEventRepository
+{
+    return app()->make(LiquidityPoolEventRepository::class);
+}
+
+protected function getSnapshotRepository(): LiquidityPoolSnapshotRepository
+{
+    return app()->make(LiquidityPoolSnapshotRepository::class);
+}
+```
+
+**Value Objects for Type Safety:**
+```php
+use App\Domain\Exchange\LiquidityPool\ValueObjects\PoolId;
+use App\Domain\Exchange\LiquidityPool\ValueObjects\LiquidityShare;
+use App\Domain\Exchange\LiquidityPool\ValueObjects\PoolRatio;
+use App\Domain\Exchange\LiquidityPool\ValueObjects\PoolFee;
+
+// Usage
+$poolId = PoolId::generate();
+$share = new LiquidityShare($amount, $totalShares);
+$ratio = new PoolRatio($baseReserve, $quoteReserve);
+$fee = PoolFee::fromBasisPoints(30); // 0.3%
+```
+
+**Circuit Breaker for External Services:**
+```php
+$circuitBreaker = app(CircuitBreakerService::class);
+$result = $circuitBreaker->call('external_exchange', function () {
+    return $this->binanceConnector->getOrderBook('BTC/USD');
+});
+```
+
+**Enhanced Workflow with Retry Policies:**
+```php
+use App\Domain\Exchange\Workflows\EnhancedLiquidityManagementWorkflow;
+use App\Domain\Exchange\Workflows\Policies\LiquidityRetryPolicy;
+
+// Workflow with retry policies
+ActivityStub::make(ValidateLiquidityActivity::class)
+    ->withRetryOptions(LiquidityRetryPolicy::standard())
+    ->execute($input);
+```
+
 ### SEO and Schema Markup
 ```bash
 # Schema.org structured data is implemented for better SEO

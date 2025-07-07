@@ -16,7 +16,7 @@ class PriceAggregator implements PriceAggregatorInterface
             'exchanges' => [],
         ];
     }
-    
+
     public function getBestBid(string $symbol): array
     {
         return [
@@ -25,7 +25,7 @@ class PriceAggregator implements PriceAggregatorInterface
             'amount' => 0,
         ];
     }
-    
+
     public function getBestAsk(string $symbol): array
     {
         return [
@@ -34,7 +34,7 @@ class PriceAggregator implements PriceAggregatorInterface
             'amount' => 0,
         ];
     }
-    
+
     /**
      * Get prices across all exchanges
      */

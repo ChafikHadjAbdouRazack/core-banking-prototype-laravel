@@ -11,6 +11,7 @@ use InvalidArgumentException;
 final readonly class LiquidityShare
 {
     private BigDecimal $amount;
+
     private BigDecimal $percentage;
 
     public function __construct(
@@ -18,13 +19,13 @@ final readonly class LiquidityShare
         string|BigDecimal $totalShares
     ) {
         $this->amount = BigDecimal::of($amount);
-        
+
         if ($this->amount->isNegative()) {
             throw new InvalidArgumentException('Liquidity share amount cannot be negative');
         }
 
         $total = BigDecimal::of($totalShares);
-        
+
         if ($total->isZero()) {
             $this->percentage = BigDecimal::zero();
         } else {
@@ -60,7 +61,7 @@ final readonly class LiquidityShare
     public function subtract(self $other): self
     {
         $newAmount = $this->amount->minus($other->amount);
-        
+
         if ($newAmount->isNegative()) {
             throw new InvalidArgumentException('Cannot subtract more shares than available');
         }
@@ -103,7 +104,7 @@ final readonly class LiquidityShare
     {
         return [
             'amount' => $this->amount->__toString(),
-            'percentage' => $this->percentage->toScale(2, RoundingMode::DOWN)->__toString() . '%',
+            'percentage' => $this->percentage->toScale(2, RoundingMode::DOWN)->__toString().'%',
         ];
     }
 }

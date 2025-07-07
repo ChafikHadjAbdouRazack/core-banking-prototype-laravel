@@ -11,13 +11,14 @@ use Illuminate\Support\Collection;
 class ExternalExchangeConnectorRegistry
 {
     private Collection $connectors;
+
     private Collection $enabledConnectors;
 
     public function __construct()
     {
         $this->connectors = collect();
         $this->enabledConnectors = collect(config('trading.external_connectors', []));
-        
+
         $this->registerDefaultConnectors();
     }
 
@@ -49,7 +50,7 @@ class ExternalExchangeConnectorRegistry
 
     public function get(string $name): IExternalExchangeConnector
     {
-        if (!$this->connectors->has($name)) {
+        if (! $this->connectors->has($name)) {
             throw new ExternalExchangeException("Exchange connector '{$name}' not found");
         }
 
@@ -68,7 +69,7 @@ class ExternalExchangeConnectorRegistry
 
     public function available(): Collection
     {
-        return $this->connectors->filter(fn($connector) => $connector->isAvailable());
+        return $this->connectors->filter(fn ($connector) => $connector->isAvailable());
     }
 
     public function isConnectorEnabled(string $name): bool
@@ -87,8 +88,8 @@ class ExternalExchangeConnectorRegistry
         foreach ($this->available() as $name => $connector) {
             try {
                 $ticker = $connector->getTicker($baseCurrency, $quoteCurrency);
-                
-                if (!$bestBid || $ticker->bid->isGreaterThan($bestBid)) {
+
+                if (! $bestBid || $ticker->bid->isGreaterThan($bestBid)) {
                     $bestBid = $ticker->bid;
                     $bestExchange = $name;
                 }
@@ -100,7 +101,7 @@ class ExternalExchangeConnectorRegistry
 
         return $bestBid ? [
             'price' => $bestBid,
-            'exchange' => $bestExchange
+            'exchange' => $bestExchange,
         ] : null;
     }
 
@@ -115,8 +116,8 @@ class ExternalExchangeConnectorRegistry
         foreach ($this->available() as $name => $connector) {
             try {
                 $ticker = $connector->getTicker($baseCurrency, $quoteCurrency);
-                
-                if (!$bestAsk || $ticker->ask->isLessThan($bestAsk)) {
+
+                if (! $bestAsk || $ticker->ask->isLessThan($bestAsk)) {
                     $bestAsk = $ticker->ask;
                     $bestExchange = $name;
                 }
@@ -128,7 +129,7 @@ class ExternalExchangeConnectorRegistry
 
         return $bestAsk ? [
             'price' => $bestAsk,
-            'exchange' => $bestExchange
+            'exchange' => $bestExchange,
         ] : null;
     }
 
@@ -143,7 +144,7 @@ class ExternalExchangeConnectorRegistry
         foreach ($this->available() as $name => $connector) {
             try {
                 $orderBook = $connector->getOrderBook($baseCurrency, $quoteCurrency, $depth);
-                
+
                 // Add exchange info to each order
                 $orderBook->bids->each(function ($bid) use ($aggregatedBids, $name) {
                     $bid['exchange'] = $name;
@@ -161,13 +162,13 @@ class ExternalExchangeConnectorRegistry
         }
 
         // Sort bids descending, asks ascending
-        $sortedBids = $aggregatedBids->sortByDesc(fn($bid) => $bid['price']->__toString())->take($depth);
-        $sortedAsks = $aggregatedAsks->sortBy(fn($ask) => $ask['price']->__toString())->take($depth);
+        $sortedBids = $aggregatedBids->sortByDesc(fn ($bid) => $bid['price']->__toString())->take($depth);
+        $sortedAsks = $aggregatedAsks->sortBy(fn ($ask) => $ask['price']->__toString())->take($depth);
 
         return [
             'bids' => $sortedBids->values(),
             'asks' => $sortedAsks->values(),
-            'exchanges' => $this->available()->keys()
+            'exchanges' => $this->available()->keys(),
         ];
     }
 }

@@ -9,13 +9,11 @@ use App\Domain\Exchange\Activities\TransferAssetsActivity;
 use App\Domain\Exchange\Activities\UpdateOrderBookActivity;
 use App\Domain\Exchange\Activities\ValidateOrderActivity;
 use App\Domain\Exchange\Aggregates\Order;
-use App\Domain\Exchange\Aggregates\OrderBook;
 use App\Domain\Exchange\ValueObjects\OrderMatchingInput;
 use App\Domain\Exchange\ValueObjects\OrderMatchingResult;
 use Carbon\CarbonInterval;
 use Workflow\Activity;
 use Workflow\Workflow;
-use Workflow\WorkflowStub;
 
 class OrderMatchingWorkflow extends Workflow
 {
@@ -23,63 +21,64 @@ class OrderMatchingWorkflow extends Workflow
     {
         // Step 1: Validate order
         $validationResult = yield Activity::make(ValidateOrderActivity::class, $input->orderId);
-        
-        if (!$validationResult->isValid) {
+
+        if (! $validationResult->isValid) {
             return new OrderMatchingResult(
                 success: false,
                 message: $validationResult->message,
                 orderId: $input->orderId
             );
         }
-        
+
         // Step 2: Lock account balance for the order
         $lockResult = yield Activity::make(
             LockAccountBalanceActivity::class,
             $input->orderId,
             $validationResult->order
         );
-        
+
         // Add compensation to release balance if something goes wrong
         $this->addCompensation(
-            fn() => Activity::make(
+            fn () => Activity::make(
                 ReleaseAccountBalanceActivity::class,
                 $input->orderId,
                 $lockResult->lockId
             )
         );
-        
-        if (!$lockResult->success) {
+
+        if (! $lockResult->success) {
             yield $this->compensate();
+
             return new OrderMatchingResult(
                 success: false,
                 message: 'Insufficient balance',
                 orderId: $input->orderId
             );
         }
-        
+
         // Step 3: Add order to order book
         $orderBookResult = yield Activity::make(
             UpdateOrderBookActivity::class,
             $input->orderId,
             'add'
         );
-        
+
         // Add compensation to remove from order book
         $this->addCompensation(
-            fn() => Activity::make(
+            fn () => Activity::make(
                 UpdateOrderBookActivity::class,
                 $input->orderId,
                 'remove'
             )
         );
-        
+
         // Step 4: Try to match the order
         $matchingResult = yield Activity::make(
             MatchOrderActivity::class,
             $input->orderId,
             $input->maxIterations ?? 100
         );
-        
+
         if ($matchingResult->matches->isEmpty()) {
             // No matches found, order stays in the book
             return new OrderMatchingResult(
@@ -90,7 +89,7 @@ class OrderMatchingWorkflow extends Workflow
                 filledAmount: '0'
             );
         }
-        
+
         // Step 5: Process each match
         foreach ($matchingResult->matches as $match) {
             try {
@@ -102,17 +101,18 @@ class OrderMatchingWorkflow extends Workflow
                     $match->executedAmount,
                     $match->executedPrice
                 );
-                
-                if (!$transferResult->success) {
+
+                if (! $transferResult->success) {
                     // Log the error but continue with other matches
                     yield Activity::make(
                         'App\Domain\Exchange\Activities\LogMatchingErrorActivity',
                         $match,
                         $transferResult->error
                     );
+
                     continue;
                 }
-                
+
                 // Update both orders
                 Order::retrieve($match->buyOrderId)->matchOrder(
                     matchedOrderId: $match->sellOrderId,
@@ -122,7 +122,7 @@ class OrderMatchingWorkflow extends Workflow
                     makerFee: $match->makerFee,
                     takerFee: $match->takerFee
                 )->persist();
-                
+
                 Order::retrieve($match->sellOrderId)->matchOrder(
                     matchedOrderId: $match->buyOrderId,
                     tradeId: $match->tradeId,
@@ -131,7 +131,7 @@ class OrderMatchingWorkflow extends Workflow
                     makerFee: $match->makerFee,
                     takerFee: $match->takerFee
                 )->persist();
-                
+
             } catch (\Exception $e) {
                 // Log error and continue
                 yield Activity::make(
@@ -141,7 +141,7 @@ class OrderMatchingWorkflow extends Workflow
                 );
             }
         }
-        
+
         // Step 6: Update order book to remove filled orders
         yield Activity::make(
             UpdateOrderBookActivity::class,
@@ -149,25 +149,25 @@ class OrderMatchingWorkflow extends Workflow
             'update_after_match',
             $matchingResult
         );
-        
+
         // Calculate total filled amount
         $totalFilledAmount = $matchingResult->matches->reduce(function ($carry, $match) {
             return bcadd($carry, $match->executedAmount, 18);
         }, '0');
-        
+
         $order = Order::retrieve($input->orderId);
         $status = $order->getRemainingAmount()->isZero() ? 'filled' : 'partially_filled';
-        
+
         return new OrderMatchingResult(
             success: true,
             message: "Order {$status}",
             orderId: $input->orderId,
             status: $status,
             filledAmount: $totalFilledAmount,
-            trades: $matchingResult->matches->map(fn($m) => $m->tradeId)->toArray()
+            trades: $matchingResult->matches->map(fn ($m) => $m->tradeId)->toArray()
         );
     }
-    
+
     protected function getCompensationDelay(): CarbonInterval
     {
         return CarbonInterval::minutes(5);

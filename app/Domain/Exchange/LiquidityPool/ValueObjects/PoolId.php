@@ -17,7 +17,7 @@ final readonly class PoolId implements Stringable
             throw new InvalidArgumentException('Pool ID cannot be empty');
         }
 
-        if (!preg_match('/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i', $value)) {
+        if (! preg_match('/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i', $value)) {
             throw new InvalidArgumentException('Pool ID must be a valid UUID');
         }
 

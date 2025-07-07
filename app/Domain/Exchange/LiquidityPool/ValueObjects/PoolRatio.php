@@ -11,8 +11,11 @@ use InvalidArgumentException;
 final readonly class PoolRatio
 {
     private BigDecimal $baseReserve;
+
     private BigDecimal $quoteReserve;
+
     private BigDecimal $ratio;
+
     private BigDecimal $price;
 
     public function __construct(
@@ -71,7 +74,7 @@ final readonly class PoolRatio
     {
         $toleranceDecimal = BigDecimal::of($tolerance);
         $deviation = $this->calculateDeviation($targetRatio);
-        
+
         return $deviation->isLessThanOrEqualTo($toleranceDecimal);
     }
 

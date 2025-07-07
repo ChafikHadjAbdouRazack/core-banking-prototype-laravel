@@ -10,15 +10,12 @@ use Spatie\EventSourcing\Snapshots\EloquentSnapshotRepository;
 final class LiquidityPoolSnapshotRepository extends EloquentSnapshotRepository
 {
     /**
-     * @param string $snapshotModel
-     *
      * @throws InvalidEloquentStoredEventModel
      */
     public function __construct(
         protected string $snapshotModel = LiquidityPoolSnapshot::class
-    )
-    {
-        if (! new $this->snapshotModel() instanceof EloquentSnapshot) {
+    ) {
+        if (! new $this->snapshotModel instanceof EloquentSnapshot) {
             throw new InvalidEloquentStoredEventModel("The class {$this->snapshotModel} must extend EloquentSnapshot");
         }
     }

@@ -56,6 +56,7 @@ class LiquidityPoolService implements LiquidityPoolServiceInterface
     public function addLiquidity(LiquidityAdditionInput $input): array
     {
         $workflow = WorkflowStub::make(LiquidityManagementWorkflow::class);
+
         return $workflow->addLiquidity($input);
     }
 
@@ -65,6 +66,7 @@ class LiquidityPoolService implements LiquidityPoolServiceInterface
     public function removeLiquidity(LiquidityRemovalInput $input): array
     {
         $workflow = WorkflowStub::make(LiquidityManagementWorkflow::class);
+
         return $workflow->removeLiquidity($input);
     }
 
@@ -79,10 +81,10 @@ class LiquidityPoolService implements LiquidityPoolServiceInterface
         string $minOutputAmount = '0'
     ): array {
         $pool = LiquidityPool::retrieve($poolId);
-        
+
         // Calculate swap details
         $swapDetails = $pool->executeSwap($inputCurrency, $inputAmount, $minOutputAmount);
-        
+
         // Execute the actual asset transfers
         $this->exchangeService->executePoolSwap(
             poolId: $poolId,
@@ -137,15 +139,15 @@ class LiquidityPoolService implements LiquidityPoolServiceInterface
     public function getPoolMetrics(string $poolId): array
     {
         $pool = PoolProjection::where('pool_id', $poolId)->firstOrFail();
-        
+
         $baseReserve = BigDecimal::of($pool->base_reserve);
         $quoteReserve = BigDecimal::of($pool->quote_reserve);
-        
+
         // Calculate TVL (Total Value Locked) in quote currency
         $spotPrice = $quoteReserve->dividedBy($baseReserve, 18);
         $baseValueInQuote = $baseReserve->multipliedBy($spotPrice);
         $tvl = $baseValueInQuote->plus($quoteReserve);
-        
+
         // Calculate APY based on fees collected
         $feesCollected24h = BigDecimal::of($pool->fees_collected_24h);
         $dailyReturn = $tvl->isZero() ? BigDecimal::zero() : $feesCollected24h->dividedBy($tvl, 18);
@@ -173,6 +175,7 @@ class LiquidityPoolService implements LiquidityPoolServiceInterface
     public function rebalancePool(string $poolId, string $targetRatio): array
     {
         $workflow = WorkflowStub::make(LiquidityManagementWorkflow::class);
+
         return $workflow->rebalancePool($poolId, $targetRatio);
     }
 
@@ -200,7 +203,7 @@ class LiquidityPoolService implements LiquidityPoolServiceInterface
             ->firstOrFail();
 
         $rewards = $provider->pending_rewards ?? [];
-        
+
         if (empty($rewards)) {
             throw new \DomainException('No rewards to claim');
         }
@@ -248,7 +251,7 @@ class LiquidityPoolService implements LiquidityPoolServiceInterface
 
         return $pools->map(function ($pool) {
             $metrics = $this->getPoolMetrics($pool->pool_id);
-            
+
             return [
                 'id' => $pool->pool_id,
                 'base_currency' => $pool->base_currency,
@@ -262,5 +265,4 @@ class LiquidityPoolService implements LiquidityPoolServiceInterface
             ];
         });
     }
-
 }

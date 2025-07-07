@@ -41,6 +41,7 @@ abstract class BasePoolEvent extends ShouldBeStored
     public function withAdditionalMetadata(array $metadata): self
     {
         $this->eventMetadata = array_merge($this->eventMetadata, $metadata);
+
         return $this;
     }
 }

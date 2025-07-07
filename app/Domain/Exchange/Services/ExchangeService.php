@@ -16,12 +16,12 @@ use Workflow\WorkflowStub;
 class ExchangeService implements ExchangeServiceInterface
 {
     private FeeCalculator $feeCalculator;
-    
+
     public function __construct()
     {
-        $this->feeCalculator = new FeeCalculator();
+        $this->feeCalculator = new FeeCalculator;
     }
-    
+
     public function placeOrder(
         string $accountId,
         string $type,
@@ -35,40 +35,40 @@ class ExchangeService implements ExchangeServiceInterface
     ): array {
         // Validate account
         $account = Account::find($accountId);
-        if (!$account) {
+        if (! $account) {
             throw new \InvalidArgumentException('Account not found');
         }
-        
+
         // Validate currencies
         $baseAsset = Asset::where('code', $baseCurrency)->first();
         $quoteAsset = Asset::where('code', $quoteCurrency)->first();
-        
-        if (!$baseAsset || !$quoteAsset) {
+
+        if (! $baseAsset || ! $quoteAsset) {
             throw new \InvalidArgumentException('Invalid currency pair');
         }
-        
-        if (!$baseAsset->is_tradeable || !$quoteAsset->is_tradeable) {
+
+        if (! $baseAsset->is_tradeable || ! $quoteAsset->is_tradeable) {
             throw new \InvalidArgumentException('Currency pair not available for trading');
         }
-        
+
         // Validate order type and price
-        if ($orderType === 'limit' && !$price) {
+        if ($orderType === 'limit' && ! $price) {
             throw new \InvalidArgumentException('Price is required for limit orders');
         }
-        
-        if ($orderType === 'stop' && !$stopPrice) {
+
+        if ($orderType === 'stop' && ! $stopPrice) {
             throw new \InvalidArgumentException('Stop price is required for stop orders');
         }
-        
+
         // Check minimum order value
         $minimumAmount = $this->feeCalculator->calculateMinimumOrderValue($baseCurrency, $quoteCurrency);
         if (bccomp($amount, $minimumAmount->__toString(), 18) < 0) {
             throw new \InvalidArgumentException("Minimum order amount is {$minimumAmount->__toString()} {$baseCurrency}");
         }
-        
+
         // Generate order ID
         $orderId = Str::uuid()->toString();
-        
+
         // Create order aggregate and place the order
         $order = Order::retrieve($orderId);
         $order->placeOrder(
@@ -88,17 +88,17 @@ class ExchangeService implements ExchangeServiceInterface
             ])
         );
         $order->persist();
-        
+
         // Ensure order book exists
         $this->ensureOrderBookExists($baseCurrency, $quoteCurrency);
-        
+
         // Start order matching workflow
         $workflow = WorkflowStub::make(OrderMatchingWorkflow::class);
         $workflow->start(new OrderMatchingInput(
             orderId: $orderId,
             maxIterations: 100
         ));
-        
+
         return [
             'success' => true,
             'order_id' => $orderId,
@@ -106,40 +106,40 @@ class ExchangeService implements ExchangeServiceInterface
             'workflow_id' => $workflow->id(),
         ];
     }
-    
+
     public function cancelOrder(string $orderId, string $reason = 'User requested'): array
     {
         $orderProjection = \App\Domain\Exchange\Projections\Order::where('order_id', $orderId)->first();
-        
-        if (!$orderProjection) {
+
+        if (! $orderProjection) {
             throw new \InvalidArgumentException('Order not found');
         }
-        
-        if (!$orderProjection->canBeCancelled()) {
+
+        if (! $orderProjection->canBeCancelled()) {
             throw new \InvalidArgumentException("Order cannot be cancelled. Status: {$orderProjection->status}");
         }
-        
+
         // Cancel the order
         $order = Order::retrieve($orderId);
         $order->cancelOrder($reason);
         $order->persist();
-        
+
         // Remove from order book
         $orderBook = OrderBook::retrieve($this->getOrderBookId($orderProjection->base_currency, $orderProjection->quote_currency));
         $orderBook->removeOrder($orderId, 'cancelled');
         $orderBook->persist();
-        
+
         return [
             'success' => true,
             'message' => 'Order cancelled successfully',
         ];
     }
-    
+
     public function getOrderBook(string $baseCurrency, string $quoteCurrency, int $depth = 20): array
     {
         $orderBook = OrderBookProjection::forPair($baseCurrency, $quoteCurrency)->first();
-        
-        if (!$orderBook) {
+
+        if (! $orderBook) {
             return [
                 'pair' => "{$baseCurrency}/{$quoteCurrency}",
                 'bids' => [],
@@ -156,9 +156,9 @@ class ExchangeService implements ExchangeServiceInterface
                 'updated_at' => now()->toIso8601String(),
             ];
         }
-        
+
         $depthData = $orderBook->getDepth($depth);
-        
+
         return [
             'pair' => $orderBook->pair,
             'bids' => $depthData['bids'],
@@ -175,12 +175,12 @@ class ExchangeService implements ExchangeServiceInterface
             'updated_at' => $orderBook->updated_at->toIso8601String(),
         ];
     }
-    
+
     public function getMarketData(string $baseCurrency, string $quoteCurrency): array
     {
         $orderBook = OrderBookProjection::forPair($baseCurrency, $quoteCurrency)->first();
-        
-        if (!$orderBook) {
+
+        if (! $orderBook) {
             return [
                 'pair' => "{$baseCurrency}/{$quoteCurrency}",
                 'last_price' => null,
@@ -190,7 +190,7 @@ class ExchangeService implements ExchangeServiceInterface
                 'low_24h' => null,
             ];
         }
-        
+
         return [
             'pair' => $orderBook->pair,
             'last_price' => $orderBook->last_price,
@@ -200,14 +200,14 @@ class ExchangeService implements ExchangeServiceInterface
             'low_24h' => $orderBook->low_24h,
         ];
     }
-    
+
     private function ensureOrderBookExists(string $baseCurrency, string $quoteCurrency): void
     {
         $orderBookId = $this->getOrderBookId($baseCurrency, $quoteCurrency);
-        
+
         $exists = OrderBookProjection::where('order_book_id', $orderBookId)->exists();
-        
-        if (!$exists) {
+
+        if (! $exists) {
             $orderBook = OrderBook::retrieve($orderBookId);
             $orderBook->initialize(
                 orderBookId: $orderBookId,
@@ -220,7 +220,7 @@ class ExchangeService implements ExchangeServiceInterface
             $orderBook->persist();
         }
     }
-    
+
     private function getOrderBookId(string $baseCurrency, string $quoteCurrency): string
     {
         return "orderbook_{$baseCurrency}_{$quoteCurrency}";

@@ -2,7 +2,6 @@
 
 namespace App\Domain\Exchange\Workflows\Policies;
 
-use Workflow\ActivityStub;
 use Workflow\Exception\RetryOptions;
 
 class LiquidityRetryPolicy
