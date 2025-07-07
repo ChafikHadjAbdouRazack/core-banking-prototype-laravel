@@ -235,17 +235,17 @@ class CsrfTest extends TestCase
         // Enable rate limiting for this test
         config(['rate_limiting.enabled' => true]);
         config(['rate_limiting.force_in_tests' => true]);
-        
+
         // Clear any existing rate limit cache for this user
         Cache::flush();
-        
+
         // Use Sanctum actingAs to properly authenticate
         Sanctum::actingAs($this->user);
 
         // Even with valid token, rapid requests should be rate limited
         // Transfer limit is 15 per hour, so we should hit it quickly
         $responses = [];
-        
+
         // Create destination account once to avoid hitting model creation limits
         $destinationAccount = Account::factory()->create(['user_uuid' => $this->user->uuid]);
 

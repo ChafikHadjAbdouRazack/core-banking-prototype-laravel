@@ -171,7 +171,7 @@ class ApiSecurityTest extends TestCase
     {
         // Test oversized payloads - use smaller sizes to avoid memory exhaustion
         $largeString = str_repeat('a', 1024 * 100); // 100KB string instead of 1MB
-        
+
         // Test individual field size limits
         $response = $this->withToken($this->token)
             ->postJson('/api/v2/accounts', [
@@ -180,12 +180,12 @@ class ApiSecurityTest extends TestCase
             ]);
 
         $this->assertContains($response->status(), [413, 422], 'Should reject oversized fields');
-        
+
         // Test metadata array with many small items instead of huge ones
         $response = $this->withToken($this->token)
             ->postJson('/api/v2/accounts', [
-                'name'        => 'Test Account',
-                'metadata'    => array_fill(0, 1000, 'small_value'),
+                'name'     => 'Test Account',
+                'metadata' => array_fill(0, 1000, 'small_value'),
             ]);
 
         $this->assertContains($response->status(), [413, 422], 'Should reject excessive metadata items');
