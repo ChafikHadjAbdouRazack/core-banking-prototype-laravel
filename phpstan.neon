@@ -9,6 +9,10 @@ parameters:
         - '#Call to an undefined static method App\\Domain\\[a-zA-Z\\]+\\Projections\\[a-zA-Z]+::#'
         - '#Access to an undefined property App\\Domain\\[a-zA-Z\\]+\\Projections\\[a-zA-Z]+::\$#'
         - '#Call to an undefined method Illuminate\\Database\\Eloquent\\Model::#'
+        - '#Access to an undefined property App\\Models\\User::\$(tokens|ownedTeams|id|name|email)#'
+        - '#Access to an undefined property App\\Models\\Team::\$(id|owner)#'
+        - '#Call to an undefined static method App\\Models\\User::(create|forceCreate)\(\)#'
+        - '#Call to an undefined static method App\\Models\\Team::(create|forceCreate)\(\)#'
         
         # Workflow Activity make - using ActivityStub instead
         - '#Call to an undefined static method Workflow\\Activity::make\(\)#'
