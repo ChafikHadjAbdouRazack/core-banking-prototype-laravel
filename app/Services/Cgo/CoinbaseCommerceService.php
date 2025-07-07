@@ -271,11 +271,17 @@ class CoinbaseCommerceService
         $chargeId = $chargeData['id'] ?? null;
 
         if ($investmentUuid) {
-            return CgoInvestment::where('uuid', $investmentUuid)->first();
+            $investment = CgoInvestment::where('uuid', $investmentUuid)->first();
+            if ($investment) {
+                return $investment;
+            }
         }
 
         if ($chargeId) {
-            return CgoInvestment::where('coinbase_charge_id', $chargeId)->first();
+            $investment = CgoInvestment::where('coinbase_charge_id', $chargeId)->first();
+            if ($investment) {
+                return $investment;
+            }
         }
 
         Log::warning('Coinbase webhook: Investment not found', [
