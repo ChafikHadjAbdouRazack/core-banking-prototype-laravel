@@ -19,7 +19,8 @@ paths = [
     '''(test|tests|spec|specs)/.*''',
     '''(example|examples|sample|samples|demo|demos)/.*''',
     '''.*\.postman_collection\.json$''',
-    '''\.env\.(example|sample|demo|test)$'''
+    '''\.env\.(example|sample|demo|test)$''',
+    '''\.php-cs-fixer\.cache$'''
 ]
 commits = [
     '''(docs|doc|documentation|readme|example|sample|test)'''
