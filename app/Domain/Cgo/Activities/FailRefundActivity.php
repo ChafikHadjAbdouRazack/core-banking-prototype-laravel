@@ -16,7 +16,7 @@ class FailRefundActivity extends Activity
                 metadata: $input['metadata'] ?? []
             )
             ->persist();
-        
+
         return [
             'refund_id' => $input['refund_id'],
             'status' => 'failed',

@@ -10,7 +10,9 @@ use Illuminate\Queue\SerializesModels;
 
 class ReportRejected
 {
-    use Dispatchable, InteractsWithSockets, SerializesModels;
+    use Dispatchable;
+    use InteractsWithSockets;
+    use SerializesModels;
 
     public RegulatoryReport $report;
     public RegulatoryFilingRecord $filing;

@@ -16,7 +16,7 @@ class WalletController extends Controller
     {
         $user = Auth::user();
         $account = $user->accounts()->first();
-        
+
         return view('wallet.index', compact('account'));
     }
 
@@ -27,7 +27,7 @@ class WalletController extends Controller
     {
         $account = Auth::user()->accounts()->first();
         $assets = Asset::where('is_active', true)->get();
-        
+
         return view('wallet.deposit', compact('account', 'assets'));
     }
 
@@ -39,7 +39,7 @@ class WalletController extends Controller
     {
         $account = Auth::user()->accounts()->first();
         $balances = $account ? $account->balances()->with('asset')->where('balance', '>', 0)->get() : collect();
-        
+
         return view('wallet.withdraw-options', compact('account', 'balances'));
     }
 
@@ -51,7 +51,7 @@ class WalletController extends Controller
     {
         $account = Auth::user()->accounts()->first();
         $balances = $account ? $account->balances()->with('asset')->where('balance', '>', 0)->get() : collect();
-        
+
         return view('wallet.transfer', compact('account', 'balances'));
     }
 
@@ -65,7 +65,7 @@ class WalletController extends Controller
         $balances = $account ? $account->balances()->with('asset')->where('balance', '>', 0)->get() : collect();
         $assets = Asset::where('is_active', true)->get();
         $rates = ExchangeRate::getLatestRates();
-        
+
         return view('wallet.convert', compact('account', 'balances', 'assets', 'rates'));
     }
 
@@ -75,7 +75,7 @@ class WalletController extends Controller
     public function transactions()
     {
         $account = Auth::user()->accounts()->first();
-        
+
         if (!$account) {
             return view('wallet.transactions', [
                 'account' => null,
@@ -83,13 +83,13 @@ class WalletController extends Controller
                 'transactionsJson' => json_encode([])
             ]);
         }
-        
+
         // Get transactions from the Account's transactions relationship
         $transactions = $account->transactions()
             ->orderBy('created_at', 'desc')
             ->take(50)
             ->get();
-        
+
         // Transform transactions for the view
         $transformedTransactions = $transactions->map(function ($transaction) {
             return [
@@ -104,14 +104,14 @@ class WalletController extends Controller
                 'balance_after' => $transaction->balance_after ?? 0
             ];
         });
-        
+
         return view('wallet.transactions', [
             'account' => $account,
             'transactions' => $transactions,
             'transactionsJson' => $transformedTransactions->toJson()
         ]);
     }
-    
+
     private function mapTransactionType($type)
     {
         $typeMap = [
@@ -121,10 +121,10 @@ class WalletController extends Controller
             'transfer_debit' => 'transfer_out',
             'conversion' => 'conversion'
         ];
-        
+
         return $typeMap[$type] ?? $type;
     }
-    
+
     private function getAssetSymbol($assetCode)
     {
         $symbols = [
@@ -133,8 +133,7 @@ class WalletController extends Controller
             'EUR' => '€',
             'GBP' => '£'
         ];
-        
+
         return $symbols[$assetCode] ?? $assetCode;
     }
-
 }

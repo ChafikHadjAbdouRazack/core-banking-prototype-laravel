@@ -11,7 +11,7 @@ class TransactionReversalWorkflow extends Workflow
 {
     /**
      * Reverse a transaction with proper audit trail
-     * 
+     *
      * @param AccountUuid $accountUuid
      * @param Money $originalAmount
      * @param string $transactionType - 'debit' or 'credit'
@@ -36,7 +36,7 @@ class TransactionReversalWorkflow extends Workflow
                 $reversalReason,
                 $authorizedBy
             );
-            
+
             return $result;
         } catch (\Throwable $th) {
             // Log reversal failure for audit
@@ -47,7 +47,7 @@ class TransactionReversalWorkflow extends Workflow
                 'reason' => $reversalReason,
                 'error' => $th->getMessage(),
             ]);
-            
+
             throw $th;
         }
     }

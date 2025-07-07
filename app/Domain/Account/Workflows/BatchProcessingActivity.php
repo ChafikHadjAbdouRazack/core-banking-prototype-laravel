@@ -24,13 +24,13 @@ class BatchProcessingActivity extends Activity
     {
         $startTime = now();
         $results = [];
-        
+
         logger()->info('Starting batch processing', [
             'batch_id' => $batchId,
             'operations' => $operations,
             'start_time' => $startTime->toISOString(),
         ]);
-        
+
         foreach ($operations as $operation) {
             try {
                 $result = $this->performOperation($operation, $batchId);
@@ -45,7 +45,7 @@ class BatchProcessingActivity extends Activity
                     'status' => 'failed',
                     'error' => $th->getMessage(),
                 ];
-                
+
                 logger()->error('Batch operation failed', [
                     'batch_id' => $batchId,
                     'operation' => $operation,
@@ -53,10 +53,10 @@ class BatchProcessingActivity extends Activity
                 ]);
             }
         }
-        
+
         $endTime = now();
         $duration = $endTime->diffInSeconds($startTime);
-        
+
         $summary = [
             'batch_id' => $batchId,
             'total_operations' => count($operations),
@@ -67,12 +67,12 @@ class BatchProcessingActivity extends Activity
             'duration_seconds' => $duration,
             'results' => $results,
         ];
-        
+
         logger()->info('Batch processing completed', $summary);
-        
+
         return $summary;
     }
-    
+
     /**
      * @param string $operation
      * @param string $batchId
@@ -97,29 +97,29 @@ class BatchProcessingActivity extends Activity
                 throw new \InvalidArgumentException("Unknown batch operation: {$operation}");
         }
     }
-    
+
     /**
      * @return array
      */
     private function calculateDailyTurnover(): array
     {
         $today = now()->startOfDay();
-        
+
         // Calculate turnover for all accounts
         $accounts = Account::all();
         $processed = 0;
-        
+
         foreach ($accounts as $account) {
             $dailyCredit = Transaction::where('account_uuid', $account->uuid)
                 ->whereDate('created_at', $today)
                 ->where('type', 'credit')
                 ->sum('amount');
-                
+
             $dailyDebit = Transaction::where('account_uuid', $account->uuid)
                 ->whereDate('created_at', $today)
                 ->where('type', 'debit')
                 ->sum('amount');
-            
+
             Turnover::updateOrCreate(
                 [
                     'account_uuid' => $account->uuid,
@@ -134,17 +134,17 @@ class BatchProcessingActivity extends Activity
                         ->count(),
                 ]
             );
-            
+
             $processed++;
         }
-        
+
         return [
             'operation' => 'calculate_daily_turnover',
             'accounts_processed' => $processed,
             'date' => $today->toDateString(),
         ];
     }
-    
+
     /**
      * @return array
      */
@@ -153,21 +153,21 @@ class BatchProcessingActivity extends Activity
         $startOfMonth = now()->startOfMonth();
         $endOfMonth = now()->endOfMonth();
         $statementsGenerated = 0;
-        
+
         // Generate monthly statements for all active accounts
         $accounts = Account::where('frozen', false)->get();
-        
+
         foreach ($accounts as $account) {
             // Get transactions for the current month
             $transactions = Transaction::where('account_uuid', $account->uuid)
                 ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
                 ->orderBy('created_at', 'desc')
                 ->get();
-            
+
             if ($transactions->isEmpty()) {
                 continue; // Skip accounts with no transactions
             }
-            
+
             $statementData = [
                 'account_uuid' => $account->uuid,
                 'account_name' => $account->name,
@@ -189,15 +189,15 @@ class BatchProcessingActivity extends Activity
                     ];
                 })->toArray(),
             ];
-            
+
             // In a real system, you would generate PDF or send via email
             // For now, we'll store as JSON for auditing
             $filename = "statements/{$account->uuid}/" . $startOfMonth->format('Y-m') . ".json";
             Storage::disk('local')->put($filename, json_encode($statementData, JSON_PRETTY_PRINT));
-            
+
             $statementsGenerated++;
         }
-        
+
         return [
             'operation' => 'generate_account_statements',
             'statements_generated' => $statementsGenerated,
@@ -205,7 +205,7 @@ class BatchProcessingActivity extends Activity
             'storage_path' => 'storage/app/statements/',
         ];
     }
-    
+
     /**
      * @return array
      */
@@ -215,20 +215,20 @@ class BatchProcessingActivity extends Activity
         $savingsAccounts = Account::where('frozen', false)
             ->where('balance', '>', 0)
             ->get();
-        
+
         $accountsProcessed = 0;
         $totalInterestPaid = 0;
         $interestRate = 0.02; // 2% annual interest rate
         $dailyRate = $interestRate / 365;
-        
+
         foreach ($savingsAccounts as $account) {
             // Calculate daily interest based on current balance
             $dailyInterest = $account->balance * $dailyRate;
-            
+
             // Only apply interest if it's significant (> $0.01)
             if ($dailyInterest >= 1) { // 1 cent minimum
                 $interestAmount = round($dailyInterest);
-                
+
                 // Create interest transaction
                 DB::table('transactions')->insert([
                     'uuid' => Str::uuid(),
@@ -241,15 +241,15 @@ class BatchProcessingActivity extends Activity
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
-                
+
                 // Update account balance
                 $account->increment('balance', $interestAmount);
-                
+
                 $totalInterestPaid += $interestAmount;
                 $accountsProcessed++;
             }
         }
-        
+
         return [
             'operation' => 'process_interest_calculations',
             'accounts_processed' => $accountsProcessed,
@@ -258,7 +258,7 @@ class BatchProcessingActivity extends Activity
             'eligible_accounts' => $savingsAccounts->count(),
         ];
     }
-    
+
     /**
      * @return array
      */
@@ -266,13 +266,13 @@ class BatchProcessingActivity extends Activity
     {
         $today = now()->startOfDay();
         $complianceFlags = [];
-        
+
         // Check for large transactions (> $10,000)
         $largeTransactions = Transaction::where('amount', '>', 1000000) // > $10,000 in cents
             ->whereDate('created_at', $today)
             ->with('account.user')
             ->get();
-        
+
         $complianceFlags['large_transactions'] = $largeTransactions->map(function ($transaction) {
             return [
                 'transaction_uuid' => $transaction->uuid,
@@ -282,7 +282,7 @@ class BatchProcessingActivity extends Activity
                 'flag_reason' => 'Transaction exceeds $10,000 threshold',
             ];
         })->toArray();
-        
+
         // Check for multiple transactions from same account in short time
         $rapidTransactions = DB::select("
             SELECT account_uuid, COUNT(*) as transaction_count, user_uuid
@@ -292,7 +292,7 @@ class BatchProcessingActivity extends Activity
             GROUP BY account_uuid, user_uuid
             HAVING COUNT(*) > 10
         ", [$today]);
-        
+
         $complianceFlags['rapid_transactions'] = collect($rapidTransactions)->map(function ($item) {
             return [
                 'account_uuid' => $item->account_uuid,
@@ -301,12 +301,12 @@ class BatchProcessingActivity extends Activity
                 'flag_reason' => 'More than 10 transactions in one day',
             ];
         })->toArray();
-        
+
         // Check for unusual account balance patterns
         $highBalanceAccounts = Account::where('balance', '>', 100000000) // > $1M
             ->with('user')
             ->get();
-        
+
         $complianceFlags['high_balance_accounts'] = $highBalanceAccounts->map(function ($account) {
             return [
                 'account_uuid' => $account->uuid,
@@ -315,24 +315,24 @@ class BatchProcessingActivity extends Activity
                 'flag_reason' => 'Account balance exceeds $1,000,000',
             ];
         })->toArray();
-        
+
         // Check for round-number transactions (possible structuring)
         $roundTransactions = Transaction::whereIn('amount', [
             1000000, 900000, 800000, 700000, 600000, 500000 // $10k, $9k, etc.
         ])
             ->whereDate('created_at', $today)
             ->count();
-        
+
         $complianceFlags['round_transactions'] = [
             'count' => $roundTransactions,
             'flag_reason' => 'Round-number transactions may indicate structuring',
         ];
-        
+
         $totalFlags = count($complianceFlags['large_transactions']) +
                      count($complianceFlags['rapid_transactions']) +
                      count($complianceFlags['high_balance_accounts']) +
                      ($roundTransactions > 5 ? 1 : 0);
-        
+
         // Store compliance report
         $reportData = [
             'date' => $today->toDateString(),
@@ -340,12 +340,12 @@ class BatchProcessingActivity extends Activity
             'flags' => $complianceFlags,
             'generated_at' => now()->toISOString(),
         ];
-        
+
         Storage::disk('local')->put(
             "compliance/daily_report_{$today->format('Y-m-d')}.json",
             json_encode($reportData, JSON_PRETTY_PRINT)
         );
-        
+
         return [
             'operation' => 'perform_compliance_checks',
             'total_flags' => $totalFlags,
@@ -356,7 +356,7 @@ class BatchProcessingActivity extends Activity
             'report_path' => "storage/app/compliance/daily_report_{$today->format('Y-m-d')}.json",
         ];
     }
-    
+
     /**
      * @return array
      */
@@ -364,17 +364,17 @@ class BatchProcessingActivity extends Activity
     {
         // Archive transactions older than 7 years
         $cutoffDate = now()->subYears(7);
-        
+
         $archivedCount = Transaction::where('created_at', '<', $cutoffDate)
             ->update(['archived' => true]);
-        
+
         return [
             'operation' => 'archive_old_transactions',
             'transactions_archived' => $archivedCount,
             'cutoff_date' => $cutoffDate->toDateString(),
         ];
     }
-    
+
     /**
      * @return array
      */
@@ -382,7 +382,7 @@ class BatchProcessingActivity extends Activity
     {
         $today = now();
         $reportsGenerated = [];
-        
+
         // Daily Transaction Summary Report
         $dailyStats = [
             'total_transactions' => Transaction::whereDate('created_at', $today)->count(),
@@ -391,13 +391,13 @@ class BatchProcessingActivity extends Activity
             'total_debits' => abs(Transaction::whereDate('created_at', $today)->where('amount', '<', 0)->sum('amount')),
             'unique_accounts' => Transaction::whereDate('created_at', $today)->distinct('account_uuid')->count(),
         ];
-        
+
         Storage::disk('local')->put(
             "regulatory/daily_transaction_summary_{$today->format('Y-m-d')}.json",
             json_encode($dailyStats, JSON_PRETTY_PRINT)
         );
         $reportsGenerated[] = 'daily_transaction_summary';
-        
+
         // Large Transaction Report (CTR - Currency Transaction Report)
         $largeTransactions = Transaction::where('amount', '>', 1000000) // > $10,000
             ->whereDate('created_at', $today)
@@ -414,7 +414,7 @@ class BatchProcessingActivity extends Activity
                     'transaction_type' => $transaction->amount > 0 ? 'Credit' : 'Debit',
                 ];
             });
-        
+
         if ($largeTransactions->isNotEmpty()) {
             Storage::disk('local')->put(
                 "regulatory/ctr_report_{$today->format('Y-m-d')}.json",
@@ -422,10 +422,10 @@ class BatchProcessingActivity extends Activity
             );
             $reportsGenerated[] = 'currency_transaction_report';
         }
-        
+
         // Suspicious Activity Report (SAR) candidates
         $suspiciousActivities = [];
-        
+
         // Check for structuring (multiple transactions just under $10k)
         $structuringCandidates = DB::select("
             SELECT account_uuid, COUNT(*) as transaction_count, SUM(amount) as total_amount
@@ -435,7 +435,7 @@ class BatchProcessingActivity extends Activity
             GROUP BY account_uuid
             HAVING COUNT(*) >= 3
         ", [$today->startOfDay()]);
-        
+
         foreach ($structuringCandidates as $candidate) {
             $suspiciousActivities[] = [
                 'account_uuid' => $candidate->account_uuid,
@@ -445,7 +445,7 @@ class BatchProcessingActivity extends Activity
                 'total_amount' => $candidate->total_amount / 100,
             ];
         }
-        
+
         if (!empty($suspiciousActivities)) {
             Storage::disk('local')->put(
                 "regulatory/sar_candidates_{$today->format('Y-m-d')}.json",
@@ -453,7 +453,7 @@ class BatchProcessingActivity extends Activity
             );
             $reportsGenerated[] = 'suspicious_activity_candidates';
         }
-        
+
         // Monthly Summary (if it's end of month)
         if ($today->isLastOfMonth()) {
             $monthlyStats = [
@@ -465,14 +465,14 @@ class BatchProcessingActivity extends Activity
                 'average_transaction_size' => Transaction::whereMonth('created_at', $today)->avg('amount') / 100,
                 'largest_transaction' => Transaction::whereMonth('created_at', $today)->max('amount') / 100,
             ];
-            
+
             Storage::disk('local')->put(
                 "regulatory/monthly_summary_{$today->format('Y-m')}.json",
                 json_encode($monthlyStats, JSON_PRETTY_PRINT)
             );
             $reportsGenerated[] = 'monthly_summary';
         }
-        
+
         return [
             'operation' => 'generate_regulatory_reports',
             'reports_generated' => $reportsGenerated,

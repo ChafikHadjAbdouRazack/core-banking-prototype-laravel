@@ -25,8 +25,9 @@ class BankCapabilities
         public readonly int $maxAccountsPerUser,
         public readonly array $requiredDocuments,
         public readonly array $availableCountries,
-    ) {}
-    
+    ) {
+    }
+
     /**
      * Check if a specific feature is supported
      */
@@ -34,7 +35,7 @@ class BankCapabilities
     {
         return in_array($feature, $this->features);
     }
-    
+
     /**
      * Check if a currency is supported
      */
@@ -42,7 +43,7 @@ class BankCapabilities
     {
         return in_array($currency, $this->supportedCurrencies);
     }
-    
+
     /**
      * Check if a transfer type is supported
      */
@@ -50,7 +51,7 @@ class BankCapabilities
     {
         return in_array($type, $this->supportedTransferTypes);
     }
-    
+
     /**
      * Get transfer limit for a specific type and currency
      */
@@ -58,7 +59,7 @@ class BankCapabilities
     {
         return $this->limits[$type][$currency] ?? null;
     }
-    
+
     /**
      * Get fee structure for a specific operation
      */
@@ -66,7 +67,7 @@ class BankCapabilities
     {
         return $this->fees[$operation][$currency] ?? null;
     }
-    
+
     /**
      * Convert to array for storage
      */
@@ -93,7 +94,7 @@ class BankCapabilities
             'available_countries' => $this->availableCountries,
         ];
     }
-    
+
     /**
      * Create from array
      */

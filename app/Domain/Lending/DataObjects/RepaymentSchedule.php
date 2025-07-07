@@ -19,7 +19,8 @@ class RepaymentSchedule
         public readonly string $monthlyPayment,
         public readonly string $totalInterest,
         public readonly string $totalAmount
-    ) {}
+    ) {
+    }
 
     public static function calculate(
         string $loanId,
@@ -31,32 +32,32 @@ class RepaymentSchedule
         $principalAmount = (float) $principal;
         $monthlyRate = $annualInterestRate / 12 / 100;
         $items = collect();
-        
+
         // Calculate monthly payment
         if ($monthlyRate == 0) {
             $monthlyPayment = $principalAmount / $termMonths;
         } else {
-            $monthlyPayment = $principalAmount * ($monthlyRate * pow(1 + $monthlyRate, $termMonths)) / 
+            $monthlyPayment = $principalAmount * ($monthlyRate * pow(1 + $monthlyRate, $termMonths)) /
                              (pow(1 + $monthlyRate, $termMonths) - 1);
         }
-        
+
         $remainingBalance = $principalAmount;
         $totalInterest = 0;
         $currentDate = $startDate->copy();
-        
+
         for ($month = 1; $month <= $termMonths; $month++) {
             $interestPayment = $remainingBalance * $monthlyRate;
             $principalPayment = $monthlyPayment - $interestPayment;
-            
+
             // Handle rounding for last payment
             if ($month === $termMonths) {
                 $principalPayment = $remainingBalance;
                 $monthlyPayment = $principalPayment + $interestPayment;
             }
-            
+
             $remainingBalance -= $principalPayment;
             $totalInterest += $interestPayment;
-            
+
             $items->push(new RepaymentScheduleItem(
                 installmentNumber: $month,
                 dueDate: $currentDate->copy(),
@@ -65,10 +66,10 @@ class RepaymentSchedule
                 totalAmount: number_format($monthlyPayment, 2, '.', ''),
                 remainingBalance: number_format(max(0, $remainingBalance), 2, '.', '')
             ));
-            
+
             $currentDate->addMonth();
         }
-        
+
         return new self(
             loanId: $loanId,
             principal: $principal,
@@ -111,40 +112,5 @@ class RepaymentSchedule
             'total_amount' => $this->totalAmount,
             'items' => $this->items->map(fn($item) => $item->toArray())->toArray()
         ];
-    }
-}
-
-class RepaymentScheduleItem
-{
-    public function __construct(
-        public readonly int $installmentNumber,
-        public readonly Carbon $dueDate,
-        public readonly string $principalAmount,
-        public readonly string $interestAmount,
-        public readonly string $totalAmount,
-        public readonly string $remainingBalance,
-        public bool $isPaid = false,
-        public ?Carbon $paidAt = null,
-        public ?string $paidAmount = null
-    ) {}
-
-    public function toArray(): array
-    {
-        return [
-            'installment_number' => $this->installmentNumber,
-            'due_date' => $this->dueDate->toDateString(),
-            'principal_amount' => $this->principalAmount,
-            'interest_amount' => $this->interestAmount,
-            'total_amount' => $this->totalAmount,
-            'remaining_balance' => $this->remainingBalance,
-            'is_paid' => $this->isPaid,
-            'paid_at' => $this->paidAt?->toIso8601String(),
-            'paid_amount' => $this->paidAmount
-        ];
-    }
-
-    public function isOverdue(): bool
-    {
-        return !$this->isPaid && $this->dueDate->isPast();
     }
 }

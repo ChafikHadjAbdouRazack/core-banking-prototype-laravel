@@ -22,7 +22,7 @@ class BlockchainServiceProvider extends ServiceProvider
         $this->app->singleton(KeyManagementService::class, function ($app) {
             return new KeyManagementService();
         });
-        
+
         // Register blockchain connectors
         $this->app->bind('blockchain.connectors', function ($app) {
             return [
@@ -45,14 +45,14 @@ class BlockchainServiceProvider extends ServiceProvider
                 ]),
             ];
         });
-        
+
         // Register blockchain wallet service
         $this->app->singleton(BlockchainWalletService::class, function ($app) {
             return new BlockchainWalletService(
                 $app->make(KeyManagementService::class)
             );
         });
-        
+
         // Register workflow activities with connectors
         $this->app->bind(BlockchainDepositActivities::class, function ($app) {
             return new BlockchainDepositActivities(
@@ -60,7 +60,7 @@ class BlockchainServiceProvider extends ServiceProvider
                 $app->make('blockchain.connectors')
             );
         });
-        
+
         $this->app->bind(BlockchainWithdrawalActivities::class, function ($app) {
             return new BlockchainWithdrawalActivities(
                 $app->make(BlockchainWalletService::class),
@@ -77,7 +77,7 @@ class BlockchainServiceProvider extends ServiceProvider
     {
         // Register blockchain configuration
         $this->publishes([
-            __DIR__.'/../../config/blockchain.php' => config_path('blockchain.php'),
+            __DIR__ . '/../../config/blockchain.php' => config_path('blockchain.php'),
         ], 'blockchain-config');
     }
 }

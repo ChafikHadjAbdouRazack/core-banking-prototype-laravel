@@ -27,7 +27,7 @@ class ComponentsRelationManager extends RelationManager
                         ->pluck('name', 'code'))
                     ->searchable()
                     ->helperText('Select the asset to include in the basket'),
-                
+
                 Forms\Components\TextInput::make('weight')
                     ->label('Weight (%)')
                     ->required()
@@ -37,7 +37,7 @@ class ComponentsRelationManager extends RelationManager
                     ->suffix('%')
                     ->step(0.01)
                     ->helperText('Percentage weight in the basket'),
-                
+
                 Forms\Components\Grid::make(2)
                     ->schema([
                         Forms\Components\TextInput::make('min_weight')
@@ -48,7 +48,7 @@ class ComponentsRelationManager extends RelationManager
                             ->suffix('%')
                             ->step(0.01)
                             ->visible(fn () => $this->getOwnerRecord()->type === 'dynamic'),
-                        
+
                         Forms\Components\TextInput::make('max_weight')
                             ->label('Max Weight (%)')
                             ->numeric()
@@ -58,7 +58,7 @@ class ComponentsRelationManager extends RelationManager
                             ->step(0.01)
                             ->visible(fn () => $this->getOwnerRecord()->type === 'dynamic'),
                     ]),
-                
+
                 Forms\Components\Toggle::make('is_active')
                     ->label('Active')
                     ->default(true)
@@ -74,19 +74,19 @@ class ComponentsRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('asset.name')
                     ->label('Asset')
                     ->searchable(),
-                
+
                 Tables\Columns\TextColumn::make('asset_code')
                     ->label('Code')
                     ->badge()
                     ->color('primary'),
-                
+
                 Tables\Columns\TextColumn::make('weight')
                     ->label('Weight')
                     ->suffix('%')
                     ->numeric(decimalPlaces: 2)
                     ->alignCenter()
                     ->color(fn ($state) => $state > 50 ? 'success' : ($state > 25 ? 'warning' : 'gray')),
-                
+
                 Tables\Columns\TextColumn::make('min_weight')
                     ->label('Min')
                     ->suffix('%')
@@ -94,7 +94,7 @@ class ComponentsRelationManager extends RelationManager
                     ->alignCenter()
                     ->placeholder('—')
                     ->visible(fn () => $this->getOwnerRecord()->type === 'dynamic'),
-                
+
                 Tables\Columns\TextColumn::make('max_weight')
                     ->label('Max')
                     ->suffix('%')
@@ -102,12 +102,12 @@ class ComponentsRelationManager extends RelationManager
                     ->alignCenter()
                     ->placeholder('—')
                     ->visible(fn () => $this->getOwnerRecord()->type === 'dynamic'),
-                
+
                 Tables\Columns\IconColumn::make('is_active')
                     ->label('Active')
                     ->boolean()
                     ->alignCenter(),
-                
+
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

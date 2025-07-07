@@ -10,7 +10,8 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class AmlScreening extends Model
 {
-    use HasUuids, SoftDeletes;
+    use HasUuids;
+    use SoftDeletes;
 
     protected $fillable = [
         'entity_id',
@@ -119,14 +120,14 @@ class AmlScreening extends Model
         $lastScreening = static::whereYear('created_at', $year)
             ->orderBy('screening_number', 'desc')
             ->first();
-        
+
         if ($lastScreening) {
             $lastNumber = intval(substr($lastScreening->screening_number, -5));
             $newNumber = str_pad($lastNumber + 1, 5, '0', STR_PAD_LEFT);
         } else {
             $newNumber = '00001';
         }
-        
+
         return "AML-{$year}-{$newNumber}";
     }
 
@@ -269,8 +270,10 @@ class AmlScreening extends Model
         }
 
         // High risk if adverse media with serious allegations
-        if (isset($this->adverse_media_results['serious_allegations']) && 
-            $this->adverse_media_results['serious_allegations'] > 0) {
+        if (
+            isset($this->adverse_media_results['serious_allegations']) &&
+            $this->adverse_media_results['serious_allegations'] > 0
+        ) {
             return self::RISK_HIGH;
         }
 

@@ -16,15 +16,15 @@ class KeyManagementService
 {
     protected ?EC $ec = null;
     protected string $encryptionKey;
-    
+
     // BIP44 derivation paths
-    const DERIVATION_PATHS = [
+    private const DERIVATION_PATHS = [
         'ethereum' => "m/44'/60'/0'/0",
         'bitcoin' => "m/44'/0'/0'/0",
         'polygon' => "m/44'/966'/0'/0",
         'bsc' => "m/44'/60'/0'/0", // Same as Ethereum
     ];
-    
+
     public function __construct()
     {
         if (class_exists(EC::class)) {
@@ -32,7 +32,7 @@ class KeyManagementService
         }
         $this->encryptionKey = config('app.key');
     }
-    
+
     /**
      * Generate a new mnemonic phrase
      */
@@ -43,7 +43,7 @@ class KeyManagementService
         $mnemonic = MnemonicFactory::bip39();
         return $mnemonic->create($strength);
     }
-    
+
     /**
      * Generate HD wallet from mnemonic
      */
@@ -51,17 +51,17 @@ class KeyManagementService
     {
         $seedGenerator = new Bip39SeedGenerator();
         $seed = $seedGenerator->getSeed($mnemonic, $passphrase ?? '');
-        
+
         $hdFactory = new HierarchicalKeyFactory();
         $masterKey = $hdFactory->fromEntropy($seed);
-        
+
         return [
             'master_public_key' => $masterKey->getPublicKey()->getHex(),
             'master_chain_code' => bin2hex($masterKey->getChainCode()),
             'encrypted_seed' => $this->encryptSeed($seed->getHex()),
         ];
     }
-    
+
     /**
      * Derive key pair for a specific path
      */
@@ -70,18 +70,18 @@ class KeyManagementService
         $seed = $this->decryptSeed($encryptedSeed);
         $hdFactory = new HierarchicalKeyFactory();
         $masterKey = $hdFactory->fromEntropy(hex2bin($seed));
-        
+
         $path = self::DERIVATION_PATHS[$chain] ?? self::DERIVATION_PATHS['ethereum'];
         $derivationPath = $path . '/' . $index;
-        
+
         $derivedKey = $masterKey->derivePath($derivationPath);
         $privateKey = $derivedKey->getPrivateKey();
-        
+
         if (in_array($chain, ['ethereum', 'polygon', 'bsc'])) {
             // For Ethereum-based chains
             $keyPair = $this->ec->keyFromPrivate($privateKey->getHex());
             $publicKey = $keyPair->getPublic('hex');
-            
+
             return [
                 'private_key' => $privateKey->getHex(),
                 'public_key' => $publicKey,
@@ -98,7 +98,7 @@ class KeyManagementService
             ];
         }
     }
-    
+
     /**
      * Generate Ethereum address from public key
      */
@@ -108,11 +108,11 @@ class KeyManagementService
         if (substr($publicKey, 0, 2) === '04') {
             $publicKey = substr($publicKey, 2);
         }
-        
+
         $hash = Keccak::hash(hex2bin($publicKey), 256);
         return '0x' . substr($hash, -40);
     }
-    
+
     /**
      * Sign transaction with private key
      */
@@ -123,10 +123,10 @@ class KeyManagementService
         } elseif ($chain === 'bitcoin') {
             return $this->signBitcoinTransaction($privateKey, $transaction);
         }
-        
+
         throw new KeyManagementException("Unsupported chain: {$chain}");
     }
-    
+
     /**
      * Sign Ethereum transaction
      */
@@ -136,7 +136,7 @@ class KeyManagementService
         // This is a placeholder
         return '0x' . bin2hex(random_bytes(32));
     }
-    
+
     /**
      * Sign Bitcoin transaction
      */
@@ -146,7 +146,7 @@ class KeyManagementService
         // This is a placeholder
         return bin2hex(random_bytes(32));
     }
-    
+
     /**
      * Encrypt seed for storage
      */
@@ -155,10 +155,10 @@ class KeyManagementService
         // Combine password with app key for encryption
         $encryptionKey = hash('sha256', $password . $this->encryptionKey);
         $iv = substr(hash('sha256', $password), 0, 16);
-        
+
         return base64_encode(openssl_encrypt($seed, 'AES-256-CBC', $encryptionKey, 0, $iv));
     }
-    
+
     /**
      * Decrypt seed
      */
@@ -167,10 +167,10 @@ class KeyManagementService
         // Combine password with app key for decryption
         $encryptionKey = hash('sha256', $password . $this->encryptionKey);
         $iv = substr(hash('sha256', $password), 0, 16);
-        
+
         return openssl_decrypt(base64_decode($encryptedSeed), 'AES-256-CBC', $encryptionKey, 0, $iv);
     }
-    
+
     /**
      * Encrypt private key for temporary storage
      */
@@ -179,7 +179,7 @@ class KeyManagementService
         $key = $this->getUserEncryptionKey($userId);
         return openssl_encrypt($privateKey, 'AES-256-CBC', $key, 0, substr($key, 0, 16));
     }
-    
+
     /**
      * Decrypt private key
      */
@@ -188,7 +188,7 @@ class KeyManagementService
         $key = $this->getUserEncryptionKey($userId);
         return openssl_decrypt($encryptedKey, 'AES-256-CBC', $key, 0, substr($key, 0, 16));
     }
-    
+
     /**
      * Get user-specific encryption key
      */
@@ -196,7 +196,7 @@ class KeyManagementService
     {
         return hash('sha256', $this->encryptionKey . $userId);
     }
-    
+
     /**
      * Store key temporarily in cache (for signing)
      */
@@ -204,12 +204,12 @@ class KeyManagementService
     {
         $token = bin2hex(random_bytes(32));
         $cacheKey = "wallet_key:{$userId}:{$token}";
-        
+
         Cache::put($cacheKey, $encryptedKey, $ttl);
-        
+
         return $token;
     }
-    
+
     /**
      * Retrieve temporary key from cache
      */
@@ -217,10 +217,10 @@ class KeyManagementService
     {
         $cacheKey = "wallet_key:{$userId}:{$token}";
         $encryptedKey = Cache::pull($cacheKey);
-        
+
         return $encryptedKey;
     }
-    
+
     /**
      * Validate mnemonic phrase
      */
@@ -233,7 +233,7 @@ class KeyManagementService
             return false;
         }
     }
-    
+
     /**
      * Generate wallet backup
      */
@@ -248,17 +248,17 @@ class KeyManagementService
             'addresses' => [],
             'metadata' => [],
         ];
-        
+
         $encrypted = Crypt::encryptString(json_encode($walletData));
         $checksum = hash('sha256', $encrypted);
-        
+
         return [
             'backup_id' => uniqid('backup_'),
             'encrypted_data' => $encrypted,
             'checksum' => $checksum,
         ];
     }
-    
+
     /**
      * Restore wallet from backup
      */
@@ -267,24 +267,24 @@ class KeyManagementService
         if (!isset($backup['encrypted_data']) || !isset($backup['checksum'])) {
             throw new KeyManagementException('Invalid backup format');
         }
-        
+
         // Verify checksum
         if (hash('sha256', $backup['encrypted_data']) !== $backup['checksum']) {
             throw new KeyManagementException('Invalid backup checksum');
         }
-        
+
         // Decrypt the backup data
         $decryptedData = Crypt::decryptString($backup['encrypted_data']);
         $walletData = json_decode($decryptedData, true);
-        
+
         if (!$walletData || !isset($walletData['wallet_id'])) {
             throw new KeyManagementException('Invalid backup data');
         }
-        
+
         // In a real implementation, this would restore the wallet and return the wallet ID
         return $walletData['wallet_id'];
     }
-    
+
     /**
      * Rotate encryption keys
      */
@@ -295,16 +295,16 @@ class KeyManagementService
         // 2. Decrypt it with the old password
         // 3. Re-encrypt it with the new password
         // 4. Update the stored encrypted seed
-        
+
         // For now, we'll just validate the parameters
         if (empty($walletId) || empty($oldPassword) || empty($newPassword)) {
             throw new KeyManagementException('Invalid parameters for key rotation');
         }
-        
+
         if ($oldPassword === $newPassword) {
             throw new KeyManagementException('New password must be different from old password');
         }
-        
+
         // Log the key rotation event
         \Log::info('Key rotation completed for wallet', ['wallet_id' => $walletId]);
     }

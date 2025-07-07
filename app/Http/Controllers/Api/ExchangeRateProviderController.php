@@ -21,11 +21,12 @@ class ExchangeRateProviderController extends Controller
     public function __construct(
         private readonly ExchangeRateProviderRegistry $registry,
         private readonly EnhancedExchangeRateService $service
-    ) {}
+    ) {
+    }
 
     /**
      * List available exchange rate providers
-     * 
+     *
      * @OA\Get(
      *     path="/api/exchange-rates/providers",
      *     operationId="listExchangeRateProviders",
@@ -62,13 +63,13 @@ class ExchangeRateProviderController extends Controller
      *         )
      *     )
      * )
-     * 
+     *
      * @return JsonResponse
      */
     public function index(): JsonResponse
     {
         $providers = [];
-        
+
         foreach ($this->registry->all() as $name => $provider) {
             $providers[] = [
                 'name' => $name,
@@ -79,7 +80,7 @@ class ExchangeRateProviderController extends Controller
                 'supported_currencies' => $provider->getSupportedCurrencies(),
             ];
         }
-        
+
         return response()->json([
             'data' => $providers,
             'default' => $this->registry->names()[0] ?? null,
@@ -88,7 +89,7 @@ class ExchangeRateProviderController extends Controller
 
     /**
      * Get exchange rate from a specific provider
-     * 
+     *
      * @OA\Get(
      *     path="/api/exchange-rates/providers/{provider}/rate",
      *     operationId="getExchangeRate",
@@ -149,7 +150,7 @@ class ExchangeRateProviderController extends Controller
      *         )
      *     )
      * )
-     * 
+     *
      * @param Request $request
      * @param string $provider
      * @return JsonResponse
@@ -160,18 +161,18 @@ class ExchangeRateProviderController extends Controller
             'from' => 'required|string|size:3',
             'to' => 'required|string|size:3',
         ]);
-        
+
         try {
             $providerInstance = $this->registry->get($provider);
-            
+
             if (!$providerInstance->isAvailable()) {
                 return response()->json([
                     'error' => 'Provider is not available',
                 ], 503);
             }
-            
+
             $quote = $providerInstance->getRate($validated['from'], $validated['to']);
-            
+
             return response()->json([
                 'data' => $quote->toArray(),
             ]);
@@ -185,7 +186,7 @@ class ExchangeRateProviderController extends Controller
 
     /**
      * Compare rates from all available providers
-     * 
+     *
      * @OA\Get(
      *     path="/api/exchange-rates/compare",
      *     operationId="compareExchangeRates",
@@ -220,7 +221,7 @@ class ExchangeRateProviderController extends Controller
      *         description="Invalid request parameters"
      *     )
      * )
-     * 
+     *
      * @param Request $request
      * @return JsonResponse
      */
@@ -230,10 +231,10 @@ class ExchangeRateProviderController extends Controller
             'from' => 'required|string|size:3',
             'to' => 'required|string|size:3',
         ]);
-        
+
         try {
             $comparison = $this->service->compareRates($validated['from'], $validated['to']);
-            
+
             return response()->json([
                 'data' => $comparison,
                 'pair' => "{$validated['from']}/{$validated['to']}",
@@ -249,7 +250,7 @@ class ExchangeRateProviderController extends Controller
 
     /**
      * Get aggregated rate from multiple providers
-     * 
+     *
      * @OA\Get(
      *     path="/api/exchange-rates/aggregated",
      *     operationId="getAggregatedExchangeRate",
@@ -292,7 +293,7 @@ class ExchangeRateProviderController extends Controller
      *         description="Invalid request parameters"
      *     )
      * )
-     * 
+     *
      * @param Request $request
      * @return JsonResponse
      */
@@ -302,10 +303,10 @@ class ExchangeRateProviderController extends Controller
             'from' => 'required|string|size:3',
             'to' => 'required|string|size:3',
         ]);
-        
+
         try {
             $quote = $this->registry->getAggregatedRate($validated['from'], $validated['to']);
-            
+
             return response()->json([
                 'data' => $quote->toArray(),
             ]);
@@ -319,7 +320,7 @@ class ExchangeRateProviderController extends Controller
 
     /**
      * Refresh exchange rates
-     * 
+     *
      * @OA\Post(
      *     path="/api/exchange-rates/refresh",
      *     operationId="refreshExchangeRates",
@@ -370,7 +371,7 @@ class ExchangeRateProviderController extends Controller
      *         description="Invalid request parameters"
      *     )
      * )
-     * 
+     *
      * @param Request $request
      * @return JsonResponse
      */
@@ -380,12 +381,12 @@ class ExchangeRateProviderController extends Controller
             'pairs' => 'nullable|array',
             'pairs.*' => 'string|regex:/^[A-Z]{3}\/[A-Z]{3}$/',
         ]);
-        
+
         try {
             if (isset($validated['pairs'])) {
                 // Refresh specific pairs
                 $results = ['refreshed' => [], 'failed' => []];
-                
+
                 foreach ($validated['pairs'] as $pair) {
                     [$from, $to] = explode('/', $pair);
                     try {
@@ -402,7 +403,7 @@ class ExchangeRateProviderController extends Controller
                 // Refresh all active rates
                 $results = $this->service->refreshAllRates();
             }
-            
+
             return response()->json([
                 'message' => 'Exchange rates refreshed',
                 'data' => $results,
@@ -417,7 +418,7 @@ class ExchangeRateProviderController extends Controller
 
     /**
      * Get historical rates
-     * 
+     *
      * @OA\Get(
      *     path="/api/exchange-rates/historical",
      *     operationId="getHistoricalExchangeRates",
@@ -471,7 +472,7 @@ class ExchangeRateProviderController extends Controller
      *         description="Invalid request parameters"
      *     )
      * )
-     * 
+     *
      * @param Request $request
      * @return JsonResponse
      */
@@ -483,7 +484,7 @@ class ExchangeRateProviderController extends Controller
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
         ]);
-        
+
         try {
             $rates = $this->service->getHistoricalRates(
                 $validated['from'],
@@ -491,7 +492,7 @@ class ExchangeRateProviderController extends Controller
                 new \DateTime($validated['start_date']),
                 new \DateTime($validated['end_date'])
             );
-            
+
             return response()->json([
                 'data' => $rates,
                 'pair' => "{$validated['from']}/{$validated['to']}",
@@ -510,7 +511,7 @@ class ExchangeRateProviderController extends Controller
 
     /**
      * Validate a specific exchange rate
-     * 
+     *
      * @OA\Post(
      *     path="/api/exchange-rates/validate",
      *     operationId="validateExchangeRate",
@@ -546,7 +547,7 @@ class ExchangeRateProviderController extends Controller
      *         description="Invalid request parameters"
      *     )
      * )
-     * 
+     *
      * @param Request $request
      * @return JsonResponse
      */
@@ -558,7 +559,7 @@ class ExchangeRateProviderController extends Controller
             'rate' => 'required|numeric|min:0',
             'provider' => 'nullable|string',
         ]);
-        
+
         try {
             // Create a quote from the provided data
             $quote = new \App\Domain\Exchange\ValueObjects\ExchangeRateQuote(
@@ -570,9 +571,9 @@ class ExchangeRateProviderController extends Controller
                 provider: $validated['provider'] ?? 'manual',
                 timestamp: now()
             );
-            
+
             $validation = $this->service->validateQuote($quote);
-            
+
             return response()->json([
                 'data' => $validation,
             ]);

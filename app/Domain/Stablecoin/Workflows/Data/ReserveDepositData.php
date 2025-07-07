@@ -12,8 +12,9 @@ class ReserveDepositData
         public readonly string $transactionHash,
         public readonly string $expectedAmount,
         public readonly array $metadata = []
-    ) {}
-    
+    ) {
+    }
+
     public function toArray(): array
     {
         return [

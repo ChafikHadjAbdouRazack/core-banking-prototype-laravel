@@ -8,15 +8,15 @@ use Filament\Widgets\Widget;
 class PrimaryBasketWidget extends Widget
 {
     protected static string $view = 'filament.admin.widgets.primary-basket-widget';
-    
+
     protected int | string | array $columnSpan = 'full';
-    
+
     protected static ?int $sort = 1;
-    
+
     public function getBasketData(): array
     {
         $basket = BasketAsset::where('code', config('baskets.primary', 'PRIMARY'))->first();
-        
+
         if (!$basket) {
             return [
                 'exists' => false,
@@ -30,7 +30,7 @@ class PrimaryBasketWidget extends Widget
                 ]
             ];
         }
-        
+
         return [
             'exists' => true,
             'basket' => $basket,

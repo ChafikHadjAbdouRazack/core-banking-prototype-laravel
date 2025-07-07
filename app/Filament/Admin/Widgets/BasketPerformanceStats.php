@@ -94,7 +94,7 @@ class BasketPerformanceStats extends BaseWidget
     protected function getSparklineData(string $periodType, int $points): array
     {
         $gcuBasket = BasketAsset::where('code', 'GCU')->first();
-        
+
         if (!$gcuBasket) {
             return [];
         }

@@ -22,7 +22,7 @@ class InitiateCustodianTransferActivity extends Activity
     ): string {
         $registry = app(CustodianRegistry::class);
         $custodian = $registry->get($custodianName);
-        
+
         // Create transfer request
         $request = new TransferRequest(
             fromAccount: $fromAccount,
@@ -36,14 +36,14 @@ class InitiateCustodianTransferActivity extends Activity
                 'initiated_at' => now()->toISOString(),
             ]
         );
-        
+
         // Initiate transfer with custodian
         $receipt = $custodian->initiateTransfer($request);
-        
+
         if ($receipt->isFailed()) {
             throw new \Exception("Custodian transfer failed: " . ($receipt->metadata['error'] ?? 'Unknown error'));
         }
-        
+
         return $receipt->id;
     }
 }

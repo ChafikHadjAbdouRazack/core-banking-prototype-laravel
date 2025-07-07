@@ -11,7 +11,8 @@ class CreateAccountForNewUser
 {
     public function __construct(
         private AccountService $accountService
-    ) {}
+    ) {
+    }
 
     /**
      * Handle the event.
@@ -26,7 +27,7 @@ class CreateAccountForNewUser
                     userUuid: $event->user->uuid
                 )
             );
-            
+
             Log::info('Created default account for new user', [
                 'user_uuid' => $event->user->uuid,
                 'user_email' => $event->user->email

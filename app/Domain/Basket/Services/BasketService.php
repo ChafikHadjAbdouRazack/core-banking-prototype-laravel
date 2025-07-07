@@ -26,7 +26,7 @@ class BasketService
 
         $accountUuidObj = __account_uuid($accountUuid);
         $account = Account::where('uuid', (string) $accountUuidObj)->firstOrFail();
-        
+
         // Validate basket exists and is active
         $basket = BasketAsset::where('code', $basketCode)->firstOrFail();
         if (!$basket->is_active) {
@@ -65,7 +65,7 @@ class BasketService
 
         $accountUuidObj = __account_uuid($accountUuid);
         $account = Account::where('uuid', (string) $accountUuidObj)->firstOrFail();
-        
+
         // Validate basket exists and is active
         $basket = BasketAsset::where('code', $basketCode)->firstOrFail();
         if (!$basket->is_active) {
@@ -91,7 +91,7 @@ class BasketService
     {
         $accountUuidObj = __account_uuid($accountUuid);
         $account = Account::where('uuid', (string) $accountUuidObj)->firstOrFail();
-        
+
         // Use the existing basket account service for read operations
         // TODO: Consider moving this to a dedicated query service
         $basketAccountService = app(BasketAccountService::class);

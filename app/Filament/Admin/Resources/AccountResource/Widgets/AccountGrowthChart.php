@@ -9,21 +9,21 @@ use Illuminate\Support\Facades\DB;
 class AccountGrowthChart extends ChartWidget
 {
     protected static ?string $heading = 'Account Growth';
-    
+
     protected static ?int $sort = 5;
-    
+
     protected int | string | array $columnSpan = '1';
-    
+
     protected static ?string $pollingInterval = '60s';
-    
+
     public ?string $filter = '30d';
-    
+
     protected function getData(): array
     {
         $activeFilter = $this->filter;
-        
+
         $data = $this->getGrowthData($activeFilter);
-        
+
         return [
             'datasets' => [
                 [
@@ -47,12 +47,12 @@ class AccountGrowthChart extends ChartWidget
             'labels' => $data->pluck('date'),
         ];
     }
-    
+
     protected function getType(): string
     {
         return 'bar';
     }
-    
+
     protected function getOptions(): array
     {
         return [
@@ -85,7 +85,7 @@ class AccountGrowthChart extends ChartWidget
             ],
         ];
     }
-    
+
     protected function getFilters(): ?array
     {
         return [
@@ -95,84 +95,84 @@ class AccountGrowthChart extends ChartWidget
             '365d' => 'Last Year',
         ];
     }
-    
+
     private function getGrowthData(string $period)
     {
         $endDate = now();
-        
-        $startDate = match($period) {
+
+        $startDate = match ($period) {
             '7d' => $endDate->copy()->subDays(7),
             '30d' => $endDate->copy()->subDays(30),
             '90d' => $endDate->copy()->subDays(90),
             '365d' => $endDate->copy()->subDays(365),
             default => $endDate->copy()->subDays(30),
         };
-        
-        $groupBy = match($period) {
+
+        $groupBy = match ($period) {
             '7d' => ['interval' => 'day', 'format' => 'M d'],
             '30d' => ['interval' => 'day', 'format' => 'M d'],
             '90d' => ['interval' => 'week', 'format' => 'M d'],
             '365d' => ['interval' => 'month', 'format' => 'M Y'],
             default => ['interval' => 'day', 'format' => 'M d'],
         };
-        
-        $dateFormat = match($groupBy['interval']) {
+
+        $dateFormat = match ($groupBy['interval']) {
             'day' => '%Y-%m-%d',
             'week' => '%Y-%W',
             'month' => '%Y-%m',
             default => '%Y-%m-%d',
         };
-        
+
         $dateExpression = config('database.default') === 'mysql'
             ? "DATE_FORMAT(created_at, '{$dateFormat}')"
             : "strftime('{$dateFormat}', created_at)";
-        
+
         $accounts = Account::select(
-                DB::raw("{$dateExpression} as period"),
-                DB::raw('COUNT(*) as count'),
-                DB::raw('MIN(created_at) as period_start')
-            )
+            DB::raw("{$dateExpression} as period"),
+            DB::raw('COUNT(*) as count'),
+            DB::raw('MIN(created_at) as period_start')
+        )
             ->where('created_at', '>=', $startDate)
             ->where('created_at', '<=', $endDate)
             ->groupBy('period')
             ->orderBy('period_start')
             ->get();
-        
+
         $totalBefore = Account::where('created_at', '<', $startDate)->count();
-        
+
         // Fill in missing periods with zeros
         $data = collect();
         $cumulative = $totalBefore;
         $current = $startDate->copy();
-        
+
         while ($current <= $endDate) {
             $periodKey = $current->format(
-                match($groupBy['interval']) {
+                match ($groupBy['interval']) {
                     'day' => 'Y-m-d',
                     'week' => 'Y-W',
                     'month' => 'Y-m',
                     default => 'Y-m-d',
                 }
             );
-            
+
             $account = $accounts->firstWhere('period', $periodKey);
             $new = $account?->count ?? 0;
             $cumulative += $new;
-            
+
             $data->push([
                 'date' => $current->format($groupBy['format']),
                 'new' => $new,
                 'cumulative' => $cumulative,
             ]);
-            
-            match($groupBy['interval']) {
+
+            match ($groupBy['interval']) {
                 'day' => $current->addDay(),
                 'week' => $current->addWeek(),
                 'month' => $current->addMonth(),
                 default => $current->addDay(),
             };
         }
-        
+
         return $data;
     }
 }

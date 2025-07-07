@@ -12,7 +12,7 @@ class FailWithdrawalActivity extends Activity
         PaymentWithdrawalAggregate::retrieve($input['withdrawal_uuid'])
             ->failWithdrawal($input['reason'])
             ->persist();
-        
+
         return [
             'withdrawal_uuid' => $input['withdrawal_uuid'],
             'status' => 'failed',

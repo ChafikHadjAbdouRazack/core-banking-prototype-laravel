@@ -9,10 +9,13 @@ use Illuminate\Queue\SerializesModels;
 
 class KycVerificationFailed
 {
-    use Dispatchable, InteractsWithSockets, SerializesModels;
-    
+    use Dispatchable;
+    use InteractsWithSockets;
+    use SerializesModels;
+
     public function __construct(
         public readonly KycVerification $verification,
         public readonly string $reason
-    ) {}
+    ) {
+    }
 }

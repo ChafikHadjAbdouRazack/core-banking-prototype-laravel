@@ -41,7 +41,7 @@ class CgoPaymentVerificationController extends Controller
 
         try {
             $updated = false;
-            
+
             switch ($investment->payment_method) {
                 case 'stripe':
                     if ($investment->stripe_payment_intent_id) {
@@ -49,7 +49,7 @@ class CgoPaymentVerificationController extends Controller
                         $updated = $result['verified'];
                     }
                     break;
-                    
+
                 case 'crypto':
                     if ($investment->coinbase_charge_id) {
                         $result = $this->verificationService->verifyCoinbasePayment($investment);
@@ -72,7 +72,6 @@ class CgoPaymentVerificationController extends Controller
                 'message' => 'Payment is still pending',
                 'status' => $investment->payment_status
             ]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -102,13 +101,13 @@ class CgoPaymentVerificationController extends Controller
         try {
             // Send email with payment instructions based on payment method
             $user = Auth::user();
-            
+
             switch ($investment->payment_method) {
                 case 'bank_transfer':
                     // Send bank transfer instructions
                     \Mail::to($user->email)->send(new \App\Mail\CgoBankTransferInstructions($investment));
                     break;
-                    
+
                 case 'crypto':
                     // Send crypto payment instructions
                     \Mail::to($user->email)->send(new \App\Mail\CgoCryptoPaymentInstructions($investment));
@@ -119,7 +118,6 @@ class CgoPaymentVerificationController extends Controller
                 'success' => true,
                 'message' => 'Payment instructions have been sent to your email'
             ]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -203,7 +201,7 @@ class CgoPaymentVerificationController extends Controller
         }
 
         // Sort by date
-        usort($timeline, function($a, $b) {
+        usort($timeline, function ($a, $b) {
             return $a['date']->timestamp - $b['date']->timestamp;
         });
 

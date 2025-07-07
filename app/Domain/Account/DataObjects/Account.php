@@ -14,10 +14,11 @@ final readonly class Account extends DataObject implements DataObjectContract
      * @param string|null $uuid
      */
     public function __construct(
-        private string  $name,
-        private string  $userUuid,
+        private string $name,
+        private string $userUuid,
         private ?string $uuid = null
-    ) {}
+    ) {
+    }
 
     /**
      * @return string

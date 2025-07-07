@@ -73,7 +73,7 @@ class KycService
     {
         DB::transaction(function () use ($user, $verifiedBy, $options) {
             $oldStatus = $user->kyc_status;
-            
+
             // Update user status
             $user->update([
                 'kyc_status' => 'approved',
@@ -110,7 +110,7 @@ class KycService
     {
         DB::transaction(function () use ($user, $reason, $rejectedBy) {
             $oldStatus = $user->kyc_status;
-            
+
             // Update user status
             $user->update([
                 'kyc_status' => 'rejected',
@@ -142,7 +142,7 @@ class KycService
     {
         if ($user->kyc_status === 'approved' && $user->kyc_expires_at && $user->kyc_expires_at->isPast()) {
             $user->update(['kyc_status' => 'expired']);
-            
+
             AuditLog::log(
                 'kyc.expired',
                 $user,
@@ -151,10 +151,10 @@ class KycService
                 null,
                 'kyc,compliance,expired'
             );
-            
+
             return true;
         }
-        
+
         return false;
     }
 
@@ -163,7 +163,7 @@ class KycService
      */
     public function getRequirements(string $level): array
     {
-        return match($level) {
+        return match ($level) {
             'basic' => [
                 'documents' => ['national_id', 'selfie'],
                 'limits' => [

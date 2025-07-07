@@ -31,7 +31,7 @@ class FeatureToggleWorkflow
         try {
             // Apply feature toggle based on poll result
             $enabled = $this->shouldEnableFeature($poll, $result);
-            
+
             $this->updateFeatureFlag($featureConfig['feature_key'], $enabled);
 
             // Log the governance action
@@ -92,7 +92,7 @@ class FeatureToggleWorkflow
     private function parseFeatureConfigFromText(string $title, ?string $description): array
     {
         $text = strtolower($title . ' ' . ($description ?? ''));
-        
+
         // Common feature patterns
         $featurePatterns = [
             'multi.?currency' => 'multi_currency_support',
@@ -119,8 +119,8 @@ class FeatureToggleWorkflow
 
     private function validateFeatureConfig(array $config): bool
     {
-        return isset($config['feature_key']) && 
-               is_string($config['feature_key']) && 
+        return isset($config['feature_key']) &&
+               is_string($config['feature_key']) &&
                !empty($config['feature_key']) &&
                $config['feature_key'] !== 'unknown_feature';
     }
@@ -146,7 +146,7 @@ class FeatureToggleWorkflow
         }
 
         $label = strtolower($winningOption['label']);
-        
+
         // Check for enabling keywords
         $enableKeywords = ['enable', 'activate', 'turn on', 'allow', 'permit', 'yes'];
         $disableKeywords = ['disable', 'deactivate', 'turn off', 'block', 'deny', 'no'];
@@ -182,10 +182,10 @@ class FeatureToggleWorkflow
     {
         // In a real implementation, this would persist to a configuration store
         // For now, we'll use Laravel's config with a runtime update
-        
+
         $currentFlags = config('features', []);
         $currentFlags[$featureKey] = $enabled;
-        
+
         Config::set('features', $currentFlags);
 
         // Log for audit purposes

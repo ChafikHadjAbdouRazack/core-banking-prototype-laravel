@@ -13,7 +13,7 @@ class PaymentWithdrawalAggregate extends AggregateRoot
 {
     protected string $withdrawalStatus = 'pending';
     protected ?string $transactionId = null;
-    
+
     /**
      * @return PaymentWithdrawalRepository
      * @throws \Illuminate\Contracts\Container\BindingResolutionException

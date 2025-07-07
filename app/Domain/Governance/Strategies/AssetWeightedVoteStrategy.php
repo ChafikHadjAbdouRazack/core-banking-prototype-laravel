@@ -18,28 +18,28 @@ class AssetWeightedVoteStrategy implements IVotingPowerStrategy
     public function calculatePower(User $user, Poll $poll): int
     {
         $accounts = Account::where('user_uuid', $user->uuid)->get();
-        
+
         if ($accounts->isEmpty()) {
             return 0;
         }
 
         $totalBalance = 0;
-        
+
         // Sum up balances across all user accounts
         foreach ($accounts as $account) {
             $balance = $account->getBalance(self::DEFAULT_ASSET_CODE);
             $totalBalance += $balance;
         }
-        
+
         // Minimum balance requirement
         if ($totalBalance < self::MIN_BALANCE_FOR_VOTE) {
             return 0;
         }
-        
+
         // Convert balance to voting power
         // $100.00 (10000 cents) = 1 voting power
         $votingPower = intval($totalBalance / self::POWER_DIVISOR);
-        
+
         // Ensure at least 1 voting power if minimum balance is met
         return max(1, $votingPower);
     }

@@ -38,7 +38,7 @@ class FailAssetTransferActivity extends Activity
                 )
                 ->persist();
         }
-        
+
         return true;
     }
 }

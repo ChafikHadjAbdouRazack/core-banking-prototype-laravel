@@ -14,5 +14,6 @@ class RefundApproved extends ShouldBeStored
         public readonly string $approvedBy,
         public readonly string $approvalNotes,
         public readonly array $metadata = []
-    ) {}
+    ) {
+    }
 }

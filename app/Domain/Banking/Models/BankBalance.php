@@ -17,8 +17,9 @@ class BankBalance
         public readonly float $reserved,
         public readonly Carbon $asOf,
         public readonly array $metadata = [],
-    ) {}
-    
+    ) {
+    }
+
     /**
      * Get total balance (current + pending)
      */
@@ -26,7 +27,7 @@ class BankBalance
     {
         return $this->current + $this->pending;
     }
-    
+
     /**
      * Get usable balance (available - reserved)
      */
@@ -34,7 +35,7 @@ class BankBalance
     {
         return $this->available - $this->reserved;
     }
-    
+
     /**
      * Check if balance is sufficient for an amount
      */
@@ -42,7 +43,7 @@ class BankBalance
     {
         return $this->getUsable() >= $amount;
     }
-    
+
     /**
      * Format balance for display
      */
@@ -55,7 +56,7 @@ class BankBalance
             $this->available / 100
         );
     }
-    
+
     /**
      * Convert to array
      */
@@ -72,7 +73,7 @@ class BankBalance
             'metadata' => $this->metadata,
         ];
     }
-    
+
     /**
      * Create from array
      */

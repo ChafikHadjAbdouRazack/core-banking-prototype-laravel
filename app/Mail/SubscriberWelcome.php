@@ -12,7 +12,8 @@ use Illuminate\Queue\SerializesModels;
 
 class SubscriberWelcome extends Mailable implements ShouldQueue
 {
-    use Queueable, SerializesModels;
+    use Queueable;
+    use SerializesModels;
 
     /**
      * Create a new message instance.
@@ -28,7 +29,7 @@ class SubscriberWelcome extends Mailable implements ShouldQueue
      */
     public function envelope(): Envelope
     {
-        $sourceText = match($this->subscriber->source) {
+        $sourceText = match ($this->subscriber->source) {
             Subscriber::SOURCE_BLOG => 'FinAegis Blog',
             Subscriber::SOURCE_CGO => 'CGO Early Access',
             Subscriber::SOURCE_INVESTMENT => 'Investment Platform',
@@ -37,7 +38,7 @@ class SubscriberWelcome extends Mailable implements ShouldQueue
             Subscriber::SOURCE_PARTNER => 'Partner Program',
             default => 'FinAegis Platform',
         };
-        
+
         return new Envelope(
             subject: "Welcome to {$sourceText}!",
         );

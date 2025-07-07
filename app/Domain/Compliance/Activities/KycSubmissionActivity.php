@@ -10,11 +10,12 @@ class KycSubmissionActivity extends Activity
 {
     public function __construct(
         private KycService $kycService
-    ) {}
+    ) {
+    }
 
     /**
      * Execute KYC submission activity.
-     * 
+     *
      * @param array $input Expected format: [
      *   'user_uuid' => string,
      *   'documents' => array

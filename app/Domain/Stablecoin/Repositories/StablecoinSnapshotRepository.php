@@ -18,8 +18,7 @@ final class StablecoinSnapshotRepository extends EloquentSnapshotRepository
      */
     public function __construct(
         protected string $snapshotModel = StablecoinSnapshot::class
-    )
-    {
+    ) {
         if (! new $this->snapshotModel() instanceof EloquentSnapshot) {
             throw new InvalidEloquentStoredEventModel("The class {$this->snapshotModel} must extend EloquentSnapshot");
         }

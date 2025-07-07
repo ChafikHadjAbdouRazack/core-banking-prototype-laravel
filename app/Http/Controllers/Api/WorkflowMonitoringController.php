@@ -19,7 +19,7 @@ class WorkflowMonitoringController extends Controller
 {
     /**
      * Get all workflows with filtering and pagination
-     * 
+     *
      * @OA\Get(
      *     path="/api/workflows",
      *     operationId="listWorkflows",
@@ -106,7 +106,7 @@ class WorkflowMonitoringController extends Controller
         $query = StoredWorkflow::query()
             ->with(['logs:id,stored_workflow_id,index,class,result,created_at'])
             ->select([
-                'id', 'class', 'status', 'arguments', 
+                'id', 'class', 'status', 'arguments',
                 'output', 'created_at', 'updated_at'
             ]);
 
@@ -121,7 +121,7 @@ class WorkflowMonitoringController extends Controller
 
         if ($request->filled('search')) {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('class', 'LIKE', "%{$search}%")
                   ->orWhere('arguments', 'LIKE', "%{$search}%");
             });
@@ -156,7 +156,7 @@ class WorkflowMonitoringController extends Controller
 
     /**
      * Get specific workflow details with full logs
-     * 
+     *
      * @OA\Get(
      *     path="/api/workflows/{id}",
      *     operationId="getWorkflow",
@@ -189,7 +189,7 @@ class WorkflowMonitoringController extends Controller
     public function show(string $id): JsonResponse
     {
         $workflow = StoredWorkflow::with([
-            'logs' => function($query) {
+            'logs' => function ($query) {
                 $query->orderBy('created_at', 'asc');
             }
         ])->findOrFail($id);
@@ -209,7 +209,7 @@ class WorkflowMonitoringController extends Controller
 
     /**
      * Get workflow statistics dashboard data
-     * 
+     *
      * @OA\Get(
      *     path="/api/workflows/stats",
      *     operationId="getWorkflowStats",
@@ -239,7 +239,7 @@ class WorkflowMonitoringController extends Controller
 
     /**
      * Get workflows by status
-     * 
+     *
      * @OA\Get(
      *     path="/api/workflows/status/{status}",
      *     operationId="getWorkflowsByStatus",
@@ -279,7 +279,7 @@ class WorkflowMonitoringController extends Controller
     public function byStatus(string $status): JsonResponse
     {
         $validStatuses = ['created', 'pending', 'running', 'completed', 'failed', 'waiting'];
-        
+
         if (!in_array($status, $validStatuses)) {
             return response()->json(['error' => 'Invalid status'], 400);
         }
@@ -304,7 +304,7 @@ class WorkflowMonitoringController extends Controller
 
     /**
      * Get failed workflows with detailed error information
-     * 
+     *
      * @OA\Get(
      *     path="/api/workflows/failed",
      *     operationId="getFailedWorkflows",
@@ -347,7 +347,7 @@ class WorkflowMonitoringController extends Controller
             ->get()
             ->groupBy('stored_workflow_id');
 
-        $enrichedWorkflows = $failedWorkflows->getCollection()->map(function($workflow) use ($exceptions) {
+        $enrichedWorkflows = $failedWorkflows->getCollection()->map(function ($workflow) use ($exceptions) {
             $workflow->exceptions = $exceptions->get($workflow->id, collect());
             return $workflow;
         });
@@ -366,7 +366,7 @@ class WorkflowMonitoringController extends Controller
 
     /**
      * Get workflow execution metrics
-     * 
+     *
      * @OA\Get(
      *     path="/api/workflows/metrics",
      *     operationId="getWorkflowMetrics",
@@ -431,7 +431,7 @@ class WorkflowMonitoringController extends Controller
 
     /**
      * Search workflows by various criteria
-     * 
+     *
      * @OA\Post(
      *     path="/api/workflows/search",
      *     operationId="searchWorkflows",
@@ -521,7 +521,7 @@ class WorkflowMonitoringController extends Controller
 
     /**
      * Get compensation tracking information
-     * 
+     *
      * @OA\Get(
      *     path="/api/workflows/compensations",
      *     operationId="getWorkflowCompensations",
@@ -569,7 +569,7 @@ class WorkflowMonitoringController extends Controller
             ->orderBy('updated_at', 'desc')
             ->paginate(20);
 
-        $compensationData = $compensatedWorkflows->getCollection()->map(function($workflow) {
+        $compensationData = $compensatedWorkflows->getCollection()->map(function ($workflow) {
             return [
                 'workflow' => $workflow,
                 'compensation_info' => $this->getCompensationInfo($workflow),
@@ -606,10 +606,10 @@ class WorkflowMonitoringController extends Controller
     private function getCompensationInfo($workflow): array
     {
         // Look for compensation-related log entries
-        $compensationLogs = $workflow->logs->filter(function($log) {
+        $compensationLogs = $workflow->logs->filter(function ($log) {
             $result = json_decode($log->result, true);
             $resultMessage = is_array($result) ? ($result['message'] ?? '') : '';
-            
+
             return stripos($log->class, 'compensation') !== false ||
                    stripos($log->class, 'rollback') !== false ||
                    stripos($resultMessage, 'compensation') !== false ||
@@ -626,7 +626,7 @@ class WorkflowMonitoringController extends Controller
     private function buildExecutionTimeline($workflow): array
     {
         $timeline = [];
-        
+
         foreach ($workflow->logs as $log) {
             $result = json_decode($log->result, true);
             $timeline[] = [
@@ -665,7 +665,7 @@ class WorkflowMonitoringController extends Controller
             return null;
         }
 
-        $totalDuration = $workflows->sum(function($workflow) {
+        $totalDuration = $workflows->sum(function ($workflow) {
             return $workflow->updated_at->diffInSeconds($workflow->created_at);
         });
 
@@ -676,13 +676,13 @@ class WorkflowMonitoringController extends Controller
     {
         // Use database-agnostic date functions
         $dbDriver = config('database.default');
-        
+
         if ($dbDriver === 'sqlite') {
             $durationSql = 'AVG((julianday(updated_at) - julianday(created_at)) * 86400)';
         } else {
             $durationSql = 'AVG(TIMESTAMPDIFF(SECOND, created_at, updated_at))';
         }
-        
+
         return StoredWorkflow::selectRaw("class, COUNT(*) as executions, {$durationSql} as avg_duration_seconds")
             ->whereNotNull('updated_at')
             ->groupBy('class')
@@ -695,7 +695,7 @@ class WorkflowMonitoringController extends Controller
     private function getPerformanceMetrics(): array
     {
         $dbDriver = config('database.default');
-        
+
         if ($dbDriver === 'sqlite') {
             $durationSql = '(julianday(updated_at) - julianday(created_at)) * 86400';
             $avgDurationSql = 'AVG((julianday(updated_at) - julianday(created_at)) * 86400)';
@@ -703,7 +703,7 @@ class WorkflowMonitoringController extends Controller
             $durationSql = 'TIMESTAMPDIFF(SECOND, created_at, updated_at)';
             $avgDurationSql = 'AVG(TIMESTAMPDIFF(SECOND, created_at, updated_at))';
         }
-        
+
         $slowWorkflows = StoredWorkflow::selectRaw("id, class, {$durationSql} as duration_seconds")
             ->whereNotNull('updated_at')
             ->whereRaw("({$durationSql}) > 30")
@@ -724,11 +724,11 @@ class WorkflowMonitoringController extends Controller
     private function getRollbackActivities($workflow): array
     {
         // Look for rollback/compensation activities in logs
-        return $workflow->logs->filter(function($log) {
+        return $workflow->logs->filter(function ($log) {
             $className = strtolower($log->class);
             $result = json_decode($log->result, true);
             $resultMessage = is_array($result) ? strtolower($result['message'] ?? '') : '';
-            
+
             return strpos($className, 'rollback') !== false ||
                    strpos($className, 'compensation') !== false ||
                    strpos($className, 'undo') !== false ||
@@ -744,7 +744,7 @@ class WorkflowMonitoringController extends Controller
     {
         $totalWorkflows = StoredWorkflow::count();
         $failedWorkflows = StoredWorkflow::where('status', 'failed')->count();
-        
+
         return [
             'total_workflows' => $totalWorkflows,
             'failed_workflows' => $failedWorkflows,

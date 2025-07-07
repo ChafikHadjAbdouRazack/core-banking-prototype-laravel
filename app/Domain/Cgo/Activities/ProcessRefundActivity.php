@@ -13,17 +13,18 @@ class ProcessRefundActivity extends Activity
     public function __construct(
         private StripePaymentService $stripeService,
         private CoinbaseCommerceService $coinbaseService
-    ) {}
-    
+    ) {
+    }
+
     public function execute(array $input): array
     {
         $refund = CgoRefund::with('investment')->findOrFail($input['refund_id']);
         $investment = $refund->investment;
-        
+
         // Process refund based on original payment method
         $processorRefundId = null;
         $processorResponse = [];
-        
+
         if ($investment->payment_method === 'stripe') {
             // Process Stripe refund
             $result = $this->stripeService->refundPayment(
@@ -52,7 +53,7 @@ class ProcessRefundActivity extends Activity
                 'currency' => $refund->currency
             ];
         }
-        
+
         // Update aggregate with processing details
         RefundAggregate::retrieve($input['refund_id'])
             ->process(
@@ -62,7 +63,7 @@ class ProcessRefundActivity extends Activity
                 processorResponse: $processorResponse
             )
             ->persist();
-        
+
         return [
             'refund_id' => $input['refund_id'],
             'processor_refund_id' => $processorRefundId,

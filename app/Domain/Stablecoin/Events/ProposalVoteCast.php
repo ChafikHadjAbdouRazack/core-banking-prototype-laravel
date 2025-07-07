@@ -14,5 +14,6 @@ class ProposalVoteCast extends ShouldBeStored
         public readonly string $votingPower,
         public readonly string $reason,
         public readonly Carbon $timestamp
-    ) {}
+    ) {
+    }
 }

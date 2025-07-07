@@ -18,25 +18,25 @@ class AssetWeightedVotingStrategy implements VotingPowerStrategy
     {
         // Get all user accounts
         $accounts = Account::where('user_uuid', $user->uuid)->get();
-        
+
         // Sum up primary asset holdings across all accounts
         $primaryAsset = config('baskets.primary_code', 'PRIMARY');
         $totalBalance = 0;
-        
+
         foreach ($accounts as $account) {
             // Check if account has primary asset balance
             $balance = $account->getBalance($primaryAsset);
             $totalBalance += $balance;
         }
-        
+
         // Convert balance to voting power
         // 1 unit = 1 voting power (in cents, so divide by 100)
         $votingPower = intval($totalBalance / 100);
-        
+
         // Return actual voting power (0 if no holdings)
         return $votingPower;
     }
-    
+
     /**
      * Get description of this voting strategy
      */
@@ -44,7 +44,7 @@ class AssetWeightedVotingStrategy implements VotingPowerStrategy
     {
         return 'Voting power is proportional to primary asset holdings. 1 unit = 1 vote.';
     }
-    
+
     /**
      * Validate if user is eligible to vote
      */
@@ -53,13 +53,13 @@ class AssetWeightedVotingStrategy implements VotingPowerStrategy
         // User must have at least some primary asset to vote
         $primaryAsset = config('baskets.primary_code', 'PRIMARY');
         $accounts = Account::where('user_uuid', $user->uuid)->get();
-        
+
         foreach ($accounts as $account) {
             if ($account->getBalance($primaryAsset) > 0) {
                 return true;
             }
         }
-        
+
         return false;
     }
 }

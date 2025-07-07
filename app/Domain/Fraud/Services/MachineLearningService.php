@@ -16,7 +16,7 @@ class MachineLearningService
     private string $modelVersion;
     private string $apiEndpoint;
     private array $modelConfig;
-    
+
     public function __construct()
     {
         $this->enabled = config('fraud.ml.enabled', false);
@@ -24,7 +24,7 @@ class MachineLearningService
         $this->apiEndpoint = config('fraud.ml.api_endpoint', '');
         $this->modelConfig = config('fraud.ml.config', []);
     }
-    
+
     /**
      * Check if ML service is enabled
      */
@@ -32,7 +32,7 @@ class MachineLearningService
     {
         return $this->enabled && !empty($this->apiEndpoint);
     }
-    
+
     /**
      * Predict fraud risk using ML model
      */
@@ -47,14 +47,14 @@ class MachineLearningService
                 'explanation' => 'ML service disabled',
             ];
         }
-        
+
         try {
             // Extract features
             $features = $this->extractFeatures($context);
-            
+
             // Get prediction from ML service
             $prediction = $this->getPrediction($features);
-            
+
             return [
                 'score' => $prediction['fraud_probability'] * 100,
                 'confidence' => $prediction['confidence'],
@@ -63,13 +63,12 @@ class MachineLearningService
                 'explanation' => $prediction['explanation'] ?? null,
                 'risk_factors' => $prediction['risk_factors'] ?? [],
             ];
-            
         } catch (\Exception $e) {
             Log::error('ML prediction failed', [
                 'error' => $e->getMessage(),
                 'context' => $context,
             ]);
-            
+
             return [
                 'score' => 0,
                 'confidence' => 0,
@@ -79,14 +78,14 @@ class MachineLearningService
             ];
         }
     }
-    
+
     /**
      * Extract features for ML model
      */
     protected function extractFeatures(array $context): array
     {
         $features = [];
-        
+
         // Transaction features
         $features['amount'] = $context['amount'] ?? 0;
         $features['amount_normalized'] = $this->normalizeAmount($features['amount']);
@@ -94,33 +93,33 @@ class MachineLearningService
         $features['type'] = $context['type'] ?? 'unknown';
         $features['is_withdrawal'] = $features['type'] === 'withdrawal' ? 1 : 0;
         $features['is_transfer'] = $features['type'] === 'transfer' ? 1 : 0;
-        
+
         // Temporal features
         $features['hour_of_day'] = $context['hour_of_day'] ?? 0;
         $features['day_of_week'] = $context['day_of_week'] ?? 0;
         $features['is_weekend'] = $context['is_weekend'] ?? false ? 1 : 0;
         $features['is_night'] = $features['hour_of_day'] >= 22 || $features['hour_of_day'] < 6 ? 1 : 0;
-        
+
         // Velocity features
         $features['daily_transaction_count'] = $context['daily_transaction_count'] ?? 0;
         $features['daily_transaction_volume'] = $context['daily_transaction_volume'] ?? 0;
         $features['hourly_transaction_count'] = $context['hourly_transaction_count'] ?? 0;
         $features['time_since_last_transaction'] = $context['time_since_last_transaction'] ?? 9999;
-        
+
         // User features
         $user = $context['user'] ?? [];
-        $features['user_age_days'] = isset($user['created_at']) ? 
+        $features['user_age_days'] = isset($user['created_at']) ?
             now()->diffInDays($user['created_at']) : 0;
         $features['user_transaction_count'] = $context['user_transaction_count'] ?? 0;
         $features['kyc_level'] = $this->encodeKycLevel($user['kyc_level'] ?? 'none');
         $features['risk_rating'] = $this->encodeRiskRating($user['risk_rating'] ?? 'medium');
-        
+
         // Behavioral features
         $behavioral = $context['behavioral_analysis'] ?? [];
         $features['behavioral_deviation_score'] = $behavioral['deviation_score'] ?? 0;
         $features['is_established_profile'] = $behavioral['is_established'] ?? false ? 1 : 0;
         $features['profile_confidence'] = $behavioral['profile_confidence'] ?? 0;
-        
+
         // Device features
         $device = $context['device_data'] ?? [];
         $features['device_risk_score'] = $device['risk_score'] ?? 50;
@@ -128,36 +127,36 @@ class MachineLearningService
         $features['is_vpn'] = $device['is_vpn'] ?? false ? 1 : 0;
         $features['is_proxy'] = $device['is_proxy'] ?? false ? 1 : 0;
         $features['device_age_days'] = $this->calculateDeviceAge($device);
-        
+
         // Network features
         $features['ip_country_risk'] = $this->getCountryRisk($context['ip_country'] ?? null);
         $features['is_high_risk_country'] = $features['ip_country_risk'] > 70 ? 1 : 0;
-        
+
         // Account features
         $features['account_balance_ratio'] = $this->calculateBalanceRatio(
             $features['amount'],
             $context['account_balance'] ?? 0
         );
-        
+
         // Historical pattern features
         $features['avg_transaction_amount'] = $behavioral['analysis_details']['amount']['average_amount'] ?? 0;
         $features['amount_deviation'] = $features['avg_transaction_amount'] > 0 ?
             abs($features['amount'] - $features['avg_transaction_amount']) / $features['avg_transaction_amount'] : 0;
-        
+
         // Rule engine features
         $ruleResults = $context['rule_results'] ?? [];
         $features['rules_triggered_count'] = count($ruleResults['triggered_rules'] ?? []);
         $features['rule_total_score'] = $ruleResults['total_score'] ?? 0;
         $features['has_blocking_rules'] = !empty($ruleResults['blocking_rules']) ? 1 : 0;
-        
+
         // Cross-feature engineering
         $features['velocity_amount_product'] = $features['daily_transaction_count'] * $features['amount_normalized'];
-        $features['risk_composite'] = ($features['device_risk_score'] + $features['behavioral_deviation_score'] + 
+        $features['risk_composite'] = ($features['device_risk_score'] + $features['behavioral_deviation_score'] +
                                       $features['rule_total_score']) / 3;
-        
+
         return $features;
     }
-    
+
     /**
      * Get prediction from ML service
      */
@@ -165,55 +164,55 @@ class MachineLearningService
     {
         // In production, this would call an actual ML service
         // For now, we'll simulate with a rule-based approach
-        
+
         $fraudProbability = 0;
         $riskFactors = [];
-        
+
         // High-risk indicators
         if ($features['has_blocking_rules']) {
             $fraudProbability += 0.4;
             $riskFactors[] = 'blocking_rules_triggered';
         }
-        
+
         if ($features['risk_composite'] > 70) {
             $fraudProbability += 0.3;
             $riskFactors[] = 'high_composite_risk';
         }
-        
+
         if ($features['is_vpn'] || $features['is_proxy']) {
             $fraudProbability += 0.2;
             $riskFactors[] = 'anonymous_connection';
         }
-        
+
         if ($features['amount_deviation'] > 5) {
             $fraudProbability += 0.15;
             $riskFactors[] = 'unusual_amount';
         }
-        
+
         if ($features['is_high_risk_country']) {
             $fraudProbability += 0.15;
             $riskFactors[] = 'high_risk_location';
         }
-        
+
         // Low-risk indicators (reduce probability)
         if ($features['is_trusted_device']) {
             $fraudProbability -= 0.2;
         }
-        
+
         if ($features['is_established_profile'] && $features['profile_confidence'] > 80) {
             $fraudProbability -= 0.15;
         }
-        
+
         if ($features['kyc_level'] >= 2) { // Enhanced or full KYC
             $fraudProbability -= 0.1;
         }
-        
+
         // Ensure probability is between 0 and 1
         $fraudProbability = max(0, min(1, $fraudProbability));
-        
+
         // Calculate confidence based on data availability
         $confidence = $this->calculateConfidence($features);
-        
+
         return [
             'fraud_probability' => $fraudProbability,
             'confidence' => $confidence,
@@ -221,7 +220,7 @@ class MachineLearningService
             'explanation' => $this->generateExplanation($fraudProbability, $riskFactors),
         ];
     }
-    
+
     /**
      * Train model with feedback
      */
@@ -230,7 +229,7 @@ class MachineLearningService
         if (!$this->isEnabled()) {
             return;
         }
-        
+
         try {
             $trainingData = [
                 'fraud_score_id' => $fraudScore->id,
@@ -240,13 +239,12 @@ class MachineLearningService
                 'decision' => $fraudScore->decision,
                 'feedback_timestamp' => now()->toIso8601String(),
             ];
-            
+
             // In production, send to ML training pipeline
             $this->sendTrainingData($trainingData);
-            
+
             // Update fraud score with outcome
             $fraudScore->update(['outcome' => $actualOutcome]);
-            
         } catch (\Exception $e) {
             Log::error('ML training feedback failed', [
                 'fraud_score_id' => $fraudScore->id,
@@ -254,7 +252,7 @@ class MachineLearningService
             ]);
         }
     }
-    
+
     /**
      * Batch predict for multiple transactions
      */
@@ -263,17 +261,17 @@ class MachineLearningService
         if (!$this->isEnabled()) {
             return [];
         }
-        
+
         $predictions = [];
-        
+
         foreach ($transactions as $transaction) {
             $context = $this->buildContextFromTransaction($transaction);
             $predictions[$transaction['id']] = $this->predict($context);
         }
-        
+
         return $predictions;
     }
-    
+
     /**
      * Get model performance metrics
      */
@@ -294,7 +292,7 @@ class MachineLearningService
             ];
         });
     }
-    
+
     /**
      * Get feature importance scores
      */
@@ -314,7 +312,7 @@ class MachineLearningService
             'time_since_last_transaction' => 0.04,
         ];
     }
-    
+
     /**
      * Normalize amount for ML features
      */
@@ -323,26 +321,26 @@ class MachineLearningService
         // Log transformation for better ML performance
         return log1p($amount);
     }
-    
+
     /**
      * Encode KYC level
      */
     protected function encodeKycLevel(?string $kycLevel): int
     {
-        return match($kycLevel) {
+        return match ($kycLevel) {
             'full' => 3,
             'enhanced' => 2,
             'basic' => 1,
             default => 0,
         };
     }
-    
+
     /**
      * Encode risk rating
      */
     protected function encodeRiskRating(?string $riskRating): int
     {
-        return match($riskRating) {
+        return match ($riskRating) {
             'very_high' => 4,
             'high' => 3,
             'medium' => 2,
@@ -350,7 +348,7 @@ class MachineLearningService
             default => 2,
         };
     }
-    
+
     /**
      * Calculate device age in days
      */
@@ -359,14 +357,14 @@ class MachineLearningService
         if (!isset($device['first_seen_at'])) {
             return 0;
         }
-        
+
         try {
             return now()->diffInDays($device['first_seen_at']);
         } catch (\Exception $e) {
             return 0;
         }
     }
-    
+
     /**
      * Get country risk score
      */
@@ -375,23 +373,23 @@ class MachineLearningService
         if (!$country) {
             return 50;
         }
-        
+
         // High-risk countries
         $highRisk = ['NG', 'PK', 'ID', 'VN', 'BD', 'KE', 'GH'];
         if (in_array($country, $highRisk)) {
             return 80;
         }
-        
+
         // Medium-risk countries
         $mediumRisk = ['IN', 'PH', 'MY', 'TH', 'EG', 'ZA'];
         if (in_array($country, $mediumRisk)) {
             return 50;
         }
-        
+
         // Low-risk countries
         return 20;
     }
-    
+
     /**
      * Calculate balance ratio
      */
@@ -400,27 +398,37 @@ class MachineLearningService
         if ($balance <= 0) {
             return 1.0;
         }
-        
+
         return min(1.0, $amount / $balance);
     }
-    
+
     /**
      * Calculate prediction confidence
      */
     protected function calculateConfidence(array $features): float
     {
         $confidence = 0.5; // Base confidence
-        
+
         // Increase confidence with more data
-        if ($features['user_transaction_count'] > 100) $confidence += 0.1;
-        if ($features['is_established_profile']) $confidence += 0.15;
-        if ($features['profile_confidence'] > 80) $confidence += 0.1;
-        if ($features['device_age_days'] > 30) $confidence += 0.05;
-        if ($features['rules_triggered_count'] > 3) $confidence += 0.1;
-        
+        if ($features['user_transaction_count'] > 100) {
+            $confidence += 0.1;
+        }
+        if ($features['is_established_profile']) {
+            $confidence += 0.15;
+        }
+        if ($features['profile_confidence'] > 80) {
+            $confidence += 0.1;
+        }
+        if ($features['device_age_days'] > 30) {
+            $confidence += 0.05;
+        }
+        if ($features['rules_triggered_count'] > 3) {
+            $confidence += 0.1;
+        }
+
         return min(1.0, $confidence);
     }
-    
+
     /**
      * Generate explanation for prediction
      */
@@ -436,7 +444,7 @@ class MachineLearningService
             return "High fraud risk detected. Key factors: {$factors}.";
         }
     }
-    
+
     /**
      * Send training data to ML pipeline
      */
@@ -448,7 +456,7 @@ class MachineLearningService
             'outcome' => $data['actual_outcome'],
         ]);
     }
-    
+
     /**
      * Build context from transaction
      */
@@ -463,7 +471,7 @@ class MachineLearningService
             'timestamp' => $transaction['created_at'] ?? now(),
         ];
     }
-    
+
     /**
      * Update model version
      */
@@ -472,7 +480,7 @@ class MachineLearningService
         $this->modelVersion = $version;
         Cache::put('ml_model_version', $version, 86400);
     }
-    
+
     /**
      * Get explainable AI insights
      */
@@ -480,7 +488,7 @@ class MachineLearningService
     {
         $importance = $this->getFeatureImportance();
         $insights = [];
-        
+
         foreach ($importance as $feature => $weight) {
             if (isset($features[$feature])) {
                 $contribution = $features[$feature] * $weight;
@@ -493,10 +501,10 @@ class MachineLearningService
                 ];
             }
         }
-        
+
         // Sort by contribution
         usort($insights, fn($a, $b) => abs($b['contribution']) <=> abs($a['contribution']));
-        
+
         return array_slice($insights, 0, 10);
     }
 }

@@ -79,7 +79,7 @@ class CreateSnapshot extends Command
         $query = DB::table('stored_events')
             ->where('aggregate_uuid', '!=', null)
             ->where('event_class', 'like', '%Transaction%');
-            
+
         if ($accountUuid) {
             $query->where('aggregate_uuid', $accountUuid);
         }
@@ -121,7 +121,7 @@ class CreateSnapshot extends Command
         $query = DB::table('stored_events')
             ->where('aggregate_uuid', '!=', null)
             ->where('event_class', 'like', '%Transfer%');
-            
+
         if ($accountUuid) {
             $query->where('aggregate_uuid', $accountUuid);
         }
@@ -173,18 +173,18 @@ class CreateSnapshot extends Command
 
             foreach ($accounts as $uuid) {
                 $aggregate = LedgerAggregate::retrieve($uuid);
-                
+
                 // Only create snapshot if there are enough events or force is enabled
                 $eventCount = DB::table('stored_events')
                     ->where('aggregate_uuid', $uuid)
                     ->where('event_class', 'like', '%Ledger%')
                     ->count();
-                    
+
                 if ($force || $eventCount >= 50) {
                     $aggregate->snapshot();
                     $snapshotCount++;
                 }
-                
+
                 $bar->advance();
             }
 
@@ -193,20 +193,20 @@ class CreateSnapshot extends Command
         } else {
             foreach ($accounts as $uuid) {
                 $aggregate = LedgerAggregate::retrieve($uuid);
-                
+
                 // Only create snapshot if there are enough events or force is enabled
                 $eventCount = DB::table('stored_events')
                     ->where('aggregate_uuid', $uuid)
                     ->where('event_class', 'like', '%Ledger%')
                     ->count();
-                    
+
                 if ($force || $eventCount >= 50) {
                     $aggregate->snapshot();
                     $snapshotCount++;
                 }
             }
         }
-        
+
         // For test compatibility, report the number of accounts processed rather than snapshots created
         $this->info("Created ledger snapshots for {$accounts->count()} accounts.");
     }

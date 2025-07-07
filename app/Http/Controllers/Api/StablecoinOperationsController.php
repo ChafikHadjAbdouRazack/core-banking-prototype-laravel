@@ -27,7 +27,8 @@ class StablecoinOperationsController extends Controller
         private readonly StablecoinIssuanceService $issuanceService,
         private readonly CollateralService $collateralService,
         private readonly LiquidationService $liquidationService
-    ) {}
+    ) {
+    }
 
     /**
      * @OA\Post(
@@ -86,9 +87,9 @@ class StablecoinOperationsController extends Controller
             'collateral_amount' => 'required|integer|min:1',
             'mint_amount' => 'required|integer|min:1',
         ]);
-        
+
         $account = Account::where('uuid', $validated['account_uuid'])->firstOrFail();
-        
+
         try {
             $position = $this->issuanceService->mint(
                 $account,
@@ -97,7 +98,7 @@ class StablecoinOperationsController extends Controller
                 $validated['collateral_amount'],
                 $validated['mint_amount']
             );
-            
+
             return response()->json([
                 'message' => 'Stablecoin minted successfully',
                 'data' => $position->load(['stablecoin', 'collateralAsset']),
@@ -163,9 +164,9 @@ class StablecoinOperationsController extends Controller
             'burn_amount' => 'required|integer|min:1',
             'collateral_release_amount' => 'nullable|integer|min:0',
         ]);
-        
+
         $account = Account::where('uuid', $validated['account_uuid'])->firstOrFail();
-        
+
         try {
             $position = $this->issuanceService->burn(
                 $account,
@@ -173,7 +174,7 @@ class StablecoinOperationsController extends Controller
                 $validated['burn_amount'],
                 $validated['collateral_release_amount'] ?? null
             );
-            
+
             return response()->json([
                 'message' => 'Stablecoin burned successfully',
                 'data' => $position->load(['stablecoin', 'collateralAsset']),
@@ -237,9 +238,9 @@ class StablecoinOperationsController extends Controller
             'collateral_asset_code' => 'required|string|exists:assets,code',
             'collateral_amount' => 'required|integer|min:1',
         ]);
-        
+
         $account = Account::where('uuid', $validated['account_uuid'])->firstOrFail();
-        
+
         try {
             $position = $this->issuanceService->addCollateral(
                 $account,
@@ -247,7 +248,7 @@ class StablecoinOperationsController extends Controller
                 $validated['collateral_asset_code'],
                 $validated['collateral_amount']
             );
-            
+
             return response()->json([
                 'message' => 'Collateral added successfully',
                 'data' => $position->load(['stablecoin', 'collateralAsset']),
@@ -301,22 +302,22 @@ class StablecoinOperationsController extends Controller
     public function getAccountPositions(string $accountUuid): JsonResponse
     {
         $account = Account::where('uuid', $accountUuid)->firstOrFail();
-        
+
         $positions = StablecoinCollateralPosition::where('account_uuid', $accountUuid)
             ->with(['stablecoin', 'collateralAsset'])
             ->get();
-        
+
         $enhancedPositions = $positions->map(function ($position) {
             $this->collateralService->updatePositionCollateralRatio($position);
             $healthScore = $this->collateralService->calculatePositionHealthScore($position);
             $recommendations = $this->collateralService->getPositionRecommendations($position);
-            
+
             return array_merge($position->toArray(), [
                 'health_score' => $healthScore,
                 'recommendations' => $recommendations,
             ]);
         });
-        
+
         return response()->json([
             'data' => $enhancedPositions,
         ]);
@@ -373,19 +374,19 @@ class StablecoinOperationsController extends Controller
         $position = StablecoinCollateralPosition::where('uuid', $positionUuid)
             ->with(['stablecoin', 'collateralAsset', 'account'])
             ->firstOrFail();
-        
+
         $this->collateralService->updatePositionCollateralRatio($position);
-        
+
         $healthScore = $this->collateralService->calculatePositionHealthScore($position);
         $recommendations = $this->collateralService->getPositionRecommendations($position);
         $maxMintAmount = $position->calculateMaxMintAmount();
-        
+
         $data = $position->toArray();
         $data['health_score'] = $healthScore;
         $data['max_mint_amount'] = $maxMintAmount;
         $data['is_at_risk'] = $position->isAtRiskOfLiquidation();
         $data['recommendations'] = $recommendations;
-        
+
         return response()->json([
             'data' => $data,
         ]);
@@ -439,13 +440,13 @@ class StablecoinOperationsController extends Controller
     {
         $limit = $request->integer('limit', 50);
         $stablecoinCode = $request->string('stablecoin_code');
-        
+
         $opportunities = $this->liquidationService->getLiquidationOpportunities($limit);
-        
+
         if ($stablecoinCode) {
             $opportunities = $opportunities->where('stablecoin_code', $stablecoinCode);
         }
-        
+
         return response()->json([
             'data' => $opportunities->values(),
         ]);
@@ -499,10 +500,10 @@ class StablecoinOperationsController extends Controller
     {
         $position = StablecoinCollateralPosition::where('uuid', $positionUuid)->firstOrFail();
         $liquidator = Auth::user()?->account;
-        
+
         try {
             $result = $this->liquidationService->liquidatePosition($position, $liquidator);
-            
+
             return response()->json([
                 'message' => 'Position liquidated successfully',
                 'data' => $result,
@@ -556,10 +557,10 @@ class StablecoinOperationsController extends Controller
         $position = StablecoinCollateralPosition::where('uuid', $positionUuid)
             ->with('stablecoin')
             ->firstOrFail();
-        
+
         $this->collateralService->updatePositionCollateralRatio($position);
         $reward = $this->liquidationService->calculateLiquidationReward($position);
-        
+
         return response()->json([
             'data' => $reward,
         ]);
@@ -615,12 +616,12 @@ class StablecoinOperationsController extends Controller
         $validated = $request->validate([
             'price_drop_percentage' => 'required|numeric|min:0|max:1',
         ]);
-        
+
         $simulation = $this->liquidationService->simulateMassLiquidation(
             $stablecoinCode,
             $validated['price_drop_percentage']
         );
-        
+
         return response()->json([
             'data' => $simulation,
         ]);
@@ -658,10 +659,10 @@ class StablecoinOperationsController extends Controller
     public function executeAutoLiquidation(): JsonResponse
     {
         $liquidator = Auth::user()?->account;
-        
+
         try {
             $result = $this->liquidationService->liquidateEligiblePositions($liquidator);
-            
+
             return response()->json([
                 'message' => 'Automatic liquidation executed',
                 'data' => $result,
@@ -719,17 +720,17 @@ class StablecoinOperationsController extends Controller
     {
         $bufferRatio = $request->float('buffer_ratio', 0.05);
         $stablecoinCode = $request->string('stablecoin_code');
-        
+
         $atRiskPositions = $this->collateralService->getPositionsAtRisk($bufferRatio);
-        
+
         if ($stablecoinCode) {
             $atRiskPositions = $atRiskPositions->where('stablecoin_code', $stablecoinCode);
         }
-        
+
         $enhancedPositions = $atRiskPositions->map(function ($position) {
             $healthScore = $this->collateralService->calculatePositionHealthScore($position);
             $recommendations = $this->collateralService->getPositionRecommendations($position);
-            
+
             $riskLevel = 'low';
             if ($healthScore < 0.2) {
                 $riskLevel = 'critical';
@@ -738,14 +739,14 @@ class StablecoinOperationsController extends Controller
             } elseif ($healthScore < 0.6) {
                 $riskLevel = 'medium';
             }
-            
+
             return array_merge($position->toArray(), [
                 'health_score' => $healthScore,
                 'risk_level' => $riskLevel,
                 'recommendations' => $recommendations,
             ]);
         });
-        
+
         return response()->json([
             'data' => $enhancedPositions->values(),
         ]);

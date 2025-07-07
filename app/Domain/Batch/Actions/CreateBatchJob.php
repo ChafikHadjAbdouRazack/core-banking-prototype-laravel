@@ -26,7 +26,7 @@ class CreateBatchJob
             'scheduled_at' => $event->batchJob->scheduledAt ?? now(),
             'metadata' => $event->batchJob->metadata,
         ]);
-        
+
         // Create batch items
         foreach ($event->batchJob->items as $index => $item) {
             BatchJobItem::create([

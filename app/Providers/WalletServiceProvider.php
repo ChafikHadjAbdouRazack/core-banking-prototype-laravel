@@ -21,7 +21,7 @@ class WalletServiceProvider extends ServiceProvider
         // Bind interfaces to implementations
         $this->app->singleton(WalletServiceInterface::class, WalletService::class);
         $this->app->singleton(WalletConnectorInterface::class, BlockchainWalletService::class);
-        
+
         // Register concrete services (for backward compatibility)
         $this->app->singleton(WalletService::class);
         $this->app->singleton(BlockchainWalletService::class);

@@ -11,7 +11,7 @@ class InitiateRefundActivity extends Activity
     public function execute(array $input): array
     {
         $refundId = Str::uuid()->toString();
-        
+
         RefundAggregate::retrieve($refundId)
             ->requestRefund(
                 refundId: $refundId,
@@ -25,7 +25,7 @@ class InitiateRefundActivity extends Activity
                 metadata: $input['metadata'] ?? []
             )
             ->persist();
-        
+
         return [
             'refund_id' => $refundId,
             'status' => 'initiated'

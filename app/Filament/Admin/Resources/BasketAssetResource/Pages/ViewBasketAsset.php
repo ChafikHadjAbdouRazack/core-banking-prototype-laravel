@@ -14,7 +14,7 @@ class ViewBasketAsset extends ViewRecord
     {
         return [
             Actions\EditAction::make(),
-            
+
             Actions\Action::make('calculate_value')
                 ->label('Calculate Value')
                 ->icon('heroicon-m-calculator')
@@ -23,13 +23,13 @@ class ViewBasketAsset extends ViewRecord
                     try {
                         $service = app(\App\Domain\Basket\Services\BasketValueCalculationService::class);
                         $value = $service->calculateValue($this->getRecord(), false);
-                        
+
                         $this->notify('success', "Current value: \${$value->value}");
                     } catch (\Exception $e) {
                         $this->notify('danger', $e->getMessage());
                     }
                 }),
-            
+
             Actions\Action::make('rebalance')
                 ->label('Rebalance')
                 ->icon('heroicon-m-scale')
@@ -43,13 +43,13 @@ class ViewBasketAsset extends ViewRecord
                     try {
                         $service = app(\App\Domain\Basket\Services\BasketRebalancingService::class);
                         $result = $service->rebalance($this->getRecord());
-                        
+
                         $this->notify('success', "Basket rebalanced: {$result['adjustments_count']} components adjusted");
                     } catch (\Exception $e) {
                         $this->notify('danger', $e->getMessage());
                     }
                 }),
-            
+
             Actions\Action::make('calculate_performance')
                 ->label('Calculate Performance')
                 ->icon('heroicon-m-chart-bar')
@@ -58,7 +58,7 @@ class ViewBasketAsset extends ViewRecord
                     try {
                         $service = app(\App\Domain\Basket\Services\BasketPerformanceService::class);
                         $performances = $service->calculateAllPeriods($this->getRecord());
-                        
+
                         $this->notify('success', "Calculated performance for {$performances->count()} periods");
                     } catch (\Exception $e) {
                         $this->notify('danger', $e->getMessage());
@@ -73,14 +73,14 @@ class ViewBasketAsset extends ViewRecord
             BasketAssetResource\Widgets\BasketValueChart::class,
         ];
     }
-    
+
     public function getRelationManagers(): array
     {
         return [
             // Existing relation managers
         ];
     }
-    
+
     protected function getFooterWidgets(): array
     {
         return [

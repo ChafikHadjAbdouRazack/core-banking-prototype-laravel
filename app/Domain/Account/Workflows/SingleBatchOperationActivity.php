@@ -21,7 +21,7 @@ class SingleBatchOperationActivity extends Activity
 {
     /**
      * Execute a single batch operation
-     * 
+     *
      * @param string $operation
      * @param string $batchId
      * @return array
@@ -29,25 +29,25 @@ class SingleBatchOperationActivity extends Activity
     public function execute(string $operation, string $batchId): array
     {
         $startTime = now();
-        
+
         logger()->info('Starting single batch operation', [
             'batch_id' => $batchId,
             'operation' => $operation,
             'start_time' => $startTime->toISOString(),
         ]);
-        
+
         try {
             $result = $this->performOperation($operation, $batchId);
-            
+
             $endTime = now();
-            
+
             logger()->info('Batch operation completed', [
                 'batch_id' => $batchId,
                 'operation' => $operation,
                 'duration_seconds' => $endTime->diffInSeconds($startTime),
                 'result' => $result,
             ]);
-            
+
             return [
                 'operation' => $operation,
                 'status' => 'success',
@@ -55,18 +55,17 @@ class SingleBatchOperationActivity extends Activity
                 'start_time' => $startTime->toISOString(),
                 'end_time' => $endTime->toISOString(),
             ];
-            
         } catch (\Throwable $th) {
             logger()->error('Batch operation failed', [
                 'batch_id' => $batchId,
                 'operation' => $operation,
                 'error' => $th->getMessage(),
             ]);
-            
+
             throw $th;
         }
     }
-    
+
     /**
      * @param string $operation
      * @param string $batchId
@@ -91,7 +90,7 @@ class SingleBatchOperationActivity extends Activity
                 throw new \InvalidArgumentException("Unknown batch operation: {$operation}");
         }
     }
-    
+
     /**
      * Calculate daily turnover for all accounts
      * @return array
@@ -99,28 +98,28 @@ class SingleBatchOperationActivity extends Activity
     private function calculateDailyTurnover(): array
     {
         $today = now()->startOfDay();
-        
+
         // Store the date we're processing for potential reversal
         $processedData = [
             'date' => $today->toDateString(),
             'turnovers' => [],
         ];
-        
+
         // Calculate turnover for all accounts
         $accounts = Account::all();
         $processed = 0;
-        
+
         foreach ($accounts as $account) {
             $dailyCredit = Transaction::where('account_uuid', $account->uuid)
                 ->whereDate('created_at', $today)
                 ->where('type', 'credit')
                 ->sum('amount');
-                
+
             $dailyDebit = Transaction::where('account_uuid', $account->uuid)
                 ->whereDate('created_at', $today)
                 ->where('type', 'debit')
                 ->sum('amount');
-            
+
             $turnover = Turnover::updateOrCreate(
                 [
                     'account_uuid' => $account->uuid,
@@ -135,16 +134,16 @@ class SingleBatchOperationActivity extends Activity
                         ->count(),
                 ]
             );
-            
+
             // Track what we created/updated for potential reversal
             $processedData['turnovers'][] = [
                 'account_uuid' => $account->uuid,
                 'was_created' => $turnover->wasRecentlyCreated,
             ];
-            
+
             $processed++;
         }
-        
+
         return [
             'operation' => 'calculate_daily_turnover',
             'accounts_processed' => $processed,
@@ -152,7 +151,7 @@ class SingleBatchOperationActivity extends Activity
             'processed_data' => $processedData,
         ];
     }
-    
+
     /**
      * Generate account statements
      * @return array
@@ -163,21 +162,21 @@ class SingleBatchOperationActivity extends Activity
         $endOfMonth = now()->endOfMonth();
         $statementsGenerated = 0;
         $generatedFiles = [];
-        
+
         // Generate monthly statements for all active accounts
         $accounts = Account::where('frozen', false)->get();
-        
+
         foreach ($accounts as $account) {
             // Get transactions for the current month
             $transactions = Transaction::where('account_uuid', $account->uuid)
                 ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
                 ->orderBy('created_at', 'desc')
                 ->get();
-            
+
             if ($transactions->isEmpty()) {
                 continue; // Skip accounts with no transactions
             }
-            
+
             $statementData = [
                 'account_uuid' => $account->uuid,
                 'account_name' => $account->name,
@@ -199,15 +198,15 @@ class SingleBatchOperationActivity extends Activity
                     ];
                 })->toArray(),
             ];
-            
+
             // Store as JSON for auditing
             $filename = "statements/{$account->uuid}/" . $startOfMonth->format('Y-m') . ".json";
             Storage::disk('local')->put($filename, json_encode($statementData, JSON_PRETTY_PRINT));
-            
+
             $generatedFiles[] = $filename;
             $statementsGenerated++;
         }
-        
+
         return [
             'operation' => 'generate_account_statements',
             'statements_generated' => $statementsGenerated,
@@ -216,7 +215,7 @@ class SingleBatchOperationActivity extends Activity
             'generated_files' => $generatedFiles,
         ];
     }
-    
+
     /**
      * Process interest calculations
      * @return array
@@ -227,23 +226,23 @@ class SingleBatchOperationActivity extends Activity
         $savingsAccounts = Account::where('frozen', false)
             ->where('balance', '>', 0)
             ->get();
-        
+
         $accountsProcessed = 0;
         $totalInterestPaid = 0;
         $interestRate = 0.02; // 2% annual interest rate
         $dailyRate = $interestRate / 365;
         $interestTransactions = [];
-        
+
         foreach ($savingsAccounts as $account) {
             // Calculate daily interest based on current balance
             $dailyInterest = $account->balance * $dailyRate;
-            
+
             // Only apply interest if it's significant (> $0.01)
             if ($dailyInterest >= 1) { // 1 cent minimum
                 $interestAmount = round($dailyInterest);
-                
+
                 $transactionId = Str::uuid();
-                
+
                 // Create interest transaction
                 DB::table('transactions')->insert([
                     'uuid' => $transactionId,
@@ -256,22 +255,22 @@ class SingleBatchOperationActivity extends Activity
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
-                
+
                 // Update account balance
                 $account->increment('balance', $interestAmount);
-                
+
                 // Track for potential reversal
                 $interestTransactions[] = [
                     'transaction_uuid' => $transactionId,
                     'account_uuid' => $account->uuid,
                     'amount' => $interestAmount,
                 ];
-                
+
                 $totalInterestPaid += $interestAmount;
                 $accountsProcessed++;
             }
         }
-        
+
         return [
             'operation' => 'process_interest_calculations',
             'accounts_processed' => $accountsProcessed,
@@ -281,7 +280,7 @@ class SingleBatchOperationActivity extends Activity
             'interest_transactions' => $interestTransactions,
         ];
     }
-    
+
     /**
      * Perform compliance checks
      * @return array
@@ -290,13 +289,13 @@ class SingleBatchOperationActivity extends Activity
     {
         $today = now()->startOfDay();
         $complianceFlags = [];
-        
+
         // Check for large transactions (> $10,000)
         $largeTransactions = Transaction::where('amount', '>', 1000000) // > $10,000 in cents
             ->whereDate('created_at', $today)
             ->with('account.user')
             ->get();
-        
+
         $complianceFlags['large_transactions'] = $largeTransactions->map(function ($transaction) {
             return [
                 'transaction_uuid' => $transaction->uuid,
@@ -306,7 +305,7 @@ class SingleBatchOperationActivity extends Activity
                 'flag_reason' => 'Transaction exceeds $10,000 threshold',
             ];
         })->toArray();
-        
+
         // Check for multiple transactions from same account in short time
         $rapidTransactions = DB::select("
             SELECT account_uuid, COUNT(*) as transaction_count, user_uuid
@@ -316,7 +315,7 @@ class SingleBatchOperationActivity extends Activity
             GROUP BY account_uuid, user_uuid
             HAVING COUNT(*) > 10
         ", [$today]);
-        
+
         $complianceFlags['rapid_transactions'] = collect($rapidTransactions)->map(function ($item) {
             return [
                 'account_uuid' => $item->account_uuid,
@@ -325,12 +324,12 @@ class SingleBatchOperationActivity extends Activity
                 'flag_reason' => 'More than 10 transactions in one day',
             ];
         })->toArray();
-        
+
         // Check for unusual account balance patterns
         $highBalanceAccounts = Account::where('balance', '>', 100000000) // > $1M
             ->with('user')
             ->get();
-        
+
         $complianceFlags['high_balance_accounts'] = $highBalanceAccounts->map(function ($account) {
             return [
                 'account_uuid' => $account->uuid,
@@ -339,24 +338,24 @@ class SingleBatchOperationActivity extends Activity
                 'flag_reason' => 'Account balance exceeds $1,000,000',
             ];
         })->toArray();
-        
+
         // Check for round-number transactions (possible structuring)
         $roundTransactions = Transaction::whereIn('amount', [
             1000000, 900000, 800000, 700000, 600000, 500000 // $10k, $9k, etc.
         ])
             ->whereDate('created_at', $today)
             ->count();
-        
+
         $complianceFlags['round_transactions'] = [
             'count' => $roundTransactions,
             'flag_reason' => 'Round-number transactions may indicate structuring',
         ];
-        
+
         $totalFlags = count($complianceFlags['large_transactions']) +
                      count($complianceFlags['rapid_transactions']) +
                      count($complianceFlags['high_balance_accounts']) +
                      ($roundTransactions > 5 ? 1 : 0);
-        
+
         // Store compliance report
         $reportData = [
             'date' => $today->toDateString(),
@@ -364,13 +363,13 @@ class SingleBatchOperationActivity extends Activity
             'flags' => $complianceFlags,
             'generated_at' => now()->toISOString(),
         ];
-        
+
         $reportFilename = "compliance/daily_report_{$today->format('Y-m-d')}.json";
         Storage::disk('local')->put(
             $reportFilename,
             json_encode($reportData, JSON_PRETTY_PRINT)
         );
-        
+
         return [
             'operation' => 'perform_compliance_checks',
             'total_flags' => $totalFlags,
@@ -381,7 +380,7 @@ class SingleBatchOperationActivity extends Activity
             'report_file' => $reportFilename,
         ];
     }
-    
+
     /**
      * Archive old transactions
      * @return array
@@ -390,19 +389,19 @@ class SingleBatchOperationActivity extends Activity
     {
         // Archive transactions older than 7 years
         $cutoffDate = now()->subYears(7);
-        
+
         // Get transactions to be archived before updating
         $transactionsToArchive = Transaction::where('created_at', '<', $cutoffDate)
-            ->where(function($query) {
+            ->where(function ($query) {
                 $query->whereNull('archived')
                       ->orWhere('archived', false);
             })
             ->pluck('uuid')
             ->toArray();
-        
+
         $archivedCount = Transaction::whereIn('uuid', $transactionsToArchive)
             ->update(['archived' => true]);
-        
+
         return [
             'operation' => 'archive_old_transactions',
             'transactions_archived' => $archivedCount,
@@ -410,7 +409,7 @@ class SingleBatchOperationActivity extends Activity
             'archived_uuids' => $transactionsToArchive,
         ];
     }
-    
+
     /**
      * Generate regulatory reports
      * @return array
@@ -420,7 +419,7 @@ class SingleBatchOperationActivity extends Activity
         $today = now();
         $reportsGenerated = [];
         $generatedFiles = [];
-        
+
         // Daily Transaction Summary Report
         $dailyStats = [
             'total_transactions' => Transaction::whereDate('created_at', $today)->count(),
@@ -429,7 +428,7 @@ class SingleBatchOperationActivity extends Activity
             'total_debits' => abs(Transaction::whereDate('created_at', $today)->where('amount', '<', 0)->sum('amount')),
             'unique_accounts' => Transaction::whereDate('created_at', $today)->distinct('account_uuid')->count(),
         ];
-        
+
         $dailyReportFile = "regulatory/daily_transaction_summary_{$today->format('Y-m-d')}.json";
         Storage::disk('local')->put(
             $dailyReportFile,
@@ -437,7 +436,7 @@ class SingleBatchOperationActivity extends Activity
         );
         $reportsGenerated[] = 'daily_transaction_summary';
         $generatedFiles[] = $dailyReportFile;
-        
+
         // Large Transaction Report (CTR - Currency Transaction Report)
         $largeTransactions = Transaction::where('amount', '>', 1000000) // > $10,000
             ->whereDate('created_at', $today)
@@ -454,7 +453,7 @@ class SingleBatchOperationActivity extends Activity
                     'transaction_type' => $transaction->amount > 0 ? 'Credit' : 'Debit',
                 ];
             });
-        
+
         if ($largeTransactions->isNotEmpty()) {
             $ctrFile = "regulatory/ctr_report_{$today->format('Y-m-d')}.json";
             Storage::disk('local')->put(
@@ -464,10 +463,10 @@ class SingleBatchOperationActivity extends Activity
             $reportsGenerated[] = 'currency_transaction_report';
             $generatedFiles[] = $ctrFile;
         }
-        
+
         // Suspicious Activity Report (SAR) candidates
         $suspiciousActivities = [];
-        
+
         // Check for structuring (multiple transactions just under $10k)
         $structuringCandidates = DB::select("
             SELECT account_uuid, COUNT(*) as transaction_count, SUM(amount) as total_amount
@@ -477,7 +476,7 @@ class SingleBatchOperationActivity extends Activity
             GROUP BY account_uuid
             HAVING COUNT(*) >= 3
         ", [$today->startOfDay()]);
-        
+
         foreach ($structuringCandidates as $candidate) {
             $suspiciousActivities[] = [
                 'account_uuid' => $candidate->account_uuid,
@@ -487,7 +486,7 @@ class SingleBatchOperationActivity extends Activity
                 'total_amount' => $candidate->total_amount / 100,
             ];
         }
-        
+
         if (!empty($suspiciousActivities)) {
             $sarFile = "regulatory/sar_candidates_{$today->format('Y-m-d')}.json";
             Storage::disk('local')->put(
@@ -497,7 +496,7 @@ class SingleBatchOperationActivity extends Activity
             $reportsGenerated[] = 'suspicious_activity_candidates';
             $generatedFiles[] = $sarFile;
         }
-        
+
         // Monthly Summary (if it's end of month)
         if ($today->isLastOfMonth()) {
             $monthlyStats = [
@@ -509,7 +508,7 @@ class SingleBatchOperationActivity extends Activity
                 'average_transaction_size' => Transaction::whereMonth('created_at', $today)->avg('amount') / 100,
                 'largest_transaction' => Transaction::whereMonth('created_at', $today)->max('amount') / 100,
             ];
-            
+
             $monthlyFile = "regulatory/monthly_summary_{$today->format('Y-m')}.json";
             Storage::disk('local')->put(
                 $monthlyFile,
@@ -518,7 +517,7 @@ class SingleBatchOperationActivity extends Activity
             $reportsGenerated[] = 'monthly_summary';
             $generatedFiles[] = $monthlyFile;
         }
-        
+
         return [
             'operation' => 'generate_regulatory_reports',
             'reports_generated' => $reportsGenerated,

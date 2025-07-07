@@ -16,8 +16,7 @@ final class LedgerSnapshotRepository extends EloquentSnapshotRepository
      */
     public function __construct(
         protected string $snapshotModel = LedgerSnapshot::class
-    )
-    {
+    ) {
         if (! new $this->snapshotModel() instanceof EloquentSnapshot) {
             throw new InvalidEloquentStoredEventModel("The class {$this->snapshotModel} must extend EloquentStoredEvent");
         }

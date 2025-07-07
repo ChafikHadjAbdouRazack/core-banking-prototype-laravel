@@ -9,10 +9,13 @@ use Illuminate\Queue\SerializesModels;
 
 class TransactionBlocked
 {
-    use Dispatchable, InteractsWithSockets, SerializesModels;
-    
+    use Dispatchable;
+    use InteractsWithSockets;
+    use SerializesModels;
+
     public function __construct(
         public readonly Transaction $transaction,
         public readonly array $reasons
-    ) {}
+    ) {
+    }
 }

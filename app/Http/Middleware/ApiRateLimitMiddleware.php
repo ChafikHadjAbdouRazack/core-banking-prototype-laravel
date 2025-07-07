@@ -57,35 +57,35 @@ class ApiRateLimitMiddleware
         if (!config('rate_limiting.enabled', true)) {
             return $next($request);
         }
-        
+
         // Skip rate limiting in testing environment unless explicitly enabled
         if (app()->environment('testing') && !config('rate_limiting.force_in_tests', false)) {
             return $next($request);
         }
-        
+
         // Get rate limit configuration
         $config = self::RATE_LIMITS[$rateLimitType] ?? self::RATE_LIMITS['query'];
-        
+
         // Generate unique key for this client/endpoint combination
         $key = $this->generateRateLimitKey($request, $rateLimitType);
         $blockKey = $key . ':blocked';
-        
+
         // Check if client is currently blocked
         if (Cache::has($blockKey)) {
             $blockedUntil = Cache::get($blockKey);
             return $this->rateLimitExceededResponse($request, $config, $blockedUntil);
         }
-        
+
         // Get current request count
         $currentCount = Cache::get($key, 0);
-        
+
         // Check if limit exceeded
         if ($currentCount >= $config['limit']) {
             // Block the client if block duration is set
             if ($config['block_duration'] > 0) {
                 $blockedUntil = now()->addSeconds($config['block_duration']);
                 Cache::put($blockKey, $blockedUntil, $config['block_duration']);
-                
+
                 // Log rate limit violation
                 Log::warning('Rate limit exceeded with blocking', [
                     'ip' => $request->ip(),
@@ -95,16 +95,16 @@ class ApiRateLimitMiddleware
                     'blocked_until' => $blockedUntil,
                 ]);
             }
-            
+
             return $this->rateLimitExceededResponse($request, $config);
         }
-        
+
         // Increment request count
         Cache::put($key, $currentCount + 1, $config['window']);
-        
+
         // Add rate limit headers to response
         $response = $next($request);
-        
+
         return $this->addRateLimitHeaders($response, $config, $currentCount + 1, $key);
     }
 
@@ -115,7 +115,7 @@ class ApiRateLimitMiddleware
     {
         $identifier = $this->getClientIdentifier($request);
         $endpoint = $this->normalizeEndpoint($request->path());
-        
+
         return "rate_limit:{$rateLimitType}:{$identifier}:{$endpoint}";
     }
 
@@ -127,11 +127,11 @@ class ApiRateLimitMiddleware
         if ($user = $request->user()) {
             return "user:{$user->id}";
         }
-        
+
         // For anonymous requests, use IP with more specific tracking
         $ip = $request->ip();
         $userAgent = substr(md5($request->userAgent() ?? ''), 0, 8);
-        
+
         return "ip:{$ip}:{$userAgent}";
     }
 
@@ -143,7 +143,7 @@ class ApiRateLimitMiddleware
         // Replace dynamic segments with placeholders
         $normalized = preg_replace('/\/\d+/', '/{id}', $path);
         $normalized = preg_replace('/\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/', '/{uuid}', $normalized);
-        
+
         return $normalized;
     }
 
@@ -153,7 +153,7 @@ class ApiRateLimitMiddleware
     private function rateLimitExceededResponse(Request $request, array $config, ?\Carbon\Carbon $blockedUntil = null): JsonResponse
     {
         $retryAfter = $blockedUntil ? $blockedUntil->diffInSeconds(now()) : $config['window'];
-        
+
         $headers = [
             'X-RateLimit-Limit' => $config['limit'],
             'X-RateLimit-Remaining' => 0,
@@ -165,7 +165,7 @@ class ApiRateLimitMiddleware
             $headers['X-RateLimit-Blocked-Until'] = $blockedUntil->toISOString();
         }
 
-        $message = $blockedUntil 
+        $message = $blockedUntil
             ? "Rate limit exceeded. Access blocked until {$blockedUntil->toDateTimeString()}."
             : "Rate limit exceeded. Try again in {$retryAfter} seconds.";
 
@@ -185,12 +185,12 @@ class ApiRateLimitMiddleware
     {
         $remaining = max(0, $config['limit'] - $currentCount);
         $resetTime = now()->addSeconds($config['window'])->timestamp;
-        
+
         $response->headers->set('X-RateLimit-Limit', $config['limit']);
         $response->headers->set('X-RateLimit-Remaining', $remaining);
         $response->headers->set('X-RateLimit-Reset', $resetTime);
         $response->headers->set('X-RateLimit-Window', $config['window']);
-        
+
         return $response;
     }
 

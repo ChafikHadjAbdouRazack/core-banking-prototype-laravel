@@ -21,8 +21,9 @@ class AssetTransferCompleted extends ShouldBeStored
         public readonly Hash $hash,
         public readonly ?string $transferId = null,
         public readonly ?array $metadata = null
-    ) {}
-    
+    ) {
+    }
+
     /**
      * Check if this is a same-asset transfer
      */
@@ -30,7 +31,7 @@ class AssetTransferCompleted extends ShouldBeStored
     {
         return $this->fromAssetCode === $this->toAssetCode;
     }
-    
+
     /**
      * Check if this is a cross-asset transfer (exchange)
      */

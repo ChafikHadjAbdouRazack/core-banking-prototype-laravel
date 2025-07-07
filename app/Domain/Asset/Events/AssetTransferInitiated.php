@@ -22,8 +22,9 @@ class AssetTransferInitiated extends ShouldBeStored
         public readonly Hash $hash,
         public readonly ?string $description = null,
         public readonly ?array $metadata = null
-    ) {}
-    
+    ) {
+    }
+
     /**
      * Check if this is a same-asset transfer
      */
@@ -31,7 +32,7 @@ class AssetTransferInitiated extends ShouldBeStored
     {
         return $this->fromAssetCode === $this->toAssetCode;
     }
-    
+
     /**
      * Check if this is a cross-asset transfer (exchange)
      */
@@ -39,7 +40,7 @@ class AssetTransferInitiated extends ShouldBeStored
     {
         return $this->fromAssetCode !== $this->toAssetCode;
     }
-    
+
     /**
      * Get the source amount in smallest unit
      */
@@ -47,7 +48,7 @@ class AssetTransferInitiated extends ShouldBeStored
     {
         return $this->fromAmount->getAmount();
     }
-    
+
     /**
      * Get the destination amount in smallest unit
      */

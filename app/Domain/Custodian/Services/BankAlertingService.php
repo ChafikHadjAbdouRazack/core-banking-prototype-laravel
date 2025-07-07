@@ -17,51 +17,52 @@ class BankAlertingService
      * Alert channels configuration
      */
     private array $alertChannels = ['mail', 'database'];
-    
+
     /**
      * Cooldown period for alerts (in minutes)
      */
     private const ALERT_COOLDOWN_MINUTES = 30;
-    
+
     /**
      * Alert severity levels
      */
     private const SEVERITY_INFO = 'info';
     private const SEVERITY_WARNING = 'warning';
     private const SEVERITY_CRITICAL = 'critical';
-    
+
     public function __construct(
         private readonly CustodianHealthMonitor $healthMonitor
-    ) {}
-    
+    ) {
+    }
+
     /**
      * Handle custodian health change event
      */
     public function handleHealthChange(CustodianHealthChanged $event): void
     {
         $severity = $this->determineSeverity($event->previousStatus, $event->newStatus);
-        
+
         if ($severity === self::SEVERITY_INFO) {
             // Don't alert for info level changes
             return;
         }
-        
+
         // Check if we should send an alert (cooldown period)
         if (!$this->shouldSendAlert($event->custodian, $severity)) {
             return;
         }
-        
+
         // Get alert recipients
         $recipients = $this->getAlertRecipients($severity);
-        
+
         if ($recipients->isEmpty()) {
             Log::warning('No alert recipients configured for bank health alerts');
             return;
         }
-        
+
         // Send alert
         $this->sendAlert($recipients, $event, $severity);
-        
+
         // Log the alert
         Log::warning('Bank health alert sent', [
             'custodian' => $event->custodian,
@@ -71,7 +72,7 @@ class BankAlertingService
             'recipients_count' => $recipients->count(),
         ]);
     }
-    
+
     /**
      * Check system-wide bank health and alert if necessary
      */
@@ -81,7 +82,7 @@ class BankAlertingService
         $unhealthyCount = 0;
         $degradedCount = 0;
         $issues = [];
-        
+
         foreach ($allHealth as $custodian => $health) {
             if ($health['status'] === 'unhealthy') {
                 $unhealthyCount++;
@@ -91,7 +92,7 @@ class BankAlertingService
                 $issues[] = "{$custodian}: Degraded (Failure rate: {$health['overall_failure_rate']}%)";
             }
         }
-        
+
         // Determine if we need to alert
         if ($unhealthyCount >= 2 || ($unhealthyCount >= 1 && $degradedCount >= 1)) {
             $this->sendSystemAlert('critical', 'Multiple bank connectors experiencing issues', $issues);
@@ -101,7 +102,7 @@ class BankAlertingService
             $this->sendSystemAlert('warning', 'Multiple bank connectors degraded', $issues);
         }
     }
-    
+
     /**
      * Determine alert severity based on status change
      */
@@ -111,42 +112,42 @@ class BankAlertingService
         if ($previousStatus === 'healthy' && $newStatus === 'degraded') {
             return self::SEVERITY_WARNING;
         }
-        
+
         // Healthy/Degraded -> Unhealthy = Critical
         if (in_array($previousStatus, ['healthy', 'degraded']) && $newStatus === 'unhealthy') {
             return self::SEVERITY_CRITICAL;
         }
-        
+
         // Unhealthy/Degraded -> Healthy = Info (recovery)
         if (in_array($previousStatus, ['unhealthy', 'degraded']) && $newStatus === 'healthy') {
             return self::SEVERITY_INFO;
         }
-        
+
         // Degraded -> Healthy = Info
         if ($previousStatus === 'degraded' && $newStatus === 'healthy') {
             return self::SEVERITY_INFO;
         }
-        
+
         return self::SEVERITY_INFO;
     }
-    
+
     /**
      * Check if we should send an alert (respecting cooldown)
      */
     private function shouldSendAlert(string $custodian, string $severity): bool
     {
         $cacheKey = "alert:cooldown:{$custodian}:{$severity}";
-        
+
         if (Cache::has($cacheKey)) {
             return false;
         }
-        
+
         // Set cooldown
         Cache::put($cacheKey, true, now()->addMinutes(self::ALERT_COOLDOWN_MINUTES));
-        
+
         return true;
     }
-    
+
     /**
      * Get alert recipients based on severity
      */
@@ -156,14 +157,14 @@ class BankAlertingService
         // For now, get all users (you can add role/permission filtering later)
         return User::all();
     }
-    
+
     /**
      * Send alert to recipients
      */
     private function sendAlert($recipients, CustodianHealthChanged $event, string $severity): void
     {
         $health = $this->healthMonitor->getCustodianHealth($event->custodian);
-        
+
         $alert = new BankHealthAlert(
             custodian: $event->custodian,
             previousStatus: $event->previousStatus,
@@ -172,10 +173,10 @@ class BankAlertingService
             healthData: $health,
             timestamp: $event->timestamp
         );
-        
+
         Notification::send($recipients, $alert);
     }
-    
+
     /**
      * Send system-wide alert
      */
@@ -184,23 +185,23 @@ class BankAlertingService
         if (!$this->shouldSendAlert('system', $severity)) {
             return;
         }
-        
+
         $recipients = $this->getAlertRecipients($severity);
-        
+
         if ($recipients->isEmpty()) {
             return;
         }
-        
+
         Log::alert('System-wide bank health alert', [
             'severity' => $severity,
             'message' => $message,
             'issues' => $issues,
         ]);
-        
+
         // In production, send actual notification
         // For now, just log it
     }
-    
+
     /**
      * Get alert history for a custodian
      */

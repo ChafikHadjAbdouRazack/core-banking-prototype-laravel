@@ -38,20 +38,20 @@ class MonitorBankHealth extends Command
     {
         $interval = (int) $this->option('interval');
         $specificCustodian = $this->option('custodian');
-        
+
         $this->info('Starting real-time bank health monitoring...');
         $this->info("Check interval: {$interval} seconds");
-        
+
         if ($specificCustodian) {
             $this->info("Monitoring custodian: {$specificCustodian}");
         }
-        
+
         $this->info('Press Ctrl+C to stop monitoring');
         $this->newLine();
-        
+
         while (true) {
             $this->displayHealthStatus($specificCustodian);
-            
+
             if (!$this->runningInBackground()) {
                 sleep($interval);
                 // Clear screen for better readability
@@ -61,10 +61,10 @@ class MonitorBankHealth extends Command
                 break;
             }
         }
-        
+
         return Command::SUCCESS;
     }
-    
+
     /**
      * Display health status for all or specific custodian
      */
@@ -73,23 +73,23 @@ class MonitorBankHealth extends Command
         $timestamp = now()->format('Y-m-d H:i:s');
         $this->info("=== Bank Health Status at {$timestamp} ===");
         $this->newLine();
-        
+
         if ($specificCustodian) {
             $health = $this->healthMonitor->getCustodianHealth($specificCustodian);
             $this->displayCustodianHealth($health);
         } else {
             $allHealth = $this->healthMonitor->getAllCustodiansHealth();
-            
+
             foreach ($allHealth as $custodian => $health) {
                 $this->displayCustodianHealth($health);
                 $this->newLine();
             }
         }
-        
+
         // Display recommendations
         $this->displayRecommendations($specificCustodian);
     }
-    
+
     /**
      * Display individual custodian health
      */
@@ -99,7 +99,7 @@ class MonitorBankHealth extends Command
         $status = $health['status'];
         $available = $health['available'] ? 'YES' : 'NO';
         $failureRate = $health['overall_failure_rate'] ?? 0;
-        
+
         // Color code based on status
         $statusColor = match ($status) {
             'healthy' => 'green',
@@ -107,12 +107,12 @@ class MonitorBankHealth extends Command
             'unhealthy' => 'red',
             default => 'gray',
         };
-        
+
         $this->line("<fg=white;bg=blue> {$custodian} </>");
         $this->line("Status: <fg={$statusColor}>{$status}</>");
         $this->line("Available: {$available}");
         $this->line("Failure Rate: {$failureRate}%");
-        
+
         // Display circuit breaker metrics if available
         if (isset($health['circuit_breaker_metrics'])) {
             $this->line('Circuit Breakers:');
@@ -124,11 +124,11 @@ class MonitorBankHealth extends Command
                     'half_open' => 'yellow',
                     default => 'gray',
                 };
-                
+
                 $this->line("  - {$operation}: <fg={$stateColor}>{$state}</> (failures: {$metrics['failure_count']})");
             }
         }
-        
+
         // Display recommendations if any
         if (!empty($health['recommendations'])) {
             $this->line('Recommendations:');
@@ -137,7 +137,7 @@ class MonitorBankHealth extends Command
             }
         }
     }
-    
+
     /**
      * Display overall recommendations
      */
@@ -146,7 +146,7 @@ class MonitorBankHealth extends Command
         if (!$specificCustodian) {
             $this->newLine();
             $this->line('<fg=cyan>Overall Recommendations:</>');
-            
+
             // Get healthiest custodian for common currencies
             $currencies = ['USD', 'EUR', 'GBP'];
             foreach ($currencies as $currency) {
@@ -157,7 +157,7 @@ class MonitorBankHealth extends Command
             }
         }
     }
-    
+
     /**
      * Clear console screen
      */
@@ -171,7 +171,7 @@ class MonitorBankHealth extends Command
             system('clear');
         }
     }
-    
+
     /**
      * Check if running in background
      */

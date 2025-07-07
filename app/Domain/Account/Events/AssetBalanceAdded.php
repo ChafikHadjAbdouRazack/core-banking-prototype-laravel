@@ -8,12 +8,12 @@ use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 
 class AssetBalanceAdded extends ShouldBeStored implements HasHash
 {
+    use HashValidatorProvider;
+
     /**
      * @var string
      */
     public string $queue = EventQueues::TRANSACTIONS->value;
-
-    use HashValidatorProvider;
 
     /**
      * @param string $assetCode
@@ -26,8 +26,9 @@ class AssetBalanceAdded extends ShouldBeStored implements HasHash
         public readonly int $amount,
         public readonly Hash $hash,
         public readonly ?array $metadata = []
-    ) {}
-    
+    ) {
+    }
+
     /**
      * Get the amount for this event
      */
@@ -35,7 +36,7 @@ class AssetBalanceAdded extends ShouldBeStored implements HasHash
     {
         return $this->amount;
     }
-    
+
     /**
      * Get the asset code for this event
      */

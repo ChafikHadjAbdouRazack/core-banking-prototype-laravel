@@ -50,7 +50,7 @@ class LoanCollateral extends Model
 
     public function getStatusColorAttribute(): string
     {
-        return match($this->status) {
+        return match ($this->status) {
             'pending_verification' => 'yellow',
             'verified' => 'green',
             'rejected' => 'red',

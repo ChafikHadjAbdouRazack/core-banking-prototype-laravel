@@ -14,13 +14,13 @@ class OnboardingController extends Controller
     {
         $user = $request->user();
         $user->completeOnboarding();
-        
+
         return response()->json([
             'message' => 'Onboarding completed successfully',
             'redirect' => route('dashboard')
         ]);
     }
-    
+
     /**
      * Skip onboarding for now.
      */
@@ -28,7 +28,7 @@ class OnboardingController extends Controller
     {
         $user = $request->user();
         $user->completeOnboarding();
-        
+
         return response()->json([
             'message' => 'Onboarding skipped',
             'redirect' => route('dashboard')

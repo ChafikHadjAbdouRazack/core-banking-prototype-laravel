@@ -17,9 +17,9 @@ class FreezeAccountActivity extends Activity
      * @return bool
      */
     public function execute(
-        AccountUuid $uuid, 
-        string $reason, 
-        ?string $authorizedBy, 
+        AccountUuid $uuid,
+        string $reason,
+        ?string $authorizedBy,
         LedgerAggregate $ledger
     ): bool {
         $ledger->retrieve($uuid->getUuid())

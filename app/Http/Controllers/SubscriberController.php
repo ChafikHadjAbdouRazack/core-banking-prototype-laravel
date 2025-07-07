@@ -10,8 +10,9 @@ class SubscriberController extends Controller
 {
     public function __construct(
         private SubscriberEmailService $emailService
-    ) {}
-    
+    ) {
+    }
+
     /**
      * Handle unsubscribe request
      */
@@ -19,26 +20,25 @@ class SubscriberController extends Controller
     {
         try {
             $email = decrypt($encryptedEmail);
-            
+
             $unsubscribed = $this->emailService->processUnsubscribe($email, 'User requested unsubscribe');
-            
+
             if ($unsubscribed) {
                 return view('subscriber.unsubscribed', [
                     'message' => 'You have been successfully unsubscribed from our mailing list.',
                 ]);
             }
-            
+
             return view('subscriber.unsubscribed', [
                 'message' => 'You are already unsubscribed or we could not find your subscription.',
             ]);
-            
         } catch (\Exception $e) {
             return view('subscriber.unsubscribed', [
                 'message' => 'Invalid unsubscribe link. Please contact support if you need assistance.',
             ]);
         }
     }
-    
+
     /**
      * Handle subscription from various forms
      */
@@ -48,7 +48,7 @@ class SubscriberController extends Controller
             'email' => 'required|email',
             'tags' => 'array',
         ]);
-        
+
         try {
             $this->emailService->subscribe(
                 $validated['email'],
@@ -57,12 +57,11 @@ class SubscriberController extends Controller
                 $request->ip(),
                 $request->userAgent()
             );
-            
+
             return response()->json([
                 'success' => true,
                 'message' => 'Thank you for subscribing! Please check your email.',
             ]);
-            
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,

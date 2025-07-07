@@ -51,7 +51,7 @@ class Vote extends Model
                 $vote->voted_at = now();
             }
         });
-        
+
         static::created(function ($vote) {
             // Generate signature after the vote is created and has an ID
             if (!$vote->skipSignatureGeneration && empty($vote->signature)) {
@@ -111,7 +111,7 @@ class Vote extends Model
 
     public function isValid(): bool
     {
-        return $this->verifySignature() 
+        return $this->verifySignature()
             && !empty($this->selected_options)
             && $this->voting_power > 0;
     }
@@ -143,7 +143,7 @@ class Vote extends Model
         }
 
         $totalPower = $this->poll->getTotalVotingPower();
-        
+
         return $totalPower > 0 ? ($this->voting_power / $totalPower) * 100 : 0.0;
     }
 

@@ -18,7 +18,7 @@ class AuthenticateApiKey
     public function handle(Request $request, Closure $next, string $permission = 'read'): Response
     {
         $startTime = microtime(true);
-        
+
         // Extract API key from Authorization header
         $authHeader = $request->header('Authorization');
         if (!$authHeader || !str_starts_with($authHeader, 'Bearer ')) {
@@ -29,7 +29,7 @@ class AuthenticateApiKey
         }
 
         $apiKeyString = substr($authHeader, 7); // Remove 'Bearer ' prefix
-        
+
         // Verify API key
         $apiKey = ApiKey::verify($apiKeyString);
         if (!$apiKey) {
@@ -57,7 +57,7 @@ class AuthenticateApiKey
 
         // Record usage
         $apiKey->recordUsage($request->ip());
-        
+
         // Add API key and user to request
         $request->merge(['api_key' => $apiKey]);
         $request->setUserResolver(function () use ($apiKey) {
@@ -66,7 +66,7 @@ class AuthenticateApiKey
 
         // Process request
         $response = $next($request);
-        
+
         // Log API request (async in production)
         $this->logApiRequest($apiKey, $request, $response, $startTime);
 
@@ -79,11 +79,11 @@ class AuthenticateApiKey
     protected function logApiRequest(ApiKey $apiKey, Request $request, Response $response, float $startTime): void
     {
         $responseTime = round((microtime(true) - $startTime) * 1000); // Convert to milliseconds
-        
+
         // Determine what to log based on environment
         $logHeaders = config('app.debug', false);
         $logBody = config('app.debug', false);
-        
+
         $logData = [
             'api_key_id' => $apiKey->id,
             'method' => $request->method(),

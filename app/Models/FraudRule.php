@@ -99,7 +99,7 @@ class FraudRule extends Model
 
     public static function generateRuleCode(string $category): string
     {
-        $prefix = match($category) {
+        $prefix = match ($category) {
             self::CATEGORY_VELOCITY => 'VEL',
             self::CATEGORY_PATTERN => 'PAT',
             self::CATEGORY_AMOUNT => 'AMT',
@@ -197,7 +197,7 @@ class FraudRule extends Model
 
         $contextValue = data_get($context, $field);
 
-        return match($operator) {
+        return match ($operator) {
             'equals' => $contextValue == $value,
             'not_equals' => $contextValue != $value,
             'greater_than' => $contextValue > $value,
@@ -218,7 +218,7 @@ class FraudRule extends Model
         $score = $this->base_score;
 
         // Apply weight based on severity
-        $severityMultiplier = match($this->severity) {
+        $severityMultiplier = match ($this->severity) {
             self::SEVERITY_CRITICAL => 2.0,
             self::SEVERITY_HIGH => 1.5,
             self::SEVERITY_MEDIUM => 1.0,
@@ -245,7 +245,7 @@ class FraudRule extends Model
             return 0;
         }
 
-        return match($this->time_window) {
+        return match ($this->time_window) {
             '1h' => 3600,
             '24h' => 86400,
             '7d' => 604800,

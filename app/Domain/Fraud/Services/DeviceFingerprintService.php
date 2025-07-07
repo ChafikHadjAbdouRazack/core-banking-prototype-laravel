@@ -16,16 +16,16 @@ class DeviceFingerprintService
     public function processFingerprint(array $deviceData, ?User $user = null): DeviceFingerprint
     {
         $fingerprintHash = DeviceFingerprint::generateFingerprint($deviceData);
-        
+
         $fingerprint = DeviceFingerprint::firstOrNew(
             ['fingerprint_hash' => $fingerprintHash],
             $this->prepareDeviceData($deviceData)
         );
-        
+
         if ($fingerprint->exists) {
             // Update existing fingerprint
             $fingerprint->recordUsage(true);
-            
+
             // Associate with user if provided
             if ($user) {
                 $fingerprint->associateUser($user);
@@ -39,15 +39,15 @@ class DeviceFingerprintService
             ]);
             $fingerprint->save();
         }
-        
+
         // Enrich with IP data
         if (isset($deviceData['ip_address'])) {
             $this->enrichWithIpData($fingerprint, $deviceData['ip_address']);
         }
-        
+
         return $fingerprint;
     }
-    
+
     /**
      * Analyze device for fraud risk
      */
@@ -60,9 +60,9 @@ class DeviceFingerprintService
                 'recommendation' => 'require_device_verification',
             ];
         }
-        
+
         $fingerprint = DeviceFingerprint::find($deviceData['fingerprint_id']);
-        
+
         if (!$fingerprint) {
             return [
                 'risk_score' => 60,
@@ -70,33 +70,47 @@ class DeviceFingerprintService
                 'recommendation' => 'monitor_closely',
             ];
         }
-        
+
         $riskScore = $fingerprint->getDeviceRiskScore();
         $riskFactors = [];
-        
+
         // Analyze risk factors
-        if ($fingerprint->is_vpn) $riskFactors[] = 'vpn_detected';
-        if ($fingerprint->is_proxy) $riskFactors[] = 'proxy_detected';
-        if ($fingerprint->is_tor) $riskFactors[] = 'tor_detected';
-        if ($fingerprint->isBlocked()) $riskFactors[] = 'blocked_device';
-        if ($fingerprint->isNew()) $riskFactors[] = 'new_device';
-        if ($fingerprint->isSuspicious()) $riskFactors[] = 'suspicious_device';
-        if (count($fingerprint->associated_users ?? []) > 5) $riskFactors[] = 'shared_device';
-        
+        if ($fingerprint->is_vpn) {
+            $riskFactors[] = 'vpn_detected';
+        }
+        if ($fingerprint->is_proxy) {
+            $riskFactors[] = 'proxy_detected';
+        }
+        if ($fingerprint->is_tor) {
+            $riskFactors[] = 'tor_detected';
+        }
+        if ($fingerprint->isBlocked()) {
+            $riskFactors[] = 'blocked_device';
+        }
+        if ($fingerprint->isNew()) {
+            $riskFactors[] = 'new_device';
+        }
+        if ($fingerprint->isSuspicious()) {
+            $riskFactors[] = 'suspicious_device';
+        }
+        if (count($fingerprint->associated_users ?? []) > 5) {
+            $riskFactors[] = 'shared_device';
+        }
+
         // Check for device spoofing
         $spoofingIndicators = $this->detectSpoofing($deviceData, $fingerprint);
         if (!empty($spoofingIndicators)) {
             $riskFactors = array_merge($riskFactors, $spoofingIndicators);
             $riskScore = min(100, $riskScore + 30);
         }
-        
+
         // Check device consistency
         $inconsistencies = $this->checkDeviceConsistency($deviceData, $fingerprint);
         if (!empty($inconsistencies)) {
             $riskFactors = array_merge($riskFactors, $inconsistencies);
             $riskScore = min(100, $riskScore + 20);
         }
-        
+
         return [
             'risk_score' => $riskScore,
             'risk_factors' => $riskFactors,
@@ -106,7 +120,7 @@ class DeviceFingerprintService
             'recommendation' => $this->getRecommendation($riskScore, $riskFactors),
         ];
     }
-    
+
     /**
      * Prepare device data for storage
      */
@@ -131,14 +145,14 @@ class DeviceFingerprintService
             'ip_address' => $deviceData['ip_address'] ?? request()->ip(),
         ];
     }
-    
+
     /**
      * Detect device type from user agent
      */
     protected function detectDeviceType(array $deviceData): string
     {
         $userAgent = strtolower($deviceData['user_agent'] ?? '');
-        
+
         if (str_contains($userAgent, 'mobile')) {
             return DeviceFingerprint::DEVICE_TYPE_MOBILE;
         } elseif (str_contains($userAgent, 'tablet') || str_contains($userAgent, 'ipad')) {
@@ -147,14 +161,14 @@ class DeviceFingerprintService
             return DeviceFingerprint::DEVICE_TYPE_DESKTOP;
         }
     }
-    
+
     /**
      * Enrich device data with IP information
      */
     protected function enrichWithIpData(DeviceFingerprint $fingerprint, string $ip): void
     {
         $ipData = $this->getIpData($ip);
-        
+
         if ($ipData) {
             $fingerprint->update([
                 'ip_country' => $ipData['country'] ?? null,
@@ -167,7 +181,7 @@ class DeviceFingerprintService
             ]);
         }
     }
-    
+
     /**
      * Get IP data from service
      */
@@ -179,7 +193,7 @@ class DeviceFingerprintService
                 // - IPQualityScore
                 // - MaxMind
                 // - IP2Proxy
-                
+
                 // Simulated response
                 return [
                     'country' => 'US',
@@ -197,97 +211,113 @@ class DeviceFingerprintService
             }
         });
     }
-    
+
     /**
      * Detect device spoofing attempts
      */
     protected function detectSpoofing(array $currentData, DeviceFingerprint $storedFingerprint): array
     {
         $indicators = [];
-        
+
         // Check for user agent mismatch
-        if (isset($currentData['user_agent']) && 
-            $currentData['user_agent'] !== $storedFingerprint->user_agent) {
+        if (
+            isset($currentData['user_agent']) &&
+            $currentData['user_agent'] !== $storedFingerprint->user_agent
+        ) {
             $indicators[] = 'user_agent_changed';
         }
-        
+
         // Check for screen resolution mismatch
-        if (isset($currentData['screen_resolution']) && 
-            $currentData['screen_resolution'] !== $storedFingerprint->screen_resolution) {
+        if (
+            isset($currentData['screen_resolution']) &&
+            $currentData['screen_resolution'] !== $storedFingerprint->screen_resolution
+        ) {
             $indicators[] = 'screen_resolution_changed';
         }
-        
+
         // Check for timezone mismatch
-        if (isset($currentData['timezone']) && 
-            $currentData['timezone'] !== $storedFingerprint->timezone) {
+        if (
+            isset($currentData['timezone']) &&
+            $currentData['timezone'] !== $storedFingerprint->timezone
+        ) {
             $indicators[] = 'timezone_changed';
         }
-        
+
         // Check for canvas fingerprint mismatch
-        if (isset($currentData['canvas_fingerprint']) && 
+        if (
+            isset($currentData['canvas_fingerprint']) &&
             $storedFingerprint->canvas_fingerprint &&
-            $currentData['canvas_fingerprint'] !== $storedFingerprint->canvas_fingerprint) {
+            $currentData['canvas_fingerprint'] !== $storedFingerprint->canvas_fingerprint
+        ) {
             $indicators[] = 'canvas_fingerprint_mismatch';
         }
-        
+
         // Multiple changes indicate possible spoofing
         if (count($indicators) >= 3) {
             $indicators[] = 'possible_device_spoofing';
         }
-        
+
         return $indicators;
     }
-    
+
     /**
      * Check device consistency
      */
     protected function checkDeviceConsistency(array $currentData, DeviceFingerprint $fingerprint): array
     {
         $inconsistencies = [];
-        
+
         // Check if plugins match OS/browser
         if (isset($currentData['plugins']) && isset($currentData['os'])) {
             if ($currentData['os'] === 'iOS' && !empty($currentData['plugins'])) {
                 $inconsistencies[] = 'ios_with_plugins'; // iOS doesn't support plugins
             }
         }
-        
+
         // Check for headless browser indicators
         if ($this->detectHeadlessBrowser($currentData)) {
             $inconsistencies[] = 'headless_browser_detected';
         }
-        
+
         // Check for automation tools
         if ($this->detectAutomationTools($currentData)) {
             $inconsistencies[] = 'automation_tools_detected';
         }
-        
+
         return $inconsistencies;
     }
-    
+
     /**
      * Detect headless browser
      */
     protected function detectHeadlessBrowser(array $deviceData): bool
     {
         $indicators = 0;
-        
+
         // Check for missing features common in headless browsers
-        if (empty($deviceData['plugins'])) $indicators++;
-        if (empty($deviceData['languages'])) $indicators++;
-        if (($deviceData['color_depth'] ?? 0) < 24) $indicators++;
-        
+        if (empty($deviceData['plugins'])) {
+            $indicators++;
+        }
+        if (empty($deviceData['languages'])) {
+            $indicators++;
+        }
+        if (($deviceData['color_depth'] ?? 0) < 24) {
+            $indicators++;
+        }
+
         // Check user agent
         $userAgent = strtolower($deviceData['user_agent'] ?? '');
-        if (str_contains($userAgent, 'headless') || 
+        if (
+            str_contains($userAgent, 'headless') ||
             str_contains($userAgent, 'phantom') ||
-            str_contains($userAgent, 'selenium')) {
+            str_contains($userAgent, 'selenium')
+        ) {
             return true;
         }
-        
+
         return $indicators >= 2;
     }
-    
+
     /**
      * Detect automation tools
      */
@@ -297,7 +327,7 @@ class DeviceFingerprintService
         if (isset($deviceData['webdriver']) && $deviceData['webdriver']) {
             return true;
         }
-        
+
         // Check for specific automation properties
         $automationProperties = [
             'selenium',
@@ -306,16 +336,16 @@ class DeviceFingerprintService
             'nightmare',
             'puppeteer',
         ];
-        
+
         foreach ($automationProperties as $prop) {
             if (isset($deviceData[$prop])) {
                 return true;
             }
         }
-        
+
         return false;
     }
-    
+
     /**
      * Get recommendation based on risk
      */
@@ -331,62 +361,62 @@ class DeviceFingerprintService
             return 'proceed_normally';
         }
     }
-    
+
     /**
      * Update device behavioral biometrics
      */
     public function updateBehavioralBiometrics(string $deviceId, array $biometrics): void
     {
         $device = DeviceFingerprint::find($deviceId);
-        
+
         if (!$device) {
             return;
         }
-        
+
         $device->updateBehavioralBiometrics($biometrics);
-        
+
         // Analyze biometrics for anomalies
         $anomalies = $this->analyzeBiometricAnomalies($device, $biometrics);
-        
+
         if (!empty($anomalies)) {
             $device->recordSuspiciousActivity('biometric_anomaly');
         }
     }
-    
+
     /**
      * Analyze biometric anomalies
      */
     protected function analyzeBiometricAnomalies(DeviceFingerprint $device, array $newBiometrics): array
     {
         $anomalies = [];
-        
+
         // Analyze typing patterns
         if (isset($newBiometrics['typing_patterns'])) {
             $typingAnomaly = $this->analyzeTypingPattern(
                 $device->typing_patterns ?? [],
                 $newBiometrics['typing_patterns']
             );
-            
+
             if ($typingAnomaly) {
                 $anomalies[] = 'typing_pattern_anomaly';
             }
         }
-        
+
         // Analyze mouse patterns
         if (isset($newBiometrics['mouse_patterns'])) {
             $mouseAnomaly = $this->analyzeMousePattern(
                 $device->mouse_patterns ?? [],
                 $newBiometrics['mouse_patterns']
             );
-            
+
             if ($mouseAnomaly) {
                 $anomalies[] = 'mouse_pattern_anomaly';
             }
         }
-        
+
         return $anomalies;
     }
-    
+
     /**
      * Analyze typing pattern for anomalies
      */
@@ -395,17 +425,17 @@ class DeviceFingerprintService
         if (empty($historical) || empty($current)) {
             return false;
         }
-        
+
         // Calculate average keystroke intervals
         $historicalAvg = $this->calculateAverageInterval($historical);
         $currentAvg = $this->calculateAverageInterval($current);
-        
+
         // Significant deviation indicates possible different user
         $deviation = abs($historicalAvg - $currentAvg) / $historicalAvg;
-        
+
         return $deviation > 0.5; // 50% deviation threshold
     }
-    
+
     /**
      * Analyze mouse pattern for anomalies
      */
@@ -414,13 +444,13 @@ class DeviceFingerprintService
         if (empty($historical) || empty($current)) {
             return false;
         }
-        
+
         // Analyze movement speed and acceleration patterns
         // In production, use more sophisticated analysis
-        
+
         return false;
     }
-    
+
     /**
      * Calculate average interval from pattern data
      */
@@ -429,50 +459,50 @@ class DeviceFingerprintService
         if (empty($patterns)) {
             return 0;
         }
-        
+
         $intervals = array_column($patterns, 'interval');
         return array_sum($intervals) / count($intervals);
     }
-    
+
     /**
      * Trust device after successful verifications
      */
     public function trustDevice(string $deviceId, User $user): void
     {
         $device = DeviceFingerprint::find($deviceId);
-        
+
         if (!$device || $device->isBlocked()) {
             return;
         }
-        
+
         $device->trust();
         $device->associateUser($user);
-        
+
         // Also add to user's behavioral profile
         $profile = $user->behavioralProfile;
         if ($profile) {
             $profile->addTrustedDevice($deviceId);
         }
     }
-    
+
     /**
      * Get device trust network
      */
     public function getDeviceTrustNetwork(string $deviceId): array
     {
         $device = DeviceFingerprint::find($deviceId);
-        
+
         if (!$device) {
             return [];
         }
-        
+
         $network = [
             'device' => $device->getDeviceProfile(),
             'associated_users' => count($device->associated_users ?? []),
             'trust_score' => $device->trust_score,
             'related_devices' => [],
         ];
-        
+
         // Find devices used by same users
         if (!empty($device->associated_users)) {
             $relatedDevices = DeviceFingerprint::where('id', '!=', $deviceId)
@@ -483,7 +513,7 @@ class DeviceFingerprintService
                 })
                 ->limit(10)
                 ->get();
-            
+
             foreach ($relatedDevices as $related) {
                 $network['related_devices'][] = [
                     'device_id' => $related->id,
@@ -496,7 +526,7 @@ class DeviceFingerprintService
                 ];
             }
         }
-        
+
         return $network;
     }
 }

@@ -16,7 +16,7 @@ class DeliveriesRelationManager extends RelationManager
     protected static string $relationship = 'deliveries';
 
     protected static ?string $recordTitleAttribute = 'uuid';
-    
+
     protected static ?string $title = 'Delivery History';
 
     public function table(Table $table): Table
@@ -70,8 +70,7 @@ class DeliveriesRelationManager extends RelationManager
                     ->options(fn () => $this->getOwnerRecord()->deliveries()
                         ->distinct('event_type')
                         ->pluck('event_type', 'event_type')
-                        ->toArray()
-                    ),
+                        ->toArray()),
             ])
             ->headerActions([])
             ->actions([
@@ -86,7 +85,7 @@ class DeliveriesRelationManager extends RelationManager
                     ->requiresConfirmation()
                     ->action(function ($record) {
                         $record->createRetry();
-                        
+
                         Notification::make()
                             ->title('Webhook retry created')
                             ->body('A new delivery attempt has been queued.')

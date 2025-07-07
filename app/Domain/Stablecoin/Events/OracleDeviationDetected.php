@@ -12,5 +12,6 @@ class OracleDeviationDetected extends ShouldBeStored
         public readonly float $deviation,
         public readonly array $prices,
         public readonly ?string $aggregateUuid = null
-    ) {}
+    ) {
+    }
 }

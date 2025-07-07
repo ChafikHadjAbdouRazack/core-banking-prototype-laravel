@@ -9,19 +9,20 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class TransactionProjection extends Model
 {
-    use HasFactory, HasUuids;
-    
+    use HasFactory;
+    use HasUuids;
+
     protected $table = 'transaction_projections';
-    
+
     protected $guarded = [];
-    
+
     protected $casts = [
         'amount' => 'integer',
         'metadata' => 'array',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
-    
+
     /**
      * Get the columns that should receive a unique identifier.
      */
@@ -29,7 +30,7 @@ class TransactionProjection extends Model
     {
         return ['uuid'];
     }
-    
+
     /**
      * Get the account that owns the transaction.
      */
@@ -37,7 +38,7 @@ class TransactionProjection extends Model
     {
         return $this->belongsTo(Account::class, 'account_uuid', 'uuid');
     }
-    
+
     /**
      * Get formatted amount (in dollars/cents format)
      */
@@ -45,7 +46,7 @@ class TransactionProjection extends Model
     {
         return number_format($this->amount / 100, 2);
     }
-    
+
     /**
      * Scope to get transactions for a specific type
      */
@@ -53,7 +54,7 @@ class TransactionProjection extends Model
     {
         return $query->where('type', $type);
     }
-    
+
     /**
      * Scope to get completed transactions
      */

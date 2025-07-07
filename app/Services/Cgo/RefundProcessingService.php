@@ -34,7 +34,7 @@ class RefundProcessingService
             $refund = $this->createRefundRecord($investment, $data);
 
             // Process refund based on payment method
-            $result = match($investment->payment_method) {
+            $result = match ($investment->payment_method) {
                 'stripe' => $this->processStripeRefund($investment, $refund),
                 'crypto' => $this->processCryptoRefund($investment, $refund),
                 'bank_transfer' => $this->processBankTransferRefund($investment, $refund),
@@ -60,7 +60,6 @@ class RefundProcessingService
 
             DB::commit();
             return $refund;
-
         } catch (\Exception $e) {
             DB::rollback();
             Log::error('Refund processing failed', [
@@ -159,7 +158,6 @@ class RefundProcessingService
                     'amount' => $stripeRefund->amount,
                 ],
             ];
-
         } catch (\Exception $e) {
             Log::error('Stripe refund failed', [
                 'investment_id' => $investment->id,
@@ -216,7 +214,7 @@ class RefundProcessingService
      */
     protected function mapRefundReason(string $reason): string
     {
-        return match($reason) {
+        return match ($reason) {
             'requested_by_customer' => 'requested_by_customer',
             'duplicate' => 'duplicate',
             'fraudulent' => 'fraudulent',
@@ -298,7 +296,7 @@ class RefundProcessingService
             'completed_refunds' => $stats->completed_refunds ?? 0,
             'failed_refunds' => $stats->failed_refunds ?? 0,
             'total_refunded_amount' => $stats->total_refunded_amount ?? 0,
-            'avg_processing_time' => $stats->avg_processing_hours ? 
+            'avg_processing_time' => $stats->avg_processing_hours ?
                 round($stats->avg_processing_hours, 1) . ' hours' : 'N/A',
         ];
     }

@@ -63,24 +63,24 @@ class DemoDepositCommand extends Command
         $account = $user->accounts()->first();
         if (!$account) {
             $this->info("User has no account. Creating one...");
-            
+
             $accountService = app(AccountService::class);
             $accountData = new \App\Domain\Account\DataObjects\Account(
                 name: 'Demo Account',
                 userUuid: $user->uuid
             );
-            
+
             $accountService->create($accountData);
-            
+
             // Process queue to ensure account is created
             $this->call('queue:work', [
                 '--stop-when-empty' => true,
                 '--queue' => 'default,events,ledger,transactions'
             ]);
-            
+
             // Refresh to get the created account
             $account = $user->accounts()->first();
-            
+
             if (!$account) {
                 $this->error('Failed to create account.');
                 return 1;
@@ -107,7 +107,7 @@ class DemoDepositCommand extends Command
             // Create deposit using event sourcing
             $ledger = app(LedgerAggregate::class);
             $transactionId = Str::uuid()->toString();
-            
+
             $ledger->retrieve($account->uuid)
                 ->addMoney(
                     assetCode: $assetCode,
@@ -130,7 +130,7 @@ class DemoDepositCommand extends Command
 
             $this->info("✅ Deposit successful!");
             $this->info("Transaction ID: {$transactionId}");
-            
+
             // Show updated balance
             $account->refresh();
             $balance = $account->getBalanceForAsset($assetCode);
@@ -140,7 +140,6 @@ class DemoDepositCommand extends Command
             }
 
             return 0;
-
         } catch (\Exception $e) {
             $this->error("Failed to create deposit: " . $e->getMessage());
             return 1;

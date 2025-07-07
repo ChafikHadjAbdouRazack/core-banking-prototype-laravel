@@ -39,14 +39,14 @@ class MintStablecoinWorkflow extends Workflow
                 $positionUuid
             );
             $positionUuid = $positionResult['position_uuid'];
-            
+
             // Add compensation to close position on failure
             $this->addCompensation(fn() => ActivityStub::make(
                 ClosePositionActivity::class,
                 $positionUuid,
                 'failed'
             ));
-            
+
             // Lock collateral from account
             yield ActivityStub::make(
                 LockCollateralActivity::class,
@@ -55,7 +55,7 @@ class MintStablecoinWorkflow extends Workflow
                 $collateralAssetCode,
                 $collateralAmount
             );
-            
+
             // Add compensation to release collateral on failure
             $this->addCompensation(fn() => ActivityStub::make(
                 ReleaseCollateralActivity::class,
@@ -64,7 +64,7 @@ class MintStablecoinWorkflow extends Workflow
                 $collateralAssetCode,
                 $collateralAmount
             ));
-            
+
             // Mint stablecoins to account
             yield ActivityStub::make(
                 MintStablecoinActivity::class,
@@ -73,7 +73,7 @@ class MintStablecoinWorkflow extends Workflow
                 $stablecoinCode,
                 $mintAmount
             );
-            
+
             // Add compensation to burn stablecoins on failure
             $this->addCompensation(fn() => ActivityStub::make(
                 BurnStablecoinActivity::class,
@@ -82,9 +82,8 @@ class MintStablecoinWorkflow extends Workflow
                 $stablecoinCode,
                 $mintAmount
             ));
-            
+
             return $positionUuid;
-            
         } catch (\Throwable $th) {
             // Execute compensations in reverse order
             yield from $this->compensate();

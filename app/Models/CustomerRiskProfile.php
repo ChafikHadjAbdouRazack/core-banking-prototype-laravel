@@ -10,7 +10,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class CustomerRiskProfile extends Model
 {
-    use HasUuids, SoftDeletes;
+    use HasUuids;
+    use SoftDeletes;
 
     protected $fillable = [
         'user_id',
@@ -163,14 +164,14 @@ class CustomerRiskProfile extends Model
         $lastProfile = static::whereYear('created_at', $year)
             ->orderBy('profile_number', 'desc')
             ->first();
-        
+
         if ($lastProfile) {
             $lastNumber = intval(substr($lastProfile->profile_number, -5));
             $newNumber = str_pad($lastNumber + 1, 5, '0', STR_PAD_LEFT);
         } else {
             $newNumber = '00001';
         }
-        
+
         return "CRP-{$year}-{$newNumber}";
     }
 
@@ -283,7 +284,7 @@ class CustomerRiskProfile extends Model
     {
         $score = 0;
         $countries = $this->geographic_risk['countries'] ?? [];
-        
+
         foreach ($countries as $country) {
             if (in_array($country, self::HIGH_RISK_COUNTRIES)) {
                 $score = max($score, 80);
@@ -318,8 +319,8 @@ class CustomerRiskProfile extends Model
     protected function calculateChannelRisk(): float
     {
         $channel = $this->channel_risk['onboarding_channel'] ?? 'online';
-        
-        return match($channel) {
+
+        return match ($channel) {
             'face_to_face' => 10,
             'online_verified' => 30,
             'online_unverified' => 60,
@@ -354,7 +355,7 @@ class CustomerRiskProfile extends Model
     protected function calculateBehavioralRisk(): float
     {
         $score = 20; // Base score
-        
+
         if ($this->suspicious_activities_count > 5) {
             $score = 80;
         } elseif ($this->suspicious_activities_count > 2) {
@@ -419,7 +420,7 @@ class CustomerRiskProfile extends Model
         $this->cdd_level = $this->determineCDDLevel();
         $this->last_assessment_at = now();
         $this->next_review_at = $this->calculateNextReviewDate();
-        
+
         // Add to risk history
         $history = $this->risk_history ?? [];
         $history[] = [
@@ -429,13 +430,13 @@ class CustomerRiskProfile extends Model
             'factors' => $this->getRiskFactorsSummary(),
         ];
         $this->risk_history = $history;
-        
+
         $this->save();
     }
 
     protected function calculateNextReviewDate(): \Carbon\Carbon
     {
-        return match($this->risk_rating) {
+        return match ($this->risk_rating) {
             self::RISK_RATING_HIGH => now()->addMonths(3),
             self::RISK_RATING_MEDIUM => now()->addMonths(6),
             self::RISK_RATING_LOW => now()->addYear(),
@@ -446,13 +447,23 @@ class CustomerRiskProfile extends Model
     protected function getRiskFactorsSummary(): array
     {
         $factors = [];
-        
-        if ($this->is_pep) $factors[] = 'PEP';
-        if ($this->is_sanctioned) $factors[] = 'Sanctioned';
-        if ($this->has_adverse_media) $factors[] = 'Adverse Media';
-        if ($this->complex_structure) $factors[] = 'Complex Structure';
-        if ($this->suspicious_activities_count > 0) $factors[] = 'Suspicious Activities';
-        
+
+        if ($this->is_pep) {
+            $factors[] = 'PEP';
+        }
+        if ($this->is_sanctioned) {
+            $factors[] = 'Sanctioned';
+        }
+        if ($this->has_adverse_media) {
+            $factors[] = 'Adverse Media';
+        }
+        if ($this->complex_structure) {
+            $factors[] = 'Complex Structure';
+        }
+        if ($this->suspicious_activities_count > 0) {
+            $factors[] = 'Suspicious Activities';
+        }
+
         return $factors;
     }
 }

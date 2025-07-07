@@ -22,7 +22,7 @@ class EnsureJsonRequest
 
         // Check if the content type is application/json
         $contentType = $request->header('Content-Type');
-        
+
         if (!$contentType || !str_contains($contentType, 'application/json')) {
             return response()->json([
                 'error' => 'Unsupported Media Type',

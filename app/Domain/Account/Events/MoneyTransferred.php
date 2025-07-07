@@ -10,12 +10,12 @@ use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 
 class MoneyTransferred extends ShouldBeStored implements HasHash, HasMoney
 {
+    use HashValidatorProvider;
+
     /**
      * @var string
      */
     public string $queue = EventQueues::TRANSFERS->value;
-
-    use HashValidatorProvider;
 
     /**
      * @param \App\Domain\Account\DataObjects\AccountUuid $from
@@ -27,7 +27,7 @@ class MoneyTransferred extends ShouldBeStored implements HasHash, HasMoney
         public readonly AccountUuid $from,
         public readonly AccountUuid $to,
         public readonly Money $money,
-        public readonly Hash  $hash,
+        public readonly Hash $hash,
     ) {
     }
 }

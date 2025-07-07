@@ -38,17 +38,17 @@ class BasketPerformanceWidget extends BaseWidget
                         'year' => 'danger',
                         default => 'secondary',
                     }),
-                
+
                 Tables\Columns\TextColumn::make('period_end')
                     ->label('Date')
                     ->dateTime('M j, Y')
                     ->sortable(),
-                
+
                 Tables\Columns\TextColumn::make('formatted_return')
                     ->label('Return')
                     ->html()
                     ->color(fn ($record): string => $record->return_percentage >= 0 ? 'success' : 'danger'),
-                
+
                 Tables\Columns\TextColumn::make('volatility')
                     ->label('Volatility')
                     ->formatStateUsing(fn ($state) => $state ? number_format($state, 2) . '%' : '-')
@@ -58,7 +58,7 @@ class BasketPerformanceWidget extends BaseWidget
                         $state <= 20 => 'warning',
                         default => 'danger',
                     }),
-                
+
                 Tables\Columns\TextColumn::make('sharpe_ratio')
                     ->label('Sharpe Ratio')
                     ->formatStateUsing(fn ($state) => $state !== null ? number_format($state, 2) : '-')
@@ -68,7 +68,7 @@ class BasketPerformanceWidget extends BaseWidget
                         $state >= 0 => 'warning',
                         default => 'danger',
                     }),
-                
+
                 Tables\Columns\TextColumn::make('max_drawdown')
                     ->label('Max Drawdown')
                     ->formatStateUsing(fn ($state) => $state ? '-' . number_format($state, 2) . '%' : '-')
@@ -78,7 +78,7 @@ class BasketPerformanceWidget extends BaseWidget
                         $state <= 20 => 'warning',
                         default => 'danger',
                     }),
-                
+
                 Tables\Columns\TextColumn::make('performance_rating')
                     ->label('Rating')
                     ->badge()
@@ -114,7 +114,7 @@ class BasketPerformanceWidget extends BaseWidget
                         $components = $record->componentPerformances()
                             ->orderBy('contribution_percentage', 'desc')
                             ->get();
-                        
+
                         return view('filament.admin.resources.basket-asset-resource.widgets.component-performance-modal', [
                             'components' => $components,
                         ]);
@@ -129,7 +129,7 @@ class BasketPerformanceWidget extends BaseWidget
                     ->action(function () {
                         $service = app(BasketPerformanceService::class);
                         $performances = $service->calculateAllPeriods($this->record);
-                        
+
                         $this->dispatch('notify', [
                             'type' => 'success',
                             'message' => "Calculated {$performances->count()} performance periods",

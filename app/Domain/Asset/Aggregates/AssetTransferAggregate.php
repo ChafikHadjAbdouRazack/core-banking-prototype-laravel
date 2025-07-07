@@ -16,7 +16,7 @@ use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
 class AssetTransferAggregate extends AggregateRoot
 {
     use ValidatesHash;
-    
+
     private ?AccountUuid $fromAccountUuid = null;
     private ?AccountUuid $toAccountUuid = null;
     private ?string $fromAssetCode = null;
@@ -27,7 +27,7 @@ class AssetTransferAggregate extends AggregateRoot
     private ?Hash $hash = null;
     private ?string $status = null;
     private ?string $failureReason = null;
-    
+
     /**
      * Initiate a transfer between assets
      */
@@ -43,7 +43,7 @@ class AssetTransferAggregate extends AggregateRoot
         ?array $metadata = null
     ): self {
         $hash = $this->generateHash($fromAmount);
-        
+
         $this->recordThat(new AssetTransferInitiated(
             fromAccountUuid: $fromAccountUuid,
             toAccountUuid: $toAccountUuid,
@@ -56,10 +56,10 @@ class AssetTransferAggregate extends AggregateRoot
             description: $description,
             metadata: $metadata
         ));
-        
+
         return $this;
     }
-    
+
     /**
      * Complete the transfer
      */
@@ -70,7 +70,7 @@ class AssetTransferAggregate extends AggregateRoot
         if ($this->status !== 'initiated') {
             throw new \InvalidArgumentException('Transfer must be initiated before it can be completed');
         }
-        
+
         $this->recordThat(new AssetTransferCompleted(
             fromAccountUuid: $this->fromAccountUuid,
             toAccountUuid: $this->toAccountUuid,
@@ -82,10 +82,10 @@ class AssetTransferAggregate extends AggregateRoot
             transferId: $transferId,
             metadata: $metadata
         ));
-        
+
         return $this;
     }
-    
+
     /**
      * Fail the transfer
      */
@@ -97,7 +97,7 @@ class AssetTransferAggregate extends AggregateRoot
         if ($this->status !== 'initiated') {
             throw new \InvalidArgumentException('Transfer must be initiated before it can fail');
         }
-        
+
         $this->recordThat(new AssetTransferFailed(
             fromAccountUuid: $this->fromAccountUuid,
             toAccountUuid: $this->toAccountUuid,
@@ -109,10 +109,10 @@ class AssetTransferAggregate extends AggregateRoot
             transferId: $transferId,
             metadata: $metadata
         ));
-        
+
         return $this;
     }
-    
+
     /**
      * Apply asset transfer initiated event
      */
@@ -128,7 +128,7 @@ class AssetTransferAggregate extends AggregateRoot
         $this->hash = $event->hash;
         $this->status = 'initiated';
     }
-    
+
     /**
      * Apply asset transfer completed event
      */
@@ -136,7 +136,7 @@ class AssetTransferAggregate extends AggregateRoot
     {
         $this->status = 'completed';
     }
-    
+
     /**
      * Apply asset transfer failed event
      */
@@ -145,7 +145,7 @@ class AssetTransferAggregate extends AggregateRoot
         $this->status = 'failed';
         $this->failureReason = $event->reason;
     }
-    
+
     /**
      * Get the from account UUID
      */
@@ -153,7 +153,7 @@ class AssetTransferAggregate extends AggregateRoot
     {
         return $this->fromAccountUuid;
     }
-    
+
     /**
      * Get the to account UUID
      */
@@ -161,7 +161,7 @@ class AssetTransferAggregate extends AggregateRoot
     {
         return $this->toAccountUuid;
     }
-    
+
     /**
      * Get the from asset code
      */
@@ -169,7 +169,7 @@ class AssetTransferAggregate extends AggregateRoot
     {
         return $this->fromAssetCode;
     }
-    
+
     /**
      * Get the to asset code
      */
@@ -177,7 +177,7 @@ class AssetTransferAggregate extends AggregateRoot
     {
         return $this->toAssetCode;
     }
-    
+
     /**
      * Get the from amount
      */
@@ -185,7 +185,7 @@ class AssetTransferAggregate extends AggregateRoot
     {
         return $this->fromAmount;
     }
-    
+
     /**
      * Get the to amount
      */
@@ -193,7 +193,7 @@ class AssetTransferAggregate extends AggregateRoot
     {
         return $this->toAmount;
     }
-    
+
     /**
      * Get the exchange rate
      */
@@ -201,7 +201,7 @@ class AssetTransferAggregate extends AggregateRoot
     {
         return $this->exchangeRate;
     }
-    
+
     /**
      * Get the status
      */
@@ -209,7 +209,7 @@ class AssetTransferAggregate extends AggregateRoot
     {
         return $this->status;
     }
-    
+
     /**
      * Get the failure reason
      */
@@ -217,7 +217,7 @@ class AssetTransferAggregate extends AggregateRoot
     {
         return $this->failureReason;
     }
-    
+
     /**
      * Check if this is a same-asset transfer
      */
@@ -225,7 +225,7 @@ class AssetTransferAggregate extends AggregateRoot
     {
         return $this->fromAssetCode === $this->toAssetCode;
     }
-    
+
     /**
      * Check if this is a cross-asset transfer (exchange)
      */

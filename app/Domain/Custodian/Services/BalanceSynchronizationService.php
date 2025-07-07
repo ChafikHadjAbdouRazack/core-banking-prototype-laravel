@@ -42,7 +42,7 @@ class BalanceSynchronizationService
         ];
 
         $custodianAccounts = $this->getActiveCustodianAccounts();
-        
+
         Log::info('Starting balance synchronization', [
             'total_accounts' => $custodianAccounts->count(),
         ]);
@@ -73,7 +73,7 @@ class BalanceSynchronizationService
 
             // Get custodian connector
             $connector = $this->custodianRegistry->getConnector($custodianAccount->custodian_id);
-            
+
             if (!$connector->isAvailable()) {
                 $this->recordSyncResult($custodianAccount, 'failed', 'Custodian not available');
                 return false;
@@ -81,10 +81,10 @@ class BalanceSynchronizationService
 
             // Get account info from custodian
             $accountInfo = $connector->getAccountInfo($custodianAccount->external_account_id);
-            
+
             // Update balances
             $this->updateAccountBalances($custodianAccount, $accountInfo);
-            
+
             // Update sync timestamp
             $custodianAccount->update([
                 'last_synced_at' => now(),
@@ -93,7 +93,7 @@ class BalanceSynchronizationService
             ]);
 
             $this->recordSyncResult($custodianAccount, 'synchronized', 'Success');
-            
+
             return true;
         } catch (\Exception $e) {
             Log::error('Balance synchronization failed', [
@@ -109,7 +109,7 @@ class BalanceSynchronizationService
             ]);
 
             $this->recordSyncResult($custodianAccount, 'failed', $e->getMessage());
-            
+
             return false;
         }
     }
@@ -120,7 +120,7 @@ class BalanceSynchronizationService
     public function synchronizeAccountBalancesByInternalAccount(string $accountUuid): array
     {
         $results = [];
-        
+
         $custodianAccounts = CustodianAccount::where('account_uuid', $accountUuid)
             ->where('status', 'active')
             ->get();
@@ -166,14 +166,14 @@ class BalanceSynchronizationService
     {
         DB::transaction(function () use ($custodianAccount, $accountInfo) {
             $account = Account::findOrFail($custodianAccount->account_uuid);
-            
+
             foreach ($accountInfo->balances as $assetCode => $amountInCents) {
                 $currentBalance = $account->getBalance($assetCode);
-                
+
                 if ($currentBalance !== $amountInCents) {
                     // Calculate the difference
                     $difference = $amountInCents - $currentBalance;
-                    
+
                     // Update the balance using WalletService
                     $accountUuid = AccountUuid::fromString($account->uuid);
                     if ($difference > 0) {
@@ -181,7 +181,7 @@ class BalanceSynchronizationService
                     } else {
                         $this->walletService->withdraw($accountUuid, $assetCode, abs($difference));
                     }
-                    
+
                     // Fire balance updated event
                     event(new AccountBalanceUpdated(
                         accountUuid: $account->uuid,
@@ -191,7 +191,7 @@ class BalanceSynchronizationService
                         newBalance: $amountInCents,
                         source: 'synchronization'
                     ));
-                    
+
                     Log::info('Account balance updated', [
                         'account_uuid' => $account->uuid,
                         'custodian_id' => $custodianAccount->custodian_id,
@@ -202,7 +202,7 @@ class BalanceSynchronizationService
                     ]);
                 }
             }
-            
+
             // Update custodian account metadata
             $custodianAccount->update([
                 'metadata' => array_merge($custodianAccount->metadata ?? [], [

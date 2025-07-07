@@ -17,14 +17,14 @@ abstract class BaseBankConnector implements IBankConnector
     protected array $config;
     protected ?string $accessToken = null;
     protected ?\DateTime $tokenExpiry = null;
-    
+
     public function __construct(array $config)
     {
         $this->config = $config;
         $this->bankCode = $config['bank_code'] ?? '';
         $this->bankName = $config['bank_name'] ?? '';
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -32,7 +32,7 @@ abstract class BaseBankConnector implements IBankConnector
     {
         return $this->bankCode;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -40,14 +40,14 @@ abstract class BaseBankConnector implements IBankConnector
     {
         return $this->bankName;
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public function isAvailable(): bool
     {
         $cacheKey = "bank_available:{$this->bankCode}";
-        
+
         return Cache::remember($cacheKey, 60, function () {
             try {
                 $response = Http::timeout(5)->get($this->getHealthCheckUrl());
@@ -60,7 +60,7 @@ abstract class BaseBankConnector implements IBankConnector
             }
         });
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -68,15 +68,15 @@ abstract class BaseBankConnector implements IBankConnector
     {
         // Remove spaces and convert to uppercase
         $iban = strtoupper(str_replace(' ', '', $iban));
-        
+
         // Check length
         if (strlen($iban) < 15) {
             return false;
         }
-        
+
         // Move first 4 characters to end
         $rearranged = substr($iban, 4) . substr($iban, 0, 4);
-        
+
         // Replace letters with numbers (A=10, B=11, etc.)
         $numericIban = '';
         for ($i = 0; $i < strlen($rearranged); $i++) {
@@ -87,29 +87,29 @@ abstract class BaseBankConnector implements IBankConnector
                 $numericIban .= $char;
             }
         }
-        
+
         // Calculate mod 97
         $mod = bcmod($numericIban, '97');
-        
+
         return $mod === '1';
     }
-    
+
     /**
      * Get health check URL for the bank
      */
     abstract protected function getHealthCheckUrl(): string;
-    
+
     /**
      * Make authenticated API request
      */
     protected function makeRequest(string $method, string $url, array $data = []): array
     {
         $this->ensureAuthenticated();
-        
+
         $response = Http::withToken($this->accessToken)
             ->timeout(30)
             ->$method($url, $data);
-        
+
         if (!$response->successful()) {
             Log::error("Bank API request failed", [
                 'bank' => $this->bankCode,
@@ -118,13 +118,13 @@ abstract class BaseBankConnector implements IBankConnector
                 'status' => $response->status(),
                 'response' => $response->body()
             ]);
-            
+
             throw new \Exception("Bank API request failed: " . $response->body());
         }
-        
+
         return $response->json();
     }
-    
+
     /**
      * Ensure we have a valid access token
      */
@@ -133,10 +133,10 @@ abstract class BaseBankConnector implements IBankConnector
         if ($this->accessToken && $this->tokenExpiry && $this->tokenExpiry > new \DateTime()) {
             return;
         }
-        
+
         $this->authenticate();
     }
-    
+
     /**
      * Log API request for debugging
      */
@@ -151,7 +151,7 @@ abstract class BaseBankConnector implements IBankConnector
             ]);
         }
     }
-    
+
     /**
      * Log API response for debugging
      */
@@ -166,7 +166,7 @@ abstract class BaseBankConnector implements IBankConnector
             ]);
         }
     }
-    
+
     /**
      * Convert amount to bank's expected format
      */
@@ -175,7 +175,7 @@ abstract class BaseBankConnector implements IBankConnector
         // Most banks expect amounts in cents/minor units
         return (int) round($amount * 100);
     }
-    
+
     /**
      * Parse amount from bank's format
      */

@@ -30,7 +30,7 @@ class WebhookEventListener extends Projector
         }
 
         $account = Account::where('uuid', $event->aggregateRootUuid())->first();
-        
+
         if (!$account) {
             return;
         }
@@ -78,7 +78,7 @@ class WebhookEventListener extends Projector
         }
 
         $account = Account::where('uuid', $event->aggregateRootUuid())->first();
-        
+
         if (!$account) {
             return;
         }
@@ -108,7 +108,7 @@ class WebhookEventListener extends Projector
         }
 
         $account = Account::where('uuid', $event->aggregateRootUuid())->first();
-        
+
         if (!$account) {
             return;
         }

@@ -26,7 +26,7 @@ class ValuesRelationManager extends RelationManager
                     ->required()
                     ->numeric()
                     ->disabled(),
-                
+
                 Forms\Components\DateTimePicker::make('calculated_at')
                     ->required()
                     ->disabled(),
@@ -44,12 +44,12 @@ class ValuesRelationManager extends RelationManager
                     ->prefix('$')
                     ->weight('bold')
                     ->color('primary'),
-                
+
                 Tables\Columns\TextColumn::make('calculated_at')
                     ->label('Calculated At')
                     ->dateTime()
                     ->sortable(),
-                
+
                 Tables\Columns\TextColumn::make('calculated_at')
                     ->label('Age')
                     ->since()
@@ -58,26 +58,23 @@ class ValuesRelationManager extends RelationManager
                         $state->diffInHours() < 1 => 'warning',
                         default => 'gray',
                     }),
-                
+
                 Tables\Columns\ViewColumn::make('component_values')
                     ->label('Components')
                     ->view('filament.tables.columns.basket-component-values'),
             ])
             ->filters([
                 Tables\Filters\Filter::make('last_24_hours')
-                    ->query(fn (Builder $query): Builder => 
-                        $query->where('calculated_at', '>=', now()->subDay())
-                    ),
-                
+                    ->query(fn (Builder $query): Builder =>
+                        $query->where('calculated_at', '>=', now()->subDay())),
+
                 Tables\Filters\Filter::make('last_7_days')
-                    ->query(fn (Builder $query): Builder => 
-                        $query->where('calculated_at', '>=', now()->subWeek())
-                    ),
-                
+                    ->query(fn (Builder $query): Builder =>
+                        $query->where('calculated_at', '>=', now()->subWeek())),
+
                 Tables\Filters\Filter::make('last_30_days')
-                    ->query(fn (Builder $query): Builder => 
-                        $query->where('calculated_at', '>=', now()->subMonth())
-                    ),
+                    ->query(fn (Builder $query): Builder =>
+                        $query->where('calculated_at', '>=', now()->subMonth())),
             ])
             ->defaultSort('calculated_at', 'desc')
             ->paginated([10, 25, 50, 100])

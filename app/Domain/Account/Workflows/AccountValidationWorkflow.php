@@ -10,7 +10,7 @@ class AccountValidationWorkflow extends Workflow
 {
     /**
      * Validate account for compliance/KYC requirements
-     * 
+     *
      * @param AccountUuid $uuid
      * @param array $validationChecks
      * @param string|null $validatedBy
@@ -18,8 +18,8 @@ class AccountValidationWorkflow extends Workflow
      * @return \Generator
      */
     public function execute(
-        AccountUuid $uuid, 
-        array $validationChecks, 
+        AccountUuid $uuid,
+        array $validationChecks,
         ?string $validatedBy = null
     ): \Generator {
         return yield ActivityStub::make(

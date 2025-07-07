@@ -28,7 +28,7 @@ class ViewApiKey extends ViewRecord
                             ->boolean(),
                     ])
                     ->columns(2),
-                    
+
                 Infolists\Components\Section::make('Permissions & Security')
                     ->schema([
                         Infolists\Components\TextEntry::make('permissions')
@@ -49,7 +49,7 @@ class ViewApiKey extends ViewRecord
                             ->dateTime()
                             ->default('Never expires'),
                     ]),
-                    
+
                 Infolists\Components\Section::make('Usage Statistics')
                     ->schema([
                         Infolists\Components\TextEntry::make('user.name')
@@ -76,7 +76,7 @@ class ViewApiKey extends ViewRecord
                             }),
                     ])
                     ->columns(3),
-                    
+
                 Infolists\Components\Section::make('Recent Activity')
                     ->schema([
                         Infolists\Components\RepeatableEntry::make('recentLogs')

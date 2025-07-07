@@ -15,14 +15,14 @@ use Filament\Infolists\Components\RepeatableEntry;
 class ViewWebhook extends ViewRecord
 {
     protected static string $resource = WebhookResource::class;
-    
+
     protected function getHeaderActions(): array
     {
         return [
             Actions\EditAction::make(),
         ];
     }
-    
+
     public function infolist(Infolist $infolist): Infolist
     {
         return $infolist

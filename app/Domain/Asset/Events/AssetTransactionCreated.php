@@ -19,8 +19,9 @@ class AssetTransactionCreated extends ShouldBeStored
         public readonly Hash $hash,
         public readonly ?string $description = null,
         public readonly ?array $metadata = null
-    ) {}
-    
+    ) {
+    }
+
     /**
      * Get the transaction type
      */
@@ -28,7 +29,7 @@ class AssetTransactionCreated extends ShouldBeStored
     {
         return $this->type;
     }
-    
+
     /**
      * Check if this is a credit transaction
      */
@@ -36,7 +37,7 @@ class AssetTransactionCreated extends ShouldBeStored
     {
         return $this->type === 'credit';
     }
-    
+
     /**
      * Check if this is a debit transaction
      */
@@ -44,7 +45,7 @@ class AssetTransactionCreated extends ShouldBeStored
     {
         return $this->type === 'debit';
     }
-    
+
     /**
      * Get the amount in smallest unit
      */

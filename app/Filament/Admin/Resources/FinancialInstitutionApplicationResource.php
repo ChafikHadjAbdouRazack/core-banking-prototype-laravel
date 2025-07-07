@@ -19,13 +19,13 @@ class FinancialInstitutionApplicationResource extends Resource
     protected static ?string $model = FinancialInstitutionApplication::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-building-office-2';
-    
+
     protected static ?string $navigationGroup = 'Partnerships';
-    
+
     protected static ?int $navigationSort = 2;
-    
+
     protected static ?string $modelLabel = 'Financial Institution Application';
-    
+
     protected static ?string $pluralModelLabel = 'Financial Institution Applications';
 
     public static function form(Form $form): Form
@@ -76,7 +76,7 @@ class FinancialInstitutionApplicationResource extends Resource
                             ->maxLength(255),
                     ])
                     ->columns(2),
-                    
+
                 Forms\Components\Section::make('Contact Information')
                     ->schema([
                         Forms\Components\TextInput::make('contact_name')
@@ -99,7 +99,7 @@ class FinancialInstitutionApplicationResource extends Resource
                             ->maxLength(255),
                     ])
                     ->columns(2),
-                    
+
                 Forms\Components\Section::make('Integration Details')
                     ->schema([
                         Forms\Components\Select::make('integration_type')
@@ -131,7 +131,7 @@ class FinancialInstitutionApplicationResource extends Resource
                             ->maxLength(5000)
                             ->rows(4),
                     ]),
-                    
+
                 Forms\Components\Section::make('Additional Information')
                     ->schema([
                         Forms\Components\Textarea::make('partnership_goals')
@@ -144,7 +144,7 @@ class FinancialInstitutionApplicationResource extends Resource
                             ->required()
                             ->disabled(fn (?FinancialInstitutionApplication $record) => $record !== null),
                     ]),
-                    
+
                 Forms\Components\Section::make('Application Status')
                     ->schema([
                         Forms\Components\Select::make('status')

@@ -110,10 +110,18 @@ class FraudScore extends Model
     // Helper methods
     public static function calculateRiskLevel(float $score): string
     {
-        if ($score < 20) return self::RISK_LEVEL_VERY_LOW;
-        if ($score < 40) return self::RISK_LEVEL_LOW;
-        if ($score < 60) return self::RISK_LEVEL_MEDIUM;
-        if ($score < 80) return self::RISK_LEVEL_HIGH;
+        if ($score < 20) {
+            return self::RISK_LEVEL_VERY_LOW;
+        }
+        if ($score < 40) {
+            return self::RISK_LEVEL_LOW;
+        }
+        if ($score < 60) {
+            return self::RISK_LEVEL_MEDIUM;
+        }
+        if ($score < 80) {
+            return self::RISK_LEVEL_HIGH;
+        }
         return self::RISK_LEVEL_VERY_HIGH;
     }
 
@@ -214,7 +222,7 @@ class FraudScore extends Model
         // Update rule effectiveness based on outcome
         if ($this->triggered_rules) {
             $isPositive = $outcome === self::OUTCOME_FRAUD;
-            
+
             foreach ($this->triggered_rules as $ruleCode) {
                 $rule = FraudRule::where('code', $ruleCode)->first();
                 $rule?->recordTrigger($isPositive);

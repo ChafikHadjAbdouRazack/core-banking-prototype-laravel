@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 class BankAllocationService
 {
     use HandlesNestedTransactions;
+
     /**
      * Set up default bank allocations for a new user
      */
@@ -38,7 +39,7 @@ class BankAllocationService
 
     /**
      * Update user's bank allocations
-     * 
+     *
      * @param User $user
      * @param array $allocations Array of ['bank_code' => percentage]
      * @return Collection
@@ -84,7 +85,7 @@ class BankAllocationService
                     'status' => 'active',
                     'metadata' => $bankInfo,
                 ]);
-                
+
                 $preferences->push($preference);
                 $isFirst = false;
             }
@@ -122,7 +123,7 @@ class BankAllocationService
         }
 
         $bankInfo = UserBankPreference::AVAILABLE_BANKS[$bankCode];
-        
+
         return $user->bankPreferences()->create([
             'bank_code' => $bankCode,
             'bank_name' => $bankInfo['name'],
@@ -181,7 +182,7 @@ class BankAllocationService
         $this->executeInTransaction(function () use ($user, $preference) {
             // Remove primary flag from all banks
             $user->bankPreferences()->update(['is_primary' => false]);
-            
+
             // Set new primary
             $preference->update(['is_primary' => true]);
         });

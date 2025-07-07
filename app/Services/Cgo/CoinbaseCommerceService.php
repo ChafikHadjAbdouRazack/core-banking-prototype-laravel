@@ -221,13 +221,13 @@ class CoinbaseCommerceService
             'payment_status' => 'pending',
             'payment_pending_at' => now(),
         ]);
-        
+
         // Extract crypto payment info if available
         $payment = $chargeData['payments'][0] ?? null;
         if ($payment) {
             $cryptoCurrency = $payment['value']['crypto']['currency'] ?? null;
             $cryptoAmount = $payment['value']['crypto']['amount'] ?? null;
-            
+
             if ($cryptoCurrency && $cryptoAmount) {
                 $investment->update([
                     'crypto_currency_paid' => $cryptoCurrency,

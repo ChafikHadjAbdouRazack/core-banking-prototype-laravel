@@ -30,7 +30,7 @@ class LoanApplication extends AggregateRoot
     private ?float $interestRate = null;
     private array $rejectionReasons = [];
     private array $documents = [];
-    
+
     public static function submit(
         string $applicationId,
         string $borrowerId,
@@ -42,13 +42,13 @@ class LoanApplication extends AggregateRoot
         if (BigDecimal::of($requestedAmount)->isLessThanOrEqualTo(0)) {
             throw new LoanApplicationException('Requested amount must be greater than zero');
         }
-        
+
         if ($termMonths < 1 || $termMonths > 360) {
             throw new LoanApplicationException('Term must be between 1 and 360 months');
         }
-        
+
         $application = static::retrieve($applicationId);
-        
+
         $application->recordThat(new LoanApplicationSubmitted(
             applicationId: $applicationId,
             borrowerId: $borrowerId,
@@ -58,10 +58,10 @@ class LoanApplication extends AggregateRoot
             borrowerInfo: $borrowerInfo,
             submittedAt: new \DateTimeImmutable()
         ));
-        
+
         return $application;
     }
-    
+
     public function completeCreditCheck(
         int $score,
         string $bureau,
@@ -71,9 +71,9 @@ class LoanApplication extends AggregateRoot
         if ($this->status !== 'pending') {
             throw new LoanApplicationException('Can only perform credit check on pending applications');
         }
-        
+
         $creditScore = new CreditScore($score, $bureau, $creditReport);
-        
+
         $this->recordThat(new LoanApplicationCreditCheckCompleted(
             applicationId: $this->applicationId,
             score: $score,
@@ -82,10 +82,10 @@ class LoanApplication extends AggregateRoot
             checkedBy: $checkedBy,
             checkedAt: new \DateTimeImmutable()
         ));
-        
+
         return $this;
     }
-    
+
     public function completeRiskAssessment(
         string $rating,
         float $defaultProbability,
@@ -95,13 +95,13 @@ class LoanApplication extends AggregateRoot
         if ($this->status !== 'pending') {
             throw new LoanApplicationException('Can only assess risk on pending applications');
         }
-        
+
         if (!$this->creditScore) {
             throw new LoanApplicationException('Credit check must be completed before risk assessment');
         }
-        
+
         $riskRating = new RiskRating($rating, $defaultProbability, $riskFactors);
-        
+
         $this->recordThat(new LoanApplicationRiskAssessmentCompleted(
             applicationId: $this->applicationId,
             rating: $rating,
@@ -110,10 +110,10 @@ class LoanApplication extends AggregateRoot
             assessedBy: $assessedBy,
             assessedAt: new \DateTimeImmutable()
         ));
-        
+
         return $this;
     }
-    
+
     public function approve(
         string $approvedAmount,
         float $interestRate,
@@ -123,19 +123,19 @@ class LoanApplication extends AggregateRoot
         if ($this->status !== 'pending') {
             throw new LoanApplicationException('Can only approve pending applications');
         }
-        
+
         if (!$this->creditScore || !$this->riskRating) {
             throw new LoanApplicationException('Credit check and risk assessment must be completed');
         }
-        
+
         if (BigDecimal::of($approvedAmount)->isGreaterThan($this->requestedAmount)) {
             throw new LoanApplicationException('Approved amount cannot exceed requested amount');
         }
-        
+
         if ($interestRate < 0 || $interestRate > 100) {
             throw new LoanApplicationException('Interest rate must be between 0 and 100');
         }
-        
+
         $this->recordThat(new LoanApplicationApproved(
             applicationId: $this->applicationId,
             approvedAmount: $approvedAmount,
@@ -144,42 +144,42 @@ class LoanApplication extends AggregateRoot
             approvedBy: $approvedBy,
             approvedAt: new \DateTimeImmutable()
         ));
-        
+
         return $this;
     }
-    
+
     public function reject(array $reasons, string $rejectedBy): self
     {
         if ($this->status !== 'pending') {
             throw new LoanApplicationException('Can only reject pending applications');
         }
-        
+
         $this->recordThat(new LoanApplicationRejected(
             applicationId: $this->applicationId,
             reasons: $reasons,
             rejectedBy: $rejectedBy,
             rejectedAt: new \DateTimeImmutable()
         ));
-        
+
         return $this;
     }
-    
+
     public function withdraw(string $reason, string $withdrawnBy): self
     {
         if (!in_array($this->status, ['pending', 'approved'])) {
             throw new LoanApplicationException('Cannot withdraw application in current status');
         }
-        
+
         $this->recordThat(new LoanApplicationWithdrawn(
             applicationId: $this->applicationId,
             reason: $reason,
             withdrawnBy: $withdrawnBy,
             withdrawnAt: new \DateTimeImmutable()
         ));
-        
+
         return $this;
     }
-    
+
     // Event handlers
     protected function applyLoanApplicationSubmitted(LoanApplicationSubmitted $event): void
     {
@@ -190,76 +190,76 @@ class LoanApplication extends AggregateRoot
         $this->purpose = $event->purpose;
         $this->status = 'pending';
     }
-    
+
     protected function applyLoanApplicationCreditCheckCompleted(LoanApplicationCreditCheckCompleted $event): void
     {
         $this->creditScore = new CreditScore($event->score, $event->bureau, $event->report);
     }
-    
+
     protected function applyLoanApplicationRiskAssessmentCompleted(LoanApplicationRiskAssessmentCompleted $event): void
     {
         $this->riskRating = new RiskRating($event->rating, $event->defaultProbability, $event->riskFactors);
     }
-    
+
     protected function applyLoanApplicationApproved(LoanApplicationApproved $event): void
     {
         $this->status = 'approved';
         $this->approvedAmount = $event->approvedAmount;
         $this->interestRate = $event->interestRate;
     }
-    
+
     protected function applyLoanApplicationRejected(LoanApplicationRejected $event): void
     {
         $this->status = 'rejected';
         $this->rejectionReasons = $event->reasons;
     }
-    
+
     protected function applyLoanApplicationWithdrawn(LoanApplicationWithdrawn $event): void
     {
         $this->status = 'withdrawn';
     }
-    
+
     // Getters
     public function getApplicationId(): string
     {
         return $this->applicationId;
     }
-    
+
     public function getBorrowerId(): string
     {
         return $this->borrowerId;
     }
-    
+
     public function getStatus(): string
     {
         return $this->status;
     }
-    
+
     public function getRequestedAmount(): string
     {
         return $this->requestedAmount;
     }
-    
+
     public function getApprovedAmount(): ?string
     {
         return $this->approvedAmount;
     }
-    
+
     public function getInterestRate(): ?float
     {
         return $this->interestRate;
     }
-    
+
     public function getCreditScore(): ?CreditScore
     {
         return $this->creditScore;
     }
-    
+
     public function getRiskRating(): ?RiskRating
     {
         return $this->riskRating;
     }
-    
+
     protected function getStoredEventRepository(): StoredEventRepository
     {
         return app(LendingEventRepository::class);

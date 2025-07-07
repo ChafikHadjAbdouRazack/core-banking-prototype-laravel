@@ -12,6 +12,7 @@ use Laravel\Jetstream\Contracts\DeletesUsers;
 class DeleteUser implements DeletesUsers
 {
     use HandlesNestedTransactions;
+
     /**
      * Create a new action instance.
      */

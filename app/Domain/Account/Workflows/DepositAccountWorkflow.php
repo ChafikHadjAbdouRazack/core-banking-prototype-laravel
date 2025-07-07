@@ -15,7 +15,7 @@ class DepositAccountWorkflow extends Workflow
      *
      * @return \Generator
      */
-    public function execute( AccountUuid $uuid, Money $money ): \Generator
+    public function execute(AccountUuid $uuid, Money $money): \Generator
     {
         return yield ActivityStub::make(
             DepositAccountActivity::class,

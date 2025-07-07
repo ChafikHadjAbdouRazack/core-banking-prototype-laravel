@@ -23,11 +23,12 @@ class CustodianController extends Controller
 {
     public function __construct(
         private readonly CustodianRegistry $registry
-    ) {}
+    ) {
+    }
 
     /**
      * List available custodians
-     * 
+     *
      * @OA\Get(
      *     path="/api/custodians",
      *     operationId="listCustodians",
@@ -56,13 +57,13 @@ class CustodianController extends Controller
      *         )
      *     )
      * )
-     * 
+     *
      * @return JsonResponse
      */
     public function index(): JsonResponse
     {
         $custodians = [];
-        
+
         foreach ($this->registry->all() as $name => $connector) {
             $custodians[] = [
                 'name' => $name,
@@ -71,17 +72,17 @@ class CustodianController extends Controller
                 'supported_assets' => $connector->getSupportedAssets(),
             ];
         }
-        
+
         return response()->json([
             'data' => $custodians,
-            'default' => $this->registry->has($this->registry->names()[0] ?? '') ? 
+            'default' => $this->registry->has($this->registry->names()[0] ?? '') ?
                 $this->registry->names()[0] : null,
         ]);
     }
 
     /**
      * Get custodian account information
-     * 
+     *
      * @OA\Get(
      *     path="/api/custodians/{custodian}/account-info",
      *     operationId="getCustodianAccountInfo",
@@ -125,7 +126,7 @@ class CustodianController extends Controller
      *         )
      *     )
      * )
-     * 
+     *
      * @param Request $request
      * @param string $custodian
      * @return JsonResponse
@@ -135,11 +136,11 @@ class CustodianController extends Controller
         $validated = $request->validate([
             'account_id' => 'required|string',
         ]);
-        
+
         try {
             $connector = $this->registry->get($custodian);
             $accountInfo = $connector->getAccountInfo($validated['account_id']);
-            
+
             return response()->json([
                 'data' => $accountInfo->toArray(),
             ]);
@@ -153,7 +154,7 @@ class CustodianController extends Controller
 
     /**
      * Get custodian account balance
-     * 
+     *
      * @OA\Get(
      *     path="/api/custodians/{custodian}/balance",
      *     operationId="getCustodianBalance",
@@ -200,7 +201,7 @@ class CustodianController extends Controller
      *         description="Invalid request or custodian error"
      *     )
      * )
-     * 
+     *
      * @param Request $request
      * @param string $custodian
      * @return JsonResponse
@@ -211,11 +212,11 @@ class CustodianController extends Controller
             'account_id' => 'required|string',
             'asset_code' => 'required|string|size:3',
         ]);
-        
+
         try {
             $connector = $this->registry->get($custodian);
             $balance = $connector->getBalance($validated['account_id'], $validated['asset_code']);
-            
+
             return response()->json([
                 'data' => [
                     'account_id' => $validated['account_id'],
@@ -234,7 +235,7 @@ class CustodianController extends Controller
 
     /**
      * Transfer funds between internal and custodian accounts
-     * 
+     *
      * @OA\Post(
      *     path="/api/custodians/{custodian}/transfer",
      *     operationId="custodianTransfer",
@@ -282,7 +283,7 @@ class CustodianController extends Controller
      *     ),
      *     security={{"bearerAuth":{}}}
      * )
-     * 
+     *
      * @param Request $request
      * @param string $custodian
      * @return JsonResponse
@@ -297,18 +298,18 @@ class CustodianController extends Controller
             'direction' => 'required|in:deposit,withdraw',
             'reference' => 'nullable|string|max:255',
         ]);
-        
+
         try {
             // Verify custodian exists and is available
             $connector = $this->registry->get($custodian);
-            
+
             // Validate custodian account
             if (!$connector->validateAccount($validated['custodian_account_id'])) {
                 return response()->json([
                     'error' => 'Invalid custodian account',
                 ], 400);
             }
-            
+
             // Start workflow
             $workflow = WorkflowStub::make(CustodianTransferWorkflow::class);
             $result = $workflow->start(
@@ -320,7 +321,7 @@ class CustodianController extends Controller
                 $validated['direction'],
                 $validated['reference'] ?? null
             );
-            
+
             // Handle both real and fake workflow responses
             $responseData = $result ?? [
                 'status' => 'completed',
@@ -329,12 +330,11 @@ class CustodianController extends Controller
                 'amount' => (int)($validated['amount'] * 100),
                 'asset_code' => $validated['asset_code'],
             ];
-            
+
             return response()->json([
                 'data' => $responseData,
                 'message' => "Transfer {$validated['direction']} initiated successfully",
             ]);
-            
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'Transfer failed',
@@ -345,7 +345,7 @@ class CustodianController extends Controller
 
     /**
      * Get transaction history from custodian
-     * 
+     *
      * @OA\Get(
      *     path="/api/custodians/{custodian}/transactions",
      *     operationId="getCustodianTransactionHistory",
@@ -410,7 +410,7 @@ class CustodianController extends Controller
      *         description="Invalid request or custodian error"
      *     )
      * )
-     * 
+     *
      * @param Request $request
      * @param string $custodian
      * @return JsonResponse
@@ -422,7 +422,7 @@ class CustodianController extends Controller
             'limit' => 'nullable|integer|min:1|max:1000',
             'offset' => 'nullable|integer|min:0',
         ]);
-        
+
         try {
             $connector = $this->registry->get($custodian);
             $history = $connector->getTransactionHistory(
@@ -430,7 +430,7 @@ class CustodianController extends Controller
                 (int)($validated['limit'] ?? 100),
                 (int)($validated['offset'] ?? 0)
             );
-            
+
             return response()->json([
                 'data' => $history,
                 'meta' => [
@@ -449,7 +449,7 @@ class CustodianController extends Controller
 
     /**
      * Get transaction status
-     * 
+     *
      * @OA\Get(
      *     path="/api/custodians/{custodian}/transactions/{transactionId}",
      *     operationId="getCustodianTransactionStatus",
@@ -491,7 +491,7 @@ class CustodianController extends Controller
      *         description="Invalid request or transaction not found"
      *     )
      * )
-     * 
+     *
      * @param string $custodian
      * @param string $transactionId
      * @return JsonResponse
@@ -501,7 +501,7 @@ class CustodianController extends Controller
         try {
             $connector = $this->registry->get($custodian);
             $receipt = $connector->getTransactionStatus($transactionId);
-            
+
             return response()->json([
                 'data' => $receipt->toArray(),
             ]);

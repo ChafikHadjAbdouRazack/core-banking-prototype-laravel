@@ -21,7 +21,8 @@ final readonly class BankWithdrawal extends DataObject implements DataObjectCont
         private ?string $iban = null,
         private ?string $swift = null,
         private array $metadata = []
-    ) {}
+    ) {
+    }
 
     public function getAccountUuid(): string
     {

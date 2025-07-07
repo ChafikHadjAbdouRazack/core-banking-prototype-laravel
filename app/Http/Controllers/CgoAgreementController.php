@@ -28,7 +28,7 @@ class CgoAgreementController extends Controller
             $investment = CgoInvestment::where('uuid', $investmentUuid)
                 ->where('user_id', Auth::id())
                 ->firstOrFail();
-            
+
             // Check if agreement already exists
             if ($investment->agreement_path && Storage::exists($investment->agreement_path)) {
                 // For JSON requests, return download URL
@@ -42,29 +42,28 @@ class CgoAgreementController extends Controller
                 // For regular requests, redirect to download
                 return redirect()->route('cgo.agreement.download', $investment->uuid);
             }
-            
+
             // Generate new agreement
             $path = $this->agreementService->generateAgreement($investment);
-            
+
             return response()->json([
                 'success' => true,
                 'message' => 'Agreement generated successfully',
                 'download_url' => route('cgo.agreement.download', $investment->uuid),
             ]);
-            
         } catch (\Exception $e) {
             Log::error('Failed to generate agreement', [
                 'investment_uuid' => $investmentUuid,
                 'error' => $e->getMessage(),
             ]);
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to generate agreement. Please try again later.',
             ], 500);
         }
     }
-    
+
     /**
      * Download investment agreement
      */
@@ -73,18 +72,18 @@ class CgoAgreementController extends Controller
         $investment = CgoInvestment::where('uuid', $investmentUuid)
             ->where('user_id', Auth::id())
             ->firstOrFail();
-        
+
         if (!$investment->agreement_path || !Storage::exists($investment->agreement_path)) {
             abort(404, 'Agreement not found');
         }
-        
+
         $filename = 'Investment_Agreement_' . $investment->uuid . '.pdf';
-        
+
         return Storage::download($investment->agreement_path, $filename, [
             'Content-Type' => 'application/pdf',
         ]);
     }
-    
+
     /**
      * Generate investment certificate
      */
@@ -94,7 +93,7 @@ class CgoAgreementController extends Controller
             $investment = CgoInvestment::where('uuid', $investmentUuid)
                 ->where('user_id', Auth::id())
                 ->firstOrFail();
-            
+
             // Check if investment is confirmed
             if ($investment->status !== 'confirmed') {
                 return response()->json([
@@ -102,34 +101,33 @@ class CgoAgreementController extends Controller
                     'message' => 'Certificate can only be generated for confirmed investments',
                 ], 400);
             }
-            
+
             // Check if certificate already exists
             if ($investment->certificate_path && Storage::exists($investment->certificate_path)) {
                 return $this->downloadCertificate($investmentUuid);
             }
-            
+
             // Generate new certificate
             $path = $this->agreementService->generateCertificate($investment);
-            
+
             return response()->json([
                 'success' => true,
                 'message' => 'Certificate generated successfully',
                 'download_url' => route('cgo.certificate.download', $investment->uuid),
             ]);
-            
         } catch (\Exception $e) {
             Log::error('Failed to generate certificate', [
                 'investment_uuid' => $investmentUuid,
                 'error' => $e->getMessage(),
             ]);
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to generate certificate. Please try again later.',
             ], 500);
         }
     }
-    
+
     /**
      * Download investment certificate
      */
@@ -138,18 +136,18 @@ class CgoAgreementController extends Controller
         $investment = CgoInvestment::where('uuid', $investmentUuid)
             ->where('user_id', Auth::id())
             ->firstOrFail();
-        
+
         if (!$investment->certificate_path || !Storage::exists($investment->certificate_path)) {
             abort(404, 'Certificate not found');
         }
-        
+
         $filename = 'Investment_Certificate_' . $investment->certificate_number . '.pdf';
-        
+
         return Storage::download($investment->certificate_path, $filename, [
             'Content-Type' => 'application/pdf',
         ]);
     }
-    
+
     /**
      * Preview agreement (admin only)
      */
@@ -159,19 +157,19 @@ class CgoAgreementController extends Controller
         if (!Auth::user()->hasRole('super_admin')) {
             abort(403);
         }
-        
+
         $investment = CgoInvestment::where('uuid', $investmentUuid)->firstOrFail();
-        
+
         if (!$investment->agreement_path || !Storage::exists($investment->agreement_path)) {
             abort(404, 'Agreement not found');
         }
-        
+
         return Response::make(Storage::get($investment->agreement_path), 200, [
             'Content-Type' => 'application/pdf',
             'Content-Disposition' => 'inline; filename="agreement_preview.pdf"',
         ]);
     }
-    
+
     /**
      * Mark agreement as signed
      */
@@ -180,11 +178,11 @@ class CgoAgreementController extends Controller
         $request->validate([
             'signature_data' => 'required|string', // Base64 encoded signature
         ]);
-        
+
         $investment = CgoInvestment::where('uuid', $investmentUuid)
             ->where('user_id', Auth::id())
             ->firstOrFail();
-        
+
         // Ensure agreement exists
         if (!$investment->agreement_generated_at) {
             return response()->json([
@@ -192,7 +190,7 @@ class CgoAgreementController extends Controller
                 'message' => 'Agreement must be generated first',
             ], 400);
         }
-        
+
         // Update investment
         $investment->update([
             'agreement_signed_at' => now(),
@@ -202,7 +200,7 @@ class CgoAgreementController extends Controller
                 'signed_user_agent' => $request->userAgent(),
             ]),
         ]);
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Agreement marked as signed',

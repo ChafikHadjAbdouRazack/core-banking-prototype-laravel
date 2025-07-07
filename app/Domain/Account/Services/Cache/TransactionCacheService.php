@@ -42,7 +42,7 @@ class TransactionCacheService
     public function getPaginated(string $accountUuid, int $page = 1, int $perPage = 15): LengthAwarePaginator
     {
         $cacheKey = $this->getCacheKey($accountUuid, "page_{$page}_per_{$perPage}");
-        
+
         return Cache::remember(
             $cacheKey,
             self::CACHE_TTL,
@@ -76,7 +76,7 @@ class TransactionCacheService
                 $transactions = Transaction::where('account_uuid', $accountUuid)
                     ->whereDate('created_at', $date)
                     ->get();
-                
+
                 return [
                     'date' => $date,
                     'total_deposits' => $transactions->where('type', 'deposit')->sum('amount'),
@@ -101,7 +101,7 @@ class TransactionCacheService
             "page_*",
             "daily_summary_*"
         ];
-        
+
         foreach ($patterns as $pattern) {
             // This is a simplified approach. In production, use Redis SCAN
             // or cache tags for better performance
@@ -120,7 +120,7 @@ class TransactionCacheService
             $transaction,
             self::CACHE_TTL
         );
-        
+
         // Invalidate account-related caches to force refresh
         $this->forget($transaction->account_uuid);
     }

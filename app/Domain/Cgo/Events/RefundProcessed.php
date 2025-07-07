@@ -16,5 +16,6 @@ class RefundProcessed extends ShouldBeStored
         public readonly string $status,
         public readonly array $processorResponse,
         public readonly array $metadata = []
-    ) {}
+    ) {
+    }
 }

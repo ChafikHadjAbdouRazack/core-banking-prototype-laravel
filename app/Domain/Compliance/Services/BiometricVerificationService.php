@@ -17,7 +17,7 @@ class BiometricVerificationService
         // - 3D depth
         // - Skin texture
         // - Light reflection patterns
-        
+
         // Simulated liveness check
         $checks = [
             'face_detected' => true,
@@ -30,15 +30,15 @@ class BiometricVerificationService
             'mask_detected' => false,
             'printed_image_detected' => false,
         ];
-        
+
         // Calculate confidence based on checks
         $passedChecks = array_filter($checks, fn($check) => $check === true);
         $failedChecks = array_filter($checks, fn($check) => $check === false);
-        
+
         // Ensure critical checks pass
         $criticalChecks = ['face_detected', 'screen_detected', 'printed_image_detected'];
         $criticalPassed = true;
-        
+
         foreach ($criticalChecks as $critical) {
             if (isset($checks[$critical])) {
                 if ($critical === 'face_detected' && !$checks[$critical]) {
@@ -49,9 +49,9 @@ class BiometricVerificationService
                 }
             }
         }
-        
+
         $confidence = $criticalPassed ? (count($passedChecks) / count($checks)) * 100 : 0;
-        
+
         return [
             'is_live' => $confidence >= 80,
             'confidence' => round($confidence, 2),
@@ -59,7 +59,7 @@ class BiometricVerificationService
             'recommendation' => $this->getLivenessRecommendation($confidence),
         ];
     }
-    
+
     /**
      * Match faces between two images
      */
@@ -67,7 +67,7 @@ class BiometricVerificationService
     {
         // In production, this would use facial recognition algorithms
         // to compare facial features and calculate similarity
-        
+
         // Simulated face matching
         $result = [
             'faces_detected' => [
@@ -83,7 +83,7 @@ class BiometricVerificationService
             'is_match' => true,
             'confidence_level' => 'high',
         ];
-        
+
         // Add detailed comparison
         $result['feature_comparison'] = [
             'face_shape' => 94.2,
@@ -92,13 +92,13 @@ class BiometricVerificationService
             'mouth_shape' => 90.5,
             'overall_geometry' => 92.5,
         ];
-        
+
         $result['is_match'] = $result['similarity'] >= $result['match_threshold'];
         $result['confidence_level'] = $this->getConfidenceLevel($result['similarity']);
-        
+
         return $result;
     }
-    
+
     /**
      * Perform age estimation
      */
@@ -106,7 +106,7 @@ class BiometricVerificationService
     {
         // In production, use age estimation models
         // Simulated age estimation
-        
+
         return [
             'estimated_age' => rand(25, 45),
             'age_range' => [
@@ -116,7 +116,7 @@ class BiometricVerificationService
             'confidence' => rand(80, 95) / 100,
         ];
     }
-    
+
     /**
      * Detect facial attributes
      */
@@ -124,7 +124,7 @@ class BiometricVerificationService
     {
         // In production, detect various facial attributes
         // Simulated attribute detection
-        
+
         return [
             'gender' => [
                 'value' => 'male',
@@ -153,7 +153,7 @@ class BiometricVerificationService
             ],
         ];
     }
-    
+
     /**
      * Create face template for future matching
      */
@@ -161,7 +161,7 @@ class BiometricVerificationService
     {
         // In production, create biometric template
         // Simulated template creation
-        
+
         return [
             'template_id' => 'face_' . uniqid(),
             'created_at' => now()->toIso8601String(),
@@ -171,7 +171,7 @@ class BiometricVerificationService
             'quality_score' => rand(85, 98) / 100,
         ];
     }
-    
+
     /**
      * Compare against face template
      */
@@ -179,7 +179,7 @@ class BiometricVerificationService
     {
         // In production, compare against stored template
         // Simulated comparison
-        
+
         return [
             'template_id' => $templateId,
             'similarity' => rand(80, 98) / 100,
@@ -187,7 +187,7 @@ class BiometricVerificationService
             'comparison_time' => rand(50, 150), // milliseconds
         ];
     }
-    
+
     /**
      * Detect presentation attacks (spoofing)
      */
@@ -198,7 +198,7 @@ class BiometricVerificationService
         // - Digital screens
         // - 3D masks
         // - Video replays
-        
+
         $spoofingChecks = [
             'texture_analysis' => [
                 'score' => 0.92,
@@ -217,13 +217,13 @@ class BiometricVerificationService
                 'is_real' => true,
             ],
         ];
-        
+
         $overallScore = array_reduce(
             $spoofingChecks,
             fn($carry, $check) => $carry + $check['score'],
             0
         ) / count($spoofingChecks);
-        
+
         return [
             'is_genuine' => $overallScore >= 0.80,
             'confidence' => round($overallScore, 2),
@@ -231,7 +231,7 @@ class BiometricVerificationService
             'checks' => $spoofingChecks,
         ];
     }
-    
+
     /**
      * Get liveness recommendation based on confidence
      */
@@ -247,7 +247,7 @@ class BiometricVerificationService
             return 'Failed - Possible spoofing attempt detected';
         }
     }
-    
+
     /**
      * Get confidence level description
      */
@@ -265,7 +265,7 @@ class BiometricVerificationService
             return 'very_low';
         }
     }
-    
+
     /**
      * Validate image quality for biometric processing
      */

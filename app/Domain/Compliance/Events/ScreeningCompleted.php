@@ -9,9 +9,12 @@ use Illuminate\Queue\SerializesModels;
 
 class ScreeningCompleted
 {
-    use Dispatchable, InteractsWithSockets, SerializesModels;
-    
+    use Dispatchable;
+    use InteractsWithSockets;
+    use SerializesModels;
+
     public function __construct(
         public readonly AmlScreening $screening
-    ) {}
+    ) {
+    }
 }

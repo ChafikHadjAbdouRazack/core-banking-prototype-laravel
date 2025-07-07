@@ -29,7 +29,7 @@ class AccountBalancesRelationManager extends RelationManager
                     ->searchable()
                     ->preload()
                     ->required(),
-                
+
                 Forms\Components\TextInput::make('balance')
                     ->label('Balance')
                     ->numeric()
@@ -50,12 +50,12 @@ class AccountBalancesRelationManager extends RelationManager
                     ->copyMessage('Account UUID copied')
                     ->limit(20)
                     ->tooltip(fn ($record) => $record->account->uuid),
-                
+
                 Tables\Columns\TextColumn::make('account.user.name')
                     ->label('Account Owner')
                     ->searchable()
                     ->placeholder('—'),
-                
+
                 Tables\Columns\TextColumn::make('balance')
                     ->label('Balance')
                     ->formatStateUsing(function ($state, $record) {
@@ -65,7 +65,7 @@ class AccountBalancesRelationManager extends RelationManager
                     })
                     ->sortable()
                     ->alignEnd(),
-                
+
                 Tables\Columns\TextColumn::make('updated_at')
                     ->label('Last Updated')
                     ->dateTime()
@@ -76,7 +76,7 @@ class AccountBalancesRelationManager extends RelationManager
                 Tables\Filters\Filter::make('positive_balance')
                     ->label('Positive Balance Only')
                     ->query(fn (Builder $query): Builder => $query->where('balance', '>', 0)),
-                
+
                 Tables\Filters\Filter::make('zero_balance')
                     ->label('Zero Balance Only')
                     ->query(fn (Builder $query): Builder => $query->where('balance', '=', 0)),

@@ -21,11 +21,12 @@ class CustodianWebhookController extends Controller
 {
     public function __construct(
         private readonly WebhookVerificationService $verificationService
-    ) {}
+    ) {
+    }
 
     /**
      * Handle incoming webhook from Paysera.
-     * 
+     *
      * @OA\Post(
      *     path="/api/webhooks/custodian/paysera",
      *     operationId="payseraWebhook",
@@ -77,7 +78,7 @@ class CustodianWebhookController extends Controller
 
     /**
      * Handle incoming webhook from Santander.
-     * 
+     *
      * @OA\Post(
      *     path="/api/webhooks/custodian/santander",
      *     operationId="santanderWebhook",
@@ -121,7 +122,7 @@ class CustodianWebhookController extends Controller
 
     /**
      * Handle incoming webhook from Mock Bank.
-     * 
+     *
      * @OA\Post(
      *     path="/api/webhooks/custodian/mock",
      *     operationId="mockBankWebhook",
@@ -169,7 +170,7 @@ class CustodianWebhookController extends Controller
     {
         $payload = $request->getContent();
         $headers = $request->headers->all();
-        
+
         // Extract signature based on custodian
         $signature = match ($custodianName) {
             'paysera' => $request->header('X-Paysera-Signature', ''),
@@ -177,7 +178,7 @@ class CustodianWebhookController extends Controller
             'mock' => 'mock-signature',
             default => '',
         };
-        
+
         // Convert header arrays to single values for webhook verification
         $cleanHeaders = [];
         foreach ($headers as $key => $value) {
@@ -190,19 +191,19 @@ class CustodianWebhookController extends Controller
                 'custodian' => $custodianName,
                 'signature' => $signature,
             ]);
-            
+
             return response()->json(['error' => 'Invalid signature'], 401);
         }
 
         // Parse the payload
         $data = json_decode($payload, true);
-        
+
         if (json_last_error() !== JSON_ERROR_NONE) {
             Log::error('Invalid webhook payload', [
                 'custodian' => $custodianName,
                 'error' => json_last_error_msg(),
             ]);
-            
+
             return response()->json(['error' => 'Invalid payload'], 400);
         }
 
@@ -239,11 +240,11 @@ class CustodianWebhookController extends Controller
                     'custodian' => $custodianName,
                     'event_id' => $eventId,
                 ]);
-                
+
                 // Return success to prevent webhook provider from retrying
                 return response()->json(['status' => 'accepted', 'duplicate' => true], 202);
             }
-            
+
             throw $e;
         } catch (\Exception $e) {
             Log::error('Failed to store webhook', [

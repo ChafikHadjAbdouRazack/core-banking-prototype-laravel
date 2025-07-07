@@ -25,7 +25,8 @@ class AccountController extends Controller
     public function __construct(
         private readonly AccountService $accountService,
         private readonly AccountCacheService $accountCache
-    ) {}
+    ) {
+    }
 
     /**
      * @OA\Get(
@@ -48,12 +49,12 @@ class AccountController extends Controller
     {
         // Get the authenticated user
         $user = $request->user();
-        
+
         // Retrieve accounts for the authenticated user
         $accounts = Account::where('user_uuid', $user->uuid)
             ->orderBy('created_at', 'desc')
             ->get();
-        
+
         return response()->json([
             'data' => $accounts->map(function ($account) {
                 return [
@@ -111,7 +112,7 @@ class AccountController extends Controller
 
         // Generate a UUID for the new account
         $accountUuid = Str::uuid()->toString();
-        
+
         // Create the Account data object with the UUID
         $accountData = new \App\Domain\Account\DataObjects\Account(
             uuid: $accountUuid,
@@ -133,7 +134,7 @@ class AccountController extends Controller
 
         // Wait a moment for the projector to create the account record
         $account = Account::where('uuid', $accountUuid)->first();
-        
+
         // In test mode, the account might not exist yet, so create it
         if (!$account) {
             $account = Account::create([
@@ -190,7 +191,7 @@ class AccountController extends Controller
     {
         // Try to get from cache first
         $account = $this->accountCache->get($uuid);
-        
+
         if (!$account) {
             abort(404, 'Account not found');
         }
@@ -327,7 +328,7 @@ class AccountController extends Controller
 
         $workflow = WorkflowStub::make(FreezeAccountWorkflow::class);
         $workflow->start(
-            $accountUuid, 
+            $accountUuid,
             $validated['reason'],
             $validated['authorized_by'] ?? null
         );

@@ -14,5 +14,6 @@ class ReserveWithdrawn extends ShouldBeStored
         public readonly string $destinationAddress,
         public readonly string $reason,
         public readonly array $metadata = []
-    ) {}
+    ) {
+    }
 }

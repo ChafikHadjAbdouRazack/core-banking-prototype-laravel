@@ -19,12 +19,12 @@ use Exception;
 class PaymentGatewayService
 {
     protected PaymentService $paymentService;
-    
+
     public function __construct(PaymentService $paymentService)
     {
         $this->paymentService = $paymentService;
     }
-    
+
     /**
      * Create a payment intent for deposit
      */
@@ -35,7 +35,7 @@ class PaymentGatewayService
             if (!$user->hasStripeId()) {
                 $user->createAsStripeCustomer();
             }
-            
+
             // Create payment intent
             $intent = $user->pay($amountInCents, [
                 'currency' => strtolower($currency),
@@ -47,7 +47,7 @@ class PaymentGatewayService
                 'description' => "Deposit to FinAegis account",
                 'setup_future_usage' => 'on_session',
             ]);
-            
+
             return $intent->asStripePaymentIntent();
         } catch (Exception $e) {
             Log::error('Failed to create deposit payment intent', [
@@ -58,7 +58,7 @@ class PaymentGatewayService
             throw $e;
         }
     }
-    
+
     /**
      * Process a successful deposit
      */
@@ -67,19 +67,19 @@ class PaymentGatewayService
         // Retrieve payment intent from Stripe
         $stripe = new \Stripe\StripeClient(config('cashier.secret'));
         $paymentIntent = $stripe->paymentIntents->retrieve($paymentIntentId);
-        
+
         if ($paymentIntent->status !== 'succeeded') {
             throw new Exception('Payment intent not succeeded');
         }
-        
+
         // Find user and account
         $userId = $paymentIntent->metadata['user_id'] ?? null;
         $accountUuid = $paymentIntent->metadata['account_uuid'] ?? null;
-        
+
         if (!$userId || !$accountUuid) {
             throw new Exception('Invalid payment metadata');
         }
-        
+
         // Use PaymentService to process deposit through event sourcing
         $reference = 'DEP-' . strtoupper(uniqid());
         $this->paymentService->processStripeDeposit([
@@ -95,7 +95,7 @@ class PaymentGatewayService
                 'processor' => 'stripe',
             ],
         ]);
-        
+
         return [
             'account_uuid' => $accountUuid,
             'amount' => $paymentIntent->amount,
@@ -103,13 +103,13 @@ class PaymentGatewayService
             'reference' => 'DEP-' . strtoupper(uniqid()),
         ];
     }
-    
+
     /**
      * Create a bank withdrawal request
      */
     public function createWithdrawalRequest(
-        Account $account, 
-        int $amountInCents, 
+        Account $account,
+        int $amountInCents,
         string $currency,
         array $bankDetails
     ): array {
@@ -118,9 +118,9 @@ class PaymentGatewayService
         if ($balance < $amountInCents) {
             throw new Exception('Insufficient balance');
         }
-        
+
         $reference = 'WTH-' . strtoupper(uniqid());
-        
+
         // Use PaymentService to process withdrawal through event sourcing
         $result = $this->paymentService->processBankWithdrawal([
             'account_uuid' => $account->uuid,
@@ -138,7 +138,7 @@ class PaymentGatewayService
                 'initiated_at' => now()->toIso8601String(),
             ],
         ]);
-        
+
         return [
             'account_uuid' => $account->uuid,
             'amount' => $amountInCents,
@@ -146,7 +146,7 @@ class PaymentGatewayService
             'reference' => $reference,
         ];
     }
-    
+
     /**
      * Get saved payment methods for a user
      */
@@ -155,10 +155,10 @@ class PaymentGatewayService
         if (!$user->hasStripeId()) {
             return [];
         }
-        
+
         try {
             $methods = $user->paymentMethods();
-            
+
             return $methods->map(function ($method) {
                 return [
                     'id' => $method->id,
@@ -177,7 +177,7 @@ class PaymentGatewayService
             return [];
         }
     }
-    
+
     /**
      * Add a new payment method
      */
@@ -187,7 +187,7 @@ class PaymentGatewayService
             if (!$user->hasStripeId()) {
                 $user->createAsStripeCustomer();
             }
-            
+
             return $user->addPaymentMethod($paymentMethodId);
         } catch (Exception $e) {
             Log::error('Failed to add payment method', [
@@ -198,7 +198,7 @@ class PaymentGatewayService
             throw $e;
         }
     }
-    
+
     /**
      * Remove a payment method
      */

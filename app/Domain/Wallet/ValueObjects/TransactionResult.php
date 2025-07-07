@@ -12,8 +12,9 @@ class TransactionResult
         public readonly ?string $effectiveGasPrice = null,
         public readonly ?array $logs = null,
         public readonly array $metadata = []
-    ) {}
-    
+    ) {
+    }
+
     public function toArray(): array
     {
         return array_filter([
@@ -26,17 +27,17 @@ class TransactionResult
             'metadata' => $this->metadata,
         ], fn($value) => $value !== null);
     }
-    
+
     public function isSuccess(): bool
     {
         return $this->status === 'success' || $this->status === '0x1';
     }
-    
+
     public function isPending(): bool
     {
         return $this->status === 'pending';
     }
-    
+
     public function isFailed(): bool
     {
         return $this->status === 'failed' || $this->status === '0x0';

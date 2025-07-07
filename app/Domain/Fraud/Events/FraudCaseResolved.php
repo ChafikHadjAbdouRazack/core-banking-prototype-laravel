@@ -9,7 +9,9 @@ use Illuminate\Queue\SerializesModels;
 
 class FraudCaseResolved
 {
-    use Dispatchable, InteractsWithSockets, SerializesModels;
+    use Dispatchable;
+    use InteractsWithSockets;
+    use SerializesModels;
 
     public FraudCase $fraudCase;
 

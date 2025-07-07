@@ -15,7 +15,7 @@ class TransactionResource extends JsonResource
     public function toArray(Request $request): array
     {
         $metadata = json_decode($this->metadata, true) ?? [];
-        
+
         return [
             'id' => $this->id,
             'chain' => $this->chain,

@@ -28,7 +28,7 @@ class TransactionReversalActivity extends Activity
         TransactionAggregate $transaction
     ): array {
         $aggregate = $transaction->retrieve($accountUuid->getUuid());
-        
+
         // Reverse the transaction by doing the opposite operation
         if ($transactionType === 'debit') {
             // Original was debit, so we credit to reverse
@@ -39,12 +39,12 @@ class TransactionReversalActivity extends Activity
         } else {
             throw new \InvalidArgumentException("Invalid transaction type: {$transactionType}");
         }
-        
+
         $aggregate->persist();
-        
+
         // Log the reversal for audit purposes
         $this->logReversal($accountUuid, $originalAmount, $transactionType, $reversalReason, $authorizedBy);
-        
+
         return [
             'account_uuid' => $accountUuid->getUuid(),
             'reversed_amount' => $originalAmount->getAmount(),
@@ -54,7 +54,7 @@ class TransactionReversalActivity extends Activity
             'reversed_at' => now()->toISOString(),
         ];
     }
-    
+
     /**
      * @param AccountUuid $accountUuid
      * @param Money $amount

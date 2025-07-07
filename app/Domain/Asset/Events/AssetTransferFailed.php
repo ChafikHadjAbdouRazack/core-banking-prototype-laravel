@@ -21,8 +21,9 @@ class AssetTransferFailed extends ShouldBeStored
         public readonly Hash $hash,
         public readonly ?string $transferId = null,
         public readonly ?array $metadata = null
-    ) {}
-    
+    ) {
+    }
+
     /**
      * Get the failure reason
      */
@@ -30,7 +31,7 @@ class AssetTransferFailed extends ShouldBeStored
     {
         return $this->reason;
     }
-    
+
     /**
      * Check if failure was due to insufficient balance
      */
@@ -38,13 +39,13 @@ class AssetTransferFailed extends ShouldBeStored
     {
         return str_contains(strtolower($this->reason), 'insufficient');
     }
-    
+
     /**
      * Check if failure was due to exchange rate issues
      */
     public function isExchangeRateFailure(): bool
     {
-        return str_contains(strtolower($this->reason), 'exchange') || 
+        return str_contains(strtolower($this->reason), 'exchange') ||
                str_contains(strtolower($this->reason), 'rate');
     }
 }

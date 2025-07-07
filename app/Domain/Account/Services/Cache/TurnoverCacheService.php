@@ -62,7 +62,7 @@ class TurnoverCacheService
             self::CACHE_TTL,
             function () use ($accountUuid) {
                 $turnovers = $this->getLastMonths($accountUuid, 12);
-                
+
                 return [
                     'total_debit' => $turnovers->sum('debit'),
                     'total_credit' => $turnovers->sum('credit'),

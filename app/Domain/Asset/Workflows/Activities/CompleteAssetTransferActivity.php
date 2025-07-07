@@ -38,7 +38,7 @@ class CompleteAssetTransferActivity extends Activity
                 ]
             )
             ->persist();
-        
+
         return true;
     }
 }

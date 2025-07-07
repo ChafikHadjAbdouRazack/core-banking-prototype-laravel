@@ -20,7 +20,8 @@ class ExternalExchangeController extends Controller
     public function __construct(
         private readonly ExternalExchangeConnectorRegistry $connectorRegistry,
         private readonly ExternalLiquidityService $liquidityService
-    ) {}
+    ) {
+    }
 
     /**
      * @OA\Get(
@@ -83,7 +84,7 @@ class ExternalExchangeController extends Controller
     public function ticker(string $base, string $quote): JsonResponse
     {
         $tickers = [];
-        
+
         foreach ($this->connectorRegistry->available() as $name => $connector) {
             try {
                 $ticker = $connector->getTicker($base, $quote);
@@ -174,7 +175,7 @@ class ExternalExchangeController extends Controller
     public function arbitrage(string $base, string $quote): JsonResponse
     {
         $this->middleware('auth:sanctum');
-        
+
         $opportunities = $this->liquidityService->findArbitrageOpportunities($base, $quote);
 
         return response()->json([

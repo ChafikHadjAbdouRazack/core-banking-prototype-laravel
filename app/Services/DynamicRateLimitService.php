@@ -45,19 +45,19 @@ class DynamicRateLimitService
     public function getDynamicRateLimit(string $rateLimitType, ?int $userId = null): array
     {
         $baseConfig = $this->getBaseRateLimit($rateLimitType);
-        
+
         // Apply system load adjustment
         $loadMultiplier = $this->getLoadMultiplier();
-        
+
         // Apply user trust level adjustment
         $trustMultiplier = $this->getUserTrustMultiplier($userId);
-        
+
         // Apply time-of-day adjustment
         $timeMultiplier = $this->getTimeOfDayMultiplier();
-        
+
         // Calculate final multiplier
         $finalMultiplier = $loadMultiplier * $trustMultiplier * $timeMultiplier;
-        
+
         // Apply multiplier to limits
         $adjustedConfig = $baseConfig;
         $adjustedConfig['limit'] = (int)ceil($baseConfig['limit'] * $finalMultiplier);
@@ -90,13 +90,13 @@ class DynamicRateLimitService
     private function getLoadMultiplier(): float
     {
         $systemLoad = $this->getCurrentSystemLoad();
-        
+
         foreach (self::LOAD_THRESHOLDS as $level => $threshold) {
             if ($systemLoad <= $threshold) {
                 return self::LOAD_MULTIPLIERS[$level];
             }
         }
-        
+
         return self::LOAD_MULTIPLIERS['critical'];
     }
 
@@ -106,23 +106,23 @@ class DynamicRateLimitService
     private function getCurrentSystemLoad(): float
     {
         $cacheKey = 'system_load:current';
-        
+
         return Cache::remember($cacheKey, 30, function () {
             // Combine multiple load indicators
             $cpuLoad = $this->getCpuLoad();
             $memoryLoad = $this->getMemoryLoad();
             $redisLoad = $this->getRedisLoad();
             $databaseLoad = $this->getDatabaseLoad();
-            
+
             // Weighted average of different load types
             $systemLoad = ($cpuLoad * 0.3) + ($memoryLoad * 0.2) + ($redisLoad * 0.25) + ($databaseLoad * 0.25);
-            
+
             // Cache system load metrics for monitoring
             Cache::put('system_metrics:cpu_load', $cpuLoad, 300);
             Cache::put('system_metrics:memory_load', $memoryLoad, 300);
             Cache::put('system_metrics:redis_load', $redisLoad, 300);
             Cache::put('system_metrics:database_load', $databaseLoad, 300);
-            
+
             return min(1.5, $systemLoad); // Cap at 150%
         });
     }
@@ -137,7 +137,7 @@ class DynamicRateLimitService
             $cpuCount = $this->getCpuCount();
             return $cpuCount > 0 ? $load[0] / $cpuCount : 0.5;
         }
-        
+
         return 0.5; // Default moderate load
     }
 
@@ -147,11 +147,11 @@ class DynamicRateLimitService
     private function getMemoryLoad(): float
     {
         $memoryInfo = $this->getMemoryInfo();
-        
+
         if ($memoryInfo['total'] > 0) {
             return $memoryInfo['used'] / $memoryInfo['total'];
         }
-        
+
         return 0.5; // Default moderate load
     }
 
@@ -164,15 +164,15 @@ class DynamicRateLimitService
             $info = Redis::info('memory');
             $usedMemory = $info['used_memory'] ?? 0;
             $maxMemory = $info['maxmemory'] ?? 0;
-            
+
             if ($maxMemory > 0) {
                 return $usedMemory / $maxMemory;
             }
-            
+
             // Fallback: check connected clients
             $clientInfo = Redis::info('clients');
             $connectedClients = $clientInfo['connected_clients'] ?? 1;
-            
+
             // Assume high load if many clients connected
             return min(1.0, $connectedClients / 100);
         } catch (\Exception $e) {
@@ -190,7 +190,7 @@ class DynamicRateLimitService
             // Count active connections (MySQL specific)
             $result = \DB::select("SHOW STATUS LIKE 'Threads_connected'");
             $connections = $result[0]->Value ?? 10;
-            
+
             // Assume high load with many connections
             return min(1.0, $connections / 50);
         } catch (\Exception $e) {
@@ -209,7 +209,7 @@ class DynamicRateLimitService
         }
 
         $cacheKey = "user_trust_level:{$userId}";
-        
+
         return Cache::remember($cacheKey, 3600, function () use ($userId) {
             $trustLevel = $this->calculateUserTrustLevel($userId);
             return self::TRUST_MULTIPLIERS[$trustLevel] ?? self::TRUST_MULTIPLIERS['basic'];
@@ -268,17 +268,17 @@ class DynamicRateLimitService
     private function getTimeOfDayMultiplier(): float
     {
         $hour = (int)now()->format('H');
-        
+
         // Business hours (9 AM - 5 PM): higher limits
         if ($hour >= 9 && $hour <= 17) {
             return 1.2;
         }
-        
+
         // Evening hours (6 PM - 10 PM): normal limits
         if ($hour >= 18 && $hour <= 22) {
             return 1.0;
         }
-        
+
         // Night/early morning (11 PM - 8 AM): lower limits
         return 0.8;
     }

@@ -30,27 +30,26 @@ class RebalancePoolsCommand extends Command
     public function handle(PoolRebalancingService $rebalancingService): int
     {
         $this->info('Starting pool rebalancing check...');
-        
+
         $isDryRun = $this->option('dry-run');
         $poolId = $this->option('pool');
-        
+
         if ($isDryRun) {
             $this->warn('DRY RUN MODE - No rebalancing will be executed');
         }
-        
+
         try {
             if ($poolId) {
                 // Rebalance specific pool
                 $pool = \App\Domain\Exchange\Projections\LiquidityPool::where('pool_id', $poolId)
                     ->firstOrFail();
-                
+
                 $result = $rebalancingService->checkAndRebalancePool($pool);
                 $this->displayRebalancingResult($pool, $result);
-                
             } else {
                 // Check all pools
                 $results = $rebalancingService->rebalanceAllPools();
-                
+
                 if (empty($results)) {
                     $this->info('No pools require rebalancing at this time.');
                 } else {
@@ -63,22 +62,21 @@ class RebalancePoolsCommand extends Command
                     }
                 }
             }
-            
+
             return Command::SUCCESS;
-            
         } catch (\Exception $e) {
             $this->error('Failed to rebalance pools: ' . $e->getMessage());
             return Command::FAILURE;
         }
     }
-    
+
     /**
      * Display rebalancing result for a pool
      */
     private function displayRebalancingResult($pool, array $result): void
     {
         $this->info("\nPool: {$pool->base_currency}/{$pool->quote_currency}");
-        
+
         if (!$result['needs_rebalancing']) {
             $this->info('Status: No rebalancing needed');
             if (isset($result['reason'])) {
@@ -86,9 +84,9 @@ class RebalancePoolsCommand extends Command
             }
             return;
         }
-        
+
         $this->warn('Status: Rebalancing needed');
-        
+
         if (isset($result['analysis'])) {
             $analysis = $result['analysis'];
             $this->table(
@@ -103,12 +101,12 @@ class RebalancePoolsCommand extends Command
                 ]
             );
         }
-        
+
         if (isset($result['strategy'])) {
             $this->info('Strategy: ' . $result['strategy']['type']);
             $this->info('Max Slippage: ' . ($result['strategy']['max_slippage'] * 100) . '%');
         }
-        
+
         if (isset($result['result'])) {
             $execResult = $result['result'];
             if ($execResult['status'] === 'success') {

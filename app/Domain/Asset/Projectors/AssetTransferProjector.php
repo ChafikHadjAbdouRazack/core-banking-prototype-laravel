@@ -41,7 +41,7 @@ class AssetTransferProjector extends Projector
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
-            
+
             Log::info('Asset transfer initiated', [
                 'from_account' => $event->fromAccountUuid->toString(),
                 'to_account' => $event->toAccountUuid->toString(),
@@ -51,7 +51,6 @@ class AssetTransferProjector extends Projector
                 'to_amount' => $event->getToAmount(),
                 'exchange_rate' => $event->exchangeRate,
             ]);
-            
         } catch (\Exception $e) {
             Log::error('Error processing asset transfer initiation', [
                 'from_account' => $event->fromAccountUuid->toString(),
@@ -60,11 +59,11 @@ class AssetTransferProjector extends Projector
                 'to_asset' => $event->toAssetCode,
                 'error' => $e->getMessage(),
             ]);
-            
+
             throw $e;
         }
     }
-    
+
     /**
      * Handle asset transfer completed event
      */
@@ -74,7 +73,7 @@ class AssetTransferProjector extends Projector
             // Find accounts
             $fromAccount = Account::where('uuid', $event->fromAccountUuid->toString())->first();
             $toAccount = Account::where('uuid', $event->toAccountUuid->toString())->first();
-            
+
             if (!$fromAccount || !$toAccount) {
                 Log::error('Account not found for asset transfer completion', [
                     'from_account' => $event->fromAccountUuid->toString(),
@@ -82,7 +81,7 @@ class AssetTransferProjector extends Projector
                 ]);
                 return;
             }
-            
+
             // Debit from source account balance
             $fromBalance = AccountBalance::firstOrCreate(
                 [
@@ -91,7 +90,7 @@ class AssetTransferProjector extends Projector
                 ],
                 ['balance' => 0]
             );
-            
+
             if (!$fromBalance->hasSufficientBalance($event->fromAmount->getAmount())) {
                 Log::error('Insufficient balance for asset transfer', [
                     'from_account' => $event->fromAccountUuid->toString(),
@@ -101,9 +100,9 @@ class AssetTransferProjector extends Projector
                 ]);
                 return;
             }
-            
+
             $fromBalance->debit($event->fromAmount->getAmount());
-            
+
             // Credit to destination account balance
             $toBalance = AccountBalance::firstOrCreate(
                 [
@@ -112,9 +111,9 @@ class AssetTransferProjector extends Projector
                 ],
                 ['balance' => 0]
             );
-            
+
             $toBalance->credit($event->toAmount->getAmount());
-            
+
             // Update transfer record status
             $transfer = Transfer::where('hash', $event->hash->getHash())->first();
             if ($transfer) {
@@ -125,7 +124,7 @@ class AssetTransferProjector extends Projector
                     ])
                 ]);
             }
-            
+
             Log::info('Asset transfer completed successfully', [
                 'from_account' => $event->fromAccountUuid->toString(),
                 'to_account' => $event->toAccountUuid->toString(),
@@ -136,7 +135,6 @@ class AssetTransferProjector extends Projector
                 'from_new_balance' => $fromBalance->balance,
                 'to_new_balance' => $toBalance->balance,
             ]);
-            
         } catch (\Exception $e) {
             Log::error('Error processing asset transfer completion', [
                 'from_account' => $event->fromAccountUuid->toString(),
@@ -145,11 +143,11 @@ class AssetTransferProjector extends Projector
                 'to_asset' => $event->toAssetCode,
                 'error' => $e->getMessage(),
             ]);
-            
+
             throw $e;
         }
     }
-    
+
     /**
      * Handle asset transfer failed event
      */
@@ -167,7 +165,7 @@ class AssetTransferProjector extends Projector
                     ])
                 ]);
             }
-            
+
             Log::warning('Asset transfer failed', [
                 'from_account' => $event->fromAccountUuid->toString(),
                 'to_account' => $event->toAccountUuid->toString(),
@@ -175,7 +173,6 @@ class AssetTransferProjector extends Projector
                 'to_asset' => $event->toAssetCode,
                 'reason' => $event->reason,
             ]);
-            
         } catch (\Exception $e) {
             Log::error('Error processing asset transfer failure', [
                 'from_account' => $event->fromAccountUuid->toString(),
@@ -183,7 +180,7 @@ class AssetTransferProjector extends Projector
                 'reason' => $event->reason,
                 'error' => $e->getMessage(),
             ]);
-            
+
             throw $e;
         }
     }

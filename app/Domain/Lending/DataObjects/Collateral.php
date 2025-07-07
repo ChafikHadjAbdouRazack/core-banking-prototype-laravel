@@ -20,7 +20,8 @@ class Collateral
         public readonly ?Carbon $verifiedAt,
         public readonly ?string $verifiedBy,
         public readonly array $metadata = []
-    ) {}
+    ) {
+    }
 
     public static function fromArray(array $data): self
     {
@@ -60,11 +61,11 @@ class Collateral
     {
         $loanValue = (float) $loanAmount;
         $collateralValue = (float) $this->estimatedValue;
-        
+
         if ($collateralValue <= 0) {
             return 1.0; // Maximum LTV if no collateral value
         }
-        
+
         return $loanValue / $collateralValue;
     }
 

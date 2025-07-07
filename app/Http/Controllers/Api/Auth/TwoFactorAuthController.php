@@ -40,9 +40,9 @@ class TwoFactorAuthController extends Controller
     public function enable(Request $request, EnableTwoFactorAuthentication $enable)
     {
         $enable($request->user());
-        
+
         $user = $request->user()->fresh();
-        
+
         return response()->json([
             'message' => 'Two-factor authentication enabled successfully.',
             'secret' => decrypt($user->two_factor_secret),
@@ -84,20 +84,22 @@ class TwoFactorAuthController extends Controller
     public function confirm(Request $request, TwoFactorAuthenticationProvider $provider)
     {
         $request->validate(['code' => 'required|string']);
-        
+
         $user = $request->user();
-        
-        if (!$user->two_factor_secret ||
-            !$provider->verify(decrypt($user->two_factor_secret), $request->code)) {
+
+        if (
+            !$user->two_factor_secret ||
+            !$provider->verify(decrypt($user->two_factor_secret), $request->code)
+        ) {
             return response()->json([
                 'message' => 'The provided two factor authentication code was invalid.'
             ], 422);
         }
-        
+
         $user->forceFill([
             'two_factor_confirmed_at' => now(),
         ])->save();
-        
+
         return response()->json([
             'message' => 'Two-factor authentication confirmed successfully.'
         ]);
@@ -138,9 +140,9 @@ class TwoFactorAuthController extends Controller
         $request->validate([
             'password' => 'required|string|current_password:sanctum'
         ]);
-        
+
         $disable($request->user());
-        
+
         return response()->json([
             'message' => 'Two-factor authentication disabled successfully.'
         ]);
@@ -183,18 +185,18 @@ class TwoFactorAuthController extends Controller
             'code' => 'required_without:recovery_code|string',
             'recovery_code' => 'required_without:code|string'
         ]);
-        
+
         $user = $request->user();
-        
+
         if ($request->has('recovery_code')) {
             $codes = $user->recoveryCodes();
-            
+
             if (!in_array($request->recovery_code, $codes)) {
                 return response()->json([
                     'message' => 'The provided recovery code was invalid.'
                 ], 422);
             }
-            
+
             $user->replaceRecoveryCode($request->recovery_code);
         } else {
             if (!$provider->verify(decrypt($user->two_factor_secret), $request->code)) {
@@ -203,10 +205,10 @@ class TwoFactorAuthController extends Controller
                 ], 422);
             }
         }
-        
+
         // Generate new token after successful 2FA
         $token = $user->createToken('api-token')->plainTextToken;
-        
+
         return response()->json([
             'message' => 'Two-factor authentication verified successfully.',
             'token' => $token
@@ -236,11 +238,11 @@ class TwoFactorAuthController extends Controller
     public function regenerateRecoveryCodes(Request $request)
     {
         $user = $request->user();
-        
+
         $user->forceFill([
             'two_factor_recovery_codes' => encrypt(json_encode(RecoveryCode::generate())),
         ])->save();
-        
+
         return response()->json([
             'message' => 'Recovery codes regenerated successfully.',
             'recovery_codes' => json_decode(decrypt($user->two_factor_recovery_codes), true)

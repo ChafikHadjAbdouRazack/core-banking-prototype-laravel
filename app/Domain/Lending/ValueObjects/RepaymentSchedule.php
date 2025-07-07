@@ -11,7 +11,7 @@ class RepaymentSchedule
             throw new \InvalidArgumentException('Repayment schedule cannot be empty');
         }
     }
-    
+
     public function getPayment(int $paymentNumber): array
     {
         foreach ($this->payments as $payment) {
@@ -19,20 +19,20 @@ class RepaymentSchedule
                 return $payment;
             }
         }
-        
+
         throw new \InvalidArgumentException("Payment number {$paymentNumber} not found in schedule");
     }
-    
+
     public function getPayments(): array
     {
         return $this->payments;
     }
-    
+
     public function getTotalPayments(): int
     {
         return count($this->payments);
     }
-    
+
     public function getTotalPrincipal(): string
     {
         $total = '0';
@@ -41,7 +41,7 @@ class RepaymentSchedule
         }
         return $total;
     }
-    
+
     public function getTotalInterest(): string
     {
         $total = '0';
@@ -50,7 +50,7 @@ class RepaymentSchedule
         }
         return $total;
     }
-    
+
     public function getNextDuePayment(?int $afterPaymentNumber = null): ?array
     {
         foreach ($this->payments as $payment) {
@@ -58,10 +58,10 @@ class RepaymentSchedule
                 return $payment;
             }
         }
-        
+
         return null;
     }
-    
+
     public function toArray(): array
     {
         return $this->payments;

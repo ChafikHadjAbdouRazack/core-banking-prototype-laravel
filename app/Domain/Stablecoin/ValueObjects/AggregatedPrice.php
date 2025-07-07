@@ -15,8 +15,9 @@ class AggregatedPrice
         public readonly Carbon $timestamp,
         public readonly float $confidence = 1.0,
         public readonly ?array $metadata = []
-    ) {}
-    
+    ) {
+    }
+
     public function toArray(): array
     {
         return [
@@ -30,12 +31,12 @@ class AggregatedPrice
             'metadata' => $this->metadata,
         ];
     }
-    
+
     public function isHighConfidence(): bool
     {
         return $this->confidence >= 0.8;
     }
-    
+
     public function getSourceCount(): int
     {
         return count($this->sources);

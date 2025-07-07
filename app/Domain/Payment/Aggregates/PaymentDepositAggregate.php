@@ -13,7 +13,7 @@ class PaymentDepositAggregate extends AggregateRoot
 {
     protected string $depositStatus = 'pending';
     protected ?string $transactionId = null;
-    
+
     /**
      * @return PaymentDepositRepository
      * @throws \Illuminate\Contracts\Container\BindingResolutionException

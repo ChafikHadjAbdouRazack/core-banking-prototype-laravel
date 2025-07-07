@@ -15,7 +15,7 @@ class TurnoversRelationManager extends RelationManager
     protected static string $relationship = 'turnovers';
 
     protected static ?string $recordTitleAttribute = 'id';
-    
+
     protected static ?string $title = 'Account Turnovers';
 
     public function table(Table $table): Table

@@ -13,22 +13,22 @@ use Illuminate\Http\JsonResponse;
 class FraudDetectionController extends Controller
 {
     private FraudDetectionService $fraudService;
-    
+
     public function __construct(FraudDetectionService $fraudService)
     {
         $this->fraudService = $fraudService;
     }
-    
+
     /**
      * Analyze transaction for fraud
      */
     public function analyzeTransaction(Request $request, string $transactionId): JsonResponse
     {
         $transaction = Transaction::findOrFail($transactionId);
-        
+
         // Ensure user can analyze this transaction
         $this->authorize('analyze', $transaction);
-        
+
         // Get additional context from request
         $context = $request->only([
             'device_data',
@@ -39,9 +39,9 @@ class FraudDetectionController extends Controller
             'isp',
             'user_agent',
         ]);
-        
+
         $fraudScore = $this->fraudService->analyzeTransaction($transaction, $context);
-        
+
         return response()->json([
             'fraud_score' => [
                 'id' => $fraudScore->id,
@@ -60,21 +60,21 @@ class FraudDetectionController extends Controller
             'action_required' => $fraudScore->decision,
         ]);
     }
-    
+
     /**
      * Analyze user for fraud patterns
      */
     public function analyzeUser(Request $request, string $userId): JsonResponse
     {
         $user = User::findOrFail($userId);
-        
+
         // Ensure user can analyze this user
         $this->authorize('analyze', $user);
-        
+
         $context = $request->only(['reason', 'trigger']);
-        
+
         $fraudScore = $this->fraudService->analyzeUser($user, $context);
-        
+
         return response()->json([
             'fraud_score' => [
                 'id' => $fraudScore->id,
@@ -91,24 +91,24 @@ class FraudDetectionController extends Controller
             ],
         ]);
     }
-    
+
     /**
      * Get fraud score details
      */
     public function getFraudScore(string $fraudScoreId): JsonResponse
     {
         $fraudScore = FraudScore::with(['fraudCase'])->findOrFail($fraudScoreId);
-        
+
         // Ensure user can view this fraud score
         $this->authorize('view', $fraudScore);
-        
+
         return response()->json([
             'fraud_score' => $fraudScore,
             'has_case' => $fraudScore->fraudCase !== null,
             'case_number' => $fraudScore->fraudCase?->case_number,
         ]);
     }
-    
+
     /**
      * Update fraud score outcome (for ML training)
      */
@@ -118,28 +118,28 @@ class FraudDetectionController extends Controller
             'outcome' => 'required|in:fraud,legitimate,unknown',
             'notes' => 'nullable|string|max:1000',
         ]);
-        
+
         $fraudScore = FraudScore::findOrFail($fraudScoreId);
-        
+
         // Ensure user can update this fraud score
         $this->authorize('update', $fraudScore);
-        
+
         $fraudScore->update([
             'outcome' => $request->outcome,
             'outcome_updated_at' => now(),
             'outcome_updated_by' => auth()->id(),
         ]);
-        
+
         // Train ML model with feedback
         app(\App\Domain\Fraud\Services\MachineLearningService::class)
             ->trainWithFeedback($fraudScore, $request->outcome);
-        
+
         return response()->json([
             'message' => 'Fraud score outcome updated successfully',
             'fraud_score' => $fraudScore,
         ]);
     }
-    
+
     /**
      * Get fraud statistics
      */
@@ -150,22 +150,22 @@ class FraudDetectionController extends Controller
             'date_to' => 'nullable|date|after_or_equal:date_from',
             'entity_type' => 'nullable|in:transaction,user',
         ]);
-        
+
         $query = FraudScore::query();
-        
+
         if ($request->date_from) {
             $query->where('created_at', '>=', $request->date_from);
         }
-        
+
         if ($request->date_to) {
             $query->where('created_at', '<=', $request->date_to);
         }
-        
+
         if ($request->entity_type) {
             $entityClass = $request->entity_type === 'transaction' ? Transaction::class : User::class;
             $query->where('entity_type', $entityClass);
         }
-        
+
         $statistics = [
             'total_analyzed' => $query->count(),
             'by_risk_level' => [
@@ -190,32 +190,32 @@ class FraudDetectionController extends Controller
             'fraud_rate' => $this->calculateFraudRate($query),
             'false_positive_rate' => $this->calculateFalsePositiveRate($query),
         ];
-        
+
         return response()->json(['statistics' => $statistics]);
     }
-    
+
     /**
      * Get ML model metrics
      */
     public function getModelMetrics(): JsonResponse
     {
         $mlService = app(\App\Domain\Fraud\Services\MachineLearningService::class);
-        
+
         if (!$mlService->isEnabled()) {
             return response()->json([
                 'message' => 'ML service is not enabled',
                 'enabled' => false,
             ]);
         }
-        
+
         $metrics = $mlService->getModelMetrics();
-        
+
         return response()->json([
             'enabled' => true,
             'metrics' => $metrics,
         ]);
     }
-    
+
     /**
      * Suggest risk rating based on fraud score
      */
@@ -233,23 +233,23 @@ class FraudDetectionController extends Controller
             return 'very_low';
         }
     }
-    
+
     /**
      * Calculate fraud rate
      */
     private function calculateFraudRate($query): float
     {
         $total = (clone $query)->whereNotNull('outcome')->count();
-        
+
         if ($total === 0) {
             return 0;
         }
-        
+
         $fraudCount = (clone $query)->where('outcome', FraudScore::OUTCOME_FRAUD)->count();
-        
+
         return round(($fraudCount / $total) * 100, 2);
     }
-    
+
     /**
      * Calculate false positive rate
      */
@@ -259,16 +259,16 @@ class FraudDetectionController extends Controller
             ->where('decision', FraudScore::DECISION_BLOCK)
             ->whereNotNull('outcome')
             ->count();
-        
+
         if ($blocked === 0) {
             return 0;
         }
-        
+
         $falsePositives = (clone $query)
             ->where('decision', FraudScore::DECISION_BLOCK)
             ->where('outcome', FraudScore::OUTCOME_LEGITIMATE)
             ->count();
-        
+
         return round(($falsePositives / $blocked) * 100, 2);
     }
 }

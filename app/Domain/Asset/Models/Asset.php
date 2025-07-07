@@ -13,7 +13,7 @@ use App\Domain\Exchange\Models\ExchangeRate;
 class Asset extends Model
 {
     use HasFactory;
-    
+
     /**
      * Create a new factory instance for the model.
      */
@@ -21,35 +21,35 @@ class Asset extends Model
     {
         return \Database\Factories\AssetFactory::new();
     }
-    
+
     /**
      * The table associated with the model.
      *
      * @var string
      */
     protected $table = 'assets';
-    
+
     /**
      * The primary key for the model.
      *
      * @var string
      */
     protected $primaryKey = 'code';
-    
+
     /**
      * Indicates if the primary key is auto-incrementing.
      *
      * @var bool
      */
     public $incrementing = false;
-    
+
     /**
      * The data type of the primary key.
      *
      * @var string
      */
     protected $keyType = 'string';
-    
+
     /**
      * The attributes that are mass assignable.
      *
@@ -64,7 +64,7 @@ class Asset extends Model
         'is_basket',
         'metadata',
     ];
-    
+
     /**
      * The attributes that should be cast.
      *
@@ -76,7 +76,7 @@ class Asset extends Model
         'is_basket' => 'boolean',
         'metadata' => 'array',
     ];
-    
+
     /**
      * Asset types
      */
@@ -85,7 +85,7 @@ class Asset extends Model
     public const TYPE_COMMODITY = 'commodity';
     public const TYPE_CUSTOM = 'custom';
     public const TYPE_BASKET = 'basket';
-    
+
     /**
      * Get all valid asset types
      *
@@ -100,7 +100,7 @@ class Asset extends Model
             self::TYPE_CUSTOM,
         ];
     }
-    
+
     /**
      * Get all account balances for this asset
      */
@@ -108,7 +108,7 @@ class Asset extends Model
     {
         return $this->hasMany(AccountBalance::class, 'asset_code', 'code');
     }
-    
+
     /**
      * Get exchange rates where this asset is the source
      */
@@ -116,7 +116,7 @@ class Asset extends Model
     {
         return $this->hasMany(ExchangeRate::class, 'from_asset_code', 'code');
     }
-    
+
     /**
      * Get exchange rates where this asset is the target
      */
@@ -124,7 +124,7 @@ class Asset extends Model
     {
         return $this->hasMany(ExchangeRate::class, 'to_asset_code', 'code');
     }
-    
+
     /**
      * Get the symbol from metadata
      *
@@ -134,7 +134,7 @@ class Asset extends Model
     {
         return $this->metadata['symbol'] ?? null;
     }
-    
+
     /**
      * Get the symbol attribute (accessor)
      *
@@ -144,7 +144,7 @@ class Asset extends Model
     {
         return $this->getSymbol();
     }
-    
+
     /**
      * Format an amount according to the asset's precision
      *
@@ -155,14 +155,14 @@ class Asset extends Model
     {
         $divisor = 10 ** $this->precision;
         $formatted = number_format($amount / $divisor, $this->precision);
-        
+
         if ($symbol = $this->getSymbol()) {
             return $symbol . $formatted;
         }
-        
+
         return $formatted . ' ' . $this->code;
     }
-    
+
     /**
      * Convert a decimal amount to the smallest unit
      *
@@ -173,7 +173,7 @@ class Asset extends Model
     {
         return (int) round($amount * (10 ** $this->precision));
     }
-    
+
     /**
      * Convert from smallest unit to decimal
      *
@@ -184,7 +184,7 @@ class Asset extends Model
     {
         return $amount / (10 ** $this->precision);
     }
-    
+
     /**
      * Check if the asset is a fiat currency
      *
@@ -194,7 +194,7 @@ class Asset extends Model
     {
         return $this->type === self::TYPE_FIAT;
     }
-    
+
     /**
      * Check if the asset is a cryptocurrency
      *
@@ -204,7 +204,7 @@ class Asset extends Model
     {
         return $this->type === self::TYPE_CRYPTO;
     }
-    
+
     /**
      * Check if the asset is a commodity
      *
@@ -214,7 +214,7 @@ class Asset extends Model
     {
         return $this->type === self::TYPE_COMMODITY;
     }
-    
+
     /**
      * Scope for active assets
      *
@@ -225,7 +225,7 @@ class Asset extends Model
     {
         return $query->where('is_active', true);
     }
-    
+
     /**
      * Scope for assets by type
      *
@@ -237,5 +237,4 @@ class Asset extends Model
     {
         return $query->where('type', $type);
     }
-    
 }

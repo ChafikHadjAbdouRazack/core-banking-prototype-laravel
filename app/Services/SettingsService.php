@@ -249,7 +249,7 @@ class SettingsService
                 );
             }
         }
-        
+
         return [];
     }
 
@@ -277,27 +277,27 @@ class SettingsService
     public function validateSetting(string $key, $value): array
     {
         $config = $this->getSettingConfig($key);
-        
+
         if (empty($config)) {
             return ['valid' => false, 'errors' => ['Setting configuration not found']];
         }
-        
+
         $validator = Validator::make(
             ['value' => $value],
             ['value' => $config['validation']]
         );
-        
+
         if ($validator->fails()) {
             return ['valid' => false, 'errors' => $validator->errors()->all()];
         }
-        
+
         return ['valid' => true, 'errors' => []];
     }
 
     public function updateSetting(string $key, $value, ?string $updatedBy = null): bool
     {
         $validation = $this->validateSetting($key, $value);
-        
+
         if (!$validation['valid']) {
             Log::warning('Invalid setting update attempt', [
                 'key' => $key,
@@ -306,24 +306,24 @@ class SettingsService
             ]);
             return false;
         }
-        
+
         $config = $this->getSettingConfig($key);
         $oldValue = Setting::get($key);
-        
+
         Setting::set($key, $value, [
             'type' => $config['type'],
             'label' => $config['label'],
             'description' => $config['description'],
             'group' => $config['group'],
         ]);
-        
+
         Log::info('Setting updated', [
             'key' => $key,
             'old_value' => $oldValue,
             'new_value' => $value,
             'updated_by' => $updatedBy,
         ]);
-        
+
         return true;
     }
 
@@ -347,19 +347,19 @@ class SettingsService
             'label' => ucwords(str_replace(['_', '.', '-'], ' ', $key)), // Default label from key
             'group' => 'general', // Default group
         ];
-        
+
         // Get config to determine additional attributes
         $config = $this->getSettingConfig($key);
         if (!empty($config)) {
             $attributes['label'] = $config['label'] ?? $attributes['label'];
             $attributes['group'] = $config['group'] ?? $attributes['group'];
         }
-        
+
         Setting::updateOrCreate(
             ['key' => $key],
             array_merge(['value' => $value], $attributes)
         );
-        
+
         Cache::forget("settings.{$key}");
     }
 
@@ -438,7 +438,7 @@ class SettingsService
             'success' => [],
             'failed' => [],
         ];
-        
+
         foreach ($settings as $key => $value) {
             if ($this->updateSetting($key, $value, $importedBy)) {
                 $results['success'][] = $key;
@@ -446,13 +446,13 @@ class SettingsService
                 $results['failed'][] = $key;
             }
         }
-        
+
         Log::info('Settings imported', [
             'imported_by' => $importedBy,
             'success_count' => count($results['success']),
             'failed_count' => count($results['failed']),
         ]);
-        
+
         return $results;
     }
 }

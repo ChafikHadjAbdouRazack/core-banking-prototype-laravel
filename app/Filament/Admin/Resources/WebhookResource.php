@@ -42,7 +42,7 @@ class WebhookResource extends Resource
                             ->maxLength(255)
                             ->columnSpanFull(),
                     ]),
-                
+
                 Forms\Components\Section::make('Configuration')
                     ->schema([
                         Forms\Components\CheckboxList::make('events')
@@ -58,7 +58,7 @@ class WebhookResource extends Resource
                             ->label('Active')
                             ->default(true),
                     ]),
-                
+
                 Forms\Components\Section::make('Advanced Settings')
                     ->schema([
                         Forms\Components\TextInput::make('retry_attempts')
@@ -144,7 +144,7 @@ class WebhookResource extends Resource
                             ],
                             'status' => 'pending',
                         ]);
-                        
+
                         Notification::make()
                             ->title('Test webhook created')
                             ->body('A test delivery has been queued for processing.')

@@ -15,14 +15,14 @@ class ProcessRefundWorkflow extends Workflow
 {
     /**
      * Process a CGO refund through the complete workflow
-     * 
+     *
      * @param RefundRequest $request
      * @return \Generator
      */
     public function execute(RefundRequest $request): \Generator
     {
         $refundId = null;
-        
+
         try {
             // Step 1: Initiate the refund request
             $initiateResult = yield ActivityStub::make(
@@ -38,9 +38,9 @@ class ProcessRefundWorkflow extends Workflow
                     'metadata' => $request->getMetadata()
                 ]
             );
-            
+
             $refundId = $initiateResult['refund_id'];
-            
+
             // Step 2: Approve the refund (in production, this might wait for manual approval)
             if ($request->isAutoApproved()) {
                 yield ActivityStub::make(
@@ -57,7 +57,7 @@ class ProcessRefundWorkflow extends Workflow
                 yield Workflow::await(fn() => false);
                 return ['status' => 'pending_approval', 'refund_id' => $refundId];
             }
-            
+
             // Step 3: Process the refund with the payment processor
             $processResult = yield ActivityStub::make(
                 ProcessRefundActivity::class,
@@ -65,7 +65,7 @@ class ProcessRefundWorkflow extends Workflow
                     'refund_id' => $refundId
                 ]
             );
-            
+
             // Step 4: Complete the refund
             yield ActivityStub::make(
                 CompleteRefundActivity::class,
@@ -75,14 +75,13 @@ class ProcessRefundWorkflow extends Workflow
                     'amount_refunded' => $processResult['amount_refunded']
                 ]
             );
-            
+
             return [
                 'status' => 'completed',
                 'refund_id' => $refundId,
                 'processor_refund_id' => $processResult['processor_refund_id'],
                 'amount_refunded' => $processResult['amount_refunded']
             ];
-            
         } catch (\Throwable $e) {
             // If we have initiated a refund, mark it as failed
             if ($refundId !== null) {
@@ -94,7 +93,7 @@ class ProcessRefundWorkflow extends Workflow
                     ]
                 );
             }
-            
+
             throw $e;
         }
     }

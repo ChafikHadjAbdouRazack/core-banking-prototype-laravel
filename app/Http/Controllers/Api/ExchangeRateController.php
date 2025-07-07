@@ -21,8 +21,9 @@ class ExchangeRateController extends Controller
 {
     public function __construct(
         private readonly ExchangeRateService $exchangeRateService
-    ) {}
-    
+    ) {
+    }
+
     /**
      * @OA\Get(
      *     path="/api/exchange-rates/{from}/{to}",
@@ -77,16 +78,16 @@ class ExchangeRateController extends Controller
     {
         $fromAsset = strtoupper($from);
         $toAsset = strtoupper($to);
-        
+
         $rate = $this->exchangeRateService->getRate($fromAsset, $toAsset);
-        
+
         if (!$rate) {
             return response()->json([
                 'message' => 'Exchange rate not found',
                 'error' => 'No active exchange rate found for the specified asset pair',
             ], 404);
         }
-        
+
         return response()->json([
             'data' => [
                 'from_asset' => $rate->from_asset_code,
@@ -102,7 +103,7 @@ class ExchangeRateController extends Controller
             ],
         ]);
     }
-    
+
     /**
      * @OA\Get(
      *     path="/api/exchange-rates/{from}/{to}/convert",
@@ -164,29 +165,29 @@ class ExchangeRateController extends Controller
         $request->validate([
             'amount' => 'required|numeric|min:0',
         ]);
-        
+
         $fromAsset = strtoupper($from);
         $toAsset = strtoupper($to);
         $amount = (int) $request->input('amount');
-        
+
         $convertedAmount = $this->exchangeRateService->convert($amount, $fromAsset, $toAsset);
-        
+
         if ($convertedAmount === null) {
             return response()->json([
                 'message' => 'Conversion not available',
                 'error' => 'No active exchange rate found for the specified asset pair',
             ], 404);
         }
-        
+
         $rate = $this->exchangeRateService->getRate($fromAsset, $toAsset);
-        
+
         // Get asset details for formatting
         $fromAssetModel = \App\Domain\Asset\Models\Asset::where('code', $fromAsset)->first();
         $toAssetModel = \App\Domain\Asset\Models\Asset::where('code', $toAsset)->first();
-        
+
         $fromFormatted = $this->formatAmount($amount, $fromAssetModel);
         $toFormatted = $this->formatAmount($convertedAmount, $toAssetModel);
-        
+
         return response()->json([
             'data' => [
                 'from_asset' => $fromAsset,
@@ -200,7 +201,7 @@ class ExchangeRateController extends Controller
             ],
         ]);
     }
-    
+
     /**
      * @OA\Get(
      *     path="/api/exchange-rates",
@@ -288,38 +289,38 @@ class ExchangeRateController extends Controller
             'valid' => 'sometimes|boolean',
             'limit' => 'sometimes|integer|min:1|max:100',
         ]);
-        
+
         $query = ExchangeRate::query();
-        
+
         // Apply filters
         if ($request->has('from')) {
             $query->where('from_asset_code', strtoupper($request->string('from')->toString()));
         }
-        
+
         if ($request->has('to')) {
             $query->where('to_asset_code', strtoupper($request->string('to')->toString()));
         }
-        
+
         if ($request->has('source')) {
             $query->where('source', $request->string('source')->toString());
         }
-        
+
         if ($request->has('active')) {
             $query->where('is_active', $request->boolean('active'));
         }
-        
+
         if ($request->has('valid') && $request->boolean('valid')) {
             $query->valid();
         }
-        
+
         $limit = $request->integer('limit', 50);
         $rates = $query->orderBy('valid_at', 'desc')->limit($limit)->get();
-        
+
         // Calculate metadata
         $total = ExchangeRate::count();
         $valid = ExchangeRate::valid()->count();
         $stale = ExchangeRate::where('valid_at', '<=', now()->subDay())->count();
-        
+
         return response()->json([
             'data' => $rates->map(function (ExchangeRate $rate) {
                 return [
@@ -390,21 +391,21 @@ class ExchangeRateController extends Controller
             if ($validated['from_currency'] === 'USD') {
                 $accountUuid = new \App\Domain\Account\DataObjects\AccountUuid($validated['account_uuid']);
                 $money = new \App\Domain\Account\DataObjects\Money($fromAmountInMinorUnits);
-                
+
                 // Withdraw USD using legacy workflow
                 $withdrawWorkflow = \Workflow\WorkflowStub::make(\App\Domain\Account\Workflows\WithdrawAccountWorkflow::class);
                 $withdrawWorkflow->start($accountUuid, $money);
-                
+
                 // Deposit target asset using asset workflow
                 $depositWorkflow = \Workflow\WorkflowStub::make(\App\Domain\Asset\Workflows\AssetDepositWorkflow::class);
                 $depositWorkflow->start($accountUuid, $validated['to_currency'], $toAmountInMinorUnits);
             } else {
                 // Use asset workflows for both sides
                 $accountUuid = new \App\Domain\Account\DataObjects\AccountUuid($validated['account_uuid']);
-                
+
                 $withdrawWorkflow = \Workflow\WorkflowStub::make(\App\Domain\Asset\Workflows\AssetWithdrawWorkflow::class);
                 $withdrawWorkflow->start($accountUuid, $validated['from_currency'], $fromAmountInMinorUnits);
-                
+
                 $depositWorkflow = \Workflow\WorkflowStub::make(\App\Domain\Asset\Workflows\AssetDepositWorkflow::class);
                 $depositWorkflow->start($accountUuid, $validated['to_currency'], $toAmountInMinorUnits);
             }
@@ -426,20 +427,20 @@ class ExchangeRateController extends Controller
             ], 422);
         }
     }
-    
+
     private function formatAmount(int $amount, ?\App\Domain\Asset\Models\Asset $asset): string
     {
         if (!$asset) {
             return (string) $amount;
         }
-        
+
         $formatted = number_format(
             $amount / (10 ** $asset->precision),
             $asset->precision,
             '.',
             ''
         );
-        
+
         return "{$formatted} {$asset->code}";
     }
 }

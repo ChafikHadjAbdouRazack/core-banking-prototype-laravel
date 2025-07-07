@@ -15,7 +15,8 @@ class BasketRebalancingService
 {
     public function __construct(
         private readonly BasketValueCalculationService $valueCalculationService
-    ) {}
+    ) {
+    }
 
     /**
      * Check if a basket needs rebalancing.
@@ -48,7 +49,7 @@ class BasketRebalancingService
 
         // Calculate current value to get component weights
         $currentValue = $this->valueCalculationService->calculateValue($basket);
-        
+
         if ($currentValue->value <= 0) {
             throw new \Exception('Cannot rebalance basket with zero or negative value');
         }
@@ -123,7 +124,7 @@ class BasketRebalancingService
                 $component = $basket->components()
                     ->where('asset_code', $adjustment['asset'])
                     ->first();
-                    
+
                 if ($component) {
                     $component->update(['weight' => $adjustment['target_weight']]);
                 }
@@ -169,25 +170,25 @@ class BasketRebalancingService
     {
         $components = $basket->activeComponents()->get();
         $totalWeight = $components->sum('weight');
-        
+
         if (abs($totalWeight - 100) < 0.01) {
             return; // Already normalized
         }
-        
+
         if ($totalWeight <= 0) {
             return; // Cannot normalize zero or negative weights
         }
-        
+
         // Calculate the difference that needs to be distributed
         $difference = 100 - $totalWeight;
-        
+
         // Calculate available capacity for adjustment
         $availableCapacity = 0;
         $adjustableComponents = [];
-        
+
         foreach ($components as $component) {
             $capacity = 0;
-            
+
             if ($difference > 0) { // Need to increase weights
                 $maxPossible = $component->max_weight ?? 100; // No limit = can go to 100%
                 $capacity = max(0, $maxPossible - $component->weight);
@@ -195,7 +196,7 @@ class BasketRebalancingService
                 $minPossible = $component->min_weight ?? 0; // No limit = can go to 0%
                 $capacity = max(0, $component->weight - $minPossible);
             }
-            
+
             if ($capacity > 0.01) { // Small threshold to avoid floating point issues
                 $adjustableComponents[] = [
                     'component' => $component,
@@ -204,7 +205,7 @@ class BasketRebalancingService
                 $availableCapacity += $capacity;
             }
         }
-        
+
         if (empty($adjustableComponents) || $availableCapacity < abs($difference)) {
             // Cannot adjust without violating constraints or insufficient capacity
             // Use proportional scaling as fallback
@@ -215,16 +216,16 @@ class BasketRebalancingService
             }
             return;
         }
-        
+
         // Distribute the difference proportionally based on available capacity
         foreach ($adjustableComponents as $adjustable) {
             $component = $adjustable['component'];
             $capacity = $adjustable['capacity'];
-            
+
             // Calculate this component's share of the adjustment
             $proportionalAdjustment = ($capacity / $availableCapacity) * $difference;
             $newWeight = $component->weight + $proportionalAdjustment;
-            
+
             // Clamp to bounds if they exist (should not be necessary but safety check)
             if ($component->min_weight !== null) {
                 $newWeight = max($newWeight, $component->min_weight);
@@ -232,7 +233,7 @@ class BasketRebalancingService
             if ($component->max_weight !== null) {
                 $newWeight = min($newWeight, $component->max_weight);
             }
-            
+
             $component->update(['weight' => $newWeight]);
         }
     }
@@ -252,7 +253,7 @@ class BasketRebalancingService
         foreach ($baskets as $basket) {
             try {
                 $result = $this->rebalance($basket);
-                
+
                 if ($result['status'] === 'rebalanced') {
                     $results['rebalanced'][] = $result;
                 } else {
@@ -263,7 +264,7 @@ class BasketRebalancingService
                     'basket' => $basket->code,
                     'error' => $e->getMessage(),
                 ];
-                
+
                 Log::error("Failed to rebalance basket {$basket->code}", [
                     'error' => $e->getMessage(),
                     'trace' => $e->getTraceAsString(),

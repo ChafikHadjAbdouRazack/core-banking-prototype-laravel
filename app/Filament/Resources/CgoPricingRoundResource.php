@@ -177,7 +177,7 @@ class CgoPricingRoundResource extends Resource
                         // Deactivate all other rounds
                         CgoPricingRound::where('id', '!=', $record->id)
                             ->update(['is_active' => false]);
-                        
+
                         // Activate this round
                         $record->update(['is_active' => true]);
                     })

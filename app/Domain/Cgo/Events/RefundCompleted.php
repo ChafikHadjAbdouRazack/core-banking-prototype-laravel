@@ -15,5 +15,6 @@ class RefundCompleted extends ShouldBeStored
         public readonly int $amountRefunded,
         public readonly string $completedAt,
         public readonly array $metadata = []
-    ) {}
+    ) {
+    }
 }

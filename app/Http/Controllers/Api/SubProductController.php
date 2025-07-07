@@ -10,7 +10,8 @@ class SubProductController extends Controller
 {
     public function __construct(
         private SubProductService $subProductService
-    ) {}
+    ) {
+    }
 
     /**
      * Get all sub-product statuses
@@ -28,14 +29,14 @@ class SubProductController extends Controller
     public function show(string $subProduct): JsonResponse
     {
         $allProducts = $this->subProductService->getApiStatus();
-        
+
         if (!isset($allProducts[$subProduct])) {
             return response()->json([
                 'error' => 'Sub-product not found',
                 'message' => "The sub-product '{$subProduct}' does not exist.",
             ], 404);
         }
-        
+
         return response()->json([
             'data' => $allProducts[$subProduct],
         ]);
@@ -47,7 +48,7 @@ class SubProductController extends Controller
     public function enabled(): JsonResponse
     {
         $enabledProducts = $this->subProductService->getEnabledSubProducts();
-        
+
         return response()->json([
             'data' => array_map(function ($product) {
                 return [

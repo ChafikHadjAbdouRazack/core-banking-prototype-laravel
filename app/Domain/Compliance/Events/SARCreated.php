@@ -9,9 +9,12 @@ use Illuminate\Queue\SerializesModels;
 
 class SARCreated
 {
-    use Dispatchable, InteractsWithSockets, SerializesModels;
-    
+    use Dispatchable;
+    use InteractsWithSockets;
+    use SerializesModels;
+
     public function __construct(
         public readonly SuspiciousActivityReport $sar
-    ) {}
+    ) {
+    }
 }

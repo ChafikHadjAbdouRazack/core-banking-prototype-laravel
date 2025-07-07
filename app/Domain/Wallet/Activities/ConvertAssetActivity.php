@@ -27,17 +27,17 @@ class ConvertAssetActivity extends Activity
         AssetTransferAggregate $assetTransfer
     ): array {
         $fromMoney = new Money($amount);
-        
+
         // Get exchange rate
         $exchangeRate = ExchangeRate::getRate($fromAssetCode, $toAssetCode);
         if (!$exchangeRate) {
             throw new \InvalidArgumentException("Exchange rate not available for {$fromAssetCode} to {$toAssetCode}");
         }
-        
+
         // Calculate converted amount
         $convertedAmount = intval($amount * $exchangeRate);
         $toMoney = new Money($convertedAmount);
-        
+
         $transferId = uniqid('convert_', true);
         $assetTransfer->retrieve($transferId)
             ->initiate(

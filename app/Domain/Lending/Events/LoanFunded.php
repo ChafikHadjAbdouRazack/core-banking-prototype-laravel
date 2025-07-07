@@ -11,5 +11,6 @@ class LoanFunded extends ShouldBeStored
         public array $investorIds,
         public string $fundedAmount,
         public \DateTimeImmutable $fundedAt
-    ) {}
+    ) {
+    }
 }

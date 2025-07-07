@@ -15,7 +15,8 @@ class CollateralService implements CollateralServiceInterface
 {
     public function __construct(
         private readonly ExchangeRateService $exchangeRateService
-    ) {}
+    ) {
+    }
 
     /**
      * Convert collateral amount to peg asset value.
@@ -30,7 +31,7 @@ class CollateralService implements CollateralServiceInterface
         if (!$rateObject) {
             throw new \RuntimeException("Exchange rate not found for {$fromAsset} to {$pegAsset}");
         }
-        
+
         $rate = $rateObject->rate;
         return (int) round($amount * $rate);
     }
@@ -69,7 +70,7 @@ class CollateralService implements CollateralServiceInterface
             ->filter(function ($position) use ($bufferRatio) {
                 // Update position's collateral ratio with current exchange rates
                 $this->updatePositionCollateralRatio($position);
-                
+
                 // Check if at risk (within buffer of minimum ratio)
                 $riskThreshold = $position->stablecoin->min_collateral_ratio + $bufferRatio;
                 return $position->collateral_ratio <= $riskThreshold;
@@ -108,7 +109,7 @@ class CollateralService implements CollateralServiceInterface
         );
 
         $newRatio = $collateralValueInPegAsset / $position->debt_amount;
-        
+
         // Only update if ratio has changed significantly (to avoid constant DB writes)
         if (abs($position->collateral_ratio - $newRatio) > 0.001) {
             $position->collateral_ratio = $newRatio;
@@ -184,8 +185,8 @@ class CollateralService implements CollateralServiceInterface
 
         foreach ($stablecoins as $stablecoin) {
             $totalCollateralValue = $this->calculateTotalCollateralValue($stablecoin->code);
-            $globalRatio = $stablecoin->total_supply > 0 
-                ? $totalCollateralValue / $stablecoin->total_supply 
+            $globalRatio = $stablecoin->total_supply > 0
+                ? $totalCollateralValue / $stablecoin->total_supply
                 : 0;
 
             $activePositions = $stablecoin->activePositions()->count();
@@ -216,15 +217,15 @@ class CollateralService implements CollateralServiceInterface
     {
         $healthScore = $this->calculatePositionHealthScore($position);
         $debtSize = $position->debt_amount;
-        $timeSinceLastInteraction = $position->last_interaction_at 
-            ? now()->diffInHours($position->last_interaction_at) 
+        $timeSinceLastInteraction = $position->last_interaction_at
+            ? now()->diffInHours($position->last_interaction_at)
             : 0;
 
         // Priority factors:
         // - Lower health score = higher priority
         // - Larger debt = higher priority
         // - Longer time since interaction = higher priority
-        $priority = (1 - $healthScore) * 0.6 + 
+        $priority = (1 - $healthScore) * 0.6 +
                    min(1.0, $debtSize / 1000000) * 0.3 + // Normalize debt to 0-1 scale
                    min(1.0, $timeSinceLastInteraction / 168) * 0.1; // 1 week = 1.0
 

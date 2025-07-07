@@ -18,9 +18,9 @@ class OrderResource extends Resource
     protected static ?string $model = Order::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-arrow-trending-up';
-    
+
     protected static ?string $navigationGroup = 'Exchange';
-    
+
     protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
@@ -45,7 +45,7 @@ class OrderResource extends Resource
                             ])
                             ->disabled(),
                     ])->columns(3),
-                    
+
                 Forms\Components\Section::make('Trading Details')
                     ->schema([
                         Forms\Components\TextInput::make('base_currency')
@@ -153,7 +153,7 @@ class OrderResource extends Resource
             'view' => Pages\ViewOrder::route('/{record}'),
         ];
     }
-    
+
     public static function canCreate(): bool
     {
         return false; // Orders are created through the exchange interface

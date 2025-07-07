@@ -14,7 +14,7 @@ enum PollType: string
 
     public function getLabel(): string
     {
-        return match($this) {
+        return match ($this) {
             self::SINGLE_CHOICE => 'Single Choice',
             self::MULTIPLE_CHOICE => 'Multiple Choice',
             self::WEIGHTED_CHOICE => 'Weighted Choice',
@@ -25,7 +25,7 @@ enum PollType: string
 
     public function getDescription(): string
     {
-        return match($this) {
+        return match ($this) {
             self::SINGLE_CHOICE => 'Voters can select only one option',
             self::MULTIPLE_CHOICE => 'Voters can select multiple options',
             self::WEIGHTED_CHOICE => 'Voters can allocate weight/percentage to options',
@@ -36,7 +36,7 @@ enum PollType: string
 
     public function allowsMultipleSelections(): bool
     {
-        return match($this) {
+        return match ($this) {
             self::MULTIPLE_CHOICE, self::WEIGHTED_CHOICE, self::RANKED_CHOICE => true,
             self::SINGLE_CHOICE, self::YES_NO => false,
         };

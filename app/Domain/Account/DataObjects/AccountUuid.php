@@ -13,7 +13,8 @@ final readonly class AccountUuid extends DataObject implements DataObjectContrac
      */
     public function __construct(
         private string $uuid
-    ) {}
+    ) {
+    }
 
     /**
      * @return string|null

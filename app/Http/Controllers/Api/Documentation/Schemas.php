@@ -16,7 +16,7 @@ namespace App\Http\Controllers\Api\Documentation;
  *     @OA\Property(property="created_at", type="string", format="date-time", example="2024-01-01T00:00:00Z"),
  *     @OA\Property(property="updated_at", type="string", format="date-time", example="2024-01-01T00:00:00Z")
  * )
- * 
+ *
  * @OA\Schema(
  *     schema="Transaction",
  *     type="object",
@@ -31,7 +31,7 @@ namespace App\Http\Controllers\Api\Documentation;
  *     @OA\Property(property="hash", type="string", example="3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e", description="SHA3-512 transaction hash"),
  *     @OA\Property(property="created_at", type="string", format="date-time", example="2024-01-01T00:00:00Z")
  * )
- * 
+ *
  * @OA\Schema(
  *     schema="Transfer",
  *     type="object",
@@ -47,7 +47,7 @@ namespace App\Http\Controllers\Api\Documentation;
  *     @OA\Property(property="created_at", type="string", format="date-time", example="2024-01-01T00:00:00Z"),
  *     @OA\Property(property="completed_at", type="string", format="date-time", example="2024-01-01T00:00:01Z", nullable=true)
  * )
- * 
+ *
  * @OA\Schema(
  *     schema="Balance",
  *     type="object",
@@ -67,7 +67,7 @@ namespace App\Http\Controllers\Api\Documentation;
  *         @OA\Property(property="year", type="integer", example=2024)
  *     )
  * )
- * 
+ *
  * @OA\Schema(
  *     schema="Asset",
  *     type="object",
@@ -82,7 +82,7 @@ namespace App\Http\Controllers\Api\Documentation;
  *     @OA\Property(property="created_at", type="string", format="date-time", example="2024-01-01T00:00:00Z"),
  *     @OA\Property(property="updated_at", type="string", format="date-time", example="2024-01-01T00:00:00Z")
  * )
- * 
+ *
  * @OA\Schema(
  *     schema="ExchangeRate",
  *     type="object",
@@ -102,7 +102,7 @@ namespace App\Http\Controllers\Api\Documentation;
  *     @OA\Property(property="created_at", type="string", format="date-time", example="2024-01-01T00:00:00Z"),
  *     @OA\Property(property="updated_at", type="string", format="date-time", example="2024-01-01T00:00:00Z")
  * )
- * 
+ *
  * @OA\Schema(
  *     schema="AccountBalance",
  *     type="object",
@@ -117,7 +117,7 @@ namespace App\Http\Controllers\Api\Documentation;
  *     @OA\Property(property="asset", ref="#/components/schemas/Asset"),
  *     @OA\Property(property="account", ref="#/components/schemas/Account")
  * )
- * 
+ *
  * @OA\Schema(
  *     schema="Poll",
  *     type="object",
@@ -149,7 +149,7 @@ namespace App\Http\Controllers\Api\Documentation;
  *     @OA\Property(property="votes_count", type="integer", example=150, description="Total number of votes"),
  *     @OA\Property(property="total_voting_power", type="integer", example=500, description="Total voting power cast")
  * )
- * 
+ *
  * @OA\Schema(
  *     schema="Vote",
  *     type="object",
@@ -171,7 +171,7 @@ namespace App\Http\Controllers\Api\Documentation;
  *     @OA\Property(property="updated_at", type="string", format="date-time", example="2024-01-01T12:00:00Z"),
  *     @OA\Property(property="poll", ref="#/components/schemas/Poll")
  * )
- * 
+ *
  * @OA\Schema(
  *     schema="PollResult",
  *     type="object",
@@ -198,7 +198,7 @@ namespace App\Http\Controllers\Api\Documentation;
  *     ),
  *     @OA\Property(property="calculated_at", type="string", format="date-time", example="2024-01-01T12:00:00Z")
  * )
- * 
+ *
  * @OA\Schema(
  *     schema="Error",
  *     type="object",
@@ -213,7 +213,7 @@ namespace App\Http\Controllers\Api\Documentation;
  *         additionalProperties={"type":"array", "items":{"type":"string"}}
  *     )
  * )
- * 
+ *
  * @OA\Schema(
  *     schema="ValidationError",
  *     type="object",
@@ -233,7 +233,7 @@ namespace App\Http\Controllers\Api\Documentation;
  *         }
  *     )
  * )
- * 
+ *
  * @OA\Schema(
  *     schema="BasketAsset",
  *     type="object",
@@ -260,7 +260,7 @@ namespace App\Http\Controllers\Api\Documentation;
  *         @OA\Property(property="calculated_at", type="string", format="date-time")
  *     )
  * )
- * 
+ *
  * @OA\Schema(
  *     schema="BasketComponent",
  *     type="object",
@@ -273,7 +273,7 @@ namespace App\Http\Controllers\Api\Documentation;
  *     @OA\Property(property="max_weight", type="number", format="float", nullable=true, example=45.0),
  *     @OA\Property(property="is_active", type="boolean", default=true)
  * )
- * 
+ *
  * @OA\Schema(
  *     schema="BasketValue",
  *     type="object",
@@ -293,7 +293,7 @@ namespace App\Http\Controllers\Api\Documentation;
  *         }
  *     )
  * )
- * 
+ *
  * @OA\Schema(
  *     schema="UserVotingPoll",
  *     type="object",

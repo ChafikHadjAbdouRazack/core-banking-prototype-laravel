@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Turnover extends Model
 {
     use HasFactory;
-    
+
     protected $fillable
         = [
             'date',

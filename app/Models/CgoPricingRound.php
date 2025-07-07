@@ -70,7 +70,7 @@ class CgoPricingRound extends Model
         if (!$lastRound) {
             return 10.00; // Starting price $10 per share
         }
-        
+
         // Increase price by 10% each round
         return round($lastRound->share_price * 1.10, 4);
     }

@@ -16,7 +16,7 @@ enum CollateralType: string
 
     public function label(): string
     {
-        return match($this) {
+        return match ($this) {
             self::REAL_ESTATE => 'Real Estate',
             self::VEHICLE => 'Vehicle',
             self::SECURITIES => 'Securities',
@@ -31,7 +31,7 @@ enum CollateralType: string
 
     public function getRequiredLTV(): float
     {
-        return match($this) {
+        return match ($this) {
             self::REAL_ESTATE => 0.80,          // 80% LTV
             self::SECURITIES => 0.70,           // 70% LTV
             self::VEHICLE => 0.60,              // 60% LTV
@@ -47,7 +47,7 @@ enum CollateralType: string
     public function getValuationFrequency(): int
     {
         // Days between required revaluations
-        return match($this) {
+        return match ($this) {
             self::CRYPTO => 1,                  // Daily
             self::SECURITIES => 7,              // Weekly
             self::INVENTORY => 30,              // Monthly

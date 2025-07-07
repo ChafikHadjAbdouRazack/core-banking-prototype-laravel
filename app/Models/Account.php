@@ -37,14 +37,14 @@ class Account extends Model
     protected $casts = [
         'frozen' => 'boolean',
     ];
-    
+
     /**
      * The accessors to append to the model's array form.
      *
      * @var array
      */
     protected $appends = ['balance'];
-    
+
     /**
      * Get the balance attribute (USD balance for backward compatibility)
      *
@@ -74,7 +74,7 @@ class Account extends Model
     {
         return $this->hasMany(AccountBalance::class, 'account_uuid', 'uuid');
     }
-    
+
     /**
      * Get balance for a specific asset
      *
@@ -85,7 +85,7 @@ class Account extends Model
     {
         return $this->balances()->where('asset_code', $assetCode)->first();
     }
-    
+
     /**
      * Get balance amount for a specific asset
      *
@@ -97,9 +97,9 @@ class Account extends Model
         $balance = $this->getBalanceForAsset($assetCode);
         return $balance ? $balance->balance : 0;
     }
-    
+
     // Balance manipulation methods removed - use event sourcing via services instead
-    
+
     /**
      * Check if account has sufficient balance for asset
      *
@@ -112,7 +112,7 @@ class Account extends Model
         $balance = $this->getBalanceForAsset($assetCode);
         return $balance && $balance->hasSufficientBalance($amount);
     }
-    
+
     /**
      * Get all non-zero balances
      *
@@ -140,7 +140,7 @@ class Account extends Model
     }
 
     // Legacy balance manipulation methods removed - use event sourcing via WalletService instead
-    
+
     /**
      * Get transactions from the transaction projection table
      */
@@ -148,7 +148,7 @@ class Account extends Model
     {
         return $this->hasMany(TransactionProjection::class, 'account_uuid', 'uuid');
     }
-    
+
     /**
      * Get the account UUID as an AccountUuid value object.
      */

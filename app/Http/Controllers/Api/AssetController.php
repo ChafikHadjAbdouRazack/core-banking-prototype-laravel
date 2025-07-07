@@ -77,17 +77,17 @@ class AssetController extends Controller
     public function index(Request $request): JsonResponse
     {
         $query = Asset::query();
-        
+
         // By default, only show active assets unless include_inactive is true
         if (!$request->boolean('include_inactive')) {
             $query->where('is_active', true);
         }
-        
+
         // Filter by asset type
         if ($request->has('type')) {
             $query->where('type', $request->string('type')->toString());
         }
-        
+
         // Search by code or name
         if ($request->has('search')) {
             $search = $request->string('search')->toString();
@@ -96,9 +96,9 @@ class AssetController extends Controller
                   ->orWhere('name', 'like', "%{$search}%");
             });
         }
-        
+
         $assets = $query->orderBy('code')->get();
-        
+
         // Calculate metadata
         $total = Asset::count();
         $active = Asset::where('is_active', true)->count();
@@ -106,7 +106,7 @@ class AssetController extends Controller
             ->groupBy('type')
             ->pluck('count', 'type')
             ->toArray();
-        
+
         return response()->json([
             'data' => $assets->map(function (Asset $asset) {
                 return [
@@ -130,14 +130,14 @@ class AssetController extends Controller
             ],
         ]);
     }
-    
+
     /**
      * Get asset details
-     * 
+     *
      * Retrieve detailed information about a specific asset.
-     * 
+     *
      * @urlParam code string required The asset code (e.g., USD, BTC, EUR). Example: USD
-     * 
+     *
      * @response 200 {
      *   "data": {
      *     "code": "USD",
@@ -157,7 +157,7 @@ class AssetController extends Controller
      *     }
      *   }
      * }
-     * 
+     *
      * @response 404 {
      *   "message": "Asset not found",
      *   "error": "The specified asset code was not found"
@@ -166,26 +166,26 @@ class AssetController extends Controller
     public function show(string $code): JsonResponse
     {
         $query = Asset::where('code', strtoupper($code));
-        
+
         // By default, only show active assets unless include_inactive is true
         if (!request()->boolean('include_inactive')) {
             $query->where('is_active', true);
         }
-        
+
         $asset = $query->first();
-        
+
         if (!$asset) {
             return response()->json([
                 'message' => 'Asset not found',
                 'error' => 'The specified asset code was not found',
             ], 404);
         }
-        
+
         // Calculate statistics
         $totalAccounts = $asset->accountBalances()->count();
         $totalBalance = $asset->accountBalances()->sum('balance');
         $activeRates = $asset->exchangeRatesFrom()->valid()->count();
-        
+
         // Format balance according to asset precision
         $formattedBalance = number_format(
             $totalBalance / (10 ** $asset->precision),
@@ -193,7 +193,7 @@ class AssetController extends Controller
             '.',
             ''
         );
-        
+
         return response()->json([
             'id' => $asset->id,
             'code' => $asset->code,

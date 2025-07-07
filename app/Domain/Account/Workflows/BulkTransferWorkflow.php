@@ -12,7 +12,7 @@ class BulkTransferWorkflow extends Workflow
 {
     /**
      * Execute bulk transfers with compensation handling
-     * 
+     *
      * @param AccountUuid $from
      * @param array $transfers - array of ['to' => AccountUuid, 'amount' => Money]
      *
@@ -22,7 +22,7 @@ class BulkTransferWorkflow extends Workflow
     public function execute(AccountUuid $from, array $transfers): \Generator
     {
         $completedTransfers = [];
-        
+
         try {
             foreach ($transfers as $transfer) {
                 $transferResult = yield ChildWorkflowStub::make(
@@ -31,11 +31,11 @@ class BulkTransferWorkflow extends Workflow
                     $transfer['to'],
                     $transfer['amount']
                 );
-                
+
                 $completedTransfers[] = $transfer;
-                
+
                 // Add compensation for each completed transfer
-                $this->addCompensation(function() use ($from, $transfer) {
+                $this->addCompensation(function () use ($from, $transfer) {
                     return ChildWorkflowStub::make(
                         TransferWorkflow::class,
                         $transfer['to'],
@@ -44,7 +44,7 @@ class BulkTransferWorkflow extends Workflow
                     );
                 });
             }
-            
+
             return $completedTransfers;
         } catch (\Throwable $th) {
             // Compensate all completed transfers

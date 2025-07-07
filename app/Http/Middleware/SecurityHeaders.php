@@ -16,27 +16,27 @@ class SecurityHeaders
     public function handle(Request $request, Closure $next): Response
     {
         $response = $next($request);
-        
+
         // Prevent MIME type sniffing
         $response->headers->set('X-Content-Type-Options', 'nosniff');
-        
+
         // Enable XSS protection
         $response->headers->set('X-XSS-Protection', '1; mode=block');
-        
+
         // Prevent clickjacking
         $response->headers->set('X-Frame-Options', 'DENY');
-        
+
         // Referrer policy
         $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
-        
+
         // Content Security Policy
         $csp = $this->getContentSecurityPolicy();
         $response->headers->set('Content-Security-Policy', $csp);
-        
+
         // Permissions Policy (formerly Feature Policy)
         $permissions = $this->getPermissionsPolicy();
         $response->headers->set('Permissions-Policy', $permissions);
-        
+
         // HSTS for production
         if (app()->environment('production')) {
             $response->headers->set(
@@ -44,14 +44,14 @@ class SecurityHeaders
                 'max-age=31536000; includeSubDomains; preload'
             );
         }
-        
+
         // Remove sensitive headers
         $response->headers->remove('X-Powered-By');
         $response->headers->remove('Server');
-        
+
         return $response;
     }
-    
+
     /**
      * Get Content Security Policy directives
      */
@@ -72,10 +72,10 @@ class SecurityHeaders
             "frame-ancestors 'none'",
             "upgrade-insecure-requests",
         ];
-        
+
         return implode('; ', $policies);
     }
-    
+
     /**
      * Get Permissions Policy directives
      */
@@ -91,7 +91,7 @@ class SecurityHeaders
             'payment=(self)',
             'usb=()',
         ];
-        
+
         return implode(', ', $policies);
     }
 }

@@ -20,7 +20,7 @@ class CustodianRegistry
     public function register(string $name, ICustodianConnector $connector): void
     {
         $this->custodians[$name] = $connector;
-        
+
         // Set as default if it's the first one
         if ($this->defaultCustodian === null) {
             $this->defaultCustodian = $name;
@@ -101,7 +101,7 @@ class CustodianRegistry
     public function remove(string $name): void
     {
         unset($this->custodians[$name]);
-        
+
         if ($this->defaultCustodian === $name) {
             $this->defaultCustodian = null;
         }

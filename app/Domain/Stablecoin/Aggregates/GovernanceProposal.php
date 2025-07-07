@@ -31,7 +31,7 @@ class GovernanceProposal extends AggregateRoot
     protected string $quorumRequired;
     protected string $approvalThreshold;
     protected ?array $executionResult = null;
-    
+
     public static function create(
         string $proposalId,
         string $proposalType,
@@ -45,7 +45,7 @@ class GovernanceProposal extends AggregateRoot
         string $approvalThreshold = '0.5' // 50%
     ): self {
         $proposal = static::retrieve($proposalId);
-        
+
         $proposal->recordThat(new ProposalCreated(
             proposalId: $proposalId,
             proposalType: $proposalType,
@@ -58,10 +58,10 @@ class GovernanceProposal extends AggregateRoot
             quorumRequired: $quorumRequired,
             approvalThreshold: $approvalThreshold
         ));
-        
+
         return $proposal;
     }
-    
+
     public function castVote(
         string $voter,
         string $choice,
@@ -71,23 +71,23 @@ class GovernanceProposal extends AggregateRoot
         if ($this->status !== 'active') {
             throw new \InvalidArgumentException('Proposal is not active for voting');
         }
-        
+
         if (!in_array($choice, ['for', 'against', 'abstain'])) {
             throw new \InvalidArgumentException('Invalid vote choice');
         }
-        
+
         if (isset($this->votes[$voter])) {
             throw new \InvalidArgumentException('Voter has already cast a vote');
         }
-        
+
         if (now()->isBefore($this->startTime)) {
             throw new \InvalidArgumentException('Voting has not started yet');
         }
-        
+
         if (now()->isAfter($this->endTime)) {
             throw new \InvalidArgumentException('Voting has ended');
         }
-        
+
         $this->recordThat(new ProposalVoteCast(
             proposalId: $this->uuid(),
             voter: $voter,
@@ -96,22 +96,22 @@ class GovernanceProposal extends AggregateRoot
             reason: $reason,
             timestamp: now()
         ));
-        
+
         return $this;
     }
-    
+
     public function finalize(): self
     {
         if ($this->status !== 'active') {
             throw new \InvalidArgumentException('Proposal is not active');
         }
-        
+
         if (now()->isBefore($this->endTime)) {
             throw new \InvalidArgumentException('Voting period has not ended');
         }
-        
+
         $result = $this->calculateResult();
-        
+
         $this->recordThat(new ProposalFinalized(
             proposalId: $this->uuid(),
             result: $result['decision'],
@@ -120,42 +120,42 @@ class GovernanceProposal extends AggregateRoot
             quorumReached: $result['quorum_reached'],
             approvalRate: $result['approval_rate']
         ));
-        
+
         return $this;
     }
-    
+
     public function execute(array $executionData): self
     {
         if ($this->status !== 'passed') {
             throw new \InvalidArgumentException('Only passed proposals can be executed');
         }
-        
+
         $this->recordThat(new ProposalExecuted(
             proposalId: $this->uuid(),
             executedBy: $executionData['executed_by'],
             executionData: $executionData,
             timestamp: now()
         ));
-        
+
         return $this;
     }
-    
+
     public function cancel(string $reason, string $cancelledBy): self
     {
         if (in_array($this->status, ['executed', 'cancelled'])) {
             throw new \InvalidArgumentException('Cannot cancel proposal in current status');
         }
-        
+
         $this->recordThat(new ProposalCancelled(
             proposalId: $this->uuid(),
             reason: $reason,
             cancelledBy: $cancelledBy,
             timestamp: now()
         ));
-        
+
         return $this;
     }
-    
+
     protected function applyProposalCreated(ProposalCreated $event): void
     {
         $this->proposalType = $event->proposalType;
@@ -169,7 +169,7 @@ class GovernanceProposal extends AggregateRoot
         $this->approvalThreshold = $event->approvalThreshold;
         $this->status = now()->isBefore($event->startTime) ? 'pending' : 'active';
     }
-    
+
     protected function applyProposalVoteCast(ProposalVoteCast $event): void
     {
         $this->votes[$event->voter] = [
@@ -178,44 +178,44 @@ class GovernanceProposal extends AggregateRoot
             'reason' => $event->reason,
             'timestamp' => $event->timestamp
         ];
-        
+
         // Update vote summary
         $currentTotal = BigDecimal::of($this->votesSummary[$event->choice]);
         $this->votesSummary[$event->choice] = $currentTotal->plus($event->votingPower)->__toString();
     }
-    
+
     protected function applyProposalFinalized(ProposalFinalized $event): void
     {
         $this->status = $event->result;
         $this->votesSummary = $event->votesSummary;
     }
-    
+
     protected function applyProposalExecuted(ProposalExecuted $event): void
     {
         $this->status = 'executed';
         $this->executionResult = $event->executionData;
     }
-    
+
     protected function applyProposalCancelled(ProposalCancelled $event): void
     {
         $this->status = 'cancelled';
     }
-    
+
     private function calculateResult(): array
     {
         $totalVotes = BigDecimal::of('0');
         $forVotes = BigDecimal::of($this->votesSummary['for']);
         $againstVotes = BigDecimal::of($this->votesSummary['against']);
         $abstainVotes = BigDecimal::of($this->votesSummary['abstain']);
-        
+
         $totalVotes = $forVotes->plus($againstVotes)->plus($abstainVotes);
-        
+
         // Assume total voting power is 1000000 tokens for quorum calculation
         // In production, this would be fetched from governance token supply
         $totalVotingPower = BigDecimal::of('1000000');
         $quorumReached = $totalVotes->dividedBy($totalVotingPower, 4, RoundingMode::DOWN)
             ->isGreaterThanOrEqualTo($this->quorumRequired);
-        
+
         $approvalRate = '0';
         if (!$forVotes->plus($againstVotes)->isZero()) {
             $approvalRate = $forVotes->dividedBy(
@@ -224,12 +224,12 @@ class GovernanceProposal extends AggregateRoot
                 RoundingMode::DOWN
             )->__toString();
         }
-        
+
         $decision = 'failed';
         if ($quorumReached && BigDecimal::of($approvalRate)->isGreaterThanOrEqualTo($this->approvalThreshold)) {
             $decision = 'passed';
         }
-        
+
         return [
             'decision' => $decision,
             'total_votes' => $totalVotes->__toString(),
@@ -238,26 +238,26 @@ class GovernanceProposal extends AggregateRoot
             'approval_rate' => $approvalRate
         ];
     }
-    
+
     public function getStatus(): string
     {
         // Update status based on time if needed
         if ($this->status === 'pending' && now()->isAfter($this->startTime)) {
             $this->status = 'active';
         }
-        
+
         if ($this->status === 'active' && now()->isAfter($this->endTime)) {
             $this->status = 'ended';
         }
-        
+
         return $this->status;
     }
-    
+
     public function getVotesSummary(): array
     {
         return $this->votesSummary;
     }
-    
+
     public function getParameters(): array
     {
         return $this->parameters;

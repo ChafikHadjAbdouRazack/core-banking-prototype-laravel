@@ -12,8 +12,9 @@ class GasEstimate
         public readonly string $estimatedCost,
         public readonly string $chain,
         public readonly array $metadata = []
-    ) {}
-    
+    ) {
+    }
+
     public function toArray(): array
     {
         return [
@@ -26,7 +27,7 @@ class GasEstimate
             'metadata' => $this->metadata,
         ];
     }
-    
+
     public function getTotalCostInWei(): string
     {
         return bcmul($this->gasLimit, $this->gasPrice);

@@ -23,23 +23,23 @@ class UpdateBasketCompositionWorkflow extends Workflow
     {
         // Get the poll
         $poll = yield ActivityStub::make(GetPollActivity::class, $pollUuid);
-        
+
         if (!$poll || $poll->status->value !== 'closed') {
             throw new \Exception('Poll not found or not completed');
         }
-        
+
         // Get the basket code from metadata
         $basketCode = $poll->metadata['basket_code'] ?? config('baskets.primary', 'PRIMARY');
-        
+
         // Calculate weighted average of votes
         $newComposition = yield ActivityStub::make(CalculateBasketCompositionActivity::class, $pollUuid);
-        
+
         // Update the basket composition
         yield ActivityStub::make(UpdateBasketComponentsActivity::class, $basketCode, $newComposition);
-        
+
         // Trigger basket rebalancing if needed
         yield ActivityStub::make(TriggerBasketRebalancingActivity::class, $basketCode);
-        
+
         // Record the governance event
         yield ActivityStub::make(RecordGovernanceEventActivity::class, [
             'type' => 'basket_composition_updated',
@@ -47,7 +47,7 @@ class UpdateBasketCompositionWorkflow extends Workflow
             'basket_code' => $basketCode,
             'new_composition' => $newComposition,
         ]);
-        
+
         return true;
     }
 }

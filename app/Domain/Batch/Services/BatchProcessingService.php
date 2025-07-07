@@ -30,20 +30,20 @@ class BatchProcessingService
             scheduledAt: $scheduledAt,
             metadata: $metadata
         );
-        
+
         // Create batch job through event sourcing
         BatchAggregate::retrieve($batchJobData->uuid)
             ->createBatchJob($batchJobData)
             ->persist();
-        
+
         // If not scheduled, process immediately
         if (!$scheduledAt || $scheduledAt <= now()) {
             $this->processBatch($batchJobData->uuid);
         }
-        
+
         return BatchJob::where('uuid', $batchJobData->uuid)->first();
     }
-    
+
     /**
      * Process a batch job
      */
@@ -52,7 +52,7 @@ class BatchProcessingService
         $workflow = WorkflowStub::make(ProcessBatchJobWorkflow::class);
         $workflow->start($batchJobUuid);
     }
-    
+
     /**
      * Cancel a batch job
      */
@@ -62,31 +62,31 @@ class BatchProcessingService
             ->cancelBatchJob($reason)
             ->persist();
     }
-    
+
     /**
      * Retry failed items in a batch job
      */
     public function retryFailedItems(string $batchJobUuid): void
     {
         $batchJob = BatchJob::where('uuid', $batchJobUuid)->first();
-        
+
         if (!$batchJob) {
             throw new \InvalidArgumentException("Batch job not found: {$batchJobUuid}");
         }
-        
+
         // Get failed items
         $failedItems = $batchJob->items()
             ->where('status', 'failed')
             ->get()
-            ->map(function($item) {
+            ->map(function ($item) {
                 return $item->data;
             })
             ->toArray();
-        
+
         if (empty($failedItems)) {
             return;
         }
-        
+
         // Create a new batch job for retry
         $this->createBatchJob(
             userUuid: $batchJob->user_uuid,

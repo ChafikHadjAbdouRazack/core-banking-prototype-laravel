@@ -30,14 +30,14 @@ class ExchangeRatesRelationManager extends RelationManager
                     ->searchable()
                     ->preload()
                     ->required(),
-                
+
                 Forms\Components\TextInput::make('rate')
                     ->label('Exchange Rate')
                     ->numeric()
                     ->step(0.0000000001)
                     ->required()
                     ->helperText('Rate for converting from base asset to target asset'),
-                
+
                 Forms\Components\Select::make('source')
                     ->label('Source')
                     ->options([
@@ -48,21 +48,21 @@ class ExchangeRatesRelationManager extends RelationManager
                     ])
                     ->default(ExchangeRate::SOURCE_MANUAL)
                     ->required(),
-                
+
                 Forms\Components\DateTimePicker::make('valid_at')
                     ->label('Valid From')
                     ->default(now())
                     ->required(),
-                
+
                 Forms\Components\DateTimePicker::make('expires_at')
                     ->label('Expires At')
                     ->after('valid_at')
                     ->helperText('Leave empty for rates that don\'t expire'),
-                
+
                 Forms\Components\Toggle::make('is_active')
                     ->label('Active')
                     ->default(true),
-                
+
                 Forms\Components\KeyValue::make('metadata')
                     ->label('Metadata')
                     ->keyLabel('Property')
@@ -82,12 +82,12 @@ class ExchangeRatesRelationManager extends RelationManager
                     ->color('primary')
                     ->searchable()
                     ->sortable(),
-                
+
                 Tables\Columns\TextColumn::make('rate')
                     ->label('Rate')
                     ->numeric(decimalPlaces: 10)
                     ->sortable(),
-                
+
                 Tables\Columns\TextColumn::make('source')
                     ->label('Source')
                     ->badge()
@@ -98,23 +98,23 @@ class ExchangeRatesRelationManager extends RelationManager
                         ExchangeRate::SOURCE_MARKET => 'info',
                         default => 'gray',
                     }),
-                
+
                 Tables\Columns\TextColumn::make('valid_at')
                     ->label('Valid From')
                     ->dateTime()
                     ->sortable(),
-                
+
                 Tables\Columns\TextColumn::make('expires_at')
                     ->label('Expires')
                     ->dateTime()
                     ->placeholder('Never')
                     ->sortable(),
-                
+
                 Tables\Columns\IconColumn::make('is_active')
                     ->label('Active')
                     ->boolean()
                     ->alignCenter(),
-                
+
                 Tables\Columns\TextColumn::make('age')
                     ->label('Age')
                     ->state(fn ($record) => $record->getAgeInMinutes() . ' min')
@@ -133,14 +133,14 @@ class ExchangeRatesRelationManager extends RelationManager
                         ExchangeRate::SOURCE_ORACLE => 'Oracle',
                         ExchangeRate::SOURCE_MARKET => 'Market',
                     ]),
-                
+
                 Tables\Filters\TernaryFilter::make('is_active')
                     ->label('Active Status'),
-                
+
                 Tables\Filters\Filter::make('valid_now')
                     ->label('Valid Now')
                     ->query(fn (Builder $query): Builder => $query->valid()),
-                
+
                 Tables\Filters\Filter::make('expired')
                     ->label('Expired')
                     ->query(fn (Builder $query): Builder => $query->where('expires_at', '<=', now())),
@@ -153,7 +153,7 @@ class ExchangeRatesRelationManager extends RelationManager
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make()
                     ->requiresConfirmation(),
-                
+
                 Tables\Actions\Action::make('refresh')
                     ->label('Refresh Rate')
                     ->icon('heroicon-m-arrow-path')
@@ -170,14 +170,14 @@ class ExchangeRatesRelationManager extends RelationManager
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make()
                         ->requiresConfirmation(),
-                    
+
                     Tables\Actions\BulkAction::make('activate')
                         ->label('Activate')
                         ->icon('heroicon-m-check-circle')
                         ->color('success')
                         ->action(fn ($records) => $records->each->update(['is_active' => true]))
                         ->deselectRecordsAfterCompletion(),
-                    
+
                     Tables\Actions\BulkAction::make('deactivate')
                         ->label('Deactivate')
                         ->icon('heroicon-m-x-circle')

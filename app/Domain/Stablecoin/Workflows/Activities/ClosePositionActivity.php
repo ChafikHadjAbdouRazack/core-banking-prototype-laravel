@@ -20,7 +20,7 @@ class ClosePositionActivity extends Activity
         $aggregate = StablecoinAggregate::retrieve($positionUuid);
         $aggregate->closePosition($reason);
         $aggregate->persist();
-        
+
         return true;
     }
 }

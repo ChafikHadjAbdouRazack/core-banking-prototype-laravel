@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 class CustodianTransfer extends Model
 {
     use HasFactory;
-    
+
     protected $keyType = 'string';
     public $incrementing = false;
 

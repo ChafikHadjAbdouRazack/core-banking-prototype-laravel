@@ -12,14 +12,16 @@ use Illuminate\Queue\SerializesModels;
 
 class ContactFormSubmission extends Mailable
 {
-    use Queueable, SerializesModels;
+    use Queueable;
+    use SerializesModels;
 
     /**
      * Create a new message instance.
      */
     public function __construct(
         public ContactSubmission $submission
-    ) {}
+    ) {
+    }
 
     /**
      * Get the message envelope.
@@ -53,11 +55,11 @@ class ContactFormSubmission extends Mailable
     public function attachments(): array
     {
         $attachments = [];
-        
+
         if ($this->submission->attachment_path) {
             $attachments[] = \Illuminate\Mail\Mailables\Attachment::fromStorageDisk('local', $this->submission->attachment_path);
         }
-        
+
         return $attachments;
     }
 }

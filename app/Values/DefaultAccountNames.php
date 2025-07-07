@@ -2,7 +2,8 @@
 
 namespace App\Values;
 
-enum DefaultAccountNames: string {
+enum DefaultAccountNames: string
+{
     case MAIN    = 'Main';
     case SAVINGS = 'Savings';
     case LOAN    = 'Loan';

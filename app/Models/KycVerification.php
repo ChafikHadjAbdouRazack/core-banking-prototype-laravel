@@ -10,7 +10,8 @@ use Illuminate\Support\Facades\Crypt;
 
 class KycVerification extends Model
 {
-    use HasUuids, SoftDeletes;
+    use HasUuids;
+    use SoftDeletes;
 
     protected $fillable = [
         'user_id',
@@ -133,14 +134,14 @@ class KycVerification extends Model
         $lastVerification = static::whereYear('created_at', $year)
             ->orderBy('verification_number', 'desc')
             ->first();
-        
+
         if ($lastVerification) {
             $lastNumber = intval(substr($lastVerification->verification_number, -5));
             $newNumber = str_pad($lastNumber + 1, 5, '0', STR_PAD_LEFT);
         } else {
             $newNumber = '00001';
         }
-        
+
         return "KYC-{$year}-{$newNumber}";
     }
 
@@ -249,7 +250,7 @@ class KycVerification extends Model
 
     public function isExpired(): bool
     {
-        return $this->status === self::STATUS_EXPIRED || 
+        return $this->status === self::STATUS_EXPIRED ||
                ($this->expires_at && $this->expires_at->isPast());
     }
 
@@ -280,7 +281,7 @@ class KycVerification extends Model
             $this->middle_name,
             $this->last_name,
         ]);
-        
+
         return implode(' ', $parts);
     }
 
@@ -294,7 +295,7 @@ class KycVerification extends Model
             $this->postal_code,
             $this->country,
         ]);
-        
+
         return implode(', ', $parts);
     }
 

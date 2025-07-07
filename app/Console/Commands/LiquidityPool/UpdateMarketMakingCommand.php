@@ -32,28 +32,28 @@ class UpdateMarketMakingCommand extends Command
         OrderService $orderService
     ): int {
         $this->info('Updating market making orders...');
-        
+
         $poolId = $this->option('pool');
         $cancelExisting = $this->option('cancel-existing');
-        
+
         try {
-            $pools = $poolId 
+            $pools = $poolId
                 ? [\App\Domain\Exchange\Projections\LiquidityPool::where('pool_id', $poolId)->firstOrFail()]
                 : \App\Domain\Exchange\Projections\LiquidityPool::active()->get();
-            
+
             foreach ($pools as $pool) {
                 $this->info("\nProcessing pool: {$pool->base_currency}/{$pool->quote_currency}");
-                
+
                 // Cancel existing AMM orders if requested
                 if ($cancelExisting) {
                     $this->cancelExistingAMMOrders($pool->pool_id, $orderService);
                 }
-                
+
                 // Generate new market making orders
                 $orders = $ammService->generateMarketMakingOrders($pool->pool_id);
-                
+
                 $this->info("Generated " . count($orders) . " market making orders");
-                
+
                 // Place orders
                 $placedOrders = 0;
                 foreach ($orders as $order) {
@@ -77,9 +77,9 @@ class UpdateMarketMakingCommand extends Command
                         $this->warn("Failed to place order: " . $e->getMessage());
                     }
                 }
-                
+
                 $this->info("Successfully placed {$placedOrders} orders");
-                
+
                 // Adjust parameters based on performance
                 $adjustments = $ammService->adjustMarketMakingParameters($pool->pool_id);
                 if (!empty($adjustments)) {
@@ -89,15 +89,14 @@ class UpdateMarketMakingCommand extends Command
                     }
                 }
             }
-            
+
             return Command::SUCCESS;
-            
         } catch (\Exception $e) {
             $this->error('Failed to update market making: ' . $e->getMessage());
             return Command::FAILURE;
         }
     }
-    
+
     /**
      * Cancel existing AMM orders for a pool
      */
@@ -107,9 +106,9 @@ class UpdateMarketMakingCommand extends Command
             ->where('metadata->source', 'amm')
             ->whereIn('status', ['PENDING', 'PARTIALLY_FILLED'])
             ->get();
-        
+
         $this->info("Cancelling " . $existingOrders->count() . " existing AMM orders");
-        
+
         foreach ($existingOrders as $order) {
             try {
                 $orderService->cancelOrder($order->order_id);

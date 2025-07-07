@@ -114,7 +114,7 @@ class RegulatoryReport extends Model
             if (empty($report->report_id)) {
                 $report->report_id = self::generateReportId($report->report_type);
             }
-            
+
             // Check if overdue
             if ($report->due_date) {
                 $report->checkOverdueStatus();
@@ -164,7 +164,7 @@ class RegulatoryReport extends Model
         if ($this->due_date && $this->status !== self::STATUS_SUBMITTED && $this->status !== self::STATUS_ACCEPTED) {
             $now = Carbon::now();
             $dueDate = Carbon::parse($this->due_date);
-            
+
             $this->is_overdue = $now->isAfter($dueDate);
             $this->days_overdue = $this->is_overdue ? $now->diffInDays($dueDate) : 0;
         } else {
@@ -207,7 +207,7 @@ class RegulatoryReport extends Model
     public function addAuditEntry(string $action, array $data = []): void
     {
         $auditTrail = $this->audit_trail ?? [];
-        
+
         $auditTrail[] = [
             'action' => $action,
             'timestamp' => now()->toIso8601String(),
@@ -221,7 +221,7 @@ class RegulatoryReport extends Model
     public function addRiskIndicator(string $indicator, string $severity = 'medium', array $details = []): void
     {
         $riskIndicators = $this->risk_indicators ?? [];
-        
+
         $riskIndicators[] = [
             'indicator' => $indicator,
             'severity' => $severity,
@@ -235,7 +235,7 @@ class RegulatoryReport extends Model
     public function addEntity(string $entityType, string $entityId, array $details = []): void
     {
         $entities = $this->entities_included ?? [];
-        
+
         $entities[] = [
             'type' => $entityType,
             'id' => $entityId,
@@ -278,7 +278,7 @@ class RegulatoryReport extends Model
 
     public function getPriorityLabel(): string
     {
-        return match($this->priority) {
+        return match ($this->priority) {
             5 => 'Critical',
             4 => 'High',
             3 => 'Medium',
@@ -290,7 +290,7 @@ class RegulatoryReport extends Model
 
     public function getStatusLabel(): string
     {
-        return match($this->status) {
+        return match ($this->status) {
             self::STATUS_DRAFT => 'Draft',
             self::STATUS_PENDING_REVIEW => 'Pending Review',
             self::STATUS_SUBMITTED => 'Submitted',

@@ -29,13 +29,13 @@ class UpdateConfigurationWorkflow
 
         try {
             $appliedChanges = [];
-            
+
             foreach ($configChanges as $configKey => $newValue) {
                 if ($this->isConfigurationUpdateAllowed($configKey)) {
                     $oldValue = $this->getCurrentConfigValue($configKey);
-                    
+
                     $this->updateConfiguration($configKey, $newValue);
-                    
+
                     $appliedChanges[] = [
                         'key' => $configKey,
                         'old_value' => $oldValue,
@@ -116,7 +116,7 @@ class UpdateConfigurationWorkflow
     {
         $changes = [];
         $text = strtolower($poll->title . ' ' . ($poll->description ?? ''));
-        
+
         // Parse common configuration patterns
         if (preg_match('/transaction.*limit.*?(\d+)/i', $text, $matches)) {
             $changes['transaction_limit'] = (int) $matches[1];
@@ -141,15 +141,15 @@ class UpdateConfigurationWorkflow
         // For yes/no polls, toggle boolean configurations
         if ($poll->type->value === 'yes_no') {
             $enabled = $result->winningOption === 'yes';
-            
+
             if (str_contains($text, 'two factor') || str_contains($text, '2fa')) {
                 $changes['require_2fa'] = $enabled;
             }
-            
+
             if (str_contains($text, 'email notification')) {
                 $changes['email_notifications'] = $enabled;
             }
-            
+
             if (str_contains($text, 'audit log')) {
                 $changes['audit_logging'] = $enabled;
             }
@@ -212,7 +212,7 @@ class UpdateConfigurationWorkflow
         // Try to get from cache first
         $cacheKey = "config.{$configKey}";
         $cachedValue = Cache::get($cacheKey);
-        
+
         if ($cachedValue !== null) {
             return $cachedValue;
         }
@@ -229,7 +229,7 @@ class UpdateConfigurationWorkflow
 
         // In a real implementation, this would also update the persistent configuration store
         // This could be database, configuration management system, or external service
-        
+
         logger()->info('Configuration updated via governance', [
             'config_key' => $configKey,
             'new_value' => $newValue,

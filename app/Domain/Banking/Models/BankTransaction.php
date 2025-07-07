@@ -27,8 +27,9 @@ class BankTransaction
         public readonly Carbon $bookingDate,
         public readonly string $status,
         public readonly array $metadata = [],
-    ) {}
-    
+    ) {
+    }
+
     /**
      * Check if transaction is a debit
      */
@@ -36,7 +37,7 @@ class BankTransaction
     {
         return $this->type === 'debit' || $this->amount < 0;
     }
-    
+
     /**
      * Check if transaction is a credit
      */
@@ -44,7 +45,7 @@ class BankTransaction
     {
         return $this->type === 'credit' || $this->amount > 0;
     }
-    
+
     /**
      * Get absolute amount
      */
@@ -52,7 +53,7 @@ class BankTransaction
     {
         return abs($this->amount);
     }
-    
+
     /**
      * Check if transaction is pending
      */
@@ -60,7 +61,7 @@ class BankTransaction
     {
         return $this->status === 'pending';
     }
-    
+
     /**
      * Check if transaction is completed
      */
@@ -68,7 +69,7 @@ class BankTransaction
     {
         return $this->status === 'completed' || $this->status === 'booked';
     }
-    
+
     /**
      * Format for display
      */
@@ -84,7 +85,7 @@ class BankTransaction
             $this->description ?? $this->category
         );
     }
-    
+
     /**
      * Get transaction direction
      */
@@ -92,7 +93,7 @@ class BankTransaction
     {
         return $this->isDebit() ? 'outgoing' : 'incoming';
     }
-    
+
     /**
      * Convert to array
      */
@@ -119,7 +120,7 @@ class BankTransaction
             'metadata' => $this->metadata,
         ];
     }
-    
+
     /**
      * Create from array
      */

@@ -32,30 +32,30 @@ class CalculateBasketPerformance extends Command
     {
         $basketCode = $this->option('basket');
         $period = $this->option('period');
-        
+
         // Get baskets to process
         $query = BasketAsset::active();
         if ($basketCode) {
             $query->where('code', $basketCode);
         }
-        
+
         $baskets = $query->get();
-        
+
         if ($baskets->isEmpty()) {
             $this->error('No active baskets found to process.');
             return 1;
         }
-        
+
         $this->info("Processing performance for {$baskets->count()} basket(s)...");
-        
+
         foreach ($baskets as $basket) {
             $this->info("Calculating performance for basket: {$basket->code} - {$basket->name}");
-            
+
             try {
                 if ($period && $period !== 'all') {
                     // Calculate specific period
                     $now = now();
-                    [$periodStart, $periodEnd] = match($period) {
+                    [$periodStart, $periodEnd] = match ($period) {
                         'hour' => [$now->copy()->subHour(), $now],
                         'day' => [$now->copy()->subDay(), $now],
                         'week' => [$now->copy()->subWeek(), $now],
@@ -64,14 +64,14 @@ class CalculateBasketPerformance extends Command
                         'year' => [$now->copy()->subYear(), $now],
                         default => throw new \InvalidArgumentException("Invalid period: {$period}")
                     };
-                    
+
                     $performance = $performanceService->calculatePerformance(
                         $basket,
                         $period,
                         $periodStart,
                         $periodEnd
                     );
-                    
+
                     if ($performance) {
                         $this->info("  - {$period}: {$performance->formatted_return} (volatility: {$performance->volatility}%)");
                     } else {
@@ -80,16 +80,16 @@ class CalculateBasketPerformance extends Command
                 } else {
                     // Calculate all periods
                     $performances = $performanceService->calculateAllPeriods($basket);
-                    
+
                     foreach ($performances as $performance) {
                         $this->info("  - {$performance->period_type}: {$performance->formatted_return} (volatility: {$performance->volatility}%)");
                     }
-                    
+
                     if ($performances->isEmpty()) {
                         $this->warn("  - No performance data could be calculated");
                     }
                 }
-                
+
                 // Show top performers
                 $topPerformers = $performanceService->getTopPerformers($basket, 'month', 3);
                 if ($topPerformers->isNotEmpty()) {
@@ -98,7 +98,7 @@ class CalculateBasketPerformance extends Command
                         $this->info("    - {$performer->asset_code}: {$performer->formatted_contribution}");
                     }
                 }
-                
+
                 // Show worst performers
                 $worstPerformers = $performanceService->getWorstPerformers($basket, 'month', 3);
                 if ($worstPerformers->isNotEmpty()) {
@@ -107,7 +107,6 @@ class CalculateBasketPerformance extends Command
                         $this->info("    - {$performer->asset_code}: {$performer->formatted_contribution}");
                     }
                 }
-                
             } catch (\Exception $e) {
                 $this->error("  Error calculating performance: {$e->getMessage()}");
                 Log::error('Basket performance calculation failed', [
@@ -117,7 +116,7 @@ class CalculateBasketPerformance extends Command
                 ]);
             }
         }
-        
+
         $this->info('Performance calculation completed.');
         return 0;
     }

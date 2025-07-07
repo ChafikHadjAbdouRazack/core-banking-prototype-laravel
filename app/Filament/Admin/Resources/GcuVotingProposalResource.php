@@ -16,16 +16,16 @@ class GcuVotingProposalResource extends Resource
     protected static ?string $model = GcuVotingProposal::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-archive-box';
-    
+
     protected static ?string $navigationGroup = 'GCU Management';
-    
+
     protected static ?int $navigationSort = 2;
 
     public static function getNavigationLabel(): string
     {
         return 'Voting Proposals';
     }
-    
+
     public static function getNavigationBadge(): ?string
     {
         return static::getModel()::where('status', 'active')->count() ?: null;
@@ -47,7 +47,7 @@ class GcuVotingProposalResource extends Resource
                             ->required()
                             ->columnSpanFull(),
                     ]),
-                    
+
                 Forms\Components\Section::make('Voting Configuration')
                     ->schema([
                         Forms\Components\Select::make('status')
@@ -78,7 +78,7 @@ class GcuVotingProposalResource extends Resource
                             ->maxValue(100),
                     ])
                     ->columns(2),
-                    
+
                 Forms\Components\Section::make('Composition')
                     ->schema([
                         Forms\Components\KeyValue::make('proposed_composition')

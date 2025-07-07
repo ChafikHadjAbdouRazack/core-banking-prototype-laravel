@@ -23,7 +23,8 @@ class StablecoinController extends Controller
     public function __construct(
         private readonly CollateralService $collateralService,
         private readonly StabilityMechanismService $stabilityService
-    ) {}
+    ) {
+    }
 
     /**
      * @OA\Get(
@@ -72,25 +73,25 @@ class StablecoinController extends Controller
     public function index(Request $request): JsonResponse
     {
         $query = Stablecoin::query();
-        
+
         if ($request->boolean('active_only')) {
             $query->active();
         }
-        
+
         if ($request->boolean('minting_enabled')) {
             $query->mintingEnabled();
         }
-        
+
         if ($request->boolean('burning_enabled')) {
             $query->burningEnabled();
         }
-        
+
         if ($request->has('stability_mechanism')) {
             $query->where('stability_mechanism', $request->string('stability_mechanism'));
         }
-        
+
         $stablecoins = $query->get();
-        
+
         return response()->json([
             'data' => $stablecoins,
         ]);
@@ -127,18 +128,18 @@ class StablecoinController extends Controller
     public function show(string $code): JsonResponse
     {
         $stablecoin = Stablecoin::findOrFail($code);
-        
+
         $metrics = $this->collateralService->getSystemCollateralizationMetrics()[$code] ?? null;
-        
+
         $data = $stablecoin->toArray();
         $data['global_collateralization_ratio'] = $stablecoin->calculateGlobalCollateralizationRatio();
         $data['is_adequately_collateralized'] = $stablecoin->isAdequatelyCollateralized();
-        
+
         if ($metrics) {
             $data['active_positions_count'] = $metrics['active_positions'];
             $data['at_risk_positions_count'] = $metrics['at_risk_positions'];
         }
-        
+
         return response()->json([
             'data' => $data,
         ]);
@@ -189,15 +190,15 @@ class StablecoinController extends Controller
             'precision' => 'required|integer|min:0|max:18',
             'metadata' => 'nullable|array',
         ]);
-        
+
         $validated['is_active'] = true;
         $validated['minting_enabled'] = true;
         $validated['burning_enabled'] = true;
         $validated['total_supply'] = 0;
         $validated['total_collateral_value'] = 0;
-        
+
         $stablecoin = Stablecoin::create($validated);
-        
+
         return response()->json([
             'data' => $stablecoin,
         ], 201);
@@ -254,7 +255,7 @@ class StablecoinController extends Controller
     public function update(Request $request, string $code): JsonResponse
     {
         $stablecoin = Stablecoin::findOrFail($code);
-        
+
         $validated = $request->validate([
             'name' => 'sometimes|string|max:255',
             'collateral_ratio' => 'sometimes|numeric|min:1',
@@ -268,21 +269,21 @@ class StablecoinController extends Controller
             'burning_enabled' => 'sometimes|boolean',
             'metadata' => 'sometimes|nullable|array',
         ]);
-        
+
         // Validate that min_collateral_ratio is less than collateral_ratio
         if (isset($validated['min_collateral_ratio']) || isset($validated['collateral_ratio'])) {
             $newMinRatio = $validated['min_collateral_ratio'] ?? $stablecoin->min_collateral_ratio;
             $newCollateralRatio = $validated['collateral_ratio'] ?? $stablecoin->collateral_ratio;
-            
+
             if ($newMinRatio >= $newCollateralRatio) {
                 throw ValidationException::withMessages([
                     'min_collateral_ratio' => 'Minimum collateral ratio must be less than collateral ratio',
                 ]);
             }
         }
-        
+
         $stablecoin->update($validated);
-        
+
         return response()->json([
             'data' => $stablecoin,
         ]);
@@ -330,13 +331,13 @@ class StablecoinController extends Controller
     {
         $stablecoin = Stablecoin::findOrFail($code);
         $metrics = $this->collateralService->getSystemCollateralizationMetrics()[$code] ?? null;
-        
+
         if (!$metrics) {
             return response()->json([
                 'error' => 'No metrics available for this stablecoin',
             ], 404);
         }
-        
+
         return response()->json([
             'data' => $metrics,
         ]);
@@ -369,7 +370,7 @@ class StablecoinController extends Controller
     public function systemMetrics(): JsonResponse
     {
         $metrics = $this->collateralService->getSystemCollateralizationMetrics();
-        
+
         return response()->json([
             'data' => $metrics,
         ]);
@@ -413,7 +414,7 @@ class StablecoinController extends Controller
     {
         $stablecoin = Stablecoin::findOrFail($code);
         $result = $this->stabilityService->executeStabilityMechanismForStablecoin($stablecoin);
-        
+
         return response()->json([
             'data' => $result,
         ]);
@@ -442,7 +443,7 @@ class StablecoinController extends Controller
     public function systemHealth(): JsonResponse
     {
         $health = $this->stabilityService->checkSystemHealth();
-        
+
         return response()->json([
             'data' => $health,
         ]);
@@ -485,7 +486,7 @@ class StablecoinController extends Controller
     {
         $stablecoin = Stablecoin::findOrFail($code);
         $distribution = $this->collateralService->getCollateralDistribution($code);
-        
+
         return response()->json([
             'data' => array_values($distribution),
         ]);
@@ -523,13 +524,13 @@ class StablecoinController extends Controller
     public function deactivate(string $code): JsonResponse
     {
         $stablecoin = Stablecoin::findOrFail($code);
-        
+
         $stablecoin->update([
             'is_active' => false,
             'minting_enabled' => false,
             'burning_enabled' => false,
         ]);
-        
+
         return response()->json([
             'message' => 'Stablecoin deactivated successfully',
             'data' => $stablecoin,
@@ -568,13 +569,13 @@ class StablecoinController extends Controller
     public function reactivate(string $code): JsonResponse
     {
         $stablecoin = Stablecoin::findOrFail($code);
-        
+
         $stablecoin->update([
             'is_active' => true,
             'minting_enabled' => true,
             'burning_enabled' => true,
         ]);
-        
+
         return response()->json([
             'message' => 'Stablecoin reactivated successfully',
             'data' => $stablecoin,

@@ -16,7 +16,7 @@ class TransactionsRelationManager extends RelationManager
     protected static string $relationship = 'transactions';
 
     protected static ?string $recordTitleAttribute = 'uuid';
-    
+
     protected static ?string $title = 'Transaction History';
 
     public function table(Table $table): Table

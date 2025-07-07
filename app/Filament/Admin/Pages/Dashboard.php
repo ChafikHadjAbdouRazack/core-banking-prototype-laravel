@@ -14,9 +14,9 @@ use Filament\Pages\Dashboard as BaseDashboard;
 class Dashboard extends BaseDashboard
 {
     protected static ?string $navigationIcon = 'heroicon-o-home';
-    
+
     protected static string $view = 'filament.admin.pages.dashboard';
-    
+
     public function getWidgets(): array
     {
         return [
@@ -29,7 +29,7 @@ class Dashboard extends BaseDashboard
             SystemHealthWidget::class,
         ];
     }
-    
+
     public function getColumns(): int|string|array
     {
         return [

@@ -61,7 +61,7 @@ class AdminPanelProvider extends PanelProvider
                 Authenticate::class,
             ]);
     }
-    
+
     /**
      * Get the brand name for the admin panel
      */
@@ -71,7 +71,7 @@ class AdminPanelProvider extends PanelProvider
         if (config('app.gcu_enabled', false)) {
             return config('app.gcu_basket_name', 'Global Currency Unit');
         }
-        
+
         return 'FinAegis Admin';
     }
 }

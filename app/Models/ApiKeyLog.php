@@ -78,7 +78,7 @@ class ApiKeyLog extends Model
         if ($this->response_time < 1000) {
             return $this->response_time . 'ms';
         }
-        
+
         return round($this->response_time / 1000, 2) . 's';
     }
 }

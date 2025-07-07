@@ -14,7 +14,8 @@ class CacheManager
         private readonly AccountCacheService $accountCache,
         private readonly TransactionCacheService $transactionCache,
         private readonly TurnoverCacheService $turnoverCache
-    ) {}
+    ) {
+    }
 
     /**
      * Handle account update event
@@ -23,7 +24,7 @@ class CacheManager
     {
         // Update account in cache
         $this->accountCache->put($account);
-        
+
         // Update balance cache specifically
         $this->accountCache->updateBalance($account->uuid, $account->balance);
     }
@@ -46,7 +47,7 @@ class CacheManager
     {
         // Update transaction cache
         $this->transactionCache->put($transaction);
-        
+
         // Invalidate account balance cache
         $this->accountCache->forget($transaction->account_uuid);
     }
@@ -77,7 +78,7 @@ class CacheManager
     {
         // Pre-load frequently accessed data
         $account = $this->accountCache->get($accountUuid);
-        
+
         if ($account) {
             $this->accountCache->getBalance($accountUuid);
             $this->transactionCache->getRecent($accountUuid);

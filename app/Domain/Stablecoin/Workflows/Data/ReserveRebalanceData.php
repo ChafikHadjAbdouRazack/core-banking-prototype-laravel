@@ -9,8 +9,9 @@ class ReserveRebalanceData
         public readonly array $targetAllocations,
         public readonly string $executedBy,
         public readonly float $maxSlippage = 0.02
-    ) {}
-    
+    ) {
+    }
+
     public function toArray(): array
     {
         return [

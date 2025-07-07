@@ -29,7 +29,7 @@ class SystemIncidentUpdate extends Model
      */
     public function getStatusColorAttribute()
     {
-        return match($this->status) {
+        return match ($this->status) {
             'resolved' => 'green',
             'in_progress' => 'yellow',
             'identified' => 'red',

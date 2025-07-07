@@ -12,7 +12,7 @@ use Carbon\Carbon;
 class ExchangeRate extends Model
 {
     use HasFactory;
-    
+
     /**
      * Create a new factory instance for the model.
      */
@@ -20,14 +20,14 @@ class ExchangeRate extends Model
     {
         return \Database\Factories\ExchangeRateFactory::new();
     }
-    
+
     /**
      * The table associated with the model.
      *
      * @var string
      */
     protected $table = 'exchange_rates';
-    
+
     /**
      * The attributes that are mass assignable.
      *
@@ -43,7 +43,7 @@ class ExchangeRate extends Model
         'is_active',
         'metadata',
     ];
-    
+
     /**
      * The attributes that should be cast.
      *
@@ -56,7 +56,7 @@ class ExchangeRate extends Model
         'is_active' => 'boolean',
         'metadata' => 'array',
     ];
-    
+
     /**
      * Exchange rate sources
      */
@@ -64,7 +64,7 @@ class ExchangeRate extends Model
     public const SOURCE_API = 'api';
     public const SOURCE_ORACLE = 'oracle';
     public const SOURCE_MARKET = 'market';
-    
+
     /**
      * Get all valid sources
      *
@@ -79,7 +79,7 @@ class ExchangeRate extends Model
             self::SOURCE_MARKET,
         ];
     }
-    
+
     /**
      * Get the from asset
      */
@@ -87,7 +87,7 @@ class ExchangeRate extends Model
     {
         return $this->belongsTo(Asset::class, 'from_asset_code', 'code');
     }
-    
+
     /**
      * Get the to asset
      */
@@ -95,7 +95,7 @@ class ExchangeRate extends Model
     {
         return $this->belongsTo(Asset::class, 'to_asset_code', 'code');
     }
-    
+
     /**
      * Convert an amount from the base asset to the target asset
      *
@@ -106,7 +106,7 @@ class ExchangeRate extends Model
     {
         return (int) round($amount * (float) $this->rate);
     }
-    
+
     /**
      * Get the inverse rate
      *
@@ -116,7 +116,7 @@ class ExchangeRate extends Model
     {
         return 1 / (float) $this->rate;
     }
-    
+
     /**
      * Check if the rate is currently valid
      *
@@ -125,12 +125,12 @@ class ExchangeRate extends Model
     public function isValid(): bool
     {
         $now = now();
-        
-        return $this->is_active 
-            && $this->valid_at <= $now 
+
+        return $this->is_active
+            && $this->valid_at <= $now
             && ($this->expires_at === null || $this->expires_at > $now);
     }
-    
+
     /**
      * Check if the rate has expired
      *
@@ -140,7 +140,7 @@ class ExchangeRate extends Model
     {
         return $this->expires_at !== null && $this->expires_at <= now();
     }
-    
+
     /**
      * Get the age of the rate in minutes
      *
@@ -150,7 +150,7 @@ class ExchangeRate extends Model
     {
         return (int) $this->valid_at->diffInMinutes(now());
     }
-    
+
     /**
      * Scope for active rates
      *
@@ -161,7 +161,7 @@ class ExchangeRate extends Model
     {
         return $query->where('is_active', true);
     }
-    
+
     /**
      * Scope for valid rates (active and within time range)
      *
@@ -171,7 +171,7 @@ class ExchangeRate extends Model
     public function scopeValid($query)
     {
         $now = now();
-        
+
         return $query->where('is_active', true)
             ->where('valid_at', '<=', $now)
             ->where(function ($q) use ($now) {
@@ -179,7 +179,7 @@ class ExchangeRate extends Model
                   ->orWhere('expires_at', '>', $now);
             });
     }
-    
+
     /**
      * Scope for rates between specific assets
      *
@@ -193,7 +193,7 @@ class ExchangeRate extends Model
         return $query->where('from_asset_code', $fromAsset)
                      ->where('to_asset_code', $toAsset);
     }
-    
+
     /**
      * Scope for rates by source
      *
@@ -205,7 +205,7 @@ class ExchangeRate extends Model
     {
         return $query->where('source', $source);
     }
-    
+
     /**
      * Scope for latest rates first
      *
@@ -216,7 +216,7 @@ class ExchangeRate extends Model
     {
         return $query->orderBy('valid_at', 'desc');
     }
-    
+
     /**
      * Get latest exchange rates grouped by asset pairs
      *
@@ -225,7 +225,7 @@ class ExchangeRate extends Model
     public static function getLatestRates(): object
     {
         $rates = self::valid()->latest()->get()->groupBy(['from_asset_code', 'to_asset_code']);
-        
+
         $result = new \stdClass();
         foreach ($rates as $fromAsset => $toAssets) {
             $result->$fromAsset = new \stdClass();
@@ -233,10 +233,10 @@ class ExchangeRate extends Model
                 $result->$fromAsset->$toAsset = $rateRecords->first()->rate;
             }
         }
-        
+
         return $result;
     }
-    
+
     /**
      * Get exchange rate between two assets
      *
@@ -249,9 +249,9 @@ class ExchangeRate extends Model
         if ($fromAsset === $toAsset) {
             return 1.0;
         }
-        
+
         $rate = self::valid()->between($fromAsset, $toAsset)->latest()->first();
-        
+
         return $rate ? (float) $rate->rate : null;
     }
 }

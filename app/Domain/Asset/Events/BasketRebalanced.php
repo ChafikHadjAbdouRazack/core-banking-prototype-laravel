@@ -10,5 +10,6 @@ class BasketRebalanced extends ShouldBeStored
         public string $basketCode,
         public array $newComponents,
         public array $oldComponents
-    ) {}
+    ) {
+    }
 }

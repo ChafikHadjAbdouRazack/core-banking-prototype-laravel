@@ -22,7 +22,7 @@ class OptimizedAssetTransferWorkflow extends Workflow
 {
     /**
      * Execute optimized asset transfer between accounts
-     * 
+     *
      * @param AccountUuid $fromAccountUuid Source account UUID
      * @param AccountUuid $toAccountUuid Destination account UUID
      * @param string $fromAssetCode Source asset code
@@ -40,16 +40,16 @@ class OptimizedAssetTransferWorkflow extends Workflow
         ?string $description = null
     ): \Generator {
         $startTime = microtime(true);
-        
+
         // Pre-warm caches for better performance
         $optimizationService = app(TransferOptimizationService::class);
         $optimizationService->warmUpCaches([
             (string) $fromAccountUuid,
             (string) $toAccountUuid,
         ]);
-        
+
         $transferId = null;
-        
+
         try {
             // Initiate the transfer with optimized activity
             $transferId = yield ActivityStub::make(
@@ -61,14 +61,14 @@ class OptimizedAssetTransferWorkflow extends Workflow
                 $fromAmount,
                 $description
             );
-            
+
             // Add compensation to reverse the transfer if something goes wrong
             $this->addCompensation(fn() => ActivityStub::make(
                 FailAssetTransferActivity::class,
                 $transferId,
                 'Transfer failed during workflow execution'
             ));
-            
+
             // For same-asset transfers, we can complete immediately
             if ($fromAssetCode === $toAssetCode) {
                 // Complete the transfer
@@ -85,24 +85,23 @@ class OptimizedAssetTransferWorkflow extends Workflow
                     $transferId
                 );
             }
-            
+
             // Calculate execution time
             $executionTime = microtime(true) - $startTime;
-            
+
             return [
                 'success' => true,
                 'transfer_id' => $transferId,
                 'execution_time_ms' => round($executionTime * 1000, 2),
                 'optimized' => true,
             ];
-            
         } catch (\Throwable $exception) {
             // Compensate on failure
             yield from $this->compensate();
-            
+
             // Calculate execution time even on failure
             $executionTime = microtime(true) - $startTime;
-            
+
             return [
                 'success' => false,
                 'error' => $exception->getMessage(),

@@ -16,7 +16,7 @@ class BlockchainWalletResource extends JsonResource
     {
         $metadata = json_decode($this->metadata, true) ?? [];
         $settings = json_decode($this->settings, true) ?? [];
-        
+
         return [
             'wallet_id' => $this->wallet_id,
             'type' => $this->type,

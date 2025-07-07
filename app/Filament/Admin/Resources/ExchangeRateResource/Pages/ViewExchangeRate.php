@@ -18,7 +18,7 @@ class ViewExchangeRate extends ViewRecord
             Actions\EditAction::make()
                 ->label('Edit Rate')
                 ->icon('heroicon-m-pencil-square'),
-            
+
             Actions\Action::make('refresh')
                 ->label('Refresh Rate')
                 ->icon('heroicon-m-arrow-path')
@@ -29,7 +29,7 @@ class ViewExchangeRate extends ViewRecord
                 })
                 ->requiresConfirmation()
                 ->visible(fn () => $this->getRecord()->source !== 'manual'),
-            
+
             Actions\Action::make('toggle_status')
                 ->label(fn () => $this->getRecord()->is_active ? 'Deactivate' : 'Activate')
                 ->icon(fn () => $this->getRecord()->is_active ? 'heroicon-m-x-circle' : 'heroicon-m-check-circle')
@@ -40,7 +40,7 @@ class ViewExchangeRate extends ViewRecord
                     $this->dispatch('$refresh');
                 })
                 ->requiresConfirmation(fn () => $this->getRecord()->is_active),
-            
+
             Actions\DeleteAction::make()
                 ->label('Delete Rate')
                 ->icon('heroicon-m-trash')

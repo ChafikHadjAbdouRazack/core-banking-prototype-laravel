@@ -15,8 +15,9 @@ class PriceData
         public readonly ?string $volume24h = null,
         public readonly ?string $changePercent24h = null,
         public readonly ?array $metadata = []
-    ) {}
-    
+    ) {
+    }
+
     public function toArray(): array
     {
         return [
@@ -30,7 +31,7 @@ class PriceData
             'metadata' => $this->metadata,
         ];
     }
-    
+
     public function isStale(int $maxAgeSeconds = 300): bool
     {
         return $this->timestamp->diffInSeconds(now()) > $maxAgeSeconds;

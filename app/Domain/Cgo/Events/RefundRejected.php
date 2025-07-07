@@ -14,5 +14,6 @@ class RefundRejected extends ShouldBeStored
         public readonly string $rejectedBy,
         public readonly string $rejectionReason,
         public readonly array $metadata = []
-    ) {}
+    ) {
+    }
 }

@@ -97,7 +97,7 @@ class PaymentVerificationService
 
         try {
             $charge = $this->coinbaseService->getCharge($investment->coinbase_charge_id);
-            
+
             // Check if charge is confirmed
             if (isset($charge['timeline'])) {
                 foreach ($charge['timeline'] as $event) {
@@ -124,7 +124,7 @@ class PaymentVerificationService
     {
         // For bank transfers, we rely on manual verification
         // Check if admin has marked it as verified
-        return !empty($investment->bank_transfer_reference) && 
+        return !empty($investment->bank_transfer_reference) &&
                $investment->payment_status === 'confirmed';
     }
 
@@ -175,7 +175,7 @@ class PaymentVerificationService
     public function verifyPendingPayments(): int
     {
         $count = 0;
-        
+
         $pendingInvestments = CgoInvestment::where('status', 'pending')
             ->where('created_at', '>', now()->subDays(7)) // Only check recent investments
             ->get();
@@ -217,7 +217,7 @@ class PaymentVerificationService
     public function isPaymentExpired(CgoInvestment $investment): bool
     {
         // Different expiration times for different payment methods
-        $expirationHours = match($investment->payment_method) {
+        $expirationHours = match ($investment->payment_method) {
             'card' => 1,      // 1 hour for card payments
             'crypto' => 24,   // 24 hours for crypto
             'bank_transfer' => 72, // 3 days for bank transfers
@@ -233,7 +233,7 @@ class PaymentVerificationService
     public function handleExpiredPayments(): int
     {
         $count = 0;
-        
+
         $pendingInvestments = CgoInvestment::where('status', 'pending')
             ->whereNull('payment_completed_at')
             ->get();

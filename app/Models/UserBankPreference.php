@@ -106,7 +106,7 @@ class UserBankPreference extends Model
         $total = self::where('user_uuid', $userUuid)
             ->active()
             ->sum('allocation_percentage');
-            
+
         return abs($total - 100) < 0.01; // Allow for small floating point differences
     }
 
@@ -145,7 +145,7 @@ class UserBankPreference extends Model
 
     /**
      * Calculate fund distribution across user's banks
-     * 
+     *
      * @param string $userUuid
      * @param int $amountInCents
      * @return array Distribution of funds per bank

@@ -20,19 +20,19 @@ class AccountService
      * @param \App\Domain\Account\Aggregates\TransferAggregate $transfer
      */
     public function __construct(
-        protected LedgerAggregate      $ledger,
+        protected LedgerAggregate $ledger,
         protected TransactionAggregate $transaction,
-        protected TransferAggregate    $transfer
+        protected TransferAggregate $transfer
     ) {
     }
 
     /**
      * @param mixed $account
      */
-    public function create( Account|array $account ): void
+    public function create(Account|array $account): void
     {
-        $workflow = WorkflowStub::make( CreateAccountWorkflow::class );
-        $workflow->start( __account( $account ) );
+        $workflow = WorkflowStub::make(CreateAccountWorkflow::class);
+        $workflow->start(__account($account));
     }
 
     /**
@@ -40,22 +40,10 @@ class AccountService
      *
      * @return void
      */
-    public function destroy( mixed $uuid ): void
+    public function destroy(mixed $uuid): void
     {
-        $workflow = WorkflowStub::make( DestroyAccountWorkflow::class );
-        $workflow->start( __account_uuid( $uuid ) );
-    }
-
-    /**
-     * @param mixed $uuid
-     * @param mixed $amount
-     *
-     * @return void
-     */
-    public function deposit( mixed $uuid, mixed $amount ): void
-    {
-        $workflow = WorkflowStub::make( DepositAccountWorkflow::class );
-        $workflow->start( __account_uuid( $uuid ), __money( $amount ) );
+        $workflow = WorkflowStub::make(DestroyAccountWorkflow::class);
+        $workflow->start(__account_uuid($uuid));
     }
 
     /**
@@ -64,9 +52,21 @@ class AccountService
      *
      * @return void
      */
-    public function withdraw( mixed $uuid, mixed $amount ): void
+    public function deposit(mixed $uuid, mixed $amount): void
     {
-        $workflow = WorkflowStub::make( WithdrawAccountWorkflow::class );
-        $workflow->start( __account_uuid( $uuid ), __money( $amount ) );
+        $workflow = WorkflowStub::make(DepositAccountWorkflow::class);
+        $workflow->start(__account_uuid($uuid), __money($amount));
+    }
+
+    /**
+     * @param mixed $uuid
+     * @param mixed $amount
+     *
+     * @return void
+     */
+    public function withdraw(mixed $uuid, mixed $amount): void
+    {
+        $workflow = WorkflowStub::make(WithdrawAccountWorkflow::class);
+        $workflow->start(__account_uuid($uuid), __money($amount));
     }
 }

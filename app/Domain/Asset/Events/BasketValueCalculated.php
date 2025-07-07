@@ -12,5 +12,6 @@ class BasketValueCalculated extends ShouldBeStored
         public array $exchangeRates,
         public float $totalValue,
         public Carbon $calculatedAt
-    ) {}
+    ) {
+    }
 }

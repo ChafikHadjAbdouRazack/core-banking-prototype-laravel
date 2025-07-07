@@ -79,19 +79,19 @@ class GdprService
         ];
 
         $updates = [];
-        
+
         if (isset($consents['marketing'])) {
             $updates['marketing_consent_at'] = $consents['marketing'] ? now() : null;
         }
-        
+
         if (isset($consents['data_retention'])) {
             $updates['data_retention_consent'] = $consents['data_retention'];
         }
-        
+
         if (isset($consents['privacy_policy'])) {
             $updates['privacy_policy_accepted_at'] = $consents['privacy_policy'] ? now() : null;
         }
-        
+
         if (isset($consents['terms'])) {
             $updates['terms_accepted_at'] = $consents['terms'] ? now() : null;
         }

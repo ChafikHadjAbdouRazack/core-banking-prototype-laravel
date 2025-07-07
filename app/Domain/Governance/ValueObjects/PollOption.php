@@ -11,7 +11,8 @@ final readonly class PollOption
         public string $label,
         public ?string $description = null,
         public ?array $metadata = []
-    ) {}
+    ) {
+    }
 
     public static function fromArray(array $data): self
     {

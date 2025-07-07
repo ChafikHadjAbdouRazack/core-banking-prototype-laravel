@@ -16,11 +16,11 @@ use Workflow\WorkflowStub;
 
 /**
  * BIAN-compliant Payment Initiation Service Domain Controller
- * 
+ *
  * Service Domain: Payment Initiation
  * Functional Pattern: Transact
  * Asset Type: Payment Transaction
- * 
+ *
  * @OA\Tag(
  *     name="BIAN",
  *     description="BIAN-compliant banking service operations"
@@ -30,11 +30,11 @@ class PaymentInitiationController extends Controller
 {
     /**
      * Initiate a new payment transaction
-     * 
+     *
      * BIAN Operation: Initiate
      * HTTP Method: POST
      * Path: /payment-initiation/{cr-reference-id}/initiate
-     * 
+     *
      * @OA\Post(
      *     path="/api/bian/payment-initiation/initiate",
      *     operationId="initiatePayment",
@@ -127,7 +127,7 @@ class PaymentInitiationController extends Controller
 
         // For backward compatibility, use USD balance
         $payerBalance = $payerAccount->getBalance('USD');
-        
+
         if ($payerBalance < $validated['paymentAmount']) {
             return response()->json([
                 'paymentInitiationTransaction' => [
@@ -152,8 +152,8 @@ class PaymentInitiationController extends Controller
             try {
                 $workflow = WorkflowStub::make(AssetTransferWorkflow::class);
                 $workflow->start(
-                    $fromUuid, 
-                    $toUuid, 
+                    $fromUuid,
+                    $toUuid,
                     'USD', // fromAssetCode
                     'USD', // toAssetCode (same asset transfer)
                     $money,
@@ -198,11 +198,11 @@ class PaymentInitiationController extends Controller
 
     /**
      * Update a payment transaction
-     * 
+     *
      * BIAN Operation: Update
      * HTTP Method: PUT
      * Path: /payment-initiation/{cr-reference-id}/update
-     * 
+     *
      * @OA\Put(
      *     path="/api/bian/payment-initiation/{crReferenceId}/update",
      *     operationId="updatePayment",
@@ -276,11 +276,11 @@ class PaymentInitiationController extends Controller
 
     /**
      * Retrieve payment transaction details
-     * 
+     *
      * BIAN Operation: Retrieve
      * HTTP Method: GET
      * Path: /payment-initiation/{cr-reference-id}/retrieve
-     * 
+     *
      * @OA\Get(
      *     path="/api/bian/payment-initiation/{crReferenceId}/retrieve",
      *     operationId="retrievePayment",
@@ -367,11 +367,11 @@ class PaymentInitiationController extends Controller
 
     /**
      * Execute payment transaction
-     * 
+     *
      * BIAN Operation: Execute
      * HTTP Method: POST
      * Path: /payment-initiation/{cr-reference-id}/execute
-     * 
+     *
      * @OA\Post(
      *     path="/api/bian/payment-initiation/{crReferenceId}/execute",
      *     operationId="executePayment",
@@ -440,12 +440,12 @@ class PaymentInitiationController extends Controller
 
     /**
      * Request payment status
-     * 
+     *
      * BIAN Operation: Request
      * Behavior Qualifier: PaymentStatus
      * HTTP Method: POST
      * Path: /payment-initiation/{cr-reference-id}/payment-status/{bq-reference-id}/request
-     * 
+     *
      * @OA\Post(
      *     path="/api/bian/payment-initiation/{crReferenceId}/payment-status/request",
      *     operationId="requestPaymentStatus",
@@ -509,12 +509,12 @@ class PaymentInitiationController extends Controller
 
     /**
      * Retrieve payment history
-     * 
+     *
      * BIAN Operation: Retrieve
      * Behavior Qualifier: PaymentHistory
      * HTTP Method: GET
      * Path: /payment-initiation/{cr-reference-id}/payment-history/{bq-reference-id}/retrieve
-     * 
+     *
      * @OA\Get(
      *     path="/api/bian/payment-initiation/{accountReference}/payment-history/retrieve",
      *     operationId="retrievePaymentHistory",
@@ -630,7 +630,7 @@ class PaymentInitiationController extends Controller
             $properties = json_decode($event->event_properties, true);
             $fromUuid = $properties['from_uuid'] ?? $event->aggregate_uuid;
             $toUuid = $properties['to_uuid'] ?? null;
-            
+
             return [
                 'paymentReference' => $event->aggregate_uuid,
                 'paymentDirection' => $fromUuid === $accountReference ? 'sent' : 'received',

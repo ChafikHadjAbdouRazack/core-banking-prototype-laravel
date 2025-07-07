@@ -19,7 +19,7 @@ class ComposeBasketWorkflow extends Workflow
                 $basketCode,
                 $amount
             );
-            
+
             // Add compensation to decompose the basket if composition fails later
             $this->addCompensation(fn() => ActivityStub::make(
                 DecomposeBasketActivity::class,
@@ -27,7 +27,7 @@ class ComposeBasketWorkflow extends Workflow
                 $basketCode,
                 $amount
             ));
-            
+
             return $result;
         } catch (\Throwable $th) {
             yield from $this->compensate();

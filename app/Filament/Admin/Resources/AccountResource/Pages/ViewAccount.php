@@ -16,7 +16,7 @@ class ViewAccount extends ViewRecord
             Actions\EditAction::make(),
         ];
     }
-    
+
     protected function getHeaderWidgets(): array
     {
         return [

@@ -15,7 +15,8 @@ class LiquidityPoolController extends Controller
     public function __construct(
         private LiquidityPoolServiceInterface $liquidityPoolService,
         private ExchangeServiceInterface $exchangeService
-    ) {}
+    ) {
+    }
 
     /**
      * Display liquidity pools dashboard
@@ -25,7 +26,7 @@ class LiquidityPoolController extends Controller
         $pools = $this->liquidityPoolService->getAllPools();
         $userLiquidity = $this->getUserLiquidityPositions();
         $marketData = $this->getMarketData();
-        
+
         return view('liquidity.index', compact('pools', 'userLiquidity', 'marketData'));
     }
 
@@ -35,11 +36,11 @@ class LiquidityPoolController extends Controller
     public function show($poolId)
     {
         $poolProjection = $this->liquidityPoolService->getPool($poolId);
-        
+
         if (!$poolProjection) {
             abort(404, 'Pool not found');
         }
-        
+
         $pool = [
             'id' => $poolProjection->pool_id,
             'base_currency' => $poolProjection->base_currency,
@@ -51,11 +52,11 @@ class LiquidityPoolController extends Controller
             'is_active' => $poolProjection->is_active,
             'created_at' => $poolProjection->created_at,
         ];
-        
+
         $metrics = $this->liquidityPoolService->getPoolMetrics($poolId);
         $userPosition = $this->getUserPositionInPool($poolId);
         $priceHistory = $this->getPoolPriceHistory($poolId);
-        
+
         return view('liquidity.show', compact('pool', 'metrics', 'userPosition', 'priceHistory'));
     }
 
@@ -65,21 +66,21 @@ class LiquidityPoolController extends Controller
     public function create($poolId)
     {
         $poolProjection = $this->liquidityPoolService->getPool($poolId);
-        
+
         if (!$poolProjection) {
             abort(404, 'Pool not found');
         }
-        
+
         $pool = [
             'id' => $poolProjection->pool_id,
             'base_currency' => $poolProjection->base_currency,
             'quote_currency' => $poolProjection->quote_currency,
             'fee_rate' => $poolProjection->fee_rate,
         ];
-        
+
         $userBalances = $this->getUserBalances($pool);
         $metrics = $this->liquidityPoolService->getPoolMetrics($poolId);
-        
+
         return view('liquidity.add', compact('pool', 'userBalances', 'metrics'));
     }
 
@@ -94,21 +95,21 @@ class LiquidityPoolController extends Controller
             'quote_amount' => 'required|numeric|min:0.01',
             'slippage_tolerance' => 'required|numeric|min:0.1|max:50',
         ]);
-        
+
         $poolProjection = $this->liquidityPoolService->getPool($poolId);
-        
+
         if (!$poolProjection) {
             abort(404, 'Pool not found');
         }
-        
+
         $account = Account::where('uuid', $validated['account_id'])
             ->where('user_id', Auth::id())
             ->first();
-            
+
         if (!$account) {
             return back()->withErrors(['account_id' => 'Invalid account']);
         }
-        
+
         try {
             $result = $this->liquidityPoolService->addLiquidity(
                 $poolId,
@@ -117,11 +118,10 @@ class LiquidityPoolController extends Controller
                 (int)($validated['quote_amount'] * 100),
                 $validated['slippage_tolerance']
             );
-            
+
             return redirect()
                 ->route('liquidity.show', $poolId)
                 ->with('success', 'Successfully added liquidity to the pool');
-                
         } catch (\Exception $e) {
             return back()
                 ->withInput()
@@ -135,28 +135,28 @@ class LiquidityPoolController extends Controller
     public function remove($poolId)
     {
         $poolProjection = $this->liquidityPoolService->getPool($poolId);
-        
+
         if (!$poolProjection) {
             abort(404, 'Pool not found');
         }
-        
+
         $pool = [
             'id' => $poolProjection->pool_id,
             'base_currency' => $poolProjection->base_currency,
             'quote_currency' => $poolProjection->quote_currency,
             'fee_rate' => $poolProjection->fee_rate,
         ];
-        
+
         $userPosition = $this->getUserPositionInPool($poolId);
-        
+
         if (!$userPosition) {
             return redirect()
                 ->route('liquidity.show', $poolId)
                 ->withErrors(['error' => 'You have no liquidity in this pool']);
         }
-        
+
         $metrics = $this->liquidityPoolService->getPoolMetrics($poolId);
-        
+
         return view('liquidity.remove', compact('pool', 'userPosition', 'metrics'));
     }
 
@@ -171,21 +171,21 @@ class LiquidityPoolController extends Controller
             'min_base_amount' => 'required|numeric|min:0',
             'min_quote_amount' => 'required|numeric|min:0',
         ]);
-        
+
         $poolProjection = $this->liquidityPoolService->getPool($poolId);
-        
+
         if (!$poolProjection) {
             abort(404, 'Pool not found');
         }
-        
+
         $account = Account::where('uuid', $validated['account_id'])
             ->where('user_id', Auth::id())
             ->first();
-            
+
         if (!$account) {
             return back()->withErrors(['account_id' => 'Invalid account']);
         }
-        
+
         try {
             $result = $this->liquidityPoolService->removeLiquidity(
                 $poolId,
@@ -194,11 +194,10 @@ class LiquidityPoolController extends Controller
                 (int)($validated['min_base_amount'] * 100),
                 (int)($validated['min_quote_amount'] * 100)
             );
-            
+
             return redirect()
                 ->route('liquidity.show', $poolId)
                 ->with('success', 'Successfully removed liquidity from the pool');
-                
         } catch (\Exception $e) {
             return back()
                 ->withInput()
@@ -212,11 +211,11 @@ class LiquidityPoolController extends Controller
     private function getUserLiquidityPositions()
     {
         $user = Auth::user();
-        
+
         if (!$user) {
             return collect();
         }
-        
+
         // Mock data for now - in production, fetch from database
         return collect([
             [
@@ -272,18 +271,18 @@ class LiquidityPoolController extends Controller
     private function getUserBalances($pool)
     {
         $user = Auth::user();
-        
+
         if (!$user) {
             return [];
         }
-        
+
         $accounts = $user->accounts()->with('balances.asset')->get();
-        
+
         $balances = [];
         foreach ($accounts as $account) {
             $baseBalance = $account->balances->where('asset_code', $pool['base_currency'])->first();
             $quoteBalance = $account->balances->where('asset_code', $pool['quote_currency'])->first();
-            
+
             if ($baseBalance || $quoteBalance) {
                 $balances[] = [
                     'account_id' => $account->uuid,
@@ -293,7 +292,7 @@ class LiquidityPoolController extends Controller
                 ];
             }
         }
-        
+
         return $balances;
     }
 
@@ -305,7 +304,7 @@ class LiquidityPoolController extends Controller
         // Mock data for now
         $now = now();
         $history = [];
-        
+
         for ($i = 23; $i >= 0; $i--) {
             $history[] = [
                 'timestamp' => $now->copy()->subHours($i)->toIso8601String(),
@@ -313,7 +312,7 @@ class LiquidityPoolController extends Controller
                 'volume' => mt_rand(100000, 500000),
             ];
         }
-        
+
         return $history;
     }
 }

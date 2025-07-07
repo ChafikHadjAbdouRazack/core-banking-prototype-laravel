@@ -10,7 +10,8 @@ use Illuminate\Queue\SerializesModels;
 
 class CgoNotificationReceived extends Mailable
 {
-    use Queueable, SerializesModels;
+    use Queueable;
+    use SerializesModels;
 
     public $email;
 

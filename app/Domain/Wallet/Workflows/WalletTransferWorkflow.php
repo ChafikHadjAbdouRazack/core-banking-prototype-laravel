@@ -61,7 +61,6 @@ class WalletTransferWorkflow extends Workflow
                 $assetCode,
                 $amount
             ));
-
         } catch (\Throwable $th) {
             // Execute compensation workflows in reverse order
             yield from $this->compensate();

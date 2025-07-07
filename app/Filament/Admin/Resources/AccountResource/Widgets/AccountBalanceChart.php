@@ -10,21 +10,21 @@ use Illuminate\Support\Facades\DB;
 class AccountBalanceChart extends ChartWidget
 {
     protected static ?string $heading = 'Account Balance Trends';
-    
+
     protected static ?int $sort = 2;
-    
+
     protected int | string | array $columnSpan = 'full';
-    
+
     protected static ?string $pollingInterval = '30s';
-    
+
     public ?string $filter = '7d';
-    
+
     protected function getData(): array
     {
         $activeFilter = $this->filter;
-        
+
         $data = $this->getBalanceData($activeFilter);
-        
+
         return [
             'datasets' => [
                 [
@@ -43,12 +43,12 @@ class AccountBalanceChart extends ChartWidget
             'labels' => $data->pluck('date'),
         ];
     }
-    
+
     protected function getType(): string
     {
         return 'line';
     }
-    
+
     protected function getFilters(): ?array
     {
         return [
@@ -58,48 +58,48 @@ class AccountBalanceChart extends ChartWidget
             '90d' => 'Last 90 Days',
         ];
     }
-    
+
     private function getBalanceData(string $period)
     {
         $endDate = now();
-        $groupBy = match($period) {
+        $groupBy = match ($period) {
             '24h' => ['hours' => 1, 'format' => 'H:00'],
             '7d' => ['days' => 1, 'format' => 'M d'],
             '30d' => ['days' => 1, 'format' => 'M d'],
             '90d' => ['days' => 3, 'format' => 'M d'],
             default => ['days' => 1, 'format' => 'M d'],
         };
-        
-        $startDate = match($period) {
+
+        $startDate = match ($period) {
             '24h' => $endDate->copy()->subDay(),
             '7d' => $endDate->copy()->subDays(7),
             '30d' => $endDate->copy()->subDays(30),
             '90d' => $endDate->copy()->subDays(90),
             default => $endDate->copy()->subDays(7),
         };
-        
+
         // For demonstration, we'll generate sample trend data
         // In production, this would query historical balance snapshots
         $data = collect();
         $current = $startDate->copy();
-        
+
         while ($current <= $endDate) {
             $baseTotal = Account::where('created_at', '<=', $current)->sum('balance') / 100;
             $variance = rand(-5, 10) / 100; // Simulate balance changes
-            
+
             $data->push([
                 'date' => $current->format($groupBy['format']),
                 'total' => round($baseTotal * (1 + $variance), 2),
                 'average' => round(($baseTotal * (1 + $variance)) / max(Account::where('created_at', '<=', $current)->count(), 1), 2),
             ]);
-            
+
             if ($period === '24h') {
                 $current->addHours($groupBy['hours']);
             } else {
                 $current->addDays($groupBy['days']);
             }
         }
-        
+
         return $data;
     }
 }

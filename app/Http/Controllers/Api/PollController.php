@@ -26,7 +26,8 @@ class PollController extends Controller
     public function __construct(
         private readonly GovernanceService $governanceService,
         private readonly PollCacheService $cacheService
-    ) {}
+    ) {
+    }
 
     /**
      * @OA\Get(
@@ -261,9 +262,9 @@ class PollController extends Controller
 
         try {
             $this->governanceService->activatePoll($poll);
-            
+
             $this->cacheService->invalidatePollCache($poll->uuid);
-            
+
             return response()->json([
                 'data' => $poll->fresh(['creator', 'votes']),
                 'message' => 'Poll activated successfully',
@@ -347,7 +348,7 @@ class PollController extends Controller
                     ]
                 ], 422);
             }
-            
+
             // Check if this is a validation error
             $validationErrors = [
                 'Poll is not active for voting',
@@ -357,7 +358,7 @@ class PollController extends Controller
                 'not available for voting',
                 'not eligible to vote',
             ];
-            
+
             foreach ($validationErrors as $errorPattern) {
                 if (str_contains($e->getMessage(), $errorPattern)) {
                     return response()->json([
@@ -365,7 +366,7 @@ class PollController extends Controller
                     ], 422);
                 }
             }
-            
+
             return response()->json([
                 'message' => $e->getMessage(),
             ], 400);

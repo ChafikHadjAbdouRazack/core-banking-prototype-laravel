@@ -25,7 +25,7 @@ class LoanApplicationProjector extends Projector
             'submitted_at' => $event->submittedAt,
         ]);
     }
-    
+
     public function onLoanApplicationCreditCheckCompleted(LoanApplicationCreditCheckCompleted $event): void
     {
         LoanApplication::where('id', $event->applicationId)->update([
@@ -36,7 +36,7 @@ class LoanApplicationProjector extends Projector
             'status' => 'credit_checked',
         ]);
     }
-    
+
     public function onLoanApplicationRiskAssessmentCompleted(LoanApplicationRiskAssessmentCompleted $event): void
     {
         LoanApplication::where('id', $event->applicationId)->update([
@@ -47,7 +47,7 @@ class LoanApplicationProjector extends Projector
             'status' => 'risk_assessed',
         ]);
     }
-    
+
     public function onLoanApplicationApproved(LoanApplicationApproved $event): void
     {
         LoanApplication::where('id', $event->applicationId)->update([
@@ -59,7 +59,7 @@ class LoanApplicationProjector extends Projector
             'status' => 'approved',
         ]);
     }
-    
+
     public function onLoanApplicationRejected(LoanApplicationRejected $event): void
     {
         LoanApplication::where('id', $event->applicationId)->update([

@@ -22,7 +22,8 @@ class KycController extends Controller
 {
     public function __construct(
         private readonly KycService $kycService
-    ) {}
+    ) {
+    }
 
     /**
      * @OA\Get(
@@ -59,7 +60,7 @@ class KycController extends Controller
     public function status(): JsonResponse
     {
         $user = Auth::user();
-        
+
         return response()->json([
             'status' => $user->kyc_status,
             'level' => $user->kyc_level,

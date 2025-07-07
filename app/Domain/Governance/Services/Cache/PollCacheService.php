@@ -139,7 +139,7 @@ class PollCacheService
         $this->forgetPoll($pollUuid);
         $this->forgetPollResults($pollUuid);
         $this->forgetActivePolls();
-        
+
         // Note: We don't invalidate user-specific caches here as they might be expensive to recalculate
         // They have their own TTL and will expire naturally
     }
@@ -154,12 +154,12 @@ class PollCacheService
     {
         // Warm up the active polls cache
         $polls = $this->getActivePolls();
-        
+
         // Optionally warm up results for active polls
         foreach ($polls as $poll) {
             $this->getPollResults($poll->uuid);
         }
-        
+
         return $polls;
     }
 
@@ -179,7 +179,7 @@ class PollCacheService
         }
 
         $stats['active_polls_cached'] = Cache::has($this->getActivePollsKey());
-        
+
         return $stats;
     }
 

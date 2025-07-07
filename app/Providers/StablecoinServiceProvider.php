@@ -27,7 +27,7 @@ class StablecoinServiceProvider extends ServiceProvider
         $this->app->singleton(LiquidationServiceInterface::class, LiquidationService::class);
         $this->app->singleton(StabilityMechanismServiceInterface::class, StabilityMechanismService::class);
         $this->app->singleton(StablecoinIssuanceServiceInterface::class, StablecoinIssuanceService::class);
-        
+
         // Register concrete services (for backward compatibility)
         $this->app->singleton(CollateralService::class);
         $this->app->singleton(LiquidationService::class);

@@ -12,12 +12,12 @@ use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 
 class WalletDepositInitiated extends ShouldBeStored implements HasHash, HasMoney
 {
+    use HashValidatorProvider;
+
     /**
      * @var string
      */
     public string $queue = EventQueues::TRANSACTIONS->value;
-
-    use HashValidatorProvider;
 
     /**
      * @param Money $money
@@ -30,5 +30,6 @@ class WalletDepositInitiated extends ShouldBeStored implements HasHash, HasMoney
         public readonly Hash $hash,
         public readonly ?string $source = null,
         public readonly array $metadata = []
-    ) {}
+    ) {
+    }
 }

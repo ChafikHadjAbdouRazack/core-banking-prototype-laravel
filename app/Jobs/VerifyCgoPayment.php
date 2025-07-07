@@ -13,7 +13,10 @@ use Illuminate\Support\Facades\Log;
 
 class VerifyCgoPayment implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
 
     protected CgoInvestment $investment;
     protected int $attempt;
@@ -66,14 +69,14 @@ class VerifyCgoPayment implements ShouldQueue
             Log::warning('Payment expired, marking as cancelled', [
                 'investment_id' => $this->investment->id,
             ]);
-            
+
             $this->investment->update([
                 'status' => 'cancelled',
                 'cancelled_at' => now(),
                 'payment_status' => 'expired',
                 'payment_failure_reason' => 'Payment window expired',
             ]);
-            
+
             return;
         }
 
@@ -83,7 +86,7 @@ class VerifyCgoPayment implements ShouldQueue
         if (!$verified && $this->attempt < 3) {
             // Retry with exponential backoff
             $delay = $this->attempt * 300; // 5 minutes, 10 minutes, etc.
-            
+
             Log::info('Payment not verified, scheduling retry', [
                 'investment_id' => $this->investment->id,
                 'attempt' => $this->attempt,

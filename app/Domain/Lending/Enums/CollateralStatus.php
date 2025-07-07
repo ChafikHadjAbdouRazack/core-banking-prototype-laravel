@@ -12,7 +12,7 @@ enum CollateralStatus: string
 
     public function label(): string
     {
-        return match($this) {
+        return match ($this) {
             self::PENDING_VERIFICATION => 'Pending Verification',
             self::VERIFIED => 'Verified',
             self::REJECTED => 'Rejected',
@@ -23,7 +23,7 @@ enum CollateralStatus: string
 
     public function getColor(): string
     {
-        return match($this) {
+        return match ($this) {
             self::PENDING_VERIFICATION => 'yellow',
             self::VERIFIED => 'green',
             self::REJECTED => 'red',
@@ -34,7 +34,7 @@ enum CollateralStatus: string
 
     public function canBeModified(): bool
     {
-        return match($this) {
+        return match ($this) {
             self::PENDING_VERIFICATION => true,
             self::VERIFIED => true,
             self::REJECTED => false,

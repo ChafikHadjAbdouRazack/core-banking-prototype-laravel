@@ -108,7 +108,7 @@ abstract class BaseCustodianConnector implements ICustodianConnector
     protected function initializeResilience(): void
     {
         $resilienceConfig = config('custodians.resilience');
-        
+
         // Initialize circuit breaker with configuration
         $this->circuitBreaker = new CircuitBreakerService(
             failureThreshold: $resilienceConfig['circuit_breaker']['failure_threshold'] ?? 5,
@@ -117,7 +117,7 @@ abstract class BaseCustodianConnector implements ICustodianConnector
             failureRateThreshold: $resilienceConfig['circuit_breaker']['failure_rate_threshold'] ?? 0.5,
             sampleSize: $resilienceConfig['circuit_breaker']['sample_size'] ?? 10
         );
-        
+
         // Initialize retry service with configuration
         $this->retryService = new RetryService(
             maxAttempts: $resilienceConfig['retry']['max_attempts'] ?? 3,
@@ -167,7 +167,7 @@ abstract class BaseCustodianConnector implements ICustodianConnector
             serviceIdentifier: "{$method}:{$endpoint}",
             operation: function () use ($method, $endpoint, $data) {
                 $this->logRequest($method, $endpoint, $data);
-                
+
                 $response = match (strtoupper($method)) {
                     'GET' => $this->client->get($endpoint, $data),
                     'POST' => $this->client->post($endpoint, $data),
@@ -175,14 +175,14 @@ abstract class BaseCustodianConnector implements ICustodianConnector
                     'DELETE' => $this->client->delete($endpoint),
                     default => throw new \InvalidArgumentException("Unsupported HTTP method: {$method}"),
                 };
-                
+
                 $this->logResponse($method, $endpoint, $response);
-                
+
                 // Throw exception for non-successful responses to trigger retry
                 if (!$response->successful()) {
                     throw new RequestException($response);
                 }
-                
+
                 return $response;
             },
             fallback: $fallback

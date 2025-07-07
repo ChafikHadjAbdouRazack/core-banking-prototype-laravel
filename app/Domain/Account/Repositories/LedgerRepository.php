@@ -16,8 +16,7 @@ final class LedgerRepository extends EloquentStoredEventRepository
      */
     public function __construct(
         protected string $storedEventModel = Ledger::class
-    )
-    {
+    ) {
         if (! new $this->storedEventModel() instanceof EloquentStoredEvent) {
             throw new InvalidEloquentStoredEventModel("The class {$this->storedEventModel} must extend EloquentStoredEvent");
         }

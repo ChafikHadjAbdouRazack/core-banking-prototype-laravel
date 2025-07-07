@@ -16,7 +16,8 @@ final class TransferRequest
         public readonly ?string $reference = null,
         public readonly ?string $description = null,
         public readonly ?array $metadata = []
-    ) {}
+    ) {
+    }
 
     public function toArray(): array
     {

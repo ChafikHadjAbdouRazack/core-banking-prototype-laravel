@@ -33,7 +33,7 @@ class BasketPerformanceChart extends ChartWidget
         };
 
         $basket = BasketAsset::where('code', $basketCode)->first();
-        
+
         if (!$basket) {
             return [
                 'datasets' => [],

@@ -9,9 +9,12 @@ use Illuminate\Queue\SerializesModels;
 
 class EnhancedDueDiligenceRequired
 {
-    use Dispatchable, InteractsWithSockets, SerializesModels;
-    
+    use Dispatchable;
+    use InteractsWithSockets;
+    use SerializesModels;
+
     public function __construct(
         public readonly CustomerRiskProfile $profile
-    ) {}
+    ) {
+    }
 }

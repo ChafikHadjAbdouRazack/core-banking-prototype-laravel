@@ -11,12 +11,12 @@ use Illuminate\Support\Facades\Log;
 class BankIntegrationController extends Controller
 {
     private IBankIntegrationService $bankService;
-    
+
     public function __construct(IBankIntegrationService $bankService)
     {
         $this->bankService = $bankService;
     }
-    
+
     /**
      * Get available banks
      */
@@ -26,7 +26,7 @@ class BankIntegrationController extends Controller
             $banks = $this->bankService->getAvailableConnectors()
                 ->map(function ($connector, $code) {
                     $capabilities = $connector->getCapabilities();
-                    
+
                     return [
                         'code' => $code,
                         'name' => $connector->getBankName(),
@@ -38,19 +38,19 @@ class BankIntegrationController extends Controller
                         'supports_multi_currency' => $capabilities->supportsMultiCurrency,
                     ];
                 });
-            
+
             return response()->json([
                 'data' => $banks->values()
             ]);
         } catch (\Exception $e) {
             Log::error('Failed to get available banks', ['error' => $e->getMessage()]);
-            
+
             return response()->json([
                 'error' => 'Failed to retrieve available banks'
             ], 500);
         }
     }
-    
+
     /**
      * Get user's bank connections
      */
@@ -71,7 +71,7 @@ class BankIntegrationController extends Controller
                         'created_at' => $connection->createdAt->toIso8601String(),
                     ];
                 });
-            
+
             return response()->json([
                 'data' => $connections
             ]);
@@ -80,13 +80,13 @@ class BankIntegrationController extends Controller
                 'user_id' => $request->user()->uuid,
                 'error' => $e->getMessage()
             ]);
-            
+
             return response()->json([
                 'error' => 'Failed to retrieve bank connections'
             ], 500);
         }
     }
-    
+
     /**
      * Connect to a bank
      */
@@ -96,14 +96,14 @@ class BankIntegrationController extends Controller
             'bank_code' => 'required|string',
             'credentials' => 'required|array',
         ]);
-        
+
         try {
             $connection = $this->bankService->connectUserToBank(
                 $request->user(),
                 $validated['bank_code'],
                 $validated['credentials']
             );
-            
+
             return response()->json([
                 'data' => [
                     'id' => $connection->id,
@@ -119,13 +119,13 @@ class BankIntegrationController extends Controller
                 'bank_code' => $validated['bank_code'],
                 'error' => $e->getMessage()
             ]);
-            
+
             return response()->json([
                 'error' => 'Failed to connect to bank: ' . $e->getMessage()
             ], 422);
         }
     }
-    
+
     /**
      * Disconnect from a bank
      */
@@ -136,7 +136,7 @@ class BankIntegrationController extends Controller
                 $request->user(),
                 $bankCode
             );
-            
+
             if ($success) {
                 return response()->json([
                     'message' => 'Successfully disconnected from bank'
@@ -152,20 +152,20 @@ class BankIntegrationController extends Controller
                 'bank_code' => $bankCode,
                 'error' => $e->getMessage()
             ]);
-            
+
             return response()->json([
                 'error' => 'Failed to disconnect from bank'
             ], 500);
         }
     }
-    
+
     /**
      * Get user's bank accounts
      */
     public function getBankAccounts(Request $request): JsonResponse
     {
         $bankCode = $request->query('bank_code');
-        
+
         try {
             $accounts = $this->bankService->getUserBankAccounts($request->user(), $bankCode)
                 ->map(function ($account) {
@@ -181,7 +181,7 @@ class BankIntegrationController extends Controller
                         'created_at' => $account->createdAt->toIso8601String(),
                     ];
                 });
-            
+
             return response()->json([
                 'data' => $accounts
             ]);
@@ -191,13 +191,13 @@ class BankIntegrationController extends Controller
                 'bank_code' => $bankCode,
                 'error' => $e->getMessage()
             ]);
-            
+
             return response()->json([
                 'error' => 'Failed to retrieve bank accounts'
             ], 500);
         }
     }
-    
+
     /**
      * Sync bank accounts
      */
@@ -205,7 +205,7 @@ class BankIntegrationController extends Controller
     {
         try {
             $accounts = $this->bankService->syncBankAccounts($request->user(), $bankCode);
-            
+
             return response()->json([
                 'message' => 'Bank accounts synced successfully',
                 'accounts_synced' => $accounts->count()
@@ -216,13 +216,13 @@ class BankIntegrationController extends Controller
                 'bank_code' => $bankCode,
                 'error' => $e->getMessage()
             ]);
-            
+
             return response()->json([
                 'error' => 'Failed to sync bank accounts'
             ], 500);
         }
     }
-    
+
     /**
      * Get aggregated balance
      */
@@ -231,13 +231,13 @@ class BankIntegrationController extends Controller
         $validated = $request->validate([
             'currency' => 'required|string|size:3',
         ]);
-        
+
         try {
             $balance = $this->bankService->getAggregatedBalance(
                 $request->user(),
                 strtoupper($validated['currency'])
             );
-            
+
             return response()->json([
                 'data' => [
                     'currency' => $validated['currency'],
@@ -251,13 +251,13 @@ class BankIntegrationController extends Controller
                 'currency' => $validated['currency'],
                 'error' => $e->getMessage()
             ]);
-            
+
             return response()->json([
                 'error' => 'Failed to retrieve aggregated balance'
             ], 500);
         }
     }
-    
+
     /**
      * Initiate inter-bank transfer
      */
@@ -273,7 +273,7 @@ class BankIntegrationController extends Controller
             'reference' => 'nullable|string|max:140',
             'description' => 'nullable|string|max:500',
         ]);
-        
+
         try {
             $transfer = $this->bankService->initiateInterBankTransfer(
                 $request->user(),
@@ -288,7 +288,7 @@ class BankIntegrationController extends Controller
                     'description' => $validated['description'] ?? null,
                 ]
             );
-            
+
             return response()->json([
                 'data' => [
                     'id' => $transfer->id,
@@ -309,13 +309,13 @@ class BankIntegrationController extends Controller
                 'transfer_data' => $validated,
                 'error' => $e->getMessage()
             ]);
-            
+
             return response()->json([
                 'error' => 'Failed to initiate transfer: ' . $e->getMessage()
             ], 422);
         }
     }
-    
+
     /**
      * Get bank health status
      */
@@ -323,7 +323,7 @@ class BankIntegrationController extends Controller
     {
         try {
             $health = $this->bankService->checkBankHealth($bankCode);
-            
+
             return response()->json([
                 'data' => $health
             ]);
@@ -332,13 +332,13 @@ class BankIntegrationController extends Controller
                 'bank_code' => $bankCode,
                 'error' => $e->getMessage()
             ]);
-            
+
             return response()->json([
                 'error' => 'Failed to retrieve bank health status'
             ], 500);
         }
     }
-    
+
     /**
      * Get recommended banks for user
      */
@@ -352,14 +352,14 @@ class BankIntegrationController extends Controller
             'countries' => 'nullable|array',
             'countries.*' => 'string|size:2',
         ]);
-        
+
         try {
             $routingService = app(\App\Domain\Banking\Services\BankRoutingService::class);
             $recommendations = $routingService->getRecommendedBanks(
                 $request->user(),
                 $validated
             );
-            
+
             return response()->json([
                 'data' => $recommendations
             ]);
@@ -369,7 +369,7 @@ class BankIntegrationController extends Controller
                 'requirements' => $validated,
                 'error' => $e->getMessage()
             ]);
-            
+
             return response()->json([
                 'error' => 'Failed to retrieve bank recommendations'
             ], 500);

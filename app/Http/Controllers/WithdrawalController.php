@@ -10,12 +10,12 @@ use Illuminate\Support\Facades\Auth;
 class WithdrawalController extends Controller
 {
     protected PaymentGatewayService $paymentGateway;
-    
+
     public function __construct(PaymentGatewayService $paymentGateway)
     {
         $this->paymentGateway = $paymentGateway;
     }
-    
+
     /**
      * Show the withdrawal form
      */
@@ -23,27 +23,27 @@ class WithdrawalController extends Controller
     {
         $user = Auth::user();
         $account = $user->accounts()->first();
-        
+
         if (!$account) {
             return redirect()->route('dashboard')
                 ->with('error', 'Please create an account first.');
         }
-        
+
         // Get user's saved bank accounts
         $bankAccounts = $user->bankAccounts()
             ->where('verified', true)
             ->get();
-        
+
         // Get account balances
         $balances = $account->balances()->with('asset')->get();
-        
+
         return view('wallet.withdraw-bank', [
             'account' => $account,
             'bankAccounts' => $bankAccounts,
             'balances' => $balances,
         ]);
     }
-    
+
     /**
      * Process a withdrawal request
      */
@@ -63,17 +63,17 @@ class WithdrawalController extends Controller
             'swift' => 'nullable|string|max:20',
             'save_bank_account' => 'boolean',
         ]);
-        
+
         $user = Auth::user();
         $account = $user->accounts()->first();
         $amountInCents = (int) ($request->amount * 100);
-        
+
         // Check balance
         $balance = $account->getBalance($request->currency);
         if ($balance < $amountInCents) {
             return back()->with('error', 'Insufficient balance.');
         }
-        
+
         // Get or create bank details
         if ($request->bank_account_type === 'saved') {
             $bankAccount = $user->bankAccounts()->findOrFail($request->bank_account_id);
@@ -94,7 +94,7 @@ class WithdrawalController extends Controller
                 'iban' => $request->iban,
                 'swift' => $request->swift,
             ];
-            
+
             // Save bank account if requested
             if ($request->save_bank_account) {
                 $user->bankAccounts()->create([
@@ -109,7 +109,7 @@ class WithdrawalController extends Controller
                 ]);
             }
         }
-        
+
         try {
             $result = $this->paymentGateway->createWithdrawalRequest(
                 $account,
@@ -117,14 +117,14 @@ class WithdrawalController extends Controller
                 $request->currency,
                 $bankDetails
             );
-            
+
             return redirect()->route('wallet.index')
                 ->with('success', 'Withdrawal request submitted successfully. Processing time: 1-3 business days.');
         } catch (\Exception $e) {
             return back()->with('error', 'Failed to process withdrawal: ' . $e->getMessage());
         }
     }
-    
+
     /**
      * Add a new bank account
      */
@@ -138,9 +138,9 @@ class WithdrawalController extends Controller
             'iban' => 'nullable|string|max:50',
             'swift' => 'nullable|string|max:20',
         ]);
-        
+
         $user = Auth::user();
-        
+
         $bankAccount = $user->bankAccounts()->create([
             'bank_name' => $request->bank_name,
             'account_number' => substr($request->account_number, -4),
@@ -151,13 +151,13 @@ class WithdrawalController extends Controller
             'swift' => $request->swift,
             'verified' => false,
         ]);
-        
+
         // In production, send verification micro-deposits or use Plaid/other verification service
-        
+
         return redirect()->back()
             ->with('success', 'Bank account added. Verification required before withdrawals.');
     }
-    
+
     /**
      * Remove a bank account
      */
@@ -166,9 +166,9 @@ class WithdrawalController extends Controller
         if ($bankAccount->user_id !== Auth::id()) {
             abort(403);
         }
-        
+
         $bankAccount->delete();
-        
+
         return redirect()->back()
             ->with('success', 'Bank account removed successfully.');
     }

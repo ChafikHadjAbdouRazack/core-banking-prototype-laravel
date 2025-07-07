@@ -23,23 +23,23 @@ class MintStablecoinActivity extends Activity
     ): bool {
         // Get stablecoin to calculate fees
         $stablecoin = Stablecoin::findOrFail($stablecoinCode);
-        
+
         // Calculate and apply minting fee
         $fee = (int) ($amount * $stablecoin->mint_fee);
         $netMintAmount = $amount - $fee;
-        
+
         // Deposit stablecoins to account using wallet service
         $walletService = app(WalletService::class);
         $walletService->deposit($accountUuid, $stablecoinCode, $netMintAmount);
-        
+
         // Record stablecoin minting in aggregate
         $aggregate = StablecoinAggregate::retrieve($positionUuid);
         $aggregate->mintStablecoin($amount);
         $aggregate->persist();
-        
+
         // Update global stablecoin statistics
         $stablecoin->increment('total_supply', $amount);
-        
+
         return true;
     }
 }

@@ -18,23 +18,23 @@ class AuthenticateApiOrSanctum
     public function handle(Request $request, Closure $next, string $permission = 'read'): Response
     {
         $bearerToken = $request->bearerToken();
-        
+
         // Check if it's an API key (starts with 'fak_')
         if ($bearerToken && str_starts_with($bearerToken, 'fak_')) {
             return $this->handleApiKeyAuth($request, $next, $permission);
         }
-        
+
         // Otherwise, try Sanctum authentication
         return $this->handleSanctumAuth($request, $next);
     }
-    
+
     /**
      * Handle API key authentication
      */
     protected function handleApiKeyAuth(Request $request, Closure $next, string $permission): Response
     {
         $apiKeyString = $request->bearerToken();
-        
+
         // Verify API key
         $apiKey = ApiKey::verify($apiKeyString);
         if (!$apiKey) {
@@ -70,7 +70,7 @@ class AuthenticateApiOrSanctum
 
         // Record usage
         $apiKey->recordUsage($request->ip());
-        
+
         // Set the user resolver
         $request->setUserResolver(function () use ($apiKey) {
             return $apiKey->user;
@@ -78,7 +78,7 @@ class AuthenticateApiOrSanctum
 
         return $next($request);
     }
-    
+
     /**
      * Handle Sanctum authentication
      */
@@ -86,7 +86,7 @@ class AuthenticateApiOrSanctum
     {
         // Apply Sanctum's stateful middleware for SPA requests
         $ensureStateful = app(EnsureFrontendRequestsAreStateful::class);
-        
+
         return $ensureStateful->handle($request, function ($request) use ($next) {
             // Check if user is authenticated via Sanctum
             if (!auth('sanctum')->check()) {
@@ -95,7 +95,7 @@ class AuthenticateApiOrSanctum
                     'message' => 'Authentication required',
                 ], 401);
             }
-            
+
             return $next($request);
         });
     }

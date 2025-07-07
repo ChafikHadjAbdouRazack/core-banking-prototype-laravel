@@ -33,12 +33,12 @@ class GenerateRegulatoryReports extends Command
         $type = $this->option('type') ?? 'all';
         $date = $this->option('date') ? Carbon::parse($this->option('date')) : now();
         $month = $this->option('month') ? Carbon::parse($this->option('month') . '-01') : now();
-        
+
         $this->info('🏛️ Generating Regulatory Reports');
         $this->info('================================');
-        
+
         $reports = [];
-        
+
         try {
             if ($type === 'ctr' || $type === 'all') {
                 $this->info('📊 Generating Currency Transaction Report (CTR)...');
@@ -46,7 +46,7 @@ class GenerateRegulatoryReports extends Command
                 $reports[] = "CTR: {$filename}";
                 $this->info("✅ CTR generated: {$filename}");
             }
-            
+
             if ($type === 'sar' || $type === 'all') {
                 $this->info('🔍 Generating Suspicious Activity Report (SAR) candidates...');
                 $startDate = $date->copy()->subDays(30);
@@ -55,30 +55,30 @@ class GenerateRegulatoryReports extends Command
                 $reports[] = "SAR: {$filename}";
                 $this->info("✅ SAR candidates generated: {$filename}");
             }
-            
+
             if ($type === 'summary' || $type === 'all') {
                 $this->info('📋 Generating Monthly Compliance Summary...');
                 $filename = $reportingService->generateComplianceSummary($month);
                 $reports[] = "Summary: {$filename}";
                 $this->info("✅ Compliance summary generated: {$filename}");
             }
-            
+
             if ($type === 'kyc' || $type === 'all') {
                 $this->info('🆔 Generating KYC Compliance Report...');
                 $filename = $reportingService->generateKycReport();
                 $reports[] = "KYC: {$filename}";
                 $this->info("✅ KYC report generated: {$filename}");
             }
-            
+
             $this->newLine();
             $this->info('📁 Generated Reports:');
             foreach ($reports as $report) {
                 $this->line("   • {$report}");
             }
-            
+
             $this->newLine();
             $this->info('✅ All reports generated successfully!');
-            
+
             return Command::SUCCESS;
         } catch (\Exception $e) {
             $this->error('❌ Error generating reports: ' . $e->getMessage());

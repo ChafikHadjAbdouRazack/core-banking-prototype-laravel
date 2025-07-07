@@ -26,16 +26,16 @@ class ReleaseCollateralActivity extends Activity
             $position = StablecoinCollateralPosition::where('uuid', $positionUuid)->firstOrFail();
             $collateralAssetCode = $position->collateral_asset_code;
         }
-        
+
         // Deposit collateral to account using wallet service
         $walletService = app(WalletService::class);
         $walletService->deposit($accountUuid, $collateralAssetCode, $amount);
-        
+
         // Record collateral release in aggregate
         $aggregate = StablecoinAggregate::retrieve($positionUuid);
         $aggregate->releaseCollateral($amount);
         $aggregate->persist();
-        
+
         return true;
     }
 }

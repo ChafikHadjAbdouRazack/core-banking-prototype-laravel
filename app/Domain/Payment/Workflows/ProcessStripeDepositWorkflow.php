@@ -15,7 +15,7 @@ class ProcessStripeDepositWorkflow extends Workflow
 {
     /**
      * Process a Stripe deposit through the complete workflow
-     * 
+     *
      * @param StripeDeposit $deposit
      * @return \Generator
      */
@@ -78,7 +78,7 @@ class ProcessStripeDepositWorkflow extends Workflow
                     ]
                 );
             }
-            
+
             throw $e;
         }
     }

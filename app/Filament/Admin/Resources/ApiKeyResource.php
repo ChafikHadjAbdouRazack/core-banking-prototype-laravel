@@ -16,16 +16,16 @@ class ApiKeyResource extends Resource
     protected static ?string $model = ApiKey::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-key';
-    
+
     protected static ?string $navigationGroup = 'System';
-    
+
     protected static ?int $navigationSort = 1;
 
     public static function getNavigationLabel(): string
     {
         return 'API Keys';
     }
-    
+
     public static function getNavigationBadge(): ?string
     {
         return static::getModel()::where('is_active', true)->count() ?: null;
@@ -47,7 +47,7 @@ class ApiKeyResource extends Resource
                         Forms\Components\Toggle::make('is_active')
                             ->label('Active'),
                     ]),
-                    
+
                 Forms\Components\Section::make('Permissions & Security')
                     ->schema([
                         Forms\Components\CheckboxList::make('permissions')
@@ -64,7 +64,7 @@ class ApiKeyResource extends Resource
                         Forms\Components\DateTimePicker::make('expires_at')
                             ->label('Expiration Date'),
                     ]),
-                    
+
                 Forms\Components\Section::make('Usage Information')
                     ->schema([
                         Forms\Components\Placeholder::make('user')

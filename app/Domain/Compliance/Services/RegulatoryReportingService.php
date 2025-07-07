@@ -21,7 +21,7 @@ class RegulatoryReportingService
     public function generateCTR(Carbon $date): string
     {
         $threshold = 1000000; // $10,000 in cents
-        
+
         // Query large transactions from the event store
         $largeTransactions = StoredEvent::whereIn('event_class', [
             'App\\Domain\\Account\\Events\\MoneyAdded',
@@ -48,7 +48,7 @@ class RegulatoryReportingService
             $properties = json_decode($event->event_properties, true);
             $account = Account::where('uuid', $event->aggregate_uuid)->first();
             $user = $account ? User::where('uuid', $account->user_uuid)->first() : null;
-            
+
             $report['transactions'][] = [
                 'transaction_id' => $event->id,
                 'timestamp' => Carbon::parse($event->created_at)->toISOString(),
@@ -66,7 +66,7 @@ class RegulatoryReportingService
         // Save report
         $filename = "regulatory/ctr/ctr_{$date->format('Y_m_d')}.json";
         Storage::put($filename, json_encode($report, JSON_PRETTY_PRINT));
-        
+
         // Log report generation
         AuditLog::log(
             'regulatory.ctr_generated',
@@ -76,7 +76,7 @@ class RegulatoryReportingService
             ['date' => $date->toDateString(), 'filename' => $filename],
             'regulatory,compliance,ctr'
         );
-        
+
         return $filename;
     }
 
@@ -86,7 +86,7 @@ class RegulatoryReportingService
     public function generateSARCandidates(Carbon $startDate, Carbon $endDate): string
     {
         $suspiciousPatterns = $this->detectSuspiciousPatterns($startDate, $endDate);
-        
+
         $report = [
             'report_type' => 'Suspicious Activity Report (SAR) Candidates',
             'period_start' => $startDate->toDateString(),
@@ -99,7 +99,7 @@ class RegulatoryReportingService
         // Save report
         $filename = "regulatory/sar/sar_candidates_{$startDate->format('Y_m_d')}_{$endDate->format('Y_m_d')}.json";
         Storage::put($filename, json_encode($report, JSON_PRETTY_PRINT));
-        
+
         // Log report generation
         AuditLog::log(
             'regulatory.sar_candidates_generated',
@@ -109,7 +109,7 @@ class RegulatoryReportingService
             ['start_date' => $startDate->toDateString(), 'end_date' => $endDate->toDateString(), 'filename' => $filename],
             'regulatory,compliance,sar'
         );
-        
+
         return $filename;
     }
 
@@ -120,7 +120,7 @@ class RegulatoryReportingService
     {
         $startDate = $month->copy()->startOfMonth();
         $endDate = $month->copy()->endOfMonth();
-        
+
         $report = [
             'report_type' => 'Monthly Compliance Summary',
             'month' => $month->format('F Y'),
@@ -137,7 +137,7 @@ class RegulatoryReportingService
         // Save report
         $filename = "regulatory/compliance/summary_{$month->format('Y_m')}.json";
         Storage::put($filename, json_encode($report, JSON_PRETTY_PRINT));
-        
+
         // Log report generation
         AuditLog::log(
             'regulatory.compliance_summary_generated',
@@ -147,7 +147,7 @@ class RegulatoryReportingService
             ['filename' => $filename],
             'regulatory,compliance,summary'
         );
-        
+
         return $filename;
     }
 
@@ -188,7 +188,7 @@ class RegulatoryReportingService
         // Save report
         $filename = "regulatory/kyc/report_" . now()->format('Y_m_d') . ".json";
         Storage::put($filename, json_encode($report, JSON_PRETTY_PRINT));
-        
+
         // Log report generation
         AuditLog::log(
             'regulatory.kyc_report_generated',
@@ -198,7 +198,7 @@ class RegulatoryReportingService
             ['filename' => $filename],
             'regulatory,compliance,kyc'
         );
-        
+
         return $filename;
     }
 
@@ -208,7 +208,7 @@ class RegulatoryReportingService
     protected function detectSuspiciousPatterns(Carbon $startDate, Carbon $endDate): Collection
     {
         $patterns = collect();
-        
+
         // Pattern 1: Rapid succession of transactions (potential structuring)
         $rapidTransactions = DB::table('stored_events')
             ->select('aggregate_uuid', DB::raw('count(*) as transaction_count'), DB::raw('min(created_at) as first_transaction'), DB::raw('max(created_at) as last_transaction'))
@@ -235,7 +235,7 @@ class RegulatoryReportingService
                 'last_transaction' => $item->last_transaction,
             ]);
         }
-        
+
         // Pattern 2: Just-below-threshold transactions
         $thresholdAmount = 999000; // Just below $10,000
         $justBelowThreshold = StoredEvent::whereIn('event_class', [
@@ -269,7 +269,7 @@ class RegulatoryReportingService
                 })->values(),
             ]);
         }
-        
+
         // Pattern 3: Round number transactions
         $roundNumberTransactions = StoredEvent::whereIn('event_class', [
             'App\\Domain\\Account\\Events\\MoneyAdded',
@@ -299,7 +299,7 @@ class RegulatoryReportingService
                 }),
             ]);
         }
-        
+
         return $patterns;
     }
 
@@ -334,12 +334,12 @@ class RegulatoryReportingService
         ])
         ->whereBetween('created_at', [$startDate, $endDate])
         ->get();
-        
+
         $totalVolume = $events->sum(function ($event) {
             $properties = json_decode($event->event_properties, true);
             return $properties['money']['amount'] ?? 0;
         });
-        
+
         return [
             'total_count' => $events->count(),
             'total_volume' => $totalVolume,
@@ -384,7 +384,7 @@ class RegulatoryReportingService
     protected function getGdprMetrics(Carbon $startDate, Carbon $endDate): array
     {
         $auditLogs = AuditLog::whereBetween('created_at', [$startDate, $endDate]);
-        
+
         return [
             'data_export_requests' => $auditLogs->clone()->where('action', 'gdpr.data_exported')->count(),
             'deletion_requests' => $auditLogs->clone()->where('action', 'gdpr.deletion_requested')->count(),

@@ -10,15 +10,18 @@ use Illuminate\Queue\SerializesModels;
 
 class BankHealthChanged
 {
-    use Dispatchable, InteractsWithSockets, SerializesModels;
-    
+    use Dispatchable;
+    use InteractsWithSockets;
+    use SerializesModels;
+
     public function __construct(
         public readonly string $bankCode,
         public readonly ?string $previousStatus,
         public readonly string $currentStatus,
         public readonly array $healthData
-    ) {}
-    
+    ) {
+    }
+
     /**
      * Check if bank became unhealthy
      */
@@ -26,7 +29,7 @@ class BankHealthChanged
     {
         return $this->previousStatus === 'healthy' && $this->currentStatus !== 'healthy';
     }
-    
+
     /**
      * Check if bank recovered
      */

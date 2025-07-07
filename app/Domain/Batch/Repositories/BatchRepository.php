@@ -18,8 +18,7 @@ final class BatchRepository extends EloquentStoredEventRepository
      */
     public function __construct(
         protected string $storedEventModel = BatchEvent::class
-    )
-    {
+    ) {
         if (! new $this->storedEventModel() instanceof EloquentStoredEvent) {
             throw new InvalidEloquentStoredEventModel("The class {$this->storedEventModel} must extend EloquentStoredEvent");
         }

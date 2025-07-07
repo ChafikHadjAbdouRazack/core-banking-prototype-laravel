@@ -19,13 +19,13 @@ class UserBankPreferenceResource extends Resource
     protected static ?string $model = UserBankPreference::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-building-library';
-    
+
     protected static ?string $navigationLabel = 'Bank Allocations';
-    
+
     protected static ?string $modelLabel = 'Bank Allocation';
-    
+
     protected static ?string $pluralModelLabel = 'Bank Allocations';
-    
+
     protected static ?int $navigationSort = 4;
 
     public static function form(Form $form): Form
@@ -90,17 +90,15 @@ class UserBankPreferenceResource extends Resource
                 Tables\Columns\TextColumn::make('bank_name')
                     ->label('Bank')
                     ->searchable()
-                    ->description(fn (UserBankPreference $record): string => 
-                        $record->metadata['country'] ?? $record->bank_code
-                    ),
+                    ->description(fn (UserBankPreference $record): string =>
+                        $record->metadata['country'] ?? $record->bank_code),
                 Tables\Columns\TextColumn::make('allocation_percentage')
                     ->label('Allocation')
                     ->numeric()
                     ->sortable()
                     ->suffix('%')
-                    ->color(fn (UserBankPreference $record): string => 
-                        $record->allocation_percentage > 50 ? 'warning' : 'success'
-                    ),
+                    ->color(fn (UserBankPreference $record): string =>
+                        $record->allocation_percentage > 50 ? 'warning' : 'success'),
                 Tables\Columns\IconColumn::make('is_primary')
                     ->label('Primary')
                     ->boolean()
@@ -115,9 +113,8 @@ class UserBankPreferenceResource extends Resource
                 Tables\Columns\TextColumn::make('metadata.deposit_insurance')
                     ->label('Insurance')
                     ->money('EUR')
-                    ->getStateUsing(fn (UserBankPreference $record): ?int => 
-                        $record->metadata['deposit_insurance'] ?? null
-                    ),
+                    ->getStateUsing(fn (UserBankPreference $record): ?int =>
+                        $record->metadata['deposit_insurance'] ?? null),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

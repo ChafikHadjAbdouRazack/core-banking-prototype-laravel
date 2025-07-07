@@ -18,7 +18,8 @@ class HandleCustodianHealthChange implements ShouldQueue
      */
     public function __construct(
         private readonly BankAlertingService $alertingService
-    ) {}
+    ) {
+    }
 
     /**
      * Handle the event.
@@ -27,7 +28,7 @@ class HandleCustodianHealthChange implements ShouldQueue
     {
         $this->alertingService->handleHealthChange($event);
     }
-    
+
     /**
      * Handle a job failure.
      */

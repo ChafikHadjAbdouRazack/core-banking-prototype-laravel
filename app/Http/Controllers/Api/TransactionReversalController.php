@@ -90,7 +90,7 @@ class TransactionReversalController extends Controller
         ]);
 
         $account = Account::where('uuid', $uuid)->firstOrFail();
-        
+
         // Ensure account belongs to authenticated user (or admin)
         if ($account->user_uuid !== Auth::user()->uuid && !Auth::user()->hasRole('admin')) {
             return response()->json(['message' => 'Forbidden'], 403);
@@ -98,10 +98,10 @@ class TransactionReversalController extends Controller
 
         try {
             $accountUuid = AccountUuid::fromString($account->uuid);
-            
+
             // Convert amount to Money object with proper precision
             $amount = Money::fromFloat($validated['amount'], $validated['asset_code']);
-            
+
             // Start the transaction reversal workflow
             $workflow = WorkflowStub::make(TransactionReversalWorkflow::class);
             $result = $workflow->execute(
@@ -111,10 +111,10 @@ class TransactionReversalController extends Controller
                 $validated['reversal_reason'],
                 $validated['authorized_by'] ?? Auth::user()->email
             );
-            
+
             // Generate reversal ID for tracking
             $reversalId = 'rev_' . uniqid() . '_' . time();
-            
+
             return response()->json([
                 'message' => 'Transaction reversal initiated successfully',
                 'data' => [
@@ -130,7 +130,6 @@ class TransactionReversalController extends Controller
                     'created_at' => now()->toISOString(),
                 ]
             ], 200);
-            
         } catch (\Exception $e) {
             logger()->error('Transaction reversal API failed', [
                 'account_uuid' => $uuid,
@@ -139,7 +138,7 @@ class TransactionReversalController extends Controller
                 'error' => $e->getMessage(),
                 'user_id' => Auth::id(),
             ]);
-            
+
             return response()->json([
                 'message' => 'Transaction reversal failed',
                 'error' => $e->getMessage()
@@ -206,7 +205,7 @@ class TransactionReversalController extends Controller
         ]);
 
         $account = Account::where('uuid', $uuid)->firstOrFail();
-        
+
         if ($account->user_uuid !== Auth::user()->uuid && !Auth::user()->hasRole('admin')) {
             return response()->json(['message' => 'Forbidden'], 403);
         }

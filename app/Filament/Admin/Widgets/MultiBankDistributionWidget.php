@@ -9,11 +9,11 @@ use Illuminate\Support\Facades\DB;
 class MultiBankDistributionWidget extends Widget
 {
     protected static string $view = 'filament.admin.widgets.multi-bank-distribution-widget';
-    
+
     protected int | string | array $columnSpan = 'full';
-    
+
     protected static ?int $sort = 3;
-    
+
     /**
      * Check if this widget should be displayed
      */
@@ -22,7 +22,7 @@ class MultiBankDistributionWidget extends Widget
         // Show this widget when GCU is enabled or when there are bank preferences
         return config('app.gcu_enabled', false) || UserBankPreference::exists();
     }
-    
+
     /**
      * Get the data for the widget
      */
@@ -30,14 +30,14 @@ class MultiBankDistributionWidget extends Widget
     {
         $bankStats = $this->getBankDistributionStats();
         $totalAllocated = $this->getTotalAllocatedFunds();
-        
+
         return [
             'bankStats' => $bankStats,
             'totalAllocated' => $totalAllocated,
             'isGcuEnabled' => config('app.gcu_enabled', false),
         ];
     }
-    
+
     /**
      * Get bank distribution statistics
      */
@@ -49,7 +49,7 @@ class MultiBankDistributionWidget extends Widget
             ->selectRaw('SUM(CASE WHEN is_primary = true THEN 1 ELSE 0 END) as primary_count')
             ->groupBy('bank_name')
             ->get();
-        
+
         // Add bank metadata
         $bankMetadata = [
             'Paysera' => [
@@ -78,18 +78,18 @@ class MultiBankDistributionWidget extends Widget
                 'coverage' => '€100,000',
             ],
         ];
-        
+
         return $stats->map(function ($stat) use ($bankMetadata) {
             $metadata = $bankMetadata[$stat->bank_name] ?? [
                 'color' => 'gray',
                 'country' => 'EU',
                 'coverage' => '€100,000',
             ];
-            
+
             return array_merge($stat->toArray(), $metadata);
         })->toArray();
     }
-    
+
     /**
      * Get total allocated funds across all banks
      */
@@ -98,7 +98,7 @@ class MultiBankDistributionWidget extends Widget
         // This is a placeholder - in a real implementation, you'd sum actual account balances
         $totalUsers = UserBankPreference::distinct('user_uuid')->count('user_uuid');
         $totalBankRelationships = UserBankPreference::count();
-        
+
         return [
             'users' => $totalUsers,
             'relationships' => $totalBankRelationships,

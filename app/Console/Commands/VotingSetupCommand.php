@@ -29,7 +29,7 @@ class VotingSetupCommand extends Command
     public function handle()
     {
         $monthOption = $this->option('month');
-        
+
         // Determine the month
         $now = now();
         if ($monthOption === 'current') {
@@ -45,17 +45,17 @@ class VotingSetupCommand extends Command
             $this->error('Invalid month option. Use "current", "next", or a month number (1-12).');
             return 1;
         }
-        
+
         // Check if proposal already exists for this month
         $existingProposal = GcuVotingProposal::whereYear('voting_starts_at', $targetMonth->year)
             ->whereMonth('voting_starts_at', $targetMonth->month)
             ->first();
-            
+
         if ($existingProposal) {
             $this->warn("A proposal already exists for {$targetMonth->format('F Y')}");
             return 0;
         }
-        
+
         // Get current composition from config
         $currentComposition = config('platform.gcu.composition', [
             'USD' => 30,
@@ -65,15 +65,15 @@ class VotingSetupCommand extends Command
             'JPY' => 15,
             'XAU' => 5,
         ]);
-        
+
         // Calculate total GCU supply
         $totalGcuSupply = \App\Models\AccountBalance::where('asset_code', 'GCU')
             ->sum('balance');
-        
+
         // Create the proposal
         $votingStartDate = Carbon::create($targetMonth->year, $targetMonth->month, 20, 0, 0, 0);
         $votingEndDate = $votingStartDate->copy()->addDays(7);
-        
+
         $proposal = GcuVotingProposal::create([
             'title' => "GCU Composition Vote - {$targetMonth->format('F Y')}",
             'description' => "Monthly voting poll to determine the Global Currency Unit composition for {$targetMonth->format('F Y')}. Vote on the optimal currency basket allocation.",
@@ -88,12 +88,12 @@ class VotingSetupCommand extends Command
             'total_gcu_supply' => $totalGcuSupply,
             'created_by' => User::role('admin')->first()?->id,
         ]);
-        
+
         $this->info("Created voting proposal for {$targetMonth->format('F Y')}");
         $this->info("Voting starts: {$votingStartDate->format('Y-m-d H:i')}");
         $this->info("Voting ends: {$votingEndDate->format('Y-m-d H:i')}");
         $this->info("Total GCU Supply: " . number_format($totalGcuSupply / 100, 2));
-        
+
         return 0;
     }
 }

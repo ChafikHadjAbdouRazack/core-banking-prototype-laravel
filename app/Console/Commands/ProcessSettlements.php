@@ -40,50 +40,49 @@ class ProcessSettlements extends Command
     public function handle(): int
     {
         $this->info('🏦 Processing inter-custodian settlements...');
-        
+
         $type = $this->option('type');
         $dryRun = $this->option('dry-run');
-        
+
         if ($type) {
             $this->info("Settlement type override: {$type}");
             config(['custodians.settlement.type' => $type]);
         }
-        
+
         $currentType = config('custodians.settlement.type');
         $this->info("Settlement type: {$currentType}");
-        
+
         if ($dryRun) {
             $this->warn('🔍 DRY RUN MODE - No actual settlements will be executed');
             return $this->performDryRun();
         }
-        
+
         try {
             $results = $this->settlementService->processPendingSettlements();
-            
+
             $this->displayResults($results, $currentType);
-            
+
             return self::SUCCESS;
-            
         } catch (\Exception $e) {
             $this->error('❌ Settlement processing failed: ' . $e->getMessage());
-            
+
             if ($this->option('verbose')) {
                 $this->error($e->getTraceAsString());
             }
-            
+
             return self::FAILURE;
         }
     }
-    
+
     /**
      * Perform a dry run to show what would be settled
      */
     private function performDryRun(): int
     {
         $this->info('Analyzing pending settlements...');
-        
+
         $stats = $this->settlementService->getSettlementStatistics();
-        
+
         $this->table(
             ['Metric', 'Value'],
             [
@@ -97,10 +96,10 @@ class ProcessSettlements extends Command
                 ['Savings Percentage', $stats['savings_percentage'] . '%'],
             ]
         );
-        
+
         return self::SUCCESS;
     }
-    
+
     /**
      * Display settlement results
      */
@@ -109,7 +108,7 @@ class ProcessSettlements extends Command
         $this->newLine();
         $this->info('✅ Settlement Processing Complete');
         $this->newLine();
-        
+
         switch ($type) {
             case 'net':
                 $this->info("📊 Net Settlement Results:");
@@ -124,7 +123,7 @@ class ProcessSettlements extends Command
                     ]
                 );
                 break;
-                
+
             case 'batch':
                 $this->info("📦 Batch Settlement Results:");
                 $this->table(
@@ -136,7 +135,7 @@ class ProcessSettlements extends Command
                     ]
                 );
                 break;
-                
+
             case 'realtime':
                 $this->info("⚡ Realtime Settlement Results:");
                 $this->table(
@@ -149,12 +148,12 @@ class ProcessSettlements extends Command
                 );
                 break;
         }
-        
+
         // Show current statistics
         $this->newLine();
         $this->info('📈 Current Settlement Statistics:');
         $stats = $this->settlementService->getSettlementStatistics();
-        
+
         $this->table(
             ['Settlement Type', 'Count', 'Amount'],
             collect($stats['by_type'])->map(function ($data, $type) {

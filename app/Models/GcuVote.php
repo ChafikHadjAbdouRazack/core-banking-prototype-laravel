@@ -52,7 +52,7 @@ class GcuVote extends Model
             'voting_power' => $this->voting_power,
             'timestamp' => $this->created_at?->timestamp,
         ];
-        
+
         return hash('sha256', json_encode($data) . config('app.key'));
     }
 

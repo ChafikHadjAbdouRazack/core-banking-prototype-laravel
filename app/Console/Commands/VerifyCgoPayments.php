@@ -33,14 +33,14 @@ class VerifyCgoPayments extends Command
         // Verify specific investment if provided
         if ($investmentUuid = $this->option('investment')) {
             $investment = \App\Models\CgoInvestment::where('uuid', $investmentUuid)->first();
-            
+
             if (!$investment) {
                 $this->error("Investment with UUID {$investmentUuid} not found.");
                 return Command::FAILURE;
             }
 
             $verified = $verificationService->verifyPayment($investment);
-            
+
             if ($verified) {
                 $this->info("Payment verified successfully for investment {$investmentUuid}");
             } else {

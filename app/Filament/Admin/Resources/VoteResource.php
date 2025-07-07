@@ -59,11 +59,15 @@ class VoteResource extends Resource
                             ->label('Selected Options')
                             ->options(function (callable $get) {
                                 $pollId = $get('poll_id');
-                                if (!$pollId) return [];
-                                
+                                if (!$pollId) {
+                                    return [];
+                                }
+
                                 $poll = Poll::find($pollId);
-                                if (!$poll) return [];
-                                
+                                if (!$poll) {
+                                    return [];
+                                }
+
                                 return collect($poll->options)->pluck('label', 'id')->toArray();
                             })
                             ->required()
@@ -188,7 +192,7 @@ class VoteResource extends Resource
                     ->color('primary')
                     ->action(function (Vote $record) {
                         $isValid = $record->verifySignature();
-                        
+
                         \Filament\Notifications\Notification::make()
                             ->title($isValid ? 'Signature Valid' : 'Signature Invalid')
                             ->body($isValid ? 'Vote signature is cryptographically valid' : 'Vote signature verification failed')

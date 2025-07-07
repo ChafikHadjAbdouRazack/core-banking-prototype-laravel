@@ -71,11 +71,11 @@ class UserVotingPollResource extends JsonResource
     {
         $totalVotingPower = $this->votes()->sum('voting_power');
         $potentialVotingPower = $this->estimatePotentialVotingPower();
-        
+
         if ($potentialVotingPower === 0) {
             return 0;
         }
-        
+
         return round(($totalVotingPower / $potentialVotingPower) * 100, 2);
     }
 

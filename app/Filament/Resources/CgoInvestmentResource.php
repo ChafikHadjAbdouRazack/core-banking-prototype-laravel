@@ -230,7 +230,7 @@ class CgoInvestmentResource extends Resource
                         'secondary' => 'refunded',
                     ]),
                 Tables\Columns\BadgeColumn::make('payment_method')
-                    ->formatStateUsing(fn ($state) => match($state) {
+                    ->formatStateUsing(fn ($state) => match ($state) {
                         'stripe' => 'Card',
                         'bank_transfer' => 'Bank',
                         'crypto' => 'Crypto',
@@ -313,10 +313,9 @@ class CgoInvestmentResource extends Resource
                         // Dispatch verification job
                         \App\Jobs\VerifyCgoPayment::dispatch($record);
                     })
-                    ->visible(fn (CgoInvestment $record) => 
-                        $record->payment_status === 'pending' && 
-                        $record->payment_method !== 'bank_transfer'
-                    ),
+                    ->visible(fn (CgoInvestment $record) =>
+                        $record->payment_status === 'pending' &&
+                        $record->payment_method !== 'bank_transfer'),
                 Tables\Actions\Action::make('download_agreement')
                     ->label('Download Agreement')
                     ->icon('heroicon-o-document-arrow-down')
@@ -364,7 +363,7 @@ class CgoInvestmentResource extends Resource
                                 reason: $data['reason'],
                                 reasonDetails: $data['reason_details']
                             );
-                            
+
                             Notification::make()
                                 ->title('Refund request initiated')
                                 ->success()

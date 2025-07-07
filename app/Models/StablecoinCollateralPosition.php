@@ -10,7 +10,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class StablecoinCollateralPosition extends Model
 {
-    use HasFactory, HasUuids;
+    use HasFactory;
+    use HasUuids;
 
     /**
      * Get the columns that should receive a unique identifier.
@@ -113,7 +114,7 @@ class StablecoinCollateralPosition extends Model
 
         return false;
     }
-    
+
     /**
      * Scope to get positions that should be auto-liquidated.
      */
@@ -137,7 +138,7 @@ class StablecoinCollateralPosition extends Model
     {
         $collateralValueInPegAsset = $this->getCollateralValueInPegAsset();
         $maxDebt = $collateralValueInPegAsset / $this->stablecoin->collateral_ratio;
-        
+
         return max(0, (int) ($maxDebt - $this->debt_amount));
     }
 

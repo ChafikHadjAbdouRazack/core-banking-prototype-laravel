@@ -13,12 +13,12 @@ class ChainlinkOracle implements OracleConnector
     private string $apiKey;
     private string $baseUrl;
     private array $priceFeedMap;
-    
+
     public function __construct()
     {
         $this->apiKey = config('stablecoin.oracles.chainlink.api_key', '');
         $this->baseUrl = config('stablecoin.oracles.chainlink.base_url', 'https://api.chain.link/v1');
-        
+
         // Map of trading pairs to Chainlink price feed addresses
         $this->priceFeedMap = [
             'BTC/USD' => '0xF4030086522a5bEEa4988F8cA5B36dbC97BeE88c',
@@ -28,20 +28,20 @@ class ChainlinkOracle implements OracleConnector
             // Add more price feeds as needed
         ];
     }
-    
+
     public function getPrice(string $base, string $quote): PriceData
     {
         $pair = "{$base}/{$quote}";
-        
+
         if (!isset($this->priceFeedMap[$pair])) {
             throw new \InvalidArgumentException("Price feed not available for {$pair}");
         }
-        
+
         try {
             // In production, this would connect to actual Chainlink nodes
             // For now, we'll simulate with realistic data
             $response = $this->simulateChainlinkResponse($base, $quote);
-            
+
             return new PriceData(
                 base: $base,
                 quote: $quote,
@@ -61,11 +61,11 @@ class ChainlinkOracle implements OracleConnector
             throw $e;
         }
     }
-    
+
     public function getMultiplePrices(array $pairs): array
     {
         $prices = [];
-        
+
         foreach ($pairs as $pair) {
             try {
                 [$base, $quote] = explode('/', $pair);
@@ -74,17 +74,17 @@ class ChainlinkOracle implements OracleConnector
                 Log::warning("Failed to get price for {$pair}: {$e->getMessage()}");
             }
         }
-        
+
         return $prices;
     }
-    
+
     public function getHistoricalPrice(string $base, string $quote, Carbon $timestamp): PriceData
     {
         // Chainlink doesn't provide historical data via API
         // In production, this would query on-chain historical rounds
         throw new \RuntimeException("Historical prices not available from Chainlink oracle");
     }
-    
+
     public function isHealthy(): bool
     {
         try {
@@ -95,17 +95,17 @@ class ChainlinkOracle implements OracleConnector
             return false;
         }
     }
-    
+
     public function getSourceName(): string
     {
         return 'chainlink';
     }
-    
+
     public function getPriority(): int
     {
         return 1; // Highest priority
     }
-    
+
     /**
      * Simulate Chainlink response for development
      */
@@ -117,14 +117,14 @@ class ChainlinkOracle implements OracleConnector
             'EUR' => 1.09 + rand(-5, 5) / 100,
             'GBP' => 1.27 + rand(-5, 5) / 100,
         ];
-        
+
         $price = $basePrices[$base] ?? 1.0;
-        
+
         if ($quote !== 'USD') {
             $quoteInUsd = $basePrices[$quote] ?? 1.0;
             $price = $price / $quoteInUsd;
         }
-        
+
         return [
             'price' => number_format($price, 8, '.', ''),
             'timestamp' => time(),

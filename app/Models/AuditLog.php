@@ -61,7 +61,7 @@ class AuditLog extends Model
         ?string $tags = null
     ): self {
         $request = request();
-        
+
         return static::create([
             'user_uuid' => Auth::user()?->uuid,
             'action' => $action,

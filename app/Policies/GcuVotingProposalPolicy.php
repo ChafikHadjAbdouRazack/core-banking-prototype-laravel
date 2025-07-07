@@ -63,11 +63,11 @@ class GcuVotingProposalPolicy
         if (!$account) {
             return false;
         }
-        
+
         $gcuBalance = $account->balances()
             ->where('asset_code', 'GCU')
             ->first()?->balance ?? 0;
-        
+
         return $gcuBalance > 0 && $proposal->isVotingActive();
     }
 }

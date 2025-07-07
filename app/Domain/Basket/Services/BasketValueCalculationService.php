@@ -15,7 +15,8 @@ class BasketValueCalculationService
 {
     public function __construct(
         private readonly ExchangeRateService $exchangeRateService
-    ) {}
+    ) {
+    }
 
     /**
      * Calculate the current value of a basket based on its components.
@@ -23,16 +24,16 @@ class BasketValueCalculationService
     public function calculateValue(BasketAsset $basket, bool $useCache = true): BasketValue
     {
         $cacheKey = "basket_value:{$basket->code}";
-        
+
         if ($useCache && $cachedValue = Cache::get($cacheKey)) {
             return $cachedValue;
         }
 
         $value = $this->performCalculation($basket);
-        
+
         // Cache for 5 minutes
         Cache::put($cacheKey, $value, 300);
-        
+
         return $value;
     }
 
@@ -42,7 +43,7 @@ class BasketValueCalculationService
     private function performCalculation(BasketAsset $basket): BasketValue
     {
         $components = $basket->activeComponents()->with('asset')->get();
-        
+
         if ($components->isEmpty()) {
             Log::warning("Basket {$basket->code} has no active components");
             return $this->createEmptyValue($basket);
@@ -63,7 +64,7 @@ class BasketValueCalculationService
                     'component' => $component->asset_code,
                     'error' => $e->getMessage(),
                 ]);
-                
+
                 $errors[] = [
                     'asset' => $component->asset_code,
                     'error' => $e->getMessage(),
@@ -75,7 +76,7 @@ class BasketValueCalculationService
         return DB::transaction(function () use ($basket, $totalValue, $componentValues, $errors) {
             // Ensure the basket exists as an asset
             $basket->toAsset();
-            
+
             $basketValue = BasketValue::create([
                 'basket_asset_code' => $basket->code,
                 'value' => $totalValue,
@@ -99,14 +100,14 @@ class BasketValueCalculationService
     private function calculateComponentValue($component): array
     {
         $asset = $component->asset;
-        
+
         if (!$asset) {
             throw new \Exception("Asset {$component->asset_code} not found");
         }
 
         // Get the value in USD
         $assetValueInUsd = $this->getAssetValueInUsd($component->asset_code);
-        
+
         // Calculate weighted value
         $weightedValue = $assetValueInUsd * ($component->weight / 100);
 
@@ -130,7 +131,7 @@ class BasketValueCalculationService
         }
 
         $rate = $this->exchangeRateService->getRate($assetCode, 'USD');
-        
+
         if (!$rate) {
             throw new \Exception("No exchange rate available for {$assetCode} to USD");
         }
@@ -238,8 +239,8 @@ class BasketValueCalculationService
         }
 
         $change = $endValue->value - $startValue->value;
-        $percentageChange = $startValue->value > 0 
-            ? ($change / $startValue->value) * 100 
+        $percentageChange = $startValue->value > 0
+            ? ($change / $startValue->value) * 100
             : 0;
 
         return [

@@ -9,12 +9,12 @@ use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 
 class AssetTransferred extends ShouldBeStored implements HasHash
 {
+    use HashValidatorProvider;
+
     /**
      * @var string
      */
     public string $queue = EventQueues::TRANSFERS->value;
-
-    use HashValidatorProvider;
 
     /**
      * @param AccountUuid $from
@@ -31,8 +31,9 @@ class AssetTransferred extends ShouldBeStored implements HasHash
         public readonly int $amount,
         public readonly Hash $hash,
         public readonly ?array $metadata = []
-    ) {}
-    
+    ) {
+    }
+
     /**
      * Get the amount for this event
      */
@@ -40,7 +41,7 @@ class AssetTransferred extends ShouldBeStored implements HasHash
     {
         return $this->amount;
     }
-    
+
     /**
      * Get the asset code for this event
      */
@@ -48,7 +49,7 @@ class AssetTransferred extends ShouldBeStored implements HasHash
     {
         return $this->assetCode;
     }
-    
+
     /**
      * Get the from account UUID
      */
@@ -56,7 +57,7 @@ class AssetTransferred extends ShouldBeStored implements HasHash
     {
         return $this->from->getUuid();
     }
-    
+
     /**
      * Get the to account UUID
      */

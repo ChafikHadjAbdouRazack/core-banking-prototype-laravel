@@ -233,7 +233,7 @@ class TransactionMonitoringRule extends Model
 
         $transactionValue = $transaction[$field] ?? null;
 
-        return match($operator) {
+        return match ($operator) {
             'equals' => $transactionValue == $value,
             'not_equals' => $transactionValue != $value,
             'greater_than' => $transactionValue > $value,
@@ -262,7 +262,7 @@ class TransactionMonitoringRule extends Model
             'note' => $note,
             'accuracy_before' => $this->accuracy_rate,
         ];
-        
+
         $this->update([
             'tuning_history' => $history,
             'last_modified_by' => $user->id,

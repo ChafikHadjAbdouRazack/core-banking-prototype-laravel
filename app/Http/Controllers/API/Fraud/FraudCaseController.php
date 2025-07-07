@@ -11,12 +11,12 @@ use Illuminate\Http\JsonResponse;
 class FraudCaseController extends Controller
 {
     private FraudCaseService $caseService;
-    
+
     public function __construct(FraudCaseService $caseService)
     {
         $this->caseService = $caseService;
     }
-    
+
     /**
      * List fraud cases
      */
@@ -36,12 +36,12 @@ class FraudCaseController extends Controller
             'sort_order' => 'nullable|in:asc,desc',
             'per_page' => 'nullable|integer|min:10|max:100',
         ]);
-        
+
         $cases = $this->caseService->searchCases($request->all());
-        
+
         return response()->json($cases);
     }
-    
+
     /**
      * Get fraud case details
      */
@@ -51,13 +51,13 @@ class FraudCaseController extends Controller
             'fraudScore',
             'fraudScore.entity',
         ])->findOrFail($caseId);
-        
+
         // Ensure user can view this case
         $this->authorize('view', $case);
-        
+
         // Get similar cases
         $similarCases = $this->caseService->linkSimilarCases($case);
-        
+
         return response()->json([
             'case' => $case,
             'similar_cases' => $similarCases->map(function ($similarCase) {
@@ -71,7 +71,7 @@ class FraudCaseController extends Controller
             }),
         ]);
     }
-    
+
     /**
      * Update fraud case
      */
@@ -90,20 +90,20 @@ class FraudCaseController extends Controller
             'tags' => 'nullable|array',
             'tags.*' => 'string|max:50',
         ]);
-        
+
         $case = FraudCase::findOrFail($caseId);
-        
+
         // Ensure user can update this case
         $this->authorize('update', $case);
-        
+
         $updatedCase = $this->caseService->updateInvestigation($case, $request->all());
-        
+
         return response()->json([
             'message' => 'Fraud case updated successfully',
             'case' => $updatedCase,
         ]);
     }
-    
+
     /**
      * Resolve fraud case
      */
@@ -114,29 +114,29 @@ class FraudCaseController extends Controller
             'outcome' => 'required|in:fraud,legitimate,unknown',
             'recovery_amount' => 'nullable|numeric|min:0',
         ]);
-        
+
         $case = FraudCase::findOrFail($caseId);
-        
+
         // Ensure user can resolve this case
         $this->authorize('resolve', $case);
-        
+
         // Update recovery amount if provided
         if ($request->has('recovery_amount')) {
             $case->update(['recovery_amount' => $request->recovery_amount]);
         }
-        
+
         $resolvedCase = $this->caseService->resolveCase(
             $case,
             $request->resolution,
             $request->outcome
         );
-        
+
         return response()->json([
             'message' => 'Fraud case resolved successfully',
             'case' => $resolvedCase,
         ]);
     }
-    
+
     /**
      * Escalate fraud case
      */
@@ -145,20 +145,20 @@ class FraudCaseController extends Controller
         $request->validate([
             'reason' => 'required|string|max:500',
         ]);
-        
+
         $case = FraudCase::findOrFail($caseId);
-        
+
         // Ensure user can escalate this case
         $this->authorize('escalate', $case);
-        
+
         $escalatedCase = $this->caseService->escalateCase($case, $request->reason);
-        
+
         return response()->json([
             'message' => 'Fraud case escalated successfully',
             'case' => $escalatedCase,
         ]);
     }
-    
+
     /**
      * Get fraud case statistics
      */
@@ -168,12 +168,12 @@ class FraudCaseController extends Controller
             'date_from' => 'nullable|date',
             'date_to' => 'nullable|date|after_or_equal:date_from',
         ]);
-        
+
         $statistics = $this->caseService->getCaseStatistics($request->all());
-        
+
         return response()->json(['statistics' => $statistics]);
     }
-    
+
     /**
      * Assign case to investigator
      */
@@ -182,26 +182,26 @@ class FraudCaseController extends Controller
         $request->validate([
             'investigator_id' => 'required|integer|exists:users,id',
         ]);
-        
+
         $case = FraudCase::findOrFail($caseId);
-        
+
         // Ensure user can assign this case
         $this->authorize('assign', $case);
-        
+
         $case->update(['assigned_to' => $request->investigator_id]);
-        
+
         $case->addInvestigationNote(
             "Case assigned to investigator ID: {$request->investigator_id}",
             auth()->user()->name ?? 'System',
             'assignment'
         );
-        
+
         return response()->json([
             'message' => 'Case assigned successfully',
             'case' => $case,
         ]);
     }
-    
+
     /**
      * Add evidence to case
      */
@@ -213,46 +213,46 @@ class FraudCaseController extends Controller
             'file' => 'nullable|file|max:10240', // 10MB max
             'metadata' => 'nullable|array',
         ]);
-        
+
         $case = FraudCase::findOrFail($caseId);
-        
+
         // Ensure user can add evidence to this case
         $this->authorize('update', $case);
-        
+
         $evidenceData = [
             'type' => $request->type,
             'description' => $request->description,
             'metadata' => $request->metadata ?? [],
         ];
-        
+
         // Handle file upload
         if ($request->hasFile('file')) {
             $path = $request->file('file')->store('fraud-evidence', 'private');
             $evidenceData['file_path'] = $path;
         }
-        
+
         $updatedCase = $this->caseService->updateInvestigation($case, [
             'evidence' => $evidenceData,
         ]);
-        
+
         return response()->json([
             'message' => 'Evidence added successfully',
             'case' => $updatedCase,
         ]);
     }
-    
+
     /**
      * Get case timeline
      */
     public function timeline(string $caseId): JsonResponse
     {
         $case = FraudCase::findOrFail($caseId);
-        
+
         // Ensure user can view this case
         $this->authorize('view', $case);
-        
+
         $timeline = [];
-        
+
         // Case created
         $timeline[] = [
             'timestamp' => $case->created_at,
@@ -260,7 +260,7 @@ class FraudCaseController extends Controller
             'description' => 'Fraud case created',
             'actor' => 'System',
         ];
-        
+
         // Investigation started
         if ($case->investigation_started_at) {
             $timeline[] = [
@@ -270,7 +270,7 @@ class FraudCaseController extends Controller
                 'actor' => 'System',
             ];
         }
-        
+
         // Add investigation notes to timeline
         foreach ($case->investigation_notes ?? [] as $note) {
             $timeline[] = [
@@ -280,7 +280,7 @@ class FraudCaseController extends Controller
                 'actor' => $note['author'] ?? 'Unknown',
             ];
         }
-        
+
         // Case resolved
         if ($case->resolved_at) {
             $timeline[] = [
@@ -290,10 +290,10 @@ class FraudCaseController extends Controller
                 'actor' => $case->resolution_notes['resolved_by'] ?? 'Unknown',
             ];
         }
-        
+
         // Sort by timestamp
         usort($timeline, fn($a, $b) => $a['timestamp'] <=> $b['timestamp']);
-        
+
         return response()->json(['timeline' => $timeline]);
     }
 }

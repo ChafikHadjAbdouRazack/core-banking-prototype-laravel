@@ -15,19 +15,19 @@ use Illuminate\Support\Str;
 class BatchProcessingController extends Controller
 {
     protected BatchProcessingService $batchService;
-    
+
     public function __construct(BatchProcessingService $batchService)
     {
         $this->batchService = $batchService;
     }
-    
+
     /**
      * Display batch processing interface
      */
     public function index(Request $request)
     {
         $user = Auth::user();
-        
+
         // Get filter parameters
         $filters = [
             'status' => $request->get('status', 'all'),
@@ -35,16 +35,16 @@ class BatchProcessingController extends Controller
             'date_from' => $request->get('date_from'),
             'date_to' => $request->get('date_to'),
         ];
-        
+
         // Get batch jobs
         $batchJobs = $this->getBatchJobs($user, $filters);
-        
+
         // Get statistics
         $statistics = $this->getBatchStatistics($user);
-        
+
         // Get templates
         $templates = $this->getBatchTemplates();
-        
+
         return view('batch-processing.index', compact(
             'batchJobs',
             'statistics',
@@ -52,7 +52,7 @@ class BatchProcessingController extends Controller
             'filters'
         ));
     }
-    
+
     /**
      * Show create batch job form
      */
@@ -60,15 +60,15 @@ class BatchProcessingController extends Controller
     {
         $user = Auth::user();
         $accounts = $user->accounts()->with('balances.asset')->get();
-        
+
         $template = null;
         if ($request->has('template')) {
             $template = $this->getBatchTemplate($request->get('template'));
         }
-        
+
         return view('batch-processing.create', compact('accounts', 'template'));
     }
-    
+
     /**
      * Store a new batch job
      */
@@ -85,7 +85,7 @@ class BatchProcessingController extends Controller
             'items.*.currency' => 'required|string|size:3',
             'items.*.description' => 'nullable|string|max:255',
         ]);
-        
+
         DB::beginTransaction();
         try {
             // Create batch job
@@ -100,7 +100,7 @@ class BatchProcessingController extends Controller
                 'failed_items' => 0,
                 'scheduled_at' => $validated['schedule_at'] ?? now(),
             ]);
-            
+
             // Create batch items
             foreach ($validated['items'] as $index => $item) {
                 BatchItem::create([
@@ -111,18 +111,17 @@ class BatchProcessingController extends Controller
                     'data' => $item,
                 ]);
             }
-            
+
             DB::commit();
-            
+
             // Queue for processing if not scheduled
             if (!isset($validated['schedule_at'])) {
                 $this->batchService->processBatch($batchJob);
             }
-            
+
             return redirect()
                 ->route('batch-processing.show', $batchJob)
                 ->with('success', 'Batch job created successfully');
-            
         } catch (\Exception $e) {
             DB::rollBack();
             return back()
@@ -130,7 +129,7 @@ class BatchProcessingController extends Controller
                 ->withErrors(['error' => 'Failed to create batch job: ' . $e->getMessage()]);
         }
     }
-    
+
     /**
      * Show batch job details
      */
@@ -140,12 +139,12 @@ class BatchProcessingController extends Controller
         if ($batchJob->user_uuid !== Auth::user()->uuid) {
             abort(403);
         }
-        
+
         $batchJob->load('items');
-        
+
         // Get processing statistics
         $stats = [
-            'success_rate' => $batchJob->total_items > 0 
+            'success_rate' => $batchJob->total_items > 0
                 ? round((($batchJob->processed_items - $batchJob->failed_items) / $batchJob->total_items) * 100, 1)
                 : 0,
             'avg_processing_time' => $batchJob->items()
@@ -153,10 +152,10 @@ class BatchProcessingController extends Controller
                 ->selectRaw('AVG(TIMESTAMPDIFF(SECOND, created_at, processed_at)) as avg_time')
                 ->value('avg_time') ?? 0,
         ];
-        
+
         return view('batch-processing.show', compact('batchJob', 'stats'));
     }
-    
+
     /**
      * Cancel a pending batch job
      */
@@ -166,21 +165,21 @@ class BatchProcessingController extends Controller
         if ($batchJob->user_uuid !== Auth::user()->uuid) {
             abort(403);
         }
-        
+
         if (!in_array($batchJob->status, ['pending', 'processing'])) {
             return back()->withErrors(['error' => 'Cannot cancel this batch job']);
         }
-        
+
         $batchJob->update(['status' => 'cancelled']);
-        
+
         // Cancel all pending items
         $batchJob->items()
             ->where('status', 'pending')
             ->update(['status' => 'cancelled']);
-        
+
         return back()->with('success', 'Batch job cancelled');
     }
-    
+
     /**
      * Retry failed items in a batch job
      */
@@ -190,13 +189,13 @@ class BatchProcessingController extends Controller
         if ($batchJob->user_uuid !== Auth::user()->uuid) {
             abort(403);
         }
-        
+
         $failedItems = $batchJob->items()->where('status', 'failed')->count();
-        
+
         if ($failedItems === 0) {
             return back()->withErrors(['error' => 'No failed items to retry']);
         }
-        
+
         // Reset failed items
         $batchJob->items()
             ->where('status', 'failed')
@@ -205,19 +204,19 @@ class BatchProcessingController extends Controller
                 'error_message' => null,
                 'processed_at' => null,
             ]);
-        
+
         // Update batch job
         $batchJob->update([
             'status' => 'processing',
             'failed_items' => 0,
         ]);
-        
+
         // Queue for reprocessing
         $this->batchService->processBatch($batchJob);
-        
+
         return back()->with('success', "Retrying {$failedItems} failed items");
     }
-    
+
     /**
      * Download batch job report
      */
@@ -227,12 +226,12 @@ class BatchProcessingController extends Controller
         if ($batchJob->user_uuid !== Auth::user()->uuid) {
             abort(403);
         }
-        
+
         $filename = "batch_{$batchJob->uuid}_{$batchJob->created_at->format('Y-m-d')}.csv";
-        
+
         return response()->streamDownload(function () use ($batchJob) {
             $handle = fopen('php://output', 'w');
-            
+
             // Headers
             fputcsv($handle, [
                 'Sequence',
@@ -246,7 +245,7 @@ class BatchProcessingController extends Controller
                 'Processed At',
                 'Error Message',
             ]);
-            
+
             // Data
             foreach ($batchJob->items as $item) {
                 fputcsv($handle, [
@@ -262,42 +261,42 @@ class BatchProcessingController extends Controller
                     $item->error_message,
                 ]);
             }
-            
+
             fclose($handle);
         }, $filename, [
             'Content-Type' => 'text/csv',
         ]);
     }
-    
+
     /**
      * Get batch jobs for user
      */
     private function getBatchJobs($user, $filters)
     {
         $query = BatchJob::where('user_uuid', $user->uuid);
-        
+
         // Apply filters
         if ($filters['status'] !== 'all') {
             $query->where('status', $filters['status']);
         }
-        
+
         if ($filters['type'] !== 'all') {
             $query->where('type', $filters['type']);
         }
-        
+
         if ($filters['date_from']) {
             $query->where('created_at', '>=', $filters['date_from']);
         }
-        
+
         if ($filters['date_to']) {
             $query->where('created_at', '<=', $filters['date_to']);
         }
-        
+
         return $query->orderBy('created_at', 'desc')
             ->paginate(10)
             ->appends($filters);
     }
-    
+
     /**
      * Get batch statistics
      */
@@ -316,7 +315,7 @@ class BatchProcessingController extends Controller
             )
             ->first();
     }
-    
+
     /**
      * Get batch templates
      */
@@ -353,7 +352,7 @@ class BatchProcessingController extends Controller
             ],
         ];
     }
-    
+
     /**
      * Get specific batch template
      */

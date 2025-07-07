@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 class AccountStatsOverview extends BaseWidget
 {
     public ?Model $record = null;
-    
+
     protected function getStats(): array
     {
         if (!$this->record) {
@@ -21,7 +21,7 @@ class AccountStatsOverview extends BaseWidget
             $activeAccounts = Account::where('frozen', false)->count();
             $frozenAccounts = Account::where('frozen', true)->count();
             $totalBalance = Account::sum('balance');
-            
+
             return [
                 Stat::make('Total Accounts', number_format($totalAccounts))
                     ->description($activeAccounts . ' active, ' . $frozenAccounts . ' frozen')
@@ -41,21 +41,21 @@ class AccountStatsOverview extends BaseWidget
                     ->color($frozenAccounts > 0 ? 'danger' : 'success'),
             ];
         }
-        
+
         // Individual account stats
         $account = $this->record;
-        
+
         $lastTransaction = Transaction::where('account_uuid', $account->uuid)
             ->latest()
             ->first();
-            
+
         $monthlyTurnover = Turnover::where('account_uuid', $account->uuid)
             ->whereMonth('created_at', now()->month)
             ->whereYear('created_at', now()->year)
             ->first();
-            
+
         $totalTransactions = Transaction::where('account_uuid', $account->uuid)->count();
-        
+
         return [
             Stat::make('Current Balance', '$' . number_format($account->balance / 100, 2))
                 ->description($account->frozen ? 'Account Frozen' : 'Account Active')

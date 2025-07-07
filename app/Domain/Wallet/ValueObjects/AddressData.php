@@ -10,8 +10,9 @@ class AddressData
         public readonly string $chain,
         public readonly ?string $derivationPath = null,
         public readonly array $metadata = []
-    ) {}
-    
+    ) {
+    }
+
     public function toArray(): array
     {
         return [

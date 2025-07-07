@@ -54,7 +54,7 @@ class DefaultCollateralManagementService implements CollateralManagementService
     public function verifyCollateral(string $collateralId, string $verifiedBy): bool
     {
         $model = LoanCollateral::find($collateralId);
-        
+
         if (!$model) {
             return false;
         }
@@ -90,9 +90,9 @@ class DefaultCollateralManagementService implements CollateralManagementService
     public function updateValuation(string $collateralId, string $newValue): Collateral
     {
         $model = LoanCollateral::findOrFail($collateralId);
-        
+
         $oldValue = $model->estimated_value;
-        
+
         $model->update([
             'estimated_value' => $newValue,
             'last_valuation_date' => now(),
@@ -118,7 +118,7 @@ class DefaultCollateralManagementService implements CollateralManagementService
     public function releaseCollateral(string $collateralId): bool
     {
         $model = LoanCollateral::find($collateralId);
-        
+
         if (!$model || !in_array($model->status, [CollateralStatus::VERIFIED->value])) {
             return false;
         }
@@ -136,11 +136,11 @@ class DefaultCollateralManagementService implements CollateralManagementService
     public function liquidateCollateral(string $collateralId): array
     {
         $model = LoanCollateral::findOrFail($collateralId);
-        
+
         // In production, this would initiate actual liquidation process
         // For now, we'll simulate it
         $liquidationValue = bcmul($model->estimated_value, '0.8', 2); // 80% of estimated value
-        
+
         $model->update([
             'status' => CollateralStatus::LIQUIDATED->value,
             'liquidated_at' => now(),
@@ -164,7 +164,7 @@ class DefaultCollateralManagementService implements CollateralManagementService
     public function getCollateral(string $collateralId): ?Collateral
     {
         $model = LoanCollateral::find($collateralId);
-        
+
         return $model ? $this->modelToDataObject($model) : null;
     }
 
@@ -180,21 +180,21 @@ class DefaultCollateralManagementService implements CollateralManagementService
         $total = LoanCollateral::where('loan_id', $loanId)
             ->where('status', CollateralStatus::VERIFIED->value)
             ->sum('estimated_value');
-            
+
         return number_format($total, 2, '.', '');
     }
 
     public function needsRevaluation(string $collateralId): bool
     {
         $model = LoanCollateral::find($collateralId);
-        
+
         if (!$model || $model->status !== CollateralStatus::VERIFIED->value) {
             return false;
         }
 
         $type = CollateralType::from($model->type);
         $daysSinceValuation = $model->last_valuation_date->diffInDays(now());
-        
+
         return $daysSinceValuation >= $type->getValuationFrequency();
     }
 

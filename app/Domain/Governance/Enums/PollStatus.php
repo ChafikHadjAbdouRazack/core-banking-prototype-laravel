@@ -16,7 +16,7 @@ enum PollStatus: string
 
     public function getLabel(): string
     {
-        return match($this) {
+        return match ($this) {
             self::DRAFT => 'Draft',
             self::PENDING => 'Pending',
             self::ACTIVE => 'Active',
@@ -29,7 +29,7 @@ enum PollStatus: string
 
     public function getColor(): string
     {
-        return match($this) {
+        return match ($this) {
             self::DRAFT => 'gray',
             self::PENDING => 'yellow',
             self::ACTIVE => 'green',

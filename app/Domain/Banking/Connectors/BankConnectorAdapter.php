@@ -20,7 +20,7 @@ class BankConnectorAdapter implements IBankConnector
     private ICustodianConnector $custodianConnector;
     private string $bankCode;
     private string $bankName;
-    
+
     public function __construct(
         ICustodianConnector $custodianConnector,
         string $bankCode,
@@ -30,27 +30,27 @@ class BankConnectorAdapter implements IBankConnector
         $this->bankCode = $bankCode;
         $this->bankName = $bankName;
     }
-    
+
     public function getBankCode(): string
     {
         return $this->bankCode;
     }
-    
+
     public function getBankName(): string
     {
         return $this->bankName;
     }
-    
+
     public function isAvailable(): bool
     {
         return $this->custodianConnector->isAvailable();
     }
-    
+
     public function getCapabilities(): BankCapabilities
     {
         // Map custodian capabilities to bank capabilities
         $supportedAssets = $this->custodianConnector->getSupportedAssets();
-        
+
         return new BankCapabilities(
             supportedCurrencies: $supportedAssets,
             supportedTransferTypes: ['INTERNAL', 'SEPA', 'SWIFT'],
@@ -77,7 +77,7 @@ class BankConnectorAdapter implements IBankConnector
             availableCountries: ['LT', 'DE', 'ES', 'GB', 'FR']
         );
     }
-    
+
     public function authenticate(): void
     {
         // Custodian connectors handle auth internally
@@ -87,7 +87,7 @@ class BankConnectorAdapter implements IBankConnector
             );
         }
     }
-    
+
     public function createAccount(array $accountDetails): BankAccount
     {
         // This would need to be implemented based on specific bank APIs
@@ -96,11 +96,11 @@ class BankConnectorAdapter implements IBankConnector
             "Account creation not supported by {$this->bankName} connector"
         );
     }
-    
+
     public function getAccount(string $accountId): BankAccount
     {
         $accountInfo = $this->custodianConnector->getAccountInfo($accountId);
-        
+
         return new BankAccount(
             id: $accountInfo->accountId,
             bankCode: $this->bankCode,
@@ -117,12 +117,12 @@ class BankConnectorAdapter implements IBankConnector
             updatedAt: Carbon::now()
         );
     }
-    
+
     public function getBalance(string $accountId, ?string $currency = null): BankBalance|Collection
     {
         if ($currency !== null) {
             $balance = $this->custodianConnector->getBalance($accountId, $currency);
-            
+
             return new BankBalance(
                 accountId: $accountId,
                 currency: $currency,
@@ -133,7 +133,7 @@ class BankConnectorAdapter implements IBankConnector
                 asOf: Carbon::now()
             );
         }
-        
+
         // Get all supported currencies
         $balances = collect();
         foreach ($this->custodianConnector->getSupportedAssets() as $asset) {
@@ -153,10 +153,10 @@ class BankConnectorAdapter implements IBankConnector
                 continue;
             }
         }
-        
+
         return $balances;
     }
-    
+
     public function initiateTransfer(array $transferDetails): BankTransfer
     {
         $request = new TransferRequest(
@@ -167,9 +167,9 @@ class BankConnectorAdapter implements IBankConnector
             reference: $transferDetails['reference'] ?? Str::random(16),
             description: $transferDetails['description'] ?? null
         );
-        
+
         $receipt = $this->custodianConnector->initiateTransfer($request);
-        
+
         return new BankTransfer(
             id: $receipt->transactionId,
             bankCode: $this->bankCode,
@@ -192,11 +192,11 @@ class BankConnectorAdapter implements IBankConnector
             metadata: $receipt->metadata ?? []
         );
     }
-    
+
     public function getTransferStatus(string $transferId): BankTransfer
     {
         $receipt = $this->custodianConnector->getTransactionStatus($transferId);
-        
+
         return new BankTransfer(
             id: $receipt->transactionId,
             bankCode: $this->bankCode,
@@ -219,16 +219,16 @@ class BankConnectorAdapter implements IBankConnector
             metadata: $receipt->metadata ?? []
         );
     }
-    
+
     public function cancelTransfer(string $transferId): bool
     {
         return $this->custodianConnector->cancelTransaction($transferId);
     }
-    
+
     public function getTransactions(string $accountId, \DateTime $from, \DateTime $to, int $limit = 100): Collection
     {
         $history = $this->custodianConnector->getTransactionHistory($accountId, $limit);
-        
+
         return collect($history)->map(function ($tx) {
             return new BankTransaction(
                 id: $tx['id'] ?? Str::uuid()->toString(),
@@ -251,22 +251,22 @@ class BankConnectorAdapter implements IBankConnector
                 metadata: $tx['metadata'] ?? []
             );
         })->filter(function ($tx) use ($from, $to) {
-            return $tx->transactionDate >= Carbon::instance($from) && 
+            return $tx->transactionDate >= Carbon::instance($from) &&
                    $tx->transactionDate <= Carbon::instance($to);
         });
     }
-    
+
     public function getStatement(string $accountId, \DateTime $from, \DateTime $to, string $format = 'JSON'): BankStatement
     {
         $transactions = $this->getTransactions($accountId, $from, $to, 1000);
-        
+
         // Calculate opening and closing balances
         $firstTx = $transactions->first();
         $lastTx = $transactions->last();
-        
+
         $openingBalance = $firstTx ? ($firstTx->balanceAfter - $firstTx->amount) : 0;
         $closingBalance = $lastTx ? $lastTx->balanceAfter : $openingBalance;
-        
+
         return new BankStatement(
             id: Str::uuid()->toString(),
             bankCode: $this->bankCode,
@@ -288,35 +288,35 @@ class BankConnectorAdapter implements IBankConnector
             generatedAt: Carbon::now()
         );
     }
-    
+
     public function validateIBAN(string $iban): bool
     {
         // Use base implementation
         return (new BaseBankConnector([]))->validateIBAN($iban);
     }
-    
+
     public function getSupportedCurrencies(): array
     {
         return $this->custodianConnector->getSupportedAssets();
     }
-    
+
     public function getTransferLimits(string $accountId, string $transferType): array
     {
         // Return default limits based on transfer type
-        return match($transferType) {
+        return match ($transferType) {
             'SEPA' => ['min' => 100, 'max' => 10000000, 'daily' => 50000000],
             'SWIFT' => ['min' => 100, 'max' => 100000000, 'daily' => 500000000],
             'INTERNAL' => ['min' => 1, 'max' => PHP_INT_MAX, 'daily' => PHP_INT_MAX],
             default => ['min' => 100, 'max' => 1000000, 'daily' => 5000000],
         };
     }
-    
+
     public function verifyWebhookSignature(string $payload, string $signature, array $headers): bool
     {
         // This would need to be implemented based on specific bank webhook verification
         return true;
     }
-    
+
     public function processWebhook(string $payload): array
     {
         // This would need to be implemented based on specific bank webhook format

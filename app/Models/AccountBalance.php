@@ -12,14 +12,14 @@ use App\Domain\Asset\Models\Asset;
 class AccountBalance extends Model
 {
     use HasFactory;
-    
+
     /**
      * The table associated with the model.
      *
      * @var string
      */
     protected $table = 'account_balances';
-    
+
     /**
      * The attributes that are mass assignable.
      *
@@ -30,7 +30,7 @@ class AccountBalance extends Model
         'asset_code',
         'balance',
     ];
-    
+
     /**
      * The attributes that should be cast.
      *
@@ -39,7 +39,7 @@ class AccountBalance extends Model
     protected $casts = [
         'balance' => 'integer',
     ];
-    
+
     /**
      * Get the account that owns this balance
      */
@@ -47,7 +47,7 @@ class AccountBalance extends Model
     {
         return $this->belongsTo(Account::class, 'account_uuid', 'uuid');
     }
-    
+
     /**
      * Get the asset for this balance
      */
@@ -55,7 +55,7 @@ class AccountBalance extends Model
     {
         return $this->belongsTo(Asset::class, 'asset_code', 'code');
     }
-    
+
     /**
      * Increment the balance
      * NOTE: This method should only be used by projectors for event sourcing
@@ -68,7 +68,7 @@ class AccountBalance extends Model
         $this->balance += $amount;
         return $this->save();
     }
-    
+
     /**
      * Decrement the balance
      * NOTE: This method should only be used by projectors for event sourcing
@@ -82,11 +82,11 @@ class AccountBalance extends Model
         if ($this->balance < $amount) {
             throw new \Exception('Insufficient balance');
         }
-        
+
         $this->balance -= $amount;
         return $this->save();
     }
-    
+
     /**
      * Check if balance is sufficient for amount
      *
@@ -97,7 +97,7 @@ class AccountBalance extends Model
     {
         return $this->balance >= $amount;
     }
-    
+
     /**
      * Get formatted balance with asset symbol
      *
@@ -108,10 +108,10 @@ class AccountBalance extends Model
         if ($this->asset) {
             return $this->asset->formatAmount($this->balance);
         }
-        
+
         return number_format($this->balance / 100, 2) . ' ' . $this->asset_code;
     }
-    
+
     /**
      * Scope for balances with positive amounts
      *
@@ -122,7 +122,7 @@ class AccountBalance extends Model
     {
         return $query->where('balance', '>', 0);
     }
-    
+
     /**
      * Scope for balances by asset
      *

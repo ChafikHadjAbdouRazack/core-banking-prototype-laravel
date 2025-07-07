@@ -35,9 +35,9 @@ class VerifyTransactionHashes extends Command
      */
     public function __construct(
         protected TransactionRepository $transactionRepository,
-        protected AccountRepository     $accountRepository,
-        protected array                 $erroneous_accounts = [],
-        protected array                 $erroneous_transactions = [],
+        protected AccountRepository $accountRepository,
+        protected array $erroneous_accounts = [],
+        protected array $erroneous_transactions = [],
     ) {
         parent::__construct();
     }
@@ -47,21 +47,17 @@ class VerifyTransactionHashes extends Command
      */
     public function handle(): int
     {
-        $this->info( 'Verifying transaction event hashes...' );
+        $this->info('Verifying transaction event hashes...');
 
         $accounts = $this->accountRepository->getAllByCursor();
 
         /** @var \App\Models\Account $account */
-        foreach ( $accounts as $account )
-        {
-            $aggregate = TransactionAggregate::retrieve( $account->uuid );
+        foreach ($accounts as $account) {
+            $aggregate = TransactionAggregate::retrieve($account->uuid);
 
-            try
-            {
-                $this->verifyAggregateHashes( $aggregate );
-            }
-            catch ( InvalidHashException $e )
-            {
+            try {
+                $this->verifyAggregateHashes($aggregate);
+            } catch (InvalidHashException $e) {
                 $this->erroneous_accounts[] = $account->uuid;
                 $this->error(
                     "Invalid hash found in account {$account->uuid}: " .
@@ -70,14 +66,11 @@ class VerifyTransactionHashes extends Command
             }
         }
 
-        if ( count( $this->erroneous_accounts ) === 0 )
-        {
-            $this->info( 'All accounts and transactions hashes are valid.' );
+        if (count($this->erroneous_accounts) === 0) {
+            $this->info('All accounts and transactions hashes are valid.');
 
             return 0; // Success
-        }
-        else
-        {
+        } else {
             $this->error(
                 'Some account has transactions which hashes were invalid. Check logs for details.'
             );
@@ -86,18 +79,13 @@ class VerifyTransactionHashes extends Command
         }
     }
 
-    protected function verifyAggregateHashes( TransactionAggregate $aggregate
-    ): void {
-        foreach ( $aggregate->getAppliedEvents() as $event )
-        {
-            if ( $event instanceof HasHash )
-            {
-                try
-                {
-                    $aggregate->validateHash( $event->hash, $event->money );
-                }
-                catch ( InvalidHashException $e )
-                {
+    protected function verifyAggregateHashes(TransactionAggregate $aggregate): void
+    {
+        foreach ($aggregate->getAppliedEvents() as $event) {
+            if ($event instanceof HasHash) {
+                try {
+                    $aggregate->validateHash($event->hash, $event->money);
+                } catch (InvalidHashException $e) {
                     // Log the hash validation error with full context
                     Log::error('Transaction hash validation failed', [
                         'aggregate_uuid' => $aggregate->uuid(),
@@ -110,12 +98,11 @@ class VerifyTransactionHashes extends Command
                         'exception_code' => $e->getCode(),
                         'timestamp' => now()->toISOString(),
                     ]);
-                    
+
                     $this->erroneous_transactions[] = $event;
 
                     throw $e;
                 }
-
             }
         }
     }

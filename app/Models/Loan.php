@@ -10,7 +10,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Loan extends Model
 {
-    use HasFactory, HasUuids;
+    use HasFactory;
+    use HasUuids;
 
     protected $fillable = [
         'id',
@@ -101,7 +102,7 @@ class Loan extends Model
     {
         $lastPaymentNumber = $this->repayments()->max('payment_number') ?? 0;
         $schedule = collect($this->repayment_schedule);
-        
+
         return $schedule->firstWhere('payment_number', $lastPaymentNumber + 1);
     }
 }

@@ -15,7 +15,7 @@ class WithdrawAccountWorkflow extends Workflow
      *
      * @return \Generator
      */
-    public function execute( AccountUuid $uuid, Money $money ): \Generator
+    public function execute(AccountUuid $uuid, Money $money): \Generator
     {
         return yield ActivityStub::make(
             WithdrawAccountActivity::class,

@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\DB;
 
 /**
  * Multi-Custodian Transfer Service
- * 
+ *
  * Handles transfers across multiple custodians with intelligent routing,
  * load balancing, and failure recovery.
  */
@@ -23,7 +23,7 @@ class MultiCustodianTransferService
 {
     private CustodianRegistry $registry;
     private array $routingStrategy;
-    
+
     /**
      * Transfer routing strategies
      */
@@ -31,7 +31,7 @@ class MultiCustodianTransferService
     public const ROUTE_FASTEST = 'fastest';
     public const ROUTE_CHEAPEST = 'cheapest';
     public const ROUTE_BALANCED = 'balanced';
-    
+
     public function __construct(CustodianRegistry $registry)
     {
         $this->registry = $registry;
@@ -40,7 +40,7 @@ class MultiCustodianTransferService
             'fallback' => self::ROUTE_FASTEST,
         ]);
     }
-    
+
     /**
      * Execute a multi-bank transfer with optimal routing
      */
@@ -58,14 +58,14 @@ class MultiCustodianTransferService
             'amount' => $amount->getAmount(),
             'asset' => $assetCode,
         ]);
-        
+
         // Find optimal route
         $route = $this->findOptimalRoute($fromAccount, $toAccount, $amount, $assetCode);
-        
+
         if (!$route) {
             throw new \RuntimeException('No valid transfer route found');
         }
-        
+
         // Execute transfer based on route type
         return match ($route['type']) {
             'internal' => $this->executeInternalTransfer($route, $amount, $assetCode, $reference, $description),
@@ -74,7 +74,7 @@ class MultiCustodianTransferService
             default => throw new \RuntimeException("Unknown route type: {$route['type']}"),
         };
     }
-    
+
     /**
      * Find the optimal transfer route between accounts
      */
@@ -89,12 +89,12 @@ class MultiCustodianTransferService
             ->active()
             ->with('account')
             ->get();
-            
+
         $toCustodians = $toAccount->custodianAccounts()
             ->active()
             ->with('account')
             ->get();
-        
+
         if ($fromCustodians->isEmpty() || $toCustodians->isEmpty()) {
             Log::error('No active custodian accounts found', [
                 'from_count' => $fromCustodians->count(),
@@ -102,7 +102,7 @@ class MultiCustodianTransferService
             ]);
             return null;
         }
-        
+
         // Check for same custodian (internal transfer)
         $sameCustodian = $this->findSameCustodianRoute($fromCustodians, $toCustodians);
         if ($sameCustodian && $this->routingStrategy['primary'] === self::ROUTE_SAME_CUSTODIAN) {
@@ -113,7 +113,7 @@ class MultiCustodianTransferService
                 'to' => $sameCustodian['to'],
             ];
         }
-        
+
         // Check for direct external transfer capability
         $directRoute = $this->findDirectExternalRoute($fromCustodians, $toCustodians, $assetCode);
         if ($directRoute) {
@@ -125,7 +125,7 @@ class MultiCustodianTransferService
                 'to' => $directRoute['to'],
             ];
         }
-        
+
         // Find bridge route through intermediate custodian
         $bridgeRoute = $this->findBridgeRoute($fromCustodians, $toCustodians, $assetCode);
         if ($bridgeRoute) {
@@ -134,10 +134,10 @@ class MultiCustodianTransferService
                 'route' => $bridgeRoute,
             ];
         }
-        
+
         return null;
     }
-    
+
     /**
      * Find accounts on the same custodian for internal transfer
      */
@@ -153,10 +153,10 @@ class MultiCustodianTransferService
                 ];
             }
         }
-        
+
         return null;
     }
-    
+
     /**
      * Find direct external transfer route between custodians
      */
@@ -167,7 +167,7 @@ class MultiCustodianTransferService
                 if ($from->custodian_name === $to->custodian_name) {
                     continue;
                 }
-                
+
                 // Check if custodian supports external transfers to destination
                 $connector = $this->registry->getConnector($from->custodian_name);
                 if ($this->canTransferTo($connector, $to->custodian_name, $assetCode)) {
@@ -180,10 +180,10 @@ class MultiCustodianTransferService
                 }
             }
         }
-        
+
         return null;
     }
-    
+
     /**
      * Find bridge route through intermediate custodian
      */
@@ -191,14 +191,14 @@ class MultiCustodianTransferService
     {
         // Get all available custodians
         $availableCustodians = $this->registry->listCustodians();
-        
+
         foreach ($availableCustodians as $bridgeCustodian) {
             // Check if bridge can receive from source and send to destination
             $canReceive = false;
             $canSend = false;
             $fromAccount = null;
             $toAccount = null;
-            
+
             foreach ($fromCustodians as $from) {
                 $connector = $this->registry->getConnector($from->custodian_name);
                 if ($this->canTransferTo($connector, $bridgeCustodian['id'], $assetCode)) {
@@ -207,11 +207,11 @@ class MultiCustodianTransferService
                     break;
                 }
             }
-            
+
             if (!$canReceive) {
                 continue;
             }
-            
+
             foreach ($toCustodians as $to) {
                 $connector = $this->registry->getConnector($bridgeCustodian['id']);
                 if ($this->canTransferTo($connector, $to->custodian_name, $assetCode)) {
@@ -220,7 +220,7 @@ class MultiCustodianTransferService
                     break;
                 }
             }
-            
+
             if ($canSend) {
                 return [
                     'from' => $fromAccount,
@@ -229,10 +229,10 @@ class MultiCustodianTransferService
                 ];
             }
         }
-        
+
         return null;
     }
-    
+
     /**
      * Check if a custodian can transfer to another custodian
      */
@@ -244,19 +244,19 @@ class MultiCustodianTransferService
             if (!$info['features']['external_transfers'] ?? false) {
                 return false;
             }
-            
+
             // Check supported destination custodians
             $supportedDestinations = $info['supported_destinations'] ?? [];
             if (!in_array($toCustodian, $supportedDestinations) && !in_array('*', $supportedDestinations)) {
                 return false;
             }
-            
+
             // Check if asset is supported
             $supportedAssets = $info['supported_assets'] ?? [];
             if (!in_array($assetCode, $supportedAssets) && !in_array('*', $supportedAssets)) {
                 return false;
             }
-            
+
             return true;
         } catch (\Exception $e) {
             Log::warning('Failed to check transfer capability', [
@@ -267,7 +267,7 @@ class MultiCustodianTransferService
             return false;
         }
     }
-    
+
     /**
      * Execute internal transfer within same custodian
      */
@@ -283,9 +283,9 @@ class MultiCustodianTransferService
             'from' => $route['from']->custodian_account_id,
             'to' => $route['to']->custodian_account_id,
         ]);
-        
+
         $connector = $this->registry->getConnector($route['custodian']);
-        
+
         $request = new TransferRequest(
             fromAccount: $route['from']->custodian_account_id,
             toAccount: $route['to']->custodian_account_id,
@@ -294,15 +294,15 @@ class MultiCustodianTransferService
             reference: $reference,
             description: $description
         );
-        
+
         $receipt = $connector->initiateTransfer($request);
-        
+
         // Record transfer in database
         $this->recordTransfer($route['from'], $route['to'], $receipt, 'internal');
-        
+
         return $receipt;
     }
-    
+
     /**
      * Execute external transfer between custodians
      */
@@ -319,9 +319,9 @@ class MultiCustodianTransferService
             'from' => $route['from']->custodian_account_id,
             'to' => $route['to']->custodian_account_id,
         ]);
-        
+
         $connector = $this->registry->getConnector($route['from_custodian']);
-        
+
         // Create external transfer request with destination custodian info
         $request = new TransferRequest(
             fromAccount: $route['from']->custodian_account_id,
@@ -335,15 +335,15 @@ class MultiCustodianTransferService
                 'transfer_type' => 'external',
             ]
         );
-        
+
         $receipt = $connector->initiateTransfer($request);
-        
+
         // Record transfer in database
         $this->recordTransfer($route['from'], $route['to'], $receipt, 'external');
-        
+
         return $receipt;
     }
-    
+
     /**
      * Execute bridge transfer through intermediate custodian
      */
@@ -359,13 +359,13 @@ class MultiCustodianTransferService
             'bridge' => $route['route']['bridge'],
             'to' => $route['route']['to']->custodian_account_id,
         ]);
-        
+
         DB::beginTransaction();
-        
+
         try {
             // Step 1: Transfer from source to bridge
             $firstLegConnector = $this->registry->getConnector($route['route']['from']->custodian_name);
-            
+
             $firstLegRequest = new TransferRequest(
                 fromAccount: $route['route']['from']->custodian_account_id,
                 toAccount: $this->getBridgeAccountId($route['route']['bridge'], $assetCode),
@@ -378,15 +378,15 @@ class MultiCustodianTransferService
                     'final_destination' => $route['route']['to']->custodian_account_id,
                 ]
             );
-            
+
             $firstLegReceipt = $firstLegConnector->initiateTransfer($firstLegRequest);
-            
+
             // Wait for first leg to complete
             $this->waitForTransferCompletion($firstLegConnector, $firstLegReceipt->id);
-            
+
             // Step 2: Transfer from bridge to destination
             $secondLegConnector = $this->registry->getConnector($route['route']['bridge']);
-            
+
             $secondLegRequest = new TransferRequest(
                 fromAccount: $this->getBridgeAccountId($route['route']['bridge'], $assetCode),
                 toAccount: $route['route']['to']->custodian_account_id,
@@ -399,11 +399,11 @@ class MultiCustodianTransferService
                     'original_source' => $route['route']['from']->custodian_account_id,
                 ]
             );
-            
+
             $secondLegReceipt = $secondLegConnector->initiateTransfer($secondLegRequest);
-            
+
             DB::commit();
-            
+
             // Create composite receipt
             $bridgeReceipt = new TransactionReceipt(
                 id: 'BRIDGE_' . $firstLegReceipt->id . '_' . $secondLegReceipt->id,
@@ -418,24 +418,23 @@ class MultiCustodianTransferService
                     'leg2' => $secondLegReceipt->toArray(),
                 ]
             );
-            
+
             // Record transfer in database
             $this->recordTransfer($route['route']['from'], $route['route']['to'], $bridgeReceipt, 'bridge');
-            
+
             return $bridgeReceipt;
-            
         } catch (\Exception $e) {
             DB::rollback();
-            
+
             Log::error('Bridge transfer failed', [
                 'error' => $e->getMessage(),
                 'route' => $route,
             ]);
-            
+
             throw new \RuntimeException('Bridge transfer failed: ' . $e->getMessage(), 0, $e);
         }
     }
-    
+
     /**
      * Wait for transfer completion with timeout
      */
@@ -445,25 +444,25 @@ class MultiCustodianTransferService
         int $maxWaitSeconds = 30
     ): void {
         $startTime = time();
-        
+
         while (time() - $startTime < $maxWaitSeconds) {
             $status = $connector->getTransactionStatus($transferId);
-            
+
             if ($status->isCompleted()) {
                 return;
             }
-            
+
             if ($status->isFailed()) {
                 throw new \RuntimeException("Transfer {$transferId} failed: " . $status->failureReason);
             }
-            
+
             // Wait before checking again
             sleep(1);
         }
-        
+
         throw new \RuntimeException("Transfer {$transferId} timed out after {$maxWaitSeconds} seconds");
     }
-    
+
     /**
      * Get bridge account ID for a custodian
      */
@@ -473,7 +472,7 @@ class MultiCustodianTransferService
         // For now, return a placeholder
         return "BRIDGE_{$custodianId}_{$assetCode}";
     }
-    
+
     /**
      * Record transfer in database for audit trail
      */
@@ -499,7 +498,7 @@ class MultiCustodianTransferService
             'updated_at' => now(),
         ]);
     }
-    
+
     /**
      * Get transfer statistics
      */
@@ -507,7 +506,7 @@ class MultiCustodianTransferService
     {
         // Use database-agnostic approach for better compatibility
         $driver = DB::connection()->getDriverName();
-        
+
         if ($driver === 'sqlite') {
             // SQLite-compatible query
             $stats = DB::table('custodian_transfers')
@@ -541,7 +540,7 @@ class MultiCustodianTransferService
                 ')
                 ->first();
         }
-        
+
         return [
             'total' => (int) ($stats->total_transfers ?? 0),
             'completed' => (int) ($stats->completed ?? 0),
@@ -553,8 +552,8 @@ class MultiCustodianTransferService
                 'bridge' => (int) ($stats->bridge ?? 0),
             ],
             'avg_completion_seconds' => round((float) ($stats->avg_completion_seconds ?? 0), 2),
-            'success_rate' => $stats->total_transfers > 0 
-                ? round(((int) $stats->completed / (int) $stats->total_transfers) * 100, 2) 
+            'success_rate' => $stats->total_transfers > 0
+                ? round(((int) $stats->completed / (int) $stats->total_transfers) * 100, 2)
                 : 0,
         ];
     }

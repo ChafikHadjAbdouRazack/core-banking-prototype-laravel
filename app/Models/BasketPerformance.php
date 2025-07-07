@@ -65,7 +65,7 @@ class BasketPerformance extends Model
     {
         return $this->belongsTo(BasketAsset::class, 'basket_asset_code', 'code');
     }
-    
+
     /**
      * Get the component performances for this record.
      */
@@ -142,10 +142,10 @@ class BasketPerformance extends Model
         }
 
         $periodsPerYear = 365.25 / $daysInPeriod;
-        
+
         // Compound annual growth rate formula
         $annualizedReturn = (pow(1 + ($this->return_percentage / 100), $periodsPerYear) - 1) * 100;
-        
+
         return round($annualizedReturn, 2);
     }
 

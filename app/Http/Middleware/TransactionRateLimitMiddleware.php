@@ -66,15 +66,15 @@ class TransactionRateLimitMiddleware
         if (!config('rate_limiting.enabled', true)) {
             return $next($request);
         }
-        
+
         // Skip rate limiting in testing environment unless explicitly enabled
         if (app()->environment('testing') && !config('rate_limiting.force_in_tests', false)) {
             return $next($request);
         }
-        
+
         // Get transaction rate limit configuration
         $config = self::TRANSACTION_LIMITS[$transactionType] ?? self::TRANSACTION_LIMITS['transfer'];
-        
+
         $userId = $request->user()?->id;
         if (!$userId) {
             return response()->json(['error' => 'Authentication required for transaction rate limiting'], 401);
@@ -107,9 +107,9 @@ class TransactionRateLimitMiddleware
 
         // Increment counters and proceed
         $this->incrementCounters($userId, $transactionType, $request);
-        
+
         $response = $next($request);
-        
+
         return $this->addTransactionHeaders($response, $userId, $transactionType, $config);
     }
 
@@ -199,7 +199,7 @@ class TransactionRateLimitMiddleware
         if ($recentCount > 3) {
             $delay = min(5, $recentCount - 3); // Max 5 second delay
             sleep($delay);
-            
+
             Log::info('Progressive delay applied', [
                 'user_id' => $userId,
                 'transaction_type' => $transactionType,
@@ -219,11 +219,11 @@ class TransactionRateLimitMiddleware
     {
         // Try common amount field names
         $amountFields = ['amount', 'value', 'quantity', 'sum'];
-        
+
         foreach ($amountFields as $field) {
             if ($request->has($field)) {
                 $amount = $request->input($field);
-                
+
                 // Convert to integer (cents) if it's a decimal
                 if (is_numeric($amount)) {
                     return (int)($amount * 100);
@@ -240,7 +240,7 @@ class TransactionRateLimitMiddleware
     private function incrementCounters(int $userId, string $transactionType, Request $request): void
     {
         $config = self::TRANSACTION_LIMITS[$transactionType];
-        
+
         // Increment hourly counter
         $hourlyKey = "tx_rate_limit:{$userId}:{$transactionType}:hourly";
         Cache::put($hourlyKey, Cache::get($hourlyKey, 0) + 1, $config['window']);
@@ -274,7 +274,7 @@ class TransactionRateLimitMiddleware
     {
         $hourlyKey = "tx_rate_limit:{$userId}:{$transactionType}:hourly";
         $dailyKey = "tx_rate_limit:{$userId}:{$transactionType}:daily";
-        
+
         $hourlyCount = Cache::get($hourlyKey, 0);
         $dailyCount = Cache::get($dailyKey, 0);
 
@@ -286,7 +286,7 @@ class TransactionRateLimitMiddleware
         if (isset($config['amount_limit'])) {
             $amountKey = "tx_amount_limit:{$userId}:{$transactionType}:hourly";
             $currentAmount = Cache::get($amountKey, 0);
-            
+
             $response->headers->set('X-Transaction-Amount-Limit', $config['amount_limit']);
             $response->headers->set('X-Transaction-Amount-Remaining', max(0, $config['amount_limit'] - $currentAmount));
         }

@@ -27,7 +27,7 @@ class AccountProjector extends Projector implements ShouldQueue
      */
     public function onAccountCreated(AccountCreated $event): void
     {
-        app( CreateAccount::class )($event);
+        app(CreateAccount::class)($event);
     }
 
     /**
@@ -37,8 +37,8 @@ class AccountProjector extends Projector implements ShouldQueue
      */
     public function onAssetBalanceAdded(AssetBalanceAdded $event): void
     {
-        app( CreditAccount::class )($event);
-        
+        app(CreditAccount::class)($event);
+
         // Invalidate cache after balance update
         if ($account = \App\Models\Account::where('uuid', $event->aggregateRootUuid())->first()) {
             app(CacheManager::class)->onAccountUpdated($account);
@@ -52,8 +52,8 @@ class AccountProjector extends Projector implements ShouldQueue
      */
     public function onAssetBalanceSubtracted(AssetBalanceSubtracted $event): void
     {
-        app( DebitAccount::class )($event);
-        
+        app(DebitAccount::class)($event);
+
         // Invalidate cache after balance update
         if ($account = \App\Models\Account::where('uuid', $event->aggregateRootUuid())->first()) {
             app(CacheManager::class)->onAccountUpdated($account);
@@ -67,8 +67,8 @@ class AccountProjector extends Projector implements ShouldQueue
      */
     public function onAccountDeleted(AccountDeleted $event): void
     {
-        app( DeleteAccount::class )($event);
-        
+        app(DeleteAccount::class)($event);
+
         // Clear all caches for deleted account
         app(CacheManager::class)->onAccountDeleted($event->aggregateRootUuid());
     }
@@ -80,7 +80,7 @@ class AccountProjector extends Projector implements ShouldQueue
      */
     public function onAccountFrozen(AccountFrozen $event): void
     {
-        app( FreezeAccount::class )($event);
+        app(FreezeAccount::class)($event);
     }
 
     /**
@@ -90,6 +90,6 @@ class AccountProjector extends Projector implements ShouldQueue
      */
     public function onAccountUnfrozen(AccountUnfrozen $event): void
     {
-        app( UnfreezeAccount::class )($event);
+        app(UnfreezeAccount::class)($event);
     }
 }

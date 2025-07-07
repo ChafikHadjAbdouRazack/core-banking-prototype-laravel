@@ -16,27 +16,27 @@ class VerifyCustodianTransferActivity extends Activity
     {
         $registry = app(CustodianRegistry::class);
         $custodian = $registry->get($custodianName);
-        
+
         $retries = 0;
-        
+
         while ($retries < self::MAX_RETRIES) {
             $receipt = $custodian->getTransactionStatus($transactionId);
-            
+
             if ($receipt->isCompleted()) {
                 return true;
             }
-            
+
             if ($receipt->isFailed()) {
-                throw new \Exception("Custodian transfer {$transactionId} failed: " . 
+                throw new \Exception("Custodian transfer {$transactionId} failed: " .
                     ($receipt->metadata['error'] ?? 'Unknown error'));
             }
-            
+
             // Transaction is still pending, wait and retry
             sleep(self::RETRY_DELAY);
             $retries++;
         }
-        
-        throw new \Exception("Custodian transfer {$transactionId} timed out after " . 
+
+        throw new \Exception("Custodian transfer {$transactionId} timed out after " .
             (self::MAX_RETRIES * self::RETRY_DELAY) . " seconds");
     }
 }

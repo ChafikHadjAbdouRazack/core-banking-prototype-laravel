@@ -9,7 +9,7 @@ class RecordGovernanceEventActivity extends Activity
 {
     /**
      * Execute record governance event activity.
-     * 
+     *
      * @param array $eventData
      * @return void
      */

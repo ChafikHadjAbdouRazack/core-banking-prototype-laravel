@@ -21,7 +21,7 @@ class AssetTransactionProjector extends Projector
         try {
             // Find the account
             $account = Account::where('uuid', (string) $event->accountUuid)->first();
-            
+
             if (!$account) {
                 Log::error('Account not found for asset transaction', [
                     'account_uuid' => (string) $event->accountUuid,
@@ -29,7 +29,7 @@ class AssetTransactionProjector extends Projector
                 ]);
                 return;
             }
-            
+
             // Update account balance for the specific asset
             $accountBalance = AccountBalance::firstOrCreate(
                 [
@@ -40,7 +40,7 @@ class AssetTransactionProjector extends Projector
                     'balance' => 0,
                 ]
             );
-            
+
             // Apply the transaction
             if ($event->isCredit()) {
                 $accountBalance->credit($event->getAmount());
@@ -56,10 +56,10 @@ class AssetTransactionProjector extends Projector
                 }
                 $accountBalance->debit($event->getAmount());
             }
-            
+
             // Asset transactions are stored as events, balance projections are sufficient
             // No need to create separate transaction records
-            
+
             Log::info('Asset transaction processed successfully', [
                 'account_uuid' => (string) $event->accountUuid,
                 'asset_code' => $event->assetCode,
@@ -67,7 +67,6 @@ class AssetTransactionProjector extends Projector
                 'amount' => $event->getAmount(),
                 'new_balance' => $accountBalance->balance,
             ]);
-            
         } catch (\Exception $e) {
             Log::error('Error processing asset transaction', [
                 'account_uuid' => (string) $event->accountUuid,
@@ -77,7 +76,7 @@ class AssetTransactionProjector extends Projector
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
-            
+
             throw $e;
         }
     }

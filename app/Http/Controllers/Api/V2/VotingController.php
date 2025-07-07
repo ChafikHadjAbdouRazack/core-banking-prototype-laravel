@@ -48,7 +48,7 @@ class VotingController extends Controller
     public function proposals(Request $request): JsonResponse
     {
         $query = GcuVotingProposal::query();
-        
+
         if ($request->has('status')) {
             switch ($request->status) {
                 case 'active':
@@ -62,7 +62,7 @@ class VotingController extends Controller
                     break;
             }
         }
-        
+
         $proposals = $query->get()->map(function ($proposal) {
             return [
                 'id' => $proposal->id,
@@ -82,13 +82,13 @@ class VotingController extends Controller
                 'total_votes_cast' => $proposal->total_votes_cast,
             ];
         });
-        
+
         return response()->json([
             'status' => 'success',
             'data' => $proposals,
         ]);
     }
-    
+
     /**
      * @OA\Get(
      *     path="/api/v2/gcu/voting/proposals/{id}",
@@ -114,7 +114,7 @@ class VotingController extends Controller
     public function proposalDetails($id): JsonResponse
     {
         $proposal = GcuVotingProposal::findOrFail($id);
-        
+
         return response()->json([
             'status' => 'success',
             'data' => [
@@ -140,7 +140,7 @@ class VotingController extends Controller
             ],
         ]);
     }
-    
+
     /**
      * @OA\Post(
      *     path="/api/v2/gcu/voting/proposals/{id}/vote",
@@ -177,33 +177,33 @@ class VotingController extends Controller
     public function vote(Request $request, $id): JsonResponse
     {
         $proposal = GcuVotingProposal::findOrFail($id);
-        
+
         if (!$proposal->isVotingActive()) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Voting is not active for this proposal',
             ], 400);
         }
-        
+
         $request->validate([
             'vote' => 'required|in:for,against,abstain',
         ]);
-        
+
         $user = $request->user();
-        
+
         // Get user's GCU balance
         $gcuAccount = $user->accounts()
             ->where('currency', 'GCU')
             ->where('type', 'personal')
             ->first();
-            
+
         if (!$gcuAccount || $gcuAccount->balance <= 0) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'You need GCU holdings to vote',
             ], 400);
         }
-        
+
         DB::transaction(function () use ($request, $proposal, $user, $gcuAccount) {
             // Create or update vote
             $vote = GcuVote::updateOrCreate(
@@ -216,15 +216,15 @@ class VotingController extends Controller
                     'voting_power' => $gcuAccount->balance,
                 ]
             );
-            
+
             // Generate and save signature
             $vote->signature = $vote->generateSignature();
             $vote->save();
-            
+
             // Update proposal vote counts
             $this->updateProposalVoteCounts($proposal);
         });
-        
+
         return response()->json([
             'status' => 'success',
             'message' => 'Your vote has been recorded',
@@ -234,7 +234,7 @@ class VotingController extends Controller
             ],
         ]);
     }
-    
+
     /**
      * @OA\Get(
      *     path="/api/v2/gcu/voting/my-votes",
@@ -274,21 +274,21 @@ class VotingController extends Controller
                     'voted_at' => $vote->created_at->toIso8601String(),
                 ];
             });
-            
+
         return response()->json([
             'status' => 'success',
             'data' => $votes,
         ]);
     }
-    
+
     protected function updateProposalVoteCounts(GcuVotingProposal $proposal)
     {
         $votes = $proposal->votes()->get();
-        
+
         $votesFor = $votes->where('vote', 'for')->sum('voting_power');
         $votesAgainst = $votes->where('vote', 'against')->sum('voting_power');
         $totalVotes = $votes->sum('voting_power');
-        
+
         $proposal->update([
             'votes_for' => $votesFor,
             'votes_against' => $votesAgainst,

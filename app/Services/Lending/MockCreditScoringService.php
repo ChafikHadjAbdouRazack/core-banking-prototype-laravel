@@ -10,15 +10,15 @@ class MockCreditScoringService implements CreditScoringService
     public function getScore(string $borrowerId): array
     {
         $user = User::find($borrowerId);
-        
+
         if (!$user) {
             throw new \InvalidArgumentException("User not found: {$borrowerId}");
         }
-        
+
         // Mock credit score based on user attributes
         // In production, this would integrate with actual credit bureaus
         $baseScore = 650;
-        
+
         // Adjust based on account age
         $accountAge = $user->created_at->diffInMonths(now());
         if ($accountAge > 24) {
@@ -26,16 +26,16 @@ class MockCreditScoringService implements CreditScoringService
         } elseif ($accountAge > 12) {
             $baseScore += 25;
         }
-        
+
         // Adjust based on KYC status
         if ($user->kyc_status === 'approved') {
             $baseScore += 30;
         }
-        
+
         // Add some randomness for testing
         $variance = rand(-50, 50);
         $score = max(300, min(850, $baseScore + $variance));
-        
+
         return [
             'score' => $score,
             'bureau' => 'MockBureau',
@@ -48,13 +48,13 @@ class MockCreditScoringService implements CreditScoringService
             ],
         ];
     }
-    
+
     public function meetsMinimumRequirements(string $borrowerId, int $minimumScore = 600): bool
     {
         $score = $this->getScore($borrowerId);
         return $score['score'] >= $minimumScore;
     }
-    
+
     public function getCreditHistory(string $borrowerId): array
     {
         // Mock credit history
@@ -80,7 +80,7 @@ class MockCreditScoringService implements CreditScoringService
             ],
         ];
     }
-    
+
     private function generatePaymentHistory(): array
     {
         $history = [];

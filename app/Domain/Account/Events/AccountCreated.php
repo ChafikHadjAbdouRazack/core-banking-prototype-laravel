@@ -18,5 +18,6 @@ class AccountCreated extends ShouldBeStored
      */
     public function __construct(
         public readonly Account $account
-    ) {}
+    ) {
+    }
 }

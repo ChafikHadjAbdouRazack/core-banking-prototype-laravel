@@ -44,14 +44,14 @@ class SocialAuthController extends Controller
     public function redirect($provider)
     {
         $validProviders = ['google', 'facebook', 'github'];
-        
+
         if (!in_array($provider, $validProviders)) {
             return response()->json(['message' => 'Invalid provider'], 400);
         }
-        
+
         try {
             $url = Socialite::driver($provider)->stateless()->redirect()->getTargetUrl();
-            
+
             return response()->json(['url' => $url]);
         } catch (\Exception $e) {
             return response()->json(['message' => 'Provider not configured'], 500);
@@ -99,16 +99,16 @@ class SocialAuthController extends Controller
     public function callback(Request $request, $provider)
     {
         $validProviders = ['google', 'facebook', 'github'];
-        
+
         if (!in_array($provider, $validProviders)) {
             return response()->json(['message' => 'Invalid provider'], 400);
         }
-        
+
         $request->validate(['code' => 'required|string']);
-        
+
         try {
             $socialUser = Socialite::driver($provider)->stateless()->user();
-            
+
             // Check if user exists with this provider
             $user = User::where('email', $socialUser->getEmail())
                 ->orWhere(function ($query) use ($provider, $socialUser) {
@@ -116,7 +116,7 @@ class SocialAuthController extends Controller
                         ->where('oauth_id', $socialUser->getId());
                 })
                 ->first();
-            
+
             if ($user) {
                 // Update OAuth info if email matched but OAuth info is different
                 if (!$user->oauth_provider) {
@@ -138,10 +138,10 @@ class SocialAuthController extends Controller
                     'email_verified_at' => now(), // Auto-verify OAuth users
                 ]);
             }
-            
+
             // Generate token
             $token = $user->createToken('api-token')->plainTextToken;
-            
+
             return response()->json([
                 'user' => $user,
                 'token' => $token,

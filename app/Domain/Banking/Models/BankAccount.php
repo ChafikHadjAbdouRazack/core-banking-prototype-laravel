@@ -23,8 +23,9 @@ class BankAccount
         public readonly Carbon $createdAt,
         public readonly Carbon $updatedAt,
         public readonly ?Carbon $closedAt = null,
-    ) {}
-    
+    ) {
+    }
+
     /**
      * Check if account is active
      */
@@ -32,7 +33,7 @@ class BankAccount
     {
         return $this->status === 'active';
     }
-    
+
     /**
      * Check if account is closed
      */
@@ -40,7 +41,7 @@ class BankAccount
     {
         return $this->status === 'closed' || $this->closedAt !== null;
     }
-    
+
     /**
      * Check if account supports a specific currency
      */
@@ -49,10 +50,10 @@ class BankAccount
         if (!isset($this->metadata['supported_currencies'])) {
             return $this->currency === $currency;
         }
-        
+
         return in_array($currency, $this->metadata['supported_currencies']);
     }
-    
+
     /**
      * Get account label for display
      */
@@ -65,7 +66,7 @@ class BankAccount
             $this->currency
         );
     }
-    
+
     /**
      * Convert to array for storage
      */
@@ -88,7 +89,7 @@ class BankAccount
             'closed_at' => $this->closedAt?->toIso8601String(),
         ];
     }
-    
+
     /**
      * Create from array
      */

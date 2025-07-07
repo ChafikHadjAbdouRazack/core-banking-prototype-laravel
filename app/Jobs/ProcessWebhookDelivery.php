@@ -14,14 +14,18 @@ use Illuminate\Support\Facades\Log;
 
 class ProcessWebhookDelivery implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
 
     /**
      * Create a new job instance.
      */
     public function __construct(
         public WebhookDelivery $delivery
-    ) {}
+    ) {
+    }
 
     /**
      * Execute the job.
@@ -39,7 +43,7 @@ class ProcessWebhookDelivery implements ShouldQueue
 
         try {
             $payloadJson = json_encode($this->delivery->payload);
-            
+
             // Prepare headers
             $headers = $webhook->headers ?? [];
             $headers['Content-Type'] = 'application/json';
@@ -55,7 +59,7 @@ class ProcessWebhookDelivery implements ShouldQueue
 
             // Send the webhook
             $startTime = microtime(true);
-            
+
             $response = Http::withHeaders($headers)
                 ->timeout($webhook->timeout_seconds)
                 ->post($webhook->url, $this->delivery->payload);
@@ -81,15 +85,15 @@ class ProcessWebhookDelivery implements ShouldQueue
             ]);
         } catch (\Exception $e) {
             $errorMessage = $e->getMessage();
-            $statusCode = $e instanceof \Illuminate\Http\Client\RequestException 
-                ? $e->response->status() ?? 0 
+            $statusCode = $e instanceof \Illuminate\Http\Client\RequestException
+                ? $e->response->status() ?? 0
                 : 0;
 
             $this->delivery->markAsFailed(
                 errorMessage: $errorMessage,
                 statusCode: $statusCode,
-                responseBody: $e instanceof \Illuminate\Http\Client\RequestException 
-                    ? $e->response->body() 
+                responseBody: $e instanceof \Illuminate\Http\Client\RequestException
+                    ? $e->response->body()
                     : null
             );
 

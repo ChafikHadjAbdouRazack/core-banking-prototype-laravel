@@ -30,11 +30,11 @@ class CacheWarmup extends Command
     public function handle(CacheManager $cacheManager): int
     {
         $accountUuids = $this->option('account');
-        
+
         if (empty($accountUuids)) {
             // Warm up cache for all active accounts
             $this->info('Warming up cache for all accounts...');
-            
+
             Account::query()
                 ->where('frozen', false)
                 ->chunk(100, function ($accounts) use ($cacheManager) {
@@ -50,9 +50,9 @@ class CacheWarmup extends Command
                 $cacheManager->warmUp($uuid);
             }
         }
-        
+
         $this->info('Cache warmup completed!');
-        
+
         return Command::SUCCESS;
     }
 }

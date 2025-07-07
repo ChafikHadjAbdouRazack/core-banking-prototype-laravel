@@ -57,15 +57,15 @@ class RetryFailedWebhooks extends Command
             try {
                 // Reset status to pending for retry
                 $webhook->update(['status' => 'pending']);
-                
+
                 // Dispatch job to process webhook
                 dispatch(new ProcessCustodianWebhook($webhook->uuid));
-                
+
                 $dispatched++;
             } catch (\Exception $e) {
                 $this->error("\nFailed to dispatch webhook {$webhook->id}: {$e->getMessage()}");
             }
-            
+
             $bar->advance();
         }
 

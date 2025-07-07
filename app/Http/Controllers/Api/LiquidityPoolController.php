@@ -20,7 +20,8 @@ class LiquidityPoolController extends Controller
 {
     public function __construct(
         private readonly LiquidityPoolService $liquidityService
-    ) {}
+    ) {
+    }
 
     /**
      * @OA\Get(
@@ -47,10 +48,10 @@ class LiquidityPoolController extends Controller
     public function index(): JsonResponse
     {
         $pools = $this->liquidityService->getActivePools();
-        
+
         $poolData = $pools->map(function ($pool) {
             $metrics = $this->liquidityService->getPoolMetrics($pool->pool_id);
-            
+
             return [
                 'pool_id' => $pool->pool_id,
                 'base_currency' => $pool->base_currency,
@@ -89,7 +90,7 @@ class LiquidityPoolController extends Controller
     public function show(string $poolId): JsonResponse
     {
         $pool = $this->liquidityService->getPool($poolId);
-        
+
         if (!$pool) {
             return response()->json(['error' => 'Pool not found'], 404);
         }
@@ -128,7 +129,7 @@ class LiquidityPoolController extends Controller
     public function create(Request $request): JsonResponse
     {
         $this->middleware('auth:sanctum');
-        
+
         $validated = $request->validate([
             'base_currency' => 'required|string|size:3',
             'quote_currency' => 'required|string|size:3',
@@ -176,7 +177,7 @@ class LiquidityPoolController extends Controller
     public function addLiquidity(Request $request): JsonResponse
     {
         $this->middleware('auth:sanctum');
-        
+
         $validated = $request->validate([
             'pool_id' => 'required|uuid',
             'base_amount' => 'required|numeric|min:0.00000001',
@@ -231,7 +232,7 @@ class LiquidityPoolController extends Controller
     public function removeLiquidity(Request $request): JsonResponse
     {
         $this->middleware('auth:sanctum');
-        
+
         $validated = $request->validate([
             'pool_id' => 'required|uuid',
             'shares' => 'required|numeric|min:0.00000001',
@@ -279,7 +280,7 @@ class LiquidityPoolController extends Controller
     public function swap(Request $request): JsonResponse
     {
         $this->middleware('auth:sanctum');
-        
+
         $validated = $request->validate([
             'pool_id' => 'required|uuid',
             'input_currency' => 'required|string|size:3',
@@ -317,9 +318,9 @@ class LiquidityPoolController extends Controller
     public function positions(Request $request): JsonResponse
     {
         $this->middleware('auth:sanctum');
-        
+
         $positions = $this->liquidityService->getProviderPositions($request->user()->account->id);
-        
+
         $positionData = $positions->map(function ($position) {
             return [
                 'pool_id' => $position->pool_id,
@@ -360,7 +361,7 @@ class LiquidityPoolController extends Controller
     public function claimRewards(Request $request): JsonResponse
     {
         $this->middleware('auth:sanctum');
-        
+
         $validated = $request->validate([
             'pool_id' => 'required|uuid',
         ]);

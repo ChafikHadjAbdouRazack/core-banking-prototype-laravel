@@ -28,7 +28,7 @@ class DailyReconciliationController extends Controller
 
     /**
      * Trigger daily reconciliation process
-     * 
+     *
      * @OA\Post(
      *     path="/api/reconciliation/trigger",
      *     operationId="triggerReconciliation",
@@ -73,9 +73,9 @@ class DailyReconciliationController extends Controller
     {
         try {
             Log::info('Manual reconciliation triggered via API');
-            
+
             $report = $this->reconciliationService->performDailyReconciliation();
-            
+
             return response()->json([
                 'data' => [
                     'reconciliation_triggered' => true,
@@ -89,7 +89,7 @@ class DailyReconciliationController extends Controller
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
-            
+
             return response()->json([
                 'error' => 'Reconciliation failed',
                 'message' => $e->getMessage(),
@@ -100,7 +100,7 @@ class DailyReconciliationController extends Controller
 
     /**
      * Get latest reconciliation report
-     * 
+     *
      * @OA\Get(
      *     path="/api/reconciliation/latest",
      *     operationId="getLatestReconciliationReport",
@@ -150,14 +150,14 @@ class DailyReconciliationController extends Controller
     {
         try {
             $report = $this->reconciliationService->getLatestReport();
-            
+
             if (!$report) {
                 return response()->json([
                     'data' => null,
                     'message' => 'No reconciliation reports found'
                 ], 404);
             }
-            
+
             return response()->json([
                 'data' => [
                     'report' => $report,
@@ -174,7 +174,7 @@ class DailyReconciliationController extends Controller
 
     /**
      * Get reconciliation history
-     * 
+     *
      * @OA\Get(
      *     path="/api/reconciliation/history",
      *     operationId="getReconciliationHistory",
@@ -246,9 +246,9 @@ class DailyReconciliationController extends Controller
         try {
             $days = $request->get('days', 30);
             $limit = $request->get('limit', 20);
-            
+
             $files = glob(storage_path('app/reconciliation/reconciliation-*.json'));
-            
+
             if (empty($files)) {
                 return response()->json([
                     'data' => [
@@ -258,27 +258,27 @@ class DailyReconciliationController extends Controller
                     'message' => 'No reconciliation reports found'
                 ]);
             }
-            
+
             // Sort by filename (date) descending
             rsort($files);
-            
+
             $reports = [];
             $cutoffDate = now()->subDays($days);
-            
+
             foreach (array_slice($files, 0, $limit) as $file) {
                 $content = file_get_contents($file);
                 $reportData = json_decode($content, true);
-                
+
                 if (!$reportData) {
                     continue;
                 }
-                
+
                 $reportDate = Carbon::parse($reportData['summary']['date'] ?? 'now');
-                
+
                 if ($reportDate->isBefore($cutoffDate)) {
                     break;
                 }
-                
+
                 $reports[] = [
                     'date' => $reportDate->toDateString(),
                     'summary' => $reportData['summary'] ?? [],
@@ -289,7 +289,7 @@ class DailyReconciliationController extends Controller
                     'generated_at' => $reportData['generated_at'] ?? null,
                 ];
             }
-            
+
             return response()->json([
                 'data' => [
                     'reports' => $reports,
@@ -308,7 +308,7 @@ class DailyReconciliationController extends Controller
 
     /**
      * Get specific reconciliation report by date
-     * 
+     *
      * @OA\Get(
      *     path="/api/reconciliation/report/{date}",
      *     operationId="getReconciliationReportByDate",
@@ -381,26 +381,26 @@ class DailyReconciliationController extends Controller
                     'error' => 'Invalid date format. Use YYYY-MM-DD format.'
                 ], 400);
             }
-            
+
             $filename = sprintf('reconciliation-%s.json', $date);
             $filePath = storage_path("app/reconciliation/{$filename}");
-            
+
             if (!file_exists($filePath)) {
                 return response()->json([
                     'error' => 'Reconciliation report not found for the specified date',
                     'date' => $date
                 ], 404);
             }
-            
+
             $content = file_get_contents($filePath);
             $reportData = json_decode($content, true);
-            
+
             if (!$reportData) {
                 return response()->json([
                     'error' => 'Invalid report format'
                 ], 500);
             }
-            
+
             return response()->json([
                 'data' => [
                     'date' => $date,
@@ -422,7 +422,7 @@ class DailyReconciliationController extends Controller
 
     /**
      * Get reconciliation metrics summary
-     * 
+     *
      * @OA\Get(
      *     path="/api/reconciliation/metrics",
      *     operationId="getReconciliationMetrics",
@@ -503,9 +503,9 @@ class DailyReconciliationController extends Controller
         try {
             $days = $request->get('days', 30);
             $cutoffDate = now()->subDays($days);
-            
+
             $files = glob(storage_path('app/reconciliation/reconciliation-*.json'));
-            
+
             if (empty($files)) {
                 return response()->json([
                     'data' => [
@@ -523,7 +523,7 @@ class DailyReconciliationController extends Controller
                     'message' => 'No reconciliation data found'
                 ]);
             }
-            
+
             $metrics = [
                 'total_reconciliations' => 0,
                 'successful_reconciliations' => 0,
@@ -535,35 +535,35 @@ class DailyReconciliationController extends Controller
                 'discrepancy_types' => [],
                 'daily_trends' => [],
             ];
-            
+
             foreach ($files as $file) {
                 $content = file_get_contents($file);
                 $reportData = json_decode($content, true);
-                
+
                 if (!$reportData || !isset($reportData['summary'])) {
                     continue;
                 }
-                
+
                 $summary = $reportData['summary'];
                 $reportDate = Carbon::parse($summary['date'] ?? 'now');
-                
+
                 if ($reportDate->isBefore($cutoffDate)) {
                     continue;
                 }
-                
+
                 $metrics['total_reconciliations']++;
-                
+
                 if (($summary['status'] ?? '') === 'completed') {
                     $metrics['successful_reconciliations']++;
                 } else {
                     $metrics['failed_reconciliations']++;
                 }
-                
+
                 $metrics['total_discrepancies'] += $summary['discrepancies_found'] ?? 0;
                 $metrics['total_discrepancy_amount'] += $summary['total_discrepancy_amount'] ?? 0;
                 $metrics['total_duration_minutes'] += $summary['duration_minutes'] ?? 0;
                 $metrics['accounts_checked_total'] += $summary['accounts_checked'] ?? 0;
-                
+
                 // Track discrepancy types
                 if (isset($reportData['discrepancies'])) {
                     foreach ($reportData['discrepancies'] as $discrepancy) {
@@ -571,7 +571,7 @@ class DailyReconciliationController extends Controller
                         $metrics['discrepancy_types'][$type] = ($metrics['discrepancy_types'][$type] ?? 0) + 1;
                     }
                 }
-                
+
                 // Daily trends
                 $metrics['daily_trends'][] = [
                     'date' => $reportDate->toDateString(),
@@ -581,25 +581,25 @@ class DailyReconciliationController extends Controller
                     'status' => $summary['status'] ?? 'unknown',
                 ];
             }
-            
+
             // Calculate averages
-            $metrics['average_duration_minutes'] = $metrics['total_reconciliations'] > 0 
+            $metrics['average_duration_minutes'] = $metrics['total_reconciliations'] > 0
                 ? round($metrics['total_duration_minutes'] / $metrics['total_reconciliations'], 2)
                 : 0;
-            
+
             $metrics['average_discrepancies_per_run'] = $metrics['total_reconciliations'] > 0
                 ? round($metrics['total_discrepancies'] / $metrics['total_reconciliations'], 2)
                 : 0;
-            
+
             $metrics['success_rate'] = $metrics['total_reconciliations'] > 0
                 ? round(($metrics['successful_reconciliations'] / $metrics['total_reconciliations']) * 100, 2)
                 : 0;
-            
+
             // Sort daily trends by date
             usort($metrics['daily_trends'], function ($a, $b) {
                 return strcmp($a['date'], $b['date']);
             });
-            
+
             return response()->json([
                 'data' => [
                     'metrics' => $metrics,
@@ -619,7 +619,7 @@ class DailyReconciliationController extends Controller
 
     /**
      * Get reconciliation status (whether process is currently running)
-     * 
+     *
      * @OA\Get(
      *     path="/api/reconciliation/status",
      *     operationId="getReconciliationStatus",
@@ -673,22 +673,22 @@ class DailyReconciliationController extends Controller
             // This would typically check a lock file or database flag
             $lockFile = storage_path('app/locks/reconciliation.lock');
             $isRunning = file_exists($lockFile);
-            
+
             $latestReport = $this->reconciliationService->getLatestReport();
             $lastRunDate = $latestReport ? ($latestReport['summary']['date'] ?? null) : null;
-            
+
             $status = [
                 'is_running' => $isRunning,
                 'last_run_date' => $lastRunDate,
                 'next_scheduled_run' => now()->addDay()->startOfDay()->setHour(2)->toISOString(), // Assuming daily at 2 AM
                 'status_checked_at' => now()->toISOString(),
             ];
-            
+
             if ($isRunning && file_exists($lockFile)) {
                 $status['started_at'] = Carbon::createFromTimestamp(filemtime($lockFile))->toISOString();
                 $status['running_duration_minutes'] = Carbon::createFromTimestamp(filemtime($lockFile))->diffInMinutes(now());
             }
-            
+
             if ($latestReport) {
                 $status['last_run_summary'] = [
                     'status' => $latestReport['summary']['status'] ?? 'unknown',
@@ -697,7 +697,7 @@ class DailyReconciliationController extends Controller
                     'duration_minutes' => $latestReport['summary']['duration_minutes'] ?? 0,
                 ];
             }
-            
+
             return response()->json([
                 'data' => $status
             ]);

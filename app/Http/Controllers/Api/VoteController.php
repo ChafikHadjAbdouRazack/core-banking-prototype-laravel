@@ -162,7 +162,7 @@ class VoteController extends Controller
 
         return response()->json([
             'verified' => $isValid,
-            'message' => $isValid 
+            'message' => $isValid
                 ? 'Vote signature is valid and vote has not been tampered with'
                 : 'Vote signature is invalid or vote has been tampered with',
         ]);
@@ -191,13 +191,13 @@ class VoteController extends Controller
     public function stats(): JsonResponse
     {
         $userUuid = Auth::user()->uuid;
-        
+
         $totalVotes = Vote::byUser($userUuid)->count();
         $totalVotingPower = Vote::byUser($userUuid)->sum('voting_power');
         $recentVotes = Vote::byUser($userUuid)->recentVotes(24 * 30)->count(); // Last 30 days
-        
+
         $avgVotingPower = $totalVotes > 0 ? $totalVotingPower / $totalVotes : 0;
-        
+
         // Calculate participation rate (votes cast / total polls available to user)
         // This is a simplified calculation - in a real system you'd need to check
         // which polls the user was eligible to vote in

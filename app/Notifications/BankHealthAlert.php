@@ -23,7 +23,8 @@ class BankHealthAlert extends Notification implements ShouldQueue
         public readonly string $severity,
         public readonly array $healthData,
         public readonly \DateTimeInterface $timestamp
-    ) {}
+    ) {
+    }
 
     /**
      * Get the notification's delivery channels.
@@ -42,18 +43,18 @@ class BankHealthAlert extends Notification implements ShouldQueue
     {
         $subject = $this->getEmailSubject();
         $color = $this->getAlertColor();
-        
-        $mail = (new MailMessage)
+
+        $mail = (new MailMessage())
             ->subject($subject)
             ->greeting("Bank Health Alert: {$this->custodian}")
             ->line("Status changed from **{$this->previousStatus}** to **{$this->newStatus}**")
             ->line("Time: {$this->timestamp->format('Y-m-d H:i:s')}");
-            
+
         // Add health metrics
         if (isset($this->healthData['overall_failure_rate'])) {
             $mail->line("Failure Rate: {$this->healthData['overall_failure_rate']}%");
         }
-        
+
         // Add recommendations
         if (!empty($this->healthData['recommendations'])) {
             $mail->line('**Recommendations:**');
@@ -61,7 +62,7 @@ class BankHealthAlert extends Notification implements ShouldQueue
                 $mail->line("• {$recommendation}");
             }
         }
-        
+
         // Add action button based on severity
         if ($this->severity === 'critical') {
             $mail->action('View Bank Status', url('/admin'))
@@ -69,7 +70,7 @@ class BankHealthAlert extends Notification implements ShouldQueue
         } else {
             $mail->action('View Bank Status', url('/admin'));
         }
-        
+
         return $mail;
     }
 
@@ -90,7 +91,7 @@ class BankHealthAlert extends Notification implements ShouldQueue
             'timestamp' => $this->timestamp->toIso8601String(),
         ];
     }
-    
+
     /**
      * Get email subject based on severity
      */
@@ -102,7 +103,7 @@ class BankHealthAlert extends Notification implements ShouldQueue
             default => "[INFO] Bank Connector {$this->custodian} status update",
         };
     }
-    
+
     /**
      * Get alert color based on severity
      */

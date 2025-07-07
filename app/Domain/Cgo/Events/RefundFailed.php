@@ -14,5 +14,6 @@ class RefundFailed extends ShouldBeStored
         public readonly string $failureReason,
         public readonly string $failedAt,
         public readonly array $metadata = []
-    ) {}
+    ) {
+    }
 }

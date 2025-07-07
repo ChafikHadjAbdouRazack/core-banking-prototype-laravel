@@ -15,11 +15,11 @@ class CancelBatchJob
     public function __invoke(BatchJobCancelled $event): void
     {
         $batchJob = BatchJob::where('uuid', $event->aggregateRootUuid())->first();
-        
+
         if (!$batchJob) {
             return;
         }
-        
+
         // Update batch job status
         $batchJob->update([
             'status' => 'cancelled',
@@ -28,7 +28,7 @@ class CancelBatchJob
                 'cancellation_reason' => $event->reason,
             ]),
         ]);
-        
+
         // Cancel all pending items
         BatchItem::where('batch_job_id', $batchJob->id)
             ->where('status', 'pending')

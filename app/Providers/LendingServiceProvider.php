@@ -22,23 +22,23 @@ class LendingServiceProvider extends ServiceProvider
                 $app->make(RiskAssessmentService::class)
             );
         });
-        
+
         // Register credit scoring service
         $this->app->bind(CreditScoringService::class, function ($app) {
             return new MockCreditScoringService();
         });
-        
+
         // Register risk assessment service
         $this->app->bind(RiskAssessmentService::class, function ($app) {
             return new DefaultRiskAssessmentService();
         });
-        
+
         // Register collateral management service
         $this->app->bind(CollateralManagementService::class, function ($app) {
             return new DefaultCollateralManagementService();
         });
     }
-    
+
     public function boot()
     {
         //

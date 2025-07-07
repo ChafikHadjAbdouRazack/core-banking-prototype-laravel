@@ -9,21 +9,21 @@ use Illuminate\Support\Facades\DB;
 class TurnoverTrendChart extends ChartWidget
 {
     protected static ?string $heading = 'Turnover Flow Analysis';
-    
+
     protected static ?int $sort = 4;
-    
+
     protected int | string | array $columnSpan = 'full';
-    
+
     protected static ?string $pollingInterval = '60s';
-    
+
     public ?string $filter = '6m';
-    
+
     protected function getData(): array
     {
         $activeFilter = $this->filter;
-        
+
         $data = $this->getTurnoverData($activeFilter);
-        
+
         return [
             'datasets' => [
                 [
@@ -54,12 +54,12 @@ class TurnoverTrendChart extends ChartWidget
             'labels' => $data->pluck('month'),
         ];
     }
-    
+
     protected function getType(): string
     {
         return 'bar';
     }
-    
+
     protected function getOptions(): array
     {
         return [
@@ -93,7 +93,7 @@ class TurnoverTrendChart extends ChartWidget
             ],
         ];
     }
-    
+
     protected function getFilters(): ?array
     {
         return [
@@ -103,26 +103,26 @@ class TurnoverTrendChart extends ChartWidget
             '24m' => 'Last 24 Months',
         ];
     }
-    
+
     private function getTurnoverData(string $period)
     {
-        $months = match($period) {
+        $months = match ($period) {
             '3m' => 3,
             '6m' => 6,
             '12m' => 12,
             '24m' => 24,
             default => 6,
         };
-        
+
         $endDate = now()->endOfMonth();
         $startDate = now()->subMonths($months - 1)->startOfMonth();
-        
+
         $turnovers = Turnover::select(
-                'year',
-                'month',
-                DB::raw('SUM(debit) as total_debit'),
-                DB::raw('SUM(credit) as total_credit')
-            )
+            'year',
+            'month',
+            DB::raw('SUM(debit) as total_debit'),
+            DB::raw('SUM(credit) as total_credit')
+        )
             ->where(function ($query) use ($startDate, $endDate) {
                 $query->where('year', '>', $startDate->year)
                     ->orWhere(function ($q) use ($startDate) {
@@ -141,29 +141,29 @@ class TurnoverTrendChart extends ChartWidget
             ->orderBy('year')
             ->orderBy('month')
             ->get();
-        
+
         // Fill in missing months with zeros
         $data = collect();
         $current = $startDate->copy();
-        
+
         while ($current <= $endDate) {
             $turnover = $turnovers->first(function ($t) use ($current) {
                 return $t->year == $current->year && $t->month == $current->month;
             });
-            
+
             $debit = ($turnover?->total_debit ?? 0) / 100;
             $credit = ($turnover?->total_credit ?? 0) / 100;
-            
+
             $data->push([
                 'month' => $current->format('M Y'),
                 'debit' => round($debit, 2),
                 'credit' => round($credit, 2),
                 'net' => round($credit - $debit, 2),
             ]);
-            
+
             $current->addMonth();
         }
-        
+
         return $data;
     }
 }

@@ -27,33 +27,33 @@ class InitiateAssetTransferActivity extends Activity
         // Validate accounts exist
         $fromAccount = Account::where('uuid', $fromAccountUuid->toString())->first();
         $toAccount = Account::where('uuid', $toAccountUuid->toString())->first();
-        
+
         if (!$fromAccount) {
             throw new \Exception("Source account not found: {$fromAccountUuid->toString()}");
         }
-        
+
         if (!$toAccount) {
             throw new \Exception("Destination account not found: {$toAccountUuid->toString()}");
         }
-        
+
         // Check if source account has sufficient balance
         $fromBalance = AccountBalance::where('account_uuid', $fromAccountUuid->toString())
             ->where('asset_code', $fromAssetCode)
             ->first();
-        
+
         if (!$fromBalance || !$fromBalance->hasSufficientBalance($fromAmount->getAmount())) {
             $currentBalance = $fromBalance ? $fromBalance->balance : 0;
             throw new \Exception(
                 "Insufficient {$fromAssetCode} balance. Required: {$fromAmount->getAmount()}, Available: {$currentBalance}"
             );
         }
-        
+
         // Generate unique transfer ID
         $transferId = (string) \Illuminate\Support\Str::uuid();
-        
+
         // For same-asset transfers, use the same amount
         $toAmount = $fromAmount;
-        
+
         // Create and execute the asset transfer aggregate
         AssetTransferAggregate::retrieve($transferId)
             ->initiate(
@@ -72,7 +72,7 @@ class InitiateAssetTransferActivity extends Activity
                 ]
             )
             ->persist();
-        
+
         return $transferId;
     }
 }

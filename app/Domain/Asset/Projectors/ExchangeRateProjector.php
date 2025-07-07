@@ -23,7 +23,7 @@ class ExchangeRateProjector extends Projector
                 ->where('source', $event->source)
                 ->latest()
                 ->first();
-            
+
             // Create new rate record
             $newRate = ExchangeRate::create([
                 'from_asset_code' => $event->fromAssetCode,
@@ -40,15 +40,15 @@ class ExchangeRateProjector extends Projector
                     'is_significant_change' => $event->isSignificantChange(),
                 ]),
             ]);
-            
+
             // Deactivate old rate if it exists
             if ($existingRate) {
                 $existingRate->update(['is_active' => false]);
             }
-            
+
             // Clear relevant caches
             $this->clearRateCache($event->fromAssetCode, $event->toAssetCode);
-            
+
             // Log significant changes
             if ($event->isSignificantChange()) {
                 Log::warning('Significant exchange rate change detected', [
@@ -69,7 +69,6 @@ class ExchangeRateProjector extends Projector
                     'source' => $event->source,
                 ]);
             }
-            
         } catch (\Exception $e) {
             Log::error('Error processing exchange rate update', [
                 'from_asset' => $event->fromAssetCode,
@@ -79,11 +78,11 @@ class ExchangeRateProjector extends Projector
                 'source' => $event->source,
                 'error' => $e->getMessage(),
             ]);
-            
+
             throw $e;
         }
     }
-    
+
     /**
      * Clear exchange rate cache for a specific pair
      */
@@ -93,7 +92,7 @@ class ExchangeRateProjector extends Projector
             "exchange_rate:{$fromAsset}:{$toAsset}",
             "exchange_rate:{$toAsset}:{$fromAsset}", // Also clear inverse
         ];
-        
+
         foreach ($cacheKeys as $key) {
             Cache::forget($key);
         }

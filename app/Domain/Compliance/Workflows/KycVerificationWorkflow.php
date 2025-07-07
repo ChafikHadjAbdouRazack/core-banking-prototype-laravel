@@ -14,7 +14,7 @@ class KycVerificationWorkflow extends Workflow
                 'App\Domain\Compliance\Activities\KycVerificationActivity',
                 $input
             );
-            
+
             // Add compensation based on the action taken
             if (($input['action'] ?? '') === 'approve') {
                 // If we approved, compensation is to reject
@@ -38,12 +38,11 @@ class KycVerificationWorkflow extends Workflow
                     ]
                 ));
             }
-            
+
             return $result;
         } catch (\Throwable $th) {
             yield from $this->compensate();
             throw $th;
         }
     }
-
 }

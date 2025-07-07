@@ -18,7 +18,7 @@ class BatchItem extends Model
         'processed_at',
         'retry_count',
     ];
-    
+
     protected $casts = [
         'sequence' => 'integer',
         'data' => 'array',
@@ -26,7 +26,7 @@ class BatchItem extends Model
         'processed_at' => 'datetime',
         'retry_count' => 'integer',
     ];
-    
+
     /**
      * Get the batch job this item belongs to
      */
@@ -34,7 +34,7 @@ class BatchItem extends Model
     {
         return $this->belongsTo(BatchJob::class);
     }
-    
+
     /**
      * Check if item can be retried
      */

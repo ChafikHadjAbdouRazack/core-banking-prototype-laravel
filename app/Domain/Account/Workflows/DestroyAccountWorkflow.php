@@ -13,7 +13,7 @@ class DestroyAccountWorkflow extends Workflow
      *
      * @return \Generator
      */
-    public function execute( AccountUuid $uuid ): \Generator
+    public function execute(AccountUuid $uuid): \Generator
     {
         return yield ActivityStub::make(
             DestroyAccountActivity::class,

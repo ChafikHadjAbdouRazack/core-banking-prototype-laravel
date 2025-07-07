@@ -9,7 +9,7 @@ use App\Domain\Account\Events\AccountFrozen;
 use App\Domain\Account\Events\AccountUnfrozen;
 use App\Domain\Account\Repositories\LedgerRepository;
 use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
-use \App\Domain\Account\Repositories\LedgerSnapshotRepository;
+use App\Domain\Account\Repositories\LedgerSnapshotRepository;
 
 class LedgerAggregate extends AggregateRoot
 {
@@ -62,7 +62,7 @@ class LedgerAggregate extends AggregateRoot
 
         return $this;
     }
-    
+
     /**
      * @param string $reason
      * @param string|null $authorizedBy
@@ -80,7 +80,7 @@ class LedgerAggregate extends AggregateRoot
 
         return $this;
     }
-    
+
     /**
      * @param string $reason
      * @param string|null $authorizedBy

@@ -100,7 +100,7 @@ class BehavioralProfile extends Model
     // Helper methods
     public function isEstablished(): bool
     {
-        return $this->is_established && 
+        return $this->is_established &&
                $this->days_since_first_transaction >= 30 &&
                $this->total_transaction_count >= 10;
     }
@@ -127,36 +127,36 @@ class BehavioralProfile extends Model
     protected function calculateTimeDistribution($timestamps): array
     {
         $distribution = array_fill(0, 24, 0);
-        
+
         foreach ($timestamps as $timestamp) {
             $hour = $timestamp->hour;
             $distribution[$hour]++;
         }
-        
+
         // Normalize to percentages
         $total = array_sum($distribution);
         if ($total > 0) {
             $distribution = array_map(fn($count) => round(($count / $total) * 100, 2), $distribution);
         }
-        
+
         return $distribution;
     }
 
     protected function calculateDayDistribution($timestamps): array
     {
         $distribution = array_fill(0, 7, 0);
-        
+
         foreach ($timestamps as $timestamp) {
             $day = $timestamp->dayOfWeek;
             $distribution[$day]++;
         }
-        
+
         // Normalize to percentages
         $total = array_sum($distribution);
         if ($total > 0) {
             $distribution = array_map(fn($count) => round(($count / $total) * 100, 2), $distribution);
         }
-        
+
         return $distribution;
     }
 
@@ -260,16 +260,16 @@ class BehavioralProfile extends Model
     protected function updateCommonLocations(array $history): void
     {
         $locationCounts = [];
-        
+
         foreach ($history as $location) {
             $key = $location['country'] . '|' . ($location['city'] ?? 'unknown');
             $locationCounts[$key] = ($locationCounts[$key] ?? 0) + 1;
         }
-        
+
         // Get top 10 locations
         arsort($locationCounts);
         $commonLocations = [];
-        
+
         foreach (array_slice($locationCounts, 0, 10, true) as $key => $count) {
             [$country, $city] = explode('|', $key);
             $commonLocations[] = [
@@ -278,7 +278,7 @@ class BehavioralProfile extends Model
                 'frequency' => $count,
             ];
         }
-        
+
         $this->update(['common_locations' => $commonLocations]);
     }
 
@@ -341,30 +341,30 @@ class BehavioralProfile extends Model
             // Transaction features
             'avg_transaction_amount' => $this->avg_transaction_amount ?? 0,
             'transaction_amount_std_dev' => $this->transaction_amount_std_dev ?? 0,
-            'max_transaction_ratio' => $this->avg_transaction_amount > 0 ? 
+            'max_transaction_ratio' => $this->avg_transaction_amount > 0 ?
                 ($this->max_transaction_amount / $this->avg_transaction_amount) : 0,
-            
+
             // Velocity features
             'avg_daily_transactions' => $this->avg_daily_transaction_count ?? 0,
             'avg_monthly_transactions' => $this->avg_monthly_transaction_count ?? 0,
-            
+
             // Location features
             'location_diversity' => count($this->common_locations ?? []),
             'travels_frequently' => $this->travels_frequently ? 1 : 0,
-            
+
             // Device features
             'device_count' => $this->device_count ?? 0,
             'uses_multiple_devices' => $this->uses_multiple_devices ? 1 : 0,
-            
+
             // Security features
             'uses_2fa' => $this->uses_2fa ? 1 : 0,
             'failed_login_rate' => $this->total_transaction_count > 0 ?
                 ($this->failed_login_attempts / $this->total_transaction_count) : 0,
-            
+
             // Account age features
             'account_age_days' => $this->days_since_first_transaction ?? 0,
             'is_established' => $this->is_established ? 1 : 0,
-            
+
             // Activity features
             'profile_change_frequency' => $this->profile_change_frequency ?? 0,
             'password_change_frequency' => $this->password_change_frequency ?? 0,
@@ -388,7 +388,7 @@ class BehavioralProfile extends Model
                 'min' => max(0, $this->avg_transaction_amount - (2 * $this->transaction_amount_std_dev)),
                 'max' => $this->avg_transaction_amount + (2 * $this->transaction_amount_std_dev),
             ],
-            'primary_location' => $this->primary_city ? 
+            'primary_location' => $this->primary_city ?
                 "{$this->primary_city}, {$this->primary_country}" : $this->primary_country,
             'device_count' => $this->device_count,
             'security' => [

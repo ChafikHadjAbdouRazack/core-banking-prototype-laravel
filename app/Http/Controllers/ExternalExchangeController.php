@@ -17,7 +17,8 @@ class ExternalExchangeController extends Controller
         private ArbitrageServiceInterface $arbitrageService,
         private PriceAggregatorInterface $priceAggregator,
         private OrderService $orderService
-    ) {}
+    ) {
+    }
 
     /**
      * Display external exchange dashboard
@@ -26,19 +27,19 @@ class ExternalExchangeController extends Controller
     {
         // Get connected exchanges
         $connectedExchanges = $this->getConnectedExchanges();
-        
+
         // Get price comparisons across exchanges
         $priceComparisons = $this->getPriceComparisons();
-        
+
         // Get recent arbitrage opportunities
         $arbitrageOpportunities = collect($this->arbitrageService->findOpportunities('BTC/USD'));
-        
+
         // Get user's external exchange balances
         $externalBalances = $this->getExternalBalances();
-        
+
         // Get recent external trades
         $recentTrades = $this->getRecentExternalTrades();
-        
+
         return view('exchange.external.index', compact(
             'connectedExchanges',
             'priceComparisons',
@@ -55,16 +56,16 @@ class ExternalExchangeController extends Controller
     {
         // Get current arbitrage opportunities
         $opportunities = $this->arbitrageService->findOpportunities();
-        
+
         // Get historical arbitrage performance
         $historicalPerformance = $this->getHistoricalArbitragePerformance();
-        
+
         // Get active arbitrage bots/strategies
         $activeStrategies = $this->getActiveArbitrageStrategies();
-        
+
         // Get supported trading pairs for arbitrage
         $supportedPairs = $this->getSupportedArbitragePairs();
-        
+
         return view('exchange.external.arbitrage', compact(
             'opportunities',
             'historicalPerformance',
@@ -84,7 +85,7 @@ class ExternalExchangeController extends Controller
             'slippage_tolerance' => 'required|numeric|min:0|max:5',
             'password' => 'required|string',
         ]);
-        
+
         try {
             // Execute the arbitrage trade
             $result = $this->arbitrageService->executeArbitrage(
@@ -95,11 +96,10 @@ class ExternalExchangeController extends Controller
                     'slippage_tolerance' => $validated['slippage_tolerance'],
                 ]
             );
-            
+
             return redirect()
                 ->route('exchange.external.arbitrage')
                 ->with('success', 'Arbitrage trade executed successfully. Profit: ' . $result['profit']);
-                
         } catch (\Exception $e) {
             return back()
                 ->withInput()
@@ -114,16 +114,16 @@ class ExternalExchangeController extends Controller
     {
         // Get price discrepancies across exchanges
         $priceDiscrepancies = $this->priceAggregator->getPriceDiscrepancies();
-        
+
         // Get our exchange prices vs market
         $ourPrices = $this->getOurExchangePrices();
-        
+
         // Get recommended price adjustments
         $recommendedAdjustments = $this->getRecommendedPriceAdjustments();
-        
+
         // Get price alignment history
         $alignmentHistory = $this->getPriceAlignmentHistory();
-        
+
         return view('exchange.external.price-alignment', compact(
             'priceDiscrepancies',
             'ourPrices',
@@ -144,7 +144,7 @@ class ExternalExchangeController extends Controller
             'exchanges' => 'required|array',
             'exchanges.*' => 'string|in:binance,kraken,coinbase',
         ]);
-        
+
         try {
             // Update price alignment settings
             $this->priceAggregator->updateAlignmentSettings([
@@ -153,11 +153,10 @@ class ExternalExchangeController extends Controller
                 'update_frequency' => $validated['update_frequency'],
                 'reference_exchanges' => $validated['exchanges'],
             ]);
-            
+
             return redirect()
                 ->route('exchange.external.price-alignment')
                 ->with('success', 'Price alignment settings updated successfully');
-                
         } catch (\Exception $e) {
             return back()
                 ->withInput()
@@ -176,7 +175,7 @@ class ExternalExchangeController extends Controller
             'api_secret' => 'required|string',
             'testnet' => 'boolean',
         ]);
-        
+
         try {
             // Connect to external exchange
             $connection = $this->externalExchangeService->connectExchange(
@@ -188,11 +187,10 @@ class ExternalExchangeController extends Controller
                     'testnet' => $validated['testnet'] ?? false,
                 ]
             );
-            
+
             return redirect()
                 ->route('exchange.external.index')
                 ->with('success', 'Successfully connected to ' . ucfirst($validated['exchange']));
-                
         } catch (\Exception $e) {
             return back()
                 ->withInput()
@@ -210,11 +208,10 @@ class ExternalExchangeController extends Controller
                 Auth::user()->uuid,
                 $exchange
             );
-            
+
             return redirect()
                 ->route('exchange.external.index')
                 ->with('success', 'Successfully disconnected from ' . ucfirst($exchange));
-                
         } catch (\Exception $e) {
             return back()->withErrors(['error' => 'Failed to disconnect: ' . $e->getMessage()]);
         }
@@ -252,7 +249,7 @@ class ExternalExchangeController extends Controller
     {
         $pairs = ['BTC/USD', 'ETH/USD', 'GCU/USD'];
         $comparisons = [];
-        
+
         foreach ($pairs as $pair) {
             $prices = $this->priceAggregator->getPricesAcrossExchanges($pair);
             $comparisons[$pair] = [
@@ -264,7 +261,7 @@ class ExternalExchangeController extends Controller
                 'spread' => $prices['spread'] ?? null,
             ];
         }
-        
+
         return collect($comparisons);
     }
 
@@ -275,7 +272,7 @@ class ExternalExchangeController extends Controller
     {
         $balances = [];
         $connections = $this->getConnectedExchanges();
-        
+
         foreach ($connections as $connection) {
             try {
                 $exchangeBalances = $this->externalExchangeService->getBalances(
@@ -287,7 +284,7 @@ class ExternalExchangeController extends Controller
                 $balances[$connection['exchange']] = ['error' => true];
             }
         }
-        
+
         return collect($balances);
     }
 
@@ -313,7 +310,7 @@ class ExternalExchangeController extends Controller
     private function getHistoricalArbitragePerformance()
     {
         $thirtyDaysAgo = now()->subDays(30);
-        
+
         return DB::table('arbitrage_trades')
             ->where('user_uuid', Auth::user()->uuid)
             ->where('created_at', '>=', $thirtyDaysAgo)
@@ -372,11 +369,11 @@ class ExternalExchangeController extends Controller
     {
         $recommendations = [];
         $comparisons = $this->getPriceComparisons();
-        
+
         foreach ($comparisons as $pair => $prices) {
             if ($prices['internal'] && $prices['average']) {
                 $deviation = abs($prices['internal'] - $prices['average']) / $prices['average'] * 100;
-                
+
                 if ($deviation > 1) { // More than 1% deviation
                     $recommendations[] = [
                         'pair' => $pair,
@@ -389,7 +386,7 @@ class ExternalExchangeController extends Controller
                 }
             }
         }
-        
+
         return $recommendations;
     }
 

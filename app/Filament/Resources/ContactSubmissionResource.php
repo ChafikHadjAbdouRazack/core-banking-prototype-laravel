@@ -129,7 +129,7 @@ class ContactSubmissionResource extends Resource
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\BadgeColumn::make('subject')
-                    ->formatStateUsing(fn ($state) => match($state) {
+                    ->formatStateUsing(fn ($state) => match ($state) {
                         'account' => 'Account Issues',
                         'technical' => 'Technical Support',
                         'billing' => 'Billing & Payments',

@@ -20,7 +20,8 @@ class GdprController extends Controller
 {
     public function __construct(
         private readonly GdprService $gdprService
-    ) {}
+    ) {
+    }
 
     /**
      * @OA\Get(

@@ -13,7 +13,7 @@ use Illuminate\Support\Collection;
 
 /**
  * Settlement Service
- * 
+ *
  * Manages inter-bank settlement processes including:
  * - Net settlement calculation
  * - Settlement batch creation
@@ -23,14 +23,14 @@ class SettlementService
 {
     private CustodianRegistry $registry;
     private array $settlementConfig;
-    
+
     /**
      * Settlement types
      */
     public const SETTLEMENT_REALTIME = 'realtime';
     public const SETTLEMENT_BATCH = 'batch';
     public const SETTLEMENT_NET = 'net';
-    
+
     /**
      * Settlement statuses
      */
@@ -38,7 +38,7 @@ class SettlementService
     public const STATUS_PROCESSING = 'processing';
     public const STATUS_COMPLETED = 'completed';
     public const STATUS_FAILED = 'failed';
-    
+
     public function __construct(CustodianRegistry $registry)
     {
         $this->registry = $registry;
@@ -48,16 +48,16 @@ class SettlementService
             'min_settlement_amount' => 10000, // $100.00
         ]);
     }
-    
+
     /**
      * Process pending settlements
      */
     public function processPendingSettlements(): array
     {
         Log::info('Processing pending settlements');
-        
+
         $settlementType = $this->settlementConfig['type'];
-        
+
         return match ($settlementType) {
             self::SETTLEMENT_REALTIME => $this->processRealtimeSettlements(),
             self::SETTLEMENT_BATCH => $this->processBatchSettlements(),
@@ -65,7 +65,7 @@ class SettlementService
             default => throw new \RuntimeException("Unknown settlement type: {$settlementType}"),
         };
     }
-    
+
     /**
      * Process realtime settlements (immediate settlement)
      */
@@ -76,13 +76,13 @@ class SettlementService
             ->whereNull('settlement_id')
             ->where('transfer_type', '!=', 'internal')
             ->get();
-        
+
         $results = [
             'processed' => 0,
             'failed' => 0,
             'total_amount' => 0,
         ];
-        
+
         foreach ($pendingTransfers as $transfer) {
             try {
                 $this->settleTransferImmediately($transfer);
@@ -96,17 +96,17 @@ class SettlementService
                 $results['failed']++;
             }
         }
-        
+
         return $results;
     }
-    
+
     /**
      * Process batch settlements
      */
     private function processBatchSettlements(): array
     {
         $cutoffTime = now()->subMinutes($this->settlementConfig['batch_interval_minutes']);
-        
+
         // Get transfers ready for batch settlement
         $transfers = DB::table('custodian_transfers')
             ->where('status', 'completed')
@@ -114,7 +114,7 @@ class SettlementService
             ->where('transfer_type', '!=', 'internal')
             ->where('completed_at', '<=', $cutoffTime)
             ->get();
-        
+
         if ($transfers->isEmpty()) {
             return [
                 'batches' => 0,
@@ -122,69 +122,69 @@ class SettlementService
                 'total_amount' => 0,
             ];
         }
-        
+
         // Group by custodian pairs and asset
         $batches = $transfers->groupBy(function ($transfer) {
             $from = DB::table('custodian_accounts')->find($transfer->from_custodian_account_id);
             $to = DB::table('custodian_accounts')->find($transfer->to_custodian_account_id);
             return "{$from->custodian_name}:{$to->custodian_name}:{$transfer->asset_code}";
         });
-        
+
         $results = [
             'batches' => 0,
             'transfers' => 0,
             'total_amount' => 0,
         ];
-        
+
         foreach ($batches as $key => $batchTransfers) {
             [$fromCustodian, $toCustodian, $assetCode] = explode(':', $key);
-            
+
             $batchId = $this->createSettlementBatch(
                 $fromCustodian,
                 $toCustodian,
                 $assetCode,
                 $batchTransfers
             );
-            
+
             if ($this->executeSettlementBatch($batchId)) {
                 $results['batches']++;
                 $results['transfers'] += $batchTransfers->count();
                 $results['total_amount'] += $batchTransfers->sum('amount');
             }
         }
-        
+
         return $results;
     }
-    
+
     /**
      * Process net settlements (offset debits and credits)
      */
     private function processNetSettlements(): array
     {
         Log::info('Processing net settlements');
-        
+
         // Calculate net positions between custodians
         $netPositions = $this->calculateNetPositions();
-        
+
         $results = [
             'settlements' => 0,
             'total_gross' => 0,
             'total_net' => 0,
             'savings' => 0,
         ];
-        
+
         foreach ($netPositions as $position) {
             if (abs($position->net_amount) < $this->settlementConfig['min_settlement_amount']) {
                 continue;
             }
-            
+
             try {
                 $settlementId = $this->createNetSettlement($position);
                 if ($this->executeNetSettlement($settlementId)) {
                     $results['settlements']++;
                     $results['total_net'] += abs($position->net_amount);
                 }
-                
+
                 $results['total_gross'] += $position->gross_amount;
             } catch (\Exception $e) {
                 Log::error('Failed to process net settlement', [
@@ -193,15 +193,15 @@ class SettlementService
                 ]);
             }
         }
-        
+
         $results['savings'] = $results['total_gross'] - $results['total_net'];
         $results['savings_percentage'] = $results['total_gross'] > 0
             ? round(($results['savings'] / $results['total_gross']) * 100, 2)
             : 0;
-        
+
         return $results;
     }
-    
+
     /**
      * Calculate net positions between custodians
      */
@@ -222,10 +222,10 @@ class SettlementService
             ->where('ct.transfer_type', '!=', 'internal')
             ->groupBy('from_ca.custodian_name', 'to_ca.custodian_name', 'ct.asset_code')
             ->get();
-        
+
         // Calculate net positions
         $netPositions = collect();
-        
+
         foreach ($positions as $position) {
             // Find reverse flow
             $reverseFlow = $positions->first(function ($p) use ($position) {
@@ -233,10 +233,10 @@ class SettlementService
                     && $p->to_custodian === $position->from_custodian
                     && $p->asset_code === $position->asset_code;
             });
-            
+
             $reverseAmount = $reverseFlow ? $reverseFlow->total_amount : 0;
             $netAmount = $position->total_amount - $reverseAmount;
-            
+
             // Only add if net amount is positive (avoid duplicates)
             if ($netAmount > 0) {
                 $netPositions->push((object)[
@@ -249,10 +249,10 @@ class SettlementService
                 ]);
             }
         }
-        
+
         return $netPositions;
     }
-    
+
     /**
      * Settle a transfer immediately
      */
@@ -265,16 +265,16 @@ class SettlementService
             'amount' => $transfer->amount,
             'asset_code' => $transfer->asset_code,
         ]);
-        
+
         // Execute actual settlement between custodians
         $this->executeSettlement($settlementId);
-        
+
         // Mark transfer as settled
         DB::table('custodian_transfers')
             ->where('id', $transfer->id)
             ->update(['settlement_id' => $settlementId]);
     }
-    
+
     /**
      * Create a settlement batch
      */
@@ -286,7 +286,7 @@ class SettlementService
     ): string {
         $settlementId = 'BATCH_' . uniqid();
         $totalAmount = $transfers->sum('amount');
-        
+
         DB::table('settlements')->insert([
             'id' => $settlementId,
             'type' => self::SETTLEMENT_BATCH,
@@ -303,22 +303,22 @@ class SettlementService
             'created_at' => now(),
             'updated_at' => now(),
         ]);
-        
+
         // Link transfers to settlement
         DB::table('custodian_transfers')
             ->whereIn('id', $transfers->pluck('id'))
             ->update(['settlement_id' => $settlementId]);
-        
+
         return $settlementId;
     }
-    
+
     /**
      * Create a net settlement
      */
     private function createNetSettlement($position): string
     {
         $settlementId = 'NET_' . uniqid();
-        
+
         // Get all unsettled transfers for this position
         $transfers = DB::table('custodian_transfers as ct')
             ->join('custodian_accounts as from_ca', 'ct.from_custodian_account_id', '=', 'from_ca.id')
@@ -337,7 +337,7 @@ class SettlementService
                 });
             })
             ->pluck('id');
-        
+
         DB::table('settlements')->insert([
             'id' => $settlementId,
             'type' => self::SETTLEMENT_NET,
@@ -355,15 +355,15 @@ class SettlementService
             'created_at' => now(),
             'updated_at' => now(),
         ]);
-        
+
         // Link transfers to settlement
         DB::table('custodian_transfers')
             ->whereIn('id', $transfers)
             ->update(['settlement_id' => $settlementId]);
-        
+
         return $settlementId;
     }
-    
+
     /**
      * Execute a settlement batch
      */
@@ -371,7 +371,7 @@ class SettlementService
     {
         return $this->executeSettlement($settlementId);
     }
-    
+
     /**
      * Execute a net settlement
      */
@@ -379,18 +379,18 @@ class SettlementService
     {
         return $this->executeSettlement($settlementId);
     }
-    
+
     /**
      * Execute settlement between custodians
      */
     private function executeSettlement(string $settlementId): bool
     {
         $settlement = DB::table('settlements')->where('id', $settlementId)->first();
-        
+
         if (!$settlement) {
             throw new \RuntimeException("Settlement not found: {$settlementId}");
         }
-        
+
         try {
             // Update status to processing
             DB::table('settlements')
@@ -399,11 +399,11 @@ class SettlementService
                     'status' => self::STATUS_PROCESSING,
                     'processed_at' => now(),
                 ]);
-            
+
             // Get custodian connectors
             $fromConnector = $this->registry->getConnector($settlement->from_custodian);
             $toConnector = $this->registry->getConnector($settlement->to_custodian);
-            
+
             // Execute settlement transfer
             // In production, this would use specific settlement accounts and protocols
             $settlementRequest = new \App\Domain\Custodian\ValueObjects\TransferRequest(
@@ -418,9 +418,9 @@ class SettlementService
                     'transfer_count' => $settlement->transfer_count,
                 ]
             );
-            
+
             $receipt = $fromConnector->initiateTransfer($settlementRequest);
-            
+
             // Update settlement status
             DB::table('settlements')
                 ->where('id', $settlementId)
@@ -429,21 +429,20 @@ class SettlementService
                     'completed_at' => now(),
                     'external_reference' => $receipt->id,
                 ]);
-            
+
             Log::info('Settlement executed successfully', [
                 'settlement_id' => $settlementId,
                 'amount' => $settlement->net_amount,
                 'asset' => $settlement->asset_code,
             ]);
-            
+
             return true;
-            
         } catch (\Exception $e) {
             Log::error('Settlement execution failed', [
                 'settlement_id' => $settlementId,
                 'error' => $e->getMessage(),
             ]);
-            
+
             DB::table('settlements')
                 ->where('id', $settlementId)
                 ->update([
@@ -451,18 +450,18 @@ class SettlementService
                     'failure_reason' => $e->getMessage(),
                     'failed_at' => now(),
                 ]);
-            
+
             return false;
         }
     }
-    
+
     /**
      * Create settlement record
      */
     private function createSettlement(array $data): string
     {
         $settlementId = $data['type'] . '_' . uniqid();
-        
+
         DB::table('settlements')->insert([
             'id' => $settlementId,
             'type' => $data['type'],
@@ -477,10 +476,10 @@ class SettlementService
             'created_at' => now(),
             'updated_at' => now(),
         ]);
-        
+
         return $settlementId;
     }
-    
+
     /**
      * Get settlement account for a custodian
      */
@@ -490,7 +489,7 @@ class SettlementService
         // from configuration or database
         return "SETTLEMENT_{$custodianId}_{$assetCode}";
     }
-    
+
     /**
      * Get settlement statistics
      */
@@ -498,7 +497,7 @@ class SettlementService
     {
         // Use database-agnostic approach for better compatibility
         $driver = DB::connection()->getDriverName();
-        
+
         if ($driver === 'sqlite') {
             // SQLite-compatible query
             $stats = DB::table('settlements')
@@ -532,12 +531,12 @@ class SettlementService
                 ')
                 ->first();
         }
-        
+
         $byType = DB::table('settlements')
             ->select('type', DB::raw('COUNT(*) as count'), DB::raw('SUM(net_amount) as amount'))
             ->groupBy('type')
             ->get();
-        
+
         return [
             'total' => (int) ($stats->total_settlements ?? 0),
             'completed' => (int) ($stats->completed ?? 0),

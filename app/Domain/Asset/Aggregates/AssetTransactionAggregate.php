@@ -14,13 +14,13 @@ use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
 class AssetTransactionAggregate extends AggregateRoot
 {
     use ValidatesHash;
-    
+
     private ?AccountUuid $accountUuid = null;
     private ?string $assetCode = null;
     private ?Money $money = null;
     private ?string $type = null;
     private ?Hash $hash = null;
-    
+
     /**
      * Create a credit transaction for an asset
      */
@@ -32,7 +32,7 @@ class AssetTransactionAggregate extends AggregateRoot
         ?array $metadata = null
     ): self {
         $hash = $this->generateHash($money);
-        
+
         $this->recordThat(new AssetTransactionCreated(
             accountUuid: $accountUuid,
             assetCode: $assetCode,
@@ -42,10 +42,10 @@ class AssetTransactionAggregate extends AggregateRoot
             description: $description,
             metadata: $metadata
         ));
-        
+
         return $this;
     }
-    
+
     /**
      * Create a debit transaction for an asset
      */
@@ -57,7 +57,7 @@ class AssetTransactionAggregate extends AggregateRoot
         ?array $metadata = null
     ): self {
         $hash = $this->generateHash($money);
-        
+
         $this->recordThat(new AssetTransactionCreated(
             accountUuid: $accountUuid,
             assetCode: $assetCode,
@@ -67,10 +67,10 @@ class AssetTransactionAggregate extends AggregateRoot
             description: $description,
             metadata: $metadata
         ));
-        
+
         return $this;
     }
-    
+
     /**
      * Apply asset transaction created event
      */
@@ -82,7 +82,7 @@ class AssetTransactionAggregate extends AggregateRoot
         $this->type = $event->type;
         $this->hash = $event->hash;
     }
-    
+
     /**
      * Get the account UUID
      */
@@ -90,7 +90,7 @@ class AssetTransactionAggregate extends AggregateRoot
     {
         return $this->accountUuid;
     }
-    
+
     /**
      * Get the asset code
      */
@@ -98,7 +98,7 @@ class AssetTransactionAggregate extends AggregateRoot
     {
         return $this->assetCode;
     }
-    
+
     /**
      * Get the money amount
      */
@@ -106,7 +106,7 @@ class AssetTransactionAggregate extends AggregateRoot
     {
         return $this->money;
     }
-    
+
     /**
      * Get the transaction type
      */
@@ -114,7 +114,7 @@ class AssetTransactionAggregate extends AggregateRoot
     {
         return $this->type;
     }
-    
+
     /**
      * Get the hash
      */
@@ -122,7 +122,7 @@ class AssetTransactionAggregate extends AggregateRoot
     {
         return $this->hash;
     }
-    
+
     /**
      * Check if this is a credit transaction
      */
@@ -130,7 +130,7 @@ class AssetTransactionAggregate extends AggregateRoot
     {
         return $this->type === 'credit';
     }
-    
+
     /**
      * Check if this is a debit transaction
      */

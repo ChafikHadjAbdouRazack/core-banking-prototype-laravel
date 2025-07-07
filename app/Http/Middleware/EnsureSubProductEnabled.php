@@ -11,7 +11,8 @@ class EnsureSubProductEnabled
 {
     public function __construct(
         private SubProductService $subProductService
-    ) {}
+    ) {
+    }
 
     /**
      * Handle an incoming request.
@@ -28,19 +29,19 @@ class EnsureSubProductEnabled
         // Parse parameter for sub-product and features
         if (str_contains($parameter, ':')) {
             [$subProduct, $features] = explode(':', $parameter, 2);
-            
+
             // Handle multiple features with OR logic
             if (str_contains($features, '|')) {
                 $featureList = explode('|', $features);
                 $anyEnabled = false;
-                
+
                 foreach ($featureList as $feature) {
                     if ($this->subProductService->isFeatureEnabled($subProduct, $feature)) {
                         $anyEnabled = true;
                         break;
                     }
                 }
-                
+
                 if (!$anyEnabled) {
                     return $this->errorResponse(
                         "None of the required features [" . implode(', ', $featureList) . "] are enabled for sub-product {$subProduct}",
@@ -59,7 +60,7 @@ class EnsureSubProductEnabled
         } else {
             // Just sub-product check
             $subProduct = $parameter;
-            
+
             if (!$this->subProductService->isEnabled($subProduct)) {
                 return $this->errorResponse("Sub-product {$subProduct} is not enabled", 403);
             }

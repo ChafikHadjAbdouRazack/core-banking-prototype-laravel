@@ -94,7 +94,7 @@ class SystemIncident extends Model
      */
     public function getImpactColorAttribute()
     {
-        return match($this->impact) {
+        return match ($this->impact) {
             'minor' => 'yellow',
             'major' => 'orange',
             'critical' => 'red',
@@ -107,7 +107,7 @@ class SystemIncident extends Model
      */
     public function getStatusColorAttribute()
     {
-        return match($this->status) {
+        return match ($this->status) {
             'resolved' => 'green',
             'in_progress' => 'yellow',
             'identified' => 'red',

@@ -1,6 +1,6 @@
 <?php
 
-declare( strict_types=1 );
+declare(strict_types=1);
 
 namespace App\Domain\Account\DataObjects;
 
@@ -16,8 +16,7 @@ final readonly class Hash extends DataObject implements DataObjectContract
     public function __construct(
         private string $hash
     ) {
-        if ( !$this->isValidHash( $hash ) )
-        {
+        if (!$this->isValidHash($hash)) {
             throw new InvalidArgumentException(
                 message: 'Invalid hash hash provided.'
             );
@@ -39,10 +38,10 @@ final readonly class Hash extends DataObject implements DataObjectContract
      *
      * @return bool
      */
-    private function isValidHash( string $hash ): bool
+    private function isValidHash(string $hash): bool
     {
         // SHA3-512 produces a 128-character hexadecimal string
-        return ctype_xdigit( $hash ) && strlen($hash) === 128; // SHA3-512 length
+        return ctype_xdigit($hash) && strlen($hash) === 128; // SHA3-512 length
     }
 
     /**
@@ -50,9 +49,9 @@ final readonly class Hash extends DataObject implements DataObjectContract
      *
      * @return bool
      */
-    public function equals( Hash $hash ): bool
+    public function equals(Hash $hash): bool
     {
-        return hash_equals( $this->hash, $hash->getHash() );
+        return hash_equals($this->hash, $hash->getHash());
     }
 
     /**

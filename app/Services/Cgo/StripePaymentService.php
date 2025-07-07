@@ -92,7 +92,7 @@ class StripePaymentService
 
         try {
             $session = Session::retrieve($investment->stripe_session_id);
-            
+
             if ($session->payment_status === 'paid') {
                 $investment->update([
                     'payment_status' => 'completed',
@@ -130,11 +130,11 @@ class StripePaymentService
             case 'checkout.session.completed':
                 $this->handleCheckoutCompleted($data);
                 break;
-            
+
             case 'payment_intent.succeeded':
                 $this->handlePaymentSucceeded($data);
                 break;
-            
+
             case 'payment_intent.payment_failed':
                 $this->handlePaymentFailed($data);
                 break;
@@ -147,14 +147,14 @@ class StripePaymentService
     protected function handleCheckoutCompleted(array $session): void
     {
         $investmentUuid = $session['client_reference_id'] ?? null;
-        
+
         if (!$investmentUuid) {
             Log::warning('Checkout completed without investment reference', ['session' => $session]);
             return;
         }
 
         $investment = CgoInvestment::where('uuid', $investmentUuid)->first();
-        
+
         if (!$investment) {
             Log::error('Investment not found for completed checkout', ['uuid' => $investmentUuid]);
             return;
@@ -178,13 +178,13 @@ class StripePaymentService
     protected function handlePaymentSucceeded(array $paymentIntent): void
     {
         $investmentId = $paymentIntent['metadata']['investment_id'] ?? null;
-        
+
         if (!$investmentId) {
             return;
         }
 
         $investment = CgoInvestment::find($investmentId);
-        
+
         if ($investment && $investment->payment_status !== 'completed') {
             $investment->update([
                 'payment_status' => 'completed',
@@ -204,13 +204,13 @@ class StripePaymentService
     protected function handlePaymentFailed(array $paymentIntent): void
     {
         $investmentId = $paymentIntent['metadata']['investment_id'] ?? null;
-        
+
         if (!$investmentId) {
             return;
         }
 
         $investment = CgoInvestment::find($investmentId);
-        
+
         if ($investment) {
             $investment->update([
                 'payment_status' => 'failed',

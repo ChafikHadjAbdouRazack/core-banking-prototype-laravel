@@ -86,16 +86,16 @@ class RegulatoryFilingRecord extends Model
             if (empty($record->filing_id)) {
                 $record->filing_id = self::generateFilingId();
             }
-            
+
             if (empty($record->filed_at)) {
                 $record->filed_at = now();
             }
-            
+
             // Capture request metadata
             if (empty($record->ip_address)) {
                 $record->ip_address = request()->ip();
             }
-            
+
             if (empty($record->user_agent)) {
                 $record->user_agent = request()->userAgent();
             }
@@ -113,7 +113,7 @@ class RegulatoryFilingRecord extends Model
     {
         $year = now()->format('Y');
         $month = now()->format('m');
-        
+
         $lastFiling = self::where('filing_id', 'like', "FIL-{$year}{$month}-%")
             ->orderBy('filing_id', 'desc')
             ->first();
@@ -249,7 +249,7 @@ class RegulatoryFilingRecord extends Model
     public function addAuditEntry(string $action, array $data = []): void
     {
         $auditLog = $this->audit_log ?? [];
-        
+
         $auditLog[] = [
             'action' => $action,
             'timestamp' => now()->toIso8601String(),
@@ -274,7 +274,7 @@ class RegulatoryFilingRecord extends Model
 
     public function getStatusLabel(): string
     {
-        return match($this->filing_status) {
+        return match ($this->filing_status) {
             self::STATUS_PENDING => 'Pending',
             self::STATUS_SUBMITTED => 'Submitted',
             self::STATUS_ACKNOWLEDGED => 'Acknowledged',

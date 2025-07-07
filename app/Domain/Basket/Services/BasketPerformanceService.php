@@ -29,7 +29,7 @@ class BasketPerformanceService
             ->whereBetween('calculated_at', [$periodStart, $periodEnd])
             ->orderBy('calculated_at')
             ->get();
-            
+
         if ($values->count() < 2) {
             Log::warning("Insufficient data to calculate performance for basket {$basket->code}", [
                 'period_type' => $periodType,
@@ -39,30 +39,30 @@ class BasketPerformanceService
             ]);
             return null;
         }
-        
+
         $startValue = $values->first();
         $endValue = $values->last();
-        
+
         // Calculate basic metrics
         $returnValue = $endValue->value - $startValue->value;
-        $returnPercentage = $startValue->value > 0 
-            ? ($returnValue / $startValue->value) * 100 
+        $returnPercentage = $startValue->value > 0
+            ? ($returnValue / $startValue->value) * 100
             : 0;
-            
+
         // Calculate high, low, and average
         $highValue = $values->max('value');
         $lowValue = $values->min('value');
         $averageValue = $values->avg('value');
-        
+
         // Calculate volatility (standard deviation of daily returns)
         $volatility = $this->calculateVolatility($values);
-        
+
         // Calculate Sharpe ratio (assuming risk-free rate of 2% annually)
         $sharpeRatio = $this->calculateSharpeRatio($returnPercentage, $volatility, $periodStart, $periodEnd);
-        
+
         // Calculate maximum drawdown
         $maxDrawdown = $this->calculateMaxDrawdown($values);
-        
+
         // Create or update performance record
         $performance = BasketPerformance::updateOrCreate(
             [
@@ -89,13 +89,13 @@ class BasketPerformanceService
                 ],
             ]
         );
-        
+
         // Calculate component performances
         $this->calculateComponentPerformances($performance, $startValue, $endValue);
-        
+
         return $performance;
     }
-    
+
     /**
      * Calculate performance for all standard periods.
      */
@@ -103,7 +103,7 @@ class BasketPerformanceService
     {
         $performances = collect();
         $now = now();
-        
+
         $periods = [
             'hour' => [$now->copy()->subHour(), $now],
             'day' => [$now->copy()->subDay(), $now],
@@ -112,14 +112,14 @@ class BasketPerformanceService
             'quarter' => [$now->copy()->subQuarter(), $now],
             'year' => [$now->copy()->subYear(), $now],
         ];
-        
+
         foreach ($periods as $periodType => [$start, $end]) {
             $performance = $this->calculatePerformance($basket, $periodType, $start, $end);
             if ($performance) {
                 $performances->push($performance);
             }
         }
-        
+
         // Calculate all-time performance
         $firstValue = $basket->values()->orderBy('calculated_at')->first();
         if ($firstValue && $firstValue->calculated_at->lt($now->copy()->subDay())) {
@@ -133,10 +133,10 @@ class BasketPerformanceService
                 $performances->push($allTimePerformance);
             }
         }
-        
+
         return $performances;
     }
-    
+
     /**
      * Calculate volatility as standard deviation of returns.
      */
@@ -145,33 +145,33 @@ class BasketPerformanceService
         if ($values->count() < 2) {
             return 0;
         }
-        
+
         $returns = [];
         $previousValue = null;
-        
+
         foreach ($values as $value) {
             if ($previousValue && $previousValue->value > 0) {
                 $returns[] = (($value->value - $previousValue->value) / $previousValue->value) * 100;
             }
             $previousValue = $value;
         }
-        
+
         if (count($returns) < 2) {
             return 0;
         }
-        
+
         $mean = array_sum($returns) / count($returns);
         $variance = 0;
-        
+
         foreach ($returns as $return) {
             $variance += pow($return - $mean, 2);
         }
-        
+
         $variance /= count($returns) - 1;
-        
+
         return sqrt($variance);
     }
-    
+
     /**
      * Calculate Sharpe ratio.
      */
@@ -184,24 +184,24 @@ class BasketPerformanceService
         if ($volatility == 0) {
             return null;
         }
-        
+
         // Annualize the return and volatility
         $daysInPeriod = $periodStart->diffInDays($periodEnd) ?: 1;
         $periodsPerYear = 365.25 / $daysInPeriod;
-        
+
         // Annualized return
         $annualizedReturn = $returnPercentage * $periodsPerYear;
-        
+
         // Annualized volatility
         $annualizedVolatility = $volatility * sqrt($periodsPerYear);
-        
+
         // Risk-free rate (2% annually)
         $riskFreeRate = 2.0;
-        
+
         // Sharpe ratio
         return ($annualizedReturn - $riskFreeRate) / $annualizedVolatility;
     }
-    
+
     /**
      * Calculate maximum drawdown.
      */
@@ -209,12 +209,12 @@ class BasketPerformanceService
     {
         $maxDrawdown = 0;
         $peak = 0;
-        
+
         foreach ($values as $value) {
             if ($value->value > $peak) {
                 $peak = $value->value;
             }
-            
+
             if ($peak > 0) {
                 $drawdown = (($peak - $value->value) / $peak) * 100;
                 if ($drawdown > $maxDrawdown) {
@@ -222,10 +222,10 @@ class BasketPerformanceService
                 }
             }
         }
-        
+
         return $maxDrawdown;
     }
-    
+
     /**
      * Calculate component performances.
      */
@@ -236,42 +236,42 @@ class BasketPerformanceService
     ): void {
         // Delete existing component performances
         $performance->componentPerformances()->delete();
-        
+
         $startComponents = $startValue->component_values ?? [];
         $endComponents = $endValue->component_values ?? [];
-        
+
         // Get all unique asset codes
         $assetCodes = collect($startComponents)
             ->keys()
             ->merge(collect($endComponents)->keys())
             ->unique();
-            
+
         foreach ($assetCodes as $assetCode) {
             $startData = $startComponents[$assetCode] ?? null;
             $endData = $endComponents[$assetCode] ?? null;
-            
+
             if (!$startData || !$endData) {
                 continue;
             }
-            
+
             $startWeight = $startData['weight'] ?? 0;
             $endWeight = $endData['weight'] ?? 0;
             $averageWeight = ($startWeight + $endWeight) / 2;
-            
+
             $startComponentValue = $startData['weighted_value'] ?? 0;
             $endComponentValue = $endData['weighted_value'] ?? 0;
-            
+
             $returnValue = $endComponentValue - $startComponentValue;
-            $returnPercentage = $startComponentValue > 0 
-                ? ($returnValue / $startComponentValue) * 100 
+            $returnPercentage = $startComponentValue > 0
+                ? ($returnValue / $startComponentValue) * 100
                 : 0;
-                
+
             // Calculate contribution to overall return
             $contributionValue = $returnValue;
-            $contributionPercentage = $startValue->value > 0 
-                ? ($contributionValue / $startValue->value) * 100 
+            $contributionPercentage = $startValue->value > 0
+                ? ($contributionValue / $startValue->value) * 100
                 : 0;
-            
+
             ComponentPerformance::create([
                 'basket_performance_id' => $performance->id,
                 'asset_code' => $assetCode,
@@ -285,7 +285,7 @@ class BasketPerformanceService
             ]);
         }
     }
-    
+
     /**
      * Get performance summary for a basket.
      */
@@ -296,14 +296,14 @@ class BasketPerformanceService
             ->orderBy('period_end', 'desc')
             ->limit(4)
             ->get();
-            
+
         $summary = [
             'basket_code' => $basket->code,
             'basket_name' => $basket->name,
             'current_value' => $basket->latestValue?->value ?? 0,
             'performances' => [],
         ];
-        
+
         foreach ($performances as $performance) {
             $summary['performances'][$performance->period_type] = [
                 'return_percentage' => $performance->return_percentage,
@@ -314,10 +314,10 @@ class BasketPerformanceService
                 'risk_rating' => $performance->risk_rating,
             ];
         }
-        
+
         return $summary;
     }
-    
+
     /**
      * Compare basket performance against benchmarks.
      */
@@ -327,17 +327,17 @@ class BasketPerformanceService
             'basket' => $this->getPerformanceSummary($basket),
             'benchmarks' => [],
         ];
-        
+
         foreach ($benchmarkCodes as $benchmarkCode) {
             $benchmark = BasketAsset::where('code', $benchmarkCode)->first();
             if ($benchmark) {
                 $comparison['benchmarks'][$benchmarkCode] = $this->getPerformanceSummary($benchmark);
             }
         }
-        
+
         return $comparison;
     }
-    
+
     /**
      * Get top performing components.
      */
@@ -347,17 +347,17 @@ class BasketPerformanceService
             ->where('period_type', $periodType)
             ->orderBy('period_end', 'desc')
             ->first();
-            
+
         if (!$performance) {
             return collect();
         }
-        
+
         return $performance->componentPerformances()
             ->orderBy('contribution_percentage', 'desc')
             ->limit($limit)
             ->get();
     }
-    
+
     /**
      * Get worst performing components.
      */
@@ -367,11 +367,11 @@ class BasketPerformanceService
             ->where('period_type', $periodType)
             ->orderBy('period_end', 'desc')
             ->first();
-            
+
         if (!$performance) {
             return collect();
         }
-        
+
         return $performance->componentPerformances()
             ->orderBy('contribution_percentage', 'asc')
             ->limit($limit)

@@ -22,21 +22,21 @@ class BankIntegrationServiceProvider extends ServiceProvider
         // Register core services
         $this->app->singleton(BankHealthMonitor::class);
         $this->app->singleton(BankRoutingService::class);
-        
+
         // Register bank integration service
         $this->app->singleton(IBankIntegrationService::class, function ($app) {
             $service = new BankIntegrationService(
                 $app->make(BankHealthMonitor::class),
                 $app->make(BankRoutingService::class)
             );
-            
+
             // Register bank connectors
             $this->registerBankConnectors($service);
-            
+
             return $service;
         });
     }
-    
+
     /**
      * Bootstrap services.
      */
@@ -45,14 +45,14 @@ class BankIntegrationServiceProvider extends ServiceProvider
         // Schedule health checks
         $this->app->booted(function () {
             $schedule = $this->app->make(\Illuminate\Console\Scheduling\Schedule::class);
-            
+
             $schedule->call(function () {
                 $monitor = app(BankHealthMonitor::class);
                 $monitor->checkAllBanks();
             })->everyFiveMinutes()->name('bank-health-check')->withoutOverlapping();
         });
     }
-    
+
     /**
      * Register all bank connectors
      */
@@ -72,7 +72,7 @@ class BankIntegrationServiceProvider extends ServiceProvider
             );
             $service->registerConnector('PAYSERA', $payseraAdapter);
         }
-        
+
         // Deutsche Bank
         if (config('services.banks.deutsche.enabled', true)) {
             $deutscheAdapter = new BankConnectorAdapter(
@@ -87,7 +87,7 @@ class BankIntegrationServiceProvider extends ServiceProvider
             );
             $service->registerConnector('DEUTSCHE', $deutscheAdapter);
         }
-        
+
         // Santander
         if (config('services.banks.santander.enabled', true)) {
             $santanderAdapter = new BankConnectorAdapter(
@@ -102,7 +102,7 @@ class BankIntegrationServiceProvider extends ServiceProvider
             );
             $service->registerConnector('SANTANDER', $santanderAdapter);
         }
-        
+
         // Additional banks can be registered here
         // Revolut, Wise, etc.
     }

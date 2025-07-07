@@ -21,7 +21,7 @@ class BasketStatsOverview extends BaseWidget
             ->get()
             ->filter(fn ($basket) => $basket->needsRebalancing())
             ->count();
-        
+
         // Get total value across all baskets
         $totalValue = BasketValue::query()
             ->whereIn('basket_code', BasketAsset::where('is_active', true)->pluck('code'))
@@ -40,12 +40,12 @@ class BasketStatsOverview extends BaseWidget
                 ->descriptionIcon('heroicon-m-check-circle')
                 ->chart([7, 3, 4, 5, 6, 8, 5])
                 ->color('primary'),
-            
+
             Stat::make('Dynamic Baskets', $dynamicBaskets)
                 ->description($needsRebalancing . ' need rebalancing')
                 ->descriptionIcon($needsRebalancing > 0 ? 'heroicon-m-exclamation-triangle' : 'heroicon-m-check-circle')
                 ->color($needsRebalancing > 0 ? 'warning' : 'success'),
-            
+
             Stat::make('Total Value', '$' . Number::format($totalValue, 2))
                 ->description('Across all active baskets')
                 ->descriptionIcon('heroicon-m-currency-dollar')

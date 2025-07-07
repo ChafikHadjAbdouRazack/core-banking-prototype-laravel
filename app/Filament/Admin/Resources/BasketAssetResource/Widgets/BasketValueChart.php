@@ -42,7 +42,7 @@ class BasketValueChart extends ChartWidget
         for ($i = 0; $i <= $days; $i++) {
             $date = $startDate->copy()->addDays($i);
             $labels[] = $date->format('M j');
-            
+
             $dayValue = $values->first(function ($value) use ($date) {
                 return $value->calculated_at->isSameDay($date);
             });

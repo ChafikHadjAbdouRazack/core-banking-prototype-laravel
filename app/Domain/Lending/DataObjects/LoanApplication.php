@@ -22,7 +22,8 @@ class LoanApplication
         public readonly array $documents,
         public readonly ?Carbon $submittedAt = null,
         public readonly array $metadata = []
-    ) {}
+    ) {
+    }
 
     public static function fromArray(array $data): self
     {
@@ -66,11 +67,11 @@ class LoanApplication
     {
         $monthlyIncome = (float) $this->monthlyIncome;
         $monthlyExpenses = (float) $this->monthlyExpenses;
-        
+
         if ($monthlyIncome <= 0) {
             return 1.0; // Maximum ratio if no income
         }
-        
+
         return $monthlyExpenses / $monthlyIncome;
     }
 
@@ -79,14 +80,14 @@ class LoanApplication
         $principal = (float) $this->amount;
         $monthlyRate = $interestRate / 12 / 100;
         $numPayments = $this->termMonths;
-        
+
         if ($monthlyRate == 0) {
             return number_format($principal / $numPayments, 2, '.', '');
         }
-        
-        $monthlyPayment = $principal * ($monthlyRate * pow(1 + $monthlyRate, $numPayments)) / 
+
+        $monthlyPayment = $principal * ($monthlyRate * pow(1 + $monthlyRate, $numPayments)) /
                          (pow(1 + $monthlyRate, $numPayments) - 1);
-        
+
         return number_format($monthlyPayment, 2, '.', '');
     }
 

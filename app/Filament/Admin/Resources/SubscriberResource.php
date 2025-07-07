@@ -23,9 +23,9 @@ class SubscriberResource extends Resource
     protected static ?string $model = Subscriber::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-envelope';
-    
+
     protected static ?string $navigationGroup = 'Marketing';
-    
+
     protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
@@ -69,7 +69,7 @@ class SubscriberResource extends Resource
                             ->columnSpanFull(),
                     ])
                     ->columns(2),
-                    
+
                 Forms\Components\Section::make('Preferences')
                     ->schema([
                         Forms\Components\KeyValue::make('preferences')
@@ -78,7 +78,7 @@ class SubscriberResource extends Resource
                             ->columnSpanFull(),
                     ])
                     ->collapsed(),
-                    
+
                 Forms\Components\Section::make('Tracking Information')
                     ->schema([
                         Forms\Components\TextInput::make('ip_address')
@@ -262,12 +262,12 @@ class SubscriberResource extends Resource
             'edit' => Pages\EditSubscriber::route('/{record}/edit'),
         ];
     }
-    
+
     public static function getNavigationBadge(): ?string
     {
         return static::getModel()::where('status', Subscriber::STATUS_ACTIVE)->count();
     }
-    
+
     public static function getNavigationBadgeColor(): ?string
     {
         return 'success';

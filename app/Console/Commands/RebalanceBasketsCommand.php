@@ -41,7 +41,7 @@ class RebalanceBasketsCommand extends Command
         if ($basketCode) {
             // Rebalance specific basket
             $basket = BasketAsset::where('code', $basketCode)->first();
-            
+
             if (!$basket) {
                 $this->error("Basket with code '{$basketCode}' not found.");
                 return Command::FAILURE;
@@ -53,7 +53,7 @@ class RebalanceBasketsCommand extends Command
             }
 
             $this->info("Processing basket: {$basket->name} ({$basket->code})");
-            
+
             if ($dryRun) {
                 $result = $rebalancingService->simulateRebalancing($basket);
                 $this->displaySimulationResults($basket, $result);
@@ -69,7 +69,7 @@ class RebalanceBasketsCommand extends Command
         } else {
             // Rebalance all baskets that need it
             $this->info('Checking all dynamic baskets for rebalancing...');
-            
+
             $baskets = BasketAsset::where('type', 'dynamic')
                 ->where('is_active', true)
                 ->get();
@@ -80,10 +80,10 @@ class RebalanceBasketsCommand extends Command
             }
 
             $rebalancedCount = 0;
-            
+
             foreach ($baskets as $basket) {
                 $this->info("\nProcessing basket: {$basket->name} ({$basket->code})");
-                
+
                 if ($dryRun) {
                     $result = $rebalancingService->simulateRebalancing($basket);
                     $this->displaySimulationResults($basket, $result);
@@ -111,7 +111,7 @@ class RebalanceBasketsCommand extends Command
     private function displaySimulationResults(BasketAsset $basket, array $result): void
     {
         $this->info("Simulation results for {$basket->name}:");
-        
+
         if (empty($result['adjustments'])) {
             $this->info("No adjustments needed.");
             return;
@@ -137,7 +137,7 @@ class RebalanceBasketsCommand extends Command
     {
         if ($result['status'] === 'completed') {
             $this->info("✅ Basket rebalanced successfully!");
-            
+
             if (!empty($result['adjustments'])) {
                 $this->table(
                     ['Asset', 'Old Weight', 'New Weight', 'Change'],

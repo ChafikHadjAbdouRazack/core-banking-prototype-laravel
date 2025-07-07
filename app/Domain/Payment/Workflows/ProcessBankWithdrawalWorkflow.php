@@ -17,14 +17,14 @@ class ProcessBankWithdrawalWorkflow extends Workflow
 {
     /**
      * Process a bank withdrawal through the complete workflow
-     * 
+     *
      * @param BankWithdrawal $withdrawal
      * @return \Generator
      */
     public function execute(BankWithdrawal $withdrawal): \Generator
     {
         $withdrawalUuid = null;
-        
+
         try {
             // Step 1: Validate withdrawal (check balance, limits, etc.)
             $validation = yield ActivityStub::make(
@@ -104,7 +104,7 @@ class ProcessBankWithdrawalWorkflow extends Workflow
                     ]
                 );
             }
-            
+
             throw $e;
         }
     }

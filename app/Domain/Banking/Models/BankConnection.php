@@ -20,17 +20,18 @@ class BankConnection
         public readonly Carbon $createdAt,
         public readonly Carbon $updatedAt,
         public readonly array $metadata = [],
-    ) {}
-    
+    ) {
+    }
+
     /**
      * Check if connection is active
      */
     public function isActive(): bool
     {
-        return $this->status === 'active' && 
+        return $this->status === 'active' &&
                ($this->expiresAt === null || $this->expiresAt->isFuture());
     }
-    
+
     /**
      * Check if connection needs renewal
      */
@@ -39,19 +40,19 @@ class BankConnection
         if ($this->expiresAt === null) {
             return false;
         }
-        
+
         return $this->expiresAt->diffInDays(now()) <= 7;
     }
-    
+
     /**
      * Check if connection has permission
      */
     public function hasPermission(string $permission): bool
     {
-        return in_array($permission, $this->permissions) || 
+        return in_array($permission, $this->permissions) ||
                in_array('*', $this->permissions);
     }
-    
+
     /**
      * Check if sync is needed
      */
@@ -60,11 +61,11 @@ class BankConnection
         if ($this->lastSyncAt === null) {
             return true;
         }
-        
+
         $syncInterval = $this->metadata['sync_interval'] ?? 3600; // Default 1 hour
         return $this->lastSyncAt->diffInSeconds(now()) >= $syncInterval;
     }
-    
+
     /**
      * Get masked credentials for display
      */
@@ -80,7 +81,7 @@ class BankConnection
         }
         return $masked;
     }
-    
+
     /**
      * Convert to array
      */
@@ -100,7 +101,7 @@ class BankConnection
             'metadata' => $this->metadata,
         ];
     }
-    
+
     /**
      * Create from array
      */

@@ -12,7 +12,7 @@ class InitiateWithdrawalActivity extends Activity
     public function execute(array $input): array
     {
         $withdrawalUuid = Str::uuid()->toString();
-        
+
         $withdrawal = new BankWithdrawal(
             accountUuid: $input['account_uuid'],
             amount: $input['amount'],
@@ -24,11 +24,11 @@ class InitiateWithdrawalActivity extends Activity
             routingNumber: $input['bank_routing_number'] ?? null,
             metadata: $input['metadata'] ?? []
         );
-        
+
         PaymentWithdrawalAggregate::retrieve($withdrawalUuid)
             ->initiateWithdrawal($withdrawal)
             ->persist();
-        
+
         return [
             'withdrawal_uuid' => $withdrawalUuid,
             'status' => 'initiated'

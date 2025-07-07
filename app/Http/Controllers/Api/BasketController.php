@@ -22,7 +22,8 @@ class BasketController extends Controller
     public function __construct(
         private readonly BasketValueCalculationService $valueCalculationService,
         private readonly BasketRebalancingService $rebalancingService
-    ) {}
+    ) {
+    }
 
     /**
      * @OA\Get(
@@ -68,7 +69,7 @@ class BasketController extends Controller
 
         $baskets = $query->get()->map(function ($basket) {
             $latestValue = $basket->values()->latest('calculated_at')->first();
-            
+
             return [
                 'code' => $basket->code,
                 'name' => $basket->name,
@@ -243,7 +244,7 @@ class BasketController extends Controller
         });
 
         $basket->load('components.asset');
-        
+
         return response()->json([
             'code' => $basket->code,
             'name' => $basket->name,
@@ -432,7 +433,7 @@ class BasketController extends Controller
         $basket = BasketAsset::where('code', $code)->firstOrFail();
         $period = $request->input('period', '30d');
 
-        $days = match($period) {
+        $days = match ($period) {
             '1d' => 1,
             '7d' => 7,
             '30d' => 30,

@@ -13,7 +13,8 @@ use Illuminate\Queue\SerializesModels;
 
 class ReconciliationReport extends Mailable implements ShouldQueue
 {
-    use Queueable, SerializesModels;
+    use Queueable;
+    use SerializesModels;
 
     /**
      * Create a new message instance.
@@ -21,17 +22,18 @@ class ReconciliationReport extends Mailable implements ShouldQueue
     public function __construct(
         public array $summary,
         public array $discrepancies
-    ) {}
+    ) {
+    }
 
     /**
      * Get the message envelope.
      */
     public function envelope(): Envelope
     {
-        $subject = $this->summary['discrepancies_found'] > 0 
+        $subject = $this->summary['discrepancies_found'] > 0
             ? "[ACTION REQUIRED] Daily Reconciliation Report - {$this->summary['date']}"
             : "Daily Reconciliation Report - {$this->summary['date']}";
-            
+
         return new Envelope(
             subject: $subject,
         );

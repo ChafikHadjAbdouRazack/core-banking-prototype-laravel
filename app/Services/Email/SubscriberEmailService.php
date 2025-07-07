@@ -18,7 +18,7 @@ class SubscriberEmailService
     {
         try {
             Mail::to($subscriber->email)->send(new SubscriberWelcome($subscriber));
-            
+
             Log::info('Welcome email sent to subscriber', [
                 'subscriber_id' => $subscriber->id,
                 'email' => $subscriber->email,
@@ -30,18 +30,18 @@ class SubscriberEmailService
                 'email' => $subscriber->email,
                 'error' => $e->getMessage(),
             ]);
-            
+
             throw $e;
         }
     }
-    
+
     /**
      * Send newsletter to active subscribers
      */
     public function sendNewsletter(string $subject, string $content, array $tags = [], ?string $source = null): int
     {
         $query = Subscriber::active();
-        
+
         if (!empty($tags)) {
             $query->where(function ($q) use ($tags) {
                 foreach ($tags as $tag) {
@@ -49,19 +49,19 @@ class SubscriberEmailService
                 }
             });
         }
-        
+
         if ($source) {
             $query->bySource($source);
         }
-        
+
         $subscribers = $query->get();
         $sentCount = 0;
-        
+
         foreach ($subscribers as $subscriber) {
             try {
                 Mail::to($subscriber->email)->send(new SubscriberNewsletter($subscriber, $subject, $content));
                 $sentCount++;
-                
+
                 Log::info('Newsletter sent to subscriber', [
                     'subscriber_id' => $subscriber->id,
                     'email' => $subscriber->email,
@@ -76,7 +76,7 @@ class SubscriberEmailService
                 ]);
             }
         }
-        
+
         Log::info('Newsletter campaign completed', [
             'subject' => $subject,
             'total_recipients' => $subscribers->count(),
@@ -84,60 +84,60 @@ class SubscriberEmailService
             'tags' => $tags,
             'source' => $source,
         ]);
-        
+
         return $sentCount;
     }
-    
+
     /**
      * Handle email bounce
      */
     public function handleBounce(string $email): void
     {
         $subscriber = Subscriber::where('email', $email)->first();
-        
+
         if ($subscriber) {
             $subscriber->update([
                 'status' => Subscriber::STATUS_BOUNCED,
                 'unsubscribed_at' => now(),
                 'unsubscribe_reason' => 'Email bounced',
             ]);
-            
+
             Log::warning('Subscriber marked as bounced', [
                 'subscriber_id' => $subscriber->id,
                 'email' => $email,
             ]);
         }
     }
-    
+
     /**
      * Process unsubscribe request
      */
     public function processUnsubscribe(string $email, ?string $reason = null): bool
     {
         $subscriber = Subscriber::where('email', $email)->first();
-        
+
         if ($subscriber && $subscriber->isActive()) {
             $subscriber->unsubscribe($reason);
-            
+
             Log::info('Subscriber unsubscribed', [
                 'subscriber_id' => $subscriber->id,
                 'email' => $email,
                 'reason' => $reason,
             ]);
-            
+
             return true;
         }
-        
+
         return false;
     }
-    
+
     /**
      * Subscribe or update existing subscriber
      */
     public function subscribe(string $email, string $source, array $tags = [], ?string $ipAddress = null, ?string $userAgent = null): Subscriber
     {
         $subscriber = Subscriber::firstOrNew(['email' => $email]);
-        
+
         if ($subscriber->exists) {
             // Reactivate if unsubscribed
             if (!$subscriber->isActive()) {
@@ -147,12 +147,12 @@ class SubscriberEmailService
                     'unsubscribe_reason' => null,
                 ]);
             }
-            
+
             // Add new tags
             if (!empty($tags)) {
                 $subscriber->addTags($tags);
             }
-            
+
             Log::info('Existing subscriber reactivated or updated', [
                 'subscriber_id' => $subscriber->id,
                 'email' => $email,
@@ -168,19 +168,19 @@ class SubscriberEmailService
                 'user_agent' => $userAgent,
                 'confirmed_at' => now(),
             ]);
-            
+
             $subscriber->save();
-            
+
             // Send welcome email
             $this->sendWelcomeEmail($subscriber);
-            
+
             Log::info('New subscriber created', [
                 'subscriber_id' => $subscriber->id,
                 'email' => $email,
                 'source' => $source,
             ]);
         }
-        
+
         return $subscriber;
     }
 }

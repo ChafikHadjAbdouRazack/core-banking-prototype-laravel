@@ -17,7 +17,8 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
         private readonly ExchangeRateService $exchangeRateService,
         private readonly CollateralService $collateralService,
         private readonly ?LiquidationService $liquidationService = null
-    ) {}
+    ) {
+    }
 
     /**
      * Execute stability mechanisms for all active stablecoins.
@@ -26,7 +27,7 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
     {
         $results = [];
         $stablecoins = Stablecoin::active()->get();
-        
+
         foreach ($stablecoins as $stablecoin) {
             try {
                 $result = $this->executeStabilityMechanismForStablecoin($stablecoin);
@@ -36,14 +37,14 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
                     'stablecoin_code' => $stablecoin->code,
                     'error' => $e->getMessage(),
                 ]);
-                
+
                 $results[$stablecoin->code] = [
                     'success' => false,
                     'error' => $e->getMessage(),
                 ];
             }
         }
-        
+
         return $results;
     }
 
@@ -53,7 +54,7 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
     public function executeStabilityMechanismForStablecoin(Stablecoin $stablecoin): array
     {
         $mechanism = $stablecoin->stability_mechanism;
-        
+
         return match ($mechanism) {
             'collateralized' => $this->executeCollateralizedMechanism($stablecoin),
             'algorithmic' => $this->executeAlgorithmicMechanism($stablecoin),
@@ -69,16 +70,16 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
     {
         $actions = [];
         $metrics = $this->collateralService->getSystemCollateralizationMetrics()[$stablecoin->code] ?? null;
-        
+
         if (!$metrics) {
             return ['success' => false, 'error' => 'No metrics available'];
         }
-        
+
         // 1. Check global collateralization ratio
         $globalRatio = $metrics['global_ratio'];
         $targetRatio = $stablecoin->collateral_ratio;
         $minRatio = $stablecoin->min_collateral_ratio;
-        
+
         // 2. Handle undercollateralization
         if ($globalRatio < $minRatio) {
             if ($this->liquidationService) {
@@ -99,13 +100,13 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
             // Gradually increase collateral requirements or fees
             $actions[] = $this->adjustCollateralRequirements($stablecoin, 'increase');
         }
-        
+
         // 3. Handle overcollateralization
         if ($globalRatio > $targetRatio * 1.5) {
             // Reduce collateral requirements to encourage more minting
             $actions[] = $this->adjustCollateralRequirements($stablecoin, 'decrease');
         }
-        
+
         // 4. Monitor and liquidate risky positions
         $atRiskPositions = $this->collateralService->getPositionsAtRisk();
         if ($atRiskPositions->isNotEmpty()) {
@@ -115,7 +116,7 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
                 'recommendations' => $this->generateRiskRecommendations($atRiskPositions),
             ];
         }
-        
+
         return [
             'success' => true,
             'mechanism' => 'collateralized',
@@ -134,19 +135,19 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
         $currentPrice = $this->getCurrentPrice($stablecoin);
         $targetPrice = $stablecoin->target_price;
         $priceDeviation = abs($currentPrice - $targetPrice) / $targetPrice;
-        
+
         // Price is too high - encourage burning by reducing fees
         if ($currentPrice > $targetPrice * 1.02) { // 2% threshold
             $actions[] = $this->adjustFees($stablecoin, 'reduce_burn_fee');
             $actions[] = $this->adjustFees($stablecoin, 'increase_mint_fee');
         }
-        
+
         // Price is too low - encourage minting by reducing fees
         if ($currentPrice < $targetPrice * 0.98) { // 2% threshold
             $actions[] = $this->adjustFees($stablecoin, 'reduce_mint_fee');
             $actions[] = $this->adjustFees($stablecoin, 'increase_burn_fee');
         }
-        
+
         // Large deviation - emergency measures
         if ($priceDeviation > 0.05) { // 5% threshold
             $actions[] = [
@@ -156,14 +157,14 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
                 'deviation' => $priceDeviation * 100,
                 'action' => 'halt_operations',
             ];
-            
+
             // Temporarily halt minting/burning
             $stablecoin->update([
                 'minting_enabled' => false,
                 'burning_enabled' => false,
             ]);
         }
-        
+
         return [
             'success' => true,
             'mechanism' => 'algorithmic',
@@ -182,7 +183,7 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
         // Combine both collateralized and algorithmic mechanisms
         $collateralizedResult = $this->executeCollateralizedMechanism($stablecoin);
         $algorithmicResult = $this->executeAlgorithmicMechanism($stablecoin);
-        
+
         return [
             'success' => $collateralizedResult['success'] && $algorithmicResult['success'],
             'mechanism' => 'hybrid',
@@ -200,11 +201,11 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
     {
         $currentRatio = $stablecoin->collateral_ratio;
         $adjustment = 0.05; // 5% adjustment
-        
-        $newRatio = $direction === 'increase' 
-            ? $currentRatio + $adjustment 
+
+        $newRatio = $direction === 'increase'
+            ? $currentRatio + $adjustment
             : max($stablecoin->min_collateral_ratio, $currentRatio - $adjustment);
-        
+
         // Don't adjust too frequently
         $cacheKey = "collateral_adjustment:{$stablecoin->code}";
         if (Cache::has($cacheKey)) {
@@ -213,17 +214,17 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
                 'reason' => 'Recent adjustment already made',
             ];
         }
-        
+
         $stablecoin->update(['collateral_ratio' => $newRatio]);
         Cache::put($cacheKey, true, 3600); // 1 hour cooldown
-        
+
         Log::info('Collateral ratio adjusted', [
             'stablecoin_code' => $stablecoin->code,
             'old_ratio' => $currentRatio,
             'new_ratio' => $newRatio,
             'direction' => $direction,
         ]);
-        
+
         return [
             'type' => 'collateral_adjustment',
             'direction' => $direction,
@@ -240,34 +241,34 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
         $adjustment = 0.001; // 0.1% adjustment
         $maxFee = 0.01; // 1% maximum fee
         $minFee = 0; // 0% minimum fee
-        
+
         $currentMintFee = $stablecoin->mint_fee;
         $currentBurnFee = $stablecoin->burn_fee;
-        
+
         $updates = [];
-        
+
         switch ($feeType) {
             case 'reduce_mint_fee':
                 $newMintFee = max($minFee, $currentMintFee - $adjustment);
                 $updates['mint_fee'] = $newMintFee;
                 break;
-                
+
             case 'increase_mint_fee':
                 $newMintFee = min($maxFee, $currentMintFee + $adjustment);
                 $updates['mint_fee'] = $newMintFee;
                 break;
-                
+
             case 'reduce_burn_fee':
                 $newBurnFee = max($minFee, $currentBurnFee - $adjustment);
                 $updates['burn_fee'] = $newBurnFee;
                 break;
-                
+
             case 'increase_burn_fee':
                 $newBurnFee = min($maxFee, $currentBurnFee + $adjustment);
                 $updates['burn_fee'] = $newBurnFee;
                 break;
         }
-        
+
         // Don't adjust fees too frequently
         $cacheKey = "fee_adjustment:{$stablecoin->code}:{$feeType}";
         if (Cache::has($cacheKey)) {
@@ -277,10 +278,10 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
                 'reason' => 'Recent adjustment already made',
             ];
         }
-        
+
         $stablecoin->update($updates);
         Cache::put($cacheKey, true, 1800); // 30 minute cooldown
-        
+
         Log::info('Fee adjusted', [
             'stablecoin_code' => $stablecoin->code,
             'fee_type' => $feeType,
@@ -288,7 +289,7 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
             'old_burn_fee' => $currentBurnFee,
             'updates' => $updates,
         ]);
-        
+
         return [
             'type' => 'fee_adjustment',
             'fee_type' => $feeType,
@@ -306,7 +307,7 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
         $targetPrice = $stablecoin->target_price;
         $variance = 0.02; // 2% variance
         $randomFactor = (mt_rand() / mt_getrandmax() - 0.5) * 2 * $variance;
-        
+
         return $targetPrice * (1 + $randomFactor);
     }
 
@@ -316,10 +317,10 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
     private function generateRiskRecommendations(Collection $atRiskPositions): array
     {
         $recommendations = [];
-        
+
         foreach ($atRiskPositions as $position) {
             $positionRecommendations = $this->collateralService->getPositionRecommendations($position);
-            
+
             if (!empty($positionRecommendations)) {
                 $recommendations[] = [
                     'position_uuid' => $position->uuid,
@@ -329,7 +330,7 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
                 ];
             }
         }
-        
+
         return $recommendations;
     }
 
@@ -343,21 +344,21 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
             'stablecoin_status' => [],
             'emergency_actions' => [],
         ];
-        
+
         $stablecoins = Stablecoin::active()->get();
         $unhealthyStablecoins = 0;
-        
+
         foreach ($stablecoins as $stablecoin) {
             $metrics = $this->collateralService->getSystemCollateralizationMetrics()[$stablecoin->code] ?? null;
-            
+
             if (!$metrics) {
                 continue;
             }
-            
+
             $isHealthy = $metrics['is_healthy'];
             $globalRatio = $metrics['global_ratio'];
             $atRiskCount = $metrics['at_risk_positions'];
-            
+
             $stablecoinStatus = [
                 'code' => $stablecoin->code,
                 'is_healthy' => $isHealthy,
@@ -365,12 +366,12 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
                 'at_risk_positions' => $atRiskCount,
                 'status' => $isHealthy ? 'healthy' : 'unhealthy',
             ];
-            
+
             // Determine if emergency action is needed
             if (!$isHealthy || $globalRatio < $stablecoin->min_collateral_ratio * 0.9) {
                 $stablecoinStatus['status'] = 'critical';
                 $unhealthyStablecoins++;
-                
+
                 // Trigger emergency liquidation
                 if ($this->liquidationService) {
                     $emergencyResult = $this->liquidationService->emergencyLiquidation($stablecoin->code);
@@ -387,16 +388,16 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
                     ];
                 }
             }
-            
+
             $systemHealth['stablecoin_status'][] = $stablecoinStatus;
         }
-        
+
         // Overall system status
         if ($unhealthyStablecoins > 0) {
             // If any stablecoin is unhealthy, it's critical
             $systemHealth['overall_status'] = 'critical';
         }
-        
+
         return $systemHealth;
     }
 
@@ -407,18 +408,18 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
     {
         $rebalanceActions = [];
         $stablecoins = Stablecoin::active()->get();
-        
+
         foreach ($stablecoins as $stablecoin) {
             $metrics = $this->collateralService->getSystemCollateralizationMetrics()[$stablecoin->code] ?? null;
-            
+
             if (!$metrics) {
                 continue;
             }
-            
+
             // Analyze collateral distribution
             $distribution = $metrics['collateral_distribution'];
             $diversificationScore = $this->calculateDiversificationScore($distribution);
-            
+
             // If too concentrated in one asset, adjust requirements
             if ($diversificationScore < 0.5) {
                 $rebalanceActions[] = [
@@ -428,10 +429,10 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
                     'recommendation' => 'Encourage collateral diversification through incentives',
                 ];
             }
-            
+
             // Adjust parameters based on utilization
             $utilizationRate = $stablecoin->total_supply / ($stablecoin->max_supply ?: PHP_INT_MAX);
-            
+
             if ($utilizationRate > 0.8) {
                 $rebalanceActions[] = [
                     'stablecoin_code' => $stablecoin->code,
@@ -441,7 +442,7 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
                 ];
             }
         }
-        
+
         return [
             'rebalance_timestamp' => now(),
             'actions_taken' => $rebalanceActions,
@@ -456,31 +457,31 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
         if (empty($distribution)) {
             return 0;
         }
-        
+
         $percentages = collect($distribution)->pluck('percentage');
         $maxPercentage = $percentages->max();
-        
+
         // Simple diversification score: 1 - max_concentration
         return 1 - ($maxPercentage / 100);
     }
-    
+
     /**
      * Check the peg deviation for a stablecoin.
      */
     public function checkPegDeviation(Stablecoin $stablecoin): array
     {
         $rateObject = $this->exchangeRateService->getRate($stablecoin->code, $stablecoin->peg_asset_code);
-        
+
         if (!$rateObject) {
             throw new \RuntimeException("Exchange rate not found for {$stablecoin->code} to {$stablecoin->peg_asset_code}");
         }
-        
+
         $currentPrice = $rateObject->rate;
         $targetPrice = $stablecoin->target_price;
-        
+
         $deviation = $currentPrice - $targetPrice;
         $percentage = ($deviation / $targetPrice) * 100;
-        
+
         return [
             'deviation' => $deviation,
             'percentage' => $percentage,
@@ -490,7 +491,7 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
             'target_price' => $targetPrice,
         ];
     }
-    
+
     /**
      * Apply stability mechanism based on the stablecoin type.
      */
@@ -498,11 +499,11 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
     {
         $deviation = $this->checkPegDeviation($stablecoin);
         $actions = [];
-        
+
         if (abs($deviation['percentage']) <= 1.0) {
             return []; // Within acceptable range
         }
-        
+
         switch ($stablecoin->stability_mechanism) {
             case 'collateralized':
                 $actions = $this->applyCollateralizedMechanism($stablecoin, $deviation);
@@ -517,7 +518,7 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
                 );
                 break;
         }
-        
+
         // Fire event if not dry run
         if (!$dryRun) {
             event('stability.mechanism.applied', [
@@ -526,27 +527,28 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
                 'actions' => $actions,
             ]);
         }
-        
+
         return $actions;
     }
-    
+
     /**
      * Apply collateralized stability mechanism.
      */
     private function applyCollateralizedMechanism(Stablecoin $stablecoin, array $deviation): array
     {
         $actions = [];
-        
+
         // Adjust fees based on deviation
         $feeAdjustment = $this->calculateFeeAdjustment($stablecoin->code);
-        
-        if ($feeAdjustment['new_mint_fee'] !== $stablecoin->mint_fee || 
-            $feeAdjustment['new_burn_fee'] !== $stablecoin->burn_fee) {
-            
+
+        if (
+            $feeAdjustment['new_mint_fee'] !== $stablecoin->mint_fee ||
+            $feeAdjustment['new_burn_fee'] !== $stablecoin->burn_fee
+        ) {
             $stablecoin->mint_fee = $feeAdjustment['new_mint_fee'];
             $stablecoin->burn_fee = $feeAdjustment['new_burn_fee'];
             $stablecoin->save();
-            
+
             $actions[] = [
                 'action' => 'adjust_fees',
                 'timestamp' => now(),
@@ -555,10 +557,10 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
                 'new_burn_fee' => $feeAdjustment['new_burn_fee'],
             ];
         }
-        
+
         return $actions;
     }
-    
+
     /**
      * Apply algorithmic stability mechanism.
      */
@@ -566,7 +568,7 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
     {
         $actions = [];
         $incentives = $this->calculateSupplyIncentives($stablecoin->code);
-        
+
         // Update algorithmic rewards/penalties
         if ($incentives['recommended_action'] === 'burn') {
             $stablecoin->algo_burn_penalty = $incentives['burn_reward'];
@@ -575,9 +577,9 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
             $stablecoin->algo_mint_reward = $incentives['mint_reward'];
             $stablecoin->algo_burn_penalty = 0;
         }
-        
+
         $stablecoin->save();
-        
+
         $actions[] = [
             'action' => 'adjust_supply',
             'timestamp' => now(),
@@ -585,17 +587,17 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
             'burn_incentive' => $incentives['burn_reward'],
             'mint_incentive' => $incentives['mint_reward'],
         ];
-        
+
         // Also adjust algorithmic incentives
         $actions[] = [
             'action' => 'adjust_incentives',
             'timestamp' => now(),
             'reason' => "Algorithmic adjustment for {$deviation['percentage']}% deviation",
         ];
-        
+
         return $actions;
     }
-    
+
     /**
      * Calculate fee adjustments based on price deviation.
      */
@@ -603,11 +605,11 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
     {
         $baseMintFee = $currentFees['mint_fee'] ?? 0.01;
         $baseBurnFee = $currentFees['burn_fee'] ?? 0.01;
-        
+
         // If price is above peg, increase mint fees and decrease burn fees
         // If price is below peg, decrease mint fees and increase burn fees
         $adjustmentFactor = min(abs($deviation) / 10, 1.0); // Cap at 100% adjustment
-        
+
         if ($deviation > 0) {
             $newMintFee = min(0.1, $baseMintFee * (1 + $adjustmentFactor));
             $newBurnFee = max(0, $baseBurnFee * (1 - $adjustmentFactor));
@@ -618,14 +620,14 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
             $newMintFee = $baseMintFee;
             $newBurnFee = $baseBurnFee;
         }
-        
+
         return [
             'new_mint_fee' => round($newMintFee, 6),
             'new_burn_fee' => round($newBurnFee, 6),
             'adjustment_reason' => sprintf("Price %s peg by %.2f%%", $deviation > 0 ? 'above' : 'below', abs($deviation)),
         ];
     }
-    
+
     /**
      * Calculate supply incentives for algorithmic stablecoins.
      */
@@ -646,7 +648,7 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
                 'burn_penalty' => 0,
             ];
         }
-        
+
         return [
             'recommended_action' => 'none',
             'mint_reward' => 0,
@@ -655,7 +657,7 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
             'burn_penalty' => 0,
         ];
     }
-    
+
     /**
      * Monitor all stablecoin pegs.
      */
@@ -663,15 +665,15 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
     {
         $monitoring = [];
         $stablecoins = Stablecoin::active()->get();
-        
+
         foreach ($stablecoins as $stablecoin) {
             try {
                 $deviation = $this->checkPegDeviation($stablecoin);
-                
+
                 $monitoring[] = [
                     'stablecoin_code' => $stablecoin->code,
                     'deviation' => $deviation,
-                    'status' => abs($deviation['percentage']) <= 1.0 ? 'healthy' : 
+                    'status' => abs($deviation['percentage']) <= 1.0 ? 'healthy' :
                                (abs($deviation['percentage']) <= 5.0 ? 'warning' : 'critical'),
                     'last_checked' => now(),
                 ];
@@ -684,10 +686,10 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
                 ];
             }
         }
-        
+
         return $monitoring;
     }
-    
+
     /**
      * Execute emergency actions for extreme deviations.
      */
@@ -697,38 +699,38 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
         if (!$stablecoinCode) {
             throw new \InvalidArgumentException('stablecoin_code is required in params');
         }
-        
+
         $stablecoin = Stablecoin::findOrFail($stablecoinCode);
         $deviation = $this->checkPegDeviation($stablecoin);
         $actions = [];
-        
+
         if (abs($deviation['percentage']) > 10.0) {
             // Pause minting if price is too high
             if ($deviation['direction'] === 'above' && $stablecoin->minting_enabled) {
                 $stablecoin->minting_enabled = false;
                 $stablecoin->save();
-                
+
                 $actions[] = [
                     'action' => 'pause_minting',
                     'timestamp' => now(),
                     'reason' => "Extreme price deviation: {$deviation['percentage']}% above peg",
                 ];
             }
-            
+
             // Max out fees
             $stablecoin->mint_fee = 0.1;
             $stablecoin->save();
-            
+
             $actions[] = [
                 'action' => 'max_fee_adjustment',
                 'timestamp' => now(),
                 'reason' => "Emergency fee adjustment due to {$deviation['percentage']}% deviation",
             ];
         }
-        
+
         return $actions;
     }
-    
+
     /**
      * Get stability recommendations for a stablecoin.
      */
@@ -736,13 +738,14 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
     {
         $stablecoin = Stablecoin::findOrFail($stablecoinCode);
         $recommendations = [];
-        
+
         // Check collateralization
-        if ($stablecoin->stability_mechanism === 'collateralized' || 
-            $stablecoin->stability_mechanism === 'hybrid') {
-            
+        if (
+            $stablecoin->stability_mechanism === 'collateralized' ||
+            $stablecoin->stability_mechanism === 'hybrid'
+        ) {
             $globalRatio = $stablecoin->total_collateral_value / max(1, $stablecoin->total_supply);
-            
+
             if ($globalRatio < $stablecoin->collateral_ratio) {
                 $recommendations[] = [
                     'action' => 'increase_collateral_requirements',
@@ -750,27 +753,29 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
                     'current_ratio' => $globalRatio,
                     'target_ratio' => $stablecoin->collateral_ratio,
                 ];
-                
+
                 $recommendations[] = [
                     'action' => 'incentivize_collateral_deposits',
                     'reason' => 'Encourage users to add more collateral',
                 ];
             }
         }
-        
+
         // Check supply utilization
         if ($stablecoin->max_supply > 0) {
             $utilization = $stablecoin->total_supply / $stablecoin->max_supply;
-            
+
             if ($utilization > 0.8) {
                 $recommendations[] = [
                     'action' => 'reduce_max_supply',
                     'reason' => 'High supply utilization may limit growth',
                     'current_utilization' => $utilization,
                 ];
-                
-                if ($stablecoin->stability_mechanism === 'algorithmic' || 
-                    $stablecoin->stability_mechanism === 'hybrid') {
+
+                if (
+                    $stablecoin->stability_mechanism === 'algorithmic' ||
+                    $stablecoin->stability_mechanism === 'hybrid'
+                ) {
                     $recommendations[] = [
                         'action' => 'increase_burn_incentives',
                         'reason' => 'Reduce supply through algorithmic incentives',
@@ -778,7 +783,7 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
                 }
             }
         }
-        
+
         return $recommendations;
     }
 }

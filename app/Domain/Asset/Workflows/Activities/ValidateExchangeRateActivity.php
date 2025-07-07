@@ -12,8 +12,9 @@ class ValidateExchangeRateActivity extends Activity
 {
     public function __construct(
         private ExchangeRateService $exchangeRateService
-    ) {}
-    
+    ) {
+    }
+
     /**
      * Execute validate exchange rate activity
      */
@@ -24,24 +25,24 @@ class ValidateExchangeRateActivity extends Activity
     ): array {
         // Get current exchange rate
         $rate = $this->exchangeRateService->getRate($fromAssetCode, $toAssetCode);
-        
+
         if (!$rate) {
             throw new \Exception("No exchange rate available for {$fromAssetCode} to {$toAssetCode}");
         }
-        
+
         if (!$rate->isValid()) {
             throw new \Exception("Exchange rate for {$fromAssetCode} to {$toAssetCode} is expired or invalid");
         }
-        
+
         // Calculate target amount using the exchange rate
         $toAmountValue = $rate->convert($fromAmount->getAmount());
         $toAmount = Money::fromInt($toAmountValue);
-        
+
         // Validate that the conversion is reasonable (not zero or negative)
         if ($toAmountValue <= 0) {
             throw new \Exception("Invalid conversion result: {$fromAmount->getAmount()} {$fromAssetCode} converts to {$toAmountValue} {$toAssetCode}");
         }
-        
+
         return [
             'exchange_rate' => (float) $rate->rate,
             'to_amount' => $toAmount,

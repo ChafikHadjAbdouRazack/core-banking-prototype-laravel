@@ -21,12 +21,12 @@ final class TurnoverRepository
      * @return \App\Models\Turnover|null
      */
     public function findByAccountAndDate(
-        Account           $account,
+        Account $account,
         DateTimeInterface $date
     ): ?Turnover {
         return $this->turnover
-            ->whereBelongsTo( $account )
-            ->where( 'date', $date->toDateString() )
+            ->whereBelongsTo($account)
+            ->where('date', $date->toDateString())
             ->first();
     }
 
@@ -38,7 +38,9 @@ final class TurnoverRepository
      * @return \App\Models\Turnover
      */
     public function incrementForDateById(
-        DateTimeInterface $date, string $accountUuid, int $amount
+        DateTimeInterface $date,
+        string $accountUuid,
+        int $amount
     ): Turnover {
         return DB::transaction(function () use ($date, $accountUuid, $amount) {
             // Use updateOrCreate with lock for atomic operation
@@ -65,11 +67,11 @@ final class TurnoverRepository
      *
      * @return \App\Models\Turnover
      */
-    protected function updateTurnover( Turnover $turnover, int $amount
-    ): Turnover {
+    protected function updateTurnover(Turnover $turnover, int $amount): Turnover
+    {
         $turnover->count += 1;
         $turnover->amount += $amount;
-        
+
         // Update debit/credit fields for proper accounting
         if ($amount > 0) {
             $turnover->credit += $amount;

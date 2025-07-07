@@ -26,7 +26,8 @@ class StablecoinIssuanceService implements StablecoinIssuanceServiceInterface
         private readonly ExchangeRateService $exchangeRateService,
         private readonly CollateralService $collateralService,
         private readonly WalletService $walletService
-    ) {}
+    ) {
+    }
 
     /**
      * Mint stablecoins by locking collateral.
@@ -39,7 +40,7 @@ class StablecoinIssuanceService implements StablecoinIssuanceServiceInterface
         int $mintAmount
     ): StablecoinCollateralPosition {
         $stablecoin = Stablecoin::findOrFail($stablecoinCode);
-        
+
         // Validate stablecoin can be minted
         if (!$stablecoin->canMint()) {
             throw new \RuntimeException("Minting is disabled for {$stablecoinCode}");
@@ -62,7 +63,7 @@ class StablecoinIssuanceService implements StablecoinIssuanceServiceInterface
             ->where('stablecoin_code', $stablecoin->code)
             ->where('status', 'active')
             ->first();
-        
+
         // Execute minting workflow
         $workflow = WorkflowStub::make(
             MintStablecoinWorkflow::class,
@@ -73,9 +74,9 @@ class StablecoinIssuanceService implements StablecoinIssuanceServiceInterface
             $mintAmount,
             $existingPosition?->uuid
         );
-        
+
         $positionUuid = $workflow->start()->await();
-        
+
         // Update stablecoin global statistics
         $collateralValueInPegAsset = $this->collateralService->convertToPegAsset(
             $collateralAssetCode,
@@ -83,7 +84,7 @@ class StablecoinIssuanceService implements StablecoinIssuanceServiceInterface
             $stablecoin->peg_asset_code
         );
         $stablecoin->increment('total_collateral_value', $collateralValueInPegAsset);
-        
+
         Log::info('Stablecoin minted', [
             'account_uuid' => $account->uuid,
             'stablecoin_code' => $stablecoin->code,
@@ -92,7 +93,7 @@ class StablecoinIssuanceService implements StablecoinIssuanceServiceInterface
             'mint_amount' => $mintAmount,
             'position_id' => $positionUuid,
         ]);
-        
+
         // Return the updated position
         return StablecoinCollateralPosition::where('uuid', $positionUuid)->firstOrFail();
     }
@@ -107,7 +108,7 @@ class StablecoinIssuanceService implements StablecoinIssuanceServiceInterface
         ?int $collateralReleaseAmount = null
     ): StablecoinCollateralPosition {
         $stablecoin = Stablecoin::findOrFail($stablecoinCode);
-        
+
         if (!$stablecoin->canBurn()) {
             throw new \RuntimeException("Burning is disabled for {$stablecoinCode}");
         }
@@ -137,7 +138,7 @@ class StablecoinIssuanceService implements StablecoinIssuanceServiceInterface
         // Validate collateral release doesn't make position unhealthy
         $newDebtAmount = $position->debt_amount - $burnAmount;
         $newCollateralAmount = $position->collateral_amount - $collateralReleaseAmount;
-        
+
         if ($newDebtAmount > 0) {
             $newCollateralValue = $this->collateralService->convertToPegAsset(
                 $position->collateral_asset_code,
@@ -145,12 +146,12 @@ class StablecoinIssuanceService implements StablecoinIssuanceServiceInterface
                 $stablecoin->peg_asset_code
             );
             $newRatio = $newCollateralValue / $newDebtAmount;
-            
+
             if ($newRatio < $stablecoin->collateral_ratio) {
                 throw new \RuntimeException("Collateral release would make position undercollateralized");
             }
         }
-        
+
         // Execute burning workflow
         $workflow = WorkflowStub::make(
             BurnStablecoinWorkflow::class,
@@ -161,9 +162,9 @@ class StablecoinIssuanceService implements StablecoinIssuanceServiceInterface
             $collateralReleaseAmount,
             $newDebtAmount == 0 // closePosition flag
         );
-        
+
         $workflow->start()->await();
-        
+
         // Update stablecoin global statistics
         $collateralValueInPegAsset = $this->collateralService->convertToPegAsset(
             $position->collateral_asset_code,
@@ -171,7 +172,7 @@ class StablecoinIssuanceService implements StablecoinIssuanceServiceInterface
             $stablecoin->peg_asset_code
         );
         $stablecoin->decrement('total_collateral_value', $collateralValueInPegAsset);
-        
+
         Log::info('Stablecoin burned', [
             'account_uuid' => $account->uuid,
             'stablecoin_code' => $stablecoin->code,
@@ -180,7 +181,7 @@ class StablecoinIssuanceService implements StablecoinIssuanceServiceInterface
             'position_id' => $position->uuid,
             'position_status' => $newDebtAmount == 0 ? 'closed' : 'active',
         ]);
-        
+
         // Return the updated position
         return StablecoinCollateralPosition::where('uuid', $position->uuid)->firstOrFail();
     }
@@ -215,9 +216,9 @@ class StablecoinIssuanceService implements StablecoinIssuanceServiceInterface
             $collateralAssetCode,
             $collateralAmount
         );
-        
+
         $workflow->start()->await();
-        
+
         // Update global collateral value
         $stablecoin = $position->stablecoin;
         $collateralValueInPegAsset = $this->collateralService->convertToPegAsset(
@@ -226,13 +227,13 @@ class StablecoinIssuanceService implements StablecoinIssuanceServiceInterface
             $stablecoin->peg_asset_code
         );
         $stablecoin->increment('total_collateral_value', $collateralValueInPegAsset);
-        
+
         Log::info('Collateral added to position', [
             'account_uuid' => $account->uuid,
             'position_id' => $position->uuid,
             'collateral_amount' => $collateralAmount,
         ]);
-        
+
         // Return the updated position
         return StablecoinCollateralPosition::where('uuid', $position->uuid)->firstOrFail();
     }

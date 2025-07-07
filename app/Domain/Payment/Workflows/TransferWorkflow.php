@@ -19,26 +19,31 @@ class TransferWorkflow extends Workflow
      * @return \Generator
      * @throws \Throwable
      */
-    public function execute( AccountUuid $from, AccountUuid $to, Money $money
-    ): \Generator {
-        try
-        {
+    public function execute(AccountUuid $from, AccountUuid $to, Money $money): \Generator
+    {
+        try {
             yield ChildWorkflowStub::make(
-                WithdrawAccountWorkflow::class, $from, $money
+                WithdrawAccountWorkflow::class,
+                $from,
+                $money
             );
-            $this->addCompensation( fn() => ChildWorkflowStub::make(
-                DepositAccountWorkflow::class, $from, $money
-            ) );
+            $this->addCompensation(fn() => ChildWorkflowStub::make(
+                DepositAccountWorkflow::class,
+                $from,
+                $money
+            ));
 
             yield ChildWorkflowStub::make(
-                DepositAccountWorkflow::class, $to, $money
+                DepositAccountWorkflow::class,
+                $to,
+                $money
             );
-            $this->addCompensation( fn() => ChildWorkflowStub::make(
-                WithdrawAccountWorkflow::class, $to, $money
-            ) );
-        }
-        catch ( \Throwable $th )
-        {
+            $this->addCompensation(fn() => ChildWorkflowStub::make(
+                WithdrawAccountWorkflow::class,
+                $to,
+                $money
+            ));
+        } catch (\Throwable $th) {
             yield from $this->compensate();
             throw $th;
         }

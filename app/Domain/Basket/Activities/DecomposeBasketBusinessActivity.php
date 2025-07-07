@@ -17,11 +17,12 @@ class DecomposeBasketBusinessActivity extends Activity
 {
     public function __construct(
         private WalletService $walletService
-    ) {}
+    ) {
+    }
 
     /**
      * Execute basket decomposition using proper Service → Workflow → Activity → Aggregate pattern.
-     * 
+     *
      * @param AccountUuid $accountUuid
      * @param string $basketCode
      * @param int $amount

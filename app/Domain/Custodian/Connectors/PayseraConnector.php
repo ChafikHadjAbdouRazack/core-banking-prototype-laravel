@@ -18,7 +18,7 @@ class PayseraConnector extends BaseCustodianConnector
 {
     private const API_BASE_URL = 'https://bank.paysera.com/rest/v1';
     private const OAUTH_URL = 'https://bank.paysera.com/oauth/v1';
-    
+
     private string $clientId;
     private string $clientSecret;
     private ?string $accessToken = null;
@@ -30,12 +30,12 @@ class PayseraConnector extends BaseCustodianConnector
         $config['name'] = $config['name'] ?? 'Paysera';
         // Set base URL for parent class
         $config['base_url'] = self::API_BASE_URL;
-        
+
         parent::__construct($config);
-        
+
         $this->clientId = $config['client_id'] ?? '';
         $this->clientSecret = $config['client_secret'] ?? '';
-        
+
         // Allow empty credentials in testing/development environments
         if ((empty($this->clientId) || empty($this->clientSecret)) && !app()->environment(['local', 'testing'])) {
             throw new \InvalidArgumentException('Paysera client_id and client_secret are required');
@@ -89,7 +89,7 @@ class PayseraConnector extends BaseCustodianConnector
     {
         // Update client with fresh token for each request
         $this->client = $this->client->withToken($this->getAccessToken());
-        
+
         return $this->resilientApiRequest(
             method: $method,
             endpoint: self::API_BASE_URL . $endpoint,
@@ -100,7 +100,7 @@ class PayseraConnector extends BaseCustodianConnector
     public function getBalance(string $accountId, string $assetCode): Money
     {
         $fallbackService = app(FallbackService::class);
-        
+
         try {
             $response = $this->apiRequest('GET', "/accounts/{$accountId}/balance");
 
@@ -109,7 +109,7 @@ class PayseraConnector extends BaseCustodianConnector
             }
 
             $data = $response->json();
-            
+
             // Paysera returns balances in an array, find the requested currency
             $balance = new Money(0);
             foreach ($data['balances'] ?? [] as $balanceData) {
@@ -119,26 +119,25 @@ class PayseraConnector extends BaseCustodianConnector
                     break;
                 }
             }
-            
+
             // Cache the successful balance for future fallback
             $fallbackService->cacheBalance($this->getName(), $accountId, $assetCode, $balance);
-            
+
             return $balance;
-            
         } catch (\Exception $e) {
             // Try fallback
             $fallbackBalance = $fallbackService->getFallbackBalance($this->getName(), $accountId, $assetCode);
-            
+
             if ($fallbackBalance !== null) {
                 Log::warning("Using fallback balance for Paysera", [
                     'account' => $accountId,
                     'asset' => $assetCode,
                     'error' => $e->getMessage(),
                 ]);
-                
+
                 return $fallbackBalance;
             }
-            
+
             // No fallback available, rethrow
             throw $e;
         }
@@ -153,11 +152,11 @@ class PayseraConnector extends BaseCustodianConnector
         }
 
         $data = $response->json();
-        
+
         // Get all balances
         $balancesResponse = $this->apiRequest('GET', "/accounts/{$accountId}/balance");
         $balancesData = $balancesResponse->json();
-        
+
         $balances = [];
         foreach ($balancesData['balances'] ?? [] as $balance) {
             $balances[$balance['currency']] = (int) $balance['amount'];
@@ -182,7 +181,7 @@ class PayseraConnector extends BaseCustodianConnector
     public function initiateTransfer(TransferRequest $request): TransactionReceipt
     {
         $fallbackService = app(FallbackService::class);
-        
+
         return $this->executeWithResilience(
             serviceIdentifier: 'initiateTransfer',
             operation: function () use ($request) {
@@ -228,7 +227,7 @@ class PayseraConnector extends BaseCustodianConnector
                     'amount' => $request->amount->getAmount(),
                     'asset' => $request->assetCode,
                 ]);
-                
+
                 return $fallbackService->queueTransferForRetry(
                     $this->getName(),
                     $request->fromAccount,
@@ -245,7 +244,7 @@ class PayseraConnector extends BaseCustodianConnector
     public function getTransactionStatus(string $transactionId): TransactionReceipt
     {
         $fallbackService = app(FallbackService::class);
-        
+
         return $this->executeWithResilience(
             serviceIdentifier: 'getTransactionStatus',
             operation: function () use ($transactionId) {
@@ -277,16 +276,16 @@ class PayseraConnector extends BaseCustodianConnector
             fallback: function () use ($transactionId, $fallbackService) {
                 // Try to get status from cached/database data
                 $status = $fallbackService->getFallbackTransferStatus($this->getName(), $transactionId);
-                
+
                 if ($status !== null) {
                     Log::warning("Using fallback transaction status for Paysera", [
                         'transaction_id' => $transactionId,
                     ]);
-                    
+
                     // Return the fallback status directly
                     return $status;
                 }
-                
+
                 throw new \Exception("Cannot retrieve transaction status, service unavailable");
             }
         );
@@ -309,7 +308,7 @@ class PayseraConnector extends BaseCustodianConnector
     {
         try {
             $response = $this->apiRequest('GET', "/accounts/{$accountId}");
-            
+
             if ($response->successful()) {
                 $data = $response->json();
                 return ($data['status'] ?? '') === 'active';

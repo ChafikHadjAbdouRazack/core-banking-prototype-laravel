@@ -16,7 +16,8 @@ class CustodianAccountService
 {
     public function __construct(
         private readonly CustodianRegistry $custodianRegistry
-    ) {}
+    ) {
+    }
 
     /**
      * Link an internal account to a custodian account
@@ -30,15 +31,15 @@ class CustodianAccountService
     ): CustodianAccount {
         // Verify the custodian exists and is available
         $custodian = $this->custodianRegistry->get($custodianName);
-        
+
         // Validate the custodian account exists
         if (!$custodian->validateAccount($custodianAccountId)) {
             throw new \InvalidArgumentException("Invalid custodian account: {$custodianAccountId}");
         }
-        
+
         // Get account info from custodian
         $accountInfo = $custodian->getAccountInfo($custodianAccountId);
-        
+
         return DB::transaction(function () use ($account, $custodianName, $custodianAccountId, $accountInfo, $metadata, $isPrimary) {
             $custodianAccount = CustodianAccount::create([
                 'account_uuid' => $account->uuid,
@@ -48,17 +49,17 @@ class CustodianAccountService
                 'status' => $accountInfo->status,
                 'metadata' => array_merge($accountInfo->metadata, $metadata),
             ]);
-            
+
             if ($isPrimary) {
                 $custodianAccount->setAsPrimary();
             }
-            
+
             Log::info("Linked custodian account", [
                 'account_uuid' => $account->uuid,
                 'custodian' => $custodianName,
                 'custodian_account' => $custodianAccountId,
             ]);
-            
+
             return $custodianAccount;
         });
     }
@@ -75,14 +76,14 @@ class CustodianAccountService
                     ->where('id', '!=', $custodianAccount->id)
                     ->where('status', 'active')
                     ->first();
-                
+
                 if ($nextPrimary) {
                     $nextPrimary->setAsPrimary();
                 }
             }
-            
+
             $custodianAccount->delete();
-            
+
             Log::info("Unlinked custodian account", [
                 'custodian_account_id' => $custodianAccount->id,
                 'account_uuid' => $custodianAccount->account_uuid,
@@ -96,7 +97,7 @@ class CustodianAccountService
     public function getBalance(CustodianAccount $custodianAccount, string $assetCode): Money
     {
         $custodian = $this->custodianRegistry->get($custodianAccount->custodian_name);
-        
+
         return $custodian->getBalance($custodianAccount->custodian_account_id, $assetCode);
     }
 
@@ -107,7 +108,7 @@ class CustodianAccountService
     {
         $custodian = $this->custodianRegistry->get($custodianAccount->custodian_name);
         $accountInfo = $custodian->getAccountInfo($custodianAccount->custodian_account_id);
-        
+
         return $accountInfo->balances;
     }
 
@@ -126,9 +127,9 @@ class CustodianAccountService
         if ($fromAccount->custodian_name !== $toAccount->custodian_name) {
             throw new \InvalidArgumentException("Cross-custodian transfers are not supported yet");
         }
-        
+
         $custodian = $this->custodianRegistry->get($fromAccount->custodian_name);
-        
+
         $transferRequest = new TransferRequest(
             fromAccount: $fromAccount->custodian_account_id,
             toAccount: $toAccount->custodian_account_id,
@@ -137,9 +138,9 @@ class CustodianAccountService
             reference: $reference,
             description: $description
         );
-        
+
         $receipt = $custodian->initiateTransfer($transferRequest);
-        
+
         Log::info("Initiated custodian transfer", [
             'transaction_id' => $receipt->id,
             'from_account' => $fromAccount->custodian_account_id,
@@ -147,7 +148,7 @@ class CustodianAccountService
             'amount' => $amount->getAmount(),
             'asset' => $assetCode,
         ]);
-        
+
         return $receipt->id;
     }
 
@@ -158,7 +159,7 @@ class CustodianAccountService
     {
         $custodian = $this->custodianRegistry->get($custodianName);
         $receipt = $custodian->getTransactionStatus($transactionId);
-        
+
         return $receipt->toArray();
     }
 
@@ -168,16 +169,16 @@ class CustodianAccountService
     public function syncAccountStatus(CustodianAccount $custodianAccount): void
     {
         $custodian = $this->custodianRegistry->get($custodianAccount->custodian_name);
-        
+
         try {
             $accountInfo = $custodian->getAccountInfo($custodianAccount->custodian_account_id);
-            
+
             $custodianAccount->update([
                 'status' => $accountInfo->status,
                 'custodian_account_name' => $accountInfo->name,
                 'metadata' => array_merge($custodianAccount->metadata ?? [], $accountInfo->metadata),
             ]);
-            
+
             Log::info("Synced custodian account status", [
                 'custodian_account_id' => $custodianAccount->id,
                 'new_status' => $accountInfo->status,
@@ -187,7 +188,7 @@ class CustodianAccountService
                 'custodian_account_id' => $custodianAccount->id,
                 'error' => $e->getMessage(),
             ]);
-            
+
             throw $e;
         }
     }
@@ -201,7 +202,7 @@ class CustodianAccountService
         ?int $offset = 0
     ): array {
         $custodian = $this->custodianRegistry->get($custodianAccount->custodian_name);
-        
+
         return $custodian->getTransactionHistory(
             $custodianAccount->custodian_account_id,
             $limit,

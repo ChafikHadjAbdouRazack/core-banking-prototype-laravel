@@ -68,7 +68,7 @@ class GcuVotingProposal extends Model
      */
     public function isVotingActive(): bool
     {
-        return $this->status === 'active' 
+        return $this->status === 'active'
             && now()->between($this->voting_starts_at, $this->voting_ends_at);
     }
 
@@ -120,7 +120,7 @@ class GcuVotingProposal extends Model
         if (!$this->isVotingActive()) {
             return null;
         }
-        
+
         return now()->diffForHumans($this->voting_ends_at, [
             'parts' => 2,
             'short' => true,

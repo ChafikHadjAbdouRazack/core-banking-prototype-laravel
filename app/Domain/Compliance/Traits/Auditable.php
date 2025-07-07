@@ -36,7 +36,7 @@ trait Auditable
 
             $old = [];
             $new = [];
-            
+
             foreach ($model->getChanges() as $attribute => $value) {
                 if (in_array($attribute, $model->getAuditableAttributes())) {
                     $old[$attribute] = $model->getOriginal($attribute);

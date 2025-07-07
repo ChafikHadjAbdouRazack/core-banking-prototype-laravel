@@ -18,7 +18,8 @@ class BasketAccountController extends Controller
 {
     public function __construct(
         private readonly BasketService $basketService
-    ) {}
+    ) {
+    }
 
     /**
      * @OA\Post(

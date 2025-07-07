@@ -14,16 +14,16 @@ class CreateAccountActivity extends Activity
      *
      * @return string
      */
-    public function execute( Account $account ): string
+    public function execute(Account $account): string
     {
         $uuid = $account->getUuid() ?: Str::uuid()->toString();
-        
+
         $ledger = app(LedgerAggregate::class);
-        
+
         $accountWithUuid = $account->withUuid($uuid);
-        
-        $ledger->retrieve( $uuid )
-               ->createAccount( $accountWithUuid )
+
+        $ledger->retrieve($uuid)
+               ->createAccount($accountWithUuid)
                ->persist();
 
         return $uuid;

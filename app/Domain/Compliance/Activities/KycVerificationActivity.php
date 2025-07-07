@@ -10,11 +10,12 @@ class KycVerificationActivity extends Activity
 {
     public function __construct(
         private KycService $kycService
-    ) {}
+    ) {
+    }
 
     /**
      * Execute KYC verification activity.
-     * 
+     *
      * @param array $input Expected format: [
      *   'user_uuid' => string,
      *   'action' => string ('approve' or 'reject'),
@@ -43,7 +44,7 @@ class KycVerificationActivity extends Activity
         if ($action === 'approve') {
             $options = $input['options'] ?? [];
             $this->kycService->verifyKyc($user, $verifiedBy, $options);
-            
+
             return [
                 'user_uuid' => $userUuid,
                 'status' => 'approved',
@@ -56,9 +57,9 @@ class KycVerificationActivity extends Activity
             if (!$reason) {
                 throw new \InvalidArgumentException('Reason is required for rejection');
             }
-            
+
             $this->kycService->rejectKyc($user, $reason, $verifiedBy);
-            
+
             return [
                 'user_uuid' => $userUuid,
                 'status' => 'rejected',

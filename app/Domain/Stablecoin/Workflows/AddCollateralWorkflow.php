@@ -31,7 +31,7 @@ class AddCollateralWorkflow extends Workflow
                 $collateralAssetCode,
                 $collateralAmount
             );
-            
+
             // Add compensation to release collateral on failure
             $this->addCompensation(fn() => ActivityStub::make(
                 ReleaseCollateralActivity::class,
@@ -40,15 +40,14 @@ class AddCollateralWorkflow extends Workflow
                 $collateralAssetCode,
                 $collateralAmount
             ));
-            
+
             // Update position with new values
             yield ActivityStub::make(
                 UpdatePositionActivity::class,
                 $positionUuid
             );
-            
+
             return true;
-            
         } catch (\Throwable $th) {
             // Execute compensations in reverse order
             yield from $this->compensate();

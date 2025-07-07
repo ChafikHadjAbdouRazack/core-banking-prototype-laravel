@@ -18,7 +18,7 @@ trait BelongsToTeam
                 $model->team_id = Auth::user()->currentTeam->id;
             }
         });
-        
+
         // Global scope to filter by team
         static::addGlobalScope('team', function (Builder $builder) {
             if (Auth::check() && Auth::user()->currentTeam) {
@@ -26,7 +26,7 @@ trait BelongsToTeam
             }
         });
     }
-    
+
     /**
      * Scope to include all teams (bypass team isolation)
      */
@@ -34,7 +34,7 @@ trait BelongsToTeam
     {
         return $query->withoutGlobalScope('team');
     }
-    
+
     /**
      * Scope to filter by specific team
      */
@@ -42,7 +42,7 @@ trait BelongsToTeam
     {
         return $query->withoutGlobalScope('team')->where('team_id', $teamId);
     }
-    
+
     /**
      * Get the team relationship
      */

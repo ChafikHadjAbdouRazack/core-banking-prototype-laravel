@@ -32,7 +32,7 @@ class Setting extends Model
         'is_public' => 'boolean',
         'is_encrypted' => 'boolean',
     ];
-    
+
     /**
      * Temporary property to store old value for audit logging
      */
@@ -44,18 +44,18 @@ class Setting extends Model
             if (!$setting->exists) {
                 return;
             }
-            
+
             $original = $setting->getOriginal();
             if ($original['value'] !== $setting->attributes['value']) {
                 $setting->oldValue = json_decode($original['value'], true);
             }
         });
-        
+
         static::saved(function ($setting) {
             Cache::forget("setting.{$setting->key}");
             Cache::forget('settings.all');
             Cache::forget("settings.group.{$setting->group}");
-            
+
             // Create audit log if value changed
             if (isset($setting->oldValue)) {
                 SettingAudit::create([
@@ -94,7 +94,7 @@ class Setting extends Model
     public function getValueAttribute($value)
     {
         $decoded = json_decode($value, true);
-        
+
         if ($this->is_encrypted && !is_null($decoded)) {
             try {
                 $decrypted = Crypt::decryptString($decoded);
@@ -103,7 +103,7 @@ class Setting extends Model
                 return $decoded;
             }
         }
-        
+
         return $this->castValue($decoded);
     }
 
@@ -130,14 +130,14 @@ class Setting extends Model
     public static function set(string $key, $value, array $attributes = []): self
     {
         $setting = static::firstOrNew(['key' => $key]);
-        
+
         foreach ($attributes as $attr => $val) {
             $setting->$attr = $val;
         }
-        
+
         $setting->value = $value;
         $setting->save();
-        
+
         return $setting;
     }
 
@@ -161,7 +161,7 @@ class Setting extends Model
                 ->toArray();
         });
     }
-    
+
     public function audits(): HasMany
     {
         return $this->hasMany(SettingAudit::class);

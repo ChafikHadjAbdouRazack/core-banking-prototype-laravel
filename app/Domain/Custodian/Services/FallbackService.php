@@ -20,14 +20,14 @@ class FallbackService
     private const BALANCE_CACHE_TTL = 300; // 5 minutes
     private const ACCOUNT_INFO_CACHE_TTL = 3600; // 1 hour
     private const TRANSFER_STATUS_CACHE_TTL = 600; // 10 minutes
-    
+
     /**
      * Get fallback balance from cache or database
      */
     public function getFallbackBalance(string $custodian, string $accountId, string $assetCode): ?Money
     {
         $cacheKey = $this->getBalanceCacheKey($custodian, $accountId, $assetCode);
-        
+
         // Try cache first
         $cachedBalance = Cache::get($cacheKey);
         if ($cachedBalance !== null) {
@@ -37,15 +37,15 @@ class FallbackService
                 'asset' => $assetCode,
                 'balance' => $cachedBalance,
             ]);
-            
+
             return new Money((int) $cachedBalance);
         }
-        
+
         // Try database
         $custodianAccount = CustodianAccount::where('custodian_account_id', $accountId)
             ->where('custodian_name', $custodian)
             ->first();
-            
+
         if ($custodianAccount && $custodianAccount->last_known_balance !== null) {
             Log::info("Using database balance for fallback", [
                 'custodian' => $custodian,
@@ -54,15 +54,15 @@ class FallbackService
                 'balance' => $custodianAccount->last_known_balance,
                 'last_synced' => $custodianAccount->last_synced_at,
             ]);
-            
+
             // Note: This assumes single currency per account for simplicity
             // In production, we'd need to store multi-currency balances
             return new Money($custodianAccount->last_known_balance);
         }
-        
+
         return null;
     }
-    
+
     /**
      * Cache balance for future fallback use
      */
@@ -70,12 +70,12 @@ class FallbackService
     {
         $cacheKey = $this->getBalanceCacheKey($custodian, $accountId, $assetCode);
         Cache::put($cacheKey, $balance->getAmount(), self::BALANCE_CACHE_TTL);
-        
+
         // Also update database if custodian account exists
         $custodianAccount = CustodianAccount::where('custodian_account_id', $accountId)
             ->where('custodian_name', $custodian)
             ->first();
-            
+
         if ($custodianAccount) {
             $custodianAccount->update([
                 'last_known_balance' => $balance->getAmount(),
@@ -83,27 +83,27 @@ class FallbackService
             ]);
         }
     }
-    
+
     /**
      * Get fallback account info from cache
      */
     public function getFallbackAccountInfo(string $custodian, string $accountId): ?AccountInfo
     {
         $cacheKey = $this->getAccountInfoCacheKey($custodian, $accountId);
-        
+
         $cached = Cache::get($cacheKey);
         if ($cached !== null) {
             Log::info("Using cached account info for fallback", [
                 'custodian' => $custodian,
                 'account' => $accountId,
             ]);
-            
+
             return unserialize($cached);
         }
-        
+
         return null;
     }
-    
+
     /**
      * Cache account info for future fallback use
      */
@@ -112,7 +112,7 @@ class FallbackService
         $cacheKey = $this->getAccountInfoCacheKey($custodian, $accountId);
         Cache::put($cacheKey, serialize($info), self::ACCOUNT_INFO_CACHE_TTL);
     }
-    
+
     /**
      * Get fallback transfer status from database
      */
@@ -120,14 +120,14 @@ class FallbackService
     {
         $transfer = CustodianTransfer::where('id', $transferId)
             ->first();
-            
+
         if ($transfer) {
             Log::info("Using database transfer status for fallback", [
                 'custodian' => $custodian,
                 'transfer' => $transferId,
                 'status' => $transfer->status,
             ]);
-            
+
             return new TransactionReceipt(
                 id: $transfer->id,
                 status: $transfer->status,
@@ -143,10 +143,10 @@ class FallbackService
                 failureReason: $transfer->failure_reason
             );
         }
-        
+
         return null;
     }
-    
+
     /**
      * Queue transfer for retry when custodian is available
      */
@@ -163,7 +163,7 @@ class FallbackService
         // In production, these would be resolved from accounts to custodian accounts
         $fromCustodianAccountId = 1;
         $toCustodianAccountId = 2;
-        
+
         // Create a pending transfer record
         $transferId = 'QUEUED_' . \Str::uuid()->toString();
         $transfer = CustodianTransfer::create([
@@ -184,14 +184,14 @@ class FallbackService
                 'description' => $description,
             ],
         ]);
-        
+
         Log::warning("Transfer queued for retry", [
             'custodian' => $custodian,
             'transfer_id' => $transfer->id,
             'amount' => $amount->getAmount(),
             'asset' => $assetCode,
         ]);
-        
+
         // Return a receipt indicating the transfer is queued
         return new TransactionReceipt(
             id: $transfer->id,
@@ -211,7 +211,7 @@ class FallbackService
             ]
         );
     }
-    
+
     /**
      * Get alternative custodian for fallback routing
      */
@@ -224,13 +224,13 @@ class FallbackService
             'deutsche_bank' => ['santander', 'paysera'],
             'santander' => ['paysera', 'deutsche_bank'],
         ];
-        
+
         $alternatives = $fallbackRoutes[strtolower($failedCustodian)] ?? [];
-        
+
         // Check which alternatives are available
         foreach ($alternatives as $alternative) {
             $registry = app(\App\Domain\Custodian\Services\CustodianRegistry::class);
-            
+
             try {
                 $connector = $registry->getConnector($alternative);
                 if ($connector->isAvailable()) {
@@ -239,23 +239,23 @@ class FallbackService
                         'alternative' => $alternative,
                         'asset' => $assetCode,
                     ]);
-                    
+
                     return $alternative;
                 }
             } catch (\Exception $e) {
                 continue;
             }
         }
-        
+
         return null;
     }
-    
+
     // Cache key helpers
     private function getBalanceCacheKey(string $custodian, string $accountId, string $assetCode): string
     {
         return "custodian:fallback:{$custodian}:{$accountId}:{$assetCode}:balance";
     }
-    
+
     private function getAccountInfoCacheKey(string $custodian, string $accountId): string
     {
         return "custodian:fallback:{$custodian}:{$accountId}:info";

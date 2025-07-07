@@ -193,7 +193,7 @@ class TransactionController extends Controller
 
         // Check sufficient balance
         $balance = $account->getBalance($validated['asset_code']);
-        
+
         if ($balance < $amountInMinorUnits) {
             return response()->json([
                 'message' => 'Insufficient balance',
@@ -289,14 +289,14 @@ class TransactionController extends Controller
         ]);
 
         $account = Account::where('uuid', $uuid)->firstOrFail();
-        
+
         // Build event classes to query based on filters
         $eventClasses = [
             'App\Domain\Account\Events\MoneyAdded',
             'App\Domain\Account\Events\MoneySubtracted',
             'App\Domain\Account\Events\MoneyTransferred',
             'App\Domain\Account\Events\AssetBalanceAdded',
-            'App\Domain\Account\Events\AssetBalanceSubtracted', 
+            'App\Domain\Account\Events\AssetBalanceSubtracted',
             'App\Domain\Account\Events\AssetTransferred',
         ];
 
@@ -311,7 +311,7 @@ class TransactionController extends Controller
         $transactions = collect($events->items())->map(function ($event) {
             $properties = json_decode($event->event_properties, true);
             $eventClass = class_basename($event->event_class);
-            
+
             // Default values
             $transaction = [
                 'id' => $event->id,
@@ -332,13 +332,13 @@ class TransactionController extends Controller
                     $transaction['amount'] = $properties['money']['amount'] ?? 0;
                     $transaction['asset_code'] = 'USD'; // Legacy events are USD
                     break;
-                    
+
                 case 'AssetBalanceAdded':
                 case 'AssetBalanceSubtracted':
                     $transaction['amount'] = $properties['amount'] ?? 0;
                     $transaction['asset_code'] = $properties['assetCode'] ?? 'USD';
                     break;
-                    
+
                 case 'MoneyTransferred':
                 case 'AssetTransferred':
                     $transaction['amount'] = $properties['money']['amount'] ?? $properties['fromAmount'] ?? 0;
@@ -356,11 +356,11 @@ class TransactionController extends Controller
             if (isset($validated['type']) && $transaction['type'] !== $validated['type']) {
                 return false;
             }
-            
+
             if (isset($validated['asset_code']) && $transaction['asset_code'] !== $validated['asset_code']) {
                 return false;
             }
-            
+
             return true;
         })->values();
 

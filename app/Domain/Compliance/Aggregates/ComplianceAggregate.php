@@ -23,7 +23,7 @@ class ComplianceAggregate extends AggregateRoot
     public function submitKyc(string $userUuid, array $documents): self
     {
         $this->recordThat(new KycSubmissionReceived($userUuid, $documents));
-        
+
         foreach ($documents as $document) {
             $this->recordThat(new KycDocumentUploaded($userUuid, $document));
         }

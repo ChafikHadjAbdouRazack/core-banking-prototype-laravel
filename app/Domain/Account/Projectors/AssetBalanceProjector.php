@@ -18,7 +18,7 @@ class AssetBalanceProjector extends Projector implements ShouldQueue
     public function onAssetBalanceAdded(AssetBalanceAdded $event): void
     {
         app(CreditAssetBalance::class)($event);
-        
+
         // Invalidate cache after balance update
         if ($account = \App\Models\Account::where('uuid', $event->aggregateRootUuid())->first()) {
             app(CacheManager::class)->onAccountUpdated($account);
@@ -31,7 +31,7 @@ class AssetBalanceProjector extends Projector implements ShouldQueue
     public function onAssetBalanceSubtracted(AssetBalanceSubtracted $event): void
     {
         app(DebitAssetBalance::class)($event);
-        
+
         // Invalidate cache after balance update
         if ($account = \App\Models\Account::where('uuid', $event->aggregateRootUuid())->first()) {
             app(CacheManager::class)->onAccountUpdated($account);

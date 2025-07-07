@@ -9,7 +9,7 @@ class GetPollActivity extends Activity
 {
     /**
      * Execute get poll activity.
-     * 
+     *
      * @param string $pollUuid
      * @return Poll|null
      */

@@ -15,5 +15,6 @@ class CollateralPositionUpdated extends ShouldBeStored
         public readonly float $collateral_ratio,
         public readonly string $status,
         public readonly array $metadata = []
-    ) {}
+    ) {
+    }
 }

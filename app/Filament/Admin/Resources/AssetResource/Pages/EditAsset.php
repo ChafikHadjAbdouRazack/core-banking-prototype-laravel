@@ -19,7 +19,7 @@ class EditAsset extends EditRecord
             Actions\ViewAction::make()
                 ->label('View Asset')
                 ->icon('heroicon-m-eye'),
-            
+
             Actions\DeleteAction::make()
                 ->label('Delete Asset')
                 ->icon('heroicon-m-trash')
@@ -45,7 +45,7 @@ class EditAsset extends EditRecord
     {
         // Ensure code is uppercase for consistency
         $data['code'] = strtoupper($data['code']);
-        
+
         return $data;
     }
 }

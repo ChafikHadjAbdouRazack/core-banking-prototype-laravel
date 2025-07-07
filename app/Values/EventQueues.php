@@ -2,7 +2,8 @@
 
 namespace App\Values;
 
-enum EventQueues: string {
+enum EventQueues: string
+{
     case EVENTS = 'events';
     case LEDGER = 'ledger';
     case TRANSACTIONS = 'transactions';

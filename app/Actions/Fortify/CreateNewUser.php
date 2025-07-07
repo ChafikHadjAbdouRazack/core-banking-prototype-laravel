@@ -42,7 +42,7 @@ class CreateNewUser implements CreatesNewUsers
 
         if (isset($input['is_business_customer']) && $input['is_business_customer']) {
             $user->assignRole('customer_business');
-            
+
             // Convert personal team to business organization
             $team->update([
                 'is_business_organization' => true,
@@ -56,7 +56,7 @@ class CreateNewUser implements CreatesNewUsers
                     'customer_service',
                 ],
             ]);
-            
+
             // Assign owner role in the team
             $team->assignUserRole($user, 'owner');
         } else {
@@ -73,7 +73,7 @@ class CreateNewUser implements CreatesNewUsers
     {
         return $user->ownedTeams()->save(Team::forceCreate([
             'user_id' => $user->id,
-            'name' => explode(' ', $user->name, 2)[0]."'s Team",
+            'name' => explode(' ', $user->name, 2)[0] . "'s Team",
             'personal_team' => true,
         ]));
     }

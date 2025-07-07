@@ -16,20 +16,20 @@ class ValidateBatchJobActivity extends Activity
     public function execute(string $batchJobUuid): BatchJob
     {
         $batchJobModel = BatchJobModel::where('uuid', $batchJobUuid)->with('items')->first();
-        
+
         if (!$batchJobModel) {
             throw new \InvalidArgumentException("Batch job not found: {$batchJobUuid}");
         }
-        
+
         if ($batchJobModel->status !== 'pending') {
             throw new \InvalidArgumentException("Batch job is not in pending status: {$batchJobModel->status}");
         }
-        
+
         // Start the batch job
         BatchAggregate::retrieve($batchJobUuid)
             ->startBatchJob()
             ->persist();
-        
+
         // Convert to DataObject
         return BatchJob::create(
             userUuid: $batchJobModel->user_uuid,

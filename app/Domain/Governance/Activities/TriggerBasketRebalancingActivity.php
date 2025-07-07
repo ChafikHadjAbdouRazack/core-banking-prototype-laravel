@@ -9,18 +9,18 @@ class TriggerBasketRebalancingActivity extends Activity
 {
     /**
      * Execute trigger basket rebalancing activity.
-     * 
+     *
      * @param string $basketCode
      * @return void
      */
     public function execute(string $basketCode): void
     {
         $basket = BasketAsset::where('code', $basketCode)->with('components')->first();
-        
+
         if (!$basket) {
             return;
         }
-        
+
         // Trigger rebalancing event
         event(new \App\Domain\Basket\Events\BasketRebalanced(
             $basketCode,

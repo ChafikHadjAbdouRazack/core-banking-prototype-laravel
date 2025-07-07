@@ -16,8 +16,7 @@ final class TransferRepository extends EloquentStoredEventRepository
      */
     public function __construct(
         protected string $storedEventModel = Transfer::class
-    )
-    {
+    ) {
         if (! new $this->storedEventModel() instanceof EloquentStoredEvent) {
             throw new InvalidEloquentStoredEventModel("The class {$this->storedEventModel} must extend EloquentStoredEvent");
         }

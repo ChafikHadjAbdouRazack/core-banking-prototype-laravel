@@ -20,7 +20,7 @@ class UpdateTurnover
      *
      * @return void
      */
-    public function __invoke( HasMoney $event ): void
+    public function __invoke(HasMoney $event): void
     {
         $amount = $event instanceof MoneySubtracted
             ? $event->money->invert()->getAmount()

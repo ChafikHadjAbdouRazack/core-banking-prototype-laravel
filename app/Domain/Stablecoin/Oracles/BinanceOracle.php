@@ -12,7 +12,7 @@ class BinanceOracle implements OracleConnector
 {
     private string $baseUrl = 'https://api.binance.com/api/v3';
     private array $symbolMap;
-    
+
     public function __construct()
     {
         // Map our internal symbols to Binance symbols
@@ -25,17 +25,17 @@ class BinanceOracle implements OracleConnector
             'GBP/USD' => 'GBPUSDT',
         ];
     }
-    
+
     public function getPrice(string $base, string $quote): PriceData
     {
         $pair = "{$base}/{$quote}";
         $symbol = $this->symbolMap[$pair] ?? $this->constructSymbol($base, $quote);
-        
+
         try {
             // In production, this would make actual API calls
             // For development, we simulate the response
             $response = $this->simulateBinanceResponse($symbol);
-            
+
             return new PriceData(
                 base: $base,
                 quote: $quote,
@@ -55,11 +55,11 @@ class BinanceOracle implements OracleConnector
             throw $e;
         }
     }
-    
+
     public function getMultiplePrices(array $pairs): array
     {
         $prices = [];
-        
+
         // Binance supports batch ticker requests
         // In production, we'd use /ticker/24hr endpoint with symbols parameter
         foreach ($pairs as $pair) {
@@ -70,19 +70,19 @@ class BinanceOracle implements OracleConnector
                 Log::warning("Failed to get price for {$pair}: {$e->getMessage()}");
             }
         }
-        
+
         return $prices;
     }
-    
+
     public function getHistoricalPrice(string $base, string $quote, Carbon $timestamp): PriceData
     {
         $symbol = $this->symbolMap["{$base}/{$quote}"] ?? $this->constructSymbol($base, $quote);
-        
+
         try {
             // Binance provides kline/candlestick data for historical prices
             // In production, use /klines endpoint
             $response = $this->simulateHistoricalResponse($symbol, $timestamp);
-            
+
             return new PriceData(
                 base: $base,
                 quote: $quote,
@@ -103,7 +103,7 @@ class BinanceOracle implements OracleConnector
             throw $e;
         }
     }
-    
+
     public function isHealthy(): bool
     {
         try {
@@ -114,17 +114,17 @@ class BinanceOracle implements OracleConnector
             return false;
         }
     }
-    
+
     public function getSourceName(): string
     {
         return 'binance';
     }
-    
+
     public function getPriority(): int
     {
         return 2; // Secondary priority after Chainlink
     }
-    
+
     private function constructSymbol(string $base, string $quote): string
     {
         // Convert USDT/USDC to USD for our purposes
@@ -133,7 +133,7 @@ class BinanceOracle implements OracleConnector
         }
         return strtoupper($base . $quote);
     }
-    
+
     /**
      * Simulate Binance 24hr ticker response
      */
@@ -145,10 +145,10 @@ class BinanceOracle implements OracleConnector
             'EURUSDT' => 1.09,
             'GBPUSDT' => 1.27,
         ];
-        
+
         $basePrice = $basePrices[$symbol] ?? 1.0;
         $price = $basePrice + ($basePrice * (rand(-100, 100) / 10000));
-        
+
         return [
             'symbol' => $symbol,
             'price' => number_format($price, 8, '.', ''),
@@ -159,7 +159,7 @@ class BinanceOracle implements OracleConnector
             'closeTime' => round(microtime(true) * 1000),
         ];
     }
-    
+
     /**
      * Simulate historical kline data
      */
@@ -171,13 +171,13 @@ class BinanceOracle implements OracleConnector
             'EURUSDT' => 1.09,
             'GBPUSDT' => 1.27,
         ];
-        
+
         $basePrice = $basePrices[$symbol] ?? 1.0;
         $open = $basePrice + ($basePrice * (rand(-200, 200) / 10000));
         $close = $basePrice + ($basePrice * (rand(-200, 200) / 10000));
         $high = max($open, $close) + ($basePrice * (rand(0, 100) / 10000));
         $low = min($open, $close) - ($basePrice * (rand(0, 100) / 10000));
-        
+
         return [
             'open' => number_format($open, 8, '.', ''),
             'high' => number_format($high, 8, '.', ''),

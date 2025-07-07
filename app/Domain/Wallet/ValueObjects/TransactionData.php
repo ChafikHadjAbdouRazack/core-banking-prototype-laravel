@@ -19,8 +19,9 @@ class TransactionData
         public readonly ?int $blockNumber = null,
         public readonly ?string $status = null,
         public readonly array $metadata = []
-    ) {}
-    
+    ) {
+    }
+
     public function toArray(): array
     {
         return array_filter([
@@ -40,7 +41,7 @@ class TransactionData
             'metadata' => $this->metadata,
         ], fn($value) => $value !== null);
     }
-    
+
     public function isConfirmed(): bool
     {
         return $this->status === 'confirmed' && $this->blockNumber !== null;

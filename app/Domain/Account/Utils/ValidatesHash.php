@@ -12,7 +12,7 @@ use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 trait ValidatesHash
 {
     private const string HASH_ALGORITHM = 'sha3-512';
-	private const int    HASH_LENGTH    = 128;         // SHA3-512 produces a 128-character hexadecimal string
+    private const int    HASH_LENGTH    = 128;         // SHA3-512 produces a 128-character hexadecimal string
 
     public string $currentHash = '';
 
@@ -21,7 +21,7 @@ trait ValidatesHash
      *
      * @return \App\Domain\Account\DataObjects\Hash
      */
-    protected function generateHash( ?Money $money = null ): Hash
+    protected function generateHash(?Money $money = null): Hash
     {
         return hydrate(
             Hash::class,
@@ -40,10 +40,9 @@ trait ValidatesHash
      *
      * @return void
      */
-    protected function validateHash( Hash $hash, ?Money $money = null ): void
+    protected function validateHash(Hash $hash, ?Money $money = null): void
     {
-        if ( !$this->generateHash( money: $money )->equals( $hash ) )
-        {
+        if (!$this->generateHash(money: $money)->equals($hash)) {
             throw new InvalidHashException();
         }
     }
@@ -53,7 +52,7 @@ trait ValidatesHash
      *
      * @return void
      */
-    protected function storeHash( Hash $hash ): void
+    protected function storeHash(Hash $hash): void
     {
         $this->currentHash = $hash->getHash();
     }
@@ -63,12 +62,12 @@ trait ValidatesHash
      *
      * @return void
      */
-    protected function resetHash( ?string $hash = null ): void
+    protected function resetHash(?string $hash = null): void
     {
         $this->currentHash = $hash ?? '';
     }
-	
-	/**
+
+    /**
      * Get the expected length of the hash.
      *
      * @return int

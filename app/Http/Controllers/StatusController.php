@@ -39,7 +39,7 @@ class StatusController extends Controller
     {
         // Get latest health checks from database
         $latestChecks = SystemHealthCheck::getLatestStatuses();
-        
+
         // Perform real-time checks for critical services
         $realtimeChecks = [
             'database' => $this->checkDatabase(),
@@ -47,12 +47,12 @@ class StatusController extends Controller
             'queue' => $this->checkQueue(),
             'storage' => $this->checkStorage(),
         ];
-        
+
         // Merge with database records
         $checks = [];
         foreach ($realtimeChecks as $service => $check) {
             $checks[$service] = $check;
-            
+
             // Record the check
             SystemHealthCheck::create([
                 'service' => $service,
@@ -63,7 +63,7 @@ class StatusController extends Controller
                 'checked_at' => now(),
             ]);
         }
-        
+
         // Add checks from database for services not checked in real-time
         foreach ($latestChecks as $service => $healthCheck) {
             if (!isset($checks[$service])) {
@@ -92,9 +92,9 @@ class StatusController extends Controller
             $start = microtime(true);
             DB::select('SELECT 1');
             $time = round((microtime(true) - $start) * 1000, 2);
-            
+
             $status = $time > 100 ? 'degraded' : 'operational';
-            
+
             return [
                 'status' => $status,
                 'response_time' => $time,
@@ -116,7 +116,7 @@ class StatusController extends Controller
             Cache::put($key, true, 10);
             $result = Cache::get($key);
             Cache::forget($key);
-            
+
             return [
                 'status' => $result ? 'operational' : 'degraded',
                 'message' => $result ? 'Cache working properly' : 'Cache issues detected'
@@ -134,17 +134,17 @@ class StatusController extends Controller
         try {
             $failedJobs = DB::table('failed_jobs')->count();
             $pendingJobs = 0;
-            
+
             // Try to count pending jobs if the table exists
             if (Schema::hasTable('jobs')) {
                 $pendingJobs = DB::table('jobs')->count();
             }
-            
+
             $status = 'operational';
             if ($failedJobs > 100 || $pendingJobs > 1000) {
                 $status = 'degraded';
             }
-            
+
             return [
                 'status' => $status,
                 'failed_jobs' => $failedJobs,
@@ -166,7 +166,7 @@ class StatusController extends Controller
             $free = disk_free_space($disk);
             $total = disk_total_space($disk);
             $used_percentage = round(($total - $free) / $total * 100, 2);
-            
+
             return [
                 'status' => $used_percentage > 90 ? 'degraded' : 'operational',
                 'usage' => $used_percentage . '%',
@@ -187,7 +187,7 @@ class StatusController extends Controller
             ->where('checked_at', '>=', now()->subHour())
             ->whereNotNull('response_time')
             ->avg('response_time');
-            
+
         return round($avgResponseTime ?? 0, 2);
     }
 
@@ -219,17 +219,17 @@ class StatusController extends Controller
                 'description' => 'Transactional email delivery',
             ]
         ];
-        
+
         $result = [];
         foreach ($services as $serviceKey => $serviceInfo) {
             // Get latest status from health checks
             $latestCheck = SystemHealthCheck::where('service', $serviceKey)
                 ->orderBy('checked_at', 'desc')
                 ->first();
-                
+
             $status = $latestCheck ? $latestCheck->status : 'operational';
             $uptime = SystemHealthCheck::calculateUptime($serviceKey, 30);
-            
+
             $result[] = [
                 'name' => $serviceInfo['name'],
                 'description' => $serviceInfo['description'],
@@ -237,7 +237,7 @@ class StatusController extends Controller
                 'uptime' => $uptime . '%'
             ];
         }
-        
+
         return $result;
     }
 
@@ -247,7 +247,7 @@ class StatusController extends Controller
             ->orderBy('started_at', 'desc')
             ->limit(10)
             ->get();
-            
+
         if ($forApi) {
             return $incidents->map(function ($incident) {
                 return [
@@ -268,7 +268,7 @@ class StatusController extends Controller
                 ];
             });
         }
-        
+
         return $incidents;
     }
 
@@ -278,7 +278,7 @@ class StatusController extends Controller
         $services = ['web', 'api', 'database', 'queue', 'cache', 'email'];
         $totalUptime = 0;
         $serviceCount = 0;
-        
+
         foreach ($services as $service) {
             $uptime = SystemHealthCheck::calculateUptime($service, 30);
             if ($uptime > 0) {
@@ -286,18 +286,18 @@ class StatusController extends Controller
                 $serviceCount++;
             }
         }
-        
+
         $overallUptime = $serviceCount > 0 ? ($totalUptime / $serviceCount) : 100;
-        
+
         // Calculate total downtime minutes
         $totalChecks = SystemHealthCheck::where('checked_at', '>=', now()->subDays(30))->count();
         $failedChecks = SystemHealthCheck::where('checked_at', '>=', now()->subDays(30))
             ->whereIn('status', ['degraded', 'down'])
             ->count();
-            
+
         // Assuming checks run every minute
         $downtimeMinutes = $failedChecks;
-        
+
         return [
             'percentage' => round($overallUptime, 2),
             'period' => '30 days',

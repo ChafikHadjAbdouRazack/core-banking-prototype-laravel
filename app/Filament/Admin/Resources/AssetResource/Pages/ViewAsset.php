@@ -19,7 +19,7 @@ class ViewAsset extends ViewRecord
             Actions\EditAction::make()
                 ->label('Edit Asset')
                 ->icon('heroicon-m-pencil-square'),
-            
+
             Actions\Action::make('toggle_status')
                 ->label(fn () => $this->getRecord()->is_active ? 'Deactivate' : 'Activate')
                 ->icon(fn () => $this->getRecord()->is_active ? 'heroicon-m-x-circle' : 'heroicon-m-check-circle')
@@ -27,18 +27,17 @@ class ViewAsset extends ViewRecord
                 ->action(function () {
                     $record = $this->getRecord();
                     $record->update(['is_active' => !$record->is_active]);
-                    
+
                     $this->dispatch('$refresh');
-                    
+
                     $status = $record->is_active ? 'activated' : 'deactivated';
                     $this->getSuccessNotification("Asset has been {$status}.");
                 })
                 ->requiresConfirmation(fn () => $this->getRecord()->is_active)
-                ->modalDescription(fn () => $this->getRecord()->is_active 
+                ->modalDescription(fn () => $this->getRecord()->is_active
                     ? 'Are you sure you want to deactivate this asset? This will prevent new transactions.'
-                    : null
-                ),
-            
+                    : null),
+
             Actions\DeleteAction::make()
                 ->label('Delete Asset')
                 ->icon('heroicon-m-trash')

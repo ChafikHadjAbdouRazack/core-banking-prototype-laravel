@@ -148,7 +148,7 @@ class GCUController extends Controller
         $interval = $request->input('interval', 'daily');
 
         $startDate = $this->getPeriodStartDate($period);
-        
+
         $values = BasketValue::where('basket_code', 'GCU')
             ->where('calculated_at', '>=', $startDate)
             ->orderBy('calculated_at')
@@ -160,16 +160,16 @@ class GCUController extends Controller
         // Calculate changes
         $history = [];
         $previousValue = null;
-        
+
         foreach ($groupedValues as $timestamp => $value) {
             $change = $previousValue ? ($value - $previousValue) / $previousValue * 100 : 0;
-            
+
             $history[] = [
                 'timestamp' => $timestamp,
                 'value' => round($value, 4),
                 'change' => round($change, 2),
             ];
-            
+
             $previousValue = $value;
         }
 
@@ -312,18 +312,18 @@ class GCUController extends Controller
 
         // Get exchange rates for each component
         $exchangeRateService = app(\App\Domain\Asset\Services\ExchangeRateService::class);
-        
+
         // Calculate detailed composition data
         $composition = $gcu->components->map(function ($component) use ($latestValue, $exchangeRateService) {
             $asset = $component->asset;
-            
+
             // Get current price in USD
             $currentPriceUSD = 1.0;
             if ($component->asset_code !== 'USD') {
                 $rate = $exchangeRateService->getRate($component->asset_code, 'USD');
                 $currentPriceUSD = $rate ? $rate->rate : 0;
             }
-            
+
             // Calculate value contribution
             $valueContribution = 0;
             $percentageOfBasket = 0;
@@ -331,11 +331,11 @@ class GCUController extends Controller
                 $valueContribution = $latestValue->component_values[$component->asset_code]['weighted_value'] ?? 0;
                 $percentageOfBasket = ($valueContribution / $latestValue->value) * 100;
             }
-            
+
             // Get historical changes
             $changes24h = $this->getAssetPriceChange($component->asset_code, 1);
             $changes7d = $this->getAssetPriceChange($component->asset_code, 7);
-            
+
             return [
                 'asset_code' => $component->asset_code,
                 'asset_name' => $asset->name,
@@ -442,7 +442,7 @@ class GCUController extends Controller
         // In production, these would be calculated from real data
         $totalSupply = \App\Models\AccountBalance::where('asset_code', 'GCU')
             ->sum('balance');
-        
+
         $holdersCount = \App\Models\AccountBalance::where('asset_code', 'GCU')
             ->where('balance', '>', 0)
             ->count();
@@ -467,13 +467,13 @@ class GCUController extends Controller
             ->value('value') ?? 1.0;
 
         $changes = [];
-        
+
         foreach (['24h' => 1, '7d' => 7, '30d' => 30] as $period => $days) {
             $previousValue = BasketValue::where('basket_code', $basketCode)
                 ->where('calculated_at', '<=', $now->copy()->subDays($days))
                 ->orderBy('calculated_at', 'desc')
                 ->value('value') ?? $currentValue;
-            
+
             $change = $previousValue > 0 ? (($currentValue - $previousValue) / $previousValue * 100) : 0;
             $changes[$period] = round($change, 2);
         }
@@ -488,7 +488,7 @@ class GCUController extends Controller
         }
 
         $lastRebalanced = $basket->last_rebalanced_at ?? now();
-        
+
         $nextRebalance = match ($basket->rebalance_frequency) {
             'daily' => $lastRebalanced->copy()->addDay(),
             'weekly' => $lastRebalanced->copy()->addWeek(),
@@ -496,7 +496,7 @@ class GCUController extends Controller
             'quarterly' => $lastRebalanced->copy()->addQuarter(),
             default => $lastRebalanced->copy()->addMonth(),
         };
-        
+
         return $nextRebalance->toIso8601String();
     }
 
@@ -515,7 +515,7 @@ class GCUController extends Controller
     private function groupValuesByInterval($values, string $interval): array
     {
         $grouped = [];
-        
+
         foreach ($values as $value) {
             $key = match ($interval) {
                 'hourly' => $value->calculated_at->format('Y-m-d H:00:00'),
@@ -524,11 +524,11 @@ class GCUController extends Controller
                 'monthly' => $value->calculated_at->format('Y-m'),
                 default => $value->calculated_at->format('Y-m-d'),
             };
-            
+
             if (!isset($grouped[$key])) {
                 $grouped[$key] = [];
             }
-            
+
             $grouped[$key][] = $value->value;
         }
 
@@ -546,7 +546,7 @@ class GCUController extends Controller
         try {
             $healthMonitor = app(\App\Domain\Custodian\Services\CustodianHealthMonitor::class);
             $health = $healthMonitor->getCustodianHealth($bankCode);
-            
+
             return match ($health['status']) {
                 'healthy' => 'operational',
                 'degraded' => 'degraded',
@@ -562,25 +562,25 @@ class GCUController extends Controller
     {
         $exchangeRateService = app(\App\Domain\Asset\Services\ExchangeRateService::class);
         $now = now();
-        
+
         // Get current rate to USD
         $currentRate = 1.0;
         if ($assetCode !== 'USD') {
             $rate = $exchangeRateService->getRate($assetCode, 'USD');
             $currentRate = $rate ? $rate->rate : 0;
         }
-        
+
         // Get historical rate
         $historicalRates = $exchangeRateService->getRateHistory($assetCode, 'USD', $days);
         if ($historicalRates->isEmpty()) {
             return 0;
         }
-        
+
         $oldestRate = $historicalRates->last();
         if (!$oldestRate || $oldestRate->rate == 0) {
             return 0;
         }
-        
+
         return (($currentRate - $oldestRate->rate) / $oldestRate->rate) * 100;
     }
 
@@ -589,22 +589,22 @@ class GCUController extends Controller
         $currentValue = BasketValue::where('basket_code', $basketCode)
             ->orderBy('calculated_at', 'desc')
             ->value('value') ?? 1.0;
-        
+
         $performance = [];
-        
+
         foreach ([1 => '24h', 7 => '7d', 30 => '30d'] as $days => $label) {
             $pastValue = BasketValue::where('basket_code', $basketCode)
                 ->where('calculated_at', '<=', now()->subDays($days))
                 ->orderBy('calculated_at', 'desc')
                 ->value('value') ?? $currentValue;
-            
+
             $changeUsd = $currentValue - $pastValue;
             $changePercent = $pastValue > 0 ? (($currentValue - $pastValue) / $pastValue * 100) : 0;
-            
+
             $performance["{$label}_change_usd"] = round($changeUsd, 4);
             $performance["{$label}_change_percent"] = round($changePercent, 2);
         }
-        
+
         return $performance;
     }
 }

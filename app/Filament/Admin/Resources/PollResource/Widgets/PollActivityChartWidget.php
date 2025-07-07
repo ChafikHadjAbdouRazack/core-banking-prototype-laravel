@@ -27,7 +27,7 @@ class PollActivityChartWidget extends ChartWidget
         for ($i = 29; $i >= 0; $i--) {
             $date = now()->subDays($i);
             $labels[] = $date->format('M j');
-            
+
             $pollsData[] = Poll::whereDate('created_at', $date->toDateString())->count();
             $votesData[] = Vote::whereDate('voted_at', $date->toDateString())->count();
         }

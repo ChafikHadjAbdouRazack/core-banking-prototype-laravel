@@ -24,15 +24,15 @@ class ReverseAssetTransferActivity extends Activity
     ): void {
         // Retrieve the transfer aggregate
         $aggregate = AssetTransferAggregate::retrieve($transferId);
-        
+
         // Mark the transfer as reversed/cancelled
         $aggregate->reverse(
             reason: 'Workflow compensation: Transfer reversed due to subsequent step failure'
         );
-        
+
         // Persist the aggregate state
         $aggregate->persist();
-        
+
         // Log the reversal for audit purposes
         logger()->info('Asset transfer reversed', [
             'transfer_id' => $transferId,

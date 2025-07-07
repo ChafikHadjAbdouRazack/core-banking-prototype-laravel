@@ -111,7 +111,7 @@ class CgoInvestment extends Model
 
     public function getTierColorAttribute(): string
     {
-        return match($this->tier) {
+        return match ($this->tier) {
             'bronze' => 'yellow',
             'silver' => 'gray',
             'gold' => 'amber',
@@ -121,7 +121,7 @@ class CgoInvestment extends Model
 
     public function getStatusColorAttribute(): string
     {
-        return match($this->status) {
+        return match ($this->status) {
             'pending' => 'yellow',
             'confirmed' => 'green',
             'cancelled' => 'red',

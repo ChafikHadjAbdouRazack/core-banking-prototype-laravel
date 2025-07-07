@@ -28,8 +28,9 @@ class BankTransfer
         public readonly ?Carbon $failedAt,
         public readonly ?string $failureReason,
         public readonly array $metadata = [],
-    ) {}
-    
+    ) {
+    }
+
     /**
      * Check if transfer is pending
      */
@@ -37,7 +38,7 @@ class BankTransfer
     {
         return in_array($this->status, ['pending', 'processing', 'submitted']);
     }
-    
+
     /**
      * Check if transfer is completed
      */
@@ -45,7 +46,7 @@ class BankTransfer
     {
         return $this->status === 'completed' && $this->executedAt !== null;
     }
-    
+
     /**
      * Check if transfer failed
      */
@@ -53,7 +54,7 @@ class BankTransfer
     {
         return $this->status === 'failed' || $this->failedAt !== null;
     }
-    
+
     /**
      * Check if transfer can be cancelled
      */
@@ -61,7 +62,7 @@ class BankTransfer
     {
         return $this->isPending() && !in_array($this->status, ['submitted', 'processing']);
     }
-    
+
     /**
      * Get total amount including fees
      */
@@ -70,7 +71,7 @@ class BankTransfer
         $totalFees = array_sum(array_column($this->fees, 'amount'));
         return $this->amount + $totalFees;
     }
-    
+
     /**
      * Get net amount after fees
      */
@@ -79,10 +80,10 @@ class BankTransfer
         if ($this->metadata['fee_mode'] === 'shared') {
             return $this->amount - (array_sum(array_column($this->fees, 'amount')) / 2);
         }
-        
+
         return $this->metadata['fee_mode'] === 'sender' ? $this->amount : $this->amount - array_sum(array_column($this->fees, 'amount'));
     }
-    
+
     /**
      * Get estimated arrival time
      */
@@ -91,18 +92,18 @@ class BankTransfer
         if ($this->isCompleted() || $this->isFailed()) {
             return null;
         }
-        
-        $estimatedHours = match($this->type) {
+
+        $estimatedHours = match ($this->type) {
             'INTERNAL' => 0,
             'SEPA' => 24,
             'SEPA_INSTANT' => 0,
             'SWIFT' => 72,
             default => 48,
         };
-        
+
         return $this->createdAt->copy()->addHours($estimatedHours);
     }
-    
+
     /**
      * Convert to array
      */
@@ -130,7 +131,7 @@ class BankTransfer
             'metadata' => $this->metadata,
         ];
     }
-    
+
     /**
      * Create from array
      */

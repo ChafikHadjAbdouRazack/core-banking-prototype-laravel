@@ -16,12 +16,12 @@ class SettingsController extends Controller
         $settings = Setting::where('is_public', true)
             ->get()
             ->mapWithKeys(fn ($setting) => [$setting->key => $setting->value]);
-        
+
         return response()->json([
             'data' => $settings,
         ]);
     }
-    
+
     /**
      * Get settings by group
      */
@@ -31,7 +31,7 @@ class SettingsController extends Controller
             ->where('is_public', true)
             ->get()
             ->mapWithKeys(fn ($setting) => [$setting->key => $setting->value]);
-        
+
         return response()->json([
             'data' => $settings,
         ]);

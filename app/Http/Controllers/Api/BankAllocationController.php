@@ -19,7 +19,8 @@ class BankAllocationController extends Controller
 {
     public function __construct(
         private BankAllocationService $bankAllocationService
-    ) {}
+    ) {
+    }
 
     /**
      * @OA\Get(
@@ -63,7 +64,7 @@ class BankAllocationController extends Controller
     {
         $user = Auth::user();
         $allocations = $user->bankPreferences()->active()->get();
-        
+
         if ($allocations->isEmpty()) {
             // Setup default allocations if none exist
             $allocations = $this->bankAllocationService->setupDefaultAllocations($user);
@@ -71,7 +72,7 @@ class BankAllocationController extends Controller
 
         $totalPercentage = $allocations->sum('allocation_percentage');
         $primaryBank = $allocations->where('is_primary', true)->first();
-        
+
         // Calculate insurance coverage
         $totalInsurance = $allocations->sum(function ($allocation) {
             return $allocation->metadata['deposit_insurance'] ?? 100000;
@@ -148,7 +149,7 @@ class BankAllocationController extends Controller
         try {
             $user = Auth::user();
             $allocations = $this->bankAllocationService->updateAllocations($user, $validated['allocations']);
-            
+
             // Set primary bank if specified
             if (isset($validated['primary_bank'])) {
                 $this->bankAllocationService->setPrimaryBank($user, $validated['primary_bank']);
@@ -169,7 +170,6 @@ class BankAllocationController extends Controller
                     })
                 ]
             ]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Failed to update bank allocations',
@@ -234,7 +234,6 @@ class BankAllocationController extends Controller
                     'status' => $preference->status,
                 ]
             ], 201);
-
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Failed to add bank to allocation',
@@ -287,7 +286,6 @@ class BankAllocationController extends Controller
                     'removed_at' => now()->toISOString(),
                 ]
             ]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Failed to remove bank from allocation',
@@ -344,7 +342,6 @@ class BankAllocationController extends Controller
                     'updated_at' => $preference->updated_at->toISOString(),
                 ]
             ]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Failed to set primary bank',
@@ -446,9 +443,9 @@ class BankAllocationController extends Controller
 
         $user = Auth::user();
         $amountInCents = (int) ($validated['amount'] * 100);
-        
+
         $summary = $this->bankAllocationService->getDistributionSummary($user, $amountInCents);
-        
+
         if (isset($summary['error'])) {
             return response()->json([
                 'message' => 'Failed to generate distribution preview',

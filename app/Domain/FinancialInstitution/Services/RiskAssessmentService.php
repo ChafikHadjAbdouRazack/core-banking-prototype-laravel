@@ -19,7 +19,7 @@ class RiskAssessmentService
             'financial_risk' => $this->assessFinancialRisk($application),
             'operational_risk' => $this->assessOperationalRisk($application),
         ];
-        
+
         // Calculate weighted risk score
         $weights = [
             'geographic_risk' => 0.25,
@@ -29,19 +29,19 @@ class RiskAssessmentService
             'financial_risk' => 0.10,
             'operational_risk' => 0.10,
         ];
-        
+
         $totalRisk = 0;
         foreach ($assessment as $category => $result) {
             $totalRisk += $result['score'] * $weights[$category];
         }
-        
+
         $assessment['total_risk_score'] = round($totalRisk, 2);
         $assessment['risk_rating'] = $this->getRiskRating($totalRisk);
         $assessment['assessed_at'] = now()->toIso8601String();
-        
+
         return $assessment;
     }
-    
+
     /**
      * Assess geographic risk
      */
@@ -49,12 +49,12 @@ class RiskAssessmentService
     {
         $riskScore = 0;
         $factors = [];
-        
+
         // Country risk categories
         $highRiskCountries = ['AF', 'IR', 'KP', 'MM', 'SY', 'YE', 'SO', 'LY', 'VE'];
         $mediumRiskCountries = ['RU', 'UA', 'BY', 'TR', 'EG', 'NG', 'KE', 'PK', 'BD'];
         $lowRiskCountries = ['US', 'GB', 'DE', 'FR', 'CH', 'NL', 'SE', 'NO', 'DK', 'FI', 'AU', 'CA', 'JP', 'SG'];
-        
+
         // Base country risk
         if (in_array($application->country, $highRiskCountries)) {
             $riskScore += 80;
@@ -69,29 +69,29 @@ class RiskAssessmentService
             $riskScore += 30;
             $factors[] = 'Standard-risk jurisdiction';
         }
-        
+
         // Target markets risk
         $targetMarkets = $application->target_markets ?? [];
         $highRiskMarkets = array_intersect($targetMarkets, $highRiskCountries);
-        
+
         if (count($highRiskMarkets) > 0) {
             $riskScore += min(20 * count($highRiskMarkets), 40);
             $factors[] = 'Operations in high-risk markets';
         }
-        
+
         // Cross-border operations
         if (count($targetMarkets) > 10) {
             $riskScore += 10;
             $factors[] = 'Extensive cross-border operations';
         }
-        
+
         return [
             'score' => min($riskScore, 100),
             'factors' => $factors,
             'high_risk_exposures' => $highRiskMarkets,
         ];
     }
-    
+
     /**
      * Assess business model risk
      */
@@ -99,7 +99,7 @@ class RiskAssessmentService
     {
         $riskScore = 0;
         $factors = [];
-        
+
         // Institution type risk
         $typeRisks = [
             'bank' => 20,
@@ -112,38 +112,38 @@ class RiskAssessmentService
             'insurance' => 20,
             'other' => 50,
         ];
-        
+
         $riskScore += $typeRisks[$application->institution_type] ?? 50;
         $factors[] = ucfirst($application->institution_type) . ' business model';
-        
+
         // Product complexity
         $products = $application->product_offerings ?? [];
         $highRiskProducts = ['crypto', 'derivatives', 'forex', 'binary_options', 'crowdfunding'];
         $riskyProducts = array_intersect($products, $highRiskProducts);
-        
+
         if (!empty($riskyProducts)) {
             $riskScore += min(15 * count($riskyProducts), 30);
             $factors[] = 'High-risk product offerings';
         }
-        
+
         // Customer base
         if (in_array('retail', $products)) {
             $riskScore += 10;
             $factors[] = 'Retail customer exposure';
         }
-        
+
         if (in_array('corporate', $products)) {
             $riskScore += 5;
             $factors[] = 'Corporate customer base';
         }
-        
+
         return [
             'score' => min($riskScore, 100),
             'factors' => $factors,
             'risky_products' => $riskyProducts,
         ];
     }
-    
+
     /**
      * Assess volume risk
      */
@@ -151,10 +151,10 @@ class RiskAssessmentService
     {
         $riskScore = 0;
         $factors = [];
-        
+
         $monthlyVolume = $application->expected_monthly_volume ?? 0;
         $monthlyTransactions = $application->expected_monthly_transactions ?? 0;
-        
+
         // Volume-based risk
         if ($monthlyVolume > 100000000) { // > $100M
             $riskScore += 40;
@@ -169,7 +169,7 @@ class RiskAssessmentService
             $riskScore += 5;
             $factors[] = 'Low transaction volume';
         }
-        
+
         // Transaction count risk
         if ($monthlyTransactions > 1000000) {
             $riskScore += 30;
@@ -181,7 +181,7 @@ class RiskAssessmentService
             $riskScore += 10;
             $factors[] = 'Moderate transaction count';
         }
-        
+
         // Average transaction size
         if ($monthlyTransactions > 0) {
             $avgTransaction = $monthlyVolume / $monthlyTransactions;
@@ -193,7 +193,7 @@ class RiskAssessmentService
                 $factors[] = 'Micro-transaction pattern';
             }
         }
-        
+
         return [
             'score' => min($riskScore, 100),
             'factors' => $factors,
@@ -201,7 +201,7 @@ class RiskAssessmentService
             'monthly_transactions' => $monthlyTransactions,
         ];
     }
-    
+
     /**
      * Assess regulatory risk
      */
@@ -209,7 +209,7 @@ class RiskAssessmentService
     {
         $riskScore = 0;
         $factors = [];
-        
+
         // No primary regulator
         if (!$application->primary_regulator) {
             $riskScore += 40;
@@ -222,29 +222,29 @@ class RiskAssessmentService
                 $factors[] = 'Regulator with limited international recognition';
             }
         }
-        
+
         // Compliance gaps
         if (!$application->has_aml_program) {
             $riskScore += 25;
             $factors[] = 'No AML program';
         }
-        
+
         if (!$application->has_kyc_procedures) {
             $riskScore += 20;
             $factors[] = 'No KYC procedures';
         }
-        
+
         if (!$application->has_data_protection_policy) {
             $riskScore += 15;
             $factors[] = 'No data protection policy';
         }
-        
+
         // Years in operation
         if ($application->years_in_operation < 3) {
             $riskScore += 15;
             $factors[] = 'Limited operating history';
         }
-        
+
         return [
             'score' => min($riskScore, 100),
             'factors' => $factors,
@@ -255,7 +255,7 @@ class RiskAssessmentService
             ]),
         ];
     }
-    
+
     /**
      * Assess financial risk
      */
@@ -263,9 +263,9 @@ class RiskAssessmentService
     {
         $riskScore = 0;
         $factors = [];
-        
+
         $aum = $application->assets_under_management ?? 0;
-        
+
         // AUM-based risk
         if ($aum < 1000000) { // < $1M
             $riskScore += 40;
@@ -280,20 +280,20 @@ class RiskAssessmentService
             $riskScore += 5;
             $factors[] = 'Substantial assets under management';
         }
-        
+
         // Institution type financial risk
         if (in_array($application->institution_type, ['fintech', 'emi', 'payment_processor'])) {
             $riskScore += 20;
             $factors[] = 'Non-traditional financial institution';
         }
-        
+
         return [
             'score' => min($riskScore, 100),
             'factors' => $factors,
             'assets_under_management' => $aum,
         ];
     }
-    
+
     /**
      * Assess operational risk
      */
@@ -301,20 +301,20 @@ class RiskAssessmentService
     {
         $riskScore = 0;
         $factors = [];
-        
+
         // Technical requirements
         $techRequirements = $application->integration_requirements ?? [];
-        
+
         if (in_array('real_time_processing', $techRequirements)) {
             $riskScore += 15;
             $factors[] = 'Real-time processing requirements';
         }
-        
+
         if (in_array('high_availability', $techRequirements)) {
             $riskScore += 10;
             $factors[] = 'High availability requirements';
         }
-        
+
         // Security certifications
         $secCerts = $application->security_certifications ?? [];
         if (empty($secCerts)) {
@@ -324,26 +324,26 @@ class RiskAssessmentService
             $riskScore += 15;
             $factors[] = 'Limited security certifications';
         }
-        
+
         // Currency complexity
         $currencies = $application->required_currencies ?? [];
         if (count($currencies) > 10) {
             $riskScore += 20;
             $factors[] = 'High currency complexity';
         }
-        
+
         // PCI compliance for payment processors
         if ($application->institution_type === 'payment_processor' && !$application->is_pci_compliant) {
             $riskScore += 25;
             $factors[] = 'Payment processor without PCI compliance';
         }
-        
+
         return [
             'score' => min($riskScore, 100),
             'factors' => $factors,
         ];
     }
-    
+
     /**
      * Get risk rating from score
      */

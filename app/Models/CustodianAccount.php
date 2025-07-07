@@ -12,14 +12,15 @@ use Carbon\Carbon;
 
 /**
  * CustodianAccount Model
- * 
+ *
  * Represents the mapping between internal accounts and external custodian accounts.
  * This enables multi-custodian support where a single internal account can have
  * multiple external accounts across different custodians.
  */
 class CustodianAccount extends Model
 {
-    use HasFactory, HasUuids;
+    use HasFactory;
+    use HasUuids;
 
     /**
      * Get the columns that should receive a unique identifier.
@@ -117,7 +118,7 @@ class CustodianAccount extends Model
         self::where('account_uuid', $this->account_uuid)
             ->where('id', '!=', $this->id)
             ->update(['is_primary' => false]);
-        
+
         // Set this as primary
         $this->update(['is_primary' => true]);
     }

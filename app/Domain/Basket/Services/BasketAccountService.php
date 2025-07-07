@@ -21,7 +21,8 @@ class BasketAccountService
     public function __construct(
         private readonly BasketValueCalculationService $valueCalculationService,
         private readonly WalletService $walletService
-    ) {}
+    ) {
+    }
 
     /**
      * Add basket asset balance to an account.
@@ -29,11 +30,11 @@ class BasketAccountService
     public function addBasketBalance(Account $account, string $basketCode, int $amount): AccountBalance
     {
         $basket = BasketAsset::where('code', $basketCode)->first();
-        
+
         if (!$basket) {
             throw new \Exception("Basket not found: {$basketCode}");
         }
-        
+
         if (!$basket->is_active) {
             throw new \Exception("Basket {$basketCode} is not active");
         }
@@ -97,11 +98,11 @@ class BasketAccountService
     public function decomposeBasket(Account $account, string $basketCode, int $amount): array
     {
         $basket = BasketAsset::where('code', $basketCode)->first();
-        
+
         if (!$basket) {
             throw new \Exception("Basket not found: {$basketCode}");
         }
-        
+
         if (!$basket->is_active) {
             throw new \Exception("Basket {$basketCode} is not active");
         }
@@ -130,7 +131,7 @@ class BasketAccountService
 
             // Use WalletService for proper Service → Workflow → Activity → Aggregate architecture
             $accountUuid = AccountUuid::fromString($account->uuid);
-            
+
             // Subtract basket balance using WalletService
             $this->walletService->withdraw($accountUuid, $basketCode, $amount);
 
@@ -168,11 +169,11 @@ class BasketAccountService
     public function composeBasket(Account $account, string $basketCode, int $amount): array
     {
         $basket = BasketAsset::where('code', $basketCode)->first();
-        
+
         if (!$basket) {
             throw new \Exception("Basket not found: {$basketCode}");
         }
-        
+
         if (!$basket->is_active) {
             throw new \Exception("Basket {$basketCode} is not active");
         }
@@ -204,7 +205,7 @@ class BasketAccountService
 
             // Use WalletService for proper Service → Workflow → Activity → Aggregate architecture
             $accountUuid = AccountUuid::fromString($account->uuid);
-            
+
             // Subtract component balances using WalletService
             foreach ($requiredAmounts as $assetCode => $requiredAmount) {
                 $this->walletService->withdraw($accountUuid, $assetCode, $requiredAmount);
@@ -298,7 +299,7 @@ class BasketAccountService
     public function calculateRequiredComponents(string $basketCode, int $amount): array
     {
         $basket = BasketAsset::where('code', $basketCode)->first();
-        
+
         if (!$basket) {
             throw new \Exception("Basket not found: {$basketCode}");
         }

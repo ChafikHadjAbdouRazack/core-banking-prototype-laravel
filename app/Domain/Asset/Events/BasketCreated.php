@@ -12,5 +12,6 @@ class BasketCreated extends ShouldBeStored
         public string $type,
         public array $components,
         public ?string $rebalanceFrequency = null
-    ) {}
+    ) {
+    }
 }

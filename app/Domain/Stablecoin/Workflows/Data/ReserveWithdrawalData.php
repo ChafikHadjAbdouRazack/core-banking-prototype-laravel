@@ -12,8 +12,9 @@ class ReserveWithdrawalData
         public readonly string $destinationAddress,
         public readonly string $reason,
         public readonly array $metadata = []
-    ) {}
-    
+    ) {
+    }
+
     public function toArray(): array
     {
         return [

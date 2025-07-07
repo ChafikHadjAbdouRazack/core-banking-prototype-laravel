@@ -65,7 +65,7 @@ class BasketAsset extends Model
     {
         return $this->hasMany(BasketValue::class, 'basket_asset_code', 'code');
     }
-    
+
     /**
      * Get the performance records of this basket.
      */
@@ -152,28 +152,28 @@ class BasketAsset extends Model
     public function calculateValue(): float
     {
         $value = 0.0;
-        
+
         foreach ($this->activeComponents as $component) {
             $asset = Asset::find($component->asset_code);
             if (!$asset) {
                 continue;
             }
-            
+
             // Get exchange rate to USD
             $rate = 1.0;
             if ($component->asset_code !== 'USD') {
                 $exchangeRate = app(\App\Domain\Asset\Services\ExchangeRateService::class)
                     ->getRate($component->asset_code, 'USD');
-                    
+
                 if ($exchangeRate) {
                     $rate = $exchangeRate->rate;
                 }
             }
-            
+
             // Add weighted value
             $value += $rate * ($component->weight / 100);
         }
-        
+
         return $value;
     }
 

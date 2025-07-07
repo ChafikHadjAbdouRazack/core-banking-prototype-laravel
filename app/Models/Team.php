@@ -54,7 +54,7 @@ class Team extends JetstreamTeam
             'allowed_roles' => 'array',
         ];
     }
-    
+
     /**
      * Team-specific user roles
      */
@@ -62,7 +62,7 @@ class Team extends JetstreamTeam
     {
         return $this->hasMany(TeamUserRole::class);
     }
-    
+
     /**
      * Get team-specific role for a user
      */
@@ -72,7 +72,7 @@ class Team extends JetstreamTeam
             ->where('user_id', $user->id)
             ->first();
     }
-    
+
     /**
      * Assign a team-specific role to a user
      */
@@ -88,7 +88,7 @@ class Team extends JetstreamTeam
             ]
         );
     }
-    
+
     /**
      * Check if team has reached user limit
      */
@@ -96,7 +96,7 @@ class Team extends JetstreamTeam
     {
         return $this->users()->count() >= $this->max_users;
     }
-    
+
     /**
      * Available roles for this team
      */
@@ -105,7 +105,7 @@ class Team extends JetstreamTeam
         if (!$this->is_business_organization) {
             return [];
         }
-        
+
         return $this->allowed_roles ?? [
             'compliance_officer',
             'accountant',

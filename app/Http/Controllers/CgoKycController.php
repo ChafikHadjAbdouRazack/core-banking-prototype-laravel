@@ -32,7 +32,7 @@ class CgoKycController extends Controller
         ]);
 
         $user = Auth::user();
-        
+
         // Create a temporary investment object for checking requirements
         $tempInvestment = new CgoInvestment([
             'user_id' => $user->id,
@@ -53,14 +53,14 @@ class CgoKycController extends Controller
     public function status()
     {
         $user = Auth::user();
-        
+
         $totalInvested = CgoInvestment::where('user_id', $user->id)
             ->whereIn('status', ['confirmed', 'pending'])
             ->sum('amount');
 
         $investmentLimits = $this->getInvestmentLimits($user);
         $documents = $this->documents()->getData()->data ?? [];
-        
+
         // Get required documents based on next level
         $requiredDocuments = [];
         if (!$user->kyc_level || $user->kyc_level === 'none') {
@@ -102,7 +102,7 @@ class CgoKycController extends Controller
                 $investment = CgoInvestment::where('uuid', $request->investment_id)
                     ->where('user_id', $user->id)
                     ->firstOrFail();
-                    
+
                 // Check if this investment requires KYC
                 $requirements = $this->cgoKycService->checkKycRequirements($investment);
                 if ($requirements['is_sufficient']) {
@@ -132,7 +132,6 @@ class CgoKycController extends Controller
                     'status' => 'pending_review',
                 ],
             ]);
-
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('CGO KYC submission failed', [
@@ -153,7 +152,7 @@ class CgoKycController extends Controller
     public function documents()
     {
         $user = Auth::user();
-        
+
         $documents = $user->kycDocuments()
             ->select('id', 'document_type', 'status', 'uploaded_at', 'verified_at', 'expires_at', 'rejection_reason')
             ->orderBy('uploaded_at', 'desc')
@@ -184,7 +183,7 @@ class CgoKycController extends Controller
     public function verifyInvestment(Request $request, $investmentUuid)
     {
         $user = Auth::user();
-        
+
         $investment = CgoInvestment::where('uuid', $investmentUuid)
             ->where('user_id', $user->id)
             ->firstOrFail();
@@ -210,7 +209,7 @@ class CgoKycController extends Controller
             ]);
         } else {
             $requirements = $this->cgoKycService->checkKycRequirements($investment);
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'KYC verification required',
@@ -231,7 +230,7 @@ class CgoKycController extends Controller
     protected function getInvestmentLimits($user): array
     {
         $requirements = $this->kycService->getRequirements($user->kyc_level ?: 'none');
-        
+
         return [
             'current_level' => $user->kyc_level ?: 'none',
             'single_investment_limit' => $requirements['limits']['daily_transaction'] ?? 0,
@@ -304,7 +303,7 @@ class CgoKycController extends Controller
             $totalInvested = CgoInvestment::where('user_id', $user->id)
                 ->whereIn('status', ['confirmed', 'pending'])
                 ->sum('amount');
-                
+
             if ($totalInvested > 800) { // Getting close to basic limit
                 $actions[] = [
                     'type' => 'upgrade_kyc',

@@ -98,7 +98,7 @@ class LoginController extends Controller
         // Implement concurrent session limit
         $maxSessions = config('auth.max_concurrent_sessions', 5);
         $currentTokenCount = $user->tokens()->count();
-        
+
         if ($currentTokenCount >= $maxSessions) {
             // Delete oldest tokens to maintain the limit
             $tokensToDelete = $currentTokenCount - $maxSessions + 1;
@@ -225,10 +225,10 @@ class LoginController extends Controller
     {
         $user = $request->user();
         $tokenName = $request->user()->currentAccessToken()->name;
-        
+
         // Delete current token
         $request->user()->currentAccessToken()->delete();
-        
+
         // Create new token
         $token = $user->createToken($tokenName)->plainTextToken;
 

@@ -118,7 +118,7 @@ class DeviceFingerprint extends Model
 
     public function isSuspicious(): bool
     {
-        return $this->is_vpn || $this->is_proxy || $this->is_tor || 
+        return $this->is_vpn || $this->is_proxy || $this->is_tor ||
                $this->trust_score < 30 || $this->suspicious_activities > 5;
     }
 
@@ -268,12 +268,20 @@ class DeviceFingerprint extends Model
         $riskScore = 0;
 
         // Network risks
-        if ($this->is_vpn) $riskScore += 20;
-        if ($this->is_proxy) $riskScore += 20;
-        if ($this->is_tor) $riskScore += 30;
+        if ($this->is_vpn) {
+            $riskScore += 20;
+        }
+        if ($this->is_proxy) {
+            $riskScore += 20;
+        }
+        if ($this->is_tor) {
+            $riskScore += 30;
+        }
 
         // Trust factors
-        if ($this->is_blocked) $riskScore += 50;
+        if ($this->is_blocked) {
+            $riskScore += 50;
+        }
         if ($this->suspicious_activities > 0) {
             $riskScore += min(30, $this->suspicious_activities * 5);
         }

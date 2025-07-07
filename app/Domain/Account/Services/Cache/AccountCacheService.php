@@ -72,7 +72,7 @@ class AccountCacheService
     {
         $uuid = (string) $uuid;
         $key = $this->getCacheKey($uuid) . ':balance';
-        
+
         $balance = Cache::remember(
             $key,
             300, // 5 minutes for balance
@@ -81,16 +81,16 @@ class AccountCacheService
                 if (!$account) {
                     return null;
                 }
-                
+
                 // For backward compatibility, return USD balance
                 $usdBalance = $account->balances()
                     ->where('asset_code', 'USD')
                     ->first();
-                
+
                 return $usdBalance ? $usdBalance->balance : 0;
             }
         );
-        
+
         return $balance === null ? null : (int) $balance;
     }
 
@@ -102,7 +102,7 @@ class AccountCacheService
         $uuid = (string) $uuid;
         $key = $this->getCacheKey($uuid) . ':balance';
         Cache::put($key, $balance, 300);
-        
+
         // Only invalidate the main account cache, not the balance
         Cache::forget($this->getCacheKey($uuid));
     }

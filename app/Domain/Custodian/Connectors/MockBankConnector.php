@@ -73,7 +73,7 @@ class MockBankConnector extends BaseCustodianConnector
         $this->logRequest('GET', "/accounts/{$accountId}/balance/{$assetCode}");
 
         $balance = $this->mockBalances[$accountId][$assetCode] ?? 0;
-        
+
         return new Money($balance);
     }
 
@@ -112,10 +112,10 @@ class MockBankConnector extends BaseCustodianConnector
 
         // Create mock transaction
         $transactionId = 'mock-tx-' . Str::uuid()->toString();
-        
+
         // Check if source account has sufficient balance
         $sourceBalance = $this->mockBalances[$request->fromAccount][$request->assetCode] ?? 0;
-        
+
         if ($sourceBalance < $request->amount->getAmount()) {
             $receipt = new TransactionReceipt(
                 id: $transactionId,
@@ -135,15 +135,15 @@ class MockBankConnector extends BaseCustodianConnector
         } else {
             // Update mock balances
             $this->mockBalances[$request->fromAccount][$request->assetCode] -= $request->amount->getAmount();
-            
+
             if (!isset($this->mockBalances[$request->toAccount])) {
                 $this->mockBalances[$request->toAccount] = [];
             }
-            
+
             if (!isset($this->mockBalances[$request->toAccount][$request->assetCode])) {
                 $this->mockBalances[$request->toAccount][$request->assetCode] = 0;
             }
-            
+
             $this->mockBalances[$request->toAccount][$request->assetCode] += $request->amount->getAmount();
 
             $receipt = new TransactionReceipt(
@@ -189,7 +189,7 @@ class MockBankConnector extends BaseCustodianConnector
         }
 
         $transaction = $this->mockTransactions[$transactionId];
-        
+
         if ($transaction->isPending()) {
             // Update transaction status
             $this->mockTransactions[$transactionId] = new TransactionReceipt(
@@ -204,7 +204,7 @@ class MockBankConnector extends BaseCustodianConnector
                 completedAt: Carbon::now(),
                 metadata: array_merge($transaction->metadata, ['cancelled_at' => Carbon::now()->toISOString()])
             );
-            
+
             return true;
         }
 
@@ -218,7 +218,7 @@ class MockBankConnector extends BaseCustodianConnector
 
     public function validateAccount(string $accountId): bool
     {
-        return isset($this->mockAccounts[$accountId]) && 
+        return isset($this->mockAccounts[$accountId]) &&
                $this->mockAccounts[$accountId]['status'] === 'active';
     }
 
@@ -231,7 +231,7 @@ class MockBankConnector extends BaseCustodianConnector
 
         // Return mock transaction history
         $history = [];
-        
+
         foreach ($this->mockTransactions as $transaction) {
             if ($transaction->fromAccount === $accountId || $transaction->toAccount === $accountId) {
                 $history[] = $transaction->toArray();

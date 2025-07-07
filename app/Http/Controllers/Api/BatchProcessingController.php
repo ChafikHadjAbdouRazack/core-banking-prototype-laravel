@@ -29,7 +29,7 @@ class BatchProcessingController extends Controller
      *         required=true,
      *         @OA\JsonContent(
      *             required={"operations"},
-     *             @OA\Property(property="operations", type="array", 
+     *             @OA\Property(property="operations", type="array",
      *                 @OA\Items(type="object",
      *                     @OA\Property(property="type", type="string", enum={"account_interest", "fee_collection", "balance_reconciliation", "report_generation"}, example="account_interest"),
      *                     @OA\Property(property="parameters", type="object", example={"rate": 0.05, "date": "2023-12-31"}),
@@ -89,15 +89,15 @@ class BatchProcessingController extends Controller
 
         try {
             $batchId = 'batch_' . Str::uuid()->toString();
-            
+
             // Validate each operation has required parameters
             foreach ($validated['operations'] as $index => $operation) {
                 $this->validateOperationParameters($operation);
             }
-            
+
             // Start the batch processing workflow
             $workflow = WorkflowStub::make(BatchProcessingWorkflow::class);
-            
+
             // Execute in background if scheduled, otherwise execute immediately
             if (isset($validated['schedule_time'])) {
                 // TODO: Implement scheduled execution
@@ -107,7 +107,7 @@ class BatchProcessingController extends Controller
                 $workflow->execute($validated['operations'], $batchId);
                 $status = 'initiated';
             }
-            
+
             return response()->json([
                 'message' => 'Batch processing initiated successfully',
                 'data' => [
@@ -121,14 +121,13 @@ class BatchProcessingController extends Controller
                     'retry_attempts' => $validated['retry_attempts'] ?? 3,
                 ]
             ], 202);
-            
         } catch (\Exception $e) {
             logger()->error('Batch processing initiation failed', [
                 'operations' => $validated['operations'],
                 'error' => $e->getMessage(),
                 'user_id' => Auth::id(),
             ]);
-            
+
             return response()->json([
                 'message' => 'Batch processing initiation failed',
                 'error' => $e->getMessage()
@@ -394,7 +393,7 @@ class BatchProcessingController extends Controller
         try {
             // TODO: Implement actual batch cancellation logic
             // This would involve stopping the workflow and potentially running compensations
-            
+
             return response()->json([
                 'message' => 'Batch operation cancelled successfully',
                 'data' => [
@@ -406,7 +405,6 @@ class BatchProcessingController extends Controller
                     'compensation_required' => $validated['compensate'] ?? true,
                 ]
             ]);
-            
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Failed to cancel batch operation',
@@ -453,7 +451,7 @@ class BatchProcessingController extends Controller
     private function estimateDuration(array $operations): string
     {
         $estimatedMinutes = count($operations) * 5; // 5 minutes per operation on average
-        
+
         if ($estimatedMinutes < 10) {
             return '5-10 minutes';
         } elseif ($estimatedMinutes < 30) {

@@ -18,12 +18,12 @@ use Illuminate\Support\Str;
 class OptimizedInitiateAssetTransferActivity extends Activity
 {
     private TransferOptimizationService $optimizationService;
-    
+
     public function __construct()
     {
         $this->optimizationService = app(TransferOptimizationService::class);
     }
-    
+
     /**
      * Execute optimized initiate asset transfer activity
      */
@@ -42,13 +42,13 @@ class OptimizedInitiateAssetTransferActivity extends Activity
             $fromAssetCode,
             $fromAmount->getAmount()
         );
-        
+
         // Generate unique transfer ID
         $transferId = (string) Str::uuid();
-        
+
         // For same-asset transfers, use the same amount
         $toAmount = $fromAmount;
-        
+
         // Create and execute the asset transfer aggregate
         AssetTransferAggregate::retrieve($transferId)
             ->initiate(
@@ -68,13 +68,13 @@ class OptimizedInitiateAssetTransferActivity extends Activity
                 ]
             )
             ->persist();
-        
+
         // Clear caches after successful initiation
         $this->optimizationService->clearTransferCaches(
             (string) $fromAccountUuid,
             $fromAssetCode
         );
-        
+
         return $transferId;
     }
 }

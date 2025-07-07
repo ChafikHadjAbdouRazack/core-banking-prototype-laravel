@@ -15,8 +15,9 @@ class ExchangeRateUpdated extends ShouldBeStored
         public readonly float $newRate,
         public readonly string $source,
         public readonly ?array $metadata = null
-    ) {}
-    
+    ) {
+    }
+
     /**
      * Get the rate change percentage
      */
@@ -25,10 +26,10 @@ class ExchangeRateUpdated extends ShouldBeStored
         if ($this->oldRate == 0) {
             return 0;
         }
-        
+
         return (($this->newRate - $this->oldRate) / $this->oldRate) * 100;
     }
-    
+
     /**
      * Check if the rate increased
      */
@@ -36,7 +37,7 @@ class ExchangeRateUpdated extends ShouldBeStored
     {
         return $this->newRate > $this->oldRate;
     }
-    
+
     /**
      * Check if the rate decreased
      */
@@ -44,7 +45,7 @@ class ExchangeRateUpdated extends ShouldBeStored
     {
         return $this->newRate < $this->oldRate;
     }
-    
+
     /**
      * Check if this is a significant change (> 5%)
      */

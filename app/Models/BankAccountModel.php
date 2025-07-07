@@ -9,13 +9,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class BankAccountModel extends Model
 {
     use HasFactory;
-    
+
     protected $table = 'bank_accounts';
-    
+
     protected $keyType = 'string';
-    
+
     public $incrementing = false;
-    
+
     protected $fillable = [
         'id',
         'user_uuid',
@@ -29,11 +29,11 @@ class BankAccountModel extends Model
         'status',
         'metadata',
     ];
-    
+
     protected $casts = [
         'metadata' => 'array',
     ];
-    
+
     /**
      * Get the user that owns the bank account
      */
@@ -41,7 +41,7 @@ class BankAccountModel extends Model
     {
         return $this->belongsTo(User::class, 'user_uuid', 'uuid');
     }
-    
+
     /**
      * Scope to get active accounts
      */
@@ -49,7 +49,7 @@ class BankAccountModel extends Model
     {
         return $query->where('status', 'active');
     }
-    
+
     /**
      * Get masked account number for display
      */
@@ -58,7 +58,7 @@ class BankAccountModel extends Model
         $decrypted = decrypt($this->account_number);
         return '...' . substr($decrypted, -4);
     }
-    
+
     /**
      * Get masked IBAN for display
      */

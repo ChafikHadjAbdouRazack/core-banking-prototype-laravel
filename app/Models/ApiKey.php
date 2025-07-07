@@ -108,7 +108,7 @@ class ApiKey extends Model
     public static function verify(string $plainKey): ?self
     {
         $keyPrefix = substr($plainKey, 0, 8);
-        
+
         $apiKey = self::where('key_prefix', $keyPrefix)
             ->where('is_active', true)
             ->where(function ($query) {
@@ -177,7 +177,7 @@ class ApiKey extends Model
      */
     public function isValid(): bool
     {
-        return $this->is_active && 
+        return $this->is_active &&
                (!$this->expires_at || $this->expires_at->isFuture());
     }
 

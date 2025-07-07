@@ -63,20 +63,20 @@ class SystemHealthCheck extends Model
     public static function calculateUptime(string $service, int $days = 30)
     {
         $startDate = now()->subDays($days);
-        
+
         $totalChecks = self::forService($service)
             ->where('checked_at', '>=', $startDate)
             ->count();
-            
+
         if ($totalChecks === 0) {
             return 100.0;
         }
-        
+
         $operationalChecks = self::forService($service)
             ->operational()
             ->where('checked_at', '>=', $startDate)
             ->count();
-            
+
         return round(($operationalChecks / $totalChecks) * 100, 2);
     }
 
@@ -86,7 +86,7 @@ class SystemHealthCheck extends Model
     public static function averageResponseTime(string $service, int $hours = 24)
     {
         $startDate = now()->subHours($hours);
-        
+
         return self::forService($service)
             ->where('checked_at', '>=', $startDate)
             ->whereNotNull('response_time')

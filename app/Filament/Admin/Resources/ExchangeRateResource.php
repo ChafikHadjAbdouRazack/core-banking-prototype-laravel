@@ -41,7 +41,7 @@ class ExchangeRateResource extends Resource
                             ->preload()
                             ->required()
                             ->reactive(),
-                        
+
                         Forms\Components\Select::make('to_asset_code')
                             ->label('To Asset')
                             ->relationship('toAsset', 'code')
@@ -50,7 +50,7 @@ class ExchangeRateResource extends Resource
                             ->required()
                             ->different('from_asset_code')
                             ->helperText('Must be different from the source asset'),
-                        
+
                         Forms\Components\TextInput::make('rate')
                             ->label('Exchange Rate')
                             ->numeric()
@@ -60,7 +60,7 @@ class ExchangeRateResource extends Resource
                             ->helperText('Rate for converting from source to target asset'),
                     ])
                     ->columns(3),
-                
+
                 Forms\Components\Section::make('Rate Configuration')
                     ->schema([
                         Forms\Components\Select::make('source')
@@ -75,26 +75,26 @@ class ExchangeRateResource extends Resource
                             ->required()
                             ->reactive()
                             ->helperText('Source of the exchange rate data'),
-                        
+
                         Forms\Components\DateTimePicker::make('valid_at')
                             ->label('Valid From')
                             ->default(now())
                             ->required()
                             ->before('expires_at')
                             ->helperText('When this rate becomes effective'),
-                        
+
                         Forms\Components\DateTimePicker::make('expires_at')
                             ->label('Expires At')
                             ->after('valid_at')
                             ->helperText('Leave empty for rates that don\'t expire'),
-                        
+
                         Forms\Components\Toggle::make('is_active')
                             ->label('Active')
                             ->default(true)
                             ->helperText('Whether this rate is available for use'),
                     ])
                     ->columns(2),
-                
+
                 Forms\Components\Section::make('Additional Information')
                     ->schema([
                         Forms\Components\KeyValue::make('metadata')
@@ -118,26 +118,26 @@ class ExchangeRateResource extends Resource
                     ->color('primary')
                     ->searchable()
                     ->sortable(),
-                
+
                 Tables\Columns\TextColumn::make('to_asset_code')
                     ->label('To')
                     ->badge()
                     ->color('success')
                     ->searchable()
                     ->sortable(),
-                
+
                 Tables\Columns\TextColumn::make('rate')
                     ->label('Rate')
                     ->numeric(decimalPlaces: 10)
                     ->sortable()
                     ->alignEnd(),
-                
+
                 Tables\Columns\TextColumn::make('inverse_rate')
                     ->label('Inverse Rate')
                     ->state(fn ($record) => number_format($record->getInverseRate(), 10))
                     ->color('gray')
                     ->alignEnd(),
-                
+
                 Tables\Columns\TextColumn::make('source')
                     ->label('Source')
                     ->badge()
@@ -148,7 +148,7 @@ class ExchangeRateResource extends Resource
                         ExchangeRate::SOURCE_MARKET => 'info',
                         default => 'gray',
                     }),
-                
+
                 Tables\Columns\TextColumn::make('age')
                     ->label('Age')
                     ->state(fn ($record) => self::formatAge($record->getAgeInMinutes()))
@@ -158,21 +158,20 @@ class ExchangeRateResource extends Resource
                         default => 'danger',
                     })
                     ->badge()
-                    ->sortable(query: fn (Builder $query, string $direction): Builder => 
-                        $query->orderBy('valid_at', $direction === 'asc' ? 'desc' : 'asc')
-                    ),
-                
+                    ->sortable(query: fn (Builder $query, string $direction): Builder =>
+                        $query->orderBy('valid_at', $direction === 'asc' ? 'desc' : 'asc')),
+
                 Tables\Columns\IconColumn::make('is_valid')
                     ->label('Valid')
                     ->state(fn ($record) => $record->isValid())
                     ->boolean()
                     ->alignCenter(),
-                
+
                 Tables\Columns\IconColumn::make('is_active')
                     ->label('Active')
                     ->boolean()
                     ->alignCenter(),
-                
+
                 Tables\Columns\TextColumn::make('expires_at')
                     ->label('Expires')
                     ->dateTime()
@@ -186,13 +185,13 @@ class ExchangeRateResource extends Resource
                     ->relationship('fromAsset', 'code')
                     ->searchable()
                     ->preload(),
-                
+
                 Tables\Filters\SelectFilter::make('to_asset_code')
                     ->label('To Asset')
                     ->relationship('toAsset', 'code')
                     ->searchable()
                     ->preload(),
-                
+
                 Tables\Filters\SelectFilter::make('source')
                     ->options([
                         ExchangeRate::SOURCE_MANUAL => 'Manual',
@@ -200,18 +199,18 @@ class ExchangeRateResource extends Resource
                         ExchangeRate::SOURCE_ORACLE => 'Oracle',
                         ExchangeRate::SOURCE_MARKET => 'Market',
                     ]),
-                
+
                 Tables\Filters\TernaryFilter::make('is_active')
                     ->label('Active Status'),
-                
+
                 Tables\Filters\Filter::make('valid_now')
                     ->label('Valid Now')
                     ->query(fn (Builder $query): Builder => $query->valid()),
-                
+
                 Tables\Filters\Filter::make('expired')
                     ->label('Expired')
                     ->query(fn (Builder $query): Builder => $query->where('expires_at', '<=', now())),
-                
+
                 Tables\Filters\Filter::make('stale')
                     ->label('Stale (>24h)')
                     ->query(fn (Builder $query): Builder => $query->where('valid_at', '<=', now()->subDay())),
@@ -221,7 +220,7 @@ class ExchangeRateResource extends Resource
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make()
                     ->requiresConfirmation(),
-                
+
                 Tables\Actions\Action::make('refresh')
                     ->label('Refresh')
                     ->icon('heroicon-m-arrow-path')
@@ -236,14 +235,14 @@ class ExchangeRateResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make()
                         ->requiresConfirmation(),
-                    
+
                     Tables\Actions\BulkAction::make('activate')
                         ->label('Activate')
                         ->icon('heroicon-m-check-circle')
                         ->color('success')
                         ->action(fn ($records) => $records->each->update(['is_active' => true]))
                         ->deselectRecordsAfterCompletion(),
-                    
+
                     Tables\Actions\BulkAction::make('deactivate')
                         ->label('Deactivate')
                         ->icon('heroicon-m-x-circle')
@@ -251,7 +250,7 @@ class ExchangeRateResource extends Resource
                         ->action(fn ($records) => $records->each->update(['is_active' => false]))
                         ->requiresConfirmation()
                         ->deselectRecordsAfterCompletion(),
-                    
+
                     Tables\Actions\BulkAction::make('refresh_rates')
                         ->label('Refresh Rates')
                         ->icon('heroicon-m-arrow-path')
@@ -275,15 +274,15 @@ class ExchangeRateResource extends Resource
                             ->state(fn ($record) => "{$record->from_asset_code} → {$record->to_asset_code}")
                             ->badge()
                             ->color('primary'),
-                        
+
                         Infolists\Components\TextEntry::make('rate')
                             ->label('Exchange Rate')
                             ->numeric(decimalPlaces: 10),
-                        
+
                         Infolists\Components\TextEntry::make('inverse_rate')
                             ->label('Inverse Rate')
                             ->state(fn ($record) => number_format($record->getInverseRate(), 10)),
-                        
+
                         Infolists\Components\TextEntry::make('source')
                             ->label('Source')
                             ->badge()
@@ -296,22 +295,22 @@ class ExchangeRateResource extends Resource
                             }),
                     ])
                     ->columns(2),
-                
+
                 Infolists\Components\Section::make('Validity Information')
                     ->schema([
                         Infolists\Components\TextEntry::make('valid_at')
                             ->label('Valid From')
                             ->dateTime(),
-                        
+
                         Infolists\Components\TextEntry::make('expires_at')
                             ->label('Expires At')
                             ->dateTime()
                             ->placeholder('Never expires'),
-                        
+
                         Infolists\Components\IconEntry::make('is_active')
                             ->label('Active')
                             ->boolean(),
-                        
+
                         Infolists\Components\TextEntry::make('age')
                             ->label('Age')
                             ->state(fn ($record) => self::formatAge($record->getAgeInMinutes()))
@@ -323,7 +322,7 @@ class ExchangeRateResource extends Resource
                             }),
                     ])
                     ->columns(2),
-                
+
                 Infolists\Components\Section::make('Metadata')
                     ->schema([
                         Infolists\Components\KeyValueEntry::make('metadata')
@@ -331,13 +330,13 @@ class ExchangeRateResource extends Resource
                             ->columnSpanFull(),
                     ])
                     ->collapsible(),
-                
+
                 Infolists\Components\Section::make('System Information')
                     ->schema([
                         Infolists\Components\TextEntry::make('created_at')
                             ->label('Created At')
                             ->dateTime(),
-                        
+
                         Infolists\Components\TextEntry::make('updated_at')
                             ->label('Updated At')
                             ->dateTime(),
@@ -381,11 +380,13 @@ class ExchangeRateResource extends Resource
     {
         $total = static::getModel()::count();
         $valid = static::getModel()::valid()->count();
-        
-        if ($total === 0) return 'gray';
-        
+
+        if ($total === 0) {
+            return 'gray';
+        }
+
         $percentage = ($valid / $total) * 100;
-        
+
         return match (true) {
             $percentage >= 80 => 'success',
             $percentage >= 60 => 'warning',

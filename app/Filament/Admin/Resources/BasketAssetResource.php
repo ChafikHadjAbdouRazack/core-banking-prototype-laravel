@@ -43,20 +43,20 @@ class BasketAssetResource extends Resource
                             ->maxLength(20)
                             ->placeholder('STABLE_BASKET, CRYPTO_INDEX, etc.')
                             ->helperText('Unique identifier for the basket asset'),
-                        
+
                         Forms\Components\TextInput::make('name')
                             ->label('Basket Name')
                             ->required()
                             ->maxLength(100)
                             ->placeholder('Stable Currency Basket, Crypto Index, etc.')
                             ->helperText('Display name of the basket'),
-                        
+
                         Forms\Components\Textarea::make('description')
                             ->label('Description')
                             ->rows(3)
                             ->maxLength(500)
                             ->helperText('Brief description of the basket\'s purpose and composition'),
-                        
+
                         Forms\Components\Select::make('type')
                             ->label('Basket Type')
                             ->required()
@@ -66,7 +66,7 @@ class BasketAssetResource extends Resource
                             ])
                             ->reactive()
                             ->helperText('Fixed baskets maintain constant weights, dynamic baskets can be rebalanced'),
-                        
+
                         Forms\Components\Select::make('rebalance_frequency')
                             ->label('Rebalance Frequency')
                             ->required()
@@ -81,7 +81,7 @@ class BasketAssetResource extends Resource
                             ->disabled(fn (Forms\Get $get) => $get('type') !== 'dynamic')
                             ->helperText('How often the basket should be rebalanced (dynamic baskets only)'),
                     ]),
-                
+
                 Forms\Components\Section::make('Components')
                     ->schema([
                         Forms\Components\Repeater::make('components')
@@ -95,7 +95,7 @@ class BasketAssetResource extends Resource
                                         ->pluck('name', 'code'))
                                     ->searchable()
                                     ->helperText('Select the asset to include in the basket'),
-                                
+
                                 Forms\Components\TextInput::make('weight')
                                     ->label('Weight (%)')
                                     ->required()
@@ -105,7 +105,7 @@ class BasketAssetResource extends Resource
                                     ->suffix('%')
                                     ->step(0.01)
                                     ->helperText('Percentage weight in the basket'),
-                                
+
                                 Forms\Components\Grid::make(2)
                                     ->schema([
                                         Forms\Components\TextInput::make('min_weight')
@@ -116,7 +116,7 @@ class BasketAssetResource extends Resource
                                             ->suffix('%')
                                             ->step(0.01)
                                             ->visible(fn (Forms\Get $get) => $get('../../type') === 'dynamic'),
-                                        
+
                                         Forms\Components\TextInput::make('max_weight')
                                             ->label('Max Weight (%)')
                                             ->numeric()
@@ -126,7 +126,7 @@ class BasketAssetResource extends Resource
                                             ->step(0.01)
                                             ->visible(fn (Forms\Get $get) => $get('../../type') === 'dynamic'),
                                     ]),
-                                
+
                                 Forms\Components\Toggle::make('is_active')
                                     ->label('Active')
                                     ->default(true)
@@ -139,11 +139,10 @@ class BasketAssetResource extends Resource
                             ->collapsible()
                             ->cloneable()
                             ->reorderable()
-                            ->itemLabel(fn (array $state): ?string => 
-                                isset($state['asset_code']) 
+                            ->itemLabel(fn (array $state): ?string =>
+                                isset($state['asset_code'])
                                     ? "{$state['asset_code']} - {$state['weight']}%"
-                                    : null
-                            )
+                                    : null)
                             ->afterStateUpdated(function (Forms\Get $get, Forms\Set $set) {
                                 // Validate total weight
                                 $components = $get('components') ?? [];
@@ -157,14 +156,14 @@ class BasketAssetResource extends Resource
                                 }
                             }),
                     ]),
-                
+
                 Forms\Components\Section::make('Status')
                     ->schema([
                         Forms\Components\Toggle::make('is_active')
                             ->label('Active')
                             ->default(true)
                             ->helperText('Whether this basket is available for trading'),
-                        
+
                         Forms\Components\DateTimePicker::make('last_rebalanced_at')
                             ->label('Last Rebalanced')
                             ->disabled()
@@ -184,12 +183,12 @@ class BasketAssetResource extends Resource
                     ->weight('bold')
                     ->badge()
                     ->color('primary'),
-                
+
                 Tables\Columns\TextColumn::make('name')
                     ->label('Name')
                     ->searchable()
                     ->sortable(),
-                
+
                 Tables\Columns\TextColumn::make('type')
                     ->label('Type')
                     ->badge()
@@ -198,22 +197,22 @@ class BasketAssetResource extends Resource
                         'dynamic' => 'warning',
                         default => 'gray',
                     }),
-                
+
                 Tables\Columns\TextColumn::make('components_count')
                     ->label('Components')
                     ->counts('components')
                     ->suffix(' assets')
                     ->alignCenter(),
-                
+
                 Tables\Columns\TextColumn::make('latestValue.value')
                     ->label('Current Value')
                     ->numeric(decimalPlaces: 4)
                     ->prefix('$')
                     ->placeholder('—')
-                    ->tooltip(fn ($record) => $record->latestValue 
+                    ->tooltip(fn ($record) => $record->latestValue
                         ? 'As of ' . $record->latestValue->calculated_at->diffForHumans()
                         : null),
-                
+
                 Tables\Columns\TextColumn::make('rebalance_frequency')
                     ->label('Rebalance')
                     ->badge()
@@ -226,25 +225,25 @@ class BasketAssetResource extends Resource
                         default => 'gray',
                     })
                     ->formatStateUsing(fn (string $state): string => ucfirst($state)),
-                
+
                 Tables\Columns\IconColumn::make('is_active')
                     ->label('Active')
                     ->boolean()
                     ->alignCenter(),
-                
+
                 Tables\Columns\IconColumn::make('needs_rebalancing')
                     ->label('Needs Rebalance')
-                    ->icon(fn ($record): string => $record->needsRebalancing() 
-                        ? 'heroicon-o-exclamation-circle' 
+                    ->icon(fn ($record): string => $record->needsRebalancing()
+                        ? 'heroicon-o-exclamation-circle'
                         : 'heroicon-o-check-circle')
-                    ->color(fn ($record): string => $record->needsRebalancing() 
-                        ? 'warning' 
+                    ->color(fn ($record): string => $record->needsRebalancing()
+                        ? 'warning'
                         : 'success')
-                    ->tooltip(fn ($record): string => $record->needsRebalancing() 
-                        ? 'Rebalancing needed' 
+                    ->tooltip(fn ($record): string => $record->needsRebalancing()
+                        ? 'Rebalancing needed'
                         : 'Balanced')
                     ->visible(fn ($record) => $record->type === 'dynamic'),
-                
+
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Created')
                     ->dateTime()
@@ -257,7 +256,7 @@ class BasketAssetResource extends Resource
                         'fixed' => 'Fixed Weights',
                         'dynamic' => 'Dynamic Weights',
                     ]),
-                
+
                 Tables\Filters\SelectFilter::make('rebalance_frequency')
                     ->options([
                         'never' => 'Never',
@@ -267,16 +266,16 @@ class BasketAssetResource extends Resource
                         'quarterly' => 'Quarterly',
                     ])
                     ->visible(fn (): bool => BasketAsset::where('type', 'dynamic')->exists()),
-                
+
                 Tables\Filters\TernaryFilter::make('is_active')
                     ->label('Active Status')
                     ->placeholder('All baskets')
                     ->trueLabel('Active only')
                     ->falseLabel('Inactive only'),
-                
+
                 Tables\Filters\Filter::make('needs_rebalancing')
                     ->label('Needs Rebalancing')
-                    ->query(fn (Builder $query): Builder => 
+                    ->query(fn (Builder $query): Builder =>
                         $query->where('type', 'dynamic')
                             ->where(function ($q) {
                                 $q->whereNull('last_rebalanced_at')
@@ -296,13 +295,12 @@ class BasketAssetResource extends Resource
                                         $q2->where('rebalance_frequency', 'quarterly')
                                             ->where('last_rebalanced_at', '<', now()->subQuarter());
                                     });
-                            })
-                    ),
+                            })),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
-                
+
                 Tables\Actions\Action::make('calculate_value')
                     ->label('Calculate Value')
                     ->icon('heroicon-m-calculator')
@@ -311,7 +309,7 @@ class BasketAssetResource extends Resource
                         try {
                             $service = app(BasketValueCalculationService::class);
                             $value = $service->calculateValue($record, false);
-                            
+
                             \Filament\Notifications\Notification::make()
                                 ->success()
                                 ->title('Value Calculated')
@@ -325,7 +323,7 @@ class BasketAssetResource extends Resource
                                 ->send();
                         }
                     }),
-                
+
                 Tables\Actions\Action::make('rebalance')
                     ->label('Rebalance')
                     ->icon('heroicon-m-scale')
@@ -339,7 +337,7 @@ class BasketAssetResource extends Resource
                         try {
                             $service = app(\App\Domain\Basket\Services\BasketRebalancingService::class);
                             $result = $service->rebalance($record);
-                            
+
                             \Filament\Notifications\Notification::make()
                                 ->success()
                                 ->title('Basket Rebalanced')
@@ -358,14 +356,14 @@ class BasketAssetResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make()
                         ->requiresConfirmation(),
-                    
+
                     Tables\Actions\BulkAction::make('activate')
                         ->label('Activate')
                         ->icon('heroicon-m-check-circle')
                         ->color('success')
                         ->action(fn ($records) => $records->each->update(['is_active' => true]))
                         ->deselectRecordsAfterCompletion(),
-                    
+
                     Tables\Actions\BulkAction::make('deactivate')
                         ->label('Deactivate')
                         ->icon('heroicon-m-x-circle')
@@ -373,7 +371,7 @@ class BasketAssetResource extends Resource
                         ->action(fn ($records) => $records->each->update(['is_active' => false]))
                         ->requiresConfirmation()
                         ->deselectRecordsAfterCompletion(),
-                    
+
                     Tables\Actions\BulkAction::make('calculate_values')
                         ->label('Calculate Values')
                         ->icon('heroicon-m-calculator')
@@ -382,7 +380,7 @@ class BasketAssetResource extends Resource
                             $service = app(BasketValueCalculationService::class);
                             $success = 0;
                             $failed = 0;
-                            
+
                             foreach ($records as $basket) {
                                 try {
                                     $service->calculateValue($basket, false);
@@ -391,7 +389,7 @@ class BasketAssetResource extends Resource
                                     $failed++;
                                 }
                             }
-                            
+
                             \Filament\Notifications\Notification::make()
                                 ->success()
                                 ->title('Values Calculated')
@@ -414,14 +412,14 @@ class BasketAssetResource extends Resource
                             ->label('Basket Code')
                             ->badge()
                             ->color('primary'),
-                        
+
                         Infolists\Components\TextEntry::make('name')
                             ->label('Basket Name'),
-                        
+
                         Infolists\Components\TextEntry::make('description')
                             ->label('Description')
                             ->placeholder('—'),
-                        
+
                         Infolists\Components\TextEntry::make('type')
                             ->label('Type')
                             ->badge()
@@ -431,18 +429,18 @@ class BasketAssetResource extends Resource
                                 default => 'gray',
                             })
                             ->formatStateUsing(fn (string $state): string => ucfirst($state) . ' Weights'),
-                        
+
                         Infolists\Components\TextEntry::make('rebalance_frequency')
                             ->label('Rebalance Frequency')
                             ->badge()
                             ->formatStateUsing(fn (string $state): string => ucfirst($state)),
-                        
+
                         Infolists\Components\IconEntry::make('is_active')
                             ->label('Active Status')
                             ->boolean(),
                     ])
                     ->columns(2),
-                
+
                 Infolists\Components\Section::make('Current Value')
                     ->schema([
                         Infolists\Components\TextEntry::make('latestValue.value')
@@ -452,12 +450,12 @@ class BasketAssetResource extends Resource
                             ->placeholder('Not calculated')
                             ->size('lg')
                             ->weight('bold'),
-                        
+
                         Infolists\Components\TextEntry::make('latestValue.calculated_at')
                             ->label('Last Calculated')
                             ->dateTime()
                             ->placeholder('Never'),
-                        
+
                         Infolists\Components\TextEntry::make('last_rebalanced_at')
                             ->label('Last Rebalanced')
                             ->dateTime()
@@ -465,7 +463,7 @@ class BasketAssetResource extends Resource
                             ->visible(fn ($record) => $record->type === 'dynamic'),
                     ])
                     ->columns(3),
-                
+
                 Infolists\Components\Section::make('Components')
                     ->schema([
                         Infolists\Components\RepeatableEntry::make('components')
@@ -476,25 +474,25 @@ class BasketAssetResource extends Resource
                                         Infolists\Components\TextEntry::make('asset.name')
                                             ->label('Asset')
                                             ->weight('bold'),
-                                        
+
                                         Infolists\Components\TextEntry::make('weight')
                                             ->label('Weight')
                                             ->suffix('%')
                                             ->badge()
                                             ->color('primary'),
-                                        
+
                                         Infolists\Components\TextEntry::make('min_weight')
                                             ->label('Min Weight')
                                             ->suffix('%')
                                             ->placeholder('—')
                                             ->visible(fn ($record) => $record->basketAsset->type === 'dynamic'),
-                                        
+
                                         Infolists\Components\TextEntry::make('max_weight')
                                             ->label('Max Weight')
                                             ->suffix('%')
                                             ->placeholder('—')
                                             ->visible(fn ($record) => $record->basketAsset->type === 'dynamic'),
-                                        
+
                                         Infolists\Components\IconEntry::make('is_active')
                                             ->label('Active')
                                             ->boolean(),
@@ -502,7 +500,7 @@ class BasketAssetResource extends Resource
                             ])
                             ->columns(1),
                     ]),
-                
+
                 Infolists\Components\Section::make('Value History')
                     ->schema([
                         Infolists\Components\ViewEntry::make('value_chart')
@@ -510,17 +508,17 @@ class BasketAssetResource extends Resource
                             ->view('filament.resources.basket-asset.value-chart'),
                     ])
                     ->collapsible(),
-                
+
                 Infolists\Components\Section::make('System Information')
                     ->schema([
                         Infolists\Components\TextEntry::make('created_by')
                             ->label('Created By')
                             ->placeholder('System'),
-                        
+
                         Infolists\Components\TextEntry::make('created_at')
                             ->label('Created At')
                             ->dateTime(),
-                        
+
                         Infolists\Components\TextEntry::make('updated_at')
                             ->label('Updated At')
                             ->dateTime(),

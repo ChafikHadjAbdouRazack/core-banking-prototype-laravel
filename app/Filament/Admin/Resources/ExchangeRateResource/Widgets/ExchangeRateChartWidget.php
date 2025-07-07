@@ -20,11 +20,11 @@ class ExchangeRateChartWidget extends ChartWidget
     {
         // Get rate creation activity over the last 30 days
         $data = collect();
-        
+
         for ($i = 29; $i >= 0; $i--) {
             $date = now()->subDays($i);
             $count = ExchangeRate::whereDate('created_at', $date)->count();
-            
+
             $data->push([
                 'date' => $date->format('M j'),
                 'rates' => $count,

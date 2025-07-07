@@ -39,14 +39,14 @@ class AssetResource extends Resource
                             ->maxLength(10)
                             ->placeholder('USD, EUR, BTC, etc.')
                             ->helperText('Unique identifier for the asset (e.g., USD, EUR, BTC)'),
-                        
+
                         Forms\Components\TextInput::make('name')
                             ->label('Asset Name')
                             ->required()
                             ->maxLength(100)
                             ->placeholder('US Dollar, Euro, Bitcoin, etc.')
                             ->helperText('Full name of the asset'),
-                        
+
                         Forms\Components\Select::make('type')
                             ->label('Asset Type')
                             ->required()
@@ -57,13 +57,13 @@ class AssetResource extends Resource
                             ])
                             ->reactive()
                             ->helperText('Type of asset being added'),
-                        
+
                         Forms\Components\TextInput::make('symbol')
                             ->label('Symbol')
                             ->maxLength(10)
                             ->placeholder('$, €, ₿, etc.')
                             ->helperText('Display symbol for the asset'),
-                        
+
                         Forms\Components\TextInput::make('precision')
                             ->label('Decimal Precision')
                             ->required()
@@ -78,14 +78,14 @@ class AssetResource extends Resource
                             ->maxValue(18)
                             ->helperText('Number of decimal places for this asset'),
                     ]),
-                
+
                 Forms\Components\Section::make('Status & Configuration')
                     ->schema([
                         Forms\Components\Toggle::make('is_active')
                             ->label('Active')
                             ->default(true)
                             ->helperText('Whether this asset is available for transactions'),
-                        
+
                         Forms\Components\KeyValue::make('metadata')
                             ->label('Metadata')
                             ->keyLabel('Property')
@@ -111,12 +111,12 @@ class AssetResource extends Resource
                         in_array($state, ['BTC', 'ETH']) => 'warning',
                         default => 'primary',
                     }),
-                
+
                 Tables\Columns\TextColumn::make('name')
                     ->label('Name')
                     ->searchable()
                     ->sortable(),
-                
+
                 Tables\Columns\TextColumn::make('type')
                     ->label('Type')
                     ->sortable()
@@ -127,27 +127,27 @@ class AssetResource extends Resource
                         'commodity' => 'info',
                         default => 'gray',
                     }),
-                
+
                 Tables\Columns\TextColumn::make('symbol')
                     ->label('Symbol')
                     ->placeholder('—'),
-                
+
                 Tables\Columns\TextColumn::make('precision')
                     ->label('Precision')
                     ->suffix(' decimals')
                     ->alignCenter(),
-                
+
                 Tables\Columns\IconColumn::make('is_active')
                     ->label('Active')
                     ->boolean()
                     ->alignCenter(),
-                
+
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Created')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                
+
                 Tables\Columns\TextColumn::make('updated_at')
                     ->label('Updated')
                     ->dateTime()
@@ -161,7 +161,7 @@ class AssetResource extends Resource
                         'crypto' => 'Cryptocurrency',
                         'commodity' => 'Commodity',
                     ]),
-                
+
                 Tables\Filters\TernaryFilter::make('is_active')
                     ->label('Active Status')
                     ->placeholder('All assets')
@@ -178,14 +178,14 @@ class AssetResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make()
                         ->requiresConfirmation(),
-                    
+
                     Tables\Actions\BulkAction::make('activate')
                         ->label('Activate')
                         ->icon('heroicon-m-check-circle')
                         ->color('success')
                         ->action(fn ($records) => $records->each->update(['is_active' => true]))
                         ->deselectRecordsAfterCompletion(),
-                    
+
                     Tables\Actions\BulkAction::make('deactivate')
                         ->label('Deactivate')
                         ->icon('heroicon-m-x-circle')
@@ -208,10 +208,10 @@ class AssetResource extends Resource
                             ->label('Asset Code')
                             ->badge()
                             ->color('primary'),
-                        
+
                         Infolists\Components\TextEntry::make('name')
                             ->label('Asset Name'),
-                        
+
                         Infolists\Components\TextEntry::make('type')
                             ->label('Asset Type')
                             ->badge()
@@ -221,21 +221,21 @@ class AssetResource extends Resource
                                 'commodity' => 'info',
                                 default => 'gray',
                             }),
-                        
+
                         Infolists\Components\TextEntry::make('symbol')
                             ->label('Symbol')
                             ->placeholder('—'),
-                        
+
                         Infolists\Components\TextEntry::make('precision')
                             ->label('Decimal Precision')
                             ->suffix(' decimals'),
-                        
+
                         Infolists\Components\IconEntry::make('is_active')
                             ->label('Active Status')
                             ->boolean(),
                     ])
                     ->columns(2),
-                
+
                 Infolists\Components\Section::make('Metadata')
                     ->schema([
                         Infolists\Components\KeyValueEntry::make('metadata')
@@ -243,13 +243,13 @@ class AssetResource extends Resource
                             ->columnSpanFull(),
                     ])
                     ->collapsible(),
-                
+
                 Infolists\Components\Section::make('System Information')
                     ->schema([
                         Infolists\Components\TextEntry::make('created_at')
                             ->label('Created At')
                             ->dateTime(),
-                        
+
                         Infolists\Components\TextEntry::make('updated_at')
                             ->label('Updated At')
                             ->dateTime(),

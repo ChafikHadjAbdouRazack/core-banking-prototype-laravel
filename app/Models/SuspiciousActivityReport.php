@@ -9,7 +9,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class SuspiciousActivityReport extends Model
 {
-    use HasUuids, SoftDeletes;
+    use HasUuids;
+    use SoftDeletes;
 
     protected $fillable = [
         'sar_number',
@@ -159,14 +160,14 @@ class SuspiciousActivityReport extends Model
         $lastSAR = static::whereYear('created_at', $year)
             ->orderBy('sar_number', 'desc')
             ->first();
-        
+
         if ($lastSAR) {
             $lastNumber = intval(substr($lastSAR->sar_number, -5));
             $newNumber = str_pad($lastNumber + 1, 5, '0', STR_PAD_LEFT);
         } else {
             $newNumber = '00001';
         }
-        
+
         return "SAR-{$year}-{$newNumber}";
     }
 
@@ -334,7 +335,7 @@ class SuspiciousActivityReport extends Model
             'accessed_at' => now()->toIso8601String(),
             'ip_address' => request()->ip(),
         ];
-        
+
         $this->access_log = $log;
         $this->saveQuietly(); // Save without triggering events
     }
@@ -351,7 +352,7 @@ class SuspiciousActivityReport extends Model
         if (!$this->activity_start_date || !$this->activity_end_date) {
             return 0;
         }
-        
+
         return $this->activity_start_date->diffInDays($this->activity_end_date);
     }
 

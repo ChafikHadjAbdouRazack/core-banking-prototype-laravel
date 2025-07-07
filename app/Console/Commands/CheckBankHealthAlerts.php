@@ -35,16 +35,16 @@ class CheckBankHealthAlerts extends Command
     public function handle(): int
     {
         $this->info('Checking bank health for alerts...');
-        
+
         try {
             $this->alertingService->performHealthCheck();
-            
+
             $this->info('Bank health check completed successfully.');
-            
+
             return Command::SUCCESS;
         } catch (\Exception $e) {
             $this->error('Failed to check bank health: ' . $e->getMessage());
-            
+
             return Command::FAILURE;
         }
     }

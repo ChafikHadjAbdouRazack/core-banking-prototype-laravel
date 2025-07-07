@@ -20,7 +20,7 @@ class EnhancedRegulatoryReportingService extends RegulatoryReportingService
     private ThresholdMonitoringService $thresholdService;
     private ReportGeneratorService $reportGenerator;
     private RegulatoryFilingService $filingService;
-    
+
     public function __construct(
         ThresholdMonitoringService $thresholdService,
         ReportGeneratorService $reportGenerator,
@@ -30,7 +30,7 @@ class EnhancedRegulatoryReportingService extends RegulatoryReportingService
         $this->reportGenerator = $reportGenerator;
         $this->filingService = $filingService;
     }
-    
+
     /**
      * Generate enhanced CTR with fraud detection integration
      */
@@ -38,7 +38,7 @@ class EnhancedRegulatoryReportingService extends RegulatoryReportingService
     {
         // First generate the basic CTR
         $filename = parent::generateCTR($date);
-        
+
         // Create regulatory report record
         $report = RegulatoryReport::create([
             'report_type' => RegulatoryReport::TYPE_CTR,
@@ -56,16 +56,16 @@ class EnhancedRegulatoryReportingService extends RegulatoryReportingService
             'is_mandatory' => true,
             'due_date' => $date->copy()->addBusinessDays(15),
         ]);
-        
+
         // Enhance with fraud detection data
         $this->enhanceReportWithFraudData($report, $date);
-        
+
         // Check regulatory thresholds
         $this->checkAndApplyThresholds($report);
-        
+
         return $report;
     }
-    
+
     /**
      * Generate enhanced SAR with comprehensive suspicious activity analysis
      */
@@ -76,14 +76,14 @@ class EnhancedRegulatoryReportingService extends RegulatoryReportingService
             ->where('priority', '>=', FraudCase::PRIORITY_HIGH)
             ->with(['fraudScore', 'fraudScore.entity'])
             ->get();
-        
+
         // Get high-risk fraud scores without cases
         $highRiskScores = FraudScore::whereBetween('created_at', [$startDate, $endDate])
             ->where('risk_level', '>=', FraudScore::RISK_LEVEL_HIGH)
             ->whereDoesntHave('fraudCase')
             ->with('entity')
             ->get();
-        
+
         // Combine suspicious activities
         $suspiciousActivities = $this->compileSuspiciousActivities(
             $fraudCases,
@@ -91,7 +91,7 @@ class EnhancedRegulatoryReportingService extends RegulatoryReportingService
             $startDate,
             $endDate
         );
-        
+
         // Generate report data
         $reportData = [
             'report_type' => 'Enhanced Suspicious Activity Report (SAR)',
@@ -104,11 +104,11 @@ class EnhancedRegulatoryReportingService extends RegulatoryReportingService
             'activities' => $suspiciousActivities,
             'summary' => $this->generateSARSummary($suspiciousActivities),
         ];
-        
+
         // Save report
         $filename = "regulatory/sar/enhanced_sar_{$startDate->format('Y_m_d')}_{$endDate->format('Y_m_d')}.json";
         Storage::put($filename, json_encode($reportData, JSON_PRETTY_PRINT));
-        
+
         // Create regulatory report record
         $report = RegulatoryReport::create([
             'report_type' => RegulatoryReport::TYPE_SAR,
@@ -132,14 +132,14 @@ class EnhancedRegulatoryReportingService extends RegulatoryReportingService
             ],
             'record_count' => $suspiciousActivities->count(),
         ]);
-        
+
         // Add entities and risk indicators
         foreach ($suspiciousActivities as $activity) {
             $report->addEntity($activity['entity_type'], $activity['entity_id'], [
                 'risk_score' => $activity['risk_score'] ?? null,
                 'fraud_case_id' => $activity['fraud_case_id'] ?? null,
             ]);
-            
+
             if (!empty($activity['risk_indicators'])) {
                 foreach ($activity['risk_indicators'] as $indicator) {
                     $report->addRiskIndicator($indicator, 'high', [
@@ -148,10 +148,10 @@ class EnhancedRegulatoryReportingService extends RegulatoryReportingService
                 }
             }
         }
-        
+
         return $report;
     }
-    
+
     /**
      * Generate comprehensive AML report
      */
@@ -159,7 +159,7 @@ class EnhancedRegulatoryReportingService extends RegulatoryReportingService
     {
         $startDate = $month->copy()->startOfMonth();
         $endDate = $month->copy()->endOfMonth();
-        
+
         $reportData = [
             'report_type' => 'Anti-Money Laundering (AML) Report',
             'month' => $month->format('F Y'),
@@ -172,11 +172,11 @@ class EnhancedRegulatoryReportingService extends RegulatoryReportingService
             'training_compliance' => $this->getAMLTrainingCompliance(),
             'policy_updates' => $this->getAMLPolicyUpdates($month),
         ];
-        
+
         // Save report
         $filename = "regulatory/aml/report_{$month->format('Y_m')}.json";
         Storage::put($filename, json_encode($reportData, JSON_PRETTY_PRINT));
-        
+
         // Create regulatory report record
         $report = RegulatoryReport::create([
             'report_type' => RegulatoryReport::TYPE_AML,
@@ -200,10 +200,10 @@ class EnhancedRegulatoryReportingService extends RegulatoryReportingService
                 'sanctions_hits' => $reportData['sanctions_screening']['total_hits'],
             ],
         ]);
-        
+
         return $report;
     }
-    
+
     /**
      * Generate OFAC screening report
      */
@@ -218,11 +218,11 @@ class EnhancedRegulatoryReportingService extends RegulatoryReportingService
             'false_positives' => $this->getOFACFalsePositives($date),
             'remediation_actions' => $this->getOFACRemediationActions($date),
         ];
-        
+
         // Save report
         $filename = "regulatory/ofac/report_{$date->format('Y_m_d')}.json";
         Storage::put($filename, json_encode($reportData, JSON_PRETTY_PRINT));
-        
+
         // Create regulatory report record
         $report = RegulatoryReport::create([
             'report_type' => RegulatoryReport::TYPE_OFAC,
@@ -246,10 +246,10 @@ class EnhancedRegulatoryReportingService extends RegulatoryReportingService
                 'requires_immediate_action' => $reportData['screening_results']['matches_found'] > 0,
             ],
         ]);
-        
+
         return $report;
     }
-    
+
     /**
      * Generate BSA compliance report
      */
@@ -257,7 +257,7 @@ class EnhancedRegulatoryReportingService extends RegulatoryReportingService
     {
         $startDate = $quarter->copy()->firstOfQuarter();
         $endDate = $quarter->copy()->lastOfQuarter();
-        
+
         $reportData = [
             'report_type' => 'Bank Secrecy Act (BSA) Compliance Report',
             'quarter' => $quarter->quarter . ' ' . $quarter->year,
@@ -269,11 +269,11 @@ class EnhancedRegulatoryReportingService extends RegulatoryReportingService
             'compliance_testing' => $this->getBSAComplianceTesting($quarter),
             'risk_assessment' => $this->getBSARiskAssessment($quarter),
         ];
-        
+
         // Save report
         $filename = "regulatory/bsa/report_Q{$quarter->quarter}_{$quarter->year}.json";
         Storage::put($filename, json_encode($reportData, JSON_PRETTY_PRINT));
-        
+
         // Create regulatory report record
         $report = RegulatoryReport::create([
             'report_type' => RegulatoryReport::TYPE_BSA,
@@ -297,10 +297,10 @@ class EnhancedRegulatoryReportingService extends RegulatoryReportingService
                 'risk_rating' => $reportData['risk_assessment']['overall_rating'],
             ],
         ]);
-        
+
         return $report;
     }
-    
+
     /**
      * Enhance report with fraud detection data
      */
@@ -311,16 +311,16 @@ class EnhancedRegulatoryReportingService extends RegulatoryReportingService
             ->where('risk_level', '>=', FraudScore::RISK_LEVEL_HIGH)
             ->with('entity')
             ->get();
-        
+
         $enhancedData = $report->report_data ?? [];
         $enhancedData['fraud_analysis'] = [
             'high_risk_transactions' => $fraudScores->count(),
             'blocked_transactions' => $fraudScores->where('decision', FraudScore::DECISION_BLOCK)->count(),
             'fraud_indicators' => $this->extractFraudIndicators($fraudScores),
         ];
-        
+
         $report->update(['report_data' => $enhancedData]);
-        
+
         // Add risk indicators
         foreach ($fraudScores as $score) {
             if ($score->risk_level === FraudScore::RISK_LEVEL_VERY_HIGH) {
@@ -331,7 +331,7 @@ class EnhancedRegulatoryReportingService extends RegulatoryReportingService
             }
         }
     }
-    
+
     /**
      * Check and apply regulatory thresholds
      */
@@ -341,18 +341,18 @@ class EnhancedRegulatoryReportingService extends RegulatoryReportingService
             ->byReportType($report->report_type)
             ->byJurisdiction($report->jurisdiction)
             ->get();
-        
+
         foreach ($thresholds as $threshold) {
             $context = $this->buildThresholdContext($report);
-            
+
             if ($threshold->evaluate($context)) {
                 $threshold->recordTrigger();
-                
+
                 // Apply threshold actions
                 foreach ($threshold->actions as $action) {
                     $this->applyThresholdAction($report, $threshold, $action);
                 }
-                
+
                 // Add to report
                 $report->addRiskIndicator("threshold_triggered:{$threshold->threshold_code}", 'high', [
                     'threshold_name' => $threshold->name,
@@ -361,7 +361,7 @@ class EnhancedRegulatoryReportingService extends RegulatoryReportingService
             }
         }
     }
-    
+
     /**
      * Build context for threshold evaluation
      */
@@ -377,7 +377,7 @@ class EnhancedRegulatoryReportingService extends RegulatoryReportingService
             'is_overdue' => $report->is_overdue,
         ];
     }
-    
+
     /**
      * Apply threshold action
      */
@@ -389,21 +389,21 @@ class EnhancedRegulatoryReportingService extends RegulatoryReportingService
                     $report->update(['status' => RegulatoryReport::STATUS_PENDING_REVIEW]);
                 }
                 break;
-                
+
             case RegulatoryThreshold::ACTION_FLAG:
                 $report->update(['priority' => min(5, $report->priority + 1)]);
                 break;
-                
+
             case RegulatoryThreshold::ACTION_NOTIFY:
                 $this->sendThresholdNotification($report, $threshold);
                 break;
-                
+
             case RegulatoryThreshold::ACTION_REVIEW:
                 $report->update(['requires_correction' => true]);
                 break;
         }
     }
-    
+
     /**
      * Compile suspicious activities from various sources
      */
@@ -414,7 +414,7 @@ class EnhancedRegulatoryReportingService extends RegulatoryReportingService
         Carbon $endDate
     ): Collection {
         $activities = collect();
-        
+
         // Add fraud cases
         foreach ($fraudCases as $case) {
             $activities->push([
@@ -430,7 +430,7 @@ class EnhancedRegulatoryReportingService extends RegulatoryReportingService
                 'priority' => $case->priority,
             ]);
         }
-        
+
         // Add high-risk transactions
         foreach ($highRiskScores as $score) {
             $activities->push([
@@ -444,16 +444,16 @@ class EnhancedRegulatoryReportingService extends RegulatoryReportingService
                 'decision' => $score->decision,
             ]);
         }
-        
+
         // Add pattern-based suspicious activities
         $patterns = $this->detectSuspiciousPatterns($startDate, $endDate);
         foreach ($patterns as $pattern) {
             $activities->push($pattern);
         }
-        
+
         return $activities->sortByDesc('risk_score');
     }
-    
+
     /**
      * Generate SAR summary
      */
@@ -472,7 +472,7 @@ class EnhancedRegulatoryReportingService extends RegulatoryReportingService
             'estimated_loss' => $activities->sum('loss_amount'),
         ];
     }
-    
+
     /**
      * Check if activities require immediate filing
      */
@@ -484,23 +484,23 @@ class EnhancedRegulatoryReportingService extends RegulatoryReportingService
                    in_array('immediate_threat', $activity['risk_indicators'] ?? []);
         });
     }
-    
+
     /**
      * Extract fraud indicators from fraud scores
      */
     protected function extractFraudIndicators(Collection $fraudScores): array
     {
         $indicators = [];
-        
+
         foreach ($fraudScores as $score) {
             foreach ($score->triggered_rules ?? [] as $rule) {
                 $indicators[$rule] = ($indicators[$rule] ?? 0) + 1;
             }
         }
-        
+
         return $indicators;
     }
-    
+
     /**
      * Send threshold notification
      */
@@ -511,12 +511,12 @@ class EnhancedRegulatoryReportingService extends RegulatoryReportingService
             'threshold_code' => $threshold->threshold_code,
             'threshold_name' => $threshold->name,
         ]);
-        
+
         // In production, send actual notifications (email, SMS, etc.)
     }
-    
+
     // Additional helper methods for various report types...
-    
+
     protected function getAMLComplianceMetrics(Carbon $startDate, Carbon $endDate): array
     {
         return [
@@ -530,7 +530,7 @@ class EnhancedRegulatoryReportingService extends RegulatoryReportingService
                 ->count(),
         ];
     }
-    
+
     protected function performAMLRiskAssessment(Carbon $startDate, Carbon $endDate): array
     {
         return [
@@ -543,11 +543,11 @@ class EnhancedRegulatoryReportingService extends RegulatoryReportingService
             ],
         ];
     }
-    
+
     protected function getTransactionMonitoringResults(Carbon $startDate, Carbon $endDate): array
     {
         $fraudScores = FraudScore::whereBetween('created_at', [$startDate, $endDate])->get();
-        
+
         return [
             'total_monitored' => $fraudScores->count(),
             'suspicious_count' => $fraudScores->where('risk_level', '>=', FraudScore::RISK_LEVEL_HIGH)->count(),
@@ -555,11 +555,11 @@ class EnhancedRegulatoryReportingService extends RegulatoryReportingService
             'false_positive_rate' => $this->calculateFalsePositiveRate($fraudScores),
         ];
     }
-    
+
     protected function getCustomerRiskRatings(): array
     {
         $users = User::all();
-        
+
         return [
             'total_customers' => $users->count(),
             'high_risk_count' => $users->where('risk_rating', 'high')->count(),
@@ -568,24 +568,78 @@ class EnhancedRegulatoryReportingService extends RegulatoryReportingService
             'pep_count' => $users->where('pep_status', true)->count(),
         ];
     }
-    
+
     // Stub methods for various assessments - implement based on business logic
-    protected function assessCustomerRisk(): string { return 'medium'; }
-    protected function assessProductRisk(): string { return 'low'; }
-    protected function assessGeographicRisk(): string { return 'medium'; }
-    protected function assessTransactionRisk($start, $end): string { return 'medium'; }
-    protected function calculateFalsePositiveRate($scores): float { return 12.5; }
-    protected function getSanctionsScreeningResults($start, $end): array { return ['total_hits' => 0]; }
-    protected function getAMLTrainingCompliance(): array { return ['compliance_rate' => 95.0]; }
-    protected function getAMLPolicyUpdates($month): array { return ['updates' => []]; }
-    protected function performOFACScreening($date): array { return ['total_screened' => 0, 'matches_found' => 0]; }
-    protected function getBlockedTransactions($date): array { return []; }
-    protected function getOFACFalsePositives($date): array { return []; }
-    protected function getOFACRemediationActions($date): array { return []; }
-    protected function getBSACTRFilings($start, $end): array { return ['total_filed' => 0]; }
-    protected function getBSASARFilings($start, $end): array { return ['total_filed' => 0]; }
-    protected function getBSACustomerIdentification($start, $end): array { return ['compliance_rate' => 98.0]; }
-    protected function getBSARecordkeeping($start, $end): array { return ['compliance_rate' => 99.0]; }
-    protected function getBSAComplianceTesting($quarter): array { return ['overall_score' => 95.0]; }
-    protected function getBSARiskAssessment($quarter): array { return ['overall_rating' => 'low']; }
+    protected function assessCustomerRisk(): string
+    {
+        return 'medium';
+    }
+    protected function assessProductRisk(): string
+    {
+        return 'low';
+    }
+    protected function assessGeographicRisk(): string
+    {
+        return 'medium';
+    }
+    protected function assessTransactionRisk($start, $end): string
+    {
+        return 'medium';
+    }
+    protected function calculateFalsePositiveRate($scores): float
+    {
+        return 12.5;
+    }
+    protected function getSanctionsScreeningResults($start, $end): array
+    {
+        return ['total_hits' => 0];
+    }
+    protected function getAMLTrainingCompliance(): array
+    {
+        return ['compliance_rate' => 95.0];
+    }
+    protected function getAMLPolicyUpdates($month): array
+    {
+        return ['updates' => []];
+    }
+    protected function performOFACScreening($date): array
+    {
+        return ['total_screened' => 0, 'matches_found' => 0];
+    }
+    protected function getBlockedTransactions($date): array
+    {
+        return [];
+    }
+    protected function getOFACFalsePositives($date): array
+    {
+        return [];
+    }
+    protected function getOFACRemediationActions($date): array
+    {
+        return [];
+    }
+    protected function getBSACTRFilings($start, $end): array
+    {
+        return ['total_filed' => 0];
+    }
+    protected function getBSASARFilings($start, $end): array
+    {
+        return ['total_filed' => 0];
+    }
+    protected function getBSACustomerIdentification($start, $end): array
+    {
+        return ['compliance_rate' => 98.0];
+    }
+    protected function getBSARecordkeeping($start, $end): array
+    {
+        return ['compliance_rate' => 99.0];
+    }
+    protected function getBSAComplianceTesting($quarter): array
+    {
+        return ['overall_score' => 95.0];
+    }
+    protected function getBSARiskAssessment($quarter): array
+    {
+        return ['overall_rating' => 'low'];
+    }
 }

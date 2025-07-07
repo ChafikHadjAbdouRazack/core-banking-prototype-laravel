@@ -17,15 +17,16 @@ class RetryService
     private const DEFAULT_MAX_DELAY_MS = 10000;
     private const DEFAULT_MULTIPLIER = 2.0;
     private const DEFAULT_JITTER = true;
-    
+
     public function __construct(
         private readonly int $maxAttempts = self::DEFAULT_MAX_ATTEMPTS,
         private readonly int $initialDelayMs = self::DEFAULT_INITIAL_DELAY_MS,
         private readonly int $maxDelayMs = self::DEFAULT_MAX_DELAY_MS,
         private readonly float $multiplier = self::DEFAULT_MULTIPLIER,
         private readonly bool $jitter = self::DEFAULT_JITTER
-    ) {}
-    
+    ) {
+    }
+
     /**
      * Execute operation with exponential backoff retry
      *
@@ -44,14 +45,14 @@ class RetryService
     ): mixed {
         $attempt = 0;
         $lastException = null;
-        
+
         while ($attempt < $this->maxAttempts) {
             $attempt++;
-            
+
             try {
                 // Execute the operation
                 $result = $operation();
-                
+
                 // Log successful retry if not first attempt
                 if ($attempt > 1) {
                     Log::info("Operation succeeded after retry", [
@@ -59,25 +60,24 @@ class RetryService
                         'attempt' => $attempt,
                     ]);
                 }
-                
+
                 return $result;
-                
             } catch (\Throwable $exception) {
                 $lastException = $exception;
-                
+
                 // Check if exception is retryable
                 if (!$this->isRetryable($exception, $retryableExceptions)) {
                     throw $exception;
                 }
-                
+
                 // Check if we have more attempts
                 if ($attempt >= $this->maxAttempts) {
                     break;
                 }
-                
+
                 // Calculate delay with exponential backoff
                 $delayMs = $this->calculateDelay($attempt);
-                
+
                 Log::warning("Operation failed, retrying", [
                     'context' => $context,
                     'attempt' => $attempt,
@@ -85,12 +85,12 @@ class RetryService
                     'delay_ms' => $delayMs,
                     'exception' => $exception->getMessage(),
                 ]);
-                
+
                 // Sleep before retry
                 usleep($delayMs * 1000);
             }
         }
-        
+
         // All attempts exhausted
         throw new MaxRetriesExceededException(
             "Operation failed after {$this->maxAttempts} attempts: {$context}",
@@ -98,7 +98,7 @@ class RetryService
             $lastException
         );
     }
-    
+
     /**
      * Execute operation with custom retry configuration
      *
@@ -124,14 +124,14 @@ class RetryService
             multiplier: $config['multiplier'] ?? $this->multiplier,
             jitter: $config['jitter'] ?? $this->jitter
         );
-        
+
         return $service->execute(
             $operation,
             $config['retryableExceptions'] ?? [\Exception::class],
             $config['context'] ?? 'operation'
         );
     }
-    
+
     /**
      * Calculate delay with exponential backoff and optional jitter
      */
@@ -139,20 +139,20 @@ class RetryService
     {
         // Base exponential backoff calculation
         $baseDelay = $this->initialDelayMs * pow($this->multiplier, $attempt - 1);
-        
+
         // Cap at maximum delay
         $delay = min($baseDelay, $this->maxDelayMs);
-        
+
         // Add jitter to prevent thundering herd
         if ($this->jitter) {
             // Random jitter between 0% and 25% of the delay
             $jitterAmount = $delay * (mt_rand(0, 25) / 100);
             $delay = (int) ($delay + $jitterAmount);
         }
-        
+
         return (int) $delay;
     }
-    
+
     /**
      * Check if exception is retryable
      */
@@ -163,10 +163,10 @@ class RetryService
                 return true;
             }
         }
-        
+
         return false;
     }
-    
+
     /**
      * Create a retry service for network operations
      */
@@ -180,7 +180,7 @@ class RetryService
             jitter: true
         );
     }
-    
+
     /**
      * Create a retry service for database operations
      */
@@ -194,7 +194,7 @@ class RetryService
             jitter: true
         );
     }
-    
+
     /**
      * Create a retry service for critical operations
      */

@@ -17,7 +17,7 @@ class PaymentVerificationStats extends BaseWidget
         $urgentPayments = CgoInvestment::where('payment_status', 'pending')
             ->where('created_at', '<=', now()->subDay())
             ->count();
-        
+
         // Payment method breakdown
         $stripePayments = CgoInvestment::where('payment_status', 'pending')
             ->where('payment_method', 'stripe')
@@ -28,25 +28,26 @@ class PaymentVerificationStats extends BaseWidget
         $bankPayments = CgoInvestment::where('payment_status', 'pending')
             ->where('payment_method', 'bank_transfer')
             ->count();
-        
+
         return [
             Stat::make('Pending Verifications', $pendingPayments)
                 ->description($processingPayments . ' processing')
                 ->descriptionIcon('heroicon-m-clock')
                 ->color($pendingPayments > 10 ? 'warning' : 'primary')
                 ->chart([7, 5, 8, 12, 10, 9, $pendingPayments]),
-            
+
             Stat::make('Pending Amount', '$' . Number::abbreviate($pendingAmount, 2))
                 ->description('Total value awaiting verification')
                 ->descriptionIcon('heroicon-m-currency-dollar')
                 ->color('info'),
-            
+
             Stat::make('Urgent Payments', $urgentPayments)
                 ->description('Pending >24 hours')
                 ->descriptionIcon('heroicon-m-exclamation-triangle')
                 ->color($urgentPayments > 0 ? 'danger' : 'success'),
-            
-            Stat::make('By Method', 
+
+            Stat::make(
+                'By Method',
                 "Card: {$stripePayments} | Crypto: {$cryptoPayments} | Bank: {$bankPayments}"
             )
                 ->description('Payment method breakdown')

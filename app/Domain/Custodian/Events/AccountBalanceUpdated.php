@@ -11,7 +11,9 @@ use Illuminate\Queue\SerializesModels;
 
 class AccountBalanceUpdated
 {
-    use Dispatchable, InteractsWithSockets, SerializesModels;
+    use Dispatchable;
+    use InteractsWithSockets;
+    use SerializesModels;
 
     /**
      * Create a new event instance.
@@ -20,7 +22,8 @@ class AccountBalanceUpdated
         public readonly CustodianAccount $custodianAccount,
         public readonly array $balances,
         public readonly string $timestamp
-    ) {}
+    ) {
+    }
 
     /**
      * Get the channels the event should broadcast on.

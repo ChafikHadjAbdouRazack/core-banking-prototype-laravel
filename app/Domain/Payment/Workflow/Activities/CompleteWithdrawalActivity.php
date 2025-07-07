@@ -12,7 +12,7 @@ class CompleteWithdrawalActivity extends Activity
         PaymentWithdrawalAggregate::retrieve($input['withdrawal_uuid'])
             ->completeWithdrawal($input['transaction_id'])
             ->persist();
-        
+
         return [
             'withdrawal_uuid' => $input['withdrawal_uuid'],
             'status' => 'completed',

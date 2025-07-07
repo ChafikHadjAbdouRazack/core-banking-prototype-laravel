@@ -9,5 +9,5 @@ interface HasMoney
     /**
      * @return \App\Domain\Account\DataObjects\Money
      */
-    public function getMoney() : Money;
+    public function getMoney(): Money;
 }

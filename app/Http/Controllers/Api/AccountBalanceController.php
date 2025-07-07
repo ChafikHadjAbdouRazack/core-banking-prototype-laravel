@@ -88,38 +88,38 @@ class AccountBalanceController extends Controller
     public function show(Request $request, string $uuid): JsonResponse
     {
         $account = Account::where('uuid', $uuid)->first();
-        
+
         if (!$account) {
             return response()->json([
                 'message' => 'Account not found',
                 'error' => 'The specified account UUID was not found',
             ], 404);
         }
-        
+
         $query = $account->balances()->with('asset');
-        
+
         // Filter by specific asset
         if ($request->has('asset')) {
             $query->where('asset_code', strtoupper($request->string('asset')->toString()));
         }
-        
+
         // Filter positive balances only
         if ($request->boolean('positive')) {
             $query->where('balance', '>', 0);
         }
-        
+
         $balances = $query->get();
-        
+
         // Calculate USD equivalent for summary
         $totalUsdEquivalent = $this->calculateUsdEquivalent($balances);
-        
+
         return response()->json([
             'data' => [
                 'account_uuid' => $account->uuid,
                 'balances' => $balances->map(function ($balance) {
                     $asset = $balance->asset;
                     $formatted = $this->formatAmount($balance->balance, $asset);
-                    
+
                     return [
                         'asset_code' => $balance->asset_code,
                         'balance' => $balance->balance,
@@ -140,7 +140,7 @@ class AccountBalanceController extends Controller
             ],
         ]);
     }
-    
+
     /**
      * @OA\Get(
      *     path="/api/balances",
@@ -217,32 +217,32 @@ class AccountBalanceController extends Controller
             'user_uuid' => 'sometimes|uuid',
             'limit' => 'sometimes|integer|min:1|max:100',
         ]);
-        
+
         $query = \App\Models\AccountBalance::with(['account', 'asset']);
-        
+
         // Apply filters
         if ($request->has('asset')) {
             $query->where('asset_code', strtoupper($request->string('asset')->toString()));
         }
-        
+
         if ($request->has('min_balance')) {
             $query->where('balance', '>=', $request->integer('min_balance'));
         }
-        
+
         if ($request->has('user_uuid')) {
             $query->whereHas('account', function ($q) use ($request) {
                 $q->where('user_uuid', $request->string('user_uuid')->toString());
             });
         }
-        
+
         $limit = $request->integer('limit', 50);
         $balances = $query->orderBy('balance', 'desc')->limit($limit)->get();
-        
+
         // Calculate aggregations
         $totalAccounts = Account::count();
         $totalBalances = \App\Models\AccountBalance::count();
         $assetTotals = $this->calculateAssetTotals();
-        
+
         return response()->json([
             'data' => $balances->map(function ($balance) {
                 return [
@@ -263,7 +263,7 @@ class AccountBalanceController extends Controller
             ],
         ]);
     }
-    
+
     private function formatAmount(int $amount, Asset $asset): string
     {
         $formatted = number_format(
@@ -272,15 +272,15 @@ class AccountBalanceController extends Controller
             '.',
             ''
         );
-        
+
         return "{$formatted} {$asset->code}";
     }
-    
+
     private function calculateUsdEquivalent($balances): float
     {
         // Calculate without caching to avoid type issues
         $total = 0.0;
-        
+
         foreach ($balances as $balance) {
             if ($balance->asset_code === 'USD') {
                 $total += $balance->balance / 100; // USD is stored in cents
@@ -293,10 +293,10 @@ class AccountBalanceController extends Controller
                 // }
             }
         }
-        
+
         return $total;
     }
-    
+
     private function calculateAssetTotals(): array
     {
         return Cache::remember('asset_totals', 300, function () {
@@ -317,7 +317,7 @@ class AccountBalanceController extends Controller
                     }
                     return [$item->asset_code => (string) $item->total];
                 });
-            
+
             return $totals->toArray();
         });
     }

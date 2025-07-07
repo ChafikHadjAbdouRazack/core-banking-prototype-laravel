@@ -21,13 +21,13 @@ class SuspiciousActivityReportService
         return DB::transaction(function () use ($transaction, $alerts) {
             $account = $transaction->account;
             $user = $account->user;
-            
+
             // Determine priority based on alerts
             $priority = $this->determinePriority($alerts);
-            
+
             // Get related transactions
             $relatedTransactions = $this->findRelatedTransactions($transaction);
-            
+
             $sar = SuspiciousActivityReport::create([
                 'status' => SuspiciousActivityReport::STATUS_DRAFT,
                 'priority' => $priority,
@@ -51,13 +51,13 @@ class SuspiciousActivityReportService
                 'triggering_rules' => array_column($alerts, 'rule_id'),
                 'related_transactions' => $relatedTransactions->pluck('id')->toArray(),
             ]);
-            
+
             event(new SARCreated($sar));
-            
+
             return $sar;
         });
     }
-    
+
     /**
      * Create SAR from detected pattern
      */
@@ -66,7 +66,7 @@ class SuspiciousActivityReportService
         return DB::transaction(function () use ($pattern, $transactions) {
             $accounts = $transactions->pluck('account')->unique('id');
             $users = $accounts->pluck('user')->filter()->unique('id');
-            
+
             $sar = SuspiciousActivityReport::create([
                 'status' => SuspiciousActivityReport::STATUS_DRAFT,
                 'priority' => SuspiciousActivityReport::PRIORITY_HIGH,
@@ -90,13 +90,13 @@ class SuspiciousActivityReportService
                 'triggering_rules' => [],
                 'related_transactions' => $transactions->pluck('id')->toArray(),
             ]);
-            
+
             event(new SARCreated($sar));
-            
+
             return $sar;
         });
     }
-    
+
     /**
      * Update SAR investigation
      */
@@ -109,16 +109,16 @@ class SuspiciousActivityReportService
         if (!$sar->investigator_id) {
             $sar->startInvestigation($investigator);
         }
-        
+
         $sar->update(array_merge($additionalData, [
             'investigation_findings' => $findings,
         ]));
-        
+
         if (isset($additionalData['complete']) && $additionalData['complete']) {
             $sar->completeInvestigation($findings);
         }
     }
-    
+
     /**
      * Submit SAR to regulator
      */
@@ -129,23 +129,23 @@ class SuspiciousActivityReportService
         if (!$validation['valid']) {
             throw new \Exception('SAR validation failed: ' . implode(', ', $validation['errors']));
         }
-        
+
         // In production, this would submit to FinCEN or appropriate regulator
         // For now, simulate submission
         $submissionResult = $this->simulateRegulatorySubmission($sar);
-        
+
         if ($submissionResult['success']) {
             $sar->fileWithRegulator(
                 $submissionResult['reference'],
                 $submissionResult['jurisdiction']
             );
-            
+
             event(new SARSubmitted($sar));
         }
-        
+
         return $submissionResult;
     }
-    
+
     /**
      * Find related transactions
      */
@@ -154,7 +154,7 @@ class SuspiciousActivityReportService
         // Find transactions that might be related
         $account = $transaction->account;
         $timeWindow = now()->subDays(30);
-        
+
         return Transaction::where('account_id', $account->id)
             ->where('created_at', '>=', $timeWindow)
             ->where(function ($query) use ($transaction) {
@@ -168,17 +168,17 @@ class SuspiciousActivityReportService
             })
             ->get();
     }
-    
+
     /**
      * Extract involved parties from transactions
      */
     protected function extractInvolvedParties(Collection $transactions): array
     {
         $parties = [];
-        
+
         foreach ($transactions as $transaction) {
             $metadata = $transaction->metadata ?? [];
-            
+
             // Extract counterparties from metadata
             if (isset($metadata['counterparty'])) {
                 $parties[] = $metadata['counterparty'];
@@ -190,23 +190,23 @@ class SuspiciousActivityReportService
                 $parties[] = $metadata['originator'];
             }
         }
-        
+
         return array_values(array_unique($parties));
     }
-    
+
     /**
      * Determine priority based on alerts
      */
     protected function determinePriority(array $alerts): string
     {
         $highRiskCount = 0;
-        
+
         foreach ($alerts as $alert) {
             if ($alert['risk_level'] === 'high') {
                 $highRiskCount++;
             }
         }
-        
+
         if ($highRiskCount >= 3) {
             return SuspiciousActivityReport::PRIORITY_CRITICAL;
         } elseif ($highRiskCount >= 1) {
@@ -217,14 +217,14 @@ class SuspiciousActivityReportService
             return SuspiciousActivityReport::PRIORITY_LOW;
         }
     }
-    
+
     /**
      * Determine activity types from alerts
      */
     protected function determineActivityTypes(array $alerts): array
     {
         $types = [];
-        
+
         foreach ($alerts as $alert) {
             if (str_contains($alert['rule_name'], 'Structuring')) {
                 $types[] = 'structuring';
@@ -236,17 +236,17 @@ class SuspiciousActivityReportService
                 $types[] = 'other';
             }
         }
-        
+
         return array_unique($types) ?: ['other'];
     }
-    
+
     /**
      * Extract red flags from alerts
      */
     protected function extractRedFlags(array $alerts): array
     {
         $redFlags = [];
-        
+
         foreach ($alerts as $alert) {
             switch ($alert['category']) {
                 case 'velocity':
@@ -263,10 +263,10 @@ class SuspiciousActivityReportService
                     break;
             }
         }
-        
+
         return array_unique($redFlags);
     }
-    
+
     /**
      * Generate activity description
      */
@@ -276,45 +276,45 @@ class SuspiciousActivityReportService
             "Suspicious activity detected on account %s. ",
             $transaction->account->account_number
         );
-        
+
         $alertDescriptions = array_map(fn($alert) => $alert['description'], $alerts);
         $description .= "Alerts triggered: " . implode('; ', $alertDescriptions) . ". ";
-        
+
         $description .= sprintf(
             "Transaction amount: %s %s. ",
             $transaction->currency,
             number_format($transaction->amount, 2)
         );
-        
+
         return $description;
     }
-    
+
     /**
      * Get activity types for pattern
      */
     protected function getActivityTypesForPattern(string $patternType): array
     {
-        return match($patternType) {
+        return match ($patternType) {
             'smurfing' => ['structuring'],
             'layering' => ['layering'],
             'rapid_movement' => ['layering'],
             default => ['other'],
         };
     }
-    
+
     /**
      * Get red flags for pattern
      */
     protected function getRedFlagsForPattern(string $patternType): array
     {
-        return match($patternType) {
+        return match ($patternType) {
             'smurfing' => ['unusual_transaction_pattern', 'multiple_accounts'],
             'layering' => ['rapid_movement', 'complex_structure'],
             'rapid_movement' => ['rapid_movement', 'no_business_purpose'],
             default => ['unusual_transaction_pattern'],
         };
     }
-    
+
     /**
      * Generate pattern description
      */
@@ -325,9 +325,9 @@ class SuspiciousActivityReportService
             'layering' => 'Complex series of transactions detected that may be attempting to obscure the source of funds',
             'rapid_movement' => 'Rapid movement of funds detected through accounts with minimal holding time',
         ];
-        
+
         $description = $patternDescriptions[$pattern['type']] ?? 'Suspicious pattern detected';
-        
+
         $description .= sprintf(
             '. Pattern involves %d transactions totaling %s across %d accounts over %d days.',
             $transactions->count(),
@@ -335,51 +335,51 @@ class SuspiciousActivityReportService
             $transactions->pluck('account_id')->unique()->count(),
             $transactions->min('created_at')->diffInDays($transactions->max('created_at'))
         );
-        
+
         return $description;
     }
-    
+
     /**
      * Validate SAR for submission
      */
     protected function validateForSubmission(SuspiciousActivityReport $sar): array
     {
         $errors = [];
-        
+
         // Required fields
         if (empty($sar->activity_description)) {
             $errors[] = 'Activity description is required';
         }
-        
+
         if (empty($sar->investigation_findings)) {
             $errors[] = 'Investigation findings are required';
         }
-        
+
         if (!$sar->decision) {
             $errors[] = 'Decision is required';
         }
-        
+
         if (!$sar->decision_rationale) {
             $errors[] = 'Decision rationale is required';
         }
-        
+
         if ($sar->transaction_count === 0) {
             $errors[] = 'At least one transaction must be linked';
         }
-        
+
         return [
             'valid' => empty($errors),
             'errors' => $errors,
         ];
     }
-    
+
     /**
      * Simulate regulatory submission
      */
     protected function simulateRegulatorySubmission(SuspiciousActivityReport $sar): array
     {
         // In production, this would connect to FinCEN BSA E-Filing or similar
-        
+
         return [
             'success' => true,
             'reference' => 'BSA-' . now()->format('Y') . '-' . rand(100000, 999999),
@@ -392,7 +392,7 @@ class SuspiciousActivityReportService
             ],
         ];
     }
-    
+
     /**
      * Generate SAR report for internal use
      */

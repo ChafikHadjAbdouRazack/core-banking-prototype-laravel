@@ -22,7 +22,7 @@ class DepositAssetActivity extends Activity
     ): string {
         // Generate unique transaction ID
         $transactionId = (string) \Illuminate\Support\Str::uuid();
-        
+
         // Create and execute the asset transaction aggregate
         AssetTransactionAggregate::retrieve($transactionId)
             ->credit(
@@ -37,7 +37,7 @@ class DepositAssetActivity extends Activity
                 ]
             )
             ->persist();
-        
+
         return $transactionId;
     }
 }

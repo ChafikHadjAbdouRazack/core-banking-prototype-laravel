@@ -10,10 +10,13 @@ use Illuminate\Queue\SerializesModels;
 
 class ApplicationApproved
 {
-    use Dispatchable, InteractsWithSockets, SerializesModels;
-    
+    use Dispatchable;
+    use InteractsWithSockets;
+    use SerializesModels;
+
     public function __construct(
         public readonly FinancialInstitutionApplication $application,
         public readonly FinancialInstitutionPartner $partner
-    ) {}
+    ) {
+    }
 }

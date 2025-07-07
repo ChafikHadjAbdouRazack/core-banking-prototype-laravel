@@ -9,27 +9,29 @@ use Illuminate\Support\Number;
 class BankAllocationWidget extends Widget
 {
     protected static string $view = 'filament.admin.widgets.bank-allocation-widget';
-    
+
     protected int | string | array $columnSpan = 'full';
-    
+
     protected static ?int $sort = 2;
-    
+
     public function getBankDistribution(): array
     {
         $banks = UserBankPreference::AVAILABLE_BANKS;
         $distribution = [];
-        
+
         // Count active allocations per bank
         $allocations = UserBankPreference::query()
             ->where('status', 'active')
             ->selectRaw('bank_code, COUNT(*) as user_count, AVG(allocation_percentage) as avg_allocation')
             ->groupBy('bank_code')
             ->get();
-            
+
         foreach ($allocations as $allocation) {
             $bank = $banks[$allocation->bank_code] ?? null;
-            if (!$bank) continue;
-            
+            if (!$bank) {
+                continue;
+            }
+
             $distribution[] = [
                 'bank_name' => $bank['name'],
                 'country' => $bank['country'],
@@ -40,7 +42,7 @@ class BankAllocationWidget extends Widget
                 'features' => implode(', ', array_map(fn($f) => ucwords(str_replace('_', ' ', $f)), $bank['features'] ?? [])),
             ];
         }
-        
+
         // Add banks with no allocations
         foreach ($banks as $code => $bank) {
             if (!$allocations->contains('bank_code', $code)) {
@@ -55,10 +57,10 @@ class BankAllocationWidget extends Widget
                 ];
             }
         }
-        
+
         return $distribution;
     }
-    
+
     public function getTotalInsuranceCoverage(): string
     {
         $maxCoverage = count(UserBankPreference::AVAILABLE_BANKS) * 100000;

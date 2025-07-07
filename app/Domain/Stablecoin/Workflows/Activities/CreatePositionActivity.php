@@ -31,13 +31,13 @@ class CreatePositionActivity extends Activity
                 ->where('stablecoin_code', $stablecoinCode)
                 ->where('status', 'active')
                 ->first();
-            
+
             $positionUuid = $existingPosition ? $existingPosition->uuid : (string) Str::uuid();
         }
-        
+
         // Get stablecoin for calculations
         $stablecoin = Stablecoin::findOrFail($stablecoinCode);
-        
+
         // Calculate collateral ratio
         $collateralService = app(CollateralService::class);
         $collateralValueInPegAsset = $collateralService->convertToPegAsset(
@@ -46,10 +46,10 @@ class CreatePositionActivity extends Activity
             $stablecoin->peg_asset_code
         );
         $collateralRatio = $collateralValueInPegAsset / $mintAmount;
-        
+
         // Use event sourcing aggregate
         $aggregate = StablecoinAggregate::retrieve($positionUuid);
-        
+
         if (!$existingPosition) {
             $aggregate->createPosition(
                 $accountUuid->toString(),
@@ -60,9 +60,9 @@ class CreatePositionActivity extends Activity
                 $collateralRatio
             );
         }
-        
+
         $aggregate->persist();
-        
+
         return [
             'position_uuid' => $positionUuid,
             'is_new' => !isset($existingPosition)

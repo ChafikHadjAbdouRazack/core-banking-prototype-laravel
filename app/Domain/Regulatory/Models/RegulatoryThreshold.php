@@ -97,7 +97,7 @@ class RegulatoryThreshold extends Model
     {
         $prefix = "THR-{$reportType}-{$jurisdiction}";
         $categoryAbbr = strtoupper(substr($category, 0, 3));
-        
+
         $lastThreshold = self::where('threshold_code', 'like', "{$prefix}-%")
             ->orderBy('threshold_code', 'desc')
             ->first();
@@ -209,7 +209,7 @@ class RegulatoryThreshold extends Model
             return $this->time_period_days;
         }
 
-        return match($this->time_period) {
+        return match ($this->time_period) {
             self::PERIOD_DAILY => 1,
             self::PERIOD_WEEKLY => 7,
             self::PERIOD_MONTHLY => 30,
@@ -257,7 +257,7 @@ class RegulatoryThreshold extends Model
         // Simple effectiveness calculation
         // In production, use more sophisticated metrics
         $baseScore = 100;
-        
+
         // Deduct for high false positive rate
         if ($this->false_positive_rate > 0) {
             $baseScore -= min(50, $this->false_positive_rate);

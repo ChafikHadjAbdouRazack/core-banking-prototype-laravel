@@ -108,7 +108,7 @@ class EnhancedRegulatoryController extends Controller
         try {
             $date = Carbon::parse($request->date);
             $report = $this->reportingService->generateEnhancedCTR($date);
-            
+
             return response()->json([
                 'message' => 'Enhanced CTR generated successfully',
                 'report' => $report,
@@ -135,9 +135,9 @@ class EnhancedRegulatoryController extends Controller
         try {
             $startDate = Carbon::parse($request->start_date);
             $endDate = Carbon::parse($request->end_date);
-            
+
             $report = $this->reportingService->generateEnhancedSAR($startDate, $endDate);
-            
+
             return response()->json([
                 'message' => 'Enhanced SAR generated successfully',
                 'report' => $report,
@@ -163,7 +163,7 @@ class EnhancedRegulatoryController extends Controller
         try {
             $month = Carbon::createFromFormat('Y-m', $request->month);
             $report = $this->reportingService->generateAMLReport($month);
-            
+
             return response()->json([
                 'message' => 'AML report generated successfully',
                 'report' => $report,
@@ -188,7 +188,7 @@ class EnhancedRegulatoryController extends Controller
         try {
             $date = Carbon::parse($request->date);
             $report = $this->reportingService->generateOFACReport($date);
-            
+
             return response()->json([
                 'message' => 'OFAC report generated successfully',
                 'report' => $report,
@@ -215,7 +215,7 @@ class EnhancedRegulatoryController extends Controller
         try {
             $quarter = Carbon::createFromDate($request->year, ($request->quarter - 1) * 3 + 1, 1);
             $report = $this->reportingService->generateBSAReport($quarter);
-            
+
             return response()->json([
                 'message' => 'BSA report generated successfully',
                 'report' => $report,
@@ -242,7 +242,7 @@ class EnhancedRegulatoryController extends Controller
 
         try {
             $filing = $this->filingService->submitReport($report, $request->all());
-            
+
             return response()->json([
                 'message' => 'Report submitted successfully',
                 'filing' => $filing,
@@ -265,7 +265,7 @@ class EnhancedRegulatoryController extends Controller
 
         try {
             $status = $this->filingService->checkFilingStatus($filing);
-            
+
             return response()->json([
                 'filing' => $filing->fresh(),
                 'status_check' => $status,
@@ -287,7 +287,7 @@ class EnhancedRegulatoryController extends Controller
 
         try {
             $filing = $this->filingService->retryFiling($filing);
-            
+
             return response()->json([
                 'message' => 'Filing retry initiated',
                 'filing' => $filing,
@@ -368,7 +368,7 @@ class EnhancedRegulatoryController extends Controller
 
         $period = $request->period ?? 'month';
         $endDate = now();
-        $startDate = match($period) {
+        $startDate = match ($period) {
             'week' => $endDate->copy()->subWeek(),
             'month' => $endDate->copy()->subMonth(),
             'quarter' => $endDate->copy()->subQuarter(),

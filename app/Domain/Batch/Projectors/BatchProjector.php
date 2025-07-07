@@ -25,7 +25,7 @@ class BatchProjector extends Projector implements ShouldQueue
     {
         app(CreateBatchJob::class)($event);
     }
-    
+
     /**
      * @param BatchJobStarted $event
      * @return void
@@ -34,7 +34,7 @@ class BatchProjector extends Projector implements ShouldQueue
     {
         app(StartBatchJob::class)($event);
     }
-    
+
     /**
      * @param BatchItemProcessed $event
      * @return void
@@ -43,7 +43,7 @@ class BatchProjector extends Projector implements ShouldQueue
     {
         app(UpdateBatchItem::class)($event);
     }
-    
+
     /**
      * @param BatchJobCompleted $event
      * @return void
@@ -52,7 +52,7 @@ class BatchProjector extends Projector implements ShouldQueue
     {
         app(CompleteBatchJob::class)($event);
     }
-    
+
     /**
      * @param BatchJobCancelled $event
      * @return void

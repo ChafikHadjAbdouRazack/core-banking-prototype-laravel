@@ -25,17 +25,17 @@ class WithdrawAssetActivity extends Activity
         $accountBalance = AccountBalance::where('account_uuid', $accountUuid->toString())
             ->where('asset_code', $assetCode)
             ->first();
-        
+
         if (!$accountBalance || !$accountBalance->hasSufficientBalance($money->getAmount())) {
             $currentBalance = $accountBalance ? $accountBalance->balance : 0;
             throw new \Exception(
                 "Insufficient balance for {$assetCode}. Required: {$money->getAmount()}, Available: {$currentBalance}"
             );
         }
-        
+
         // Generate unique transaction ID
         $transactionId = (string) \Illuminate\Support\Str::uuid();
-        
+
         // Create and execute the asset transaction aggregate
         AssetTransactionAggregate::retrieve($transactionId)
             ->debit(
@@ -50,7 +50,7 @@ class WithdrawAssetActivity extends Activity
                 ]
             )
             ->persist();
-        
+
         return $transactionId;
     }
 }

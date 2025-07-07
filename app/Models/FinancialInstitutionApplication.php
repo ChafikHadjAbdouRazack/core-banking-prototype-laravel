@@ -10,8 +10,10 @@ use Illuminate\Support\Str;
 
 class FinancialInstitutionApplication extends Model
 {
-    use HasFactory, HasUuids, SoftDeletes;
-    
+    use HasFactory;
+    use HasUuids;
+    use SoftDeletes;
+
     protected $fillable = [
         'application_number',
         'institution_name',
@@ -76,7 +78,7 @@ class FinancialInstitutionApplication extends Model
         'source',
         'referral_code',
     ];
-    
+
     protected $casts = [
         'assets_under_management' => 'decimal:2',
         'expected_monthly_volume' => 'decimal:2',
@@ -109,7 +111,7 @@ class FinancialInstitutionApplication extends Model
         'agreement_start_date' => 'date',
         'agreement_end_date' => 'date',
     ];
-    
+
     /**
      * Available institution types
      */
@@ -124,7 +126,7 @@ class FinancialInstitutionApplication extends Model
         'insurance' => 'Insurance Company',
         'other' => 'Other Financial Institution',
     ];
-    
+
     /**
      * Application statuses
      */
@@ -133,7 +135,7 @@ class FinancialInstitutionApplication extends Model
     const STATUS_APPROVED = 'approved';
     const STATUS_REJECTED = 'rejected';
     const STATUS_ON_HOLD = 'on_hold';
-    
+
     /**
      * Review stages
      */
@@ -142,28 +144,28 @@ class FinancialInstitutionApplication extends Model
     const STAGE_TECHNICAL = 'technical';
     const STAGE_LEGAL = 'legal';
     const STAGE_FINAL = 'final';
-    
+
     /**
      * Risk ratings
      */
     const RISK_LOW = 'low';
     const RISK_MEDIUM = 'medium';
     const RISK_HIGH = 'high';
-    
+
     /**
      * Boot method
      */
     protected static function boot()
     {
         parent::boot();
-        
+
         static::creating(function ($application) {
             if (empty($application->application_number)) {
                 $application->application_number = static::generateApplicationNumber();
             }
         });
     }
-    
+
     /**
      * Generate unique application number
      */
@@ -173,17 +175,17 @@ class FinancialInstitutionApplication extends Model
         $lastApplication = static::whereYear('created_at', $year)
             ->orderBy('application_number', 'desc')
             ->first();
-        
+
         if ($lastApplication) {
             $lastNumber = intval(substr($lastApplication->application_number, -5));
             $newNumber = str_pad($lastNumber + 1, 5, '0', STR_PAD_LEFT);
         } else {
             $newNumber = '00001';
         }
-        
+
         return "FIA-{$year}-{$newNumber}";
     }
-    
+
     /**
      * Get the reviewer
      */
@@ -191,7 +193,7 @@ class FinancialInstitutionApplication extends Model
     {
         return $this->belongsTo(User::class, 'reviewed_by', 'uuid');
     }
-    
+
     /**
      * Get the partner (after approval)
      */
@@ -199,7 +201,7 @@ class FinancialInstitutionApplication extends Model
     {
         return $this->belongsTo(FinancialInstitutionPartner::class, 'partner_id', 'id');
     }
-    
+
     /**
      * Scope for pending applications
      */
@@ -207,7 +209,7 @@ class FinancialInstitutionApplication extends Model
     {
         return $query->where('status', self::STATUS_PENDING);
     }
-    
+
     /**
      * Scope for under review applications
      */
@@ -215,7 +217,7 @@ class FinancialInstitutionApplication extends Model
     {
         return $query->where('status', self::STATUS_UNDER_REVIEW);
     }
-    
+
     /**
      * Scope for approved applications
      */
@@ -223,7 +225,7 @@ class FinancialInstitutionApplication extends Model
     {
         return $query->where('status', self::STATUS_APPROVED);
     }
-    
+
     /**
      * Check if application is editable
      */
@@ -231,7 +233,7 @@ class FinancialInstitutionApplication extends Model
     {
         return in_array($this->status, [self::STATUS_PENDING, self::STATUS_ON_HOLD]);
     }
-    
+
     /**
      * Check if application is reviewable
      */
@@ -239,7 +241,7 @@ class FinancialInstitutionApplication extends Model
     {
         return in_array($this->status, [self::STATUS_PENDING, self::STATUS_UNDER_REVIEW]);
     }
-    
+
     /**
      * Get required documents based on institution type
      */
@@ -252,7 +254,7 @@ class FinancialInstitutionApplication extends Model
             'aml_policy' => 'AML/KYC Policy Document',
             'data_protection_policy' => 'Data Protection Policy',
         ];
-        
+
         // Add type-specific documents
         switch ($this->institution_type) {
             case 'bank':
@@ -266,10 +268,10 @@ class FinancialInstitutionApplication extends Model
                 $baseDocuments['pci_certificate'] = 'PCI-DSS Compliance Certificate';
                 break;
         }
-        
+
         return $baseDocuments;
     }
-    
+
     /**
      * Calculate risk score
      */
@@ -277,14 +279,14 @@ class FinancialInstitutionApplication extends Model
     {
         $score = 0;
         $factors = [];
-        
+
         // Country risk (simplified)
         $highRiskCountries = ['AF', 'IR', 'KP', 'MM', 'SY', 'YE'];
         if (in_array($this->country, $highRiskCountries)) {
             $score += 30;
             $factors[] = 'high_risk_country';
         }
-        
+
         // Institution type risk
         $typeRisk = [
             'bank' => 10,
@@ -298,7 +300,7 @@ class FinancialInstitutionApplication extends Model
             'other' => 30,
         ];
         $score += $typeRisk[$this->institution_type] ?? 30;
-        
+
         // Compliance factors
         if (!$this->has_aml_program) {
             $score += 20;
@@ -312,23 +314,23 @@ class FinancialInstitutionApplication extends Model
             $score += 15;
             $factors[] = 'no_pci_compliance';
         }
-        
+
         // Size factor (larger institutions typically lower risk)
         if ($this->assets_under_management && $this->assets_under_management < 10000000) {
             $score += 10;
             $factors[] = 'small_institution';
         }
-        
+
         // Years in operation
         if ($this->years_in_operation < 3) {
             $score += 15;
             $factors[] = 'new_institution';
         }
-        
+
         // Update risk assessment
         $this->risk_score = min($score, 100);
         $this->risk_factors = $factors;
-        
+
         // Determine risk rating
         if ($score <= 30) {
             $this->risk_rating = self::RISK_LOW;
@@ -337,16 +339,16 @@ class FinancialInstitutionApplication extends Model
         } else {
             $this->risk_rating = self::RISK_HIGH;
         }
-        
+
         return $this->risk_score;
     }
-    
+
     /**
      * Get display status
      */
     public function getStatusBadgeColor(): string
     {
-        return match($this->status) {
+        return match ($this->status) {
             self::STATUS_PENDING => 'warning',
             self::STATUS_UNDER_REVIEW => 'info',
             self::STATUS_APPROVED => 'success',
@@ -355,13 +357,13 @@ class FinancialInstitutionApplication extends Model
             default => 'secondary',
         };
     }
-    
+
     /**
      * Get risk rating color
      */
     public function getRiskRatingColor(): string
     {
-        return match($this->risk_rating) {
+        return match ($this->risk_rating) {
             self::RISK_LOW => 'success',
             self::RISK_MEDIUM => 'warning',
             self::RISK_HIGH => 'danger',

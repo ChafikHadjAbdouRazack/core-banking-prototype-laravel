@@ -21,7 +21,7 @@ class BatchJob extends Model
         'completed_at',
         'metadata',
     ];
-    
+
     protected $casts = [
         'total_items' => 'integer',
         'processed_items' => 'integer',
@@ -31,7 +31,7 @@ class BatchJob extends Model
         'completed_at' => 'datetime',
         'metadata' => 'array',
     ];
-    
+
     /**
      * Get the items for this batch job
      */
@@ -39,7 +39,7 @@ class BatchJob extends Model
     {
         return $this->hasMany(BatchItem::class);
     }
-    
+
     /**
      * Get progress percentage
      */
@@ -48,10 +48,10 @@ class BatchJob extends Model
         if ($this->total_items === 0) {
             return 0;
         }
-        
+
         return round(($this->processed_items / $this->total_items) * 100, 1);
     }
-    
+
     /**
      * Get success rate
      */
@@ -60,11 +60,11 @@ class BatchJob extends Model
         if ($this->processed_items === 0) {
             return 0;
         }
-        
+
         $successfulItems = $this->processed_items - $this->failed_items;
         return round(($successfulItems / $this->processed_items) * 100, 1);
     }
-    
+
     /**
      * Check if batch can be cancelled
      */
@@ -72,13 +72,13 @@ class BatchJob extends Model
     {
         return in_array($this->status, ['pending', 'processing', 'scheduled']);
     }
-    
+
     /**
      * Check if batch can be retried
      */
     public function canBeRetried(): bool
     {
-        return $this->status === 'failed' || 
+        return $this->status === 'failed' ||
                ($this->status === 'completed' && $this->failed_items > 0);
     }
 }

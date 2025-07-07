@@ -3,8 +3,7 @@
 use Faker\Factory;
 use Faker\Generator;
 
-if (!function_exists('faker') )
-{
+if (!function_exists('faker')) {
     /**
      * A shorthand for faker factory
      *

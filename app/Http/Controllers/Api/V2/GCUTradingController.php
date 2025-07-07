@@ -136,7 +136,7 @@ class GCUTradingController extends Controller
 
         // Calculate exchange rate and GCU amount
         $exchangeRate = $this->calculateGCUExchangeRate($validated['currency'], $latestValue->value);
-        
+
         // Apply trading fee (1%)
         $feeRate = 0.01;
         $feeAmount = $validated['amount'] * $feeRate;
@@ -186,7 +186,7 @@ class GCUTradingController extends Controller
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
-            
+
             return response()->json([
                 'error' => 'Transaction Failed',
                 'message' => 'Failed to complete GCU purchase: ' . $e->getMessage(),
@@ -298,7 +298,7 @@ class GCUTradingController extends Controller
         // Calculate exchange rate and fiat amount
         $exchangeRate = 1 / $this->calculateGCUExchangeRate($validated['currency'], $latestValue->value);
         $grossAmount = $validated['amount'] * $exchangeRate;
-        
+
         // Apply trading fee (1%)
         $feeRate = 0.01;
         $feeAmount = $grossAmount * $feeRate;
@@ -347,7 +347,7 @@ class GCUTradingController extends Controller
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
-            
+
             return response()->json([
                 'error' => 'Transaction Failed',
                 'message' => 'Failed to complete GCU sale: ' . $e->getMessage(),
@@ -507,7 +507,7 @@ class GCUTradingController extends Controller
     public function tradingLimits(Request $request): JsonResponse
     {
         $user = $request->user();
-        
+
         // Get user's KYC level (placeholder - implement actual KYC check)
         $kycLevel = 2; // Basic verified
 

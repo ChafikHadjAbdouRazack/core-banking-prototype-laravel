@@ -14,9 +14,9 @@ class DestroyAccountActivity extends Activity
      *
      * @return bool
      */
-    public function execute( AccountUuid $uuid, LedgerAggregate $ledger ): bool
+    public function execute(AccountUuid $uuid, LedgerAggregate $ledger): bool
     {
-        $ledger->retrieve( $uuid->getUuid() )
+        $ledger->retrieve($uuid->getUuid())
                ->deleteAccount()
                ->persist();
 

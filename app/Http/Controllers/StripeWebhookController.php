@@ -16,10 +16,10 @@ class StripeWebhookController extends CashierController
     {
         $stripeService = new StripePaymentService();
         $stripeService->handleWebhook($payload);
-        
+
         return $this->successMethod();
     }
-    
+
     /**
      * Handle payment intent succeeded
      */
@@ -27,10 +27,10 @@ class StripeWebhookController extends CashierController
     {
         $stripeService = new StripePaymentService();
         $stripeService->handleWebhook($payload);
-        
+
         return $this->successMethod();
     }
-    
+
     /**
      * Handle payment intent failed
      */
@@ -38,7 +38,7 @@ class StripeWebhookController extends CashierController
     {
         $stripeService = new StripePaymentService();
         $stripeService->handleWebhook($payload);
-        
+
         return $this->successMethod();
     }
 }

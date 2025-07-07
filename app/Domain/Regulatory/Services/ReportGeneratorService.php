@@ -18,8 +18,8 @@ class ReportGeneratorService
     public function generateReport(RegulatoryReport $report, string $format = null): string
     {
         $format = $format ?? $report->file_format;
-        
-        return match($format) {
+
+        return match ($format) {
             RegulatoryReport::FORMAT_JSON => $this->generateJsonReport($report),
             RegulatoryReport::FORMAT_XML => $this->generateXmlReport($report),
             RegulatoryReport::FORMAT_CSV => $this->generateCsvReport($report),
@@ -28,134 +28,134 @@ class ReportGeneratorService
             default => throw new \InvalidArgumentException("Unsupported format: {$format}"),
         };
     }
-    
+
     /**
      * Generate JSON report
      */
     protected function generateJsonReport(RegulatoryReport $report): string
     {
         $data = $this->prepareReportData($report);
-        
+
         $json = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-        
+
         $filename = $this->getFilename($report, 'json');
         Storage::put($filename, $json);
-        
+
         $this->updateReportFile($report, $filename, strlen($json));
-        
+
         return $filename;
     }
-    
+
     /**
      * Generate XML report
      */
     protected function generateXmlReport(RegulatoryReport $report): string
     {
         $data = $this->prepareReportData($report);
-        
+
         $xml = new \SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?><report></report>');
         $this->arrayToXml($data, $xml);
-        
+
         $xmlString = $xml->asXML();
-        
+
         $filename = $this->getFilename($report, 'xml');
         Storage::put($filename, $xmlString);
-        
+
         $this->updateReportFile($report, $filename, strlen($xmlString));
-        
+
         return $filename;
     }
-    
+
     /**
      * Generate CSV report
      */
     protected function generateCsvReport(RegulatoryReport $report): string
     {
         $data = $this->prepareReportData($report);
-        
+
         $filename = $this->getFilename($report, 'csv');
         $path = Storage::path($filename);
-        
+
         $file = fopen($path, 'w');
-        
+
         // Write headers
         $headers = $this->extractCsvHeaders($report);
         fputcsv($file, $headers);
-        
+
         // Write data
         $rows = $this->extractCsvRows($report, $data);
         foreach ($rows as $row) {
             fputcsv($file, $row);
         }
-        
+
         fclose($file);
-        
+
         $this->updateReportFile($report, $filename, filesize($path));
-        
+
         return $filename;
     }
-    
+
     /**
      * Generate PDF report
      */
     protected function generatePdfReport(RegulatoryReport $report): string
     {
         $data = $this->prepareReportData($report);
-        
+
         // Load appropriate template based on report type
         $template = $this->getReportTemplate($report->report_type);
-        
+
         $pdf = Pdf::loadView($template, [
             'report' => $report,
             'data' => $data,
             'generated_at' => now(),
         ]);
-        
+
         $pdf->setPaper('A4', 'portrait');
-        
+
         $filename = $this->getFilename($report, 'pdf');
         $pdfContent = $pdf->output();
-        
+
         Storage::put($filename, $pdfContent);
-        
+
         $this->updateReportFile($report, $filename, strlen($pdfContent));
-        
+
         return $filename;
     }
-    
+
     /**
      * Generate Excel report
      */
     protected function generateExcelReport(RegulatoryReport $report): string
     {
         $data = $this->prepareReportData($report);
-        
+
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
-        
+
         // Add report header
         $this->addExcelHeader($sheet, $report);
-        
+
         // Add data based on report type
         $this->addExcelData($sheet, $report, $data);
-        
+
         // Auto-size columns
         foreach (range('A', $sheet->getHighestColumn()) as $col) {
             $sheet->getColumnDimension($col)->setAutoSize(true);
         }
-        
+
         $writer = new Xlsx($spreadsheet);
-        
+
         $filename = $this->getFilename($report, 'xlsx');
         $path = Storage::path($filename);
-        
+
         $writer->save($path);
-        
+
         $this->updateReportFile($report, $filename, filesize($path));
-        
+
         return $filename;
     }
-    
+
     /**
      * Prepare report data
      */
@@ -172,7 +172,7 @@ class ReportGeneratorService
         } else {
             $existingData = [];
         }
-        
+
         // Merge with report metadata
         return array_merge($existingData, [
             'report_metadata' => [
@@ -198,7 +198,7 @@ class ReportGeneratorService
             ],
         ]);
     }
-    
+
     /**
      * Convert array to XML
      */
@@ -216,13 +216,13 @@ class ReportGeneratorService
             }
         }
     }
-    
+
     /**
      * Extract CSV headers based on report type
      */
     protected function extractCsvHeaders(RegulatoryReport $report): array
     {
-        return match($report->report_type) {
+        return match ($report->report_type) {
             RegulatoryReport::TYPE_CTR => [
                 'Transaction ID', 'Date', 'Time', 'Type', 'Amount', 'Currency',
                 'Account Number', 'Customer Name', 'Customer ID', 'Customer Type',
@@ -241,14 +241,14 @@ class ReportGeneratorService
             default => ['ID', 'Date', 'Type', 'Amount', 'Description'],
         };
     }
-    
+
     /**
      * Extract CSV rows based on report type
      */
     protected function extractCsvRows(RegulatoryReport $report, array $data): array
     {
         $rows = [];
-        
+
         // Extract rows based on report type
         // This is a simplified version - implement based on actual data structure
         if (isset($data['transactions'])) {
@@ -260,10 +260,10 @@ class ReportGeneratorService
                 $rows[] = $this->extractActivityRow($activity);
             }
         }
-        
+
         return $rows;
     }
-    
+
     /**
      * Extract transaction row for CSV
      */
@@ -287,7 +287,7 @@ class ReportGeneratorService
             $transaction['postal_code'] ?? '',
         ];
     }
-    
+
     /**
      * Extract activity row for CSV
      */
@@ -307,7 +307,7 @@ class ReportGeneratorService
             implode(', ', $activity['risk_indicators'] ?? []),
         ];
     }
-    
+
     /**
      * Get report template path
      */
@@ -321,10 +321,10 @@ class ReportGeneratorService
             RegulatoryReport::TYPE_BSA => 'regulatory.reports.bsa',
             RegulatoryReport::TYPE_OFAC => 'regulatory.reports.ofac',
         ];
-        
+
         return $templates[$reportType] ?? 'regulatory.reports.default';
     }
-    
+
     /**
      * Add Excel header
      */
@@ -333,30 +333,30 @@ class ReportGeneratorService
         $sheet->setCellValue('A1', $report->report_type . ' Report');
         $sheet->mergeCells('A1:E1');
         $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(16);
-        
+
         $sheet->setCellValue('A3', 'Report ID:');
         $sheet->setCellValue('B3', $report->report_id);
-        
+
         $sheet->setCellValue('A4', 'Period:');
         $sheet->setCellValue('B4', $report->reporting_period_start->toDateString() . ' to ' . $report->reporting_period_end->toDateString());
-        
+
         $sheet->setCellValue('A5', 'Generated:');
         $sheet->setCellValue('B5', $report->generated_at->toDateTimeString());
-        
+
         $sheet->setCellValue('D3', 'Jurisdiction:');
         $sheet->setCellValue('E3', $report->jurisdiction);
-        
+
         $sheet->setCellValue('D4', 'Status:');
         $sheet->setCellValue('E4', $report->getStatusLabel());
     }
-    
+
     /**
      * Add Excel data
      */
     protected function addExcelData($sheet, RegulatoryReport $report, array $data): void
     {
         $startRow = 7;
-        
+
         // Add headers
         $headers = $this->extractCsvHeaders($report);
         $col = 'A';
@@ -365,7 +365,7 @@ class ReportGeneratorService
             $sheet->getStyle($col . $startRow)->getFont()->setBold(true);
             $col++;
         }
-        
+
         // Add data rows
         $rows = $this->extractCsvRows($report, $data);
         $currentRow = $startRow + 1;
@@ -378,7 +378,7 @@ class ReportGeneratorService
             $currentRow++;
         }
     }
-    
+
     /**
      * Get filename for report
      */
@@ -386,10 +386,10 @@ class ReportGeneratorService
     {
         $type = strtolower($report->report_type);
         $date = $report->reporting_period_end->format('Y_m_d');
-        
+
         return "regulatory/{$type}/{$report->report_id}_{$date}.{$extension}";
     }
-    
+
     /**
      * Update report file information
      */
@@ -401,13 +401,13 @@ class ReportGeneratorService
             'file_hash' => hash_file('sha256', Storage::path($filename)),
         ]);
     }
-    
+
     /**
      * Get certification statement
      */
     protected function getCertificationStatement(RegulatoryReport $report): string
     {
-        return match($report->report_type) {
+        return match ($report->report_type) {
             RegulatoryReport::TYPE_CTR => 'I certify that this Currency Transaction Report is complete and accurate to the best of my knowledge.',
             RegulatoryReport::TYPE_SAR => 'I certify that this Suspicious Activity Report contains all known information regarding the suspicious activity.',
             RegulatoryReport::TYPE_BSA => 'I certify compliance with all applicable Bank Secrecy Act requirements.',

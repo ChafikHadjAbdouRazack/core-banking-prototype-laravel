@@ -14,13 +14,13 @@ class DocumentAnalysisService
     {
         // In production, this would use OCR and document analysis services
         // For demonstration, simulate data extraction
-        
+
         $extractedData = [
             'document_type' => $documentType,
             'extraction_confidence' => 95.5,
             'extracted_at' => now()->toIso8601String(),
         ];
-        
+
         switch ($documentType) {
             case 'passport':
                 $extractedData = array_merge($extractedData, [
@@ -36,7 +36,7 @@ class DocumentAnalysisService
                     'mrz' => 'P<USADOE<<JOHN<<<<<<<<<<<<<<<<<<<<<<<<<<<<',
                 ]);
                 break;
-                
+
             case 'driving_license':
                 $extractedData = array_merge($extractedData, [
                     'document_number' => 'DL' . rand(1000000, 9999999),
@@ -52,7 +52,7 @@ class DocumentAnalysisService
                     'class' => 'C',
                 ]);
                 break;
-                
+
             case 'national_id':
                 $extractedData = array_merge($extractedData, [
                     'document_number' => 'ID' . rand(100000000, 999999999),
@@ -67,10 +67,10 @@ class DocumentAnalysisService
                 ]);
                 break;
         }
-        
+
         return $extractedData;
     }
-    
+
     /**
      * Extract address data from document
      */
@@ -78,9 +78,9 @@ class DocumentAnalysisService
     {
         // In production, this would use OCR to extract address information
         // For demonstration, simulate data extraction
-        
+
         $addressData = [];
-        
+
         switch ($documentType) {
             case 'utility_bill':
                 $addressData = [
@@ -94,7 +94,7 @@ class DocumentAnalysisService
                     'account_holder' => 'John Doe',
                 ];
                 break;
-                
+
             case 'bank_statement':
                 $addressData = [
                     'line1' => '123 Main Street',
@@ -107,7 +107,7 @@ class DocumentAnalysisService
                     'account_holder' => 'John Doe',
                 ];
                 break;
-                
+
             case 'lease_agreement':
                 $addressData = [
                     'line1' => '123 Main Street',
@@ -121,10 +121,10 @@ class DocumentAnalysisService
                 ];
                 break;
         }
-        
+
         return $addressData;
     }
-    
+
     /**
      * Verify document authenticity
      */
@@ -132,7 +132,7 @@ class DocumentAnalysisService
     {
         // In production, this would use document verification services
         // to check security features, holograms, watermarks, etc.
-        
+
         $checks = [
             'is_authentic' => true,
             'confidence' => 94.2,
@@ -140,7 +140,7 @@ class DocumentAnalysisService
             'fraud_indicators' => false,
             'data_consistency' => true,
         ];
-        
+
         // Perform various authenticity checks
         $checks['checks_performed'] = [
             'format_validation' => $this->validateDocumentFormat($documentType),
@@ -149,20 +149,20 @@ class DocumentAnalysisService
             'image_quality' => $this->assessImageQuality($documentPath),
             'tampering_detection' => $this->detectTampering($documentPath),
         ];
-        
+
         // Calculate overall authenticity
         $passedChecks = array_filter($checks['checks_performed'], fn($check) => $check['passed']);
         $checks['confidence'] = (count($passedChecks) / count($checks['checks_performed'])) * 100;
         $checks['is_authentic'] = $checks['confidence'] >= 80;
-        
+
         // Check for fraud indicators
         if ($checks['confidence'] < 50) {
             $checks['fraud_indicators'] = true;
         }
-        
+
         return $checks;
     }
-    
+
     /**
      * Check document recency
      */
@@ -173,7 +173,7 @@ class DocumentAnalysisService
             'age_in_days' => null,
             'max_allowed_age' => 90, // 3 months
         ];
-        
+
         // Find date field based on document type
         $dateField = null;
         if (isset($documentData['bill_date'])) {
@@ -183,16 +183,16 @@ class DocumentAnalysisService
         } elseif (isset($documentData['issue_date'])) {
             $dateField = $documentData['issue_date'];
         }
-        
+
         if ($dateField) {
             $documentDate = \Carbon\Carbon::parse($dateField);
             $result['age_in_days'] = $documentDate->diffInDays(now());
             $result['is_recent'] = $result['age_in_days'] <= $result['max_allowed_age'];
         }
-        
+
         return $result;
     }
-    
+
     /**
      * Validate document format
      */
@@ -204,7 +204,7 @@ class DocumentAnalysisService
             'details' => "Document format matches expected {$documentType} format",
         ];
     }
-    
+
     /**
      * Check security features
      */
@@ -212,7 +212,7 @@ class DocumentAnalysisService
     {
         // Simulate security feature detection
         $features = [];
-        
+
         switch ($documentType) {
             case 'passport':
                 $features = ['watermark', 'hologram', 'machine_readable_zone'];
@@ -224,7 +224,7 @@ class DocumentAnalysisService
                 $features = ['watermark', 'security_thread', 'raised_print'];
                 break;
         }
-        
+
         return [
             'check' => 'security_features',
             'passed' => true,
@@ -232,7 +232,7 @@ class DocumentAnalysisService
             'details' => 'All expected security features detected',
         ];
     }
-    
+
     /**
      * Check data consistency
      */
@@ -245,7 +245,7 @@ class DocumentAnalysisService
             'details' => 'Document data is internally consistent',
         ];
     }
-    
+
     /**
      * Assess image quality
      */
@@ -261,7 +261,7 @@ class DocumentAnalysisService
             'details' => 'Image quality sufficient for verification',
         ];
     }
-    
+
     /**
      * Detect tampering
      */
@@ -275,7 +275,7 @@ class DocumentAnalysisService
             'details' => 'No signs of digital manipulation detected',
         ];
     }
-    
+
     /**
      * Store document securely
      */
@@ -288,17 +288,17 @@ class DocumentAnalysisService
             now()->format('YmdHis'),
             uniqid()
         );
-        
+
         // Store encrypted
         $path = Storage::disk('secure')->putFileAs(
             dirname($fileName),
             $documentPath,
             basename($fileName)
         );
-        
+
         return $path;
     }
-    
+
     /**
      * Compare document with selfie
      */

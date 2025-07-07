@@ -19,7 +19,7 @@ class ApiKeyController extends Controller
             }])
             ->orderBy('created_at', 'desc')
             ->get();
-            
+
         return view('api-keys.index', compact('apiKeys'));
     }
 

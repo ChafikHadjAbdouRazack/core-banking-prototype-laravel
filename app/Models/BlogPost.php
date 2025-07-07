@@ -39,7 +39,7 @@ class BlogPost extends Model
             if (empty($post->slug)) {
                 $post->slug = Str::slug($post->title);
             }
-            
+
             if (empty($post->published_at) && $post->is_published) {
                 $post->published_at = now();
             }
@@ -65,7 +65,7 @@ class BlogPost extends Model
 
     public function getCategoryBadgeColorAttribute()
     {
-        return match($this->category) {
+        return match ($this->category) {
             'platform' => 'blue',
             'security' => 'green',
             'developer' => 'purple',

@@ -17,13 +17,13 @@ class IdentityVerificationService
             'api_key' => null,
         ],
     ];
-    
+
     public function __construct()
     {
         $this->providers['jumio']['api_key'] = config('services.jumio.api_key');
         $this->providers['onfido']['api_key'] = config('services.onfido.api_key');
     }
-    
+
     /**
      * Verify identity against external databases
      */
@@ -31,22 +31,22 @@ class IdentityVerificationService
     {
         // In production, this would make actual API calls to identity verification services
         // For demonstration, simulate the verification
-        
+
         $results = [
             'match_found' => false,
             'match_confidence' => 0,
             'sources_checked' => [],
             'discrepancies' => [],
         ];
-        
+
         // Simulate identity database check
         $identityCheck = $this->checkIdentityDatabase($data);
         $results['sources_checked'][] = 'National Identity Database';
-        
+
         if ($identityCheck['found']) {
             $results['match_found'] = true;
             $results['match_confidence'] = $identityCheck['confidence'];
-            
+
             // Check for discrepancies
             $discrepancies = $this->findDiscrepancies($data, $identityCheck['data']);
             if (!empty($discrepancies)) {
@@ -54,19 +54,19 @@ class IdentityVerificationService
                 $results['match_confidence'] -= count($discrepancies) * 10;
             }
         }
-        
+
         // Check against credit bureaus
         $creditCheck = $this->checkCreditBureaus($data);
         $results['sources_checked'][] = 'Credit Bureaus';
-        
+
         if ($creditCheck['found'] && !$results['match_found']) {
             $results['match_found'] = true;
             $results['match_confidence'] = $creditCheck['confidence'] * 0.8; // Lower weight for credit bureau
         }
-        
+
         return $results;
     }
-    
+
     /**
      * Create verification session with provider
      */
@@ -81,7 +81,7 @@ class IdentityVerificationService
                 throw new \InvalidArgumentException("Unknown provider: {$provider}");
         }
     }
-    
+
     /**
      * Get verification result from provider
      */
@@ -96,7 +96,7 @@ class IdentityVerificationService
                 throw new \InvalidArgumentException("Unknown provider: {$provider}");
         }
     }
-    
+
     /**
      * Check identity database (simulated)
      */
@@ -106,7 +106,7 @@ class IdentityVerificationService
         $firstName = strtolower($data['first_name'] ?? '');
         $lastName = strtolower($data['last_name'] ?? '');
         $dob = $data['date_of_birth'] ?? '';
-        
+
         // Simulate positive match for testing
         if ($firstName === 'john' && $lastName === 'doe') {
             return [
@@ -121,10 +121,10 @@ class IdentityVerificationService
                 ],
             ];
         }
-        
+
         return ['found' => false];
     }
-    
+
     /**
      * Check credit bureaus (simulated)
      */
@@ -136,7 +136,7 @@ class IdentityVerificationService
             'confidence' => rand(70, 90),
         ];
     }
-    
+
     /**
      * Find discrepancies between provided and verified data
      */
@@ -144,7 +144,7 @@ class IdentityVerificationService
     {
         $discrepancies = [];
         $fields = ['first_name', 'last_name', 'date_of_birth', 'nationality'];
-        
+
         foreach ($fields as $field) {
             if (isset($provided[$field]) && isset($verified[$field])) {
                 if (strtolower($provided[$field]) !== strtolower($verified[$field])) {
@@ -156,10 +156,10 @@ class IdentityVerificationService
                 }
             }
         }
-        
+
         return $discrepancies;
     }
-    
+
     /**
      * Create Jumio verification session
      */
@@ -173,7 +173,7 @@ class IdentityVerificationService
             'expires_at' => now()->addHours(24)->toIso8601String(),
         ];
     }
-    
+
     /**
      * Create Onfido verification session
      */
@@ -188,7 +188,7 @@ class IdentityVerificationService
             'expires_at' => now()->addHours(24)->toIso8601String(),
         ];
     }
-    
+
     /**
      * Get Jumio verification result
      */
@@ -217,7 +217,7 @@ class IdentityVerificationService
             ],
         ];
     }
-    
+
     /**
      * Get Onfido verification result
      */

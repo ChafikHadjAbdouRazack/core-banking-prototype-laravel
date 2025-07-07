@@ -19,48 +19,47 @@ class InvestmentAgreementService
         try {
             // Load investment with relationships
             $investment->load(['user', 'round']);
-            
+
             // Generate agreement data
             $data = $this->prepareAgreementData($investment);
-            
+
             // Generate PDF
             $pdf = Pdf::loadView('cgo.agreements.investment-agreement', $data);
-            
+
             // Configure PDF settings
             $pdf->setPaper('A4', 'portrait');
             $pdf->setOption('isRemoteEnabled', true);
             $pdf->setOption('isHtml5ParserEnabled', true);
-            
+
             // Generate filename
             $filename = $this->generateFilename($investment);
-            
+
             // Save to storage
             $path = 'cgo/agreements/' . $filename;
             Storage::put($path, $pdf->output());
-            
+
             // Update investment record
             $investment->update([
                 'agreement_path' => $path,
                 'agreement_generated_at' => now(),
             ]);
-            
+
             Log::info('CGO investment agreement generated', [
                 'investment_id' => $investment->id,
                 'path' => $path,
             ]);
-            
+
             return $path;
-            
         } catch (\Exception $e) {
             Log::error('Failed to generate CGO investment agreement', [
                 'investment_id' => $investment->id,
                 'error' => $e->getMessage(),
             ]);
-            
+
             throw $e;
         }
     }
-    
+
     /**
      * Generate certificate of investment
      */
@@ -71,10 +70,10 @@ class InvestmentAgreementService
             if ($investment->status !== 'confirmed') {
                 throw new \Exception('Investment must be confirmed to generate certificate');
             }
-            
+
             // Load relationships
             $investment->load(['user', 'round']);
-            
+
             // Generate certificate number if not exists
             if (!$investment->certificate_number) {
                 $investment->update([
@@ -82,48 +81,47 @@ class InvestmentAgreementService
                     'certificate_issued_at' => now(),
                 ]);
             }
-            
+
             // Prepare certificate data
             $data = $this->prepareCertificateData($investment);
-            
+
             // Generate PDF
             $pdf = Pdf::loadView('cgo.agreements.investment-certificate', $data);
-            
+
             // Configure PDF settings
             $pdf->setPaper('A4', 'landscape');
             $pdf->setOption('isRemoteEnabled', true);
             $pdf->setOption('isHtml5ParserEnabled', true);
-            
+
             // Generate filename
             $filename = 'certificate_' . $investment->certificate_number . '.pdf';
-            
+
             // Save to storage
             $path = 'cgo/certificates/' . $filename;
             Storage::put($path, $pdf->output());
-            
+
             // Update investment record
             $investment->update([
                 'certificate_path' => $path,
             ]);
-            
+
             Log::info('CGO investment certificate generated', [
                 'investment_id' => $investment->id,
                 'certificate_number' => $investment->certificate_number,
                 'path' => $path,
             ]);
-            
+
             return $path;
-            
         } catch (\Exception $e) {
             Log::error('Failed to generate CGO investment certificate', [
                 'investment_id' => $investment->id,
                 'error' => $e->getMessage(),
             ]);
-            
+
             throw $e;
         }
     }
-    
+
     /**
      * Prepare agreement data
      */
@@ -131,7 +129,7 @@ class InvestmentAgreementService
     {
         $round = $investment->round;
         $user = $investment->user;
-        
+
         return [
             'investment' => $investment,
             'investor' => [
@@ -162,7 +160,7 @@ class InvestmentAgreementService
             'agreement_number' => 'CGO-AGR-' . $investment->uuid,
         ];
     }
-    
+
     /**
      * Prepare certificate data
      */
@@ -186,7 +184,7 @@ class InvestmentAgreementService
             ],
         ];
     }
-    
+
     /**
      * Get investment terms based on tier
      */
@@ -200,7 +198,7 @@ class InvestmentAgreementService
             'dilution_protection' => 'None',
             'information_rights' => 'Annual financial statements',
         ];
-        
+
         // Add tier-specific terms
         switch ($investment->tier) {
             case 'gold':
@@ -208,15 +206,15 @@ class InvestmentAgreementService
                 $baseTerms['information_rights'] = 'Quarterly financial statements and board updates';
                 $baseTerms['board_observer'] = 'Board observer rights for investments above $100,000';
                 break;
-                
+
             case 'silver':
                 $baseTerms['information_rights'] = 'Semi-annual financial statements';
                 break;
         }
-        
+
         return $baseTerms;
     }
-    
+
     /**
      * Get standard investment risks
      */
@@ -233,7 +231,7 @@ class InvestmentAgreementService
             'Technology risks and cybersecurity threats',
         ];
     }
-    
+
     /**
      * Generate unique filename
      */
@@ -241,10 +239,10 @@ class InvestmentAgreementService
     {
         $timestamp = now()->format('Ymd_His');
         $uuid = Str::substr($investment->uuid, 0, 8);
-        
+
         return "agreement_{$investment->tier}_{$uuid}_{$timestamp}.pdf";
     }
-    
+
     /**
      * Send agreement to investor
      */

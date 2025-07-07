@@ -15,7 +15,7 @@ class WalletConvertWorkflow extends Workflow
      *
      * @param AccountUuid $accountUuid
      * @param string $fromAssetCode
-     * @param string $toAssetCode  
+     * @param string $toAssetCode
      * @param int $amount
      * @return \Generator
      */
@@ -33,7 +33,7 @@ class WalletConvertWorkflow extends Workflow
                 $toAssetCode,
                 $amount
             );
-            
+
             // Add compensation to reverse the conversion
             // This requires knowing the converted amount to reverse properly
             $this->addCompensation(fn() => ActivityStub::make(
@@ -43,7 +43,7 @@ class WalletConvertWorkflow extends Workflow
                 $fromAssetCode,  // Reverse: to -> from becomes from -> to
                 $result['converted_amount'] // Use actual converted amount for proper reversal
             ));
-            
+
             return $result;
         } catch (\Throwable $th) {
             yield from $this->compensate();

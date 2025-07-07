@@ -37,9 +37,8 @@ class AssetTransferWorkflow extends Workflow
                 $amount,
                 $description
             );
-            
+
             return yield $workflow;
-            
         } catch (\Throwable $th) {
             // Execute compensations in reverse order
             yield from $this->compensate();

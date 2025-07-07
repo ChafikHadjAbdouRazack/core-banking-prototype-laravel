@@ -13,5 +13,6 @@ class LoanApplicationRiskAssessmentCompleted extends ShouldBeStored
         public array $riskFactors,
         public string $assessedBy,
         public \DateTimeImmutable $assessedAt
-    ) {}
+    ) {
+    }
 }

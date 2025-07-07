@@ -37,9 +37,9 @@ class ExternalExchangeServiceProvider extends ServiceProvider
         if (config('trading.arbitrage.enabled', false)) {
             $this->app->booted(function () {
                 $schedule = $this->app->make(\Illuminate\Console\Scheduling\Schedule::class);
-                
+
                 $interval = config('trading.arbitrage.check_interval', 60);
-                
+
                 $schedule->job(new CheckArbitrageOpportunitiesJob())
                     ->everyMinutes($interval / 60)
                     ->withoutOverlapping()

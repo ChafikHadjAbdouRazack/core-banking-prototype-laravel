@@ -15,8 +15,9 @@ class LoanApplicationService
     public function __construct(
         private CreditScoringService $creditScoring,
         private RiskAssessmentService $riskAssessment
-    ) {}
-    
+    ) {
+    }
+
     public function processApplication(
         string $applicationId,
         string $borrowerId,
@@ -27,7 +28,7 @@ class LoanApplicationService
     ): array {
         try {
             DB::beginTransaction();
-            
+
             // Step 1: Create loan application
             $application = LoanApplication::submit(
                 $applicationId,
@@ -38,27 +39,27 @@ class LoanApplicationService
                 $borrowerInfo
             );
             $application->persist();
-            
+
             // Step 2: Perform KYC check
             $user = User::find($borrowerId);
             $kycStatus = $user->kyc_status ?? 'pending';
-            
+
             if ($kycStatus !== 'approved') {
                 $application->reject(['KYC not verified'], 'system');
                 $application->persist();
-                
+
                 DB::commit();
-                
+
                 return [
                     'status' => 'rejected',
                     'reason' => 'KYC check failed',
                     'applicationId' => $applicationId,
                 ];
             }
-            
+
             // Step 3: Run credit check
             $creditScore = $this->creditScoring->getScore($borrowerId);
-            
+
             $application->completeCreditCheck(
                 $creditScore['score'],
                 $creditScore['bureau'],
@@ -66,7 +67,7 @@ class LoanApplicationService
                 'system'
             );
             $application->persist();
-            
+
             // Step 4: Assess risk
             $riskAssessment = $this->riskAssessment->assessLoan(
                 $application,
@@ -76,7 +77,7 @@ class LoanApplicationService
                     'termMonths' => $termMonths,
                 ]
             );
-            
+
             $application->completeRiskAssessment(
                 $riskAssessment['rating'],
                 $riskAssessment['defaultProbability'],
@@ -84,7 +85,7 @@ class LoanApplicationService
                 'system'
             );
             $application->persist();
-            
+
             // Step 5: Make decision
             $decision = $this->makeDecision(
                 $requestedAmount,
@@ -92,7 +93,7 @@ class LoanApplicationService
                 $creditScore,
                 $riskAssessment
             );
-            
+
             if ($decision['approved']) {
                 // Approve application
                 $application->approve(
@@ -102,7 +103,7 @@ class LoanApplicationService
                     'system'
                 );
                 $application->persist();
-                
+
                 // Create loan
                 $loanId = 'loan_' . uniqid();
                 $loan = Loan::createFromApplication(
@@ -115,9 +116,9 @@ class LoanApplicationService
                     $decision['terms']
                 );
                 $loan->persist();
-                
+
                 DB::commit();
-                
+
                 // Notify borrower
                 $this->notifyBorrower($borrowerId, 'approved', [
                     'applicationId' => $applicationId,
@@ -126,7 +127,7 @@ class LoanApplicationService
                     'interestRate' => $decision['interestRate'],
                     'termMonths' => $termMonths,
                 ]);
-                
+
                 return [
                     'status' => 'approved',
                     'applicationId' => $applicationId,
@@ -138,15 +139,15 @@ class LoanApplicationService
                 // Reject application
                 $application->reject($decision['rejectionReasons'], 'system');
                 $application->persist();
-                
+
                 DB::commit();
-                
+
                 // Notify borrower
                 $this->notifyBorrower($borrowerId, 'rejected', [
                     'applicationId' => $applicationId,
                     'reasons' => $decision['rejectionReasons'],
                 ]);
-                
+
                 return [
                     'status' => 'rejected',
                     'applicationId' => $applicationId,
@@ -158,7 +159,7 @@ class LoanApplicationService
             throw $e;
         }
     }
-    
+
     private function makeDecision(
         string $requestedAmount,
         int $termMonths,
@@ -167,31 +168,31 @@ class LoanApplicationService
     ): array {
         // Decision logic based on credit score and risk
         $approved = $creditScore['score'] >= 600 && in_array($riskAssessment['rating'], ['A', 'B', 'C', 'D']);
-        
+
         if ($approved) {
             // Calculate interest rate
             $baseRate = 5.0; // Base rate
-            $riskPremium = match($riskAssessment['rating']) {
+            $riskPremium = match ($riskAssessment['rating']) {
                 'A' => 0,
                 'B' => 2,
                 'C' => 4,
                 'D' => 6,
                 default => 10,
             };
-            
+
             $interestRate = $baseRate + $riskPremium;
-            
+
             // Determine approved amount (may be less than requested for higher risk)
-            $approvalRatio = match($riskAssessment['rating']) {
+            $approvalRatio = match ($riskAssessment['rating']) {
                 'A' => 1.0,
                 'B' => 1.0,
                 'C' => 0.9,
                 'D' => 0.8,
                 default => 0.7,
             };
-            
+
             $approvedAmount = bcmul($requestedAmount, $approvalRatio, 2);
-            
+
             return [
                 'approved' => true,
                 'approvedAmount' => $approvedAmount,
@@ -204,22 +205,22 @@ class LoanApplicationService
             ];
         } else {
             $reasons = [];
-            
+
             if ($creditScore['score'] < 600) {
                 $reasons[] = 'Credit score below minimum threshold';
             }
-            
+
             if (!in_array($riskAssessment['rating'], ['A', 'B', 'C', 'D'])) {
                 $reasons[] = 'Risk rating too high';
             }
-            
+
             return [
                 'approved' => false,
                 'rejectionReasons' => $reasons,
             ];
         }
     }
-    
+
     private function notifyBorrower(string $borrowerId, string $status, array $details): void
     {
         // In production, this would send email/SMS/push notification

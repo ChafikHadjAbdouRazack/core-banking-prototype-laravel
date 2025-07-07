@@ -18,7 +18,7 @@ class CompleteRefundActivity extends Activity
                 ]
             )
             ->persist();
-        
+
         return [
             'refund_id' => $input['refund_id'],
             'status' => 'completed'

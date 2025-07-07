@@ -23,7 +23,8 @@ class BasketPerformanceController extends Controller
 {
     public function __construct(
         private readonly BasketPerformanceService $performanceService
-    ) {}
+    ) {
+    }
 
     /**
      * @OA\Get(
@@ -83,7 +84,7 @@ class BasketPerformanceController extends Controller
         if (!$performance) {
             // Try to calculate it
             $now = now();
-            [$periodStart, $periodEnd] = match($period) {
+            [$periodStart, $periodEnd] = match ($period) {
                 'hour' => [$now->copy()->subHour(), $now],
                 'day' => [$now->copy()->subDay(), $now],
                 'week' => [$now->copy()->subWeek(), $now],
@@ -163,7 +164,7 @@ class BasketPerformanceController extends Controller
         ]);
 
         $basket = BasketAsset::where('code', $code)->firstOrFail();
-        
+
         $query = $basket->performances()
             ->with('componentPerformances')
             ->complete();
@@ -430,7 +431,7 @@ class BasketPerformanceController extends Controller
             $calculatedPeriods = $performances->pluck('period_type')->toArray();
         } else {
             $now = now();
-            [$periodStart, $periodEnd] = match($period) {
+            [$periodStart, $periodEnd] = match ($period) {
                 'hour' => [$now->copy()->subHour(), $now],
                 'day' => [$now->copy()->subDay(), $now],
                 'week' => [$now->copy()->subWeek(), $now],

@@ -11,5 +11,6 @@ class ReservePoolCreated extends ShouldBeStored
         public readonly string $stablecoinSymbol,
         public readonly string $targetCollateralizationRatio,
         public readonly string $minimumCollateralizationRatio
-    ) {}
+    ) {
+    }
 }

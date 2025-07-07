@@ -10,22 +10,24 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class FraudCase extends Model
 {
-    use HasUuids, BelongsToTeam, HasFactory;
-    
+    use HasUuids;
+    use BelongsToTeam;
+    use HasFactory;
+
     /**
      * The primary key type.
      *
      * @var string
      */
     protected $keyType = 'int';
-    
+
     /**
      * Indicates if the IDs are auto-incrementing.
      *
      * @var bool
      */
     public $incrementing = true;
-    
+
     /**
      * Get the columns that should receive a unique identifier.
      *
@@ -126,14 +128,14 @@ class FraudCase extends Model
         $lastCase = static::whereYear('created_at', $year)
             ->orderBy('case_number', 'desc')
             ->first();
-        
+
         if ($lastCase) {
             $lastNumber = intval(substr($lastCase->case_number, -5));
             $newNumber = str_pad($lastNumber + 1, 5, '0', STR_PAD_LEFT);
         } else {
             $newNumber = '00001';
         }
-        
+
         return "FC-{$year}-{$newNumber}";
     }
 
@@ -187,7 +189,7 @@ class FraudCase extends Model
         if (!$this->detected_at || !$this->resolved_at) {
             return 0;
         }
-        
+
         return $this->detected_at->diffInDays($this->resolved_at);
     }
 
@@ -206,7 +208,7 @@ class FraudCase extends Model
         $currentEvidence[] = array_merge($evidence, [
             'added_at' => now()->toIso8601String(),
         ]);
-        
+
         $this->update(['evidence' => $currentEvidence]);
     }
 
@@ -217,7 +219,7 @@ class FraudCase extends Model
             'action' => $action,
             'timestamp' => now()->toIso8601String(),
         ], $details);
-        
+
         $this->update(['actions_taken' => $actions]);
     }
 

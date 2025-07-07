@@ -10,8 +10,10 @@ use Illuminate\Support\Str;
 
 class FinancialInstitutionPartner extends Model
 {
-    use HasFactory, HasUuids, SoftDeletes;
-    
+    use HasFactory;
+    use HasUuids;
+    use SoftDeletes;
+
     protected $fillable = [
         'partner_code',
         'application_id',
@@ -65,7 +67,7 @@ class FinancialInstitutionPartner extends Model
         'suspension_reason',
         'termination_reason',
     ];
-    
+
     protected $casts = [
         'api_permissions' => 'array',
         'allowed_ip_addresses' => 'array',
@@ -98,47 +100,47 @@ class FinancialInstitutionPartner extends Model
         'suspended_at' => 'datetime',
         'terminated_at' => 'datetime',
     ];
-    
+
     /**
      * Partner statuses
      */
     const STATUS_ACTIVE = 'active';
     const STATUS_SUSPENDED = 'suspended';
     const STATUS_TERMINATED = 'terminated';
-    
+
     /**
      * Billing cycles
      */
     const BILLING_MONTHLY = 'monthly';
     const BILLING_QUARTERLY = 'quarterly';
     const BILLING_ANNUALLY = 'annually';
-    
+
     /**
      * Boot method
      */
     protected static function boot()
     {
         parent::boot();
-        
+
         static::creating(function ($partner) {
             if (empty($partner->partner_code)) {
                 $partner->partner_code = static::generatePartnerCode();
             }
-            
+
             if (empty($partner->api_client_id)) {
                 $partner->api_client_id = static::generateApiClientId();
             }
-            
+
             if (empty($partner->api_client_secret)) {
                 $partner->api_client_secret = encrypt(Str::random(64));
             }
-            
+
             if (empty($partner->webhook_secret)) {
                 $partner->webhook_secret = encrypt(Str::random(32));
             }
         });
     }
-    
+
     /**
      * Generate unique partner code
      */
@@ -147,10 +149,10 @@ class FinancialInstitutionPartner extends Model
         do {
             $code = 'FIP-' . strtoupper(Str::random(5));
         } while (static::where('partner_code', $code)->exists());
-        
+
         return $code;
     }
-    
+
     /**
      * Generate unique API client ID
      */
@@ -159,10 +161,10 @@ class FinancialInstitutionPartner extends Model
         do {
             $clientId = 'fip_' . Str::random(32);
         } while (static::where('api_client_id', $clientId)->exists());
-        
+
         return $clientId;
     }
-    
+
     /**
      * Get the application
      */
@@ -170,7 +172,7 @@ class FinancialInstitutionPartner extends Model
     {
         return $this->belongsTo(FinancialInstitutionApplication::class, 'application_id');
     }
-    
+
     /**
      * Scope for active partners
      */
@@ -178,7 +180,7 @@ class FinancialInstitutionPartner extends Model
     {
         return $query->where('status', self::STATUS_ACTIVE);
     }
-    
+
     /**
      * Scope for production enabled partners
      */
@@ -186,7 +188,7 @@ class FinancialInstitutionPartner extends Model
     {
         return $query->where('production_enabled', true);
     }
-    
+
     /**
      * Check if partner is active
      */
@@ -194,7 +196,7 @@ class FinancialInstitutionPartner extends Model
     {
         return $this->status === self::STATUS_ACTIVE;
     }
-    
+
     /**
      * Check if partner is suspended
      */
@@ -202,7 +204,7 @@ class FinancialInstitutionPartner extends Model
     {
         return $this->status === self::STATUS_SUSPENDED;
     }
-    
+
     /**
      * Check if partner is terminated
      */
@@ -210,7 +212,7 @@ class FinancialInstitutionPartner extends Model
     {
         return $this->status === self::STATUS_TERMINATED;
     }
-    
+
     /**
      * Check if partner has production access
      */
@@ -218,7 +220,7 @@ class FinancialInstitutionPartner extends Model
     {
         return $this->isActive() && $this->production_enabled;
     }
-    
+
     /**
      * Check if partner has sandbox access
      */
@@ -226,7 +228,7 @@ class FinancialInstitutionPartner extends Model
     {
         return $this->isActive() && $this->sandbox_enabled;
     }
-    
+
     /**
      * Suspend partner
      */
@@ -239,7 +241,7 @@ class FinancialInstitutionPartner extends Model
             'production_enabled' => false,
         ]);
     }
-    
+
     /**
      * Reactivate partner
      */
@@ -251,7 +253,7 @@ class FinancialInstitutionPartner extends Model
             'suspension_reason' => null,
         ]);
     }
-    
+
     /**
      * Terminate partner
      */
@@ -265,7 +267,7 @@ class FinancialInstitutionPartner extends Model
             'sandbox_enabled' => false,
         ]);
     }
-    
+
     /**
      * Update activity metrics
      */
@@ -276,7 +278,7 @@ class FinancialInstitutionPartner extends Model
             'last_activity_at' => now(),
         ]);
     }
-    
+
     /**
      * Check if IP address is allowed
      */
@@ -285,10 +287,10 @@ class FinancialInstitutionPartner extends Model
         if (empty($this->allowed_ip_addresses)) {
             return true; // No restriction
         }
-        
+
         return in_array($ip, $this->allowed_ip_addresses);
     }
-    
+
     /**
      * Check if currency is allowed
      */
@@ -297,10 +299,10 @@ class FinancialInstitutionPartner extends Model
         if (empty($this->allowed_currencies)) {
             return true; // No restriction
         }
-        
+
         return in_array($currency, $this->allowed_currencies);
     }
-    
+
     /**
      * Check if country is allowed
      */
@@ -309,10 +311,10 @@ class FinancialInstitutionPartner extends Model
         if (empty($this->allowed_countries)) {
             return true; // No restriction
         }
-        
+
         return in_array($country, $this->allowed_countries);
     }
-    
+
     /**
      * Check if feature is enabled
      */
@@ -321,14 +323,14 @@ class FinancialInstitutionPartner extends Model
         if (!empty($this->disabled_features) && in_array($feature, $this->disabled_features)) {
             return false;
         }
-        
+
         if (empty($this->enabled_features)) {
             return true; // All features enabled by default
         }
-        
+
         return in_array($feature, $this->enabled_features);
     }
-    
+
     /**
      * Check if transaction amount is within limits
      */
@@ -337,10 +339,10 @@ class FinancialInstitutionPartner extends Model
         if ($this->max_transaction_amount && $amount > $this->max_transaction_amount) {
             return false;
         }
-        
+
         return true;
     }
-    
+
     /**
      * Get decrypted API client secret
      */
@@ -348,7 +350,7 @@ class FinancialInstitutionPartner extends Model
     {
         return decrypt($this->api_client_secret);
     }
-    
+
     /**
      * Get decrypted webhook secret
      */
@@ -356,7 +358,7 @@ class FinancialInstitutionPartner extends Model
     {
         return decrypt($this->webhook_secret);
     }
-    
+
     /**
      * Regenerate API credentials
      */
@@ -364,24 +366,24 @@ class FinancialInstitutionPartner extends Model
     {
         $newClientId = static::generateApiClientId();
         $newClientSecret = Str::random(64);
-        
+
         $this->update([
             'api_client_id' => $newClientId,
             'api_client_secret' => encrypt($newClientSecret),
         ]);
-        
+
         return [
             'client_id' => $newClientId,
             'client_secret' => $newClientSecret,
         ];
     }
-    
+
     /**
      * Get status badge color
      */
     public function getStatusBadgeColor(): string
     {
-        return match($this->status) {
+        return match ($this->status) {
             self::STATUS_ACTIVE => 'success',
             self::STATUS_SUSPENDED => 'warning',
             self::STATUS_TERMINATED => 'danger',

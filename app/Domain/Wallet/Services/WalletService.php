@@ -30,11 +30,11 @@ class WalletService implements WalletServiceInterface
         // Validate sufficient balance before starting workflow
         $accountUuidObj = __account_uuid($accountUuid);
         $account = Account::where('uuid', (string) $accountUuidObj)->first();
-        
+
         if (!$account || !$account->hasSufficientBalance($assetCode, $amount)) {
             throw new \Exception('Insufficient balance');
         }
-        
+
         $workflow = WorkflowStub::make(WalletWithdrawWorkflow::class);
         $workflow->start($accountUuidObj, $assetCode, $amount);
     }
@@ -47,11 +47,11 @@ class WalletService implements WalletServiceInterface
         // Validate sufficient balance before starting workflow
         $fromAccountUuidObj = __account_uuid($fromAccountUuid);
         $fromAccount = Account::where('uuid', (string) $fromAccountUuidObj)->first();
-        
+
         if (!$fromAccount || !$fromAccount->hasSufficientBalance($assetCode, $amount)) {
             throw new \Exception('Insufficient balance');
         }
-        
+
         $workflow = WorkflowStub::make(WalletTransferWorkflow::class);
         $workflow->start(
             $fromAccountUuidObj,

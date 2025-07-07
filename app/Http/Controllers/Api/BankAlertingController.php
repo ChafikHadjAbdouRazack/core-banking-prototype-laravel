@@ -29,7 +29,7 @@ class BankAlertingController extends Controller
 
     /**
      * Trigger system-wide health check and alerting
-     * 
+     *
      * @OA\Post(
      *     path="/api/bank-alerting/health-check",
      *     operationId="triggerBankHealthCheck",
@@ -70,24 +70,24 @@ class BankAlertingController extends Controller
     {
         try {
             Log::info('Manual bank health check triggered via API');
-            
+
             $this->alertingService->performHealthCheck();
-            
+
             // Get current health status of all custodians
             $allHealth = $this->healthMonitor->getAllCustodiansHealth();
-            
+
             $summary = [
                 'healthy' => 0,
                 'degraded' => 0,
                 'unhealthy' => 0,
                 'unknown' => 0,
             ];
-            
+
             foreach ($allHealth as $health) {
                 $status = $health['status'] ?? 'unknown';
                 $summary[$status] = ($summary[$status] ?? 0) + 1;
             }
-            
+
             return response()->json([
                 'data' => [
                     'health_check_completed' => true,
@@ -103,7 +103,7 @@ class BankAlertingController extends Controller
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
-            
+
             return response()->json([
                 'error' => 'Health check failed',
                 'message' => $e->getMessage(),
@@ -114,7 +114,7 @@ class BankAlertingController extends Controller
 
     /**
      * Get current health status of all custodians
-     * 
+     *
      * @OA\Get(
      *     path="/api/bank-alerting/health-status",
      *     operationId="getBankHealthStatus",
@@ -162,20 +162,20 @@ class BankAlertingController extends Controller
     {
         try {
             $allHealth = $this->healthMonitor->getAllCustodiansHealth();
-            
+
             $summary = [
                 'healthy' => 0,
                 'degraded' => 0,
                 'unhealthy' => 0,
                 'unknown' => 0,
             ];
-            
+
             $details = [];
-            
+
             foreach ($allHealth as $custodian => $health) {
                 $status = $health['status'] ?? 'unknown';
                 $summary[$status] = ($summary[$status] ?? 0) + 1;
-                
+
                 $details[] = [
                     'custodian' => $custodian,
                     'status' => $status,
@@ -187,7 +187,7 @@ class BankAlertingController extends Controller
                     'last_failure' => $health['last_failure'] ?? null,
                 ];
             }
-            
+
             return response()->json([
                 'data' => [
                     'summary' => $summary,
@@ -206,7 +206,7 @@ class BankAlertingController extends Controller
 
     /**
      * Get health status for specific custodian
-     * 
+     *
      * @OA\Get(
      *     path="/api/bank-alerting/custodian/{custodian}/health",
      *     operationId="getSpecificCustodianHealth",
@@ -244,14 +244,14 @@ class BankAlertingController extends Controller
     {
         try {
             $health = $this->healthMonitor->getCustodianHealth($custodian);
-            
+
             if (!$health) {
                 return response()->json([
                     'error' => 'Custodian not found',
                     'custodian' => $custodian
                 ], 404);
             }
-            
+
             return response()->json([
                 'data' => [
                     'custodian' => $custodian,
@@ -269,7 +269,7 @@ class BankAlertingController extends Controller
 
     /**
      * Get alert history for a custodian
-     * 
+     *
      * @OA\Get(
      *     path="/api/bank-alerting/custodian/{custodian}/alerts",
      *     operationId="getCustodianAlertHistory",
@@ -315,9 +315,9 @@ class BankAlertingController extends Controller
 
         try {
             $days = $request->get('days', 7);
-            
+
             $history = $this->alertingService->getAlertHistory($custodian, $days);
-            
+
             return response()->json([
                 'data' => [
                     'custodian' => $custodian,
@@ -336,7 +336,7 @@ class BankAlertingController extends Controller
 
     /**
      * Get overall alerting statistics
-     * 
+     *
      * @OA\Get(
      *     path="/api/bank-alerting/statistics",
      *     operationId="getBankAlertingStatistics",
@@ -385,7 +385,7 @@ class BankAlertingController extends Controller
 
         try {
             $period = $request->get('period', 'day');
-            
+
             // In a real implementation, this would query from database
             // For now, return sample statistics
             $stats = [
@@ -418,7 +418,7 @@ class BankAlertingController extends Controller
                 'period_start' => now()->sub($period, 1)->toISOString(),
                 'period_end' => now()->toISOString(),
             ];
-            
+
             return response()->json([
                 'data' => [
                     'statistics' => $stats,
@@ -435,7 +435,7 @@ class BankAlertingController extends Controller
 
     /**
      * Configure alert settings
-     * 
+     *
      * @OA\Put(
      *     path="/api/bank-alerting/configuration",
      *     operationId="configureBankAlerts",
@@ -502,10 +502,10 @@ class BankAlertingController extends Controller
                 'notification_channels' => $request->get('notification_channels', ['mail', 'database']),
                 'updated_at' => now()->toISOString(),
             ];
-            
+
             // In a real implementation, this would save to database or config
             Log::info('Alert configuration updated', $config);
-            
+
             return response()->json([
                 'data' => [
                     'configuration_updated' => true,
@@ -523,7 +523,7 @@ class BankAlertingController extends Controller
 
     /**
      * Get current alert configuration
-     * 
+     *
      * @OA\Get(
      *     path="/api/bank-alerting/configuration",
      *     operationId="getBankAlertConfiguration",
@@ -573,7 +573,7 @@ class BankAlertingController extends Controller
                 ],
                 'last_updated' => now()->subDays(5)->toISOString(),
             ];
-            
+
             return response()->json([
                 'data' => [
                     'configuration' => $config,
@@ -590,7 +590,7 @@ class BankAlertingController extends Controller
 
     /**
      * Test alert system by sending a test alert
-     * 
+     *
      * @OA\Post(
      *     path="/api/bank-alerting/test",
      *     operationId="testBankAlert",
@@ -637,16 +637,16 @@ class BankAlertingController extends Controller
             $severity = $request->get('severity');
             $custodian = $request->get('custodian', 'test_custodian');
             $message = $request->get('message', 'Test alert from API');
-            
+
             Log::info('Test alert triggered', [
                 'severity' => $severity,
                 'custodian' => $custodian,
                 'message' => $message,
                 'triggered_by' => auth()->user()->email,
             ]);
-            
+
             // In a real implementation, this would send an actual test alert
-            
+
             return response()->json([
                 'data' => [
                     'test_alert_sent' => true,
@@ -667,7 +667,7 @@ class BankAlertingController extends Controller
 
     /**
      * Acknowledge an alert (mark as resolved)
-     * 
+     *
      * @OA\Post(
      *     path="/api/bank-alerting/alerts/{alertId}/acknowledge",
      *     operationId="acknowledgeBankAlert",
@@ -714,14 +714,14 @@ class BankAlertingController extends Controller
 
         try {
             $resolutionNotes = $request->get('resolution_notes', '');
-            
+
             // In a real implementation, this would update the alert in database
             Log::info('Alert acknowledged', [
                 'alert_id' => $alertId,
                 'acknowledged_by' => auth()->user()->email,
                 'resolution_notes' => $resolutionNotes,
             ]);
-            
+
             return response()->json([
                 'data' => [
                     'alert_id' => $alertId,

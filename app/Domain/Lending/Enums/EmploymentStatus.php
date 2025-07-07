@@ -13,7 +13,7 @@ enum EmploymentStatus: string
 
     public function label(): string
     {
-        return match($this) {
+        return match ($this) {
             self::EMPLOYED => 'Employed',
             self::SELF_EMPLOYED => 'Self-Employed',
             self::UNEMPLOYED => 'Unemployed',
@@ -25,7 +25,7 @@ enum EmploymentStatus: string
 
     public function getRiskScore(): int
     {
-        return match($this) {
+        return match ($this) {
             self::EMPLOYED => 10,
             self::SELF_EMPLOYED => 20,
             self::RETIRED => 15,

@@ -19,5 +19,6 @@ class RefundRequested extends ShouldBeStored
         public readonly ?string $reasonDetails,
         public readonly string $initiatedBy,
         public readonly array $metadata = []
-    ) {}
+    ) {
+    }
 }

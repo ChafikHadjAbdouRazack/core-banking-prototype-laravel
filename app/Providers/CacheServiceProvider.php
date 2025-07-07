@@ -21,7 +21,7 @@ class CacheServiceProvider extends ServiceProvider
         $this->app->singleton(AccountCacheService::class);
         $this->app->singleton(TransactionCacheService::class);
         $this->app->singleton(TurnoverCacheService::class);
-        
+
         // Register the cache manager
         $this->app->singleton(CacheManager::class, function ($app) {
             return new CacheManager(

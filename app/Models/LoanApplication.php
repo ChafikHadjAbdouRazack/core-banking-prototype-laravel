@@ -10,7 +10,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class LoanApplication extends Model
 {
-    use HasFactory, HasUuids;
+    use HasFactory;
+    use HasUuids;
 
     protected $fillable = [
         'id',

@@ -59,12 +59,12 @@ class TransactionAggregate extends AggregateRoot
      *
      * @return $this
      */
-    public function credit( Money $money ): static
+    public function credit(Money $money): static
     {
         $this->recordThat(
             domainEvent: new MoneyAdded(
                 money: $money,
-                hash: $this->generateHash( $money ),
+                hash: $this->generateHash($money),
             )
         );
 
@@ -76,7 +76,7 @@ class TransactionAggregate extends AggregateRoot
      *
      * @return \App\Domain\Account\Aggregates\TransactionAggregate
      */
-    public function applyMoneyAdded( MoneyAdded $event ): static
+    public function applyMoneyAdded(MoneyAdded $event): static
     {
         $this->validateHash(
             hash: $event->hash,
@@ -85,15 +85,14 @@ class TransactionAggregate extends AggregateRoot
 
         $this->balance += $event->money->getAmount();
 
-        if ( ++$this->count >= self::COUNT_THRESHOLD )
-        {
+        if (++$this->count >= self::COUNT_THRESHOLD) {
             $this->recordThat(
                 domainEvent: new TransactionThresholdReached()
             );
             $this->count = 0;
         }
 
-        $this->storeHash( $event->hash );
+        $this->storeHash($event->hash);
 
         return $this;
     }
@@ -103,23 +102,22 @@ class TransactionAggregate extends AggregateRoot
      *
      * @return \App\Domain\Account\Aggregates\TransactionAggregate
      */
-    public function debit( Money $money ): static
+    public function debit(Money $money): static
     {
-        if ( !$this->hasSufficientFundsToSubtractAmount( $money ) )
-        {
+        if (!$this->hasSufficientFundsToSubtractAmount($money)) {
             $this->recordThat(
                 new AccountLimitHit()
             );
 
             $this->persist();
 
-            throw new NotEnoughFunds;
+            throw new NotEnoughFunds();
         }
 
         $this->recordThat(
             new MoneySubtracted(
                 money: $money,
-                hash: $this->generateHash( $money )
+                hash: $this->generateHash($money)
             )
         );
 
@@ -131,7 +129,7 @@ class TransactionAggregate extends AggregateRoot
      *
      * @return \App\Domain\Account\Aggregates\TransactionAggregate
      */
-    public function applyMoneySubtracted( MoneySubtracted $event ): static
+    public function applyMoneySubtracted(MoneySubtracted $event): static
     {
         $this->validateHash(
             hash: $event->hash,
@@ -140,7 +138,7 @@ class TransactionAggregate extends AggregateRoot
 
         $this->balance -= $event->money->getAmount();
 
-        $this->storeHash( $event->hash );
+        $this->storeHash($event->hash);
 
         return $this;
     }
@@ -150,7 +148,7 @@ class TransactionAggregate extends AggregateRoot
      *
      * @return bool
      */
-    protected function hasSufficientFundsToSubtractAmount( Money $money ): bool
+    protected function hasSufficientFundsToSubtractAmount(Money $money): bool
     {
         return $this->balance - $money->getAmount() >= self::ACCOUNT_LIMIT;
     }

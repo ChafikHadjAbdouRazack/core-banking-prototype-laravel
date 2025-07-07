@@ -14,12 +14,12 @@ use Illuminate\Validation\Rule;
 class ExchangeController extends Controller
 {
     private ExchangeService $exchangeService;
-    
+
     public function __construct(ExchangeService $exchangeService)
     {
         $this->exchangeService = $exchangeService;
     }
-    
+
     /**
      * @OA\Post(
      *     path="/api/exchange/orders",
@@ -61,16 +61,16 @@ class ExchangeController extends Controller
             'price' => ['required_if:order_type,limit', 'nullable', 'numeric', 'gt:0'],
             'stop_price' => ['nullable', 'numeric', 'gt:0'],
         ]);
-        
+
         $account = Auth::user()->account;
-        
+
         if (!$account) {
             return response()->json([
                 'success' => false,
                 'error' => 'Account not found. Please complete your account setup.',
             ], 400);
         }
-        
+
         try {
             $result = $this->exchangeService->placeOrder(
                 accountId: $account->id,
@@ -86,7 +86,7 @@ class ExchangeController extends Controller
                     'user_id' => Auth::id(),
                 ]
             );
-            
+
             return response()->json($result);
         } catch (\Exception $e) {
             return response()->json([
@@ -95,7 +95,7 @@ class ExchangeController extends Controller
             ], 400);
         }
     }
-    
+
     /**
      * @OA\Delete(
      *     path="/api/exchange/orders/{orderId}",
@@ -117,26 +117,26 @@ class ExchangeController extends Controller
     public function cancelOrder(string $orderId): JsonResponse
     {
         $account = Auth::user()->account;
-        
+
         if (!$account) {
             return response()->json([
                 'success' => false,
                 'error' => 'Account not found. Please complete your account setup.',
             ], 400);
         }
-        
+
         // Verify order belongs to user
         $order = Order::where('order_id', $orderId)
             ->where('account_id', $account->id)
             ->first();
-        
+
         if (!$order) {
             return response()->json([
                 'success' => false,
                 'error' => 'Order not found',
             ], 404);
         }
-        
+
         try {
             $result = $this->exchangeService->cancelOrder($orderId);
             return response()->json($result);
@@ -147,7 +147,7 @@ class ExchangeController extends Controller
             ], 400);
         }
     }
-    
+
     /**
      * @OA\Get(
      *     path="/api/exchange/orders",
@@ -178,16 +178,16 @@ class ExchangeController extends Controller
     public function getOrders(Request $request): JsonResponse
     {
         $account = Auth::user()->account;
-        
+
         if (!$account) {
             return response()->json([
                 'success' => false,
                 'error' => 'Account not found. Please complete your account setup.',
             ], 400);
         }
-        
+
         $query = Order::forAccount($account->id);
-        
+
         if ($request->status && $request->status !== 'all') {
             if ($request->status === 'open') {
                 $query->open();
@@ -195,17 +195,17 @@ class ExchangeController extends Controller
                 $query->where('status', $request->status);
             }
         }
-        
+
         if ($request->base_currency && $request->quote_currency) {
             $query->forPair($request->base_currency, $request->quote_currency);
         }
-        
+
         $orders = $query->orderBy('created_at', 'desc')
             ->paginate(20);
-        
+
         return response()->json($orders);
     }
-    
+
     /**
      * @OA\Get(
      *     path="/api/exchange/trades",
@@ -231,26 +231,26 @@ class ExchangeController extends Controller
     public function getTrades(Request $request): JsonResponse
     {
         $account = Auth::user()->account;
-        
+
         if (!$account) {
             return response()->json([
                 'success' => false,
                 'error' => 'Account not found. Please complete your account setup.',
             ], 400);
         }
-        
+
         $query = Trade::forAccount($account->id);
-        
+
         if ($request->base_currency && $request->quote_currency) {
             $query->forPair($request->base_currency, $request->quote_currency);
         }
-        
+
         $trades = $query->orderBy('created_at', 'desc')
             ->paginate(20);
-        
+
         return response()->json($trades);
     }
-    
+
     /**
      * @OA\Get(
      *     path="/api/exchange/orderbook/{baseCurrency}/{quoteCurrency}",
@@ -282,12 +282,12 @@ class ExchangeController extends Controller
     public function getOrderBook(string $baseCurrency, string $quoteCurrency, Request $request): JsonResponse
     {
         $depth = min($request->input('depth', 20), 100); // Max depth of 100
-        
+
         $orderBook = $this->exchangeService->getOrderBook($baseCurrency, $quoteCurrency, $depth);
-        
+
         return response()->json($orderBook);
     }
-    
+
     /**
      * @OA\Get(
      *     path="/api/exchange/markets",
@@ -302,7 +302,7 @@ class ExchangeController extends Controller
     public function getMarkets(): JsonResponse
     {
         $markets = $this->exchangeService->getMarketData();
-        
+
         return response()->json([
             'success' => true,
             'data' => $markets,

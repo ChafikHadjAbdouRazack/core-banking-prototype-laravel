@@ -29,7 +29,7 @@ class RegulatoryReportingController extends Controller
 
     /**
      * Generate Currency Transaction Report (CTR)
-     * 
+     *
      * @OA\Post(
      *     path="/api/regulatory/reports/ctr",
      *     operationId="generateCTR",
@@ -89,7 +89,7 @@ class RegulatoryReportingController extends Controller
         try {
             $date = Carbon::parse($request->date);
             $filename = $this->regulatoryReportingService->generateCTR($date);
-            
+
             return response()->json([
                 'data' => [
                     'type' => 'ctr',
@@ -110,7 +110,7 @@ class RegulatoryReportingController extends Controller
 
     /**
      * Generate Suspicious Activity Report (SAR) candidates
-     * 
+     *
      * @OA\Post(
      *     path="/api/regulatory/reports/sar",
      *     operationId="generateSARCandidates",
@@ -167,9 +167,9 @@ class RegulatoryReportingController extends Controller
         try {
             $startDate = Carbon::parse($request->start_date);
             $endDate = Carbon::parse($request->end_date);
-            
+
             $filename = $this->regulatoryReportingService->generateSARCandidates($startDate, $endDate);
-            
+
             return response()->json([
                 'data' => [
                     'type' => 'sar_candidates',
@@ -191,7 +191,7 @@ class RegulatoryReportingController extends Controller
 
     /**
      * Generate compliance summary report
-     * 
+     *
      * @OA\Post(
      *     path="/api/regulatory/reports/compliance-summary",
      *     operationId="generateComplianceSummary",
@@ -251,7 +251,7 @@ class RegulatoryReportingController extends Controller
         try {
             $month = Carbon::createFromFormat('Y-m', $request->month);
             $filename = $this->regulatoryReportingService->generateComplianceSummary($month);
-            
+
             return response()->json([
                 'data' => [
                     'type' => 'compliance_summary',
@@ -272,7 +272,7 @@ class RegulatoryReportingController extends Controller
 
     /**
      * Generate KYC compliance report
-     * 
+     *
      * @OA\Post(
      *     path="/api/regulatory/reports/kyc",
      *     operationId="generateKycReport",
@@ -313,7 +313,7 @@ class RegulatoryReportingController extends Controller
     {
         try {
             $filename = $this->regulatoryReportingService->generateKycReport();
-            
+
             return response()->json([
                 'data' => [
                     'type' => 'kyc_compliance',
@@ -333,7 +333,7 @@ class RegulatoryReportingController extends Controller
 
     /**
      * List all available regulatory reports
-     * 
+     *
      * @OA\Get(
      *     path="/api/regulatory/reports",
      *     operationId="listRegulatoryReports",
@@ -440,7 +440,7 @@ class RegulatoryReportingController extends Controller
 
             foreach ($searchDirs as $reportType => $directory) {
                 $files = Storage::files($directory);
-                
+
                 foreach ($files as $file) {
                     $reports->push([
                         'type' => $reportType,
@@ -455,7 +455,7 @@ class RegulatoryReportingController extends Controller
 
             // Sort by creation date (newest first)
             $reports = $reports->sortByDesc('created_at');
-            
+
             $total = $reports->count();
             $paginatedReports = $reports->slice($offset, $limit)->values();
 
@@ -485,7 +485,7 @@ class RegulatoryReportingController extends Controller
 
     /**
      * Get specific report content
-     * 
+     *
      * @OA\Get(
      *     path="/api/regulatory/reports/{filename}",
      *     operationId="getRegulatoryReport",
@@ -594,7 +594,7 @@ class RegulatoryReportingController extends Controller
 
     /**
      * Download report file
-     * 
+     *
      * @OA\Get(
      *     path="/api/regulatory/reports/{filename}/download",
      *     operationId="downloadRegulatoryReport",
@@ -688,7 +688,7 @@ class RegulatoryReportingController extends Controller
 
     /**
      * Delete a regulatory report
-     * 
+     *
      * @OA\Delete(
      *     path="/api/regulatory/reports/{filename}",
      *     operationId="deleteRegulatoryReport",
@@ -790,7 +790,7 @@ class RegulatoryReportingController extends Controller
 
     /**
      * Get regulatory metrics summary
-     * 
+     *
      * @OA\Get(
      *     path="/api/regulatory/metrics",
      *     operationId="getRegulatoryMetrics",
@@ -850,9 +850,9 @@ class RegulatoryReportingController extends Controller
 
         try {
             $period = $request->get('period', 'month');
-            
+
             $endDate = now();
-            $startDate = match($period) {
+            $startDate = match ($period) {
                 'week' => $endDate->copy()->subWeek(),
                 'month' => $endDate->copy()->subMonth(),
                 'quarter' => $endDate->copy()->subQuarter(),
@@ -862,19 +862,19 @@ class RegulatoryReportingController extends Controller
 
             // Get summary metrics using reflection to access protected methods
             $reflection = new \ReflectionClass($this->regulatoryReportingService);
-            
+
             $kycMetrics = $reflection->getMethod('getKycMetrics');
             $kycMetrics->setAccessible(true);
-            
+
             $transactionMetrics = $reflection->getMethod('getTransactionMetrics');
             $transactionMetrics->setAccessible(true);
-            
+
             $userMetrics = $reflection->getMethod('getUserMetrics');
             $userMetrics->setAccessible(true);
-            
+
             $riskMetrics = $reflection->getMethod('getRiskMetrics');
             $riskMetrics->setAccessible(true);
-            
+
             $gdprMetrics = $reflection->getMethod('getGdprMetrics');
             $gdprMetrics->setAccessible(true);
 

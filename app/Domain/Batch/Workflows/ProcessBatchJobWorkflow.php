@@ -23,7 +23,7 @@ class ProcessBatchJobWorkflow extends Workflow
                 ValidateBatchJobActivity::class,
                 $batchJobUuid
             );
-            
+
             // Process each item
             $results = [];
             foreach ($batchJob->items as $index => $item) {
@@ -43,16 +43,15 @@ class ProcessBatchJobWorkflow extends Workflow
                     ];
                 }
             }
-            
+
             // Complete the batch job
             yield ActivityStub::make(
                 CompleteBatchJobActivity::class,
                 $batchJobUuid,
                 $results
             );
-            
+
             return $results;
-            
         } catch (\Throwable $th) {
             // Compensate if needed
             yield from $this->compensate();

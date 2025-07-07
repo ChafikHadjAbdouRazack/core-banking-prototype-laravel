@@ -14,9 +14,9 @@ class TransferService
      *
      * @return void
      */
-    public function transfer( mixed $from, mixed $to, mixed $amount ): void
+    public function transfer(mixed $from, mixed $to, mixed $amount): void
     {
-        $workflow = WorkflowStub::make( TransferWorkflow::class );
-        $workflow->start( __account_uuid( $from ), __account_uuid( $to ), __money( $amount ) );
+        $workflow = WorkflowStub::make(TransferWorkflow::class);
+        $workflow->start(__account_uuid($from), __account_uuid($to), __money($amount));
     }
 }

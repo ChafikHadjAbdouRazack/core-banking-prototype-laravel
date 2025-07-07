@@ -16,39 +16,39 @@ namespace App\Http\Controllers\Api\Documentation;
  *         url="https://www.apache.org/licenses/LICENSE-2.0.html"
  *     )
  * )
- * 
+ *
  * @OA\Server(
  *     url=L5_SWAGGER_CONST_HOST,
  *     description="API Server"
  * )
- * 
+ *
  * @OA\SecurityScheme(
  *     securityScheme="sanctum",
  *     type="http",
  *     scheme="bearer",
  *     description="Enter token in format: Bearer {token}"
  * )
- * 
+ *
  * @OA\Tag(
  *     name="Authentication",
  *     description="API endpoints for authentication"
  * )
- * 
+ *
  * @OA\Tag(
  *     name="Accounts",
  *     description="Account management operations"
  * )
- * 
+ *
  * @OA\Tag(
  *     name="Transactions",
  *     description="Transaction operations (deposits and withdrawals)"
  * )
- * 
+ *
  * @OA\Tag(
  *     name="Transfers",
  *     description="Money transfer operations between accounts"
  * )
- * 
+ *
  * @OA\Tag(
  *     name="Balance",
  *     description="Balance inquiry and account statistics"

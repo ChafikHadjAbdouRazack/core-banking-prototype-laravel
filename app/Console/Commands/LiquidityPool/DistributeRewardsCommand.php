@@ -29,36 +29,35 @@ class DistributeRewardsCommand extends Command
     public function handle(LiquidityIncentivesService $incentivesService): int
     {
         $this->info('Starting liquidity rewards distribution...');
-        
+
         $isDryRun = $this->option('dry-run');
         $poolId = $this->option('pool');
-        
+
         if ($isDryRun) {
             $this->warn('DRY RUN MODE - No rewards will be distributed');
         }
-        
+
         try {
             if ($poolId) {
                 // Distribute rewards for specific pool
                 $pool = \App\Domain\Exchange\Projections\LiquidityPool::where('pool_id', $poolId)
                     ->firstOrFail();
-                
+
                 $rewards = $incentivesService->calculatePoolRewards($pool);
-                
+
                 $this->info("Pool: {$pool->base_currency}/{$pool->quote_currency}");
                 $this->info("TVL: {$rewards['tvl']}");
                 $this->info("Total Rewards: {$rewards['total_rewards']} {$rewards['reward_currency']}");
                 $this->info("Performance Multiplier: {$rewards['performance_multiplier']}x");
-                
+
                 if (!$isDryRun) {
                     $incentivesService->distributeRewards();
                     $this->info('Rewards distributed successfully!');
                 }
-                
             } else {
                 // Distribute rewards for all pools
                 $results = $incentivesService->distributeRewards();
-                
+
                 $this->info('Distribution Results:');
                 foreach ($results as $poolId => $result) {
                     if ($result['status'] === 'success') {
@@ -69,9 +68,8 @@ class DistributeRewardsCommand extends Command
                     }
                 }
             }
-            
+
             return Command::SUCCESS;
-            
         } catch (\Exception $e) {
             $this->error('Failed to distribute rewards: ' . $e->getMessage());
             return Command::FAILURE;

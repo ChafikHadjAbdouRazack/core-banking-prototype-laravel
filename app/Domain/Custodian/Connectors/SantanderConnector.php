@@ -16,7 +16,7 @@ class SantanderConnector extends BaseCustodianConnector
 {
     private const API_BASE_URL = 'https://api.santander.com/open-banking/v3.1';
     private const AUTH_URL = 'https://auth.santander.com/oauth/token';
-    
+
     private string $apiKey;
     private string $apiSecret;
     private string $certificate;
@@ -29,13 +29,13 @@ class SantanderConnector extends BaseCustodianConnector
         $config['name'] = $config['name'] ?? 'Santander';
         // Set base URL for parent class
         $config['base_url'] = self::API_BASE_URL;
-        
+
         parent::__construct($config);
-        
+
         $this->apiKey = $config['api_key'] ?? '';
         $this->apiSecret = $config['api_secret'] ?? '';
         $this->certificate = $config['certificate'] ?? '';
-        
+
         // Only validate credentials in production
         if (app()->environment('production') && (empty($this->apiKey) || empty($this->apiSecret))) {
             throw new \InvalidArgumentException('Santander api_key and api_secret are required');
@@ -102,7 +102,7 @@ class SantanderConnector extends BaseCustodianConnector
     private function apiRequest(string $method, string $endpoint, array $data = []): \Illuminate\Http\Client\Response
     {
         $token = $this->getAccessToken();
-        
+
         $this->logRequest($method, $endpoint, $data);
 
         $headers = array_merge($this->getCommonHeaders(), [
@@ -138,7 +138,7 @@ class SantanderConnector extends BaseCustodianConnector
         }
 
         $data = $response->json();
-        
+
         // Santander follows Open Banking UK standard
         foreach ($data['Data']['Balance'] ?? [] as $balance) {
             if ($balance['Currency'] === $assetCode && $balance['Type'] === 'InterimAvailable') {
@@ -162,11 +162,11 @@ class SantanderConnector extends BaseCustodianConnector
 
         $data = $response->json();
         $accountData = $data['Data']['Account'][0] ?? [];
-        
+
         // Get balance information
         $balancesResponse = $this->apiRequest('GET', "/aisp/accounts/{$accountId}/balances");
         $balancesData = $balancesResponse->json();
-        
+
         $balances = [];
         foreach ($balancesData['Data']['Balance'] ?? [] as $balance) {
             if ($balance['Type'] === 'InterimAvailable') {
@@ -196,7 +196,7 @@ class SantanderConnector extends BaseCustodianConnector
     {
         $consentResponse = $this->createPaymentConsent($request);
         $consentId = $consentResponse['Data']['ConsentId'];
-        
+
         $paymentData = [
             'Data' => [
                 'ConsentId' => $consentId,
@@ -245,8 +245,8 @@ class SantanderConnector extends BaseCustodianConnector
             fee: $this->extractFee($paymentData),
             reference: $paymentData['Initiation']['EndToEndIdentification'],
             createdAt: Carbon::parse($paymentData['CreationDateTime']),
-            completedAt: isset($paymentData['StatusUpdateDateTime']) && $paymentData['Status'] === 'AcceptedSettlementCompleted' 
-                ? Carbon::parse($paymentData['StatusUpdateDateTime']) 
+            completedAt: isset($paymentData['StatusUpdateDateTime']) && $paymentData['Status'] === 'AcceptedSettlementCompleted'
+                ? Carbon::parse($paymentData['StatusUpdateDateTime'])
                 : null,
             metadata: [
                 'santander_payment_id' => $paymentData['DomesticPaymentId'],
@@ -294,7 +294,7 @@ class SantanderConnector extends BaseCustodianConnector
         Log::warning('Santander does not support payment cancellation', [
             'transaction_id' => $transactionId,
         ]);
-        
+
         return false;
     }
 
@@ -308,7 +308,7 @@ class SantanderConnector extends BaseCustodianConnector
     {
         try {
             $response = $this->apiRequest('GET', "/aisp/accounts/{$accountId}");
-            
+
             if ($response->successful()) {
                 $data = $response->json();
                 $status = $data['Data']['Account'][0]['Status'] ?? '';
@@ -346,8 +346,8 @@ class SantanderConnector extends BaseCustodianConnector
                 'to_account' => $transaction['CreditorAccount']['Identification'] ?? $accountId,
                 'asset_code' => $transaction['Amount']['Currency'],
                 'amount' => (int) round(abs((float) $transaction['Amount']['Amount']) * 100),
-                'fee' => isset($transaction['ChargeAmount']) 
-                    ? (int) round((float) $transaction['ChargeAmount']['Amount'] * 100) 
+                'fee' => isset($transaction['ChargeAmount'])
+                    ? (int) round((float) $transaction['ChargeAmount']['Amount'] * 100)
                     : null,
                 'reference' => $transaction['TransactionReference'] ?? null,
                 'created_at' => $transaction['BookingDateTime'],

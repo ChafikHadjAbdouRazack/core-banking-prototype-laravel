@@ -12,7 +12,7 @@ use Workflow\Workflow;
 class ReserveManagementWorkflow extends Workflow
 {
     private ActivityStub|ReserveManagementActivity $activity;
-    
+
     public function __construct()
     {
         $this->activity = Workflow::newActivityStub(
@@ -22,7 +22,7 @@ class ReserveManagementWorkflow extends Workflow
                 ->withRetryAttempts(3)
         );
     }
-    
+
     public function depositReserve(ReserveDepositData $data): \Generator
     {
         try {
@@ -32,7 +32,7 @@ class ReserveManagementWorkflow extends Workflow
                 $data->asset,
                 $data->expectedAmount
             );
-            
+
             // Lock funds in custodian
             yield $this->activity->lockFundsInCustodian(
                 $data->custodianId,
@@ -40,7 +40,7 @@ class ReserveManagementWorkflow extends Workflow
                 $data->amount,
                 $data->transactionHash
             );
-            
+
             // Update reserve pool
             yield $this->activity->updateReservePool(
                 $data->poolId,
@@ -48,13 +48,13 @@ class ReserveManagementWorkflow extends Workflow
                 $data->amount,
                 'deposit'
             );
-            
+
             // Emit success event
             yield $this->activity->emitReserveEvent(
                 'deposit_completed',
                 $data->toArray()
             );
-            
+
             return [
                 'success' => true,
                 'pool_id' => $data->poolId,
@@ -62,16 +62,15 @@ class ReserveManagementWorkflow extends Workflow
                 'amount' => $data->amount,
                 'timestamp' => now()->toIso8601String()
             ];
-            
         } catch (\Throwable $e) {
             yield Workflow::asyncDetached(
                 fn() => $this->compensateDeposit($data, $e->getMessage())
             );
-            
+
             throw $e;
         }
     }
-    
+
     public function withdrawReserve(ReserveWithdrawalData $data): \Generator
     {
         try {
@@ -81,7 +80,7 @@ class ReserveManagementWorkflow extends Workflow
                 $data->asset,
                 $data->amount
             );
-            
+
             // Create withdrawal request in custodian
             $withdrawalId = yield $this->activity->createWithdrawalRequest(
                 $data->custodianId,
@@ -89,7 +88,7 @@ class ReserveManagementWorkflow extends Workflow
                 $data->amount,
                 $data->destinationAddress
             );
-            
+
             // Update reserve pool
             yield $this->activity->updateReservePool(
                 $data->poolId,
@@ -97,7 +96,7 @@ class ReserveManagementWorkflow extends Workflow
                 $data->amount,
                 'withdrawal'
             );
-            
+
             // Execute withdrawal on blockchain
             $txHash = yield $this->activity->executeBlockchainWithdrawal(
                 $withdrawalId,
@@ -106,27 +105,26 @@ class ReserveManagementWorkflow extends Workflow
                 $data->amount,
                 $data->destinationAddress
             );
-            
+
             return [
                 'success' => true,
                 'withdrawal_id' => $withdrawalId,
                 'transaction_hash' => $txHash,
                 'timestamp' => now()->toIso8601String()
             ];
-            
         } catch (\Throwable $e) {
             yield Workflow::asyncDetached(
                 fn() => $this->compensateWithdrawal($data, $e->getMessage())
             );
-            
+
             throw $e;
         }
     }
-    
+
     public function rebalanceReserves(ReserveRebalanceData $data): \Generator
     {
         $executedSwaps = [];
-        
+
         try {
             // Calculate required swaps
             $swaps = yield $this->activity->calculateRebalanceSwaps(
@@ -134,7 +132,7 @@ class ReserveManagementWorkflow extends Workflow
                 $data->targetAllocations,
                 $data->maxSlippage
             );
-            
+
             // Execute swaps
             foreach ($swaps as $swap) {
                 $result = yield $this->activity->executeSwap(
@@ -143,36 +141,35 @@ class ReserveManagementWorkflow extends Workflow
                     $swap['amount'],
                     $swap['min_output']
                 );
-                
+
                 $executedSwaps[] = array_merge($swap, [
                     'executed_output' => $result['output'],
                     'transaction_hash' => $result['tx_hash']
                 ]);
             }
-            
+
             // Update reserve allocations
             yield $this->activity->updateReserveAllocations(
                 $data->poolId,
                 $executedSwaps
             );
-            
+
             return [
                 'success' => true,
                 'swaps' => $executedSwaps,
                 'new_allocations' => yield $this->activity->getReserveAllocations($data->poolId),
                 'timestamp' => now()->toIso8601String()
             ];
-            
         } catch (\Throwable $e) {
             // Reverse executed swaps
             yield Workflow::asyncDetached(
                 fn() => $this->compensateRebalance($executedSwaps, $e->getMessage())
             );
-            
+
             throw $e;
         }
     }
-    
+
     private function compensateDeposit(ReserveDepositData $data, string $error): \Generator
     {
         try {
@@ -182,7 +179,7 @@ class ReserveManagementWorkflow extends Workflow
                 $data->asset,
                 $data->amount
             );
-            
+
             // Log compensation
             yield $this->activity->logCompensation(
                 'deposit_failed',
@@ -197,7 +194,7 @@ class ReserveManagementWorkflow extends Workflow
             );
         }
     }
-    
+
     private function compensateWithdrawal(ReserveWithdrawalData $data, string $error): \Generator
     {
         try {
@@ -208,14 +205,14 @@ class ReserveManagementWorkflow extends Workflow
                 $data->amount,
                 'deposit' // Reverse the withdrawal
             );
-            
+
             // Cancel withdrawal request
             yield $this->activity->cancelWithdrawalRequest(
                 $data->custodianId,
                 $data->asset,
                 $data->amount
             );
-            
+
             yield $this->activity->logCompensation(
                 'withdrawal_failed',
                 $data->toArray(),
@@ -228,7 +225,7 @@ class ReserveManagementWorkflow extends Workflow
             );
         }
     }
-    
+
     private function compensateRebalance(array $executedSwaps, string $error): \Generator
     {
         try {
@@ -241,7 +238,7 @@ class ReserveManagementWorkflow extends Workflow
                     '0' // Accept any output for compensation
                 );
             }
-            
+
             yield $this->activity->logCompensation(
                 'rebalance_failed',
                 ['swaps' => $executedSwaps],

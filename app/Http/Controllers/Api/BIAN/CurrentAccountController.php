@@ -22,11 +22,11 @@ use Workflow\WorkflowStub;
 
 /**
  * BIAN-compliant Current Account Service Domain Controller
- * 
+ *
  * Service Domain: Current Account
  * Functional Pattern: Fulfill
  * Asset Type: Current Account Fulfillment Arrangement
- * 
+ *
  * @OA\Tag(
  *     name="BIAN",
  *     description="BIAN-compliant banking service operations"
@@ -36,15 +36,16 @@ class CurrentAccountController extends Controller
 {
     public function __construct(
         private readonly AccountService $accountService
-    ) {}
+    ) {
+    }
 
     /**
      * Initiate a new current account fulfillment arrangement
-     * 
+     *
      * BIAN Operation: Initiate
      * HTTP Method: POST
      * Path: /current-account/{cr-reference-id}/initiate
-     * 
+     *
      * @OA\Post(
      *     path="/api/bian/current-account/initiate",
      *     operationId="initiateCurrentAccount",
@@ -112,7 +113,7 @@ class CurrentAccountController extends Controller
 
         // Generate Control Record Reference ID
         $crReferenceId = Str::uuid()->toString();
-        
+
         // Create the Account data object with the UUID
         $accountData = new \App\Domain\Account\DataObjects\Account(
             uuid: $crReferenceId,
@@ -161,11 +162,11 @@ class CurrentAccountController extends Controller
 
     /**
      * Retrieve current account fulfillment arrangement
-     * 
+     *
      * BIAN Operation: Retrieve
      * HTTP Method: GET
      * Path: /current-account/{cr-reference-id}
-     * 
+     *
      * @OA\Get(
      *     path="/api/bian/current-account/{crReferenceId}",
      *     operationId="retrieveCurrentAccount",
@@ -242,11 +243,11 @@ class CurrentAccountController extends Controller
 
     /**
      * Update current account fulfillment arrangement
-     * 
+     *
      * BIAN Operation: Update
      * HTTP Method: PUT
      * Path: /current-account/{cr-reference-id}
-     * 
+     *
      * @OA\Put(
      *     path="/api/bian/current-account/{crReferenceId}",
      *     operationId="updateCurrentAccount",
@@ -325,11 +326,11 @@ class CurrentAccountController extends Controller
 
     /**
      * Control current account fulfillment arrangement (freeze/unfreeze)
-     * 
+     *
      * BIAN Operation: Control
      * HTTP Method: PUT
      * Path: /current-account/{cr-reference-id}/control
-     * 
+     *
      * @OA\Put(
      *     path="/api/bian/current-account/{crReferenceId}/control",
      *     operationId="controlCurrentAccount",
@@ -420,12 +421,12 @@ class CurrentAccountController extends Controller
 
     /**
      * Execute payment from current account (withdrawal)
-     * 
+     *
      * BIAN Operation: Execute
      * Behavior Qualifier: Payment
      * HTTP Method: POST
      * Path: /current-account/{cr-reference-id}/payment/{bq-reference-id}/execute
-     * 
+     *
      * @OA\Post(
      *     path="/api/bian/current-account/{crReferenceId}/payment/execute",
      *     operationId="executePaymentFromAccount",
@@ -536,12 +537,12 @@ class CurrentAccountController extends Controller
 
     /**
      * Execute deposit to current account
-     * 
+     *
      * BIAN Operation: Execute
      * Behavior Qualifier: Deposit
      * HTTP Method: POST
      * Path: /current-account/{cr-reference-id}/deposit/{bq-reference-id}/execute
-     * 
+     *
      * @OA\Post(
      *     path="/api/bian/current-account/{crReferenceId}/deposit/execute",
      *     operationId="executeDepositToAccount",
@@ -631,12 +632,12 @@ class CurrentAccountController extends Controller
 
     /**
      * Retrieve account balance
-     * 
+     *
      * BIAN Operation: Retrieve
      * Behavior Qualifier: AccountBalance
      * HTTP Method: GET
      * Path: /current-account/{cr-reference-id}/account-balance/{bq-reference-id}/retrieve
-     * 
+     *
      * @OA\Get(
      *     path="/api/bian/current-account/{crReferenceId}/account-balance/retrieve",
      *     operationId="retrieveAccountBalance",
@@ -695,12 +696,12 @@ class CurrentAccountController extends Controller
 
     /**
      * Retrieve transaction report
-     * 
+     *
      * BIAN Operation: Retrieve
      * Behavior Qualifier: TransactionReport
      * HTTP Method: GET
      * Path: /current-account/{cr-reference-id}/transaction-report/{bq-reference-id}/retrieve
-     * 
+     *
      * @OA\Get(
      *     path="/api/bian/current-account/{crReferenceId}/transaction-report/retrieve",
      *     operationId="retrieveTransactionReport",
@@ -812,7 +813,7 @@ class CurrentAccountController extends Controller
         $transactions = $events->map(function ($event) {
             $properties = json_decode($event->event_properties, true);
             $eventClass = class_basename($event->event_class);
-            
+
             return [
                 'transactionReference' => $event->aggregate_uuid,
                 'transactionType' => $eventClass === 'MoneyAdded' ? 'credit' : 'debit',

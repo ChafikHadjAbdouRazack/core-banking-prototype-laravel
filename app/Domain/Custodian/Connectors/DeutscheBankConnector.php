@@ -16,7 +16,7 @@ class DeutscheBankConnector extends BaseCustodianConnector
 {
     private const API_BASE_URL = 'https://api.db.com/v2';
     private const OAUTH_URL = 'https://api.db.com/oauth2/token';
-    
+
     private string $clientId;
     private string $clientSecret;
     private string $accountId;
@@ -29,13 +29,13 @@ class DeutscheBankConnector extends BaseCustodianConnector
         $config['name'] = $config['name'] ?? 'Deutsche Bank';
         // Set base URL for parent class
         $config['base_url'] = self::API_BASE_URL;
-        
+
         parent::__construct($config);
-        
+
         $this->clientId = $config['client_id'] ?? '';
         $this->clientSecret = $config['client_secret'] ?? '';
         $this->accountId = $config['account_id'] ?? '';
-        
+
         // Only validate credentials in production
         if (app()->environment('production') && (empty($this->clientId) || empty($this->clientSecret))) {
             throw new \InvalidArgumentException('Deutsche Bank client_id and client_secret are required');
@@ -88,7 +88,7 @@ class DeutscheBankConnector extends BaseCustodianConnector
     private function apiRequest(string $method, string $endpoint, array $data = []): \Illuminate\Http\Client\Response
     {
         $token = $this->getAccessToken();
-        
+
         $this->logRequest($method, $endpoint, $data);
 
         $request = Http::withToken($token)
@@ -117,7 +117,7 @@ class DeutscheBankConnector extends BaseCustodianConnector
         }
 
         $data = $response->json();
-        
+
         // Deutsche Bank API returns balance information
         foreach ($data['balances'] ?? [] as $balance) {
             if ($balance['currency'] === $assetCode) {
@@ -140,11 +140,11 @@ class DeutscheBankConnector extends BaseCustodianConnector
         }
 
         $data = $response->json();
-        
+
         // Get balance information
         $balancesResponse = $this->apiRequest('GET', "/accounts/{$accountId}/balances");
         $balancesData = $balancesResponse->json();
-        
+
         $balances = [];
         foreach ($balancesData['balances'] ?? [] as $balance) {
             $amountInCents = (int) round((float) $balance['amount'] * 100);
@@ -171,7 +171,7 @@ class DeutscheBankConnector extends BaseCustodianConnector
     public function initiateTransfer(TransferRequest $request): TransactionReceipt
     {
         $endpoint = $this->determineTransferEndpoint($request);
-        
+
         $paymentData = [
             'debtorAccount' => [
                 'iban' => $request->fromAccount,
@@ -261,7 +261,7 @@ class DeutscheBankConnector extends BaseCustodianConnector
     {
         try {
             $response = $this->apiRequest('GET', "/accounts/{$accountId}");
-            
+
             if ($response->successful()) {
                 $data = $response->json();
                 return in_array($data['status'] ?? '', ['ACTIVE', 'ENABLED']);
@@ -294,16 +294,16 @@ class DeutscheBankConnector extends BaseCustodianConnector
 
         foreach ($data['transactions']['booked'] ?? [] as $transaction) {
             // Determine if this is a debit or credit
-            $isDebit = isset($transaction['debtorAccount']['iban']) && 
+            $isDebit = isset($transaction['debtorAccount']['iban']) &&
                        $transaction['debtorAccount']['iban'] === $accountId;
-            
+
             $amount = (int) round((float) $transaction['transactionAmount']['amount'] * 100);
-            
+
             // Make debits negative only if not already negative
             if ($isDebit && $amount > 0) {
                 $amount = -$amount;
             }
-            
+
             $transactions[] = [
                 'id' => $transaction['transactionId'],
                 'status' => 'completed',

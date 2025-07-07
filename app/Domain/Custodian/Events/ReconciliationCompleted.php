@@ -9,11 +9,13 @@ use Illuminate\Queue\SerializesModels;
 
 class ReconciliationCompleted
 {
-    use Dispatchable, SerializesModels;
+    use Dispatchable;
+    use SerializesModels;
 
     public function __construct(
         public readonly string $date,
         public readonly array $results,
         public readonly array $discrepancies
-    ) {}
+    ) {
+    }
 }

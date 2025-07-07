@@ -19,23 +19,23 @@ class SubProductService
     public function isEnabled(string $subProduct): bool
     {
         $cacheKey = "sub_product.{$subProduct}.enabled";
-        
+
         return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($subProduct) {
             // Check if feature flag exists
             $featureKey = "sub_product.{$subProduct}";
-            
+
             try {
                 if (Feature::active($featureKey)) {
                     return true;
                 }
-                
+
                 if (Feature::inactive($featureKey)) {
                     return false;
                 }
             } catch (\Exception $e) {
                 // Feature not defined, fall back to config
             }
-            
+
             // Fall back to config
             return config("sub_products.{$subProduct}.enabled", false);
         });
@@ -52,23 +52,23 @@ class SubProductService
         }
 
         $cacheKey = "sub_product.{$subProduct}.feature.{$feature}";
-        
+
         return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($subProduct, $feature) {
             // Check feature flag
             $featureKey = "sub_product.{$subProduct}.{$feature}";
-            
+
             try {
                 if (Feature::active($featureKey)) {
                     return true;
                 }
-                
+
                 if (Feature::inactive($featureKey)) {
                     return false;
                 }
             } catch (\Exception $e) {
                 // Feature not defined, fall back to config
             }
-            
+
             // Fall back to config
             return config("sub_products.{$subProduct}.features.{$feature}", false);
         });
@@ -145,19 +145,19 @@ class SubProductService
         try {
             Feature::activate("sub_product.{$subProduct}");
             $this->clearCache();
-            
+
             Log::info('Sub-product enabled', [
                 'sub_product' => $subProduct,
                 'enabled_by' => $enabledBy ?? 'system',
             ]);
-            
+
             return true;
         } catch (\Exception $e) {
             Log::error('Failed to enable sub-product', [
                 'sub_product' => $subProduct,
                 'error' => $e->getMessage(),
             ]);
-            
+
             return false;
         }
     }
@@ -170,19 +170,19 @@ class SubProductService
         try {
             Feature::deactivate("sub_product.{$subProduct}");
             $this->clearCache();
-            
+
             Log::info('Sub-product disabled', [
                 'sub_product' => $subProduct,
                 'disabled_by' => $disabledBy ?? 'system',
             ]);
-            
+
             return true;
         } catch (\Exception $e) {
             Log::error('Failed to disable sub-product', [
                 'sub_product' => $subProduct,
                 'error' => $e->getMessage(),
             ]);
-            
+
             return false;
         }
     }
@@ -195,13 +195,13 @@ class SubProductService
         try {
             Feature::activate("sub_product.{$subProduct}.{$feature}");
             $this->clearCache();
-            
+
             Log::info('Sub-product feature enabled', [
                 'sub_product' => $subProduct,
                 'feature' => $feature,
                 'enabled_by' => $enabledBy ?? 'system',
             ]);
-            
+
             return true;
         } catch (\Exception $e) {
             Log::error('Failed to enable sub-product feature', [
@@ -209,7 +209,7 @@ class SubProductService
                 'feature' => $feature,
                 'error' => $e->getMessage(),
             ]);
-            
+
             return false;
         }
     }
@@ -222,13 +222,13 @@ class SubProductService
         try {
             Feature::deactivate("sub_product.{$subProduct}.{$feature}");
             $this->clearCache();
-            
+
             Log::info('Sub-product feature disabled', [
                 'sub_product' => $subProduct,
                 'feature' => $feature,
                 'disabled_by' => $disabledBy ?? 'system',
             ]);
-            
+
             return true;
         } catch (\Exception $e) {
             Log::error('Failed to disable sub-product feature', [
@@ -236,7 +236,7 @@ class SubProductService
                 'feature' => $feature,
                 'error' => $e->getMessage(),
             ]);
-            
+
             return false;
         }
     }
@@ -247,11 +247,11 @@ class SubProductService
     public function hasRequiredLicenses(string $subProduct, array $userLicenses = []): bool
     {
         $requiredLicenses = config("sub_products.{$subProduct}.licenses", []);
-        
+
         if (empty($requiredLicenses)) {
             return true;
         }
-        
+
         return !empty(array_intersect($requiredLicenses, $userLicenses));
     }
 
@@ -270,16 +270,16 @@ class SubProductService
     {
         // Clear all sub-product cache keys
         $subProducts = array_keys(config('sub_products', []));
-        
+
         foreach ($subProducts as $subProduct) {
             Cache::forget("sub_product.{$subProduct}.enabled");
-            
+
             $features = array_keys(config("sub_products.{$subProduct}.features", []));
             foreach ($features as $feature) {
                 Cache::forget("sub_product.{$subProduct}.feature.{$feature}");
             }
         }
-        
+
         Cache::forget('sub_products.enabled');
     }
 
@@ -290,7 +290,7 @@ class SubProductService
     {
         $subProducts = $this->getAllSubProducts();
         $status = [];
-        
+
         foreach ($subProducts as $key => $config) {
             $status[$key] = [
                 'enabled' => $config['is_enabled'],
@@ -304,7 +304,7 @@ class SubProductService
                 }, array_keys($config['features'])),
             ];
         }
-        
+
         return $status;
     }
 
@@ -349,12 +349,12 @@ class SubProductService
         if (!$this->isEnabled($subProduct)) {
             return false;
         }
-        
+
         // Check licenses if provided in context
         if (isset($context['user_licenses'])) {
             return $this->hasRequiredLicenses($subProduct, $context['user_licenses']);
         }
-        
+
         return true;
     }
 }

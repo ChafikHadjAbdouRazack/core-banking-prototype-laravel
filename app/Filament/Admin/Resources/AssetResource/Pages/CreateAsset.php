@@ -29,7 +29,7 @@ class CreateAsset extends CreateRecord
     {
         // Ensure code is uppercase for consistency
         $data['code'] = strtoupper($data['code']);
-        
+
         // Set default metadata based on asset type
         if (empty($data['metadata'])) {
             $data['metadata'] = match ($data['type']) {
@@ -48,7 +48,7 @@ class CreateAsset extends CreateRecord
                 default => [],
             };
         }
-        
+
         return $data;
     }
 }

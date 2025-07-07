@@ -12,12 +12,13 @@ class LiquidityController extends Controller
 {
     public function __construct(
         private readonly LiquidityPoolService $liquidityService
-    ) {}
+    ) {
+    }
 
     public function index(): View
     {
         $pools = $this->liquidityService->getActivePools();
-        $userPositions = auth()->check() 
+        $userPositions = auth()->check()
             ? $this->liquidityService->getProviderPositions(auth()->user()->account->id)
             : collect();
 
@@ -27,7 +28,7 @@ class LiquidityController extends Controller
     public function pool(string $poolId): View
     {
         $pool = $this->liquidityService->getPool($poolId);
-        
+
         if (!$pool) {
             abort(404, 'Liquidity pool not found');
         }

@@ -9,7 +9,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class BankAccount extends Model
 {
-    use HasFactory, HasUuids;
+    use HasFactory;
+    use HasUuids;
 
     /**
      * Get the columns that should receive a unique identifier.
@@ -74,7 +75,7 @@ class BankAccount extends Model
         $lastFour = substr($this->account_number, -4);
         return "{$this->bank_code} - ****{$lastFour}";
     }
-    
+
     /**
      * Scope a query to only include verified bank accounts.
      */

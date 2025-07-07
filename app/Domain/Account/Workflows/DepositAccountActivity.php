@@ -16,10 +16,10 @@ class DepositAccountActivity extends Activity
      *
      * @return bool
      */
-    public function execute( AccountUuid $uuid, Money $money, TransactionAggregate $transaction ): bool
+    public function execute(AccountUuid $uuid, Money $money, TransactionAggregate $transaction): bool
     {
-        $transaction->retrieve( $uuid->getUuid() )
-               ->credit( $money )
+        $transaction->retrieve($uuid->getUuid())
+               ->credit($money)
                ->persist();
 
         return true;

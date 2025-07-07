@@ -113,7 +113,7 @@ class PublicApiController extends Controller
     public function status(): JsonResponse
     {
         $startTime = microtime(true);
-        
+
         // Check component status
         $components = [
             'api' => 'operational',
@@ -121,9 +121,9 @@ class PublicApiController extends Controller
             'redis' => $this->checkRedisStatus(),
             'bank_connectors' => $this->checkBankConnectorsStatus(),
         ];
-        
+
         $overallStatus = $this->determineOverallStatus($components);
-        
+
         return response()->json([
             'status' => $overallStatus,
             'timestamp' => now()->toIso8601String(),
@@ -159,7 +159,7 @@ class PublicApiController extends Controller
     {
         $healthMonitor = app(\App\Domain\Custodian\Services\CustodianHealthMonitor::class);
         $allHealth = $healthMonitor->getAllCustodiansHealth();
-        
+
         $status = [];
         foreach ($allHealth as $custodian => $health) {
             $status[$custodian] = match ($health['status']) {
@@ -169,23 +169,23 @@ class PublicApiController extends Controller
                 default => 'unknown',
             };
         }
-        
+
         return $status;
     }
 
     private function determineOverallStatus(array $components): string
     {
         $flatComponents = [];
-        array_walk_recursive($components, function($value) use (&$flatComponents) {
+        array_walk_recursive($components, function ($value) use (&$flatComponents) {
             $flatComponents[] = $value;
         });
-        
+
         if (in_array('down', $flatComponents)) {
             return 'major_outage';
         } elseif (in_array('degraded', $flatComponents)) {
             return 'partial_outage';
         }
-        
+
         return 'operational';
     }
 }

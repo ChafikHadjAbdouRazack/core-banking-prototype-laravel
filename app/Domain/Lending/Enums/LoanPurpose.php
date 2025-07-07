@@ -15,7 +15,7 @@ enum LoanPurpose: string
 
     public function label(): string
     {
-        return match($this) {
+        return match ($this) {
             self::PERSONAL => 'Personal Use',
             self::BUSINESS => 'Business Investment',
             self::HOME_IMPROVEMENT => 'Home Improvement',
@@ -29,7 +29,7 @@ enum LoanPurpose: string
 
     public function getBaseInterestRate(): float
     {
-        return match($this) {
+        return match ($this) {
             self::EDUCATION => 4.5,
             self::MEDICAL => 5.0,
             self::HOME_IMPROVEMENT => 6.0,
@@ -43,7 +43,7 @@ enum LoanPurpose: string
 
     public function getMaxTermMonths(): int
     {
-        return match($this) {
+        return match ($this) {
             self::EDUCATION => 120, // 10 years
             self::HOME_IMPROVEMENT => 84, // 7 years
             self::BUSINESS => 60, // 5 years

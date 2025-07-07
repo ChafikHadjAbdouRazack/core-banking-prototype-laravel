@@ -84,7 +84,7 @@ class BasketComponent extends Model
         if ($this->asset_code !== 'USD') {
             $exchangeRate = app(\App\Domain\Asset\Services\ExchangeRateService::class)
                 ->getRate($this->asset_code, 'USD');
-                
+
             if ($exchangeRate) {
                 $rate = $exchangeRate->rate;
             }

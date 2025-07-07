@@ -126,7 +126,7 @@ class AddAssetWorkflow
         ];
 
         $text = $title . ' ' . ($description ?? '');
-        
+
         foreach ($assetPatterns as $code => $data) {
             if (preg_match('/\b' . preg_quote($code, '/') . '\b/i', $text)) {
                 return array_merge(['code' => $code], $data);
@@ -145,7 +145,7 @@ class AddAssetWorkflow
     private function validateAssetData(array $data): bool
     {
         $required = ['code', 'name', 'type', 'precision'];
-        
+
         foreach ($required as $field) {
             if (!isset($data[$field]) || empty($data[$field])) {
                 return false;

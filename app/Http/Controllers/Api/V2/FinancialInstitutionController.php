@@ -14,7 +14,7 @@ class FinancialInstitutionController extends Controller
 {
     private OnboardingService $onboardingService;
     private DocumentVerificationService $documentService;
-    
+
     public function __construct(
         OnboardingService $onboardingService,
         DocumentVerificationService $documentService
@@ -22,7 +22,7 @@ class FinancialInstitutionController extends Controller
         $this->onboardingService = $onboardingService;
         $this->documentService = $documentService;
     }
-    
+
     /**
      * Get application form structure
      */
@@ -92,7 +92,7 @@ class FinancialInstitutionController extends Controller
             ]
         ]);
     }
-    
+
     /**
      * Submit new application
      */
@@ -110,21 +110,21 @@ class FinancialInstitutionController extends Controller
             'years_in_operation' => 'required|integer|min:0',
             'primary_regulator' => 'nullable|string|max:255',
             'regulatory_license_number' => 'nullable|string|max:255',
-            
+
             // Contact Information
             'contact_name' => 'required|string|max:255',
             'contact_email' => 'required|email|max:255',
             'contact_phone' => 'required|string|max:50',
             'contact_position' => 'required|string|max:255',
             'contact_department' => 'nullable|string|max:255',
-            
+
             // Address Information
             'headquarters_address' => 'required|string|max:500',
             'headquarters_city' => 'required|string|max:255',
             'headquarters_state' => 'nullable|string|max:255',
             'headquarters_postal_code' => 'required|string|max:50',
             'headquarters_country' => 'required|string|size:2',
-            
+
             // Business Information
             'business_description' => 'required|string|min:100',
             'target_markets' => 'required|array',
@@ -135,7 +135,7 @@ class FinancialInstitutionController extends Controller
             'expected_monthly_volume' => 'nullable|numeric|min:0',
             'required_currencies' => 'required|array',
             'required_currencies.*' => 'string|size:3',
-            
+
             // Technical Requirements
             'integration_requirements' => 'required|array',
             'integration_requirements.*' => 'string',
@@ -144,7 +144,7 @@ class FinancialInstitutionController extends Controller
             'requires_reporting' => 'boolean',
             'security_certifications' => 'nullable|array',
             'security_certifications.*' => 'string',
-            
+
             // Compliance Information
             'has_aml_program' => 'required|boolean',
             'has_kyc_procedures' => 'required|boolean',
@@ -153,15 +153,15 @@ class FinancialInstitutionController extends Controller
             'is_gdpr_compliant' => 'required|boolean',
             'compliance_certifications' => 'nullable|array',
             'compliance_certifications.*' => 'string',
-            
+
             // Optional
             'source' => 'nullable|string',
             'referral_code' => 'nullable|string',
         ]);
-        
+
         try {
             $application = $this->onboardingService->submitApplication($validated);
-            
+
             return response()->json([
                 'data' => [
                     'application_id' => $application->id,
@@ -176,13 +176,13 @@ class FinancialInstitutionController extends Controller
                 'error' => $e->getMessage(),
                 'data' => $validated,
             ]);
-            
+
             return response()->json([
                 'error' => 'Failed to submit application'
             ], 422);
         }
     }
-    
+
     /**
      * Get application status
      */
@@ -190,15 +190,15 @@ class FinancialInstitutionController extends Controller
     {
         $application = FinancialInstitutionApplication::where('application_number', $applicationNumber)
             ->first();
-        
+
         if (!$application) {
             return response()->json([
                 'error' => 'Application not found'
             ], 404);
         }
-        
+
         $documentStatus = $this->documentService->getVerificationStatus($application);
-        
+
         return response()->json([
             'data' => [
                 'application_number' => $application->application_number,
@@ -212,7 +212,7 @@ class FinancialInstitutionController extends Controller
             ]
         ]);
     }
-    
+
     /**
      * Upload document for application
      */
@@ -220,31 +220,31 @@ class FinancialInstitutionController extends Controller
     {
         $application = FinancialInstitutionApplication::where('application_number', $applicationNumber)
             ->first();
-        
+
         if (!$application) {
             return response()->json([
                 'error' => 'Application not found'
             ], 404);
         }
-        
+
         if (!$application->isEditable()) {
             return response()->json([
                 'error' => 'Application is not editable in current status'
             ], 422);
         }
-        
+
         $validated = $request->validate([
             'document_type' => 'required|string',
             'document' => 'required|file|mimes:pdf,jpg,jpeg,png|max:10240', // 10MB
         ]);
-        
+
         try {
             $document = $this->documentService->uploadDocument(
                 $application,
                 $validated['document_type'],
                 $request->file('document')
             );
-            
+
             return response()->json([
                 'data' => [
                     'document_type' => $validated['document_type'],
@@ -260,7 +260,7 @@ class FinancialInstitutionController extends Controller
             ], 422);
         }
     }
-    
+
     /**
      * Get partner API documentation
      */

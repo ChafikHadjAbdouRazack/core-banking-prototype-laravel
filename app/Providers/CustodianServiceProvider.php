@@ -26,7 +26,7 @@ class CustodianServiceProvider extends ServiceProvider
     {
         // Publish config file
         $this->publishes([
-            __DIR__.'/../../config/custodians.php' => config_path('custodians.php'),
+            __DIR__ . '/../../config/custodians.php' => config_path('custodians.php'),
         ], 'config');
 
         // Register custodians from config
@@ -49,7 +49,7 @@ class CustodianServiceProvider extends ServiceProvider
 
             try {
                 $connectorClass = $settings['class'] ?? null;
-                
+
                 if (!$connectorClass || !class_exists($connectorClass)) {
                     Log::warning("Custodian connector class not found: {$connectorClass}");
                     continue;
@@ -57,15 +57,15 @@ class CustodianServiceProvider extends ServiceProvider
 
                 // Create connector instance with config
                 $connector = new $connectorClass($settings);
-                
+
                 // Register with the registry
                 $registry->register($name, $connector);
-                
+
                 // Set as default if specified
                 if ($name === $default) {
                     $registry->setDefault($name);
                 }
-                
+
                 Log::info("Registered custodian connector: {$name}");
             } catch (\Exception $e) {
                 Log::error("Failed to register custodian {$name}: " . $e->getMessage());

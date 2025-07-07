@@ -3,14 +3,15 @@
 namespace App\Domain\Account\Repositories;
 
 use App\Models\Account;
-use \App\Domain\Account\DataObjects\Account as AccountDTO;
+use App\Domain\Account\DataObjects\Account as AccountDTO;
 use Illuminate\Support\LazyCollection;
 
 final class AccountRepository
 {
     public function __construct(
         protected Account $account
-    ) {}
+    ) {
+    }
 
     /**
      * @param AccountDTO $account

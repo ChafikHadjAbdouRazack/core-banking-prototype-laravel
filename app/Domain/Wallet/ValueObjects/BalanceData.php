@@ -13,8 +13,9 @@ class BalanceData
         public readonly ?string $pendingBalance = null,
         public readonly ?int $nonce = null,
         public readonly array $metadata = []
-    ) {}
-    
+    ) {
+    }
+
     public function toArray(): array
     {
         return [
@@ -28,7 +29,7 @@ class BalanceData
             'metadata' => $this->metadata,
         ];
     }
-    
+
     public function getFormattedBalance(): string
     {
         $divisor = pow(10, $this->decimals);

@@ -13,7 +13,10 @@ use Illuminate\Support\Facades\Log;
 
 class ProcessCustodianWebhook implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
 
     /**
      * The number of times the job may be attempted.
@@ -60,12 +63,12 @@ class ProcessCustodianWebhook implements ShouldQueue
 
         try {
             $webhook->markAsProcessing();
-            
+
             // Process the webhook based on custodian and event type
             $processor->process($webhook);
-            
+
             $webhook->markAsProcessed();
-            
+
             Log::info('Webhook processed successfully', [
                 'webhook_id' => $webhook->id,
                 'custodian' => $webhook->custodian_name,
@@ -73,7 +76,7 @@ class ProcessCustodianWebhook implements ShouldQueue
             ]);
         } catch (\Exception $e) {
             $webhook->markAsFailed($e->getMessage());
-            
+
             Log::error('Failed to process webhook', [
                 'webhook_id' => $webhook->id,
                 'error' => $e->getMessage(),

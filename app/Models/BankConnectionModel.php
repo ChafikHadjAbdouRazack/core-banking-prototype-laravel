@@ -9,13 +9,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class BankConnectionModel extends Model
 {
     use HasFactory;
-    
+
     protected $table = 'bank_connections';
-    
+
     protected $keyType = 'string';
-    
+
     public $incrementing = false;
-    
+
     protected $fillable = [
         'id',
         'user_uuid',
@@ -27,14 +27,14 @@ class BankConnectionModel extends Model
         'expires_at',
         'metadata',
     ];
-    
+
     protected $casts = [
         'permissions' => 'array',
         'metadata' => 'array',
         'last_sync_at' => 'datetime',
         'expires_at' => 'datetime',
     ];
-    
+
     /**
      * Get the user that owns the bank connection
      */
@@ -42,7 +42,7 @@ class BankConnectionModel extends Model
     {
         return $this->belongsTo(User::class, 'user_uuid', 'uuid');
     }
-    
+
     /**
      * Scope to get active connections
      */
@@ -50,7 +50,7 @@ class BankConnectionModel extends Model
     {
         return $query->where('status', 'active');
     }
-    
+
     /**
      * Check if connection is expired
      */
@@ -58,7 +58,7 @@ class BankConnectionModel extends Model
     {
         return $this->expires_at && $this->expires_at->isPast();
     }
-    
+
     /**
      * Check if connection needs renewal
      */
@@ -67,7 +67,7 @@ class BankConnectionModel extends Model
         if (!$this->expires_at) {
             return false;
         }
-        
+
         return $this->expires_at->diffInDays(now()) <= 7;
     }
 }

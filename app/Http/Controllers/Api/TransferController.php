@@ -107,7 +107,7 @@ class TransferController extends Controller
 
         // Check sufficient balance
         $fromBalance = $fromAccount->getBalance($validated['asset_code']);
-        
+
         if ($fromBalance < $amountInMinorUnits) {
             return response()->json([
                 'message' => 'Insufficient funds',
@@ -201,7 +201,7 @@ class TransferController extends Controller
         // Transform events to transfer-like format
         $transfers = collect($events->items())->map(function ($event) use ($accountUuid) {
             $properties = json_decode($event->event_properties, true);
-            
+
             return [
                 'uuid' => $event->aggregate_uuid,
                 'from_account_uuid' => $properties['from_uuid'] ?? $event->aggregate_uuid,

@@ -14,5 +14,6 @@ class StablecoinMinted extends ShouldBeStored
         public readonly string $stablecoin_code,
         public readonly int $amount,
         public readonly array $metadata = []
-    ) {}
+    ) {
+    }
 }

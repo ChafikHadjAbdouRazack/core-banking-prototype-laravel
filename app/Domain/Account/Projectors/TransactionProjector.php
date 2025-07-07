@@ -35,7 +35,7 @@ class TransactionProjector extends Projector
                     'event_uuid' => $event->aggregateRootUuid(),
                 ],
             ]);
-            
+
             Log::info('Transaction projection created for AssetTransactionCreated', [
                 'account_uuid' => (string) $event->accountUuid,
                 'asset_code' => $event->assetCode,
@@ -48,7 +48,7 @@ class TransactionProjector extends Projector
             ]);
         }
     }
-    
+
     /**
      * Handle asset transfer completed event
      */
@@ -71,7 +71,7 @@ class TransactionProjector extends Projector
                     'to_account' => (string) $event->toAccountUuid,
                 ],
             ]);
-            
+
             // Create credit transaction for receiver
             TransactionProjection::create([
                 'uuid' => Str::uuid(),
@@ -88,7 +88,7 @@ class TransactionProjector extends Projector
                     'from_account' => (string) $event->fromAccountUuid,
                 ],
             ]);
-            
+
             Log::info('Transaction projections created for AssetTransferCompleted', [
                 'from_account' => (string) $event->fromAccountUuid,
                 'to_account' => (string) $event->toAccountUuid,
@@ -102,7 +102,7 @@ class TransactionProjector extends Projector
             ]);
         }
     }
-    
+
     /**
      * Handle payment deposit created event
      */
@@ -124,7 +124,7 @@ class TransactionProjector extends Projector
                     'payment_method' => $event->paymentMethod ?? null,
                 ],
             ]);
-            
+
             Log::info('Transaction projection created for PaymentDepositCreated', [
                 'account_uuid' => (string) $event->accountUuid,
                 'asset_code' => $event->assetCode,
@@ -137,7 +137,7 @@ class TransactionProjector extends Projector
             ]);
         }
     }
-    
+
     /**
      * Handle payment withdrawal created event
      */
@@ -159,7 +159,7 @@ class TransactionProjector extends Projector
                     'payment_method' => $event->paymentMethod ?? null,
                 ],
             ]);
-            
+
             Log::info('Transaction projection created for PaymentWithdrawalCreated', [
                 'account_uuid' => (string) $event->accountUuid,
                 'asset_code' => $event->assetCode,

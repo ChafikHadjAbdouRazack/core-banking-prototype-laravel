@@ -25,8 +25,9 @@ class BankStatement
         public readonly ?string $fileContent,
         public readonly Carbon $generatedAt,
         public readonly array $metadata = [],
-    ) {}
-    
+    ) {
+    }
+
     /**
      * Get total debits
      */
@@ -36,7 +37,7 @@ class BankStatement
             ->filter(fn($tx) => $tx->isDebit())
             ->sum(fn($tx) => $tx->getAbsoluteAmount());
     }
-    
+
     /**
      * Get total credits
      */
@@ -46,7 +47,7 @@ class BankStatement
             ->filter(fn($tx) => $tx->isCredit())
             ->sum(fn($tx) => $tx->getAbsoluteAmount());
     }
-    
+
     /**
      * Get net change
      */
@@ -54,7 +55,7 @@ class BankStatement
     {
         return $this->closingBalance - $this->openingBalance;
     }
-    
+
     /**
      * Get transaction count by type
      */
@@ -65,7 +66,7 @@ class BankStatement
             ->map(fn($group) => $group->count())
             ->toArray();
     }
-    
+
     /**
      * Get average transaction amount
      */
@@ -74,10 +75,10 @@ class BankStatement
         if ($this->transactions->isEmpty()) {
             return 0;
         }
-        
+
         return $this->transactions->avg(fn($tx) => $tx->getAbsoluteAmount());
     }
-    
+
     /**
      * Check if statement is balanced
      */
@@ -86,7 +87,7 @@ class BankStatement
         $calculatedClosing = $this->openingBalance + $this->getTotalCredits() - $this->getTotalDebits();
         return abs($calculatedClosing - $this->closingBalance) < 0.01;
     }
-    
+
     /**
      * Convert to array
      */
@@ -109,7 +110,7 @@ class BankStatement
             'metadata' => $this->metadata,
         ];
     }
-    
+
     /**
      * Create from array
      */
@@ -117,7 +118,7 @@ class BankStatement
     {
         $transactions = collect($data['transactions'] ?? [])
             ->map(fn($tx) => BankTransaction::fromArray($tx));
-        
+
         return new self(
             id: $data['id'],
             bankCode: $data['bank_code'],

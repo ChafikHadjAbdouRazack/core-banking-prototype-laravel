@@ -38,10 +38,10 @@ class SchemaHelper
                 'Open Banking API'
             ]
         ];
-        
+
         return self::generateScript($schema);
     }
-    
+
     /**
      * Generate WebSite schema with search action
      */
@@ -61,10 +61,10 @@ class SchemaHelper
                 'query-input' => 'required name=search_term_string'
             ]
         ];
-        
+
         return self::generateScript($schema);
     }
-    
+
     /**
      * Generate SoftwareApplication schema
      */
@@ -97,10 +97,10 @@ class SchemaHelper
                 'name' => 'FinAegis'
             ]
         ];
-        
+
         return self::generateScript($schema);
     }
-    
+
     /**
      * Generate Product schema for GCU
      */
@@ -133,17 +133,17 @@ class SchemaHelper
                 'reviewCount' => '150'
             ]
         ];
-        
+
         return self::generateScript($schema);
     }
-    
+
     /**
      * Generate FAQ schema
      */
     public static function faq(array $faqs): string
     {
         $faqItems = [];
-        
+
         foreach ($faqs as $faq) {
             $faqItems[] = [
                 '@type' => 'Question',
@@ -154,23 +154,23 @@ class SchemaHelper
                 ]
             ];
         }
-        
+
         $schema = [
             '@context' => 'https://schema.org',
             '@type' => 'FAQPage',
             'mainEntity' => $faqItems
         ];
-        
+
         return self::generateScript($schema);
     }
-    
+
     /**
      * Generate BreadcrumbList schema
      */
     public static function breadcrumb(array $items): string
     {
         $breadcrumbItems = [];
-        
+
         foreach ($items as $position => $item) {
             $breadcrumbItems[] = [
                 '@type' => 'ListItem',
@@ -179,16 +179,16 @@ class SchemaHelper
                 'item' => $item['url']
             ];
         }
-        
+
         $schema = [
             '@context' => 'https://schema.org',
             '@type' => 'BreadcrumbList',
             'itemListElement' => $breadcrumbItems
         ];
-        
+
         return self::generateScript($schema);
     }
-    
+
     /**
      * Generate Service schema for sub-products
      */
@@ -210,10 +210,10 @@ class SchemaHelper
                 'name' => $name . ' Services'
             ]
         ];
-        
+
         return self::generateScript($schema);
     }
-    
+
     /**
      * Generate Article schema for blog posts
      */
@@ -243,21 +243,21 @@ class SchemaHelper
                 '@id' => $data['url']
             ]
         ];
-        
+
         if (isset($data['image'])) {
             $schema['image'] = $data['image'];
         }
-        
+
         return self::generateScript($schema);
     }
-    
+
     /**
      * Generate the script tag with JSON-LD
      */
     private static function generateScript(array $schema): string
     {
         $json = json_encode($schema, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-        
+
         return '<script type="application/ld+json">' . "\n" . $json . "\n" . '</script>';
     }
 }

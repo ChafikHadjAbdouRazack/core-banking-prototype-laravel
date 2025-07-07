@@ -15,7 +15,7 @@ use Carbon\Carbon;
 class VotingTemplateService
 {
     private ?string $systemUserUuid = null;
-    
+
     /**
      * Get or create system user for polls
      */
@@ -28,17 +28,17 @@ class VotingTemplateService
             );
             $this->systemUserUuid = $systemUser->uuid;
         }
-        
+
         return $this->systemUserUuid;
     }
-    
+
     /**
      * Create a monthly currency basket voting poll
      */
     public function createMonthlyBasketVotingPoll(Carbon $votingMonth = null): Poll
     {
         $votingMonth = $votingMonth ?? now()->addMonth()->startOfMonth();
-        
+
         $poll = Poll::create([
             'title' => "Currency Basket Composition - {$votingMonth->format('F Y')}",
             'description' => $this->getBasketVotingDescription($votingMonth),
@@ -58,10 +58,10 @@ class VotingTemplateService
                 'auto_execute' => true,
             ],
         ]);
-        
+
         return $poll;
     }
-    
+
     /**
      * Create a poll for adding a new currency to the basket
      */
@@ -88,10 +88,10 @@ class VotingTemplateService
                 'currency_name' => $currencyName,
             ],
         ]);
-        
+
         return $poll;
     }
-    
+
     /**
      * Create a poll for emergency rebalancing
      */
@@ -118,10 +118,10 @@ class VotingTemplateService
                 'urgent' => true,
             ],
         ]);
-        
+
         return $poll;
     }
-    
+
     /**
      * Get description for basket voting poll
      */
@@ -131,7 +131,7 @@ class VotingTemplateService
                "Allocate percentages to each currency/asset in the basket. Your voting power is based on your asset holdings. " .
                "The final composition will be the weighted average of all votes.";
     }
-    
+
     /**
      * Get voting options for basket composition
      */
@@ -154,19 +154,19 @@ class VotingTemplateService
             ],
         ];
     }
-    
+
     /**
      * Schedule monthly voting polls for the year
      */
     public function scheduleYearlyVotingPolls(int $year): array
     {
         $polls = [];
-        
+
         for ($month = 1; $month <= 12; $month++) {
             $votingMonth = Carbon::create($year, $month, 1);
             $polls[] = $this->createMonthlyBasketVotingPoll($votingMonth);
         }
-        
+
         return $polls;
     }
 }

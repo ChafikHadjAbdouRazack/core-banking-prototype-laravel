@@ -18,11 +18,11 @@ class CgoNotificationResource extends Resource
     protected static ?string $model = CgoNotification::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-sparkles';
-    
+
     protected static ?string $navigationLabel = 'CGO Early Access';
-    
+
     protected static ?string $navigationGroup = 'Platform';
-    
+
     protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
@@ -75,7 +75,7 @@ class CgoNotificationResource extends Resource
                 ]),
             ]);
     }
-    
+
     public static function getNavigationBadge(): ?string
     {
         return static::getModel()::count();

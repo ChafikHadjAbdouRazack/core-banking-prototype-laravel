@@ -23,13 +23,13 @@ class AccountResource extends Resource
     protected static ?string $model = Account::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-banknotes';
-    
+
     protected static ?string $navigationLabel = 'Bank Accounts';
-    
+
     protected static ?string $modelLabel = 'Bank Account';
-    
+
     protected static ?string $navigationGroup = 'Banking';
-    
+
     protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
@@ -55,7 +55,7 @@ class AccountResource extends Resource
                             ->placeholder('UUID of the account owner')
                             ->helperText('The unique identifier of the user who owns this account'),
                     ])->columns(2),
-                    
+
                 Section::make('Financial Details')
                     ->description('Account balance and status')
                     ->schema([
@@ -190,12 +190,12 @@ class AccountResource extends Resource
                     ->action(function (Account $record, array $data): void {
                         try {
                             DB::beginTransaction();
-                            
+
                             $accountService = app(\App\Domain\Account\Services\AccountService::class);
                             $accountService->deposit($record->uuid, (int)($data['amount'] * 100));
-                            
+
                             DB::commit();
-                            
+
                             Notification::make()
                                 ->title('Deposit Successful')
                                 ->success()
@@ -203,7 +203,7 @@ class AccountResource extends Resource
                                 ->send();
                         } catch (\Exception $e) {
                             DB::rollBack();
-                            
+
                             Notification::make()
                                 ->title('Deposit Failed')
                                 ->danger()
@@ -228,12 +228,12 @@ class AccountResource extends Resource
                     ->action(function (Account $record, array $data): void {
                         try {
                             DB::beginTransaction();
-                            
+
                             $accountService = app(\App\Domain\Account\Services\AccountService::class);
                             $accountService->withdraw($record->uuid, (int)($data['amount'] * 100));
-                            
+
                             DB::commit();
-                            
+
                             Notification::make()
                                 ->title('Withdrawal Successful')
                                 ->success()
@@ -241,7 +241,7 @@ class AccountResource extends Resource
                                 ->send();
                         } catch (\Exception $e) {
                             DB::rollBack();
-                            
+
                             Notification::make()
                                 ->title('Withdrawal Failed')
                                 ->danger()
@@ -262,7 +262,7 @@ class AccountResource extends Resource
                         try {
                             $accountService = app(\App\Domain\Account\Services\AccountService::class);
                             $accountService->freeze($record->uuid);
-                            
+
                             Notification::make()
                                 ->title('Account Frozen')
                                 ->success()
@@ -289,7 +289,7 @@ class AccountResource extends Resource
                         try {
                             $accountService = app(\App\Domain\Account\Services\AccountService::class);
                             $accountService->unfreeze($record->uuid);
-                            
+
                             Notification::make()
                                 ->title('Account Unfrozen')
                                 ->success()
@@ -316,7 +316,7 @@ class AccountResource extends Resource
                             $accountService = app(\App\Domain\Account\Services\AccountService::class);
                             $success = 0;
                             $failed = 0;
-                            
+
                             foreach ($records as $record) {
                                 if (!$record->frozen) {
                                     try {
@@ -327,7 +327,7 @@ class AccountResource extends Resource
                                     }
                                 }
                             }
-                            
+
                             if ($success > 0) {
                                 Notification::make()
                                     ->title('Accounts Frozen')
@@ -335,7 +335,7 @@ class AccountResource extends Resource
                                     ->body("{$success} account(s) frozen successfully.")
                                     ->send();
                             }
-                            
+
                             if ($failed > 0) {
                                 Notification::make()
                                     ->title('Some Freezes Failed')
@@ -355,7 +355,7 @@ class AccountResource extends Resource
             RelationManagers\TurnoversRelationManager::class,
         ];
     }
-    
+
     public static function getWidgets(): array
     {
         return [
@@ -377,7 +377,7 @@ class AccountResource extends Resource
             'view' => Pages\ViewAccount::route('/{record}'),
         ];
     }
-    
+
     public static function getGlobalSearchResultDetails($record): array
     {
         return [
@@ -386,7 +386,7 @@ class AccountResource extends Resource
             'Status' => $record->frozen ? 'Frozen' : 'Active',
         ];
     }
-    
+
     public static function getGloballySearchableAttributes(): array
     {
         return ['uuid', 'name', 'user_uuid'];

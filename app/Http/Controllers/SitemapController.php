@@ -14,12 +14,12 @@ class SitemapController extends Controller
     public function index(): Response
     {
         $sitemap = $this->generateSitemap();
-        
+
         return response($sitemap, 200, [
             'Content-Type' => 'application/xml',
         ]);
     }
-    
+
     /**
      * Generate the sitemap XML
      */
@@ -27,18 +27,18 @@ class SitemapController extends Controller
     {
         $xml = '<?xml version="1.0" encoding="UTF-8"?>';
         $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
-        
+
         $routes = $this->getPublicRoutes();
-        
+
         foreach ($routes as $route) {
             $xml .= $this->generateUrlEntry($route);
         }
-        
+
         $xml .= '</urlset>';
-        
+
         return $xml;
     }
-    
+
     /**
      * Generate a single URL entry
      */
@@ -50,10 +50,10 @@ class SitemapController extends Controller
         $url .= '<changefreq>' . $route['changefreq'] . '</changefreq>';
         $url .= '<priority>' . $route['priority'] . '</priority>';
         $url .= '</url>';
-        
+
         return $url;
     }
-    
+
     /**
      * Get all public routes for the sitemap
      */
@@ -61,7 +61,7 @@ class SitemapController extends Controller
     {
         $baseUrl = config('app.url');
         $now = Carbon::now()->toW3cString();
-        
+
         $routes = [
             // Homepage - highest priority
             [
@@ -70,7 +70,7 @@ class SitemapController extends Controller
                 'changefreq' => 'daily',
                 'priority' => '1.0',
             ],
-            
+
             // Main pages - high priority
             [
                 'url' => $baseUrl . '/about',
@@ -96,7 +96,7 @@ class SitemapController extends Controller
                 'changefreq' => 'weekly',
                 'priority' => '0.9',
             ],
-            
+
             // Feature pages
             [
                 'url' => $baseUrl . '/features',
@@ -122,7 +122,7 @@ class SitemapController extends Controller
                 'changefreq' => 'monthly',
                 'priority' => '0.8',
             ],
-            
+
             // Sub-products
             [
                 'url' => $baseUrl . '/sub-products',
@@ -154,7 +154,7 @@ class SitemapController extends Controller
                 'changefreq' => 'weekly',
                 'priority' => '0.7',
             ],
-            
+
             // Developer resources
             [
                 'url' => $baseUrl . '/developers',
@@ -162,7 +162,7 @@ class SitemapController extends Controller
                 'changefreq' => 'weekly',
                 'priority' => '0.7',
             ],
-            
+
             // Support pages
             [
                 'url' => $baseUrl . '/support',
@@ -188,7 +188,7 @@ class SitemapController extends Controller
                 'changefreq' => 'weekly',
                 'priority' => '0.6',
             ],
-            
+
             // Other pages
             [
                 'url' => $baseUrl . '/cgo',
@@ -208,7 +208,7 @@ class SitemapController extends Controller
                 'changefreq' => 'daily',
                 'priority' => '0.7',
             ],
-            
+
             // Legal pages - lower priority
             [
                 'url' => $baseUrl . '/legal/terms',
@@ -234,7 +234,7 @@ class SitemapController extends Controller
                 'changefreq' => 'monthly',
                 'priority' => '0.5',
             ],
-            
+
             // Status page
             [
                 'url' => $baseUrl . '/status',
@@ -242,7 +242,7 @@ class SitemapController extends Controller
                 'changefreq' => 'hourly',
                 'priority' => '0.6',
             ],
-            
+
             // Financial institutions
             [
                 'url' => $baseUrl . '/financial-institutions/apply',
@@ -251,7 +251,7 @@ class SitemapController extends Controller
                 'priority' => '0.6',
             ],
         ];
-        
+
         // Add authentication pages
         $routes[] = [
             'url' => $baseUrl . '/login',
@@ -259,17 +259,17 @@ class SitemapController extends Controller
             'changefreq' => 'monthly',
             'priority' => '0.7',
         ];
-        
+
         $routes[] = [
             'url' => $baseUrl . '/register',
             'lastmod' => $now,
             'changefreq' => 'monthly',
             'priority' => '0.7',
         ];
-        
+
         return $routes;
     }
-    
+
     /**
      * Generate robots.txt file
      */
@@ -295,7 +295,7 @@ class SitemapController extends Controller
         $content .= "Disallow: /subscriber/unsubscribe/\n";
         $content .= "\n";
         $content .= "Sitemap: " . config('app.url') . "/sitemap.xml\n";
-        
+
         return response($content, 200, [
             'Content-Type' => 'text/plain',
         ]);

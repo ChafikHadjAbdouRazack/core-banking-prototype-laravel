@@ -96,11 +96,11 @@ class UserVotingController extends Controller
     public function getVotingHistory(): JsonResponse
     {
         $user = Auth::user();
-        
+
         $votedPollIds = Vote::where('user_uuid', $user->uuid)
             ->pluck('poll_id')
             ->unique();
-            
+
         $polls = Poll::whereIn('id', $votedPollIds)
             ->orderBy('end_date', 'desc')
             ->paginate(10);
@@ -156,18 +156,18 @@ class UserVotingController extends Controller
     public function submitBasketVote(Request $request, string $uuid): JsonResponse
     {
         $poll = Poll::where('uuid', $uuid)->firstOrFail();
-        
+
         // Verify it's a basket voting poll
         if ($poll->metadata['template'] !== 'monthly_basket') {
             return response()->json(['error' => 'This endpoint is for basket voting only'], 400);
         }
-        
+
         // Validate allocations
         $validated = $request->validate([
             'allocations' => 'required|array',
             'allocations.*' => 'required|numeric|min:0|max:100',
         ]);
-        
+
         // Verify allocations sum to 100
         $total = array_sum($validated['allocations']);
         if (abs($total - 100) > 0.01) {
@@ -176,21 +176,21 @@ class UserVotingController extends Controller
                 'current_sum' => $total
             ], 422);
         }
-        
+
         // Get user's voting power
         $user = Auth::user();
         $strategy = app($poll->voting_power_strategy);
         $votingPower = $strategy->calculatePower($user, $poll);
-        
+
         if ($votingPower <= 0) {
             return response()->json(['error' => 'You have no voting power for this poll'], 403);
         }
-        
+
         // Check if already voted
         if ($poll->votes()->where('user_uuid', $user->uuid)->exists()) {
             return response()->json(['error' => 'You have already voted in this poll'], 403);
         }
-        
+
         // Create vote
         $vote = Vote::create([
             'poll_id' => $poll->id,
@@ -203,7 +203,7 @@ class UserVotingController extends Controller
                 'voted_via' => 'user_voting_api',
             ],
         ]);
-        
+
         return response()->json([
             'message' => 'Your vote has been recorded successfully',
             'vote_id' => $vote->uuid,
@@ -227,27 +227,27 @@ class UserVotingController extends Controller
     public function getDashboard(): JsonResponse
     {
         $user = Auth::user();
-        
+
         // Get active polls
         $activePolls = Poll::where('status', PollStatus::ACTIVE)
             ->where('end_date', '>', now())
             ->count();
-            
+
         // Get user's participation
         $userVotes = Vote::where('user_uuid', $user->uuid)->count();
-        
+
         // Get user's total voting power (GCU holdings)
         $gcuBalance = $user->accounts()
             ->join('account_balances', 'accounts.uuid', '=', 'account_balances.account_uuid')
             ->where('account_balances.asset_code', config('baskets.primary_code', 'GCU'))
             ->sum('account_balances.balance');
-            
+
         // Get next poll
         $nextPoll = Poll::where('status', PollStatus::DRAFT)
             ->where('start_date', '>', now())
             ->orderBy('start_date', 'asc')
             ->first();
-            
+
         return response()->json([
             'data' => [
                 'stats' => [

@@ -93,8 +93,8 @@ class BasketValue extends Model
     public function getPerformance(BasketValue $previousValue): array
     {
         $change = $this->value - $previousValue->value;
-        $percentageChange = $previousValue->value > 0 
-            ? ($change / $previousValue->value) * 100 
+        $percentageChange = $previousValue->value > 0
+            ? ($change / $previousValue->value) * 100
             : 0;
 
         return [

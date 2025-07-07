@@ -17,17 +17,17 @@ class BalanceInquiryActivity extends Activity
      * @return array
      */
     public function execute(
-        AccountUuid $uuid, 
-        ?string $requestedBy, 
+        AccountUuid $uuid,
+        ?string $requestedBy,
         TransactionAggregate $transaction
     ): array {
         $aggregate = $transaction->retrieve($uuid->getUuid());
-        
+
         $account = Account::where('uuid', $uuid->getUuid())->first();
-        
+
         // Log the inquiry for audit purposes
         $this->logInquiry($uuid, $requestedBy);
-        
+
         return [
             'account_uuid' => $uuid->getUuid(),
             'balance' => $aggregate->balance,
@@ -37,7 +37,7 @@ class BalanceInquiryActivity extends Activity
             'inquired_by' => $requestedBy,
         ];
     }
-    
+
     /**
      * @param AccountUuid $uuid
      * @param string|null $requestedBy

@@ -9,7 +9,9 @@ use Illuminate\Queue\SerializesModels;
 
 class ThresholdTriggered
 {
-    use Dispatchable, InteractsWithSockets, SerializesModels;
+    use Dispatchable;
+    use InteractsWithSockets;
+    use SerializesModels;
 
     public RegulatoryThreshold $threshold;
     public array $context;
@@ -17,8 +19,8 @@ class ThresholdTriggered
     public ?string $entityId;
 
     public function __construct(
-        RegulatoryThreshold $threshold, 
-        array $context, 
+        RegulatoryThreshold $threshold,
+        array $context,
         ?string $entityType = null,
         ?string $entityId = null
     ) {

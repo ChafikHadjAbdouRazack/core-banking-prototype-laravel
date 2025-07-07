@@ -22,25 +22,25 @@ class FraudRuleController extends Controller
             'is_blocking' => 'nullable|boolean',
             'search' => 'nullable|string|max:100',
         ]);
-        
+
         $query = FraudRule::query();
-        
+
         if ($request->has('category')) {
             $query->where('category', $request->category);
         }
-        
+
         if ($request->has('severity')) {
             $query->where('severity', $request->severity);
         }
-        
+
         if ($request->has('is_active')) {
             $query->where('is_active', $request->boolean('is_active'));
         }
-        
+
         if ($request->has('is_blocking')) {
             $query->where('is_blocking', $request->boolean('is_blocking'));
         }
-        
+
         if ($request->search) {
             $searchTerm = $request->search;
             $query->where(function ($q) use ($searchTerm) {
@@ -49,27 +49,27 @@ class FraudRuleController extends Controller
                   ->orWhere('description', 'like', "%{$searchTerm}%");
             });
         }
-        
+
         $rules = $query->orderBy('severity', 'desc')
                       ->orderBy('base_score', 'desc')
                       ->paginate($request->per_page ?? 20);
-        
+
         return response()->json($rules);
     }
-    
+
     /**
      * Get fraud rule details
      */
     public function show(string $ruleId): JsonResponse
     {
         $rule = FraudRule::findOrFail($ruleId);
-        
+
         return response()->json([
             'rule' => $rule,
             'performance' => $rule->getPerformanceMetrics(),
         ]);
     }
-    
+
     /**
      * Create fraud rule
      */
@@ -92,21 +92,21 @@ class FraudRuleController extends Controller
             'tags' => 'nullable|array',
             'tags.*' => 'string|max:50',
         ]);
-        
+
         // Ensure user can create fraud rules
         $this->authorize('create', FraudRule::class);
-        
+
         $rule = FraudRule::create($request->all());
-        
+
         // Clear rules cache
         Cache::forget('active_fraud_rules');
-        
+
         return response()->json([
             'message' => 'Fraud rule created successfully',
             'rule' => $rule,
         ], 201);
     }
-    
+
     /**
      * Update fraud rule
      */
@@ -128,64 +128,64 @@ class FraudRuleController extends Controller
             'tags' => 'nullable|array',
             'tags.*' => 'string|max:50',
         ]);
-        
+
         $rule = FraudRule::findOrFail($ruleId);
-        
+
         // Ensure user can update fraud rules
         $this->authorize('update', $rule);
-        
+
         $rule->update($request->all());
-        
+
         // Clear rules cache
         Cache::forget('active_fraud_rules');
-        
+
         return response()->json([
             'message' => 'Fraud rule updated successfully',
             'rule' => $rule,
         ]);
     }
-    
+
     /**
      * Delete fraud rule
      */
     public function destroy(string $ruleId): JsonResponse
     {
         $rule = FraudRule::findOrFail($ruleId);
-        
+
         // Ensure user can delete fraud rules
         $this->authorize('delete', $rule);
-        
+
         $rule->delete();
-        
+
         // Clear rules cache
         Cache::forget('active_fraud_rules');
-        
+
         return response()->json([
             'message' => 'Fraud rule deleted successfully',
         ]);
     }
-    
+
     /**
      * Toggle rule status
      */
     public function toggleStatus(string $ruleId): JsonResponse
     {
         $rule = FraudRule::findOrFail($ruleId);
-        
+
         // Ensure user can update fraud rules
         $this->authorize('update', $rule);
-        
+
         $rule->update(['is_active' => !$rule->is_active]);
-        
+
         // Clear rules cache
         Cache::forget('active_fraud_rules');
-        
+
         return response()->json([
             'message' => 'Rule status toggled successfully',
             'rule' => $rule,
         ]);
     }
-    
+
     /**
      * Test fraud rule
      */
@@ -194,15 +194,15 @@ class FraudRuleController extends Controller
         $request->validate([
             'context' => 'required|array',
         ]);
-        
+
         $rule = FraudRule::findOrFail($ruleId);
-        
+
         // Ensure user can test fraud rules
         $this->authorize('test', $rule);
-        
+
         $triggered = $rule->evaluate($request->context);
         $score = $triggered ? $rule->calculateScore($request->context) : 0;
-        
+
         return response()->json([
             'triggered' => $triggered,
             'score' => $score,
@@ -215,7 +215,7 @@ class FraudRuleController extends Controller
             ],
         ]);
     }
-    
+
     /**
      * Get rule statistics
      */
@@ -225,17 +225,17 @@ class FraudRuleController extends Controller
             'date_from' => 'nullable|date',
             'date_to' => 'nullable|date|after_or_equal:date_from',
         ]);
-        
+
         $query = FraudRule::query();
-        
+
         if ($request->date_from) {
             $query->where('created_at', '>=', $request->date_from);
         }
-        
+
         if ($request->date_to) {
             $query->where('created_at', '<=', $request->date_to);
         }
-        
+
         $statistics = [
             'total_rules' => FraudRule::count(),
             'active_rules' => FraudRule::where('is_active', true)->count(),
@@ -253,10 +253,10 @@ class FraudRuleController extends Controller
                 ->take(10)
                 ->get(['id', 'name', 'code', 'trigger_count', 'last_triggered_at']),
         ];
-        
+
         return response()->json(['statistics' => $statistics]);
     }
-    
+
     /**
      * Create default rules
      */
@@ -264,19 +264,19 @@ class FraudRuleController extends Controller
     {
         // Ensure user can create fraud rules
         $this->authorize('create', FraudRule::class);
-        
+
         $ruleEngine = app(\App\Domain\Fraud\Services\RuleEngineService::class);
         $ruleEngine->createDefaultRules();
-        
+
         // Clear rules cache
         Cache::forget('active_fraud_rules');
-        
+
         return response()->json([
             'message' => 'Default fraud rules created successfully',
             'rules_created' => FraudRule::count(),
         ]);
     }
-    
+
     /**
      * Export rules
      */
@@ -284,7 +284,7 @@ class FraudRuleController extends Controller
     {
         // Ensure user can export fraud rules
         $this->authorize('export', FraudRule::class);
-        
+
         $rules = FraudRule::all()->map(function ($rule) {
             return [
                 'name' => $rule->name,
@@ -302,14 +302,14 @@ class FraudRuleController extends Controller
                 'tags' => $rule->tags,
             ];
         });
-        
+
         return response()->json([
             'rules' => $rules,
             'exported_at' => now()->toIso8601String(),
             'total_rules' => $rules->count(),
         ]);
     }
-    
+
     /**
      * Import rules
      */
@@ -325,27 +325,27 @@ class FraudRuleController extends Controller
             'rules.*.actions' => 'required|array',
             'rules.*.base_score' => 'required|integer|min:0|max:100',
         ]);
-        
+
         // Ensure user can import fraud rules
         $this->authorize('import', FraudRule::class);
-        
+
         $imported = 0;
         $skipped = 0;
-        
+
         foreach ($request->rules as $ruleData) {
             // Skip if rule with same code exists
             if (FraudRule::where('code', $ruleData['code'])->exists()) {
                 $skipped++;
                 continue;
             }
-            
+
             FraudRule::create($ruleData);
             $imported++;
         }
-        
+
         // Clear rules cache
         Cache::forget('active_fraud_rules');
-        
+
         return response()->json([
             'message' => 'Rules imported successfully',
             'imported' => $imported,

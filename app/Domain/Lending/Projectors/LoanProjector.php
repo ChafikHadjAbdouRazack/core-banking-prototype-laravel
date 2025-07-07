@@ -31,7 +31,7 @@ class LoanProjector extends Projector
             'created_at' => $event->createdAt,
         ]);
     }
-    
+
     public function onLoanFunded(LoanFunded $event): void
     {
         Loan::where('id', $event->loanId)->update([
@@ -41,7 +41,7 @@ class LoanProjector extends Projector
             'status' => 'funded',
         ]);
     }
-    
+
     public function onLoanDisbursed(LoanDisbursed $event): void
     {
         Loan::where('id', $event->loanId)->update([
@@ -50,7 +50,7 @@ class LoanProjector extends Projector
             'status' => 'active',
         ]);
     }
-    
+
     public function onLoanRepaymentMade(LoanRepaymentMade $event): void
     {
         // Update loan
@@ -59,7 +59,7 @@ class LoanProjector extends Projector
         $loan->increment('total_interest_paid', $event->interestAmount);
         $loan->last_payment_date = $event->paidAt;
         $loan->save();
-        
+
         // Create repayment record
         LoanRepayment::create([
             'loan_id' => $event->loanId,
@@ -71,7 +71,7 @@ class LoanProjector extends Projector
             'paid_at' => $event->paidAt,
         ]);
     }
-    
+
     public function onLoanPaymentMissed(LoanPaymentMissed $event): void
     {
         Loan::where('id', $event->loanId)->update([
@@ -79,7 +79,7 @@ class LoanProjector extends Projector
             'status' => 'delinquent',
         ]);
     }
-    
+
     public function onLoanDefaulted(LoanDefaulted $event): void
     {
         Loan::where('id', $event->loanId)->update([
@@ -87,7 +87,7 @@ class LoanProjector extends Projector
             'status' => 'defaulted',
         ]);
     }
-    
+
     public function onLoanCompleted(LoanCompleted $event): void
     {
         Loan::where('id', $event->loanId)->update([
@@ -95,7 +95,7 @@ class LoanProjector extends Projector
             'status' => 'completed',
         ]);
     }
-    
+
     public function onLoanSettledEarly(LoanSettledEarly $event): void
     {
         Loan::where('id', $event->loanId)->update([

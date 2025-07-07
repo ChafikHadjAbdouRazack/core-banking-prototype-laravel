@@ -15,5 +15,6 @@ class RefundCancelled extends ShouldBeStored
         public readonly string $cancelledBy,
         public readonly string $cancelledAt,
         public readonly array $metadata = []
-    ) {}
+    ) {
+    }
 }

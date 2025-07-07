@@ -157,7 +157,7 @@ class User extends Authenticatable implements FilamentUser
     {
         return $this->hasMany(UserBankPreference::class, 'user_uuid', 'uuid');
     }
-    
+
     /**
      * Get the bank accounts for the user.
      */
@@ -187,7 +187,7 @@ class User extends Authenticatable implements FilamentUser
      */
     public function hasCompletedKyc(): bool
     {
-        return $this->kyc_status === 'approved' && 
+        return $this->kyc_status === 'approved' &&
                ($this->kyc_expires_at === null || $this->kyc_expires_at->isFuture());
     }
 
@@ -218,7 +218,7 @@ class User extends Authenticatable implements FilamentUser
             'onboarding_completed_at' => now(),
         ]);
     }
-    
+
     /**
      * Get the CGO investments for the user.
      */
@@ -226,7 +226,7 @@ class User extends Authenticatable implements FilamentUser
     {
         return $this->hasMany(CgoInvestment::class);
     }
-    
+
     /**
      * Get the API keys for the user.
      */

@@ -19,7 +19,8 @@ class BalanceController extends Controller
     public function __construct(
         private readonly AccountCacheService $accountCache,
         private readonly TurnoverCacheService $turnoverCache
-    ) {}
+    ) {
+    }
 
     /**
      * @OA\Get(
@@ -54,13 +55,13 @@ class BalanceController extends Controller
     {
         // Get account from cache
         $account = $this->accountCache->get($uuid);
-        
+
         if (!$account) {
             abort(404, 'Account not found');
         }
-        
+
         $accountUuid = new AccountUuid($uuid);
-        
+
         // Get cached balance
         $balance = $this->accountCache->getBalance($uuid) ?? $account->balance;
 
@@ -135,14 +136,14 @@ class BalanceController extends Controller
     {
         // Get account from cache
         $account = $this->accountCache->get($uuid);
-        
+
         if (!$account) {
             abort(404, 'Account not found');
         }
-        
+
         // Get cached turnovers
         $turnovers = $this->turnoverCache->getLastMonths($uuid, 12);
-        
+
         // Get cached statistics
         $statistics = $this->turnoverCache->getStatistics($uuid);
 
