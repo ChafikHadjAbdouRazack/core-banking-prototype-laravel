@@ -128,9 +128,7 @@ class ExchangeRateProviderRegistry
         $availableProviders = $this->findByCurrencyPair($fromCurrency, $toCurrency);
 
         if (empty($availableProviders)) {
-            Log::warning("No providers available for currency pair {$fromCurrency}/{$toCurrency}");
-
-            return null;
+            throw new RateProviderException("No providers available for currency pair {$fromCurrency}/{$toCurrency}");
         }
 
         // Sort by priority and try each one

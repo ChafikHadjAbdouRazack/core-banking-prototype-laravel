@@ -85,13 +85,18 @@ it('can get providers by priority', function () {
     $midPriority = new MockExchangeRateProvider(['priority' => 50]);
 
     $this->registry->register('low', $lowPriority);
+    $this->registry->setPriority('low', 10);
+    
     $this->registry->register('high', $highPriority);
+    $this->registry->setPriority('high', 100);
+    
     $this->registry->register('mid', $midPriority);
+    $this->registry->setPriority('mid', 50);
 
     $sorted = $this->registry->byPriority();
 
-    expect($sorted->first())->toBe($highPriority);
-    expect($sorted->last())->toBe($lowPriority);
+    expect($sorted->values()->first())->toBe($highPriority);
+    expect($sorted->values()->last())->toBe($lowPriority);
 });
 
 it('can find providers by currency pair', function () {
@@ -109,11 +114,10 @@ it('can find providers by currency pair', function () {
 it('can get rate from first available provider', function () {
     $this->registry->register('mock', $this->mockProvider);
 
-    $quote = $this->registry->getRate('USD', 'EUR');
+    $rate = $this->registry->getRate('USD', 'EUR');
 
-    expect($quote->fromCurrency)->toBe('USD');
-    expect($quote->toCurrency)->toBe('EUR');
-    expect($quote->provider)->toBe('Mock Provider');
+    expect($rate)->toBeInstanceOf(\Brick\Math\BigDecimal::class);
+    expect((string) $rate)->toBe('1.2000');
 });
 
 it('throws exception when no providers available for pair', function () {
