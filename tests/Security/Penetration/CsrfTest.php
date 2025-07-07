@@ -268,7 +268,7 @@ class CsrfTest extends TestCase
 
         // Should hit rate limit after some requests
         $this->assertContains(429, $responses, 'Rate limiting should be enforced');
-        
+
         // Count successful responses before hitting rate limit
         $successfulCount = 0;
         foreach ($responses as $status) {
@@ -278,7 +278,7 @@ class CsrfTest extends TestCase
                 break;
             }
         }
-        
+
         // Should allow at least some requests but not all 20
         $this->assertGreaterThan(0, $successfulCount, 'Should allow some requests before rate limiting');
         $this->assertLessThan(20, $successfulCount, 'Should hit rate limit before all 20 requests');

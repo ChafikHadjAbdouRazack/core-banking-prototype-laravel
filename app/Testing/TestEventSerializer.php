@@ -4,7 +4,6 @@ namespace App\Testing;
 
 use Spatie\EventSourcing\EventSerializers\EventSerializer;
 use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
-use Spatie\EventSourcing\StoredEvents\StoredEvent;
 
 class TestEventSerializer implements EventSerializer
 {

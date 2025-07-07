@@ -277,13 +277,13 @@ class KycController extends Controller
     }
 
     /**
-     * Upload KYC document (legacy endpoint for backward compatibility)
+     * Upload KYC document (legacy endpoint for backward compatibility).
      */
     public function upload(Request $request): JsonResponse
     {
         $request->validate([
             'document' => 'required|file|mimes:jpg,jpeg,png,pdf|max:10240',
-            'type' => 'sometimes|string|in:passport,national_id,drivers_license,residence_permit,utility_bill,bank_statement,selfie,proof_of_income,other'
+            'type'     => 'sometimes|string|in:passport,national_id,drivers_license,residence_permit,utility_bill,bank_statement,selfie,proof_of_income,other',
         ]);
 
         /** @var User $user */
@@ -298,13 +298,13 @@ class KycController extends Controller
             // Create document record
             $document = $user->kycDocuments()->create([
                 'document_type' => $type,
-                'file_path' => $path,
-                'status' => 'pending',
-                'uploaded_at' => now(),
-                'metadata' => [
+                'file_path'     => $path,
+                'status'        => 'pending',
+                'uploaded_at'   => now(),
+                'metadata'      => [
                     'original_name' => $file->getClientOriginalName(),
-                    'mime_type' => $file->getMimeType(),
-                    'size' => $file->getSize(),
+                    'mime_type'     => $file->getMimeType(),
+                    'size'          => $file->getSize(),
                 ],
             ]);
 
@@ -318,7 +318,7 @@ class KycController extends Controller
             );
 
             return response()->json([
-                'message' => 'Document uploaded successfully',
+                'message'     => 'Document uploaded successfully',
                 'document_id' => $document->id,
             ]);
         } catch (\Exception $e) {

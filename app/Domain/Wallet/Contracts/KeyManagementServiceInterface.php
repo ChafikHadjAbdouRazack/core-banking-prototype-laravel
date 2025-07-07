@@ -5,47 +5,47 @@ namespace App\Domain\Wallet\Contracts;
 interface KeyManagementServiceInterface
 {
     /**
-     * Generate a new mnemonic phrase
+     * Generate a new mnemonic phrase.
      */
     public function generateMnemonic(): string;
 
     /**
-     * Derive a key pair from a mnemonic and path
+     * Derive a key pair from a mnemonic and path.
      */
     public function deriveKeyPair(string $mnemonic, string $path): array;
 
     /**
-     * Derive key pair for a specific blockchain chain
+     * Derive key pair for a specific blockchain chain.
      */
     public function deriveKeyPairForChain(string $encryptedSeed, string $chain, int $index = 0): array;
 
     /**
-     * Encrypt sensitive data
+     * Encrypt sensitive data.
      */
     public function encrypt(string $data): string;
 
     /**
-     * Decrypt encrypted data
+     * Decrypt encrypted data.
      */
     public function decrypt(string $encryptedData): string;
 
     /**
-     * Generate a secure random key
+     * Generate a secure random key.
      */
     public function generateKey(): string;
 
     /**
-     * Sign data with a private key
+     * Sign data with a private key.
      */
     public function sign(string $data, string $privateKey): string;
 
     /**
-     * Verify a signature
+     * Verify a signature.
      */
     public function verify(string $data, string $signature, string $publicKey): bool;
 
     /**
-     * Generate wallet backup
+     * Generate wallet backup.
      */
     public function generateBackup(string $walletId): array;
 }

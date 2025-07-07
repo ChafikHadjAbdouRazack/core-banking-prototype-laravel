@@ -88,18 +88,19 @@ Route::get('/user', function (Request $request) {
 // Legacy profile route for backward compatibility
 Route::get('/profile', function (Request $request) {
     $user = $request->user();
-    if (!$user) {
+    if (! $user) {
         return response()->json(['message' => 'Unauthenticated.'], 401);
     }
+
     return response()->json([
         'data' => [
-            'id' => $user->id,
-            'name' => $user->name,
-            'email' => $user->email,
-            'uuid' => $user->uuid,
+            'id'         => $user->id,
+            'name'       => $user->name,
+            'email'      => $user->email,
+            'uuid'       => $user->uuid,
             'created_at' => $user->created_at,
             'updated_at' => $user->updated_at,
-        ]
+        ],
     ]);
 })->middleware('auth:sanctum');
 
@@ -109,7 +110,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Legacy accounts route for backward compatibility
     Route::get('/accounts', [AccountController::class, 'index'])->middleware('api.rate_limit:query');
-    
+
     // Versioned routes for backward compatibility
     Route::prefix('v1')->middleware('api.rate_limit:query')->group(function () {
         Route::get('/accounts', [AccountController::class, 'index']);
@@ -342,7 +343,7 @@ Route::middleware('api.rate_limit:public')->group(function () {
 Route::prefix('v1')->middleware('api.rate_limit:public')->group(function () {
     // Versioned accounts endpoint (requires authentication)
     Route::middleware('auth:sanctum')->get('/accounts', [AccountController::class, 'index']);
-    
+
     // Asset management endpoints
     Route::get('/assets', [AssetController::class, 'index']);
     Route::get('/assets/{code}', [AssetController::class, 'show']);
@@ -368,7 +369,7 @@ Route::prefix('v1')->middleware('api.rate_limit:public')->group(function () {
 Route::prefix('v2')->group(function () {
     // V2 accounts endpoint (requires authentication)
     Route::middleware('auth:sanctum')->get('/accounts', [AccountController::class, 'index']);
-    
+
     // Public basket endpoints
     Route::prefix('baskets')->group(function () {
         Route::get('/', [BasketController::class, 'index']);

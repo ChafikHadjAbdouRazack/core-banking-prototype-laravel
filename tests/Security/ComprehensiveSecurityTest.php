@@ -5,7 +5,6 @@ namespace Tests\Security;
 use App\Models\Account;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Tests\TestCase;
 
@@ -22,14 +21,14 @@ class ComprehensiveSecurityTest extends TestCase
     {
         $user = User::factory()->create();
         $this->actingAs($user);
-        
+
         // Create test data first
         Account::factory()->create(['id' => 1, 'user_uuid' => $user->uuid]);
-        
+
         // Create a test account for search tests
         Account::factory()->create([
             'user_uuid' => $user->uuid,
-            'name' => 'Test Account'
+            'name'      => 'Test Account',
         ]);
 
         $injectionPayloads = [
@@ -83,17 +82,17 @@ class ComprehensiveSecurityTest extends TestCase
 
             $response = $this->getJson("/api/accounts/{$account->uuid}");
             $response->assertSuccessful();
-            
+
             // Verify proper content type for JSON API
             $response->assertHeader('Content-Type', 'application/json');
             $response->assertHeader('X-Content-Type-Options', 'nosniff');
-            
+
             // Verify JSON structure contains the raw data
             // In a JSON API, data should be returned as-is
             // XSS prevention happens on the client side when rendering
             $data = $response->json('data');
             $this->assertEquals($payload, $data['name']);
-            
+
             // Ensure no HTML is being rendered
             $response->assertDontSee('<html', false);
             $response->assertDontSee('</body>', false);
@@ -107,7 +106,7 @@ class ComprehensiveSecurityTest extends TestCase
     {
         // Enable rate limiting for tests
         config(['rate_limiting.force_in_tests' => true]);
-        
+
         $user = User::factory()->create([
             'password' => Hash::make('SecurePassword123!'),
         ]);
@@ -179,7 +178,7 @@ class ComprehensiveSecurityTest extends TestCase
     {
         // Enable rate limiting for tests
         config(['rate_limiting.force_in_tests' => true]);
-        
+
         $user = User::factory()->create();
         $this->actingAs($user);
 
@@ -353,11 +352,11 @@ class ComprehensiveSecurityTest extends TestCase
             $response->assertSuccessful();
             $tokens[] = $response->json('token');
         }
-        
+
         // Check that the oldest session is invalidated (only 5 sessions allowed)
         $response = $this->withToken($tokens[0])->getJson('/api/user');
         $response->assertStatus(401);
-        
+
         // But the latest sessions should still work
         $response = $this->withToken($tokens[5])->getJson('/api/user');
         $response->assertSuccessful();

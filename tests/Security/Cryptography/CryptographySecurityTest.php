@@ -242,10 +242,10 @@ class CryptographySecurityTest extends TestCase
 
         // Test that sensitive fields are not exposed in API responses
         $response = $this->withToken($token)->getJson('/api/profile');
-        
+
         $response->assertSuccessful();
         $data = $response->json('data');
-        
+
         $this->assertNotNull($data, 'Profile data should not be null');
 
         // Should not expose sensitive fields

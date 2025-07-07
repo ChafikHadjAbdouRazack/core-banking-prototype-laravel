@@ -317,7 +317,7 @@ class KeyManagementService implements KeyManagementServiceInterface
     }
 
     /**
-     * Generate a new mnemonic phrase (for interface compatibility)
+     * Generate a new mnemonic phrase (for interface compatibility).
      */
     public function generateMnemonic(): string
     {
@@ -325,18 +325,19 @@ class KeyManagementService implements KeyManagementServiceInterface
     }
 
     /**
-     * Derive a key pair from a mnemonic and path (for interface compatibility)
+     * Derive a key pair from a mnemonic and path (for interface compatibility).
      */
     public function deriveKeyPair(string $mnemonic, string $path): array
     {
         // Generate HD wallet from mnemonic
         $hdWallet = $this->generateHDWallet($mnemonic);
+
         // Default to Ethereum chain
         return $this->deriveKeyPairForChain($hdWallet['encrypted_seed'], 'ethereum', 0);
     }
 
     /**
-     * Encrypt sensitive data (for interface compatibility)
+     * Encrypt sensitive data (for interface compatibility).
      */
     public function encrypt(string $data): string
     {
@@ -344,7 +345,7 @@ class KeyManagementService implements KeyManagementServiceInterface
     }
 
     /**
-     * Decrypt encrypted data (for interface compatibility)
+     * Decrypt encrypted data (for interface compatibility).
      */
     public function decrypt(string $encryptedData): string
     {
@@ -352,7 +353,7 @@ class KeyManagementService implements KeyManagementServiceInterface
     }
 
     /**
-     * Generate a secure random key (for interface compatibility)
+     * Generate a secure random key (for interface compatibility).
      */
     public function generateKey(): string
     {
@@ -360,7 +361,7 @@ class KeyManagementService implements KeyManagementServiceInterface
     }
 
     /**
-     * Sign data with a private key (for interface compatibility)
+     * Sign data with a private key (for interface compatibility).
      */
     public function sign(string $data, string $privateKey): string
     {
@@ -369,12 +370,13 @@ class KeyManagementService implements KeyManagementServiceInterface
     }
 
     /**
-     * Verify a signature (for interface compatibility)
+     * Verify a signature (for interface compatibility).
      */
     public function verify(string $data, string $signature, string $publicKey): bool
     {
         // For HMAC, we use the same key for signing and verification
         $expectedSignature = hash_hmac('sha256', $data, $publicKey);
+
         return hash_equals($expectedSignature, $signature);
     }
 }

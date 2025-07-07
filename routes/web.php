@@ -391,13 +391,13 @@ Route::middleware([
 
         return view('accounts.index', compact('accounts'));
     })->name('accounts');
-    
+
     // Web accounts endpoint for CSRF testing
     Route::post('/web/accounts', function (Request $request) {
         $request->validate([
             'name' => 'required|string|max:255',
         ]);
-        
+
         // This would create an account in a real implementation
         return response()->json(['success' => true]);
     });
