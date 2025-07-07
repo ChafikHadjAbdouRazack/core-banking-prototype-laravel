@@ -31,6 +31,7 @@ class TestSeeder extends Seeder
 
         if (empty($seeders)) {
             $this->command->warn('No tables available for seeding. Migrations may not have run properly.');
+
             return;
         }
 
