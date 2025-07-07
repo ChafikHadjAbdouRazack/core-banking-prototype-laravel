@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash as HashFacade;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 class CryptographySecurityTest extends TestCase
 {
@@ -23,9 +24,7 @@ class CryptographySecurityTest extends TestCase
         $this->user = User::factory()->create();
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function test_passwords_are_properly_hashed()
     {
         $plainPassword = 'MySecurePassword123!';
@@ -54,9 +53,7 @@ class CryptographySecurityTest extends TestCase
         $this->assertNotEquals($user->password, $user2->password);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function test_sensitive_data_is_encrypted_at_rest()
     {
         // Check if sensitive columns are encrypted in database
@@ -79,9 +76,7 @@ class CryptographySecurityTest extends TestCase
         }
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function test_api_tokens_are_hashed()
     {
         $token = $this->user->createToken('test-token');
@@ -99,9 +94,7 @@ class CryptographySecurityTest extends TestCase
         $this->assertMatchesRegularExpression('/^[a-f0-9]{64}$/', $storedToken->token);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function test_transaction_hashes_use_secure_algorithm()
     {
         // Test the Hash value object uses SHA3-512
@@ -121,9 +114,7 @@ class CryptographySecurityTest extends TestCase
         $this->assertNotEquals($hash->toString(), $hash3->toString());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function test_encryption_keys_are_properly_configured()
     {
         // APP_KEY should be set and strong
@@ -137,9 +128,7 @@ class CryptographySecurityTest extends TestCase
         $this->assertGreaterThanOrEqual(32, strlen($key), 'Encryption key should be at least 256 bits');
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function test_sensitive_data_not_logged()
     {
         $sensitiveData = [
@@ -165,9 +154,7 @@ class CryptographySecurityTest extends TestCase
         }
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function test_secure_random_generation()
     {
         $tokens = [];
@@ -191,9 +178,7 @@ class CryptographySecurityTest extends TestCase
         }
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function test_password_reset_tokens_expire()
     {
         $user = User::factory()->create();
@@ -214,9 +199,7 @@ class CryptographySecurityTest extends TestCase
         }
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function test_quantum_resistant_hashing()
     {
         // Verify SHA3-512 is used for transaction hashing
@@ -239,15 +222,13 @@ class CryptographySecurityTest extends TestCase
         $this->assertEquals($expectedHash, $hashString);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function test_encryption_of_sensitive_api_responses()
     {
         $token = $this->user->createToken('test-token')->plainTextToken;
 
         // Test that sensitive fields are not exposed in API responses
-        $response = $this->withToken($token)->getJson('/api/v2/profile');
+        $response = $this->withToken($token)->getJson('/api/profile');
 
         $data = $response->json('data');
 
@@ -264,9 +245,7 @@ class CryptographySecurityTest extends TestCase
         }
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function test_secure_session_configuration()
     {
         $response = $this->post('/login', [
@@ -290,9 +269,7 @@ class CryptographySecurityTest extends TestCase
         }
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function test_cryptographic_signatures_on_webhooks()
     {
         $payload = json_encode(['event' => 'account.created', 'data' => ['id' => 123]]);
@@ -312,9 +289,7 @@ class CryptographySecurityTest extends TestCase
         $this->assertNotEquals($signature, $differentSignature);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function test_no_weak_cryptographic_algorithms()
     {
         // List of weak algorithms that should not be used
@@ -335,9 +310,7 @@ class CryptographySecurityTest extends TestCase
         }
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function test_secure_file_storage_encryption()
     {
         // Test that uploaded files are encrypted

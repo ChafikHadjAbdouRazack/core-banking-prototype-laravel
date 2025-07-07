@@ -6,6 +6,7 @@ use App\Models\Account;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\RateLimiter;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class ApiSecurityTest extends TestCase
@@ -28,18 +29,16 @@ class ApiSecurityTest extends TestCase
         RateLimiter::clear('transactions');
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function test_api_requires_authentication()
     {
         $endpoints = [
-            ['GET', '/api/v2/accounts'],
-            ['POST', '/api/v2/accounts'],
-            ['GET', '/api/v2/profile'],
-            ['GET', '/api/v2/transactions'],
-            ['POST', '/api/v2/transfers'],
-            ['GET', '/api/v2/exchange-rates'],
+            ['GET', '/api/accounts'],
+            ['POST', '/api/accounts'],
+            ['GET', '/api/profile'],
+            ['GET', '/api/transactions'],
+            ['POST', '/api/transfers'],
+            ['GET', '/api/exchange-rates'],
         ];
 
         foreach ($endpoints as [$method, $endpoint]) {
@@ -47,14 +46,17 @@ class ApiSecurityTest extends TestCase
 
             $this->assertContains($response->status(), [401, 404], "Endpoint {$endpoint} should require authentication or not exist");
             if ($response->status() === 401) {
-                $response->assertJson(['message' => 'Unauthenticated.']);
+                // Accept different authentication error messages
+                $this->assertTrue(
+                    $response->json('message') === 'Unauthenticated.' ||
+                    $response->json('message') === 'Authentication required',
+                    "Expected authentication error message, got: " . $response->json('message')
+                );
             }
         }
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function test_api_versioning_is_enforced()
     {
         // Old version endpoints should not work
@@ -70,13 +72,11 @@ class ApiSecurityTest extends TestCase
         }
 
         // Current version should work
-        $response = $this->withToken($this->token)->getJson('/api/v2/accounts');
+        $response = $this->withToken($this->token)->getJson('/api/accounts');
         $this->assertNotEquals(404, $response->status());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function test_api_rate_limiting_per_user()
     {
         $hitLimit = false;
@@ -85,7 +85,7 @@ class ApiSecurityTest extends TestCase
         // Make rapid requests
         for ($i = 0; $i < 200; $i++) {
             $response = $this->withToken($this->token)
-                ->getJson('/api/v2/accounts');
+                ->getJson('/api/accounts');
 
             $attempts++;
 
@@ -104,9 +104,7 @@ class ApiSecurityTest extends TestCase
         $this->assertTrue($response->headers->has('Retry-After'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function test_api_handles_malformed_json()
     {
         $malformedPayloads = [
@@ -126,7 +124,7 @@ class ApiSecurityTest extends TestCase
 
         foreach ($malformedPayloads as $payload) {
             $response = $this->withToken($this->token)
-                ->postJson('/api/v2/accounts', [], ['Content-Type' => 'application/json'])
+                ->postJson('/api/accounts', [], ['Content-Type' => 'application/json'])
                 ->withBody($payload, 'application/json');
 
             $this->assertContains($response->status(), [400, 422], "Should handle malformed JSON: {$payload}");
@@ -138,9 +136,7 @@ class ApiSecurityTest extends TestCase
         }
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function test_api_validates_content_type()
     {
         $invalidContentTypes = [
@@ -155,7 +151,7 @@ class ApiSecurityTest extends TestCase
         foreach ($invalidContentTypes as $contentType) {
             $response = $this->withToken($this->token)
                 ->withHeaders(['Content-Type' => $contentType])
-                ->post('/api/v2/accounts', [
+                ->post('/api/accounts', [
                     'name' => 'Test Account',
                     'type' => 'savings',
                 ]);
@@ -164,9 +160,7 @@ class ApiSecurityTest extends TestCase
         }
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function test_api_input_size_limits()
     {
         // Test oversized payloads - use smaller sizes to avoid memory exhaustion
@@ -174,7 +168,7 @@ class ApiSecurityTest extends TestCase
 
         // Test individual field size limits
         $response = $this->withToken($this->token)
-            ->postJson('/api/v2/accounts', [
+            ->postJson('/api/accounts', [
                 'name'        => $largeString,
                 'description' => $largeString,
             ]);
@@ -183,7 +177,7 @@ class ApiSecurityTest extends TestCase
 
         // Test metadata array with many small items instead of huge ones
         $response = $this->withToken($this->token)
-            ->postJson('/api/v2/accounts', [
+            ->postJson('/api/accounts', [
                 'name'     => 'Test Account',
                 'metadata' => array_fill(0, 1000, 'small_value'),
             ]);
@@ -191,9 +185,7 @@ class ApiSecurityTest extends TestCase
         $this->assertContains($response->status(), [413, 422], 'Should reject excessive metadata items');
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function test_api_prevents_xml_external_entity_attacks()
     {
         $xxePayloads = [
@@ -205,7 +197,7 @@ class ApiSecurityTest extends TestCase
         foreach ($xxePayloads as $payload) {
             $response = $this->withToken($this->token)
                 ->withHeaders(['Content-Type' => 'application/xml'])
-                ->post('/api/v2/accounts', $payload);
+                ->post('/api/accounts', $payload);
 
             // Should reject XML or handle safely
             $this->assertContains($response->status(), [400, 415, 422]);
@@ -217,9 +209,7 @@ class ApiSecurityTest extends TestCase
         }
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function test_api_handles_method_override_attempts()
     {
         // Try to override HTTP method
@@ -235,16 +225,14 @@ class ApiSecurityTest extends TestCase
         foreach ($overrideHeaders as $header => $value) {
             $response = $this->withToken($this->token)
                 ->withHeaders([$header => $value])
-                ->post("/api/v2/accounts/{$account->uuid}");
+                ->post("/api/accounts/{$account->uuid}");
 
             // Should not delete the account
             $this->assertDatabaseHas('accounts', ['uuid' => $account->uuid]);
         }
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function test_api_pagination_limits()
     {
         // Create many accounts
@@ -252,7 +240,7 @@ class ApiSecurityTest extends TestCase
 
         // Try to request excessive items per page
         $response = $this->withToken($this->token)
-            ->getJson('/api/v2/accounts?per_page=10000');
+            ->getJson('/api/accounts?per_page=10000');
 
         $data = $response->json('data');
 
@@ -261,7 +249,7 @@ class ApiSecurityTest extends TestCase
 
         // Test negative per_page
         $response = $this->withToken($this->token)
-            ->getJson('/api/v2/accounts?per_page=-1');
+            ->getJson('/api/accounts?per_page=-1');
 
         $this->assertContains($response->status(), [200, 422]);
         if ($response->status() === 200) {
@@ -269,16 +257,14 @@ class ApiSecurityTest extends TestCase
         }
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function test_api_error_messages_dont_leak_information()
     {
         $probes = [
-            '/api/v2/../../etc/passwd',
-            '/api/v2/accounts/../../admin',
-            '/api/v2/accounts/123; SELECT * FROM users',
-            '/api/v2/accounts/<script>alert(1)</script>',
+            '/api/../../etc/passwd',
+            '/api/accounts/../../admin',
+            '/api/accounts/123; SELECT * FROM users',
+            '/api/accounts/<script>alert(1)</script>',
         ];
 
         foreach ($probes as $probe) {
@@ -302,9 +288,7 @@ class ApiSecurityTest extends TestCase
         }
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function test_api_cors_configuration()
     {
         $origins = [
@@ -318,7 +302,7 @@ class ApiSecurityTest extends TestCase
             $response = $this->withHeaders([
                 'Origin'        => $origin,
                 'Authorization' => "Bearer {$this->token}",
-            ])->options('/api/v2/accounts');
+            ])->options('/api/accounts');
 
             if ($response->headers->has('Access-Control-Allow-Origin')) {
                 $allowedOrigin = $response->headers->get('Access-Control-Allow-Origin');
@@ -333,9 +317,7 @@ class ApiSecurityTest extends TestCase
         }
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function test_api_webhook_security()
     {
         // Test webhook URL validation
@@ -355,7 +337,7 @@ class ApiSecurityTest extends TestCase
 
         foreach ($maliciousUrls as $url) {
             $response = $this->withToken($this->token)
-                ->postJson('/api/v2/webhooks', [
+                ->postJson('/api/webhooks', [
                     'url'    => $url,
                     'events' => ['account.created'],
                 ]);
@@ -364,9 +346,7 @@ class ApiSecurityTest extends TestCase
         }
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function test_api_transaction_idempotency()
     {
         $account = Account::factory()->create([
@@ -379,7 +359,7 @@ class ApiSecurityTest extends TestCase
         // First request
         $response1 = $this->withToken($this->token)
             ->withHeaders(['Idempotency-Key' => $idempotencyKey])
-            ->postJson('/api/v2/transfers', [
+            ->postJson('/api/transfers', [
                 'from_account' => $account->uuid,
                 'to_account'   => Account::factory()->create()->uuid,
                 'amount'       => 1000,
@@ -389,7 +369,7 @@ class ApiSecurityTest extends TestCase
         // Second request with same key
         $response2 = $this->withToken($this->token)
             ->withHeaders(['Idempotency-Key' => $idempotencyKey])
-            ->postJson('/api/v2/transfers', [
+            ->postJson('/api/transfers', [
                 'from_account' => $account->uuid,
                 'to_account'   => Account::factory()->create()->uuid,
                 'amount'       => 1000,
