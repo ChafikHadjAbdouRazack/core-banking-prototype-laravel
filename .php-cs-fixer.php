@@ -135,6 +135,7 @@ return (new Config())
             'elements' => ['method', 'property'],
         ],
         'whitespace_after_comma_in_array' => true,
+        'statement_indentation' => false,
     ])
     ->setFinder($finder)
     ->setRiskyAllowed(true)
