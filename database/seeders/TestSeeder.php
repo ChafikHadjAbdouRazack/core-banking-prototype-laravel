@@ -12,10 +12,16 @@ class TestSeeder extends Seeder
     public function run(): void
     {
         // Only seed essential data needed for tests
-        $this->call([
-            RolesSeeder::class,
+        $seeders = [
             AssetSeeder::class,
             SettingSeeder::class,
-        ]);
+        ];
+        
+        // Only seed roles if the permission tables exist
+        if (\Schema::hasTable('roles')) {
+            array_unshift($seeders, RolesSeeder::class);
+        }
+        
+        $this->call($seeders);
     }
 }
