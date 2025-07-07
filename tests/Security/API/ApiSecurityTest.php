@@ -72,21 +72,30 @@ class ApiSecurityTest extends TestCase
     #[Test]
     public function test_api_versioning_is_enforced()
     {
-        // Old version endpoints should not work
-        $oldVersions = [
-            '/api/accounts',
-            '/api/v1/accounts',
+        // Non-existent version endpoints should return 404
+        $nonExistentVersions = [
             '/api/v0/accounts',
+            '/api/v3/accounts',
+            '/api/v99/accounts',
         ];
 
-        foreach ($oldVersions as $endpoint) {
+        foreach ($nonExistentVersions as $endpoint) {
             $response = $this->withToken($this->token)->getJson($endpoint);
-            $this->assertContains($response->status(), [404, 405]); // 405 if method not allowed
+            $this->assertEquals(404, $response->status(), "Non-existent version $endpoint should return 404");
         }
 
-        // Current version should work
-        $response = $this->withToken($this->token)->getJson('/api/accounts');
-        $this->assertNotEquals(404, $response->status());
+        // Supported version endpoints should work
+        $supportedVersions = [
+            '/api/accounts',     // Legacy endpoint
+            '/api/v1/accounts',  // Version 1
+            '/api/v2/accounts',  // Version 2 (current)
+        ];
+
+        foreach ($supportedVersions as $endpoint) {
+            $response = $this->withToken($this->token)->getJson($endpoint);
+            $this->assertNotEquals(404, $response->status(), "Supported version $endpoint should not return 404");
+            $this->assertContains($response->status(), [200, 201], "Supported version $endpoint should return success");
+        }
     }
 
     #[Test]
