@@ -31,7 +31,7 @@ final readonly class Hash extends DataObject implements DataObjectContract
     }
 
     /**
-     * Create hash from data using SHA3-512
+     * Create hash from data using SHA3-512.
      *
      * @param string $data
      * @return self
@@ -42,7 +42,7 @@ final readonly class Hash extends DataObject implements DataObjectContract
     }
 
     /**
-     * Get string representation of the hash
+     * Get string representation of the hash.
      *
      * @return string
      */

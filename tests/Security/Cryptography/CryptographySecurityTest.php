@@ -58,7 +58,7 @@ class CryptographySecurityTest extends TestCase
     {
         // Skip this test as the sensitive columns don't exist in the current schema
         $this->markTestSkipped('Sensitive columns (ssn, bank_account, api_secret) not implemented in users table');
-        
+
         // TODO: When these columns are added, uncomment this test
         /*
         // Check if sensitive columns are encrypted in database
@@ -148,13 +148,13 @@ class CryptographySecurityTest extends TestCase
         try {
             // Only use fields that exist in the users table
             $userData = [
-                'name'  => 'Test User',
-                'email' => 'test@example.com',
+                'name'     => 'Test User',
+                'email'    => 'test@example.com',
                 'password' => $sensitiveData['password'],
             ];
-            
+
             User::create($userData);
-            
+
             // If no exception, test passes (no sensitive data exposed)
             $this->assertTrue(true);
         } catch (\Exception $e) {

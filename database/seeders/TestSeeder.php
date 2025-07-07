@@ -16,12 +16,12 @@ class TestSeeder extends Seeder
             AssetSeeder::class,
             SettingSeeder::class,
         ];
-        
+
         // Only seed roles if the permission tables exist
         if (\Schema::hasTable('roles')) {
             array_unshift($seeders, RolesSeeder::class);
         }
-        
+
         $this->call($seeders);
     }
 }
