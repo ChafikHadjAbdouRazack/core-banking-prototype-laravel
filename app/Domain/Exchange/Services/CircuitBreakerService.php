@@ -19,23 +19,21 @@ class CircuitBreakerService
     {
         $state = $this->getState($service);
 
-        switch ($state) {
-            case 'open':
-                if ($this->shouldAttemptReset($service)) {
-                    $this->setState($service, 'half-open');
-                    Cache::forget("circuit_breaker:{$service}:half_open_attempts");
-                    // Continue execution in half-open state
-                } else {
-                    throw new \RuntimeException("Circuit breaker is OPEN for service: {$service}");
-                }
-                break;
-
-            case 'half-open':
-                // Allow limited traffic through
-                if ($this->isHalfOpenLimitReached($service)) {
-                    throw new \RuntimeException("Circuit breaker is HALF-OPEN with limit reached for service: {$service}");
-                }
-                break;
+        if ($state === 'open') {
+            if ($this->shouldAttemptReset($service)) {
+                $this->setState($service, 'half-open');
+                Cache::forget("circuit_breaker:{$service}:half_open_attempts");
+                $state = 'half-open'; // Update state for next check
+            } else {
+                throw new \RuntimeException("Circuit breaker is OPEN for service: {$service}");
+            }
+        }
+        
+        if ($state === 'half-open') {
+            // Allow limited traffic through
+            if ($this->isHalfOpenLimitReached($service)) {
+                throw new \RuntimeException("Circuit breaker is HALF-OPEN with limit reached for service: {$service}");
+            }
         }
 
         try {
@@ -67,13 +65,23 @@ class CircuitBreakerService
 
     private function recordSuccess(string $service): void
     {
-        $successCount = Cache::increment("circuit_breaker:{$service}:success_count");
-        Cache::forget("circuit_breaker:{$service}:failure_count");
-
-        if ($this->getState($service) === 'half-open' && $successCount >= self::SUCCESS_THRESHOLD) {
-            $this->setState($service, 'closed');
-            Cache::forget("circuit_breaker:{$service}:success_count");
-            Cache::forget("circuit_breaker:{$service}:half_open_attempts");
+        $state = $this->getState($service);
+        
+        if ($state === 'half-open') {
+            $successCount = Cache::increment("circuit_breaker:{$service}:success_count");
+            
+            if ($successCount >= self::SUCCESS_THRESHOLD) {
+                $this->setState($service, 'closed');
+                Cache::forget("circuit_breaker:{$service}:success_count");
+                Cache::forget("circuit_breaker:{$service}:half_open_attempts");
+                Cache::forget("circuit_breaker:{$service}:failure_count");
+            } else {
+                // For half-open, allow the next request by resetting attempts
+                Cache::forget("circuit_breaker:{$service}:half_open_attempts");
+            }
+        } else {
+            // For closed state, just clear failure count
+            Cache::forget("circuit_breaker:{$service}:failure_count");
         }
     }
 
@@ -118,9 +126,17 @@ class CircuitBreakerService
             return true;
         }
 
-        $timestamp = is_string($stateChangedAt) ? \Carbon\Carbon::parse($stateChangedAt) : $stateChangedAt;
+        // Handle both string and Carbon instances
+        if (is_string($stateChangedAt)) {
+            $timestamp = \Carbon\Carbon::parse($stateChangedAt);
+        } elseif ($stateChangedAt instanceof \Carbon\Carbon) {
+            $timestamp = $stateChangedAt;
+        } else {
+            // If it's something else, try to convert to string and parse
+            $timestamp = \Carbon\Carbon::parse((string) $stateChangedAt);
+        }
         
-        return now()->diffInSeconds($timestamp) >= self::HALF_OPEN_TIMEOUT;
+        return abs(now()->diffInSeconds($timestamp)) >= self::HALF_OPEN_TIMEOUT;
     }
 
     private function isHalfOpenLimitReached(string $service): bool
