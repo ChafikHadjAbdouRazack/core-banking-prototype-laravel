@@ -60,10 +60,13 @@ class EnhancedExchangeRateService extends ExchangeRateService
             }
 
             // Create a quote object from the rate
+            $rateValue = (float) $rate->toScale(8, RoundingMode::HALF_UP)->__toString();
             $quote = new ExchangeRateQuote(
                 fromCurrency: $fromAsset,
                 toCurrency: $toAsset,
-                rate: (float) $rate->toScale(8, RoundingMode::HALF_UP)->__toString(),
+                rate: $rateValue,
+                bid: $rateValue * 0.999, // 0.1% spread
+                ask: $rateValue * 1.001, // 0.1% spread
                 provider: 'registry',
                 timestamp: now()
             );
@@ -96,10 +99,13 @@ class EnhancedExchangeRateService extends ExchangeRateService
         }
 
         // Create a quote object from the rate
+        $rateValue = (float) $rate->toScale(8, RoundingMode::HALF_UP)->__toString();
         $quote = new ExchangeRateQuote(
             fromCurrency: $from,
             toCurrency: $to,
-            rate: (float) $rate->toScale(8, RoundingMode::HALF_UP)->__toString(),
+            rate: $rateValue,
+            bid: $rateValue * 0.999, // 0.1% spread
+            ask: $rateValue * 1.001, // 0.1% spread
             provider: 'registry',
             timestamp: now()
         );
