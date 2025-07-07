@@ -44,8 +44,10 @@ class ValidateLiquidityActivity extends Activity
         }
 
         // Validate currencies match
-        if ($pool->base_currency !== $input->baseCurrency ||
-            $pool->quote_currency !== $input->quoteCurrency) {
+        if (
+            $pool->base_currency !== $input->baseCurrency ||
+            $pool->quote_currency !== $input->quoteCurrency
+        ) {
             throw new \DomainException('Currency mismatch with pool');
         }
 

@@ -31,7 +31,7 @@ class EnhancedLiquidityManagementWorkflow extends Workflow
 
     public function __construct()
     {
-        $this->circuitBreaker = new CircuitBreakerService;
+        $this->circuitBreaker = new CircuitBreakerService();
     }
 
     public function addLiquidity(LiquidityAdditionInput $input): \Generator
@@ -141,7 +141,6 @@ class EnhancedLiquidityManagementWorkflow extends Workflow
                 'provider_id' => $input->providerId,
                 'execution_time_ms' => (microtime(true) - $startTime) * 1000,
             ];
-
         } catch (\Exception $e) {
             Log::error('Failed to add liquidity', array_merge($context, [
                 'error' => $e->getMessage(),

@@ -87,7 +87,7 @@ class Order extends AggregateRoot
     public function cancelOrder(string $reason, array $metadata = []): self
     {
         if ($this->status->isFinal()) {
-            throw new \DomainException('Cannot cancel order in final status: '.$this->status->value);
+            throw new \DomainException('Cannot cancel order in final status: ' . $this->status->value);
         }
 
         $this->recordThat(new OrderCancelled(

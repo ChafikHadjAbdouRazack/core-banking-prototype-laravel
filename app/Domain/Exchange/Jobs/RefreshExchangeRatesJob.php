@@ -14,7 +14,10 @@ use Illuminate\Support\Facades\Log;
 
 class RefreshExchangeRatesJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
 
     /**
      * The number of times the job may be attempted.
@@ -32,7 +35,8 @@ class RefreshExchangeRatesJob implements ShouldQueue
     public function __construct(
         public readonly ?array $currencyPairs = null,
         public readonly bool $forceRefresh = false
-    ) {}
+    ) {
+    }
 
     /**
      * Execute the job.

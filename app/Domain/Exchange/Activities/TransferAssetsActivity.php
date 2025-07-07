@@ -99,7 +99,6 @@ class TransferAssetsActivity extends Activity
                 'baseAmount' => $baseAmount,
                 'quoteAmount' => $quoteAmount,
             ];
-
         } catch (\Exception $e) {
             return (object) [
                 'success' => false,

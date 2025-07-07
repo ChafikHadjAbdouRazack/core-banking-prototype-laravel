@@ -53,13 +53,11 @@ class MockExchangeRateProvider extends BaseExchangeRateProvider
         // Check for direct rate
         if (isset($this->mockRates[$fromCurrency][$toCurrency])) {
             $rate = $this->mockRates[$fromCurrency][$toCurrency];
-        }
-        // Check for inverse rate
-        elseif (isset($this->mockRates[$toCurrency][$fromCurrency])) {
+        } elseif (isset($this->mockRates[$toCurrency][$fromCurrency])) {
+            // Check for inverse rate
             $rate = 1 / $this->mockRates[$toCurrency][$fromCurrency];
-        }
-        // Same currency (identity rate)
-        elseif ($fromCurrency === $toCurrency) {
+        } elseif ($fromCurrency === $toCurrency) {
+            // Same currency (identity rate)
             $rate = 1.0;
             // Skip variance for identity rates
             $actualRate = $rate;

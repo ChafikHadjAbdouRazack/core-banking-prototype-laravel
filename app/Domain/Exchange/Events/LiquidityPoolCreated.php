@@ -12,5 +12,6 @@ class LiquidityPoolCreated extends ShouldBeStored
         public readonly string $quoteCurrency,
         public readonly string $feeRate,
         public readonly array $metadata = []
-    ) {}
+    ) {
+    }
 }

@@ -22,7 +22,7 @@ class TransferLiquidityActivity extends Activity
                     $input['to_pool_id'],
                     $input['base_currency'],
                     $input['base_amount'],
-                    $transactionId.'-base'
+                    $transactionId . '-base'
                 );
 
                 $this->transferFromAccount(
@@ -30,7 +30,7 @@ class TransferLiquidityActivity extends Activity
                     $input['to_pool_id'],
                     $input['quote_currency'],
                     $input['quote_amount'],
-                    $transactionId.'-quote'
+                    $transactionId . '-quote'
                 );
             } else {
                 // Transfer from pool to account
@@ -39,7 +39,7 @@ class TransferLiquidityActivity extends Activity
                     $input['to_account_id'],
                     $input['base_currency'],
                     $input['base_amount'],
-                    $transactionId.'-base'
+                    $transactionId . '-base'
                 );
 
                 $this->transferFromPool(
@@ -47,7 +47,7 @@ class TransferLiquidityActivity extends Activity
                     $input['to_account_id'],
                     $input['quote_currency'],
                     $input['quote_amount'],
-                    $transactionId.'-quote'
+                    $transactionId . '-quote'
                 );
             }
 

@@ -368,7 +368,7 @@ class LiquidityIncentivesService
             'reward_apy' => $apy->__toString(),
             'fee_apy' => $feeAPY->__toString(),
             'total_apy' => $apy->plus($feeAPY)->__toString(),
-            'share_ratio' => $shareRatio->multipliedBy(100)->toScale(0, RoundingMode::DOWN)->__toString().'%',
+            'share_ratio' => $shareRatio->multipliedBy(100)->toScale(0, RoundingMode::DOWN)->__toString() . '%',
         ];
     }
 

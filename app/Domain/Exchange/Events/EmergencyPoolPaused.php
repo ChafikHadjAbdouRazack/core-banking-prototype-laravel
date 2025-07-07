@@ -13,5 +13,6 @@ final class EmergencyPoolPaused extends ShouldBeStored
         public readonly string $pausedAt,
         public readonly array $poolState, // Snapshot of pool state at pause
         public readonly array $metadata = []
-    ) {}
+    ) {
+    }
 }

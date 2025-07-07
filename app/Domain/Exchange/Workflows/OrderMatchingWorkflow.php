@@ -131,7 +131,6 @@ class OrderMatchingWorkflow extends Workflow
                     makerFee: $match->makerFee,
                     takerFee: $match->takerFee
                 )->persist();
-
             } catch (\Exception $e) {
                 // Log error and continue
                 yield Activity::make(

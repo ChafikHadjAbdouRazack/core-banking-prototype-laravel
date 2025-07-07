@@ -14,5 +14,6 @@ final class PoolGovernanceVoteInitiated extends ShouldBeStored
         public readonly string $initiatedBy,
         public readonly string $votingDeadline,
         public readonly array $metadata = []
-    ) {}
+    ) {
+    }
 }

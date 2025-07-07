@@ -16,7 +16,8 @@ final class MarketPair
         public readonly int $amountPrecision,
         public readonly bool $isActive,
         public readonly array $metadata = []
-    ) {}
+    ) {
+    }
 
     public static function fromArray(array $data): self
     {
@@ -50,7 +51,7 @@ final class MarketPair
 
     public function getSymbol(string $separator = '/'): string
     {
-        return $this->baseCurrency.$separator.$this->quoteCurrency;
+        return $this->baseCurrency . $separator . $this->quoteCurrency;
     }
 
     public function validatePrice(BigDecimal $price): bool

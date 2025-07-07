@@ -12,5 +12,6 @@ final class EmergencyPoolResumed extends ShouldBeStored
         public readonly string $resumedAt,
         public readonly string $pauseDuration, // In seconds
         public readonly array $metadata = []
-    ) {}
+    ) {
+    }
 }

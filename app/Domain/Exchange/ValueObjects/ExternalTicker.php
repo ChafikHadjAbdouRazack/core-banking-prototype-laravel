@@ -19,7 +19,8 @@ final class ExternalTicker
         public readonly \DateTimeImmutable $timestamp,
         public readonly string $exchange,
         public readonly array $metadata = []
-    ) {}
+    ) {
+    }
 
     public static function fromArray(array $data): self
     {

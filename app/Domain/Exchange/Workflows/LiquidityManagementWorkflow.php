@@ -77,7 +77,6 @@ class LiquidityManagementWorkflow extends Workflow
                 'pool_id' => $input->poolId,
                 'provider_id' => $input->providerId,
             ];
-
         } catch (\Exception $e) {
             // Compensate on failure
             yield from $this->compensateAddLiquidity($e->getMessage());
@@ -132,7 +131,6 @@ class LiquidityManagementWorkflow extends Workflow
                 'quote_amount' => $amounts['quote_amount'],
                 'shares_burned' => $input->shares,
             ];
-
         } catch (\Exception $e) {
             return [
                 'success' => false,
@@ -199,7 +197,6 @@ class LiquidityManagementWorkflow extends Workflow
                 'rebalance_amount' => $rebalanceAmount,
                 'rebalance_currency' => $rebalanceCurrency,
             ];
-
         } catch (\Exception $e) {
             return [
                 'success' => false,

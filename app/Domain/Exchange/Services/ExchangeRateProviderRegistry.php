@@ -327,7 +327,6 @@ class ExchangeRateProviderRegistry
                     }
                 }
             }
-
         } catch (\Exception $e) {
             $health['available'] = false;
             $health['last_error'] = $e->getMessage();

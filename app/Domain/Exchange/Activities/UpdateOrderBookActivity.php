@@ -114,7 +114,6 @@ class UpdateOrderBookActivity extends Activity
                 'action' => $action,
                 'orderId' => $orderId,
             ];
-
         } catch (\Exception $e) {
             return (object) [
                 'success' => false,

@@ -15,5 +15,6 @@ final class ImpermanentLossCalculated extends ShouldBeStored
         public readonly string $impermanentLossUsd,
         public readonly string $impermanentLossPercentage,
         public readonly array $metadata = []
-    ) {}
+    ) {
+    }
 }

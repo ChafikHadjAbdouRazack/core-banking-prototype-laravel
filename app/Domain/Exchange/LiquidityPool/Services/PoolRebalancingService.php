@@ -31,7 +31,8 @@ class PoolRebalancingService
     public function __construct(
         private readonly PriceAggregatorInterface $priceAggregator,
         private readonly ArbitrageService $arbitrageService
-    ) {}
+    ) {
+    }
 
     /**
      * Check all pools and rebalance if needed
@@ -313,7 +314,6 @@ class PoolRebalancingService
                 'executed_currency' => $rebalanceAmounts['currency'],
                 'new_ratio' => $this->calculateCurrentInventoryRatio($pool->fresh())->__toString(),
             ];
-
         } catch (\Exception $e) {
             return [
                 'status' => 'failed',

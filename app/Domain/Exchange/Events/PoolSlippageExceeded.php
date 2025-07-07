@@ -14,5 +14,6 @@ final class PoolSlippageExceeded extends ShouldBeStored
         public readonly string $slippagePercentage,
         public readonly string $maxSlippageTolerance,
         public readonly array $metadata = []
-    ) {}
+    ) {
+    }
 }
