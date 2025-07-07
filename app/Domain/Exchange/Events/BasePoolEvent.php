@@ -2,12 +2,18 @@
 
 namespace App\Domain\Exchange\Events;
 
+use App\Values\EventQueues;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 
 abstract class BasePoolEvent extends ShouldBeStored
 {
+    /**
+     * @var string
+     */
+    public string $queue = EventQueues::LIQUIDITY_POOLS->value;
+
     public readonly array $eventMetadata;
 
     public function __construct()
