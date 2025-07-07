@@ -27,24 +27,24 @@ class ValidateLiquidityActivity extends Activity
     {
         // Validate account exists
         $account = Account::findOrFail($input->providerId);
-        
-        if (!$account->hasKycApproval()) {
+
+        if (! $account->hasKycApproval()) {
             throw new \DomainException('Account must have KYC approval to provide liquidity');
         }
 
         // Validate pool exists
         $pool = PoolProjection::where('pool_id', $input->poolId)->first();
-        
-        if (!$pool) {
+
+        if (! $pool) {
             throw new \DomainException('Liquidity pool not found');
         }
 
-        if (!$pool->is_active) {
+        if (! $pool->is_active) {
             throw new \DomainException('Liquidity pool is not active');
         }
 
         // Validate currencies match
-        if ($pool->base_currency !== $input->baseCurrency || 
+        if ($pool->base_currency !== $input->baseCurrency ||
             $pool->quote_currency !== $input->quoteCurrency) {
             throw new \DomainException('Currency mismatch with pool');
         }
@@ -58,11 +58,11 @@ class ValidateLiquidityActivity extends Activity
             ->where('currency_code', $input->quoteCurrency)
             ->first();
 
-        if (!$baseBalance || BigDecimal::of($baseBalance->available_balance)->isLessThan($input->baseAmount)) {
+        if (! $baseBalance || BigDecimal::of($baseBalance->available_balance)->isLessThan($input->baseAmount)) {
             throw new \DomainException("Insufficient {$input->baseCurrency} balance");
         }
 
-        if (!$quoteBalance || BigDecimal::of($quoteBalance->available_balance)->isLessThan($input->quoteAmount)) {
+        if (! $quoteBalance || BigDecimal::of($quoteBalance->available_balance)->isLessThan($input->quoteAmount)) {
             throw new \DomainException("Insufficient {$input->quoteCurrency} balance");
         }
 
@@ -70,7 +70,7 @@ class ValidateLiquidityActivity extends Activity
         if (BigDecimal::of($pool->total_shares)->isGreaterThan(0)) {
             $poolRatio = BigDecimal::of($pool->base_reserve)->dividedBy($pool->quote_reserve, 18);
             $inputRatio = BigDecimal::of($input->baseAmount)->dividedBy($input->quoteAmount, 18);
-            
+
             $deviation = $poolRatio->minus($inputRatio)->abs()
                 ->dividedBy($poolRatio, 18)
                 ->multipliedBy(100);
@@ -91,8 +91,8 @@ class ValidateLiquidityActivity extends Activity
     {
         // Validate pool exists
         $pool = PoolProjection::where('pool_id', $input->poolId)->first();
-        
-        if (!$pool) {
+
+        if (! $pool) {
             throw new \DomainException('Liquidity pool not found');
         }
 
@@ -101,7 +101,7 @@ class ValidateLiquidityActivity extends Activity
             ->where('provider_id', $input->providerId)
             ->first();
 
-        if (!$provider) {
+        if (! $provider) {
             throw new \DomainException('Provider not found in pool');
         }
 

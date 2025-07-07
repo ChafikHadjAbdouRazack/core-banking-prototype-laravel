@@ -8,12 +8,12 @@ interface ArbitrageServiceInterface
      * Find arbitrage opportunities
      */
     public function findOpportunities(string $symbol): array;
-    
+
     /**
      * Execute arbitrage opportunity
      */
     public function executeArbitrage(array $opportunity): array;
-    
+
     /**
      * Calculate profitability of opportunity
      */

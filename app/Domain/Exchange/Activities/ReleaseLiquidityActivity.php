@@ -17,7 +17,7 @@ class ReleaseLiquidityActivity extends Activity
                 ->where('id', $lock['lock_id'])
                 ->first();
 
-            if (!$lockRecord) {
+            if (! $lockRecord) {
                 throw new \DomainException('Lock record not found');
             }
 
@@ -28,7 +28,7 @@ class ReleaseLiquidityActivity extends Activity
                 ->firstOrFail();
 
             $amount = BigDecimal::of($lock['amount']);
-            
+
             $balance->locked_balance = BigDecimal::of($balance->locked_balance)
                 ->minus($amount)
                 ->__toString();

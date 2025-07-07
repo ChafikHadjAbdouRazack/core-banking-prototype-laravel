@@ -36,7 +36,7 @@ class OrderProjector extends Projector
     public function onOrderMatched(OrderMatched $event): void
     {
         $order = Order::where('order_id', $event->orderId)->firstOrFail();
-        
+
         // Update order with trade information
         $trades = $order->trades ?? [];
         $trades[] = [
@@ -47,9 +47,9 @@ class OrderProjector extends Projector
             'fee' => $order->type === 'buy' ? $event->takerFee : $event->makerFee,
             'timestamp' => now()->toIso8601String(),
         ];
-        
+
         $filledAmount = BigDecimal::of($order->filled_amount)->plus($event->executedAmount);
-        
+
         // Calculate average price
         $totalValue = BigDecimal::zero();
         $totalAmount = BigDecimal::zero();
@@ -59,17 +59,17 @@ class OrderProjector extends Projector
             $totalAmount = $totalAmount->plus($trade['executed_amount']);
         }
         $averagePrice = $totalValue->dividedBy($totalAmount, 18);
-        
+
         $order->update([
             'filled_amount' => $filledAmount->__toString(),
             'average_price' => $averagePrice->__toString(),
             'trades' => $trades,
             'status' => $filledAmount->isEqualTo($order->amount) ? 'filled' : 'partially_filled',
         ]);
-        
+
         // Create trade record
         $matchedOrder = Order::where('order_id', $event->matchedOrderId)->firstOrFail();
-        
+
         Trade::create([
             'trade_id' => $event->tradeId,
             'buy_order_id' => $order->type === 'buy' ? $order->order_id : $matchedOrder->order_id,

@@ -49,6 +49,7 @@ class OrderBook extends Model
         }
 
         $spread = $this->spread;
+
         return (float) bcmul(bcdiv($spread, $this->best_bid, 18), '100', 4);
     }
 
@@ -64,7 +65,7 @@ class OrderBook extends Model
     public function getChange24hAttribute(): ?string
     {
         $openPrice = $this->metadata['open_24h'] ?? null;
-        
+
         if ($openPrice === null || $this->last_price === null) {
             return null;
         }
@@ -75,12 +76,13 @@ class OrderBook extends Model
     public function getChange24hPercentageAttribute(): ?float
     {
         $openPrice = $this->metadata['open_24h'] ?? null;
-        
+
         if ($openPrice === null || $this->last_price === null || bccomp($openPrice, '0', 18) === 0) {
             return null;
         }
 
         $change = $this->change_24h;
+
         return (float) bcmul(bcdiv($change, $openPrice, 18), '100', 2);
     }
 
@@ -102,19 +104,19 @@ class OrderBook extends Model
         ];
     }
 
-    public function getTotalBidVolume(int $levels = null): string
+    public function getTotalBidVolume(?int $levels = null): string
     {
         $orders = $levels ? $this->buy_orders_collection->take($levels) : $this->buy_orders_collection;
-        
+
         return $orders->reduce(function ($carry, $order) {
             return bcadd($carry, $order['amount'], 18);
         }, '0');
     }
 
-    public function getTotalAskVolume(int $levels = null): string
+    public function getTotalAskVolume(?int $levels = null): string
     {
         $orders = $levels ? $this->sell_orders_collection->take($levels) : $this->sell_orders_collection;
-        
+
         return $orders->reduce(function ($carry, $order) {
             return bcadd($carry, $order['amount'], 18);
         }, '0');

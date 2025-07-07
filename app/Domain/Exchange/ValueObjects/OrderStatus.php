@@ -33,7 +33,7 @@ enum OrderStatus: string
 
     public function getLabel(): string
     {
-        return match($this) {
+        return match ($this) {
             self::PENDING => 'Pending',
             self::OPEN => 'Open',
             self::PARTIALLY_FILLED => 'Partially Filled',
@@ -46,7 +46,7 @@ enum OrderStatus: string
 
     public function getColor(): string
     {
-        return match($this) {
+        return match ($this) {
             self::PENDING => 'gray',
             self::OPEN => 'blue',
             self::PARTIALLY_FILLED => 'yellow',

@@ -67,7 +67,7 @@ final class ExternalTicker
         if ($this->bid->isZero()) {
             return BigDecimal::zero();
         }
-        
+
         return $this->getSpread()->dividedBy($this->bid, 18)->multipliedBy(100);
     }
 

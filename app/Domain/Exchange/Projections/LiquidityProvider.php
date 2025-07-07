@@ -33,7 +33,7 @@ class LiquidityProvider extends Model
     public function getSharePercentageAttribute(): string
     {
         $pool = $this->pool;
-        if (!$pool || $pool->total_shares == 0) {
+        if (! $pool || $pool->total_shares == 0) {
             return '0';
         }
 
@@ -47,7 +47,7 @@ class LiquidityProvider extends Model
     public function getCurrentValueAttribute(): array
     {
         $pool = $this->pool;
-        if (!$pool || $pool->total_shares == 0) {
+        if (! $pool || $pool->total_shares == 0) {
             return [
                 'base_amount' => '0',
                 'quote_amount' => '0',

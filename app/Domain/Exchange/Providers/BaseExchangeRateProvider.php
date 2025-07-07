@@ -5,19 +5,21 @@ declare(strict_types=1);
 namespace App\Domain\Exchange\Providers;
 
 use App\Domain\Exchange\Contracts\IExchangeRateProvider;
-use App\Domain\Exchange\Exceptions\RateProviderException;
 use App\Domain\Exchange\Exceptions\RateLimitException;
-use App\Domain\Exchange\ValueObjects\RateProviderCapabilities;
+use App\Domain\Exchange\Exceptions\RateProviderException;
+use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Http\Client\PendingRequest;
 
 abstract class BaseExchangeRateProvider implements IExchangeRateProvider
 {
     protected array $config;
+
     protected PendingRequest $client;
+
     protected string $cachePrefix = 'exchange_rate_provider';
+
     protected int $cacheMinutes = 5;
 
     public function __construct(array $config)
@@ -56,11 +58,13 @@ abstract class BaseExchangeRateProvider implements IExchangeRateProvider
     {
         try {
             $response = $this->client->get($this->getHealthCheckEndpoint());
+
             return $response->successful();
         } catch (\Exception $e) {
             Log::error("Exchange rate provider {$this->getName()} health check failed", [
                 'error' => $e->getMessage(),
             ]);
+
             return false;
         }
     }
@@ -68,6 +72,7 @@ abstract class BaseExchangeRateProvider implements IExchangeRateProvider
     public function supportsPair(string $fromCurrency, string $toCurrency): bool
     {
         $supported = $this->getSupportedCurrencies();
+
         return in_array($fromCurrency, $supported) && in_array($toCurrency, $supported);
     }
 
@@ -78,15 +83,15 @@ abstract class BaseExchangeRateProvider implements IExchangeRateProvider
     {
         $key = "{$this->cachePrefix}:rate_limit:{$this->getName()}";
         $limit = $this->getCapabilities()->rateLimitPerMinute;
-        
+
         $current = Cache::get($key, 0);
-        
+
         if ($current >= $limit) {
             throw new RateLimitException(
                 "Rate limit exceeded for {$this->getName()}. Limit: {$limit}/min"
             );
         }
-        
+
         Cache::put($key, $current + 1, 60);
     }
 
@@ -105,6 +110,7 @@ abstract class BaseExchangeRateProvider implements IExchangeRateProvider
     protected function getCached(string $key): mixed
     {
         $fullKey = "{$this->cachePrefix}:{$this->getName()}:{$key}";
+
         return Cache::get($fullKey);
     }
 
@@ -114,6 +120,7 @@ abstract class BaseExchangeRateProvider implements IExchangeRateProvider
     protected function remember(string $key, \Closure $callback, ?int $minutes = null): mixed
     {
         $fullKey = "{$this->cachePrefix}:{$this->getName()}:{$key}";
+
         return Cache::remember($fullKey, ($minutes ?? $this->cacheMinutes) * 60, $callback);
     }
 
@@ -153,13 +160,13 @@ abstract class BaseExchangeRateProvider implements IExchangeRateProvider
     {
         $status = $response->status();
         $body = $response->json() ?? $response->body();
-        
+
         $message = "Exchange rate provider {$this->getName()} {$operation} failed";
-        
+
         if ($status === 429) {
             throw new RateLimitException("{$message}: Rate limit exceeded");
         }
-        
+
         throw new RateProviderException("{$message}: HTTP {$status}", $status, null, [
             'response' => $body,
         ]);

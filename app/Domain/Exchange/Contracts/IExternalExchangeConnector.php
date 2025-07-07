@@ -22,7 +22,7 @@ interface IExternalExchangeConnector
 
     /**
      * Get supported market pairs
-     * 
+     *
      * @return Collection<MarketPair>
      */
     public function getSupportedPairs(): Collection;
@@ -39,21 +39,21 @@ interface IExternalExchangeConnector
 
     /**
      * Get recent trades for a market pair
-     * 
+     *
      * @return Collection<ExternalTrade>
      */
     public function getRecentTrades(string $baseCurrency, string $quoteCurrency, int $limit = 100): Collection;
 
     /**
      * Place a buy order
-     * 
+     *
      * @return array Order details
      */
     public function placeBuyOrder(string $baseCurrency, string $quoteCurrency, string $amount, ?string $price = null): array;
 
     /**
      * Place a sell order
-     * 
+     *
      * @return array Order details
      */
     public function placeSellOrder(string $baseCurrency, string $quoteCurrency, string $amount, ?string $price = null): array;
@@ -65,21 +65,21 @@ interface IExternalExchangeConnector
 
     /**
      * Get order status
-     * 
+     *
      * @return array Order details
      */
     public function getOrderStatus(string $orderId): array;
 
     /**
      * Get account balance
-     * 
+     *
      * @return array Balance by currency
      */
     public function getBalance(): array;
 
     /**
      * Get trading fees
-     * 
+     *
      * @return array Fee structure
      */
     public function getFees(): array;

@@ -60,7 +60,7 @@ class Order extends Model
         if (bccomp($this->amount, '0', 18) === 0) {
             return 0;
         }
-        
+
         return (float) bcmul(bcdiv($this->filled_amount, $this->amount, 18), '100', 2);
     }
 

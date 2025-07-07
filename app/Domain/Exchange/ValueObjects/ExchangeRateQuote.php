@@ -45,7 +45,7 @@ final class ExchangeRateQuote
         if ($this->rate == 0) {
             return 0;
         }
-        
+
         return ($this->getSpread() / $this->rate) * 100;
     }
 
@@ -75,7 +75,7 @@ final class ExchangeRateQuote
         } else {
             $rate = $this->rate;
         }
-        
+
         return $amount * $rate;
     }
 

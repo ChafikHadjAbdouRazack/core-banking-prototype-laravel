@@ -33,7 +33,7 @@ class LockLiquidityActivity extends Activity
 
             // Create lock record for compensation
             $lockId = \Str::uuid()->toString();
-            
+
             \DB::table('balance_locks')->insert([
                 'id' => $lockId,
                 'account_id' => $input['account_id'],

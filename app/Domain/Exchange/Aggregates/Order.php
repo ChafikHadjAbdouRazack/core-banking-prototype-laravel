@@ -5,25 +5,32 @@ namespace App\Domain\Exchange\Aggregates;
 use App\Domain\Exchange\Events\OrderCancelled;
 use App\Domain\Exchange\Events\OrderMatched;
 use App\Domain\Exchange\Events\OrderPlaced;
-use App\Domain\Exchange\Events\OrderPartiallyFilled;
-use App\Domain\Exchange\Events\OrderFilled;
 use App\Domain\Exchange\ValueObjects\OrderStatus;
-use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
 use Brick\Math\BigDecimal;
-use Brick\Math\RoundingMode;
+use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
 
 class Order extends AggregateRoot
 {
     protected string $orderId;
+
     protected string $accountId;
+
     protected string $type;
+
     protected string $orderType;
+
     protected string $baseCurrency;
+
     protected string $quoteCurrency;
+
     protected BigDecimal $amount;
+
     protected ?BigDecimal $price = null;
+
     protected BigDecimal $filledAmount;
+
     protected OrderStatus $status;
+
     protected array $trades = [];
 
     public function placeOrder(
@@ -80,7 +87,7 @@ class Order extends AggregateRoot
     public function cancelOrder(string $reason, array $metadata = []): self
     {
         if ($this->status->isFinal()) {
-            throw new \DomainException('Cannot cancel order in final status: ' . $this->status->value);
+            throw new \DomainException('Cannot cancel order in final status: '.$this->status->value);
         }
 
         $this->recordThat(new OrderCancelled(

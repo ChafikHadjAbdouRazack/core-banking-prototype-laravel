@@ -47,7 +47,7 @@ class RefreshExchangeRatesJob implements ShouldQueue
         if ($this->currencyPairs) {
             // Refresh specific pairs
             $results = ['refreshed' => [], 'failed' => []];
-            
+
             foreach ($this->currencyPairs as $pair) {
                 if (str_contains($pair, '/')) {
                     [$from, $to] = explode('/', $pair);

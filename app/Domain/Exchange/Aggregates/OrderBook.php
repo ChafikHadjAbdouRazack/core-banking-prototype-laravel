@@ -2,23 +2,30 @@
 
 namespace App\Domain\Exchange\Aggregates;
 
-use App\Domain\Exchange\Events\OrderBookInitialized;
 use App\Domain\Exchange\Events\OrderAddedToBook;
-use App\Domain\Exchange\Events\OrderRemovedFromBook;
+use App\Domain\Exchange\Events\OrderBookInitialized;
 use App\Domain\Exchange\Events\OrderBookSnapshotTaken;
-use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
+use App\Domain\Exchange\Events\OrderRemovedFromBook;
 use Brick\Math\BigDecimal;
 use Illuminate\Support\Collection;
+use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
 
 class OrderBook extends AggregateRoot
 {
     protected string $orderBookId;
+
     protected string $baseCurrency;
+
     protected string $quoteCurrency;
+
     protected Collection $buyOrders;
+
     protected Collection $sellOrders;
+
     protected ?BigDecimal $lastPrice = null;
+
     protected ?BigDecimal $bestBid = null;
+
     protected ?BigDecimal $bestAsk = null;
 
     public function __construct()
@@ -113,14 +120,14 @@ class OrderBook extends AggregateRoot
             $this->buyOrders = $this->buyOrders->sortByDesc(function ($order) {
                 return $order['price']->__toString();
             })->values();
-            
+
             $this->bestBid = $this->buyOrders->first()['price'] ?? null;
         } else {
             $this->sellOrders->push($order);
             $this->sellOrders = $this->sellOrders->sortBy(function ($order) {
                 return $order['price']->__toString();
             })->values();
-            
+
             $this->bestAsk = $this->sellOrders->first()['price'] ?? null;
         }
     }
@@ -177,7 +184,7 @@ class OrderBook extends AggregateRoot
     {
         return $this->sellOrders;
     }
-    
+
     public static function generateId(string $baseAsset, string $quoteAsset): string
     {
         return sprintf('orderbook-%s-%s', strtolower($baseAsset), strtolower($quoteAsset));

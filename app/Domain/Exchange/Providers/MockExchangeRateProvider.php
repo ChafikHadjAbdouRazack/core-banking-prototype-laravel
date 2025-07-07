@@ -7,7 +7,6 @@ namespace App\Domain\Exchange\Providers;
 use App\Domain\Exchange\ValueObjects\ExchangeRateQuote;
 use App\Domain\Exchange\ValueObjects\RateProviderCapabilities;
 use Carbon\Carbon;
-use Illuminate\Support\Str;
 
 class MockExchangeRateProvider extends BaseExchangeRateProvider
 {
@@ -50,7 +49,7 @@ class MockExchangeRateProvider extends BaseExchangeRateProvider
     public function getRate(string $fromCurrency, string $toCurrency): ExchangeRateQuote
     {
         $this->checkRateLimit();
-        
+
         // Check for direct rate
         if (isset($this->mockRates[$fromCurrency][$toCurrency])) {
             $rate = $this->mockRates[$fromCurrency][$toCurrency];
@@ -67,7 +66,7 @@ class MockExchangeRateProvider extends BaseExchangeRateProvider
             $spread = $actualRate * 0.001;
             $bid = $actualRate - ($spread / 2);
             $ask = $actualRate + ($spread / 2);
-            
+
             return new ExchangeRateQuote(
                 fromCurrency: $fromCurrency,
                 toCurrency: $toCurrency,
@@ -83,8 +82,7 @@ class MockExchangeRateProvider extends BaseExchangeRateProvider
                     'identity_rate' => true,
                 ]
             );
-        }
-        else {
+        } else {
             throw new \App\Domain\Exchange\Exceptions\RateProviderException(
                 "Currency pair {$fromCurrency}/{$toCurrency} not supported"
             );
@@ -93,7 +91,7 @@ class MockExchangeRateProvider extends BaseExchangeRateProvider
         // Add some randomness for realism
         $variance = $rate * 0.001; // 0.1% variance
         $actualRate = $rate + (rand(-1000, 1000) / 1000000) * $variance;
-        
+
         // Calculate bid/ask with 0.1% spread
         $spread = $actualRate * 0.001;
         $bid = $actualRate - ($spread / 2);
@@ -119,7 +117,7 @@ class MockExchangeRateProvider extends BaseExchangeRateProvider
     public function getRates(array $pairs): array
     {
         $rates = [];
-        
+
         foreach ($pairs as $pair) {
             if (str_contains($pair, '/')) {
                 [$from, $to] = explode('/', $pair);
@@ -130,28 +128,28 @@ class MockExchangeRateProvider extends BaseExchangeRateProvider
                 }
             }
         }
-        
+
         return $rates;
     }
 
     public function getAllRatesForBase(string $baseCurrency): array
     {
         $rates = [];
-        
+
         // Get direct rates
         if (isset($this->mockRates[$baseCurrency])) {
             foreach ($this->mockRates[$baseCurrency] as $toCurrency => $rate) {
                 $rates["{$baseCurrency}/{$toCurrency}"] = $this->getRate($baseCurrency, $toCurrency);
             }
         }
-        
+
         // Get inverse rates
         foreach ($this->mockRates as $currency => $currencyRates) {
             if (isset($currencyRates[$baseCurrency]) && $currency !== $baseCurrency) {
                 $rates["{$baseCurrency}/{$currency}"] = $this->getRate($baseCurrency, $currency);
             }
         }
-        
+
         return $rates;
     }
 
@@ -174,12 +172,12 @@ class MockExchangeRateProvider extends BaseExchangeRateProvider
     public function getSupportedCurrencies(): array
     {
         $currencies = array_keys($this->mockRates);
-        
+
         // Add currencies that appear as values
         foreach ($this->mockRates as $rates) {
             $currencies = array_merge($currencies, array_keys($rates));
         }
-        
+
         return array_unique($currencies);
     }
 
@@ -216,10 +214,10 @@ class MockExchangeRateProvider extends BaseExchangeRateProvider
      */
     public function setMockRate(string $from, string $to, float $rate): void
     {
-        if (!isset($this->mockRates[$from])) {
+        if (! isset($this->mockRates[$from])) {
             $this->mockRates[$from] = [];
         }
-        
+
         $this->mockRates[$from][$to] = $rate;
     }
 }

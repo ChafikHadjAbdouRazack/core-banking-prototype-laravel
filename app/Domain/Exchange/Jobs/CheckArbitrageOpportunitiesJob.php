@@ -31,7 +31,7 @@ class CheckArbitrageOpportunitiesJob implements ShouldQueue
                 if ($baseCurrency->code !== $quoteCurrency->code) {
                     $pairs[] = [
                         'base' => $baseCurrency->code,
-                        'quote' => $quoteCurrency->code
+                        'quote' => $quoteCurrency->code,
                     ];
                 }
             }
@@ -45,10 +45,10 @@ class CheckArbitrageOpportunitiesJob implements ShouldQueue
                     $pair['quote']
                 );
 
-                if (!empty($opportunities)) {
+                if (! empty($opportunities)) {
                     Log::info('Arbitrage opportunities found', [
                         'pair' => "{$pair['base']}/{$pair['quote']}",
-                        'opportunities' => $opportunities
+                        'opportunities' => $opportunities,
                     ]);
 
                     // Here you could dispatch jobs to execute arbitrage trades
@@ -57,7 +57,7 @@ class CheckArbitrageOpportunitiesJob implements ShouldQueue
             } catch (\Exception $e) {
                 Log::error('Failed to check arbitrage opportunities', [
                     'pair' => "{$pair['base']}/{$pair['quote']}",
-                    'error' => $e->getMessage()
+                    'error' => $e->getMessage(),
                 ]);
             }
         }
@@ -67,7 +67,7 @@ class CheckArbitrageOpportunitiesJob implements ShouldQueue
     {
         Log::error('Arbitrage check job failed', [
             'error' => $exception->getMessage(),
-            'trace' => $exception->getTraceAsString()
+            'trace' => $exception->getTraceAsString(),
         ]);
     }
 }

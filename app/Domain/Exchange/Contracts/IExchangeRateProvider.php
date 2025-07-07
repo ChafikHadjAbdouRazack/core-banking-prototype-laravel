@@ -21,26 +21,22 @@ interface IExchangeRateProvider
 
     /**
      * Get exchange rate for a currency pair
-     * 
-     * @param string $fromCurrency
-     * @param string $toCurrency
-     * @return ExchangeRateQuote
+     *
      * @throws \App\Domain\Exchange\Exceptions\RateProviderException
      */
     public function getRate(string $fromCurrency, string $toCurrency): ExchangeRateQuote;
 
     /**
      * Get multiple exchange rates at once
-     * 
-     * @param array<string> $pairs Array of currency pairs like ['USD/EUR', 'BTC/USD']
+     *
+     * @param  array<string>  $pairs  Array of currency pairs like ['USD/EUR', 'BTC/USD']
      * @return array<string, ExchangeRateQuote>
      */
     public function getRates(array $pairs): array;
 
     /**
      * Get all available rates for a base currency
-     * 
-     * @param string $baseCurrency
+     *
      * @return array<string, ExchangeRateQuote>
      */
     public function getAllRatesForBase(string $baseCurrency): array;
@@ -52,7 +48,7 @@ interface IExchangeRateProvider
 
     /**
      * Get supported currency codes
-     * 
+     *
      * @return array<string>
      */
     public function getSupportedCurrencies(): array;

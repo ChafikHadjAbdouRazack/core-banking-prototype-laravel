@@ -50,7 +50,7 @@ final class MarketPair
 
     public function getSymbol(string $separator = '/'): string
     {
-        return $this->baseCurrency . $separator . $this->quoteCurrency;
+        return $this->baseCurrency.$separator.$this->quoteCurrency;
     }
 
     public function validatePrice(BigDecimal $price): bool
@@ -61,12 +61,13 @@ final class MarketPair
 
         // Check if price respects tick size
         $remainder = $price->remainder($this->tickSize);
+
         return $remainder->isZero();
     }
 
     public function validateAmount(BigDecimal $amount): bool
     {
-        return $amount->isGreaterThanOrEqualTo($this->minOrderSize) 
+        return $amount->isGreaterThanOrEqualTo($this->minOrderSize)
             && $amount->isLessThanOrEqualTo($this->maxOrderSize);
     }
 }

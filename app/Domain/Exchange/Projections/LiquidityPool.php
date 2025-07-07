@@ -55,7 +55,7 @@ class LiquidityPool extends Model
         if ($this->base_reserve == 0) {
             return '0';
         }
-        
+
         return \Brick\Math\BigDecimal::of($this->quote_reserve)
             ->dividedBy($this->base_reserve, 18)
             ->__toString();

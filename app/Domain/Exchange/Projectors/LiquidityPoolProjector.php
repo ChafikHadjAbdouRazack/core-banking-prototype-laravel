@@ -2,7 +2,6 @@
 
 namespace App\Domain\Exchange\Projectors;
 
-use App\Models\Account;
 use App\Domain\Exchange\Events\LiquidityAdded;
 use App\Domain\Exchange\Events\LiquidityPoolCreated;
 use App\Domain\Exchange\Events\LiquidityPoolRebalanced;
@@ -14,6 +13,7 @@ use App\Domain\Exchange\Events\PoolParametersUpdated;
 use App\Domain\Exchange\Projections\LiquidityPool;
 use App\Domain\Exchange\Projections\LiquidityProvider;
 use App\Domain\Exchange\Projections\PoolSwap;
+use App\Models\Account;
 use Brick\Math\BigDecimal;
 use Illuminate\Support\Str;
 use Spatie\EventSourcing\EventHandlers\Projectors\Projector;
@@ -28,7 +28,7 @@ class LiquidityPoolProjector extends Projector
             'password' => bcrypt('system'),
             'uuid' => Str::uuid()->toString(),
         ]);
-        
+
         // Create a system account for the pool
         $poolAccount = Account::create([
             'uuid' => Str::uuid()->toString(),
@@ -57,7 +57,7 @@ class LiquidityPoolProjector extends Projector
     public function onLiquidityAdded(LiquidityAdded $event): void
     {
         $pool = LiquidityPool::where('pool_id', $event->poolId)->firstOrFail();
-        
+
         $pool->update([
             'base_reserve' => $event->newBaseReserve,
             'quote_reserve' => $event->newQuoteReserve,
@@ -88,7 +88,7 @@ class LiquidityPoolProjector extends Projector
     public function onLiquidityRemoved(LiquidityRemoved $event): void
     {
         $pool = LiquidityPool::where('pool_id', $event->poolId)->firstOrFail();
-        
+
         $pool->update([
             'base_reserve' => $event->newBaseReserve,
             'quote_reserve' => $event->newQuoteReserve,
@@ -116,11 +116,11 @@ class LiquidityPoolProjector extends Projector
     public function onPoolFeeCollected(PoolFeeCollected $event): void
     {
         $pool = LiquidityPool::where('pool_id', $event->poolId)->firstOrFail();
-        
+
         // Update 24h metrics
         $currentFees = BigDecimal::of($pool->fees_collected_24h ?? '0');
         $currentVolume = BigDecimal::of($pool->volume_24h ?? '0');
-        
+
         $pool->update([
             'fees_collected_24h' => $currentFees->plus($event->feeAmount)->__toString(),
             'volume_24h' => $currentVolume->plus($event->swapVolume)->__toString(),
@@ -146,7 +146,7 @@ class LiquidityPoolProjector extends Projector
     {
         $pool = LiquidityPool::where('pool_id', $event->poolId)->firstOrFail();
         $providers = LiquidityProvider::where('pool_id', $event->poolId)->get();
-        
+
         $totalShares = BigDecimal::of($event->totalShares);
         $rewardAmount = BigDecimal::of($event->rewardAmount);
 
@@ -155,14 +155,14 @@ class LiquidityPoolProjector extends Projector
             if ($providerShares->isGreaterThan(0)) {
                 $shareRatio = $providerShares->dividedBy($totalShares, 18);
                 $providerReward = $rewardAmount->multipliedBy($shareRatio);
-                
+
                 $pendingRewards = $provider->pending_rewards ?? [];
                 $currentReward = BigDecimal::of($pendingRewards[$event->rewardCurrency] ?? '0');
-                
+
                 $pendingRewards[$event->rewardCurrency] = $currentReward
                     ->plus($providerReward)
                     ->__toString();
-                
+
                 $provider->update([
                     'pending_rewards' => $pendingRewards,
                 ]);
@@ -177,7 +177,7 @@ class LiquidityPoolProjector extends Projector
             ->firstOrFail();
 
         $totalClaimed = BigDecimal::of($provider->total_rewards_claimed ?? '0');
-        
+
         foreach ($event->rewards as $currency => $amount) {
             $totalClaimed = $totalClaimed->plus($amount);
         }
@@ -191,18 +191,18 @@ class LiquidityPoolProjector extends Projector
     public function onPoolParametersUpdated(PoolParametersUpdated $event): void
     {
         $pool = LiquidityPool::where('pool_id', $event->poolId)->firstOrFail();
-        
+
         $updates = [];
-        
+
         if (isset($event->changes['fee_rate'])) {
             $updates['fee_rate'] = $event->changes['fee_rate'];
         }
-        
+
         if (isset($event->changes['is_active'])) {
             $updates['is_active'] = $event->changes['is_active'];
         }
-        
-        if (!empty($updates)) {
+
+        if (! empty($updates)) {
             $pool->update($updates);
         }
     }
@@ -210,7 +210,7 @@ class LiquidityPoolProjector extends Projector
     public function onLiquidityPoolRebalanced(LiquidityPoolRebalanced $event): void
     {
         $pool = LiquidityPool::where('pool_id', $event->poolId)->firstOrFail();
-        
+
         // Log rebalancing in metadata
         $metadata = $pool->metadata ?? [];
         $metadata['last_rebalance'] = [
@@ -220,7 +220,7 @@ class LiquidityPoolProjector extends Projector
             'amount' => $event->rebalanceAmount,
             'currency' => $event->rebalanceCurrency,
         ];
-        
+
         $pool->update([
             'metadata' => $metadata,
         ]);

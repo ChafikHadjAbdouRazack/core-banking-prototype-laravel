@@ -30,7 +30,7 @@ class CircuitBreakerService
                     throw new \RuntimeException("Circuit breaker is OPEN for service: {$service}");
                 }
                 // Fall through to half-open check
-                
+
             case 'half-open':
                 if ($state === 'half-open') {
                     // Allow limited traffic through
@@ -94,6 +94,7 @@ class CircuitBreakerService
                 'exception' => $exception->getMessage(),
                 'context' => $context,
             ]);
+
             return;
         }
 

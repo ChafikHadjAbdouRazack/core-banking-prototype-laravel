@@ -30,11 +30,11 @@ class CalculatePoolSharesActivity extends Activity
     private function calculateSharesForAddition(LiquidityAdditionInput $input): array
     {
         $pool = PoolProjection::where('pool_id', $input->poolId)->firstOrFail();
-        
+
         $baseReserve = BigDecimal::of($pool->base_reserve);
         $quoteReserve = BigDecimal::of($pool->quote_reserve);
         $totalShares = BigDecimal::of($pool->total_shares);
-        
+
         $baseAmount = BigDecimal::of($input->baseAmount);
         $quoteAmount = BigDecimal::of($input->quoteAmount);
 
@@ -45,7 +45,7 @@ class CalculatePoolSharesActivity extends Activity
             // Calculate shares proportionally
             $baseRatio = $baseAmount->dividedBy($baseReserve, 18);
             $quoteRatio = $quoteAmount->dividedBy($quoteReserve, 18);
-            
+
             // Use the minimum ratio to prevent manipulation
             $ratio = $baseRatio->isLessThan($quoteRatio) ? $baseRatio : $quoteRatio;
             $shares = $totalShares->multipliedBy($ratio);
@@ -53,8 +53,8 @@ class CalculatePoolSharesActivity extends Activity
 
         return [
             'shares' => $shares->__toString(),
-            'share_price' => $totalShares->isZero() 
-                ? '1' 
+            'share_price' => $totalShares->isZero()
+                ? '1'
                 : $baseReserve->plus($quoteReserve)->dividedBy($totalShares, 18)->__toString(),
         ];
     }
@@ -63,13 +63,13 @@ class CalculatePoolSharesActivity extends Activity
     {
         $sharesDecimal = BigDecimal::of($shares);
         $totalShares = BigDecimal::of($pool->total_shares);
-        
+
         if ($sharesDecimal->isGreaterThan($totalShares)) {
             throw new \DomainException('Shares exceed total pool shares');
         }
 
         $shareRatio = $sharesDecimal->dividedBy($totalShares, 18);
-        
+
         $baseAmount = BigDecimal::of($pool->base_reserve)->multipliedBy($shareRatio);
         $quoteAmount = BigDecimal::of($pool->quote_reserve)->multipliedBy($shareRatio);
 
