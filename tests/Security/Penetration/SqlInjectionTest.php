@@ -6,6 +6,7 @@ use App\Models\Account;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class SqlInjectionTest extends TestCase
@@ -140,9 +141,7 @@ class SqlInjectionTest extends TestCase
         $this->assertStringNotContainsString('SQL syntax', $content);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function test_raw_queries_use_parameter_binding()
     {
         // This test verifies that any raw queries in the codebase use proper binding
@@ -182,9 +181,7 @@ class SqlInjectionTest extends TestCase
         $this->assertStringNotContainsString('SQLSTATE', $content);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function test_pagination_is_protected_against_sql_injection()
     {
         $payloads = [
@@ -216,9 +213,7 @@ class SqlInjectionTest extends TestCase
         }
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function test_stored_procedures_are_protected()
     {
         // Test that procedure calls are properly escaped

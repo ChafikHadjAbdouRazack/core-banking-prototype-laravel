@@ -5,6 +5,7 @@ namespace Tests\Security\Penetration;
 use App\Models\Account;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class XssTest extends TestCase
@@ -140,9 +141,7 @@ class XssTest extends TestCase
         }
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function test_json_responses_have_proper_content_type()
     {
         // Ensure JSON responses can't be interpreted as HTML
@@ -218,9 +217,7 @@ class XssTest extends TestCase
         $this->assertStringNotContainsString('<img src=x onerror=', $content);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function test_file_upload_names_are_protected_against_xss()
     {
         $xssFilenames = [
@@ -248,9 +245,7 @@ class XssTest extends TestCase
         }
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function test_csp_headers_are_present()
     {
         $response = $this->withToken($this->token)->getJson('/api/v2/profile');
@@ -266,9 +261,7 @@ class XssTest extends TestCase
         $this->assertTrue($hasCSP);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function test_dom_based_xss_protection()
     {
         $domXssPayloads = [

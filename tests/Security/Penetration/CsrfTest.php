@@ -5,7 +5,10 @@ namespace Tests\Security\Penetration;
 use App\Models\Account;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Session;
+use Laravel\Sanctum\Sanctum;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class CsrfTest extends TestCase
@@ -30,9 +33,7 @@ class CsrfTest extends TestCase
         ]);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function test_api_endpoints_are_protected_against_csrf_for_state_changing_operations()
     {
         // Test that API uses token authentication instead of cookies
@@ -71,9 +72,7 @@ class CsrfTest extends TestCase
         }
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function test_cors_headers_prevent_unauthorized_cross_origin_requests()
     {
         $response = $this->withHeaders([
@@ -102,9 +101,7 @@ class CsrfTest extends TestCase
         }
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function test_same_site_cookie_attribute_is_set()
     {
         // If the application uses cookies for any purpose
@@ -122,9 +119,7 @@ class CsrfTest extends TestCase
         }
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function test_referrer_validation_for_sensitive_operations()
     {
         $maliciousReferrers = [
@@ -155,9 +150,7 @@ class CsrfTest extends TestCase
         }
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function test_double_submit_cookie_pattern_if_implemented()
     {
         // Test if double-submit cookie pattern is used
@@ -180,9 +173,7 @@ class CsrfTest extends TestCase
         $this->assertNotEquals(419, $response->status());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function test_custom_request_headers_for_csrf_mitigation()
     {
         // Test that API requires custom headers that are hard to set from forms
@@ -214,9 +205,7 @@ class CsrfTest extends TestCase
         $this->assertContains($response->status(), [400, 415, 422]);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function test_token_rotation_for_sensitive_operations()
     {
         // Create initial token
@@ -240,26 +229,34 @@ class CsrfTest extends TestCase
         }
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function test_rate_limiting_prevents_csrf_abuse()
     {
         // Enable rate limiting for this test
         config(['rate_limiting.enabled' => true]);
         config(['rate_limiting.force_in_tests' => true]);
+        
+        // Clear any existing rate limit cache for this user
+        Cache::flush();
+        
+        // Use Sanctum actingAs to properly authenticate
+        Sanctum::actingAs($this->user);
 
         // Even with valid token, rapid requests should be rate limited
+        // Transfer limit is 15 per hour, so we should hit it quickly
         $responses = [];
+        
+        // Create destination account once to avoid hitting model creation limits
+        $destinationAccount = Account::factory()->create(['user_uuid' => $this->user->uuid]);
 
-        for ($i = 0; $i < 100; $i++) {
-            $response = $this->withToken($this->token)
-                ->postJson('/api/v2/transfers', [
-                    'from_account' => $this->account->uuid,
-                    'to_account'   => Account::factory()->create()->uuid,
-                    'amount'       => 1,
-                    'currency'     => 'USD',
-                ]);
+        for ($i = 0; $i < 20; $i++) { // Only need 20 attempts to exceed 15 limit
+            $response = $this->postJson('/api/v2/transfers', [
+                'from_account' => $this->account->uuid,
+                'to_account'   => $destinationAccount->uuid,
+                'amount'       => 100, // Amount in cents
+                'currency'     => 'USD',
+                'description'  => 'Test transfer ' . $i,
+            ]);
 
             $responses[] = $response->status();
 
@@ -268,13 +265,12 @@ class CsrfTest extends TestCase
             }
         }
 
-        // Should hit rate limit before 100 requests
+        // Should hit rate limit at 16th request (after 15 successful ones)
         $this->assertContains(429, $responses, 'Rate limiting should be enforced');
+        $this->assertLessThanOrEqual(16, count($responses), 'Should hit rate limit by 16th request');
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function test_origin_validation_for_websocket_connections()
     {
         // If WebSockets are used, test origin validation
@@ -302,9 +298,7 @@ class CsrfTest extends TestCase
         }
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function test_form_action_hijacking_protection()
     {
         // Test that forms (if any) have proper action URLs
@@ -325,9 +319,7 @@ class CsrfTest extends TestCase
         }
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function test_clickjacking_protection_headers()
     {
         $response = $this->withToken($this->token)->getJson('/api/v2/accounts');
