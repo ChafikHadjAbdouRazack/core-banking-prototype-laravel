@@ -7,6 +7,7 @@ namespace App\Domain\Exchange\Services;
 use App\Domain\Asset\Models\ExchangeRate;
 use App\Domain\Asset\Services\ExchangeRateService;
 use App\Domain\Exchange\ValueObjects\ExchangeRateQuote;
+use Brick\Math\RoundingMode;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -52,7 +53,20 @@ class EnhancedExchangeRateService extends ExchangeRateService
     public function fetchAndStoreRate(string $fromAsset, string $toAsset): ?ExchangeRate
     {
         try {
-            $quote = $this->providerRegistry->getRate($fromAsset, $toAsset);
+            $rate = $this->providerRegistry->getRate($fromAsset, $toAsset);
+            
+            if ($rate === null) {
+                return null;
+            }
+
+            // Create a quote object from the rate
+            $quote = new ExchangeRateQuote(
+                fromCurrency: $fromAsset,
+                toCurrency: $toAsset,
+                rate: (float) $rate->toScale(8, RoundingMode::HALF_UP)->__toString(),
+                provider: 'registry',
+                timestamp: now()
+            );
 
             // Store in database
             return $this->storeQuote($quote);
@@ -72,7 +86,20 @@ class EnhancedExchangeRateService extends ExchangeRateService
      */
     public function fetchRateAsFloat(string $from, string $to): float
     {
-        $quote = $this->providerRegistry->getRate($from, $to);
+        $rate = $this->providerRegistry->getRate($from, $to);
+        
+        if ($rate === null) {
+            throw new \Exception("Failed to fetch exchange rate for {$from}/{$to}");
+        }
+
+        // Create a quote object from the rate
+        $quote = new ExchangeRateQuote(
+            fromCurrency: $from,
+            toCurrency: $to,
+            rate: (float) $rate->toScale(8, RoundingMode::HALF_UP)->__toString(),
+            provider: 'registry',
+            timestamp: now()
+        );
 
         // Store in database
         $this->storeQuote($quote);
