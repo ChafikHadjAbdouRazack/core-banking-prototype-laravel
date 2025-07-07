@@ -66,9 +66,9 @@ class LockAccountBalanceActivity extends Activity
 
             if (bccomp($availableBalance, $amountToLock, 18) < 0) {
                 return (object) [
-                    'success' => false,
-                    'message' => "Insufficient {$currencyToLock} balance",
-                    'required' => $amountToLock,
+                    'success'   => false,
+                    'message'   => "Insufficient {$currencyToLock} balance",
+                    'required'  => $amountToLock,
                     'available' => $availableBalance,
                 ];
             }
@@ -79,18 +79,18 @@ class LockAccountBalanceActivity extends Activity
 
             // Store lock information for later release
             \Cache::put("order_lock:{$lockId}", [
-                'order_id' => $orderId,
+                'order_id'   => $orderId,
                 'account_id' => $order->account_id,
-                'currency' => $currencyToLock,
-                'amount' => $amountToLock,
+                'currency'   => $currencyToLock,
+                'amount'     => $amountToLock,
                 'created_at' => now(),
             ], now()->addHours(24));
 
             return (object) [
-                'success' => true,
-                'lockId' => $lockId,
+                'success'      => true,
+                'lockId'       => $lockId,
                 'amountLocked' => $amountToLock,
-                'currency' => $currencyToLock,
+                'currency'     => $currencyToLock,
             ];
         });
     }

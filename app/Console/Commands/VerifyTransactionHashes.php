@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands;
 
-use App\Domain\Account\Aggregates\LedgerAggregate;
 use App\Domain\Account\Aggregates\TransactionAggregate;
 use App\Domain\Account\Events\HasHash;
 use App\Domain\Account\Exceptions\InvalidHashException;
@@ -28,8 +27,8 @@ class VerifyTransactionHashes extends Command
     protected $description = 'Verify the hashes of all transaction events to ensure data integrity';
 
     /**
-     * @param \App\Domain\Account\Repositories\TransactionRepository $transactionRepository
-     * @param \App\Domain\Account\Repositories\AccountRepository $accountRepository
+     * @param TransactionRepository $transactionRepository
+     * @param AccountRepository $accountRepository
      * @param array $erroneous_accounts
      * @param array $erroneous_transactions
      */
@@ -88,15 +87,15 @@ class VerifyTransactionHashes extends Command
                 } catch (InvalidHashException $e) {
                     // Log the hash validation error with full context
                     Log::error('Transaction hash validation failed', [
-                        'aggregate_uuid' => $aggregate->uuid(),
-                        'event_class' => get_class($event),
-                        'event_uuid' => method_exists($event, 'aggregateRootUuid') ? $event->aggregateRootUuid() : null,
-                        'event_hash' => $event->hash->toString(),
-                        'money_amount' => $event->money->getAmount(),
-                        'money_currency' => $event->money->getCurrency()->getCode(),
+                        'aggregate_uuid'    => $aggregate->uuid(),
+                        'event_class'       => get_class($event),
+                        'event_uuid'        => method_exists($event, 'aggregateRootUuid') ? $event->aggregateRootUuid() : null,
+                        'event_hash'        => $event->hash->toString(),
+                        'money_amount'      => $event->money->getAmount(),
+                        'money_currency'    => $event->money->getCurrency()->getCode(),
                         'exception_message' => $e->getMessage(),
-                        'exception_code' => $e->getCode(),
-                        'timestamp' => now()->toISOString(),
+                        'exception_code'    => $e->getCode(),
+                        'timestamp'         => now()->toISOString(),
                     ]);
 
                     $this->erroneous_transactions[] = $event;

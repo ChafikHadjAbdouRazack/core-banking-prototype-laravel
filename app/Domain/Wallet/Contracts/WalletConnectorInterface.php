@@ -8,7 +8,7 @@ use App\Domain\Wallet\ValueObjects\WalletAddress;
 interface WalletConnectorInterface
 {
     /**
-     * Generate a new wallet address
+     * Generate a new wallet address.
      *
      * @param string $blockchain
      * @param string $accountId
@@ -17,7 +17,7 @@ interface WalletConnectorInterface
     public function generateAddress(string $blockchain, string $accountId): WalletAddress;
 
     /**
-     * Get wallet balance from blockchain
+     * Get wallet balance from blockchain.
      *
      * @param string $blockchain
      * @param string $address
@@ -26,7 +26,7 @@ interface WalletConnectorInterface
     public function getBalance(string $blockchain, string $address): array;
 
     /**
-     * Send transaction to blockchain
+     * Send transaction to blockchain.
      *
      * @param string $blockchain
      * @param string $fromAddress
@@ -44,7 +44,7 @@ interface WalletConnectorInterface
     ): BlockchainTransaction;
 
     /**
-     * Get transaction status
+     * Get transaction status.
      *
      * @param string $blockchain
      * @param string $transactionHash
@@ -53,7 +53,7 @@ interface WalletConnectorInterface
     public function getTransactionStatus(string $blockchain, string $transactionHash): array;
 
     /**
-     * Monitor incoming transactions
+     * Monitor incoming transactions.
      *
      * @param string $blockchain
      * @param string $address
@@ -67,7 +67,7 @@ interface WalletConnectorInterface
     ): array;
 
     /**
-     * Validate address format
+     * Validate address format.
      *
      * @param string $blockchain
      * @param string $address
@@ -76,7 +76,7 @@ interface WalletConnectorInterface
     public function validateAddress(string $blockchain, string $address): bool;
 
     /**
-     * Get network fee estimate
+     * Get network fee estimate.
      *
      * @param string $blockchain
      * @param string $priority
@@ -85,7 +85,7 @@ interface WalletConnectorInterface
     public function estimateNetworkFee(string $blockchain, string $priority = 'medium'): array;
 
     /**
-     * Get supported blockchains
+     * Get supported blockchains.
      *
      * @return array
      */

@@ -6,18 +6,18 @@ namespace App\Domain\Stablecoin\Workflows;
 
 use App\Domain\Account\DataObjects\AccountUuid;
 use App\Domain\Stablecoin\Workflows\Activities\BurnStablecoinActivity;
+use App\Domain\Stablecoin\Workflows\Activities\ClosePositionActivity;
+use App\Domain\Stablecoin\Workflows\Activities\LockCollateralActivity;
+use App\Domain\Stablecoin\Workflows\Activities\MintStablecoinActivity;
 use App\Domain\Stablecoin\Workflows\Activities\ReleaseCollateralActivity;
 use App\Domain\Stablecoin\Workflows\Activities\UpdatePositionActivity;
-use App\Domain\Stablecoin\Workflows\Activities\ClosePositionActivity;
-use App\Domain\Stablecoin\Workflows\Activities\MintStablecoinActivity;
-use App\Domain\Stablecoin\Workflows\Activities\LockCollateralActivity;
-use Workflow\Workflow;
 use Workflow\ActivityStub;
+use Workflow\Workflow;
 
 class BurnStablecoinWorkflow extends Workflow
 {
     /**
-     * Execute stablecoin burning workflow with compensation pattern
+     * Execute stablecoin burning workflow with compensation pattern.
      */
     public function execute(
         AccountUuid $accountUuid,
@@ -38,7 +38,7 @@ class BurnStablecoinWorkflow extends Workflow
             );
 
             // Add compensation to mint stablecoins back on failure
-            $this->addCompensation(fn() => ActivityStub::make(
+            $this->addCompensation(fn () => ActivityStub::make(
                 MintStablecoinActivity::class,
                 $accountUuid,
                 $positionUuid,
@@ -56,7 +56,7 @@ class BurnStablecoinWorkflow extends Workflow
             );
 
             // Add compensation to lock collateral back on failure
-            $this->addCompensation(fn() => ActivityStub::make(
+            $this->addCompensation(fn () => ActivityStub::make(
                 LockCollateralActivity::class,
                 $accountUuid,
                 $positionUuid,

@@ -5,7 +5,12 @@ declare(strict_types=1);
 namespace App\Domain\Banking\Connectors;
 
 use App\Domain\Banking\Contracts\IBankConnector;
-use App\Domain\Banking\Models\{BankAccount, BankBalance, BankCapabilities, BankStatement, BankTransaction, BankTransfer};
+use App\Domain\Banking\Models\BankAccount;
+use App\Domain\Banking\Models\BankBalance;
+use App\Domain\Banking\Models\BankCapabilities;
+use App\Domain\Banking\Models\BankStatement;
+use App\Domain\Banking\Models\BankTransaction;
+use App\Domain\Banking\Models\BankTransfer;
 use App\Domain\Custodian\Contracts\ICustodianConnector;
 use App\Domain\Custodian\ValueObjects\TransferRequest;
 use Carbon\Carbon;
@@ -13,12 +18,14 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
 /**
- * Adapter to use existing Custodian connectors as Bank connectors
+ * Adapter to use existing Custodian connectors as Bank connectors.
  */
 class BankConnectorAdapter implements IBankConnector
 {
     private ICustodianConnector $custodianConnector;
+
     private string $bankCode;
+
     private string $bankName;
 
     public function __construct(
@@ -56,7 +63,7 @@ class BankConnectorAdapter implements IBankConnector
             supportedTransferTypes: ['INTERNAL', 'SEPA', 'SWIFT'],
             features: ['multi_currency', 'instant_transfers', 'api_access'],
             limits: [
-                'SEPA' => ['EUR' => ['min' => 100, 'max' => 10000000, 'daily' => 50000000]],
+                'SEPA'  => ['EUR' => ['min' => 100, 'max' => 10000000, 'daily' => 50000000]],
                 'SWIFT' => ['USD' => ['min' => 100, 'max' => 100000000, 'daily' => 500000000]],
             ],
             fees: [
@@ -81,7 +88,7 @@ class BankConnectorAdapter implements IBankConnector
     public function authenticate(): void
     {
         // Custodian connectors handle auth internally
-        if (!$this->custodianConnector->isAvailable()) {
+        if (! $this->custodianConnector->isAvailable()) {
             throw new \App\Domain\Banking\Exceptions\BankAuthenticationException(
                 "Failed to authenticate with {$this->bankName}"
             );
@@ -279,8 +286,8 @@ class BankConnectorAdapter implements IBankConnector
             currency: 'EUR', // Would need to determine from account
             transactions: $transactions,
             summary: [
-                'total_debits' => $transactions->filter(fn($tx) => $tx->isDebit())->count(),
-                'total_credits' => $transactions->filter(fn($tx) => $tx->isCredit())->count(),
+                'total_debits'       => $transactions->filter(fn ($tx) => $tx->isDebit())->count(),
+                'total_credits'      => $transactions->filter(fn ($tx) => $tx->isCredit())->count(),
                 'total_transactions' => $transactions->count(),
             ],
             fileUrl: null,
@@ -304,10 +311,10 @@ class BankConnectorAdapter implements IBankConnector
     {
         // Return default limits based on transfer type
         return match ($transferType) {
-            'SEPA' => ['min' => 100, 'max' => 10000000, 'daily' => 50000000],
-            'SWIFT' => ['min' => 100, 'max' => 100000000, 'daily' => 500000000],
+            'SEPA'     => ['min' => 100, 'max' => 10000000, 'daily' => 50000000],
+            'SWIFT'    => ['min' => 100, 'max' => 100000000, 'daily' => 500000000],
             'INTERNAL' => ['min' => 1, 'max' => PHP_INT_MAX, 'daily' => PHP_INT_MAX],
-            default => ['min' => 100, 'max' => 1000000, 'daily' => 5000000],
+            default    => ['min' => 100, 'max' => 1000000, 'daily' => 5000000],
         };
     }
 

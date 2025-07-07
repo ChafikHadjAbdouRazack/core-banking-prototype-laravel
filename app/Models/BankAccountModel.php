@@ -35,7 +35,7 @@ class BankAccountModel extends Model
     ];
 
     /**
-     * Get the user that owns the bank account
+     * Get the user that owns the bank account.
      */
     public function user(): BelongsTo
     {
@@ -43,7 +43,7 @@ class BankAccountModel extends Model
     }
 
     /**
-     * Scope to get active accounts
+     * Scope to get active accounts.
      */
     public function scopeActive($query)
     {
@@ -51,20 +51,22 @@ class BankAccountModel extends Model
     }
 
     /**
-     * Get masked account number for display
+     * Get masked account number for display.
      */
     public function getMaskedAccountNumber(): string
     {
         $decrypted = decrypt($this->account_number);
+
         return '...' . substr($decrypted, -4);
     }
 
     /**
-     * Get masked IBAN for display
+     * Get masked IBAN for display.
      */
     public function getMaskedIBAN(): string
     {
         $decrypted = decrypt($this->iban);
+
         return substr($decrypted, 0, 4) . ' **** **** **** ' . substr($decrypted, -4);
     }
 }

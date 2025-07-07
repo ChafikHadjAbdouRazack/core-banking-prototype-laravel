@@ -3,21 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Models\FraudCase;
-use App\Domain\Transaction\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class FraudAlertsController extends Controller
 {
     /**
-     * Display fraud alerts dashboard
+     * Display fraud alerts dashboard.
      */
     public function index(Request $request)
     {
         $user = Auth::user();
 
         // Base query
-        if (!$user->can('view_fraud_alerts')) {
+        if (! $user->can('view_fraud_alerts')) {
             // For regular customers, show only their fraud alerts
             $query = FraudCase::whereHas('subjectAccount', function ($q) use ($user) {
                 $q->where('user_uuid', $user->uuid);
@@ -80,12 +79,12 @@ class FraudAlertsController extends Controller
         }
 
         $stats = [
-            'total_cases' => (clone $statsQuery)->count(),
-            'pending_cases' => (clone $statsQuery)->where('status', 'pending')->count(),
-            'confirmed_cases' => (clone $statsQuery)->where('status', 'confirmed')->count(),
-            'false_positives' => (clone $statsQuery)->where('status', 'false_positive')->count(),
+            'total_cases'         => (clone $statsQuery)->count(),
+            'pending_cases'       => (clone $statsQuery)->where('status', 'pending')->count(),
+            'confirmed_cases'     => (clone $statsQuery)->where('status', 'confirmed')->count(),
+            'false_positives'     => (clone $statsQuery)->where('status', 'false_positive')->count(),
             'investigating_cases' => (clone $statsQuery)->where('status', 'investigating')->count(),
-            'resolved_cases' => (clone $statsQuery)->where('status', 'resolved')->count(),
+            'resolved_cases'      => (clone $statsQuery)->where('status', 'resolved')->count(),
         ];
 
         // Get trend data for the last 30 days
@@ -107,7 +106,7 @@ class FraudAlertsController extends Controller
     }
 
     /**
-     * Show fraud case details
+     * Show fraud case details.
      */
     public function show(FraudCase $fraudCase)
     {
@@ -127,7 +126,7 @@ class FraudAlertsController extends Controller
     }
 
     /**
-     * Update fraud case status
+     * Update fraud case status.
      */
     public function updateStatus(Request $request, FraudCase $fraudCase)
     {
@@ -135,14 +134,14 @@ class FraudAlertsController extends Controller
 
         $request->validate([
             'status' => 'required|in:pending,investigating,confirmed,false_positive,resolved',
-            'notes' => 'nullable|string|max:1000',
+            'notes'  => 'nullable|string|max:1000',
         ]);
 
         $fraudCase->update([
-            'status' => $request->status,
+            'status'             => $request->status,
             'investigator_notes' => $request->notes,
-            'investigated_by' => Auth::id(),
-            'investigated_at' => now(),
+            'investigated_by'    => Auth::id(),
+            'investigated_at'    => now(),
         ]);
 
         return redirect()->route('fraud.alerts.show', $fraudCase)
@@ -150,7 +149,7 @@ class FraudAlertsController extends Controller
     }
 
     /**
-     * Export fraud cases to CSV
+     * Export fraud cases to CSV.
      */
     public function export(Request $request)
     {
@@ -159,7 +158,7 @@ class FraudAlertsController extends Controller
         $filename = 'fraud-cases-' . date('Y-m-d') . '.csv';
 
         $headers = [
-            'Content-Type' => 'text/csv',
+            'Content-Type'        => 'text/csv',
             'Content-Disposition' => 'attachment; filename="' . $filename . '"',
         ];
 
@@ -177,14 +176,14 @@ class FraudAlertsController extends Controller
                 'Currency',
                 'Detected At',
                 'Resolved At',
-                'Description'
+                'Description',
             ]);
 
             // Apply same filters as index
             $user = Auth::user();
             $query = FraudCase::query();
 
-            if (!$user->can('view_fraud_alerts')) {
+            if (! $user->can('view_fraud_alerts')) {
                 $query->whereHas('subjectAccount', function ($q) use ($user) {
                     $q->where('user_uuid', $user->uuid);
                 });
@@ -214,7 +213,7 @@ class FraudAlertsController extends Controller
                             $case->currency ?? 'USD',
                             $case->detected_at->format('Y-m-d H:i:s'),
                             $case->resolved_at?->format('Y-m-d H:i:s') ?? '',
-                            $case->description ?? ''
+                            $case->description ?? '',
                         ]);
                     }
                   });
@@ -226,7 +225,7 @@ class FraudAlertsController extends Controller
     }
 
     /**
-     * Get fraud trend data for the last 30 days
+     * Get fraud trend data for the last 30 days.
      */
     private function getFraudTrendData($baseQuery)
     {
@@ -241,8 +240,8 @@ class FraudAlertsController extends Controller
                 ->count();
 
             $trendData[] = [
-                'date' => $date->format('M d'),
-                'count' => $count
+                'date'  => $date->format('M d'),
+                'count' => $count,
             ];
         }
 
@@ -250,20 +249,20 @@ class FraudAlertsController extends Controller
     }
 
     /**
-     * Get risk score distribution
+     * Get risk score distribution.
      */
     private function getRiskDistribution($baseQuery)
     {
         return [
-            'low' => (clone $baseQuery)->whereBetween('risk_score', [0, 30])->count(),
-            'medium' => (clone $baseQuery)->whereBetween('risk_score', [31, 60])->count(),
-            'high' => (clone $baseQuery)->whereBetween('risk_score', [61, 80])->count(),
+            'low'      => (clone $baseQuery)->whereBetween('risk_score', [0, 30])->count(),
+            'medium'   => (clone $baseQuery)->whereBetween('risk_score', [31, 60])->count(),
+            'high'     => (clone $baseQuery)->whereBetween('risk_score', [61, 80])->count(),
             'critical' => (clone $baseQuery)->where('risk_score', '>', 80)->count(),
         ];
     }
 
     /**
-     * Get fraud type distribution
+     * Get fraud type distribution.
      */
     private function getTypeDistribution($baseQuery)
     {

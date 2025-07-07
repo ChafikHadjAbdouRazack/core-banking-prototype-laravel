@@ -13,7 +13,7 @@ use Workflow\Activity;
 class MintStablecoinActivity extends Activity
 {
     /**
-     * Mint stablecoins to account
+     * Mint stablecoins to account.
      */
     public function execute(
         AccountUuid $accountUuid,

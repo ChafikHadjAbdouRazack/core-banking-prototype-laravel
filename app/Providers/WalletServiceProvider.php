@@ -2,12 +2,12 @@
 
 namespace App\Providers;
 
-use App\Domain\Wallet\Contracts\WalletServiceInterface;
 use App\Domain\Wallet\Contracts\WalletConnectorInterface;
+use App\Domain\Wallet\Contracts\WalletServiceInterface;
 use App\Domain\Wallet\Projectors\BlockchainWalletProjector;
-use App\Domain\Wallet\Services\WalletService;
 use App\Domain\Wallet\Services\BlockchainWalletService;
 use App\Domain\Wallet\Services\KeyManagementService;
+use App\Domain\Wallet\Services\WalletService;
 use Illuminate\Support\ServiceProvider;
 use Spatie\EventSourcing\Facades\Projectionist;
 

@@ -28,32 +28,32 @@ class ContactSubmission extends Model
     ];
 
     /**
-     * Get subject label
+     * Get subject label.
      */
     public function getSubjectLabelAttribute()
     {
         $labels = [
-            'account' => 'Account Issues',
-            'technical' => 'Technical Support',
-            'billing' => 'Billing & Payments',
-            'gcu' => 'GCU Questions',
-            'api' => 'API & Integration',
+            'account'    => 'Account Issues',
+            'technical'  => 'Technical Support',
+            'billing'    => 'Billing & Payments',
+            'gcu'        => 'GCU Questions',
+            'api'        => 'API & Integration',
             'compliance' => 'Compliance & Security',
-            'other' => 'Other',
+            'other'      => 'Other',
         ];
 
         return $labels[$this->subject] ?? 'Unknown';
     }
 
     /**
-     * Get priority color
+     * Get priority color.
      */
     public function getPriorityColorAttribute()
     {
         $colors = [
-            'low' => 'gray',
+            'low'    => 'gray',
             'medium' => 'yellow',
-            'high' => 'orange',
+            'high'   => 'orange',
             'urgent' => 'red',
         ];
 
@@ -61,13 +61,13 @@ class ContactSubmission extends Model
     }
 
     /**
-     * Mark as responded
+     * Mark as responded.
      */
     public function markAsResponded($notes = null)
     {
         $this->update([
-            'status' => 'responded',
-            'responded_at' => now(),
+            'status'         => 'responded',
+            'responded_at'   => now(),
             'response_notes' => $notes,
         ]);
     }

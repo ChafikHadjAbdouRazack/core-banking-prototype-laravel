@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Filament\Admin\Resources\PollResource\Pages;
 
 use App\Filament\Admin\Resources\PollResource;
-use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreatePoll extends CreateRecord

@@ -2,16 +2,16 @@
 
 namespace App\Domain\Lending\Aggregates;
 
-use App\Domain\Lending\Events\LoanApplicationSubmitted;
-use App\Domain\Lending\Events\LoanApplicationCreditCheckCompleted;
-use App\Domain\Lending\Events\LoanApplicationRiskAssessmentCompleted;
 use App\Domain\Lending\Events\LoanApplicationApproved;
+use App\Domain\Lending\Events\LoanApplicationCreditCheckCompleted;
 use App\Domain\Lending\Events\LoanApplicationRejected;
+use App\Domain\Lending\Events\LoanApplicationRiskAssessmentCompleted;
+use App\Domain\Lending\Events\LoanApplicationSubmitted;
 use App\Domain\Lending\Events\LoanApplicationWithdrawn;
 use App\Domain\Lending\Exceptions\LoanApplicationException;
+use App\Domain\Lending\Repositories\LendingEventRepository;
 use App\Domain\Lending\ValueObjects\CreditScore;
 use App\Domain\Lending\ValueObjects\RiskRating;
-use App\Domain\Lending\Repositories\LendingEventRepository;
 use Brick\Math\BigDecimal;
 use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
 use Spatie\EventSourcing\StoredEvents\Repositories\StoredEventRepository;
@@ -19,16 +19,27 @@ use Spatie\EventSourcing\StoredEvents\Repositories\StoredEventRepository;
 class LoanApplication extends AggregateRoot
 {
     private string $applicationId;
+
     private string $borrowerId;
+
     private string $requestedAmount;
+
     private int $termMonths;
+
     private string $purpose;
+
     private string $status = 'pending';
+
     private ?CreditScore $creditScore = null;
+
     private ?RiskRating $riskRating = null;
+
     private ?string $approvedAmount = null;
+
     private ?float $interestRate = null;
+
     private array $rejectionReasons = [];
+
     private array $documents = [];
 
     public static function submit(
@@ -96,7 +107,7 @@ class LoanApplication extends AggregateRoot
             throw new LoanApplicationException('Can only assess risk on pending applications');
         }
 
-        if (!$this->creditScore) {
+        if (! $this->creditScore) {
             throw new LoanApplicationException('Credit check must be completed before risk assessment');
         }
 
@@ -124,7 +135,7 @@ class LoanApplication extends AggregateRoot
             throw new LoanApplicationException('Can only approve pending applications');
         }
 
-        if (!$this->creditScore || !$this->riskRating) {
+        if (! $this->creditScore || ! $this->riskRating) {
             throw new LoanApplicationException('Credit check and risk assessment must be completed');
         }
 
@@ -166,7 +177,7 @@ class LoanApplication extends AggregateRoot
 
     public function withdraw(string $reason, string $withdrawnBy): self
     {
-        if (!in_array($this->status, ['pending', 'approved'])) {
+        if (! in_array($this->status, ['pending', 'approved'])) {
             throw new LoanApplicationException('Cannot withdraw application in current status');
         }
 

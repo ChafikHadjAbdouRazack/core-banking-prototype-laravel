@@ -6,15 +6,15 @@ namespace App\Domain\Stablecoin\Workflows;
 
 use App\Domain\Account\DataObjects\AccountUuid;
 use App\Domain\Stablecoin\Workflows\Activities\LockCollateralActivity;
-use App\Domain\Stablecoin\Workflows\Activities\UpdatePositionActivity;
 use App\Domain\Stablecoin\Workflows\Activities\ReleaseCollateralActivity;
-use Workflow\Workflow;
+use App\Domain\Stablecoin\Workflows\Activities\UpdatePositionActivity;
 use Workflow\ActivityStub;
+use Workflow\Workflow;
 
 class AddCollateralWorkflow extends Workflow
 {
     /**
-     * Execute add collateral workflow with compensation pattern
+     * Execute add collateral workflow with compensation pattern.
      */
     public function execute(
         AccountUuid $accountUuid,
@@ -33,7 +33,7 @@ class AddCollateralWorkflow extends Workflow
             );
 
             // Add compensation to release collateral on failure
-            $this->addCompensation(fn() => ActivityStub::make(
+            $this->addCompensation(fn () => ActivityStub::make(
                 ReleaseCollateralActivity::class,
                 $accountUuid,
                 $positionUuid,

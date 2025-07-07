@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Domain\Asset\Aggregates;
 
 use App\Domain\Account\DataObjects\AccountUuid;
-use App\Domain\Account\DataObjects\Money;
 use App\Domain\Account\DataObjects\Hash;
+use App\Domain\Account\DataObjects\Money;
 use App\Domain\Account\Utils\ValidatesHash;
 use App\Domain\Asset\Events\AssetTransactionCreated;
 use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
@@ -16,13 +16,17 @@ class AssetTransactionAggregate extends AggregateRoot
     use ValidatesHash;
 
     private ?AccountUuid $accountUuid = null;
+
     private ?string $assetCode = null;
+
     private ?Money $money = null;
+
     private ?string $type = null;
+
     private ?Hash $hash = null;
 
     /**
-     * Create a credit transaction for an asset
+     * Create a credit transaction for an asset.
      */
     public function credit(
         AccountUuid $accountUuid,
@@ -47,7 +51,7 @@ class AssetTransactionAggregate extends AggregateRoot
     }
 
     /**
-     * Create a debit transaction for an asset
+     * Create a debit transaction for an asset.
      */
     public function debit(
         AccountUuid $accountUuid,
@@ -72,7 +76,7 @@ class AssetTransactionAggregate extends AggregateRoot
     }
 
     /**
-     * Apply asset transaction created event
+     * Apply asset transaction created event.
      */
     public function applyAssetTransactionCreated(AssetTransactionCreated $event): void
     {
@@ -84,7 +88,7 @@ class AssetTransactionAggregate extends AggregateRoot
     }
 
     /**
-     * Get the account UUID
+     * Get the account UUID.
      */
     public function getAccountUuid(): ?AccountUuid
     {
@@ -92,7 +96,7 @@ class AssetTransactionAggregate extends AggregateRoot
     }
 
     /**
-     * Get the asset code
+     * Get the asset code.
      */
     public function getAssetCode(): ?string
     {
@@ -100,7 +104,7 @@ class AssetTransactionAggregate extends AggregateRoot
     }
 
     /**
-     * Get the money amount
+     * Get the money amount.
      */
     public function getMoney(): ?Money
     {
@@ -108,7 +112,7 @@ class AssetTransactionAggregate extends AggregateRoot
     }
 
     /**
-     * Get the transaction type
+     * Get the transaction type.
      */
     public function getType(): ?string
     {
@@ -116,7 +120,7 @@ class AssetTransactionAggregate extends AggregateRoot
     }
 
     /**
-     * Get the hash
+     * Get the hash.
      */
     public function getHash(): ?Hash
     {
@@ -124,7 +128,7 @@ class AssetTransactionAggregate extends AggregateRoot
     }
 
     /**
-     * Check if this is a credit transaction
+     * Check if this is a credit transaction.
      */
     public function isCredit(): bool
     {
@@ -132,7 +136,7 @@ class AssetTransactionAggregate extends AggregateRoot
     }
 
     /**
-     * Check if this is a debit transaction
+     * Check if this is a debit transaction.
      */
     public function isDebit(): bool
     {

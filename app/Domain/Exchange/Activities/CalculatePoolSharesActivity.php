@@ -64,7 +64,7 @@ class CalculatePoolSharesActivity extends Activity
         }
 
         return [
-            'shares' => $shares->__toString(),
+            'shares'      => $shares->__toString(),
             'share_price' => $totalShares->isZero()
                 ? '1'
                 : $baseReserve->plus($quoteReserve)->dividedBy($totalShares, 18)->__toString(),
@@ -89,11 +89,11 @@ class CalculatePoolSharesActivity extends Activity
         $quoteAmount = BigDecimal::of($pool->quote_reserve)->multipliedBy($shareRatio);
 
         return [
-            'base_amount' => $baseAmount->__toString(),
-            'quote_amount' => $quoteAmount->__toString(),
-            'base_currency' => $pool->base_currency,
+            'base_amount'    => $baseAmount->__toString(),
+            'quote_amount'   => $quoteAmount->__toString(),
+            'base_currency'  => $pool->base_currency,
             'quote_currency' => $pool->quote_currency,
-            'share_ratio' => $shareRatio->__toString(),
+            'share_ratio'    => $shareRatio->__toString(),
         ];
     }
 
@@ -103,15 +103,15 @@ class CalculatePoolSharesActivity extends Activity
     private function getPoolState(PoolProjection $pool): array
     {
         return [
-            'pool_id' => $pool->pool_id,
-            'base_currency' => $pool->base_currency,
-            'quote_currency' => $pool->quote_currency,
-            'base_reserve' => $pool->base_reserve,
-            'quote_reserve' => $pool->quote_reserve,
-            'total_shares' => $pool->total_shares,
-            'fee_rate' => $pool->fee_rate,
-            'is_active' => $pool->is_active,
-            'provider_count' => $pool->providers()->count(),
+            'pool_id'          => $pool->pool_id,
+            'base_currency'    => $pool->base_currency,
+            'quote_currency'   => $pool->quote_currency,
+            'base_reserve'     => $pool->base_reserve,
+            'quote_reserve'    => $pool->quote_reserve,
+            'total_shares'     => $pool->total_shares,
+            'fee_rate'         => $pool->fee_rate,
+            'is_active'        => $pool->is_active,
+            'provider_count'   => $pool->providers()->count(),
             'total_volume_24h' => $pool->volume_24h ?? '0',
         ];
     }

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Domain\Exchange\Projections\Order;
-use App\Domain\Exchange\Projections\OrderBook;
 use App\Domain\Exchange\Projections\Trade;
 use App\Domain\Exchange\Services\ExchangeService;
 use App\Models\Asset;
@@ -52,13 +51,13 @@ class ExchangeController extends Controller
         $markets = $this->getMarketPairs();
 
         return view('exchange.index', [
-            'baseCurrency' => $baseCurrency,
+            'baseCurrency'  => $baseCurrency,
             'quoteCurrency' => $quoteCurrency,
-            'assets' => $assets,
-            'orderBook' => $orderBook,
-            'userOrders' => $userOrders,
-            'recentTrades' => $recentTrades,
-            'markets' => $markets,
+            'assets'        => $assets,
+            'orderBook'     => $orderBook,
+            'userOrders'    => $userOrders,
+            'recentTrades'  => $recentTrades,
+            'markets'       => $markets,
         ]);
     }
 
@@ -66,7 +65,7 @@ class ExchangeController extends Controller
     {
         $account = Auth::user()->account;
 
-        if (!$account) {
+        if (! $account) {
             return redirect()->route('dashboard')->with('error', 'Please complete your account setup first.');
         }
 
@@ -84,7 +83,7 @@ class ExchangeController extends Controller
     {
         $account = Auth::user()->account;
 
-        if (!$account) {
+        if (! $account) {
             return redirect()->route('dashboard')->with('error', 'Please complete your account setup first.');
         }
 
@@ -103,7 +102,7 @@ class ExchangeController extends Controller
             ->value('total_fees') ?? '0';
 
         return view('exchange.trades', [
-            'trades' => $trades,
+            'trades'    => $trades,
             'totalFees' => $totalFees,
         ]);
     }
@@ -111,17 +110,17 @@ class ExchangeController extends Controller
     public function placeOrder(Request $request)
     {
         $validated = $request->validate([
-            'type' => ['required', 'in:buy,sell'],
-            'order_type' => ['required', 'in:market,limit'],
-            'base_currency' => ['required', 'string', 'size:3'],
+            'type'           => ['required', 'in:buy,sell'],
+            'order_type'     => ['required', 'in:market,limit'],
+            'base_currency'  => ['required', 'string', 'size:3'],
             'quote_currency' => ['required', 'string', 'size:3'],
-            'amount' => ['required', 'numeric', 'gt:0'],
-            'price' => ['required_if:order_type,limit', 'nullable', 'numeric', 'gt:0'],
+            'amount'         => ['required', 'numeric', 'gt:0'],
+            'price'          => ['required_if:order_type,limit', 'nullable', 'numeric', 'gt:0'],
         ]);
 
         $account = Auth::user()->account;
 
-        if (!$account) {
+        if (! $account) {
             return redirect()->back()->with('error', 'Please complete your account setup first.');
         }
 
@@ -135,13 +134,13 @@ class ExchangeController extends Controller
                 amount: $validated['amount'],
                 price: $validated['price'] ?? null,
                 metadata: [
-                    'source' => 'web',
+                    'source'  => 'web',
                     'user_id' => Auth::id(),
                 ]
             );
 
             return redirect()->route('exchange.index', [
-                'base' => $validated['base_currency'],
+                'base'  => $validated['base_currency'],
                 'quote' => $validated['quote_currency'],
             ])->with('success', 'Order placed successfully');
         } catch (\Exception $e) {
@@ -155,7 +154,7 @@ class ExchangeController extends Controller
     {
         $account = Auth::user()->account;
 
-        if (!$account) {
+        if (! $account) {
             return redirect()->back()->with('error', 'Please complete your account setup first.');
         }
 
@@ -164,12 +163,13 @@ class ExchangeController extends Controller
             ->where('account_id', $account->id)
             ->first();
 
-        if (!$order) {
+        if (! $order) {
             return redirect()->back()->with('error', 'Order not found');
         }
 
         try {
             $this->exchangeService->cancelOrder($orderId);
+
             return redirect()->back()->with('success', 'Order cancelled successfully');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());
@@ -177,7 +177,7 @@ class ExchangeController extends Controller
     }
 
     /**
-     * Get market pairs data
+     * Get market pairs data.
      */
     private function getMarketPairs(): array
     {

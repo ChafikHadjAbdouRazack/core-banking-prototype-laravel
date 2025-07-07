@@ -4,8 +4,8 @@ namespace App\Filament\Admin\Resources\BasketAssetResource\Pages;
 
 use App\Filament\Admin\Resources\BasketAssetResource;
 use Filament\Actions;
-use Filament\Resources\Pages\ListRecords;
 use Filament\Resources\Components\Tab;
+use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Builder;
 
 class ListBasketAssets extends ListRecords
@@ -51,8 +51,7 @@ class ListBasketAssets extends ListRecords
 
             'needs_rebalancing' => Tab::make()
                 ->label('Needs Rebalancing')
-                ->modifyQueryUsing(fn (Builder $query) =>
-                    $query->where('type', 'dynamic')
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('type', 'dynamic')
                         ->where(function ($q) {
                             $q->whereNull('last_rebalanced_at')
                                 ->orWhere(function ($q2) {

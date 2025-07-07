@@ -2,14 +2,14 @@
 
 namespace App\Domain\Account\Reactors;
 
-use App\Domain\Account\Events\TransactionThresholdReached;
 use App\Domain\Account\Aggregates\TransactionAggregate;
+use App\Domain\Account\Events\TransactionThresholdReached;
 use Spatie\EventSourcing\EventHandlers\Reactors\Reactor;
 
 class SnapshotTransactionsReactor extends Reactor
 {
     /**
-     * @param \App\Domain\Account\Aggregates\TransactionAggregate $transactions
+     * @param TransactionAggregate $transactions
      */
     public function __construct(
         protected TransactionAggregate $transactions,
@@ -17,7 +17,7 @@ class SnapshotTransactionsReactor extends Reactor
     }
 
     /**
-     * @param \App\Domain\Account\Events\TransactionThresholdReached $event
+     * @param TransactionThresholdReached $event
      *
      * @return void
      */

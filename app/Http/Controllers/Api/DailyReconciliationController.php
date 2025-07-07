@@ -27,7 +27,7 @@ class DailyReconciliationController extends Controller
     }
 
     /**
-     * Trigger daily reconciliation process
+     * Trigger daily reconciliation process.
      *
      * @OA\Post(
      *     path="/api/reconciliation/trigger",
@@ -79,10 +79,10 @@ class DailyReconciliationController extends Controller
             return response()->json([
                 'data' => [
                     'reconciliation_triggered' => true,
-                    'triggered_at' => now()->toISOString(),
-                    'report' => $report,
+                    'triggered_at'             => now()->toISOString(),
+                    'report'                   => $report,
                 ],
-                'message' => 'Daily reconciliation completed successfully'
+                'message' => 'Daily reconciliation completed successfully',
             ]);
         } catch (\Exception $e) {
             Log::error('Manual reconciliation failed', [
@@ -91,15 +91,15 @@ class DailyReconciliationController extends Controller
             ]);
 
             return response()->json([
-                'error' => 'Reconciliation failed',
-                'message' => $e->getMessage(),
+                'error'        => 'Reconciliation failed',
+                'message'      => $e->getMessage(),
                 'triggered_at' => now()->toISOString(),
             ], 500);
         }
     }
 
     /**
-     * Get latest reconciliation report
+     * Get latest reconciliation report.
      *
      * @OA\Get(
      *     path="/api/reconciliation/latest",
@@ -151,29 +151,29 @@ class DailyReconciliationController extends Controller
         try {
             $report = $this->reconciliationService->getLatestReport();
 
-            if (!$report) {
+            if (! $report) {
                 return response()->json([
-                    'data' => null,
-                    'message' => 'No reconciliation reports found'
+                    'data'    => null,
+                    'message' => 'No reconciliation reports found',
                 ], 404);
             }
 
             return response()->json([
                 'data' => [
-                    'report' => $report,
+                    'report'       => $report,
                     'retrieved_at' => now()->toISOString(),
-                ]
+                ],
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'error' => 'Failed to retrieve latest report',
-                'message' => $e->getMessage()
+                'error'   => 'Failed to retrieve latest report',
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
 
     /**
-     * Get reconciliation history
+     * Get reconciliation history.
      *
      * @OA\Get(
      *     path="/api/reconciliation/history",
@@ -239,7 +239,7 @@ class DailyReconciliationController extends Controller
     public function getHistory(Request $request): JsonResponse
     {
         $request->validate([
-            'days' => 'sometimes|integer|min:1|max:90',
+            'days'  => 'sometimes|integer|min:1|max:90',
             'limit' => 'sometimes|integer|min:1|max:50',
         ]);
 
@@ -253,9 +253,9 @@ class DailyReconciliationController extends Controller
                 return response()->json([
                     'data' => [
                         'reports' => [],
-                        'total' => 0,
+                        'total'   => 0,
                     ],
-                    'message' => 'No reconciliation reports found'
+                    'message' => 'No reconciliation reports found',
                 ]);
             }
 
@@ -269,7 +269,7 @@ class DailyReconciliationController extends Controller
                 $content = file_get_contents($file);
                 $reportData = json_decode($content, true);
 
-                if (!$reportData) {
+                if (! $reportData) {
                     continue;
                 }
 
@@ -280,34 +280,34 @@ class DailyReconciliationController extends Controller
                 }
 
                 $reports[] = [
-                    'date' => $reportDate->toDateString(),
-                    'summary' => $reportData['summary'] ?? [],
-                    'discrepancy_count' => count($reportData['discrepancies'] ?? []),
+                    'date'                  => $reportDate->toDateString(),
+                    'summary'               => $reportData['summary'] ?? [],
+                    'discrepancy_count'     => count($reportData['discrepancies'] ?? []),
                     'recommendations_count' => count($reportData['recommendations'] ?? []),
-                    'file_path' => basename($file),
-                    'file_size' => filesize($file),
-                    'generated_at' => $reportData['generated_at'] ?? null,
+                    'file_path'             => basename($file),
+                    'file_size'             => filesize($file),
+                    'generated_at'          => $reportData['generated_at'] ?? null,
                 ];
             }
 
             return response()->json([
                 'data' => [
-                    'reports' => $reports,
-                    'total' => count($reports),
-                    'period_days' => $days,
+                    'reports'      => $reports,
+                    'total'        => count($reports),
+                    'period_days'  => $days,
                     'retrieved_at' => now()->toISOString(),
-                ]
+                ],
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'error' => 'Failed to retrieve reconciliation history',
-                'message' => $e->getMessage()
+                'error'   => 'Failed to retrieve reconciliation history',
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
 
     /**
-     * Get specific reconciliation report by date
+     * Get specific reconciliation report by date.
      *
      * @OA\Get(
      *     path="/api/reconciliation/report/{date}",
@@ -376,52 +376,52 @@ class DailyReconciliationController extends Controller
         try {
             // Validate date format
             $reportDate = Carbon::createFromFormat('Y-m-d', $date);
-            if (!$reportDate) {
+            if (! $reportDate) {
                 return response()->json([
-                    'error' => 'Invalid date format. Use YYYY-MM-DD format.'
+                    'error' => 'Invalid date format. Use YYYY-MM-DD format.',
                 ], 400);
             }
 
             $filename = sprintf('reconciliation-%s.json', $date);
             $filePath = storage_path("app/reconciliation/{$filename}");
 
-            if (!file_exists($filePath)) {
+            if (! file_exists($filePath)) {
                 return response()->json([
                     'error' => 'Reconciliation report not found for the specified date',
-                    'date' => $date
+                    'date'  => $date,
                 ], 404);
             }
 
             $content = file_get_contents($filePath);
             $reportData = json_decode($content, true);
 
-            if (!$reportData) {
+            if (! $reportData) {
                 return response()->json([
-                    'error' => 'Invalid report format'
+                    'error' => 'Invalid report format',
                 ], 500);
             }
 
             return response()->json([
                 'data' => [
-                    'date' => $date,
-                    'report' => $reportData,
+                    'date'      => $date,
+                    'report'    => $reportData,
                     'file_info' => [
-                        'size' => filesize($filePath),
+                        'size'        => filesize($filePath),
                         'modified_at' => Carbon::createFromTimestamp(filemtime($filePath))->toISOString(),
                     ],
                     'retrieved_at' => now()->toISOString(),
-                ]
+                ],
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'error' => 'Failed to retrieve reconciliation report',
-                'message' => $e->getMessage()
+                'error'   => 'Failed to retrieve reconciliation report',
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
 
     /**
-     * Get reconciliation metrics summary
+     * Get reconciliation metrics summary.
      *
      * @OA\Get(
      *     path="/api/reconciliation/metrics",
@@ -510,37 +510,37 @@ class DailyReconciliationController extends Controller
                 return response()->json([
                     'data' => [
                         'metrics' => [
-                            'total_reconciliations' => 0,
+                            'total_reconciliations'      => 0,
                             'successful_reconciliations' => 0,
-                            'failed_reconciliations' => 0,
-                            'total_discrepancies' => 0,
-                            'total_discrepancy_amount' => 0,
-                            'average_duration_minutes' => 0,
-                            'accounts_checked_total' => 0,
+                            'failed_reconciliations'     => 0,
+                            'total_discrepancies'        => 0,
+                            'total_discrepancy_amount'   => 0,
+                            'average_duration_minutes'   => 0,
+                            'accounts_checked_total'     => 0,
                         ],
                         'period_days' => $days,
                     ],
-                    'message' => 'No reconciliation data found'
+                    'message' => 'No reconciliation data found',
                 ]);
             }
 
             $metrics = [
-                'total_reconciliations' => 0,
+                'total_reconciliations'      => 0,
                 'successful_reconciliations' => 0,
-                'failed_reconciliations' => 0,
-                'total_discrepancies' => 0,
-                'total_discrepancy_amount' => 0,
-                'total_duration_minutes' => 0,
-                'accounts_checked_total' => 0,
-                'discrepancy_types' => [],
-                'daily_trends' => [],
+                'failed_reconciliations'     => 0,
+                'total_discrepancies'        => 0,
+                'total_discrepancy_amount'   => 0,
+                'total_duration_minutes'     => 0,
+                'accounts_checked_total'     => 0,
+                'discrepancy_types'          => [],
+                'daily_trends'               => [],
             ];
 
             foreach ($files as $file) {
                 $content = file_get_contents($file);
                 $reportData = json_decode($content, true);
 
-                if (!$reportData || !isset($reportData['summary'])) {
+                if (! $reportData || ! isset($reportData['summary'])) {
                     continue;
                 }
 
@@ -574,11 +574,11 @@ class DailyReconciliationController extends Controller
 
                 // Daily trends
                 $metrics['daily_trends'][] = [
-                    'date' => $reportDate->toDateString(),
-                    'discrepancies' => $summary['discrepancies_found'] ?? 0,
+                    'date'             => $reportDate->toDateString(),
+                    'discrepancies'    => $summary['discrepancies_found'] ?? 0,
                     'accounts_checked' => $summary['accounts_checked'] ?? 0,
                     'duration_minutes' => $summary['duration_minutes'] ?? 0,
-                    'status' => $summary['status'] ?? 'unknown',
+                    'status'           => $summary['status'] ?? 'unknown',
                 ];
             }
 
@@ -602,23 +602,23 @@ class DailyReconciliationController extends Controller
 
             return response()->json([
                 'data' => [
-                    'metrics' => $metrics,
-                    'period_days' => $days,
-                    'period_start' => $cutoffDate->toDateString(),
-                    'period_end' => now()->toDateString(),
+                    'metrics'       => $metrics,
+                    'period_days'   => $days,
+                    'period_start'  => $cutoffDate->toDateString(),
+                    'period_end'    => now()->toDateString(),
                     'calculated_at' => now()->toISOString(),
-                ]
+                ],
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'error' => 'Failed to calculate reconciliation metrics',
-                'message' => $e->getMessage()
+                'error'   => 'Failed to calculate reconciliation metrics',
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
 
     /**
-     * Get reconciliation status (whether process is currently running)
+     * Get reconciliation status (whether process is currently running).
      *
      * @OA\Get(
      *     path="/api/reconciliation/status",
@@ -678,10 +678,10 @@ class DailyReconciliationController extends Controller
             $lastRunDate = $latestReport ? ($latestReport['summary']['date'] ?? null) : null;
 
             $status = [
-                'is_running' => $isRunning,
-                'last_run_date' => $lastRunDate,
+                'is_running'         => $isRunning,
+                'last_run_date'      => $lastRunDate,
                 'next_scheduled_run' => now()->addDay()->startOfDay()->setHour(2)->toISOString(), // Assuming daily at 2 AM
-                'status_checked_at' => now()->toISOString(),
+                'status_checked_at'  => now()->toISOString(),
             ];
 
             if ($isRunning && file_exists($lockFile)) {
@@ -691,20 +691,20 @@ class DailyReconciliationController extends Controller
 
             if ($latestReport) {
                 $status['last_run_summary'] = [
-                    'status' => $latestReport['summary']['status'] ?? 'unknown',
-                    'accounts_checked' => $latestReport['summary']['accounts_checked'] ?? 0,
+                    'status'              => $latestReport['summary']['status'] ?? 'unknown',
+                    'accounts_checked'    => $latestReport['summary']['accounts_checked'] ?? 0,
                     'discrepancies_found' => $latestReport['summary']['discrepancies_found'] ?? 0,
-                    'duration_minutes' => $latestReport['summary']['duration_minutes'] ?? 0,
+                    'duration_minutes'    => $latestReport['summary']['duration_minutes'] ?? 0,
                 ];
             }
 
             return response()->json([
-                'data' => $status
+                'data' => $status,
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'error' => 'Failed to get reconciliation status',
-                'message' => $e->getMessage()
+                'error'   => 'Failed to get reconciliation status',
+                'message' => $e->getMessage(),
             ], 500);
         }
     }

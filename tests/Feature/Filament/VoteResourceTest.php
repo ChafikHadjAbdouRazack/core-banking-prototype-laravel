@@ -38,7 +38,7 @@ describe('Vote Resource', function () {
     it('can filter votes by poll', function () {
         $poll1 = Poll::factory()->create();
         $poll2 = Poll::factory()->create();
-        
+
         $vote1 = Vote::factory()->forPoll($poll1)->create();
         $vote2 = Vote::factory()->forPoll($poll2)->create();
 
@@ -51,7 +51,7 @@ describe('Vote Resource', function () {
     it('can filter votes by user', function () {
         $user1 = User::factory()->create();
         $user2 = User::factory()->create();
-        
+
         $vote1 = Vote::factory()->forUser($user1)->create();
         $vote2 = Vote::factory()->forUser($user2)->create();
 
@@ -102,12 +102,12 @@ describe('Vote Resource', function () {
     it('displays vote validity status', function () {
         $validVote = Vote::factory()->create([
             'selected_options' => ['yes'],
-            'voting_power' => 5,
+            'voting_power'     => 5,
         ]);
 
         $invalidVote = Vote::factory()->create([
             'selected_options' => [],
-            'voting_power' => 0,
+            'voting_power'     => 0,
         ]);
 
         Livewire::test(ListVotes::class)
@@ -117,7 +117,7 @@ describe('Vote Resource', function () {
 
     it('displays voting power weight correctly', function () {
         $poll = Poll::factory()->create();
-        
+
         // Create votes with different voting powers
         $vote1 = Vote::factory()->forPoll($poll)->create(['voting_power' => 30]);
         $vote2 = Vote::factory()->forPoll($poll)->create(['voting_power' => 70]);
@@ -130,7 +130,7 @@ describe('Vote Resource', function () {
     it('can search votes by poll title', function () {
         $poll1 = Poll::factory()->create(['title' => 'Dark Mode Poll']);
         $poll2 = Poll::factory()->create(['title' => 'Light Theme Poll']);
-        
+
         $vote1 = Vote::factory()->forPoll($poll1)->create();
         $vote2 = Vote::factory()->forPoll($poll2)->create();
 
@@ -143,7 +143,7 @@ describe('Vote Resource', function () {
     it('can search votes by user name', function () {
         $user1 = User::factory()->create(['name' => 'Alice Smith']);
         $user2 = User::factory()->create(['name' => 'Bob Jones']);
-        
+
         $vote1 = Vote::factory()->forUser($user1)->create();
         $vote2 = Vote::factory()->forUser($user2)->create();
 
@@ -164,13 +164,13 @@ describe('Vote Resource', function () {
     it('displays poll status badge with correct colors', function () {
         $activePoll = Poll::factory()->active()->create();
         $draftPoll = Poll::factory()->draft()->create();
-        
+
         $activeVote = Vote::factory()->forPoll($activePoll)->create();
         $draftVote = Vote::factory()->forPoll($draftPoll)->create();
 
         Livewire::test(ListVotes::class)
-            ->assertTableColumnStateSet('poll.status', \App\Domain\Governance\Enums\PollStatus::ACTIVE, $activeVote)
-            ->assertTableColumnStateSet('poll.status', \App\Domain\Governance\Enums\PollStatus::DRAFT, $draftVote);
+            ->assertTableColumnStateSet('poll.status', App\Domain\Governance\Enums\PollStatus::ACTIVE, $activeVote)
+            ->assertTableColumnStateSet('poll.status', App\Domain\Governance\Enums\PollStatus::DRAFT, $draftVote);
     });
 
     it('prevents vote creation through admin panel', function () {
@@ -183,10 +183,10 @@ describe('Vote Resource', function () {
         ]);
 
         $component = Livewire::test(ListVotes::class);
-        
+
         // Verify the vote is visible and selected options are displayed
         $component->assertCanSeeTableRecords([$vote]);
-        
+
         // The selected options should be shown as comma-separated values
         expect($vote->getSelectedOptionsAsString())->toBe('option1, option2, option3');
     });

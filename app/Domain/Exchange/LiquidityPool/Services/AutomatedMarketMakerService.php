@@ -30,7 +30,7 @@ class AutomatedMarketMakerService
     }
 
     /**
-     * Generate market making orders for a liquidity pool
+     * Generate market making orders for a liquidity pool.
      */
     public function generateMarketMakingOrders(string $poolId): array
     {
@@ -52,7 +52,7 @@ class AutomatedMarketMakerService
     }
 
     /**
-     * Analyze market conditions to determine optimal market making strategy
+     * Analyze market conditions to determine optimal market making strategy.
      */
     private function analyzeMarketConditions(LiquidityPool $pool): array
     {
@@ -83,18 +83,18 @@ class AutomatedMarketMakerService
         $bookDepth = $this->calculateOrderBookDepth($orderBook);
 
         return [
-            'pool_price' => $poolPrice->__toString(),
-            'external_price' => $externalPrice->__toString(),
+            'pool_price'      => $poolPrice->__toString(),
+            'external_price'  => $externalPrice->__toString(),
             'price_deviation' => $priceDeviation->__toString(),
-            'volatility' => $volatility->__toString(),
-            'book_depth' => $bookDepth,
-            'volume_24h' => $pool->volume_24h,
+            'volatility'      => $volatility->__toString(),
+            'book_depth'      => $bookDepth,
+            'volume_24h'      => $pool->volume_24h,
             'liquidity_depth' => $this->calculateLiquidityDepth($pool),
         ];
     }
 
     /**
-     * Determine optimal spread based on market conditions
+     * Determine optimal spread based on market conditions.
      */
     private function determineOptimalSpread(array $marketConditions): string
     {
@@ -120,7 +120,7 @@ class AutomatedMarketMakerService
     }
 
     /**
-     * Generate buy orders at different price levels
+     * Generate buy orders at different price levels.
      */
     private function generateBuyOrders(
         LiquidityPool $pool,
@@ -146,13 +146,13 @@ class AutomatedMarketMakerService
             $quantity = $orderSize->dividedBy($price, 8, RoundingMode::DOWN);
 
             $orders[] = [
-                'type' => 'buy',
-                'price' => $price->__toString(),
+                'type'     => 'buy',
+                'price'    => $price->__toString(),
                 'quantity' => $quantity->__toString(),
-                'value' => $orderSize->__toString(),
-                'level' => $i + 1,
-                'source' => 'amm',
-                'pool_id' => $pool->pool_id,
+                'value'    => $orderSize->__toString(),
+                'level'    => $i + 1,
+                'source'   => 'amm',
+                'pool_id'  => $pool->pool_id,
             ];
         }
 
@@ -160,7 +160,7 @@ class AutomatedMarketMakerService
     }
 
     /**
-     * Generate sell orders at different price levels
+     * Generate sell orders at different price levels.
      */
     private function generateSellOrders(
         LiquidityPool $pool,
@@ -187,13 +187,13 @@ class AutomatedMarketMakerService
             $value = $quantity->multipliedBy($price);
 
             $orders[] = [
-                'type' => 'sell',
-                'price' => $price->__toString(),
+                'type'     => 'sell',
+                'price'    => $price->__toString(),
                 'quantity' => $quantity->__toString(),
-                'value' => $value->toScale(2, RoundingMode::DOWN)->__toString(),
-                'level' => $i + 1,
-                'source' => 'amm',
-                'pool_id' => $pool->pool_id,
+                'value'    => $value->toScale(2, RoundingMode::DOWN)->__toString(),
+                'level'    => $i + 1,
+                'source'   => 'amm',
+                'pool_id'  => $pool->pool_id,
             ];
         }
 
@@ -201,7 +201,7 @@ class AutomatedMarketMakerService
     }
 
     /**
-     * Calculate mid price from pool reserves
+     * Calculate mid price from pool reserves.
      */
     private function calculateMidPrice(LiquidityPool $pool): BigDecimal
     {
@@ -210,7 +210,7 @@ class AutomatedMarketMakerService
     }
 
     /**
-     * Calculate recent price volatility
+     * Calculate recent price volatility.
      */
     private function calculateRecentVolatility(LiquidityPool $pool): BigDecimal
     {
@@ -260,7 +260,7 @@ class AutomatedMarketMakerService
     }
 
     /**
-     * Calculate order book depth
+     * Calculate order book depth.
      */
     private function calculateOrderBookDepth(?OrderBook $orderBook): float
     {
@@ -278,7 +278,7 @@ class AutomatedMarketMakerService
     }
 
     /**
-     * Calculate liquidity depth ratio
+     * Calculate liquidity depth ratio.
      */
     private function calculateLiquidityDepth(LiquidityPool $pool): float
     {
@@ -296,7 +296,7 @@ class AutomatedMarketMakerService
     }
 
     /**
-     * Adjust market making parameters based on performance
+     * Adjust market making parameters based on performance.
      */
     public function adjustMarketMakingParameters(string $poolId): array
     {
@@ -326,7 +326,7 @@ class AutomatedMarketMakerService
     }
 
     /**
-     * Analyze market making performance
+     * Analyze market making performance.
      */
     private function analyzeMarketMakingPerformance(LiquidityPool $pool): array
     {
@@ -358,9 +358,9 @@ class AutomatedMarketMakerService
         $direction = $baseRatio->isGreaterThan('0.5') ? 'base_heavy' : 'quote_heavy';
 
         return [
-            'capture_rate' => $captureRate,
-            'filled_orders' => $filledOrders,
-            'total_orders' => $totalOrders,
+            'capture_rate'        => $captureRate,
+            'filled_orders'       => $filledOrders,
+            'total_orders'        => $totalOrders,
             'inventory_imbalance' => (float) $imbalance->__toString(),
             'inventory_direction' => $direction,
         ];

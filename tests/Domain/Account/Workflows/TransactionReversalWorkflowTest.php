@@ -7,16 +7,16 @@ use Workflow\WorkflowStub;
 
 it('can reverse a debit transaction', function () {
     WorkflowStub::fake();
-    
+
     $accountUuid = new AccountUuid('test-account-uuid');
     $amount = new Money(500);
     $transactionType = 'debit';
     $reason = 'Transaction posted in error';
     $authorizedBy = 'manager-456';
-    
+
     $workflow = WorkflowStub::make(TransactionReversalWorkflow::class);
     $workflow->start($accountUuid, $amount, $transactionType, $reason, $authorizedBy);
-    
+
     expect(true)->toBeTrue(); // Basic test that workflow starts without error
 });
 

@@ -11,7 +11,7 @@ class MockCreditScoringService implements CreditScoringService
     {
         $user = User::find($borrowerId);
 
-        if (!$user) {
+        if (! $user) {
             throw new \InvalidArgumentException("User not found: {$borrowerId}");
         }
 
@@ -37,13 +37,13 @@ class MockCreditScoringService implements CreditScoringService
         $score = max(300, min(850, $baseScore + $variance));
 
         return [
-            'score' => $score,
+            'score'  => $score,
             'bureau' => 'MockBureau',
             'report' => [
-                'inquiries' => rand(0, 5),
-                'openAccounts' => rand(1, 10),
-                'totalDebt' => rand(0, 50000),
-                'paymentHistory' => $this->generatePaymentHistory(),
+                'inquiries'         => rand(0, 5),
+                'openAccounts'      => rand(1, 10),
+                'totalDebt'         => rand(0, 50000),
+                'paymentHistory'    => $this->generatePaymentHistory(),
                 'creditUtilization' => rand(10, 90) / 100,
             ],
         ];
@@ -52,6 +52,7 @@ class MockCreditScoringService implements CreditScoringService
     public function meetsMinimumRequirements(string $borrowerId, int $minimumScore = 600): bool
     {
         $score = $this->getScore($borrowerId);
+
         return $score['score'] >= $minimumScore;
     }
 
@@ -66,16 +67,16 @@ class MockCreditScoringService implements CreditScoringService
             ],
             'accounts' => [
                 [
-                    'type' => 'credit_card',
-                    'status' => 'active',
-                    'limit' => rand(1000, 10000),
+                    'type'    => 'credit_card',
+                    'status'  => 'active',
+                    'limit'   => rand(1000, 10000),
                     'balance' => rand(0, 5000),
                 ],
                 [
-                    'type' => 'auto_loan',
-                    'status' => 'closed',
+                    'type'           => 'auto_loan',
+                    'status'         => 'closed',
                     'originalAmount' => rand(10000, 30000),
-                    'paidOff' => true,
+                    'paidOff'        => true,
                 ],
             ],
         ];
@@ -86,10 +87,11 @@ class MockCreditScoringService implements CreditScoringService
         $history = [];
         for ($i = 0; $i < 12; $i++) {
             $history[] = [
-                'month' => now()->subMonths($i)->format('Y-m'),
+                'month'  => now()->subMonths($i)->format('Y-m'),
                 'status' => rand(1, 100) > 10 ? 'on_time' : 'late',
             ];
         }
+
         return $history;
     }
 }

@@ -6,13 +6,13 @@ namespace App\Domain\Governance\Strategies;
 
 use App\Domain\Governance\Contracts\VotingPowerStrategy;
 use App\Domain\Governance\Models\Poll;
-use App\Models\User;
 use App\Models\Account;
+use App\Models\User;
 
 class AssetWeightedVotingStrategy implements VotingPowerStrategy
 {
     /**
-     * Calculate voting power based on user's primary asset holdings
+     * Calculate voting power based on user's primary asset holdings.
      */
     public function calculatePower(User $user, Poll $poll): int
     {
@@ -38,7 +38,7 @@ class AssetWeightedVotingStrategy implements VotingPowerStrategy
     }
 
     /**
-     * Get description of this voting strategy
+     * Get description of this voting strategy.
      */
     public function getDescription(): string
     {
@@ -46,7 +46,7 @@ class AssetWeightedVotingStrategy implements VotingPowerStrategy
     }
 
     /**
-     * Validate if user is eligible to vote
+     * Validate if user is eligible to vote.
      */
     public function isEligible(User $user, Poll $poll): bool
     {

@@ -4,24 +4,32 @@ namespace App\Domain\Wallet\Aggregates;
 
 use App\Domain\Wallet\Events\BlockchainWalletCreated;
 use App\Domain\Wallet\Events\WalletAddressGenerated;
-use App\Domain\Wallet\Events\WalletSettingsUpdated;
-use App\Domain\Wallet\Events\WalletFrozen;
-use App\Domain\Wallet\Events\WalletUnfrozen;
-use App\Domain\Wallet\Events\WalletKeyRotated;
 use App\Domain\Wallet\Events\WalletBackupCreated;
+use App\Domain\Wallet\Events\WalletFrozen;
+use App\Domain\Wallet\Events\WalletKeyRotated;
+use App\Domain\Wallet\Events\WalletSettingsUpdated;
+use App\Domain\Wallet\Events\WalletUnfrozen;
 use App\Domain\Wallet\Exceptions\WalletException;
 use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
 
 class BlockchainWallet extends AggregateRoot
 {
     protected string $walletId;
+
     protected string $userId;
+
     protected string $type; // 'custodial', 'non-custodial', 'smart-contract'
+
     protected array $addresses = []; // chain => [addresses]
+
     protected array $publicKeys = []; // chain => public key
+
     protected string $status = 'active'; // 'active', 'frozen', 'closed'
+
     protected array $settings = [];
+
     protected ?string $masterPublicKey = null;
+
     protected array $metadata = [];
 
     public static function create(
@@ -31,7 +39,7 @@ class BlockchainWallet extends AggregateRoot
         ?string $masterPublicKey = null,
         array $settings = []
     ): self {
-        if (!in_array($type, ['custodial', 'non-custodial', 'smart-contract'])) {
+        if (! in_array($type, ['custodial', 'non-custodial', 'smart-contract'])) {
             throw new WalletException("Invalid wallet type: {$type}");
         }
 
@@ -79,15 +87,15 @@ class BlockchainWallet extends AggregateRoot
     {
         $allowedSettings = [
             'withdrawal_whitelist' => 'array',
-            'daily_limit' => 'numeric',
-            'requires_2fa' => 'boolean',
-            'auto_convert' => 'boolean',
-            'notification_email' => 'string',
-            'webhook_url' => 'string'
+            'daily_limit'          => 'numeric',
+            'requires_2fa'         => 'boolean',
+            'auto_convert'         => 'boolean',
+            'notification_email'   => 'string',
+            'webhook_url'          => 'string',
         ];
 
         foreach ($settings as $key => $value) {
-            if (!isset($allowedSettings[$key])) {
+            if (! isset($allowedSettings[$key])) {
                 throw new WalletException("Invalid setting: {$key}");
             }
         }
@@ -146,7 +154,7 @@ class BlockchainWallet extends AggregateRoot
             throw new WalletException('Cannot rotate key for inactive wallet');
         }
 
-        if (!isset($this->publicKeys[$chain]) || $this->publicKeys[$chain] !== $oldPublicKey) {
+        if (! isset($this->publicKeys[$chain]) || $this->publicKeys[$chain] !== $oldPublicKey) {
             throw new WalletException('Old public key does not match');
         }
 
@@ -197,15 +205,15 @@ class BlockchainWallet extends AggregateRoot
 
     protected function applyWalletAddressGenerated(WalletAddressGenerated $event): void
     {
-        if (!isset($this->addresses[$event->chain])) {
+        if (! isset($this->addresses[$event->chain])) {
             $this->addresses[$event->chain] = [];
         }
 
         $this->addresses[$event->chain][] = [
-            'address' => $event->address,
+            'address'         => $event->address,
             'derivation_path' => $event->derivationPath,
-            'label' => $event->label,
-            'created_at' => now()->toDateTimeString()
+            'label'           => $event->label,
+            'created_at'      => now()->toDateTimeString(),
         ];
 
         $this->publicKeys[$event->chain] = $event->publicKey;
@@ -240,10 +248,10 @@ class BlockchainWallet extends AggregateRoot
     protected function applyWalletBackupCreated(WalletBackupCreated $event): void
     {
         $this->metadata['last_backup'] = [
-            'backup_id' => $event->backupId,
-            'method' => $event->backupMethod,
+            'backup_id'  => $event->backupId,
+            'method'     => $event->backupMethod,
             'created_by' => $event->createdBy,
-            'created_at' => $event->createdAt->toDateTimeString()
+            'created_at' => $event->createdAt->toDateTimeString(),
         ];
     }
 

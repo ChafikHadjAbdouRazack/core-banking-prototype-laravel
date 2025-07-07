@@ -15,7 +15,7 @@ class AccountStatsOverview extends BaseWidget
 
     protected function getStats(): array
     {
-        if (!$this->record) {
+        if (! $this->record) {
             // Dashboard stats for all accounts
             $totalAccounts = Account::count();
             $activeAccounts = Account::where('frozen', false)->count();

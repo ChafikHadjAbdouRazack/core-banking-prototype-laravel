@@ -50,10 +50,10 @@ class ComposeBasketBusinessActivity extends Activity
             ]);
 
             return [
-                'basket_code' => $basketCode,
-                'basket_amount' => $amount,
+                'basket_code'     => $basketCode,
+                'basket_amount'   => $amount,
                 'components_used' => $requiredAmounts,
-                'composed_at' => now()->toISOString(),
+                'composed_at'     => now()->toISOString(),
             ];
         });
     }

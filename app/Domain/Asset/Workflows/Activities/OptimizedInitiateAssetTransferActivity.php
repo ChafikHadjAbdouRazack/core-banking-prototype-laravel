@@ -8,12 +8,12 @@ use App\Domain\Account\DataObjects\AccountUuid;
 use App\Domain\Account\DataObjects\Money;
 use App\Domain\Asset\Aggregates\AssetTransferAggregate;
 use App\Domain\Performance\Services\TransferOptimizationService;
-use Workflow\Activity;
 use Illuminate\Support\Str;
+use Workflow\Activity;
 
 /**
  * Optimized version of InitiateAssetTransferActivity
- * Uses caching and single-query validation for sub-second performance
+ * Uses caching and single-query validation for sub-second performance.
  */
 class OptimizedInitiateAssetTransferActivity extends Activity
 {
@@ -25,7 +25,7 @@ class OptimizedInitiateAssetTransferActivity extends Activity
     }
 
     /**
-     * Execute optimized initiate asset transfer activity
+     * Execute optimized initiate asset transfer activity.
      */
     public function execute(
         AccountUuid $fromAccountUuid,
@@ -61,8 +61,8 @@ class OptimizedInitiateAssetTransferActivity extends Activity
                 exchangeRate: $fromAssetCode === $toAssetCode ? 1.0 : null,
                 description: $description ?: "Asset transfer: {$fromAssetCode} to {$toAssetCode}",
                 metadata: [
-                    'workflow' => 'AssetTransferWorkflow',
-                    'activity' => 'OptimizedInitiateAssetTransferActivity',
+                    'workflow'  => 'AssetTransferWorkflow',
+                    'activity'  => 'OptimizedInitiateAssetTransferActivity',
                     'timestamp' => now()->toISOString(),
                     'optimized' => true,
                 ]

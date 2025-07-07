@@ -2,17 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\GcuVotingProposal;
 use App\Models\GcuVote;
-use App\Models\Account;
+use App\Models\GcuVotingProposal;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class GcuVotingController extends Controller
 {
     /**
-     * Display voting dashboard
+     * Display voting dashboard.
      */
     public function index()
     {
@@ -53,7 +52,7 @@ class GcuVotingController extends Controller
     }
 
     /**
-     * Show proposal details
+     * Show proposal details.
      */
     public function show(GcuVotingProposal $proposal)
     {
@@ -80,7 +79,7 @@ class GcuVotingController extends Controller
 
         // Calculate vote distribution
         $voteDistribution = [
-            'for' => $proposal->votes_for,
+            'for'     => $proposal->votes_for,
             'against' => $proposal->votes_against,
             'abstain' => $proposal->total_votes_cast - $proposal->votes_for - $proposal->votes_against,
         ];
@@ -89,11 +88,11 @@ class GcuVotingController extends Controller
     }
 
     /**
-     * Cast a vote
+     * Cast a vote.
      */
     public function vote(Request $request, GcuVotingProposal $proposal)
     {
-        if (!$proposal->isVotingActive()) {
+        if (! $proposal->isVotingActive()) {
             return back()->with('error', 'Voting is not active for this proposal.');
         }
 
@@ -103,7 +102,7 @@ class GcuVotingController extends Controller
 
         // Get user's GCU balance
         $account = Auth::user()->accounts()->first();
-        if (!$account) {
+        if (! $account) {
             return back()->with('error', 'You need an account to vote.');
         }
 
@@ -120,10 +119,10 @@ class GcuVotingController extends Controller
             $vote = GcuVote::updateOrCreate(
                 [
                     'proposal_id' => $proposal->id,
-                    'user_uuid' => Auth::user()->uuid,
+                    'user_uuid'   => Auth::user()->uuid,
                 ],
                 [
-                    'vote' => $request->vote,
+                    'vote'         => $request->vote,
                     'voting_power' => $gcuBalance,
                 ]
             );
@@ -140,7 +139,7 @@ class GcuVotingController extends Controller
     }
 
     /**
-     * Update proposal vote counts
+     * Update proposal vote counts.
      */
     protected function updateProposalVoteCounts(GcuVotingProposal $proposal)
     {
@@ -151,14 +150,14 @@ class GcuVotingController extends Controller
         $totalVotes = $votes->sum('voting_power');
 
         $proposal->update([
-            'votes_for' => $votesFor,
-            'votes_against' => $votesAgainst,
+            'votes_for'        => $votesFor,
+            'votes_against'    => $votesAgainst,
             'total_votes_cast' => $totalVotes,
         ]);
     }
 
     /**
-     * Show create proposal form (admin only)
+     * Show create proposal form (admin only).
      */
     public function create()
     {
@@ -170,22 +169,22 @@ class GcuVotingController extends Controller
     }
 
     /**
-     * Store new proposal (admin only)
+     * Store new proposal (admin only).
      */
     public function store(Request $request)
     {
         $this->authorize('create', GcuVotingProposal::class);
 
         $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'rationale' => 'required|string',
-            'voting_starts_at' => 'required|date|after:now',
-            'voting_ends_at' => 'required|date|after:voting_starts_at',
+            'title'                 => 'required|string|max:255',
+            'description'           => 'required|string',
+            'rationale'             => 'required|string',
+            'voting_starts_at'      => 'required|date|after:now',
+            'voting_ends_at'        => 'required|date|after:voting_starts_at',
             'minimum_participation' => 'required|numeric|min:1|max:100',
-            'minimum_approval' => 'required|numeric|min:1|max:100',
-            'composition' => 'required|array',
-            'composition.*' => 'required|numeric|min:0|max:100',
+            'minimum_approval'      => 'required|numeric|min:1|max:100',
+            'composition'           => 'required|array',
+            'composition.*'         => 'required|numeric|min:0|max:100',
         ]);
 
         // Validate composition totals 100%
@@ -199,18 +198,18 @@ class GcuVotingController extends Controller
             ->sum('balance');
 
         $proposal = GcuVotingProposal::create([
-            'title' => $validated['title'],
-            'description' => $validated['description'],
-            'rationale' => $validated['rationale'],
-            'proposed_composition' => $validated['composition'],
-            'current_composition' => config('platform.gcu.composition'),
-            'status' => 'active',
-            'voting_starts_at' => $validated['voting_starts_at'],
-            'voting_ends_at' => $validated['voting_ends_at'],
+            'title'                 => $validated['title'],
+            'description'           => $validated['description'],
+            'rationale'             => $validated['rationale'],
+            'proposed_composition'  => $validated['composition'],
+            'current_composition'   => config('platform.gcu.composition'),
+            'status'                => 'active',
+            'voting_starts_at'      => $validated['voting_starts_at'],
+            'voting_ends_at'        => $validated['voting_ends_at'],
             'minimum_participation' => $validated['minimum_participation'],
-            'minimum_approval' => $validated['minimum_approval'],
-            'total_gcu_supply' => $totalGcuSupply,
-            'created_by' => Auth::id(),
+            'minimum_approval'      => $validated['minimum_approval'],
+            'total_gcu_supply'      => $totalGcuSupply,
+            'created_by'            => Auth::id(),
         ]);
 
         return redirect()->route('gcu.voting.show', $proposal)

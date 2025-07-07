@@ -12,24 +12,24 @@ use Illuminate\Support\Facades\Cache;
 class TransactionCacheService
 {
     /**
-     * Cache key prefix for transactions
+     * Cache key prefix for transactions.
      */
     private const CACHE_PREFIX = 'transaction:';
 
     /**
-     * Cache duration in seconds (30 minutes for transactions)
+     * Cache duration in seconds (30 minutes for transactions).
      */
     private const CACHE_TTL = 1800;
 
     /**
-     * Get recent transactions for account
+     * Get recent transactions for account.
      */
     public function getRecent(string $accountUuid, int $limit = 10): Collection
     {
         return Cache::remember(
             $this->getCacheKey($accountUuid, "recent_{$limit}"),
             self::CACHE_TTL,
-            fn() => Transaction::where('account_uuid', $accountUuid)
+            fn () => Transaction::where('account_uuid', $accountUuid)
                 ->orderBy('created_at', 'desc')
                 ->take($limit)
                 ->get()
@@ -37,7 +37,7 @@ class TransactionCacheService
     }
 
     /**
-     * Get paginated transactions (cached per page)
+     * Get paginated transactions (cached per page).
      */
     public function getPaginated(string $accountUuid, int $page = 1, int $perPage = 15): LengthAwarePaginator
     {
@@ -46,26 +46,26 @@ class TransactionCacheService
         return Cache::remember(
             $cacheKey,
             self::CACHE_TTL,
-            fn() => Transaction::where('account_uuid', $accountUuid)
+            fn () => Transaction::where('account_uuid', $accountUuid)
                 ->orderBy('created_at', 'desc')
                 ->paginate($perPage, ['*'], 'page', $page)
         );
     }
 
     /**
-     * Get transaction by UUID
+     * Get transaction by UUID.
      */
     public function get(string $uuid): ?Transaction
     {
         return Cache::remember(
             self::CACHE_PREFIX . 'uuid:' . $uuid,
             self::CACHE_TTL,
-            fn() => Transaction::where('uuid', $uuid)->first()
+            fn () => Transaction::where('uuid', $uuid)->first()
         );
     }
 
     /**
-     * Get daily transaction summary
+     * Get daily transaction summary.
      */
     public function getDailySummary(string $accountUuid, string $date): array
     {
@@ -78,11 +78,11 @@ class TransactionCacheService
                     ->get();
 
                 return [
-                    'date' => $date,
-                    'total_deposits' => $transactions->where('type', 'deposit')->sum('amount'),
+                    'date'              => $date,
+                    'total_deposits'    => $transactions->where('type', 'deposit')->sum('amount'),
                     'total_withdrawals' => $transactions->where('type', 'withdrawal')->sum('amount'),
                     'transaction_count' => $transactions->count(),
-                    'net_change' => $transactions->where('type', 'deposit')->sum('amount') -
+                    'net_change'        => $transactions->where('type', 'deposit')->sum('amount') -
                                    $transactions->where('type', 'withdrawal')->sum('amount'),
                 ];
             }
@@ -90,16 +90,16 @@ class TransactionCacheService
     }
 
     /**
-     * Invalidate transaction cache for account
+     * Invalidate transaction cache for account.
      */
     public function forget(string $accountUuid): void
     {
         // Clear all transaction-related cache for this account
         // In production, consider using cache tags for more efficient clearing
         $patterns = [
-            "recent_*",
-            "page_*",
-            "daily_summary_*"
+            'recent_*',
+            'page_*',
+            'daily_summary_*',
         ];
 
         foreach ($patterns as $pattern) {
@@ -110,7 +110,7 @@ class TransactionCacheService
     }
 
     /**
-     * Update cache when new transaction is created
+     * Update cache when new transaction is created.
      */
     public function put(Transaction $transaction): void
     {
@@ -126,7 +126,7 @@ class TransactionCacheService
     }
 
     /**
-     * Generate cache key for transaction data
+     * Generate cache key for transaction data.
      */
     private function getCacheKey(string $accountUuid, string $type): string
     {

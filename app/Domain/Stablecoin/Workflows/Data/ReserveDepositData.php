@@ -18,13 +18,13 @@ class ReserveDepositData
     public function toArray(): array
     {
         return [
-            'pool_id' => $this->poolId,
-            'asset' => $this->asset,
-            'amount' => $this->amount,
-            'custodian_id' => $this->custodianId,
+            'pool_id'          => $this->poolId,
+            'asset'            => $this->asset,
+            'amount'           => $this->amount,
+            'custodian_id'     => $this->custodianId,
             'transaction_hash' => $this->transactionHash,
-            'expected_amount' => $this->expectedAmount,
-            'metadata' => $this->metadata,
+            'expected_amount'  => $this->expectedAmount,
+            'metadata'         => $this->metadata,
         ];
     }
 }

@@ -84,7 +84,7 @@ class ExchangeService implements ExchangeServiceInterface
             metadata: array_merge($metadata, [
                 'ip_address' => request()->ip(),
                 'user_agent' => request()->userAgent(),
-                'placed_at' => now()->toIso8601String(),
+                'placed_at'  => now()->toIso8601String(),
             ])
         );
         $order->persist();
@@ -100,9 +100,9 @@ class ExchangeService implements ExchangeServiceInterface
         ));
 
         return [
-            'success' => true,
-            'order_id' => $orderId,
-            'message' => 'Order placed successfully',
+            'success'     => true,
+            'order_id'    => $orderId,
+            'message'     => 'Order placed successfully',
             'workflow_id' => $workflow->id(),
         ];
     }
@@ -141,38 +141,38 @@ class ExchangeService implements ExchangeServiceInterface
 
         if (! $orderBook) {
             return [
-                'pair' => "{$baseCurrency}/{$quoteCurrency}",
-                'bids' => [],
-                'asks' => [],
-                'spread' => null,
-                'spread_percentage' => null,
-                'mid_price' => null,
-                'last_price' => null,
-                'volume_24h' => null,
-                'high_24h' => null,
-                'low_24h' => null,
-                'change_24h' => null,
+                'pair'                  => "{$baseCurrency}/{$quoteCurrency}",
+                'bids'                  => [],
+                'asks'                  => [],
+                'spread'                => null,
+                'spread_percentage'     => null,
+                'mid_price'             => null,
+                'last_price'            => null,
+                'volume_24h'            => null,
+                'high_24h'              => null,
+                'low_24h'               => null,
+                'change_24h'            => null,
                 'change_24h_percentage' => null,
-                'updated_at' => now()->toIso8601String(),
+                'updated_at'            => now()->toIso8601String(),
             ];
         }
 
         $depthData = $orderBook->getDepth($depth);
 
         return [
-            'pair' => $orderBook->pair,
-            'bids' => $depthData['bids'],
-            'asks' => $depthData['asks'],
-            'spread' => $orderBook->spread,
-            'spread_percentage' => $orderBook->spread_percentage,
-            'mid_price' => $orderBook->mid_price,
-            'last_price' => $orderBook->last_price,
-            'volume_24h' => $orderBook->volume_24h,
-            'high_24h' => $orderBook->high_24h,
-            'low_24h' => $orderBook->low_24h,
-            'change_24h' => $orderBook->change_24h,
+            'pair'                  => $orderBook->pair,
+            'bids'                  => $depthData['bids'],
+            'asks'                  => $depthData['asks'],
+            'spread'                => $orderBook->spread,
+            'spread_percentage'     => $orderBook->spread_percentage,
+            'mid_price'             => $orderBook->mid_price,
+            'last_price'            => $orderBook->last_price,
+            'volume_24h'            => $orderBook->volume_24h,
+            'high_24h'              => $orderBook->high_24h,
+            'low_24h'               => $orderBook->low_24h,
+            'change_24h'            => $orderBook->change_24h,
             'change_24h_percentage' => $orderBook->change_24h_percentage,
-            'updated_at' => $orderBook->updated_at->toIso8601String(),
+            'updated_at'            => $orderBook->updated_at->toIso8601String(),
         ];
     }
 
@@ -182,22 +182,22 @@ class ExchangeService implements ExchangeServiceInterface
 
         if (! $orderBook) {
             return [
-                'pair' => "{$baseCurrency}/{$quoteCurrency}",
-                'last_price' => null,
-                'volume_24h' => null,
+                'pair'                  => "{$baseCurrency}/{$quoteCurrency}",
+                'last_price'            => null,
+                'volume_24h'            => null,
                 'change_24h_percentage' => null,
-                'high_24h' => null,
-                'low_24h' => null,
+                'high_24h'              => null,
+                'low_24h'               => null,
             ];
         }
 
         return [
-            'pair' => $orderBook->pair,
-            'last_price' => $orderBook->last_price,
-            'volume_24h' => $orderBook->volume_24h,
+            'pair'                  => $orderBook->pair,
+            'last_price'            => $orderBook->last_price,
+            'volume_24h'            => $orderBook->volume_24h,
             'change_24h_percentage' => $orderBook->change_24h_percentage,
-            'high_24h' => $orderBook->high_24h,
-            'low_24h' => $orderBook->low_24h,
+            'high_24h'              => $orderBook->high_24h,
+            'low_24h'               => $orderBook->low_24h,
         ];
     }
 

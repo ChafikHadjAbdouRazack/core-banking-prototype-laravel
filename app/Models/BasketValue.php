@@ -28,8 +28,8 @@ class BasketValue extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'value' => 'float',
-        'calculated_at' => 'datetime',
+        'value'            => 'float',
+        'calculated_at'    => 'datetime',
         'component_values' => 'array',
     ];
 
@@ -46,7 +46,7 @@ class BasketValue extends Model
      */
     public function getTotalWeight(): float
     {
-        if (!$this->component_values) {
+        if (! $this->component_values) {
             return 0.0;
         }
 
@@ -59,7 +59,7 @@ class BasketValue extends Model
      */
     public function getComponentValue(string $assetCode): ?float
     {
-        if (!$this->component_values || !isset($this->component_values[$assetCode])) {
+        if (! $this->component_values || ! isset($this->component_values[$assetCode])) {
             return null;
         }
 
@@ -90,7 +90,7 @@ class BasketValue extends Model
     /**
      * Get the performance compared to a previous value.
      */
-    public function getPerformance(BasketValue $previousValue): array
+    public function getPerformance(self $previousValue): array
     {
         $change = $this->value - $previousValue->value;
         $percentageChange = $previousValue->value > 0
@@ -98,11 +98,11 @@ class BasketValue extends Model
             : 0;
 
         return [
-            'previous_value' => $previousValue->value,
-            'current_value' => $this->value,
-            'change' => $change,
+            'previous_value'    => $previousValue->value,
+            'current_value'     => $this->value,
+            'change'            => $change,
             'percentage_change' => $percentageChange,
-            'time_period' => $previousValue->calculated_at->diffForHumans($this->calculated_at),
+            'time_period'       => $previousValue->calculated_at->diffForHumans($this->calculated_at),
         ];
     }
 

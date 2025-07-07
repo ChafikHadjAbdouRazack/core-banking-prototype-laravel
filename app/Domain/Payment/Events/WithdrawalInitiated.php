@@ -8,6 +8,7 @@ use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 class WithdrawalInitiated extends ShouldBeStored
 {
     public string $queue = EventQueues::TRANSACTIONS->value;
+
     public function __construct(
         public string $accountUuid,
         public int $amount,

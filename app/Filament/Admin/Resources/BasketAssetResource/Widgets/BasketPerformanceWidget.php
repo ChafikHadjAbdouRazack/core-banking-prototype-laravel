@@ -3,7 +3,6 @@
 namespace App\Filament\Admin\Resources\BasketAssetResource\Widgets;
 
 use App\Domain\Basket\Services\BasketPerformanceService;
-use App\Models\BasketAsset;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
@@ -12,7 +11,9 @@ use Illuminate\Database\Eloquent\Model;
 class BasketPerformanceWidget extends BaseWidget
 {
     protected static ?string $heading = 'Performance History';
+
     protected int | string | array $columnSpan = 'full';
+
     protected static ?string $maxHeight = '400px';
 
     public ?Model $record = null;
@@ -30,13 +31,13 @@ class BasketPerformanceWidget extends BaseWidget
                     ->label('Period')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
-                        'hour' => 'gray',
-                        'day' => 'info',
-                        'week' => 'primary',
-                        'month' => 'success',
+                        'hour'    => 'gray',
+                        'day'     => 'info',
+                        'week'    => 'primary',
+                        'month'   => 'success',
                         'quarter' => 'warning',
-                        'year' => 'danger',
-                        default => 'secondary',
+                        'year'    => 'danger',
+                        default   => 'secondary',
                     }),
 
                 Tables\Columns\TextColumn::make('period_end')
@@ -53,10 +54,10 @@ class BasketPerformanceWidget extends BaseWidget
                     ->label('Volatility')
                     ->formatStateUsing(fn ($state) => $state ? number_format($state, 2) . '%' : '-')
                     ->color(fn ($state): string => match (true) {
-                        $state <= 5 => 'success',
+                        $state <= 5  => 'success',
                         $state <= 10 => 'primary',
                         $state <= 20 => 'warning',
-                        default => 'danger',
+                        default      => 'danger',
                     }),
 
                 Tables\Columns\TextColumn::make('sharpe_ratio')
@@ -66,17 +67,17 @@ class BasketPerformanceWidget extends BaseWidget
                         $state >= 2 => 'success',
                         $state >= 1 => 'primary',
                         $state >= 0 => 'warning',
-                        default => 'danger',
+                        default     => 'danger',
                     }),
 
                 Tables\Columns\TextColumn::make('max_drawdown')
                     ->label('Max Drawdown')
                     ->formatStateUsing(fn ($state) => $state ? '-' . number_format($state, 2) . '%' : '-')
                     ->color(fn ($state): string => match (true) {
-                        $state <= 5 => 'success',
+                        $state <= 5  => 'success',
                         $state <= 10 => 'primary',
                         $state <= 20 => 'warning',
-                        default => 'danger',
+                        default      => 'danger',
                     }),
 
                 Tables\Columns\TextColumn::make('performance_rating')
@@ -85,22 +86,22 @@ class BasketPerformanceWidget extends BaseWidget
                     ->formatStateUsing(fn ($state) => str_replace('_', ' ', $state))
                     ->color(fn (string $state): string => match ($state) {
                         'excellent' => 'success',
-                        'good' => 'primary',
-                        'neutral' => 'warning',
-                        'poor' => 'danger',
+                        'good'      => 'primary',
+                        'neutral'   => 'warning',
+                        'poor'      => 'danger',
                         'very_poor' => 'gray',
-                        default => 'secondary',
+                        default     => 'secondary',
                     }),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('period_type')
                     ->options([
-                        'hour' => 'Hourly',
-                        'day' => 'Daily',
-                        'week' => 'Weekly',
-                        'month' => 'Monthly',
+                        'hour'    => 'Hourly',
+                        'day'     => 'Daily',
+                        'week'    => 'Weekly',
+                        'month'   => 'Monthly',
                         'quarter' => 'Quarterly',
-                        'year' => 'Yearly',
+                        'year'    => 'Yearly',
                     ])
                     ->multiple(),
             ])
@@ -131,7 +132,7 @@ class BasketPerformanceWidget extends BaseWidget
                         $performances = $service->calculateAllPeriods($this->record);
 
                         $this->dispatch('notify', [
-                            'type' => 'success',
+                            'type'    => 'success',
                             'message' => "Calculated {$performances->count()} performance periods",
                         ]);
                     }),

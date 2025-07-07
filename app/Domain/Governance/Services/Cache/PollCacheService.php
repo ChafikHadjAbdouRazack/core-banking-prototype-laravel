@@ -12,9 +12,13 @@ use Illuminate\Support\Facades\Cache;
 class PollCacheService
 {
     private const CACHE_PREFIX = 'poll';
+
     private const POLL_TTL = 1800; // 30 minutes
+
     private const RESULTS_TTL = 3600; // 1 hour
+
     private const ACTIVE_POLLS_TTL = 300; // 5 minutes
+
     private const USER_VOTES_TTL = 1800; // 30 minutes
 
     public function getPoll(string $uuid): ?Poll
@@ -43,6 +47,7 @@ class PollCacheService
             self::RESULTS_TTL,
             function () use ($pollUuid) {
                 $poll = Poll::where('uuid', $pollUuid)->with('votes')->first();
+
                 return $poll ? $poll->calculateResults() : null;
             }
         );
@@ -79,16 +84,17 @@ class PollCacheService
             self::USER_VOTES_TTL,
             function () use ($userUuid, $pollUuid) {
                 $poll = Poll::where('uuid', $pollUuid)->first();
-                if (!$poll) {
+                if (! $poll) {
                     return null;
                 }
 
                 $user = \App\Models\User::where('uuid', $userUuid)->first();
-                if (!$user) {
+                if (! $user) {
                     return null;
                 }
 
                 $service = app(\App\Domain\Governance\Services\GovernanceService::class);
+
                 return $service->getUserVotingPower($user, $poll);
             }
         );
@@ -115,6 +121,7 @@ class PollCacheService
             self::USER_VOTES_TTL,
             function () use ($userUuid, $pollUuid) {
                 $poll = Poll::where('uuid', $pollUuid)->first();
+
                 return $poll ? $poll->hasUserVoted($userUuid) : false;
             }
         );
@@ -166,10 +173,10 @@ class PollCacheService
     public function getStats(): array
     {
         $keys = [
-            'polls' => $this->getPollKey('*'),
-            'results' => $this->getResultsKey('*'),
+            'polls'             => $this->getPollKey('*'),
+            'results'           => $this->getResultsKey('*'),
             'user_voting_power' => $this->getUserVotingPowerKey('*', '*'),
-            'user_vote_status' => $this->getUserVoteStatusKey('*', '*'),
+            'user_vote_status'  => $this->getUserVoteStatusKey('*', '*'),
         ];
 
         $stats = [];

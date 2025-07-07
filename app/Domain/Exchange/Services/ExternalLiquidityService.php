@@ -21,7 +21,7 @@ class ExternalLiquidityService implements ExternalLiquidityServiceInterface
     }
 
     /**
-     * Find arbitrage opportunities between internal and external exchanges
+     * Find arbitrage opportunities between internal and external exchanges.
      */
     public function findArbitrageOpportunities(string $baseCurrency, string $quoteCurrency): array
     {
@@ -52,12 +52,12 @@ class ExternalLiquidityService implements ExternalLiquidityServiceInterface
                     ->multipliedBy('100');
 
                 $opportunities[] = [
-                    'type' => 'buy_external_sell_internal',
+                    'type'              => 'buy_external_sell_internal',
                     'external_exchange' => $externalAsk['exchange'],
-                    'external_price' => $askPrice->__toString(),
-                    'internal_price' => $internalBestBid->__toString(),
+                    'external_price'    => $askPrice->__toString(),
+                    'internal_price'    => $internalBestBid->__toString(),
                     'profit_percentage' => $profitPercentage->__toString(),
-                    'action' => 'Buy on ' . $externalAsk['exchange'] . ' at ' . $askPrice . ', sell internally at ' . $internalBestBid,
+                    'action'            => 'Buy on ' . $externalAsk['exchange'] . ' at ' . $askPrice . ', sell internally at ' . $internalBestBid,
                 ];
             }
         }
@@ -72,12 +72,12 @@ class ExternalLiquidityService implements ExternalLiquidityServiceInterface
                     ->multipliedBy('100');
 
                 $opportunities[] = [
-                    'type' => 'buy_internal_sell_external',
+                    'type'              => 'buy_internal_sell_external',
                     'external_exchange' => $externalBid['exchange'],
-                    'external_price' => $bidPrice->__toString(),
-                    'internal_price' => $internalBestAsk->__toString(),
+                    'external_price'    => $bidPrice->__toString(),
+                    'internal_price'    => $internalBestAsk->__toString(),
                     'profit_percentage' => $profitPercentage->__toString(),
-                    'action' => 'Buy internally at ' . $internalBestAsk . ', sell on ' . $externalBid['exchange'] . ' at ' . $bidPrice,
+                    'action'            => 'Buy internally at ' . $internalBestAsk . ', sell on ' . $externalBid['exchange'] . ' at ' . $bidPrice,
                 ];
             }
         }
@@ -86,15 +86,15 @@ class ExternalLiquidityService implements ExternalLiquidityServiceInterface
     }
 
     /**
-     * Provide liquidity from external exchanges when internal liquidity is low
+     * Provide liquidity from external exchanges when internal liquidity is low.
      */
     public function provideLiquidity(string $baseCurrency, string $quoteCurrency, string $side, string $amount): array
     {
         $result = [
-            'success' => false,
+            'success'       => false,
             'orders_placed' => 0,
-            'total_amount' => '0',
-            'message' => '',
+            'total_amount'  => '0',
+            'message'       => '',
         ];
 
         // Get system account ID from config or use a default
@@ -158,19 +158,19 @@ class ExternalLiquidityService implements ExternalLiquidityServiceInterface
                         amount: $amountPerOrder->__toString(),
                         price: $orderPrice->__toString(),
                         metadata: [
-                            'source' => 'external_liquidity',
+                            'source'            => 'external_liquidity',
                             'external_exchange' => $bestExternal['exchange'],
-                            'external_price' => $basePrice->__toString(),
-                            'liquidity_side' => $side,
+                            'external_price'    => $basePrice->__toString(),
+                            'liquidity_side'    => $side,
                         ]
                     )
                     ->persist();
 
                 $placedOrders[] = [
                     'order_id' => $orderId,
-                    'type' => $orderType,
-                    'amount' => $amountPerOrder->__toString(),
-                    'price' => $orderPrice->__toString(),
+                    'type'     => $orderType,
+                    'amount'   => $amountPerOrder->__toString(),
+                    'price'    => $orderPrice->__toString(),
                     'exchange' => $bestExternal['exchange'],
                 ];
 
@@ -188,19 +188,19 @@ class ExternalLiquidityService implements ExternalLiquidityServiceInterface
     }
 
     /**
-     * Align internal prices with external market prices
+     * Align internal prices with external market prices.
      */
     public function alignPrices(string $baseCurrency, string $quoteCurrency, float $maxDeviationPercentage = 1.0): array
     {
         $result = [
-            'aligned' => false,
+            'aligned'           => false,
             'internal_best_bid' => null,
             'internal_best_ask' => null,
             'external_best_bid' => null,
             'external_best_ask' => null,
-            'bid_deviation' => null,
-            'ask_deviation' => null,
-            'actions_taken' => [],
+            'bid_deviation'     => null,
+            'ask_deviation'     => null,
+            'actions_taken'     => [],
         ];
 
         // Get internal prices
@@ -266,8 +266,8 @@ class ExternalLiquidityService implements ExternalLiquidityServiceInterface
                         amount: '0.1',
                         price: $extBidPrice->__toString(),
                         metadata: [
-                            'source' => 'price_alignment',
-                            'reason' => 'bid_deviation',
+                            'source'    => 'price_alignment',
+                            'reason'    => 'bid_deviation',
                             'deviation' => $bidDeviation->__toString(),
                         ]
                     )
@@ -289,8 +289,8 @@ class ExternalLiquidityService implements ExternalLiquidityServiceInterface
                         amount: '0.1',
                         price: $extAskPrice->__toString(),
                         metadata: [
-                            'source' => 'price_alignment',
-                            'reason' => 'ask_deviation',
+                            'source'    => 'price_alignment',
+                            'reason'    => 'ask_deviation',
                             'deviation' => $askDeviation->__toString(),
                         ]
                     )
@@ -308,27 +308,27 @@ class ExternalLiquidityService implements ExternalLiquidityServiceInterface
     }
 
     /**
-     * Execute arbitrage trade
+     * Execute arbitrage trade.
      */
     public function executeArbitrage(array $opportunity): array
     {
         // This would integrate with external exchange APIs to execute the actual trades
         // For now, we'll return a placeholder response
         return [
-            'executed' => false,
-            'reason' => 'External exchange trading not yet implemented',
+            'executed'    => false,
+            'reason'      => 'External exchange trading not yet implemented',
             'opportunity' => $opportunity,
         ];
     }
 
     /**
-     * Get liquidity depth from external sources
+     * Get liquidity depth from external sources.
      */
     public function getExternalLiquidityDepth(string $baseCurrency, string $quoteCurrency): array
     {
         $depth = [
-            'bids' => [],
-            'asks' => [],
+            'bids'             => [],
+            'asks'             => [],
             'total_bid_volume' => '0',
             'total_ask_volume' => '0',
         ];
@@ -342,8 +342,8 @@ class ExternalLiquidityService implements ExternalLiquidityServiceInterface
                 foreach ($externalBook['bids'] ?? [] as $bid) {
                     $depth['bids'][] = [
                         'exchange' => $connector->getName(),
-                        'price' => $bid['price'],
-                        'amount' => $bid['amount'],
+                        'price'    => $bid['price'],
+                        'amount'   => $bid['amount'],
                     ];
                 }
 
@@ -351,8 +351,8 @@ class ExternalLiquidityService implements ExternalLiquidityServiceInterface
                 foreach ($externalBook['asks'] ?? [] as $ask) {
                     $depth['asks'][] = [
                         'exchange' => $connector->getName(),
-                        'price' => $ask['price'],
-                        'amount' => $ask['amount'],
+                        'price'    => $ask['price'],
+                        'amount'   => $ask['amount'],
                     ];
                 }
             } catch (\Exception $e) {
@@ -384,7 +384,7 @@ class ExternalLiquidityService implements ExternalLiquidityServiceInterface
     }
 
     /**
-     * Monitor price divergence across all trading pairs
+     * Monitor price divergence across all trading pairs.
      */
     public function monitorPriceDivergence(): array
     {
@@ -421,9 +421,9 @@ class ExternalLiquidityService implements ExternalLiquidityServiceInterface
                         $mid = $bid->plus($ask)->dividedBy('2', 8, RoundingMode::HALF_UP);
 
                         $externalPrices[$connector->getName()] = [
-                            'bid' => $bid->__toString(),
-                            'ask' => $ask->__toString(),
-                            'mid' => $mid->__toString(),
+                            'bid'        => $bid->__toString(),
+                            'ask'        => $ask->__toString(),
+                            'mid'        => $mid->__toString(),
                             'divergence' => $mid->minus($internalMid)
                                 ->dividedBy($internalMid, 6, RoundingMode::HALF_UP)
                                 ->multipliedBy('100')
@@ -437,7 +437,7 @@ class ExternalLiquidityService implements ExternalLiquidityServiceInterface
 
             if (! empty($externalPrices)) {
                 $divergences["{$baseCurrency}/{$quoteCurrency}"] = [
-                    'internal_mid' => $internalMid->__toString(),
+                    'internal_mid'    => $internalMid->__toString(),
                     'external_prices' => $externalPrices,
                 ];
             }
@@ -447,21 +447,21 @@ class ExternalLiquidityService implements ExternalLiquidityServiceInterface
     }
 
     /**
-     * Rebalance liquidity across exchanges
+     * Rebalance liquidity across exchanges.
      */
     public function rebalanceLiquidity(array $targetDistribution): array
     {
         // This would implement logic to move funds between exchanges
         // to maintain target distribution percentages
         return [
-            'rebalanced' => false,
-            'reason' => 'Cross-exchange fund transfers not yet implemented',
+            'rebalanced'          => false,
+            'reason'              => 'Cross-exchange fund transfers not yet implemented',
             'target_distribution' => $targetDistribution,
         ];
     }
 
     /**
-     * Get arbitrage statistics
+     * Get arbitrage statistics.
      */
     public function getArbitrageStats(?\DateTimeInterface $from = null, ?\DateTimeInterface $to = null): array
     {
@@ -481,8 +481,8 @@ class ExternalLiquidityService implements ExternalLiquidityServiceInterface
             'total_trades' => $trades->count(),
             'total_volume' => '0',
             'total_profit' => '0',
-            'by_exchange' => [],
-            'by_pair' => [],
+            'by_exchange'  => [],
+            'by_pair'      => [],
         ];
 
         $totalVolume = BigDecimal::of('0');

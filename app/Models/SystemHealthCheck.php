@@ -20,13 +20,13 @@ class SystemHealthCheck extends Model
     ];
 
     protected $casts = [
-        'metadata' => 'array',
-        'checked_at' => 'datetime',
+        'metadata'      => 'array',
+        'checked_at'    => 'datetime',
         'response_time' => 'float',
     ];
 
     /**
-     * Get checks for a specific service
+     * Get checks for a specific service.
      */
     public function scopeForService($query, string $service)
     {
@@ -34,7 +34,7 @@ class SystemHealthCheck extends Model
     }
 
     /**
-     * Get checks within a time range
+     * Get checks within a time range.
      */
     public function scopeInTimeRange($query, $start, $end)
     {
@@ -42,7 +42,7 @@ class SystemHealthCheck extends Model
     }
 
     /**
-     * Get only operational checks
+     * Get only operational checks.
      */
     public function scopeOperational($query)
     {
@@ -50,7 +50,7 @@ class SystemHealthCheck extends Model
     }
 
     /**
-     * Get only failed checks
+     * Get only failed checks.
      */
     public function scopeFailed($query)
     {
@@ -58,7 +58,7 @@ class SystemHealthCheck extends Model
     }
 
     /**
-     * Calculate uptime percentage for a service
+     * Calculate uptime percentage for a service.
      */
     public static function calculateUptime(string $service, int $days = 30)
     {
@@ -81,7 +81,7 @@ class SystemHealthCheck extends Model
     }
 
     /**
-     * Get average response time for a service
+     * Get average response time for a service.
      */
     public static function averageResponseTime(string $service, int $hours = 24)
     {
@@ -94,7 +94,7 @@ class SystemHealthCheck extends Model
     }
 
     /**
-     * Get the latest status for each service
+     * Get the latest status for each service.
      */
     public static function getLatestStatuses()
     {

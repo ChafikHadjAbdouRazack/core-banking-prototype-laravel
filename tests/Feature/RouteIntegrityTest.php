@@ -2,45 +2,45 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
 use Illuminate\Support\Facades\Route;
+use Tests\TestCase;
 
 class RouteIntegrityTest extends TestCase
 {
     /**
-     * Test that all defined routes are properly named and don't have syntax errors
+     * Test that all defined routes are properly named and don't have syntax errors.
      */
     public function test_all_routes_are_properly_defined(): void
     {
         $routes = Route::getRoutes();
         $routeErrors = [];
-        
+
         foreach ($routes as $route) {
             // Skip vendor routes
-            if (str_contains($route->uri(), 'telescope') || 
+            if (str_contains($route->uri(), 'telescope') ||
                 str_contains($route->uri(), 'horizon') ||
                 str_contains($route->uri(), 'pulse') ||
                 str_contains($route->uri(), '_ignition') ||
                 str_contains($route->uri(), 'sanctum')) {
                 continue;
             }
-            
+
             // Check if route has a name
             $routeName = $route->getName();
-            
+
             // Check common route patterns that should have names
-            if ($routeName === null && !str_starts_with($route->uri(), 'api/')) {
+            if ($routeName === null && ! str_starts_with($route->uri(), 'api/')) {
                 if (preg_match('/^(dashboard|wallet|transactions|accounts|fund-flow|exchange-rates)/', $route->uri())) {
                     $routeErrors[] = "Route {$route->uri()} should have a name";
                 }
             }
         }
-        
+
         $this->assertEmpty($routeErrors, "Found routes without proper names: \n" . implode("\n", $routeErrors));
     }
 
     /**
-     * Test that navigation menu routes all exist
+     * Test that navigation menu routes all exist.
      */
     public function test_navigation_menu_routes_exist(): void
     {
@@ -63,7 +63,7 @@ class RouteIntegrityTest extends TestCase
             'wallet.voting',
             'cgo.invest',
         ];
-        
+
         foreach ($navigationRoutes as $routeName) {
             try {
                 $url = route($routeName);
@@ -75,31 +75,36 @@ class RouteIntegrityTest extends TestCase
     }
 
     /**
-     * Test that common route patterns follow naming conventions
+     * Test that common route patterns follow naming conventions.
      */
     public function test_route_naming_conventions(): void
     {
         $routes = Route::getRoutes();
-        
+
         foreach ($routes as $route) {
             $routeName = $route->getName();
-            if (!$routeName) continue;
-            
+            if (! $routeName) {
+                continue;
+            }
+
             // Check that route names match their URI patterns
             if (str_contains($routeName, '.index')) {
                 $uri = $route->uri();
                 // Index routes should typically be at the root of their prefix
-                if (!str_ends_with($uri, '{')) {
+                if (! str_ends_with($uri, '{')) {
                     $parts = explode('.', $routeName);
                     $prefix = $parts[0];
-                    
+
                     // Special cases that are ok
                     $exceptions = ['monitoring.transactions.index', 'api'];
-                    if (!in_array($routeName, $exceptions) && 
-                        !str_starts_with($routeName, 'api.') &&
-                        !str_starts_with($routeName, 'filament.')) {
-                        $this->assertStringEndsWith($prefix, $uri, 
-                            "Route {$routeName} should have URI ending with '{$prefix}' but has '{$uri}'");
+                    if (! in_array($routeName, $exceptions) &&
+                        ! str_starts_with($routeName, 'api.') &&
+                        ! str_starts_with($routeName, 'filament.')) {
+                        $this->assertStringEndsWith(
+                            $prefix,
+                            $uri,
+                            "Route {$routeName} should have URI ending with '{$prefix}' but has '{$uri}'"
+                        );
                     }
                 }
             }
@@ -107,14 +112,14 @@ class RouteIntegrityTest extends TestCase
     }
 
     /**
-     * Test that there are no duplicate route names
+     * Test that there are no duplicate route names.
      */
     public function test_no_duplicate_route_names(): void
     {
         $routes = Route::getRoutes();
         $routeNames = [];
         $duplicates = [];
-        
+
         foreach ($routes as $route) {
             $name = $route->getName();
             if ($name) {
@@ -125,7 +130,7 @@ class RouteIntegrityTest extends TestCase
                 }
             }
         }
-        
-        $this->assertEmpty($duplicates, "Found duplicate route names: " . implode(', ', $duplicates));
+
+        $this->assertEmpty($duplicates, 'Found duplicate route names: ' . implode(', ', $duplicates));
     }
 }

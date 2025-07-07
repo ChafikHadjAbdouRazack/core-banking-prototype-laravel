@@ -9,8 +9,8 @@ use App\Domain\Governance\Enums\PollType;
 use App\Domain\Governance\ValueObjects\PollOption;
 use App\Domain\Governance\ValueObjects\PollResult;
 use App\Models\User;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Database\Factories\PollFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -42,14 +42,14 @@ class Poll extends Model
     ];
 
     protected $casts = [
-        'uuid' => 'string',
-        'type' => PollType::class,
-        'status' => PollStatus::class,
-        'options' => 'array',
-        'start_date' => 'datetime',
-        'end_date' => 'datetime',
+        'uuid'                   => 'string',
+        'type'                   => PollType::class,
+        'status'                 => PollStatus::class,
+        'options'                => 'array',
+        'start_date'             => 'datetime',
+        'end_date'               => 'datetime',
         'required_participation' => 'integer',
-        'metadata' => 'array',
+        'metadata'               => 'array',
     ];
 
     protected static function boot()
@@ -108,7 +108,7 @@ class Poll extends Model
 
     public function canVote(): bool
     {
-        return $this->isActive() && !$this->isExpired();
+        return $this->isActive() && ! $this->isExpired();
     }
 
     public function getDurationInHours(): int
@@ -118,7 +118,7 @@ class Poll extends Model
 
     public function getTimeRemainingInHours(): int
     {
-        if (!$this->isActive()) {
+        if (! $this->isActive()) {
             return 0;
         }
 

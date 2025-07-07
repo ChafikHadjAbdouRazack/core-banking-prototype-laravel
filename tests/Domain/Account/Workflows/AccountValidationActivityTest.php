@@ -2,8 +2,6 @@
 
 use App\Domain\Account\DataObjects\AccountUuid;
 use App\Domain\Account\Workflows\AccountValidationActivity;
-use App\Models\Account;
-use App\Models\User;
 
 it('class exists', function () {
     expect(class_exists(AccountValidationActivity::class))->toBeTrue();
@@ -21,9 +19,9 @@ it('has execute method', function () {
 it('execute method has correct signature', function () {
     $reflection = new ReflectionClass(AccountValidationActivity::class);
     $method = $reflection->getMethod('execute');
-    
+
     expect($method->getNumberOfParameters())->toBe(3);
-    
+
     $parameters = $method->getParameters();
     expect($parameters[0]->getName())->toBe('uuid');
     expect($parameters[1]->getName())->toBe('validationChecks');
@@ -33,7 +31,7 @@ it('execute method has correct signature', function () {
 it('execute method returns array', function () {
     $reflection = new ReflectionClass(AccountValidationActivity::class);
     $method = $reflection->getMethod('execute');
-    
+
     expect($method->getReturnType()->getName())->toBe('array');
 });
 
@@ -41,7 +39,7 @@ it('has proper type hints for parameters', function () {
     $reflection = new ReflectionClass(AccountValidationActivity::class);
     $method = $reflection->getMethod('execute');
     $parameters = $method->getParameters();
-    
+
     expect($parameters[0]->getType()->getName())->toBe('App\Domain\Account\DataObjects\AccountUuid');
     expect($parameters[1]->getType()->getName())->toBe('array');
     expect($parameters[2]->getType()->getName())->toBe('string');
@@ -55,9 +53,9 @@ it('has validation check methods', function () {
         'validateAddress',
         'validateIdentity',
         'performComplianceScreening',
-        'logValidation'
+        'logValidation',
     ];
-    
+
     foreach ($methods as $method) {
         expect(method_exists(AccountValidationActivity::class, $method))->toBeTrue();
     }
@@ -65,16 +63,16 @@ it('has validation check methods', function () {
 
 it('validation methods have proper visibility', function () {
     $reflection = new ReflectionClass(AccountValidationActivity::class);
-    
+
     $privateMethodNames = [
         'performValidationCheck',
-        'validateKycDocuments', 
+        'validateKycDocuments',
         'validateAddress',
         'validateIdentity',
         'performComplianceScreening',
-        'logValidation'
+        'logValidation',
     ];
-    
+
     foreach ($privateMethodNames as $methodName) {
         $method = $reflection->getMethod($methodName);
         expect($method->isPrivate())->toBeTrue();
@@ -83,15 +81,15 @@ it('validation methods have proper visibility', function () {
 
 it('validation methods return arrays', function () {
     $reflection = new ReflectionClass(AccountValidationActivity::class);
-    
+
     $methods = [
         'performValidationCheck',
         'validateKycDocuments',
-        'validateAddress', 
+        'validateAddress',
         'validateIdentity',
-        'performComplianceScreening'
+        'performComplianceScreening',
     ];
-    
+
     foreach ($methods as $methodName) {
         $method = $reflection->getMethod($methodName);
         expect($method->getReturnType()->getName())->toBe('array');
@@ -102,7 +100,7 @@ it('validation methods return arrays', function () {
 it('can access execute method through reflection', function () {
     $reflection = new ReflectionClass(AccountValidationActivity::class);
     $method = $reflection->getMethod('execute');
-    
+
     expect($method->isPublic())->toBeTrue();
     expect($method->getNumberOfParameters())->toBe(3);
     expect($method->getReturnType()->getName())->toBe('array');
@@ -110,7 +108,7 @@ it('can access execute method through reflection', function () {
 
 it('validates all required validation methods exist', function () {
     $reflection = new ReflectionClass(AccountValidationActivity::class);
-    
+
     $expectedMethods = [
         'execute',
         'performValidationCheck',
@@ -118,9 +116,9 @@ it('validates all required validation methods exist', function () {
         'validateAddress',
         'validateIdentity',
         'performComplianceScreening',
-        'logValidation'
+        'logValidation',
     ];
-    
+
     foreach ($expectedMethods as $methodName) {
         expect($reflection->hasMethod($methodName))->toBeTrue();
     }
@@ -128,7 +126,7 @@ it('validates all required validation methods exist', function () {
 
 it('can create data object instances for validation testing', function () {
     $uuid = new AccountUuid('validation-test-uuid');
-    
+
     expect($uuid->getUuid())->toBe('validation-test-uuid');
     expect(class_exists(AccountValidationActivity::class))->toBeTrue();
 });

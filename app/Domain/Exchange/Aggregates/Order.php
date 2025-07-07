@@ -116,12 +116,12 @@ class Order extends AggregateRoot
     protected function applyOrderMatched(OrderMatched $event): void
     {
         $this->trades[] = [
-            'tradeId' => $event->tradeId,
+            'tradeId'        => $event->tradeId,
             'matchedOrderId' => $event->matchedOrderId,
-            'executedPrice' => $event->executedPrice,
+            'executedPrice'  => $event->executedPrice,
             'executedAmount' => $event->executedAmount,
-            'makerFee' => $event->makerFee,
-            'takerFee' => $event->takerFee,
+            'makerFee'       => $event->makerFee,
+            'takerFee'       => $event->takerFee,
         ];
 
         $this->filledAmount = $this->filledAmount->plus($event->executedAmount);

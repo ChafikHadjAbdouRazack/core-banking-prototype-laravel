@@ -7,17 +7,20 @@ namespace App\Domain\Custodian\Connectors;
 use App\Domain\Custodian\Contracts\ICustodianConnector;
 use App\Domain\Custodian\Services\CircuitBreakerService;
 use App\Domain\Custodian\Services\RetryService;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\RequestException;
-use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 abstract class BaseCustodianConnector implements ICustodianConnector
 {
     protected array $config;
+
     protected PendingRequest $client;
+
     protected CircuitBreakerService $circuitBreaker;
+
     protected RetryService $retryService;
 
     public function __construct(array $config)
@@ -41,7 +44,7 @@ abstract class BaseCustodianConnector implements ICustodianConnector
     protected function getHeaders(): array
     {
         $headers = [
-            'Accept' => 'application/json',
+            'Accept'       => 'application/json',
             'Content-Type' => 'application/json',
         ];
 
@@ -65,19 +68,22 @@ abstract class BaseCustodianConnector implements ICustodianConnector
                 serviceIdentifier: "GET:{$this->getHealthCheckEndpoint()}",
                 operation: function () {
                     $response = $this->client->get($this->getHealthCheckEndpoint());
+
                     return $response->successful();
                 },
                 fallback: function () {
                     // If health check fails, return cached status or false
                     Log::warning("Custodian {$this->getName()} health check using fallback");
+
                     return false;
                 }
             );
         } catch (\Exception $e) {
             Log::error("Custodian {$this->getName()} health check failed", [
-                'error' => $e->getMessage(),
+                'error'                 => $e->getMessage(),
                 'circuit_breaker_state' => $this->circuitBreaker->getState("{$this->getName()}.GET:{$this->getHealthCheckEndpoint()}"),
             ]);
+
             return false;
         }
     }
@@ -86,9 +92,9 @@ abstract class BaseCustodianConnector implements ICustodianConnector
     {
         if ($this->config['debug'] ?? false) {
             Log::debug("Custodian {$this->getName()} request", [
-                'method' => $method,
+                'method'   => $method,
                 'endpoint' => $endpoint,
-                'data' => $data,
+                'data'     => $data,
             ]);
         }
     }
@@ -97,10 +103,10 @@ abstract class BaseCustodianConnector implements ICustodianConnector
     {
         if ($this->config['debug'] ?? false) {
             Log::debug("Custodian {$this->getName()} response", [
-                'method' => $method,
+                'method'   => $method,
                 'endpoint' => $endpoint,
-                'status' => $response->status(),
-                'body' => $response->json(),
+                'status'   => $response->status(),
+                'body'     => $response->json(),
             ]);
         }
     }
@@ -129,7 +135,7 @@ abstract class BaseCustodianConnector implements ICustodianConnector
     }
 
     /**
-     * Execute API request with circuit breaker and retry logic
+     * Execute API request with circuit breaker and retry logic.
      */
     protected function executeWithResilience(
         string $serviceIdentifier,
@@ -155,7 +161,7 @@ abstract class BaseCustodianConnector implements ICustodianConnector
     }
 
     /**
-     * Make resilient API request
+     * Make resilient API request.
      */
     protected function resilientApiRequest(
         string $method,
@@ -169,17 +175,17 @@ abstract class BaseCustodianConnector implements ICustodianConnector
                 $this->logRequest($method, $endpoint, $data);
 
                 $response = match (strtoupper($method)) {
-                    'GET' => $this->client->get($endpoint, $data),
-                    'POST' => $this->client->post($endpoint, $data),
-                    'PUT' => $this->client->put($endpoint, $data),
+                    'GET'    => $this->client->get($endpoint, $data),
+                    'POST'   => $this->client->post($endpoint, $data),
+                    'PUT'    => $this->client->put($endpoint, $data),
                     'DELETE' => $this->client->delete($endpoint),
-                    default => throw new \InvalidArgumentException("Unsupported HTTP method: {$method}"),
+                    default  => throw new \InvalidArgumentException("Unsupported HTTP method: {$method}"),
                 };
 
                 $this->logResponse($method, $endpoint, $response);
 
                 // Throw exception for non-successful responses to trigger retry
-                if (!$response->successful()) {
+                if (! $response->successful()) {
                     throw new RequestException($response);
                 }
 
@@ -190,16 +196,17 @@ abstract class BaseCustodianConnector implements ICustodianConnector
     }
 
     /**
-     * Get circuit breaker metrics for this connector
+     * Get circuit breaker metrics for this connector.
      */
     public function getCircuitBreakerMetrics(string $operation = ''): array
     {
         $service = $operation ? "{$this->getName()}.{$operation}" : $this->getName();
+
         return $this->circuitBreaker->getMetrics($service);
     }
 
     /**
-     * Reset circuit breaker for specific operation or all operations
+     * Reset circuit breaker for specific operation or all operations.
      */
     public function resetCircuitBreaker(string $operation = ''): void
     {

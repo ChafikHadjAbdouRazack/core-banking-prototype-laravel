@@ -11,7 +11,7 @@ class RiskRating
         public readonly float $defaultProbability,
         public readonly array $riskFactors
     ) {
-        if (!in_array($rating, self::VALID_RATINGS)) {
+        if (! in_array($rating, self::VALID_RATINGS)) {
             throw new \InvalidArgumentException('Invalid risk rating. Must be A-F');
         }
 
@@ -50,9 +50,9 @@ class RiskRating
     public function toArray(): array
     {
         return [
-            'rating' => $this->rating,
+            'rating'              => $this->rating,
             'default_probability' => $this->defaultProbability,
-            'risk_factors' => $this->riskFactors,
+            'risk_factors'        => $this->riskFactors,
         ];
     }
 }

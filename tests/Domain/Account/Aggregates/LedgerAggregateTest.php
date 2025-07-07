@@ -28,7 +28,7 @@ class LedgerAggregateTest extends TestCase
             ->assertRecorded([
                 new AccountCreated(
                     account: $this->fakeAccount()
-                )
+                ),
             ]);
     }
 
@@ -39,18 +39,18 @@ class LedgerAggregateTest extends TestCase
             ->given([
                 new AccountCreated(
                     account: $this->fakeAccount()
-                )
+                ),
             ])
             ->when(function (LedgerAggregate $ledger): void {
                 $ledger->deleteAccount();
             })
             ->assertRecorded([
-                new AccountDeleted()
+                new AccountDeleted(),
             ]);
     }
 
     /**
-     * @return \App\Domain\Account\DataObjects\Account
+     * @return Account
      */
     protected function fakeAccount(): Account
     {

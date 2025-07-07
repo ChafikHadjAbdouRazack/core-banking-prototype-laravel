@@ -7,7 +7,7 @@ use Illuminate\Support\Collection;
 interface CollateralServiceInterface
 {
     /**
-     * Convert collateral value to peg asset
+     * Convert collateral value to peg asset.
      *
      * @param string $fromAsset
      * @param int $amount
@@ -17,7 +17,7 @@ interface CollateralServiceInterface
     public function convertToPegAsset(string $fromAsset, int $amount, string $pegAsset): int;
 
     /**
-     * Calculate total collateral value in the system
+     * Calculate total collateral value in the system.
      *
      * @param string $stablecoinCode
      * @return int
@@ -25,7 +25,7 @@ interface CollateralServiceInterface
     public function calculateTotalCollateralValue(string $stablecoinCode): int;
 
     /**
-     * Get positions at risk (collateral ratio below warning threshold)
+     * Get positions at risk (collateral ratio below warning threshold).
      *
      * @param float $bufferRatio
      * @return Collection
@@ -33,14 +33,14 @@ interface CollateralServiceInterface
     public function getPositionsAtRisk(float $bufferRatio = 0.05): Collection;
 
     /**
-     * Get positions eligible for liquidation
+     * Get positions eligible for liquidation.
      *
      * @return Collection
      */
     public function getPositionsForLiquidation(): Collection;
 
     /**
-     * Update position collateral ratio
+     * Update position collateral ratio.
      *
      * @param \App\Models\StablecoinCollateralPosition $position
      * @return void
@@ -48,7 +48,7 @@ interface CollateralServiceInterface
     public function updatePositionCollateralRatio(\App\Models\StablecoinCollateralPosition $position): void;
 
     /**
-     * Calculate position health score
+     * Calculate position health score.
      *
      * @param \App\Models\StablecoinCollateralPosition $position
      * @return float
@@ -56,7 +56,7 @@ interface CollateralServiceInterface
     public function calculatePositionHealthScore(\App\Models\StablecoinCollateralPosition $position): float;
 
     /**
-     * Get collateral distribution analysis
+     * Get collateral distribution analysis.
      *
      * @param string $stablecoinCode
      * @return array
@@ -64,7 +64,7 @@ interface CollateralServiceInterface
     public function getCollateralDistribution(string $stablecoinCode): array;
 
     /**
-     * Get system-wide collateralization metrics
+     * Get system-wide collateralization metrics.
      *
      * @return array
      */

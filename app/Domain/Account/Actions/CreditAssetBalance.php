@@ -9,7 +9,7 @@ use App\Models\AccountBalance;
 class CreditAssetBalance extends AccountAction
 {
     /**
-     * Handle asset balance credit event
+     * Handle asset balance credit event.
      */
     public function __invoke(AssetBalanceAdded $event): Account
     {
@@ -19,7 +19,7 @@ class CreditAssetBalance extends AccountAction
         $balance = AccountBalance::firstOrCreate(
             [
                 'account_uuid' => $account->uuid,
-                'asset_code' => $event->assetCode,
+                'asset_code'   => $event->assetCode,
             ],
             [
                 'balance' => 0,

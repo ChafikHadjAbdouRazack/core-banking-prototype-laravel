@@ -3,8 +3,8 @@
 namespace App\Domain\Wallet\Services;
 
 use App\Domain\Wallet\Aggregates\BlockchainWallet;
-use App\Domain\Wallet\Contracts\BlockchainConnector;
 use App\Domain\Wallet\Connectors\EthereumConnector;
+use App\Domain\Wallet\Contracts\BlockchainConnector;
 use App\Domain\Wallet\Exceptions\WalletException;
 use App\Domain\Wallet\ValueObjects\TransactionData;
 use Illuminate\Support\Facades\DB;
@@ -14,6 +14,7 @@ use Illuminate\Support\Str;
 class BlockchainWalletService
 {
     protected KeyManagementService $keyManager;
+
     protected array $connectors = [];
 
     public function __construct(KeyManagementService $keyManager)
@@ -23,7 +24,7 @@ class BlockchainWalletService
     }
 
     /**
-     * Initialize blockchain connectors
+     * Initialize blockchain connectors.
      */
     protected function initializeConnectors(): void
     {
@@ -47,7 +48,7 @@ class BlockchainWalletService
     }
 
     /**
-     * Create a new blockchain wallet
+     * Create a new blockchain wallet.
      */
     public function createWallet(
         string $userId,
@@ -63,11 +64,11 @@ class BlockchainWalletService
             $encryptedSeed = null;
 
             if ($type === 'non-custodial') {
-                if (!$mnemonic) {
+                if (! $mnemonic) {
                     throw new WalletException('Mnemonic required for non-custodial wallet');
                 }
 
-                if (!$this->keyManager->validateMnemonic($mnemonic)) {
+                if (! $this->keyManager->validateMnemonic($mnemonic)) {
                     throw new WalletException('Invalid mnemonic phrase');
                 }
 
@@ -106,14 +107,14 @@ class BlockchainWalletService
             DB::rollBack();
             Log::error('Failed to create wallet', [
                 'user_id' => $userId,
-                'error' => $e->getMessage()
+                'error'   => $e->getMessage(),
             ]);
             throw $e;
         }
     }
 
     /**
-     * Generate initial addresses for major chains
+     * Generate initial addresses for major chains.
      */
     protected function generateInitialAddresses(BlockchainWallet $wallet): void
     {
@@ -125,7 +126,7 @@ class BlockchainWalletService
     }
 
     /**
-     * Generate new address for a chain
+     * Generate new address for a chain.
      */
     public function generateAddress(string $walletId, string $chain, ?string $label = null): array
     {
@@ -165,13 +166,13 @@ class BlockchainWalletService
 
         return [
             'address' => $addressData->address,
-            'chain' => $chain,
-            'label' => $label,
+            'chain'   => $chain,
+            'label'   => $label,
         ];
     }
 
     /**
-     * Get wallet balance across all chains
+     * Get wallet balance across all chains.
      */
     public function getBalance(string $walletId): array
     {
@@ -188,7 +189,7 @@ class BlockchainWalletService
             }
 
             $balances[$chain] = [
-                'balance' => $chainBalance,
+                'balance'   => $chainBalance,
                 'formatted' => $this->formatBalance($chainBalance, $chain),
                 'addresses' => count($addresses),
             ];
@@ -198,7 +199,7 @@ class BlockchainWalletService
     }
 
     /**
-     * Send transaction
+     * Send transaction.
      */
     public function sendTransaction(
         string $walletId,
@@ -245,18 +246,18 @@ class BlockchainWalletService
         $this->recordTransaction($walletId, $chain, $transaction, $result);
 
         return [
-            'hash' => $result->hash,
-            'status' => $result->status,
-            'from' => $fromAddress['address'],
-            'to' => $to,
-            'amount' => $amount,
-            'chain' => $chain,
+            'hash'         => $result->hash,
+            'status'       => $result->status,
+            'from'         => $fromAddress['address'],
+            'to'           => $to,
+            'amount'       => $amount,
+            'chain'        => $chain,
             'gas_estimate' => $gasEstimate->toArray(),
         ];
     }
 
     /**
-     * Get transaction history
+     * Get transaction history.
      */
     public function getTransactionHistory(string $walletId, ?string $chain = null): array
     {
@@ -274,7 +275,7 @@ class BlockchainWalletService
     }
 
     /**
-     * Update wallet settings
+     * Update wallet settings.
      */
     public function updateSettings(string $walletId, array $settings): BlockchainWallet
     {
@@ -286,7 +287,7 @@ class BlockchainWalletService
     }
 
     /**
-     * Freeze wallet
+     * Freeze wallet.
      */
     public function freezeWallet(string $walletId, string $reason, string $frozenBy): BlockchainWallet
     {
@@ -298,7 +299,7 @@ class BlockchainWalletService
     }
 
     /**
-     * Unfreeze wallet
+     * Unfreeze wallet.
      */
     public function unfreezeWallet(string $walletId, string $unfrozenBy): BlockchainWallet
     {
@@ -310,11 +311,11 @@ class BlockchainWalletService
     }
 
     /**
-     * Get blockchain connector
+     * Get blockchain connector.
      */
     protected function getConnector(string $chain): BlockchainConnector
     {
-        if (!isset($this->connectors[$chain])) {
+        if (! isset($this->connectors[$chain])) {
             throw new WalletException("Unsupported blockchain: {$chain}");
         }
 
@@ -322,19 +323,19 @@ class BlockchainWalletService
     }
 
     /**
-     * Store encrypted seed
+     * Store encrypted seed.
      */
     protected function storeEncryptedSeed(string $walletId, string $encryptedSeed): void
     {
         DB::table('wallet_seeds')->insert([
-            'wallet_id' => $walletId,
+            'wallet_id'      => $walletId,
             'encrypted_seed' => $encryptedSeed,
-            'created_at' => now(),
+            'created_at'     => now(),
         ]);
     }
 
     /**
-     * Store in HSM (placeholder)
+     * Store in HSM (placeholder).
      */
     protected function storeInHSM(string $walletId, string $encryptedSeed): void
     {
@@ -343,7 +344,7 @@ class BlockchainWalletService
     }
 
     /**
-     * Retrieve encrypted seed
+     * Retrieve encrypted seed.
      */
     protected function retrieveEncryptedSeed(string $walletId): string
     {
@@ -351,7 +352,7 @@ class BlockchainWalletService
             ->where('wallet_id', $walletId)
             ->value('encrypted_seed');
 
-        if (!$seed) {
+        if (! $seed) {
             throw new WalletException('Seed not found for wallet');
         }
 
@@ -359,7 +360,7 @@ class BlockchainWalletService
     }
 
     /**
-     * Select address with sufficient balance
+     * Select address with sufficient balance.
      */
     protected function selectAddressWithBalance(string $chain, array $addresses, string $requiredAmount): array
     {
@@ -377,7 +378,7 @@ class BlockchainWalletService
     }
 
     /**
-     * Sign transaction
+     * Sign transaction.
      */
     protected function signTransaction(
         string $walletId,
@@ -401,7 +402,7 @@ class BlockchainWalletService
     }
 
     /**
-     * Sign with HSM (placeholder)
+     * Sign with HSM (placeholder).
      */
     protected function signWithHSM(TransactionData $transaction): SignedTransaction
     {
@@ -413,7 +414,7 @@ class BlockchainWalletService
     }
 
     /**
-     * Record transaction
+     * Record transaction.
      */
     protected function recordTransaction(
         string $walletId,
@@ -422,16 +423,16 @@ class BlockchainWalletService
         TransactionResult $result
     ): void {
         DB::table('blockchain_transactions')->insert([
-            'wallet_id' => $walletId,
-            'chain' => $chain,
+            'wallet_id'        => $walletId,
+            'chain'            => $chain,
             'transaction_hash' => $result->hash,
-            'from_address' => $transaction->from,
-            'to_address' => $transaction->to,
-            'amount' => $transaction->value,
-            'gas_limit' => $transaction->gasLimit,
-            'gas_price' => $transaction->gasPrice,
-            'status' => $result->status,
-            'metadata' => json_encode(array_merge(
+            'from_address'     => $transaction->from,
+            'to_address'       => $transaction->to,
+            'amount'           => $transaction->value,
+            'gas_limit'        => $transaction->gasLimit,
+            'gas_price'        => $transaction->gasPrice,
+            'status'           => $result->status,
+            'metadata'         => json_encode(array_merge(
                 $transaction->metadata,
                 $result->metadata
             )),
@@ -440,7 +441,7 @@ class BlockchainWalletService
     }
 
     /**
-     * Subscribe to address events
+     * Subscribe to address events.
      */
     protected function subscribeToAddressEvents(string $chain, string $address, string $walletId): void
     {
@@ -449,9 +450,9 @@ class BlockchainWalletService
         $connector->subscribeToEvents($address, function ($event) use ($walletId, $chain, $address) {
             Log::info('Blockchain event received', [
                 'wallet_id' => $walletId,
-                'chain' => $chain,
-                'address' => $address,
-                'event' => $event,
+                'chain'     => $chain,
+                'address'   => $address,
+                'event'     => $event,
             ]);
 
             // Process event (update balances, record transactions, etc.)
@@ -460,7 +461,7 @@ class BlockchainWalletService
     }
 
     /**
-     * Process blockchain event
+     * Process blockchain event.
      */
     protected function processBlockchainEvent(string $walletId, string $chain, string $address, $event): void
     {
@@ -469,19 +470,19 @@ class BlockchainWalletService
     }
 
     /**
-     * Format balance for display
+     * Format balance for display.
      */
     protected function formatBalance(string $balance, string $chain): string
     {
         $decimals = [
             'ethereum' => 18,
-            'polygon' => 18,
-            'bsc' => 18,
-            'bitcoin' => 8,
+            'polygon'  => 18,
+            'bsc'      => 18,
+            'bitcoin'  => 8,
         ];
 
         $decimal = $decimals[$chain] ?? 18;
-        $divisor = bcpow('10', (string)$decimal);
+        $divisor = bcpow('10', (string) $decimal);
 
         return rtrim(rtrim(bcdiv($balance, $divisor, $decimal), '0'), '.');
     }

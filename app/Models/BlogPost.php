@@ -26,7 +26,7 @@ class BlogPost extends Model
     ];
 
     protected $casts = [
-        'is_featured' => 'boolean',
+        'is_featured'  => 'boolean',
         'is_published' => 'boolean',
         'published_at' => 'datetime',
     ];
@@ -66,12 +66,12 @@ class BlogPost extends Model
     public function getCategoryBadgeColorAttribute()
     {
         return match ($this->category) {
-            'platform' => 'blue',
-            'security' => 'green',
-            'developer' => 'purple',
-            'industry' => 'yellow',
+            'platform'   => 'blue',
+            'security'   => 'green',
+            'developer'  => 'purple',
+            'industry'   => 'yellow',
             'compliance' => 'red',
-            default => 'gray',
+            default      => 'gray',
         };
     }
 }

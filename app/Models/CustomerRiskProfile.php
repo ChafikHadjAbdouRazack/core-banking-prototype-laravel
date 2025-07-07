@@ -2,11 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class CustomerRiskProfile extends Model
 {
@@ -67,79 +67,86 @@ class CustomerRiskProfile extends Model
     ];
 
     protected $casts = [
-        'geographic_risk' => 'array',
-        'product_risk' => 'array',
-        'channel_risk' => 'array',
-        'customer_risk' => 'array',
-        'behavioral_risk' => 'array',
-        'cdd_measures' => 'array',
-        'pep_details' => 'array',
-        'sanctions_details' => 'array',
-        'adverse_media_details' => 'array',
-        'restricted_countries' => 'array',
-        'restricted_currencies' => 'array',
-        'monitoring_rules' => 'array',
-        'risk_history' => 'array',
-        'screening_history' => 'array',
-        'beneficial_owners' => 'array',
-        'override_reasons' => 'array',
-        'risk_score' => 'decimal:2',
-        'daily_transaction_limit' => 'decimal:2',
-        'monthly_transaction_limit' => 'decimal:2',
-        'single_transaction_limit' => 'decimal:2',
-        'is_pep' => 'boolean',
-        'is_sanctioned' => 'boolean',
-        'has_adverse_media' => 'boolean',
-        'enhanced_monitoring' => 'boolean',
-        'sow_verified' => 'boolean',
-        'sof_verified' => 'boolean',
-        'complex_structure' => 'boolean',
-        'last_assessment_at' => 'datetime',
-        'next_review_at' => 'datetime',
-        'cdd_completed_at' => 'datetime',
-        'cdd_expires_at' => 'datetime',
-        'pep_verified_at' => 'datetime',
-        'sanctions_verified_at' => 'datetime',
-        'adverse_media_checked_at' => 'datetime',
+        'geographic_risk'             => 'array',
+        'product_risk'                => 'array',
+        'channel_risk'                => 'array',
+        'customer_risk'               => 'array',
+        'behavioral_risk'             => 'array',
+        'cdd_measures'                => 'array',
+        'pep_details'                 => 'array',
+        'sanctions_details'           => 'array',
+        'adverse_media_details'       => 'array',
+        'restricted_countries'        => 'array',
+        'restricted_currencies'       => 'array',
+        'monitoring_rules'            => 'array',
+        'risk_history'                => 'array',
+        'screening_history'           => 'array',
+        'beneficial_owners'           => 'array',
+        'override_reasons'            => 'array',
+        'risk_score'                  => 'decimal:2',
+        'daily_transaction_limit'     => 'decimal:2',
+        'monthly_transaction_limit'   => 'decimal:2',
+        'single_transaction_limit'    => 'decimal:2',
+        'is_pep'                      => 'boolean',
+        'is_sanctioned'               => 'boolean',
+        'has_adverse_media'           => 'boolean',
+        'enhanced_monitoring'         => 'boolean',
+        'sow_verified'                => 'boolean',
+        'sof_verified'                => 'boolean',
+        'complex_structure'           => 'boolean',
+        'last_assessment_at'          => 'datetime',
+        'next_review_at'              => 'datetime',
+        'cdd_completed_at'            => 'datetime',
+        'cdd_expires_at'              => 'datetime',
+        'pep_verified_at'             => 'datetime',
+        'sanctions_verified_at'       => 'datetime',
+        'adverse_media_checked_at'    => 'datetime',
         'last_suspicious_activity_at' => 'datetime',
-        'approved_at' => 'datetime',
+        'approved_at'                 => 'datetime',
     ];
 
-    const RISK_RATING_LOW = 'low';
-    const RISK_RATING_MEDIUM = 'medium';
-    const RISK_RATING_HIGH = 'high';
-    const RISK_RATING_PROHIBITED = 'prohibited';
+    public const RISK_RATING_LOW = 'low';
 
-    const CDD_LEVEL_SIMPLIFIED = 'simplified';
-    const CDD_LEVEL_STANDARD = 'standard';
-    const CDD_LEVEL_ENHANCED = 'enhanced';
+    public const RISK_RATING_MEDIUM = 'medium';
 
-    const PEP_TYPE_DOMESTIC = 'domestic';
-    const PEP_TYPE_FOREIGN = 'foreign';
-    const PEP_TYPE_INTERNATIONAL_ORG = 'international_org';
+    public const RISK_RATING_HIGH = 'high';
 
-    const RISK_RATINGS = [
-        self::RISK_RATING_LOW => 'Low Risk',
-        self::RISK_RATING_MEDIUM => 'Medium Risk',
-        self::RISK_RATING_HIGH => 'High Risk',
+    public const RISK_RATING_PROHIBITED = 'prohibited';
+
+    public const CDD_LEVEL_SIMPLIFIED = 'simplified';
+
+    public const CDD_LEVEL_STANDARD = 'standard';
+
+    public const CDD_LEVEL_ENHANCED = 'enhanced';
+
+    public const PEP_TYPE_DOMESTIC = 'domestic';
+
+    public const PEP_TYPE_FOREIGN = 'foreign';
+
+    public const PEP_TYPE_INTERNATIONAL_ORG = 'international_org';
+
+    public const RISK_RATINGS = [
+        self::RISK_RATING_LOW        => 'Low Risk',
+        self::RISK_RATING_MEDIUM     => 'Medium Risk',
+        self::RISK_RATING_HIGH       => 'High Risk',
         self::RISK_RATING_PROHIBITED => 'Prohibited',
     ];
 
-    const CDD_LEVELS = [
+    public const CDD_LEVELS = [
         self::CDD_LEVEL_SIMPLIFIED => 'Simplified Due Diligence',
-        self::CDD_LEVEL_STANDARD => 'Standard Due Diligence',
-        self::CDD_LEVEL_ENHANCED => 'Enhanced Due Diligence',
+        self::CDD_LEVEL_STANDARD   => 'Standard Due Diligence',
+        self::CDD_LEVEL_ENHANCED   => 'Enhanced Due Diligence',
     ];
 
     // High-risk countries list (example - should be maintained separately)
-    const HIGH_RISK_COUNTRIES = [
+    public const HIGH_RISK_COUNTRIES = [
         'AF', 'AL', 'BS', 'BB', 'BW', 'KH', 'GH', 'IS', 'JM', 'ML',
         'MT', 'MN', 'MM', 'NI', 'PK', 'PA', 'PH', 'SN', 'SY', 'UG',
         'VU', 'YE', 'ZW', 'IR', 'KP',
     ];
 
     // High-risk industries (NAICS codes)
-    const HIGH_RISK_INDUSTRIES = [
+    public const HIGH_RISK_INDUSTRIES = [
         '5223', // Activities Related to Credit Intermediation
         '5239', // Other Financial Investment Activities
         '7132', // Gambling Industries
@@ -152,7 +159,7 @@ class CustomerRiskProfile extends Model
         parent::boot();
 
         static::creating(function ($profile) {
-            if (!$profile->profile_number) {
+            if (! $profile->profile_number) {
                 $profile->profile_number = static::generateProfileNumber();
             }
         });
@@ -243,9 +250,9 @@ class CustomerRiskProfile extends Model
         $score = 0;
         $weights = [
             'geographic' => 0.25,
-            'product' => 0.20,
-            'channel' => 0.15,
-            'customer' => 0.25,
+            'product'    => 0.20,
+            'channel'    => 0.15,
+            'customer'   => 0.25,
             'behavioral' => 0.15,
         ];
 
@@ -321,11 +328,11 @@ class CustomerRiskProfile extends Model
         $channel = $this->channel_risk['onboarding_channel'] ?? 'online';
 
         return match ($channel) {
-            'face_to_face' => 10,
-            'online_verified' => 30,
+            'face_to_face'      => 10,
+            'online_verified'   => 30,
             'online_unverified' => 60,
-            'third_party' => 70,
-            default => 40,
+            'third_party'       => 70,
+            default             => 40,
         };
     }
 
@@ -397,7 +404,7 @@ class CustomerRiskProfile extends Model
     {
         if ($this->isHighRisk() || $this->is_pep) {
             return self::CDD_LEVEL_ENHANCED;
-        } elseif ($this->isLowRisk() && !$this->complex_structure) {
+        } elseif ($this->isLowRisk() && ! $this->complex_structure) {
             return self::CDD_LEVEL_SIMPLIFIED;
         } else {
             return self::CDD_LEVEL_STANDARD;
@@ -407,9 +414,9 @@ class CustomerRiskProfile extends Model
     public function getTransactionLimits(): array
     {
         return [
-            'daily' => $this->daily_transaction_limit,
+            'daily'   => $this->daily_transaction_limit,
             'monthly' => $this->monthly_transaction_limit,
-            'single' => $this->single_transaction_limit,
+            'single'  => $this->single_transaction_limit,
         ];
     }
 
@@ -424,9 +431,9 @@ class CustomerRiskProfile extends Model
         // Add to risk history
         $history = $this->risk_history ?? [];
         $history[] = [
-            'date' => now()->toIso8601String(),
-            'score' => $this->risk_score,
-            'rating' => $this->risk_rating,
+            'date'    => now()->toIso8601String(),
+            'score'   => $this->risk_score,
+            'rating'  => $this->risk_rating,
             'factors' => $this->getRiskFactorsSummary(),
         ];
         $this->risk_history = $history;
@@ -437,10 +444,10 @@ class CustomerRiskProfile extends Model
     protected function calculateNextReviewDate(): \Carbon\Carbon
     {
         return match ($this->risk_rating) {
-            self::RISK_RATING_HIGH => now()->addMonths(3),
+            self::RISK_RATING_HIGH   => now()->addMonths(3),
             self::RISK_RATING_MEDIUM => now()->addMonths(6),
-            self::RISK_RATING_LOW => now()->addYear(),
-            default => now()->addMonth(),
+            self::RISK_RATING_LOW    => now()->addYear(),
+            default                  => now()->addMonth(),
         };
     }
 

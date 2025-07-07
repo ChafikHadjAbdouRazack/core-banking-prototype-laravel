@@ -43,10 +43,10 @@ class ReleaseLiquidityActivity extends Activity
                 ->delete();
 
             return [
-                'released' => true,
+                'released'   => true,
                 'account_id' => $lock['account_id'],
-                'currency' => $lock['currency'],
-                'amount' => $lock['amount'],
+                'currency'   => $lock['currency'],
+                'amount'     => $lock['amount'],
             ];
         });
     }

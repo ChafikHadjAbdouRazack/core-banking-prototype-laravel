@@ -1,6 +1,5 @@
 <?php
 
-use App\Domain\Account\Aggregates\TransactionAggregate;
 use App\Domain\Account\DataObjects\AccountUuid;
 use App\Domain\Account\DataObjects\Money;
 use App\Domain\Account\Workflows\TransactionReversalActivity;
@@ -21,9 +20,9 @@ it('has execute method', function () {
 it('execute method has correct signature', function () {
     $reflection = new ReflectionClass(TransactionReversalActivity::class);
     $method = $reflection->getMethod('execute');
-    
+
     expect($method->getNumberOfParameters())->toBe(6);
-    
+
     $parameters = $method->getParameters();
     expect($parameters[0]->getName())->toBe('accountUuid');
     expect($parameters[1]->getName())->toBe('originalAmount');
@@ -36,7 +35,7 @@ it('execute method has correct signature', function () {
 it('execute method returns array', function () {
     $reflection = new ReflectionClass(TransactionReversalActivity::class);
     $method = $reflection->getMethod('execute');
-    
+
     expect($method->getReturnType()->getName())->toBe('array');
 });
 
@@ -44,7 +43,7 @@ it('has proper type hints for parameters', function () {
     $reflection = new ReflectionClass(TransactionReversalActivity::class);
     $method = $reflection->getMethod('execute');
     $parameters = $method->getParameters();
-    
+
     expect($parameters[0]->getType()->getName())->toBe('App\Domain\Account\DataObjects\AccountUuid');
     expect($parameters[1]->getType()->getName())->toBe('App\Domain\Account\DataObjects\Money');
     expect($parameters[2]->getType()->getName())->toBe('string');
@@ -57,7 +56,7 @@ it('has proper type hints for parameters', function () {
 it('has logReversal method', function () {
     $reflection = new ReflectionClass(TransactionReversalActivity::class);
     $method = $reflection->getMethod('logReversal');
-    
+
     expect($method->isPrivate())->toBeTrue();
 });
 
@@ -65,7 +64,7 @@ it('has logReversal method', function () {
 it('can access execute method through reflection', function () {
     $reflection = new ReflectionClass(TransactionReversalActivity::class);
     $method = $reflection->getMethod('execute');
-    
+
     expect($method->isPublic())->toBeTrue();
     expect($method->getNumberOfParameters())->toBe(6);
     expect($method->getReturnType()->getName())->toBe('array');
@@ -74,7 +73,7 @@ it('can access execute method through reflection', function () {
 it('validates transaction reversal has private logReversal method', function () {
     $reflection = new ReflectionClass(TransactionReversalActivity::class);
     $logMethod = $reflection->getMethod('logReversal');
-    
+
     expect($logMethod->isPrivate())->toBeTrue();
     expect($logMethod->getNumberOfParameters())->toBe(5);
 });
@@ -82,7 +81,7 @@ it('validates transaction reversal has private logReversal method', function () 
 it('can create data object instances for reversal testing', function () {
     $uuid = new AccountUuid('reversal-test-uuid');
     $money = new Money(3000);
-    
+
     expect($uuid->getUuid())->toBe('reversal-test-uuid');
     expect($money->getAmount())->toBe(3000);
     expect(class_exists(TransactionReversalActivity::class))->toBeTrue();

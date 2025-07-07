@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources;
 
-use App\Domain\Cgo\Actions\RequestRefundAction;
 use App\Domain\Cgo\Aggregates\RefundAggregate;
 use App\Filament\Resources\CgoRefundResource\Pages;
 use App\Models\CgoRefund;
@@ -60,13 +59,13 @@ class CgoRefundResource extends Resource
 
                         Forms\Components\Select::make('status')
                             ->options([
-                                'pending' => 'Pending',
-                                'approved' => 'Approved',
-                                'rejected' => 'Rejected',
+                                'pending'    => 'Pending',
+                                'approved'   => 'Approved',
+                                'rejected'   => 'Rejected',
                                 'processing' => 'Processing',
-                                'completed' => 'Completed',
-                                'failed' => 'Failed',
-                                'cancelled' => 'Cancelled',
+                                'completed'  => 'Completed',
+                                'failed'     => 'Failed',
+                                'cancelled'  => 'Cancelled',
                             ])
                             ->disabled(),
                     ])
@@ -76,12 +75,12 @@ class CgoRefundResource extends Resource
                     ->schema([
                         Forms\Components\Select::make('reason')
                             ->options([
-                                'customer_request' => 'Customer Request',
-                                'duplicate_payment' => 'Duplicate Payment',
-                                'payment_error' => 'Payment Error',
-                                'system_error' => 'System Error',
+                                'customer_request'       => 'Customer Request',
+                                'duplicate_payment'      => 'Duplicate Payment',
+                                'payment_error'          => 'Payment Error',
+                                'system_error'           => 'System Error',
                                 'regulatory_requirement' => 'Regulatory Requirement',
-                                'other' => 'Other',
+                                'other'                  => 'Other',
                             ])
                             ->disabled(),
 
@@ -172,10 +171,10 @@ class CgoRefundResource extends Resource
                     ->colors([
                         'warning' => 'pending',
                         'primary' => 'approved',
-                        'danger' => ['rejected', 'failed'],
-                        'info' => 'processing',
+                        'danger'  => ['rejected', 'failed'],
+                        'info'    => 'processing',
                         'success' => 'completed',
-                        'gray' => 'cancelled',
+                        'gray'    => 'cancelled',
                     ]),
 
                 Tables\Columns\TextColumn::make('reason')
@@ -198,24 +197,24 @@ class CgoRefundResource extends Resource
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
                     ->options([
-                        'pending' => 'Pending',
-                        'approved' => 'Approved',
-                        'rejected' => 'Rejected',
+                        'pending'    => 'Pending',
+                        'approved'   => 'Approved',
+                        'rejected'   => 'Rejected',
                         'processing' => 'Processing',
-                        'completed' => 'Completed',
-                        'failed' => 'Failed',
-                        'cancelled' => 'Cancelled',
+                        'completed'  => 'Completed',
+                        'failed'     => 'Failed',
+                        'cancelled'  => 'Cancelled',
                     ])
                     ->multiple(),
 
                 Tables\Filters\SelectFilter::make('reason')
                     ->options([
-                        'customer_request' => 'Customer Request',
-                        'duplicate_payment' => 'Duplicate Payment',
-                        'payment_error' => 'Payment Error',
-                        'system_error' => 'System Error',
+                        'customer_request'       => 'Customer Request',
+                        'duplicate_payment'      => 'Duplicate Payment',
+                        'payment_error'          => 'Payment Error',
+                        'system_error'           => 'System Error',
                         'regulatory_requirement' => 'Regulatory Requirement',
-                        'other' => 'Other',
+                        'other'                  => 'Other',
                     ]),
 
                 Tables\Filters\Filter::make('created_at')
@@ -334,10 +333,10 @@ class CgoRefundResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListCgoRefunds::route('/'),
+            'index'  => Pages\ListCgoRefunds::route('/'),
             'create' => Pages\CreateCgoRefund::route('/create'),
-            'view' => Pages\ViewCgoRefund::route('/{record}'),
-            'edit' => Pages\EditCgoRefund::route('/{record}/edit'),
+            'view'   => Pages\ViewCgoRefund::route('/{record}'),
+            'edit'   => Pages\EditCgoRefund::route('/{record}/edit'),
         ];
     }
 

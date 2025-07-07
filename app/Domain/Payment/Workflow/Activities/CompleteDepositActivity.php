@@ -14,9 +14,9 @@ class CompleteDepositActivity extends Activity
             ->persist();
 
         return [
-            'deposit_uuid' => $input['deposit_uuid'],
-            'status' => 'completed',
-            'transaction_id' => $input['transaction_id']
+            'deposit_uuid'   => $input['deposit_uuid'],
+            'status'         => 'completed',
+            'transaction_id' => $input['transaction_id'],
         ];
     }
 }

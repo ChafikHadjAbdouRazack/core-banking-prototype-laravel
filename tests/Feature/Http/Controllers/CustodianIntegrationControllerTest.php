@@ -2,31 +2,32 @@
 
 namespace Tests\Feature\Http\Controllers;
 
-use Tests\TestCase;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Permission\Models\Role;
+use Tests\TestCase;
 
 class CustodianIntegrationControllerTest extends TestCase
 {
     use RefreshDatabase;
 
     protected User $adminUser;
+
     protected User $regularUser;
 
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Create roles
         Role::create(['name' => 'super_admin']);
         Role::create(['name' => 'bank_admin']);
         Role::create(['name' => 'operations_manager']);
-        
+
         // Create users
         $this->adminUser = User::factory()->create();
         $this->adminUser->assignRole('super_admin');
-        
+
         $this->regularUser = User::factory()->create();
     }
 
@@ -34,7 +35,7 @@ class CustodianIntegrationControllerTest extends TestCase
     {
         $response = $this->actingAs($this->regularUser)
             ->get(route('custodian-integration.index'));
-            
+
         $response->assertStatus(403);
     }
 
@@ -42,7 +43,7 @@ class CustodianIntegrationControllerTest extends TestCase
     {
         $response = $this->actingAs($this->adminUser)
             ->get(route('custodian-integration.index'));
-            
+
         $response->assertStatus(200)
             ->assertViewIs('custodian-integration.index')
             ->assertViewHas(['custodians', 'statistics', 'recentActivities']);
@@ -52,7 +53,7 @@ class CustodianIntegrationControllerTest extends TestCase
     {
         $response = $this->actingAs($this->adminUser)
             ->get(route('custodian-integration.show', ['custodianCode' => 'ANCHORAGE']));
-            
+
         $response->assertStatus(200)
             ->assertViewIs('custodian-integration.show')
             ->assertViewHas(['custodian', 'accountBalances', 'transactionHistory', 'systemStatus']);
@@ -62,7 +63,7 @@ class CustodianIntegrationControllerTest extends TestCase
     {
         $response = $this->actingAs($this->adminUser)
             ->get(route('custodian-integration.show', ['custodianCode' => 'INVALID']));
-            
+
         $response->assertStatus(404);
     }
 
@@ -70,7 +71,7 @@ class CustodianIntegrationControllerTest extends TestCase
     {
         $response = $this->actingAs($this->adminUser)
             ->post(route('custodian-integration.test-connection', ['custodianCode' => 'ANCHORAGE']));
-            
+
         $response->assertStatus(200)
             ->assertJson(['status' => 'success']);
     }
@@ -79,7 +80,7 @@ class CustodianIntegrationControllerTest extends TestCase
     {
         $response = $this->actingAs($this->adminUser)
             ->post(route('custodian-integration.synchronize', ['custodianCode' => 'ANCHORAGE']));
-            
+
         $response->assertStatus(200)
             ->assertJson(['status' => 'success']);
     }

@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Log;
 class WebhookService
 {
     /**
-     * Dispatch a webhook event to all subscribed webhooks
+     * Dispatch a webhook event to all subscribed webhooks.
      */
     public function dispatch(string $eventType, array $payload): void
     {
@@ -21,6 +21,7 @@ class WebhookService
 
         if ($webhooks->isEmpty()) {
             Log::debug("No active webhooks found for event: {$eventType}");
+
             return;
         }
 
@@ -30,8 +31,8 @@ class WebhookService
         foreach ($webhooks as $webhook) {
             $delivery = $webhook->deliveries()->create([
                 'event_type' => $eventType,
-                'payload' => array_merge($payload, [
-                    'event' => $eventType,
+                'payload'    => array_merge($payload, [
+                    'event'     => $eventType,
                     'timestamp' => now()->toIso8601String(),
                 ]),
                 'status' => WebhookDelivery::STATUS_PENDING,
@@ -44,7 +45,7 @@ class WebhookService
     }
 
     /**
-     * Dispatch a webhook event for a specific account
+     * Dispatch a webhook event for a specific account.
      */
     public function dispatchAccountEvent(string $eventType, string $accountUuid, array $additionalData = []): void
     {
@@ -56,7 +57,7 @@ class WebhookService
     }
 
     /**
-     * Dispatch a webhook event for a transaction
+     * Dispatch a webhook event for a transaction.
      */
     public function dispatchTransactionEvent(string $eventType, array $transactionData): void
     {
@@ -64,7 +65,7 @@ class WebhookService
     }
 
     /**
-     * Dispatch a webhook event for a transfer
+     * Dispatch a webhook event for a transfer.
      */
     public function dispatchTransferEvent(string $eventType, array $transferData): void
     {
@@ -72,7 +73,7 @@ class WebhookService
     }
 
     /**
-     * Generate webhook signature for payload
+     * Generate webhook signature for payload.
      */
     public function generateSignature(string $payload, string $secret): string
     {
@@ -80,11 +81,12 @@ class WebhookService
     }
 
     /**
-     * Verify webhook signature
+     * Verify webhook signature.
      */
     public function verifySignature(string $payload, string $signature, string $secret): bool
     {
         $expectedSignature = $this->generateSignature($payload, $secret);
+
         return hash_equals($expectedSignature, $signature);
     }
 }

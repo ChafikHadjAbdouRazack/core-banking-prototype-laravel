@@ -5,7 +5,7 @@ namespace App\Domain\Exchange\Contracts;
 interface ExchangeServiceInterface
 {
     /**
-     * Place a new order on the exchange
+     * Place a new order on the exchange.
      */
     public function placeOrder(
         string $accountId,
@@ -20,17 +20,17 @@ interface ExchangeServiceInterface
     ): array;
 
     /**
-     * Cancel an existing order
+     * Cancel an existing order.
      */
     public function cancelOrder(string $orderId, string $reason = 'User requested'): array;
 
     /**
-     * Get order book data for a currency pair
+     * Get order book data for a currency pair.
      */
     public function getOrderBook(string $baseCurrency, string $quoteCurrency, int $depth = 20): array;
 
     /**
-     * Get market data and statistics for a currency pair
+     * Get market data and statistics for a currency pair.
      */
     public function getMarketData(string $baseCurrency, string $quoteCurrency): array;
 }

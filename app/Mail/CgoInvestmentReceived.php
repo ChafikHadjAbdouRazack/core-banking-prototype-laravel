@@ -43,9 +43,9 @@ class CgoInvestmentReceived extends Mailable
             markdown: 'emails.cgo.investment-received',
             with: [
                 'investment' => $this->investment,
-                'amount' => number_format($this->investment->amount, 2),
-                'tier' => ucfirst($this->investment->tier),
-                'shares' => number_format($this->investment->shares_purchased, 4),
+                'amount'     => number_format($this->investment->amount, 2),
+                'tier'       => ucfirst($this->investment->tier),
+                'shares'     => number_format($this->investment->shares_purchased, 4),
             ],
         );
     }

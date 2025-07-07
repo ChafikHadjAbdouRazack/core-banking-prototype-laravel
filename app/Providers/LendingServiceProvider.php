@@ -2,14 +2,14 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
-use App\Services\Lending\LoanApplicationService;
+use App\Domain\Lending\Services\CollateralManagementService;
 use App\Domain\Lending\Services\CreditScoringService;
 use App\Domain\Lending\Services\RiskAssessmentService;
-use App\Domain\Lending\Services\CollateralManagementService;
-use App\Services\Lending\MockCreditScoringService;
-use App\Services\Lending\DefaultRiskAssessmentService;
 use App\Services\Lending\DefaultCollateralManagementService;
+use App\Services\Lending\DefaultRiskAssessmentService;
+use App\Services\Lending\LoanApplicationService;
+use App\Services\Lending\MockCreditScoringService;
+use Illuminate\Support\ServiceProvider;
 
 class LendingServiceProvider extends ServiceProvider
 {

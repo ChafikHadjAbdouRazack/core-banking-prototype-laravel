@@ -11,7 +11,7 @@ class AuditLog extends Model
 {
     use HasFactory;
 
-    const UPDATED_AT = null;
+    public const UPDATED_AT = null;
 
     protected $fillable = [
         'user_uuid',
@@ -29,7 +29,7 @@ class AuditLog extends Model
     protected $casts = [
         'old_values' => 'array',
         'new_values' => 'array',
-        'metadata' => 'array',
+        'metadata'   => 'array',
         'created_at' => 'datetime',
     ];
 
@@ -50,7 +50,7 @@ class AuditLog extends Model
     }
 
     /**
-     * Log an action
+     * Log an action.
      */
     public static function log(
         string $action,
@@ -63,21 +63,21 @@ class AuditLog extends Model
         $request = request();
 
         return static::create([
-            'user_uuid' => Auth::user()?->uuid,
-            'action' => $action,
+            'user_uuid'      => Auth::user()?->uuid,
+            'action'         => $action,
             'auditable_type' => $auditable ? get_class($auditable) : null,
-            'auditable_id' => $auditable ? $auditable->getKey() : null,
-            'old_values' => $oldValues,
-            'new_values' => $newValues,
-            'metadata' => $metadata,
-            'ip_address' => $request ? $request->ip() : null,
-            'user_agent' => $request ? $request->userAgent() : null,
-            'tags' => $tags,
+            'auditable_id'   => $auditable ? $auditable->getKey() : null,
+            'old_values'     => $oldValues,
+            'new_values'     => $newValues,
+            'metadata'       => $metadata,
+            'ip_address'     => $request ? $request->ip() : null,
+            'user_agent'     => $request ? $request->userAgent() : null,
+            'tags'           => $tags,
         ]);
     }
 
     /**
-     * Scope for user actions
+     * Scope for user actions.
      */
     public function scopeForUser($query, string $userUuid)
     {
@@ -85,7 +85,7 @@ class AuditLog extends Model
     }
 
     /**
-     * Scope for specific action
+     * Scope for specific action.
      */
     public function scopeForAction($query, string $action)
     {
@@ -93,7 +93,7 @@ class AuditLog extends Model
     }
 
     /**
-     * Scope for auditable
+     * Scope for auditable.
      */
     public function scopeForAuditable($query, Model $auditable)
     {
@@ -102,7 +102,7 @@ class AuditLog extends Model
     }
 
     /**
-     * Scope for tags
+     * Scope for tags.
      */
     public function scopeWithTag($query, string $tag)
     {

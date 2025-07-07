@@ -4,18 +4,22 @@ declare(strict_types=1);
 
 namespace App\Domain\Custodian\Services;
 
-use Illuminate\Support\Facades\Log;
 use App\Domain\Custodian\Exceptions\MaxRetriesExceededException;
+use Illuminate\Support\Facades\Log;
 
 class RetryService
 {
     /**
-     * Default retry configuration
+     * Default retry configuration.
      */
     private const DEFAULT_MAX_ATTEMPTS = 3;
+
     private const DEFAULT_INITIAL_DELAY_MS = 100;
+
     private const DEFAULT_MAX_DELAY_MS = 10000;
+
     private const DEFAULT_MULTIPLIER = 2.0;
+
     private const DEFAULT_JITTER = true;
 
     public function __construct(
@@ -28,7 +32,7 @@ class RetryService
     }
 
     /**
-     * Execute operation with exponential backoff retry
+     * Execute operation with exponential backoff retry.
      *
      * @template T
      * @param callable(): T $operation The operation to execute
@@ -55,7 +59,7 @@ class RetryService
 
                 // Log successful retry if not first attempt
                 if ($attempt > 1) {
-                    Log::info("Operation succeeded after retry", [
+                    Log::info('Operation succeeded after retry', [
                         'context' => $context,
                         'attempt' => $attempt,
                     ]);
@@ -66,7 +70,7 @@ class RetryService
                 $lastException = $exception;
 
                 // Check if exception is retryable
-                if (!$this->isRetryable($exception, $retryableExceptions)) {
+                if (! $this->isRetryable($exception, $retryableExceptions)) {
                     throw $exception;
                 }
 
@@ -78,12 +82,12 @@ class RetryService
                 // Calculate delay with exponential backoff
                 $delayMs = $this->calculateDelay($attempt);
 
-                Log::warning("Operation failed, retrying", [
-                    'context' => $context,
-                    'attempt' => $attempt,
+                Log::warning('Operation failed, retrying', [
+                    'context'      => $context,
+                    'attempt'      => $attempt,
                     'max_attempts' => $this->maxAttempts,
-                    'delay_ms' => $delayMs,
-                    'exception' => $exception->getMessage(),
+                    'delay_ms'     => $delayMs,
+                    'exception'    => $exception->getMessage(),
                 ]);
 
                 // Sleep before retry
@@ -100,7 +104,7 @@ class RetryService
     }
 
     /**
-     * Execute operation with custom retry configuration
+     * Execute operation with custom retry configuration.
      *
      * @template T
      * @param callable(): T $operation
@@ -133,7 +137,7 @@ class RetryService
     }
 
     /**
-     * Calculate delay with exponential backoff and optional jitter
+     * Calculate delay with exponential backoff and optional jitter.
      */
     private function calculateDelay(int $attempt): int
     {
@@ -154,7 +158,7 @@ class RetryService
     }
 
     /**
-     * Check if exception is retryable
+     * Check if exception is retryable.
      */
     private function isRetryable(\Throwable $exception, array $retryableExceptions): bool
     {
@@ -168,7 +172,7 @@ class RetryService
     }
 
     /**
-     * Create a retry service for network operations
+     * Create a retry service for network operations.
      */
     public static function forNetworkOperations(): self
     {
@@ -182,7 +186,7 @@ class RetryService
     }
 
     /**
-     * Create a retry service for database operations
+     * Create a retry service for database operations.
      */
     public static function forDatabaseOperations(): self
     {
@@ -196,7 +200,7 @@ class RetryService
     }
 
     /**
-     * Create a retry service for critical operations
+     * Create a retry service for critical operations.
      */
     public static function forCriticalOperations(): self
     {

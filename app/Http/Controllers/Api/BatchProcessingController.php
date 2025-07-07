@@ -73,18 +73,18 @@ class BatchProcessingController extends Controller
     public function executeBatch(Request $request): JsonResponse
     {
         // Only admins can execute batch operations
-        if (!Auth::user()->hasRole('admin')) {
+        if (! Auth::user()->hasRole('admin')) {
             return response()->json(['message' => 'Admin access required'], 403);
         }
 
         $validated = $request->validate([
-            'operations' => 'required|array|min:1',
-            'operations.*.type' => 'required|string|in:account_interest,fee_collection,balance_reconciliation,report_generation,maintenance_tasks',
+            'operations'              => 'required|array|min:1',
+            'operations.*.type'       => 'required|string|in:account_interest,fee_collection,balance_reconciliation,report_generation,maintenance_tasks',
             'operations.*.parameters' => 'required|array',
-            'operations.*.priority' => 'integer|min:1|max:10',
-            'batch_name' => 'nullable|string|max:255',
-            'schedule_time' => 'nullable|date_format:Y-m-d H:i:s',
-            'retry_attempts' => 'integer|min:0|max:5',
+            'operations.*.priority'   => 'integer|min:1|max:10',
+            'batch_name'              => 'nullable|string|max:255',
+            'schedule_time'           => 'nullable|date_format:Y-m-d H:i:s',
+            'retry_attempts'          => 'integer|min:0|max:5',
         ]);
 
         try {
@@ -110,27 +110,27 @@ class BatchProcessingController extends Controller
 
             return response()->json([
                 'message' => 'Batch processing initiated successfully',
-                'data' => [
-                    'batch_id' => $batchId,
-                    'status' => $status,
-                    'operations_count' => count($validated['operations']),
-                    'batch_name' => $validated['batch_name'] ?? "EOD_" . now()->format('Y_m_d'),
+                'data'    => [
+                    'batch_id'           => $batchId,
+                    'status'             => $status,
+                    'operations_count'   => count($validated['operations']),
+                    'batch_name'         => $validated['batch_name'] ?? 'EOD_' . now()->format('Y_m_d'),
                     'estimated_duration' => $this->estimateDuration($validated['operations']),
-                    'started_at' => now()->toISOString(),
-                    'started_by' => Auth::user()->email,
-                    'retry_attempts' => $validated['retry_attempts'] ?? 3,
-                ]
+                    'started_at'         => now()->toISOString(),
+                    'started_by'         => Auth::user()->email,
+                    'retry_attempts'     => $validated['retry_attempts'] ?? 3,
+                ],
             ], 202);
         } catch (\Exception $e) {
             logger()->error('Batch processing initiation failed', [
                 'operations' => $validated['operations'],
-                'error' => $e->getMessage(),
-                'user_id' => Auth::id(),
+                'error'      => $e->getMessage(),
+                'user_id'    => Auth::id(),
             ]);
 
             return response()->json([
                 'message' => 'Batch processing initiation failed',
-                'error' => $e->getMessage()
+                'error'   => $e->getMessage(),
             ], 500);
         }
     }
@@ -188,54 +188,54 @@ class BatchProcessingController extends Controller
         // TODO: In a real implementation, fetch from batch tracking table
         // For now, return mock status data
         $mockStatus = [
-            'batch_id' => $batchId,
-            'status' => 'running',
-            'progress' => 65,
-            'operations_total' => 4,
+            'batch_id'             => $batchId,
+            'status'               => 'running',
+            'progress'             => 65,
+            'operations_total'     => 4,
             'operations_completed' => 2,
-            'operations_failed' => 0,
-            'current_operation' => 'balance_reconciliation',
-            'started_at' => now()->subMinutes(15)->toISOString(),
+            'operations_failed'    => 0,
+            'current_operation'    => 'balance_reconciliation',
+            'started_at'           => now()->subMinutes(15)->toISOString(),
             'estimated_completion' => now()->addMinutes(10)->toISOString(),
-            'error_message' => null,
-            'operations' => [
+            'error_message'        => null,
+            'operations'           => [
                 [
-                    'type' => 'account_interest',
-                    'status' => 'completed',
-                    'started_at' => now()->subMinutes(15)->toISOString(),
-                    'completed_at' => now()->subMinutes(10)->toISOString(),
+                    'type'              => 'account_interest',
+                    'status'            => 'completed',
+                    'started_at'        => now()->subMinutes(15)->toISOString(),
+                    'completed_at'      => now()->subMinutes(10)->toISOString(),
                     'records_processed' => 1250,
-                    'error_message' => null,
+                    'error_message'     => null,
                 ],
                 [
-                    'type' => 'fee_collection',
-                    'status' => 'completed',
-                    'started_at' => now()->subMinutes(10)->toISOString(),
-                    'completed_at' => now()->subMinutes(5)->toISOString(),
+                    'type'              => 'fee_collection',
+                    'status'            => 'completed',
+                    'started_at'        => now()->subMinutes(10)->toISOString(),
+                    'completed_at'      => now()->subMinutes(5)->toISOString(),
                     'records_processed' => 890,
-                    'error_message' => null,
+                    'error_message'     => null,
                 ],
                 [
-                    'type' => 'balance_reconciliation',
-                    'status' => 'running',
-                    'started_at' => now()->subMinutes(5)->toISOString(),
-                    'completed_at' => null,
+                    'type'              => 'balance_reconciliation',
+                    'status'            => 'running',
+                    'started_at'        => now()->subMinutes(5)->toISOString(),
+                    'completed_at'      => null,
                     'records_processed' => 450,
-                    'error_message' => null,
+                    'error_message'     => null,
                 ],
                 [
-                    'type' => 'report_generation',
-                    'status' => 'pending',
-                    'started_at' => null,
-                    'completed_at' => null,
+                    'type'              => 'report_generation',
+                    'status'            => 'pending',
+                    'started_at'        => null,
+                    'completed_at'      => null,
                     'records_processed' => 0,
-                    'error_message' => null,
+                    'error_message'     => null,
                 ],
-            ]
+            ],
         ];
 
         return response()->json([
-            'data' => $mockStatus
+            'data' => $mockStatus,
         ]);
     }
 
@@ -298,10 +298,10 @@ class BatchProcessingController extends Controller
     public function getBatchHistory(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'status' => 'string|in:initiated,running,completed,failed,scheduled',
+            'status'    => 'string|in:initiated,running,completed,failed,scheduled',
             'date_from' => 'date',
-            'date_to' => 'date',
-            'limit' => 'integer|min:1|max:100',
+            'date_to'   => 'date',
+            'limit'     => 'integer|min:1|max:100',
         ]);
 
         $limit = $validated['limit'] ?? 20;
@@ -310,34 +310,34 @@ class BatchProcessingController extends Controller
         // For now, return mock history data
         $mockHistory = [
             [
-                'batch_id' => 'batch_' . Str::uuid(),
-                'batch_name' => 'EOD_2023_12_31',
-                'status' => 'completed',
+                'batch_id'         => 'batch_' . Str::uuid(),
+                'batch_name'       => 'EOD_2023_12_31',
+                'status'           => 'completed',
                 'operations_count' => 4,
-                'started_at' => now()->subDays(1)->toISOString(),
-                'completed_at' => now()->subDays(1)->addMinutes(25)->toISOString(),
+                'started_at'       => now()->subDays(1)->toISOString(),
+                'completed_at'     => now()->subDays(1)->addMinutes(25)->toISOString(),
                 'duration_minutes' => 25,
-                'started_by' => 'admin@finaegis.org',
+                'started_by'       => 'admin@finaegis.org',
             ],
             [
-                'batch_id' => 'batch_' . Str::uuid(),
-                'batch_name' => 'Monthly_Interest_Dec_2023',
-                'status' => 'completed',
+                'batch_id'         => 'batch_' . Str::uuid(),
+                'batch_name'       => 'Monthly_Interest_Dec_2023',
+                'status'           => 'completed',
                 'operations_count' => 2,
-                'started_at' => now()->subDays(7)->toISOString(),
-                'completed_at' => now()->subDays(7)->addMinutes(12)->toISOString(),
+                'started_at'       => now()->subDays(7)->toISOString(),
+                'completed_at'     => now()->subDays(7)->addMinutes(12)->toISOString(),
                 'duration_minutes' => 12,
-                'started_by' => 'system@finaegis.org',
+                'started_by'       => 'system@finaegis.org',
             ],
         ];
 
         return response()->json([
-            'data' => array_slice($mockHistory, 0, $limit),
+            'data'       => array_slice($mockHistory, 0, $limit),
             'pagination' => [
-                'total' => count($mockHistory),
-                'limit' => $limit,
+                'total'  => count($mockHistory),
+                'limit'  => $limit,
                 'offset' => 0,
-            ]
+            ],
         ]);
     }
 
@@ -381,12 +381,12 @@ class BatchProcessingController extends Controller
      */
     public function cancelBatch(Request $request, string $batchId): JsonResponse
     {
-        if (!Auth::user()->hasRole('admin')) {
+        if (! Auth::user()->hasRole('admin')) {
             return response()->json(['message' => 'Admin access required'], 403);
         }
 
         $validated = $request->validate([
-            'reason' => 'required|string|max:500',
+            'reason'     => 'required|string|max:500',
             'compensate' => 'boolean',
         ]);
 
@@ -396,25 +396,25 @@ class BatchProcessingController extends Controller
 
             return response()->json([
                 'message' => 'Batch operation cancelled successfully',
-                'data' => [
-                    'batch_id' => $batchId,
-                    'status' => 'cancelled',
-                    'cancelled_at' => now()->toISOString(),
-                    'cancelled_by' => Auth::user()->email,
-                    'reason' => $validated['reason'],
+                'data'    => [
+                    'batch_id'              => $batchId,
+                    'status'                => 'cancelled',
+                    'cancelled_at'          => now()->toISOString(),
+                    'cancelled_by'          => Auth::user()->email,
+                    'reason'                => $validated['reason'],
                     'compensation_required' => $validated['compensate'] ?? true,
-                ]
+                ],
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Failed to cancel batch operation',
-                'error' => $e->getMessage()
+                'error'   => $e->getMessage(),
             ], 500);
         }
     }
 
     /**
-     * Validate operation-specific parameters
+     * Validate operation-specific parameters.
      */
     private function validateOperationParameters(array $operation): void
     {
@@ -423,22 +423,22 @@ class BatchProcessingController extends Controller
 
         switch ($type) {
             case 'account_interest':
-                if (!isset($parameters['rate']) || !is_numeric($parameters['rate'])) {
+                if (! isset($parameters['rate']) || ! is_numeric($parameters['rate'])) {
                     throw new \InvalidArgumentException('Interest rate is required for account_interest operation');
                 }
                 break;
             case 'fee_collection':
-                if (!isset($parameters['fee_type'])) {
+                if (! isset($parameters['fee_type'])) {
                     throw new \InvalidArgumentException('Fee type is required for fee_collection operation');
                 }
                 break;
             case 'balance_reconciliation':
-                if (!isset($parameters['date'])) {
+                if (! isset($parameters['date'])) {
                     throw new \InvalidArgumentException('Date is required for balance_reconciliation operation');
                 }
                 break;
             case 'report_generation':
-                if (!isset($parameters['report_type'])) {
+                if (! isset($parameters['report_type'])) {
                     throw new \InvalidArgumentException('Report type is required for report_generation operation');
                 }
                 break;
@@ -446,7 +446,7 @@ class BatchProcessingController extends Controller
     }
 
     /**
-     * Estimate batch duration based on operations
+     * Estimate batch duration based on operations.
      */
     private function estimateDuration(array $operations): string
     {

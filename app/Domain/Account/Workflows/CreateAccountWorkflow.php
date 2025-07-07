@@ -9,7 +9,7 @@ use Workflow\Workflow;
 class CreateAccountWorkflow extends Workflow
 {
     /**
-     * @param \App\Domain\Account\DataObjects\Account $account
+     * @param Account $account
      *
      * @return \Generator
      */
@@ -22,7 +22,7 @@ class CreateAccountWorkflow extends Workflow
             );
 
             // Add compensation to delete the created account if workflow fails later
-            $this->addCompensation(fn() => ActivityStub::make(
+            $this->addCompensation(fn () => ActivityStub::make(
                 DeleteAccountActivity::class,
                 $account
             ));

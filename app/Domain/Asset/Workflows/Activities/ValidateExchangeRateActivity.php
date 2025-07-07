@@ -16,7 +16,7 @@ class ValidateExchangeRateActivity extends Activity
     }
 
     /**
-     * Execute validate exchange rate activity
+     * Execute validate exchange rate activity.
      */
     public function execute(
         string $fromAssetCode,
@@ -26,11 +26,11 @@ class ValidateExchangeRateActivity extends Activity
         // Get current exchange rate
         $rate = $this->exchangeRateService->getRate($fromAssetCode, $toAssetCode);
 
-        if (!$rate) {
+        if (! $rate) {
             throw new \Exception("No exchange rate available for {$fromAssetCode} to {$toAssetCode}");
         }
 
-        if (!$rate->isValid()) {
+        if (! $rate->isValid()) {
             throw new \Exception("Exchange rate for {$fromAssetCode} to {$toAssetCode} is expired or invalid");
         }
 
@@ -44,11 +44,11 @@ class ValidateExchangeRateActivity extends Activity
         }
 
         return [
-            'exchange_rate' => (float) $rate->rate,
-            'to_amount' => $toAmount,
+            'exchange_rate'    => (float) $rate->rate,
+            'to_amount'        => $toAmount,
             'rate_age_minutes' => $rate->getAgeInMinutes(),
-            'rate_source' => $rate->source,
-            'rate_metadata' => $rate->metadata,
+            'rate_source'      => $rate->source,
+            'rate_metadata'    => $rate->metadata,
         ];
     }
 }

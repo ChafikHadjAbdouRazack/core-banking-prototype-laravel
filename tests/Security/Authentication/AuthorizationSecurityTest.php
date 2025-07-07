@@ -2,8 +2,8 @@
 
 namespace Tests\Security\Authentication;
 
-use App\Models\User;
 use App\Models\Account;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -12,35 +12,41 @@ class AuthorizationSecurityTest extends TestCase
     use RefreshDatabase;
 
     protected User $user1;
+
     protected User $user2;
+
     protected User $admin;
+
     protected string $userToken;
+
     protected string $adminToken;
+
     protected Account $user1Account;
+
     protected Account $user2Account;
 
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Create test users
         $this->user1 = User::factory()->create();
         $this->user2 = User::factory()->create();
         $this->admin = User::factory()->create(['role' => 'admin']);
-        
+
         // Create tokens
         $this->userToken = $this->user1->createToken('user-token')->plainTextToken;
         $this->adminToken = $this->admin->createToken('admin-token')->plainTextToken;
-        
+
         // Create accounts
         $this->user1Account = Account::factory()->create([
             'user_uuid' => $this->user1->uuid,
-            'balance' => 50000
+            'balance'   => 50000,
         ]);
-        
+
         $this->user2Account = Account::factory()->create([
             'user_uuid' => $this->user2->uuid,
-            'balance' => 30000
+            'balance'   => 30000,
         ]);
     }
 
@@ -62,7 +68,7 @@ class AuthorizationSecurityTest extends TestCase
 
         $accounts = $response->json('data');
         $accountUuids = array_column($accounts, 'uuid');
-        
+
         $this->assertContains($this->user1Account->uuid, $accountUuids);
         $this->assertNotContains($this->user2Account->uuid, $accountUuids);
     }
@@ -75,7 +81,7 @@ class AuthorizationSecurityTest extends TestCase
         // Try to update another user's account
         $response = $this->withToken($this->userToken)
             ->putJson("/api/v2/accounts/{$this->user2Account->uuid}", [
-                'name' => 'Hacked Account'
+                'name' => 'Hacked Account',
             ]);
 
         $this->assertEquals(403, $response->status());
@@ -89,7 +95,7 @@ class AuthorizationSecurityTest extends TestCase
         // Verify account unchanged
         $this->assertDatabaseHas('accounts', [
             'uuid' => $this->user2Account->uuid,
-            'name' => $this->user2Account->name
+            'name' => $this->user2Account->name,
         ]);
     }
 
@@ -101,9 +107,9 @@ class AuthorizationSecurityTest extends TestCase
         $response = $this->withToken($this->userToken)
             ->postJson('/api/v2/transfers', [
                 'from_account' => $this->user2Account->uuid, // Not their account
-                'to_account' => $this->user1Account->uuid,
-                'amount' => 10000,
-                'currency' => 'USD'
+                'to_account'   => $this->user1Account->uuid,
+                'amount'       => 10000,
+                'currency'     => 'USD',
             ]);
 
         $this->assertEquals(403, $response->status());
@@ -148,7 +154,7 @@ class AuthorizationSecurityTest extends TestCase
         for ($i = 1; $i <= 100; $i++) {
             $response = $this->withToken($this->userToken)
                 ->getJson("/api/v2/accounts/{$i}");
-            
+
             if ($response->status() === 200) {
                 $accountIds[] = $i;
             }
@@ -167,7 +173,7 @@ class AuthorizationSecurityTest extends TestCase
         foreach ($commonUuids as $uuid) {
             $response = $this->withToken($this->userToken)
                 ->getJson("/api/v2/accounts/{$uuid}");
-            
+
             $this->assertContains($response->status(), [403, 404]);
         }
     }
@@ -180,25 +186,25 @@ class AuthorizationSecurityTest extends TestCase
         // Try to assign protected attributes
         $response = $this->withToken($this->userToken)
             ->postJson('/api/v2/accounts', [
-                'name' => 'New Account',
-                'type' => 'savings',
-                'user_uuid' => $this->user2->uuid, // Try to assign to another user
-                'balance' => 1000000, // Try to set initial balance
-                'is_active' => true,
-                'is_frozen' => false,
+                'name'       => 'New Account',
+                'type'       => 'savings',
+                'user_uuid'  => $this->user2->uuid, // Try to assign to another user
+                'balance'    => 1000000, // Try to set initial balance
+                'is_active'  => true,
+                'is_frozen'  => false,
                 'created_at' => '2020-01-01',
-                'uuid' => 'custom-uuid-12345'
+                'uuid'       => 'custom-uuid-12345',
             ]);
 
         if ($response->status() === 201) {
             $account = $response->json('data');
-            
+
             // Should be assigned to authenticated user, not user2
             $this->assertEquals($this->user1->uuid, $account['user_uuid']);
-            
+
             // Balance should be 0, not 1000000
             $this->assertEquals(0, $account['balance']);
-            
+
             // UUID should be auto-generated, not custom
             $this->assertNotEquals('custom-uuid-12345', $account['uuid']);
         }
@@ -220,7 +226,7 @@ class AuthorizationSecurityTest extends TestCase
         foreach ($tamperedTokens as $token) {
             $response = $this->withToken($token)
                 ->getJson('/api/v2/profile');
-            
+
             $this->assertEquals(401, $response->status());
         }
     }
@@ -231,13 +237,13 @@ class AuthorizationSecurityTest extends TestCase
     public function test_authorization_bypass_via_http_methods()
     {
         $methods = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS'];
-        
+
         foreach ($methods as $method) {
             $response = $this->withToken($this->userToken)
                 ->json($method, "/api/v2/accounts/{$this->user2Account->uuid}");
-            
+
             // Should not allow unauthorized access with any method
-            if (!in_array($method, ['HEAD', 'OPTIONS'])) {
+            if (! in_array($method, ['HEAD', 'OPTIONS'])) {
                 $this->assertContains($response->status(), [403, 404, 405]);
             }
         }
@@ -286,7 +292,7 @@ class AuthorizationSecurityTest extends TestCase
         // Should not be able to write
         $response = $this->withToken($limitedToken)
             ->putJson("/api/v2/accounts/{$this->user1Account->uuid}", [
-                'name' => 'Updated Name'
+                'name' => 'Updated Name',
             ]);
         $this->assertEquals(403, $response->status());
 
@@ -303,19 +309,19 @@ class AuthorizationSecurityTest extends TestCase
     {
         // Create account with transaction limits
         $limitedAccount = Account::factory()->create([
-            'user_uuid' => $this->user1->uuid,
-            'balance' => 100000,
-            'daily_limit' => 10000,
-            'transaction_limit' => 5000
+            'user_uuid'         => $this->user1->uuid,
+            'balance'           => 100000,
+            'daily_limit'       => 10000,
+            'transaction_limit' => 5000,
         ]);
 
         // Try to exceed single transaction limit
         $response = $this->withToken($this->userToken)
             ->postJson('/api/v2/transfers', [
                 'from_account' => $limitedAccount->uuid,
-                'to_account' => Account::factory()->create()->uuid,
-                'amount' => 6000, // Exceeds limit
-                'currency' => 'USD'
+                'to_account'   => Account::factory()->create()->uuid,
+                'amount'       => 6000, // Exceeds limit
+                'currency'     => 'USD',
             ]);
 
         $this->assertEquals(422, $response->status());
@@ -337,7 +343,7 @@ class AuthorizationSecurityTest extends TestCase
         foreach ($pathTraversalAttempts as $attempt) {
             $response = $this->withToken($this->userToken)
                 ->getJson("/api/v2/accounts/{$attempt}");
-            
+
             // Should not bypass authorization
             $this->assertContains($response->status(), [403, 404]);
         }

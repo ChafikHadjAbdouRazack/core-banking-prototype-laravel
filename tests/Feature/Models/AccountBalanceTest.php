@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
+use App\Domain\Asset\Models\Asset;
 use App\Models\Account;
 use App\Models\AccountBalance;
-use App\Domain\Asset\Models\Asset;
+
 // No need for manual imports - Pest.php handles TestCase and RefreshDatabase for Feature tests
 
 describe('AccountBalance Model', function () {
@@ -13,32 +14,32 @@ describe('AccountBalance Model', function () {
         $balance = AccountBalance::factory()->create([
             'account_uuid' => $account->uuid,
         ]);
-        
+
         expect($balance->account)->toBeInstanceOf(Account::class);
         expect((string) $balance->account->uuid)->toBe((string) $account->uuid);
     });
-    
+
     it('belongs to an asset', function () {
         $asset = Asset::where('code', 'USD')->first();
         $account = Account::factory()->create();
         $balance = AccountBalance::factory()->create([
             'account_uuid' => $account->uuid,
-            'asset_code' => $asset->code,
+            'asset_code'   => $asset->code,
         ]);
-        
+
         expect($balance->asset)->toBeInstanceOf(Asset::class);
         expect($balance->asset->code)->toBe($asset->code);
     });
-    
+
     it('can format balance for display', function () {
         $account = Account::factory()->create();
         $asset = Asset::where('code', 'USD')->first();
         $balance = AccountBalance::factory()->create([
             'account_uuid' => $account->uuid,
-            'asset_code' => $asset->code,
-            'balance' => 150000,
+            'asset_code'   => $asset->code,
+            'balance'      => 150000,
         ]);
-        
+
         // Check if method exists, otherwise just check the raw balance
         if (method_exists($balance, 'getFormattedBalanceAttribute')) {
             expect($balance->getFormattedBalanceAttribute())->toBe('1500.00');
@@ -46,16 +47,16 @@ describe('AccountBalance Model', function () {
             expect($balance->balance)->toBe(150000);
         }
     });
-    
+
     it('can calculate balance in dollars', function () {
         $account = Account::factory()->create();
         $asset = Asset::where('code', 'USD')->first();
         $balance = AccountBalance::factory()->create([
             'account_uuid' => $account->uuid,
-            'asset_code' => $asset->code,
-            'balance' => 250000,
+            'asset_code'   => $asset->code,
+            'balance'      => 250000,
         ]);
-        
+
         // Check if method exists, otherwise calculate manually
         if (method_exists($balance, 'getBalanceInDollarsAttribute')) {
             expect($balance->getBalanceInDollarsAttribute())->toBe(2500.00);
@@ -63,16 +64,16 @@ describe('AccountBalance Model', function () {
             expect((float) ($balance->balance / 100))->toBe(2500.00);
         }
     });
-    
+
     it('can increment balance', function () {
         $account = Account::factory()->create();
         $asset = Asset::where('code', 'USD')->first();
         $balance = AccountBalance::factory()->create([
             'account_uuid' => $account->uuid,
-            'asset_code' => $asset->code,
-            'balance' => 100000,
+            'asset_code'   => $asset->code,
+            'balance'      => 100000,
         ]);
-        
+
         if (method_exists($balance, 'incrementBalance')) {
             $balance->incrementBalance(50000);
             expect($balance->fresh()->balance)->toBe(150000);
@@ -83,16 +84,16 @@ describe('AccountBalance Model', function () {
             expect($balance->fresh()->balance)->toBe(150000);
         }
     });
-    
+
     it('can decrement balance', function () {
         $account = Account::factory()->create();
         $asset = Asset::where('code', 'USD')->first();
         $balance = AccountBalance::factory()->create([
             'account_uuid' => $account->uuid,
-            'asset_code' => $asset->code,
-            'balance' => 100000,
+            'asset_code'   => $asset->code,
+            'balance'      => 100000,
         ]);
-        
+
         if (method_exists($balance, 'decrementBalance')) {
             $balance->decrementBalance(30000);
             expect($balance->fresh()->balance)->toBe(70000);
@@ -103,34 +104,34 @@ describe('AccountBalance Model', function () {
             expect($balance->fresh()->balance)->toBe(70000);
         }
     });
-    
+
     it('cannot decrement below zero', function () {
         $account = Account::factory()->create();
         $asset = Asset::where('code', 'USD')->first();
         $balance = AccountBalance::factory()->create([
             'account_uuid' => $account->uuid,
-            'asset_code' => $asset->code,
-            'balance' => 100000,
+            'asset_code'   => $asset->code,
+            'balance'      => 100000,
         ]);
-        
+
         if (method_exists($balance, 'decrementBalance')) {
-            expect(fn() => $balance->decrementBalance(150000))
+            expect(fn () => $balance->decrementBalance(150000))
                 ->toThrow(InvalidArgumentException::class, 'Insufficient balance');
         } else {
             // Test manual validation
             expect($balance->balance < 150000)->toBeTrue();
         }
     });
-    
+
     it('can check if balance is sufficient', function () {
         $account = Account::factory()->create();
         $asset = Asset::where('code', 'USD')->first();
         $balance = AccountBalance::factory()->create([
             'account_uuid' => $account->uuid,
-            'asset_code' => $asset->code,
-            'balance' => 100000,
+            'asset_code'   => $asset->code,
+            'balance'      => 100000,
         ]);
-        
+
         if (method_exists($balance, 'hasSufficientBalance')) {
             expect($balance->hasSufficientBalance(50000))->toBeTrue();
             expect($balance->hasSufficientBalance(150000))->toBeFalse();
@@ -140,12 +141,12 @@ describe('AccountBalance Model', function () {
             expect($balance->balance >= 150000)->toBeFalse();
         }
     });
-    
+
     it('can get zero balance for new account balance', function () {
         $balance = new AccountBalance([
             'balance' => 0,
         ]);
-        
+
         expect($balance->balance)->toBe(0);
         if (method_exists($balance, 'getFormattedBalanceAttribute')) {
             expect($balance->getFormattedBalanceAttribute())->toBe('0.00');

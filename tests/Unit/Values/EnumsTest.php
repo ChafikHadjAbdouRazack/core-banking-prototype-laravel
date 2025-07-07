@@ -23,7 +23,7 @@ it('user roles enum has correct values', function () {
 
 it('can get all event queue values', function () {
     $cases = EventQueues::cases();
-    
+
     expect($cases)->toHaveCount(4);
     expect(collect($cases)->pluck('value')->toArray())
         ->toBe(['events', 'ledger', 'transactions', 'transfers']);
@@ -31,7 +31,7 @@ it('can get all event queue values', function () {
 
 it('can get all user role values', function () {
     $cases = UserRoles::cases();
-    
+
     expect($cases)->toHaveCount(3);
     expect(collect($cases)->pluck('value')->toArray())
         ->toBe(['business', 'private', 'admin']);

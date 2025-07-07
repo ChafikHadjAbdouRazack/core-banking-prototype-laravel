@@ -2,20 +2,25 @@
 
 namespace App\Domain\Asset\Aggregates;
 
-use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
-use App\Domain\Asset\Events\BasketCreated;
 use App\Domain\Asset\Events\BasketComposed;
+use App\Domain\Asset\Events\BasketCreated;
 use App\Domain\Asset\Events\BasketDecomposed;
 use App\Domain\Asset\Events\BasketRebalanced;
 use App\Domain\Asset\Events\BasketValueCalculated;
+use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
 
 class BasketAggregate extends AggregateRoot
 {
     private string $basketCode;
+
     private string $name;
+
     private string $type;
+
     private array $components = [];
+
     private bool $isActive = true;
+
     private ?string $rebalanceFrequency = null;
 
     public function createBasket(

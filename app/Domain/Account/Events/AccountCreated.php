@@ -14,7 +14,7 @@ class AccountCreated extends ShouldBeStored
     public string $queue = EventQueues::LEDGER->value;
 
     /**
-     * @param \App\Domain\Account\DataObjects\Account $account
+     * @param Account $account
      */
     public function __construct(
         public readonly Account $account

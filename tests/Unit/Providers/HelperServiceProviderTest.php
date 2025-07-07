@@ -13,20 +13,20 @@ class HelperServiceProviderTest extends UnitTestCase
     public function test_provider_is_service_provider()
     {
         $provider = new HelperServiceProvider(app());
-        
+
         $this->assertInstanceOf(ServiceProvider::class, $provider);
     }
 
     public function test_provider_registers_services()
     {
         $provider = new HelperServiceProvider(app());
-        
+
         // Test that the provider can be instantiated and doesn't throw errors
         $this->assertNotNull($provider);
-        
+
         // Call register method
         $provider->register();
-        
+
         // If we get here without exceptions, the test passes
         $this->assertTrue(true);
     }
@@ -34,10 +34,10 @@ class HelperServiceProviderTest extends UnitTestCase
     public function test_provider_boots_successfully()
     {
         $provider = new HelperServiceProvider(app());
-        
-        // Call boot method  
+
+        // Call boot method
         $provider->boot();
-        
+
         // If we get here without exceptions, the test passes
         $this->assertTrue(true);
     }

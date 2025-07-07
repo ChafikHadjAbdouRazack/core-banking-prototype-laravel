@@ -11,7 +11,7 @@ use Workflow\Workflow;
 class BulkTransferWorkflow extends Workflow
 {
     /**
-     * Execute bulk transfers with compensation handling
+     * Execute bulk transfers with compensation handling.
      *
      * @param AccountUuid $from
      * @param array $transfers - array of ['to' => AccountUuid, 'amount' => Money]

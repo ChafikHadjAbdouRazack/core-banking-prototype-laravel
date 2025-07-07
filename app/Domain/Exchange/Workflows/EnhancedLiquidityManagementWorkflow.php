@@ -40,9 +40,9 @@ class EnhancedLiquidityManagementWorkflow extends Workflow
         $startTime = microtime(true);
         $context = [
             'workflow_id' => $this->workflowId(),
-            'pool_id' => $input->poolId,
+            'pool_id'     => $input->poolId,
             'provider_id' => $input->providerId,
-            'operation' => 'add_liquidity',
+            'operation'   => 'add_liquidity',
         ];
 
         try {
@@ -104,11 +104,11 @@ class EnhancedLiquidityManagementWorkflow extends Workflow
                     ->withRetryOptions(LiquidityRetryPolicy::critical())
                     ->execute([
                         'from_account_id' => $input->providerId,
-                        'to_pool_id' => $input->poolId,
-                        'base_currency' => $input->baseCurrency,
-                        'base_amount' => $input->baseAmount,
-                        'quote_currency' => $input->quoteCurrency,
-                        'quote_amount' => $input->quoteAmount,
+                        'to_pool_id'      => $input->poolId,
+                        'base_currency'   => $input->baseCurrency,
+                        'base_amount'     => $input->baseAmount,
+                        'quote_currency'  => $input->quoteCurrency,
+                        'quote_amount'    => $input->quoteAmount,
                     ]),
                 $context
             );
@@ -123,28 +123,28 @@ class EnhancedLiquidityManagementWorkflow extends Workflow
                     quoteAmount: $input->quoteAmount,
                     minShares: $input->minShares,
                     metadata: array_merge($context, [
-                        'timestamp' => now()->toIso8601String(),
+                        'timestamp'         => now()->toIso8601String(),
                         'execution_time_ms' => (microtime(true) - $startTime) * 1000,
-                        'shares_minted' => $shares['shares'],
+                        'shares_minted'     => $shares['shares'],
                     ])
                 )
             );
 
             Log::info('Liquidity added successfully', array_merge($context, [
-                'shares_minted' => $shares['shares'],
+                'shares_minted'     => $shares['shares'],
                 'execution_time_ms' => (microtime(true) - $startTime) * 1000,
             ]));
 
             return [
-                'success' => true,
-                'shares_minted' => $shares['shares'],
-                'pool_id' => $input->poolId,
-                'provider_id' => $input->providerId,
+                'success'           => true,
+                'shares_minted'     => $shares['shares'],
+                'pool_id'           => $input->poolId,
+                'provider_id'       => $input->providerId,
                 'execution_time_ms' => (microtime(true) - $startTime) * 1000,
             ];
         } catch (\Exception $e) {
             Log::error('Failed to add liquidity', array_merge($context, [
-                'error' => $e->getMessage(),
+                'error'             => $e->getMessage(),
                 'execution_time_ms' => (microtime(true) - $startTime) * 1000,
             ]));
 
@@ -157,9 +157,9 @@ class EnhancedLiquidityManagementWorkflow extends Workflow
             }
 
             return [
-                'success' => false,
-                'error' => $e->getMessage(),
-                'compensation_log' => $this->compensationLog,
+                'success'           => false,
+                'error'             => $e->getMessage(),
+                'compensation_log'  => $this->compensationLog,
                 'execution_time_ms' => (microtime(true) - $startTime) * 1000,
             ];
         }
@@ -181,10 +181,10 @@ class EnhancedLiquidityManagementWorkflow extends Workflow
                     ->withRetryOptions(LiquidityRetryPolicy::critical())
                     ->execute([
                         'account_id' => $accountId,
-                        'currency' => $currency,
-                        'amount' => $amount,
-                        'pool_id' => $poolId,
-                        'attempt' => $attempt + 1,
+                        'currency'   => $currency,
+                        'amount'     => $amount,
+                        'pool_id'    => $poolId,
+                        'attempt'    => $attempt + 1,
                     ]);
             } catch (\Exception $e) {
                 $attempt++;
@@ -194,9 +194,9 @@ class EnhancedLiquidityManagementWorkflow extends Workflow
                 }
 
                 Log::warning('Retrying fund lock', array_merge($context, [
-                    'attempt' => $attempt,
+                    'attempt'  => $attempt,
                     'currency' => $currency,
-                    'error' => $e->getMessage(),
+                    'error'    => $e->getMessage(),
                 ]));
 
                 // Exponential backoff
@@ -227,7 +227,7 @@ class EnhancedLiquidityManagementWorkflow extends Workflow
                 Log::warning('Retrying pool state update', [
                     'pool_id' => $poolId,
                     'attempt' => $attempt,
-                    'error' => $e->getMessage(),
+                    'error'   => $e->getMessage(),
                 ]);
 
                 yield $this->timer(100 * $attempt); // Linear backoff
@@ -258,8 +258,8 @@ class EnhancedLiquidityManagementWorkflow extends Workflow
     {
         $this->compensationLog[] = [
             'started_at' => now()->toIso8601String(),
-            'reason' => $error->getMessage(),
-            'context' => $context,
+            'reason'     => $error->getMessage(),
+            'context'    => $context,
         ];
 
         // Release locked balances in parallel
@@ -277,13 +277,13 @@ class EnhancedLiquidityManagementWorkflow extends Workflow
             if ($result instanceof \Exception) {
                 $this->compensationLog[] = [
                     'action' => 'release_lock_failed',
-                    'lock' => $this->lockedBalances[$index],
-                    'error' => $result->getMessage(),
+                    'lock'   => $this->lockedBalances[$index],
+                    'error'  => $result->getMessage(),
                 ];
             } else {
                 $this->compensationLog[] = [
                     'action' => 'release_lock_success',
-                    'lock' => $this->lockedBalances[$index],
+                    'lock'   => $this->lockedBalances[$index],
                 ];
             }
         }
@@ -298,7 +298,7 @@ class EnhancedLiquidityManagementWorkflow extends Workflow
 
         $this->compensationLog[] = [
             'completed_at' => now()->toIso8601String(),
-            'status' => 'compensation_completed',
+            'status'       => 'compensation_completed',
         ];
     }
 
@@ -331,7 +331,7 @@ class EnhancedLiquidityManagementWorkflow extends Workflow
         try {
             $pool = LiquidityPool::retrieve($poolId);
             $pool->updateParameters(isActive: false, metadata: [
-                'paused_by' => 'system',
+                'paused_by'    => 'system',
                 'pause_reason' => $reason,
             ])->persist();
 
@@ -347,14 +347,14 @@ class EnhancedLiquidityManagementWorkflow extends Workflow
 
             Log::critical('Pool paused due to emergency', [
                 'pool_id' => $poolId,
-                'reason' => $reason,
+                'reason'  => $reason,
             ]);
 
             yield; // Required for Generator return type
         } catch (\Exception $e) {
             Log::error('Failed to pause pool', [
                 'pool_id' => $poolId,
-                'error' => $e->getMessage(),
+                'error'   => $e->getMessage(),
             ]);
 
             yield; // Required for Generator return type

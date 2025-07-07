@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Api;
 
-use App\Models\User;
 use App\Models\Account;
+use App\Models\User;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
@@ -16,7 +16,7 @@ class AccountControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->user = User::factory()->create();
     }
 
@@ -25,8 +25,8 @@ class AccountControllerTest extends TestCase
         Sanctum::actingAs($this->user);
 
         $response = $this->postJson('/api/accounts', [
-            'user_uuid' => $this->user->uuid,
-            'name' => 'Test Savings Account',
+            'user_uuid'       => $this->user->uuid,
+            'name'            => 'Test Savings Account',
             'initial_balance' => 10000,
         ]);
 
@@ -38,22 +38,22 @@ class AccountControllerTest extends TestCase
                     'name',
                     'balance',
                     'frozen',
-                    'created_at'
+                    'created_at',
                 ],
-                'message'
+                'message',
             ])
             ->assertJson([
                 'data' => [
                     'user_uuid' => $this->user->uuid,
-                    'name' => 'Test Savings Account',
-                    'frozen' => false,
+                    'name'      => 'Test Savings Account',
+                    'frozen'    => false,
                 ],
                 'message' => 'Account created successfully',
             ]);
 
         $this->assertDatabaseHas('accounts', [
             'user_uuid' => $this->user->uuid,
-            'name' => 'Test Savings Account',
+            'name'      => 'Test Savings Account',
         ]);
     }
 
@@ -63,7 +63,7 @@ class AccountControllerTest extends TestCase
 
         $response = $this->postJson('/api/accounts', [
             'user_uuid' => $this->user->uuid,
-            'name' => 'Zero Balance Account',
+            'name'      => 'Zero Balance Account',
         ]);
 
         $response->assertStatus(201)
@@ -74,9 +74,9 @@ class AccountControllerTest extends TestCase
                     'name',
                     'balance',
                     'frozen',
-                    'created_at'
+                    'created_at',
                 ],
-                'message'
+                'message',
             ]);
     }
 
@@ -96,7 +96,7 @@ class AccountControllerTest extends TestCase
 
         $response = $this->postJson('/api/accounts', [
             'user_uuid' => 'invalid-uuid',
-            'name' => 'Test Account',
+            'name'      => 'Test Account',
         ]);
 
         $response->assertStatus(422)
@@ -106,17 +106,17 @@ class AccountControllerTest extends TestCase
     public function test_can_show_account()
     {
         Sanctum::actingAs($this->user);
-        
+
         $account = Account::factory()->forUser($this->user)->create([
-            'name' => 'Display Account',
+            'name'    => 'Display Account',
             'balance' => 5000,
         ]);
-        
+
         // Create the USD balance record
         \App\Models\AccountBalance::create([
             'account_uuid' => $account->uuid,
-            'asset_code' => 'USD',
-            'balance' => 5000,
+            'asset_code'   => 'USD',
+            'balance'      => 5000,
         ]);
 
         $response = $this->getJson("/api/accounts/{$account->uuid}");
@@ -125,22 +125,22 @@ class AccountControllerTest extends TestCase
             ->assertJsonStructure([
                 'data' => [
                     'uuid',
-                    'user_uuid', 
+                    'user_uuid',
                     'name',
                     'balance',
                     'frozen',
                     'created_at',
-                    'updated_at'
-                ]
+                    'updated_at',
+                ],
             ])
             ->assertJson([
                 'data' => [
-                    'uuid' => $account->uuid,
+                    'uuid'      => $account->uuid,
                     'user_uuid' => $this->user->uuid,
-                    'name' => 'Display Account',
-                    'balance' => 5000,
-                    'frozen' => false,
-                ]
+                    'name'      => 'Display Account',
+                    'balance'   => 5000,
+                    'frozen'    => false,
+                ],
             ]);
     }
 
@@ -156,10 +156,10 @@ class AccountControllerTest extends TestCase
     public function test_can_delete_account_with_zero_balance()
     {
         Sanctum::actingAs($this->user);
-        
+
         $account = Account::factory()->forUser($this->user)->create([
             'balance' => 0,
-            'frozen' => false,
+            'frozen'  => false,
         ]);
 
         $response = $this->deleteJson("/api/accounts/{$account->uuid}");
@@ -173,7 +173,7 @@ class AccountControllerTest extends TestCase
     public function test_cannot_delete_account_with_positive_balance()
     {
         Sanctum::actingAs($this->user);
-        
+
         $account = Account::factory()->forUser($this->user)->create([
             'balance' => 1000,
         ]);
@@ -183,17 +183,17 @@ class AccountControllerTest extends TestCase
         $response->assertStatus(422)
             ->assertJson([
                 'message' => 'Cannot delete account with positive balance',
-                'error' => 'ACCOUNT_HAS_BALANCE',
+                'error'   => 'ACCOUNT_HAS_BALANCE',
             ]);
     }
 
     public function test_cannot_delete_frozen_account()
     {
         Sanctum::actingAs($this->user);
-        
+
         $account = Account::factory()->forUser($this->user)->create([
             'balance' => 0,
-            'frozen' => true,
+            'frozen'  => true,
         ]);
 
         $response = $this->deleteJson("/api/accounts/{$account->uuid}");
@@ -201,20 +201,20 @@ class AccountControllerTest extends TestCase
         $response->assertStatus(422)
             ->assertJson([
                 'message' => 'Cannot delete frozen account',
-                'error' => 'ACCOUNT_FROZEN',
+                'error'   => 'ACCOUNT_FROZEN',
             ]);
     }
 
     public function test_can_freeze_account()
     {
         Sanctum::actingAs($this->user);
-        
+
         $account = Account::factory()->forUser($this->user)->create([
             'frozen' => false,
         ]);
 
         $response = $this->postJson("/api/accounts/{$account->uuid}/freeze", [
-            'reason' => 'Suspicious activity detected',
+            'reason'        => 'Suspicious activity detected',
             'authorized_by' => 'admin@example.com',
         ]);
 
@@ -227,7 +227,7 @@ class AccountControllerTest extends TestCase
     public function test_cannot_freeze_already_frozen_account()
     {
         Sanctum::actingAs($this->user);
-        
+
         $account = Account::factory()->forUser($this->user)->create([
             'frozen' => true,
         ]);
@@ -239,14 +239,14 @@ class AccountControllerTest extends TestCase
         $response->assertStatus(422)
             ->assertJson([
                 'message' => 'Account is already frozen',
-                'error' => 'ACCOUNT_ALREADY_FROZEN',
+                'error'   => 'ACCOUNT_ALREADY_FROZEN',
             ]);
     }
 
     public function test_validates_freeze_reason()
     {
         Sanctum::actingAs($this->user);
-        
+
         $account = Account::factory()->forUser($this->user)->create();
 
         $response = $this->postJson("/api/accounts/{$account->uuid}/freeze", []);
@@ -258,13 +258,13 @@ class AccountControllerTest extends TestCase
     public function test_can_unfreeze_account()
     {
         Sanctum::actingAs($this->user);
-        
+
         $account = Account::factory()->forUser($this->user)->create([
             'frozen' => true,
         ]);
 
         $response = $this->postJson("/api/accounts/{$account->uuid}/unfreeze", [
-            'reason' => 'Investigation completed',
+            'reason'        => 'Investigation completed',
             'authorized_by' => 'admin@example.com',
         ]);
 
@@ -277,7 +277,7 @@ class AccountControllerTest extends TestCase
     public function test_cannot_unfreeze_non_frozen_account()
     {
         Sanctum::actingAs($this->user);
-        
+
         $account = Account::factory()->forUser($this->user)->create([
             'frozen' => false,
         ]);
@@ -289,14 +289,14 @@ class AccountControllerTest extends TestCase
         $response->assertStatus(422)
             ->assertJson([
                 'message' => 'Account is not frozen',
-                'error' => 'ACCOUNT_NOT_FROZEN',
+                'error'   => 'ACCOUNT_NOT_FROZEN',
             ]);
     }
 
     public function test_validates_unfreeze_reason()
     {
         Sanctum::actingAs($this->user);
-        
+
         $account = Account::factory()->forUser($this->user)->create([
             'frozen' => true,
         ]);

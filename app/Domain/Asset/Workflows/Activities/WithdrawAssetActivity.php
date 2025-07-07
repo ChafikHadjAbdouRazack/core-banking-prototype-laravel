@@ -13,7 +13,7 @@ use Workflow\Activity;
 class WithdrawAssetActivity extends Activity
 {
     /**
-     * Execute asset withdrawal activity
+     * Execute asset withdrawal activity.
      */
     public function execute(
         AccountUuid $accountUuid,
@@ -26,7 +26,7 @@ class WithdrawAssetActivity extends Activity
             ->where('asset_code', $assetCode)
             ->first();
 
-        if (!$accountBalance || !$accountBalance->hasSufficientBalance($money->getAmount())) {
+        if (! $accountBalance || ! $accountBalance->hasSufficientBalance($money->getAmount())) {
             $currentBalance = $accountBalance ? $accountBalance->balance : 0;
             throw new \Exception(
                 "Insufficient balance for {$assetCode}. Required: {$money->getAmount()}, Available: {$currentBalance}"
@@ -44,8 +44,8 @@ class WithdrawAssetActivity extends Activity
                 money: $money,
                 description: $description ?: "Asset withdrawal: {$assetCode}",
                 metadata: [
-                    'workflow' => 'AssetWithdrawWorkflow',
-                    'activity' => 'WithdrawAssetActivity',
+                    'workflow'  => 'AssetWithdrawWorkflow',
+                    'activity'  => 'WithdrawAssetActivity',
                     'timestamp' => now()->toISOString(),
                 ]
             )

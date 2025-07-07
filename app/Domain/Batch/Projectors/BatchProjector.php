@@ -2,16 +2,16 @@
 
 namespace App\Domain\Batch\Projectors;
 
+use App\Domain\Batch\Actions\CancelBatchJob;
+use App\Domain\Batch\Actions\CompleteBatchJob;
 use App\Domain\Batch\Actions\CreateBatchJob;
 use App\Domain\Batch\Actions\StartBatchJob;
 use App\Domain\Batch\Actions\UpdateBatchItem;
-use App\Domain\Batch\Actions\CompleteBatchJob;
-use App\Domain\Batch\Actions\CancelBatchJob;
+use App\Domain\Batch\Events\BatchItemProcessed;
+use App\Domain\Batch\Events\BatchJobCancelled;
+use App\Domain\Batch\Events\BatchJobCompleted;
 use App\Domain\Batch\Events\BatchJobCreated;
 use App\Domain\Batch\Events\BatchJobStarted;
-use App\Domain\Batch\Events\BatchItemProcessed;
-use App\Domain\Batch\Events\BatchJobCompleted;
-use App\Domain\Batch\Events\BatchJobCancelled;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Spatie\EventSourcing\EventHandlers\Projectors\Projector;
 

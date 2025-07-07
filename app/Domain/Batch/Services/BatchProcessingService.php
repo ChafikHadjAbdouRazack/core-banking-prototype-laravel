@@ -11,7 +11,7 @@ use Workflow\WorkflowStub;
 class BatchProcessingService
 {
     /**
-     * Create a new batch job
+     * Create a new batch job.
      */
     public function createBatchJob(
         string $userUuid,
@@ -37,7 +37,7 @@ class BatchProcessingService
             ->persist();
 
         // If not scheduled, process immediately
-        if (!$scheduledAt || $scheduledAt <= now()) {
+        if (! $scheduledAt || $scheduledAt <= now()) {
             $this->processBatch($batchJobData->uuid);
         }
 
@@ -45,7 +45,7 @@ class BatchProcessingService
     }
 
     /**
-     * Process a batch job
+     * Process a batch job.
      */
     public function processBatch(string $batchJobUuid): void
     {
@@ -54,7 +54,7 @@ class BatchProcessingService
     }
 
     /**
-     * Cancel a batch job
+     * Cancel a batch job.
      */
     public function cancelBatchJob(string $batchJobUuid, string $reason): void
     {
@@ -64,13 +64,13 @@ class BatchProcessingService
     }
 
     /**
-     * Retry failed items in a batch job
+     * Retry failed items in a batch job.
      */
     public function retryFailedItems(string $batchJobUuid): void
     {
         $batchJob = BatchJob::where('uuid', $batchJobUuid)->first();
 
-        if (!$batchJob) {
+        if (! $batchJob) {
             throw new \InvalidArgumentException("Batch job not found: {$batchJobUuid}");
         }
 
@@ -95,7 +95,7 @@ class BatchProcessingService
             items: $failedItems,
             metadata: [
                 'original_batch_job_uuid' => $batchJobUuid,
-                'is_retry' => true,
+                'is_retry'                => true,
             ]
         );
     }

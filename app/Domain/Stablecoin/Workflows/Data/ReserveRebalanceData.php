@@ -15,10 +15,10 @@ class ReserveRebalanceData
     public function toArray(): array
     {
         return [
-            'pool_id' => $this->poolId,
+            'pool_id'            => $this->poolId,
             'target_allocations' => $this->targetAllocations,
-            'executed_by' => $this->executedBy,
-            'max_slippage' => $this->maxSlippage,
+            'executed_by'        => $this->executedBy,
+            'max_slippage'       => $this->maxSlippage,
         ];
     }
 }

@@ -3,9 +3,6 @@
 namespace App\Domain\Wallet\Workflows;
 
 use App\Domain\Account\DataObjects\AccountUuid;
-use App\Domain\Wallet\Activities\WithdrawAssetActivity;
-use App\Domain\Wallet\Activities\DepositAssetActivity;
-use Workflow\ActivityStub;
 use Workflow\ChildWorkflowStub;
 use Workflow\Workflow;
 
@@ -13,7 +10,7 @@ class WalletTransferWorkflow extends Workflow
 {
     /**
      * Execute wallet transfer between accounts for a specific asset
-     * Uses compensation pattern for rollback safety
+     * Uses compensation pattern for rollback safety.
      *
      * @param AccountUuid $fromAccountUuid
      * @param AccountUuid $toAccountUuid
@@ -39,7 +36,7 @@ class WalletTransferWorkflow extends Workflow
             );
 
             // Add compensation: if deposit fails, re-deposit to source account
-            $this->addCompensation(fn() => ChildWorkflowStub::make(
+            $this->addCompensation(fn () => ChildWorkflowStub::make(
                 WalletDepositWorkflow::class,
                 $fromAccountUuid,
                 $assetCode,
@@ -55,7 +52,7 @@ class WalletTransferWorkflow extends Workflow
             );
 
             // Add compensation: if needed later, withdraw from destination
-            $this->addCompensation(fn() => ChildWorkflowStub::make(
+            $this->addCompensation(fn () => ChildWorkflowStub::make(
                 WalletWithdrawWorkflow::class,
                 $toAccountUuid,
                 $assetCode,

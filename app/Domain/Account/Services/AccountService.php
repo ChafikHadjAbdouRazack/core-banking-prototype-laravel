@@ -8,16 +8,16 @@ use App\Domain\Account\Aggregates\TransferAggregate;
 use App\Domain\Account\DataObjects\Account;
 use App\Domain\Account\Workflows\CreateAccountWorkflow;
 use App\Domain\Account\Workflows\DepositAccountWorkflow;
-use App\Domain\Account\Workflows\WithdrawAccountWorkflow;
 use App\Domain\Account\Workflows\DestroyAccountWorkflow;
+use App\Domain\Account\Workflows\WithdrawAccountWorkflow;
 use Workflow\WorkflowStub;
 
 class AccountService
 {
     /**
-     * @param \App\Domain\Account\Aggregates\LedgerAggregate $ledger
-     * @param \App\Domain\Account\Aggregates\TransactionAggregate $transaction
-     * @param \App\Domain\Account\Aggregates\TransferAggregate $transfer
+     * @param LedgerAggregate $ledger
+     * @param TransactionAggregate $transaction
+     * @param TransferAggregate $transfer
      */
     public function __construct(
         protected LedgerAggregate $ledger,

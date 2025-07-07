@@ -7,7 +7,7 @@ use Brick\Math\BigDecimal;
 interface FeeCalculatorInterface
 {
     /**
-     * Calculate trading fees for both maker and taker
+     * Calculate trading fees for both maker and taker.
      */
     public function calculateFees(
         BigDecimal $amount,
@@ -17,7 +17,7 @@ interface FeeCalculatorInterface
     ): object;
 
     /**
-     * Calculate minimum order value
+     * Calculate minimum order value.
      */
     public function calculateMinimumOrderValue(string $baseCurrency, string $quoteCurrency): BigDecimal;
 }

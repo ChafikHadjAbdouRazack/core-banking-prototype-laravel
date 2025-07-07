@@ -20,14 +20,14 @@ class StablecoinProjector extends Projector
     public function onCollateralPositionCreated(CollateralPositionCreated $event): void
     {
         StablecoinCollateralPosition::create([
-            'uuid' => $event->position_uuid,
-            'account_uuid' => $event->account_uuid,
-            'stablecoin_code' => $event->stablecoin_code,
+            'uuid'                  => $event->position_uuid,
+            'account_uuid'          => $event->account_uuid,
+            'stablecoin_code'       => $event->stablecoin_code,
             'collateral_asset_code' => $event->collateral_asset_code,
-            'collateral_amount' => $event->collateral_amount,
-            'debt_amount' => $event->debt_amount,
-            'collateral_ratio' => $event->collateral_ratio,
-            'status' => $event->status,
+            'collateral_amount'     => $event->collateral_amount,
+            'debt_amount'           => $event->debt_amount,
+            'collateral_ratio'      => $event->collateral_ratio,
+            'status'                => $event->status,
         ]);
     }
 
@@ -64,9 +64,9 @@ class StablecoinProjector extends Projector
         $position = StablecoinCollateralPosition::where('uuid', $event->position_uuid)->firstOrFail();
         $position->update([
             'collateral_amount' => $event->collateral_amount,
-            'debt_amount' => $event->debt_amount,
-            'collateral_ratio' => $event->collateral_ratio,
-            'status' => $event->status,
+            'debt_amount'       => $event->debt_amount,
+            'collateral_ratio'  => $event->collateral_ratio,
+            'status'            => $event->status,
         ]);
     }
 
@@ -74,7 +74,7 @@ class StablecoinProjector extends Projector
     {
         $position = StablecoinCollateralPosition::where('uuid', $event->position_uuid)->firstOrFail();
         $position->update([
-            'status' => 'closed',
+            'status'    => 'closed',
             'closed_at' => now(),
         ]);
     }
@@ -83,10 +83,10 @@ class StablecoinProjector extends Projector
     {
         $position = StablecoinCollateralPosition::where('uuid', $event->position_uuid)->firstOrFail();
         $position->update([
-            'status' => 'liquidated',
-            'liquidated_at' => now(),
+            'status'            => 'liquidated',
+            'liquidated_at'     => now(),
             'collateral_amount' => 0,
-            'debt_amount' => 0,
+            'debt_amount'       => 0,
         ]);
     }
 }

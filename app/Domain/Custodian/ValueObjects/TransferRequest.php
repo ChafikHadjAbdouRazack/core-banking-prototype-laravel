@@ -23,12 +23,12 @@ final class TransferRequest
     {
         return [
             'from_account' => $this->fromAccount,
-            'to_account' => $this->toAccount,
-            'asset_code' => $this->assetCode,
-            'amount' => $this->amount->getAmount(),
-            'reference' => $this->reference,
-            'description' => $this->description,
-            'metadata' => $this->metadata,
+            'to_account'   => $this->toAccount,
+            'asset_code'   => $this->assetCode,
+            'amount'       => $this->amount->getAmount(),
+            'reference'    => $this->reference,
+            'description'  => $this->description,
+            'metadata'     => $this->metadata,
         ];
     }
 

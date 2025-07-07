@@ -26,22 +26,22 @@ class Setting extends Model
     ];
 
     protected $casts = [
-        'value' => 'json',
+        'value'            => 'json',
         'validation_rules' => 'json',
-        'metadata' => 'json',
-        'is_public' => 'boolean',
-        'is_encrypted' => 'boolean',
+        'metadata'         => 'json',
+        'is_public'        => 'boolean',
+        'is_encrypted'     => 'boolean',
     ];
 
     /**
-     * Temporary property to store old value for audit logging
+     * Temporary property to store old value for audit logging.
      */
     public $oldValue;
 
     protected static function booted(): void
     {
         static::saving(function ($setting) {
-            if (!$setting->exists) {
+            if (! $setting->exists) {
                 return;
             }
 
@@ -60,14 +60,14 @@ class Setting extends Model
             if (isset($setting->oldValue)) {
                 SettingAudit::create([
                     'setting_id' => $setting->id,
-                    'key' => $setting->key,
-                    'old_value' => $setting->oldValue,
-                    'new_value' => $setting->value,
+                    'key'        => $setting->key,
+                    'old_value'  => $setting->oldValue,
+                    'new_value'  => $setting->value,
                     'changed_by' => auth()->user()->email ?? request()->ip() ?? 'system',
                     'ip_address' => request()->ip(),
                     'user_agent' => request()->userAgent(),
-                    'metadata' => [
-                        'user_id' => auth()->id(),
+                    'metadata'   => [
+                        'user_id'    => auth()->id(),
                         'request_id' => request()->header('X-Request-ID'),
                     ],
                 ]);
@@ -83,7 +83,7 @@ class Setting extends Model
 
     public function setValueAttribute($value): void
     {
-        if ($this->is_encrypted && !is_null($value)) {
+        if ($this->is_encrypted && ! is_null($value)) {
             $encrypted = Crypt::encryptString(json_encode($value));
             $this->attributes['value'] = json_encode($encrypted);
         } else {
@@ -95,9 +95,10 @@ class Setting extends Model
     {
         $decoded = json_decode($value, true);
 
-        if ($this->is_encrypted && !is_null($decoded)) {
+        if ($this->is_encrypted && ! is_null($decoded)) {
             try {
                 $decrypted = Crypt::decryptString($decoded);
+
                 return json_decode($decrypted, true);
             } catch (\Exception $e) {
                 return $decoded;
@@ -112,10 +113,10 @@ class Setting extends Model
         return match ($this->type) {
             'boolean' => (bool) $value,
             'integer' => (int) $value,
-            'float' => (float) $value,
-            'array' => (array) $value,
-            'json' => $value,
-            default => (string) $value,
+            'float'   => (float) $value,
+            'array'   => (array) $value,
+            'json'    => $value,
+            default   => (string) $value,
         };
     }
 
@@ -123,6 +124,7 @@ class Setting extends Model
     {
         return Cache::remember("setting.{$key}", 3600, function () use ($key, $default) {
             $setting = static::where('key', $key)->first();
+
             return $setting ? $setting->value : $default;
         });
     }

@@ -74,11 +74,11 @@ class ValidateOrderActivity extends Activity
         }
 
         return (object) [
-            'isValid' => true,
-            'message' => 'Order is valid',
-            'order' => $orderProjection,
-            'account' => $account,
-            'baseCurrency' => $baseCurrency,
+            'isValid'       => true,
+            'message'       => 'Order is valid',
+            'order'         => $orderProjection,
+            'account'       => $account,
+            'baseCurrency'  => $baseCurrency,
             'quoteCurrency' => $quoteCurrency,
         ];
     }

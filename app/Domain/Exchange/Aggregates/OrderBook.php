@@ -109,9 +109,9 @@ class OrderBook extends AggregateRoot
     protected function applyOrderAddedToBook(OrderAddedToBook $event): void
     {
         $order = [
-            'orderId' => $event->orderId,
-            'price' => BigDecimal::of($event->price),
-            'amount' => BigDecimal::of($event->amount),
+            'orderId'   => $event->orderId,
+            'price'     => BigDecimal::of($event->price),
+            'amount'    => BigDecimal::of($event->amount),
             'timestamp' => now(),
         ];
 

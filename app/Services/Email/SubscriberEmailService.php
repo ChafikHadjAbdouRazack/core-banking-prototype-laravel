@@ -2,17 +2,16 @@
 
 namespace App\Services\Email;
 
-use App\Models\Subscriber;
-use Illuminate\Support\Facades\Mail;
-use App\Mail\SubscriberWelcome;
 use App\Mail\SubscriberNewsletter;
-use Illuminate\Support\Collection;
+use App\Mail\SubscriberWelcome;
+use App\Models\Subscriber;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class SubscriberEmailService
 {
     /**
-     * Send welcome email to new subscriber
+     * Send welcome email to new subscriber.
      */
     public function sendWelcomeEmail(Subscriber $subscriber): void
     {
@@ -21,14 +20,14 @@ class SubscriberEmailService
 
             Log::info('Welcome email sent to subscriber', [
                 'subscriber_id' => $subscriber->id,
-                'email' => $subscriber->email,
-                'source' => $subscriber->source,
+                'email'         => $subscriber->email,
+                'source'        => $subscriber->source,
             ]);
         } catch (\Exception $e) {
             Log::error('Failed to send welcome email', [
                 'subscriber_id' => $subscriber->id,
-                'email' => $subscriber->email,
-                'error' => $e->getMessage(),
+                'email'         => $subscriber->email,
+                'error'         => $e->getMessage(),
             ]);
 
             throw $e;
@@ -36,13 +35,13 @@ class SubscriberEmailService
     }
 
     /**
-     * Send newsletter to active subscribers
+     * Send newsletter to active subscribers.
      */
     public function sendNewsletter(string $subject, string $content, array $tags = [], ?string $source = null): int
     {
         $query = Subscriber::active();
 
-        if (!empty($tags)) {
+        if (! empty($tags)) {
             $query->where(function ($q) use ($tags) {
                 foreach ($tags as $tag) {
                     $q->orWhereJsonContains('tags', $tag);
@@ -64,32 +63,32 @@ class SubscriberEmailService
 
                 Log::info('Newsletter sent to subscriber', [
                     'subscriber_id' => $subscriber->id,
-                    'email' => $subscriber->email,
-                    'subject' => $subject,
+                    'email'         => $subscriber->email,
+                    'subject'       => $subject,
                 ]);
             } catch (\Exception $e) {
                 Log::error('Failed to send newsletter to subscriber', [
                     'subscriber_id' => $subscriber->id,
-                    'email' => $subscriber->email,
-                    'subject' => $subject,
-                    'error' => $e->getMessage(),
+                    'email'         => $subscriber->email,
+                    'subject'       => $subject,
+                    'error'         => $e->getMessage(),
                 ]);
             }
         }
 
         Log::info('Newsletter campaign completed', [
-            'subject' => $subject,
+            'subject'          => $subject,
             'total_recipients' => $subscribers->count(),
-            'sent_count' => $sentCount,
-            'tags' => $tags,
-            'source' => $source,
+            'sent_count'       => $sentCount,
+            'tags'             => $tags,
+            'source'           => $source,
         ]);
 
         return $sentCount;
     }
 
     /**
-     * Handle email bounce
+     * Handle email bounce.
      */
     public function handleBounce(string $email): void
     {
@@ -97,20 +96,20 @@ class SubscriberEmailService
 
         if ($subscriber) {
             $subscriber->update([
-                'status' => Subscriber::STATUS_BOUNCED,
-                'unsubscribed_at' => now(),
+                'status'             => Subscriber::STATUS_BOUNCED,
+                'unsubscribed_at'    => now(),
                 'unsubscribe_reason' => 'Email bounced',
             ]);
 
             Log::warning('Subscriber marked as bounced', [
                 'subscriber_id' => $subscriber->id,
-                'email' => $email,
+                'email'         => $email,
             ]);
         }
     }
 
     /**
-     * Process unsubscribe request
+     * Process unsubscribe request.
      */
     public function processUnsubscribe(string $email, ?string $reason = null): bool
     {
@@ -121,8 +120,8 @@ class SubscriberEmailService
 
             Log::info('Subscriber unsubscribed', [
                 'subscriber_id' => $subscriber->id,
-                'email' => $email,
-                'reason' => $reason,
+                'email'         => $email,
+                'reason'        => $reason,
             ]);
 
             return true;
@@ -132,7 +131,7 @@ class SubscriberEmailService
     }
 
     /**
-     * Subscribe or update existing subscriber
+     * Subscribe or update existing subscriber.
      */
     public function subscribe(string $email, string $source, array $tags = [], ?string $ipAddress = null, ?string $userAgent = null): Subscriber
     {
@@ -140,32 +139,32 @@ class SubscriberEmailService
 
         if ($subscriber->exists) {
             // Reactivate if unsubscribed
-            if (!$subscriber->isActive()) {
+            if (! $subscriber->isActive()) {
                 $subscriber->update([
-                    'status' => Subscriber::STATUS_ACTIVE,
-                    'unsubscribed_at' => null,
+                    'status'             => Subscriber::STATUS_ACTIVE,
+                    'unsubscribed_at'    => null,
                     'unsubscribe_reason' => null,
                 ]);
             }
 
             // Add new tags
-            if (!empty($tags)) {
+            if (! empty($tags)) {
                 $subscriber->addTags($tags);
             }
 
             Log::info('Existing subscriber reactivated or updated', [
                 'subscriber_id' => $subscriber->id,
-                'email' => $email,
-                'source' => $source,
+                'email'         => $email,
+                'source'        => $source,
             ]);
         } else {
             // New subscriber
             $subscriber->fill([
-                'source' => $source,
-                'status' => Subscriber::STATUS_ACTIVE,
-                'tags' => $tags,
-                'ip_address' => $ipAddress,
-                'user_agent' => $userAgent,
+                'source'       => $source,
+                'status'       => Subscriber::STATUS_ACTIVE,
+                'tags'         => $tags,
+                'ip_address'   => $ipAddress,
+                'user_agent'   => $userAgent,
                 'confirmed_at' => now(),
             ]);
 
@@ -176,8 +175,8 @@ class SubscriberEmailService
 
             Log::info('New subscriber created', [
                 'subscriber_id' => $subscriber->id,
-                'email' => $email,
-                'source' => $source,
+                'email'         => $email,
+                'source'        => $source,
             ]);
         }
 

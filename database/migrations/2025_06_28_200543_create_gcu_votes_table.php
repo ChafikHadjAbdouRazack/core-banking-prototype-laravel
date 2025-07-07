@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class () extends Migration {
     public function up()
     {
         Schema::create('gcu_votes', function (Blueprint $table) {
@@ -17,7 +16,7 @@ return new class extends Migration
             $table->string('signature')->nullable(); // Cryptographic signature for verification
             $table->json('metadata')->nullable(); // Additional vote metadata
             $table->timestamps();
-            
+
             // Ensure one vote per user per proposal
             $table->unique(['proposal_id', 'user_uuid']);
             $table->index('created_at');

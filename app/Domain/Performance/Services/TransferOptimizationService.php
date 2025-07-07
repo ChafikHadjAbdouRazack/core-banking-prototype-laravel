@@ -4,23 +4,24 @@ declare(strict_types=1);
 
 namespace App\Domain\Performance\Services;
 
+use App\Domain\Account\DataObjects\AccountUuid;
 use App\Models\Account;
 use App\Models\AccountBalance;
-use App\Domain\Account\DataObjects\AccountUuid;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 /**
  * Service for optimizing transfer performance
- * Implements caching strategies and query optimizations
+ * Implements caching strategies and query optimizations.
  */
 class TransferOptimizationService
 {
     private const ACCOUNT_CACHE_TTL = 300; // 5 minutes
+
     private const BALANCE_CACHE_TTL = 60; // 1 minute
 
     /**
-     * Get account with caching
+     * Get account with caching.
      */
     public function getAccountWithCache(AccountUuid $accountUuid): ?Account
     {
@@ -35,7 +36,7 @@ class TransferOptimizationService
     }
 
     /**
-     * Get account balance with caching
+     * Get account balance with caching.
      */
     public function getBalanceWithCache(string $accountUuid, string $assetCode): ?AccountBalance
     {
@@ -49,7 +50,7 @@ class TransferOptimizationService
     }
 
     /**
-     * Pre-validate transfer in a single query
+     * Pre-validate transfer in a single query.
      */
     public function preValidateTransfer(
         AccountUuid $fromAccountUuid,
@@ -61,7 +62,7 @@ class TransferOptimizationService
         $toUuid = (string) $toAccountUuid;
 
         // Single query to fetch both accounts and balance
-        $result = DB::select("
+        $result = DB::select('
             SELECT 
                 a1.uuid as from_uuid,
                 a1.frozen as from_frozen,
@@ -72,33 +73,33 @@ class TransferOptimizationService
             CROSS JOIN accounts a2
             LEFT JOIN account_balances ab ON ab.account_uuid = a1.uuid AND ab.asset_code = ?
             WHERE a1.uuid = ? AND a2.uuid = ?
-        ", [$fromAssetCode, $fromUuid, $toUuid]);
+        ', [$fromAssetCode, $fromUuid, $toUuid]);
 
         if (empty($result)) {
-            throw new \Exception("One or both accounts not found");
+            throw new \Exception('One or both accounts not found');
         }
 
         $data = $result[0];
 
         // Validate accounts
-        if (!$data->from_uuid) {
+        if (! $data->from_uuid) {
             throw new \Exception("Source account not found: {$fromUuid}");
         }
 
-        if (!$data->to_uuid) {
+        if (! $data->to_uuid) {
             throw new \Exception("Destination account not found: {$toUuid}");
         }
 
         if ($data->from_frozen) {
-            throw new \Exception("Source account is frozen");
+            throw new \Exception('Source account is frozen');
         }
 
         if ($data->to_frozen) {
-            throw new \Exception("Destination account is frozen");
+            throw new \Exception('Destination account is frozen');
         }
 
         // Validate balance
-        if (!$data->from_balance || $data->from_balance < $amount) {
+        if (! $data->from_balance || $data->from_balance < $amount) {
             $balance = $data->from_balance ?? 0;
             throw new \Exception(
                 "Insufficient {$fromAssetCode} balance. Required: {$amount}, Available: {$balance}"
@@ -106,13 +107,13 @@ class TransferOptimizationService
         }
 
         return [
-            'from_balance' => $data->from_balance,
+            'from_balance'      => $data->from_balance,
             'validation_passed' => true,
         ];
     }
 
     /**
-     * Batch validate multiple transfers
+     * Batch validate multiple transfers.
      */
     public function batchValidateTransfers(array $transfers): array
     {
@@ -125,8 +126,8 @@ class TransferOptimizationService
             $accountUuids[] = $transfer['to_account'];
             $balanceChecks[] = [
                 'account_uuid' => $transfer['from_account'],
-                'asset_code' => $transfer['from_asset'],
-                'amount' => $transfer['amount'],
+                'asset_code'   => $transfer['from_asset'],
+                'amount'       => $transfer['amount'],
             ];
         }
 
@@ -158,19 +159,19 @@ class TransferOptimizationService
                 $fromAccount = $accounts->firstWhere('uuid', $transfer['from_account']);
                 $toAccount = $accounts->firstWhere('uuid', $transfer['to_account']);
 
-                if (!$fromAccount || !$toAccount) {
-                    throw new \Exception("Account not found");
+                if (! $fromAccount || ! $toAccount) {
+                    throw new \Exception('Account not found');
                 }
 
                 if ($fromAccount->frozen || $toAccount->frozen) {
-                    throw new \Exception("Account is frozen");
+                    throw new \Exception('Account is frozen');
                 }
 
                 $balanceKey = "{$transfer['from_account']}:{$transfer['from_asset']}";
                 $balance = $balances->get($balanceKey);
 
-                if (!$balance || $balance->balance < $transfer['amount']) {
-                    throw new \Exception("Insufficient balance");
+                if (! $balance || $balance->balance < $transfer['amount']) {
+                    throw new \Exception('Insufficient balance');
                 }
 
                 $results[$index] = ['valid' => true];
@@ -183,7 +184,7 @@ class TransferOptimizationService
     }
 
     /**
-     * Warm up caches for frequently used accounts
+     * Warm up caches for frequently used accounts.
      */
     public function warmUpCaches(array $accountUuids): void
     {
@@ -205,7 +206,7 @@ class TransferOptimizationService
     }
 
     /**
-     * Clear transfer-related caches
+     * Clear transfer-related caches.
      */
     public function clearTransferCaches(string $accountUuid, string $assetCode): void
     {

@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Api\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Laravel\Fortify\Actions\EnableTwoFactorAuthentication;
 use Laravel\Fortify\Actions\DisableTwoFactorAuthentication;
+use Laravel\Fortify\Actions\EnableTwoFactorAuthentication;
 use Laravel\Fortify\Contracts\TwoFactorAuthenticationProvider;
 use Laravel\Fortify\RecoveryCode;
 
@@ -44,10 +44,10 @@ class TwoFactorAuthController extends Controller
         $user = $request->user()->fresh();
 
         return response()->json([
-            'message' => 'Two-factor authentication enabled successfully.',
-            'secret' => decrypt($user->two_factor_secret),
-            'qr_code' => $user->twoFactorQrCodeSvg(),
-            'recovery_codes' => json_decode(decrypt($user->two_factor_recovery_codes), true)
+            'message'        => 'Two-factor authentication enabled successfully.',
+            'secret'         => decrypt($user->two_factor_secret),
+            'qr_code'        => $user->twoFactorQrCodeSvg(),
+            'recovery_codes' => json_decode(decrypt($user->two_factor_recovery_codes), true),
         ]);
     }
 
@@ -88,11 +88,11 @@ class TwoFactorAuthController extends Controller
         $user = $request->user();
 
         if (
-            !$user->two_factor_secret ||
-            !$provider->verify(decrypt($user->two_factor_secret), $request->code)
+            ! $user->two_factor_secret ||
+            ! $provider->verify(decrypt($user->two_factor_secret), $request->code)
         ) {
             return response()->json([
-                'message' => 'The provided two factor authentication code was invalid.'
+                'message' => 'The provided two factor authentication code was invalid.',
             ], 422);
         }
 
@@ -101,7 +101,7 @@ class TwoFactorAuthController extends Controller
         ])->save();
 
         return response()->json([
-            'message' => 'Two-factor authentication confirmed successfully.'
+            'message' => 'Two-factor authentication confirmed successfully.',
         ]);
     }
 
@@ -138,13 +138,13 @@ class TwoFactorAuthController extends Controller
     public function disable(Request $request, DisableTwoFactorAuthentication $disable)
     {
         $request->validate([
-            'password' => 'required|string|current_password:sanctum'
+            'password' => 'required|string|current_password:sanctum',
         ]);
 
         $disable($request->user());
 
         return response()->json([
-            'message' => 'Two-factor authentication disabled successfully.'
+            'message' => 'Two-factor authentication disabled successfully.',
         ]);
     }
 
@@ -182,8 +182,8 @@ class TwoFactorAuthController extends Controller
     public function verify(Request $request, TwoFactorAuthenticationProvider $provider)
     {
         $request->validate([
-            'code' => 'required_without:recovery_code|string',
-            'recovery_code' => 'required_without:code|string'
+            'code'          => 'required_without:recovery_code|string',
+            'recovery_code' => 'required_without:code|string',
         ]);
 
         $user = $request->user();
@@ -191,17 +191,17 @@ class TwoFactorAuthController extends Controller
         if ($request->has('recovery_code')) {
             $codes = $user->recoveryCodes();
 
-            if (!in_array($request->recovery_code, $codes)) {
+            if (! in_array($request->recovery_code, $codes)) {
                 return response()->json([
-                    'message' => 'The provided recovery code was invalid.'
+                    'message' => 'The provided recovery code was invalid.',
                 ], 422);
             }
 
             $user->replaceRecoveryCode($request->recovery_code);
         } else {
-            if (!$provider->verify(decrypt($user->two_factor_secret), $request->code)) {
+            if (! $provider->verify(decrypt($user->two_factor_secret), $request->code)) {
                 return response()->json([
-                    'message' => 'The provided two factor authentication code was invalid.'
+                    'message' => 'The provided two factor authentication code was invalid.',
                 ], 422);
             }
         }
@@ -211,7 +211,7 @@ class TwoFactorAuthController extends Controller
 
         return response()->json([
             'message' => 'Two-factor authentication verified successfully.',
-            'token' => $token
+            'token'   => $token,
         ]);
     }
 
@@ -244,8 +244,8 @@ class TwoFactorAuthController extends Controller
         ])->save();
 
         return response()->json([
-            'message' => 'Recovery codes regenerated successfully.',
-            'recovery_codes' => json_decode(decrypt($user->two_factor_recovery_codes), true)
+            'message'        => 'Recovery codes regenerated successfully.',
+            'recovery_codes' => json_decode(decrypt($user->two_factor_recovery_codes), true),
         ]);
     }
 }

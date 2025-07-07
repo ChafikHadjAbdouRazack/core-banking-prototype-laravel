@@ -23,7 +23,7 @@ class SnapshotLiquidityPoolReactor extends Reactor
     private array $rebalanceCounts = [];
 
     /**
-     * Take snapshot when significant liquidity is added
+     * Take snapshot when significant liquidity is added.
      */
     public function onLiquidityAdded(LiquidityAdded $event): void
     {
@@ -40,7 +40,7 @@ class SnapshotLiquidityPoolReactor extends Reactor
     }
 
     /**
-     * Take snapshot when significant liquidity is removed
+     * Take snapshot when significant liquidity is removed.
      */
     public function onLiquidityRemoved(LiquidityRemoved $event): void
     {
@@ -55,7 +55,7 @@ class SnapshotLiquidityPoolReactor extends Reactor
     }
 
     /**
-     * Take snapshot after multiple rebalances
+     * Take snapshot after multiple rebalances.
      */
     public function onLiquidityPoolRebalanced(LiquidityPoolRebalanced $event): void
     {
@@ -74,7 +74,7 @@ class SnapshotLiquidityPoolReactor extends Reactor
     }
 
     /**
-     * Take snapshot after reward distributions
+     * Take snapshot after reward distributions.
      */
     public function onLiquidityRewardsDistributed(LiquidityRewardsDistributed $event): void
     {
@@ -88,7 +88,7 @@ class SnapshotLiquidityPoolReactor extends Reactor
     }
 
     /**
-     * Check if event count threshold is reached
+     * Check if event count threshold is reached.
      */
     private function checkEventThreshold(string $poolId): void
     {
@@ -105,7 +105,7 @@ class SnapshotLiquidityPoolReactor extends Reactor
     }
 
     /**
-     * Take a snapshot of the liquidity pool
+     * Take a snapshot of the liquidity pool.
      */
     protected function takeSnapshot(string $poolId): void
     {

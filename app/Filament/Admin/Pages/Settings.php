@@ -108,7 +108,7 @@ class Settings extends Page
 
                 $validation = $this->settingsService->validateSetting($key, $value);
 
-                if (!$validation['valid']) {
+                if (! $validation['valid']) {
                     Notification::make()
                         ->title('Validation Error')
                         ->body("Invalid value for {$config['label']}: " . implode(', ', $validation['errors']))
@@ -129,7 +129,7 @@ class Settings extends Page
                 ->send();
 
             Log::info('Platform settings updated', [
-                'user' => auth()->user()->email ?? 'system',
+                'user'           => auth()->user()->email ?? 'system',
                 'settings_count' => count($data),
             ]);
         } catch (Halt $exception) {
@@ -177,8 +177,8 @@ class Settings extends Page
 
         // In a real implementation, this would trigger a download
         Log::info('Settings exported', [
-            'user' => auth()->user()->email ?? 'system',
-            'filename' => $filename,
+            'user'           => auth()->user()->email ?? 'system',
+            'filename'       => $filename,
             'settings_count' => count($settings),
         ]);
     }

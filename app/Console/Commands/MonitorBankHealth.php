@@ -52,7 +52,7 @@ class MonitorBankHealth extends Command
         while (true) {
             $this->displayHealthStatus($specificCustodian);
 
-            if (!$this->runningInBackground()) {
+            if (! $this->runningInBackground()) {
                 sleep($interval);
                 // Clear screen for better readability
                 $this->clearScreen();
@@ -66,7 +66,7 @@ class MonitorBankHealth extends Command
     }
 
     /**
-     * Display health status for all or specific custodian
+     * Display health status for all or specific custodian.
      */
     private function displayHealthStatus(?string $specificCustodian): void
     {
@@ -91,7 +91,7 @@ class MonitorBankHealth extends Command
     }
 
     /**
-     * Display individual custodian health
+     * Display individual custodian health.
      */
     private function displayCustodianHealth(array $health): void
     {
@@ -102,10 +102,10 @@ class MonitorBankHealth extends Command
 
         // Color code based on status
         $statusColor = match ($status) {
-            'healthy' => 'green',
-            'degraded' => 'yellow',
+            'healthy'   => 'green',
+            'degraded'  => 'yellow',
             'unhealthy' => 'red',
-            default => 'gray',
+            default     => 'gray',
         };
 
         $this->line("<fg=white;bg=blue> {$custodian} </>");
@@ -119,10 +119,10 @@ class MonitorBankHealth extends Command
             foreach ($health['circuit_breaker_metrics'] as $operation => $metrics) {
                 $state = $metrics['state'];
                 $stateColor = match ($state) {
-                    'closed' => 'green',
-                    'open' => 'red',
+                    'closed'    => 'green',
+                    'open'      => 'red',
                     'half_open' => 'yellow',
-                    default => 'gray',
+                    default     => 'gray',
                 };
 
                 $this->line("  - {$operation}: <fg={$stateColor}>{$state}</> (failures: {$metrics['failure_count']})");
@@ -130,7 +130,7 @@ class MonitorBankHealth extends Command
         }
 
         // Display recommendations if any
-        if (!empty($health['recommendations'])) {
+        if (! empty($health['recommendations'])) {
             $this->line('Recommendations:');
             foreach ($health['recommendations'] as $recommendation) {
                 $this->line("  • {$recommendation}");
@@ -139,11 +139,11 @@ class MonitorBankHealth extends Command
     }
 
     /**
-     * Display overall recommendations
+     * Display overall recommendations.
      */
     private function displayRecommendations(?string $specificCustodian): void
     {
-        if (!$specificCustodian) {
+        if (! $specificCustodian) {
             $this->newLine();
             $this->line('<fg=cyan>Overall Recommendations:</>');
 
@@ -159,7 +159,7 @@ class MonitorBankHealth extends Command
     }
 
     /**
-     * Clear console screen
+     * Clear console screen.
      */
     private function clearScreen(): void
     {
@@ -173,10 +173,10 @@ class MonitorBankHealth extends Command
     }
 
     /**
-     * Check if running in background
+     * Check if running in background.
      */
     private function runningInBackground(): bool
     {
-        return !posix_isatty(STDOUT);
+        return ! posix_isatty(STDOUT);
     }
 }

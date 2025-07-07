@@ -22,7 +22,7 @@ class LiquidityPoolService implements LiquidityPoolServiceInterface
     }
 
     /**
-     * Create a new liquidity pool
+     * Create a new liquidity pool.
      */
     public function createPool(
         string $baseCurrency,
@@ -52,7 +52,7 @@ class LiquidityPoolService implements LiquidityPoolServiceInterface
     }
 
     /**
-     * Add liquidity to a pool
+     * Add liquidity to a pool.
      */
     public function addLiquidity(LiquidityAdditionInput $input): array
     {
@@ -62,7 +62,7 @@ class LiquidityPoolService implements LiquidityPoolServiceInterface
     }
 
     /**
-     * Remove liquidity from a pool
+     * Remove liquidity from a pool.
      */
     public function removeLiquidity(LiquidityRemovalInput $input): array
     {
@@ -72,7 +72,7 @@ class LiquidityPoolService implements LiquidityPoolServiceInterface
     }
 
     /**
-     * Execute a swap through the pool
+     * Execute a swap through the pool.
      */
     public function swap(
         string $poolId,
@@ -101,7 +101,7 @@ class LiquidityPoolService implements LiquidityPoolServiceInterface
     }
 
     /**
-     * Get pool details
+     * Get pool details.
      */
     public function getPool(string $poolId): ?PoolProjection
     {
@@ -109,7 +109,7 @@ class LiquidityPoolService implements LiquidityPoolServiceInterface
     }
 
     /**
-     * Get pool by currency pair
+     * Get pool by currency pair.
      */
     public function getPoolByPair(string $baseCurrency, string $quoteCurrency): ?PoolProjection
     {
@@ -117,7 +117,7 @@ class LiquidityPoolService implements LiquidityPoolServiceInterface
     }
 
     /**
-     * Get all active pools
+     * Get all active pools.
      */
     public function getActivePools(): Collection
     {
@@ -125,7 +125,7 @@ class LiquidityPoolService implements LiquidityPoolServiceInterface
     }
 
     /**
-     * Get provider's positions
+     * Get provider's positions.
      */
     public function getProviderPositions(string $providerId): Collection
     {
@@ -135,7 +135,7 @@ class LiquidityPoolService implements LiquidityPoolServiceInterface
     }
 
     /**
-     * Calculate pool metrics
+     * Calculate pool metrics.
      */
     public function getPoolMetrics(string $poolId): array
     {
@@ -155,23 +155,23 @@ class LiquidityPoolService implements LiquidityPoolServiceInterface
         $apy = $dailyReturn->multipliedBy(365)->multipliedBy(100);
 
         return [
-            'pool_id' => $poolId,
-            'base_currency' => $pool->base_currency,
+            'pool_id'        => $poolId,
+            'base_currency'  => $pool->base_currency,
             'quote_currency' => $pool->quote_currency,
-            'base_reserve' => $pool->base_reserve,
-            'quote_reserve' => $pool->quote_reserve,
-            'total_shares' => $pool->total_shares,
-            'spot_price' => $spotPrice->__toString(),
-            'tvl' => $tvl->__toString(),
-            'volume_24h' => $pool->volume_24h,
-            'fees_24h' => $pool->fees_collected_24h,
-            'apy' => $apy->__toString(),
+            'base_reserve'   => $pool->base_reserve,
+            'quote_reserve'  => $pool->quote_reserve,
+            'total_shares'   => $pool->total_shares,
+            'spot_price'     => $spotPrice->__toString(),
+            'tvl'            => $tvl->__toString(),
+            'volume_24h'     => $pool->volume_24h,
+            'fees_24h'       => $pool->fees_collected_24h,
+            'apy'            => $apy->__toString(),
             'provider_count' => $pool->providers()->count(),
         ];
     }
 
     /**
-     * Rebalance pool to target ratio
+     * Rebalance pool to target ratio.
      */
     public function rebalancePool(string $poolId, string $targetRatio): array
     {
@@ -181,7 +181,7 @@ class LiquidityPoolService implements LiquidityPoolServiceInterface
     }
 
     /**
-     * Distribute rewards to liquidity providers
+     * Distribute rewards to liquidity providers.
      */
     public function distributeRewards(
         string $poolId,
@@ -195,7 +195,7 @@ class LiquidityPoolService implements LiquidityPoolServiceInterface
     }
 
     /**
-     * Claim rewards for a provider
+     * Claim rewards for a provider.
      */
     public function claimRewards(string $poolId, string $providerId): array
     {
@@ -228,7 +228,7 @@ class LiquidityPoolService implements LiquidityPoolServiceInterface
     }
 
     /**
-     * Update pool parameters
+     * Update pool parameters.
      */
     public function updatePoolParameters(
         string $poolId,
@@ -242,7 +242,7 @@ class LiquidityPoolService implements LiquidityPoolServiceInterface
     }
 
     /**
-     * Get all liquidity pools
+     * Get all liquidity pools.
      */
     public function getAllPools(): Collection
     {
@@ -254,15 +254,15 @@ class LiquidityPoolService implements LiquidityPoolServiceInterface
             $metrics = $this->getPoolMetrics($pool->pool_id);
 
             return [
-                'id' => $pool->pool_id,
-                'base_currency' => $pool->base_currency,
+                'id'             => $pool->pool_id,
+                'base_currency'  => $pool->base_currency,
                 'quote_currency' => $pool->quote_currency,
-                'fee_rate' => $pool->fee_rate,
-                'tvl' => $metrics['tvl'] ?? 0,
-                'volume_24h' => $metrics['volume_24h'] ?? 0,
-                'apy' => $metrics['fee_apy'] ?? 0,
+                'fee_rate'       => $pool->fee_rate,
+                'tvl'            => $metrics['tvl'] ?? 0,
+                'volume_24h'     => $metrics['volume_24h'] ?? 0,
+                'apy'            => $metrics['fee_apy'] ?? 0,
                 'provider_count' => $pool->providers->count(),
-                'is_active' => $pool->is_active,
+                'is_active'      => $pool->is_active,
             ];
         });
     }

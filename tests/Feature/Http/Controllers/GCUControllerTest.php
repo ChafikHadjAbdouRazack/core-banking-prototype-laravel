@@ -2,10 +2,10 @@
 
 namespace Tests\Feature\Http\Controllers;
 
-use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
+use Tests\TestCase;
 
 class GCUControllerTest extends TestCase
 {
@@ -14,7 +14,7 @@ class GCUControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Clear cache before each test
         Cache::flush();
     }
@@ -33,13 +33,13 @@ class GCUControllerTest extends TestCase
                     ['currency' => 'CNY', 'weight' => 5.00, 'flag' => '🇨🇳'],
                 ],
                 'performance' => [
-                    'value' => 1.0234,
+                    'value'      => 1.0234,
                     'change_24h' => 0.15,
-                    'change_7d' => 0.89,
+                    'change_7d'  => 0.89,
                     'change_30d' => 2.34,
                 ],
                 'last_updated' => now()->toIso8601String(),
-            ], 200)
+            ], 200),
         ]);
 
         $response = $this->get(route('gcu'));
@@ -47,7 +47,7 @@ class GCUControllerTest extends TestCase
         $response->assertStatus(200);
         $response->assertViewIs('gcu.index');
         $response->assertViewHas('compositionData');
-        
+
         $compositionData = $response->viewData('compositionData');
         $this->assertArrayHasKey('composition', $compositionData);
         $this->assertArrayHasKey('performance', $compositionData);
@@ -60,23 +60,23 @@ class GCUControllerTest extends TestCase
         // First request should call the API
         Http::fake([
             '*/api/v2/gcu/composition' => Http::response([
-                'composition' => config('platform.gcu.composition'),
-                'performance' => ['value' => 1.0, 'change_24h' => 0],
+                'composition'  => config('platform.gcu.composition'),
+                'performance'  => ['value' => 1.0, 'change_24h' => 0],
                 'last_updated' => now()->toIso8601String(),
-            ], 200)
+            ], 200),
         ]);
 
         $this->get(route('gcu'));
-        
+
         // Assert data is cached
         $this->assertTrue(Cache::has('gcu_composition'));
-        
+
         // Clear HTTP fake to ensure no more requests are made
         Http::clearResolvedInstances();
         Http::fake([
-            '*' => Http::response('Should not be called', 500)
+            '*' => Http::response('Should not be called', 500),
         ]);
-        
+
         // Second request should use cache
         $response = $this->get(route('gcu'));
         $response->assertStatus(200);
@@ -87,14 +87,14 @@ class GCUControllerTest extends TestCase
     {
         // Mock API failure
         Http::fake([
-            '*/api/v2/gcu/composition' => Http::response(null, 500)
+            '*/api/v2/gcu/composition' => Http::response(null, 500),
         ]);
 
         $response = $this->get(route('gcu'));
 
         $response->assertStatus(200);
         $response->assertViewHas('compositionData');
-        
+
         $compositionData = $response->viewData('compositionData');
         $this->assertEquals(config('platform.gcu.composition'), $compositionData['composition']);
         $this->assertEquals(1.0, $compositionData['performance']['value']);
@@ -107,14 +107,14 @@ class GCUControllerTest extends TestCase
         Http::fake([
             '*/api/v2/gcu/composition' => function () {
                 throw new \Exception('Connection timeout');
-            }
+            },
         ]);
 
         $response = $this->get(route('gcu'));
 
         $response->assertStatus(200);
         $response->assertViewHas('compositionData');
-        
+
         // Should fall back to config data
         $compositionData = $response->viewData('compositionData');
         $this->assertArrayHasKey('composition', $compositionData);
@@ -130,29 +130,29 @@ class GCUControllerTest extends TestCase
                     ['currency' => 'USD', 'weight' => 40.00, 'flag' => '🇺🇸'],
                 ],
                 'performance' => [
-                    'value' => 1.0234,
+                    'value'      => 1.0234,
                     'change_24h' => 0.15,
-                    'change_7d' => 0.89,
+                    'change_7d'  => 0.89,
                     'change_30d' => 2.34,
                 ],
                 'last_updated' => '2024-01-15T10:30:00Z',
-            ], 200)
+            ], 200),
         ]);
 
         $response = $this->get(route('gcu'));
         $compositionData = $response->viewData('compositionData');
-        
+
         // Check composition structure
         $this->assertArrayHasKey('currency', $compositionData['composition'][0]);
         $this->assertArrayHasKey('weight', $compositionData['composition'][0]);
         $this->assertArrayHasKey('flag', $compositionData['composition'][0]);
-        
+
         // Check performance structure
         $this->assertArrayHasKey('value', $compositionData['performance']);
         $this->assertArrayHasKey('change_24h', $compositionData['performance']);
         $this->assertArrayHasKey('change_7d', $compositionData['performance']);
         $this->assertArrayHasKey('change_30d', $compositionData['performance']);
-        
+
         // Check timestamp
         $this->assertArrayHasKey('last_updated', $compositionData);
     }

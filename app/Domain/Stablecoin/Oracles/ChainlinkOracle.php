@@ -5,13 +5,14 @@ namespace App\Domain\Stablecoin\Oracles;
 use App\Domain\Stablecoin\Contracts\OracleConnector;
 use App\Domain\Stablecoin\ValueObjects\PriceData;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
 class ChainlinkOracle implements OracleConnector
 {
     private string $apiKey;
+
     private string $baseUrl;
+
     private array $priceFeedMap;
 
     public function __construct()
@@ -33,7 +34,7 @@ class ChainlinkOracle implements OracleConnector
     {
         $pair = "{$base}/{$quote}";
 
-        if (!isset($this->priceFeedMap[$pair])) {
+        if (! isset($this->priceFeedMap[$pair])) {
             throw new \InvalidArgumentException("Price feed not available for {$pair}");
         }
 
@@ -52,8 +53,8 @@ class ChainlinkOracle implements OracleConnector
                 changePercent24h: null,
                 metadata: [
                     'feed_address' => $this->priceFeedMap[$pair],
-                    'round_id' => $response['roundId'],
-                    'updated_at' => $response['updatedAt']
+                    'round_id'     => $response['roundId'],
+                    'updated_at'   => $response['updatedAt'],
                 ]
             );
         } catch (\Exception $e) {
@@ -82,7 +83,7 @@ class ChainlinkOracle implements OracleConnector
     {
         // Chainlink doesn't provide historical data via API
         // In production, this would query on-chain historical rounds
-        throw new \RuntimeException("Historical prices not available from Chainlink oracle");
+        throw new \RuntimeException('Historical prices not available from Chainlink oracle');
     }
 
     public function isHealthy(): bool
@@ -90,6 +91,7 @@ class ChainlinkOracle implements OracleConnector
         try {
             // Check if we can get a common price feed
             $this->getPrice('ETH', 'USD');
+
             return true;
         } catch (\Exception $e) {
             return false;
@@ -107,7 +109,7 @@ class ChainlinkOracle implements OracleConnector
     }
 
     /**
-     * Simulate Chainlink response for development
+     * Simulate Chainlink response for development.
      */
     private function simulateChainlinkResponse(string $base, string $quote): array
     {
@@ -126,9 +128,9 @@ class ChainlinkOracle implements OracleConnector
         }
 
         return [
-            'price' => number_format($price, 8, '.', ''),
+            'price'     => number_format($price, 8, '.', ''),
             'timestamp' => time(),
-            'roundId' => rand(1000000, 9999999),
+            'roundId'   => rand(1000000, 9999999),
             'updatedAt' => time() - rand(0, 300),
         ];
     }

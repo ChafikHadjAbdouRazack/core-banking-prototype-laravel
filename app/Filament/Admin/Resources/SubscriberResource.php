@@ -3,20 +3,18 @@
 namespace App\Filament\Admin\Resources;
 
 use App\Filament\Admin\Resources\SubscriberResource\Pages;
-use App\Filament\Admin\Resources\SubscriberResource\RelationManagers;
 use App\Models\Subscriber;
 use Filament\Forms;
+use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
+use Filament\Support\Enums\FontWeight;
 use Filament\Tables;
+use Filament\Tables\Actions\Action;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Filament\Tables\Filters\SelectFilter;
-use Filament\Tables\Actions\Action;
-use Filament\Forms\Components\TagsInput;
-use Filament\Support\Enums\FontWeight;
-use Filament\Notifications\Notification;
 
 class SubscriberResource extends Resource
 {
@@ -42,19 +40,19 @@ class SubscriberResource extends Resource
                         Forms\Components\Select::make('source')
                             ->required()
                             ->options([
-                                Subscriber::SOURCE_BLOG => 'Blog',
-                                Subscriber::SOURCE_CGO => 'CGO Early Access',
+                                Subscriber::SOURCE_BLOG       => 'Blog',
+                                Subscriber::SOURCE_CGO        => 'CGO Early Access',
                                 Subscriber::SOURCE_INVESTMENT => 'Investment',
-                                Subscriber::SOURCE_FOOTER => 'Footer',
-                                Subscriber::SOURCE_CONTACT => 'Contact Form',
-                                Subscriber::SOURCE_PARTNER => 'Partner Application',
+                                Subscriber::SOURCE_FOOTER     => 'Footer',
+                                Subscriber::SOURCE_CONTACT    => 'Contact Form',
+                                Subscriber::SOURCE_PARTNER    => 'Partner Application',
                             ]),
                         Forms\Components\Select::make('status')
                             ->required()
                             ->options([
-                                Subscriber::STATUS_ACTIVE => 'Active',
+                                Subscriber::STATUS_ACTIVE       => 'Active',
                                 Subscriber::STATUS_UNSUBSCRIBED => 'Unsubscribed',
-                                Subscriber::STATUS_BOUNCED => 'Bounced',
+                                Subscriber::STATUS_BOUNCED      => 'Bounced',
                             ])
                             ->default(Subscriber::STATUS_ACTIVE),
                         TagsInput::make('tags')
@@ -113,21 +111,21 @@ class SubscriberResource extends Resource
                     ->badge()
                     ->searchable()
                     ->formatStateUsing(fn (string $state): string => match ($state) {
-                        Subscriber::SOURCE_BLOG => 'Blog',
-                        Subscriber::SOURCE_CGO => 'CGO Early Access',
+                        Subscriber::SOURCE_BLOG       => 'Blog',
+                        Subscriber::SOURCE_CGO        => 'CGO Early Access',
                         Subscriber::SOURCE_INVESTMENT => 'Investment',
-                        Subscriber::SOURCE_FOOTER => 'Footer',
-                        Subscriber::SOURCE_CONTACT => 'Contact Form',
-                        Subscriber::SOURCE_PARTNER => 'Partner Application',
-                        default => $state,
+                        Subscriber::SOURCE_FOOTER     => 'Footer',
+                        Subscriber::SOURCE_CONTACT    => 'Contact Form',
+                        Subscriber::SOURCE_PARTNER    => 'Partner Application',
+                        default                       => $state,
                     }),
                 Tables\Columns\TextColumn::make('status')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
-                        Subscriber::STATUS_ACTIVE => 'success',
+                        Subscriber::STATUS_ACTIVE       => 'success',
                         Subscriber::STATUS_UNSUBSCRIBED => 'warning',
-                        Subscriber::STATUS_BOUNCED => 'danger',
-                        default => 'gray',
+                        Subscriber::STATUS_BOUNCED      => 'danger',
+                        default                         => 'gray',
                     })
                     ->searchable(),
                 Tables\Columns\TagsColumn::make('tags')
@@ -147,20 +145,20 @@ class SubscriberResource extends Resource
             ->filters([
                 SelectFilter::make('status')
                     ->options([
-                        Subscriber::STATUS_ACTIVE => 'Active',
+                        Subscriber::STATUS_ACTIVE       => 'Active',
                         Subscriber::STATUS_UNSUBSCRIBED => 'Unsubscribed',
-                        Subscriber::STATUS_BOUNCED => 'Bounced',
+                        Subscriber::STATUS_BOUNCED      => 'Bounced',
                     ])
                     ->default(Subscriber::STATUS_ACTIVE),
                 SelectFilter::make('source')
                     ->multiple()
                     ->options([
-                        Subscriber::SOURCE_BLOG => 'Blog',
-                        Subscriber::SOURCE_CGO => 'CGO Early Access',
+                        Subscriber::SOURCE_BLOG       => 'Blog',
+                        Subscriber::SOURCE_CGO        => 'CGO Early Access',
                         Subscriber::SOURCE_INVESTMENT => 'Investment',
-                        Subscriber::SOURCE_FOOTER => 'Footer',
-                        Subscriber::SOURCE_CONTACT => 'Contact Form',
-                        Subscriber::SOURCE_PARTNER => 'Partner Application',
+                        Subscriber::SOURCE_FOOTER     => 'Footer',
+                        Subscriber::SOURCE_CONTACT    => 'Contact Form',
+                        Subscriber::SOURCE_PARTNER    => 'Partner Application',
                     ]),
                 Tables\Filters\Filter::make('confirmed')
                     ->query(fn (Builder $query): Builder => $query->whereNotNull('confirmed_at')),
@@ -186,11 +184,11 @@ class SubscriberResource extends Resource
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
                     ->requiresConfirmation()
-                    ->visible(fn (Subscriber $record): bool => !$record->isActive())
+                    ->visible(fn (Subscriber $record): bool => ! $record->isActive())
                     ->action(function (Subscriber $record): void {
                         $record->update([
-                            'status' => Subscriber::STATUS_ACTIVE,
-                            'unsubscribed_at' => null,
+                            'status'             => Subscriber::STATUS_ACTIVE,
+                            'unsubscribed_at'    => null,
                             'unsubscribe_reason' => null,
                         ]);
                         Notification::make()
@@ -257,9 +255,9 @@ class SubscriberResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListSubscribers::route('/'),
+            'index'  => Pages\ListSubscribers::route('/'),
             'create' => Pages\CreateSubscriber::route('/create'),
-            'edit' => Pages\EditSubscriber::route('/{record}/edit'),
+            'edit'   => Pages\EditSubscriber::route('/{record}/edit'),
         ];
     }
 

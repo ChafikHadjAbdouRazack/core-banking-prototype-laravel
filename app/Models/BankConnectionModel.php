@@ -29,14 +29,14 @@ class BankConnectionModel extends Model
     ];
 
     protected $casts = [
-        'permissions' => 'array',
-        'metadata' => 'array',
+        'permissions'  => 'array',
+        'metadata'     => 'array',
         'last_sync_at' => 'datetime',
-        'expires_at' => 'datetime',
+        'expires_at'   => 'datetime',
     ];
 
     /**
-     * Get the user that owns the bank connection
+     * Get the user that owns the bank connection.
      */
     public function user(): BelongsTo
     {
@@ -44,7 +44,7 @@ class BankConnectionModel extends Model
     }
 
     /**
-     * Scope to get active connections
+     * Scope to get active connections.
      */
     public function scopeActive($query)
     {
@@ -52,7 +52,7 @@ class BankConnectionModel extends Model
     }
 
     /**
-     * Check if connection is expired
+     * Check if connection is expired.
      */
     public function isExpired(): bool
     {
@@ -60,11 +60,11 @@ class BankConnectionModel extends Model
     }
 
     /**
-     * Check if connection needs renewal
+     * Check if connection needs renewal.
      */
     public function needsRenewal(): bool
     {
-        if (!$this->expires_at) {
+        if (! $this->expires_at) {
             return false;
         }
 

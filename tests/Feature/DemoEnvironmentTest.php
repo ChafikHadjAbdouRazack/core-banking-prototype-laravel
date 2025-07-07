@@ -2,19 +2,18 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
 use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Config;
+use Tests\TestCase;
 
 class DemoEnvironmentTest extends TestCase
 {
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Force demo environment for these tests
         App::detectEnvironment(fn () => 'demo');
-        
+
         // Re-bootstrap the app to apply demo configurations
         $this->app->bootstrapWith([
             \Illuminate\Foundation\Bootstrap\LoadEnvironmentVariables::class,
@@ -62,7 +61,7 @@ class DemoEnvironmentTest extends TestCase
     public function it_does_not_expose_sensitive_data_in_demo()
     {
         $debugBlacklist = config('app.debug_blacklist._ENV', []);
-        
+
         $this->assertContains('APP_KEY', $debugBlacklist);
         $this->assertContains('DB_PASSWORD', $debugBlacklist);
         $this->assertContains('REDIS_PASSWORD', $debugBlacklist);
@@ -72,7 +71,7 @@ class DemoEnvironmentTest extends TestCase
     {
         // Reset to testing environment
         App::detectEnvironment(fn () => 'testing');
-        
+
         parent::tearDown();
     }
 }

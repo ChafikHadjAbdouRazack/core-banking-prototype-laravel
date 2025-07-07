@@ -2,17 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Account;
 use App\Domain\Asset\Models\Asset;
 use App\Domain\Basket\Models\BasketPrice;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class GcuTradingController extends Controller
 {
     /**
-     * Display the GCU trading interface
+     * Display the GCU trading interface.
      */
     public function index()
     {

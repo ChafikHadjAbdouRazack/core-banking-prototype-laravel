@@ -6,13 +6,15 @@ namespace App\Domain\Governance\Strategies;
 
 use App\Domain\Governance\Contracts\IVotingPowerStrategy;
 use App\Domain\Governance\Models\Poll;
-use App\Models\User;
 use App\Models\Account;
+use App\Models\User;
 
 class AssetWeightedVoteStrategy implements IVotingPowerStrategy
 {
     private const DEFAULT_ASSET_CODE = 'USD';
+
     private const MIN_BALANCE_FOR_VOTE = 100; // $1.00 in cents
+
     private const POWER_DIVISOR = 10000; // $100.00 = 1 voting power
 
     public function calculatePower(User $user, Poll $poll): int
@@ -60,7 +62,7 @@ class AssetWeightedVoteStrategy implements IVotingPowerStrategy
 
     public function canVote(User $user, Poll $poll): bool
     {
-        if (!$user->exists()) {
+        if (! $user->exists()) {
             return false;
         }
 

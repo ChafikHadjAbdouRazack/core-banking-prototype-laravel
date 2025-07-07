@@ -58,11 +58,11 @@ class AccountController extends Controller
         return response()->json([
             'data' => $accounts->map(function ($account) {
                 return [
-                    'uuid' => $account->uuid,
-                    'user_uuid' => $account->user_uuid,
-                    'name' => $account->name,
-                    'balance' => $account->balance,
-                    'frozen' => $account->frozen ?? false,
+                    'uuid'       => $account->uuid,
+                    'user_uuid'  => $account->user_uuid,
+                    'name'       => $account->name,
+                    'balance'    => $account->balance,
+                    'frozen'     => $account->frozen ?? false,
                     'created_at' => $account->created_at,
                     'updated_at' => $account->updated_at,
                 ];
@@ -105,8 +105,8 @@ class AccountController extends Controller
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'user_uuid' => 'required|uuid',
-            'name' => 'required|string|max:255',
+            'user_uuid'       => 'required|uuid',
+            'name'            => 'required|string|max:255',
             'initial_balance' => 'sometimes|integer|min:0',
         ]);
 
@@ -136,22 +136,22 @@ class AccountController extends Controller
         $account = Account::where('uuid', $accountUuid)->first();
 
         // In test mode, the account might not exist yet, so create it
-        if (!$account) {
+        if (! $account) {
             $account = Account::create([
-                'uuid' => $accountUuid,
+                'uuid'      => $accountUuid,
                 'user_uuid' => $validated['user_uuid'],
-                'name' => $validated['name'],
-                'balance' => $validated['initial_balance'] ?? 0,
+                'name'      => $validated['name'],
+                'balance'   => $validated['initial_balance'] ?? 0,
             ]);
         }
 
         return response()->json([
             'data' => [
-                'uuid' => $account->uuid,
-                'user_uuid' => $account->user_uuid,
-                'name' => $account->name,
-                'balance' => $account->balance,
-                'frozen' => $account->frozen ?? false,
+                'uuid'       => $account->uuid,
+                'user_uuid'  => $account->user_uuid,
+                'name'       => $account->name,
+                'balance'    => $account->balance,
+                'frozen'     => $account->frozen ?? false,
                 'created_at' => $account->created_at,
             ],
             'message' => 'Account created successfully',
@@ -192,17 +192,17 @@ class AccountController extends Controller
         // Try to get from cache first
         $account = $this->accountCache->get($uuid);
 
-        if (!$account) {
+        if (! $account) {
             abort(404, 'Account not found');
         }
 
         return response()->json([
             'data' => [
-                'uuid' => $account->uuid,
-                'user_uuid' => $account->user_uuid,
-                'name' => $account->name,
-                'balance' => $account->balance,
-                'frozen' => $account->frozen ?? false,
+                'uuid'       => $account->uuid,
+                'user_uuid'  => $account->user_uuid,
+                'name'       => $account->name,
+                'balance'    => $account->balance,
+                'frozen'     => $account->frozen ?? false,
                 'created_at' => $account->created_at,
                 'updated_at' => $account->updated_at,
             ],
@@ -250,14 +250,14 @@ class AccountController extends Controller
         if ($account->balance > 0) {
             return response()->json([
                 'message' => 'Cannot delete account with positive balance',
-                'error' => 'ACCOUNT_HAS_BALANCE',
+                'error'   => 'ACCOUNT_HAS_BALANCE',
             ], 422);
         }
 
         if ($account->frozen) {
             return response()->json([
                 'message' => 'Cannot delete frozen account',
-                'error' => 'ACCOUNT_FROZEN',
+                'error'   => 'ACCOUNT_FROZEN',
             ], 422);
         }
 
@@ -311,7 +311,7 @@ class AccountController extends Controller
     public function freeze(Request $request, string $uuid): JsonResponse
     {
         $validated = $request->validate([
-            'reason' => 'required|string|max:255',
+            'reason'        => 'required|string|max:255',
             'authorized_by' => 'sometimes|string|max:255',
         ]);
 
@@ -320,7 +320,7 @@ class AccountController extends Controller
         if ($account->frozen) {
             return response()->json([
                 'message' => 'Account is already frozen',
-                'error' => 'ACCOUNT_ALREADY_FROZEN',
+                'error'   => 'ACCOUNT_ALREADY_FROZEN',
             ], 422);
         }
 
@@ -378,16 +378,16 @@ class AccountController extends Controller
     public function unfreeze(Request $request, string $uuid): JsonResponse
     {
         $validated = $request->validate([
-            'reason' => 'required|string|max:255',
+            'reason'        => 'required|string|max:255',
             'authorized_by' => 'sometimes|string|max:255',
         ]);
 
         $account = Account::where('uuid', $uuid)->firstOrFail();
 
-        if (!$account->frozen) {
+        if (! $account->frozen) {
             return response()->json([
                 'message' => 'Account is not frozen',
-                'error' => 'ACCOUNT_NOT_FROZEN',
+                'error'   => 'ACCOUNT_NOT_FROZEN',
             ], 422);
         }
 

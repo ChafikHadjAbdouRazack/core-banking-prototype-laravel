@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class () extends Migration {
     /**
      * Run the migrations.
      */
@@ -21,15 +20,15 @@ return new class extends Migration
             $table->enum('status', ['active', 'pending', 'suspended'])->default('pending');
             $table->json('metadata')->nullable();
             $table->timestamps();
-            
+
             // Indexes
             $table->index('user_uuid');
             $table->index(['user_uuid', 'bank_code']);
             $table->index('status');
-            
+
             // Foreign key
             $table->foreign('user_uuid')->references('uuid')->on('users')->onDelete('cascade');
-            
+
             // Ensure allocations per user sum to 100%
             $table->unique(['user_uuid', 'bank_code']);
         });

@@ -4,13 +4,12 @@ namespace App\Filament\Admin\Resources\WebhookResource\Pages;
 
 use App\Filament\Admin\Resources\WebhookResource;
 use Filament\Actions;
-use Filament\Resources\Pages\ViewRecord;
-use Filament\Infolists\Infolist;
-use Filament\Infolists\Components\TextEntry;
-use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\Grid;
 use Filament\Infolists\Components\KeyValueEntry;
-use Filament\Infolists\Components\RepeatableEntry;
+use Filament\Infolists\Components\Section;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Infolist;
+use Filament\Resources\Pages\ViewRecord;
 
 class ViewWebhook extends ViewRecord
 {
@@ -73,9 +72,10 @@ class ViewWebhook extends ViewRecord
                             ->label('Last Delivery')
                             ->formatStateUsing(function ($record) {
                                 $lastDelivery = $record->deliveries()->latest()->first();
-                                if (!$lastDelivery) {
+                                if (! $lastDelivery) {
                                     return 'No deliveries yet';
                                 }
+
                                 return sprintf(
                                     '%s - Response: %d',
                                     ucfirst($lastDelivery->status),
@@ -85,9 +85,10 @@ class ViewWebhook extends ViewRecord
                             ->badge()
                             ->color(function ($record) {
                                 $lastDelivery = $record->deliveries()->latest()->first();
-                                if (!$lastDelivery) {
+                                if (! $lastDelivery) {
                                     return 'gray';
                                 }
+
                                 return $lastDelivery->status === 'success' ? 'success' : 'danger';
                             }),
                     ]),

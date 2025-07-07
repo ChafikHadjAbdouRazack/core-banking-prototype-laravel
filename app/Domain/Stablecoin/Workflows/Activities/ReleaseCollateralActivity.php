@@ -13,7 +13,7 @@ use Workflow\Activity;
 class ReleaseCollateralActivity extends Activity
 {
     /**
-     * Release collateral to account
+     * Release collateral to account.
      */
     public function execute(
         AccountUuid $accountUuid,
@@ -22,7 +22,7 @@ class ReleaseCollateralActivity extends Activity
         int $amount
     ): bool {
         // Get asset code from position if not provided
-        if (!$collateralAssetCode) {
+        if (! $collateralAssetCode) {
             $position = StablecoinCollateralPosition::where('uuid', $positionUuid)->firstOrFail();
             $collateralAssetCode = $position->collateral_asset_code;
         }

@@ -12,7 +12,7 @@ use Workflow\Activity;
 class CompleteAssetTransferActivity extends Activity
 {
     /**
-     * Execute complete asset transfer activity
+     * Execute complete asset transfer activity.
      */
     public function execute(
         string $transferId,
@@ -29,12 +29,12 @@ class CompleteAssetTransferActivity extends Activity
             ->complete(
                 transferId: $transferId,
                 metadata: [
-                    'workflow' => 'AssetTransferWorkflow',
-                    'activity' => 'CompleteAssetTransferActivity',
-                    'completed_at' => now()->toISOString(),
+                    'workflow'           => 'AssetTransferWorkflow',
+                    'activity'           => 'CompleteAssetTransferActivity',
+                    'completed_at'       => now()->toISOString(),
                     'exchange_rate_used' => $exchangeRate,
-                    'final_from_amount' => $fromAmount->getAmount(),
-                    'final_to_amount' => $toAmount->getAmount(),
+                    'final_from_amount'  => $fromAmount->getAmount(),
+                    'final_to_amount'    => $toAmount->getAmount(),
                 ]
             )
             ->persist();

@@ -55,7 +55,7 @@ class ExchangeRateProviderServiceProvider extends ServiceProvider
                 continue; // Already handled above
             }
 
-            if (!($config['enabled'] ?? false)) {
+            if (! ($config['enabled'] ?? false)) {
                 continue;
             }
 
@@ -79,7 +79,7 @@ class ExchangeRateProviderServiceProvider extends ServiceProvider
     }
 
     /**
-     * Schedule automatic rate refresh
+     * Schedule automatic rate refresh.
      */
     private function scheduleRateRefresh(): void
     {

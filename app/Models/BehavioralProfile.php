@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class BehavioralProfile extends Model
@@ -58,37 +58,37 @@ class BehavioralProfile extends Model
     ];
 
     protected $casts = [
-        'typical_transaction_times' => 'array',
-        'typical_transaction_days' => 'array',
-        'common_locations' => 'array',
-        'location_history' => 'array',
-        'travel_patterns' => 'array',
-        'trusted_devices' => 'array',
-        'device_switching_pattern' => 'array',
-        'frequent_merchants' => 'array',
-        'frequent_recipients' => 'array',
-        'merchant_categories' => 'array',
+        'typical_transaction_times'  => 'array',
+        'typical_transaction_days'   => 'array',
+        'common_locations'           => 'array',
+        'location_history'           => 'array',
+        'travel_patterns'            => 'array',
+        'trusted_devices'            => 'array',
+        'device_switching_pattern'   => 'array',
+        'frequent_merchants'         => 'array',
+        'frequent_recipients'        => 'array',
+        'merchant_categories'        => 'array',
         'recurring_payment_patterns' => 'array',
-        'typical_login_times' => 'array',
-        'common_features_used' => 'array',
-        'ml_feature_vector' => 'array',
-        'avg_transaction_amount' => 'decimal:2',
-        'median_transaction_amount' => 'decimal:2',
-        'max_transaction_amount' => 'decimal:2',
+        'typical_login_times'        => 'array',
+        'common_features_used'       => 'array',
+        'ml_feature_vector'          => 'array',
+        'avg_transaction_amount'     => 'decimal:2',
+        'median_transaction_amount'  => 'decimal:2',
+        'max_transaction_amount'     => 'decimal:2',
         'transaction_amount_std_dev' => 'decimal:2',
-        'avg_session_duration' => 'decimal:2',
-        'max_daily_volume' => 'decimal:2',
-        'max_weekly_volume' => 'decimal:2',
-        'max_monthly_volume' => 'decimal:2',
-        'total_transaction_volume' => 'decimal:2',
-        'travels_frequently' => 'boolean',
-        'uses_multiple_devices' => 'boolean',
-        'has_recurring_payments' => 'boolean',
-        'uses_2fa' => 'boolean',
-        'is_established' => 'boolean',
-        'last_suspicious_activity' => 'datetime',
-        'profile_established_at' => 'datetime',
-        'ml_features_updated_at' => 'datetime',
+        'avg_session_duration'       => 'decimal:2',
+        'max_daily_volume'           => 'decimal:2',
+        'max_weekly_volume'          => 'decimal:2',
+        'max_monthly_volume'         => 'decimal:2',
+        'total_transaction_volume'   => 'decimal:2',
+        'travels_frequently'         => 'boolean',
+        'uses_multiple_devices'      => 'boolean',
+        'has_recurring_payments'     => 'boolean',
+        'uses_2fa'                   => 'boolean',
+        'is_established'             => 'boolean',
+        'last_suspicious_activity'   => 'datetime',
+        'profile_established_at'     => 'datetime',
+        'ml_features_updated_at'     => 'datetime',
     ];
 
     // Relationships
@@ -115,12 +115,12 @@ class BehavioralProfile extends Model
         $timestamps = collect($transactions)->pluck('created_at');
 
         $this->update([
-            'avg_transaction_amount' => $amounts->average(),
-            'median_transaction_amount' => $amounts->median(),
-            'max_transaction_amount' => $amounts->max(),
+            'avg_transaction_amount'     => $amounts->average(),
+            'median_transaction_amount'  => $amounts->median(),
+            'max_transaction_amount'     => $amounts->max(),
             'transaction_amount_std_dev' => $amounts->count() > 1 ? $amounts->std() : 0,
-            'typical_transaction_times' => $this->calculateTimeDistribution($timestamps),
-            'typical_transaction_days' => $this->calculateDayDistribution($timestamps),
+            'typical_transaction_times'  => $this->calculateTimeDistribution($timestamps),
+            'typical_transaction_days'   => $this->calculateDayDistribution($timestamps),
         ]);
     }
 
@@ -136,7 +136,7 @@ class BehavioralProfile extends Model
         // Normalize to percentages
         $total = array_sum($distribution);
         if ($total > 0) {
-            $distribution = array_map(fn($count) => round(($count / $total) * 100, 2), $distribution);
+            $distribution = array_map(fn ($count) => round(($count / $total) * 100, 2), $distribution);
         }
 
         return $distribution;
@@ -154,7 +154,7 @@ class BehavioralProfile extends Model
         // Normalize to percentages
         $total = array_sum($distribution);
         if ($total > 0) {
-            $distribution = array_map(fn($count) => round(($count / $total) * 100, 2), $distribution);
+            $distribution = array_map(fn ($count) => round(($count / $total) * 100, 2), $distribution);
         }
 
         return $distribution;
@@ -162,23 +162,25 @@ class BehavioralProfile extends Model
 
     public function isTransactionTimeUnusual(int $hour): bool
     {
-        if (!$this->is_established || empty($this->typical_transaction_times)) {
+        if (! $this->is_established || empty($this->typical_transaction_times)) {
             return false;
         }
 
         $hourPercentage = $this->typical_transaction_times[$hour] ?? 0;
+
         return $hourPercentage < 5; // Less than 5% of transactions happen at this hour
     }
 
     public function isTransactionAmountUnusual(float $amount): bool
     {
-        if (!$this->is_established || !$this->avg_transaction_amount) {
+        if (! $this->is_established || ! $this->avg_transaction_amount) {
             return false;
         }
 
         // Check if amount is more than 3 standard deviations from mean
         if ($this->transaction_amount_std_dev > 0) {
             $zScore = abs($amount - $this->avg_transaction_amount) / $this->transaction_amount_std_dev;
+
             return $zScore > 3;
         }
 
@@ -188,7 +190,7 @@ class BehavioralProfile extends Model
 
     public function isLocationUnusual(string $country, string $city = null): bool
     {
-        if (!$this->is_established) {
+        if (! $this->is_established) {
             return false;
         }
 
@@ -198,7 +200,7 @@ class BehavioralProfile extends Model
             ->unique()
             ->toArray();
 
-        if (!in_array($country, $commonCountries)) {
+        if (! in_array($country, $commonCountries)) {
             return true;
         }
 
@@ -210,7 +212,7 @@ class BehavioralProfile extends Model
                 ->unique()
                 ->toArray();
 
-            return !in_array($city, $commonCities);
+            return ! in_array($city, $commonCities);
         }
 
         return false;
@@ -218,21 +220,21 @@ class BehavioralProfile extends Model
 
     public function isDeviceUnusual(string $deviceFingerprintId): bool
     {
-        if (!$this->is_established) {
+        if (! $this->is_established) {
             return false;
         }
 
-        return !in_array($deviceFingerprintId, $this->trusted_devices ?? []);
+        return ! in_array($deviceFingerprintId, $this->trusted_devices ?? []);
     }
 
     public function addTrustedDevice(string $deviceFingerprintId): void
     {
         $devices = $this->trusted_devices ?? [];
-        if (!in_array($deviceFingerprintId, $devices)) {
+        if (! in_array($deviceFingerprintId, $devices)) {
             $devices[] = $deviceFingerprintId;
             $this->update([
-                'trusted_devices' => $devices,
-                'device_count' => count($devices),
+                'trusted_devices'       => $devices,
+                'device_count'          => count($devices),
                 'uses_multiple_devices' => count($devices) > 1,
             ]);
         }
@@ -242,9 +244,9 @@ class BehavioralProfile extends Model
     {
         $history = $this->location_history ?? [];
         $history[] = [
-            'country' => $country,
-            'city' => $city,
-            'ip' => $ip,
+            'country'   => $country,
+            'city'      => $city,
+            'ip'        => $ip,
             'timestamp' => now()->toIso8601String(),
         ];
 
@@ -273,8 +275,8 @@ class BehavioralProfile extends Model
         foreach (array_slice($locationCounts, 0, 10, true) as $key => $count) {
             [$country, $city] = explode('|', $key);
             $commonLocations[] = [
-                'country' => $country,
-                'city' => $city === 'unknown' ? null : $city,
+                'country'   => $country,
+                'city'      => $city === 'unknown' ? null : $city,
                 'frequency' => $count,
             ];
         }
@@ -284,16 +286,16 @@ class BehavioralProfile extends Model
 
     public function calculateBehaviorScore(array $currentBehavior): float
     {
-        if (!$this->is_established) {
+        if (! $this->is_established) {
             return 50; // Neutral score for new profiles
         }
 
         $deviationScore = 0;
         $weights = [
-            'time' => 0.15,
-            'amount' => 0.25,
+            'time'     => 0.15,
+            'amount'   => 0.25,
             'location' => 0.20,
-            'device' => 0.20,
+            'device'   => 0.20,
             'velocity' => 0.20,
         ];
 
@@ -339,13 +341,13 @@ class BehavioralProfile extends Model
     {
         $features = [
             // Transaction features
-            'avg_transaction_amount' => $this->avg_transaction_amount ?? 0,
+            'avg_transaction_amount'     => $this->avg_transaction_amount ?? 0,
             'transaction_amount_std_dev' => $this->transaction_amount_std_dev ?? 0,
-            'max_transaction_ratio' => $this->avg_transaction_amount > 0 ?
+            'max_transaction_ratio'      => $this->avg_transaction_amount > 0 ?
                 ($this->max_transaction_amount / $this->avg_transaction_amount) : 0,
 
             // Velocity features
-            'avg_daily_transactions' => $this->avg_daily_transaction_count ?? 0,
+            'avg_daily_transactions'   => $this->avg_daily_transaction_count ?? 0,
             'avg_monthly_transactions' => $this->avg_monthly_transaction_count ?? 0,
 
             // Location features
@@ -353,25 +355,25 @@ class BehavioralProfile extends Model
             'travels_frequently' => $this->travels_frequently ? 1 : 0,
 
             // Device features
-            'device_count' => $this->device_count ?? 0,
+            'device_count'          => $this->device_count ?? 0,
             'uses_multiple_devices' => $this->uses_multiple_devices ? 1 : 0,
 
             // Security features
-            'uses_2fa' => $this->uses_2fa ? 1 : 0,
+            'uses_2fa'          => $this->uses_2fa ? 1 : 0,
             'failed_login_rate' => $this->total_transaction_count > 0 ?
                 ($this->failed_login_attempts / $this->total_transaction_count) : 0,
 
             // Account age features
             'account_age_days' => $this->days_since_first_transaction ?? 0,
-            'is_established' => $this->is_established ? 1 : 0,
+            'is_established'   => $this->is_established ? 1 : 0,
 
             // Activity features
-            'profile_change_frequency' => $this->profile_change_frequency ?? 0,
+            'profile_change_frequency'  => $this->profile_change_frequency ?? 0,
             'password_change_frequency' => $this->password_change_frequency ?? 0,
         ];
 
         $this->update([
-            'ml_feature_vector' => $features,
+            'ml_feature_vector'      => $features,
             'ml_features_updated_at' => now(),
         ]);
 
@@ -381,9 +383,9 @@ class BehavioralProfile extends Model
     public function getProfileSummary(): array
     {
         return [
-            'established' => $this->is_established,
-            'account_age_days' => $this->days_since_first_transaction,
-            'total_transactions' => $this->total_transaction_count,
+            'established'          => $this->is_established,
+            'account_age_days'     => $this->days_since_first_transaction,
+            'total_transactions'   => $this->total_transaction_count,
             'typical_amount_range' => [
                 'min' => max(0, $this->avg_transaction_amount - (2 * $this->transaction_amount_std_dev)),
                 'max' => $this->avg_transaction_amount + (2 * $this->transaction_amount_std_dev),
@@ -391,8 +393,8 @@ class BehavioralProfile extends Model
             'primary_location' => $this->primary_city ?
                 "{$this->primary_city}, {$this->primary_country}" : $this->primary_country,
             'device_count' => $this->device_count,
-            'security' => [
-                '2fa_enabled' => $this->uses_2fa,
+            'security'     => [
+                '2fa_enabled'                => $this->uses_2fa,
                 'recent_suspicious_activity' => $this->last_suspicious_activity?->diffForHumans(),
             ],
         ];

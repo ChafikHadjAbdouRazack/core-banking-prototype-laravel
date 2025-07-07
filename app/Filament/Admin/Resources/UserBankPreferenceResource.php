@@ -3,16 +3,14 @@
 namespace App\Filament\Admin\Resources;
 
 use App\Filament\Admin\Resources\UserBankPreferenceResource\Pages;
-use App\Filament\Admin\Resources\UserBankPreferenceResource\RelationManagers;
-use App\Models\UserBankPreference;
 use App\Models\User;
+use App\Models\UserBankPreference;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class UserBankPreferenceResource extends Resource
 {
@@ -66,8 +64,8 @@ class UserBankPreferenceResource extends Resource
                     ->helperText('Primary bank will be used for urgent transfers'),
                 Forms\Components\Select::make('status')
                     ->options([
-                        'active' => 'Active',
-                        'pending' => 'Pending',
+                        'active'    => 'Active',
+                        'pending'   => 'Pending',
                         'suspended' => 'Suspended',
                     ])
                     ->default('active')
@@ -90,15 +88,13 @@ class UserBankPreferenceResource extends Resource
                 Tables\Columns\TextColumn::make('bank_name')
                     ->label('Bank')
                     ->searchable()
-                    ->description(fn (UserBankPreference $record): string =>
-                        $record->metadata['country'] ?? $record->bank_code),
+                    ->description(fn (UserBankPreference $record): string => $record->metadata['country'] ?? $record->bank_code),
                 Tables\Columns\TextColumn::make('allocation_percentage')
                     ->label('Allocation')
                     ->numeric()
                     ->sortable()
                     ->suffix('%')
-                    ->color(fn (UserBankPreference $record): string =>
-                        $record->allocation_percentage > 50 ? 'warning' : 'success'),
+                    ->color(fn (UserBankPreference $record): string => $record->allocation_percentage > 50 ? 'warning' : 'success'),
                 Tables\Columns\IconColumn::make('is_primary')
                     ->label('Primary')
                     ->boolean()
@@ -108,13 +104,12 @@ class UserBankPreferenceResource extends Resource
                     ->colors([
                         'success' => 'active',
                         'warning' => 'pending',
-                        'danger' => 'suspended',
+                        'danger'  => 'suspended',
                     ]),
                 Tables\Columns\TextColumn::make('metadata.deposit_insurance')
                     ->label('Insurance')
                     ->money('EUR')
-                    ->getStateUsing(fn (UserBankPreference $record): ?int =>
-                        $record->metadata['deposit_insurance'] ?? null),
+                    ->getStateUsing(fn (UserBankPreference $record): ?int => $record->metadata['deposit_insurance'] ?? null),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -127,8 +122,8 @@ class UserBankPreferenceResource extends Resource
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
                     ->options([
-                        'active' => 'Active',
-                        'pending' => 'Pending',
+                        'active'    => 'Active',
+                        'pending'   => 'Pending',
                         'suspended' => 'Suspended',
                     ]),
                 Tables\Filters\Filter::make('is_primary')
@@ -141,7 +136,7 @@ class UserBankPreferenceResource extends Resource
                     ->label('Set as Primary')
                     ->icon('heroicon-o-star')
                     ->color('warning')
-                    ->visible(fn (UserBankPreference $record): bool => !$record->is_primary && $record->status === 'active')
+                    ->visible(fn (UserBankPreference $record): bool => ! $record->is_primary && $record->status === 'active')
                     ->action(function (UserBankPreference $record) {
                         $service = app(\App\Domain\Account\Services\BankAllocationService::class);
                         $service->setPrimaryBank($record->user, $record->bank_code);
@@ -171,9 +166,9 @@ class UserBankPreferenceResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListUserBankPreferences::route('/'),
+            'index'  => Pages\ListUserBankPreferences::route('/'),
             'create' => Pages\CreateUserBankPreference::route('/create'),
-            'edit' => Pages\EditUserBankPreference::route('/{record}/edit'),
+            'edit'   => Pages\EditUserBankPreference::route('/{record}/edit'),
         ];
     }
 }

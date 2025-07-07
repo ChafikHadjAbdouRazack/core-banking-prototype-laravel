@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\CgoRefundResource\Pages;
 
 use App\Filament\Resources\CgoRefundResource;
-use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 
 class ListCgoRefunds extends ListRecords

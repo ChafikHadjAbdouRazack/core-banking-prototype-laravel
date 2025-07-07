@@ -53,6 +53,7 @@ class BasketRebalanced extends ShouldBeStored
                 return $adjustment;
             }
         }
+
         return null;
     }
 }

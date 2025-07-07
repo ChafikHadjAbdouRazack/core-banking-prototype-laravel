@@ -2,19 +2,20 @@
 
 namespace App\Domain\Fraud\Services;
 
-use App\Models\User;
-use App\Models\Transaction;
 use App\Models\FraudScore;
-use App\Models\BehavioralProfile;
-use Illuminate\Support\Facades\Http;
+use App\Models\Transaction;
+use App\Models\User;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 class MachineLearningService
 {
     private bool $enabled;
+
     private string $modelVersion;
+
     private string $apiEndpoint;
+
     private array $modelConfig;
 
     public function __construct()
@@ -26,25 +27,25 @@ class MachineLearningService
     }
 
     /**
-     * Check if ML service is enabled
+     * Check if ML service is enabled.
      */
     public function isEnabled(): bool
     {
-        return $this->enabled && !empty($this->apiEndpoint);
+        return $this->enabled && ! empty($this->apiEndpoint);
     }
 
     /**
-     * Predict fraud risk using ML model
+     * Predict fraud risk using ML model.
      */
     public function predict(array $context): array
     {
-        if (!$this->isEnabled()) {
+        if (! $this->isEnabled()) {
             return [
-                'score' => 0,
-                'confidence' => 0,
+                'score'         => 0,
+                'confidence'    => 0,
                 'model_version' => null,
-                'features' => [],
-                'explanation' => 'ML service disabled',
+                'features'      => [],
+                'explanation'   => 'ML service disabled',
             ];
         }
 
@@ -56,31 +57,31 @@ class MachineLearningService
             $prediction = $this->getPrediction($features);
 
             return [
-                'score' => $prediction['fraud_probability'] * 100,
-                'confidence' => $prediction['confidence'],
+                'score'         => $prediction['fraud_probability'] * 100,
+                'confidence'    => $prediction['confidence'],
                 'model_version' => $this->modelVersion,
-                'features' => $features,
-                'explanation' => $prediction['explanation'] ?? null,
-                'risk_factors' => $prediction['risk_factors'] ?? [],
+                'features'      => $features,
+                'explanation'   => $prediction['explanation'] ?? null,
+                'risk_factors'  => $prediction['risk_factors'] ?? [],
             ];
         } catch (\Exception $e) {
             Log::error('ML prediction failed', [
-                'error' => $e->getMessage(),
+                'error'   => $e->getMessage(),
                 'context' => $context,
             ]);
 
             return [
-                'score' => 0,
-                'confidence' => 0,
+                'score'         => 0,
+                'confidence'    => 0,
                 'model_version' => $this->modelVersion,
-                'features' => [],
-                'explanation' => 'ML prediction error',
+                'features'      => [],
+                'explanation'   => 'ML prediction error',
             ];
         }
     }
 
     /**
-     * Extract features for ML model
+     * Extract features for ML model.
      */
     protected function extractFeatures(array $context): array
     {
@@ -147,7 +148,7 @@ class MachineLearningService
         $ruleResults = $context['rule_results'] ?? [];
         $features['rules_triggered_count'] = count($ruleResults['triggered_rules'] ?? []);
         $features['rule_total_score'] = $ruleResults['total_score'] ?? 0;
-        $features['has_blocking_rules'] = !empty($ruleResults['blocking_rules']) ? 1 : 0;
+        $features['has_blocking_rules'] = ! empty($ruleResults['blocking_rules']) ? 1 : 0;
 
         // Cross-feature engineering
         $features['velocity_amount_product'] = $features['daily_transaction_count'] * $features['amount_normalized'];
@@ -158,7 +159,7 @@ class MachineLearningService
     }
 
     /**
-     * Get prediction from ML service
+     * Get prediction from ML service.
      */
     protected function getPrediction(array $features): array
     {
@@ -215,28 +216,28 @@ class MachineLearningService
 
         return [
             'fraud_probability' => $fraudProbability,
-            'confidence' => $confidence,
-            'risk_factors' => $riskFactors,
-            'explanation' => $this->generateExplanation($fraudProbability, $riskFactors),
+            'confidence'        => $confidence,
+            'risk_factors'      => $riskFactors,
+            'explanation'       => $this->generateExplanation($fraudProbability, $riskFactors),
         ];
     }
 
     /**
-     * Train model with feedback
+     * Train model with feedback.
      */
     public function trainWithFeedback(FraudScore $fraudScore, string $actualOutcome): void
     {
-        if (!$this->isEnabled()) {
+        if (! $this->isEnabled()) {
             return;
         }
 
         try {
             $trainingData = [
-                'fraud_score_id' => $fraudScore->id,
-                'features' => $fraudScore->ml_features,
-                'predicted_score' => $fraudScore->ml_score,
-                'actual_outcome' => $actualOutcome,
-                'decision' => $fraudScore->decision,
+                'fraud_score_id'     => $fraudScore->id,
+                'features'           => $fraudScore->ml_features,
+                'predicted_score'    => $fraudScore->ml_score,
+                'actual_outcome'     => $actualOutcome,
+                'decision'           => $fraudScore->decision,
                 'feedback_timestamp' => now()->toIso8601String(),
             ];
 
@@ -248,17 +249,17 @@ class MachineLearningService
         } catch (\Exception $e) {
             Log::error('ML training feedback failed', [
                 'fraud_score_id' => $fraudScore->id,
-                'error' => $e->getMessage(),
+                'error'          => $e->getMessage(),
             ]);
         }
     }
 
     /**
-     * Batch predict for multiple transactions
+     * Batch predict for multiple transactions.
      */
     public function batchPredict(array $transactions): array
     {
-        if (!$this->isEnabled()) {
+        if (! $this->isEnabled()) {
             return [];
         }
 
@@ -273,48 +274,48 @@ class MachineLearningService
     }
 
     /**
-     * Get model performance metrics
+     * Get model performance metrics.
      */
     public function getModelMetrics(): array
     {
         return Cache::remember('ml_model_metrics', 3600, function () {
             // In production, fetch from ML service
             return [
-                'model_version' => $this->modelVersion,
-                'accuracy' => 0.94,
-                'precision' => 0.89,
-                'recall' => 0.82,
-                'f1_score' => 0.85,
-                'auc_roc' => 0.91,
-                'last_trained' => now()->subDays(7)->toIso8601String(),
-                'training_samples' => 150000,
+                'model_version'      => $this->modelVersion,
+                'accuracy'           => 0.94,
+                'precision'          => 0.89,
+                'recall'             => 0.82,
+                'f1_score'           => 0.85,
+                'auc_roc'            => 0.91,
+                'last_trained'       => now()->subDays(7)->toIso8601String(),
+                'training_samples'   => 150000,
                 'feature_importance' => $this->getFeatureImportance(),
             ];
         });
     }
 
     /**
-     * Get feature importance scores
+     * Get feature importance scores.
      */
     protected function getFeatureImportance(): array
     {
         // In production, this would come from the ML model
         return [
-            'risk_composite' => 0.15,
-            'amount_deviation' => 0.12,
-            'device_risk_score' => 0.10,
-            'behavioral_deviation_score' => 0.09,
-            'rules_triggered_count' => 0.08,
-            'velocity_amount_product' => 0.07,
-            'is_vpn' => 0.06,
-            'is_high_risk_country' => 0.05,
-            'account_balance_ratio' => 0.05,
+            'risk_composite'              => 0.15,
+            'amount_deviation'            => 0.12,
+            'device_risk_score'           => 0.10,
+            'behavioral_deviation_score'  => 0.09,
+            'rules_triggered_count'       => 0.08,
+            'velocity_amount_product'     => 0.07,
+            'is_vpn'                      => 0.06,
+            'is_high_risk_country'        => 0.05,
+            'account_balance_ratio'       => 0.05,
             'time_since_last_transaction' => 0.04,
         ];
     }
 
     /**
-     * Normalize amount for ML features
+     * Normalize amount for ML features.
      */
     protected function normalizeAmount(float $amount): float
     {
@@ -323,38 +324,38 @@ class MachineLearningService
     }
 
     /**
-     * Encode KYC level
+     * Encode KYC level.
      */
     protected function encodeKycLevel(?string $kycLevel): int
     {
         return match ($kycLevel) {
-            'full' => 3,
+            'full'     => 3,
             'enhanced' => 2,
-            'basic' => 1,
-            default => 0,
+            'basic'    => 1,
+            default    => 0,
         };
     }
 
     /**
-     * Encode risk rating
+     * Encode risk rating.
      */
     protected function encodeRiskRating(?string $riskRating): int
     {
         return match ($riskRating) {
             'very_high' => 4,
-            'high' => 3,
-            'medium' => 2,
-            'low' => 1,
-            default => 2,
+            'high'      => 3,
+            'medium'    => 2,
+            'low'       => 1,
+            default     => 2,
         };
     }
 
     /**
-     * Calculate device age in days
+     * Calculate device age in days.
      */
     protected function calculateDeviceAge(array $device): int
     {
-        if (!isset($device['first_seen_at'])) {
+        if (! isset($device['first_seen_at'])) {
             return 0;
         }
 
@@ -366,11 +367,11 @@ class MachineLearningService
     }
 
     /**
-     * Get country risk score
+     * Get country risk score.
      */
     protected function getCountryRisk(?string $country): int
     {
-        if (!$country) {
+        if (! $country) {
             return 50;
         }
 
@@ -391,7 +392,7 @@ class MachineLearningService
     }
 
     /**
-     * Calculate balance ratio
+     * Calculate balance ratio.
      */
     protected function calculateBalanceRatio(float $amount, float $balance): float
     {
@@ -403,7 +404,7 @@ class MachineLearningService
     }
 
     /**
-     * Calculate prediction confidence
+     * Calculate prediction confidence.
      */
     protected function calculateConfidence(array $features): float
     {
@@ -430,7 +431,7 @@ class MachineLearningService
     }
 
     /**
-     * Generate explanation for prediction
+     * Generate explanation for prediction.
      */
     protected function generateExplanation(float $probability, array $riskFactors): string
     {
@@ -438,42 +439,44 @@ class MachineLearningService
             return 'Low fraud risk based on established patterns and trusted indicators.';
         } elseif ($probability < 0.6) {
             $factors = implode(', ', array_slice($riskFactors, 0, 2));
+
             return "Medium fraud risk due to: {$factors}.";
         } else {
             $factors = implode(', ', array_slice($riskFactors, 0, 3));
+
             return "High fraud risk detected. Key factors: {$factors}.";
         }
     }
 
     /**
-     * Send training data to ML pipeline
+     * Send training data to ML pipeline.
      */
     protected function sendTrainingData(array $data): void
     {
         // In production, this would send to ML training pipeline
         Log::info('ML training data collected', [
             'fraud_score_id' => $data['fraud_score_id'],
-            'outcome' => $data['actual_outcome'],
+            'outcome'        => $data['actual_outcome'],
         ]);
     }
 
     /**
-     * Build context from transaction
+     * Build context from transaction.
      */
     protected function buildContextFromTransaction($transaction): array
     {
         // Build minimal context for batch processing
         return [
             'transaction' => $transaction,
-            'amount' => $transaction['amount'] ?? 0,
-            'currency' => $transaction['currency'] ?? 'USD',
-            'type' => $transaction['type'] ?? 'unknown',
-            'timestamp' => $transaction['created_at'] ?? now(),
+            'amount'      => $transaction['amount'] ?? 0,
+            'currency'    => $transaction['currency'] ?? 'USD',
+            'type'        => $transaction['type'] ?? 'unknown',
+            'timestamp'   => $transaction['created_at'] ?? now(),
         ];
     }
 
     /**
-     * Update model version
+     * Update model version.
      */
     public function updateModelVersion(string $version): void
     {
@@ -482,7 +485,7 @@ class MachineLearningService
     }
 
     /**
-     * Get explainable AI insights
+     * Get explainable AI insights.
      */
     public function getExplainableInsights(array $features, float $prediction): array
     {
@@ -493,17 +496,17 @@ class MachineLearningService
             if (isset($features[$feature])) {
                 $contribution = $features[$feature] * $weight;
                 $insights[] = [
-                    'feature' => $feature,
-                    'value' => $features[$feature],
-                    'importance' => $weight,
+                    'feature'      => $feature,
+                    'value'        => $features[$feature],
+                    'importance'   => $weight,
                     'contribution' => $contribution,
-                    'direction' => $contribution > 0 ? 'increases_risk' : 'decreases_risk',
+                    'direction'    => $contribution > 0 ? 'increases_risk' : 'decreases_risk',
                 ];
             }
         }
 
         // Sort by contribution
-        usort($insights, fn($a, $b) => abs($b['contribution']) <=> abs($a['contribution']));
+        usort($insights, fn ($a, $b) => abs($b['contribution']) <=> abs($a['contribution']));
 
         return array_slice($insights, 0, 10);
     }

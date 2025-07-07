@@ -13,7 +13,7 @@ use Workflow\Activity;
 class BurnStablecoinActivity extends Activity
 {
     /**
-     * Burn stablecoins from account
+     * Burn stablecoins from account.
      */
     public function execute(
         AccountUuid $accountUuid,

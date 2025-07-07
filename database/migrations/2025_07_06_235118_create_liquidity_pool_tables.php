@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class () extends Migration {
     /**
      * Run the migrations.
      */
@@ -26,7 +25,7 @@ return new class extends Migration
             $table->decimal('fees_collected_24h', 36, 18)->default(0);
             $table->json('metadata')->nullable();
             $table->timestamps();
-            
+
             $table->index(['base_currency', 'quote_currency']);
             $table->index('is_active');
         });
@@ -40,9 +39,9 @@ return new class extends Migration
             $table->decimal('quote_contributed', 36, 18)->default(0);
             $table->json('pending_rewards')->nullable();
             $table->timestamps();
-            
+
             $table->unique(['pool_id', 'provider_id']);
-            
+
             $table->foreign('pool_id')
                 ->references('pool_id')
                 ->on('liquidity_pools')
@@ -62,7 +61,7 @@ return new class extends Migration
             $table->decimal('price_impact', 10, 6);
             $table->json('metadata')->nullable();
             $table->timestamps();
-            
+
             $table->foreign('pool_id')
                 ->references('pool_id')
                 ->on('liquidity_pools')

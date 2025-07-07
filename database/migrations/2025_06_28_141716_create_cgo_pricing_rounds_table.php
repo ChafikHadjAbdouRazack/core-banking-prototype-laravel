@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class () extends Migration {
     /**
      * Run the migrations.
      */
@@ -22,7 +21,7 @@ return new class extends Migration
             $table->timestamp('ended_at')->nullable();
             $table->boolean('is_active')->default(false);
             $table->timestamps();
-            
+
             $table->index('is_active');
             $table->index('round_number');
         });

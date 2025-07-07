@@ -60,9 +60,9 @@ class DecomposeBasketBusinessActivity extends Activity
             ]);
 
             return [
-                'basket_code' => $basketCode,
+                'basket_code'   => $basketCode,
                 'basket_amount' => $amount,
-                'components' => $componentAmounts,
+                'components'    => $componentAmounts,
                 'decomposed_at' => now()->toISOString(),
             ];
         });

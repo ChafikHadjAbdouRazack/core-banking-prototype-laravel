@@ -7,7 +7,6 @@ namespace App\Filament\Admin\Resources\AssetResource\Pages;
 use App\Filament\Admin\Resources\AssetResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ViewRecord;
-use Filament\Infolists\Components\Actions\Action;
 
 class ViewAsset extends ViewRecord
 {
@@ -26,7 +25,7 @@ class ViewAsset extends ViewRecord
                 ->color(fn () => $this->getRecord()->is_active ? 'danger' : 'success')
                 ->action(function () {
                     $record = $this->getRecord();
-                    $record->update(['is_active' => !$record->is_active]);
+                    $record->update(['is_active' => ! $record->is_active]);
 
                     $this->dispatch('$refresh');
 

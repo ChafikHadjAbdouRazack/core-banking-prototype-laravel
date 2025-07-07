@@ -21,7 +21,7 @@ class BankBalance
     }
 
     /**
-     * Get total balance (current + pending)
+     * Get total balance (current + pending).
      */
     public function getTotal(): float
     {
@@ -29,7 +29,7 @@ class BankBalance
     }
 
     /**
-     * Get usable balance (available - reserved)
+     * Get usable balance (available - reserved).
      */
     public function getUsable(): float
     {
@@ -37,7 +37,7 @@ class BankBalance
     }
 
     /**
-     * Check if balance is sufficient for an amount
+     * Check if balance is sufficient for an amount.
      */
     public function hasSufficientFunds(float $amount): bool
     {
@@ -45,7 +45,7 @@ class BankBalance
     }
 
     /**
-     * Format balance for display
+     * Format balance for display.
      */
     public function format(): string
     {
@@ -58,24 +58,24 @@ class BankBalance
     }
 
     /**
-     * Convert to array
+     * Convert to array.
      */
     public function toArray(): array
     {
         return [
             'account_id' => $this->accountId,
-            'currency' => $this->currency,
-            'available' => $this->available,
-            'current' => $this->current,
-            'pending' => $this->pending,
-            'reserved' => $this->reserved,
-            'as_of' => $this->asOf->toIso8601String(),
-            'metadata' => $this->metadata,
+            'currency'   => $this->currency,
+            'available'  => $this->available,
+            'current'    => $this->current,
+            'pending'    => $this->pending,
+            'reserved'   => $this->reserved,
+            'as_of'      => $this->asOf->toIso8601String(),
+            'metadata'   => $this->metadata,
         ];
     }
 
     /**
-     * Create from array
+     * Create from array.
      */
     public static function fromArray(array $data): self
     {

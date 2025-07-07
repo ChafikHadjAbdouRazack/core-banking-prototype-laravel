@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Domain\Basket\Services\BasketService;
 use App\Http\Controllers\Controller;
 use App\Models\Account;
-use App\Domain\Basket\Services\BasketService;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 /**
  * @OA\Tag(
@@ -63,7 +63,7 @@ class BasketAccountController extends Controller
     {
         $validated = $request->validate([
             'basket_code' => 'required|string|exists:basket_assets,code',
-            'amount' => 'required|integer|min:1',
+            'amount'      => 'required|integer|min:1',
         ]);
 
         $account = Account::where('uuid', $uuid)->firstOrFail();
@@ -130,7 +130,7 @@ class BasketAccountController extends Controller
     {
         $validated = $request->validate([
             'basket_code' => 'required|string|exists:basket_assets,code',
-            'amount' => 'required|integer|min:1',
+            'amount'      => 'required|integer|min:1',
         ]);
 
         $account = Account::where('uuid', $uuid)->firstOrFail();

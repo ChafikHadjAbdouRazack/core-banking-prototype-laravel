@@ -2,25 +2,28 @@
 
 namespace App\Services\Cgo;
 
-use App\Domain\Compliance\Services\KycService;
 use App\Domain\Compliance\Services\CustomerRiskService;
 use App\Domain\Compliance\Services\EnhancedKycService;
+use App\Domain\Compliance\Services\KycService;
 use App\Models\CgoInvestment;
 use App\Models\KycVerification;
 use App\Models\User;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class CgoKycService
 {
     protected KycService $kycService;
+
     protected CustomerRiskService $riskService;
+
     protected EnhancedKycService $enhancedKycService;
 
     // Investment thresholds that trigger different KYC levels
-    const BASIC_KYC_THRESHOLD = 1000;      // Up to $1,000
-    const ENHANCED_KYC_THRESHOLD = 10000;  // Up to $10,000
-    const FULL_KYC_THRESHOLD = 50000;      // Above $50,000
+    public const BASIC_KYC_THRESHOLD = 1000;      // Up to $1,000
+
+    public const ENHANCED_KYC_THRESHOLD = 10000;  // Up to $10,000
+
+    public const FULL_KYC_THRESHOLD = 50000;      // Above $50,000
 
     public function __construct(
         KycService $kycService,
@@ -33,7 +36,7 @@ class CgoKycService
     }
 
     /**
-     * Check KYC requirements for CGO investment
+     * Check KYC requirements for CGO investment.
      */
     public function checkKycRequirements(CgoInvestment $investment): array
     {
@@ -51,36 +54,36 @@ class CgoKycService
         $isKycSufficient = $this->isKycSufficient($currentKycStatus, $requiredLevel);
 
         return [
-            'required_level' => $requiredLevel,
-            'current_level' => $currentKycStatus['level'] ?? null,
-            'current_status' => $currentKycStatus['status'] ?? 'none',
-            'is_sufficient' => $isKycSufficient,
-            'total_invested' => $totalInvested,
-            'proposed_total' => $proposedTotal,
+            'required_level'     => $requiredLevel,
+            'current_level'      => $currentKycStatus['level'] ?? null,
+            'current_status'     => $currentKycStatus['status'] ?? 'none',
+            'is_sufficient'      => $isKycSufficient,
+            'total_invested'     => $totalInvested,
+            'proposed_total'     => $proposedTotal,
             'required_documents' => $this->getRequiredDocuments($requiredLevel),
-            'additional_checks' => $this->getAdditionalChecks($requiredLevel),
+            'additional_checks'  => $this->getAdditionalChecks($requiredLevel),
         ];
     }
 
     /**
-     * Verify investor for CGO investment
+     * Verify investor for CGO investment.
      */
     public function verifyInvestor(CgoInvestment $investment): bool
     {
         $user = $investment->user;
         $kycRequirements = $this->checkKycRequirements($investment);
 
-        if (!$kycRequirements['is_sufficient']) {
+        if (! $kycRequirements['is_sufficient']) {
             Log::warning('CGO investment blocked - insufficient KYC', [
-                'investment_id' => $investment->id,
-                'user_id' => $user->id,
+                'investment_id'  => $investment->id,
+                'user_id'        => $user->id,
                 'required_level' => $kycRequirements['required_level'],
-                'current_level' => $kycRequirements['current_level'],
+                'current_level'  => $kycRequirements['current_level'],
             ]);
 
             $investment->update([
                 'status' => 'kyc_required',
-                'notes' => 'Investment requires ' . $kycRequirements['required_level'] . ' KYC verification',
+                'notes'  => 'Investment requires ' . $kycRequirements['required_level'] . ' KYC verification',
             ]);
 
             return false;
@@ -90,16 +93,16 @@ class CgoKycService
         if ($investment->amount >= self::ENHANCED_KYC_THRESHOLD) {
             $amlCheckResult = $this->performAmlChecks($user, $investment);
 
-            if (!$amlCheckResult['passed']) {
+            if (! $amlCheckResult['passed']) {
                 Log::warning('CGO investment flagged by AML checks', [
                     'investment_id' => $investment->id,
-                    'user_id' => $user->id,
-                    'flags' => $amlCheckResult['flags'],
+                    'user_id'       => $user->id,
+                    'flags'         => $amlCheckResult['flags'],
                 ]);
 
                 $investment->update([
                     'status' => 'aml_review',
-                    'notes' => 'Investment flagged for AML review: ' . implode(', ', $amlCheckResult['flags']),
+                    'notes'  => 'Investment flagged for AML review: ' . implode(', ', $amlCheckResult['flags']),
                 ]);
 
                 return false;
@@ -109,7 +112,7 @@ class CgoKycService
         // Update investment with KYC verification details
         $investment->update([
             'kyc_verified_at' => now(),
-            'kyc_level' => $kycRequirements['current_level'],
+            'kyc_level'       => $kycRequirements['current_level'],
             'risk_assessment' => $this->riskService->calculateRiskScore($user),
         ]);
 
@@ -117,7 +120,7 @@ class CgoKycService
     }
 
     /**
-     * Get total invested amount by user
+     * Get total invested amount by user.
      */
     protected function getTotalInvestedAmount(User $user): float
     {
@@ -127,7 +130,7 @@ class CgoKycService
     }
 
     /**
-     * Determine required KYC level based on investment amount
+     * Determine required KYC level based on investment amount.
      */
     protected function determineRequiredKycLevel(float $amount): string
     {
@@ -141,7 +144,7 @@ class CgoKycService
     }
 
     /**
-     * Get current KYC status for user
+     * Get current KYC status for user.
      */
     protected function getCurrentKycStatus(User $user): array
     {
@@ -149,17 +152,17 @@ class CgoKycService
         $this->kycService->checkExpiredKyc($user);
 
         return [
-            'status' => $user->kyc_status,
-            'level' => $user->kyc_level,
+            'status'      => $user->kyc_status,
+            'level'       => $user->kyc_level,
             'approved_at' => $user->kyc_approved_at,
-            'expires_at' => $user->kyc_expires_at,
+            'expires_at'  => $user->kyc_expires_at,
             'risk_rating' => $user->risk_rating,
-            'pep_status' => $user->pep_status,
+            'pep_status'  => $user->pep_status,
         ];
     }
 
     /**
-     * Check if current KYC is sufficient for required level
+     * Check if current KYC is sufficient for required level.
      */
     protected function isKycSufficient(array $currentStatus, string $requiredLevel): bool
     {
@@ -182,7 +185,7 @@ class CgoKycService
     }
 
     /**
-     * Get required documents for KYC level
+     * Get required documents for KYC level.
      */
     protected function getRequiredDocuments(string $level): array
     {
@@ -190,7 +193,7 @@ class CgoKycService
     }
 
     /**
-     * Get additional checks required for level
+     * Get additional checks required for level.
      */
     protected function getAdditionalChecks(string $level): array
     {
@@ -212,7 +215,7 @@ class CgoKycService
     }
 
     /**
-     * Perform AML checks for investment
+     * Perform AML checks for investment.
      */
     protected function performAmlChecks(User $user, CgoInvestment $investment): array
     {
@@ -228,14 +231,14 @@ class CgoKycService
         // Check sanctions
         $sanctionsCheck = $this->checkSanctions($user);
 
-        if (!$sanctionsCheck['clear']) {
+        if (! $sanctionsCheck['clear']) {
             $flags[] = 'sanctions_hit';
             $passed = false;
         }
 
         // Check transaction patterns
         $transactionCheck = $this->checkTransactionPatterns($user, $investment);
-        if (!$transactionCheck['normal']) {
+        if (! $transactionCheck['normal']) {
             $flags[] = 'unusual_transaction_pattern';
             $passed = false;
         }
@@ -243,7 +246,7 @@ class CgoKycService
         // Check source of funds for large investments
         if ($investment->amount >= self::FULL_KYC_THRESHOLD) {
             $sourceCheck = $this->checkSourceOfFunds($user, $investment);
-            if (!$sourceCheck['verified']) {
+            if (! $sourceCheck['verified']) {
                 $flags[] = 'unverified_source_of_funds';
                 $passed = false;
             }
@@ -256,14 +259,14 @@ class CgoKycService
         }
 
         return [
-            'passed' => $passed,
-            'flags' => $flags,
+            'passed'    => $passed,
+            'flags'     => $flags,
             'timestamp' => now(),
         ];
     }
 
     /**
-     * Check sanctions lists
+     * Check sanctions lists.
      */
     protected function checkSanctions(User $user): array
     {
@@ -295,7 +298,7 @@ class CgoKycService
     }
 
     /**
-     * Check transaction patterns
+     * Check transaction patterns.
      */
     protected function checkTransactionPatterns(User $user, CgoInvestment $investment): array
     {
@@ -321,7 +324,7 @@ class CgoKycService
     }
 
     /**
-     * Check source of funds
+     * Check source of funds.
      */
     protected function checkSourceOfFunds(User $user, CgoInvestment $investment): array
     {
@@ -332,7 +335,7 @@ class CgoKycService
             ->where('created_at', '>', now()->subYear())
             ->exists();
 
-        if (!$verifiedSources) {
+        if (! $verifiedSources) {
             return ['verified' => false, 'reason' => 'no_source_documentation'];
         }
 
@@ -346,22 +349,22 @@ class CgoKycService
     }
 
     /**
-     * Create KYC verification request for CGO investment
+     * Create KYC verification request for CGO investment.
      */
     public function createVerificationRequest(CgoInvestment $investment, string $level): KycVerification
     {
         $user = $investment->user;
 
         return KycVerification::create([
-            'user_id' => $user->id,
-            'type' => $level === 'full' ? KycVerification::TYPE_ENHANCED_DUE_DILIGENCE : KycVerification::TYPE_IDENTITY,
-            'status' => KycVerification::STATUS_PENDING,
-            'provider' => 'internal',
+            'user_id'           => $user->id,
+            'type'              => $level === 'full' ? KycVerification::TYPE_ENHANCED_DUE_DILIGENCE : KycVerification::TYPE_IDENTITY,
+            'status'            => KycVerification::STATUS_PENDING,
+            'provider'          => 'internal',
             'verification_data' => [
-                'investment_id' => $investment->id,
+                'investment_id'     => $investment->id,
                 'investment_amount' => $investment->amount,
-                'required_level' => $level,
-                'triggered_by' => 'cgo_investment',
+                'required_level'    => $level,
+                'triggered_by'      => 'cgo_investment',
             ],
             'risk_level' => $this->determineRiskLevel($user, $investment),
             'started_at' => now(),
@@ -369,7 +372,7 @@ class CgoKycService
     }
 
     /**
-     * Determine risk level for investment
+     * Determine risk level for investment.
      */
     protected function determineRiskLevel(User $user, CgoInvestment $investment): string
     {

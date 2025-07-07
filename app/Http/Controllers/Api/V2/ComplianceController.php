@@ -2,22 +2,24 @@
 
 namespace App\Http\Controllers\Api\V2;
 
-use App\Http\Controllers\Controller;
-use App\Models\User;
-use App\Models\KycVerification;
-use App\Models\AmlScreening;
-use App\Models\CustomerRiskProfile;
-use App\Domain\Compliance\Services\EnhancedKycService;
 use App\Domain\Compliance\Services\AmlScreeningService;
 use App\Domain\Compliance\Services\CustomerRiskService;
-use Illuminate\Http\Request;
+use App\Domain\Compliance\Services\EnhancedKycService;
+use App\Http\Controllers\Controller;
+use App\Models\AmlScreening;
+use App\Models\CustomerRiskProfile;
+use App\Models\KycVerification;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
 class ComplianceController extends Controller
 {
     private EnhancedKycService $kycService;
+
     private AmlScreeningService $amlService;
+
     private CustomerRiskService $riskService;
 
     public function __construct(
@@ -31,7 +33,7 @@ class ComplianceController extends Controller
     }
 
     /**
-     * Get user's KYC status
+     * Get user's KYC status.
      */
     public function getKycStatus(Request $request): JsonResponse
     {
@@ -45,33 +47,33 @@ class ComplianceController extends Controller
 
         return response()->json([
             'data' => [
-                'kyc_level' => $user->kyc_level,
-                'kyc_status' => $user->kyc_status,
-                'risk_rating' => $profile?->risk_rating ?? 'unknown',
+                'kyc_level'             => $user->kyc_level,
+                'kyc_status'            => $user->kyc_status,
+                'risk_rating'           => $profile?->risk_rating ?? 'unknown',
                 'requires_verification' => $this->determineRequiredVerifications($user),
-                'verifications' => $verifications->map(fn($v) => [
-                    'id' => $v->id,
-                    'type' => $v->type,
-                    'status' => $v->status,
+                'verifications'         => $verifications->map(fn ($v) => [
+                    'id'           => $v->id,
+                    'type'         => $v->type,
+                    'status'       => $v->status,
                     'completed_at' => $v->completed_at?->toIso8601String(),
-                    'expires_at' => $v->expires_at?->toIso8601String(),
+                    'expires_at'   => $v->expires_at?->toIso8601String(),
                 ]),
                 'limits' => [
-                    'daily' => $profile?->daily_transaction_limit ?? 0,
+                    'daily'   => $profile?->daily_transaction_limit ?? 0,
                     'monthly' => $profile?->monthly_transaction_limit ?? 0,
-                    'single' => $profile?->single_transaction_limit ?? 0,
+                    'single'  => $profile?->single_transaction_limit ?? 0,
                 ],
             ],
         ]);
     }
 
     /**
-     * Start KYC verification
+     * Start KYC verification.
      */
     public function startVerification(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'type' => 'required|string|in:identity,address,income,enhanced_due_diligence',
+            'type'     => 'required|string|in:identity,address,income,enhanced_due_diligence',
             'provider' => 'nullable|string|in:jumio,onfido,manual',
         ]);
 
@@ -86,18 +88,18 @@ class ComplianceController extends Controller
 
             return response()->json([
                 'data' => [
-                    'verification_id' => $verification->id,
+                    'verification_id'     => $verification->id,
                     'verification_number' => $verification->verification_number,
-                    'type' => $verification->type,
-                    'status' => $verification->status,
-                    'provider' => $verification->provider,
-                    'next_steps' => $this->getVerificationNextSteps($verification),
+                    'type'                => $verification->type,
+                    'status'              => $verification->status,
+                    'provider'            => $verification->provider,
+                    'next_steps'          => $this->getVerificationNextSteps($verification),
                 ],
             ], 201);
         } catch (\Exception $e) {
             Log::error('Failed to start KYC verification', [
                 'user_id' => $user->id,
-                'error' => $e->getMessage(),
+                'error'   => $e->getMessage(),
             ]);
 
             return response()->json([
@@ -107,13 +109,13 @@ class ComplianceController extends Controller
     }
 
     /**
-     * Upload verification document
+     * Upload verification document.
      */
     public function uploadDocument(Request $request, string $verificationId): JsonResponse
     {
         $validated = $request->validate([
             'document_type' => 'required|string',
-            'document' => 'required|file|mimes:jpg,jpeg,png,pdf|max:10240',
+            'document'      => 'required|file|mimes:jpg,jpeg,png,pdf|max:10240',
             'document_side' => 'nullable|string|in:front,back',
         ]);
 
@@ -122,7 +124,7 @@ class ComplianceController extends Controller
             ->where('user_id', $user->id)
             ->firstOrFail();
 
-        if (!$verification->isPending() && !$verification->isInProgress()) {
+        if (! $verification->isPending() && ! $verification->isInProgress()) {
             return response()->json([
                 'error' => 'Verification is not in a valid state for document upload',
             ], 422);
@@ -147,16 +149,16 @@ class ComplianceController extends Controller
 
             return response()->json([
                 'data' => [
-                    'success' => $result['success'],
-                    'verification_id' => $verification->id,
+                    'success'          => $result['success'],
+                    'verification_id'  => $verification->id,
                     'confidence_score' => $result['confidence_score'] ?? null,
-                    'next_steps' => $this->getVerificationNextSteps($verification->fresh()),
+                    'next_steps'       => $this->getVerificationNextSteps($verification->fresh()),
                 ],
             ]);
         } catch (\Exception $e) {
             Log::error('Document upload failed', [
                 'verification_id' => $verificationId,
-                'error' => $e->getMessage(),
+                'error'           => $e->getMessage(),
             ]);
 
             return response()->json([
@@ -166,7 +168,7 @@ class ComplianceController extends Controller
     }
 
     /**
-     * Upload selfie for biometric verification
+     * Upload selfie for biometric verification.
      */
     public function uploadSelfie(Request $request, string $verificationId): JsonResponse
     {
@@ -198,16 +200,16 @@ class ComplianceController extends Controller
 
             return response()->json([
                 'data' => [
-                    'success' => $result['success'],
-                    'liveness_score' => $result['liveness_score'],
-                    'face_match_score' => $result['face_match_score'],
+                    'success'             => $result['success'],
+                    'liveness_score'      => $result['liveness_score'],
+                    'face_match_score'    => $result['face_match_score'],
                     'verification_status' => $verification->fresh()->status,
                 ],
             ]);
         } catch (\Exception $e) {
             Log::error('Selfie verification failed', [
                 'verification_id' => $verificationId,
-                'error' => $e->getMessage(),
+                'error'           => $e->getMessage(),
             ]);
 
             return response()->json([
@@ -217,7 +219,7 @@ class ComplianceController extends Controller
     }
 
     /**
-     * Get AML screening status
+     * Get AML screening status.
      */
     public function getScreeningStatus(Request $request): JsonResponse
     {
@@ -232,30 +234,30 @@ class ComplianceController extends Controller
 
         return response()->json([
             'data' => [
-                'is_pep' => $profile?->is_pep ?? false,
-                'is_sanctioned' => $profile?->is_sanctioned ?? false,
-                'has_adverse_media' => $profile?->has_adverse_media ?? false,
+                'is_pep'              => $profile?->is_pep ?? false,
+                'is_sanctioned'       => $profile?->is_sanctioned ?? false,
+                'has_adverse_media'   => $profile?->has_adverse_media ?? false,
                 'last_screening_date' => $screenings->first()?->created_at?->toIso8601String(),
-                'screenings' => $screenings->map(fn($s) => [
-                    'id' => $s->id,
+                'screenings'          => $screenings->map(fn ($s) => [
+                    'id'               => $s->id,
                     'screening_number' => $s->screening_number,
-                    'type' => $s->type,
-                    'status' => $s->status,
-                    'overall_risk' => $s->overall_risk,
-                    'total_matches' => $s->total_matches,
-                    'completed_at' => $s->completed_at?->toIso8601String(),
+                    'type'             => $s->type,
+                    'status'           => $s->status,
+                    'overall_risk'     => $s->overall_risk,
+                    'total_matches'    => $s->total_matches,
+                    'completed_at'     => $s->completed_at?->toIso8601String(),
                 ]),
             ],
         ]);
     }
 
     /**
-     * Request manual screening
+     * Request manual screening.
      */
     public function requestScreening(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'type' => 'required|string|in:sanctions,pep,adverse_media,comprehensive',
+            'type'   => 'required|string|in:sanctions,pep,adverse_media,comprehensive',
             'reason' => 'nullable|string|max:500',
         ]);
 
@@ -264,21 +266,21 @@ class ComplianceController extends Controller
         try {
             $screening = $this->amlService->performComprehensiveScreening($user, [
                 'requested_by_user' => true,
-                'reason' => $validated['reason'] ?? null,
+                'reason'            => $validated['reason'] ?? null,
             ]);
 
             return response()->json([
                 'data' => [
-                    'screening_id' => $screening->id,
-                    'screening_number' => $screening->screening_number,
-                    'status' => $screening->status,
+                    'screening_id'         => $screening->id,
+                    'screening_number'     => $screening->screening_number,
+                    'status'               => $screening->status,
                     'estimated_completion' => now()->addMinutes(5)->toIso8601String(),
                 ],
             ], 201);
         } catch (\Exception $e) {
             Log::error('Screening request failed', [
                 'user_id' => $user->id,
-                'error' => $e->getMessage(),
+                'error'   => $e->getMessage(),
             ]);
 
             return response()->json([
@@ -288,48 +290,48 @@ class ComplianceController extends Controller
     }
 
     /**
-     * Get risk profile
+     * Get risk profile.
      */
     public function getRiskProfile(Request $request): JsonResponse
     {
         $user = $request->user();
         $profile = CustomerRiskProfile::where('user_id', $user->id)->first();
 
-        if (!$profile) {
+        if (! $profile) {
             $profile = $this->riskService->createOrUpdateProfile($user);
         }
 
         return response()->json([
             'data' => [
                 'profile_number' => $profile->profile_number,
-                'risk_rating' => $profile->risk_rating,
-                'risk_score' => $profile->risk_score,
-                'cdd_level' => $profile->cdd_level,
-                'factors' => $this->summarizeRiskFactors($profile),
-                'limits' => [
-                    'daily' => $profile->daily_transaction_limit,
+                'risk_rating'    => $profile->risk_rating,
+                'risk_score'     => $profile->risk_score,
+                'cdd_level'      => $profile->cdd_level,
+                'factors'        => $this->summarizeRiskFactors($profile),
+                'limits'         => [
+                    'daily'   => $profile->daily_transaction_limit,
                     'monthly' => $profile->monthly_transaction_limit,
-                    'single' => $profile->single_transaction_limit,
+                    'single'  => $profile->single_transaction_limit,
                 ],
                 'restrictions' => [
-                    'countries' => $profile->restricted_countries ?? [],
+                    'countries'  => $profile->restricted_countries ?? [],
                     'currencies' => $profile->restricted_currencies ?? [],
                 ],
                 'enhanced_monitoring' => $profile->enhanced_monitoring,
-                'next_review_date' => $profile->next_review_at?->toIso8601String(),
+                'next_review_date'    => $profile->next_review_at?->toIso8601String(),
             ],
         ]);
     }
 
     /**
-     * Check transaction eligibility
+     * Check transaction eligibility.
      */
     public function checkTransactionEligibility(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'amount' => 'required|numeric|min:0',
-            'currency' => 'required|string|size:3',
-            'type' => 'required|string',
+            'amount'              => 'required|numeric|min:0',
+            'currency'            => 'required|string|size:3',
+            'type'                => 'required|string',
             'destination_country' => 'nullable|string|size:2',
         ]);
 
@@ -342,10 +344,10 @@ class ComplianceController extends Controller
 
         return response()->json([
             'data' => [
-                'allowed' => $result['allowed'],
-                'reason' => $result['reason'],
-                'limit' => $result['limit'] ?? null,
-                'current_usage' => $result['current'] ?? null,
+                'allowed'                          => $result['allowed'],
+                'reason'                           => $result['reason'],
+                'limit'                            => $result['limit'] ?? null,
+                'current_usage'                    => $result['current'] ?? null,
                 'requires_additional_verification' => $this->checkAdditionalVerificationNeeded(
                     $user,
                     $validated
@@ -355,13 +357,13 @@ class ComplianceController extends Controller
     }
 
     /**
-     * Determine required verifications
+     * Determine required verifications.
      */
     protected function determineRequiredVerifications(User $user): array
     {
         $required = [];
 
-        if ($user->kyc_status === 'not_started' || !$user->kyc_level) {
+        if ($user->kyc_status === 'not_started' || ! $user->kyc_level) {
             $required[] = 'identity';
         }
 
@@ -378,7 +380,7 @@ class ComplianceController extends Controller
     }
 
     /**
-     * Get verification next steps
+     * Get verification next steps.
      */
     protected function getVerificationNextSteps(KycVerification $verification): array
     {
@@ -388,15 +390,15 @@ class ComplianceController extends Controller
 
         $steps = [];
 
-        if (!$verification->document_type) {
+        if (! $verification->document_type) {
             $steps[] = 'upload_identity_document';
         }
 
-        if ($verification->type === KycVerification::TYPE_IDENTITY && !$verification->verification_data) {
+        if ($verification->type === KycVerification::TYPE_IDENTITY && ! $verification->verification_data) {
             $steps[] = 'upload_selfie';
         }
 
-        if ($verification->type === KycVerification::TYPE_ADDRESS && !$verification->address_line1) {
+        if ($verification->type === KycVerification::TYPE_ADDRESS && ! $verification->address_line1) {
             $steps[] = 'upload_address_proof';
         }
 
@@ -404,7 +406,7 @@ class ComplianceController extends Controller
     }
 
     /**
-     * Summarize risk factors
+     * Summarize risk factors.
      */
     protected function summarizeRiskFactors(CustomerRiskProfile $profile): array
     {
@@ -435,7 +437,7 @@ class ComplianceController extends Controller
     }
 
     /**
-     * Check if additional verification needed
+     * Check if additional verification needed.
      */
     protected function checkAdditionalVerificationNeeded(User $user, array $transaction): bool
     {

@@ -5,7 +5,6 @@ namespace App\Filament\Admin\Resources\BasketAssetResource\Widgets;
 use App\Models\BasketAsset;
 use App\Models\BasketValue;
 use Filament\Widgets\ChartWidget;
-use Illuminate\Support\Carbon;
 
 class BasketValueChart extends ChartWidget
 {
@@ -17,10 +16,10 @@ class BasketValueChart extends ChartWidget
 
     protected function getData(): array
     {
-        if (!$this->record) {
+        if (! $this->record) {
             return [
                 'datasets' => [],
-                'labels' => [],
+                'labels'   => [],
             ];
         }
 
@@ -57,11 +56,11 @@ class BasketValueChart extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'label' => 'Value (USD)',
-                    'data' => $data,
-                    'borderColor' => 'rgb(75, 192, 192)',
+                    'label'           => 'Value (USD)',
+                    'data'            => $data,
+                    'borderColor'     => 'rgb(75, 192, 192)',
                     'backgroundColor' => 'rgba(75, 192, 192, 0.1)',
-                    'tension' => 0.1,
+                    'tension'         => 0.1,
                 ],
             ],
             'labels' => $labels,
@@ -84,7 +83,7 @@ class BasketValueChart extends ChartWidget
             'scales' => [
                 'y' => [
                     'beginAtZero' => false,
-                    'ticks' => [
+                    'ticks'       => [
                         'callback' => "function(value) { return '$' + value.toFixed(2); }",
                     ],
                 ],

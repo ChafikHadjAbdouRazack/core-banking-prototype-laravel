@@ -15,7 +15,7 @@ use Workflow\Activity;
 class CreatePositionActivity extends Activity
 {
     /**
-     * Create or find a collateral position
+     * Create or find a collateral position.
      */
     public function execute(
         AccountUuid $accountUuid,
@@ -26,7 +26,7 @@ class CreatePositionActivity extends Activity
         ?string $positionUuid = null
     ): array {
         // Find existing position or create new UUID
-        if (!$positionUuid) {
+        if (! $positionUuid) {
             $existingPosition = StablecoinCollateralPosition::where('account_uuid', $accountUuid->toString())
                 ->where('stablecoin_code', $stablecoinCode)
                 ->where('status', 'active')
@@ -50,7 +50,7 @@ class CreatePositionActivity extends Activity
         // Use event sourcing aggregate
         $aggregate = StablecoinAggregate::retrieve($positionUuid);
 
-        if (!$existingPosition) {
+        if (! $existingPosition) {
             $aggregate->createPosition(
                 $accountUuid->toString(),
                 $stablecoinCode,
@@ -65,7 +65,7 @@ class CreatePositionActivity extends Activity
 
         return [
             'position_uuid' => $positionUuid,
-            'is_new' => !isset($existingPosition)
+            'is_new'        => ! isset($existingPosition),
         ];
     }
 }

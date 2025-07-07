@@ -2,12 +2,10 @@
 
 namespace App\Domain\Lending\Services;
 
-use App\Domain\Lending\ValueObjects\CreditScore;
-
 interface CreditScoringService
 {
     /**
-     * Get credit score for a borrower
+     * Get credit score for a borrower.
      *
      * @param string $borrowerId
      * @return array{score: int, bureau: string, report: array}
@@ -15,7 +13,7 @@ interface CreditScoringService
     public function getScore(string $borrowerId): array;
 
     /**
-     * Check if borrower meets minimum credit requirements
+     * Check if borrower meets minimum credit requirements.
      *
      * @param string $borrowerId
      * @param int $minimumScore
@@ -24,7 +22,7 @@ interface CreditScoringService
     public function meetsMinimumRequirements(string $borrowerId, int $minimumScore = 600): bool;
 
     /**
-     * Get credit history
+     * Get credit history.
      *
      * @param string $borrowerId
      * @return array

@@ -9,16 +9,16 @@ use Illuminate\Support\Facades\Log;
 class ComplianceCheckService
 {
     /**
-     * Perform comprehensive compliance check
+     * Perform comprehensive compliance check.
      */
     public function checkApplication(FinancialInstitutionApplication $application): array
     {
         $results = [
-            'aml_check' => $this->checkAmlCompliance($application),
-            'sanctions_check' => $this->checkSanctions($application),
-            'regulatory_check' => $this->checkRegulatoryStatus($application),
+            'aml_check'           => $this->checkAmlCompliance($application),
+            'sanctions_check'     => $this->checkSanctions($application),
+            'regulatory_check'    => $this->checkRegulatoryStatus($application),
             'certification_check' => $this->checkCertifications($application),
-            'jurisdiction_check' => $this->checkJurisdiction($application),
+            'jurisdiction_check'  => $this->checkJurisdiction($application),
         ];
 
         // Calculate overall compliance score
@@ -37,7 +37,7 @@ class ComplianceCheckService
     }
 
     /**
-     * Check AML compliance
+     * Check AML compliance.
      */
     private function checkAmlCompliance(FinancialInstitutionApplication $application): array
     {
@@ -75,15 +75,15 @@ class ComplianceCheckService
         }
 
         return [
-            'score' => min($score, 100),
-            'passed' => $score >= 70,
-            'issues' => $issues,
+            'score'           => min($score, 100),
+            'passed'          => $score >= 70,
+            'issues'          => $issues,
             'recommendations' => $recommendations,
         ];
     }
 
     /**
-     * Check sanctions lists
+     * Check sanctions lists.
      */
     private function checkSanctions(FinancialInstitutionApplication $application): array
     {
@@ -98,7 +98,7 @@ class ComplianceCheckService
             $score = 0;
             $issues[] = 'Institution based in sanctioned country';
             $matches[] = [
-                'list' => 'Country Sanctions',
+                'list'  => 'Country Sanctions',
                 'match' => $application->country,
             ];
         }
@@ -107,12 +107,12 @@ class ComplianceCheckService
         $targetMarkets = $application->target_markets ?? [];
         $sanctionedMarkets = array_intersect($targetMarkets, $sanctionedCountries);
 
-        if (!empty($sanctionedMarkets)) {
+        if (! empty($sanctionedMarkets)) {
             $score -= 30;
             $issues[] = 'Target markets include sanctioned countries';
             foreach ($sanctionedMarkets as $market) {
                 $matches[] = [
-                    'list' => 'Target Market Sanctions',
+                    'list'  => 'Target Market Sanctions',
                     'match' => $market,
                 ];
             }
@@ -125,15 +125,15 @@ class ComplianceCheckService
         // - UK HM Treasury List
 
         return [
-            'score' => max($score, 0),
-            'passed' => $score >= 50,
-            'issues' => $issues,
+            'score'   => max($score, 0),
+            'passed'  => $score >= 50,
+            'issues'  => $issues,
             'matches' => $matches,
         ];
     }
 
     /**
-     * Check regulatory status
+     * Check regulatory status.
      */
     private function checkRegulatoryStatus(FinancialInstitutionApplication $application): array
     {
@@ -147,10 +147,10 @@ class ComplianceCheckService
 
             // In production, would verify license with regulatory body
             $validations[] = [
-                'type' => 'Regulatory License',
-                'number' => $application->regulatory_license_number,
+                'type'      => 'Regulatory License',
+                'number'    => $application->regulatory_license_number,
                 'regulator' => $application->primary_regulator,
-                'verified' => true, // Would be actual verification result
+                'verified'  => true, // Would be actual verification result
             ];
         } else {
             $issues[] = 'No regulatory license number provided';
@@ -171,23 +171,23 @@ class ComplianceCheckService
         if ($application->registration_number) {
             $score += 20;
             $validations[] = [
-                'type' => 'Company Registration',
-                'number' => $application->registration_number,
-                'country' => $application->country,
+                'type'     => 'Company Registration',
+                'number'   => $application->registration_number,
+                'country'  => $application->country,
                 'verified' => true, // Would check with company registry
             ];
         }
 
         return [
-            'score' => min($score, 100),
-            'passed' => $score >= 50,
-            'issues' => $issues,
+            'score'       => min($score, 100),
+            'passed'      => $score >= 50,
+            'issues'      => $issues,
             'validations' => $validations,
         ];
     }
 
     /**
-     * Check certifications
+     * Check certifications.
      */
     private function checkCertifications(FinancialInstitutionApplication $application): array
     {
@@ -201,17 +201,17 @@ class ComplianceCheckService
         // Check for important certifications
         $importantCerts = [
             'ISO27001' => 'Information Security Management',
-            'SOC2' => 'Service Organization Control 2',
-            'PCI-DSS' => 'Payment Card Industry Data Security Standard',
-            'ISO9001' => 'Quality Management',
+            'SOC2'     => 'Service Organization Control 2',
+            'PCI-DSS'  => 'Payment Card Industry Data Security Standard',
+            'ISO9001'  => 'Quality Management',
         ];
 
         foreach ($importantCerts as $cert => $name) {
             if (in_array($cert, $complianceCerts)) {
                 $score += 10;
                 $certifications[] = [
-                    'type' => $cert,
-                    'name' => $name,
+                    'type'   => $cert,
+                    'name'   => $name,
                     'status' => 'present',
                 ];
             } else {
@@ -220,7 +220,7 @@ class ComplianceCheckService
         }
 
         // Type-specific requirements
-        if ($application->institution_type === 'payment_processor' && !$application->is_pci_compliant) {
+        if ($application->institution_type === 'payment_processor' && ! $application->is_pci_compliant) {
             $score -= 20;
             $missing[] = 'PCI compliance required for payment processors';
         }
@@ -231,8 +231,8 @@ class ComplianceCheckService
             if ($application->is_gdpr_compliant) {
                 $score += 10;
                 $certifications[] = [
-                    'type' => 'GDPR',
-                    'name' => 'General Data Protection Regulation',
+                    'type'   => 'GDPR',
+                    'name'   => 'General Data Protection Regulation',
                     'status' => 'compliant',
                 ];
             } else {
@@ -242,15 +242,15 @@ class ComplianceCheckService
         }
 
         return [
-            'score' => min(max($score, 0), 100),
-            'passed' => $score >= 50,
+            'score'          => min(max($score, 0), 100),
+            'passed'         => $score >= 50,
             'certifications' => $certifications,
-            'missing' => $missing,
+            'missing'        => $missing,
         ];
     }
 
     /**
-     * Check jurisdiction compatibility
+     * Check jurisdiction compatibility.
      */
     private function checkJurisdiction(FinancialInstitutionApplication $application): array
     {
@@ -283,23 +283,23 @@ class ComplianceCheckService
         $restrictedMarkets = ['AF', 'YE', 'MM', 'LA', 'UG', 'KH'];
 
         $problematicMarkets = array_intersect($targetMarkets, $restrictedMarkets);
-        if (!empty($problematicMarkets)) {
+        if (! empty($problematicMarkets)) {
             $score -= 20;
             $incompatible = array_merge($incompatible, $problematicMarkets);
             $issues[] = 'Target markets include high-risk jurisdictions';
         }
 
         return [
-            'score' => max($score, 0),
-            'passed' => $score >= 60,
-            'issues' => $issues,
-            'compatible_jurisdictions' => $compatible,
+            'score'                      => max($score, 0),
+            'passed'                     => $score >= 60,
+            'issues'                     => $issues,
+            'compatible_jurisdictions'   => $compatible,
             'incompatible_jurisdictions' => $incompatible,
         ];
     }
 
     /**
-     * Check with external compliance service (stub)
+     * Check with external compliance service (stub).
      */
     private function checkExternalCompliance(FinancialInstitutionApplication $application): ?array
     {
@@ -328,7 +328,7 @@ class ComplianceCheckService
         } catch (\Exception $e) {
             Log::error('External compliance check failed', [
                 'application_id' => $application->id,
-                'error' => $e->getMessage(),
+                'error'          => $e->getMessage(),
             ]);
 
             return null;

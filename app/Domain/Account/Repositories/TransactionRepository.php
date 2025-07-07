@@ -12,7 +12,7 @@ final class TransactionRepository extends EloquentStoredEventRepository
     /**
      * @param string $storedEventModel
      *
-     * @throws \Spatie\EventSourcing\AggregateRoots\Exceptions\InvalidEloquentStoredEventModel
+     * @throws InvalidEloquentStoredEventModel
      */
     public function __construct(
         protected string $storedEventModel = Transaction::class

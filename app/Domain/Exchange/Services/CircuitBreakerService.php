@@ -58,7 +58,7 @@ class CircuitBreakerService
         Cache::put("circuit_breaker:{$service}:state_changed_at", now()->toIso8601String(), self::TIMEOUT);
 
         Log::info('Circuit breaker state changed', [
-            'service' => $service,
+            'service'   => $service,
             'new_state' => $state,
         ]);
     }
@@ -95,9 +95,9 @@ class CircuitBreakerService
             Cache::forget("circuit_breaker:{$service}:half_open_attempts");
             Cache::forget("circuit_breaker:{$service}:success_count");
             Log::warning('Circuit breaker failure in half-open state, reopening', [
-                'service' => $service,
+                'service'   => $service,
                 'exception' => $exception->getMessage(),
-                'context' => $context,
+                'context'   => $context,
             ]);
 
             return;
@@ -106,10 +106,10 @@ class CircuitBreakerService
         $failureCount = Cache::increment("circuit_breaker:{$service}:failure_count");
 
         Log::warning('Circuit breaker failure recorded', [
-            'service' => $service,
+            'service'       => $service,
             'failure_count' => $failureCount,
-            'exception' => $exception->getMessage(),
-            'context' => $context,
+            'exception'     => $exception->getMessage(),
+            'context'       => $context,
         ]);
 
         if ($failureCount >= self::FAILURE_THRESHOLD && $state !== 'open') {
@@ -148,6 +148,7 @@ class CircuitBreakerService
         }
 
         Cache::increment("circuit_breaker:{$service}:half_open_attempts");
+
         return false;
     }
 }

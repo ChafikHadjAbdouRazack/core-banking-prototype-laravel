@@ -54,9 +54,9 @@ class ReleaseAccountBalanceActivity extends Activity
             \Cache::forget("order_lock:{$lockId}");
 
             return (object) [
-                'success' => true,
+                'success'        => true,
                 'amountReleased' => $lockInfo['amount'],
-                'currency' => $lockInfo['currency'],
+                'currency'       => $lockInfo['currency'],
             ];
         });
     }

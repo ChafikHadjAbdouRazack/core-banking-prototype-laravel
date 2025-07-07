@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Log;
 class BinanceOracle implements OracleConnector
 {
     private string $baseUrl = 'https://api.binance.com/api/v3';
+
     private array $symbolMap;
 
     public function __construct()
@@ -19,10 +20,10 @@ class BinanceOracle implements OracleConnector
         $this->symbolMap = [
             'BTC/USDT' => 'BTCUSDT',
             'ETH/USDT' => 'ETHUSDT',
-            'BTC/USD' => 'BTCUSDC',
-            'ETH/USD' => 'ETHUSDC',
-            'EUR/USD' => 'EURUSDT',
-            'GBP/USD' => 'GBPUSDT',
+            'BTC/USD'  => 'BTCUSDC',
+            'ETH/USD'  => 'ETHUSDC',
+            'EUR/USD'  => 'EURUSDT',
+            'GBP/USD'  => 'GBPUSDT',
         ];
     }
 
@@ -45,9 +46,9 @@ class BinanceOracle implements OracleConnector
                 volume24h: $response['volume'],
                 changePercent24h: $response['priceChangePercent'],
                 metadata: [
-                    'symbol' => $symbol,
+                    'symbol'       => $symbol,
                     'quote_volume' => $response['quoteVolume'],
-                    'count' => $response['count']
+                    'count'        => $response['count'],
                 ]
             );
         } catch (\Exception $e) {
@@ -93,9 +94,9 @@ class BinanceOracle implements OracleConnector
                 changePercent24h: null,
                 metadata: [
                     'symbol' => $symbol,
-                    'open' => $response['open'],
-                    'high' => $response['high'],
-                    'low' => $response['low']
+                    'open'   => $response['open'],
+                    'high'   => $response['high'],
+                    'low'    => $response['low'],
                 ]
             );
         } catch (\Exception $e) {
@@ -109,6 +110,7 @@ class BinanceOracle implements OracleConnector
         try {
             // In production, check /ping endpoint
             $response = Http::timeout(5)->get("{$this->baseUrl}/ping");
+
             return $response->successful();
         } catch (\Exception $e) {
             return false;
@@ -131,11 +133,12 @@ class BinanceOracle implements OracleConnector
         if ($quote === 'USD') {
             $quote = 'USDT';
         }
+
         return strtoupper($base . $quote);
     }
 
     /**
-     * Simulate Binance 24hr ticker response
+     * Simulate Binance 24hr ticker response.
      */
     private function simulateBinanceResponse(string $symbol): array
     {
@@ -150,18 +153,18 @@ class BinanceOracle implements OracleConnector
         $price = $basePrice + ($basePrice * (rand(-100, 100) / 10000));
 
         return [
-            'symbol' => $symbol,
-            'price' => number_format($price, 8, '.', ''),
+            'symbol'             => $symbol,
+            'price'              => number_format($price, 8, '.', ''),
             'priceChangePercent' => number_format(rand(-500, 500) / 100, 2, '.', ''),
-            'volume' => number_format(rand(1000, 100000), 8, '.', ''),
-            'quoteVolume' => number_format($price * rand(1000, 100000), 8, '.', ''),
-            'count' => rand(10000, 500000),
-            'closeTime' => round(microtime(true) * 1000),
+            'volume'             => number_format(rand(1000, 100000), 8, '.', ''),
+            'quoteVolume'        => number_format($price * rand(1000, 100000), 8, '.', ''),
+            'count'              => rand(10000, 500000),
+            'closeTime'          => round(microtime(true) * 1000),
         ];
     }
 
     /**
-     * Simulate historical kline data
+     * Simulate historical kline data.
      */
     private function simulateHistoricalResponse(string $symbol, Carbon $timestamp): array
     {
@@ -179,10 +182,10 @@ class BinanceOracle implements OracleConnector
         $low = min($open, $close) - ($basePrice * (rand(0, 100) / 10000));
 
         return [
-            'open' => number_format($open, 8, '.', ''),
-            'high' => number_format($high, 8, '.', ''),
-            'low' => number_format($low, 8, '.', ''),
-            'close' => number_format($close, 8, '.', ''),
+            'open'   => number_format($open, 8, '.', ''),
+            'high'   => number_format($high, 8, '.', ''),
+            'low'    => number_format($low, 8, '.', ''),
+            'close'  => number_format($close, 8, '.', ''),
             'volume' => number_format(rand(1000, 100000), 8, '.', ''),
         ];
     }

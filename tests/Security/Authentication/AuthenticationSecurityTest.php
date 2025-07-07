@@ -3,7 +3,6 @@
 namespace Tests\Security\Authentication;
 
 use App\Models\User;
-use App\Models\Account;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
@@ -27,10 +26,10 @@ class AuthenticationSecurityTest extends TestCase
         // Enable rate limiting for this test
         config(['rate_limiting.enabled' => true]);
         config(['rate_limiting.force_in_tests' => true]);
-        
+
         $user = User::factory()->create([
-            'email' => 'test@example.com',
-            'password' => Hash::make('correct-password')
+            'email'    => 'test@example.com',
+            'password' => Hash::make('correct-password'),
         ]);
 
         $attempts = 0;
@@ -39,8 +38,8 @@ class AuthenticationSecurityTest extends TestCase
         // Attempt multiple failed logins
         for ($i = 0; $i < 20; $i++) {
             $response = $this->postJson('/api/v2/auth/login', [
-                'email' => 'test@example.com',
-                'password' => 'wrong-password-' . $i
+                'email'    => 'test@example.com',
+                'password' => 'wrong-password-' . $i,
             ]);
 
             $attempts++;
@@ -80,10 +79,10 @@ class AuthenticationSecurityTest extends TestCase
 
         foreach ($weakPasswords as $password) {
             $response = $this->postJson('/api/v2/auth/register', [
-                'name' => 'Test User',
-                'email' => 'test' . uniqid() . '@example.com',
-                'password' => $password,
-                'password_confirmation' => $password
+                'name'                  => 'Test User',
+                'email'                 => 'test' . uniqid() . '@example.com',
+                'password'              => $password,
+                'password_confirmation' => $password,
             ]);
 
             $this->assertEquals(422, $response->status(), "Weak password '{$password}' should be rejected");
@@ -97,8 +96,8 @@ class AuthenticationSecurityTest extends TestCase
     public function test_timing_attacks_are_mitigated_on_login()
     {
         $validUser = User::factory()->create([
-            'email' => 'valid@example.com',
-            'password' => Hash::make('password123')
+            'email'    => 'valid@example.com',
+            'password' => Hash::make('password123'),
         ]);
 
         $timings = [];
@@ -106,24 +105,24 @@ class AuthenticationSecurityTest extends TestCase
         // Test with valid username
         for ($i = 0; $i < 5; $i++) {
             $start = microtime(true);
-            
+
             $this->postJson('/api/v2/auth/login', [
-                'email' => 'valid@example.com',
-                'password' => 'wrong-password'
+                'email'    => 'valid@example.com',
+                'password' => 'wrong-password',
             ]);
-            
+
             $timings['valid_user'][] = microtime(true) - $start;
         }
 
         // Test with invalid username
         for ($i = 0; $i < 5; $i++) {
             $start = microtime(true);
-            
+
             $this->postJson('/api/v2/auth/login', [
-                'email' => 'nonexistent@example.com',
-                'password' => 'wrong-password'
+                'email'    => 'nonexistent@example.com',
+                'password' => 'wrong-password',
             ]);
-            
+
             $timings['invalid_user'][] = microtime(true) - $start;
         }
 
@@ -142,23 +141,23 @@ class AuthenticationSecurityTest extends TestCase
     public function test_session_fixation_is_prevented()
     {
         $user = User::factory()->create();
-        
+
         // For API endpoints that might use sessions (SPA with Sanctum)
         // we need to ensure the session middleware is available
         $this->withMiddleware(['web', 'api']);
-        
+
         // Get initial session ID
         $this->get('/');
         $initialSessionId = session()->getId();
 
         // Login via API
         $response = $this->postJson('/api/v2/auth/login', [
-            'email' => $user->email,
-            'password' => 'password'
+            'email'    => $user->email,
+            'password' => 'password',
         ]);
 
         $this->assertEquals(200, $response->status(), 'Login should be successful');
-        
+
         // For SPAs using Sanctum, session should be regenerated if sessions are used
         // For pure API clients, this test is less relevant but doesn't hurt
         if ($response->headers->get('Set-Cookie')) {
@@ -180,9 +179,9 @@ class AuthenticationSecurityTest extends TestCase
         $tokens = [];
         for ($i = 0; $i < 10; $i++) {
             $response = $this->postJson('/api/v2/auth/login', [
-                'email' => $user->email,
-                'password' => 'password',
-                'device_name' => 'device-' . $i
+                'email'       => $user->email,
+                'password'    => 'password',
+                'device_name' => 'device-' . $i,
             ]);
 
             if ($response->status() === 200) {
@@ -207,14 +206,14 @@ class AuthenticationSecurityTest extends TestCase
     public function test_token_expiration_is_enforced()
     {
         $user = User::factory()->create();
-        
+
         // Create token and manually set expires_at
         $tokenResult = $user->createToken('test-token');
         $token = $tokenResult->plainTextToken;
-        
+
         // Manually update the token's expiration time
         $tokenResult->accessToken->update([
-            'expires_at' => now()->addMinutes(1)
+            'expires_at' => now()->addMinutes(1),
         ]);
 
         // Token should work immediately
@@ -237,26 +236,26 @@ class AuthenticationSecurityTest extends TestCase
         // Enable rate limiting for this test
         config(['rate_limiting.enabled' => true]);
         config(['rate_limiting.force_in_tests' => true]);
-        
+
         $user = User::factory()->create();
 
         // Make multiple failed attempts
         for ($i = 0; $i < 10; $i++) {
             $this->postJson('/api/v2/auth/login', [
-                'email' => $user->email,
-                'password' => 'wrong-password'
+                'email'    => $user->email,
+                'password' => 'wrong-password',
             ]);
         }
 
         // Try with correct password
         $response = $this->postJson('/api/v2/auth/login', [
-            'email' => $user->email,
-            'password' => 'password'
+            'email'    => $user->email,
+            'password' => 'password',
         ]);
 
         // Should still be locked
         $this->assertEquals(429, $response->status());
-        
+
         // Check lockout time is reasonable
         $retryAfter = $response->headers->get('Retry-After');
         $this->assertNotNull($retryAfter);
@@ -272,7 +271,7 @@ class AuthenticationSecurityTest extends TestCase
 
         // Request password reset
         $response = $this->postJson('/api/v2/auth/forgot-password', [
-            'email' => $user->email
+            'email' => $user->email,
         ]);
 
         if ($response->status() === 200) {
@@ -280,10 +279,10 @@ class AuthenticationSecurityTest extends TestCase
             $expiredToken = 'expired-token-12345';
 
             $response = $this->postJson('/api/v2/auth/reset-password', [
-                'email' => $user->email,
-                'token' => $expiredToken,
-                'password' => 'new-password-123',
-                'password_confirmation' => 'new-password-123'
+                'email'                 => $user->email,
+                'token'                 => $expiredToken,
+                'password'              => 'new-password-123',
+                'password_confirmation' => 'new-password-123',
             ]);
 
             $this->assertEquals(422, $response->status());
@@ -300,12 +299,12 @@ class AuthenticationSecurityTest extends TestCase
 
         // Test password reset with existing user
         $response1 = $this->postJson('/api/v2/auth/forgot-password', [
-            'email' => 'exists@example.com'
+            'email' => 'exists@example.com',
         ]);
 
         // Test password reset with non-existing user
         $response2 = $this->postJson('/api/v2/auth/forgot-password', [
-            'email' => 'doesnotexist@example.com'
+            'email' => 'doesnotexist@example.com',
         ]);
 
         // Both should return same response
@@ -323,11 +322,11 @@ class AuthenticationSecurityTest extends TestCase
 
         // Security headers that should be present
         $securityHeaders = [
-            'X-Content-Type-Options' => 'nosniff',
-            'X-Frame-Options' => ['DENY', 'SAMEORIGIN'],
-            'X-XSS-Protection' => '1; mode=block',
+            'X-Content-Type-Options'    => 'nosniff',
+            'X-Frame-Options'           => ['DENY', 'SAMEORIGIN'],
+            'X-XSS-Protection'          => '1; mode=block',
             'Strict-Transport-Security' => 'max-age=',
-            'Referrer-Policy' => ['no-referrer', 'strict-origin-when-cross-origin']
+            'Referrer-Policy'           => ['no-referrer', 'strict-origin-when-cross-origin'],
         ];
 
         foreach ($securityHeaders as $header => $expectedValues) {

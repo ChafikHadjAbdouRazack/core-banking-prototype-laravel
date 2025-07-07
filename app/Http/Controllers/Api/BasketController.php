@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Domain\Basket\Services\BasketRebalancingService;
+use App\Domain\Basket\Services\BasketValueCalculationService;
 use App\Http\Controllers\Controller;
 use App\Models\BasketAsset;
-use App\Models\BasketValue;
-use App\Domain\Basket\Services\BasketValueCalculationService;
-use App\Domain\Basket\Services\BasketRebalancingService;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 /**
@@ -71,21 +70,21 @@ class BasketController extends Controller
             $latestValue = $basket->values()->latest('calculated_at')->first();
 
             return [
-                'code' => $basket->code,
-                'name' => $basket->name,
-                'description' => $basket->description,
-                'type' => $basket->type,
+                'code'                => $basket->code,
+                'name'                => $basket->name,
+                'description'         => $basket->description,
+                'type'                => $basket->type,
                 'rebalance_frequency' => $basket->rebalance_frequency,
-                'is_active' => $basket->is_active,
-                'latest_value' => $latestValue ? [
-                    'value' => $latestValue->value,
+                'is_active'           => $basket->is_active,
+                'latest_value'        => $latestValue ? [
+                    'value'         => $latestValue->value,
                     'calculated_at' => $latestValue->calculated_at->toISOString(),
                 ] : null,
                 'components' => $basket->components->map(function ($component) {
                     return [
                         'asset_code' => $component->asset_code,
                         'asset_name' => $component->asset->name ?? $component->asset_code,
-                        'weight' => $component->weight,
+                        'weight'     => $component->weight,
                         'min_weight' => $component->min_weight,
                         'max_weight' => $component->max_weight,
                     ];
@@ -127,27 +126,27 @@ class BasketController extends Controller
         }])->where('code', $code)->firstOrFail();
 
         return response()->json([
-            'code' => $basket->code,
-            'name' => $basket->name,
-            'description' => $basket->description,
-            'type' => $basket->type,
+            'code'                => $basket->code,
+            'name'                => $basket->name,
+            'description'         => $basket->description,
+            'type'                => $basket->type,
             'rebalance_frequency' => $basket->rebalance_frequency,
-            'last_rebalanced_at' => $basket->last_rebalanced_at?->toISOString(),
-            'is_active' => $basket->is_active,
-            'created_at' => $basket->created_at->toISOString(),
-            'components' => $basket->components->map(function ($component) {
+            'last_rebalanced_at'  => $basket->last_rebalanced_at?->toISOString(),
+            'is_active'           => $basket->is_active,
+            'created_at'          => $basket->created_at->toISOString(),
+            'components'          => $basket->components->map(function ($component) {
                 return [
                     'asset_code' => $component->asset_code,
                     'asset_name' => $component->asset->name ?? $component->asset_code,
-                    'weight' => $component->weight,
+                    'weight'     => $component->weight,
                     'min_weight' => $component->min_weight,
                     'max_weight' => $component->max_weight,
-                    'is_active' => $component->is_active,
+                    'is_active'  => $component->is_active,
                 ];
             }),
             'recent_values' => $basket->values->map(function ($value) {
                 return [
-                    'value' => $value->value,
+                    'value'         => $value->value,
                     'calculated_at' => $value->calculated_at->toISOString(),
                 ];
             }),
@@ -198,14 +197,14 @@ class BasketController extends Controller
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'code' => 'required|string|max:20|unique:basket_assets,code',
-            'name' => 'required|string|max:100',
-            'description' => 'nullable|string',
-            'type' => ['required', Rule::in(['fixed', 'dynamic'])],
-            'rebalance_frequency' => ['required', Rule::in(['daily', 'weekly', 'monthly', 'quarterly', 'never'])],
-            'components' => 'required|array|min:2',
+            'code'                    => 'required|string|max:20|unique:basket_assets,code',
+            'name'                    => 'required|string|max:100',
+            'description'             => 'nullable|string',
+            'type'                    => ['required', Rule::in(['fixed', 'dynamic'])],
+            'rebalance_frequency'     => ['required', Rule::in(['daily', 'weekly', 'monthly', 'quarterly', 'never'])],
+            'components'              => 'required|array|min:2',
             'components.*.asset_code' => 'required|string|exists:assets,code',
-            'components.*.weight' => 'required|numeric|min:0|max:100',
+            'components.*.weight'     => 'required|numeric|min:0|max:100',
             'components.*.min_weight' => 'nullable|numeric|min:0|max:100',
             'components.*.max_weight' => 'nullable|numeric|min:0|max:100',
         ]);
@@ -214,20 +213,20 @@ class BasketController extends Controller
         $totalWeight = collect($validated['components'])->sum('weight');
         if (abs($totalWeight - 100) > 0.01) {
             return response()->json([
-                'message' => 'Component weights must sum to 100%',
+                'message'      => 'Component weights must sum to 100%',
                 'total_weight' => $totalWeight,
             ], 422);
         }
 
         $basket = \DB::transaction(function () use ($validated, $request) {
             $basket = BasketAsset::create([
-                'code' => $validated['code'],
-                'name' => $validated['name'],
-                'description' => $validated['description'] ?? null,
-                'type' => $validated['type'],
+                'code'                => $validated['code'],
+                'name'                => $validated['name'],
+                'description'         => $validated['description'] ?? null,
+                'type'                => $validated['type'],
                 'rebalance_frequency' => $validated['rebalance_frequency'],
-                'created_by' => $request->user()?->uuid,
-                'is_active' => true,
+                'created_by'          => $request->user()?->uuid,
+                'is_active'           => true,
             ]);
 
             foreach ($validated['components'] as $componentData) {
@@ -246,17 +245,17 @@ class BasketController extends Controller
         $basket->load('components.asset');
 
         return response()->json([
-            'code' => $basket->code,
-            'name' => $basket->name,
-            'description' => $basket->description,
-            'type' => $basket->type,
+            'code'                => $basket->code,
+            'name'                => $basket->name,
+            'description'         => $basket->description,
+            'type'                => $basket->type,
             'rebalance_frequency' => $basket->rebalance_frequency,
-            'is_active' => $basket->is_active,
-            'components' => $basket->components->map(function ($component) {
+            'is_active'           => $basket->is_active,
+            'components'          => $basket->components->map(function ($component) {
                 return [
                     'asset_code' => $component->asset_code,
                     'asset_name' => $component->asset->name ?? $component->asset_code,
-                    'weight' => $component->weight,
+                    'weight'     => $component->weight,
                     'min_weight' => $component->min_weight,
                     'max_weight' => $component->max_weight,
                 ];
@@ -295,9 +294,9 @@ class BasketController extends Controller
         $value = $this->valueCalculationService->calculateValue($basket);
 
         return response()->json([
-            'basket_code' => $basket->code,
-            'value' => $value->value,
-            'calculated_at' => $value->calculated_at->toISOString(),
+            'basket_code'      => $basket->code,
+            'value'            => $value->value,
+            'calculated_at'    => $value->calculated_at->toISOString(),
             'component_values' => $value->component_values,
         ]);
     }
@@ -394,9 +393,9 @@ class BasketController extends Controller
 
         return response()->json([
             'basket_code' => $basket->code,
-            'period' => [
+            'period'      => [
                 'start' => now()->subDays($days)->toISOString(),
-                'end' => now()->toISOString(),
+                'end'   => now()->toISOString(),
             ],
             'values' => $history,
         ]);
@@ -434,11 +433,11 @@ class BasketController extends Controller
         $period = $request->input('period', '30d');
 
         $days = match ($period) {
-            '1d' => 1,
-            '7d' => 7,
-            '30d' => 30,
-            '90d' => 90,
-            '1y' => 365,
+            '1d'    => 1,
+            '7d'    => 7,
+            '30d'   => 30,
+            '90d'   => 90,
+            '1y'    => 365,
             default => 30,
         };
 
@@ -450,7 +449,7 @@ class BasketController extends Controller
 
         return response()->json([
             'basket_code' => $basket->code,
-            'period' => $period,
+            'period'      => $period,
             'performance' => $performance,
         ]);
     }

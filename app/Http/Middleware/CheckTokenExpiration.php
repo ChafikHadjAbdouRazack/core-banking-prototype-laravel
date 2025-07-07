@@ -11,7 +11,7 @@ class CheckTokenExpiration
     /**
      * Handle an incoming request.
      *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * @param  Closure(Request): (Response)  $next
      */
     public function handle(Request $request, Closure $next): Response
     {
@@ -23,7 +23,7 @@ class CheckTokenExpiration
                 $token->delete();
 
                 return response()->json([
-                    'message' => 'Token has expired'
+                    'message' => 'Token has expired',
                 ], 401);
             }
         }

@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domain\Asset\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Carbon\Carbon;
 
 class ExchangeRate extends Model
 {
@@ -50,23 +49,26 @@ class ExchangeRate extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'rate' => 'decimal:10',
-        'valid_at' => 'datetime',
+        'rate'       => 'decimal:10',
+        'valid_at'   => 'datetime',
         'expires_at' => 'datetime',
-        'is_active' => 'boolean',
-        'metadata' => 'array',
+        'is_active'  => 'boolean',
+        'metadata'   => 'array',
     ];
 
     /**
-     * Exchange rate sources
+     * Exchange rate sources.
      */
     public const SOURCE_MANUAL = 'manual';
+
     public const SOURCE_API = 'api';
+
     public const SOURCE_ORACLE = 'oracle';
+
     public const SOURCE_MARKET = 'market';
 
     /**
-     * Get all valid sources
+     * Get all valid sources.
      *
      * @return array<string>
      */
@@ -81,7 +83,7 @@ class ExchangeRate extends Model
     }
 
     /**
-     * Get the from asset
+     * Get the from asset.
      */
     public function fromAsset(): BelongsTo
     {
@@ -89,7 +91,7 @@ class ExchangeRate extends Model
     }
 
     /**
-     * Get the to asset
+     * Get the to asset.
      */
     public function toAsset(): BelongsTo
     {
@@ -97,7 +99,7 @@ class ExchangeRate extends Model
     }
 
     /**
-     * Convert an amount from the base asset to the target asset
+     * Convert an amount from the base asset to the target asset.
      *
      * @param int $amount Amount in smallest unit
      * @return int Converted amount in smallest unit
@@ -108,7 +110,7 @@ class ExchangeRate extends Model
     }
 
     /**
-     * Get the inverse rate
+     * Get the inverse rate.
      *
      * @return float
      */
@@ -118,7 +120,7 @@ class ExchangeRate extends Model
     }
 
     /**
-     * Check if the rate is currently valid
+     * Check if the rate is currently valid.
      *
      * @return bool
      */
@@ -132,7 +134,7 @@ class ExchangeRate extends Model
     }
 
     /**
-     * Check if the rate has expired
+     * Check if the rate has expired.
      *
      * @return bool
      */
@@ -142,7 +144,7 @@ class ExchangeRate extends Model
     }
 
     /**
-     * Get the age of the rate in minutes
+     * Get the age of the rate in minutes.
      *
      * @return int
      */
@@ -152,7 +154,7 @@ class ExchangeRate extends Model
     }
 
     /**
-     * Scope for active rates
+     * Scope for active rates.
      *
      * @param \Illuminate\Database\Eloquent\Builder $query
      * @return \Illuminate\Database\Eloquent\Builder
@@ -163,7 +165,7 @@ class ExchangeRate extends Model
     }
 
     /**
-     * Scope for valid rates (active and within time range)
+     * Scope for valid rates (active and within time range).
      *
      * @param \Illuminate\Database\Eloquent\Builder $query
      * @return \Illuminate\Database\Eloquent\Builder
@@ -181,7 +183,7 @@ class ExchangeRate extends Model
     }
 
     /**
-     * Scope for rates between specific assets
+     * Scope for rates between specific assets.
      *
      * @param \Illuminate\Database\Eloquent\Builder $query
      * @param string $fromAsset
@@ -195,7 +197,7 @@ class ExchangeRate extends Model
     }
 
     /**
-     * Scope for rates by source
+     * Scope for rates by source.
      *
      * @param \Illuminate\Database\Eloquent\Builder $query
      * @param string $source
@@ -207,7 +209,7 @@ class ExchangeRate extends Model
     }
 
     /**
-     * Scope for latest rates first
+     * Scope for latest rates first.
      *
      * @param \Illuminate\Database\Eloquent\Builder $query
      * @return \Illuminate\Database\Eloquent\Builder
@@ -218,7 +220,7 @@ class ExchangeRate extends Model
     }
 
     /**
-     * Get latest exchange rates grouped by asset pairs
+     * Get latest exchange rates grouped by asset pairs.
      *
      * @return object
      */
@@ -238,7 +240,7 @@ class ExchangeRate extends Model
     }
 
     /**
-     * Get exchange rate between two assets
+     * Get exchange rate between two assets.
      *
      * @param string $fromAsset
      * @param string $toAsset

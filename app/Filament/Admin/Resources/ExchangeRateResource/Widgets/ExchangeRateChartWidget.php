@@ -6,7 +6,6 @@ namespace App\Filament\Admin\Resources\ExchangeRateResource\Widgets;
 
 use App\Domain\Asset\Models\ExchangeRate;
 use Filament\Widgets\ChartWidget;
-use Illuminate\Support\Carbon;
 
 class ExchangeRateChartWidget extends ChartWidget
 {
@@ -26,7 +25,7 @@ class ExchangeRateChartWidget extends ChartWidget
             $count = ExchangeRate::whereDate('created_at', $date)->count();
 
             $data->push([
-                'date' => $date->format('M j'),
+                'date'  => $date->format('M j'),
                 'rates' => $count,
             ]);
         }
@@ -34,11 +33,11 @@ class ExchangeRateChartWidget extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'label' => 'New Rates Created',
-                    'data' => $data->pluck('rates')->toArray(),
-                    'borderColor' => '#10b981',
+                    'label'           => 'New Rates Created',
+                    'data'            => $data->pluck('rates')->toArray(),
+                    'borderColor'     => '#10b981',
                     'backgroundColor' => 'rgba(16, 185, 129, 0.1)',
-                    'fill' => true,
+                    'fill'            => true,
                 ],
             ],
             'labels' => $data->pluck('date')->toArray(),
@@ -53,19 +52,19 @@ class ExchangeRateChartWidget extends ChartWidget
     protected function getOptions(): array
     {
         return [
-            'responsive' => true,
+            'responsive'          => true,
             'maintainAspectRatio' => false,
-            'scales' => [
+            'scales'              => [
                 'y' => [
                     'beginAtZero' => true,
-                    'ticks' => [
+                    'ticks'       => [
                         'precision' => 0,
                     ],
                 ],
             ],
             'plugins' => [
                 'legend' => [
-                    'display' => true,
+                    'display'  => true,
                     'position' => 'top',
                 ],
             ],

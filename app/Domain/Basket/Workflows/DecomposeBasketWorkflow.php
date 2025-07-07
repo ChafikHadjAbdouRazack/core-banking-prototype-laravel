@@ -21,7 +21,7 @@ class DecomposeBasketWorkflow extends Workflow
             );
 
             // Add compensation to recompose the basket if decomposition needs to be rolled back
-            $this->addCompensation(fn() => ActivityStub::make(
+            $this->addCompensation(fn () => ActivityStub::make(
                 ComposeBasketActivity::class,
                 $accountUuid,
                 $basketCode,

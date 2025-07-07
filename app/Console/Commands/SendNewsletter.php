@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use App\Services\Email\SubscriberEmailService;
+use Illuminate\Console\Command;
 
 class SendNewsletter extends Command
 {
@@ -40,6 +40,7 @@ class SendNewsletter extends Command
 
         if (empty($content)) {
             $this->error('Newsletter content cannot be empty.');
+
             return 1;
         }
 
@@ -47,8 +48,8 @@ class SendNewsletter extends Command
             $this->info('DRY RUN MODE - No emails will be sent');
             $this->info('Newsletter Details:');
             $this->info("Subject: $subject");
-            $this->info("Source filter: " . ($source ?: 'All sources'));
-            $this->info("Tag filters: " . ($tags ? implode(', ', $tags) : 'No tag filters'));
+            $this->info('Source filter: ' . ($source ?: 'All sources'));
+            $this->info('Tag filters: ' . ($tags ? implode(', ', $tags) : 'No tag filters'));
 
             // Show preview of who would receive
             $query = \App\Models\Subscriber::active();
@@ -57,7 +58,7 @@ class SendNewsletter extends Command
                 $query->bySource($source);
             }
 
-            if (!empty($tags)) {
+            if (! empty($tags)) {
                 $query->where(function ($q) use ($tags) {
                     foreach ($tags as $tag) {
                         $q->orWhereJsonContains('tags', $tag);
@@ -78,8 +79,9 @@ class SendNewsletter extends Command
         }
 
         // Confirm before sending
-        if (!$this->confirm("Send newsletter to subscribers? Subject: $subject")) {
+        if (! $this->confirm("Send newsletter to subscribers? Subject: $subject")) {
             $this->info('Newsletter cancelled.');
+
             return 0;
         }
 
@@ -89,9 +91,11 @@ class SendNewsletter extends Command
             $sentCount = $emailService->sendNewsletter($subject, $content, $tags, $source);
 
             $this->info("Newsletter sent successfully to $sentCount subscribers!");
+
             return 0;
         } catch (\Exception $e) {
             $this->error('Failed to send newsletter: ' . $e->getMessage());
+
             return 1;
         }
     }

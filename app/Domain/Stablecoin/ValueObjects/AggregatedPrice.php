@@ -21,14 +21,14 @@ class AggregatedPrice
     public function toArray(): array
     {
         return [
-            'base' => $this->base,
-            'quote' => $this->quote,
-            'price' => $this->price,
-            'sources' => $this->sources,
+            'base'               => $this->base,
+            'quote'              => $this->quote,
+            'price'              => $this->price,
+            'sources'            => $this->sources,
             'aggregation_method' => $this->aggregationMethod,
-            'timestamp' => $this->timestamp->toIso8601String(),
-            'confidence' => $this->confidence,
-            'metadata' => $this->metadata,
+            'timestamp'          => $this->timestamp->toIso8601String(),
+            'confidence'         => $this->confidence,
+            'metadata'           => $this->metadata,
         ];
     }
 

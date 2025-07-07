@@ -30,7 +30,7 @@ class AssetBalanceSubtracted extends ShouldBeStored implements HasHash
     }
 
     /**
-     * Get the amount for this event
+     * Get the amount for this event.
      */
     public function getAmount(): int
     {
@@ -38,7 +38,7 @@ class AssetBalanceSubtracted extends ShouldBeStored implements HasHash
     }
 
     /**
-     * Get the asset code for this event
+     * Get the asset code for this event.
      */
     public function getAssetCode(): string
     {

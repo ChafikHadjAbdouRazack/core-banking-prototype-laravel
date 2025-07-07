@@ -20,7 +20,7 @@ class EventQueuesTest extends UnitTestCase
     public function test_default_returns_events()
     {
         $default = EventQueues::default();
-        
+
         $this->assertEquals(EventQueues::EVENTS, $default);
         $this->assertEquals('events', $default->value);
     }
@@ -28,7 +28,7 @@ class EventQueuesTest extends UnitTestCase
     public function test_all_enum_cases_exist()
     {
         $cases = EventQueues::cases();
-        
+
         $this->assertCount(4, $cases);
         $this->assertContains(EventQueues::EVENTS, $cases);
         $this->assertContains(EventQueues::LEDGER, $cases);
@@ -42,7 +42,7 @@ class EventQueuesTest extends UnitTestCase
         $ledger = EventQueues::from('ledger');
         $transactions = EventQueues::from('transactions');
         $transfers = EventQueues::from('transfers');
-        
+
         $this->assertEquals(EventQueues::EVENTS, $events);
         $this->assertEquals(EventQueues::LEDGER, $ledger);
         $this->assertEquals(EventQueues::TRANSACTIONS, $transactions);
@@ -55,7 +55,7 @@ class EventQueuesTest extends UnitTestCase
         $ledger = EventQueues::tryFrom('ledger');
         $transactions = EventQueues::tryFrom('transactions');
         $transfers = EventQueues::tryFrom('transfers');
-        
+
         $this->assertEquals(EventQueues::EVENTS, $events);
         $this->assertEquals(EventQueues::LEDGER, $ledger);
         $this->assertEquals(EventQueues::TRANSACTIONS, $transactions);
@@ -65,14 +65,14 @@ class EventQueuesTest extends UnitTestCase
     public function test_enum_try_from_invalid()
     {
         $invalid = EventQueues::tryFrom('invalid');
-        
+
         $this->assertNull($invalid);
     }
 
     public function test_queue_values_are_lowercase()
     {
         $cases = EventQueues::cases();
-        
+
         foreach ($cases as $case) {
             $this->assertEquals(strtolower($case->value), $case->value);
         }

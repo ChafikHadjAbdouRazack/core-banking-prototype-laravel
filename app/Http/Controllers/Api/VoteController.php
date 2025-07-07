@@ -53,7 +53,7 @@ class VoteController extends Controller
     public function index(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'poll_id' => ['sometimes', 'integer', 'exists:polls,id'],
+            'poll_id'  => ['sometimes', 'integer', 'exists:polls,id'],
             'per_page' => ['sometimes', 'integer', 'min:1', 'max:100'],
         ]);
 
@@ -98,7 +98,7 @@ class VoteController extends Controller
     {
         $vote = Vote::with(['poll', 'user'])->find($id);
 
-        if (!$vote) {
+        if (! $vote) {
             return response()->json([
                 'message' => 'Vote not found',
             ], 404);
@@ -145,7 +145,7 @@ class VoteController extends Controller
     {
         $vote = Vote::find($id);
 
-        if (!$vote) {
+        if (! $vote) {
             return response()->json([
                 'message' => 'Vote not found',
             ], 404);
@@ -162,7 +162,7 @@ class VoteController extends Controller
 
         return response()->json([
             'verified' => $isValid,
-            'message' => $isValid
+            'message'  => $isValid
                 ? 'Vote signature is valid and vote has not been tampered with'
                 : 'Vote signature is invalid or vote has been tampered with',
         ]);
@@ -205,10 +205,10 @@ class VoteController extends Controller
         $participationRate = $totalPolls > 0 ? ($totalVotes / $totalPolls) * 100 : 0;
 
         return response()->json([
-            'total_votes' => $totalVotes,
+            'total_votes'        => $totalVotes,
             'total_voting_power' => $totalVotingPower,
-            'recent_votes' => $recentVotes,
-            'avg_voting_power' => round($avgVotingPower, 2),
+            'recent_votes'       => $recentVotes,
+            'avg_voting_power'   => round($avgVotingPower, 2),
             'participation_rate' => round($participationRate, 2),
         ]);
     }

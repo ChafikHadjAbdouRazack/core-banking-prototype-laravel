@@ -15,8 +15,8 @@ class FailWithdrawalActivity extends Activity
 
         return [
             'withdrawal_uuid' => $input['withdrawal_uuid'],
-            'status' => 'failed',
-            'reason' => $input['reason']
+            'status'          => 'failed',
+            'reason'          => $input['reason'],
         ];
     }
 }

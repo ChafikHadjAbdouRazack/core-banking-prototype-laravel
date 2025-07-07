@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class () extends Migration {
     /**
      * Run the migrations.
      */
@@ -28,18 +27,18 @@ return new class extends Migration
             $table->timestamp('completed_at')->nullable();
             $table->timestamp('failed_at')->nullable();
             $table->timestamps();
-            
+
             // Indexes
             $table->index('status');
             $table->index('type');
             $table->index(['from_custodian', 'to_custodian']);
             $table->index(['asset_code', 'status']);
             $table->index('created_at');
-            
+
             // Foreign keys
             $table->foreign('asset_code')->references('code')->on('assets');
         });
-        
+
         // Add settlement_id to custodian_transfers
         Schema::table('custodian_transfers', function (Blueprint $table) {
             $table->string('settlement_id')->nullable()->after('reference');
@@ -57,7 +56,7 @@ return new class extends Migration
             $table->dropForeign(['settlement_id']);
             $table->dropColumn('settlement_id');
         });
-        
+
         Schema::dropIfExists('settlements');
     }
 };

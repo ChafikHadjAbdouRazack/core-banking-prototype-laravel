@@ -6,10 +6,9 @@ namespace App\Domain\Stablecoin\Services;
 
 use App\Domain\Asset\Services\ExchangeRateService;
 use App\Domain\Stablecoin\Contracts\CollateralServiceInterface;
-use App\Models\StablecoinCollateralPosition;
 use App\Models\Stablecoin;
+use App\Models\StablecoinCollateralPosition;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Log;
 
 class CollateralService implements CollateralServiceInterface
 {
@@ -28,11 +27,12 @@ class CollateralService implements CollateralServiceInterface
         }
 
         $rateObject = $this->exchangeRateService->getRate($fromAsset, $pegAsset);
-        if (!$rateObject) {
+        if (! $rateObject) {
             throw new \RuntimeException("Exchange rate not found for {$fromAsset} to {$pegAsset}");
         }
 
         $rate = $rateObject->rate;
+
         return (int) round($amount * $rate);
     }
 
@@ -73,6 +73,7 @@ class CollateralService implements CollateralServiceInterface
 
                 // Check if at risk (within buffer of minimum ratio)
                 $riskThreshold = $position->stablecoin->min_collateral_ratio + $bufferRatio;
+
                 return $position->collateral_ratio <= $riskThreshold;
             });
     }
@@ -88,6 +89,7 @@ class CollateralService implements CollateralServiceInterface
             ->filter(function ($position) {
                 // Double-check with current exchange rates
                 $this->updatePositionCollateralRatio($position);
+
                 return $position->shouldAutoLiquidate();
             });
     }
@@ -99,6 +101,7 @@ class CollateralService implements CollateralServiceInterface
     {
         if ($position->debt_amount == 0) {
             $position->collateral_ratio = 0;
+
             return;
         }
 
@@ -150,6 +153,7 @@ class CollateralService implements CollateralServiceInterface
         foreach ($positions as $assetCode => $assetPositions) {
             $assetValue = $assetPositions->sum(function ($position) use ($stablecoinCode) {
                 $stablecoin = Stablecoin::find($stablecoinCode);
+
                 return $this->convertToPegAsset(
                     $position->collateral_asset_code,
                     $position->collateral_amount,
@@ -158,9 +162,9 @@ class CollateralService implements CollateralServiceInterface
             });
 
             $distribution[$assetCode] = [
-                'asset_code' => $assetCode,
-                'total_amount' => $assetPositions->sum('collateral_amount'),
-                'total_value' => $assetValue,
+                'asset_code'     => $assetCode,
+                'total_amount'   => $assetPositions->sum('collateral_amount'),
+                'total_value'    => $assetValue,
                 'position_count' => $assetPositions->count(),
             ];
 
@@ -193,15 +197,15 @@ class CollateralService implements CollateralServiceInterface
             $atRiskPositions = $this->getPositionsAtRisk()->where('stablecoin_code', $stablecoin->code)->count();
 
             $metrics[$stablecoin->code] = [
-                'stablecoin_code' => $stablecoin->code,
-                'total_supply' => $stablecoin->total_supply,
-                'total_collateral_value' => $totalCollateralValue,
-                'global_ratio' => $globalRatio,
-                'target_ratio' => $stablecoin->collateral_ratio,
-                'min_ratio' => $stablecoin->min_collateral_ratio,
-                'active_positions' => $activePositions,
-                'at_risk_positions' => $atRiskPositions,
-                'is_healthy' => $globalRatio >= $stablecoin->min_collateral_ratio,
+                'stablecoin_code'         => $stablecoin->code,
+                'total_supply'            => $stablecoin->total_supply,
+                'total_collateral_value'  => $totalCollateralValue,
+                'global_ratio'            => $globalRatio,
+                'target_ratio'            => $stablecoin->collateral_ratio,
+                'min_ratio'               => $stablecoin->min_collateral_ratio,
+                'active_positions'        => $activePositions,
+                'at_risk_positions'       => $atRiskPositions,
+                'is_healthy'              => $globalRatio >= $stablecoin->min_collateral_ratio,
                 'collateral_distribution' => $this->getCollateralDistribution($stablecoin->code),
             ];
         }
@@ -243,20 +247,20 @@ class CollateralService implements CollateralServiceInterface
 
         if ($position->shouldAutoLiquidate()) {
             $recommendations[] = [
-                'action' => 'liquidate',
+                'action'  => 'liquidate',
                 'urgency' => 'critical',
                 'message' => 'Position must be liquidated immediately',
             ];
         } elseif ($healthScore < 0.2) {
             $recommendations[] = [
-                'action' => 'add_collateral',
-                'urgency' => 'high',
-                'message' => 'Add collateral to avoid liquidation',
+                'action'           => 'add_collateral',
+                'urgency'          => 'high',
+                'message'          => 'Add collateral to avoid liquidation',
                 'suggested_amount' => $this->calculateSuggestedCollateralAmount($position),
             ];
         } elseif ($healthScore < 0.4) {
             $recommendations[] = [
-                'action' => 'monitor',
+                'action'  => 'monitor',
                 'urgency' => 'medium',
                 'message' => 'Position health is declining, consider adding collateral',
             ];
@@ -264,9 +268,9 @@ class CollateralService implements CollateralServiceInterface
             $maxMintAmount = $position->calculateMaxMintAmount();
             if ($maxMintAmount > 0) {
                 $recommendations[] = [
-                    'action' => 'mint_more',
-                    'urgency' => 'low',
-                    'message' => 'Position is over-collateralized, you can mint more stablecoins',
+                    'action'          => 'mint_more',
+                    'urgency'         => 'low',
+                    'message'         => 'Position is over-collateralized, you can mint more stablecoins',
                     'max_mint_amount' => $maxMintAmount,
                 ];
             }

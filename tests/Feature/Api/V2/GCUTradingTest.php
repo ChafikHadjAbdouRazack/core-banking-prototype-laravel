@@ -17,7 +17,9 @@ class GCUTradingTest extends TestCase
     use RefreshDatabase;
 
     protected User $user;
+
     protected Account $account;
+
     protected BasketAsset $gcu;
 
     protected function setUp(): void
@@ -27,7 +29,7 @@ class GCUTradingTest extends TestCase
         // Create user and account
         $this->user = User::factory()->create();
         $this->account = Account::factory()->create([
-            'user_id' => $this->user->id,
+            'user_id'    => $this->user->id,
             'is_primary' => true,
         ]);
 
@@ -46,17 +48,17 @@ class GCUTradingTest extends TestCase
 
         // Create GCU value
         BasketValue::create([
-            'basket_code' => 'GCU',
-            'value' => 1.0975,
+            'basket_code'      => 'GCU',
+            'value'            => 1.0975,
             'component_values' => [],
-            'calculated_at' => now(),
+            'calculated_at'    => now(),
         ]);
 
         // Give user some EUR balance
         AccountBalance::create([
             'account_uuid' => $this->account->uuid,
-            'asset_code' => 'EUR',
-            'balance' => 10000.00,
+            'asset_code'   => 'EUR',
+            'balance'      => 10000.00,
         ]);
 
         Sanctum::actingAs($this->user);
@@ -120,7 +122,7 @@ class GCUTradingTest extends TestCase
     public function can_buy_gcu_with_eur()
     {
         $response = $this->postJson('/api/v2/gcu/buy', [
-            'amount' => 1000,
+            'amount'   => 1000,
             'currency' => 'EUR',
         ]);
 
@@ -147,12 +149,12 @@ class GCUTradingTest extends TestCase
         // Verify balances were updated
         $this->assertDatabaseHas('account_balances', [
             'account_uuid' => $this->account->uuid,
-            'asset_code' => 'EUR',
+            'asset_code'   => 'EUR',
         ]);
 
         $this->assertDatabaseHas('account_balances', [
             'account_uuid' => $this->account->uuid,
-            'asset_code' => 'GCU',
+            'asset_code'   => 'GCU',
         ]);
     }
 
@@ -160,7 +162,7 @@ class GCUTradingTest extends TestCase
     public function cannot_buy_gcu_with_insufficient_balance()
     {
         $response = $this->postJson('/api/v2/gcu/buy', [
-            'amount' => 20000, // More than available balance
+            'amount'   => 20000, // More than available balance
             'currency' => 'EUR',
         ]);
 
@@ -172,7 +174,7 @@ class GCUTradingTest extends TestCase
     public function cannot_buy_gcu_below_minimum_amount()
     {
         $response = $this->postJson('/api/v2/gcu/buy', [
-            'amount' => 50, // Below minimum of 100
+            'amount'   => 50, // Below minimum of 100
             'currency' => 'EUR',
         ]);
 
@@ -186,12 +188,12 @@ class GCUTradingTest extends TestCase
         // Give user some GCU balance
         AccountBalance::create([
             'account_uuid' => $this->account->uuid,
-            'asset_code' => 'GCU',
-            'balance' => 1000.00,
+            'asset_code'   => 'GCU',
+            'balance'      => 1000.00,
         ]);
 
         $response = $this->postJson('/api/v2/gcu/sell', [
-            'amount' => 100,
+            'amount'   => 100,
             'currency' => 'EUR',
         ]);
 
@@ -222,12 +224,12 @@ class GCUTradingTest extends TestCase
         // Give user minimal GCU balance
         AccountBalance::create([
             'account_uuid' => $this->account->uuid,
-            'asset_code' => 'GCU',
-            'balance' => 5.00,
+            'asset_code'   => 'GCU',
+            'balance'      => 5.00,
         ]);
 
         $response = $this->postJson('/api/v2/gcu/sell', [
-            'amount' => 100, // More than available
+            'amount'   => 100, // More than available
             'currency' => 'EUR',
         ]);
 
@@ -265,7 +267,7 @@ class GCUTradingTest extends TestCase
         $this->account->update(['frozen_at' => now()]);
 
         $response = $this->postJson('/api/v2/gcu/buy', [
-            'amount' => 1000,
+            'amount'   => 1000,
             'currency' => 'EUR',
         ]);
 
@@ -281,12 +283,12 @@ class GCUTradingTest extends TestCase
         // Give user some GCU balance
         AccountBalance::create([
             'account_uuid' => $this->account->uuid,
-            'asset_code' => 'GCU',
-            'balance' => 1000.00,
+            'asset_code'   => 'GCU',
+            'balance'      => 1000.00,
         ]);
 
         $response = $this->postJson('/api/v2/gcu/sell', [
-            'amount' => 100,
+            'amount'   => 100,
             'currency' => 'EUR',
         ]);
 
@@ -330,12 +332,12 @@ class GCUTradingTest extends TestCase
             // Give user balance in this currency
             AccountBalance::create([
                 'account_uuid' => $this->account->uuid,
-                'asset_code' => $currency,
-                'balance' => 10000.00,
+                'asset_code'   => $currency,
+                'balance'      => 10000.00,
             ]);
 
             $response = $this->postJson('/api/v2/gcu/buy', [
-                'amount' => 1000,
+                'amount'   => 1000,
                 'currency' => $currency,
             ]);
 

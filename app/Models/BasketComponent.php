@@ -31,10 +31,10 @@ class BasketComponent extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'weight' => 'float',
+        'weight'     => 'float',
         'min_weight' => 'float',
         'max_weight' => 'float',
-        'is_active' => 'boolean',
+        'is_active'  => 'boolean',
     ];
 
     /**
@@ -75,7 +75,7 @@ class BasketComponent extends Model
     public function calculateValueContribution(): float
     {
         $asset = $this->asset;
-        if (!$asset) {
+        if (! $asset) {
             return 0.0;
         }
 

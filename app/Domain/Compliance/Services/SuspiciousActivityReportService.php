@@ -2,19 +2,18 @@
 
 namespace App\Domain\Compliance\Services;
 
-use App\Models\Transaction;
-use App\Models\User;
-use App\Models\SuspiciousActivityReport;
 use App\Domain\Compliance\Events\SARCreated;
 use App\Domain\Compliance\Events\SARSubmitted;
+use App\Models\SuspiciousActivityReport;
+use App\Models\Transaction;
+use App\Models\User;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class SuspiciousActivityReportService
 {
     /**
-     * Create SAR from transaction
+     * Create SAR from transaction.
      */
     public function createFromTransaction(Transaction $transaction, array $alerts): SuspiciousActivityReport
     {
@@ -29,26 +28,26 @@ class SuspiciousActivityReportService
             $relatedTransactions = $this->findRelatedTransactions($transaction);
 
             $sar = SuspiciousActivityReport::create([
-                'status' => SuspiciousActivityReport::STATUS_DRAFT,
-                'priority' => $priority,
+                'status'          => SuspiciousActivityReport::STATUS_DRAFT,
+                'priority'        => $priority,
                 'subject_user_id' => $user?->id,
-                'subject_type' => SuspiciousActivityReport::SUBJECT_TYPE_TRANSACTION,
+                'subject_type'    => SuspiciousActivityReport::SUBJECT_TYPE_TRANSACTION,
                 'subject_details' => [
-                    'name' => $user?->name ?? 'Unknown',
+                    'name'           => $user?->name ?? 'Unknown',
                     'account_number' => $account->account_number,
-                    'user_id' => $user?->id,
+                    'user_id'        => $user?->id,
                 ],
-                'activity_start_date' => $relatedTransactions->min('created_at') ?? $transaction->created_at,
-                'activity_end_date' => $relatedTransactions->max('created_at') ?? $transaction->created_at,
-                'total_amount' => $relatedTransactions->sum('amount'),
-                'primary_currency' => $transaction->currency,
-                'transaction_count' => $relatedTransactions->count(),
-                'involved_accounts' => [$account->id],
-                'involved_parties' => $this->extractInvolvedParties($relatedTransactions),
-                'activity_types' => $this->determineActivityTypes($alerts),
+                'activity_start_date'  => $relatedTransactions->min('created_at') ?? $transaction->created_at,
+                'activity_end_date'    => $relatedTransactions->max('created_at') ?? $transaction->created_at,
+                'total_amount'         => $relatedTransactions->sum('amount'),
+                'primary_currency'     => $transaction->currency,
+                'transaction_count'    => $relatedTransactions->count(),
+                'involved_accounts'    => [$account->id],
+                'involved_parties'     => $this->extractInvolvedParties($relatedTransactions),
+                'activity_types'       => $this->determineActivityTypes($alerts),
                 'activity_description' => $this->generateActivityDescription($transaction, $alerts),
-                'red_flags' => $this->extractRedFlags($alerts),
-                'triggering_rules' => array_column($alerts, 'rule_id'),
+                'red_flags'            => $this->extractRedFlags($alerts),
+                'triggering_rules'     => array_column($alerts, 'rule_id'),
                 'related_transactions' => $relatedTransactions->pluck('id')->toArray(),
             ]);
 
@@ -59,7 +58,7 @@ class SuspiciousActivityReportService
     }
 
     /**
-     * Create SAR from detected pattern
+     * Create SAR from detected pattern.
      */
     public function createFromPattern(array $pattern, Collection $transactions): SuspiciousActivityReport
     {
@@ -68,26 +67,26 @@ class SuspiciousActivityReportService
             $users = $accounts->pluck('user')->filter()->unique('id');
 
             $sar = SuspiciousActivityReport::create([
-                'status' => SuspiciousActivityReport::STATUS_DRAFT,
-                'priority' => SuspiciousActivityReport::PRIORITY_HIGH,
+                'status'          => SuspiciousActivityReport::STATUS_DRAFT,
+                'priority'        => SuspiciousActivityReport::PRIORITY_HIGH,
                 'subject_user_id' => $users->count() === 1 ? $users->first()->id : null,
-                'subject_type' => SuspiciousActivityReport::SUBJECT_TYPE_PATTERN,
+                'subject_type'    => SuspiciousActivityReport::SUBJECT_TYPE_PATTERN,
                 'subject_details' => [
                     'pattern_type' => $pattern['type'],
-                    'accounts' => $accounts->pluck('account_number')->toArray(),
-                    'users' => $users->pluck('name')->toArray(),
+                    'accounts'     => $accounts->pluck('account_number')->toArray(),
+                    'users'        => $users->pluck('name')->toArray(),
                 ],
-                'activity_start_date' => $transactions->min('created_at'),
-                'activity_end_date' => $transactions->max('created_at'),
-                'total_amount' => $transactions->sum('amount'),
-                'primary_currency' => $transactions->first()->currency,
-                'transaction_count' => $transactions->count(),
-                'involved_accounts' => $accounts->pluck('id')->toArray(),
-                'involved_parties' => $this->extractInvolvedParties($transactions),
-                'activity_types' => $this->getActivityTypesForPattern($pattern['type']),
+                'activity_start_date'  => $transactions->min('created_at'),
+                'activity_end_date'    => $transactions->max('created_at'),
+                'total_amount'         => $transactions->sum('amount'),
+                'primary_currency'     => $transactions->first()->currency,
+                'transaction_count'    => $transactions->count(),
+                'involved_accounts'    => $accounts->pluck('id')->toArray(),
+                'involved_parties'     => $this->extractInvolvedParties($transactions),
+                'activity_types'       => $this->getActivityTypesForPattern($pattern['type']),
                 'activity_description' => $this->generatePatternDescription($pattern, $transactions),
-                'red_flags' => $this->getRedFlagsForPattern($pattern['type']),
-                'triggering_rules' => [],
+                'red_flags'            => $this->getRedFlagsForPattern($pattern['type']),
+                'triggering_rules'     => [],
                 'related_transactions' => $transactions->pluck('id')->toArray(),
             ]);
 
@@ -98,7 +97,7 @@ class SuspiciousActivityReportService
     }
 
     /**
-     * Update SAR investigation
+     * Update SAR investigation.
      */
     public function updateInvestigation(
         SuspiciousActivityReport $sar,
@@ -106,7 +105,7 @@ class SuspiciousActivityReportService
         string $findings,
         array $additionalData = []
     ): void {
-        if (!$sar->investigator_id) {
+        if (! $sar->investigator_id) {
             $sar->startInvestigation($investigator);
         }
 
@@ -120,13 +119,13 @@ class SuspiciousActivityReportService
     }
 
     /**
-     * Submit SAR to regulator
+     * Submit SAR to regulator.
      */
     public function submitToRegulator(SuspiciousActivityReport $sar): array
     {
         // Validate SAR is complete
         $validation = $this->validateForSubmission($sar);
-        if (!$validation['valid']) {
+        if (! $validation['valid']) {
             throw new \Exception('SAR validation failed: ' . implode(', ', $validation['errors']));
         }
 
@@ -147,7 +146,7 @@ class SuspiciousActivityReportService
     }
 
     /**
-     * Find related transactions
+     * Find related transactions.
      */
     protected function findRelatedTransactions(Transaction $transaction): Collection
     {
@@ -170,7 +169,7 @@ class SuspiciousActivityReportService
     }
 
     /**
-     * Extract involved parties from transactions
+     * Extract involved parties from transactions.
      */
     protected function extractInvolvedParties(Collection $transactions): array
     {
@@ -195,7 +194,7 @@ class SuspiciousActivityReportService
     }
 
     /**
-     * Determine priority based on alerts
+     * Determine priority based on alerts.
      */
     protected function determinePriority(array $alerts): string
     {
@@ -219,7 +218,7 @@ class SuspiciousActivityReportService
     }
 
     /**
-     * Determine activity types from alerts
+     * Determine activity types from alerts.
      */
     protected function determineActivityTypes(array $alerts): array
     {
@@ -241,7 +240,7 @@ class SuspiciousActivityReportService
     }
 
     /**
-     * Extract red flags from alerts
+     * Extract red flags from alerts.
      */
     protected function extractRedFlags(array $alerts): array
     {
@@ -268,20 +267,20 @@ class SuspiciousActivityReportService
     }
 
     /**
-     * Generate activity description
+     * Generate activity description.
      */
     protected function generateActivityDescription(Transaction $transaction, array $alerts): string
     {
         $description = sprintf(
-            "Suspicious activity detected on account %s. ",
+            'Suspicious activity detected on account %s. ',
             $transaction->account->account_number
         );
 
-        $alertDescriptions = array_map(fn($alert) => $alert['description'], $alerts);
-        $description .= "Alerts triggered: " . implode('; ', $alertDescriptions) . ". ";
+        $alertDescriptions = array_map(fn ($alert) => $alert['description'], $alerts);
+        $description .= 'Alerts triggered: ' . implode('; ', $alertDescriptions) . '. ';
 
         $description .= sprintf(
-            "Transaction amount: %s %s. ",
+            'Transaction amount: %s %s. ',
             $transaction->currency,
             number_format($transaction->amount, 2)
         );
@@ -290,39 +289,39 @@ class SuspiciousActivityReportService
     }
 
     /**
-     * Get activity types for pattern
+     * Get activity types for pattern.
      */
     protected function getActivityTypesForPattern(string $patternType): array
     {
         return match ($patternType) {
-            'smurfing' => ['structuring'],
-            'layering' => ['layering'],
+            'smurfing'       => ['structuring'],
+            'layering'       => ['layering'],
             'rapid_movement' => ['layering'],
-            default => ['other'],
+            default          => ['other'],
         };
     }
 
     /**
-     * Get red flags for pattern
+     * Get red flags for pattern.
      */
     protected function getRedFlagsForPattern(string $patternType): array
     {
         return match ($patternType) {
-            'smurfing' => ['unusual_transaction_pattern', 'multiple_accounts'],
-            'layering' => ['rapid_movement', 'complex_structure'],
+            'smurfing'       => ['unusual_transaction_pattern', 'multiple_accounts'],
+            'layering'       => ['rapid_movement', 'complex_structure'],
             'rapid_movement' => ['rapid_movement', 'no_business_purpose'],
-            default => ['unusual_transaction_pattern'],
+            default          => ['unusual_transaction_pattern'],
         };
     }
 
     /**
-     * Generate pattern description
+     * Generate pattern description.
      */
     protected function generatePatternDescription(array $pattern, Collection $transactions): string
     {
         $patternDescriptions = [
-            'smurfing' => 'Multiple small transactions detected that appear to be structured to avoid reporting thresholds',
-            'layering' => 'Complex series of transactions detected that may be attempting to obscure the source of funds',
+            'smurfing'       => 'Multiple small transactions detected that appear to be structured to avoid reporting thresholds',
+            'layering'       => 'Complex series of transactions detected that may be attempting to obscure the source of funds',
             'rapid_movement' => 'Rapid movement of funds detected through accounts with minimal holding time',
         ];
 
@@ -340,7 +339,7 @@ class SuspiciousActivityReportService
     }
 
     /**
-     * Validate SAR for submission
+     * Validate SAR for submission.
      */
     protected function validateForSubmission(SuspiciousActivityReport $sar): array
     {
@@ -355,11 +354,11 @@ class SuspiciousActivityReportService
             $errors[] = 'Investigation findings are required';
         }
 
-        if (!$sar->decision) {
+        if (! $sar->decision) {
             $errors[] = 'Decision is required';
         }
 
-        if (!$sar->decision_rationale) {
+        if (! $sar->decision_rationale) {
             $errors[] = 'Decision rationale is required';
         }
 
@@ -368,69 +367,69 @@ class SuspiciousActivityReportService
         }
 
         return [
-            'valid' => empty($errors),
+            'valid'  => empty($errors),
             'errors' => $errors,
         ];
     }
 
     /**
-     * Simulate regulatory submission
+     * Simulate regulatory submission.
      */
     protected function simulateRegulatorySubmission(SuspiciousActivityReport $sar): array
     {
         // In production, this would connect to FinCEN BSA E-Filing or similar
 
         return [
-            'success' => true,
-            'reference' => 'BSA-' . now()->format('Y') . '-' . rand(100000, 999999),
-            'jurisdiction' => 'US-FinCEN',
-            'submitted_at' => now()->toIso8601String(),
+            'success'        => true,
+            'reference'      => 'BSA-' . now()->format('Y') . '-' . rand(100000, 999999),
+            'jurisdiction'   => 'US-FinCEN',
+            'submitted_at'   => now()->toIso8601String(),
             'acknowledgment' => [
-                'received' => true,
-                'tracking_number' => 'ACK-' . uniqid(),
+                'received'                  => true,
+                'tracking_number'           => 'ACK-' . uniqid(),
                 'estimated_processing_time' => '3-5 business days',
             ],
         ];
     }
 
     /**
-     * Generate SAR report for internal use
+     * Generate SAR report for internal use.
      */
     public function generateReport(SuspiciousActivityReport $sar): array
     {
         return [
-            'sar_number' => $sar->sar_number,
-            'status' => $sar->status,
-            'priority' => $sar->priority,
-            'filing_status' => $sar->filed_with_regulator ? 'Filed' : 'Not Filed',
+            'sar_number'       => $sar->sar_number,
+            'status'           => $sar->status,
+            'priority'         => $sar->priority,
+            'filing_status'    => $sar->filed_with_regulator ? 'Filed' : 'Not Filed',
             'filing_reference' => $sar->filing_reference,
-            'subject' => $sar->subject_details,
-            'activity_period' => [
-                'start' => $sar->activity_start_date->toDateString(),
-                'end' => $sar->activity_end_date->toDateString(),
+            'subject'          => $sar->subject_details,
+            'activity_period'  => [
+                'start'         => $sar->activity_start_date->toDateString(),
+                'end'           => $sar->activity_end_date->toDateString(),
                 'duration_days' => $sar->getActivityDuration(),
             ],
             'financial_summary' => [
-                'total_amount' => $sar->total_amount,
+                'total_amount'      => $sar->total_amount,
                 'transaction_count' => $sar->transaction_count,
-                'primary_currency' => $sar->primary_currency,
+                'primary_currency'  => $sar->primary_currency,
             ],
             'suspicious_activity' => [
-                'types' => $sar->activity_types,
+                'types'       => $sar->activity_types,
                 'description' => $sar->activity_description,
-                'red_flags' => $sar->red_flags,
+                'red_flags'   => $sar->red_flags,
             ],
             'investigation' => [
                 'investigator' => $sar->investigator?->name,
-                'started_at' => $sar->investigation_started_at?->toDateTimeString(),
+                'started_at'   => $sar->investigation_started_at?->toDateTimeString(),
                 'completed_at' => $sar->investigation_completed_at?->toDateTimeString(),
-                'findings' => $sar->investigation_findings,
+                'findings'     => $sar->investigation_findings,
             ],
             'decision' => [
-                'decision' => $sar->decision,
-                'rationale' => $sar->decision_rationale,
+                'decision'       => $sar->decision,
+                'rationale'      => $sar->decision_rationale,
                 'decision_maker' => $sar->decisionMaker?->name,
-                'decision_date' => $sar->decision_date?->toDateTimeString(),
+                'decision_date'  => $sar->decision_date?->toDateTimeString(),
             ],
         ];
     }

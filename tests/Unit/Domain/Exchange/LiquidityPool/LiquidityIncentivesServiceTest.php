@@ -17,22 +17,22 @@ class LiquidityIncentivesServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->service = new LiquidityIncentivesService;
+        $this->service = new LiquidityIncentivesService();
     }
 
     public function test_calculates_pool_rewards_based_on_tvl()
     {
         // Create a pool with known TVL
         $pool = LiquidityPool::create([
-            'pool_id' => 'test-pool-1',
-            'base_currency' => 'ETH',
-            'quote_currency' => 'USD',
-            'base_reserve' => '100',
-            'quote_reserve' => '200000', // TVL = 400k
-            'total_shares' => '1000',
-            'fee_rate' => '0.003',
-            'is_active' => true,
-            'volume_24h' => '50000',
+            'pool_id'            => 'test-pool-1',
+            'base_currency'      => 'ETH',
+            'quote_currency'     => 'USD',
+            'base_reserve'       => '100',
+            'quote_reserve'      => '200000', // TVL = 400k
+            'total_shares'       => '1000',
+            'fee_rate'           => '0.003',
+            'is_active'          => true,
+            'volume_24h'         => '50000',
             'fees_collected_24h' => '150',
         ]);
 
@@ -49,29 +49,29 @@ class LiquidityIncentivesServiceTest extends TestCase
     {
         // High volume pool
         $highVolumePool = LiquidityPool::create([
-            'pool_id' => 'high-volume',
-            'base_currency' => 'BTC',
-            'quote_currency' => 'USD',
-            'base_reserve' => '10',
-            'quote_reserve' => '400000',
-            'total_shares' => '1000',
-            'fee_rate' => '0.003',
-            'is_active' => true,
-            'volume_24h' => '800000', // 200% of TVL
+            'pool_id'            => 'high-volume',
+            'base_currency'      => 'BTC',
+            'quote_currency'     => 'USD',
+            'base_reserve'       => '10',
+            'quote_reserve'      => '400000',
+            'total_shares'       => '1000',
+            'fee_rate'           => '0.003',
+            'is_active'          => true,
+            'volume_24h'         => '800000', // 200% of TVL
             'fees_collected_24h' => '2400',
         ]);
 
         // Low volume pool
         $lowVolumePool = LiquidityPool::create([
-            'pool_id' => 'low-volume',
-            'base_currency' => 'ETH',
-            'quote_currency' => 'USD',
-            'base_reserve' => '100',
-            'quote_reserve' => '200000',
-            'total_shares' => '1000',
-            'fee_rate' => '0.003',
-            'is_active' => true,
-            'volume_24h' => '10000', // 2.5% of TVL
+            'pool_id'            => 'low-volume',
+            'base_currency'      => 'ETH',
+            'quote_currency'     => 'USD',
+            'base_reserve'       => '100',
+            'quote_reserve'      => '200000',
+            'total_shares'       => '1000',
+            'fee_rate'           => '0.003',
+            'is_active'          => true,
+            'volume_24h'         => '10000', // 2.5% of TVL
             'fees_collected_24h' => '30',
         ]);
 
@@ -88,30 +88,30 @@ class LiquidityIncentivesServiceTest extends TestCase
     public function test_calculates_provider_rewards_proportionally()
     {
         $pool = LiquidityPool::create([
-            'pool_id' => 'test-pool-2',
-            'base_currency' => 'ETH',
+            'pool_id'        => 'test-pool-2',
+            'base_currency'  => 'ETH',
             'quote_currency' => 'USD',
-            'base_reserve' => '100',
-            'quote_reserve' => '200000',
-            'total_shares' => '1000',
-            'fee_rate' => '0.003',
-            'is_active' => true,
+            'base_reserve'   => '100',
+            'quote_reserve'  => '200000',
+            'total_shares'   => '1000',
+            'fee_rate'       => '0.003',
+            'is_active'      => true,
         ]);
 
         // Create providers with different shares
         LiquidityProvider::create([
-            'pool_id' => $pool->pool_id,
-            'provider_id' => 'provider-1',
-            'shares' => '600', // 60% of pool
-            'base_contributed' => '60',
+            'pool_id'           => $pool->pool_id,
+            'provider_id'       => 'provider-1',
+            'shares'            => '600', // 60% of pool
+            'base_contributed'  => '60',
             'quote_contributed' => '120000',
         ]);
 
         LiquidityProvider::create([
-            'pool_id' => $pool->pool_id,
-            'provider_id' => 'provider-2',
-            'shares' => '400', // 40% of pool
-            'base_contributed' => '40',
+            'pool_id'           => $pool->pool_id,
+            'provider_id'       => 'provider-2',
+            'shares'            => '400', // 40% of pool
+            'base_contributed'  => '40',
             'quote_contributed' => '80000',
         ]);
 
@@ -130,35 +130,35 @@ class LiquidityIncentivesServiceTest extends TestCase
     public function test_applies_early_provider_bonus()
     {
         $pool = LiquidityPool::create([
-            'pool_id' => 'new-pool',
-            'base_currency' => 'ETH',
+            'pool_id'        => 'new-pool',
+            'base_currency'  => 'ETH',
             'quote_currency' => 'USD',
-            'base_reserve' => '100',
-            'quote_reserve' => '200000',
-            'total_shares' => '1000',
-            'fee_rate' => '0.003',
-            'is_active' => true,
-            'created_at' => now()->subDays(10), // Pool is 10 days old
+            'base_reserve'   => '100',
+            'quote_reserve'  => '200000',
+            'total_shares'   => '1000',
+            'fee_rate'       => '0.003',
+            'is_active'      => true,
+            'created_at'     => now()->subDays(10), // Pool is 10 days old
         ]);
 
         // Early provider (joined on day 1)
         LiquidityProvider::create([
-            'pool_id' => $pool->pool_id,
-            'provider_id' => 'early-provider',
-            'shares' => '500',
-            'base_contributed' => '50',
+            'pool_id'           => $pool->pool_id,
+            'provider_id'       => 'early-provider',
+            'shares'            => '500',
+            'base_contributed'  => '50',
             'quote_contributed' => '100000',
-            'created_at' => now()->subDays(9),
+            'created_at'        => now()->subDays(9),
         ]);
 
         // Late provider (joined recently)
         LiquidityProvider::create([
-            'pool_id' => $pool->pool_id,
-            'provider_id' => 'late-provider',
-            'shares' => '500',
-            'base_contributed' => '50',
+            'pool_id'           => $pool->pool_id,
+            'provider_id'       => 'late-provider',
+            'shares'            => '500',
+            'base_contributed'  => '50',
             'quote_contributed' => '100000',
-            'created_at' => now()->subDays(1),
+            'created_at'        => now()->subDays(1),
         ]);
 
         $rewards = $this->service->calculatePoolRewards($pool);
@@ -176,22 +176,22 @@ class LiquidityIncentivesServiceTest extends TestCase
     public function test_calculates_provider_apy()
     {
         $pool = LiquidityPool::create([
-            'pool_id' => 'test-pool-3',
-            'base_currency' => 'ETH',
-            'quote_currency' => 'USD',
-            'base_reserve' => '100',
-            'quote_reserve' => '200000',
-            'total_shares' => '1000',
-            'fee_rate' => '0.003',
-            'is_active' => true,
+            'pool_id'            => 'test-pool-3',
+            'base_currency'      => 'ETH',
+            'quote_currency'     => 'USD',
+            'base_reserve'       => '100',
+            'quote_reserve'      => '200000',
+            'total_shares'       => '1000',
+            'fee_rate'           => '0.003',
+            'is_active'          => true,
             'fees_collected_24h' => '200', // 0.1% daily
         ]);
 
         LiquidityProvider::create([
-            'pool_id' => $pool->pool_id,
-            'provider_id' => 'provider-1',
-            'shares' => '100', // 10% of pool
-            'base_contributed' => '10',
+            'pool_id'           => $pool->pool_id,
+            'provider_id'       => 'provider-1',
+            'shares'            => '100', // 10% of pool
+            'base_contributed'  => '10',
             'quote_contributed' => '20000',
         ]);
 

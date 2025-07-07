@@ -2,8 +2,8 @@
 
 namespace App\Domain\Account\Events;
 
-use App\Domain\Account\DataObjects\Hash;
 use App\Domain\Account\DataObjects\AccountUuid;
+use App\Domain\Account\DataObjects\Hash;
 use App\Values\EventQueues;
 use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 
@@ -35,7 +35,7 @@ class AssetTransferred extends ShouldBeStored implements HasHash
     }
 
     /**
-     * Get the amount for this event
+     * Get the amount for this event.
      */
     public function getAmount(): int
     {
@@ -43,7 +43,7 @@ class AssetTransferred extends ShouldBeStored implements HasHash
     }
 
     /**
-     * Get the asset code for this event
+     * Get the asset code for this event.
      */
     public function getAssetCode(): string
     {
@@ -51,7 +51,7 @@ class AssetTransferred extends ShouldBeStored implements HasHash
     }
 
     /**
-     * Get the from account UUID
+     * Get the from account UUID.
      */
     public function getFromAccount(): string
     {
@@ -59,7 +59,7 @@ class AssetTransferred extends ShouldBeStored implements HasHash
     }
 
     /**
-     * Get the to account UUID
+     * Get the to account UUID.
      */
     public function getToAccount(): string
     {

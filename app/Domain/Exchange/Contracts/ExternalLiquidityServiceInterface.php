@@ -5,12 +5,12 @@ namespace App\Domain\Exchange\Contracts;
 interface ExternalLiquidityServiceInterface
 {
     /**
-     * Find arbitrage opportunities between internal and external exchanges
+     * Find arbitrage opportunities between internal and external exchanges.
      */
     public function findArbitrageOpportunities(string $baseCurrency, string $quoteCurrency): array;
 
     /**
-     * Provide liquidity from external sources when needed
+     * Provide liquidity from external sources when needed.
      */
     public function provideLiquidity(
         string $baseCurrency,
@@ -20,7 +20,7 @@ interface ExternalLiquidityServiceInterface
     ): array;
 
     /**
-     * Align internal prices with external market prices
+     * Align internal prices with external market prices.
      */
     public function alignPrices(
         string $baseCurrency,
@@ -29,27 +29,27 @@ interface ExternalLiquidityServiceInterface
     ): array;
 
     /**
-     * Execute arbitrage trade
+     * Execute arbitrage trade.
      */
     public function executeArbitrage(array $opportunity): array;
 
     /**
-     * Get liquidity depth from external sources
+     * Get liquidity depth from external sources.
      */
     public function getExternalLiquidityDepth(string $baseCurrency, string $quoteCurrency): array;
 
     /**
-     * Monitor price divergence
+     * Monitor price divergence.
      */
     public function monitorPriceDivergence(): array;
 
     /**
-     * Rebalance liquidity across exchanges
+     * Rebalance liquidity across exchanges.
      */
     public function rebalanceLiquidity(array $targetDistribution): array;
 
     /**
-     * Get arbitrage statistics
+     * Get arbitrage statistics.
      */
     public function getArbitrageStats(?\DateTimeInterface $from = null, ?\DateTimeInterface $to = null): array;
 }

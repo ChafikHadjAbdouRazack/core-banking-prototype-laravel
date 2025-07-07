@@ -35,7 +35,7 @@ class PoolRebalancingService
     }
 
     /**
-     * Check all pools and rebalance if needed
+     * Check all pools and rebalance if needed.
      */
     public function rebalanceAllPools(): array
     {
@@ -53,16 +53,16 @@ class PoolRebalancingService
     }
 
     /**
-     * Check if a pool needs rebalancing and execute if necessary
+     * Check if a pool needs rebalancing and execute if necessary.
      */
     public function checkAndRebalancePool(PoolProjection $pool): array
     {
         // Check if enough time has passed since last rebalancing
         if (! $this->canRebalance($pool)) {
             return [
-                'pool_id' => $pool->pool_id,
+                'pool_id'           => $pool->pool_id,
                 'needs_rebalancing' => false,
-                'reason' => 'Too soon since last rebalancing',
+                'reason'            => 'Too soon since last rebalancing',
             ];
         }
 
@@ -71,9 +71,9 @@ class PoolRebalancingService
 
         if (! $analysis['needs_rebalancing']) {
             return [
-                'pool_id' => $pool->pool_id,
+                'pool_id'           => $pool->pool_id,
                 'needs_rebalancing' => false,
-                'metrics' => $analysis,
+                'metrics'           => $analysis,
             ];
         }
 
@@ -84,16 +84,16 @@ class PoolRebalancingService
         $result = $this->executeRebalancing($pool, $analysis, $strategy);
 
         return [
-            'pool_id' => $pool->pool_id,
+            'pool_id'           => $pool->pool_id,
             'needs_rebalancing' => true,
-            'analysis' => $analysis,
-            'strategy' => $strategy,
-            'result' => $result,
+            'analysis'          => $analysis,
+            'strategy'          => $strategy,
+            'result'            => $result,
         ];
     }
 
     /**
-     * Analyze pool state to determine if rebalancing is needed
+     * Analyze pool state to determine if rebalancing is needed.
      */
     private function analyzePoolState(PoolProjection $pool): array
     {
@@ -127,20 +127,20 @@ class PoolRebalancingService
                            ! empty($arbitrageOpportunities);
 
         return [
-            'needs_rebalancing' => $needsRebalancing,
-            'pool_price' => $poolPrice->__toString(),
-            'external_price' => $externalPrice->__toString(),
-            'price_deviation' => $priceDeviation->__toString(),
+            'needs_rebalancing'       => $needsRebalancing,
+            'pool_price'              => $poolPrice->__toString(),
+            'external_price'          => $externalPrice->__toString(),
+            'price_deviation'         => $priceDeviation->__toString(),
             'current_inventory_ratio' => $currentRatio->__toString(),
-            'target_inventory_ratio' => $targetRatio->__toString(),
-            'inventory_imbalance' => $inventoryImbalance->__toString(),
+            'target_inventory_ratio'  => $targetRatio->__toString(),
+            'inventory_imbalance'     => $inventoryImbalance->__toString(),
             'arbitrage_opportunities' => $arbitrageOpportunities,
-            'timestamp' => now()->toIso8601String(),
+            'timestamp'               => now()->toIso8601String(),
         ];
     }
 
     /**
-     * Calculate target inventory ratio based on market conditions
+     * Calculate target inventory ratio based on market conditions.
      */
     private function calculateTargetInventoryRatio(PoolProjection $pool, BigDecimal $marketPrice): BigDecimal
     {
@@ -170,7 +170,7 @@ class PoolRebalancingService
     }
 
     /**
-     * Calculate current inventory ratio (base value / total value)
+     * Calculate current inventory ratio (base value / total value).
      */
     private function calculateCurrentInventoryRatio(PoolProjection $pool): BigDecimal
     {
@@ -187,7 +187,7 @@ class PoolRebalancingService
     }
 
     /**
-     * Calculate price trend over recent period
+     * Calculate price trend over recent period.
      */
     private function calculatePriceTrend(PoolProjection $pool): BigDecimal
     {
@@ -212,7 +212,7 @@ class PoolRebalancingService
     }
 
     /**
-     * Check for arbitrage opportunities
+     * Check for arbitrage opportunities.
      */
     private function checkArbitrageOpportunities(PoolProjection $pool): array
     {
@@ -224,7 +224,7 @@ class PoolRebalancingService
     }
 
     /**
-     * Determine rebalancing strategy based on market conditions
+     * Determine rebalancing strategy based on market conditions.
      */
     private function determineRebalancingStrategy(array $analysis): array
     {
@@ -234,34 +234,34 @@ class PoolRebalancingService
         // High deviation requires aggressive rebalancing
         if ($priceDeviation->isGreaterThan('0.05') || $inventoryImbalance->isGreaterThan('0.2')) {
             return [
-                'type' => self::STRATEGY_AGGRESSIVE,
-                'max_slippage' => '0.02', // 2% slippage tolerance
+                'type'            => self::STRATEGY_AGGRESSIVE,
+                'max_slippage'    => '0.02', // 2% slippage tolerance
                 'execution_speed' => 'fast',
-                'chunk_size' => '0.1', // 10% of imbalance per chunk
+                'chunk_size'      => '0.1', // 10% of imbalance per chunk
             ];
         }
 
         // Moderate deviation uses adaptive strategy
         if ($priceDeviation->isGreaterThan('0.02') || $inventoryImbalance->isGreaterThan('0.1')) {
             return [
-                'type' => self::STRATEGY_ADAPTIVE,
-                'max_slippage' => '0.01', // 1% slippage tolerance
+                'type'            => self::STRATEGY_ADAPTIVE,
+                'max_slippage'    => '0.01', // 1% slippage tolerance
                 'execution_speed' => 'moderate',
-                'chunk_size' => '0.05', // 5% of imbalance per chunk
+                'chunk_size'      => '0.05', // 5% of imbalance per chunk
             ];
         }
 
         // Low deviation uses conservative strategy
         return [
-            'type' => self::STRATEGY_CONSERVATIVE,
-            'max_slippage' => '0.005', // 0.5% slippage tolerance
+            'type'            => self::STRATEGY_CONSERVATIVE,
+            'max_slippage'    => '0.005', // 0.5% slippage tolerance
             'execution_speed' => 'slow',
-            'chunk_size' => '0.02', // 2% of imbalance per chunk
+            'chunk_size'      => '0.02', // 2% of imbalance per chunk
         ];
     }
 
     /**
-     * Execute rebalancing based on strategy
+     * Execute rebalancing based on strategy.
      */
     private function executeRebalancing(
         PoolProjection $pool,
@@ -301,29 +301,29 @@ class PoolRebalancingService
                     targetRatio: $targetRatio->__toString(),
                     maxSlippage: $strategy['max_slippage'],
                     metadata: [
-                        'executed_amount' => $rebalanceAmounts['amount']->__toString(),
+                        'executed_amount'   => $rebalanceAmounts['amount']->__toString(),
                         'executed_currency' => $rebalanceAmounts['currency'],
-                        'strategy_type' => $strategy['type'],
+                        'strategy_type'     => $strategy['type'],
                     ]
                 )
                 ->persist();
 
             return [
-                'status' => 'success',
-                'executed_amount' => $rebalanceAmounts['amount']->__toString(),
+                'status'            => 'success',
+                'executed_amount'   => $rebalanceAmounts['amount']->__toString(),
                 'executed_currency' => $rebalanceAmounts['currency'],
-                'new_ratio' => $this->calculateCurrentInventoryRatio($pool->fresh())->__toString(),
+                'new_ratio'         => $this->calculateCurrentInventoryRatio($pool->fresh())->__toString(),
             ];
         } catch (\Exception $e) {
             return [
                 'status' => 'failed',
-                'error' => $e->getMessage(),
+                'error'  => $e->getMessage(),
             ];
         }
     }
 
     /**
-     * Calculate amounts needed for rebalancing
+     * Calculate amounts needed for rebalancing.
      */
     private function calculateRebalancingAmounts(
         PoolProjection $pool,
@@ -355,24 +355,24 @@ class PoolRebalancingService
         if ($baseDiff->isPositive()) {
             // Need to buy base currency
             return [
-                'action' => 'buy_base',
-                'currency' => $pool->base_currency,
-                'amount' => $baseDiff->multipliedBy($chunkSize),
+                'action'       => 'buy_base',
+                'currency'     => $pool->base_currency,
+                'amount'       => $baseDiff->multipliedBy($chunkSize),
                 'quote_needed' => $baseDiff->multipliedBy($chunkSize)->multipliedBy($poolPrice),
             ];
         } else {
             // Need to sell base currency
             return [
-                'action' => 'sell_base',
-                'currency' => $pool->base_currency,
-                'amount' => $baseDiff->abs()->multipliedBy($chunkSize),
+                'action'         => 'sell_base',
+                'currency'       => $pool->base_currency,
+                'amount'         => $baseDiff->abs()->multipliedBy($chunkSize),
                 'quote_received' => $baseDiff->abs()->multipliedBy($chunkSize)->multipliedBy($poolPrice),
             ];
         }
     }
 
     /**
-     * Check if enough time has passed since last rebalancing
+     * Check if enough time has passed since last rebalancing.
      */
     private function canRebalance(PoolProjection $pool): bool
     {
@@ -393,7 +393,7 @@ class PoolRebalancingService
     }
 
     /**
-     * Get rebalancing history for a pool
+     * Get rebalancing history for a pool.
      */
     public function getRebalancingHistory(string $poolId, int $days = 30): Collection
     {
@@ -407,10 +407,10 @@ class PoolRebalancingService
                 $eventData = json_decode($event->event_properties, true);
 
                 return [
-                    'timestamp' => $event->created_at,
-                    'old_ratio' => $eventData['old_ratio'] ?? null,
-                    'new_ratio' => $eventData['new_ratio'] ?? null,
-                    'rebalance_amount' => $eventData['rebalance_amount'] ?? null,
+                    'timestamp'          => $event->created_at,
+                    'old_ratio'          => $eventData['old_ratio'] ?? null,
+                    'new_ratio'          => $eventData['new_ratio'] ?? null,
+                    'rebalance_amount'   => $eventData['rebalance_amount'] ?? null,
                     'rebalance_currency' => $eventData['rebalance_currency'] ?? null,
                 ];
             });

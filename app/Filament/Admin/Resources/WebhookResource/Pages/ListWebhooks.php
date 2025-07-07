@@ -3,7 +3,6 @@
 namespace App\Filament\Admin\Resources\WebhookResource\Pages;
 
 use App\Filament\Admin\Resources\WebhookResource;
-use App\Filament\Exports\WebhookExporter;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 

@@ -24,7 +24,7 @@ class BankConnection
     }
 
     /**
-     * Check if connection is active
+     * Check if connection is active.
      */
     public function isActive(): bool
     {
@@ -33,7 +33,7 @@ class BankConnection
     }
 
     /**
-     * Check if connection needs renewal
+     * Check if connection needs renewal.
      */
     public function needsRenewal(): bool
     {
@@ -45,7 +45,7 @@ class BankConnection
     }
 
     /**
-     * Check if connection has permission
+     * Check if connection has permission.
      */
     public function hasPermission(string $permission): bool
     {
@@ -54,7 +54,7 @@ class BankConnection
     }
 
     /**
-     * Check if sync is needed
+     * Check if sync is needed.
      */
     public function needsSync(): bool
     {
@@ -63,11 +63,12 @@ class BankConnection
         }
 
         $syncInterval = $this->metadata['sync_interval'] ?? 3600; // Default 1 hour
+
         return $this->lastSyncAt->diffInSeconds(now()) >= $syncInterval;
     }
 
     /**
-     * Get masked credentials for display
+     * Get masked credentials for display.
      */
     public function getMaskedCredentials(): array
     {
@@ -79,31 +80,32 @@ class BankConnection
                 $masked[$key] = str_repeat('*', 8);
             }
         }
+
         return $masked;
     }
 
     /**
-     * Convert to array
+     * Convert to array.
      */
     public function toArray(): array
     {
         return [
-            'id' => $this->id,
-            'user_id' => $this->userId,
-            'bank_code' => $this->bankCode,
-            'status' => $this->status,
-            'credentials' => $this->credentials,
-            'permissions' => $this->permissions,
+            'id'           => $this->id,
+            'user_id'      => $this->userId,
+            'bank_code'    => $this->bankCode,
+            'status'       => $this->status,
+            'credentials'  => $this->credentials,
+            'permissions'  => $this->permissions,
             'last_sync_at' => $this->lastSyncAt?->toIso8601String(),
-            'expires_at' => $this->expiresAt?->toIso8601String(),
-            'created_at' => $this->createdAt->toIso8601String(),
-            'updated_at' => $this->updatedAt->toIso8601String(),
-            'metadata' => $this->metadata,
+            'expires_at'   => $this->expiresAt?->toIso8601String(),
+            'created_at'   => $this->createdAt->toIso8601String(),
+            'updated_at'   => $this->updatedAt->toIso8601String(),
+            'metadata'     => $this->metadata,
         ];
     }
 
     /**
-     * Create from array
+     * Create from array.
      */
     public static function fromArray(array $data): self
     {

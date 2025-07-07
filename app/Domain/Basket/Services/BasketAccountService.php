@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace App\Domain\Basket\Services;
 
-use App\Models\Account;
-use App\Models\BasketAsset;
-use App\Models\AccountBalance;
-use App\Domain\Basket\Events\BasketDecomposed;
+use App\Domain\Account\DataObjects\AccountUuid;
+use App\Domain\Account\DataObjects\Hash;
 use App\Domain\Account\Events\AssetBalanceAdded;
 use App\Domain\Account\Events\AssetBalanceSubtracted;
-use App\Domain\Account\DataObjects\Hash;
-use App\Domain\Account\DataObjects\AccountUuid;
+use App\Domain\Basket\Events\BasketDecomposed;
 use App\Domain\Wallet\Services\WalletService;
+use App\Models\Account;
+use App\Models\AccountBalance;
+use App\Models\BasketAsset;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -31,11 +31,11 @@ class BasketAccountService
     {
         $basket = BasketAsset::where('code', $basketCode)->first();
 
-        if (!$basket) {
+        if (! $basket) {
             throw new \Exception("Basket not found: {$basketCode}");
         }
 
-        if (!$basket->is_active) {
+        if (! $basket->is_active) {
             throw new \Exception("Basket {$basketCode} is not active");
         }
 
@@ -99,17 +99,17 @@ class BasketAccountService
     {
         $basket = BasketAsset::where('code', $basketCode)->first();
 
-        if (!$basket) {
+        if (! $basket) {
             throw new \Exception("Basket not found: {$basketCode}");
         }
 
-        if (!$basket->is_active) {
+        if (! $basket->is_active) {
             throw new \Exception("Basket {$basketCode} is not active");
         }
 
         // Validate positive amount
         if ($amount <= 0) {
-            throw new \Exception("Amount must be positive");
+            throw new \Exception('Amount must be positive');
         }
 
         // Note: We don't validate weights here since this is an operational function
@@ -120,7 +120,7 @@ class BasketAccountService
             ->where('asset_code', $basketCode)
             ->first();
 
-        if (!$basketBalance || $basketBalance->balance < $amount) {
+        if (! $basketBalance || $basketBalance->balance < $amount) {
             $availableBalance = $basketBalance ? $basketBalance->balance : 0;
             throw new \Exception("Insufficient basket balance for decomposition. Required: {$amount}, Available: {$availableBalance}");
         }
@@ -154,9 +154,9 @@ class BasketAccountService
             ]);
 
             return [
-                'basket_code' => $basketCode,
+                'basket_code'   => $basketCode,
                 'basket_amount' => $amount,
-                'components' => $componentAmounts,
+                'components'    => $componentAmounts,
                 'decomposed_at' => now()->toISOString(),
             ];
         });
@@ -170,21 +170,21 @@ class BasketAccountService
     {
         $basket = BasketAsset::where('code', $basketCode)->first();
 
-        if (!$basket) {
+        if (! $basket) {
             throw new \Exception("Basket not found: {$basketCode}");
         }
 
-        if (!$basket->is_active) {
+        if (! $basket->is_active) {
             throw new \Exception("Basket {$basketCode} is not active");
         }
 
         // Validate positive amount
         if ($amount <= 0) {
-            throw new \Exception("Amount must be positive");
+            throw new \Exception('Amount must be positive');
         }
 
         // Validate basket weights
-        if (!$basket->validateWeights()) {
+        if (! $basket->validateWeights()) {
             throw new \Exception("Basket {$basketCode} has invalid component weights");
         }
 
@@ -198,7 +198,7 @@ class BasketAccountService
                     ->where('asset_code', $assetCode)
                     ->first();
 
-                if (!$balance || $balance->balance < $requiredAmount) {
+                if (! $balance || $balance->balance < $requiredAmount) {
                     throw new \Exception("Insufficient {$assetCode} balance. Required: {$requiredAmount}, Available: " . ($balance ? $balance->balance : 0));
                 }
             }
@@ -219,10 +219,10 @@ class BasketAccountService
             ]);
 
             return [
-                'basket_code' => $basketCode,
-                'basket_amount' => $amount,
+                'basket_code'     => $basketCode,
+                'basket_amount'   => $amount,
                 'components_used' => $requiredAmounts,
-                'composed_at' => now()->toISOString(),
+                'composed_at'     => now()->toISOString(),
             ];
         });
     }
@@ -264,7 +264,7 @@ class BasketAccountService
             }
 
             $basket = BasketAsset::where('code', $balance->asset_code)->first();
-            if (!$basket) {
+            if (! $basket) {
                 continue;
             }
 
@@ -272,11 +272,11 @@ class BasketAccountService
             $holdingValue = $basketValue->value * $balance->balance;
 
             $holdings[] = [
-                'basket_code' => $balance->asset_code,
-                'basket_name' => $basket->name,
-                'balance' => $balance->balance,
-                'unit_value' => $basketValue->value,
-                'total_value' => $holdingValue,
+                'basket_code'     => $balance->asset_code,
+                'basket_name'     => $basket->name,
+                'balance'         => $balance->balance,
+                'unit_value'      => $basketValue->value,
+                'total_value'     => $holdingValue,
                 'last_calculated' => $basketValue->calculated_at->toISOString(),
             ];
 
@@ -284,11 +284,11 @@ class BasketAccountService
         }
 
         return [
-            'account_uuid' => (string) $account->uuid,
+            'account_uuid'    => (string) $account->uuid,
             'basket_holdings' => $holdings,
-            'total_value' => $totalValue,
-            'currency' => 'USD',
-            'calculated_at' => now()->toISOString(),
+            'total_value'     => $totalValue,
+            'currency'        => 'USD',
+            'calculated_at'   => now()->toISOString(),
         ];
     }
 
@@ -300,7 +300,7 @@ class BasketAccountService
     {
         $basket = BasketAsset::where('code', $basketCode)->first();
 
-        if (!$basket) {
+        if (! $basket) {
             throw new \Exception("Basket not found: {$basketCode}");
         }
         $components = $basket->activeComponents;

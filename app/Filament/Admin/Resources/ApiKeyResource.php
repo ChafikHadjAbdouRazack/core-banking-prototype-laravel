@@ -52,10 +52,10 @@ class ApiKeyResource extends Resource
                     ->schema([
                         Forms\Components\CheckboxList::make('permissions')
                             ->options([
-                                'read' => 'Read',
-                                'write' => 'Write',
+                                'read'   => 'Read',
+                                'write'  => 'Write',
                                 'delete' => 'Delete',
-                                '*' => 'All Permissions',
+                                '*'      => 'All Permissions',
                             ])
                             ->columns(2),
                         Forms\Components\TagsInput::make('allowed_ips')
@@ -99,7 +99,7 @@ class ApiKeyResource extends Resource
                     ->colors([
                         'success' => 'read',
                         'warning' => 'write',
-                        'danger' => 'delete',
+                        'danger'  => 'delete',
                         'primary' => '*',
                     ]),
                 Tables\Columns\IconColumn::make('is_active')
@@ -154,8 +154,8 @@ class ApiKeyResource extends Resource
     {
         return [
             'index' => Pages\ListApiKeys::route('/'),
-            'view' => Pages\ViewApiKey::route('/{record}'),
-            'edit' => Pages\EditApiKey::route('/{record}/edit'),
+            'view'  => Pages\ViewApiKey::route('/{record}'),
+            'edit'  => Pages\EditApiKey::route('/{record}/edit'),
         ];
     }
 }

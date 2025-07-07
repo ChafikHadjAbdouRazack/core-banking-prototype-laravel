@@ -10,8 +10,8 @@ use Workflow\Workflow;
 class WithdrawAccountWorkflow extends Workflow
 {
     /**
-     * @param \App\Domain\Account\DataObjects\AccountUuid $uuid
-     * @param \App\Domain\Account\DataObjects\Money $money
+     * @param AccountUuid $uuid
+     * @param Money $money
      *
      * @return \Generator
      */

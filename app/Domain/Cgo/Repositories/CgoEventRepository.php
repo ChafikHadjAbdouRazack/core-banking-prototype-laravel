@@ -14,7 +14,7 @@ final class CgoEventRepository extends EloquentStoredEventRepository
     /**
      * @param string $storedEventModel
      *
-     * @throws \Spatie\EventSourcing\AggregateRoots\Exceptions\InvalidEloquentStoredEventModel
+     * @throws InvalidEloquentStoredEventModel
      */
     public function __construct(
         protected string $storedEventModel = CgoEvent::class

@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Domain\Asset\Events;
 
 use App\Domain\Account\DataObjects\AccountUuid;
-use App\Domain\Account\DataObjects\Money;
 use App\Domain\Account\DataObjects\Hash;
+use App\Domain\Account\DataObjects\Money;
 use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 
 class AssetTransferFailed extends ShouldBeStored
@@ -25,7 +25,7 @@ class AssetTransferFailed extends ShouldBeStored
     }
 
     /**
-     * Get the failure reason
+     * Get the failure reason.
      */
     public function getReason(): string
     {
@@ -33,7 +33,7 @@ class AssetTransferFailed extends ShouldBeStored
     }
 
     /**
-     * Check if failure was due to insufficient balance
+     * Check if failure was due to insufficient balance.
      */
     public function isInsufficientBalance(): bool
     {
@@ -41,7 +41,7 @@ class AssetTransferFailed extends ShouldBeStored
     }
 
     /**
-     * Check if failure was due to exchange rate issues
+     * Check if failure was due to exchange rate issues.
      */
     public function isExchangeRateFailure(): bool
     {

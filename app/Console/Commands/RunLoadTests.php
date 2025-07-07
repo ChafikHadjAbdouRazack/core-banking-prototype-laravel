@@ -3,9 +3,8 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class RunLoadTests extends Command
 {
@@ -121,20 +120,21 @@ class RunLoadTests extends Command
 
             default:
                 $this->warn("Unknown test: {$test}");
+
                 return;
         }
 
         $totalTime = microtime(true) - $startTime;
 
         $this->results[$test] = [
-            'iterations' => $iterations,
-            'total_time' => $totalTime,
-            'avg_time' => $totalTime / $iterations,
+            'iterations'     => $iterations,
+            'total_time'     => $totalTime,
+            'avg_time'       => $totalTime / $iterations,
             'ops_per_second' => $iterations / $totalTime,
         ];
 
         $this->info(sprintf(
-            "✅ Completed in %.3fs (%.2f ops/sec, avg: %.2fms)",
+            '✅ Completed in %.3fs (%.2f ops/sec, avg: %.2fms)',
             $totalTime,
             $iterations / $totalTime,
             ($totalTime / $iterations) * 1000
@@ -154,8 +154,8 @@ class RunLoadTests extends Command
             // Create initial balance for testing
             \App\Models\AccountBalance::create([
                 'account_uuid' => $account->uuid,
-                'asset_code' => 'USD',
-                'balance' => 100000,
+                'asset_code'   => 'USD',
+                'balance'      => 100000,
             ]);
 
             $bar->advance();
@@ -176,8 +176,8 @@ class RunLoadTests extends Command
             // Create initial balance for testing
             \App\Models\AccountBalance::create([
                 'account_uuid' => $account->uuid,
-                'asset_code' => 'USD',
-                'balance' => 10000000, // $100,000
+                'asset_code'   => 'USD',
+                'balance'      => 10000000, // $100,000
             ]);
             $accounts[] = $account;
         }
@@ -199,7 +199,7 @@ class RunLoadTests extends Command
                     );
                 } catch (\Exception $e) {
                     // Log but continue testing
-                    $this->warn("Transfer failed: " . $e->getMessage());
+                    $this->warn('Transfer failed: ' . $e->getMessage());
                 }
             }
 
@@ -235,9 +235,9 @@ class RunLoadTests extends Command
     {
         // Create test webhook
         $webhook = \App\Models\Webhook::create([
-            'uuid' => \Illuminate\Support\Str::uuid(),
-            'name' => 'Load Test Webhook',
-            'url' => 'https://httpbin.org/post',
+            'uuid'   => \Illuminate\Support\Str::uuid(),
+            'name'   => 'Load Test Webhook',
+            'url'    => 'https://httpbin.org/post',
             'events' => ['account.created', 'transaction.completed'],
             'secret' => \Illuminate\Support\Str::random(32),
         ]);
@@ -291,7 +291,7 @@ class RunLoadTests extends Command
     private function testCacheOperations(int $iterations): void
     {
         $data = [
-            'account' => \App\Models\Account::factory()->make()->toArray(),
+            'account'  => \App\Models\Account::factory()->make()->toArray(),
             'balances' => [
                 'USD' => 100000,
                 'EUR' => 50000,
@@ -299,7 +299,7 @@ class RunLoadTests extends Command
             ],
             'metadata' => [
                 'last_updated' => now()->toIso8601String(),
-                'version' => '1.0',
+                'version'      => '1.0',
             ],
         ];
 
@@ -353,9 +353,9 @@ class RunLoadTests extends Command
 
         $thresholds = [
             'account-creation' => 100, // ms
-            'transfers' => 200,
-            'exchange-rates' => 50,
-            'webhooks' => 50,
+            'transfers'        => 200,
+            'exchange-rates'   => 50,
+            'webhooks'         => 50,
             'database-queries' => 100,
             'cache-operations' => 1,
         ];
@@ -388,19 +388,19 @@ class RunLoadTests extends Command
     {
         $benchmarkFile = storage_path('app/benchmarks/load-test-' . now()->format('Y-m-d-His') . '.json');
 
-        if (!is_dir(dirname($benchmarkFile))) {
+        if (! is_dir(dirname($benchmarkFile))) {
             mkdir(dirname($benchmarkFile), 0755, true);
         }
 
         $benchmark = [
-            'timestamp' => now()->toIso8601String(),
+            'timestamp'   => now()->toIso8601String(),
             'environment' => app()->environment(),
-            'system' => [
+            'system'      => [
                 'database' => config('database.default'),
-                'cache' => config('cache.default'),
-                'queue' => config('queue.default'),
-                'php' => PHP_VERSION,
-                'laravel' => app()->version(),
+                'cache'    => config('cache.default'),
+                'queue'    => config('queue.default'),
+                'php'      => PHP_VERSION,
+                'laravel'  => app()->version(),
             ],
             'results' => $this->results,
         ];

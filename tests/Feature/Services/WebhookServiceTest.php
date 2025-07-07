@@ -18,15 +18,15 @@ it('dispatches webhook to subscribed webhooks', function () {
 
     $this->webhookService->dispatch('account.created', [
         'account_uuid' => 'test-uuid',
-        'name' => 'Test Account',
+        'name'         => 'Test Account',
     ]);
 
     // Should create deliveries for webhook1 and webhook2 only
     expect(WebhookDelivery::count())->toBe(2);
-    
+
     $deliveries = WebhookDelivery::all();
     $webhookUuids = $deliveries->pluck('webhook_uuid')->toArray();
-    
+
     expect($webhookUuids)->toContain($webhook1->uuid, $webhook2->uuid)
         ->and($webhookUuids)->not->toContain($webhook3->uuid);
 
@@ -50,7 +50,7 @@ it('includes event and timestamp in payload', function () {
     $this->webhookService->dispatch('test.event', ['custom' => 'data']);
 
     $delivery = WebhookDelivery::first();
-    
+
     expect($delivery->payload)->toHaveKey('event', 'test.event')
         ->and($delivery->payload)->toHaveKey('timestamp')
         ->and($delivery->payload)->toHaveKey('custom', 'data');
@@ -64,7 +64,7 @@ it('dispatches account events', function () {
     ]);
 
     $delivery = WebhookDelivery::first();
-    
+
     expect($delivery->event_type)->toBe('account.frozen')
         ->and($delivery->payload)->toHaveKey('account_uuid', 'account-uuid')
         ->and($delivery->payload)->toHaveKey('reason', 'Suspicious activity');
@@ -75,12 +75,12 @@ it('dispatches transaction events', function () {
 
     $this->webhookService->dispatchTransactionEvent('transaction.created', [
         'account_uuid' => 'test-uuid',
-        'type' => 'deposit',
-        'amount' => 1000,
+        'type'         => 'deposit',
+        'amount'       => 1000,
     ]);
 
     $delivery = WebhookDelivery::first();
-    
+
     expect($delivery->event_type)->toBe('transaction.created')
         ->and($delivery->payload['account_uuid'])->toBe('test-uuid')
         ->and($delivery->payload['type'])->toBe('deposit')
@@ -92,12 +92,12 @@ it('dispatches transfer events', function () {
 
     $this->webhookService->dispatchTransferEvent('transfer.created', [
         'from_account_uuid' => 'from-uuid',
-        'to_account_uuid' => 'to-uuid',
-        'amount' => 5000,
+        'to_account_uuid'   => 'to-uuid',
+        'amount'            => 5000,
     ]);
 
     $delivery = WebhookDelivery::first();
-    
+
     expect($delivery->event_type)->toBe('transfer.created')
         ->and($delivery->payload['from_account_uuid'])->toBe('from-uuid')
         ->and($delivery->payload['to_account_uuid'])->toBe('to-uuid')

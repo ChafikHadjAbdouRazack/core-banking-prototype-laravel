@@ -5,8 +5,8 @@ namespace App\Domain\Wallet\Events;
 use App\Domain\Account\DataObjects\Hash;
 use App\Domain\Account\DataObjects\Money;
 use App\Domain\Account\Events\HasHash;
-use App\Domain\Account\Events\HasMoney;
 use App\Domain\Account\Events\HashValidatorProvider;
+use App\Domain\Account\Events\HasMoney;
 use App\Values\EventQueues;
 use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 

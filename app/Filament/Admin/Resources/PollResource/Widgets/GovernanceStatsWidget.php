@@ -85,6 +85,7 @@ class GovernanceStatsWidget extends BaseWidget
             $count = Poll::whereDate('created_at', $date)->count();
             $data[] = $count;
         }
+
         return $data;
     }
 
@@ -97,6 +98,7 @@ class GovernanceStatsWidget extends BaseWidget
             $count = Vote::whereDate('voted_at', $date)->count();
             $data[] = $count;
         }
+
         return $data;
     }
 }

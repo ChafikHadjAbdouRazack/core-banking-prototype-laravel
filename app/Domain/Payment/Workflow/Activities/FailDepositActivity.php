@@ -15,8 +15,8 @@ class FailDepositActivity extends Activity
 
         return [
             'deposit_uuid' => $input['deposit_uuid'],
-            'status' => 'failed',
-            'reason' => $input['reason']
+            'status'       => 'failed',
+            'reason'       => $input['reason'],
         ];
     }
 }

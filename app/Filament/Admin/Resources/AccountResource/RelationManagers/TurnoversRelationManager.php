@@ -3,12 +3,10 @@
 namespace App\Filament\Admin\Resources\AccountResource\RelationManagers;
 
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class TurnoversRelationManager extends RelationManager
 {
@@ -79,6 +77,7 @@ class TurnoversRelationManager extends RelationManager
                         if ($data['created_until'] ?? null) {
                             $indicators['created_until'] = 'Until ' . \Carbon\Carbon::parse($data['created_until'])->toFormattedDateString();
                         }
+
                         return $indicators;
                     }),
             ])

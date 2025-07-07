@@ -2,9 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Models\FraudCase;
-use App\Models\User;
 use App\Models\Account;
+use App\Models\FraudCase;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -24,22 +23,22 @@ class FraudCaseFactory extends Factory
         // Generate unique case number for tests
         static $counter = 1;
         $caseNumber = 'FC-' . date('Y') . '-' . str_pad($counter++, 5, '0', STR_PAD_LEFT);
-        
+
         return [
-            'uuid' => $this->faker->uuid(),
-            'case_number' => $caseNumber,
-            'status' => $this->faker->randomElement(['pending', 'investigating', 'confirmed', 'false_positive', 'resolved']),
-            'severity' => $this->faker->randomElement(['low', 'medium', 'high', 'critical']),
-            'type' => $this->faker->randomElement(array_keys(FraudCase::FRAUD_TYPES)),
-            'subject_account_uuid' => function() {
+            'uuid'                 => $this->faker->uuid(),
+            'case_number'          => $caseNumber,
+            'status'               => $this->faker->randomElement(['pending', 'investigating', 'confirmed', 'false_positive', 'resolved']),
+            'severity'             => $this->faker->randomElement(['low', 'medium', 'high', 'critical']),
+            'type'                 => $this->faker->randomElement(array_keys(FraudCase::FRAUD_TYPES)),
+            'subject_account_uuid' => function () {
                 return Account::factory()->create()->uuid;
             },
-            'risk_score' => $this->faker->randomFloat(2, 0, 100),
-            'amount' => $this->faker->randomFloat(8, 100, 10000),
-            'currency' => 'USD',
-            'description' => $this->faker->paragraph(),
+            'risk_score'      => $this->faker->randomFloat(2, 0, 100),
+            'amount'          => $this->faker->randomFloat(8, 100, 10000),
+            'currency'        => 'USD',
+            'description'     => $this->faker->paragraph(),
             'detection_rules' => ['rule' => 'high_value_transaction', 'threshold' => 5000],
-            'detected_at' => $this->faker->dateTimeBetween('-7 days', 'now'),
+            'detected_at'     => $this->faker->dateTimeBetween('-7 days', 'now'),
         ];
     }
 
@@ -59,7 +58,7 @@ class FraudCaseFactory extends Factory
     public function investigating(): static
     {
         return $this->state(fn (array $attributes) => [
-            'status' => FraudCase::STATUS_INVESTIGATING,
+            'status'                   => FraudCase::STATUS_INVESTIGATING,
             'investigation_started_at' => now(),
         ]);
     }
@@ -70,7 +69,7 @@ class FraudCaseFactory extends Factory
     public function resolved(): static
     {
         return $this->state(fn (array $attributes) => [
-            'status' => FraudCase::STATUS_RESOLVED,
+            'status'      => FraudCase::STATUS_RESOLVED,
             'resolved_at' => now(),
         ]);
     }

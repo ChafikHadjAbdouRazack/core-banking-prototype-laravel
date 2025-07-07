@@ -18,7 +18,7 @@ class UpdateBasketComponentsActivity extends Activity
     {
         $basket = BasketAsset::where('code', $basketCode)->first();
 
-        if (!$basket) {
+        if (! $basket) {
             throw new \Exception("Basket {$basketCode} not found");
         }
 

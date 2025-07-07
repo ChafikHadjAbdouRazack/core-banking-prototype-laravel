@@ -4,8 +4,6 @@ namespace App\Filament\Admin\Resources\AccountResource\Widgets;
 
 use App\Models\Account;
 use Filament\Widgets\ChartWidget;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
 
 class AccountBalanceChart extends ChartWidget
 {
@@ -28,15 +26,15 @@ class AccountBalanceChart extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'label' => 'Total Balance',
-                    'data' => $data->pluck('total'),
-                    'borderColor' => '#10b981',
+                    'label'           => 'Total Balance',
+                    'data'            => $data->pluck('total'),
+                    'borderColor'     => '#10b981',
                     'backgroundColor' => 'rgba(16, 185, 129, 0.1)',
                 ],
                 [
-                    'label' => 'Average Balance',
-                    'data' => $data->pluck('average'),
-                    'borderColor' => '#3b82f6',
+                    'label'           => 'Average Balance',
+                    'data'            => $data->pluck('average'),
+                    'borderColor'     => '#3b82f6',
                     'backgroundColor' => 'rgba(59, 130, 246, 0.1)',
                 ],
             ],
@@ -53,7 +51,7 @@ class AccountBalanceChart extends ChartWidget
     {
         return [
             '24h' => 'Last 24 Hours',
-            '7d' => 'Last 7 Days',
+            '7d'  => 'Last 7 Days',
             '30d' => 'Last 30 Days',
             '90d' => 'Last 90 Days',
         ];
@@ -63,18 +61,18 @@ class AccountBalanceChart extends ChartWidget
     {
         $endDate = now();
         $groupBy = match ($period) {
-            '24h' => ['hours' => 1, 'format' => 'H:00'],
-            '7d' => ['days' => 1, 'format' => 'M d'],
-            '30d' => ['days' => 1, 'format' => 'M d'],
-            '90d' => ['days' => 3, 'format' => 'M d'],
+            '24h'   => ['hours' => 1, 'format' => 'H:00'],
+            '7d'    => ['days' => 1, 'format' => 'M d'],
+            '30d'   => ['days' => 1, 'format' => 'M d'],
+            '90d'   => ['days' => 3, 'format' => 'M d'],
             default => ['days' => 1, 'format' => 'M d'],
         };
 
         $startDate = match ($period) {
-            '24h' => $endDate->copy()->subDay(),
-            '7d' => $endDate->copy()->subDays(7),
-            '30d' => $endDate->copy()->subDays(30),
-            '90d' => $endDate->copy()->subDays(90),
+            '24h'   => $endDate->copy()->subDay(),
+            '7d'    => $endDate->copy()->subDays(7),
+            '30d'   => $endDate->copy()->subDays(30),
+            '90d'   => $endDate->copy()->subDays(90),
             default => $endDate->copy()->subDays(7),
         };
 
@@ -88,8 +86,8 @@ class AccountBalanceChart extends ChartWidget
             $variance = rand(-5, 10) / 100; // Simulate balance changes
 
             $data->push([
-                'date' => $current->format($groupBy['format']),
-                'total' => round($baseTotal * (1 + $variance), 2),
+                'date'    => $current->format($groupBy['format']),
+                'total'   => round($baseTotal * (1 + $variance), 2),
                 'average' => round(($baseTotal * (1 + $variance)) / max(Account::where('created_at', '<=', $current)->count(), 1), 2),
             ]);
 

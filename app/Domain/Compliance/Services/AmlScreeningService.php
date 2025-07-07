@@ -2,26 +2,26 @@
 
 namespace App\Domain\Compliance\Services;
 
-use App\Models\User;
-use App\Models\FinancialInstitutionApplication;
-use App\Models\AmlScreening;
-use App\Models\CustomerRiskProfile;
 use App\Domain\Compliance\Events\ScreeningCompleted;
 use App\Domain\Compliance\Events\ScreeningMatchFound;
+use App\Models\AmlScreening;
+use App\Models\CustomerRiskProfile;
+use App\Models\FinancialInstitutionApplication;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class AmlScreeningService
 {
     private array $sanctionsLists = [
         'OFAC' => 'https://api.ofac.treasury.gov/v1/',
-        'EU' => 'https://webgate.ec.europa.eu/fsd/fsf/public/files/xmlFullSanctionsList_1_1/content',
-        'UN' => 'https://api.un.org/sc/suborg/en/sanctions/un-sc-consolidated-list',
+        'EU'   => 'https://webgate.ec.europa.eu/fsd/fsf/public/files/xmlFullSanctionsList_1_1/content',
+        'UN'   => 'https://api.un.org/sc/suborg/en/sanctions/un-sc-consolidated-list',
     ];
 
     /**
-     * Perform comprehensive screening
+     * Perform comprehensive screening.
      */
     public function performComprehensiveScreening($entity, array $parameters = []): AmlScreening
     {
@@ -41,11 +41,11 @@ class AmlScreeningService
 
                 // Update screening with results
                 $screening->update([
-                    'sanctions_results' => $sanctionsResults,
-                    'pep_results' => $pepResults,
+                    'sanctions_results'     => $sanctionsResults,
+                    'pep_results'           => $pepResults,
                     'adverse_media_results' => $adverseMediaResults,
-                    'overall_risk' => $overallRisk,
-                    'total_matches' => $this->countTotalMatches($sanctionsResults, $pepResults, $adverseMediaResults),
+                    'overall_risk'          => $overallRisk,
+                    'total_matches'         => $this->countTotalMatches($sanctionsResults, $pepResults, $adverseMediaResults),
                 ]);
 
                 $screening->markAsCompleted();
@@ -65,12 +65,12 @@ class AmlScreeningService
     }
 
     /**
-     * Perform sanctions screening
+     * Perform sanctions screening.
      */
     public function performSanctionsScreening(AmlScreening $screening): array
     {
         $results = [
-            'matches' => [],
+            'matches'       => [],
             'lists_checked' => [],
             'total_matches' => 0,
         ];
@@ -79,7 +79,7 @@ class AmlScreeningService
 
         // Check OFAC SDN List
         $ofacResults = $this->checkOFACList($searchParams);
-        if (!empty($ofacResults)) {
+        if (! empty($ofacResults)) {
             $results['matches']['OFAC'] = $ofacResults;
             $results['total_matches'] += count($ofacResults);
         }
@@ -87,7 +87,7 @@ class AmlScreeningService
 
         // Check EU Sanctions
         $euResults = $this->checkEUSanctions($searchParams);
-        if (!empty($euResults)) {
+        if (! empty($euResults)) {
             $results['matches']['EU'] = $euResults;
             $results['total_matches'] += count($euResults);
         }
@@ -95,7 +95,7 @@ class AmlScreeningService
 
         // Check UN Sanctions
         $unResults = $this->checkUNSanctions($searchParams);
-        if (!empty($unResults)) {
+        if (! empty($unResults)) {
             $results['matches']['UN'] = $unResults;
             $results['total_matches'] += count($unResults);
         }
@@ -105,7 +105,7 @@ class AmlScreeningService
     }
 
     /**
-     * Perform PEP screening
+     * Perform PEP screening.
      */
     public function performPEPScreening(AmlScreening $screening): array
     {
@@ -114,12 +114,12 @@ class AmlScreeningService
         // In production, this would integrate with a PEP database provider
         // For now, simulate PEP checking
         $results = [
-            'is_pep' => false,
-            'pep_type' => null,
-            'position' => null,
-            'country' => null,
+            'is_pep'     => false,
+            'pep_type'   => null,
+            'position'   => null,
+            'country'    => null,
             'since_date' => null,
-            'matches' => [],
+            'matches'    => [],
         ];
 
         // Check against known PEP indicators
@@ -134,9 +134,9 @@ class AmlScreeningService
             $results['country'] = $country;
             $results['since_date'] = now()->subYears(2)->toDateString();
             $results['matches'][] = [
-                'name' => $name,
+                'name'        => $name,
                 'match_score' => 95,
-                'source' => 'PEP Database',
+                'source'      => 'PEP Database',
             ];
         }
 
@@ -144,7 +144,7 @@ class AmlScreeningService
     }
 
     /**
-     * Perform adverse media screening
+     * Perform adverse media screening.
      */
     public function performAdverseMediaScreening(AmlScreening $screening): array
     {
@@ -152,17 +152,17 @@ class AmlScreeningService
 
         // In production, this would integrate with news aggregation services
         $results = [
-            'has_adverse_media' => false,
-            'total_articles' => 0,
+            'has_adverse_media'   => false,
+            'total_articles'      => 0,
             'serious_allegations' => 0,
-            'categories' => [],
-            'articles' => [],
+            'categories'          => [],
+            'articles'            => [],
         ];
 
         // Simulate adverse media check
         $adverseMedia = $this->searchAdverseMedia($searchParams['name'] ?? '');
 
-        if (!empty($adverseMedia)) {
+        if (! empty($adverseMedia)) {
             $results['has_adverse_media'] = true;
             $results['total_articles'] = count($adverseMedia);
             $results['articles'] = $adverseMedia;
@@ -180,7 +180,7 @@ class AmlScreeningService
     }
 
     /**
-     * Create screening record
+     * Create screening record.
      */
     protected function createScreening($entity, string $type, array $parameters): AmlScreening
     {
@@ -191,19 +191,19 @@ class AmlScreeningService
         $searchParams = $this->buildSearchParameters($entity, $parameters);
 
         return AmlScreening::create([
-            'entity_id' => $entityId,
-            'entity_type' => $entityType,
-            'type' => $type,
-            'status' => AmlScreening::STATUS_PENDING,
+            'entity_id'         => $entityId,
+            'entity_type'       => $entityType,
+            'type'              => $type,
+            'status'            => AmlScreening::STATUS_PENDING,
             'search_parameters' => $searchParams,
-            'fuzzy_matching' => $parameters['fuzzy_matching'] ?? true,
-            'match_threshold' => $parameters['match_threshold'] ?? 85,
-            'started_at' => now(),
+            'fuzzy_matching'    => $parameters['fuzzy_matching'] ?? true,
+            'match_threshold'   => $parameters['match_threshold'] ?? 85,
+            'started_at'        => now(),
         ]);
     }
 
     /**
-     * Build search parameters from entity
+     * Build search parameters from entity.
      */
     protected function buildSearchParameters($entity, array $additionalParams = []): array
     {
@@ -211,16 +211,16 @@ class AmlScreeningService
 
         if ($entity instanceof User) {
             $params = [
-                'name' => $entity->name,
+                'name'          => $entity->name,
                 'date_of_birth' => $entity->date_of_birth?->toDateString(),
-                'country' => $entity->country ?? 'US',
-                'id_number' => $entity->id_number ?? null,
+                'country'       => $entity->country ?? 'US',
+                'id_number'     => $entity->id_number ?? null,
             ];
         } elseif ($entity instanceof FinancialInstitutionApplication) {
             $params = [
-                'name' => $entity->institution_name,
-                'legal_name' => $entity->legal_name,
-                'country' => $entity->country,
+                'name'                => $entity->institution_name,
+                'legal_name'          => $entity->legal_name,
+                'country'             => $entity->country,
                 'registration_number' => $entity->registration_number,
             ];
         }
@@ -229,7 +229,7 @@ class AmlScreeningService
     }
 
     /**
-     * Check OFAC SDN List
+     * Check OFAC SDN List.
      */
     protected function checkOFACList(array $searchParams): array
     {
@@ -250,12 +250,12 @@ class AmlScreeningService
             // Simulated response
             if (str_contains(strtolower($name), 'test') || str_contains(strtolower($name), 'sanctioned')) {
                 $matches[] = [
-                    'sdn_id' => '12345',
-                    'name' => $name,
+                    'sdn_id'      => '12345',
+                    'name'        => $name,
                     'match_score' => 92,
-                    'type' => 'Individual',
-                    'program' => 'CYBER2',
-                    'remarks' => 'Added to SDN list on 2023-01-01',
+                    'type'        => 'Individual',
+                    'program'     => 'CYBER2',
+                    'remarks'     => 'Added to SDN list on 2023-01-01',
                 ];
             }
         } catch (\Exception $e) {
@@ -266,7 +266,7 @@ class AmlScreeningService
     }
 
     /**
-     * Check EU Sanctions
+     * Check EU Sanctions.
      */
     protected function checkEUSanctions(array $searchParams): array
     {
@@ -275,7 +275,7 @@ class AmlScreeningService
     }
 
     /**
-     * Check UN Sanctions
+     * Check UN Sanctions.
      */
     protected function checkUNSanctions(array $searchParams): array
     {
@@ -284,7 +284,7 @@ class AmlScreeningService
     }
 
     /**
-     * Check PEP Database
+     * Check PEP Database.
      */
     protected function checkPEPDatabase(string $name, string $country): bool
     {
@@ -305,7 +305,7 @@ class AmlScreeningService
     }
 
     /**
-     * Search adverse media
+     * Search adverse media.
      */
     protected function searchAdverseMedia(string $name): array
     {
@@ -316,12 +316,12 @@ class AmlScreeningService
 
         if (str_contains(strtolower($name), 'fraud') || str_contains(strtolower($name), 'scandal')) {
             $articles[] = [
-                'title' => "Investigation into {$name} financial practices",
-                'source' => 'Financial Times',
-                'date' => now()->subMonths(2)->toDateString(),
+                'title'    => "Investigation into {$name} financial practices",
+                'source'   => 'Financial Times',
+                'date'     => now()->subMonths(2)->toDateString(),
                 'category' => 'Financial Crime',
                 'severity' => 'high',
-                'url' => 'https://example.com/article1',
+                'url'      => 'https://example.com/article1',
             ];
         }
 
@@ -329,7 +329,7 @@ class AmlScreeningService
     }
 
     /**
-     * Calculate overall risk
+     * Calculate overall risk.
      */
     protected function calculateOverallRisk(array $sanctions, array $pep, array $adverseMedia): string
     {
@@ -353,7 +353,7 @@ class AmlScreeningService
     }
 
     /**
-     * Count total matches across all screening types
+     * Count total matches across all screening types.
      */
     protected function countTotalMatches(array $sanctions, array $pep, array $adverseMedia): int
     {
@@ -371,7 +371,7 @@ class AmlScreeningService
     }
 
     /**
-     * Review screening results
+     * Review screening results.
      */
     public function reviewScreening(AmlScreening $screening, string $decision, string $notes, User $reviewer): void
     {
@@ -384,19 +384,19 @@ class AmlScreeningService
     }
 
     /**
-     * Update customer risk profile based on screening
+     * Update customer risk profile based on screening.
      */
     protected function updateCustomerRiskProfile(AmlScreening $screening): void
     {
         $profile = CustomerRiskProfile::where('user_id', $screening->entity_id)->first();
 
-        if (!$profile) {
+        if (! $profile) {
             return;
         }
 
         $updates = [
-            'sanctions_verified_at' => now(),
-            'pep_verified_at' => now(),
+            'sanctions_verified_at'    => now(),
+            'pep_verified_at'          => now(),
             'adverse_media_checked_at' => now(),
         ];
 

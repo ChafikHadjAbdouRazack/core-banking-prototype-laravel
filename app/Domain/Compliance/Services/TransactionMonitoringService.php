@@ -2,19 +2,18 @@
 
 namespace App\Domain\Compliance\Services;
 
-use App\Models\Transaction;
-use App\Models\TransactionMonitoringRule;
-use App\Models\SuspiciousActivityReport;
-use App\Models\CustomerRiskProfile;
 use App\Domain\Compliance\Events\SuspiciousActivityDetected;
 use App\Domain\Compliance\Events\TransactionBlocked;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
+use App\Models\CustomerRiskProfile;
+use App\Models\Transaction;
+use App\Models\TransactionMonitoringRule;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 
 class TransactionMonitoringService
 {
     private SuspiciousActivityReportService $sarService;
+
     private CustomerRiskService $riskService;
 
     public function __construct(
@@ -26,7 +25,7 @@ class TransactionMonitoringService
     }
 
     /**
-     * Monitor transaction in real-time
+     * Monitor transaction in real-time.
      */
     public function monitorTransaction(Transaction $transaction): array
     {
@@ -55,26 +54,26 @@ class TransactionMonitoringService
             $this->processActions($actions, $transaction, $alerts);
 
             // Update behavioral risk if patterns detected
-            if (!empty($alerts)) {
+            if (! empty($alerts)) {
                 $this->updateBehavioralRisk($transaction, $alerts);
             }
 
             return [
-                'passed' => empty($alerts) || !in_array(TransactionMonitoringRule::ACTION_BLOCK, $actions),
-                'alerts' => $alerts,
+                'passed'  => empty($alerts) || ! in_array(TransactionMonitoringRule::ACTION_BLOCK, $actions),
+                'alerts'  => $alerts,
                 'actions' => array_unique($actions),
             ];
         } catch (\Exception $e) {
             Log::error('Transaction monitoring failed', [
                 'transaction_id' => $transaction->id,
-                'error' => $e->getMessage(),
+                'error'          => $e->getMessage(),
             ]);
 
             // Fail-safe: allow transaction but flag for review
             return [
                 'passed' => true,
                 'alerts' => [[
-                    'type' => 'system_error',
+                    'type'    => 'system_error',
                     'message' => 'Monitoring system error - flagged for manual review',
                 ]],
                 'actions' => [TransactionMonitoringRule::ACTION_REVIEW],
@@ -83,7 +82,7 @@ class TransactionMonitoringService
     }
 
     /**
-     * Batch monitor transactions
+     * Batch monitor transactions.
      */
     public function batchMonitor(Collection $transactions): array
     {
@@ -96,7 +95,7 @@ class TransactionMonitoringService
         // Look for patterns across batch
         $patterns = $this->detectBatchPatterns($transactions, $results);
 
-        if (!empty($patterns)) {
+        if (! empty($patterns)) {
             $this->handleDetectedPatterns($patterns, $transactions);
         }
 
@@ -104,12 +103,12 @@ class TransactionMonitoringService
     }
 
     /**
-     * Get customer risk profile
+     * Get customer risk profile.
      */
     protected function getCustomerRiskProfile(Transaction $transaction): ?CustomerRiskProfile
     {
         $account = $transaction->account;
-        if (!$account || !$account->user_id) {
+        if (! $account || ! $account->user_id) {
             return null;
         }
 
@@ -117,7 +116,7 @@ class TransactionMonitoringService
     }
 
     /**
-     * Get applicable monitoring rules
+     * Get applicable monitoring rules.
      */
     protected function getApplicableRules(Transaction $transaction, ?CustomerRiskProfile $riskProfile): Collection
     {
@@ -147,7 +146,7 @@ class TransactionMonitoringService
     }
 
     /**
-     * Evaluate monitoring rule
+     * Evaluate monitoring rule.
      */
     protected function evaluateRule(
         TransactionMonitoringRule $rule,
@@ -176,7 +175,7 @@ class TransactionMonitoringService
     }
 
     /**
-     * Evaluate velocity rule
+     * Evaluate velocity rule.
      */
     protected function evaluateVelocityRule(TransactionMonitoringRule $rule, Transaction $transaction): bool
     {
@@ -186,10 +185,10 @@ class TransactionMonitoringService
 
         // Parse time window
         $startTime = match ($timeWindow) {
-            '1h' => now()->subHour(),
-            '24h' => now()->subDay(),
-            '7d' => now()->subWeek(),
-            '30d' => now()->subMonth(),
+            '1h'    => now()->subHour(),
+            '24h'   => now()->subDay(),
+            '7d'    => now()->subWeek(),
+            '30d'   => now()->subMonth(),
             default => now()->subDay(),
         };
 
@@ -204,7 +203,7 @@ class TransactionMonitoringService
     }
 
     /**
-     * Evaluate pattern rule
+     * Evaluate pattern rule.
      */
     protected function evaluatePatternRule(TransactionMonitoringRule $rule, Transaction $transaction): bool
     {
@@ -229,7 +228,7 @@ class TransactionMonitoringService
     }
 
     /**
-     * Evaluate threshold rule
+     * Evaluate threshold rule.
      */
     protected function evaluateThresholdRule(TransactionMonitoringRule $rule, Transaction $transaction): bool
     {
@@ -256,7 +255,7 @@ class TransactionMonitoringService
     }
 
     /**
-     * Evaluate geography rule
+     * Evaluate geography rule.
      */
     protected function evaluateGeographyRule(TransactionMonitoringRule $rule, Transaction $transaction): bool
     {
@@ -279,14 +278,14 @@ class TransactionMonitoringService
     }
 
     /**
-     * Evaluate behavior rule
+     * Evaluate behavior rule.
      */
     protected function evaluateBehaviorRule(
         TransactionMonitoringRule $rule,
         Transaction $transaction,
         ?CustomerRiskProfile $riskProfile
     ): bool {
-        if (!$riskProfile) {
+        if (! $riskProfile) {
             return false;
         }
 
@@ -307,7 +306,7 @@ class TransactionMonitoringService
     }
 
     /**
-     * Detect structuring pattern
+     * Detect structuring pattern.
      */
     protected function detectStructuring(Transaction $transaction): bool
     {
@@ -331,7 +330,7 @@ class TransactionMonitoringService
     }
 
     /**
-     * Detect rapid fund movement
+     * Detect rapid fund movement.
      */
     protected function detectRapidMovement(Transaction $transaction): bool
     {
@@ -350,7 +349,7 @@ class TransactionMonitoringService
     }
 
     /**
-     * Detect round amounts pattern
+     * Detect round amounts pattern.
      */
     protected function detectRoundAmounts(Transaction $transaction): bool
     {
@@ -375,25 +374,25 @@ class TransactionMonitoringService
     }
 
     /**
-     * Create alert from rule and transaction
+     * Create alert from rule and transaction.
      */
     protected function createAlert(TransactionMonitoringRule $rule, Transaction $transaction): array
     {
         return [
-            'rule_id' => $rule->id,
-            'rule_code' => $rule->rule_code,
-            'rule_name' => $rule->name,
-            'category' => $rule->category,
-            'risk_level' => $rule->risk_level,
+            'rule_id'        => $rule->id,
+            'rule_code'      => $rule->rule_code,
+            'rule_name'      => $rule->name,
+            'category'       => $rule->category,
+            'risk_level'     => $rule->risk_level,
             'transaction_id' => $transaction->id,
-            'amount' => $transaction->amount,
-            'timestamp' => now()->toIso8601String(),
-            'description' => $this->generateAlertDescription($rule, $transaction),
+            'amount'         => $transaction->amount,
+            'timestamp'      => now()->toIso8601String(),
+            'description'    => $this->generateAlertDescription($rule, $transaction),
         ];
     }
 
     /**
-     * Generate alert description
+     * Generate alert description.
      */
     protected function generateAlertDescription(TransactionMonitoringRule $rule, Transaction $transaction): string
     {
@@ -401,22 +400,17 @@ class TransactionMonitoringService
         $currency = $transaction->currency;
 
         return match ($rule->category) {
-            TransactionMonitoringRule::CATEGORY_VELOCITY =>
-                "High velocity detected: Multiple transactions totaling {$currency} {$amount}",
-            TransactionMonitoringRule::CATEGORY_PATTERN =>
-                "Suspicious pattern detected: {$rule->name}",
-            TransactionMonitoringRule::CATEGORY_THRESHOLD =>
-                "Threshold exceeded: Transaction of {$currency} {$amount}",
-            TransactionMonitoringRule::CATEGORY_GEOGRAPHY =>
-                "High-risk geography: Transaction involving restricted country",
-            TransactionMonitoringRule::CATEGORY_BEHAVIOR =>
-                "Behavioral anomaly: Deviation from established pattern",
-            default => "Alert: {$rule->name}",
+            TransactionMonitoringRule::CATEGORY_VELOCITY  => "High velocity detected: Multiple transactions totaling {$currency} {$amount}",
+            TransactionMonitoringRule::CATEGORY_PATTERN   => "Suspicious pattern detected: {$rule->name}",
+            TransactionMonitoringRule::CATEGORY_THRESHOLD => "Threshold exceeded: Transaction of {$currency} {$amount}",
+            TransactionMonitoringRule::CATEGORY_GEOGRAPHY => 'High-risk geography: Transaction involving restricted country',
+            TransactionMonitoringRule::CATEGORY_BEHAVIOR  => 'Behavioral anomaly: Deviation from established pattern',
+            default                                       => "Alert: {$rule->name}",
         };
     }
 
     /**
-     * Process monitoring actions
+     * Process monitoring actions.
      */
     protected function processActions(array $actions, Transaction $transaction, array $alerts): void
     {
@@ -442,16 +436,16 @@ class TransactionMonitoringService
     }
 
     /**
-     * Block transaction
+     * Block transaction.
      */
     protected function blockTransaction(Transaction $transaction, array $alerts): void
     {
         $transaction->update([
-            'status' => 'blocked',
+            'status'   => 'blocked',
             'metadata' => array_merge($transaction->metadata ?? [], [
-                'blocked_at' => now()->toIso8601String(),
+                'blocked_at'   => now()->toIso8601String(),
                 'block_reason' => 'AML monitoring alert',
-                'alerts' => $alerts,
+                'alerts'       => $alerts,
             ]),
         ]);
 
@@ -459,7 +453,7 @@ class TransactionMonitoringService
     }
 
     /**
-     * Send alert
+     * Send alert.
      */
     protected function sendAlert(Transaction $transaction, array $alerts): void
     {
@@ -467,39 +461,38 @@ class TransactionMonitoringService
     }
 
     /**
-     * Flag transaction for review
+     * Flag transaction for review.
      */
     protected function flagForReview(Transaction $transaction, array $alerts): void
     {
         $transaction->update([
             'metadata' => array_merge($transaction->metadata ?? [], [
-                'requires_review' => true,
+                'requires_review'     => true,
                 'review_requested_at' => now()->toIso8601String(),
-                'review_alerts' => $alerts,
+                'review_alerts'       => $alerts,
             ]),
         ]);
     }
 
     /**
-     * Create Suspicious Activity Report
+     * Create Suspicious Activity Report.
      */
     protected function createSAR(Transaction $transaction, array $alerts): void
     {
-        $highRiskAlerts = array_filter($alerts, fn($alert) =>
-            $alert['risk_level'] === TransactionMonitoringRule::RISK_LEVEL_HIGH);
+        $highRiskAlerts = array_filter($alerts, fn ($alert) => $alert['risk_level'] === TransactionMonitoringRule::RISK_LEVEL_HIGH);
 
-        if (!empty($highRiskAlerts)) {
+        if (! empty($highRiskAlerts)) {
             $this->sarService->createFromTransaction($transaction, $alerts);
         }
     }
 
     /**
-     * Update behavioral risk based on alerts
+     * Update behavioral risk based on alerts.
      */
     protected function updateBehavioralRisk(Transaction $transaction, array $alerts): void
     {
         $riskProfile = $this->getCustomerRiskProfile($transaction);
-        if (!$riskProfile) {
+        if (! $riskProfile) {
             return;
         }
 
@@ -518,7 +511,7 @@ class TransactionMonitoringService
         $behavioralRisk['alert_count'] = ($behavioralRisk['alert_count'] ?? 0) + count($alerts);
 
         $riskProfile->update([
-            'behavioral_risk' => $behavioralRisk,
+            'behavioral_risk'             => $behavioralRisk,
             'suspicious_activities_count' => $riskProfile->suspicious_activities_count + 1,
             'last_suspicious_activity_at' => now(),
         ]);
@@ -530,7 +523,7 @@ class TransactionMonitoringService
     }
 
     /**
-     * Detect patterns across batch of transactions
+     * Detect patterns across batch of transactions.
      */
     protected function detectBatchPatterns(Collection $transactions, array $results): array
     {
@@ -543,8 +536,8 @@ class TransactionMonitoringService
             // Check for smurfing (multiple small transactions)
             if ($this->detectSmurfing($accountTransactions)) {
                 $patterns[] = [
-                    'type' => 'smurfing',
-                    'account_id' => $accountId,
+                    'type'         => 'smurfing',
+                    'account_id'   => $accountId,
                     'transactions' => $accountTransactions->pluck('id')->toArray(),
                 ];
             }
@@ -552,8 +545,8 @@ class TransactionMonitoringService
             // Check for layering
             if ($this->detectLayering($accountTransactions)) {
                 $patterns[] = [
-                    'type' => 'layering',
-                    'account_id' => $accountId,
+                    'type'         => 'layering',
+                    'account_id'   => $accountId,
                     'transactions' => $accountTransactions->pluck('id')->toArray(),
                 ];
             }
@@ -563,7 +556,7 @@ class TransactionMonitoringService
     }
 
     /**
-     * Detect smurfing pattern
+     * Detect smurfing pattern.
      */
     protected function detectSmurfing(Collection $transactions): bool
     {
@@ -582,7 +575,7 @@ class TransactionMonitoringService
     }
 
     /**
-     * Detect layering pattern
+     * Detect layering pattern.
      */
     protected function detectLayering(Collection $transactions): bool
     {
@@ -605,7 +598,7 @@ class TransactionMonitoringService
     }
 
     /**
-     * Handle detected patterns
+     * Handle detected patterns.
      */
     protected function handleDetectedPatterns(array $patterns, Collection $transactions): void
     {
@@ -622,37 +615,37 @@ class TransactionMonitoringService
     }
 
     /**
-     * Parse time window string
+     * Parse time window string.
      */
     protected function parseTimeWindow(string $window): \Carbon\Carbon
     {
         return match ($window) {
-            '1h' => now()->subHour(),
-            '24h' => now()->subDay(),
-            '7d' => now()->subWeek(),
-            '30d' => now()->subMonth(),
+            '1h'    => now()->subHour(),
+            '24h'   => now()->subDay(),
+            '7d'    => now()->subWeek(),
+            '30d'   => now()->subMonth(),
             default => now()->subDay(),
         };
     }
 
     /**
-     * Check behavioral deviation
+     * Check behavioral deviation.
      */
     protected function checkBehavioralDeviation(array $condition, Transaction $transaction, array $behavioralRisk): bool
     {
         $type = $condition['type'] ?? null;
 
         return match ($type) {
-            'unusual_amount' => $this->isUnusualAmount($transaction, $behavioralRisk),
-            'unusual_time' => $this->isUnusualTime($transaction, $behavioralRisk),
-            'unusual_frequency' => $this->isUnusualFrequency($transaction, $behavioralRisk),
+            'unusual_amount'      => $this->isUnusualAmount($transaction, $behavioralRisk),
+            'unusual_time'        => $this->isUnusualTime($transaction, $behavioralRisk),
+            'unusual_frequency'   => $this->isUnusualFrequency($transaction, $behavioralRisk),
             'unusual_destination' => $this->isUnusualDestination($transaction, $behavioralRisk),
-            default => false,
+            default               => false,
         };
     }
 
     /**
-     * Check if transaction amount is unusual
+     * Check if transaction amount is unusual.
      */
     protected function isUnusualAmount(Transaction $transaction, array $behavioralRisk): bool
     {
@@ -670,7 +663,7 @@ class TransactionMonitoringService
     }
 
     /**
-     * Check if transaction time is unusual
+     * Check if transaction time is unusual.
      */
     protected function isUnusualTime(Transaction $transaction, array $behavioralRisk): bool
     {
@@ -682,11 +675,11 @@ class TransactionMonitoringService
 
         $hour = $transaction->created_at->hour;
 
-        return !in_array($hour, $usualHours);
+        return ! in_array($hour, $usualHours);
     }
 
     /**
-     * Check if transaction frequency is unusual
+     * Check if transaction frequency is unusual.
      */
     protected function isUnusualFrequency(Transaction $transaction, array $behavioralRisk): bool
     {
@@ -704,7 +697,7 @@ class TransactionMonitoringService
     }
 
     /**
-     * Check if transaction destination is unusual
+     * Check if transaction destination is unusual.
      */
     protected function isUnusualDestination(Transaction $transaction, array $behavioralRisk): bool
     {
@@ -712,10 +705,10 @@ class TransactionMonitoringService
         $metadata = $transaction->metadata ?? [];
         $destination = $metadata['destination_account'] ?? $metadata['destination_country'] ?? null;
 
-        if (!$destination || empty($knownDestinations)) {
+        if (! $destination || empty($knownDestinations)) {
             return false;
         }
 
-        return !in_array($destination, $knownDestinations);
+        return ! in_array($destination, $knownDestinations);
     }
 }

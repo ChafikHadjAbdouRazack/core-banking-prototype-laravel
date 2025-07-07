@@ -17,7 +17,7 @@ class BankRoutingService
     }
 
     /**
-     * Determine optimal transfer type between banks
+     * Determine optimal transfer type between banks.
      */
     public function determineTransferType(
         string $fromBank,
@@ -36,6 +36,7 @@ class BankRoutingService
             if ($amount <= 15000) {
                 return 'SEPA_INSTANT';
             }
+
             return 'SEPA';
         }
 
@@ -44,7 +45,7 @@ class BankRoutingService
     }
 
     /**
-     * Get optimal bank for a specific operation
+     * Get optimal bank for a specific operation.
      */
     public function getOptimalBank(
         User $user,
@@ -56,7 +57,7 @@ class BankRoutingService
         $scores = [];
 
         foreach ($userConnections as $connection) {
-            if (!$connection->isActive()) {
+            if (! $connection->isActive()) {
                 continue;
             }
 
@@ -72,11 +73,12 @@ class BankRoutingService
 
         // Return bank with highest score
         arsort($scores);
+
         return array_key_first($scores);
     }
 
     /**
-     * Calculate bank score for routing decision
+     * Calculate bank score for routing decision.
      */
     private function calculateBankScore(
         string $bankCode,
@@ -130,7 +132,7 @@ class BankRoutingService
     }
 
     /**
-     * Calculate fee score for a bank
+     * Calculate fee score for a bank.
      */
     private function calculateFeeScore(
         string $bankCode,
@@ -141,10 +143,10 @@ class BankRoutingService
         // This would be calculated based on actual fee structures
         // For now, return a mock score
         $baseFees = [
-            'PAYSERA' => ['SEPA' => 1, 'SWIFT' => 15, 'INTERNAL' => 0],
-            'REVOLUT' => ['SEPA' => 0, 'SWIFT' => 5, 'INTERNAL' => 0],
-            'WISE' => ['SEPA' => 0.5, 'SWIFT' => 4, 'INTERNAL' => 0],
-            'DEUTSCHE' => ['SEPA' => 5, 'SWIFT' => 25, 'INTERNAL' => 0],
+            'PAYSERA'   => ['SEPA' => 1, 'SWIFT' => 15, 'INTERNAL' => 0],
+            'REVOLUT'   => ['SEPA' => 0, 'SWIFT' => 5, 'INTERNAL' => 0],
+            'WISE'      => ['SEPA' => 0.5, 'SWIFT' => 4, 'INTERNAL' => 0],
+            'DEUTSCHE'  => ['SEPA' => 5, 'SWIFT' => 25, 'INTERNAL' => 0],
             'SANTANDER' => ['SEPA' => 3, 'SWIFT' => 20, 'INTERNAL' => 0],
         ];
 
@@ -165,7 +167,7 @@ class BankRoutingService
     }
 
     /**
-     * Check if both banks are European
+     * Check if both banks are European.
      */
     private function areBothEuropean(string $bank1, string $bank2): bool
     {
@@ -175,7 +177,7 @@ class BankRoutingService
     }
 
     /**
-     * Get recommended banks for a user based on their needs
+     * Get recommended banks for a user based on their needs.
      */
     public function getRecommendedBanks(User $user, array $requirements): array
     {
@@ -220,7 +222,7 @@ class BankRoutingService
                 $availableCountries = $health['capabilities']['available_countries'] ?? [];
                 $supported = array_intersect($requirements['countries'], $availableCountries);
 
-                if (!empty($supported)) {
+                if (! empty($supported)) {
                     $score += 15;
                     $reasons[] = 'Available in required countries';
                 }
@@ -229,31 +231,31 @@ class BankRoutingService
             if ($score > 0) {
                 $recommendations[] = [
                     'bank_code' => $bankCode,
-                    'score' => $score,
-                    'reasons' => $reasons,
-                    'health' => $health,
+                    'score'     => $score,
+                    'reasons'   => $reasons,
+                    'health'    => $health,
                 ];
             }
         }
 
         // Sort by score
-        usort($recommendations, fn($a, $b) => $b['score'] <=> $a['score']);
+        usort($recommendations, fn ($a, $b) => $b['score'] <=> $a['score']);
 
         return $recommendations;
     }
 
     /**
-     * Check if bank supports a specific feature
+     * Check if bank supports a specific feature.
      */
     private function bankSupportsFeature(array $capabilities, string $feature): bool
     {
         $featureMap = [
             'instant_transfers' => 'supports_instant_transfers',
-            'multi_currency' => 'supports_multi_currency',
-            'virtual_accounts' => 'supports_virtual_accounts',
-            'bulk_transfers' => 'supports_bulk_transfers',
-            'webhooks' => 'supports_webhooks',
-            'cards' => 'supports_card_issuance',
+            'multi_currency'    => 'supports_multi_currency',
+            'virtual_accounts'  => 'supports_virtual_accounts',
+            'bulk_transfers'    => 'supports_bulk_transfers',
+            'webhooks'          => 'supports_webhooks',
+            'cards'             => 'supports_card_issuance',
         ];
 
         $capabilityKey = $featureMap[$feature] ?? null;

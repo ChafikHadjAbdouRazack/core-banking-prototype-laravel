@@ -6,8 +6,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class ApiKey extends Model
 {
@@ -31,12 +31,12 @@ class ApiKey extends Model
     ];
 
     protected $casts = [
-        'permissions' => 'array',
-        'rate_limits' => 'array',
-        'allowed_ips' => 'array',
-        'is_active' => 'boolean',
-        'last_used_at' => 'datetime',
-        'expires_at' => 'datetime',
+        'permissions'   => 'array',
+        'rate_limits'   => 'array',
+        'allowed_ips'   => 'array',
+        'is_active'     => 'boolean',
+        'last_used_at'  => 'datetime',
+        'expires_at'    => 'datetime',
         'request_count' => 'integer',
     ];
 
@@ -52,7 +52,7 @@ class ApiKey extends Model
     }
 
     /**
-     * Get the user that owns the API key
+     * Get the user that owns the API key.
      */
     public function user(): BelongsTo
     {
@@ -60,7 +60,7 @@ class ApiKey extends Model
     }
 
     /**
-     * Get the logs for this API key
+     * Get the logs for this API key.
      */
     public function logs(): HasMany
     {
@@ -68,7 +68,7 @@ class ApiKey extends Model
     }
 
     /**
-     * Generate a new API key
+     * Generate a new API key.
      */
     public static function generateKey(): string
     {
@@ -76,7 +76,7 @@ class ApiKey extends Model
     }
 
     /**
-     * Create a new API key for a user
+     * Create a new API key for a user.
      */
     public static function createForUser(User $user, array $data): array
     {
@@ -85,25 +85,25 @@ class ApiKey extends Model
         $keyHash = Hash::make($plainKey);
 
         $apiKey = self::create([
-            'user_uuid' => $user->uuid,
-            'name' => $data['name'],
-            'key_prefix' => $keyPrefix,
-            'key_hash' => $keyHash,
+            'user_uuid'   => $user->uuid,
+            'name'        => $data['name'],
+            'key_prefix'  => $keyPrefix,
+            'key_hash'    => $keyHash,
             'description' => $data['description'] ?? null,
             'permissions' => $data['permissions'] ?? ['read'],
             'rate_limits' => $data['rate_limits'] ?? null,
             'allowed_ips' => $data['allowed_ips'] ?? null,
-            'expires_at' => $data['expires_at'] ?? null,
+            'expires_at'  => $data['expires_at'] ?? null,
         ]);
 
         return [
-            'api_key' => $apiKey,
+            'api_key'   => $apiKey,
             'plain_key' => $plainKey,
         ];
     }
 
     /**
-     * Verify an API key
+     * Verify an API key.
      */
     public static function verify(string $plainKey): ?self
     {
@@ -125,7 +125,7 @@ class ApiKey extends Model
     }
 
     /**
-     * Check if the API key has a specific permission
+     * Check if the API key has a specific permission.
      */
     public function hasPermission(string $permission): bool
     {
@@ -137,7 +137,7 @@ class ApiKey extends Model
     }
 
     /**
-     * Check if the request IP is allowed
+     * Check if the request IP is allowed.
      */
     public function isIpAllowed(string $ip): bool
     {
@@ -149,7 +149,7 @@ class ApiKey extends Model
     }
 
     /**
-     * Get rate limit for a specific endpoint
+     * Get rate limit for a specific endpoint.
      */
     public function getRateLimit(string $endpoint = 'default'): ?int
     {
@@ -161,28 +161,28 @@ class ApiKey extends Model
     }
 
     /**
-     * Record API key usage
+     * Record API key usage.
      */
     public function recordUsage(string $ip): void
     {
         $this->update([
-            'last_used_at' => now(),
-            'last_used_ip' => $ip,
+            'last_used_at'  => now(),
+            'last_used_ip'  => $ip,
             'request_count' => $this->request_count + 1,
         ]);
     }
 
     /**
-     * Check if the API key is valid
+     * Check if the API key is valid.
      */
     public function isValid(): bool
     {
         return $this->is_active &&
-               (!$this->expires_at || $this->expires_at->isFuture());
+               (! $this->expires_at || $this->expires_at->isFuture());
     }
 
     /**
-     * Revoke the API key
+     * Revoke the API key.
      */
     public function revoke(): void
     {

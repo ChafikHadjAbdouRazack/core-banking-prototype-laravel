@@ -7,7 +7,6 @@ namespace App\Domain\Stablecoin\Services;
 use App\Domain\Asset\Services\ExchangeRateService;
 use App\Domain\Stablecoin\Contracts\StabilityMechanismServiceInterface;
 use App\Models\Stablecoin;
-use App\Models\StablecoinCollateralPosition;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
@@ -35,12 +34,12 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
             } catch (\Exception $e) {
                 Log::error('Stability mechanism failed', [
                     'stablecoin_code' => $stablecoin->code,
-                    'error' => $e->getMessage(),
+                    'error'           => $e->getMessage(),
                 ]);
 
                 $results[$stablecoin->code] = [
                     'success' => false,
-                    'error' => $e->getMessage(),
+                    'error'   => $e->getMessage(),
                 ];
             }
         }
@@ -57,9 +56,9 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
 
         return match ($mechanism) {
             'collateralized' => $this->executeCollateralizedMechanism($stablecoin),
-            'algorithmic' => $this->executeAlgorithmicMechanism($stablecoin),
-            'hybrid' => $this->executeHybridMechanism($stablecoin),
-            default => throw new \InvalidArgumentException("Unknown stability mechanism: {$mechanism}")
+            'algorithmic'    => $this->executeAlgorithmicMechanism($stablecoin),
+            'hybrid'         => $this->executeHybridMechanism($stablecoin),
+            default          => throw new \InvalidArgumentException("Unknown stability mechanism: {$mechanism}")
         };
     }
 
@@ -71,7 +70,7 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
         $actions = [];
         $metrics = $this->collateralService->getSystemCollateralizationMetrics()[$stablecoin->code] ?? null;
 
-        if (!$metrics) {
+        if (! $metrics) {
             return ['success' => false, 'error' => 'No metrics available'];
         }
 
@@ -85,14 +84,14 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
             if ($this->liquidationService) {
                 $liquidationResult = $this->liquidationService->liquidateEligiblePositions();
                 $actions[] = [
-                    'type' => 'emergency_liquidation',
-                    'reason' => 'Global collateralization below minimum',
+                    'type'    => 'emergency_liquidation',
+                    'reason'  => 'Global collateralization below minimum',
                     'details' => $liquidationResult,
                 ];
             } else {
                 $actions[] = [
-                    'type' => 'emergency_liquidation_needed',
-                    'reason' => 'Global collateralization below minimum',
+                    'type'    => 'emergency_liquidation_needed',
+                    'reason'  => 'Global collateralization below minimum',
                     'details' => 'Liquidation service not available',
                 ];
             }
@@ -111,17 +110,17 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
         $atRiskPositions = $this->collateralService->getPositionsAtRisk();
         if ($atRiskPositions->isNotEmpty()) {
             $actions[] = [
-                'type' => 'risk_monitoring',
+                'type'              => 'risk_monitoring',
                 'positions_at_risk' => $atRiskPositions->count(),
-                'recommendations' => $this->generateRiskRecommendations($atRiskPositions),
+                'recommendations'   => $this->generateRiskRecommendations($atRiskPositions),
             ];
         }
 
         return [
-            'success' => true,
-            'mechanism' => 'collateralized',
-            'global_ratio' => $globalRatio,
-            'target_ratio' => $targetRatio,
+            'success'       => true,
+            'mechanism'     => 'collateralized',
+            'global_ratio'  => $globalRatio,
+            'target_ratio'  => $targetRatio,
             'actions_taken' => $actions,
         ];
     }
@@ -151,11 +150,11 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
         // Large deviation - emergency measures
         if ($priceDeviation > 0.05) { // 5% threshold
             $actions[] = [
-                'type' => 'emergency_intervention',
+                'type'          => 'emergency_intervention',
                 'current_price' => $currentPrice,
-                'target_price' => $targetPrice,
-                'deviation' => $priceDeviation * 100,
-                'action' => 'halt_operations',
+                'target_price'  => $targetPrice,
+                'deviation'     => $priceDeviation * 100,
+                'action'        => 'halt_operations',
             ];
 
             // Temporarily halt minting/burning
@@ -166,12 +165,12 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
         }
 
         return [
-            'success' => true,
-            'mechanism' => 'algorithmic',
-            'current_price' => $currentPrice,
-            'target_price' => $targetPrice,
+            'success'         => true,
+            'mechanism'       => 'algorithmic',
+            'current_price'   => $currentPrice,
+            'target_price'    => $targetPrice,
             'price_deviation' => $priceDeviation * 100,
-            'actions_taken' => $actions,
+            'actions_taken'   => $actions,
         ];
     }
 
@@ -185,12 +184,12 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
         $algorithmicResult = $this->executeAlgorithmicMechanism($stablecoin);
 
         return [
-            'success' => $collateralizedResult['success'] && $algorithmicResult['success'],
-            'mechanism' => 'hybrid',
+            'success'                => $collateralizedResult['success'] && $algorithmicResult['success'],
+            'mechanism'              => 'hybrid',
             'collateralized_actions' => $collateralizedResult['actions_taken'] ?? [],
-            'algorithmic_actions' => $algorithmicResult['actions_taken'] ?? [],
-            'global_ratio' => $collateralizedResult['global_ratio'] ?? 0,
-            'price_deviation' => $algorithmicResult['price_deviation'] ?? 0,
+            'algorithmic_actions'    => $algorithmicResult['actions_taken'] ?? [],
+            'global_ratio'           => $collateralizedResult['global_ratio'] ?? 0,
+            'price_deviation'        => $algorithmicResult['price_deviation'] ?? 0,
         ];
     }
 
@@ -210,7 +209,7 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
         $cacheKey = "collateral_adjustment:{$stablecoin->code}";
         if (Cache::has($cacheKey)) {
             return [
-                'type' => 'collateral_adjustment_skipped',
+                'type'   => 'collateral_adjustment_skipped',
                 'reason' => 'Recent adjustment already made',
             ];
         }
@@ -220,13 +219,13 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
 
         Log::info('Collateral ratio adjusted', [
             'stablecoin_code' => $stablecoin->code,
-            'old_ratio' => $currentRatio,
-            'new_ratio' => $newRatio,
-            'direction' => $direction,
+            'old_ratio'       => $currentRatio,
+            'new_ratio'       => $newRatio,
+            'direction'       => $direction,
         ]);
 
         return [
-            'type' => 'collateral_adjustment',
+            'type'      => 'collateral_adjustment',
             'direction' => $direction,
             'old_ratio' => $currentRatio,
             'new_ratio' => $newRatio,
@@ -273,9 +272,9 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
         $cacheKey = "fee_adjustment:{$stablecoin->code}:{$feeType}";
         if (Cache::has($cacheKey)) {
             return [
-                'type' => 'fee_adjustment_skipped',
+                'type'     => 'fee_adjustment_skipped',
                 'fee_type' => $feeType,
-                'reason' => 'Recent adjustment already made',
+                'reason'   => 'Recent adjustment already made',
             ];
         }
 
@@ -284,16 +283,16 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
 
         Log::info('Fee adjusted', [
             'stablecoin_code' => $stablecoin->code,
-            'fee_type' => $feeType,
-            'old_mint_fee' => $currentMintFee,
-            'old_burn_fee' => $currentBurnFee,
-            'updates' => $updates,
+            'fee_type'        => $feeType,
+            'old_mint_fee'    => $currentMintFee,
+            'old_burn_fee'    => $currentBurnFee,
+            'updates'         => $updates,
         ]);
 
         return [
-            'type' => 'fee_adjustment',
+            'type'     => 'fee_adjustment',
             'fee_type' => $feeType,
-            'updates' => $updates,
+            'updates'  => $updates,
         ];
     }
 
@@ -321,11 +320,11 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
         foreach ($atRiskPositions as $position) {
             $positionRecommendations = $this->collateralService->getPositionRecommendations($position);
 
-            if (!empty($positionRecommendations)) {
+            if (! empty($positionRecommendations)) {
                 $recommendations[] = [
-                    'position_uuid' => $position->uuid,
-                    'account_uuid' => $position->account_uuid,
-                    'current_ratio' => $position->collateral_ratio,
+                    'position_uuid'   => $position->uuid,
+                    'account_uuid'    => $position->account_uuid,
+                    'current_ratio'   => $position->collateral_ratio,
                     'recommendations' => $positionRecommendations,
                 ];
             }
@@ -340,7 +339,7 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
     public function checkSystemHealth(): array
     {
         $systemHealth = [
-            'overall_status' => 'healthy',
+            'overall_status'    => 'healthy',
             'stablecoin_status' => [],
             'emergency_actions' => [],
         ];
@@ -351,7 +350,7 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
         foreach ($stablecoins as $stablecoin) {
             $metrics = $this->collateralService->getSystemCollateralizationMetrics()[$stablecoin->code] ?? null;
 
-            if (!$metrics) {
+            if (! $metrics) {
                 continue;
             }
 
@@ -360,15 +359,15 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
             $atRiskCount = $metrics['at_risk_positions'];
 
             $stablecoinStatus = [
-                'code' => $stablecoin->code,
-                'is_healthy' => $isHealthy,
-                'global_ratio' => $globalRatio,
+                'code'              => $stablecoin->code,
+                'is_healthy'        => $isHealthy,
+                'global_ratio'      => $globalRatio,
                 'at_risk_positions' => $atRiskCount,
-                'status' => $isHealthy ? 'healthy' : 'unhealthy',
+                'status'            => $isHealthy ? 'healthy' : 'unhealthy',
             ];
 
             // Determine if emergency action is needed
-            if (!$isHealthy || $globalRatio < $stablecoin->min_collateral_ratio * 0.9) {
+            if (! $isHealthy || $globalRatio < $stablecoin->min_collateral_ratio * 0.9) {
                 $stablecoinStatus['status'] = 'critical';
                 $unhealthyStablecoins++;
 
@@ -377,14 +376,14 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
                     $emergencyResult = $this->liquidationService->emergencyLiquidation($stablecoin->code);
                     $systemHealth['emergency_actions'][] = [
                         'stablecoin_code' => $stablecoin->code,
-                        'action' => 'emergency_liquidation',
-                        'result' => $emergencyResult,
+                        'action'          => 'emergency_liquidation',
+                        'result'          => $emergencyResult,
                     ];
                 } else {
                     $systemHealth['emergency_actions'][] = [
                         'stablecoin_code' => $stablecoin->code,
-                        'action' => 'emergency_liquidation_needed',
-                        'result' => 'Liquidation service not available',
+                        'action'          => 'emergency_liquidation_needed',
+                        'result'          => 'Liquidation service not available',
                     ];
                 }
             }
@@ -412,7 +411,7 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
         foreach ($stablecoins as $stablecoin) {
             $metrics = $this->collateralService->getSystemCollateralizationMetrics()[$stablecoin->code] ?? null;
 
-            if (!$metrics) {
+            if (! $metrics) {
                 continue;
             }
 
@@ -424,9 +423,9 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
             if ($diversificationScore < 0.5) {
                 $rebalanceActions[] = [
                     'stablecoin_code' => $stablecoin->code,
-                    'action' => 'improve_diversification',
-                    'current_score' => $diversificationScore,
-                    'recommendation' => 'Encourage collateral diversification through incentives',
+                    'action'          => 'improve_diversification',
+                    'current_score'   => $diversificationScore,
+                    'recommendation'  => 'Encourage collateral diversification through incentives',
                 ];
             }
 
@@ -435,17 +434,17 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
 
             if ($utilizationRate > 0.8) {
                 $rebalanceActions[] = [
-                    'stablecoin_code' => $stablecoin->code,
-                    'action' => 'increase_supply_capacity',
+                    'stablecoin_code'     => $stablecoin->code,
+                    'action'              => 'increase_supply_capacity',
                     'current_utilization' => $utilizationRate,
-                    'recommendation' => 'Consider increasing max supply or reducing mint requirements',
+                    'recommendation'      => 'Consider increasing max supply or reducing mint requirements',
                 ];
             }
         }
 
         return [
             'rebalance_timestamp' => now(),
-            'actions_taken' => $rebalanceActions,
+            'actions_taken'       => $rebalanceActions,
         ];
     }
 
@@ -472,7 +471,7 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
     {
         $rateObject = $this->exchangeRateService->getRate($stablecoin->code, $stablecoin->peg_asset_code);
 
-        if (!$rateObject) {
+        if (! $rateObject) {
             throw new \RuntimeException("Exchange rate not found for {$stablecoin->code} to {$stablecoin->peg_asset_code}");
         }
 
@@ -483,12 +482,12 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
         $percentage = ($deviation / $targetPrice) * 100;
 
         return [
-            'deviation' => $deviation,
-            'percentage' => $percentage,
-            'direction' => $deviation > 0 ? 'above' : ($deviation < 0 ? 'below' : 'at'),
+            'deviation'        => $deviation,
+            'percentage'       => $percentage,
+            'direction'        => $deviation > 0 ? 'above' : ($deviation < 0 ? 'below' : 'at'),
             'within_threshold' => abs($percentage) <= 1.0, // 1% threshold
-            'current_price' => $currentPrice,
-            'target_price' => $targetPrice,
+            'current_price'    => $currentPrice,
+            'target_price'     => $targetPrice,
         ];
     }
 
@@ -520,11 +519,11 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
         }
 
         // Fire event if not dry run
-        if (!$dryRun) {
+        if (! $dryRun) {
             event('stability.mechanism.applied', [
                 'stablecoin_code' => $stablecoin->code,
-                'deviation' => $deviation,
-                'actions' => $actions,
+                'deviation'       => $deviation,
+                'actions'         => $actions,
             ]);
         }
 
@@ -550,9 +549,9 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
             $stablecoin->save();
 
             $actions[] = [
-                'action' => 'adjust_fees',
-                'timestamp' => now(),
-                'reason' => "Price deviation of {$deviation['percentage']}%",
+                'action'       => 'adjust_fees',
+                'timestamp'    => now(),
+                'reason'       => "Price deviation of {$deviation['percentage']}%",
                 'new_mint_fee' => $feeAdjustment['new_mint_fee'],
                 'new_burn_fee' => $feeAdjustment['new_burn_fee'],
             ];
@@ -581,18 +580,18 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
         $stablecoin->save();
 
         $actions[] = [
-            'action' => 'adjust_supply',
-            'timestamp' => now(),
-            'direction' => $deviation['direction'] === 'above' ? 'expand' : 'contract',
+            'action'         => 'adjust_supply',
+            'timestamp'      => now(),
+            'direction'      => $deviation['direction'] === 'above' ? 'expand' : 'contract',
             'burn_incentive' => $incentives['burn_reward'],
             'mint_incentive' => $incentives['mint_reward'],
         ];
 
         // Also adjust algorithmic incentives
         $actions[] = [
-            'action' => 'adjust_incentives',
+            'action'    => 'adjust_incentives',
             'timestamp' => now(),
-            'reason' => "Algorithmic adjustment for {$deviation['percentage']}% deviation",
+            'reason'    => "Algorithmic adjustment for {$deviation['percentage']}% deviation",
         ];
 
         return $actions;
@@ -622,9 +621,9 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
         }
 
         return [
-            'new_mint_fee' => round($newMintFee, 6),
-            'new_burn_fee' => round($newBurnFee, 6),
-            'adjustment_reason' => sprintf("Price %s peg by %.2f%%", $deviation > 0 ? 'above' : 'below', abs($deviation)),
+            'new_mint_fee'      => round($newMintFee, 6),
+            'new_burn_fee'      => round($newBurnFee, 6),
+            'adjustment_reason' => sprintf('Price %s peg by %.2f%%', $deviation > 0 ? 'above' : 'below', abs($deviation)),
         ];
     }
 
@@ -637,24 +636,24 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
             // Need to reduce supply - incentivize burning
             return [
                 'recommended_action' => 'burn',
-                'burn_reward' => min(0.1, abs($deviation) * 0.01),
-                'mint_penalty' => 0,
+                'burn_reward'        => min(0.1, abs($deviation) * 0.01),
+                'mint_penalty'       => 0,
             ];
         } elseif ($deviation > 0) {
             // Need to increase supply - incentivize minting
             return [
                 'recommended_action' => 'mint',
-                'mint_reward' => min(0.1, abs($deviation) * 0.01),
-                'burn_penalty' => 0,
+                'mint_reward'        => min(0.1, abs($deviation) * 0.01),
+                'burn_penalty'       => 0,
             ];
         }
 
         return [
             'recommended_action' => 'none',
-            'mint_reward' => 0,
-            'burn_reward' => 0,
-            'mint_penalty' => 0,
-            'burn_penalty' => 0,
+            'mint_reward'        => 0,
+            'burn_reward'        => 0,
+            'mint_penalty'       => 0,
+            'burn_penalty'       => 0,
         ];
     }
 
@@ -672,17 +671,17 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
 
                 $monitoring[] = [
                     'stablecoin_code' => $stablecoin->code,
-                    'deviation' => $deviation,
-                    'status' => abs($deviation['percentage']) <= 1.0 ? 'healthy' :
+                    'deviation'       => $deviation,
+                    'status'          => abs($deviation['percentage']) <= 1.0 ? 'healthy' :
                                (abs($deviation['percentage']) <= 5.0 ? 'warning' : 'critical'),
                     'last_checked' => now(),
                 ];
             } catch (\Exception $e) {
                 $monitoring[] = [
                     'stablecoin_code' => $stablecoin->code,
-                    'status' => 'error',
-                    'error' => $e->getMessage(),
-                    'last_checked' => now(),
+                    'status'          => 'error',
+                    'error'           => $e->getMessage(),
+                    'last_checked'    => now(),
                 ];
             }
         }
@@ -696,7 +695,7 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
     public function executeEmergencyActions(string $action, array $params = []): array
     {
         $stablecoinCode = $params['stablecoin_code'] ?? null;
-        if (!$stablecoinCode) {
+        if (! $stablecoinCode) {
             throw new \InvalidArgumentException('stablecoin_code is required in params');
         }
 
@@ -711,9 +710,9 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
                 $stablecoin->save();
 
                 $actions[] = [
-                    'action' => 'pause_minting',
+                    'action'    => 'pause_minting',
                     'timestamp' => now(),
-                    'reason' => "Extreme price deviation: {$deviation['percentage']}% above peg",
+                    'reason'    => "Extreme price deviation: {$deviation['percentage']}% above peg",
                 ];
             }
 
@@ -722,9 +721,9 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
             $stablecoin->save();
 
             $actions[] = [
-                'action' => 'max_fee_adjustment',
+                'action'    => 'max_fee_adjustment',
                 'timestamp' => now(),
-                'reason' => "Emergency fee adjustment due to {$deviation['percentage']}% deviation",
+                'reason'    => "Emergency fee adjustment due to {$deviation['percentage']}% deviation",
             ];
         }
 
@@ -748,10 +747,10 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
 
             if ($globalRatio < $stablecoin->collateral_ratio) {
                 $recommendations[] = [
-                    'action' => 'increase_collateral_requirements',
-                    'reason' => 'Global collateralization below target',
+                    'action'        => 'increase_collateral_requirements',
+                    'reason'        => 'Global collateralization below target',
                     'current_ratio' => $globalRatio,
-                    'target_ratio' => $stablecoin->collateral_ratio,
+                    'target_ratio'  => $stablecoin->collateral_ratio,
                 ];
 
                 $recommendations[] = [
@@ -767,8 +766,8 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
 
             if ($utilization > 0.8) {
                 $recommendations[] = [
-                    'action' => 'reduce_max_supply',
-                    'reason' => 'High supply utilization may limit growth',
+                    'action'              => 'reduce_max_supply',
+                    'reason'              => 'High supply utilization may limit growth',
                     'current_utilization' => $utilization,
                 ];
 

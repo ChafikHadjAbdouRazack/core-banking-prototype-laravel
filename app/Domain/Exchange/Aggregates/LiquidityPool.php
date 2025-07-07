@@ -224,10 +224,10 @@ class LiquidityPool extends AggregateRoot
         ));
 
         return [
-            'outputAmount' => $outputAmount->__toString(),
+            'outputAmount'   => $outputAmount->__toString(),
             'outputCurrency' => $outputCurrency,
-            'feeAmount' => $feeAmount->__toString(),
-            'priceImpact' => $this->calculatePriceImpact($inputAmountDecimal, $isBaseInput)->__toString(),
+            'feeAmount'      => $feeAmount->__toString(),
+            'priceImpact'    => $this->calculatePriceImpact($inputAmountDecimal, $isBaseInput)->__toString(),
         ];
     }
 
@@ -402,7 +402,7 @@ class LiquidityPool extends AggregateRoot
 
         if (! isset($this->providers[$event->providerId])) {
             $this->providers[$event->providerId] = [
-                'shares' => '0',
+                'shares'          => '0',
                 'pending_rewards' => [],
             ];
         }

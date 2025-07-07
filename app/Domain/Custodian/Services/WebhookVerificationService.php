@@ -18,10 +18,10 @@ class WebhookVerificationService
         array $headers = []
     ): bool {
         return match ($custodianName) {
-            'paysera' => $this->verifyPayseraSignature($payload, $signature, $headers),
+            'paysera'   => $this->verifyPayseraSignature($payload, $signature, $headers),
             'santander' => $this->verifySantanderSignature($payload, $signature, $headers),
-            'mock' => true, // Mock always passes
-            default => false,
+            'mock'      => true, // Mock always passes
+            default     => false,
         };
     }
 
@@ -34,8 +34,9 @@ class WebhookVerificationService
     {
         $secret = config('custodians.connectors.paysera.webhook_secret');
 
-        if (!$secret) {
+        if (! $secret) {
             Log::warning('Paysera webhook secret not configured');
+
             return false;
         }
 
@@ -54,8 +55,9 @@ class WebhookVerificationService
     {
         $secret = config('custodians.connectors.santander.webhook_secret');
 
-        if (!$secret) {
+        if (! $secret) {
             Log::warning('Santander webhook secret not configured');
+
             return false;
         }
 

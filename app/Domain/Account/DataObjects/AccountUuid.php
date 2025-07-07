@@ -27,7 +27,7 @@ final readonly class AccountUuid extends DataObject implements DataObjectContrac
     /**
      * @param string $uuid
      *
-     * @return \App\Domain\Account\DataObjects\AccountUuid
+     * @return AccountUuid
      */
     public function withUuid(string $uuid): self
     {
@@ -40,7 +40,7 @@ final readonly class AccountUuid extends DataObject implements DataObjectContrac
      * Create from string UUID.
      *
      * @param string $uuid
-     * @return \App\Domain\Account\DataObjects\AccountUuid
+     * @return AccountUuid
      */
     public static function fromString(string $uuid): self
     {
@@ -63,7 +63,7 @@ final readonly class AccountUuid extends DataObject implements DataObjectContrac
     public function toArray(): array
     {
         return [
-            'uuid'      => $this->uuid,
+            'uuid' => $this->uuid,
         ];
     }
 }

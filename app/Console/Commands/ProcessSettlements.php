@@ -54,6 +54,7 @@ class ProcessSettlements extends Command
 
         if ($dryRun) {
             $this->warn('🔍 DRY RUN MODE - No actual settlements will be executed');
+
             return $this->performDryRun();
         }
 
@@ -75,7 +76,7 @@ class ProcessSettlements extends Command
     }
 
     /**
-     * Perform a dry run to show what would be settled
+     * Perform a dry run to show what would be settled.
      */
     private function performDryRun(): int
     {
@@ -101,7 +102,7 @@ class ProcessSettlements extends Command
     }
 
     /**
-     * Display settlement results
+     * Display settlement results.
      */
     private function displayResults(array $results, string $type): void
     {
@@ -111,7 +112,7 @@ class ProcessSettlements extends Command
 
         switch ($type) {
             case 'net':
-                $this->info("📊 Net Settlement Results:");
+                $this->info('📊 Net Settlement Results:');
                 $this->table(
                     ['Metric', 'Value'],
                     [
@@ -125,7 +126,7 @@ class ProcessSettlements extends Command
                 break;
 
             case 'batch':
-                $this->info("📦 Batch Settlement Results:");
+                $this->info('📦 Batch Settlement Results:');
                 $this->table(
                     ['Metric', 'Value'],
                     [
@@ -137,7 +138,7 @@ class ProcessSettlements extends Command
                 break;
 
             case 'realtime':
-                $this->info("⚡ Realtime Settlement Results:");
+                $this->info('⚡ Realtime Settlement Results:');
                 $this->table(
                     ['Metric', 'Value'],
                     [

@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace App\Domain\Banking\Contracts;
 
-use App\Models\User;
-use App\Domain\Banking\Models\BankConnection;
 use App\Domain\Banking\Models\BankAccount;
+use App\Domain\Banking\Models\BankConnection;
 use App\Domain\Banking\Models\BankTransfer;
+use App\Models\User;
 use Illuminate\Support\Collection;
 
 interface IBankIntegrationService
 {
     /**
-     * Register a new bank connector
+     * Register a new bank connector.
      *
      * @param string $bankCode Unique bank identifier
      * @param IBankConnector $connector Bank connector implementation
@@ -21,7 +21,7 @@ interface IBankIntegrationService
     public function registerConnector(string $bankCode, IBankConnector $connector): void;
 
     /**
-     * Get a registered bank connector
+     * Get a registered bank connector.
      *
      * @param string $bankCode Bank identifier
      * @return IBankConnector
@@ -30,14 +30,14 @@ interface IBankIntegrationService
     public function getConnector(string $bankCode): IBankConnector;
 
     /**
-     * Get all available bank connectors
+     * Get all available bank connectors.
      *
      * @return Collection<string, IBankConnector>
      */
     public function getAvailableConnectors(): Collection;
 
     /**
-     * Connect a user to a bank
+     * Connect a user to a bank.
      *
      * @param User $user
      * @param string $bankCode
@@ -47,7 +47,7 @@ interface IBankIntegrationService
     public function connectUserToBank(User $user, string $bankCode, array $credentials): BankConnection;
 
     /**
-     * Disconnect a user from a bank
+     * Disconnect a user from a bank.
      *
      * @param User $user
      * @param string $bankCode
@@ -56,7 +56,7 @@ interface IBankIntegrationService
     public function disconnectUserFromBank(User $user, string $bankCode): bool;
 
     /**
-     * Get user's bank connections
+     * Get user's bank connections.
      *
      * @param User $user
      * @return Collection<BankConnection>
@@ -64,7 +64,7 @@ interface IBankIntegrationService
     public function getUserBankConnections(User $user): Collection;
 
     /**
-     * Create a bank account for a user
+     * Create a bank account for a user.
      *
      * @param User $user
      * @param string $bankCode
@@ -74,7 +74,7 @@ interface IBankIntegrationService
     public function createBankAccount(User $user, string $bankCode, array $accountDetails): BankAccount;
 
     /**
-     * Get user's bank accounts
+     * Get user's bank accounts.
      *
      * @param User $user
      * @param string|null $bankCode Filter by bank
@@ -83,7 +83,7 @@ interface IBankIntegrationService
     public function getUserBankAccounts(User $user, ?string $bankCode = null): Collection;
 
     /**
-     * Sync bank accounts for a user
+     * Sync bank accounts for a user.
      *
      * @param User $user
      * @param string $bankCode
@@ -92,7 +92,7 @@ interface IBankIntegrationService
     public function syncBankAccounts(User $user, string $bankCode): Collection;
 
     /**
-     * Initiate a transfer between banks
+     * Initiate a transfer between banks.
      *
      * @param User $user
      * @param string $fromBankCode
@@ -116,7 +116,7 @@ interface IBankIntegrationService
     ): BankTransfer;
 
     /**
-     * Get optimal bank for a transaction
+     * Get optimal bank for a transaction.
      *
      * @param User $user
      * @param string $currency
@@ -127,7 +127,7 @@ interface IBankIntegrationService
     public function getOptimalBank(User $user, string $currency, float $amount, string $transferType): string;
 
     /**
-     * Check bank health status
+     * Check bank health status.
      *
      * @param string $bankCode
      * @return array Health status details
@@ -135,7 +135,7 @@ interface IBankIntegrationService
     public function checkBankHealth(string $bankCode): array;
 
     /**
-     * Get aggregated balance across all banks
+     * Get aggregated balance across all banks.
      *
      * @param User $user
      * @param string $currency

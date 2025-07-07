@@ -2,9 +2,8 @@
 
 namespace App\Domain\Wallet\Activities;
 
-use App\Domain\Account\DataObjects\AccountUuid;
-use App\Domain\Account\DataObjects\Money;
 use App\Domain\Account\Aggregates\AssetTransactionAggregate;
+use App\Domain\Account\DataObjects\AccountUuid;
 use Workflow\Activity;
 
 class WithdrawAssetActivity extends Activity
@@ -23,7 +22,7 @@ class WithdrawAssetActivity extends Activity
         int $amount,
         AssetTransactionAggregate $assetTransaction
     ): bool {
-        $assetTransaction->retrieve((string)$accountUuid)
+        $assetTransaction->retrieve((string) $accountUuid)
             ->debit($assetCode, $amount)
             ->persist();
 

@@ -8,7 +8,7 @@ use Workflow\Workflow;
 class BatchProcessingWorkflow extends Workflow
 {
     /**
-     * Execute end-of-day batch processing operations with compensation
+     * Execute end-of-day batch processing operations with compensation.
      *
      * @param array $operations - array of batch operations to perform
      * @param string|null $batchId
@@ -31,11 +31,11 @@ class BatchProcessingWorkflow extends Workflow
 
                 $completedOperations[] = [
                     'operation' => $operation,
-                    'result' => $result,
+                    'result'    => $result,
                 ];
 
                 // Add compensation for this specific operation
-                $this->addCompensation(fn() => ActivityStub::make(
+                $this->addCompensation(fn () => ActivityStub::make(
                     ReverseBatchOperationActivity::class,
                     $operation,
                     $batchId,
@@ -57,10 +57,10 @@ class BatchProcessingWorkflow extends Workflow
 
             // Log batch processing failure
             logger()->error('Batch processing failed - compensations executed', [
-                'batch_id' => $batchId,
-                'operations' => $operations,
+                'batch_id'             => $batchId,
+                'operations'           => $operations,
                 'completed_operations' => $completedOperations,
-                'error' => $th->getMessage(),
+                'error'                => $th->getMessage(),
             ]);
 
             throw $th;

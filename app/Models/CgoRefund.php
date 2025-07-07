@@ -48,22 +48,22 @@ class CgoRefund extends Model
     ];
 
     protected $casts = [
-        'amount' => 'integer',
-        'amount_refunded' => 'integer',
+        'amount'             => 'integer',
+        'amount_refunded'    => 'integer',
         'processor_response' => 'array',
-        'bank_details' => 'array',
-        'metadata' => 'array',
-        'requested_at' => 'datetime',
-        'approved_at' => 'datetime',
-        'rejected_at' => 'datetime',
-        'processed_at' => 'datetime',
-        'completed_at' => 'datetime',
-        'failed_at' => 'datetime',
-        'cancelled_at' => 'datetime',
+        'bank_details'       => 'array',
+        'metadata'           => 'array',
+        'requested_at'       => 'datetime',
+        'approved_at'        => 'datetime',
+        'rejected_at'        => 'datetime',
+        'processed_at'       => 'datetime',
+        'completed_at'       => 'datetime',
+        'failed_at'          => 'datetime',
+        'cancelled_at'       => 'datetime',
     ];
 
     /**
-     * Get the investment associated with the refund
+     * Get the investment associated with the refund.
      */
     public function investment(): BelongsTo
     {
@@ -71,7 +71,7 @@ class CgoRefund extends Model
     }
 
     /**
-     * Get the user who owns the investment
+     * Get the user who owns the investment.
      */
     public function user(): BelongsTo
     {
@@ -79,7 +79,7 @@ class CgoRefund extends Model
     }
 
     /**
-     * Get the user who initiated the refund
+     * Get the user who initiated the refund.
      */
     public function initiator(): BelongsTo
     {
@@ -87,7 +87,7 @@ class CgoRefund extends Model
     }
 
     /**
-     * Get the user who approved the refund
+     * Get the user who approved the refund.
      */
     public function approver(): BelongsTo
     {
@@ -95,7 +95,7 @@ class CgoRefund extends Model
     }
 
     /**
-     * Get the user who rejected the refund
+     * Get the user who rejected the refund.
      */
     public function rejector(): BelongsTo
     {
@@ -103,7 +103,7 @@ class CgoRefund extends Model
     }
 
     /**
-     * Get the user who cancelled the refund
+     * Get the user who cancelled the refund.
      */
     public function canceller(): BelongsTo
     {
@@ -111,24 +111,24 @@ class CgoRefund extends Model
     }
 
     /**
-     * Get status color for display
+     * Get status color for display.
      */
     public function getStatusColorAttribute(): string
     {
         return match ($this->status) {
-            'pending' => 'warning',
-            'approved' => 'primary',
-            'rejected' => 'danger',
+            'pending'    => 'warning',
+            'approved'   => 'primary',
+            'rejected'   => 'danger',
             'processing' => 'info',
-            'completed' => 'success',
-            'failed' => 'danger',
-            'cancelled' => 'gray',
-            default => 'gray',
+            'completed'  => 'success',
+            'failed'     => 'danger',
+            'cancelled'  => 'gray',
+            default      => 'gray',
         };
     }
 
     /**
-     * Get formatted amount
+     * Get formatted amount.
      */
     public function getFormattedAmountAttribute(): string
     {
@@ -136,7 +136,7 @@ class CgoRefund extends Model
     }
 
     /**
-     * Status check methods
+     * Status check methods.
      */
     public function isPending(): bool
     {
@@ -174,7 +174,7 @@ class CgoRefund extends Model
     }
 
     /**
-     * Check if refund can be approved
+     * Check if refund can be approved.
      */
     public function canBeApproved(): bool
     {
@@ -182,7 +182,7 @@ class CgoRefund extends Model
     }
 
     /**
-     * Check if refund can be rejected
+     * Check if refund can be rejected.
      */
     public function canBeRejected(): bool
     {
@@ -190,7 +190,7 @@ class CgoRefund extends Model
     }
 
     /**
-     * Check if refund can be processed
+     * Check if refund can be processed.
      */
     public function canBeProcessed(): bool
     {
@@ -198,15 +198,15 @@ class CgoRefund extends Model
     }
 
     /**
-     * Check if refund can be cancelled
+     * Check if refund can be cancelled.
      */
     public function canBeCancelled(): bool
     {
-        return !in_array($this->status, ['completed', 'cancelled']);
+        return ! in_array($this->status, ['completed', 'cancelled']);
     }
 
     /**
-     * Scope for pending refunds
+     * Scope for pending refunds.
      */
     public function scopePending($query)
     {
@@ -214,7 +214,7 @@ class CgoRefund extends Model
     }
 
     /**
-     * Scope for processing refunds
+     * Scope for processing refunds.
      */
     public function scopeProcessing($query)
     {
@@ -222,7 +222,7 @@ class CgoRefund extends Model
     }
 
     /**
-     * Scope for completed refunds
+     * Scope for completed refunds.
      */
     public function scopeCompleted($query)
     {

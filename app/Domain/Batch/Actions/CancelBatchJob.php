@@ -3,8 +3,8 @@
 namespace App\Domain\Batch\Actions;
 
 use App\Domain\Batch\Events\BatchJobCancelled;
-use App\Models\BatchJob;
 use App\Domain\Batch\Models\BatchItem;
+use App\Models\BatchJob;
 
 class CancelBatchJob
 {
@@ -16,15 +16,15 @@ class CancelBatchJob
     {
         $batchJob = BatchJob::where('uuid', $event->aggregateRootUuid())->first();
 
-        if (!$batchJob) {
+        if (! $batchJob) {
             return;
         }
 
         // Update batch job status
         $batchJob->update([
-            'status' => 'cancelled',
+            'status'       => 'cancelled',
             'completed_at' => $event->cancelledAt,
-            'metadata' => array_merge($batchJob->metadata ?? [], [
+            'metadata'     => array_merge($batchJob->metadata ?? [], [
                 'cancellation_reason' => $event->reason,
             ]),
         ]);

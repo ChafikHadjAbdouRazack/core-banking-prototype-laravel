@@ -34,8 +34,9 @@ class ProcessWebhookDelivery implements ShouldQueue
     {
         $webhook = $this->delivery->webhook;
 
-        if (!$webhook->is_active) {
+        if (! $webhook->is_active) {
             Log::warning("Skipping delivery for inactive webhook: {$webhook->uuid}");
+
             return;
         }
 
@@ -77,8 +78,8 @@ class ProcessWebhookDelivery implements ShouldQueue
                 durationMs: $duration
             );
 
-            Log::info("Webhook delivered successfully", [
-                'webhook_id' => $webhook->uuid,
+            Log::info('Webhook delivered successfully', [
+                'webhook_id'  => $webhook->uuid,
                 'delivery_id' => $this->delivery->uuid,
                 'status_code' => $response->status(),
                 'duration_ms' => $duration,
@@ -97,11 +98,11 @@ class ProcessWebhookDelivery implements ShouldQueue
                     : null
             );
 
-            Log::error("Webhook delivery failed", [
-                'webhook_id' => $webhook->uuid,
+            Log::error('Webhook delivery failed', [
+                'webhook_id'  => $webhook->uuid,
                 'delivery_id' => $this->delivery->uuid,
-                'error' => $errorMessage,
-                'attempt' => $this->delivery->attempt_number,
+                'error'       => $errorMessage,
+                'attempt'     => $this->delivery->attempt_number,
             ]);
 
             // Re-throw to trigger retry if applicable
@@ -132,9 +133,9 @@ class ProcessWebhookDelivery implements ShouldQueue
      */
     public function failed(\Throwable $exception): void
     {
-        Log::error("Webhook delivery job failed permanently", [
+        Log::error('Webhook delivery job failed permanently', [
             'delivery_id' => $this->delivery->uuid,
-            'error' => $exception->getMessage(),
+            'error'       => $exception->getMessage(),
         ]);
     }
 }

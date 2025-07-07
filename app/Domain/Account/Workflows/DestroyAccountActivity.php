@@ -9,8 +9,8 @@ use Workflow\Activity;
 class DestroyAccountActivity extends Activity
 {
     /**
-     * @param \App\Domain\Account\DataObjects\AccountUuid $uuid
-     * @param \App\Domain\Account\Aggregates\LedgerAggregate $ledger
+     * @param AccountUuid $uuid
+     * @param LedgerAggregate $ledger
      *
      * @return bool
      */

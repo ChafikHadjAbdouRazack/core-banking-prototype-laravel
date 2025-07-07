@@ -9,12 +9,11 @@ use App\Filament\Admin\Resources\AssetResource\Pages;
 use App\Filament\Admin\Resources\AssetResource\RelationManagers;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Infolists;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Filament\Infolists;
-use Filament\Infolists\Infolist;
-use Illuminate\Database\Eloquent\Builder;
 
 class AssetResource extends Resource
 {
@@ -51,8 +50,8 @@ class AssetResource extends Resource
                             ->label('Asset Type')
                             ->required()
                             ->options([
-                                'fiat' => 'Fiat Currency',
-                                'crypto' => 'Cryptocurrency',
+                                'fiat'      => 'Fiat Currency',
+                                'crypto'    => 'Cryptocurrency',
                                 'commodity' => 'Commodity',
                             ])
                             ->reactive()
@@ -69,10 +68,10 @@ class AssetResource extends Resource
                             ->required()
                             ->numeric()
                             ->default(fn (Forms\Get $get) => match ($get('type')) {
-                                'fiat' => 2,
-                                'crypto' => 8,
+                                'fiat'      => 2,
+                                'crypto'    => 8,
                                 'commodity' => 4,
-                                default => 2,
+                                default     => 2,
                             })
                             ->minValue(0)
                             ->maxValue(18)
@@ -108,8 +107,8 @@ class AssetResource extends Resource
                     ->badge()
                     ->color(fn (string $state): string => match (true) {
                         in_array($state, ['USD', 'EUR', 'GBP']) => 'success',
-                        in_array($state, ['BTC', 'ETH']) => 'warning',
-                        default => 'primary',
+                        in_array($state, ['BTC', 'ETH'])        => 'warning',
+                        default                                 => 'primary',
                     }),
 
                 Tables\Columns\TextColumn::make('name')
@@ -122,10 +121,10 @@ class AssetResource extends Resource
                     ->sortable()
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
-                        'fiat' => 'success',
-                        'crypto' => 'warning',
+                        'fiat'      => 'success',
+                        'crypto'    => 'warning',
                         'commodity' => 'info',
-                        default => 'gray',
+                        default     => 'gray',
                     }),
 
                 Tables\Columns\TextColumn::make('symbol')
@@ -157,8 +156,8 @@ class AssetResource extends Resource
             ->filters([
                 Tables\Filters\SelectFilter::make('type')
                     ->options([
-                        'fiat' => 'Fiat Currency',
-                        'crypto' => 'Cryptocurrency',
+                        'fiat'      => 'Fiat Currency',
+                        'crypto'    => 'Cryptocurrency',
                         'commodity' => 'Commodity',
                     ]),
 
@@ -216,10 +215,10 @@ class AssetResource extends Resource
                             ->label('Asset Type')
                             ->badge()
                             ->color(fn (string $state): string => match ($state) {
-                                'fiat' => 'success',
-                                'crypto' => 'warning',
+                                'fiat'      => 'success',
+                                'crypto'    => 'warning',
                                 'commodity' => 'info',
-                                default => 'gray',
+                                default     => 'gray',
                             }),
 
                         Infolists\Components\TextEntry::make('symbol')
@@ -270,10 +269,10 @@ class AssetResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListAssets::route('/'),
+            'index'  => Pages\ListAssets::route('/'),
             'create' => Pages\CreateAsset::route('/create'),
-            'view' => Pages\ViewAsset::route('/{record}'),
-            'edit' => Pages\EditAsset::route('/{record}/edit'),
+            'view'   => Pages\ViewAsset::route('/{record}'),
+            'edit'   => Pages\EditAsset::route('/{record}/edit'),
         ];
     }
 

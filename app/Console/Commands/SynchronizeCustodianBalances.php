@@ -59,7 +59,7 @@ class SynchronizeCustodianBalances extends Command
     }
 
     /**
-     * Sync balances for a specific internal account
+     * Sync balances for a specific internal account.
      */
     private function syncSpecificAccount(string $accountUuid): int
     {
@@ -75,11 +75,11 @@ class SynchronizeCustodianBalances extends Command
             }
         }
 
-        return empty(array_filter($results, fn($result) => !$result)) ? 0 : 1;
+        return empty(array_filter($results, fn ($result) => ! $result)) ? 0 : 1;
     }
 
     /**
-     * Sync balances for a specific custodian
+     * Sync balances for a specific custodian.
      */
     private function syncSpecificCustodian(string $custodianId, bool $force): int
     {
@@ -88,7 +88,7 @@ class SynchronizeCustodianBalances extends Command
         $custodianAccounts = CustodianAccount::active()
             ->forCustodian($custodianId);
 
-        if (!$force) {
+        if (! $force) {
             $custodianAccounts->needsSynchronization();
         }
 
@@ -96,6 +96,7 @@ class SynchronizeCustodianBalances extends Command
 
         if ($custodianAccounts->isEmpty()) {
             $this->warn('No accounts found for synchronization.');
+
             return 0;
         }
 
@@ -124,7 +125,7 @@ class SynchronizeCustodianBalances extends Command
     }
 
     /**
-     * Sync all active custodian accounts
+     * Sync all active custodian accounts.
      */
     private function syncAllAccounts(): int
     {
@@ -137,12 +138,12 @@ class SynchronizeCustodianBalances extends Command
         $this->error("❌ Failed: {$results['failed']}");
         $this->info("⏱️  Duration: {$results['duration']} seconds");
 
-        if (!empty($results['details'])) {
+        if (! empty($results['details'])) {
             $this->newLine();
 
             // Show failed accounts if any
-            $failures = array_filter($results['details'], fn($detail) => $detail['status'] === 'failed');
-            if (!empty($failures)) {
+            $failures = array_filter($results['details'], fn ($detail) => $detail['status'] === 'failed');
+            if (! empty($failures)) {
                 $this->error('Failed accounts:');
                 foreach ($failures as $failure) {
                     $this->error("  - {$failure['custodian_id']}/{$failure['external_account_id']}: {$failure['message']}");

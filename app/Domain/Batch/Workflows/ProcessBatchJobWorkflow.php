@@ -2,10 +2,9 @@
 
 namespace App\Domain\Batch\Workflows;
 
-use App\Domain\Batch\Activities\ValidateBatchJobActivity;
-use App\Domain\Batch\Activities\ProcessBatchItemActivity;
 use App\Domain\Batch\Activities\CompleteBatchJobActivity;
-use App\Domain\Batch\DataObjects\BatchJob;
+use App\Domain\Batch\Activities\ProcessBatchItemActivity;
+use App\Domain\Batch\Activities\ValidateBatchJobActivity;
 use Workflow\ActivityStub;
 use Workflow\Workflow;
 
@@ -39,7 +38,7 @@ class ProcessBatchJobWorkflow extends Workflow
                     // Continue processing other items even if one fails
                     $results[$index] = [
                         'status' => 'failed',
-                        'error' => $e->getMessage()
+                        'error'  => $e->getMessage(),
                     ];
                 }
             }

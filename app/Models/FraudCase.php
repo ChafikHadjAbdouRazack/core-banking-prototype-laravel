@@ -3,9 +3,9 @@
 namespace App\Models;
 
 use App\Traits\BelongsToTeam;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class FraudCase extends Model
@@ -63,49 +63,64 @@ class FraudCase extends Model
 
     protected $casts = [
         'related_transactions' => 'array',
-        'related_accounts' => 'array',
-        'detection_rules' => 'array',
-        'evidence' => 'array',
-        'actions_taken' => 'array',
-        'amount' => 'decimal:8',
-        'risk_score' => 'decimal:2',
-        'detected_at' => 'datetime',
-        'resolved_at' => 'datetime',
+        'related_accounts'     => 'array',
+        'detection_rules'      => 'array',
+        'evidence'             => 'array',
+        'actions_taken'        => 'array',
+        'amount'               => 'decimal:8',
+        'risk_score'           => 'decimal:2',
+        'detected_at'          => 'datetime',
+        'resolved_at'          => 'datetime',
     ];
 
-    const STATUS_PENDING = 'pending';
-    const STATUS_INVESTIGATING = 'investigating';
-    const STATUS_CONFIRMED = 'confirmed';
-    const STATUS_FALSE_POSITIVE = 'false_positive';
-    const STATUS_RESOLVED = 'resolved';
+    public const STATUS_PENDING = 'pending';
 
-    const SEVERITY_LOW = 'low';
-    const SEVERITY_MEDIUM = 'medium';
-    const SEVERITY_HIGH = 'high';
-    const SEVERITY_CRITICAL = 'critical';
+    public const STATUS_INVESTIGATING = 'investigating';
 
-    const TYPE_ACCOUNT_TAKEOVER = 'account_takeover';
-    const TYPE_IDENTITY_THEFT = 'identity_theft';
-    const TYPE_TRANSACTION_FRAUD = 'transaction_fraud';
-    const TYPE_CARD_FRAUD = 'card_fraud';
-    const TYPE_PHISHING = 'phishing';
-    const TYPE_MONEY_LAUNDERING = 'money_laundering';
-    const TYPE_OTHER = 'other';
+    public const STATUS_CONFIRMED = 'confirmed';
 
-    const DETECTION_METHOD_RULE_BASED = 'rule_based';
-    const DETECTION_METHOD_ML_MODEL = 'ml_model';
-    const DETECTION_METHOD_MANUAL_REPORT = 'manual_report';
-    const DETECTION_METHOD_EXTERNAL_REPORT = 'external_report';
+    public const STATUS_FALSE_POSITIVE = 'false_positive';
 
+    public const STATUS_RESOLVED = 'resolved';
 
-    const FRAUD_TYPES = [
-        self::TYPE_ACCOUNT_TAKEOVER => 'Account Takeover',
-        self::TYPE_IDENTITY_THEFT => 'Identity Theft',
+    public const SEVERITY_LOW = 'low';
+
+    public const SEVERITY_MEDIUM = 'medium';
+
+    public const SEVERITY_HIGH = 'high';
+
+    public const SEVERITY_CRITICAL = 'critical';
+
+    public const TYPE_ACCOUNT_TAKEOVER = 'account_takeover';
+
+    public const TYPE_IDENTITY_THEFT = 'identity_theft';
+
+    public const TYPE_TRANSACTION_FRAUD = 'transaction_fraud';
+
+    public const TYPE_CARD_FRAUD = 'card_fraud';
+
+    public const TYPE_PHISHING = 'phishing';
+
+    public const TYPE_MONEY_LAUNDERING = 'money_laundering';
+
+    public const TYPE_OTHER = 'other';
+
+    public const DETECTION_METHOD_RULE_BASED = 'rule_based';
+
+    public const DETECTION_METHOD_ML_MODEL = 'ml_model';
+
+    public const DETECTION_METHOD_MANUAL_REPORT = 'manual_report';
+
+    public const DETECTION_METHOD_EXTERNAL_REPORT = 'external_report';
+
+    public const FRAUD_TYPES = [
+        self::TYPE_ACCOUNT_TAKEOVER  => 'Account Takeover',
+        self::TYPE_IDENTITY_THEFT    => 'Identity Theft',
         self::TYPE_TRANSACTION_FRAUD => 'Transaction Fraud',
-        self::TYPE_CARD_FRAUD => 'Card Fraud',
-        self::TYPE_PHISHING => 'Phishing',
-        self::TYPE_MONEY_LAUNDERING => 'Money Laundering',
-        self::TYPE_OTHER => 'Other',
+        self::TYPE_CARD_FRAUD        => 'Card Fraud',
+        self::TYPE_PHISHING          => 'Phishing',
+        self::TYPE_MONEY_LAUNDERING  => 'Money Laundering',
+        self::TYPE_OTHER             => 'Other',
     ];
 
     protected static function boot()
@@ -113,10 +128,10 @@ class FraudCase extends Model
         parent::boot();
 
         static::creating(function ($case) {
-            if (!$case->case_number) {
+            if (! $case->case_number) {
                 $case->case_number = static::generateCaseNumber();
             }
-            if (!$case->detected_at) {
+            if (! $case->detected_at) {
                 $case->detected_at = now();
             }
         });
@@ -149,7 +164,6 @@ class FraudCase extends Model
     {
         return $this->belongsTo(User::class, 'assigned_to', 'uuid');
     }
-
 
     // Helper methods
     public function isPending(): bool
@@ -186,19 +200,18 @@ class FraudCase extends Model
     {
         // Since we don't have fraud_start_date and fraud_end_date columns,
         // we'll calculate based on detected_at and resolved_at
-        if (!$this->detected_at || !$this->resolved_at) {
+        if (! $this->detected_at || ! $this->resolved_at) {
             return 0;
         }
 
         return $this->detected_at->diffInDays($this->resolved_at);
     }
 
-
     public function assign(User $investigator): void
     {
         $this->update([
             'assigned_to' => $investigator->uuid,
-            'status' => self::STATUS_INVESTIGATING,
+            'status'      => self::STATUS_INVESTIGATING,
         ]);
     }
 
@@ -216,7 +229,7 @@ class FraudCase extends Model
     {
         $actions = $this->actions_taken ?? [];
         $actions[] = array_merge([
-            'action' => $action,
+            'action'    => $action,
             'timestamp' => now()->toIso8601String(),
         ], $details);
 
@@ -227,20 +240,20 @@ class FraudCase extends Model
     {
         $this->update([
             'resolution_notes' => $notes,
-            'resolved_at' => now(),
-            'status' => self::STATUS_RESOLVED,
+            'resolved_at'      => now(),
+            'status'           => self::STATUS_RESOLVED,
         ]);
     }
 
     public function getCaseSummary(): array
     {
         return [
-            'case_number' => $this->case_number,
-            'type' => $this->type,
-            'status' => $this->status,
-            'severity' => $this->severity,
-            'total_loss' => $this->amount,
-            'duration_days' => $this->getDurationInDays(),
+            'case_number'       => $this->case_number,
+            'type'              => $this->type,
+            'status'            => $this->status,
+            'severity'          => $this->severity,
+            'total_loss'        => $this->amount,
+            'duration_days'     => $this->getDurationInDays(),
             'accounts_affected' => count($this->related_accounts ?? []),
         ];
     }

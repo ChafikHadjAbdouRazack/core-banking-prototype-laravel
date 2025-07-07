@@ -5,18 +5,17 @@ declare(strict_types=1);
 namespace App\Domain\Governance\Models;
 
 use App\Models\User;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Database\Factories\VoteFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Facades\Hash;
 
 class Vote extends Model
 {
     use HasFactory;
 
     /**
-     * Flag to prevent auto-generation of signature during testing
+     * Flag to prevent auto-generation of signature during testing.
      */
     public bool $skipSignatureGeneration = false;
 
@@ -37,9 +36,9 @@ class Vote extends Model
 
     protected $casts = [
         'selected_options' => 'array',
-        'voting_power' => 'integer',
-        'voted_at' => 'datetime',
-        'metadata' => 'array',
+        'voting_power'     => 'integer',
+        'voted_at'         => 'datetime',
+        'metadata'         => 'array',
     ];
 
     protected static function boot()
@@ -54,7 +53,7 @@ class Vote extends Model
 
         static::created(function ($vote) {
             // Generate signature after the vote is created and has an ID
-            if (!$vote->skipSignatureGeneration && empty($vote->signature)) {
+            if (! $vote->skipSignatureGeneration && empty($vote->signature)) {
                 $vote->signature = $vote->generateSignature();
                 $vote->saveQuietly(); // Save without triggering events
             }
@@ -89,11 +88,11 @@ class Vote extends Model
     public function generateSignature(): string
     {
         $data = [
-            'poll_id' => $this->poll_id,
-            'user_uuid' => $this->user_uuid,
+            'poll_id'          => $this->poll_id,
+            'user_uuid'        => $this->user_uuid,
             'selected_options' => $this->selected_options,
-            'voting_power' => $this->voting_power,
-            'voted_at' => $this->voted_at?->toISOString(),
+            'voting_power'     => $this->voting_power,
+            'voted_at'         => $this->voted_at?->toISOString(),
         ];
 
         return hash_hmac('sha256', json_encode($data), config('app.key'));
@@ -106,13 +105,14 @@ class Vote extends Model
         }
 
         $expectedSignature = $this->generateSignature();
+
         return hash_equals($expectedSignature, $this->signature);
     }
 
     public function isValid(): bool
     {
         return $this->verifySignature()
-            && !empty($this->selected_options)
+            && ! empty($this->selected_options)
             && $this->voting_power > 0;
     }
 
@@ -138,7 +138,7 @@ class Vote extends Model
 
     public function getVotingPowerWeight(): float
     {
-        if (!$this->poll) {
+        if (! $this->poll) {
             return 0.0;
         }
 
@@ -151,9 +151,9 @@ class Vote extends Model
     {
         return array_merge(parent::toArray(), [
             'selected_options_string' => $this->getSelectedOptionsAsString(),
-            'selected_option_count' => $this->getSelectedOptionCount(),
-            'voting_power_weight' => $this->getVotingPowerWeight(),
-            'is_valid' => $this->isValid(),
+            'selected_option_count'   => $this->getSelectedOptionCount(),
+            'voting_power_weight'     => $this->getVotingPowerWeight(),
+            'is_valid'                => $this->isValid(),
         ]);
     }
 }

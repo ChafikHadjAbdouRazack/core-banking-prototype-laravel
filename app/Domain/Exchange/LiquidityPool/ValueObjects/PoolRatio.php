@@ -102,11 +102,11 @@ final readonly class PoolRatio
     public function toArray(): array
     {
         return [
-            'base_reserve' => $this->baseReserve->__toString(),
+            'base_reserve'  => $this->baseReserve->__toString(),
             'quote_reserve' => $this->quoteReserve->__toString(),
-            'ratio' => $this->ratio->toScale(6, RoundingMode::DOWN)->__toString(),
-            'price' => $this->price->toScale(2, RoundingMode::DOWN)->__toString(),
-            'k' => $this->getK()->__toString(),
+            'ratio'         => $this->ratio->toScale(6, RoundingMode::DOWN)->__toString(),
+            'price'         => $this->price->toScale(2, RoundingMode::DOWN)->__toString(),
+            'k'             => $this->getK()->__toString(),
         ];
     }
 }

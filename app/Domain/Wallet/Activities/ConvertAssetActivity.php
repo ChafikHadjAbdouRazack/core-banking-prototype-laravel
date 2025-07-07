@@ -30,7 +30,7 @@ class ConvertAssetActivity extends Activity
 
         // Get exchange rate
         $exchangeRate = ExchangeRate::getRate($fromAssetCode, $toAssetCode);
-        if (!$exchangeRate) {
+        if (! $exchangeRate) {
             throw new \InvalidArgumentException("Exchange rate not available for {$fromAssetCode} to {$toAssetCode}");
         }
 
@@ -54,13 +54,13 @@ class ConvertAssetActivity extends Activity
             ->persist();
 
         return [
-            'success' => true,
-            'transfer_id' => $transferId,
-            'from_asset' => $fromAssetCode,
-            'to_asset' => $toAssetCode,
-            'original_amount' => $amount,
+            'success'          => true,
+            'transfer_id'      => $transferId,
+            'from_asset'       => $fromAssetCode,
+            'to_asset'         => $toAssetCode,
+            'original_amount'  => $amount,
             'converted_amount' => $convertedAmount,
-            'exchange_rate' => $exchangeRate,
+            'exchange_rate'    => $exchangeRate,
         ];
     }
 }

@@ -7,7 +7,7 @@ use App\Domain\Account\Events\AccountDeleted;
 class DeleteAccount extends AccountAction
 {
     /**
-     * @param \App\Domain\Account\Events\AccountDeleted $event
+     * @param AccountDeleted $event
      *
      * @return bool|null
      */

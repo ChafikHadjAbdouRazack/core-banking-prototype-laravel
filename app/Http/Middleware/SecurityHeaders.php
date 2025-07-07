@@ -11,7 +11,7 @@ class SecurityHeaders
     /**
      * Handle an incoming request.
      *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * @param  Closure(Request): (Response)  $next
      */
     public function handle(Request $request, Closure $next): Response
     {
@@ -53,7 +53,7 @@ class SecurityHeaders
     }
 
     /**
-     * Get Content Security Policy directives
+     * Get Content Security Policy directives.
      */
     private function getContentSecurityPolicy(): string
     {
@@ -70,14 +70,14 @@ class SecurityHeaders
             "base-uri 'self'",
             "form-action 'self'",
             "frame-ancestors 'none'",
-            "upgrade-insecure-requests",
+            'upgrade-insecure-requests',
         ];
 
         return implode('; ', $policies);
     }
 
     /**
-     * Get Permissions Policy directives
+     * Get Permissions Policy directives.
      */
     private function getPermissionsPolicy(): string
     {

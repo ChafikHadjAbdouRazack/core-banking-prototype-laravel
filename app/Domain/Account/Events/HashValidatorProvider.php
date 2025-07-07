@@ -8,8 +8,8 @@ use App\Domain\Account\DataObjects\Money;
 trait HashValidatorProvider
 {
     /**
-     * @param \App\Domain\Account\DataObjects\Money $money
-     * @param \App\Domain\Account\DataObjects\Hash $hash
+     * @param Money $money
+     * @param Hash $hash
      */
     public function __construct(
         public readonly Money $money,
@@ -18,7 +18,7 @@ trait HashValidatorProvider
     }
 
     /**
-     * @return \App\Domain\Account\DataObjects\Hash
+     * @return Hash
      */
     public function getHash(): Hash
     {
@@ -26,7 +26,7 @@ trait HashValidatorProvider
     }
 
     /**
-     * @return \App\Domain\Account\DataObjects\Money
+     * @return Money
      */
     public function getMoney(): Money
     {

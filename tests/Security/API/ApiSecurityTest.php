@@ -2,8 +2,8 @@
 
 namespace Tests\Security\API;
 
-use App\Models\User;
 use App\Models\Account;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\RateLimiter;
 use Tests\TestCase;
@@ -13,15 +13,16 @@ class ApiSecurityTest extends TestCase
     use RefreshDatabase;
 
     protected User $user;
+
     protected string $token;
 
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->user = User::factory()->create();
         $this->token = $this->user->createToken('test-token')->plainTextToken;
-        
+
         // Clear rate limiters
         RateLimiter::clear('api');
         RateLimiter::clear('transactions');
@@ -43,7 +44,7 @@ class ApiSecurityTest extends TestCase
 
         foreach ($endpoints as [$method, $endpoint]) {
             $response = $this->json($method, $endpoint);
-            
+
             $this->assertContains($response->status(), [401, 404], "Endpoint {$endpoint} should require authentication or not exist");
             if ($response->status() === 401) {
                 $response->assertJson(['message' => 'Unauthenticated.']);
@@ -85,9 +86,9 @@ class ApiSecurityTest extends TestCase
         for ($i = 0; $i < 200; $i++) {
             $response = $this->withToken($this->token)
                 ->getJson('/api/v2/accounts');
-            
+
             $attempts++;
-            
+
             if ($response->status() === 429) {
                 $hitLimit = true;
                 break;
@@ -129,7 +130,7 @@ class ApiSecurityTest extends TestCase
                 ->withBody($payload, 'application/json');
 
             $this->assertContains($response->status(), [400, 422], "Should handle malformed JSON: {$payload}");
-            
+
             // Should not expose internal errors
             $content = $response->content();
             $this->assertStringNotContainsString('ParseError', $content);
@@ -156,7 +157,7 @@ class ApiSecurityTest extends TestCase
                 ->withHeaders(['Content-Type' => $contentType])
                 ->post('/api/v2/accounts', [
                     'name' => 'Test Account',
-                    'type' => 'savings'
+                    'type' => 'savings',
                 ]);
 
             $this->assertContains($response->status(), [400, 415], "Should reject content type: {$contentType}");
@@ -170,12 +171,12 @@ class ApiSecurityTest extends TestCase
     {
         // Test oversized payloads
         $largeString = str_repeat('a', 1024 * 1024); // 1MB string
-        
+
         $response = $this->withToken($this->token)
             ->postJson('/api/v2/accounts', [
-                'name' => $largeString,
+                'name'        => $largeString,
                 'description' => $largeString,
-                'metadata' => array_fill(0, 1000, $largeString)
+                'metadata'    => array_fill(0, 1000, $largeString),
             ]);
 
         $this->assertContains($response->status(), [413, 422], 'Should reject oversized payloads');
@@ -199,7 +200,7 @@ class ApiSecurityTest extends TestCase
 
             // Should reject XML or handle safely
             $this->assertContains($response->status(), [400, 415, 422]);
-            
+
             // Should not expose file contents
             $content = $response->content();
             $this->assertStringNotContainsString('root:', $content);
@@ -215,9 +216,9 @@ class ApiSecurityTest extends TestCase
         // Try to override HTTP method
         $overrideHeaders = [
             'X-HTTP-Method-Override' => 'DELETE',
-            'X-Method-Override' => 'DELETE',
-            '_method' => 'DELETE',
-            'X-HTTP-Method' => 'DELETE',
+            'X-Method-Override'      => 'DELETE',
+            '_method'                => 'DELETE',
+            'X-HTTP-Method'          => 'DELETE',
         ];
 
         $account = Account::factory()->create(['user_uuid' => $this->user->uuid]);
@@ -245,14 +246,14 @@ class ApiSecurityTest extends TestCase
             ->getJson('/api/v2/accounts?per_page=10000');
 
         $data = $response->json('data');
-        
+
         // Should enforce maximum items per page
         $this->assertLessThanOrEqual(100, count($data), 'Should limit items per page');
 
         // Test negative per_page
         $response = $this->withToken($this->token)
             ->getJson('/api/v2/accounts?per_page=-1');
-        
+
         $this->assertContains($response->status(), [200, 422]);
         if ($response->status() === 200) {
             $this->assertNotEmpty($response->json('data'));
@@ -273,18 +274,18 @@ class ApiSecurityTest extends TestCase
 
         foreach ($probes as $probe) {
             $response = $this->withToken($this->token)->getJson($probe);
-            
+
             $content = $response->content();
-            
+
             // Should not expose system paths
             $this->assertStringNotContainsString('/var/www', $content);
             $this->assertStringNotContainsString('/home/', $content);
             $this->assertStringNotContainsString('storage/app', $content);
-            
+
             // Should not expose framework details
             $this->assertStringNotContainsString('Laravel', $content);
             $this->assertStringNotContainsString('Symfony', $content);
-            
+
             // Should not expose database details
             $this->assertStringNotContainsString('SQLSTATE', $content);
             $this->assertStringNotContainsString('MySQL', $content);
@@ -306,16 +307,16 @@ class ApiSecurityTest extends TestCase
 
         foreach ($origins as $origin) {
             $response = $this->withHeaders([
-                'Origin' => $origin,
-                'Authorization' => "Bearer {$this->token}"
+                'Origin'        => $origin,
+                'Authorization' => "Bearer {$this->token}",
             ])->options('/api/v2/accounts');
 
             if ($response->headers->has('Access-Control-Allow-Origin')) {
                 $allowedOrigin = $response->headers->get('Access-Control-Allow-Origin');
-                
+
                 // Should not allow all origins
                 $this->assertNotEquals('*', $allowedOrigin);
-                
+
                 // Should not allow suspicious origins
                 $this->assertNotEquals('null', $allowedOrigin);
                 $this->assertNotEquals('file://', $allowedOrigin);
@@ -346,8 +347,8 @@ class ApiSecurityTest extends TestCase
         foreach ($maliciousUrls as $url) {
             $response = $this->withToken($this->token)
                 ->postJson('/api/v2/webhooks', [
-                    'url' => $url,
-                    'events' => ['account.created']
+                    'url'    => $url,
+                    'events' => ['account.created'],
                 ]);
 
             $this->assertEquals(422, $response->status(), "Should reject webhook URL: {$url}");
@@ -361,7 +362,7 @@ class ApiSecurityTest extends TestCase
     {
         $account = Account::factory()->create([
             'user_uuid' => $this->user->uuid,
-            'balance' => 100000
+            'balance'   => 100000,
         ]);
 
         $idempotencyKey = 'test-key-' . uniqid();
@@ -371,9 +372,9 @@ class ApiSecurityTest extends TestCase
             ->withHeaders(['Idempotency-Key' => $idempotencyKey])
             ->postJson('/api/v2/transfers', [
                 'from_account' => $account->uuid,
-                'to_account' => Account::factory()->create()->uuid,
-                'amount' => 1000,
-                'currency' => 'USD'
+                'to_account'   => Account::factory()->create()->uuid,
+                'amount'       => 1000,
+                'currency'     => 'USD',
             ]);
 
         // Second request with same key
@@ -381,15 +382,15 @@ class ApiSecurityTest extends TestCase
             ->withHeaders(['Idempotency-Key' => $idempotencyKey])
             ->postJson('/api/v2/transfers', [
                 'from_account' => $account->uuid,
-                'to_account' => Account::factory()->create()->uuid,
-                'amount' => 1000,
-                'currency' => 'USD'
+                'to_account'   => Account::factory()->create()->uuid,
+                'amount'       => 1000,
+                'currency'     => 'USD',
             ]);
 
         // Should return same response
         if ($response1->status() === 201) {
             $this->assertEquals($response1->json(), $response2->json());
-            
+
             // Balance should only be deducted once
             $this->assertEquals(99000, $account->fresh()->balance);
         }

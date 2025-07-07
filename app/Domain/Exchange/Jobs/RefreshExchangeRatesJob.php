@@ -60,7 +60,7 @@ class RefreshExchangeRatesJob implements ShouldQueue
                         $results['refreshed'][] = $pair;
                     } catch (\Exception $e) {
                         $results['failed'][] = [
-                            'pair' => $pair,
+                            'pair'  => $pair,
                             'error' => $e->getMessage(),
                         ];
                     }
@@ -80,7 +80,7 @@ class RefreshExchangeRatesJob implements ShouldQueue
     }
 
     /**
-     * Handle job failure
+     * Handle job failure.
      */
     public function failed(\Throwable $exception): void
     {
@@ -91,7 +91,7 @@ class RefreshExchangeRatesJob implements ShouldQueue
     }
 
     /**
-     * Dispatch webhook notifications
+     * Dispatch webhook notifications.
      */
     private function dispatchWebhooks(array $results): void
     {

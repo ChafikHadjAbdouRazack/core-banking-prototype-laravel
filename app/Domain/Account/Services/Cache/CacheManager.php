@@ -18,7 +18,7 @@ class CacheManager
     }
 
     /**
-     * Handle account update event
+     * Handle account update event.
      */
     public function onAccountUpdated(Account $account): void
     {
@@ -30,7 +30,7 @@ class CacheManager
     }
 
     /**
-     * Handle account deletion event
+     * Handle account deletion event.
      */
     public function onAccountDeleted(string $accountUuid): void
     {
@@ -41,7 +41,7 @@ class CacheManager
     }
 
     /**
-     * Handle new transaction event
+     * Handle new transaction event.
      */
     public function onTransactionCreated(Transaction $transaction): void
     {
@@ -53,7 +53,7 @@ class CacheManager
     }
 
     /**
-     * Handle new turnover event
+     * Handle new turnover event.
      */
     public function onTurnoverCreated(Turnover $turnover): void
     {
@@ -62,7 +62,7 @@ class CacheManager
     }
 
     /**
-     * Clear all caches (useful for testing or maintenance)
+     * Clear all caches (useful for testing or maintenance).
      */
     public function flushAll(): void
     {
@@ -72,7 +72,7 @@ class CacheManager
     }
 
     /**
-     * Warm up cache for an account
+     * Warm up cache for an account.
      */
     public function warmUp(string $accountUuid): void
     {

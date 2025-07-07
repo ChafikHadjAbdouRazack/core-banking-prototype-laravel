@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Model;
 
 class FraudRule extends Model
 {
@@ -37,52 +37,64 @@ class FraudRule extends Model
     ];
 
     protected $casts = [
-        'is_active' => 'boolean',
-        'is_blocking' => 'boolean',
-        'ml_enabled' => 'boolean',
-        'conditions' => 'array',
-        'thresholds' => 'array',
-        'actions' => 'array',
-        'notification_channels' => 'array',
-        'ml_features' => 'array',
-        'base_score' => 'integer',
-        'weight' => 'decimal:2',
-        'precision_rate' => 'decimal:2',
+        'is_active'               => 'boolean',
+        'is_blocking'             => 'boolean',
+        'ml_enabled'              => 'boolean',
+        'conditions'              => 'array',
+        'thresholds'              => 'array',
+        'actions'                 => 'array',
+        'notification_channels'   => 'array',
+        'ml_features'             => 'array',
+        'base_score'              => 'integer',
+        'weight'                  => 'decimal:2',
+        'precision_rate'          => 'decimal:2',
         'ml_confidence_threshold' => 'decimal:2',
-        'last_triggered_at' => 'datetime',
+        'last_triggered_at'       => 'datetime',
     ];
 
-    const CATEGORY_VELOCITY = 'velocity';
-    const CATEGORY_PATTERN = 'pattern';
-    const CATEGORY_AMOUNT = 'amount';
-    const CATEGORY_GEOGRAPHY = 'geography';
-    const CATEGORY_DEVICE = 'device';
-    const CATEGORY_BEHAVIOR = 'behavior';
+    public const CATEGORY_VELOCITY = 'velocity';
 
-    const SEVERITY_LOW = 'low';
-    const SEVERITY_MEDIUM = 'medium';
-    const SEVERITY_HIGH = 'high';
-    const SEVERITY_CRITICAL = 'critical';
+    public const CATEGORY_PATTERN = 'pattern';
 
-    const ACTION_BLOCK = 'block';
-    const ACTION_FLAG = 'flag';
-    const ACTION_REVIEW = 'review';
-    const ACTION_NOTIFY = 'notify';
-    const ACTION_CHALLENGE = 'challenge';
+    public const CATEGORY_AMOUNT = 'amount';
 
-    const CATEGORIES = [
-        self::CATEGORY_VELOCITY => 'Transaction Velocity',
-        self::CATEGORY_PATTERN => 'Pattern Detection',
-        self::CATEGORY_AMOUNT => 'Amount-based Rules',
+    public const CATEGORY_GEOGRAPHY = 'geography';
+
+    public const CATEGORY_DEVICE = 'device';
+
+    public const CATEGORY_BEHAVIOR = 'behavior';
+
+    public const SEVERITY_LOW = 'low';
+
+    public const SEVERITY_MEDIUM = 'medium';
+
+    public const SEVERITY_HIGH = 'high';
+
+    public const SEVERITY_CRITICAL = 'critical';
+
+    public const ACTION_BLOCK = 'block';
+
+    public const ACTION_FLAG = 'flag';
+
+    public const ACTION_REVIEW = 'review';
+
+    public const ACTION_NOTIFY = 'notify';
+
+    public const ACTION_CHALLENGE = 'challenge';
+
+    public const CATEGORIES = [
+        self::CATEGORY_VELOCITY  => 'Transaction Velocity',
+        self::CATEGORY_PATTERN   => 'Pattern Detection',
+        self::CATEGORY_AMOUNT    => 'Amount-based Rules',
         self::CATEGORY_GEOGRAPHY => 'Geographic Rules',
-        self::CATEGORY_DEVICE => 'Device-based Rules',
-        self::CATEGORY_BEHAVIOR => 'Behavioral Analysis',
+        self::CATEGORY_DEVICE    => 'Device-based Rules',
+        self::CATEGORY_BEHAVIOR  => 'Behavioral Analysis',
     ];
 
-    const SEVERITIES = [
-        self::SEVERITY_LOW => 'Low Risk',
-        self::SEVERITY_MEDIUM => 'Medium Risk',
-        self::SEVERITY_HIGH => 'High Risk',
+    public const SEVERITIES = [
+        self::SEVERITY_LOW      => 'Low Risk',
+        self::SEVERITY_MEDIUM   => 'Medium Risk',
+        self::SEVERITY_HIGH     => 'High Risk',
         self::SEVERITY_CRITICAL => 'Critical Risk',
     ];
 
@@ -91,7 +103,7 @@ class FraudRule extends Model
         parent::boot();
 
         static::creating(function ($rule) {
-            if (!$rule->code) {
+            if (! $rule->code) {
                 $rule->code = static::generateRuleCode($rule->category);
             }
         });
@@ -100,16 +112,17 @@ class FraudRule extends Model
     public static function generateRuleCode(string $category): string
     {
         $prefix = match ($category) {
-            self::CATEGORY_VELOCITY => 'VEL',
-            self::CATEGORY_PATTERN => 'PAT',
-            self::CATEGORY_AMOUNT => 'AMT',
+            self::CATEGORY_VELOCITY  => 'VEL',
+            self::CATEGORY_PATTERN   => 'PAT',
+            self::CATEGORY_AMOUNT    => 'AMT',
             self::CATEGORY_GEOGRAPHY => 'GEO',
-            self::CATEGORY_DEVICE => 'DEV',
-            self::CATEGORY_BEHAVIOR => 'BEH',
-            default => 'FR',
+            self::CATEGORY_DEVICE    => 'DEV',
+            self::CATEGORY_BEHAVIOR  => 'BEH',
+            default                  => 'FR',
         };
 
         $count = static::where('code', 'like', $prefix . '-%')->count();
+
         return sprintf('%s-%03d', $prefix, $count + 1);
     }
 
@@ -172,12 +185,12 @@ class FraudRule extends Model
 
     public function evaluate(array $context): bool
     {
-        if (!$this->is_active) {
+        if (! $this->is_active) {
             return false;
         }
 
         foreach ($this->conditions as $condition) {
-            if (!$this->evaluateCondition($condition, $context)) {
+            if (! $this->evaluateCondition($condition, $context)) {
                 return false;
             }
         }
@@ -191,25 +204,25 @@ class FraudRule extends Model
         $operator = $condition['operator'] ?? null;
         $value = $condition['value'] ?? null;
 
-        if (!$field || !$operator) {
+        if (! $field || ! $operator) {
             return false;
         }
 
         $contextValue = data_get($context, $field);
 
         return match ($operator) {
-            'equals' => $contextValue == $value,
-            'not_equals' => $contextValue != $value,
-            'greater_than' => $contextValue > $value,
-            'less_than' => $contextValue < $value,
+            'equals'           => $contextValue == $value,
+            'not_equals'       => $contextValue != $value,
+            'greater_than'     => $contextValue > $value,
+            'less_than'        => $contextValue < $value,
             'greater_or_equal' => $contextValue >= $value,
-            'less_or_equal' => $contextValue <= $value,
-            'contains' => str_contains($contextValue, $value),
-            'in' => in_array($contextValue, (array)$value),
-            'not_in' => !in_array($contextValue, (array)$value),
-            'between' => $contextValue >= $value[0] && $contextValue <= $value[1],
-            'regex' => preg_match($value, $contextValue),
-            default => false,
+            'less_or_equal'    => $contextValue <= $value,
+            'contains'         => str_contains($contextValue, $value),
+            'in'               => in_array($contextValue, (array) $value),
+            'not_in'           => ! in_array($contextValue, (array) $value),
+            'between'          => $contextValue >= $value[0] && $contextValue <= $value[1],
+            'regex'            => preg_match($value, $contextValue),
+            default            => false,
         };
     }
 
@@ -220,10 +233,10 @@ class FraudRule extends Model
         // Apply weight based on severity
         $severityMultiplier = match ($this->severity) {
             self::SEVERITY_CRITICAL => 2.0,
-            self::SEVERITY_HIGH => 1.5,
-            self::SEVERITY_MEDIUM => 1.0,
-            self::SEVERITY_LOW => 0.5,
-            default => 1.0,
+            self::SEVERITY_HIGH     => 1.5,
+            self::SEVERITY_MEDIUM   => 1.0,
+            self::SEVERITY_LOW      => 0.5,
+            default                 => 1.0,
         };
 
         return $score * $this->weight * $severityMultiplier;
@@ -236,20 +249,20 @@ class FraudRule extends Model
 
     public function shouldNotify(): bool
     {
-        return $this->hasAction(self::ACTION_NOTIFY) && !empty($this->notification_channels);
+        return $this->hasAction(self::ACTION_NOTIFY) && ! empty($this->notification_channels);
     }
 
     public function getTimeWindowInSeconds(): int
     {
-        if (!$this->time_window) {
+        if (! $this->time_window) {
             return 0;
         }
 
         return match ($this->time_window) {
-            '1h' => 3600,
-            '24h' => 86400,
-            '7d' => 604800,
-            '30d' => 2592000,
+            '1h'    => 3600,
+            '24h'   => 86400,
+            '7d'    => 604800,
+            '30d'   => 2592000,
             default => 0,
         };
     }

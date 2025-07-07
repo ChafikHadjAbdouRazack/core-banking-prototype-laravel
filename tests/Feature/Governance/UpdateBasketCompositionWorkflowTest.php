@@ -1,39 +1,37 @@
 <?php
 
-use App\Domain\Governance\Workflows\UpdateBasketCompositionWorkflow;
-use App\Domain\Governance\Models\Poll;
-use App\Domain\Governance\Models\Vote;
 use App\Domain\Governance\Enums\PollStatus;
 use App\Domain\Governance\Enums\PollType;
+use App\Domain\Governance\Models\Poll;
+use App\Domain\Governance\Models\Vote;
+use App\Domain\Governance\Workflows\UpdateBasketCompositionWorkflow;
 use App\Models\BasketAsset;
-use App\Models\User;
-use Workflow\WorkflowStub;
 
 beforeEach(function () {
     // Ensure all required assets exist
     $assets = ['USD', 'EUR', 'GBP', 'CHF', 'JPY', 'XAU'];
     foreach ($assets as $code) {
-        \App\Domain\Asset\Models\Asset::firstOrCreate(
+        App\Domain\Asset\Models\Asset::firstOrCreate(
             ['code' => $code],
             [
-                'name' => $code . ' Currency',
-                'type' => in_array($code, ['XAU']) ? 'commodity' : 'fiat',
+                'name'      => $code . ' Currency',
+                'type'      => in_array($code, ['XAU']) ? 'commodity' : 'fiat',
                 'precision' => 2,
                 'is_active' => true,
             ]
         );
     }
-    
+
     // Create GCU basket
     $this->basket = BasketAsset::factory()->create([
         'code' => 'GCU',
         'name' => 'Global Currency Unit',
         'type' => 'dynamic',
     ]);
-    
+
     // Delete any existing components to avoid duplicates
     $this->basket->components()->delete();
-    
+
     // Add components
     $components = [
         ['asset_code' => 'USD', 'weight' => 40.0],
@@ -43,23 +41,23 @@ beforeEach(function () {
         ['asset_code' => 'JPY', 'weight' => 3.0],
         ['asset_code' => 'XAU', 'weight' => 2.0],
     ];
-    
+
     foreach ($components as $component) {
         $this->basket->components()->create($component);
     }
-    
+
     // Create poll with basket voting structure
     $this->poll = Poll::factory()->create([
-        'status' => PollStatus::CLOSED,
-        'type' => PollType::WEIGHTED_CHOICE,
+        'status'   => PollStatus::CLOSED,
+        'type'     => PollType::WEIGHTED_CHOICE,
         'metadata' => [
             'basket_code' => 'GCU',
-            'template' => 'monthly_basket',
+            'template'    => 'monthly_basket',
         ],
         'options' => [[
-            'id' => 'basket_weights',
-            'label' => 'GCU Basket Weights',
-            'type' => 'allocation',
+            'id'         => 'basket_weights',
+            'label'      => 'GCU Basket Weights',
+            'type'       => 'allocation',
             'currencies' => [
                 ['code' => 'USD', 'default' => 40],
                 ['code' => 'EUR', 'default' => 30],
@@ -79,8 +77,8 @@ it('can create workflow stub for updating basket composition', function () {
 it('workflow processes votes with different allocations', function () {
     // Create votes with different allocations and voting power
     Vote::factory()->create([
-        'poll_id' => $this->poll->id,
-        'voting_power' => 1000,
+        'poll_id'          => $this->poll->id,
+        'voting_power'     => 1000,
         'selected_options' => [
             'allocations' => [
                 'USD' => 45,
@@ -92,10 +90,10 @@ it('workflow processes votes with different allocations', function () {
             ],
         ],
     ]);
-    
+
     Vote::factory()->create([
-        'poll_id' => $this->poll->id,
-        'voting_power' => 2000,
+        'poll_id'          => $this->poll->id,
+        'voting_power'     => 2000,
         'selected_options' => [
             'allocations' => [
                 'USD' => 35,
@@ -107,7 +105,7 @@ it('workflow processes votes with different allocations', function () {
             ],
         ],
     ]);
-    
+
     // Test that the workflow can be instantiated with votes present
     expect(UpdateBasketCompositionWorkflow::class)->toBeString();
 });
@@ -120,9 +118,9 @@ it('workflow handles poll with no votes', function () {
 
 it('workflow handles votes with metadata allocations format', function () {
     Vote::factory()->create([
-        'poll_id' => $this->poll->id,
+        'poll_id'      => $this->poll->id,
         'voting_power' => 1000,
-        'metadata' => [
+        'metadata'     => [
             'allocations' => [
                 'USD' => 40,
                 'EUR' => 30,
@@ -133,7 +131,7 @@ it('workflow handles votes with metadata allocations format', function () {
             ],
         ],
     ]);
-    
+
     expect($this->poll->votes()->count())->toBe(1);
     expect(UpdateBasketCompositionWorkflow::class)->toBeString();
 });
@@ -141,8 +139,8 @@ it('workflow handles votes with metadata allocations format', function () {
 it('workflow handles allocations with rounding', function () {
     // Create vote with allocations that might have rounding issues
     Vote::factory()->create([
-        'poll_id' => $this->poll->id,
-        'voting_power' => 1000,
+        'poll_id'          => $this->poll->id,
+        'voting_power'     => 1000,
         'selected_options' => [
             'allocations' => [
                 'USD' => 33.33,
@@ -154,15 +152,15 @@ it('workflow handles allocations with rounding', function () {
             ],
         ],
     ]);
-    
+
     expect($this->poll->votes()->count())->toBe(1);
     expect(UpdateBasketCompositionWorkflow::class)->toBeString();
 });
 
 it('workflow processes basket rebalancing votes', function () {
     Vote::factory()->create([
-        'poll_id' => $this->poll->id,
-        'voting_power' => 1000,
+        'poll_id'          => $this->poll->id,
+        'voting_power'     => 1000,
         'selected_options' => [
             'allocations' => [
                 'USD' => 50,
@@ -174,7 +172,7 @@ it('workflow processes basket rebalancing votes', function () {
             ],
         ],
     ]);
-    
+
     expect($this->poll->votes()->count())->toBe(1);
     expect(UpdateBasketCompositionWorkflow::class)->toBeString();
 });
@@ -186,7 +184,7 @@ it('workflow records governance events', function () {
 
 it('requires closed poll status', function () {
     $this->poll->update(['status' => PollStatus::ACTIVE]);
-    
+
     expect($this->poll->status)->toBe(PollStatus::ACTIVE);
     expect(UpdateBasketCompositionWorkflow::class)->toBeString();
 });
@@ -195,18 +193,18 @@ it('workflow uses basket code from poll metadata', function () {
     $this->poll->update([
         'metadata' => [
             'basket_code' => 'CUSTOM_BASKET',
-            'template' => 'monthly_basket',
+            'template'    => 'monthly_basket',
         ],
     ]);
-    
+
     expect($this->poll->metadata['basket_code'])->toBe('CUSTOM_BASKET');
     expect(UpdateBasketCompositionWorkflow::class)->toBeString();
 });
 
 it('workflow ignores votes for invalid currencies', function () {
     Vote::factory()->create([
-        'poll_id' => $this->poll->id,
-        'voting_power' => 1000,
+        'poll_id'          => $this->poll->id,
+        'voting_power'     => 1000,
         'selected_options' => [
             'allocations' => [
                 'USD' => 40,
@@ -219,15 +217,15 @@ it('workflow ignores votes for invalid currencies', function () {
             ],
         ],
     ]);
-    
+
     expect($this->poll->votes()->count())->toBe(1);
     expect(UpdateBasketCompositionWorkflow::class)->toBeString();
 });
 
 it('workflow handles zero voting power', function () {
     Vote::factory()->create([
-        'poll_id' => $this->poll->id,
-        'voting_power' => 0,
+        'poll_id'          => $this->poll->id,
+        'voting_power'     => 0,
         'selected_options' => [
             'allocations' => [
                 'USD' => 100,
@@ -239,7 +237,7 @@ it('workflow handles zero voting power', function () {
             ],
         ],
     ]);
-    
+
     expect($this->poll->votes()->where('voting_power', 0)->count())->toBe(1);
     expect(UpdateBasketCompositionWorkflow::class)->toBeString();
 });

@@ -43,18 +43,18 @@ final class ExternalTicker
     public function toArray(): array
     {
         return [
-            'base_currency' => $this->baseCurrency,
+            'base_currency'  => $this->baseCurrency,
             'quote_currency' => $this->quoteCurrency,
-            'bid' => $this->bid->__toString(),
-            'ask' => $this->ask->__toString(),
-            'last' => $this->last->__toString(),
-            'volume_24h' => $this->volume24h->__toString(),
-            'high_24h' => $this->high24h->__toString(),
-            'low_24h' => $this->low24h->__toString(),
-            'change_24h' => $this->change24h->__toString(),
-            'timestamp' => $this->timestamp->format('c'),
-            'exchange' => $this->exchange,
-            'metadata' => $this->metadata,
+            'bid'            => $this->bid->__toString(),
+            'ask'            => $this->ask->__toString(),
+            'last'           => $this->last->__toString(),
+            'volume_24h'     => $this->volume24h->__toString(),
+            'high_24h'       => $this->high24h->__toString(),
+            'low_24h'        => $this->low24h->__toString(),
+            'change_24h'     => $this->change24h->__toString(),
+            'timestamp'      => $this->timestamp->format('c'),
+            'exchange'       => $this->exchange,
+            'metadata'       => $this->metadata,
         ];
     }
 

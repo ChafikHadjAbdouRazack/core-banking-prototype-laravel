@@ -7,7 +7,7 @@ class OrderService
     public function createOrder(array $data): array
     {
         return [
-            'id' => uniqid(),
+            'id'     => uniqid(),
             'status' => 'created',
         ];
     }
@@ -25,7 +25,7 @@ class OrderService
     public function getOrder(string $orderId): ?array
     {
         return [
-            'id' => $orderId,
+            'id'     => $orderId,
             'status' => 'open',
         ];
     }

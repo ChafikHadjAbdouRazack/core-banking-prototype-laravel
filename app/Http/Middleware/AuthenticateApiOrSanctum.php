@@ -2,18 +2,18 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\ApiKey;
 use Closure;
 use Illuminate\Http\Request;
-use App\Models\ApiKey;
-use Symfony\Component\HttpFoundation\Response;
 use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
+use Symfony\Component\HttpFoundation\Response;
 
 class AuthenticateApiOrSanctum
 {
     /**
      * Handle an incoming request.
      *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * @param  Closure(Request): (Response)  $next
      */
     public function handle(Request $request, Closure $next, string $permission = 'read'): Response
     {
@@ -29,7 +29,7 @@ class AuthenticateApiOrSanctum
     }
 
     /**
-     * Handle API key authentication
+     * Handle API key authentication.
      */
     protected function handleApiKeyAuth(Request $request, Closure $next, string $permission): Response
     {
@@ -37,9 +37,9 @@ class AuthenticateApiOrSanctum
 
         // Verify API key
         $apiKey = ApiKey::verify($apiKeyString);
-        if (!$apiKey) {
+        if (! $apiKey) {
             return response()->json([
-                'error' => 'Unauthorized',
+                'error'   => 'Unauthorized',
                 'message' => 'Invalid API key',
             ], 401);
         }
@@ -47,23 +47,23 @@ class AuthenticateApiOrSanctum
         // Check expiration
         if ($apiKey->expires_at && $apiKey->expires_at->isPast()) {
             return response()->json([
-                'error' => 'Unauthorized',
+                'error'   => 'Unauthorized',
                 'message' => 'API key expired',
             ], 401);
         }
 
         // Check IP restrictions
-        if (!$apiKey->isIpAllowed($request->ip())) {
+        if (! $apiKey->isIpAllowed($request->ip())) {
             return response()->json([
-                'error' => 'Forbidden',
+                'error'   => 'Forbidden',
                 'message' => 'Access denied from this IP address',
             ], 403);
         }
 
         // Check permissions
-        if (!$apiKey->hasPermission($permission)) {
+        if (! $apiKey->hasPermission($permission)) {
             return response()->json([
-                'error' => 'Forbidden',
+                'error'   => 'Forbidden',
                 'message' => 'Insufficient permissions',
             ], 403);
         }
@@ -80,7 +80,7 @@ class AuthenticateApiOrSanctum
     }
 
     /**
-     * Handle Sanctum authentication
+     * Handle Sanctum authentication.
      */
     protected function handleSanctumAuth(Request $request, Closure $next): Response
     {
@@ -89,9 +89,9 @@ class AuthenticateApiOrSanctum
 
         return $ensureStateful->handle($request, function ($request) use ($next) {
             // Check if user is authenticated via Sanctum
-            if (!auth('sanctum')->check()) {
+            if (! auth('sanctum')->check()) {
                 return response()->json([
-                    'error' => 'Unauthorized',
+                    'error'   => 'Unauthorized',
                     'message' => 'Authentication required',
                 ], 401);
             }

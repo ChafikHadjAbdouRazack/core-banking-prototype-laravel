@@ -2,13 +2,13 @@
 
 namespace App\Domain\Stablecoin\Aggregates;
 
-use App\Domain\Stablecoin\Events\ReservePoolCreated;
-use App\Domain\Stablecoin\Events\ReserveDeposited;
-use App\Domain\Stablecoin\Events\ReserveWithdrawn;
-use App\Domain\Stablecoin\Events\ReserveRebalanced;
+use App\Domain\Stablecoin\Events\CollateralizationRatioUpdated;
 use App\Domain\Stablecoin\Events\CustodianAdded;
 use App\Domain\Stablecoin\Events\CustodianRemoved;
-use App\Domain\Stablecoin\Events\CollateralizationRatioUpdated;
+use App\Domain\Stablecoin\Events\ReserveDeposited;
+use App\Domain\Stablecoin\Events\ReservePoolCreated;
+use App\Domain\Stablecoin\Events\ReserveRebalanced;
+use App\Domain\Stablecoin\Events\ReserveWithdrawn;
 use Brick\Math\BigDecimal;
 use Brick\Math\RoundingMode;
 use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
@@ -16,11 +16,17 @@ use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
 class ReservePool extends AggregateRoot
 {
     protected string $stablecoinSymbol;
+
     protected array $reserves = []; // asset => balance
+
     protected array $custodians = []; // custodian_id => info
+
     protected string $targetCollateralizationRatio = '1.5'; // 150%
+
     protected string $minimumCollateralizationRatio = '1.2'; // 120%
+
     protected string $totalMinted = '0';
+
     protected string $status = 'active';
 
     public static function create(
@@ -47,7 +53,7 @@ class ReservePool extends AggregateRoot
         string $transactionHash,
         array $metadata = []
     ): self {
-        if (!isset($this->custodians[$custodianId])) {
+        if (! isset($this->custodians[$custodianId])) {
             throw new \InvalidArgumentException("Custodian {$custodianId} not authorized");
         }
 
@@ -75,7 +81,7 @@ class ReservePool extends AggregateRoot
         string $reason,
         array $metadata = []
     ): self {
-        if (!isset($this->custodians[$custodianId])) {
+        if (! isset($this->custodians[$custodianId])) {
             throw new \InvalidArgumentException("Custodian {$custodianId} not authorized");
         }
 
@@ -88,7 +94,7 @@ class ReservePool extends AggregateRoot
 
         // Check if withdrawal maintains minimum collateralization
         $newBalance = $currentBalance->minus($withdrawAmount);
-        if (!$this->wouldMaintainMinimumCollateralization($asset, $newBalance->__toString())) {
+        if (! $this->wouldMaintainMinimumCollateralization($asset, $newBalance->__toString())) {
             throw new \InvalidArgumentException('Withdrawal would breach minimum collateralization ratio');
         }
 
@@ -115,7 +121,7 @@ class ReservePool extends AggregateRoot
             return BigDecimal::of($sum)->plus($allocation);
         }, '0');
 
-        if (!BigDecimal::of($total)->isEqualTo('1')) {
+        if (! BigDecimal::of($total)->isEqualTo('1')) {
             throw new \InvalidArgumentException('Target allocations must sum to 100%');
         }
 
@@ -153,7 +159,7 @@ class ReservePool extends AggregateRoot
 
     public function removeCustodian(string $custodianId, string $reason): self
     {
-        if (!isset($this->custodians[$custodianId])) {
+        if (! isset($this->custodians[$custodianId])) {
             throw new \InvalidArgumentException("Custodian {$custodianId} not found");
         }
 
@@ -257,10 +263,10 @@ class ReservePool extends AggregateRoot
     protected function applyCustodianAdded(CustodianAdded $event): void
     {
         $this->custodians[$event->custodianId] = [
-            'name' => $event->name,
-            'type' => $event->type,
-            'config' => $event->config,
-            'added_at' => now()->toDateTimeString()
+            'name'     => $event->name,
+            'type'     => $event->type,
+            'config'   => $event->config,
+            'added_at' => now()->toDateTimeString(),
         ];
     }
 
@@ -338,6 +344,7 @@ class ReservePool extends AggregateRoot
 
         // Max mintable = (collateral_value / min_ratio) - current_minted
         $maxTotal = $totalCollateralValue->dividedBy($this->minimumCollateralizationRatio, 18, RoundingMode::DOWN);
+
         return $maxTotal->minus($this->totalMinted);
     }
 

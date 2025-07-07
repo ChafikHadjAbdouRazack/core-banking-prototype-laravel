@@ -6,16 +6,15 @@ use App\Filament\Admin\Resources\AccountResource\Pages;
 use App\Filament\Admin\Resources\AccountResource\RelationManagers;
 use App\Models\Account;
 use Filament\Forms;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Filament\Tables\Filters\SelectFilter;
-use Filament\Tables\Filters\Filter;
-use Filament\Forms\Components\Section;
-use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\DB;
 
 class AccountResource extends Resource
@@ -168,6 +167,7 @@ class AccountResource extends Resource
                         if (! $data['balance_amount']) {
                             return null;
                         }
+
                         return 'Balance ' . $data['balance_operator'] . ' $' . number_format($data['balance_amount'], 2);
                     }),
             ])
@@ -192,7 +192,7 @@ class AccountResource extends Resource
                             DB::beginTransaction();
 
                             $accountService = app(\App\Domain\Account\Services\AccountService::class);
-                            $accountService->deposit($record->uuid, (int)($data['amount'] * 100));
+                            $accountService->deposit($record->uuid, (int) ($data['amount'] * 100));
 
                             DB::commit();
 
@@ -211,7 +211,7 @@ class AccountResource extends Resource
                                 ->send();
                         }
                     })
-                    ->visible(fn (Account $record): bool => !$record->frozen),
+                    ->visible(fn (Account $record): bool => ! $record->frozen),
                 Tables\Actions\Action::make('withdraw')
                     ->label('Withdraw')
                     ->icon('heroicon-o-minus-circle')
@@ -230,7 +230,7 @@ class AccountResource extends Resource
                             DB::beginTransaction();
 
                             $accountService = app(\App\Domain\Account\Services\AccountService::class);
-                            $accountService->withdraw($record->uuid, (int)($data['amount'] * 100));
+                            $accountService->withdraw($record->uuid, (int) ($data['amount'] * 100));
 
                             DB::commit();
 
@@ -249,7 +249,7 @@ class AccountResource extends Resource
                                 ->send();
                         }
                     })
-                    ->visible(fn (Account $record): bool => !$record->frozen && $record->balance > 0),
+                    ->visible(fn (Account $record): bool => ! $record->frozen && $record->balance > 0),
                 Tables\Actions\Action::make('freeze')
                     ->label('Freeze')
                     ->icon('heroicon-o-lock-closed')
@@ -276,7 +276,7 @@ class AccountResource extends Resource
                                 ->send();
                         }
                     })
-                    ->visible(fn (Account $record): bool => !$record->frozen),
+                    ->visible(fn (Account $record): bool => ! $record->frozen),
                 Tables\Actions\Action::make('unfreeze')
                     ->label('Unfreeze')
                     ->icon('heroicon-o-lock-open')
@@ -318,7 +318,7 @@ class AccountResource extends Resource
                             $failed = 0;
 
                             foreach ($records as $record) {
-                                if (!$record->frozen) {
+                                if (! $record->frozen) {
                                     try {
                                         $accountService->freeze($record->uuid);
                                         $success++;
@@ -371,19 +371,19 @@ class AccountResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListAccounts::route('/'),
+            'index'  => Pages\ListAccounts::route('/'),
             'create' => Pages\CreateAccount::route('/create'),
-            'edit' => Pages\EditAccount::route('/{record}/edit'),
-            'view' => Pages\ViewAccount::route('/{record}'),
+            'edit'   => Pages\EditAccount::route('/{record}/edit'),
+            'view'   => Pages\ViewAccount::route('/{record}'),
         ];
     }
 
     public static function getGlobalSearchResultDetails($record): array
     {
         return [
-            'User' => $record->user_uuid,
+            'User'    => $record->user_uuid,
             'Balance' => '$' . number_format($record->balance / 100, 2),
-            'Status' => $record->frozen ? 'Frozen' : 'Active',
+            'Status'  => $record->frozen ? 'Frozen' : 'Active',
         ];
     }
 

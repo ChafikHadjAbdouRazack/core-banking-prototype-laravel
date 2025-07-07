@@ -12,12 +12,12 @@ use Illuminate\Support\Facades\Storage;
 use Workflow\Activity;
 
 /**
- * Activity to reverse a batch operation as part of workflow compensation
+ * Activity to reverse a batch operation as part of workflow compensation.
  */
 class ReverseBatchOperationActivity extends Activity
 {
     /**
-     * Reverse a batch operation based on its type and result
+     * Reverse a batch operation based on its type and result.
      *
      * @param string $operation
      * @param string $batchId
@@ -27,8 +27,8 @@ class ReverseBatchOperationActivity extends Activity
     public function execute(string $operation, string $batchId, array $operationResult): void
     {
         logger()->info('Reversing batch operation', [
-            'batch_id' => $batchId,
-            'operation' => $operation,
+            'batch_id'        => $batchId,
+            'operation'       => $operation,
             'original_result' => $operationResult,
         ]);
 
@@ -61,30 +61,30 @@ class ReverseBatchOperationActivity extends Activity
                 default:
                     logger()->warning('No reversal logic for operation', [
                         'operation' => $operation,
-                        'batch_id' => $batchId,
+                        'batch_id'  => $batchId,
                     ]);
             }
 
             logger()->info('Successfully reversed batch operation', [
-                'batch_id' => $batchId,
+                'batch_id'  => $batchId,
                 'operation' => $operation,
             ]);
         } catch (\Throwable $th) {
             logger()->error('Failed to reverse batch operation', [
-                'batch_id' => $batchId,
+                'batch_id'  => $batchId,
                 'operation' => $operation,
-                'error' => $th->getMessage(),
+                'error'     => $th->getMessage(),
             ]);
             throw $th;
         }
     }
 
     /**
-     * Reverse daily turnover calculations
+     * Reverse daily turnover calculations.
      */
     private function reverseDailyTurnover(array $result): void
     {
-        if (!isset($result['result']['processed_data'])) {
+        if (! isset($result['result']['processed_data'])) {
             return;
         }
 
@@ -103,18 +103,18 @@ class ReverseBatchOperationActivity extends Activity
                 // For simplicity, we'll just log that we couldn't fully revert
                 logger()->warning('Cannot fully revert updated turnover', [
                     'account_uuid' => $turnoverData['account_uuid'],
-                    'date' => $date,
+                    'date'         => $date,
                 ]);
             }
         }
     }
 
     /**
-     * Reverse account statement generation
+     * Reverse account statement generation.
      */
     private function reverseAccountStatements(array $result): void
     {
-        if (!isset($result['result']['generated_files'])) {
+        if (! isset($result['result']['generated_files'])) {
             return;
         }
 
@@ -128,11 +128,11 @@ class ReverseBatchOperationActivity extends Activity
     }
 
     /**
-     * Reverse interest calculations
+     * Reverse interest calculations.
      */
     private function reverseInterestCalculations(array $result): void
     {
-        if (!isset($result['result']['interest_transactions'])) {
+        if (! isset($result['result']['interest_transactions'])) {
             return;
         }
 
@@ -147,19 +147,19 @@ class ReverseBatchOperationActivity extends Activity
 
                 logger()->info('Reversed interest transaction', [
                     'transaction_uuid' => $interestTx['transaction_uuid'],
-                    'account_uuid' => $interestTx['account_uuid'],
-                    'amount' => $interestTx['amount'],
+                    'account_uuid'     => $interestTx['account_uuid'],
+                    'amount'           => $interestTx['amount'],
                 ]);
             }
         });
     }
 
     /**
-     * Reverse compliance checks (delete generated reports)
+     * Reverse compliance checks (delete generated reports).
      */
     private function reverseComplianceChecks(array $result): void
     {
-        if (!isset($result['result']['report_file'])) {
+        if (! isset($result['result']['report_file'])) {
             return;
         }
 
@@ -171,11 +171,11 @@ class ReverseBatchOperationActivity extends Activity
     }
 
     /**
-     * Reverse archive operations
+     * Reverse archive operations.
      */
     private function reverseArchiveTransactions(array $result): void
     {
-        if (!isset($result['result']['archived_uuids'])) {
+        if (! isset($result['result']['archived_uuids'])) {
             return;
         }
 
@@ -184,17 +184,17 @@ class ReverseBatchOperationActivity extends Activity
             ->update(['archived' => false]);
 
         logger()->info('Unarchived transactions', [
-            'count' => $count,
+            'count'    => $count,
             'expected' => count($result['result']['archived_uuids']),
         ]);
     }
 
     /**
-     * Reverse regulatory report generation
+     * Reverse regulatory report generation.
      */
     private function reverseRegulatoryReports(array $result): void
     {
-        if (!isset($result['result']['generated_files'])) {
+        if (! isset($result['result']['generated_files'])) {
             return;
         }
 

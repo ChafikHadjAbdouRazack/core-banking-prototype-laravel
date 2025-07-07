@@ -6,11 +6,9 @@ use App\Domain\Governance\Enums\PollStatus;
 use App\Domain\Governance\Enums\PollType;
 use App\Domain\Governance\Models\Poll;
 use App\Domain\Governance\Models\Vote;
-use App\Filament\Admin\Resources\PollResource;
 use App\Filament\Admin\Resources\PollResource\Pages\CreatePoll;
 use App\Filament\Admin\Resources\PollResource\Pages\EditPoll;
 use App\Filament\Admin\Resources\PollResource\Pages\ListPolls;
-use App\Models\User;
 use Livewire\Livewire;
 
 beforeEach(function () {
@@ -34,17 +32,17 @@ describe('Poll Resource', function () {
 
     it('can create a poll', function () {
         $pollData = [
-            'title' => 'Should we add Dark Mode?',
+            'title'       => 'Should we add Dark Mode?',
             'description' => 'Adding dark mode theme support',
-            'type' => PollType::YES_NO->value,
-            'options' => [
+            'type'        => PollType::YES_NO->value,
+            'options'     => [
                 ['id' => 'yes', 'label' => 'Yes', 'description' => 'Add dark mode'],
                 ['id' => 'no', 'label' => 'No', 'description' => 'Keep current theme'],
             ],
-            'start_date' => now()->addHour(),
-            'end_date' => now()->addWeek(),
+            'start_date'            => now()->addHour(),
+            'end_date'              => now()->addWeek(),
             'voting_power_strategy' => 'one_user_one_vote',
-            'status' => PollStatus::DRAFT->value,
+            'status'                => PollStatus::DRAFT->value,
         ];
 
         Livewire::test(CreatePoll::class)
@@ -53,7 +51,7 @@ describe('Poll Resource', function () {
             ->assertHasNoFormErrors();
 
         $this->assertDatabaseHas('polls', [
-            'title' => 'Should we add Dark Mode?',
+            'title'      => 'Should we add Dark Mode?',
             'created_by' => $this->user->uuid,
         ]);
     });
@@ -61,14 +59,14 @@ describe('Poll Resource', function () {
     it('validates required fields on poll creation', function () {
         Livewire::test(CreatePoll::class)
             ->fillForm([
-                'title' => '',
-                'type' => '',
+                'title'   => '',
+                'type'    => '',
                 'options' => [],
             ])
             ->call('create')
             ->assertHasFormErrors([
-                'title' => 'required',
-                'type' => 'required',
+                'title'   => 'required',
+                'type'    => 'required',
                 'options' => 'required',
             ]);
     });
@@ -79,7 +77,7 @@ describe('Poll Resource', function () {
         Livewire::test(EditPoll::class, ['record' => $poll->getRouteKey()])
             ->assertFormSet([
                 'title' => $poll->title,
-                'type' => $poll->type->value,
+                'type'  => $poll->type->value,
             ])
             ->fillForm([
                 'title' => 'Updated Poll Title',
@@ -121,7 +119,7 @@ describe('Poll Resource', function () {
     it('can activate a draft poll', function () {
         $poll = Poll::factory()->draft()->create([
             'start_date' => now()->subMinute(),
-            'end_date' => now()->addWeek(),
+            'end_date'   => now()->addWeek(),
         ]);
 
         Livewire::test(ListPolls::class)
@@ -163,7 +161,7 @@ describe('Poll Resource', function () {
     it('can bulk activate multiple draft polls', function () {
         $draftPolls = Poll::factory()->draft()->count(3)->create([
             'start_date' => now()->subMinute(),
-            'end_date' => now()->addWeek(),
+            'end_date'   => now()->addWeek(),
         ]);
 
         Livewire::test(ListPolls::class)

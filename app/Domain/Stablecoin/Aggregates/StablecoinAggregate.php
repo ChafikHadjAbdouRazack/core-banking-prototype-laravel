@@ -19,11 +19,17 @@ use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
 class StablecoinAggregate extends AggregateRoot
 {
     private string $position_uuid;
+
     private string $account_uuid;
+
     private string $stablecoin_code;
+
     private string $collateral_asset_code;
+
     private int $collateral_amount = 0;
+
     private int $debt_amount = 0;
+
     private string $status = 'active';
 
     /**

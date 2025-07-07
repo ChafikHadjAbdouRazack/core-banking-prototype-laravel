@@ -16,9 +16,9 @@ class LoginControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->user = User::factory()->create([
-            'email' => 'test@example.com',
+            'email'    => 'test@example.com',
             'password' => bcrypt('password123'),
         ]);
     }
@@ -26,7 +26,7 @@ class LoginControllerTest extends TestCase
     public function test_user_can_login_with_valid_credentials(): void
     {
         $response = $this->postJson('/api/auth/login', [
-            'email' => 'test@example.com',
+            'email'    => 'test@example.com',
             'password' => 'password123',
         ]);
 
@@ -49,7 +49,7 @@ class LoginControllerTest extends TestCase
     public function test_user_cannot_login_with_invalid_credentials(): void
     {
         $response = $this->postJson('/api/auth/login', [
-            'email' => 'test@example.com',
+            'email'    => 'test@example.com',
             'password' => 'wrongpassword',
         ]);
 
@@ -98,7 +98,7 @@ class LoginControllerTest extends TestCase
     {
         // Create a token first
         $token = $this->user->createToken('test-token')->plainTextToken;
-        
+
         // Use the token to make the request
         $response = $this->withToken($token)->postJson('/api/auth/refresh');
 
@@ -112,7 +112,7 @@ class LoginControllerTest extends TestCase
         // Verify new token works
         $newToken = $response->json('access_token');
         $this->assertNotEquals($token, $newToken);
-        
+
         // Test new token works
         $authResponse = $this->withToken($newToken)->getJson('/api/auth/user');
         $authResponse->assertOk();

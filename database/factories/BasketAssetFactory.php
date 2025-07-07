@@ -20,17 +20,17 @@ class BasketAssetFactory extends Factory
     public function definition(): array
     {
         return [
-            'code' => strtoupper(fake()->unique()->lexify('BASKET_???')),
-            'name' => fake()->words(3, true) . ' Basket',
-            'description' => fake()->sentence(),
-            'type' => fake()->randomElement(['fixed', 'dynamic']),
+            'code'                => strtoupper(fake()->unique()->lexify('BASKET_???')),
+            'name'                => fake()->words(3, true) . ' Basket',
+            'description'         => fake()->sentence(),
+            'type'                => fake()->randomElement(['fixed', 'dynamic']),
             'rebalance_frequency' => fake()->randomElement(['daily', 'weekly', 'monthly', 'quarterly', 'never']),
-            'last_rebalanced_at' => fake()->optional(0.3)->dateTimeBetween('-30 days', 'now'),
-            'is_active' => fake()->boolean(90), // 90% chance of being active
-            'created_by' => null,
-            'metadata' => [
+            'last_rebalanced_at'  => fake()->optional(0.3)->dateTimeBetween('-30 days', 'now'),
+            'is_active'           => fake()->boolean(90), // 90% chance of being active
+            'created_by'          => null,
+            'metadata'            => [
                 'risk_level' => fake()->randomElement(['low', 'medium', 'high']),
-                'category' => fake()->randomElement(['conservative', 'balanced', 'aggressive']),
+                'category'   => fake()->randomElement(['conservative', 'balanced', 'aggressive']),
             ],
         ];
     }
@@ -61,7 +61,7 @@ class BasketAssetFactory extends Factory
     public function fixed(): static
     {
         return $this->state(fn (array $attributes) => [
-            'type' => 'fixed',
+            'type'                => 'fixed',
             'rebalance_frequency' => 'never',
         ]);
     }
@@ -82,7 +82,7 @@ class BasketAssetFactory extends Factory
     public function dailyRebalance(): static
     {
         return $this->state(fn (array $attributes) => [
-            'type' => 'dynamic',
+            'type'                => 'dynamic',
             'rebalance_frequency' => 'daily',
         ]);
     }
@@ -103,9 +103,9 @@ class BasketAssetFactory extends Factory
     public function needsRebalancing(): static
     {
         return $this->state(fn (array $attributes) => [
-            'type' => 'dynamic',
+            'type'                => 'dynamic',
             'rebalance_frequency' => 'daily',
-            'last_rebalanced_at' => now()->subDays(2),
+            'last_rebalanced_at'  => now()->subDays(2),
         ]);
     }
 
@@ -115,13 +115,13 @@ class BasketAssetFactory extends Factory
     public function stableCurrencyBasket(): static
     {
         return $this->state(fn (array $attributes) => [
-            'code' => 'STABLE_BASKET',
-            'name' => 'Stable Currency Basket',
+            'code'        => 'STABLE_BASKET',
+            'name'        => 'Stable Currency Basket',
             'description' => 'A diversified basket of major stable fiat currencies',
-            'type' => 'fixed',
-            'metadata' => [
-                'risk_level' => 'low',
-                'category' => 'conservative',
+            'type'        => 'fixed',
+            'metadata'    => [
+                'risk_level'    => 'low',
+                'category'      => 'conservative',
                 'target_market' => 'risk-averse investors',
             ],
         ]);
@@ -133,14 +133,14 @@ class BasketAssetFactory extends Factory
     public function cryptoIndexBasket(): static
     {
         return $this->state(fn (array $attributes) => [
-            'code' => 'CRYPTO_INDEX',
-            'name' => 'Crypto Index Basket',
-            'description' => 'Top cryptocurrencies by market cap',
-            'type' => 'dynamic',
+            'code'                => 'CRYPTO_INDEX',
+            'name'                => 'Crypto Index Basket',
+            'description'         => 'Top cryptocurrencies by market cap',
+            'type'                => 'dynamic',
             'rebalance_frequency' => 'weekly',
-            'metadata' => [
-                'risk_level' => 'high',
-                'category' => 'aggressive',
+            'metadata'            => [
+                'risk_level'    => 'high',
+                'category'      => 'aggressive',
                 'target_market' => 'crypto enthusiasts',
             ],
         ]);
@@ -154,7 +154,7 @@ class BasketAssetFactory extends Factory
         return $this->afterCreating(function (BasketAsset $basket) {
             // Disabled automatic component creation to avoid conflicts in tests
             // Tests should explicitly create the components they need
-            
+
             // Only create components for specific basket types if needed
             if (in_array($basket->code, ['STABLE_BASKET', 'CRYPTO_INDEX'])) {
                 // These specific baskets can have predefined components
@@ -163,7 +163,7 @@ class BasketAssetFactory extends Factory
             }
         });
     }
-    
+
     /**
      * Create a basket with components.
      */
@@ -189,10 +189,10 @@ class BasketAssetFactory extends Factory
 
                 $basket->components()->create([
                     'asset_code' => $assetCode,
-                    'weight' => round($weight, 2),
+                    'weight'     => round($weight, 2),
                     'min_weight' => $basket->type === 'dynamic' ? round($weight * 0.8, 2) : null,
                     'max_weight' => $basket->type === 'dynamic' ? round($weight * 1.2, 2) : null,
-                    'is_active' => true,
+                    'is_active'  => true,
                 ]);
             }
         });

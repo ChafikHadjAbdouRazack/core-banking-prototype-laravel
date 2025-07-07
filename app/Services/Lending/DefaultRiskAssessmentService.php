@@ -2,8 +2,8 @@
 
 namespace App\Services\Lending;
 
-use App\Domain\Lending\Services\RiskAssessmentService;
 use App\Domain\Lending\Aggregates\LoanApplication;
+use App\Domain\Lending\Services\RiskAssessmentService;
 use App\Models\User;
 use Brick\Math\BigDecimal;
 
@@ -53,7 +53,7 @@ class DefaultRiskAssessmentService implements RiskAssessmentService
 
         // Payment history (20% weight)
         $paymentHistory = $creditScore['report']['paymentHistory'] ?? [];
-        $latePayments = count(array_filter($paymentHistory, fn($p) => $p['status'] === 'late'));
+        $latePayments = count(array_filter($paymentHistory, fn ($p) => $p['status'] === 'late'));
 
         if ($latePayments == 0) {
             $riskScore += 20;
@@ -84,7 +84,7 @@ class DefaultRiskAssessmentService implements RiskAssessmentService
             $riskScore >= 50 => 'C',
             $riskScore >= 35 => 'D',
             $riskScore >= 20 => 'E',
-            default => 'F',
+            default          => 'F',
         };
 
         // Calculate default probability
@@ -98,14 +98,14 @@ class DefaultRiskAssessmentService implements RiskAssessmentService
         };
 
         return [
-            'rating' => $rating,
+            'rating'             => $rating,
             'defaultProbability' => $defaultProbability,
-            'riskFactors' => $riskFactors,
-            'riskScore' => $riskScore,
-            'details' => [
-                'creditScore' => $creditScoreValue,
-                'dti' => $dti,
-                'latePayments' => $latePayments,
+            'riskFactors'        => $riskFactors,
+            'riskScore'          => $riskScore,
+            'details'            => [
+                'creditScore'      => $creditScoreValue,
+                'dti'              => $dti,
+                'latePayments'     => $latePayments,
                 'accountAgeMonths' => $accountAgeMonths,
             ],
         ];
@@ -114,12 +114,12 @@ class DefaultRiskAssessmentService implements RiskAssessmentService
     public function calculateRiskAdjustedRate(string $riskRating, float $baseRate): float
     {
         $riskPremium = match ($riskRating) {
-            'A' => 0,
-            'B' => 2,
-            'C' => 4,
-            'D' => 6,
-            'E' => 8,
-            'F' => 12,
+            'A'     => 0,
+            'B'     => 2,
+            'C'     => 4,
+            'D'     => 6,
+            'E'     => 8,
+            'F'     => 12,
             default => 15,
         };
 

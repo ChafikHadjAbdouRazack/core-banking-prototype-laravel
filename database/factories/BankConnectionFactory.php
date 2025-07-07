@@ -28,42 +28,42 @@ class BankConnectionFactory extends Factory
     {
         $bankCodes = ['HSBC', 'BARCLAYS', 'NATWEST', 'LLOYDS', 'SANTANDER', 'REVOLUT', 'WISE'];
         $statuses = ['active', 'inactive', 'pending', 'expired'];
-        
+
         return [
-            'id' => Str::uuid()->toString(),
-            'user_uuid' => User::factory(),
-            'bank_code' => fake()->randomElement($bankCodes),
-            'status' => fake()->randomElement($statuses),
-            'credentials' => $this->generateCredentials(),
-            'permissions' => $this->generatePermissions(),
+            'id'           => Str::uuid()->toString(),
+            'user_uuid'    => User::factory(),
+            'bank_code'    => fake()->randomElement($bankCodes),
+            'status'       => fake()->randomElement($statuses),
+            'credentials'  => $this->generateCredentials(),
+            'permissions'  => $this->generatePermissions(),
             'last_sync_at' => fake()->optional(0.7)->dateTimeBetween('-1 week', 'now'),
-            'expires_at' => fake()->optional(0.5)->dateTimeBetween('now', '+1 year'),
-            'metadata' => [
-                'sync_interval' => fake()->randomElement([3600, 7200, 14400, 28800]),
+            'expires_at'   => fake()->optional(0.5)->dateTimeBetween('now', '+1 year'),
+            'metadata'     => [
+                'sync_interval'   => fake()->randomElement([3600, 7200, 14400, 28800]),
                 'connection_type' => fake()->randomElement(['oauth', 'api_key', 'username_password']),
                 'consent_version' => '1.0.0',
-                'last_error' => null,
+                'last_error'      => null,
             ],
         ];
     }
 
     /**
-     * Generate fake encrypted credentials
+     * Generate fake encrypted credentials.
      *
      * @return array
      */
     private function generateCredentials(): array
     {
         return [
-            'username' => encrypt(fake()->userName()),
-            'password' => encrypt(fake()->password()),
-            'api_key' => encrypt(Str::random(32)),
+            'username'    => encrypt(fake()->userName()),
+            'password'    => encrypt(fake()->password()),
+            'api_key'     => encrypt(Str::random(32)),
             'customer_id' => fake()->numerify('CUST-#########'),
         ];
     }
 
     /**
-     * Generate permissions array
+     * Generate permissions array.
      *
      * @return array
      */
@@ -91,42 +91,42 @@ class BankConnectionFactory extends Factory
     }
 
     /**
-     * Indicate that the bank connection is active
+     * Indicate that the bank connection is active.
      */
     public function active(): static
     {
         return $this->state(fn (array $attributes) => [
-            'status' => 'active',
-            'expires_at' => fake()->dateTimeBetween('+1 month', '+1 year'),
+            'status'       => 'active',
+            'expires_at'   => fake()->dateTimeBetween('+1 month', '+1 year'),
             'last_sync_at' => fake()->dateTimeBetween('-1 hour', 'now'),
         ]);
     }
 
     /**
-     * Indicate that the bank connection is expired
+     * Indicate that the bank connection is expired.
      */
     public function expired(): static
     {
         return $this->state(fn (array $attributes) => [
-            'status' => 'expired',
+            'status'     => 'expired',
             'expires_at' => fake()->dateTimeBetween('-1 month', '-1 day'),
         ]);
     }
 
     /**
-     * Indicate that the bank connection is pending
+     * Indicate that the bank connection is pending.
      */
     public function pending(): static
     {
         return $this->state(fn (array $attributes) => [
-            'status' => 'pending',
+            'status'       => 'pending',
             'last_sync_at' => null,
-            'permissions' => [],
+            'permissions'  => [],
         ]);
     }
 
     /**
-     * Set specific bank
+     * Set specific bank.
      */
     public function forBank(string $bankCode): static
     {
@@ -136,7 +136,7 @@ class BankConnectionFactory extends Factory
     }
 
     /**
-     * Set specific user
+     * Set specific user.
      */
     public function forUser(User $user): static
     {
@@ -146,7 +146,7 @@ class BankConnectionFactory extends Factory
     }
 
     /**
-     * With all permissions
+     * With all permissions.
      */
     public function withAllPermissions(): static
     {
@@ -156,7 +156,7 @@ class BankConnectionFactory extends Factory
     }
 
     /**
-     * With specific permissions
+     * With specific permissions.
      */
     public function withPermissions(array $permissions): static
     {

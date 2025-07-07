@@ -36,7 +36,7 @@ class HandleCustodianHealthChange implements ShouldQueue
     {
         \Log::error('Failed to handle custodian health change', [
             'custodian' => $event->custodian,
-            'error' => $exception->getMessage(),
+            'error'     => $exception->getMessage(),
         ]);
     }
 }

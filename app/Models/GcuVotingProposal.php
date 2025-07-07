@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Carbon\Carbon;
 
 class GcuVotingProposal extends Model
 {
@@ -33,22 +32,22 @@ class GcuVotingProposal extends Model
     ];
 
     protected $casts = [
-        'proposed_composition' => 'array',
-        'current_composition' => 'array',
+        'proposed_composition'   => 'array',
+        'current_composition'    => 'array',
         'implementation_details' => 'array',
-        'voting_starts_at' => 'datetime',
-        'voting_ends_at' => 'datetime',
-        'implemented_at' => 'datetime',
-        'minimum_participation' => 'decimal:2',
-        'minimum_approval' => 'decimal:2',
-        'total_gcu_supply' => 'decimal:4',
-        'total_votes_cast' => 'decimal:4',
-        'votes_for' => 'decimal:4',
-        'votes_against' => 'decimal:4',
+        'voting_starts_at'       => 'datetime',
+        'voting_ends_at'         => 'datetime',
+        'implemented_at'         => 'datetime',
+        'minimum_participation'  => 'decimal:2',
+        'minimum_approval'       => 'decimal:2',
+        'total_gcu_supply'       => 'decimal:4',
+        'total_votes_cast'       => 'decimal:4',
+        'votes_for'              => 'decimal:4',
+        'votes_against'          => 'decimal:4',
     ];
 
     /**
-     * Get the creator of the proposal
+     * Get the creator of the proposal.
      */
     public function creator(): BelongsTo
     {
@@ -56,7 +55,7 @@ class GcuVotingProposal extends Model
     }
 
     /**
-     * Get all votes for this proposal
+     * Get all votes for this proposal.
      */
     public function votes(): HasMany
     {
@@ -64,7 +63,7 @@ class GcuVotingProposal extends Model
     }
 
     /**
-     * Check if voting is currently active
+     * Check if voting is currently active.
      */
     public function isVotingActive(): bool
     {
@@ -73,7 +72,7 @@ class GcuVotingProposal extends Model
     }
 
     /**
-     * Check if the proposal has passed
+     * Check if the proposal has passed.
      */
     public function hasPassed(): bool
     {
@@ -87,37 +86,40 @@ class GcuVotingProposal extends Model
         }
 
         $approvalRate = ($this->votes_for / $this->total_votes_cast) * 100;
+
         return $approvalRate >= $this->minimum_approval;
     }
 
     /**
-     * Get the participation rate
+     * Get the participation rate.
      */
     public function getParticipationRateAttribute(): float
     {
-        if (!$this->total_gcu_supply || $this->total_gcu_supply == 0) {
+        if (! $this->total_gcu_supply || $this->total_gcu_supply == 0) {
             return 0;
         }
+
         return ($this->total_votes_cast / $this->total_gcu_supply) * 100;
     }
 
     /**
-     * Get the approval rate
+     * Get the approval rate.
      */
     public function getApprovalRateAttribute(): float
     {
         if ($this->total_votes_cast == 0) {
             return 0;
         }
+
         return ($this->votes_for / $this->total_votes_cast) * 100;
     }
 
     /**
-     * Get time remaining for voting
+     * Get time remaining for voting.
      */
     public function getTimeRemainingAttribute(): ?string
     {
-        if (!$this->isVotingActive()) {
+        if (! $this->isVotingActive()) {
             return null;
         }
 
@@ -128,7 +130,7 @@ class GcuVotingProposal extends Model
     }
 
     /**
-     * Scope for active proposals
+     * Scope for active proposals.
      */
     public function scopeActive($query)
     {
@@ -138,7 +140,7 @@ class GcuVotingProposal extends Model
     }
 
     /**
-     * Scope for upcoming proposals
+     * Scope for upcoming proposals.
      */
     public function scopeUpcoming($query)
     {
@@ -147,7 +149,7 @@ class GcuVotingProposal extends Model
     }
 
     /**
-     * Scope for past proposals
+     * Scope for past proposals.
      */
     public function scopePast($query)
     {

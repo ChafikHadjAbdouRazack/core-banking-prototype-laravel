@@ -29,15 +29,15 @@ class StablecoinOperation extends Model
     ];
 
     protected $casts = [
-        'amount' => 'integer',
+        'amount'            => 'integer',
         'collateral_amount' => 'integer',
         'collateral_return' => 'integer',
-        'metadata' => 'array',
-        'executed_at' => 'datetime',
+        'metadata'          => 'array',
+        'executed_at'       => 'datetime',
     ];
 
     /**
-     * Get the operator user
+     * Get the operator user.
      */
     public function operator(): BelongsTo
     {
@@ -45,7 +45,7 @@ class StablecoinOperation extends Model
     }
 
     /**
-     * Get the source account
+     * Get the source account.
      */
     public function sourceAccount(): BelongsTo
     {
@@ -53,7 +53,7 @@ class StablecoinOperation extends Model
     }
 
     /**
-     * Get the recipient account
+     * Get the recipient account.
      */
     public function recipientAccount(): BelongsTo
     {

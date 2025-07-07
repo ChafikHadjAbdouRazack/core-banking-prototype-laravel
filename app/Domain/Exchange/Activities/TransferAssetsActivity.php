@@ -44,11 +44,11 @@ class TransferAssetsActivity extends Activity
                 assetCode: $sellOrder->base_asset,
                 description: "Exchange trade: {$baseAmount} {$sellOrder->base_asset}",
                 metadata: [
-                    'trade_type' => 'exchange',
-                    'buy_order_id' => $buyOrderId,
-                    'sell_order_id' => $sellOrderId,
+                    'trade_type'     => 'exchange',
+                    'buy_order_id'   => $buyOrderId,
+                    'sell_order_id'  => $sellOrderId,
                     'executed_price' => $executedPrice,
-                    'side' => 'base_transfer',
+                    'side'           => 'base_transfer',
                 ]
             );
 
@@ -64,11 +64,11 @@ class TransferAssetsActivity extends Activity
                 assetCode: $sellOrder->quote_asset,
                 description: "Exchange trade: {$quoteAmount} {$sellOrder->quote_asset}",
                 metadata: [
-                    'trade_type' => 'exchange',
-                    'buy_order_id' => $buyOrderId,
-                    'sell_order_id' => $sellOrderId,
-                    'executed_price' => $executedPrice,
-                    'side' => 'quote_transfer',
+                    'trade_type'             => 'exchange',
+                    'buy_order_id'           => $buyOrderId,
+                    'sell_order_id'          => $sellOrderId,
+                    'executed_price'         => $executedPrice,
+                    'side'                   => 'quote_transfer',
                     'related_transaction_id' => $transactionId,
                 ]
             );
@@ -93,16 +93,16 @@ class TransferAssetsActivity extends Activity
                 ->persist();
 
             return (object) [
-                'success' => true,
-                'baseTransactionId' => $transactionId,
+                'success'            => true,
+                'baseTransactionId'  => $transactionId,
                 'quoteTransactionId' => $quoteTransactionId,
-                'baseAmount' => $baseAmount,
-                'quoteAmount' => $quoteAmount,
+                'baseAmount'         => $baseAmount,
+                'quoteAmount'        => $quoteAmount,
             ];
         } catch (\Exception $e) {
             return (object) [
                 'success' => false,
-                'error' => $e->getMessage(),
+                'error'   => $e->getMessage(),
             ];
         }
     }

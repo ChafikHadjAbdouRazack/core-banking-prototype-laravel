@@ -49,8 +49,8 @@ class CustodianWebhook extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'headers' => 'array',
-        'payload' => 'array',
+        'headers'      => 'array',
+        'payload'      => 'array',
         'processed_at' => 'datetime',
     ];
 
@@ -110,7 +110,7 @@ class CustodianWebhook extends Model
     public function markAsProcessing(): void
     {
         $this->update([
-            'status' => 'processing',
+            'status'   => 'processing',
             'attempts' => $this->attempts + 1,
         ]);
     }
@@ -121,8 +121,8 @@ class CustodianWebhook extends Model
     public function markAsProcessed(): void
     {
         $this->update([
-            'status' => 'processed',
-            'processed_at' => now(),
+            'status'        => 'processed',
+            'processed_at'  => now(),
             'error_message' => null,
         ]);
     }
@@ -133,7 +133,7 @@ class CustodianWebhook extends Model
     public function markAsFailed(string $errorMessage): void
     {
         $this->update([
-            'status' => 'failed',
+            'status'        => 'failed',
             'error_message' => $errorMessage,
         ]);
     }
@@ -144,8 +144,8 @@ class CustodianWebhook extends Model
     public function markAsIgnored(string $reason = null): void
     {
         $this->update([
-            'status' => 'ignored',
-            'processed_at' => now(),
+            'status'        => 'ignored',
+            'processed_at'  => now(),
             'error_message' => $reason,
         ]);
     }

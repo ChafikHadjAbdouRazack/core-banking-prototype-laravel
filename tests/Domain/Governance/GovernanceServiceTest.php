@@ -17,15 +17,15 @@ beforeEach(function () {
 describe('Poll Creation', function () {
     it('can create a basic poll', function () {
         $pollData = [
-            'title' => 'Should we add JPY support?',
+            'title'       => 'Should we add JPY support?',
             'description' => 'Adding Japanese Yen as a supported currency',
-            'type' => 'yes_no',
-            'options' => [
+            'type'        => 'yes_no',
+            'options'     => [
                 ['id' => 'yes', 'label' => 'Yes', 'description' => 'Add JPY support'],
                 ['id' => 'no', 'label' => 'No', 'description' => 'Keep current currencies'],
             ],
             'start_date' => now()->addHour(),
-            'end_date' => now()->addWeek(),
+            'end_date'   => now()->addWeek(),
             'created_by' => $this->user->uuid,
         ];
 
@@ -40,16 +40,16 @@ describe('Poll Creation', function () {
 
     it('can create poll with execution workflow', function () {
         $pollData = [
-            'title' => 'Enable two-factor authentication',
-            'type' => 'yes_no',
+            'title'   => 'Enable two-factor authentication',
+            'type'    => 'yes_no',
             'options' => [
                 ['id' => 'yes', 'label' => 'Yes'],
                 ['id' => 'no', 'label' => 'No'],
             ],
-            'start_date' => now()->addHour(),
-            'end_date' => now()->addWeek(),
+            'start_date'         => now()->addHour(),
+            'end_date'           => now()->addWeek(),
             'execution_workflow' => 'FeatureToggleWorkflow',
-            'created_by' => $this->user->uuid,
+            'created_by'         => $this->user->uuid,
         ];
 
         $poll = $this->governanceService->createPoll($pollData);
@@ -62,7 +62,7 @@ describe('Poll Activation', function () {
     it('can activate a draft poll', function () {
         $poll = Poll::factory()->draft()->create([
             'start_date' => now()->subMinute(),
-            'end_date' => now()->addWeek(),
+            'end_date'   => now()->addWeek(),
         ]);
 
         $result = $this->governanceService->activatePoll($poll);
@@ -74,27 +74,27 @@ describe('Poll Activation', function () {
     it('cannot activate poll before start date', function () {
         $poll = Poll::factory()->draft()->create([
             'start_date' => now()->addHour(),
-            'end_date' => now()->addWeek(),
+            'end_date'   => now()->addWeek(),
         ]);
 
-        expect(fn() => $this->governanceService->activatePoll($poll))
+        expect(fn () => $this->governanceService->activatePoll($poll))
             ->toThrow(InvalidArgumentException::class, 'Poll cannot be activated before its start date');
     });
 
     it('cannot activate poll after end date', function () {
         $poll = Poll::factory()->draft()->create([
             'start_date' => now()->subWeek(),
-            'end_date' => now()->subDay(),
+            'end_date'   => now()->subDay(),
         ]);
 
-        expect(fn() => $this->governanceService->activatePoll($poll))
+        expect(fn () => $this->governanceService->activatePoll($poll))
             ->toThrow(InvalidArgumentException::class, 'Poll cannot be activated after its end date');
     });
 
     it('cannot activate non-draft poll', function () {
         $poll = Poll::factory()->active()->create();
 
-        expect(fn() => $this->governanceService->activatePoll($poll))
+        expect(fn () => $this->governanceService->activatePoll($poll))
             ->toThrow(InvalidArgumentException::class, 'Only draft polls can be activated');
     });
 });
@@ -114,37 +114,37 @@ describe('Voting', function () {
 
     it('cannot vote twice in same poll', function () {
         $poll = Poll::factory()->active()->yesNo()->oneUserOneVote()->create();
-        
+
         // First vote
         $this->governanceService->castVote($poll, $this->user, ['yes']);
 
         // Second vote attempt
-        expect(fn() => $this->governanceService->castVote($poll, $this->user, ['no']))
+        expect(fn () => $this->governanceService->castVote($poll, $this->user, ['no']))
             ->toThrow(InvalidArgumentException::class, 'User has already voted in this poll');
     });
 
     it('cannot vote in inactive poll', function () {
         $poll = Poll::factory()->draft()->yesNo()->oneUserOneVote()->create();
 
-        expect(fn() => $this->governanceService->castVote($poll, $this->user, ['yes']))
+        expect(fn () => $this->governanceService->castVote($poll, $this->user, ['yes']))
             ->toThrow(InvalidArgumentException::class, 'Poll is not available for voting');
     });
 
     it('validates selected options', function () {
         $poll = Poll::factory()->active()->yesNo()->oneUserOneVote()->create();
 
-        expect(fn() => $this->governanceService->castVote($poll, $this->user, ['invalid_option']))
+        expect(fn () => $this->governanceService->castVote($poll, $this->user, ['invalid_option']))
             ->toThrow(InvalidArgumentException::class, 'Invalid option ID: invalid_option');
     });
 
     it('validates single choice constraint', function () {
         $poll = Poll::factory()->active()->singleChoice()->oneUserOneVote()->create();
-        
+
         // Get actual option IDs from the poll
         $optionIds = array_column($poll->options, 'id');
         $twoOptions = array_slice($optionIds, 0, 2);
 
-        expect(fn() => $this->governanceService->castVote($poll, $this->user, $twoOptions))
+        expect(fn () => $this->governanceService->castVote($poll, $this->user, $twoOptions))
             ->toThrow(InvalidArgumentException::class, 'Exactly one option must be selected for single choice polls');
     });
 });
@@ -160,9 +160,9 @@ describe('Voting Power', function () {
 
     it('calculates voting power with AssetWeighted strategy', function () {
         $poll = Poll::factory()->assetWeighted()->create();
-        
+
         // Create account with balance for user
-        $account = \App\Models\Account::factory()
+        $account = App\Models\Account::factory()
             ->withBalance(1000000) // $10,000 = 100 voting power
             ->forUser($this->user)
             ->create();
@@ -182,7 +182,7 @@ describe('Voting Power', function () {
 
     it('prevents voting if user already voted', function () {
         $poll = Poll::factory()->active()->yesNo()->oneUserOneVote()->create();
-        
+
         // Cast vote
         $this->governanceService->castVote($poll, $this->user, ['yes']);
 
@@ -214,7 +214,7 @@ describe('Poll Completion', function () {
             'end_date' => now()->addWeek(),
         ]);
 
-        expect(fn() => $this->governanceService->completePoll($poll))
+        expect(fn () => $this->governanceService->completePoll($poll))
             ->toThrow(InvalidArgumentException::class, 'Poll has not expired yet');
     });
 
@@ -223,7 +223,7 @@ describe('Poll Completion', function () {
             'end_date' => now()->subMinute(),
         ]);
 
-        expect(fn() => $this->governanceService->completePoll($poll))
+        expect(fn () => $this->governanceService->completePoll($poll))
             ->toThrow(InvalidArgumentException::class, 'Only active polls can be completed');
     });
 });
@@ -251,7 +251,7 @@ describe('Poll Cancellation', function () {
     it('cannot cancel completed poll', function () {
         $poll = Poll::factory()->completed()->create();
 
-        expect(fn() => $this->governanceService->cancelPoll($poll))
+        expect(fn () => $this->governanceService->cancelPoll($poll))
             ->toThrow(InvalidArgumentException::class, 'Cannot cancel a completed poll');
     });
 });
@@ -264,12 +264,12 @@ describe('Utility Methods', function () {
         $activePolls = $this->governanceService->getActivePolls();
 
         expect($activePolls)->toHaveCount(3);
-        $activePolls->each(fn($poll) => expect($poll->status)->toBe(PollStatus::ACTIVE));
+        $activePolls->each(fn ($poll) => expect($poll->status)->toBe(PollStatus::ACTIVE));
     });
 
     it('can get poll results', function () {
         $poll = Poll::factory()->yesNo()->create();
-        
+
         // Add votes
         Vote::factory()->forPoll($poll)->yesVote()->withHighVotingPower()->create();
         Vote::factory()->forPoll($poll)->noVote()->create();

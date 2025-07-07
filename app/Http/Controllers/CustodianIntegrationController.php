@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\CustodianAccount;
-use App\Models\CustodianWebhook;
-use App\Models\CustodianTransfer;
 use App\Domain\Custodian\Services\CustodianHealthMonitor;
 use App\Domain\Custodian\Services\CustodianRegistry;
+use App\Models\CustodianAccount;
+use App\Models\CustodianTransfer;
+use App\Models\CustodianWebhook;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -20,14 +20,14 @@ class CustodianIntegrationController extends Controller
     }
 
     /**
-     * Display custodian integration status dashboard
+     * Display custodian integration status dashboard.
      */
     public function index(Request $request)
     {
         $user = Auth::user();
 
         // Check if user has appropriate permissions
-        if (!$user->hasRole(['super_admin', 'bank_admin', 'operations_manager'])) {
+        if (! $user->hasRole(['super_admin', 'bank_admin', 'operations_manager'])) {
             abort(403, 'Unauthorized access to custodian integration status');
         }
 
@@ -56,20 +56,20 @@ class CustodianIntegrationController extends Controller
     }
 
     /**
-     * Show detailed status for a specific custodian
+     * Show detailed status for a specific custodian.
      */
     public function show(Request $request, string $custodianCode)
     {
         $user = Auth::user();
 
-        if (!$user->hasRole(['super_admin', 'bank_admin', 'operations_manager'])) {
+        if (! $user->hasRole(['super_admin', 'bank_admin', 'operations_manager'])) {
             abort(403);
         }
 
         // Get custodian details
         $custodian = $this->getCustodianDetails($custodianCode);
 
-        if (!$custodian) {
+        if (! $custodian) {
             abort(404, 'Custodian not found');
         }
 
@@ -103,13 +103,13 @@ class CustodianIntegrationController extends Controller
     }
 
     /**
-     * Test connection to a custodian
+     * Test connection to a custodian.
      */
     public function testConnection(Request $request, string $custodianCode)
     {
         $user = Auth::user();
 
-        if (!$user->hasRole(['super_admin', 'bank_admin'])) {
+        if (! $user->hasRole(['super_admin', 'bank_admin'])) {
             abort(403);
         }
 
@@ -120,24 +120,24 @@ class CustodianIntegrationController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Connection successful',
-                'data' => $result
+                'data'    => $result,
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Connection failed: ' . $e->getMessage()
+                'message' => 'Connection failed: ' . $e->getMessage(),
             ], 500);
         }
     }
 
     /**
-     * Trigger manual synchronization
+     * Trigger manual synchronization.
      */
     public function synchronize(Request $request, string $custodianCode)
     {
         $user = Auth::user();
 
-        if (!$user->hasRole(['super_admin', 'bank_admin'])) {
+        if (! $user->hasRole(['super_admin', 'bank_admin'])) {
             abort(403);
         }
 
@@ -156,7 +156,7 @@ class CustodianIntegrationController extends Controller
     }
 
     /**
-     * Get custodians status
+     * Get custodians status.
      */
     private function getCustodiansStatus(): array
     {
@@ -169,14 +169,14 @@ class CustodianIntegrationController extends Controller
             $lastSync = Cache::get("custodian_last_sync_{$code}");
 
             $status[] = [
-                'code' => $code,
-                'name' => $config['name'] ?? $code,
-                'type' => $config['type'] ?? 'unknown',
-                'status' => $health['status'] ?? 'unknown',
+                'code'         => $code,
+                'name'         => $config['name'] ?? $code,
+                'type'         => $config['type'] ?? 'unknown',
+                'status'       => $health['status'] ?? 'unknown',
                 'health_score' => $health['score'] ?? 0,
-                'accounts' => $accounts,
-                'last_sync' => $lastSync,
-                'features' => $config['features'] ?? [],
+                'accounts'     => $accounts,
+                'last_sync'    => $lastSync,
+                'features'     => $config['features'] ?? [],
             ];
         }
 
@@ -184,7 +184,7 @@ class CustodianIntegrationController extends Controller
     }
 
     /**
-     * Get recent transfers
+     * Get recent transfers.
      */
     private function getRecentTransfers()
     {
@@ -194,21 +194,21 @@ class CustodianIntegrationController extends Controller
             ->get()
             ->map(function ($transfer) {
                 return [
-                    'id' => $transfer->id,
-                    'custodian' => $transfer->custodian_code,
-                    'type' => $transfer->type,
-                    'amount' => $transfer->amount,
-                    'currency' => $transfer->currency,
-                    'status' => $transfer->status,
-                    'source' => $transfer->sourceAccount->name ?? 'External',
+                    'id'          => $transfer->id,
+                    'custodian'   => $transfer->custodian_code,
+                    'type'        => $transfer->type,
+                    'amount'      => $transfer->amount,
+                    'currency'    => $transfer->currency,
+                    'status'      => $transfer->status,
+                    'source'      => $transfer->sourceAccount->name ?? 'External',
                     'destination' => $transfer->destinationAccount->name ?? 'External',
-                    'created_at' => $transfer->created_at,
+                    'created_at'  => $transfer->created_at,
                 ];
             });
     }
 
     /**
-     * Get webhook statistics
+     * Get webhook statistics.
      */
     private function getWebhookStatistics(): array
     {
@@ -226,17 +226,17 @@ class CustodianIntegrationController extends Controller
             });
 
         return [
-            'total' => $total,
-            'processed' => $processed,
-            'failed' => $failed,
-            'pending' => $pending,
-            'success_rate' => $total > 0 ? round(($processed / $total) * 100, 2) : 0,
+            'total'               => $total,
+            'processed'           => $processed,
+            'failed'              => $failed,
+            'pending'             => $pending,
+            'success_rate'        => $total > 0 ? round(($processed / $total) * 100, 2) : 0,
             'recent_by_custodian' => $recentWebhooks,
         ];
     }
 
     /**
-     * Get synchronization status
+     * Get synchronization status.
      */
     private function getSynchronizationStatus(): array
     {
@@ -252,8 +252,8 @@ class CustodianIntegrationController extends Controller
                 'custodian' => $code,
                 'last_sync' => $lastSync,
                 'next_sync' => $nextSync,
-                'errors' => $syncErrors,
-                'status' => $this->getSyncStatusLabel($lastSync),
+                'errors'    => $syncErrors,
+                'status'    => $this->getSyncStatusLabel($lastSync),
             ];
         }
 
@@ -261,7 +261,7 @@ class CustodianIntegrationController extends Controller
     }
 
     /**
-     * Get health metrics
+     * Get health metrics.
      */
     private function getHealthMetrics(): array
     {
@@ -271,10 +271,10 @@ class CustodianIntegrationController extends Controller
         foreach (array_keys($custodians) as $code) {
             $health = $this->healthMonitor->getHealth($code);
             $metrics[$code] = [
-                'status' => $health['status'] ?? 'unknown',
-                'score' => $health['score'] ?? 0,
-                'response_time' => $health['response_time'] ?? null,
-                'error_rate' => $health['error_rate'] ?? 0,
+                'status'          => $health['status'] ?? 'unknown',
+                'score'           => $health['score'] ?? 0,
+                'response_time'   => $health['response_time'] ?? null,
+                'error_rate'      => $health['error_rate'] ?? 0,
                 'circuit_breaker' => $health['circuit_breaker_status'] ?? 'closed',
             ];
         }
@@ -283,35 +283,35 @@ class CustodianIntegrationController extends Controller
     }
 
     /**
-     * Get custodian details
+     * Get custodian details.
      */
     private function getCustodianDetails(string $custodianCode): ?array
     {
         $config = config("custodians.{$custodianCode}");
 
-        if (!$config) {
+        if (! $config) {
             return null;
         }
 
         $health = $this->healthMonitor->getHealth($custodianCode);
 
         return [
-            'code' => $custodianCode,
-            'name' => $config['name'] ?? $custodianCode,
-            'type' => $config['type'] ?? 'unknown',
-            'base_url' => $config['base_url'] ?? null,
-            'features' => $config['features'] ?? [],
-            'health' => $health,
+            'code'          => $custodianCode,
+            'name'          => $config['name'] ?? $custodianCode,
+            'type'          => $config['type'] ?? 'unknown',
+            'base_url'      => $config['base_url'] ?? null,
+            'features'      => $config['features'] ?? [],
+            'health'        => $health,
             'configuration' => [
-                'timeout' => $config['timeout'] ?? 30,
-                'retry_attempts' => $config['retry_attempts'] ?? 3,
+                'timeout'                   => $config['timeout'] ?? 30,
+                'retry_attempts'            => $config['retry_attempts'] ?? 3,
                 'circuit_breaker_threshold' => $config['circuit_breaker_threshold'] ?? 5,
             ],
         ];
     }
 
     /**
-     * Get health history
+     * Get health history.
      */
     private function getHealthHistory(string $custodianCode): array
     {
@@ -323,9 +323,9 @@ class CustodianIntegrationController extends Controller
             $history = [];
             for ($i = 23; $i >= 0; $i--) {
                 $history[] = [
-                    'timestamp' => now()->subHours($i),
-                    'status' => rand(0, 100) > 10 ? 'healthy' : 'degraded',
-                    'score' => rand(70, 100),
+                    'timestamp'     => now()->subHours($i),
+                    'status'        => rand(0, 100) > 10 ? 'healthy' : 'degraded',
+                    'score'         => rand(70, 100),
                     'response_time' => rand(100, 500),
                 ];
             }
@@ -335,11 +335,11 @@ class CustodianIntegrationController extends Controller
     }
 
     /**
-     * Get sync status label
+     * Get sync status label.
      */
     private function getSyncStatusLabel($lastSync): string
     {
-        if (!$lastSync) {
+        if (! $lastSync) {
             return 'never';
         }
 

@@ -28,7 +28,7 @@ describe('Asset Model', function () {
     it('has correct fillable attributes', function () {
         $asset = new Asset();
         $fillable = $asset->getFillable();
-        
+
         expect($fillable)->toContain('code');
         expect($fillable)->toContain('name');
         expect($fillable)->toContain('type');
@@ -40,7 +40,7 @@ describe('Asset Model', function () {
     it('has correct casts', function () {
         $asset = new Asset();
         $casts = $asset->getCasts();
-        
+
         expect($casts)->toHaveKey('is_active');
         expect($casts)->toHaveKey('metadata');
         expect($casts)->toHaveKey('precision');
@@ -48,12 +48,12 @@ describe('Asset Model', function () {
 
     it('can create asset with all attributes', function () {
         $asset = Asset::factory()->create([
-            'code' => 'TEST',
-            'name' => 'Test Currency',
-            'type' => 'fiat',
+            'code'      => 'TEST',
+            'name'      => 'Test Currency',
+            'type'      => 'fiat',
             'precision' => 2,
             'is_active' => true,
-            'metadata' => ['country' => 'Test'],
+            'metadata'  => ['country' => 'Test'],
         ]);
 
         expect($asset->code)->toBe('TEST');

@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Domain\Account\Services;
 
+use App\Domain\Account\DataObjects\Account as AccountDataObject;
 use App\Domain\Account\DataObjects\AccountUuid;
 use App\Domain\Account\Services\AccountService;
-use App\Models\Account;
 use App\Models\User;
 use Tests\TestCase;
-use App\Domain\Account\DataObjects\Account as AccountDataObject;
 
 class AccountServiceTest extends TestCase
 {
@@ -25,7 +24,7 @@ class AccountServiceTest extends TestCase
     {
         $uuid = '550e8400-e29b-41d4-a716-446655440000';
         $accountUuid = AccountUuid::fromString($uuid);
-        
+
         $this->assertEquals($uuid, (string) $accountUuid);
     }
 
@@ -51,22 +50,22 @@ class AccountServiceTest extends TestCase
     public function test_can_create_account_data_object()
     {
         $user = User::factory()->create();
-        
+
         // Test creating AccountDataObject if it exists
         if (class_exists(AccountDataObject::class)) {
             $accountData = new AccountDataObject(
                 name: 'Test Account',
                 userUuid: $user->uuid
             );
-            
+
             $this->assertInstanceOf(AccountDataObject::class, $accountData);
         } else {
             // If DataObject doesn't exist, just use array
             $accountData = [
-                'name' => 'Test Account',
+                'name'      => 'Test Account',
                 'user_uuid' => $user->uuid,
             ];
-            
+
             $this->assertIsArray($accountData);
         }
     }
@@ -76,7 +75,7 @@ class AccountServiceTest extends TestCase
         // Create reflection to test method signature
         $reflection = new \ReflectionMethod($this->accountService, 'deposit');
         $parameters = $reflection->getParameters();
-        
+
         $this->assertCount(2, $parameters);
         $this->assertEquals('uuid', $parameters[0]->getName());
         $this->assertEquals('amount', $parameters[1]->getName());
@@ -87,7 +86,7 @@ class AccountServiceTest extends TestCase
         // Create reflection to test method signature
         $reflection = new \ReflectionMethod($this->accountService, 'withdraw');
         $parameters = $reflection->getParameters();
-        
+
         $this->assertCount(2, $parameters);
         $this->assertEquals('uuid', $parameters[0]->getName());
         $this->assertEquals('amount', $parameters[1]->getName());
@@ -98,7 +97,7 @@ class AccountServiceTest extends TestCase
         // Create reflection to test method signature
         $reflection = new \ReflectionMethod($this->accountService, 'destroy');
         $parameters = $reflection->getParameters();
-        
+
         $this->assertCount(1, $parameters);
         $this->assertEquals('uuid', $parameters[0]->getName());
     }
@@ -108,7 +107,7 @@ class AccountServiceTest extends TestCase
         // Create reflection to test method signature
         $reflection = new \ReflectionMethod($this->accountService, 'create');
         $parameters = $reflection->getParameters();
-        
+
         $this->assertCount(1, $parameters);
         $this->assertEquals('account', $parameters[0]->getName());
     }

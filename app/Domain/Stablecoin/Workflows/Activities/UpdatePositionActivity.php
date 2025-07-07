@@ -12,7 +12,7 @@ use Workflow\Activity;
 class UpdatePositionActivity extends Activity
 {
     /**
-     * Update position with recalculated values
+     * Update position with recalculated values.
      */
     public function execute(
         string $positionUuid

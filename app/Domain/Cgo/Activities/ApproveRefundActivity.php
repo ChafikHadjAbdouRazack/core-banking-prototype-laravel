@@ -19,7 +19,7 @@ class ApproveRefundActivity extends Activity
 
         return [
             'refund_id' => $input['refund_id'],
-            'status' => 'approved'
+            'status'    => 'approved',
         ];
     }
 }

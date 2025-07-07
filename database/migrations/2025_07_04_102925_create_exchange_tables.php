@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class () extends Migration {
     /**
      * Run the migrations.
      */
@@ -30,14 +29,14 @@ return new class extends Migration
             $table->timestamps();
             $table->timestamp('cancelled_at')->nullable();
             $table->timestamp('filled_at')->nullable();
-            
+
             // Indexes
             $table->index('account_id');
             $table->index('status');
             $table->index(['base_currency', 'quote_currency']);
             $table->index('created_at');
         });
-        
+
         Schema::create('order_books', function (Blueprint $table) {
             $table->id();
             $table->uuid('order_book_id')->unique();
@@ -53,12 +52,12 @@ return new class extends Migration
             $table->decimal('low_24h', 36, 18)->nullable();
             $table->jsonb('metadata')->nullable();
             $table->timestamps();
-            
+
             // Indexes
             $table->unique(['base_currency', 'quote_currency']);
             $table->index('updated_at');
         });
-        
+
         Schema::create('trades', function (Blueprint $table) {
             $table->id();
             $table->uuid('trade_id')->unique();
@@ -76,14 +75,14 @@ return new class extends Migration
             $table->enum('maker_side', ['buy', 'sell']);
             $table->jsonb('metadata')->nullable();
             $table->timestamps();
-            
+
             // Indexes
             $table->index('buyer_account_id');
             $table->index('seller_account_id');
             $table->index(['base_currency', 'quote_currency']);
             $table->index('created_at');
         });
-        
+
         Schema::create('exchange_fees', function (Blueprint $table) {
             $table->id();
             $table->string('fee_type', 50);
@@ -92,7 +91,7 @@ return new class extends Migration
             $table->jsonb('volume_discounts')->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamps();
-            
+
             // Indexes
             $table->unique(['fee_type', 'is_active']);
         });

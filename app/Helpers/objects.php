@@ -7,7 +7,7 @@ use App\Models\Account as AccountModel;
 use JustSteveKing\DataObjects\Contracts\DataObjectContract;
 use JustSteveKing\DataObjects\Facades\Hydrator;
 
-if (!function_exists('hydrate')) {
+if (! function_exists('hydrate')) {
     /**
      * Hydrate and return a specific Data Object class instance.
      * @template T of DataObjectContract
@@ -28,7 +28,7 @@ if (!function_exists('hydrate')) {
     }
 }
 
-if (!function_exists('__account')) {
+if (! function_exists('__account')) {
     /**
      * @param Account|array $account
      *
@@ -47,7 +47,7 @@ if (!function_exists('__account')) {
     }
 }
 
-if (!function_exists('__money')) {
+if (! function_exists('__money')) {
     /**
      * @param Money|int $amount
      *
@@ -68,9 +68,9 @@ if (!function_exists('__money')) {
     }
 }
 
-if (!function_exists('__account_uuid')) {
+if (! function_exists('__account_uuid')) {
     /**
-     * @param \App\Domain\Account\DataObjects\Account|\App\Models\Account|\App\Domain\Account\DataObjects\AccountUuid|string $uuid
+     * @param Account|AccountModel|AccountUuid|string $uuid
      *
      * @return AccountUuid
      */
@@ -97,9 +97,9 @@ if (!function_exists('__account_uuid')) {
     }
 }
 
-if (!function_exists('__account__uuid')) {
+if (! function_exists('__account__uuid')) {
     /**
-     * @param \App\Domain\Account\DataObjects\Account|\App\Models\Account|\App\Domain\Account\DataObjects\AccountUuid|string $uuid
+     * @param Account|AccountModel|AccountUuid|string $uuid
      *
      * @return string
      */

@@ -17,7 +17,7 @@ class ValidateBatchJobActivity extends Activity
     {
         $batchJobModel = BatchJobModel::where('uuid', $batchJobUuid)->with('items')->first();
 
-        if (!$batchJobModel) {
+        if (! $batchJobModel) {
             throw new \InvalidArgumentException("Batch job not found: {$batchJobUuid}");
         }
 
@@ -35,7 +35,7 @@ class ValidateBatchJobActivity extends Activity
             userUuid: $batchJobModel->user_uuid,
             name: $batchJobModel->name,
             type: $batchJobModel->type,
-            items: $batchJobModel->items->map(fn($item) => $item->data)->toArray(),
+            items: $batchJobModel->items->map(fn ($item) => $item->data)->toArray(),
             scheduledAt: $batchJobModel->scheduled_at?->toIso8601String(),
             metadata: $batchJobModel->metadata ?? []
         );

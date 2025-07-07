@@ -19,7 +19,7 @@ class DefaultAccountNamesTest extends UnitTestCase
     public function test_default_returns_main()
     {
         $default = DefaultAccountNames::default();
-        
+
         $this->assertEquals(DefaultAccountNames::MAIN, $default);
         $this->assertEquals('Main', $default->value);
     }
@@ -29,12 +29,12 @@ class DefaultAccountNamesTest extends UnitTestCase
         $mainLabel = DefaultAccountNames::MAIN->label();
         $savingsLabel = DefaultAccountNames::SAVINGS->label();
         $loanLabel = DefaultAccountNames::LOAN->label();
-        
+
         // These should return translation strings
         $this->assertIsString($mainLabel);
         $this->assertIsString($savingsLabel);
         $this->assertIsString($loanLabel);
-        
+
         // Test that labels are not empty
         $this->assertNotEmpty($mainLabel);
         $this->assertNotEmpty($savingsLabel);
@@ -44,7 +44,7 @@ class DefaultAccountNamesTest extends UnitTestCase
     public function test_all_enum_cases_exist()
     {
         $cases = DefaultAccountNames::cases();
-        
+
         $this->assertCount(3, $cases);
         $this->assertContains(DefaultAccountNames::MAIN, $cases);
         $this->assertContains(DefaultAccountNames::SAVINGS, $cases);
@@ -56,7 +56,7 @@ class DefaultAccountNamesTest extends UnitTestCase
         $main = DefaultAccountNames::from('Main');
         $savings = DefaultAccountNames::from('Savings');
         $loan = DefaultAccountNames::from('Loan');
-        
+
         $this->assertEquals(DefaultAccountNames::MAIN, $main);
         $this->assertEquals(DefaultAccountNames::SAVINGS, $savings);
         $this->assertEquals(DefaultAccountNames::LOAN, $loan);
@@ -67,7 +67,7 @@ class DefaultAccountNamesTest extends UnitTestCase
         $main = DefaultAccountNames::tryFrom('Main');
         $savings = DefaultAccountNames::tryFrom('Savings');
         $loan = DefaultAccountNames::tryFrom('Loan');
-        
+
         $this->assertEquals(DefaultAccountNames::MAIN, $main);
         $this->assertEquals(DefaultAccountNames::SAVINGS, $savings);
         $this->assertEquals(DefaultAccountNames::LOAN, $loan);
@@ -76,7 +76,7 @@ class DefaultAccountNamesTest extends UnitTestCase
     public function test_enum_try_from_invalid()
     {
         $invalid = DefaultAccountNames::tryFrom('Invalid');
-        
+
         $this->assertNull($invalid);
     }
 }

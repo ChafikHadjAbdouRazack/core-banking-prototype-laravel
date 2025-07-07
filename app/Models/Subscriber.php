@@ -23,22 +23,29 @@ class Subscriber extends Model
     ];
 
     protected $casts = [
-        'preferences' => 'array',
-        'tags' => 'array',
-        'confirmed_at' => 'datetime',
+        'preferences'     => 'array',
+        'tags'            => 'array',
+        'confirmed_at'    => 'datetime',
         'unsubscribed_at' => 'datetime',
     ];
 
-    const STATUS_ACTIVE = 'active';
-    const STATUS_UNSUBSCRIBED = 'unsubscribed';
-    const STATUS_BOUNCED = 'bounced';
+    public const STATUS_ACTIVE = 'active';
 
-    const SOURCE_BLOG = 'blog';
-    const SOURCE_CGO = 'cgo';
-    const SOURCE_INVESTMENT = 'investment';
-    const SOURCE_FOOTER = 'footer';
-    const SOURCE_CONTACT = 'contact';
-    const SOURCE_PARTNER = 'partner';
+    public const STATUS_UNSUBSCRIBED = 'unsubscribed';
+
+    public const STATUS_BOUNCED = 'bounced';
+
+    public const SOURCE_BLOG = 'blog';
+
+    public const SOURCE_CGO = 'cgo';
+
+    public const SOURCE_INVESTMENT = 'investment';
+
+    public const SOURCE_FOOTER = 'footer';
+
+    public const SOURCE_CONTACT = 'contact';
+
+    public const SOURCE_PARTNER = 'partner';
 
     public function scopeActive($query)
     {
@@ -58,8 +65,8 @@ class Subscriber extends Model
     public function unsubscribe($reason = null): void
     {
         $this->update([
-            'status' => self::STATUS_UNSUBSCRIBED,
-            'unsubscribed_at' => now(),
+            'status'             => self::STATUS_UNSUBSCRIBED,
+            'unsubscribed_at'    => now(),
             'unsubscribe_reason' => $reason,
         ]);
     }

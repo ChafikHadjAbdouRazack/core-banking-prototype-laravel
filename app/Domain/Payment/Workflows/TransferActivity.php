@@ -21,7 +21,7 @@ class TransferActivity extends Activity
     }
 
     /**
-     * Execute a transfer between two accounts
+     * Execute a transfer between two accounts.
      *
      * @throws NotEnoughFunds
      * @throws \Exception

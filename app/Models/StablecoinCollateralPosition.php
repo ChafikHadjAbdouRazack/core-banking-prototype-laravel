@@ -45,11 +45,11 @@ class StablecoinCollateralPosition extends Model
      * The attributes that should be cast.
      */
     protected $casts = [
-        'collateral_ratio' => 'decimal:4',
-        'liquidation_price' => 'decimal:8',
-        'stop_loss_ratio' => 'decimal:4',
-        'last_interaction_at' => 'datetime',
-        'liquidated_at' => 'datetime',
+        'collateral_ratio'         => 'decimal:4',
+        'liquidation_price'        => 'decimal:8',
+        'stop_loss_ratio'          => 'decimal:4',
+        'last_interaction_at'      => 'datetime',
+        'liquidated_at'            => 'datetime',
         'auto_liquidation_enabled' => 'boolean',
     ];
 
@@ -98,7 +98,7 @@ class StablecoinCollateralPosition extends Model
      */
     public function shouldAutoLiquidate(): bool
     {
-        if (!$this->auto_liquidation_enabled || !$this->isActive()) {
+        if (! $this->auto_liquidation_enabled || ! $this->isActive()) {
             return false;
         }
 
@@ -193,7 +193,7 @@ class StablecoinCollateralPosition extends Model
     public function markAsLiquidated(): void
     {
         $this->update([
-            'status' => 'liquidated',
+            'status'        => 'liquidated',
             'liquidated_at' => now(),
         ]);
     }

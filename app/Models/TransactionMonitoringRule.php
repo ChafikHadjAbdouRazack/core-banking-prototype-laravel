@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class TransactionMonitoringRule extends Model
@@ -42,77 +42,86 @@ class TransactionMonitoringRule extends Model
     ];
 
     protected $casts = [
-        'is_active' => 'boolean',
-        'auto_escalate' => 'boolean',
-        'conditions' => 'array',
-        'parameters' => 'array',
-        'actions' => 'array',
-        'applies_to_customer_types' => 'array',
-        'applies_to_risk_levels' => 'array',
-        'applies_to_countries' => 'array',
-        'applies_to_currencies' => 'array',
+        'is_active'                    => 'boolean',
+        'auto_escalate'                => 'boolean',
+        'conditions'                   => 'array',
+        'parameters'                   => 'array',
+        'actions'                      => 'array',
+        'applies_to_customer_types'    => 'array',
+        'applies_to_risk_levels'       => 'array',
+        'applies_to_countries'         => 'array',
+        'applies_to_currencies'        => 'array',
         'applies_to_transaction_types' => 'array',
-        'tuning_history' => 'array',
-        'threshold_amount' => 'decimal:2',
-        'accuracy_rate' => 'decimal:2',
-        'last_triggered_at' => 'datetime',
-        'last_reviewed_at' => 'datetime',
+        'tuning_history'               => 'array',
+        'threshold_amount'             => 'decimal:2',
+        'accuracy_rate'                => 'decimal:2',
+        'last_triggered_at'            => 'datetime',
+        'last_reviewed_at'             => 'datetime',
     ];
 
-    const CATEGORY_VELOCITY = 'velocity';
-    const CATEGORY_PATTERN = 'pattern';
-    const CATEGORY_THRESHOLD = 'threshold';
-    const CATEGORY_GEOGRAPHY = 'geography';
-    const CATEGORY_BEHAVIOR = 'behavior';
+    public const CATEGORY_VELOCITY = 'velocity';
 
-    const RISK_LEVEL_LOW = 'low';
-    const RISK_LEVEL_MEDIUM = 'medium';
-    const RISK_LEVEL_HIGH = 'high';
+    public const CATEGORY_PATTERN = 'pattern';
 
-    const ACTION_ALERT = 'alert';
-    const ACTION_BLOCK = 'block';
-    const ACTION_REVIEW = 'review';
-    const ACTION_REPORT = 'report';
+    public const CATEGORY_THRESHOLD = 'threshold';
 
-    const CATEGORIES = [
-        self::CATEGORY_VELOCITY => 'Velocity Rules',
-        self::CATEGORY_PATTERN => 'Pattern Detection',
+    public const CATEGORY_GEOGRAPHY = 'geography';
+
+    public const CATEGORY_BEHAVIOR = 'behavior';
+
+    public const RISK_LEVEL_LOW = 'low';
+
+    public const RISK_LEVEL_MEDIUM = 'medium';
+
+    public const RISK_LEVEL_HIGH = 'high';
+
+    public const ACTION_ALERT = 'alert';
+
+    public const ACTION_BLOCK = 'block';
+
+    public const ACTION_REVIEW = 'review';
+
+    public const ACTION_REPORT = 'report';
+
+    public const CATEGORIES = [
+        self::CATEGORY_VELOCITY  => 'Velocity Rules',
+        self::CATEGORY_PATTERN   => 'Pattern Detection',
         self::CATEGORY_THRESHOLD => 'Threshold Monitoring',
         self::CATEGORY_GEOGRAPHY => 'Geographic Rules',
-        self::CATEGORY_BEHAVIOR => 'Behavioral Analysis',
+        self::CATEGORY_BEHAVIOR  => 'Behavioral Analysis',
     ];
 
     // Common rule templates
-    const RULE_TEMPLATES = [
+    public const RULE_TEMPLATES = [
         'rapid_movement' => [
-            'name' => 'Rapid Movement of Funds',
-            'category' => self::CATEGORY_VELOCITY,
+            'name'        => 'Rapid Movement of Funds',
+            'category'    => self::CATEGORY_VELOCITY,
             'description' => 'Detects rapid movement of funds through accounts',
-            'risk_level' => self::RISK_LEVEL_HIGH,
+            'risk_level'  => self::RISK_LEVEL_HIGH,
         ],
         'structuring' => [
-            'name' => 'Potential Structuring',
-            'category' => self::CATEGORY_PATTERN,
+            'name'        => 'Potential Structuring',
+            'category'    => self::CATEGORY_PATTERN,
             'description' => 'Detects transactions structured to avoid reporting thresholds',
-            'risk_level' => self::RISK_LEVEL_HIGH,
+            'risk_level'  => self::RISK_LEVEL_HIGH,
         ],
         'high_risk_geography' => [
-            'name' => 'High-Risk Geography',
-            'category' => self::CATEGORY_GEOGRAPHY,
+            'name'        => 'High-Risk Geography',
+            'category'    => self::CATEGORY_GEOGRAPHY,
             'description' => 'Transactions involving high-risk countries',
-            'risk_level' => self::RISK_LEVEL_MEDIUM,
+            'risk_level'  => self::RISK_LEVEL_MEDIUM,
         ],
         'unusual_pattern' => [
-            'name' => 'Unusual Transaction Pattern',
-            'category' => self::CATEGORY_BEHAVIOR,
+            'name'        => 'Unusual Transaction Pattern',
+            'category'    => self::CATEGORY_BEHAVIOR,
             'description' => 'Deviation from established customer behavior',
-            'risk_level' => self::RISK_LEVEL_MEDIUM,
+            'risk_level'  => self::RISK_LEVEL_MEDIUM,
         ],
         'large_cash' => [
-            'name' => 'Large Cash Transaction',
-            'category' => self::CATEGORY_THRESHOLD,
+            'name'        => 'Large Cash Transaction',
+            'category'    => self::CATEGORY_THRESHOLD,
             'description' => 'Cash transactions exceeding threshold',
-            'risk_level' => self::RISK_LEVEL_MEDIUM,
+            'risk_level'  => self::RISK_LEVEL_MEDIUM,
         ],
     ];
 
@@ -146,22 +155,22 @@ class TransactionMonitoringRule extends Model
     public function appliesTo(string $customerType, string $riskLevel, string $country = null, string $currency = null): bool
     {
         // Check customer type
-        if ($this->applies_to_customer_types && !in_array($customerType, $this->applies_to_customer_types)) {
+        if ($this->applies_to_customer_types && ! in_array($customerType, $this->applies_to_customer_types)) {
             return false;
         }
 
         // Check risk level
-        if ($this->applies_to_risk_levels && !in_array($riskLevel, $this->applies_to_risk_levels)) {
+        if ($this->applies_to_risk_levels && ! in_array($riskLevel, $this->applies_to_risk_levels)) {
             return false;
         }
 
         // Check country
-        if ($country && $this->applies_to_countries && !in_array($country, $this->applies_to_countries)) {
+        if ($country && $this->applies_to_countries && ! in_array($country, $this->applies_to_countries)) {
             return false;
         }
 
         // Check currency
-        if ($currency && $this->applies_to_currencies && !in_array($currency, $this->applies_to_currencies)) {
+        if ($currency && $this->applies_to_currencies && ! in_array($currency, $this->applies_to_currencies)) {
             return false;
         }
 
@@ -207,13 +216,13 @@ class TransactionMonitoringRule extends Model
 
     public function evaluateTransaction(array $transaction): bool
     {
-        if (!$this->is_active) {
+        if (! $this->is_active) {
             return false;
         }
 
         // Evaluate conditions
         foreach ($this->conditions as $condition) {
-            if (!$this->evaluateCondition($condition, $transaction)) {
+            if (! $this->evaluateCondition($condition, $transaction)) {
                 return false;
             }
         }
@@ -227,23 +236,23 @@ class TransactionMonitoringRule extends Model
         $operator = $condition['operator'] ?? null;
         $value = $condition['value'] ?? null;
 
-        if (!$field || !$operator) {
+        if (! $field || ! $operator) {
             return false;
         }
 
         $transactionValue = $transaction[$field] ?? null;
 
         return match ($operator) {
-            'equals' => $transactionValue == $value,
-            'not_equals' => $transactionValue != $value,
-            'greater_than' => $transactionValue > $value,
-            'less_than' => $transactionValue < $value,
+            'equals'           => $transactionValue == $value,
+            'not_equals'       => $transactionValue != $value,
+            'greater_than'     => $transactionValue > $value,
+            'less_than'        => $transactionValue < $value,
             'greater_or_equal' => $transactionValue >= $value,
-            'less_or_equal' => $transactionValue <= $value,
-            'contains' => str_contains($transactionValue, $value),
-            'in' => in_array($transactionValue, (array)$value),
-            'not_in' => !in_array($transactionValue, (array)$value),
-            default => false,
+            'less_or_equal'    => $transactionValue <= $value,
+            'contains'         => str_contains($transactionValue, $value),
+            'in'               => in_array($transactionValue, (array) $value),
+            'not_in'           => ! in_array($transactionValue, (array) $value),
+            default            => false,
         };
     }
 
@@ -256,15 +265,15 @@ class TransactionMonitoringRule extends Model
     {
         $history = $this->tuning_history ?? [];
         $history[] = [
-            'date' => now()->toIso8601String(),
-            'user_id' => $user->id,
-            'user_name' => $user->name,
-            'note' => $note,
+            'date'            => now()->toIso8601String(),
+            'user_id'         => $user->id,
+            'user_name'       => $user->name,
+            'note'            => $note,
             'accuracy_before' => $this->accuracy_rate,
         ];
 
         $this->update([
-            'tuning_history' => $history,
+            'tuning_history'   => $history,
             'last_modified_by' => $user->id,
             'last_reviewed_at' => now(),
         ]);
@@ -272,7 +281,7 @@ class TransactionMonitoringRule extends Model
 
     public static function createFromTemplate(string $template, array $overrides = []): self
     {
-        if (!isset(self::RULE_TEMPLATES[$template])) {
+        if (! isset(self::RULE_TEMPLATES[$template])) {
             throw new \InvalidArgumentException("Unknown rule template: {$template}");
         }
 
@@ -280,10 +289,10 @@ class TransactionMonitoringRule extends Model
         $ruleCode = 'TMR-' . str_pad(self::count() + 1, 3, '0', STR_PAD_LEFT);
 
         return self::create(array_merge($templateData, [
-            'rule_code' => $ruleCode,
-            'is_active' => true,
-            'triggers_count' => 0,
-            'true_positives' => 0,
+            'rule_code'       => $ruleCode,
+            'is_active'       => true,
+            'triggers_count'  => 0,
+            'true_positives'  => 0,
             'false_positives' => 0,
         ], $overrides));
     }

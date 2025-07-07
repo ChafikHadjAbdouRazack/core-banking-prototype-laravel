@@ -39,6 +39,7 @@ class RepaymentSchedule
         foreach ($this->payments as $payment) {
             $total = bcadd($total, $payment['principal'], 2);
         }
+
         return $total;
     }
 
@@ -48,6 +49,7 @@ class RepaymentSchedule
         foreach ($this->payments as $payment) {
             $total = bcadd($total, $payment['interest'], 2);
         }
+
         return $total;
     }
 

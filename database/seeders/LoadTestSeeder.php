@@ -2,10 +2,10 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use App\Models\User;
 use App\Models\Account;
 use App\Models\Asset;
+use App\Models\User;
+use Illuminate\Database\Seeder;
 
 class LoadTestSeeder extends Seeder
 {
@@ -26,13 +26,13 @@ class LoadTestSeeder extends Seeder
         for ($i = 1; $i <= 10; $i++) {
             $user = User::factory()->create([
                 'email' => "loadtest{$i}@example.com",
-                'name' => "Load Test User {$i}"
+                'name'  => "Load Test User {$i}",
             ]);
 
             // Create 3 accounts per user with initial balances
             for ($j = 1; $j <= 3; $j++) {
                 $account = Account::factory()->forUser($user)->create([
-                    'name' => "Load Test Account {$i}-{$j}"
+                    'name' => "Load Test Account {$i}-{$j}",
                 ]);
 
                 // Add balances in different currencies

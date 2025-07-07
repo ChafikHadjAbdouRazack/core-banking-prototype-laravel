@@ -9,7 +9,7 @@ use Workflow\Workflow;
 class DestroyAccountWorkflow extends Workflow
 {
     /**
-     * @param \App\Domain\Account\DataObjects\AccountUuid $uuid
+     * @param AccountUuid $uuid
      *
      * @return \Generator
      */

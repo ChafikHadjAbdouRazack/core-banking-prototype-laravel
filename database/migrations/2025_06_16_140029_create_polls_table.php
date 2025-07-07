@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class () extends Migration {
     /**
      * Run the migrations.
      */
@@ -32,7 +31,7 @@ return new class extends Migration
             $table->index(['status', 'start_date', 'end_date']);
             $table->index(['created_by']);
             $table->index(['voting_power_strategy']);
-            
+
             // Foreign key constraint for created_by (references users.uuid)
             $table->foreign('created_by')->references('uuid')->on('users')->onDelete('cascade');
         });

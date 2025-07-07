@@ -47,14 +47,14 @@ class ExternalExchangeController extends Controller
     {
         $connectors = $this->connectorRegistry->all()->map(function ($connector, $name) {
             return [
-                'name' => $name,
+                'name'         => $name,
                 'display_name' => $connector->getName(),
-                'available' => $connector->isAvailable()
+                'available'    => $connector->isAvailable(),
             ];
         });
 
         return response()->json([
-            'connectors' => $connectors->values()
+            'connectors' => $connectors->values(),
         ]);
     }
 
@@ -99,11 +99,11 @@ class ExternalExchangeController extends Controller
         $bestAsk = $this->connectorRegistry->getBestAsk($base, $quote);
 
         return response()->json([
-            'pair' => "{$base}/{$quote}",
-            'tickers' => $tickers,
-            'best_bid' => $bestBid,
-            'best_ask' => $bestAsk,
-            'timestamp' => now()->toIso8601String()
+            'pair'      => "{$base}/{$quote}",
+            'tickers'   => $tickers,
+            'best_bid'  => $bestBid,
+            'best_ask'  => $bestAsk,
+            'timestamp' => now()->toIso8601String(),
         ]);
     }
 
@@ -142,9 +142,9 @@ class ExternalExchangeController extends Controller
         $aggregatedBook = $this->connectorRegistry->getAggregatedOrderBook($base, $quote, $depth);
 
         return response()->json([
-            'pair' => "{$base}/{$quote}",
+            'pair'      => "{$base}/{$quote}",
             'orderbook' => $aggregatedBook,
-            'timestamp' => now()->toIso8601String()
+            'timestamp' => now()->toIso8601String(),
         ]);
     }
 
@@ -179,9 +179,9 @@ class ExternalExchangeController extends Controller
         $opportunities = $this->liquidityService->findArbitrageOpportunities($base, $quote);
 
         return response()->json([
-            'pair' => "{$base}/{$quote}",
+            'pair'          => "{$base}/{$quote}",
             'opportunities' => $opportunities,
-            'timestamp' => now()->toIso8601String()
+            'timestamp'     => now()->toIso8601String(),
         ]);
     }
 }

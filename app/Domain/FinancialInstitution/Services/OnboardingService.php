@@ -2,21 +2,22 @@
 
 namespace App\Domain\FinancialInstitution\Services;
 
-use App\Models\FinancialInstitutionApplication;
-use App\Models\FinancialInstitutionPartner;
-use App\Domain\FinancialInstitution\Events\ApplicationSubmitted;
 use App\Domain\FinancialInstitution\Events\ApplicationApproved;
 use App\Domain\FinancialInstitution\Events\ApplicationRejected;
+use App\Domain\FinancialInstitution\Events\ApplicationSubmitted;
 use App\Domain\FinancialInstitution\Events\PartnerActivated;
 use App\Domain\FinancialInstitution\Exceptions\OnboardingException;
+use App\Models\FinancialInstitutionApplication;
+use App\Models\FinancialInstitutionPartner;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
 
 class OnboardingService
 {
     private DocumentVerificationService $documentService;
+
     private ComplianceCheckService $complianceService;
+
     private RiskAssessmentService $riskService;
 
     public function __construct(
@@ -30,7 +31,7 @@ class OnboardingService
     }
 
     /**
-     * Submit a new application
+     * Submit a new application.
      */
     public function submitApplication(array $data): FinancialInstitutionApplication
     {
@@ -53,7 +54,7 @@ class OnboardingService
             DB::commit();
 
             Log::info('Financial institution application submitted', [
-                'application_id' => $application->id,
+                'application_id'   => $application->id,
                 'institution_name' => $application->institution_name,
             ]);
 
@@ -62,36 +63,36 @@ class OnboardingService
             DB::rollBack();
             Log::error('Failed to submit financial institution application', [
                 'error' => $e->getMessage(),
-                'data' => $data,
+                'data'  => $data,
             ]);
             throw new OnboardingException('Failed to submit application: ' . $e->getMessage());
         }
     }
 
     /**
-     * Start application review process
+     * Start application review process.
      */
     public function startReview(FinancialInstitutionApplication $application, string $reviewerId): void
     {
-        if (!$application->isReviewable()) {
+        if (! $application->isReviewable()) {
             throw new OnboardingException('Application is not in a reviewable state');
         }
 
         $application->update([
-            'status' => FinancialInstitutionApplication::STATUS_UNDER_REVIEW,
+            'status'       => FinancialInstitutionApplication::STATUS_UNDER_REVIEW,
             'review_stage' => FinancialInstitutionApplication::STAGE_INITIAL,
-            'reviewed_by' => $reviewerId,
-            'reviewed_at' => now(),
+            'reviewed_by'  => $reviewerId,
+            'reviewed_at'  => now(),
         ]);
 
         Log::info('Application review started', [
             'application_id' => $application->id,
-            'reviewer_id' => $reviewerId,
+            'reviewer_id'    => $reviewerId,
         ]);
     }
 
     /**
-     * Perform compliance checks
+     * Perform compliance checks.
      */
     public function performComplianceCheck(FinancialInstitutionApplication $application): array
     {
@@ -104,21 +105,21 @@ class OnboardingService
         // Update application with compliance results
         $application->update([
             'metadata' => array_merge($application->metadata ?? [], [
-                'compliance_check' => $results,
+                'compliance_check'      => $results,
                 'compliance_checked_at' => now()->toIso8601String(),
             ]),
         ]);
 
         Log::info('Compliance check completed', [
             'application_id' => $application->id,
-            'passed' => $results['passed'],
+            'passed'         => $results['passed'],
         ]);
 
         return $results;
     }
 
     /**
-     * Perform technical assessment
+     * Perform technical assessment.
      */
     public function performTechnicalAssessment(FinancialInstitutionApplication $application): array
     {
@@ -128,14 +129,14 @@ class OnboardingService
 
         $assessment = [
             'api_integration' => $this->assessApiCapabilities($application),
-            'security' => $this->assessSecurityMeasures($application),
-            'scalability' => $this->assessScalability($application),
-            'passed' => true,
+            'security'        => $this->assessSecurityMeasures($application),
+            'scalability'     => $this->assessScalability($application),
+            'passed'          => true,
         ];
 
         // Determine if technical assessment passes
         foreach (['api_integration', 'security', 'scalability'] as $criteria) {
-            if (!$assessment[$criteria]['passed']) {
+            if (! $assessment[$criteria]['passed']) {
                 $assessment['passed'] = false;
                 break;
             }
@@ -144,7 +145,7 @@ class OnboardingService
         // Update application
         $application->update([
             'metadata' => array_merge($application->metadata ?? [], [
-                'technical_assessment' => $assessment,
+                'technical_assessment'  => $assessment,
                 'technical_assessed_at' => now()->toIso8601String(),
             ]),
         ]);
@@ -153,13 +154,13 @@ class OnboardingService
     }
 
     /**
-     * Approve application and create partner
+     * Approve application and create partner.
      */
     public function approveApplication(
         FinancialInstitutionApplication $application,
         array $partnerConfig = []
     ): FinancialInstitutionPartner {
-        if (!$application->isReviewable()) {
+        if (! $application->isReviewable()) {
             throw new OnboardingException('Application is not in a reviewable state');
         }
 
@@ -168,7 +169,7 @@ class OnboardingService
         try {
             // Update application status
             $application->update([
-                'status' => FinancialInstitutionApplication::STATUS_APPROVED,
+                'status'       => FinancialInstitutionApplication::STATUS_APPROVED,
                 'review_stage' => FinancialInstitutionApplication::STAGE_FINAL,
             ]);
 
@@ -177,7 +178,7 @@ class OnboardingService
 
             // Update application with partner reference
             $application->update([
-                'partner_id' => $partner->id,
+                'partner_id'              => $partner->id,
                 'onboarding_completed_at' => now(),
             ]);
 
@@ -189,7 +190,7 @@ class OnboardingService
 
             Log::info('Application approved and partner created', [
                 'application_id' => $application->id,
-                'partner_id' => $partner->id,
+                'partner_id'     => $partner->id,
             ]);
 
             return $partner;
@@ -197,25 +198,25 @@ class OnboardingService
             DB::rollBack();
             Log::error('Failed to approve application', [
                 'application_id' => $application->id,
-                'error' => $e->getMessage(),
+                'error'          => $e->getMessage(),
             ]);
             throw new OnboardingException('Failed to approve application: ' . $e->getMessage());
         }
     }
 
     /**
-     * Reject application
+     * Reject application.
      */
     public function rejectApplication(
         FinancialInstitutionApplication $application,
         string $reason
     ): void {
-        if (!$application->isReviewable()) {
+        if (! $application->isReviewable()) {
             throw new OnboardingException('Application is not in a reviewable state');
         }
 
         $application->update([
-            'status' => FinancialInstitutionApplication::STATUS_REJECTED,
+            'status'           => FinancialInstitutionApplication::STATUS_REJECTED,
             'rejection_reason' => $reason,
         ]);
 
@@ -223,55 +224,55 @@ class OnboardingService
 
         Log::info('Application rejected', [
             'application_id' => $application->id,
-            'reason' => $reason,
+            'reason'         => $reason,
         ]);
     }
 
     /**
-     * Put application on hold
+     * Put application on hold.
      */
     public function putOnHold(
         FinancialInstitutionApplication $application,
         string $reason
     ): void {
         $application->update([
-            'status' => FinancialInstitutionApplication::STATUS_ON_HOLD,
+            'status'       => FinancialInstitutionApplication::STATUS_ON_HOLD,
             'review_notes' => $reason,
         ]);
 
         Log::info('Application put on hold', [
             'application_id' => $application->id,
-            'reason' => $reason,
+            'reason'         => $reason,
         ]);
     }
 
     /**
-     * Create partner from approved application
+     * Create partner from approved application.
      */
     private function createPartner(
         FinancialInstitutionApplication $application,
         array $config
     ): FinancialInstitutionPartner {
         $defaultConfig = [
-            'application_id' => $application->id,
+            'application_id'   => $application->id,
             'institution_name' => $application->institution_name,
-            'legal_name' => $application->legal_name,
+            'legal_name'       => $application->legal_name,
             'institution_type' => $application->institution_type,
-            'country' => $application->country,
-            'status' => FinancialInstitutionPartner::STATUS_ACTIVE,
-            'risk_rating' => $application->risk_rating,
-            'risk_score' => $application->risk_score,
-            'primary_contact' => [
-                'name' => $application->contact_name,
-                'email' => $application->contact_email,
-                'phone' => $application->contact_phone,
+            'country'          => $application->country,
+            'status'           => FinancialInstitutionPartner::STATUS_ACTIVE,
+            'risk_rating'      => $application->risk_rating,
+            'risk_score'       => $application->risk_score,
+            'primary_contact'  => [
+                'name'     => $application->contact_name,
+                'email'    => $application->contact_email,
+                'phone'    => $application->contact_phone,
                 'position' => $application->contact_position,
             ],
-            'fee_structure' => $this->getDefaultFeeStructure($application),
+            'fee_structure'      => $this->getDefaultFeeStructure($application),
             'allowed_currencies' => $application->required_currencies,
-            'api_permissions' => $this->getDefaultApiPermissions($application),
-            'enabled_features' => $this->getDefaultEnabledFeatures($application),
-            'activated_at' => now(),
+            'api_permissions'    => $this->getDefaultApiPermissions($application),
+            'enabled_features'   => $this->getDefaultEnabledFeatures($application),
+            'activated_at'       => now(),
         ];
 
         $partnerData = array_merge($defaultConfig, $config);
@@ -280,32 +281,32 @@ class OnboardingService
     }
 
     /**
-     * Get default fee structure based on institution type
+     * Get default fee structure based on institution type.
      */
     private function getDefaultFeeStructure(FinancialInstitutionApplication $application): array
     {
         return [
-            'account_creation' => 0,
-            'monthly_account' => 0,
+            'account_creation'       => 0,
+            'monthly_account'        => 0,
             'transaction_percentage' => match ($application->institution_type) {
-                'bank' => 0.1,
-                'credit_union' => 0.05,
-                'fintech' => 0.15,
+                'bank'              => 0.1,
+                'credit_union'      => 0.05,
+                'fintech'           => 0.15,
                 'payment_processor' => 0.2,
-                default => 0.1,
+                default             => 0.1,
             },
             'minimum_monthly_fee' => match ($application->institution_type) {
-                'bank' => 1000,
-                'credit_union' => 500,
-                'fintech' => 2000,
+                'bank'              => 1000,
+                'credit_union'      => 500,
+                'fintech'           => 2000,
                 'payment_processor' => 2500,
-                default => 1000,
+                default             => 1000,
             },
         ];
     }
 
     /**
-     * Get default API permissions
+     * Get default API permissions.
      */
     private function getDefaultApiPermissions(FinancialInstitutionApplication $application): array
     {
@@ -333,7 +334,7 @@ class OnboardingService
     }
 
     /**
-     * Get default enabled features
+     * Get default enabled features.
      */
     private function getDefaultEnabledFeatures(FinancialInstitutionApplication $application): array
     {
@@ -358,7 +359,7 @@ class OnboardingService
     }
 
     /**
-     * Assess API capabilities
+     * Assess API capabilities.
      */
     private function assessApiCapabilities(FinancialInstitutionApplication $application): array
     {
@@ -386,14 +387,14 @@ class OnboardingService
         }
 
         return [
-            'score' => $score,
+            'score'        => $score,
             'requirements' => $requirements,
-            'passed' => $score >= 50,
+            'passed'       => $score >= 50,
         ];
     }
 
     /**
-     * Assess security measures
+     * Assess security measures.
      */
     private function assessSecurityMeasures(FinancialInstitutionApplication $application): array
     {
@@ -422,14 +423,14 @@ class OnboardingService
         }
 
         return [
-            'score' => $score,
+            'score'    => $score,
             'measures' => $measures,
-            'passed' => $score >= 50,
+            'passed'   => $score >= 50,
         ];
     }
 
     /**
-     * Assess scalability
+     * Assess scalability.
      */
     private function assessScalability(FinancialInstitutionApplication $application): array
     {
@@ -460,9 +461,9 @@ class OnboardingService
         }
 
         return [
-            'score' => $scalabilityScore,
+            'score'   => $scalabilityScore,
             'factors' => $factors,
-            'passed' => true, // Scalability is informational, not a hard requirement
+            'passed'  => true, // Scalability is informational, not a hard requirement
         ];
     }
 }

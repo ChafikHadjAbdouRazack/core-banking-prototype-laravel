@@ -28,7 +28,7 @@ class InitiateRefundActivity extends Activity
 
         return [
             'refund_id' => $refundId,
-            'status' => 'initiated'
+            'status'    => 'initiated',
         ];
     }
 }

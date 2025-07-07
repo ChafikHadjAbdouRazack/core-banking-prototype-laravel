@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Domain\Exchange\Contracts\ExternalExchangeServiceInterface;
 use App\Domain\Exchange\Contracts\ArbitrageServiceInterface;
+use App\Domain\Exchange\Contracts\ExternalExchangeServiceInterface;
 use App\Domain\Exchange\Contracts\PriceAggregatorInterface;
 use App\Domain\Exchange\Services\OrderService;
 use Illuminate\Http\Request;
@@ -21,7 +21,7 @@ class ExternalExchangeController extends Controller
     }
 
     /**
-     * Display external exchange dashboard
+     * Display external exchange dashboard.
      */
     public function index()
     {
@@ -50,7 +50,7 @@ class ExternalExchangeController extends Controller
     }
 
     /**
-     * Show arbitrage opportunities
+     * Show arbitrage opportunities.
      */
     public function arbitrage()
     {
@@ -75,15 +75,15 @@ class ExternalExchangeController extends Controller
     }
 
     /**
-     * Execute arbitrage opportunity
+     * Execute arbitrage opportunity.
      */
     public function executeArbitrage(Request $request)
     {
         $validated = $request->validate([
-            'opportunity_id' => 'required|string',
-            'amount' => 'required|numeric|min:0.00000001',
+            'opportunity_id'     => 'required|string',
+            'amount'             => 'required|numeric|min:0.00000001',
             'slippage_tolerance' => 'required|numeric|min:0|max:5',
-            'password' => 'required|string',
+            'password'           => 'required|string',
         ]);
 
         try {
@@ -92,7 +92,7 @@ class ExternalExchangeController extends Controller
                 $validated['opportunity_id'],
                 $validated['amount'],
                 [
-                    'user_uuid' => Auth::user()->uuid,
+                    'user_uuid'          => Auth::user()->uuid,
                     'slippage_tolerance' => $validated['slippage_tolerance'],
                 ]
             );
@@ -108,7 +108,7 @@ class ExternalExchangeController extends Controller
     }
 
     /**
-     * Show price alignment dashboard
+     * Show price alignment dashboard.
      */
     public function priceAlignment()
     {
@@ -133,24 +133,24 @@ class ExternalExchangeController extends Controller
     }
 
     /**
-     * Update price alignment settings
+     * Update price alignment settings.
      */
     public function updatePriceAlignment(Request $request)
     {
         $validated = $request->validate([
-            'auto_align' => 'boolean',
-            'max_spread' => 'required|numeric|min:0|max:10',
+            'auto_align'       => 'boolean',
+            'max_spread'       => 'required|numeric|min:0|max:10',
             'update_frequency' => 'required|integer|min:1|max:3600',
-            'exchanges' => 'required|array',
-            'exchanges.*' => 'string|in:binance,kraken,coinbase',
+            'exchanges'        => 'required|array',
+            'exchanges.*'      => 'string|in:binance,kraken,coinbase',
         ]);
 
         try {
             // Update price alignment settings
             $this->priceAggregator->updateAlignmentSettings([
-                'auto_align' => $validated['auto_align'] ?? false,
-                'max_spread' => $validated['max_spread'],
-                'update_frequency' => $validated['update_frequency'],
+                'auto_align'          => $validated['auto_align'] ?? false,
+                'max_spread'          => $validated['max_spread'],
+                'update_frequency'    => $validated['update_frequency'],
                 'reference_exchanges' => $validated['exchanges'],
             ]);
 
@@ -165,15 +165,15 @@ class ExternalExchangeController extends Controller
     }
 
     /**
-     * Connect external exchange
+     * Connect external exchange.
      */
     public function connect(Request $request)
     {
         $validated = $request->validate([
-            'exchange' => 'required|string|in:binance,kraken,coinbase',
-            'api_key' => 'required|string',
+            'exchange'   => 'required|string|in:binance,kraken,coinbase',
+            'api_key'    => 'required|string',
             'api_secret' => 'required|string',
-            'testnet' => 'boolean',
+            'testnet'    => 'boolean',
         ]);
 
         try {
@@ -182,9 +182,9 @@ class ExternalExchangeController extends Controller
                 Auth::user()->uuid,
                 $validated['exchange'],
                 [
-                    'api_key' => $validated['api_key'],
+                    'api_key'    => $validated['api_key'],
                     'api_secret' => $validated['api_secret'],
-                    'testnet' => $validated['testnet'] ?? false,
+                    'testnet'    => $validated['testnet'] ?? false,
                 ]
             );
 
@@ -199,7 +199,7 @@ class ExternalExchangeController extends Controller
     }
 
     /**
-     * Disconnect external exchange
+     * Disconnect external exchange.
      */
     public function disconnect($exchange)
     {
@@ -218,7 +218,7 @@ class ExternalExchangeController extends Controller
     }
 
     /**
-     * Get connected exchanges
+     * Get connected exchanges.
      */
     private function getConnectedExchanges()
     {
@@ -229,11 +229,11 @@ class ExternalExchangeController extends Controller
                 ->get()
                 ->map(function ($connection) {
                     return [
-                        'exchange' => $connection->exchange,
+                        'exchange'     => $connection->exchange,
                         'connected_at' => $connection->created_at,
-                        'testnet' => $connection->testnet,
-                        'last_sync' => $connection->last_sync_at,
-                        'status' => $connection->status,
+                        'testnet'      => $connection->testnet,
+                        'last_sync'    => $connection->last_sync_at,
+                        'status'       => $connection->status,
                     ];
                 });
         } catch (\Exception $e) {
@@ -243,7 +243,7 @@ class ExternalExchangeController extends Controller
     }
 
     /**
-     * Get price comparisons
+     * Get price comparisons.
      */
     private function getPriceComparisons()
     {
@@ -254,11 +254,11 @@ class ExternalExchangeController extends Controller
             $prices = $this->priceAggregator->getPricesAcrossExchanges($pair);
             $comparisons[$pair] = [
                 'internal' => $prices['internal'] ?? null,
-                'binance' => $prices['binance'] ?? null,
-                'kraken' => $prices['kraken'] ?? null,
+                'binance'  => $prices['binance'] ?? null,
+                'kraken'   => $prices['kraken'] ?? null,
                 'coinbase' => $prices['coinbase'] ?? null,
-                'average' => $prices['average'] ?? null,
-                'spread' => $prices['spread'] ?? null,
+                'average'  => $prices['average'] ?? null,
+                'spread'   => $prices['spread'] ?? null,
             ];
         }
 
@@ -266,7 +266,7 @@ class ExternalExchangeController extends Controller
     }
 
     /**
-     * Get external balances
+     * Get external balances.
      */
     private function getExternalBalances()
     {
@@ -289,7 +289,7 @@ class ExternalExchangeController extends Controller
     }
 
     /**
-     * Get recent external trades
+     * Get recent external trades.
      */
     private function getRecentExternalTrades()
     {
@@ -305,7 +305,7 @@ class ExternalExchangeController extends Controller
     }
 
     /**
-     * Get historical arbitrage performance
+     * Get historical arbitrage performance.
      */
     private function getHistoricalArbitragePerformance()
     {
@@ -326,7 +326,7 @@ class ExternalExchangeController extends Controller
     }
 
     /**
-     * Get active arbitrage strategies
+     * Get active arbitrage strategies.
      */
     private function getActiveArbitrageStrategies()
     {
@@ -337,21 +337,21 @@ class ExternalExchangeController extends Controller
     }
 
     /**
-     * Get supported arbitrage pairs
+     * Get supported arbitrage pairs.
      */
     private function getSupportedArbitragePairs()
     {
         return [
-            'BTC/USD' => ['binance', 'kraken', 'coinbase'],
-            'ETH/USD' => ['binance', 'kraken', 'coinbase'],
-            'BTC/ETH' => ['binance', 'kraken'],
+            'BTC/USD'   => ['binance', 'kraken', 'coinbase'],
+            'ETH/USD'   => ['binance', 'kraken', 'coinbase'],
+            'BTC/ETH'   => ['binance', 'kraken'],
             'MATIC/USD' => ['binance', 'coinbase'],
-            'BNB/USD' => ['binance'],
+            'BNB/USD'   => ['binance'],
         ];
     }
 
     /**
-     * Get our exchange prices
+     * Get our exchange prices.
      */
     private function getOurExchangePrices()
     {
@@ -363,7 +363,7 @@ class ExternalExchangeController extends Controller
     }
 
     /**
-     * Get recommended price adjustments
+     * Get recommended price adjustments.
      */
     private function getRecommendedPriceAdjustments()
     {
@@ -376,12 +376,12 @@ class ExternalExchangeController extends Controller
 
                 if ($deviation > 1) { // More than 1% deviation
                     $recommendations[] = [
-                        'pair' => $pair,
-                        'current_price' => $prices['internal'],
-                        'market_average' => $prices['average'],
-                        'recommended_price' => $prices['average'],
+                        'pair'                 => $pair,
+                        'current_price'        => $prices['internal'],
+                        'market_average'       => $prices['average'],
+                        'recommended_price'    => $prices['average'],
                         'deviation_percentage' => $deviation,
-                        'action' => $prices['internal'] > $prices['average'] ? 'decrease' : 'increase',
+                        'action'               => $prices['internal'] > $prices['average'] ? 'decrease' : 'increase',
                     ];
                 }
             }
@@ -391,7 +391,7 @@ class ExternalExchangeController extends Controller
     }
 
     /**
-     * Get price alignment history
+     * Get price alignment history.
      */
     private function getPriceAlignmentHistory()
     {

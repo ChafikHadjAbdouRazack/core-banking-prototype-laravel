@@ -8,7 +8,7 @@ use App\Models\StablecoinCollateralPosition;
 interface StablecoinIssuanceServiceInterface
 {
     /**
-     * Mint stablecoins by locking collateral
+     * Mint stablecoins by locking collateral.
      *
      * @param Account $account
      * @param string $stablecoinCode
@@ -26,7 +26,7 @@ interface StablecoinIssuanceServiceInterface
     ): StablecoinCollateralPosition;
 
     /**
-     * Burn stablecoins and release collateral
+     * Burn stablecoins and release collateral.
      *
      * @param Account $account
      * @param string $stablecoinCode
@@ -42,7 +42,7 @@ interface StablecoinIssuanceServiceInterface
     ): StablecoinCollateralPosition;
 
     /**
-     * Add collateral to an existing position
+     * Add collateral to an existing position.
      *
      * @param Account $account
      * @param string $stablecoinCode

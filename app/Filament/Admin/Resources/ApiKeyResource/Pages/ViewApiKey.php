@@ -3,10 +3,9 @@
 namespace App\Filament\Admin\Resources\ApiKeyResource\Pages;
 
 use App\Filament\Admin\Resources\ApiKeyResource;
-use App\Models\ApiKeyLog;
-use Filament\Resources\Pages\ViewRecord;
 use Filament\Infolists;
 use Filament\Infolists\Infolist;
+use Filament\Resources\Pages\ViewRecord;
 
 class ViewApiKey extends ViewRecord
 {
@@ -34,11 +33,11 @@ class ViewApiKey extends ViewRecord
                         Infolists\Components\TextEntry::make('permissions')
                             ->badge()
                             ->color(fn (string $state): string => match ($state) {
-                                'read' => 'success',
-                                'write' => 'warning',
+                                'read'   => 'success',
+                                'write'  => 'warning',
                                 'delete' => 'danger',
-                                '*' => 'primary',
-                                default => 'gray',
+                                '*'      => 'primary',
+                                default  => 'gray',
                             }),
                         Infolists\Components\TextEntry::make('allowed_ips')
                             ->label('IP Whitelist')
@@ -94,11 +93,11 @@ class ViewApiKey extends ViewRecord
                                 Infolists\Components\TextEntry::make('method')
                                     ->badge()
                                     ->color(fn (string $state): string => match ($state) {
-                                        'GET' => 'info',
+                                        'GET'  => 'info',
                                         'POST' => 'success',
                                         'PUT', 'PATCH' => 'warning',
                                         'DELETE' => 'danger',
-                                        default => 'gray',
+                                        default  => 'gray',
                                     }),
                                 Infolists\Components\TextEntry::make('path'),
                                 Infolists\Components\TextEntry::make('response_code')
@@ -106,8 +105,8 @@ class ViewApiKey extends ViewRecord
                                     ->badge()
                                     ->color(fn (?int $state): string => match (true) {
                                         $state >= 200 && $state < 300 => 'success',
-                                        $state >= 400 => 'danger',
-                                        default => 'warning',
+                                        $state >= 400                 => 'danger',
+                                        default                       => 'warning',
                                     }),
                                 Infolists\Components\TextEntry::make('response_time')
                                     ->label('Response Time')

@@ -49,6 +49,7 @@ class AssetOverviewWidget extends BaseWidget
     private function formatAssetValue(float $value, Asset $asset): string
     {
         $formatted = number_format($value / (10 ** $asset->precision), $asset->precision);
+
         return "{$formatted} {$asset->code}";
     }
 }

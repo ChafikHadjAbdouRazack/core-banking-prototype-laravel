@@ -2,7 +2,6 @@
 
 namespace App\Filament\Admin\Resources\AccountResource\Widgets;
 
-use App\Models\Account;
 use App\Models\Transaction as TransactionEvent;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
@@ -97,6 +96,7 @@ class SystemHealthWidget extends BaseWidget
             ])
             ->where('created_at', '>=', now()->subMinute())
             ->count();
+
         return number_format($rate);
     }
 
@@ -171,10 +171,10 @@ class SystemHealthWidget extends BaseWidget
         $status = $this->getQueueStatus();
 
         return match ($status) {
-            'Idle' => 'success',
+            'Idle'   => 'success',
             'Active' => 'info',
-            'Busy' => 'warning',
-            default => 'gray',
+            'Busy'   => 'warning',
+            default  => 'gray',
         };
     }
 

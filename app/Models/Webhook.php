@@ -13,7 +13,9 @@ class Webhook extends Model
     use HasUuids;
 
     protected $primaryKey = 'uuid';
+
     public $incrementing = false;
+
     protected $keyType = 'string';
 
     protected $fillable = [
@@ -34,33 +36,33 @@ class Webhook extends Model
     ];
 
     protected $casts = [
-        'events' => 'array',
-        'headers' => 'array',
-        'is_active' => 'boolean',
-        'retry_attempts' => 'integer',
-        'timeout_seconds' => 'integer',
+        'events'               => 'array',
+        'headers'              => 'array',
+        'is_active'            => 'boolean',
+        'retry_attempts'       => 'integer',
+        'timeout_seconds'      => 'integer',
         'consecutive_failures' => 'integer',
-        'last_triggered_at' => 'datetime',
-        'last_success_at' => 'datetime',
-        'last_failure_at' => 'datetime',
+        'last_triggered_at'    => 'datetime',
+        'last_success_at'      => 'datetime',
+        'last_failure_at'      => 'datetime',
     ];
 
     /**
-     * Available webhook events
+     * Available webhook events.
      */
     public const EVENTS = [
-        'account.created' => 'Account Created',
-        'account.updated' => 'Account Updated',
-        'account.frozen' => 'Account Frozen',
-        'account.unfrozen' => 'Account Unfrozen',
-        'account.closed' => 'Account Closed',
-        'transaction.created' => 'Transaction Created',
+        'account.created'      => 'Account Created',
+        'account.updated'      => 'Account Updated',
+        'account.frozen'       => 'Account Frozen',
+        'account.unfrozen'     => 'Account Unfrozen',
+        'account.closed'       => 'Account Closed',
+        'transaction.created'  => 'Transaction Created',
         'transaction.reversed' => 'Transaction Reversed',
-        'transfer.created' => 'Transfer Created',
-        'transfer.completed' => 'Transfer Completed',
-        'transfer.failed' => 'Transfer Failed',
-        'balance.low' => 'Low Balance Alert',
-        'balance.negative' => 'Negative Balance Alert',
+        'transfer.created'     => 'Transfer Created',
+        'transfer.completed'   => 'Transfer Completed',
+        'transfer.failed'      => 'Transfer Failed',
+        'balance.low'          => 'Low Balance Alert',
+        'balance.negative'     => 'Negative Balance Alert',
     ];
 
     /**
@@ -72,7 +74,7 @@ class Webhook extends Model
     }
 
     /**
-     * Scope to get active webhooks
+     * Scope to get active webhooks.
      */
     public function scopeActive($query)
     {
@@ -80,7 +82,7 @@ class Webhook extends Model
     }
 
     /**
-     * Scope to get webhooks subscribed to a specific event
+     * Scope to get webhooks subscribed to a specific event.
      */
     public function scopeForEvent($query, string $event)
     {
@@ -88,7 +90,7 @@ class Webhook extends Model
     }
 
     /**
-     * Check if webhook is subscribed to an event
+     * Check if webhook is subscribed to an event.
      */
     public function isSubscribedTo(string $event): bool
     {
@@ -96,7 +98,7 @@ class Webhook extends Model
     }
 
     /**
-     * Mark webhook as triggered
+     * Mark webhook as triggered.
      */
     public function markAsTriggered(): void
     {
@@ -104,18 +106,18 @@ class Webhook extends Model
     }
 
     /**
-     * Mark webhook delivery as successful
+     * Mark webhook delivery as successful.
      */
     public function markAsSuccessful(): void
     {
         $this->update([
-            'last_success_at' => now(),
+            'last_success_at'      => now(),
             'consecutive_failures' => 0,
         ]);
     }
 
     /**
-     * Mark webhook delivery as failed
+     * Mark webhook delivery as failed.
      */
     public function markAsFailed(): void
     {

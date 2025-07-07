@@ -9,7 +9,6 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
 
 class GcuVotingProposalResource extends Resource
 {
@@ -52,11 +51,11 @@ class GcuVotingProposalResource extends Resource
                     ->schema([
                         Forms\Components\Select::make('status')
                             ->options([
-                                'draft' => 'Draft',
-                                'active' => 'Active',
-                                'closed' => 'Closed',
+                                'draft'       => 'Draft',
+                                'active'      => 'Active',
+                                'closed'      => 'Closed',
                                 'implemented' => 'Implemented',
-                                'rejected' => 'Rejected',
+                                'rejected'    => 'Rejected',
                             ])
                             ->required(),
                         Forms\Components\DateTimePicker::make('voting_starts_at')
@@ -100,10 +99,10 @@ class GcuVotingProposalResource extends Resource
                 Tables\Columns\BadgeColumn::make('status')
                     ->colors([
                         'secondary' => 'draft',
-                        'success' => 'active',
-                        'danger' => 'rejected',
-                        'warning' => 'closed',
-                        'primary' => 'implemented',
+                        'success'   => 'active',
+                        'danger'    => 'rejected',
+                        'warning'   => 'closed',
+                        'primary'   => 'implemented',
                     ]),
                 Tables\Columns\TextColumn::make('participation_rate')
                     ->label('Participation')
@@ -125,11 +124,11 @@ class GcuVotingProposalResource extends Resource
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
                     ->options([
-                        'draft' => 'Draft',
-                        'active' => 'Active',
-                        'closed' => 'Closed',
+                        'draft'       => 'Draft',
+                        'active'      => 'Active',
+                        'closed'      => 'Closed',
                         'implemented' => 'Implemented',
-                        'rejected' => 'Rejected',
+                        'rejected'    => 'Rejected',
                     ]),
             ])
             ->actions([
@@ -157,9 +156,9 @@ class GcuVotingProposalResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListGcuVotingProposals::route('/'),
+            'index'  => Pages\ListGcuVotingProposals::route('/'),
             'create' => Pages\CreateGcuVotingProposal::route('/create'),
-            'edit' => Pages\EditGcuVotingProposal::route('/{record}/edit'),
+            'edit'   => Pages\EditGcuVotingProposal::route('/{record}/edit'),
         ];
     }
 }

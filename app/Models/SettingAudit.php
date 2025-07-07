@@ -24,7 +24,7 @@ class SettingAudit extends Model
     protected $casts = [
         'old_value' => 'json',
         'new_value' => 'json',
-        'metadata' => 'json',
+        'metadata'  => 'json',
     ];
 
     public function setting(): BelongsTo

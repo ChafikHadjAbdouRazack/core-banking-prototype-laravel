@@ -4,7 +4,6 @@ namespace App\Filament\Admin\Widgets;
 
 use App\Models\UserBankPreference;
 use Filament\Widgets\Widget;
-use Illuminate\Support\Facades\DB;
 
 class MultiBankDistributionWidget extends Widget
 {
@@ -15,7 +14,7 @@ class MultiBankDistributionWidget extends Widget
     protected static ?int $sort = 3;
 
     /**
-     * Check if this widget should be displayed
+     * Check if this widget should be displayed.
      */
     public static function canView(): bool
     {
@@ -24,7 +23,7 @@ class MultiBankDistributionWidget extends Widget
     }
 
     /**
-     * Get the data for the widget
+     * Get the data for the widget.
      */
     protected function getViewData(): array
     {
@@ -32,14 +31,14 @@ class MultiBankDistributionWidget extends Widget
         $totalAllocated = $this->getTotalAllocatedFunds();
 
         return [
-            'bankStats' => $bankStats,
+            'bankStats'      => $bankStats,
             'totalAllocated' => $totalAllocated,
-            'isGcuEnabled' => config('app.gcu_enabled', false),
+            'isGcuEnabled'   => config('app.gcu_enabled', false),
         ];
     }
 
     /**
-     * Get bank distribution statistics
+     * Get bank distribution statistics.
      */
     private function getBankDistributionStats(): array
     {
@@ -53,36 +52,36 @@ class MultiBankDistributionWidget extends Widget
         // Add bank metadata
         $bankMetadata = [
             'Paysera' => [
-                'color' => 'blue',
-                'country' => 'LT',
+                'color'    => 'blue',
+                'country'  => 'LT',
                 'coverage' => '€100,000',
             ],
             'Deutsche Bank' => [
-                'color' => 'gray',
-                'country' => 'DE',
+                'color'    => 'gray',
+                'country'  => 'DE',
                 'coverage' => '€100,000',
             ],
             'Santander' => [
-                'color' => 'red',
-                'country' => 'ES',
+                'color'    => 'red',
+                'country'  => 'ES',
                 'coverage' => '€100,000',
             ],
             'Revolut' => [
-                'color' => 'purple',
-                'country' => 'LT',
+                'color'    => 'purple',
+                'country'  => 'LT',
                 'coverage' => '€100,000',
             ],
             'Wise' => [
-                'color' => 'green',
-                'country' => 'BE',
+                'color'    => 'green',
+                'country'  => 'BE',
                 'coverage' => '€100,000',
             ],
         ];
 
         return $stats->map(function ($stat) use ($bankMetadata) {
             $metadata = $bankMetadata[$stat->bank_name] ?? [
-                'color' => 'gray',
-                'country' => 'EU',
+                'color'    => 'gray',
+                'country'  => 'EU',
                 'coverage' => '€100,000',
             ];
 
@@ -91,7 +90,7 @@ class MultiBankDistributionWidget extends Widget
     }
 
     /**
-     * Get total allocated funds across all banks
+     * Get total allocated funds across all banks.
      */
     private function getTotalAllocatedFunds(): array
     {
@@ -100,8 +99,8 @@ class MultiBankDistributionWidget extends Widget
         $totalBankRelationships = UserBankPreference::count();
 
         return [
-            'users' => $totalUsers,
-            'relationships' => $totalBankRelationships,
+            'users'          => $totalUsers,
+            'relationships'  => $totalBankRelationships,
             'averagePerUser' => $totalUsers > 0 ? round($totalBankRelationships / $totalUsers, 1) : 0,
         ];
     }

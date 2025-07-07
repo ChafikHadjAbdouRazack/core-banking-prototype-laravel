@@ -152,7 +152,6 @@ namespace App\Http\Controllers\Api\Documentation;
  *     @OA\Property(property="next_check_date", type="string", format="date")
  * )
  */
-
 class ComplianceSchemas
 {
     // This class only contains OpenAPI schema definitions

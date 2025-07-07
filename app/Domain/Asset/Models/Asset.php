@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Domain\Asset\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use App\Models\AccountBalance;
 use App\Domain\Exchange\Models\ExchangeRate;
+use App\Models\AccountBalance;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Asset extends Model
 {
@@ -74,20 +74,24 @@ class Asset extends Model
         'precision' => 'integer',
         'is_active' => 'boolean',
         'is_basket' => 'boolean',
-        'metadata' => 'array',
+        'metadata'  => 'array',
     ];
 
     /**
-     * Asset types
+     * Asset types.
      */
     public const TYPE_FIAT = 'fiat';
+
     public const TYPE_CRYPTO = 'crypto';
+
     public const TYPE_COMMODITY = 'commodity';
+
     public const TYPE_CUSTOM = 'custom';
+
     public const TYPE_BASKET = 'basket';
 
     /**
-     * Get all valid asset types
+     * Get all valid asset types.
      *
      * @return array<string>
      */
@@ -102,7 +106,7 @@ class Asset extends Model
     }
 
     /**
-     * Get all account balances for this asset
+     * Get all account balances for this asset.
      */
     public function accountBalances(): HasMany
     {
@@ -110,7 +114,7 @@ class Asset extends Model
     }
 
     /**
-     * Get exchange rates where this asset is the source
+     * Get exchange rates where this asset is the source.
      */
     public function exchangeRatesFrom(): HasMany
     {
@@ -118,7 +122,7 @@ class Asset extends Model
     }
 
     /**
-     * Get exchange rates where this asset is the target
+     * Get exchange rates where this asset is the target.
      */
     public function exchangeRatesTo(): HasMany
     {
@@ -126,7 +130,7 @@ class Asset extends Model
     }
 
     /**
-     * Get the symbol from metadata
+     * Get the symbol from metadata.
      *
      * @return string|null
      */
@@ -136,7 +140,7 @@ class Asset extends Model
     }
 
     /**
-     * Get the symbol attribute (accessor)
+     * Get the symbol attribute (accessor).
      *
      * @return string|null
      */
@@ -146,7 +150,7 @@ class Asset extends Model
     }
 
     /**
-     * Format an amount according to the asset's precision
+     * Format an amount according to the asset's precision.
      *
      * @param int $amount Amount in smallest unit
      * @return string Formatted amount
@@ -164,7 +168,7 @@ class Asset extends Model
     }
 
     /**
-     * Convert a decimal amount to the smallest unit
+     * Convert a decimal amount to the smallest unit.
      *
      * @param float $amount
      * @return int
@@ -175,7 +179,7 @@ class Asset extends Model
     }
 
     /**
-     * Convert from smallest unit to decimal
+     * Convert from smallest unit to decimal.
      *
      * @param int $amount
      * @return float
@@ -186,7 +190,7 @@ class Asset extends Model
     }
 
     /**
-     * Check if the asset is a fiat currency
+     * Check if the asset is a fiat currency.
      *
      * @return bool
      */
@@ -196,7 +200,7 @@ class Asset extends Model
     }
 
     /**
-     * Check if the asset is a cryptocurrency
+     * Check if the asset is a cryptocurrency.
      *
      * @return bool
      */
@@ -206,7 +210,7 @@ class Asset extends Model
     }
 
     /**
-     * Check if the asset is a commodity
+     * Check if the asset is a commodity.
      *
      * @return bool
      */
@@ -216,7 +220,7 @@ class Asset extends Model
     }
 
     /**
-     * Scope for active assets
+     * Scope for active assets.
      *
      * @param \Illuminate\Database\Eloquent\Builder $query
      * @return \Illuminate\Database\Eloquent\Builder
@@ -227,7 +231,7 @@ class Asset extends Model
     }
 
     /**
-     * Scope for assets by type
+     * Scope for assets by type.
      *
      * @param \Illuminate\Database\Eloquent\Builder $query
      * @param string $type

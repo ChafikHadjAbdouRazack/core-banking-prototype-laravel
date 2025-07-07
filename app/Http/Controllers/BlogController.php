@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Subscriber;
+use App\Services\Email\SubscriberEmailService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use App\Services\Email\SubscriberEmailService;
-use App\Models\Subscriber;
 
 class BlogController extends Controller
 {
     /**
-     * Display the blog index page
+     * Display the blog index page.
      */
     public function index()
     {
@@ -27,10 +27,10 @@ class BlogController extends Controller
             ->get();
 
         $categories = [
-            'platform' => \App\Models\BlogPost::published()->category('platform')->count(),
-            'security' => \App\Models\BlogPost::published()->category('security')->count(),
-            'developer' => \App\Models\BlogPost::published()->category('developer')->count(),
-            'industry' => \App\Models\BlogPost::published()->category('industry')->count(),
+            'platform'   => \App\Models\BlogPost::published()->category('platform')->count(),
+            'security'   => \App\Models\BlogPost::published()->category('security')->count(),
+            'developer'  => \App\Models\BlogPost::published()->category('developer')->count(),
+            'industry'   => \App\Models\BlogPost::published()->category('industry')->count(),
             'compliance' => \App\Models\BlogPost::published()->category('compliance')->count(),
         ];
 
@@ -38,7 +38,7 @@ class BlogController extends Controller
     }
 
     /**
-     * Display a single blog post
+     * Display a single blog post.
      */
     public function show($slug)
     {
@@ -57,12 +57,12 @@ class BlogController extends Controller
     }
 
     /**
-     * Subscribe email to newsletter (now using internal subscriber system)
+     * Subscribe email to newsletter (now using internal subscriber system).
      */
     public function subscribe(Request $request, SubscriberEmailService $emailService)
     {
         $validated = $request->validate([
-            'email' => 'required|email'
+            'email' => 'required|email',
         ]);
 
         try {
@@ -80,30 +80,30 @@ class BlogController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Thank you for subscribing! Check your email for confirmation.'
+                'message' => 'Thank you for subscribing! Check your email for confirmation.',
             ]);
         } catch (\Exception $e) {
             Log::error('Subscription error', [
                 'error' => $e->getMessage(),
-                'email' => $validated['email']
+                'email' => $validated['email'],
             ]);
 
             return response()->json([
                 'success' => false,
-                'message' => 'An error occurred. Please try again later.'
+                'message' => 'An error occurred. Please try again later.',
             ], 500);
         }
     }
 
     /**
-     * Sync with Mailchimp if configured
+     * Sync with Mailchimp if configured.
      */
     private function syncWithMailchimp($email)
     {
         $apiKey = config('services.mailchimp.api_key');
         $listId = config('services.mailchimp.list_id');
 
-        if (!$apiKey || !$listId) {
+        if (! $apiKey || ! $listId) {
             return; // Mailchimp not configured, skip
         }
 
@@ -113,27 +113,28 @@ class BlogController extends Controller
             Http::withBasicAuth('apikey', $apiKey)
                 ->post("https://{$dataCenter}.api.mailchimp.com/3.0/lists/{$listId}/members", [
                     'email_address' => $email,
-                    'status' => 'subscribed',
-                    'tags' => ['blog_subscriber', 'finaegis_demo']
+                    'status'        => 'subscribed',
+                    'tags'          => ['blog_subscriber', 'finaegis_demo'],
                 ]);
         } catch (\Exception $e) {
             Log::warning('Mailchimp sync failed (non-critical)', [
                 'error' => $e->getMessage(),
-                'email' => $email
+                'email' => $email,
             ]);
         }
     }
 
     /**
-     * Extract data center from Mailchimp API key
+     * Extract data center from Mailchimp API key.
      */
     private function getDataCenterFromApiKey($apiKey)
     {
-        if (!$apiKey) {
+        if (! $apiKey) {
             return 'us1';
         }
 
         $parts = explode('-', $apiKey);
+
         return isset($parts[1]) ? $parts[1] : 'us1';
     }
 }

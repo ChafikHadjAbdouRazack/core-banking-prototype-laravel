@@ -10,7 +10,6 @@ use App\Domain\Governance\Models\Poll;
 use App\Domain\Governance\Services\GovernanceService;
 use App\Filament\Admin\Resources\PollResource\Pages;
 use App\Filament\Admin\Resources\PollResource\RelationManagers;
-use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
@@ -19,7 +18,6 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\HtmlString;
 
 class PollResource extends Resource
 {
@@ -51,11 +49,11 @@ class PollResource extends Resource
                         Forms\Components\Select::make('type')
                             ->required()
                             ->options([
-                                PollType::YES_NO->value => 'Yes/No',
-                                PollType::SINGLE_CHOICE->value => 'Single Choice',
+                                PollType::YES_NO->value          => 'Yes/No',
+                                PollType::SINGLE_CHOICE->value   => 'Single Choice',
                                 PollType::MULTIPLE_CHOICE->value => 'Multiple Choice',
                                 PollType::WEIGHTED_CHOICE->value => 'Weighted Choice',
-                                PollType::RANKED_CHOICE->value => 'Ranked Choice',
+                                PollType::RANKED_CHOICE->value   => 'Ranked Choice',
                             ])
                             ->reactive()
                             ->afterStateUpdated(function ($state, callable $set) {
@@ -73,7 +71,7 @@ class PollResource extends Resource
                         Forms\Components\Select::make('voting_power_strategy')
                             ->required()
                             ->options([
-                                'one_user_one_vote' => 'One User One Vote',
+                                'one_user_one_vote'   => 'One User One Vote',
                                 'asset_weighted_vote' => 'Asset Weighted Vote',
                             ])
                             ->default('one_user_one_vote'),
@@ -125,8 +123,8 @@ class PollResource extends Resource
 
                         Forms\Components\Select::make('execution_workflow')
                             ->options([
-                                'AddAssetWorkflow' => 'Add Asset Workflow',
-                                'FeatureToggleWorkflow' => 'Feature Toggle Workflow',
+                                'AddAssetWorkflow'            => 'Add Asset Workflow',
+                                'FeatureToggleWorkflow'       => 'Feature Toggle Workflow',
                                 'UpdateConfigurationWorkflow' => 'Update Configuration Workflow',
                             ])
                             ->helperText('Optional workflow to execute when poll passes'),
@@ -134,9 +132,9 @@ class PollResource extends Resource
                         Forms\Components\Select::make('status')
                             ->required()
                             ->options([
-                                PollStatus::DRAFT->value => 'Draft',
-                                PollStatus::ACTIVE->value => 'Active',
-                                PollStatus::CLOSED->value => 'Closed',
+                                PollStatus::DRAFT->value     => 'Draft',
+                                PollStatus::ACTIVE->value    => 'Active',
+                                PollStatus::CLOSED->value    => 'Closed',
                                 PollStatus::CANCELLED->value => 'Cancelled',
                             ])
                             ->default(PollStatus::DRAFT->value),
@@ -170,15 +168,15 @@ class PollResource extends Resource
                         'primary' => PollType::YES_NO->value,
                         'success' => PollType::SINGLE_CHOICE->value,
                         'warning' => PollType::MULTIPLE_CHOICE->value,
-                        'danger' => PollType::WEIGHTED_CHOICE->value,
-                        'gray' => PollType::RANKED_CHOICE->value,
+                        'danger'  => PollType::WEIGHTED_CHOICE->value,
+                        'gray'    => PollType::RANKED_CHOICE->value,
                     ]),
 
                 Tables\Columns\BadgeColumn::make('status')
                     ->colors([
-                        'gray' => PollStatus::DRAFT->value,
+                        'gray'    => PollStatus::DRAFT->value,
                         'success' => PollStatus::ACTIVE->value,
-                        'danger' => PollStatus::CLOSED->value,
+                        'danger'  => PollStatus::CLOSED->value,
                         'warning' => PollStatus::CANCELLED->value,
                     ]),
 
@@ -221,19 +219,19 @@ class PollResource extends Resource
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
                     ->options([
-                        PollStatus::DRAFT->value => 'Draft',
-                        PollStatus::ACTIVE->value => 'Active',
-                        PollStatus::CLOSED->value => 'Closed',
+                        PollStatus::DRAFT->value     => 'Draft',
+                        PollStatus::ACTIVE->value    => 'Active',
+                        PollStatus::CLOSED->value    => 'Closed',
                         PollStatus::CANCELLED->value => 'Cancelled',
                     ]),
 
                 Tables\Filters\SelectFilter::make('type')
                     ->options([
-                        PollType::YES_NO->value => 'Yes/No',
-                        PollType::SINGLE_CHOICE->value => 'Single Choice',
+                        PollType::YES_NO->value          => 'Yes/No',
+                        PollType::SINGLE_CHOICE->value   => 'Single Choice',
                         PollType::MULTIPLE_CHOICE->value => 'Multiple Choice',
                         PollType::WEIGHTED_CHOICE->value => 'Weighted Choice',
-                        PollType::RANKED_CHOICE->value => 'Ranked Choice',
+                        PollType::RANKED_CHOICE->value   => 'Ranked Choice',
                     ]),
 
                 Tables\Filters\Filter::make('active')
@@ -368,9 +366,9 @@ class PollResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListPolls::route('/'),
+            'index'  => Pages\ListPolls::route('/'),
             'create' => Pages\CreatePoll::route('/create'),
-            'edit' => Pages\EditPoll::route('/{record}/edit'),
+            'edit'   => Pages\EditPoll::route('/{record}/edit'),
         ];
     }
 
@@ -388,8 +386,8 @@ class PollResource extends Resource
     {
         return [
             'Creator' => $record->creator?->name,
-            'Status' => $record->status->value,
-            'Type' => $record->type->value,
+            'Status'  => $record->status->value,
+            'Type'    => $record->type->value,
         ];
     }
 }

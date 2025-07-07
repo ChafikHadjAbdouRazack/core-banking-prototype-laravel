@@ -18,13 +18,13 @@ class ReserveWithdrawalData
     public function toArray(): array
     {
         return [
-            'pool_id' => $this->poolId,
-            'asset' => $this->asset,
-            'amount' => $this->amount,
-            'custodian_id' => $this->custodianId,
+            'pool_id'             => $this->poolId,
+            'asset'               => $this->asset,
+            'amount'              => $this->amount,
+            'custodian_id'        => $this->custodianId,
             'destination_address' => $this->destinationAddress,
-            'reason' => $this->reason,
-            'metadata' => $this->metadata,
+            'reason'              => $this->reason,
+            'metadata'            => $this->metadata,
         ];
     }
 }

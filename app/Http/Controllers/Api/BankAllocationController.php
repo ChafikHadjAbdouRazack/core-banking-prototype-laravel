@@ -82,22 +82,22 @@ class BankAllocationController extends Controller
             'data' => [
                 'allocations' => $allocations->map(function ($allocation) {
                     return [
-                        'bank_code' => $allocation->bank_code,
-                        'bank_name' => $allocation->bank_name,
+                        'bank_code'             => $allocation->bank_code,
+                        'bank_name'             => $allocation->bank_name,
                         'allocation_percentage' => $allocation->allocation_percentage,
-                        'is_primary' => $allocation->is_primary,
-                        'status' => $allocation->status,
-                        'metadata' => $allocation->metadata,
+                        'is_primary'            => $allocation->is_primary,
+                        'status'                => $allocation->status,
+                        'metadata'              => $allocation->metadata,
                     ];
                 }),
                 'summary' => [
-                    'total_percentage' => $totalPercentage,
-                    'bank_count' => $allocations->count(),
-                    'primary_bank' => $primaryBank?->bank_code,
-                    'is_diversified' => $allocations->count() >= 3,
+                    'total_percentage'         => $totalPercentage,
+                    'bank_count'               => $allocations->count(),
+                    'primary_bank'             => $primaryBank?->bank_code,
+                    'is_diversified'           => $allocations->count() >= 3,
                     'total_insurance_coverage' => $totalInsurance,
-                ]
-            ]
+                ],
+            ],
         ]);
     }
 
@@ -141,9 +141,9 @@ class BankAllocationController extends Controller
     public function update(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'allocations' => 'required|array',
+            'allocations'   => 'required|array',
             'allocations.*' => 'numeric|min:0|max:100',
-            'primary_bank' => 'nullable|string|in:' . implode(',', array_keys(UserBankPreference::AVAILABLE_BANKS))
+            'primary_bank'  => 'nullable|string|in:' . implode(',', array_keys(UserBankPreference::AVAILABLE_BANKS)),
         ]);
 
         try {
@@ -158,22 +158,22 @@ class BankAllocationController extends Controller
 
             return response()->json([
                 'message' => 'Bank allocations updated successfully',
-                'data' => [
+                'data'    => [
                     'allocations' => $allocations->map(function ($allocation) {
                         return [
-                            'bank_code' => $allocation->bank_code,
-                            'bank_name' => $allocation->bank_name,
+                            'bank_code'             => $allocation->bank_code,
+                            'bank_name'             => $allocation->bank_name,
                             'allocation_percentage' => $allocation->allocation_percentage,
-                            'is_primary' => $allocation->is_primary,
-                            'status' => $allocation->status,
+                            'is_primary'            => $allocation->is_primary,
+                            'status'                => $allocation->status,
                         ];
-                    })
-                ]
+                    }),
+                ],
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Failed to update bank allocations',
-                'error' => $e->getMessage()
+                'error'   => $e->getMessage(),
             ], 422);
         }
     }
@@ -216,8 +216,8 @@ class BankAllocationController extends Controller
     public function addBank(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'bank_code' => 'required|string|in:' . implode(',', array_keys(UserBankPreference::AVAILABLE_BANKS)),
-            'percentage' => 'required|numeric|min:0.01|max:100'
+            'bank_code'  => 'required|string|in:' . implode(',', array_keys(UserBankPreference::AVAILABLE_BANKS)),
+            'percentage' => 'required|numeric|min:0.01|max:100',
         ]);
 
         try {
@@ -226,18 +226,18 @@ class BankAllocationController extends Controller
 
             return response()->json([
                 'message' => 'Bank added to allocation successfully',
-                'data' => [
-                    'bank_code' => $preference->bank_code,
-                    'bank_name' => $preference->bank_name,
+                'data'    => [
+                    'bank_code'             => $preference->bank_code,
+                    'bank_name'             => $preference->bank_name,
                     'allocation_percentage' => $preference->allocation_percentage,
-                    'is_primary' => $preference->is_primary,
-                    'status' => $preference->status,
-                ]
+                    'is_primary'            => $preference->is_primary,
+                    'status'                => $preference->status,
+                ],
             ], 201);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Failed to add bank to allocation',
-                'error' => $e->getMessage()
+                'error'   => $e->getMessage(),
             ], 422);
         }
     }
@@ -281,15 +281,15 @@ class BankAllocationController extends Controller
 
             return response()->json([
                 'message' => 'Bank removed from allocation successfully',
-                'data' => [
-                    'bank_code' => $bankCode,
+                'data'    => [
+                    'bank_code'  => $bankCode,
                     'removed_at' => now()->toISOString(),
-                ]
+                ],
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Failed to remove bank from allocation',
-                'error' => $e->getMessage()
+                'error'   => $e->getMessage(),
             ], 422);
         }
     }
@@ -335,17 +335,17 @@ class BankAllocationController extends Controller
 
             return response()->json([
                 'message' => 'Primary bank updated successfully',
-                'data' => [
-                    'bank_code' => $preference->bank_code,
-                    'bank_name' => $preference->bank_name,
+                'data'    => [
+                    'bank_code'  => $preference->bank_code,
+                    'bank_name'  => $preference->bank_name,
                     'is_primary' => $preference->is_primary,
                     'updated_at' => $preference->updated_at->toISOString(),
-                ]
+                ],
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Failed to set primary bank',
-                'error' => $e->getMessage()
+                'error'   => $e->getMessage(),
             ], 422);
         }
     }
@@ -379,17 +379,17 @@ class BankAllocationController extends Controller
     {
         $banks = collect(UserBankPreference::AVAILABLE_BANKS)->map(function ($bankInfo, $bankCode) {
             return [
-                'bank_code' => $bankCode,
-                'bank_name' => $bankInfo['name'],
-                'country' => $bankInfo['country'],
-                'currency' => $bankInfo['currency'],
-                'insurance_limit' => $bankInfo['deposit_insurance'],
+                'bank_code'          => $bankCode,
+                'bank_name'          => $bankInfo['name'],
+                'country'            => $bankInfo['country'],
+                'currency'           => $bankInfo['currency'],
+                'insurance_limit'    => $bankInfo['deposit_insurance'],
                 'supported_features' => $bankInfo['features'] ?? [],
             ];
         })->values();
 
         return response()->json([
-            'data' => $banks
+            'data' => $banks,
         ]);
     }
 
@@ -437,8 +437,8 @@ class BankAllocationController extends Controller
     public function previewDistribution(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'amount' => 'required|numeric|min:0.01',
-            'asset_code' => 'required|string|exists:assets,code'
+            'amount'     => 'required|numeric|min:0.01',
+            'asset_code' => 'required|string|exists:assets,code',
         ]);
 
         $user = Auth::user();
@@ -449,32 +449,32 @@ class BankAllocationController extends Controller
         if (isset($summary['error'])) {
             return response()->json([
                 'message' => 'Failed to generate distribution preview',
-                'error' => $summary['error']
+                'error'   => $summary['error'],
             ], 422);
         }
 
         // Convert distribution from cents back to float for API response
         $distribution = collect($summary['distribution'])->map(function ($bankDistribution) {
             return [
-                'bank_code' => $bankDistribution['bank_code'],
-                'bank_name' => $bankDistribution['bank_name'],
+                'bank_code'             => $bankDistribution['bank_code'],
+                'bank_name'             => $bankDistribution['bank_name'],
                 'allocation_percentage' => $bankDistribution['allocation_percentage'],
-                'amount' => $bankDistribution['amount_in_cents'] / 100,
-                'is_primary' => $bankDistribution['is_primary'],
+                'amount'                => $bankDistribution['amount_in_cents'] / 100,
+                'is_primary'            => $bankDistribution['is_primary'],
             ];
         });
 
         return response()->json([
             'data' => [
                 'total_amount' => $validated['amount'],
-                'asset_code' => $validated['asset_code'],
+                'asset_code'   => $validated['asset_code'],
                 'distribution' => $distribution,
-                'summary' => [
-                    'bank_count' => $summary['bank_count'],
-                    'is_diversified' => $summary['is_diversified'],
+                'summary'      => [
+                    'bank_count'               => $summary['bank_count'],
+                    'is_diversified'           => $summary['is_diversified'],
                     'total_insurance_coverage' => $summary['total_insurance_coverage'],
-                ]
-            ]
+                ],
+            ],
         ]);
     }
 }

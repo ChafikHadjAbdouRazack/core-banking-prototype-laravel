@@ -9,10 +9,10 @@ class PriceAggregator implements PriceAggregatorInterface
     public function getAggregatedPrice(string $symbol): array
     {
         return [
-            'symbol' => $symbol,
-            'average' => 0,
-            'min' => 0,
-            'max' => 0,
+            'symbol'    => $symbol,
+            'average'   => 0,
+            'min'       => 0,
+            'max'       => 0,
             'exchanges' => [],
         ];
     }
@@ -21,8 +21,8 @@ class PriceAggregator implements PriceAggregatorInterface
     {
         return [
             'exchange' => null,
-            'price' => 0,
-            'amount' => 0,
+            'price'    => 0,
+            'amount'   => 0,
         ];
     }
 
@@ -30,13 +30,13 @@ class PriceAggregator implements PriceAggregatorInterface
     {
         return [
             'exchange' => null,
-            'price' => 0,
-            'amount' => 0,
+            'price'    => 0,
+            'amount'   => 0,
         ];
     }
 
     /**
-     * Get prices across all exchanges
+     * Get prices across all exchanges.
      */
     public function getPricesAcrossExchanges(string $pair): array
     {

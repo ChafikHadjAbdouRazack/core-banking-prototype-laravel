@@ -43,6 +43,7 @@ class CalculateBasketPerformance extends Command
 
         if ($baskets->isEmpty()) {
             $this->error('No active baskets found to process.');
+
             return 1;
         }
 
@@ -56,13 +57,13 @@ class CalculateBasketPerformance extends Command
                     // Calculate specific period
                     $now = now();
                     [$periodStart, $periodEnd] = match ($period) {
-                        'hour' => [$now->copy()->subHour(), $now],
-                        'day' => [$now->copy()->subDay(), $now],
-                        'week' => [$now->copy()->subWeek(), $now],
-                        'month' => [$now->copy()->subMonth(), $now],
+                        'hour'    => [$now->copy()->subHour(), $now],
+                        'day'     => [$now->copy()->subDay(), $now],
+                        'week'    => [$now->copy()->subWeek(), $now],
+                        'month'   => [$now->copy()->subMonth(), $now],
                         'quarter' => [$now->copy()->subQuarter(), $now],
-                        'year' => [$now->copy()->subYear(), $now],
-                        default => throw new \InvalidArgumentException("Invalid period: {$period}")
+                        'year'    => [$now->copy()->subYear(), $now],
+                        default   => throw new \InvalidArgumentException("Invalid period: {$period}")
                     };
 
                     $performance = $performanceService->calculatePerformance(
@@ -86,14 +87,14 @@ class CalculateBasketPerformance extends Command
                     }
 
                     if ($performances->isEmpty()) {
-                        $this->warn("  - No performance data could be calculated");
+                        $this->warn('  - No performance data could be calculated');
                     }
                 }
 
                 // Show top performers
                 $topPerformers = $performanceService->getTopPerformers($basket, 'month', 3);
                 if ($topPerformers->isNotEmpty()) {
-                    $this->info("  Top performers (monthly):");
+                    $this->info('  Top performers (monthly):');
                     foreach ($topPerformers as $performer) {
                         $this->info("    - {$performer->asset_code}: {$performer->formatted_contribution}");
                     }
@@ -102,7 +103,7 @@ class CalculateBasketPerformance extends Command
                 // Show worst performers
                 $worstPerformers = $performanceService->getWorstPerformers($basket, 'month', 3);
                 if ($worstPerformers->isNotEmpty()) {
-                    $this->info("  Worst performers (monthly):");
+                    $this->info('  Worst performers (monthly):');
                     foreach ($worstPerformers as $performer) {
                         $this->info("    - {$performer->asset_code}: {$performer->formatted_contribution}");
                     }
@@ -111,13 +112,14 @@ class CalculateBasketPerformance extends Command
                 $this->error("  Error calculating performance: {$e->getMessage()}");
                 Log::error('Basket performance calculation failed', [
                     'basket' => $basket->code,
-                    'error' => $e->getMessage(),
-                    'trace' => $e->getTraceAsString(),
+                    'error'  => $e->getMessage(),
+                    'trace'  => $e->getTraceAsString(),
                 ]);
             }
         }
 
         $this->info('Performance calculation completed.');
+
         return 0;
     }
 }

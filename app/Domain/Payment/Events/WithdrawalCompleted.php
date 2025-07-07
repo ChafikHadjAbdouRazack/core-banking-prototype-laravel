@@ -9,6 +9,7 @@ use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 class WithdrawalCompleted extends ShouldBeStored
 {
     public string $queue = EventQueues::TRANSACTIONS->value;
+
     public function __construct(
         public string $transactionId,
         public Carbon $completedAt

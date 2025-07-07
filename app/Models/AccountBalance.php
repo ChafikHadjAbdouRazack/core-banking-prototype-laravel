@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Domain\Asset\Models\Asset;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class AccountBalance extends Model
 {
@@ -41,7 +41,7 @@ class AccountBalance extends Model
     ];
 
     /**
-     * Get the account that owns this balance
+     * Get the account that owns this balance.
      */
     public function account(): BelongsTo
     {
@@ -49,7 +49,7 @@ class AccountBalance extends Model
     }
 
     /**
-     * Get the asset for this balance
+     * Get the asset for this balance.
      */
     public function asset(): BelongsTo
     {
@@ -58,7 +58,7 @@ class AccountBalance extends Model
 
     /**
      * Increment the balance
-     * NOTE: This method should only be used by projectors for event sourcing
+     * NOTE: This method should only be used by projectors for event sourcing.
      *
      * @param int $amount
      * @return bool
@@ -66,12 +66,13 @@ class AccountBalance extends Model
     public function credit(int $amount): bool
     {
         $this->balance += $amount;
+
         return $this->save();
     }
 
     /**
      * Decrement the balance
-     * NOTE: This method should only be used by projectors for event sourcing
+     * NOTE: This method should only be used by projectors for event sourcing.
      *
      * @param int $amount
      * @return bool
@@ -84,11 +85,12 @@ class AccountBalance extends Model
         }
 
         $this->balance -= $amount;
+
         return $this->save();
     }
 
     /**
-     * Check if balance is sufficient for amount
+     * Check if balance is sufficient for amount.
      *
      * @param int $amount
      * @return bool
@@ -99,7 +101,7 @@ class AccountBalance extends Model
     }
 
     /**
-     * Get formatted balance with asset symbol
+     * Get formatted balance with asset symbol.
      *
      * @return string
      */
@@ -113,7 +115,7 @@ class AccountBalance extends Model
     }
 
     /**
-     * Scope for balances with positive amounts
+     * Scope for balances with positive amounts.
      *
      * @param \Illuminate\Database\Eloquent\Builder $query
      * @return \Illuminate\Database\Eloquent\Builder
@@ -124,7 +126,7 @@ class AccountBalance extends Model
     }
 
     /**
-     * Scope for balances by asset
+     * Scope for balances by asset.
      *
      * @param \Illuminate\Database\Eloquent\Builder $query
      * @param string $assetCode

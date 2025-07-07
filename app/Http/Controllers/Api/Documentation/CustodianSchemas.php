@@ -176,7 +176,6 @@ namespace App\Http\Controllers\Api\Documentation;
  *     @OA\Property(property="created_at", type="string", format="date-time")
  * )
  */
-
 class CustodianSchemas
 {
     // This class only contains OpenAPI schema definitions

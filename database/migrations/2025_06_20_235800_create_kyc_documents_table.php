@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class () extends Migration {
     /**
      * Run the migrations.
      */
@@ -23,7 +22,7 @@ return new class extends Migration
                 'bank_statement',
                 'selfie',
                 'proof_of_income',
-                'other'
+                'other',
             ]);
             $table->enum('status', ['pending', 'verified', 'rejected', 'expired'])->default('pending');
             $table->string('file_path')->nullable();
@@ -35,7 +34,7 @@ return new class extends Migration
             $table->timestamp('expires_at')->nullable();
             $table->string('verified_by')->nullable()->comment('Admin user who verified');
             $table->timestamps();
-            
+
             // Indexes
             $table->foreign('user_uuid')->references('uuid')->on('users')->onDelete('cascade');
             $table->index('document_type');

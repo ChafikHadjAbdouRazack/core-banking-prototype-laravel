@@ -4,20 +4,17 @@ declare(strict_types=1);
 
 namespace App\Domain\Stablecoin\Services;
 
-use App\Domain\Account\DataObjects\Money;
-use App\Domain\Asset\Services\ExchangeRateService;
-use App\Domain\Wallet\Services\WalletService;
 use App\Domain\Account\DataObjects\AccountUuid;
+use App\Domain\Asset\Services\ExchangeRateService;
 use App\Domain\Stablecoin\Contracts\StablecoinIssuanceServiceInterface;
-use App\Domain\Stablecoin\Workflows\MintStablecoinWorkflow;
-use App\Domain\Stablecoin\Workflows\BurnStablecoinWorkflow;
 use App\Domain\Stablecoin\Workflows\AddCollateralWorkflow;
+use App\Domain\Stablecoin\Workflows\BurnStablecoinWorkflow;
+use App\Domain\Stablecoin\Workflows\MintStablecoinWorkflow;
+use App\Domain\Wallet\Services\WalletService;
 use App\Models\Account;
 use App\Models\Stablecoin;
 use App\Models\StablecoinCollateralPosition;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
 use Workflow\WorkflowStub;
 
 class StablecoinIssuanceService implements StablecoinIssuanceServiceInterface
@@ -42,7 +39,7 @@ class StablecoinIssuanceService implements StablecoinIssuanceServiceInterface
         $stablecoin = Stablecoin::findOrFail($stablecoinCode);
 
         // Validate stablecoin can be minted
-        if (!$stablecoin->canMint()) {
+        if (! $stablecoin->canMint()) {
             throw new \RuntimeException("Minting is disabled for {$stablecoinCode}");
         }
 
@@ -54,7 +51,7 @@ class StablecoinIssuanceService implements StablecoinIssuanceServiceInterface
         $this->validateCollateralSufficiency($stablecoin, $collateralAssetCode, $collateralAmount, $mintAmount);
 
         // Check account has sufficient collateral
-        if (!$account->hasSufficientBalance($collateralAssetCode, $collateralAmount)) {
+        if (! $account->hasSufficientBalance($collateralAssetCode, $collateralAmount)) {
             throw new \RuntimeException("Insufficient {$collateralAssetCode} balance for collateral");
         }
 
@@ -86,12 +83,12 @@ class StablecoinIssuanceService implements StablecoinIssuanceServiceInterface
         $stablecoin->increment('total_collateral_value', $collateralValueInPegAsset);
 
         Log::info('Stablecoin minted', [
-            'account_uuid' => $account->uuid,
-            'stablecoin_code' => $stablecoin->code,
-            'collateral_asset' => $collateralAssetCode,
+            'account_uuid'      => $account->uuid,
+            'stablecoin_code'   => $stablecoin->code,
+            'collateral_asset'  => $collateralAssetCode,
             'collateral_amount' => $collateralAmount,
-            'mint_amount' => $mintAmount,
-            'position_id' => $positionUuid,
+            'mint_amount'       => $mintAmount,
+            'position_id'       => $positionUuid,
         ]);
 
         // Return the updated position
@@ -109,7 +106,7 @@ class StablecoinIssuanceService implements StablecoinIssuanceServiceInterface
     ): StablecoinCollateralPosition {
         $stablecoin = Stablecoin::findOrFail($stablecoinCode);
 
-        if (!$stablecoin->canBurn()) {
+        if (! $stablecoin->canBurn()) {
             throw new \RuntimeException("Burning is disabled for {$stablecoinCode}");
         }
 
@@ -121,11 +118,11 @@ class StablecoinIssuanceService implements StablecoinIssuanceServiceInterface
 
         // Validate burn amount
         if ($burnAmount > $position->debt_amount) {
-            throw new \RuntimeException("Cannot burn more than debt amount");
+            throw new \RuntimeException('Cannot burn more than debt amount');
         }
 
         // Check account has sufficient stablecoin balance
-        if (!$account->hasSufficientBalance($stablecoinCode, $burnAmount)) {
+        if (! $account->hasSufficientBalance($stablecoinCode, $burnAmount)) {
             throw new \RuntimeException("Insufficient {$stablecoinCode} balance to burn");
         }
 
@@ -148,7 +145,7 @@ class StablecoinIssuanceService implements StablecoinIssuanceServiceInterface
             $newRatio = $newCollateralValue / $newDebtAmount;
 
             if ($newRatio < $stablecoin->collateral_ratio) {
-                throw new \RuntimeException("Collateral release would make position undercollateralized");
+                throw new \RuntimeException('Collateral release would make position undercollateralized');
             }
         }
 
@@ -174,12 +171,12 @@ class StablecoinIssuanceService implements StablecoinIssuanceServiceInterface
         $stablecoin->decrement('total_collateral_value', $collateralValueInPegAsset);
 
         Log::info('Stablecoin burned', [
-            'account_uuid' => $account->uuid,
-            'stablecoin_code' => $stablecoin->code,
-            'burn_amount' => $burnAmount,
+            'account_uuid'        => $account->uuid,
+            'stablecoin_code'     => $stablecoin->code,
+            'burn_amount'         => $burnAmount,
             'collateral_released' => $collateralReleaseAmount,
-            'position_id' => $position->uuid,
-            'position_status' => $newDebtAmount == 0 ? 'closed' : 'active',
+            'position_id'         => $position->uuid,
+            'position_status'     => $newDebtAmount == 0 ? 'closed' : 'active',
         ]);
 
         // Return the updated position
@@ -201,10 +198,10 @@ class StablecoinIssuanceService implements StablecoinIssuanceServiceInterface
             ->firstOrFail();
 
         if ($position->collateral_asset_code !== $collateralAssetCode) {
-            throw new \RuntimeException("Collateral asset mismatch");
+            throw new \RuntimeException('Collateral asset mismatch');
         }
 
-        if (!$account->hasSufficientBalance($collateralAssetCode, $collateralAmount)) {
+        if (! $account->hasSufficientBalance($collateralAssetCode, $collateralAmount)) {
             throw new \RuntimeException("Insufficient {$collateralAssetCode} balance");
         }
 
@@ -229,8 +226,8 @@ class StablecoinIssuanceService implements StablecoinIssuanceServiceInterface
         $stablecoin->increment('total_collateral_value', $collateralValueInPegAsset);
 
         Log::info('Collateral added to position', [
-            'account_uuid' => $account->uuid,
-            'position_id' => $position->uuid,
+            'account_uuid'      => $account->uuid,
+            'position_id'       => $position->uuid,
             'collateral_amount' => $collateralAmount,
         ]);
 

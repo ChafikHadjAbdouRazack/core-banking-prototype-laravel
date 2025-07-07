@@ -48,15 +48,15 @@ class Team extends JetstreamTeam
     protected function casts(): array
     {
         return [
-            'personal_team' => 'boolean',
+            'personal_team'            => 'boolean',
             'is_business_organization' => 'boolean',
-            'business_details' => 'array',
-            'allowed_roles' => 'array',
+            'business_details'         => 'array',
+            'allowed_roles'            => 'array',
         ];
     }
 
     /**
-     * Team-specific user roles
+     * Team-specific user roles.
      */
     public function teamUserRoles()
     {
@@ -64,7 +64,7 @@ class Team extends JetstreamTeam
     }
 
     /**
-     * Get team-specific role for a user
+     * Get team-specific role for a user.
      */
     public function getUserTeamRole($user)
     {
@@ -74,7 +74,7 @@ class Team extends JetstreamTeam
     }
 
     /**
-     * Assign a team-specific role to a user
+     * Assign a team-specific role to a user.
      */
     public function assignUserRole($user, $role, $permissions = null)
     {
@@ -83,14 +83,14 @@ class Team extends JetstreamTeam
                 'user_id' => $user->id,
             ],
             [
-                'role' => $role,
+                'role'        => $role,
                 'permissions' => $permissions,
             ]
         );
     }
 
     /**
-     * Check if team has reached user limit
+     * Check if team has reached user limit.
      */
     public function hasReachedUserLimit(): bool
     {
@@ -98,11 +98,11 @@ class Team extends JetstreamTeam
     }
 
     /**
-     * Available roles for this team
+     * Available roles for this team.
      */
     public function getAvailableRoles(): array
     {
-        if (!$this->is_business_organization) {
+        if (! $this->is_business_organization) {
             return [];
         }
 

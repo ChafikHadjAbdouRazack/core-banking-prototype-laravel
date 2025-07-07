@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 class ExchangeRateViewController extends Controller
 {
     /**
-     * Display the exchange rate viewer
+     * Display the exchange rate viewer.
      */
     public function index(Request $request)
     {
@@ -45,7 +45,7 @@ class ExchangeRateViewController extends Controller
     }
 
     /**
-     * Get real-time rate updates via AJAX
+     * Get real-time rate updates via AJAX.
      */
     public function rates(Request $request)
     {
@@ -55,14 +55,14 @@ class ExchangeRateViewController extends Controller
         $rates = $this->getLatestRates($baseCurrency, $assets);
 
         return response()->json([
-            'base' => $baseCurrency,
+            'base'      => $baseCurrency,
             'timestamp' => now()->toIso8601String(),
-            'rates' => $rates,
+            'rates'     => $rates,
         ]);
     }
 
     /**
-     * Get historical data for a specific pair
+     * Get historical data for a specific pair.
      */
     public function historical(Request $request)
     {
@@ -73,15 +73,15 @@ class ExchangeRateViewController extends Controller
         $data = $this->getHistoricalDataForPair($base, $target, $period);
 
         return response()->json([
-            'base' => $base,
+            'base'   => $base,
             'target' => $target,
             'period' => $period,
-            'data' => $data,
+            'data'   => $data,
         ]);
     }
 
     /**
-     * Get latest rates for given currencies
+     * Get latest rates for given currencies.
      */
     private function getLatestRates($baseCurrency, $assets)
     {
@@ -90,10 +90,10 @@ class ExchangeRateViewController extends Controller
         foreach ($assets as $asset) {
             if ($asset === $baseCurrency) {
                 $rates[$asset] = [
-                    'rate' => 1.0000,
-                    'change_24h' => 0,
+                    'rate'           => 1.0000,
+                    'change_24h'     => 0,
                     'change_percent' => 0,
-                    'last_updated' => now(),
+                    'last_updated'   => now(),
                 ];
                 continue;
             }
@@ -111,7 +111,7 @@ class ExchangeRateViewController extends Controller
                     ->orderBy('created_at', 'desc')
                     ->first();
 
-                if (!$latestRate) {
+                if (! $latestRate) {
                     // Try reverse pair
                     $reverseRate = ExchangeRate::where('from_asset_code', $asset)
                         ->where('to_asset_code', $baseCurrency)
@@ -134,10 +134,10 @@ class ExchangeRateViewController extends Controller
                 $changePercent = $dayAgoRate > 0 ? ($change / $dayAgoRate) * 100 : 0;
 
                 $rateData = [
-                    'rate' => round($rate, 4),
-                    'change_24h' => round($change, 4),
+                    'rate'           => round($rate, 4),
+                    'change_24h'     => round($change, 4),
                     'change_percent' => round($changePercent, 2),
-                    'last_updated' => $latestRate ? $latestRate->created_at : now(),
+                    'last_updated'   => $latestRate ? $latestRate->created_at : now(),
                 ];
 
                 $rates[$asset] = $rateData;
@@ -151,7 +151,7 @@ class ExchangeRateViewController extends Controller
     }
 
     /**
-     * Get historical data for charts
+     * Get historical data for charts.
      */
     private function getHistoricalData($baseCurrency, $assets)
     {
@@ -169,15 +169,15 @@ class ExchangeRateViewController extends Controller
     }
 
     /**
-     * Get historical data for a specific currency pair
+     * Get historical data for a specific currency pair.
      */
     private function getHistoricalDataForPair($base, $target, $period)
     {
         $startDate = match ($period) {
-            '24h' => now()->subDay(),
-            '7d' => now()->subDays(7),
-            '30d' => now()->subDays(30),
-            '90d' => now()->subDays(90),
+            '24h'   => now()->subDay(),
+            '7d'    => now()->subDays(7),
+            '30d'   => now()->subDays(30),
+            '90d'   => now()->subDays(90),
             default => now()->subDays(7),
         };
 
@@ -189,7 +189,7 @@ class ExchangeRateViewController extends Controller
             ->map(function ($rate) {
                 return [
                     'timestamp' => $rate->created_at->toIso8601String(),
-                    'rate' => $rate->rate,
+                    'rate'      => $rate->rate,
                 ];
             });
 
@@ -203,7 +203,7 @@ class ExchangeRateViewController extends Controller
                 ->map(function ($rate) {
                     return [
                         'timestamp' => $rate->created_at->toIso8601String(),
-                        'rate' => 1 / $rate->rate,
+                        'rate'      => 1 / $rate->rate,
                     ];
                 });
         }
@@ -212,7 +212,7 @@ class ExchangeRateViewController extends Controller
     }
 
     /**
-     * Get rate statistics
+     * Get rate statistics.
      */
     private function getRateStatistics($baseCurrency)
     {
@@ -238,14 +238,14 @@ class ExchangeRateViewController extends Controller
             return [
                 'total_updates' => $stats->total_updates ?? 0,
                 'pairs_tracked' => $stats->pairs_tracked ?? 0,
-                'last_update' => $stats->last_update ?? now(),
-                'providers' => $providers,
+                'last_update'   => $stats->last_update ?? now(),
+                'providers'     => $providers,
             ];
         });
     }
 
     /**
-     * Get rate from 24 hours ago
+     * Get rate from 24 hours ago.
      */
     private function get24hAgoRate($base, $target)
     {
@@ -255,7 +255,7 @@ class ExchangeRateViewController extends Controller
             ->orderBy('created_at', 'desc')
             ->first();
 
-        if (!$rate) {
+        if (! $rate) {
             // Try reverse
             $reverseRate = ExchangeRate::where('from_asset_code', $target)
                 ->where('to_asset_code', $base)
@@ -272,7 +272,7 @@ class ExchangeRateViewController extends Controller
     }
 
     /**
-     * Get default exchange rate
+     * Get default exchange rate.
      */
     private function getDefaultRate($base, $target)
     {

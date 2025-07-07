@@ -2,9 +2,9 @@
 
 namespace App\Domain\Stablecoin\Oracles;
 
+use App\Domain\Exchange\Projections\LiquidityPool;
 use App\Domain\Stablecoin\Contracts\OracleConnector;
 use App\Domain\Stablecoin\ValueObjects\PriceData;
-use App\Domain\Exchange\Projections\LiquidityPool;
 use Brick\Math\BigDecimal;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
@@ -21,7 +21,7 @@ class InternalAMMOracle implements OracleConnector
                 $query->where('base_currency', $quote)->where('quote_currency', $base);
             })->first();
 
-            if (!$pool) {
+            if (! $pool) {
                 throw new \RuntimeException("No liquidity pool found for {$base}/{$quote}");
             }
 
@@ -37,12 +37,12 @@ class InternalAMMOracle implements OracleConnector
                 volume24h: $pool->volume_24h,
                 changePercent24h: null,
                 metadata: [
-                    'pool_id' => $pool->pool_id,
-                    'liquidity' => $pool->base_reserve + $pool->quote_reserve,
+                    'pool_id'      => $pool->pool_id,
+                    'liquidity'    => $pool->base_reserve + $pool->quote_reserve,
                     'total_shares' => $pool->total_shares,
-                    'k_value' => BigDecimal::of($pool->base_reserve)
+                    'k_value'      => BigDecimal::of($pool->base_reserve)
                         ->multipliedBy($pool->quote_reserve)
-                        ->__toString()
+                        ->__toString(),
                 ]
             );
         } catch (\Exception $e) {
@@ -70,7 +70,7 @@ class InternalAMMOracle implements OracleConnector
     public function getHistoricalPrice(string $base, string $quote, Carbon $timestamp): PriceData
     {
         // For historical prices, we'd need to implement pool state snapshots
-        throw new \RuntimeException("Historical AMM prices not yet implemented");
+        throw new \RuntimeException('Historical AMM prices not yet implemented');
     }
 
     public function isHealthy(): bool
@@ -94,7 +94,7 @@ class InternalAMMOracle implements OracleConnector
     }
 
     /**
-     * Calculate price from pool reserves using constant product formula
+     * Calculate price from pool reserves using constant product formula.
      */
     private function calculatePrice(LiquidityPool $pool, string $base, string $quote): string
     {

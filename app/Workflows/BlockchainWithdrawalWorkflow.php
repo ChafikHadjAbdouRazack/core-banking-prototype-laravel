@@ -2,15 +2,9 @@
 
 namespace App\Workflows;
 
-use App\Domain\Wallet\Aggregates\BlockchainWallet;
-use App\Domain\Wallet\Services\BlockchainWalletService;
-use App\Domain\Wallet\Services\KeyManagementService;
-use App\Domain\Wallet\Contracts\BlockchainConnector;
 use App\Domain\Account\Aggregates\Account;
 use App\Models\User;
 use App\Workflows\Activities\BlockchainWithdrawalActivities;
-use Brick\Math\BigDecimal;
-use Illuminate\Support\Facades\DB;
 use Workflow\ActivityStub;
 use Workflow\Workflow;
 use Workflow\WorkflowStub;
@@ -25,7 +19,7 @@ class BlockchainWithdrawalWorkflow extends Workflow
             BlockchainWithdrawalActivities::class,
             [
                 'startToCloseTimeout' => 600, // 10 minutes
-                'retryAttempts' => 3,
+                'retryAttempts'       => 3,
             ]
         );
     }
@@ -100,8 +94,8 @@ class BlockchainWithdrawalWorkflow extends Workflow
             "Blockchain withdrawal to {$chain}",
             [
                 'withdrawal_id' => $withdrawalId,
-                'chain' => $chain,
-                'to_address' => $toAddress,
+                'chain'         => $chain,
+                'to_address'    => $toAddress,
             ]
         );
 
@@ -146,14 +140,14 @@ class BlockchainWithdrawalWorkflow extends Workflow
             );
 
             return [
-                'status' => 'completed',
-                'withdrawal_id' => $withdrawalId,
+                'status'           => 'completed',
+                'withdrawal_id'    => $withdrawalId,
                 'transaction_hash' => $transactionHash,
-                'amount_fiat' => $amount,
-                'amount_crypto' => $cryptoAmount,
-                'asset' => $asset,
-                'chain' => $chain,
-                'to_address' => $toAddress,
+                'amount_fiat'      => $amount,
+                'amount_crypto'    => $cryptoAmount,
+                'asset'            => $asset,
+                'chain'            => $chain,
+                'to_address'       => $toAddress,
             ];
         } catch (\Exception $e) {
             // Rollback: Credit the account back

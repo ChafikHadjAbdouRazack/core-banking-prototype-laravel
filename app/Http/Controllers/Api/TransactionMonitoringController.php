@@ -12,14 +12,14 @@ class TransactionMonitoringController extends Controller
     {
         return response()->json([
             'data' => [],
-            'meta' => ['total' => 0]
+            'meta' => ['total' => 0],
         ]);
     }
 
     public function getTransactionDetails($id): JsonResponse
     {
         return response()->json([
-            'data' => ['id' => $id]
+            'data' => ['id' => $id],
         ]);
     }
 
@@ -27,7 +27,7 @@ class TransactionMonitoringController extends Controller
     {
         return response()->json([
             'message' => 'Transaction flagged',
-            'data' => ['id' => $id]
+            'data'    => ['id' => $id],
         ]);
     }
 
@@ -35,14 +35,14 @@ class TransactionMonitoringController extends Controller
     {
         return response()->json([
             'message' => 'Transaction cleared',
-            'data' => ['id' => $id]
+            'data'    => ['id' => $id],
         ]);
     }
 
     public function getRules(): JsonResponse
     {
         return response()->json([
-            'data' => []
+            'data' => [],
         ]);
     }
 
@@ -50,7 +50,7 @@ class TransactionMonitoringController extends Controller
     {
         return response()->json([
             'message' => 'Rule created',
-            'data' => []
+            'data'    => [],
         ], 201);
     }
 
@@ -58,28 +58,28 @@ class TransactionMonitoringController extends Controller
     {
         return response()->json([
             'message' => 'Rule updated',
-            'data' => ['id' => $id]
+            'data'    => ['id' => $id],
         ]);
     }
 
     public function deleteRule($id): JsonResponse
     {
         return response()->json([
-            'message' => 'Rule deleted'
+            'message' => 'Rule deleted',
         ]);
     }
 
     public function getPatterns(): JsonResponse
     {
         return response()->json([
-            'data' => []
+            'data' => [],
         ]);
     }
 
     public function getThresholds(): JsonResponse
     {
         return response()->json([
-            'data' => []
+            'data' => [],
         ]);
     }
 
@@ -87,7 +87,7 @@ class TransactionMonitoringController extends Controller
     {
         return response()->json([
             'message' => 'Thresholds updated',
-            'data' => []
+            'data'    => [],
         ]);
     }
 
@@ -96,8 +96,8 @@ class TransactionMonitoringController extends Controller
         return response()->json([
             'data' => [
                 'analysis_id' => uniqid(),
-                'status' => 'completed'
-            ]
+                'status'      => 'completed',
+            ],
         ]);
     }
 
@@ -106,8 +106,8 @@ class TransactionMonitoringController extends Controller
         return response()->json([
             'data' => [
                 'batch_id' => uniqid(),
-                'status' => 'processing'
-            ]
+                'status'   => 'processing',
+            ],
         ]);
     }
 
@@ -116,8 +116,8 @@ class TransactionMonitoringController extends Controller
         return response()->json([
             'data' => [
                 'analysis_id' => $analysisId,
-                'status' => 'completed'
-            ]
+                'status'      => 'completed',
+            ],
         ]);
     }
 }

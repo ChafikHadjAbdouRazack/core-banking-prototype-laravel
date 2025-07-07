@@ -19,8 +19,8 @@ class FailRefundActivity extends Activity
 
         return [
             'refund_id' => $input['refund_id'],
-            'status' => 'failed',
-            'reason' => $input['reason']
+            'status'    => 'failed',
+            'reason'    => $input['reason'],
         ];
     }
 }

@@ -33,7 +33,7 @@ class UpdateOrderBookActivity extends Activity
                         metadata: [
                             'account_id' => $order->account_id,
                             'order_type' => $order->type,
-                            'timestamp' => now()->toIso8601String(),
+                            'timestamp'  => now()->toIso8601String(),
                         ]
                     )->persist();
                     break;
@@ -78,8 +78,8 @@ class UpdateOrderBookActivity extends Activity
                                         price: $buyOrder->price,
                                         amount: $buyOrder->remaining_amount,
                                         metadata: [
-                                            'account_id' => $buyOrder->account_id,
-                                            'order_type' => $buyOrder->type,
+                                            'account_id'       => $buyOrder->account_id,
+                                            'order_type'       => $buyOrder->type,
                                             'partially_filled' => true,
                                         ]
                                     );
@@ -93,8 +93,8 @@ class UpdateOrderBookActivity extends Activity
                                         price: $sellOrder->price,
                                         amount: $sellOrder->remaining_amount,
                                         metadata: [
-                                            'account_id' => $sellOrder->account_id,
-                                            'order_type' => $sellOrder->type,
+                                            'account_id'       => $sellOrder->account_id,
+                                            'order_type'       => $sellOrder->type,
                                             'partially_filled' => true,
                                         ]
                                     );
@@ -111,13 +111,13 @@ class UpdateOrderBookActivity extends Activity
 
             return (object) [
                 'success' => true,
-                'action' => $action,
+                'action'  => $action,
                 'orderId' => $orderId,
             ];
         } catch (\Exception $e) {
             return (object) [
                 'success' => false,
-                'error' => $e->getMessage(),
+                'error'   => $e->getMessage(),
             ];
         }
     }

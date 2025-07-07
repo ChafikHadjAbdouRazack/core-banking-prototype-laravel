@@ -2,9 +2,6 @@
 
 namespace App\Filament\Admin\Widgets;
 
-use App\Models\BasketAsset;
-use Filament\Widgets\Widget;
-
 class GCUBasketWidget extends PrimaryBasketWidget
 {
     protected static string $view = 'filament.admin.widgets.gcu-basket-widget';

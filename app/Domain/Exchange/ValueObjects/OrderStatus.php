@@ -34,26 +34,26 @@ enum OrderStatus: string
     public function getLabel(): string
     {
         return match ($this) {
-            self::PENDING => 'Pending',
-            self::OPEN => 'Open',
+            self::PENDING          => 'Pending',
+            self::OPEN             => 'Open',
             self::PARTIALLY_FILLED => 'Partially Filled',
-            self::FILLED => 'Filled',
-            self::CANCELLED => 'Cancelled',
-            self::EXPIRED => 'Expired',
-            self::REJECTED => 'Rejected',
+            self::FILLED           => 'Filled',
+            self::CANCELLED        => 'Cancelled',
+            self::EXPIRED          => 'Expired',
+            self::REJECTED         => 'Rejected',
         };
     }
 
     public function getColor(): string
     {
         return match ($this) {
-            self::PENDING => 'gray',
-            self::OPEN => 'blue',
+            self::PENDING          => 'gray',
+            self::OPEN             => 'blue',
             self::PARTIALLY_FILLED => 'yellow',
-            self::FILLED => 'green',
-            self::CANCELLED => 'red',
-            self::EXPIRED => 'gray',
-            self::REJECTED => 'red',
+            self::FILLED           => 'green',
+            self::CANCELLED        => 'red',
+            self::EXPIRED          => 'gray',
+            self::REJECTED         => 'red',
         };
     }
 }

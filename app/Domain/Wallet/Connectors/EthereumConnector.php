@@ -6,21 +6,21 @@ use App\Domain\Wallet\Contracts\BlockchainConnector;
 use App\Domain\Wallet\ValueObjects\AddressData;
 use App\Domain\Wallet\ValueObjects\BalanceData;
 use App\Domain\Wallet\ValueObjects\GasEstimate;
-use App\Domain\Wallet\ValueObjects\TransactionData;
 use App\Domain\Wallet\ValueObjects\SignedTransaction;
+use App\Domain\Wallet\ValueObjects\TransactionData;
 use App\Domain\Wallet\ValueObjects\TransactionResult;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Web3\Web3;
-use Web3\Contract;
 use kornrunner\Keccak;
-use Elliptic\EC;
+use Web3\Web3;
 
 class EthereumConnector implements BlockchainConnector
 {
     protected ?Web3 $web3 = null;
+
     protected string $rpcUrl;
+
     protected string $chainId;
+
     protected array $eventSubscriptions = [];
 
     public function __construct(string $rpcUrl, string $chainId = '1')
@@ -96,8 +96,8 @@ class EthereumConnector implements BlockchainConnector
 
         // Estimate gas limit
         $txParams = [
-            'from' => $transaction->from,
-            'to' => $transaction->to,
+            'from'  => $transaction->from,
+            'to'    => $transaction->to,
             'value' => '0x' . dechex($transaction->value),
         ];
 
@@ -131,7 +131,7 @@ class EthereumConnector implements BlockchainConnector
         $estimatedCost = bcmul($gasLimit, $gasPrice);
 
         return new GasEstimate(
-            gasLimit: (string)$gasLimit,
+            gasLimit: (string) $gasLimit,
             gasPrice: $gasPrice,
             maxFeePerGas: $maxFeePerGas,
             maxPriorityFeePerGas: $maxPriorityFeePerGas,
@@ -159,8 +159,8 @@ class EthereumConnector implements BlockchainConnector
             hash: $hash,
             status: 'pending',
             metadata: [
-                'chain_id' => $this->chainId,
-                'submitted_at' => now()->toIso8601String()
+                'chain_id'     => $this->chainId,
+                'submitted_at' => now()->toIso8601String(),
             ]
         );
     }
@@ -177,7 +177,7 @@ class EthereumConnector implements BlockchainConnector
             $transaction = $result;
         });
 
-        if (!$transaction) {
+        if (! $transaction) {
             return null;
         }
 
@@ -230,19 +230,19 @@ class EthereumConnector implements BlockchainConnector
         $instant = bcmul($gasPrice, '1.5');
 
         return [
-            'slow' => $slow,
+            'slow'     => $slow,
             'standard' => $standard,
-            'fast' => $fast,
-            'instant' => $instant,
-            'eip1559' => [
-                'base_fee' => $gasPrice,
+            'fast'     => $fast,
+            'instant'  => $instant,
+            'eip1559'  => [
+                'base_fee'      => $gasPrice,
                 'priority_fees' => [
-                    'slow' => '1000000000', // 1 gwei
+                    'slow'     => '1000000000', // 1 gwei
                     'standard' => '2000000000', // 2 gwei
-                    'fast' => '3000000000', // 3 gwei
-                    'instant' => '5000000000', // 5 gwei
-                ]
-            ]
+                    'fast'     => '3000000000', // 3 gwei
+                    'instant'  => '5000000000', // 5 gwei
+                ],
+            ],
         ];
     }
 
@@ -283,6 +283,7 @@ class EthereumConnector implements BlockchainConnector
             return $syncing === false || (is_object($syncing) && $syncing->currentBlock === $syncing->highestBlock);
         } catch (\Exception $e) {
             Log::error('Ethereum connector health check failed: ' . $e->getMessage());
+
             return false;
         }
     }

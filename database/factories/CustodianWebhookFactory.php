@@ -2,7 +2,6 @@
 
 namespace Database\Factories;
 
-use App\Models\CustodianWebhook;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -18,30 +17,30 @@ class CustodianWebhookFactory extends Factory
     public function definition(): array
     {
         return [
-            'uuid' => fake()->uuid(),
+            'uuid'           => fake()->uuid(),
             'custodian_name' => fake()->randomElement(['coinbase', 'binance', 'kraken', 'gemini']),
-            'event_type' => fake()->randomElement(['transaction.completed', 'transaction.pending', 'deposit.confirmed', 'withdrawal.processed']),
-            'event_id' => fake()->uuid(),
-            'headers' => [
-                'X-Webhook-ID' => fake()->uuid(),
+            'event_type'     => fake()->randomElement(['transaction.completed', 'transaction.pending', 'deposit.confirmed', 'withdrawal.processed']),
+            'event_id'       => fake()->uuid(),
+            'headers'        => [
+                'X-Webhook-ID'        => fake()->uuid(),
                 'X-Webhook-Timestamp' => now()->timestamp,
-                'Content-Type' => 'application/json',
+                'Content-Type'        => 'application/json',
             ],
             'payload' => [
-                'id' => fake()->uuid(),
-                'type' => 'transaction',
-                'amount' => fake()->randomFloat(2, 10, 10000),
-                'currency' => fake()->randomElement(['BTC', 'ETH', 'USD', 'EUR']),
-                'status' => 'completed',
+                'id'        => fake()->uuid(),
+                'type'      => 'transaction',
+                'amount'    => fake()->randomFloat(2, 10, 10000),
+                'currency'  => fake()->randomElement(['BTC', 'ETH', 'USD', 'EUR']),
+                'status'    => 'completed',
                 'timestamp' => now()->toISOString(),
             ],
-            'signature' => fake()->sha256(),
-            'status' => fake()->randomElement(['pending', 'processing', 'processed', 'failed']),
-            'attempts' => fake()->numberBetween(0, 3),
-            'processed_at' => null,
-            'error_message' => null,
+            'signature'            => fake()->sha256(),
+            'status'               => fake()->randomElement(['pending', 'processing', 'processed', 'failed']),
+            'attempts'             => fake()->numberBetween(0, 3),
+            'processed_at'         => null,
+            'error_message'        => null,
             'custodian_account_id' => null,
-            'transaction_id' => null,
+            'transaction_id'       => null,
         ];
     }
 
@@ -51,8 +50,8 @@ class CustodianWebhookFactory extends Factory
     public function pending(): static
     {
         return $this->state(fn (array $attributes) => [
-            'status' => 'pending',
-            'processed_at' => null,
+            'status'        => 'pending',
+            'processed_at'  => null,
             'error_message' => null,
         ]);
     }
@@ -63,8 +62,8 @@ class CustodianWebhookFactory extends Factory
     public function processed(): static
     {
         return $this->state(fn (array $attributes) => [
-            'status' => 'processed',
-            'processed_at' => now(),
+            'status'        => 'processed',
+            'processed_at'  => now(),
             'error_message' => null,
         ]);
     }
@@ -75,8 +74,8 @@ class CustodianWebhookFactory extends Factory
     public function failed(): static
     {
         return $this->state(fn (array $attributes) => [
-            'status' => 'failed',
-            'processed_at' => null,
+            'status'        => 'failed',
+            'processed_at'  => null,
             'error_message' => fake()->sentence(),
         ]);
     }

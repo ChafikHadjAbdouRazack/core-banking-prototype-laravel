@@ -44,7 +44,7 @@ class SubscriberNewsletter extends Mailable implements ShouldQueue
         return new Content(
             markdown: 'emails.subscriber.newsletter',
             with: [
-                'content' => $this->newsletterContent,
+                'content'        => $this->newsletterContent,
                 'unsubscribeUrl' => route('subscriber.unsubscribe', [
                     'email' => encrypt($this->subscriber->email),
                 ]),

@@ -26,7 +26,7 @@ class Turnover extends Model
         ];
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function account(): BelongsTo
     {

@@ -2,7 +2,7 @@
 
 use App\Domain\Account\Aggregates\TransactionAggregate;
 use App\Domain\Account\DataObjects\AccountUuid;
-use App\Domain\Account\DataObjects\Money;  
+use App\Domain\Account\DataObjects\Money;
 use App\Domain\Account\Workflows\DepositAccountActivity;
 
 it('class exists', function () {
@@ -21,9 +21,9 @@ it('has execute method', function () {
 it('execute method has correct signature', function () {
     $reflection = new ReflectionClass(DepositAccountActivity::class);
     $method = $reflection->getMethod('execute');
-    
+
     expect($method->getNumberOfParameters())->toBe(3);
-    
+
     $parameters = $method->getParameters();
     expect($parameters[0]->getName())->toBe('uuid');
     expect($parameters[1]->getName())->toBe('money');
@@ -33,7 +33,7 @@ it('execute method has correct signature', function () {
 it('execute method returns boolean', function () {
     $reflection = new ReflectionClass(DepositAccountActivity::class);
     $method = $reflection->getMethod('execute');
-    
+
     expect($method->getReturnType()->getName())->toBe('bool');
 });
 
@@ -41,7 +41,7 @@ it('has proper type hints for parameters', function () {
     $reflection = new ReflectionClass(DepositAccountActivity::class);
     $method = $reflection->getMethod('execute');
     $parameters = $method->getParameters();
-    
+
     expect($parameters[0]->getType()->getName())->toBe('App\Domain\Account\DataObjects\AccountUuid');
     expect($parameters[1]->getType()->getName())->toBe('App\Domain\Account\DataObjects\Money');
     expect($parameters[2]->getType()->getName())->toBe('App\Domain\Account\Aggregates\TransactionAggregate');
@@ -51,7 +51,7 @@ it('has proper type hints for parameters', function () {
 it('can access execute method through reflection', function () {
     $reflection = new ReflectionClass(DepositAccountActivity::class);
     $method = $reflection->getMethod('execute');
-    
+
     expect($method->isPublic())->toBeTrue();
     expect($method->getNumberOfParameters())->toBe(3);
     expect($method->getReturnType()->getName())->toBe('bool');
@@ -66,7 +66,7 @@ it('validates all required data objects exist', function () {
 it('can create data object instances for testing', function () {
     $uuid = new AccountUuid('test-uuid');
     $money = new Money(1000);
-    
+
     expect($uuid->getUuid())->toBe('test-uuid');
     expect($money->getAmount())->toBe(1000);
 });

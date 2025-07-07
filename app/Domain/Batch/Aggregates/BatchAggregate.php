@@ -3,11 +3,11 @@
 namespace App\Domain\Batch\Aggregates;
 
 use App\Domain\Batch\DataObjects\BatchJob;
+use App\Domain\Batch\Events\BatchItemProcessed;
+use App\Domain\Batch\Events\BatchJobCancelled;
+use App\Domain\Batch\Events\BatchJobCompleted;
 use App\Domain\Batch\Events\BatchJobCreated;
 use App\Domain\Batch\Events\BatchJobStarted;
-use App\Domain\Batch\Events\BatchItemProcessed;
-use App\Domain\Batch\Events\BatchJobCompleted;
-use App\Domain\Batch\Events\BatchJobCancelled;
 use App\Domain\Batch\Repositories\BatchRepository;
 use App\Domain\Batch\Repositories\BatchSnapshotRepository;
 use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
@@ -15,8 +15,11 @@ use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
 class BatchAggregate extends AggregateRoot
 {
     protected int $processedItems = 0;
+
     protected int $failedItems = 0;
+
     protected string $status = 'pending';
+
     protected array $items = [];
 
     /**
@@ -120,7 +123,7 @@ class BatchAggregate extends AggregateRoot
      */
     public function cancelBatchJob(string $reason): static
     {
-        if (!in_array($this->status, ['pending', 'processing'])) {
+        if (! in_array($this->status, ['pending', 'processing'])) {
             throw new \InvalidArgumentException('Can only cancel pending or processing batch jobs');
         }
 

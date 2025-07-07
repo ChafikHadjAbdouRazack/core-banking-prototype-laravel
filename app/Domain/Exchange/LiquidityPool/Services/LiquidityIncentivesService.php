@@ -25,7 +25,7 @@ class LiquidityIncentivesService
     private const LARGE_LP_THRESHOLD_PERCENT = '0.05'; // 5% of pool
 
     /**
-     * Calculate and distribute rewards for all active pools
+     * Calculate and distribute rewards for all active pools.
      */
     public function distributeRewards(): array
     {
@@ -38,14 +38,14 @@ class LiquidityIncentivesService
                 if ($rewards['total_rewards']->isGreaterThan(0)) {
                     $this->distributePoolRewards($pool, $rewards);
                     $results[$pool->pool_id] = [
-                        'status' => 'success',
+                        'status'  => 'success',
                         'rewards' => $rewards,
                     ];
                 }
             } catch (\Exception $e) {
                 $results[$pool->pool_id] = [
                     'status' => 'error',
-                    'error' => $e->getMessage(),
+                    'error'  => $e->getMessage(),
                 ];
             }
         }
@@ -54,7 +54,7 @@ class LiquidityIncentivesService
     }
 
     /**
-     * Calculate rewards for a specific pool
+     * Calculate rewards for a specific pool.
      */
     public function calculatePoolRewards(PoolProjection $pool): array
     {
@@ -70,18 +70,18 @@ class LiquidityIncentivesService
         $providerRewards = $this->calculateProviderRewards($pool, $totalRewards);
 
         return [
-            'pool_id' => $pool->pool_id,
-            'tvl' => $tvl->__toString(),
-            'base_reward' => $baseReward->__toString(),
+            'pool_id'                => $pool->pool_id,
+            'tvl'                    => $tvl->__toString(),
+            'base_reward'            => $baseReward->__toString(),
             'performance_multiplier' => $performanceMultiplier->__toString(),
-            'total_rewards' => $totalRewards->__toString(),
-            'provider_rewards' => $providerRewards,
-            'reward_currency' => $pool->quote_currency, // Rewards paid in quote currency
+            'total_rewards'          => $totalRewards->__toString(),
+            'provider_rewards'       => $providerRewards,
+            'reward_currency'        => $pool->quote_currency, // Rewards paid in quote currency
         ];
     }
 
     /**
-     * Calculate TVL (Total Value Locked) in quote currency
+     * Calculate TVL (Total Value Locked) in quote currency.
      */
     private function calculateTVL(PoolProjection $pool): BigDecimal
     {
@@ -98,7 +98,7 @@ class LiquidityIncentivesService
     }
 
     /**
-     * Calculate performance multiplier based on pool metrics
+     * Calculate performance multiplier based on pool metrics.
      */
     private function calculatePerformanceMultiplier(PoolProjection $pool): BigDecimal
     {
@@ -125,7 +125,7 @@ class LiquidityIncentivesService
     }
 
     /**
-     * Calculate volume-based multiplier
+     * Calculate volume-based multiplier.
      */
     private function calculateVolumeMultiplier(PoolProjection $pool): BigDecimal
     {
@@ -148,7 +148,7 @@ class LiquidityIncentivesService
     }
 
     /**
-     * Calculate fee-based multiplier
+     * Calculate fee-based multiplier.
      */
     private function calculateFeeMultiplier(PoolProjection $pool): BigDecimal
     {
@@ -171,7 +171,7 @@ class LiquidityIncentivesService
     }
 
     /**
-     * Calculate utilization multiplier
+     * Calculate utilization multiplier.
      */
     private function calculateUtilizationMultiplier(PoolProjection $pool): BigDecimal
     {
@@ -194,7 +194,7 @@ class LiquidityIncentivesService
     }
 
     /**
-     * Calculate individual provider rewards
+     * Calculate individual provider rewards.
      */
     private function calculateProviderRewards(PoolProjection $pool, BigDecimal $totalRewards): array
     {
@@ -218,12 +218,12 @@ class LiquidityIncentivesService
             $finalReward = $baseProviderReward->multipliedBy($bonusMultiplier);
 
             $providerRewards[] = [
-                'provider_id' => $provider->provider_id,
-                'shares' => $provider->shares,
-                'share_ratio' => $shareRatio->__toString(),
-                'base_reward' => $baseProviderReward->__toString(),
+                'provider_id'      => $provider->provider_id,
+                'shares'           => $provider->shares,
+                'share_ratio'      => $shareRatio->__toString(),
+                'base_reward'      => $baseProviderReward->__toString(),
                 'bonus_multiplier' => $bonusMultiplier->__toString(),
-                'final_reward' => $finalReward->__toString(),
+                'final_reward'     => $finalReward->__toString(),
             ];
         }
 
@@ -231,7 +231,7 @@ class LiquidityIncentivesService
     }
 
     /**
-     * Calculate provider-specific bonuses
+     * Calculate provider-specific bonuses.
      */
     private function calculateProviderBonuses(LiquidityProvider $provider, PoolProjection $pool): BigDecimal
     {
@@ -255,7 +255,7 @@ class LiquidityIncentivesService
     }
 
     /**
-     * Check if provider is an early LP
+     * Check if provider is an early LP.
      */
     private function isEarlyProvider(LiquidityProvider $provider, PoolProjection $pool): bool
     {
@@ -267,7 +267,7 @@ class LiquidityIncentivesService
     }
 
     /**
-     * Check if provider is a large LP
+     * Check if provider is a large LP.
      */
     private function isLargeProvider(LiquidityProvider $provider, PoolProjection $pool): bool
     {
@@ -284,7 +284,7 @@ class LiquidityIncentivesService
     }
 
     /**
-     * Calculate loyalty bonus based on time in pool
+     * Calculate loyalty bonus based on time in pool.
      */
     private function calculateLoyaltyBonus(LiquidityProvider $provider): BigDecimal
     {
@@ -302,7 +302,7 @@ class LiquidityIncentivesService
     }
 
     /**
-     * Distribute rewards to providers
+     * Distribute rewards to providers.
      */
     private function distributePoolRewards(PoolProjection $pool, array $rewards): void
     {
@@ -313,15 +313,15 @@ class LiquidityIncentivesService
             rewardAmount: $rewards['total_rewards'],
             rewardCurrency: $rewards['reward_currency'],
             metadata: [
-                'distribution_type' => 'automated',
+                'distribution_type'      => 'automated',
                 'performance_multiplier' => $rewards['performance_multiplier'],
-                'provider_count' => count($rewards['provider_rewards']),
+                'provider_count'         => count($rewards['provider_rewards']),
             ]
         )->persist();
     }
 
     /**
-     * Calculate APY for liquidity providers
+     * Calculate APY for liquidity providers.
      */
     public function calculateProviderAPY(string $poolId, string $providerId): array
     {
@@ -363,17 +363,17 @@ class LiquidityIncentivesService
 
         return [
             'provider_id' => $providerId,
-            'pool_id' => $poolId,
-            'tvl' => $providerTVL->__toString(),
-            'reward_apy' => $apy->__toString(),
-            'fee_apy' => $feeAPY->__toString(),
-            'total_apy' => $apy->plus($feeAPY)->__toString(),
+            'pool_id'     => $poolId,
+            'tvl'         => $providerTVL->__toString(),
+            'reward_apy'  => $apy->__toString(),
+            'fee_apy'     => $feeAPY->__toString(),
+            'total_apy'   => $apy->plus($feeAPY)->__toString(),
             'share_ratio' => $shareRatio->multipliedBy(100)->toScale(0, RoundingMode::DOWN)->__toString() . '%',
         ];
     }
 
     /**
-     * Get recent rewards for a provider
+     * Get recent rewards for a provider.
      */
     private function getRecentProviderRewards(string $providerId, string $poolId, int $days): BigDecimal
     {

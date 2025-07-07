@@ -8,9 +8,9 @@ use App\Domain\Account\DataObjects\AccountUuid;
 use App\Domain\Account\DataObjects\Money;
 use App\Domain\Account\Workflows\DepositAccountWorkflow;
 use App\Domain\Account\Workflows\WithdrawAccountWorkflow;
+use App\Domain\Asset\Models\Asset;
 use App\Domain\Asset\Workflows\AssetDepositWorkflow;
 use App\Domain\Asset\Workflows\AssetWithdrawWorkflow;
-use App\Domain\Asset\Models\Asset;
 use App\Http\Controllers\Controller;
 use App\Models\Account;
 use App\Models\Transaction;
@@ -71,8 +71,8 @@ class TransactionController extends Controller
     public function deposit(Request $request, string $uuid): JsonResponse
     {
         $validated = $request->validate([
-            'amount' => 'required|numeric|min:0.01',
-            'asset_code' => 'required|string|exists:assets,code',
+            'amount'      => 'required|numeric|min:0.01',
+            'asset_code'  => 'required|string|exists:assets,code',
             'description' => 'sometimes|string|max:255',
         ]);
 
@@ -82,14 +82,14 @@ class TransactionController extends Controller
         if ($account->user_uuid !== auth()->user()->uuid) {
             return response()->json([
                 'message' => 'Access denied to this account',
-                'error' => 'FORBIDDEN',
+                'error'   => 'FORBIDDEN',
             ], 403);
         }
 
         if ($account->frozen) {
             return response()->json([
                 'message' => 'Cannot deposit to frozen account',
-                'error' => 'ACCOUNT_FROZEN',
+                'error'   => 'ACCOUNT_FROZEN',
             ], 422);
         }
 
@@ -166,8 +166,8 @@ class TransactionController extends Controller
     public function withdraw(Request $request, string $uuid): JsonResponse
     {
         $validated = $request->validate([
-            'amount' => 'required|numeric|min:0.01',
-            'asset_code' => 'required|string|exists:assets,code',
+            'amount'      => 'required|numeric|min:0.01',
+            'asset_code'  => 'required|string|exists:assets,code',
             'description' => 'sometimes|string|max:255',
         ]);
 
@@ -177,14 +177,14 @@ class TransactionController extends Controller
         if ($account->user_uuid !== auth()->user()->uuid) {
             return response()->json([
                 'message' => 'Access denied to this account',
-                'error' => 'FORBIDDEN',
+                'error'   => 'FORBIDDEN',
             ], 403);
         }
 
         if ($account->frozen) {
             return response()->json([
                 'message' => 'Cannot withdraw from frozen account',
-                'error' => 'ACCOUNT_FROZEN',
+                'error'   => 'ACCOUNT_FROZEN',
             ], 422);
         }
 
@@ -197,7 +197,7 @@ class TransactionController extends Controller
         if ($balance < $amountInMinorUnits) {
             return response()->json([
                 'message' => 'Insufficient balance',
-                'errors' => [
+                'errors'  => [
                     'amount' => ['Insufficient balance'],
                 ],
             ], 422);
@@ -220,7 +220,7 @@ class TransactionController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Withdrawal failed',
-                'error' => 'WITHDRAWAL_FAILED',
+                'error'   => 'WITHDRAWAL_FAILED',
             ], 422);
         }
 
@@ -283,9 +283,9 @@ class TransactionController extends Controller
     public function history(Request $request, string $uuid): JsonResponse
     {
         $validated = $request->validate([
-            'type' => 'sometimes|string|in:credit,debit',
+            'type'       => 'sometimes|string|in:credit,debit',
             'asset_code' => 'sometimes|string|max:10',
-            'per_page' => 'sometimes|integer|min:1|max:100',
+            'per_page'   => 'sometimes|integer|min:1|max:100',
         ]);
 
         $account = Account::where('uuid', $uuid)->firstOrFail();
@@ -314,15 +314,15 @@ class TransactionController extends Controller
 
             // Default values
             $transaction = [
-                'id' => $event->id,
+                'id'           => $event->id,
                 'account_uuid' => $event->aggregate_uuid,
-                'type' => $this->getTransactionType($eventClass),
-                'amount' => 0,
-                'asset_code' => 'USD',
-                'description' => $this->getTransactionDescription($eventClass),
-                'hash' => $properties['hash']['hash'] ?? null,
-                'created_at' => $event->created_at,
-                'metadata' => [],
+                'type'         => $this->getTransactionType($eventClass),
+                'amount'       => 0,
+                'asset_code'   => 'USD',
+                'description'  => $this->getTransactionDescription($eventClass),
+                'hash'         => $properties['hash']['hash'] ?? null,
+                'created_at'   => $event->created_at,
+                'metadata'     => [],
             ];
 
             // Extract amount and asset based on event type
@@ -344,7 +344,7 @@ class TransactionController extends Controller
                     $transaction['amount'] = $properties['money']['amount'] ?? $properties['fromAmount'] ?? 0;
                     $transaction['asset_code'] = $properties['fromAsset'] ?? 'USD';
                     $transaction['metadata'] = [
-                        'to_account' => $properties['toAccount']['uuid'] ?? null,
+                        'to_account'   => $properties['toAccount']['uuid'] ?? null,
                         'from_account' => $properties['fromAccount']['uuid'] ?? null,
                     ];
                     break;
@@ -368,16 +368,16 @@ class TransactionController extends Controller
             'data' => $transactions,
             'meta' => [
                 'current_page' => $events->currentPage(),
-                'last_page' => $events->lastPage(),
-                'per_page' => $events->perPage(),
-                'total' => $events->total(),
+                'last_page'    => $events->lastPage(),
+                'per_page'     => $events->perPage(),
+                'total'        => $events->total(),
                 'account_uuid' => $uuid,
             ],
         ]);
     }
 
     /**
-     * Get transaction type from event class
+     * Get transaction type from event class.
      */
     private function getTransactionType(string $eventClass): string
     {
@@ -390,7 +390,7 @@ class TransactionController extends Controller
     }
 
     /**
-     * Get transaction description from event class
+     * Get transaction description from event class.
      */
     private function getTransactionDescription(string $eventClass): string
     {

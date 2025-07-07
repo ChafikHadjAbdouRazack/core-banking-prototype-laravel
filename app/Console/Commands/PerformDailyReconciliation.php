@@ -38,11 +38,12 @@ class PerformDailyReconciliation extends Command
         $this->info('Starting daily reconciliation process...');
 
         // Check if already run today
-        if (!$this->option('force')) {
+        if (! $this->option('force')) {
             $latestReport = $this->reconciliationService->getLatestReport();
 
             if ($latestReport && $latestReport['summary']['date'] === now()->toDateString()) {
                 $this->warn('Daily reconciliation already performed today. Use --force to run again.');
+
                 return Command::SUCCESS;
             }
         }
@@ -72,7 +73,7 @@ class PerformDailyReconciliation extends Command
     }
 
     /**
-     * Display reconciliation results
+     * Display reconciliation results.
      */
     private function displayResults(array $report): void
     {
@@ -85,7 +86,7 @@ class PerformDailyReconciliation extends Command
         $this->line("Discrepancies Found: {$summary['discrepancies_found']}");
 
         if ($summary['discrepancies_found'] > 0) {
-            $this->line("Total Discrepancy Amount: $" . number_format($summary['total_discrepancy_amount'] / 100, 2));
+            $this->line('Total Discrepancy Amount: $' . number_format($summary['total_discrepancy_amount'] / 100, 2));
 
             $this->newLine();
             $this->warn('=== Discrepancies ===');
@@ -98,7 +99,7 @@ class PerformDailyReconciliation extends Command
             $this->info('✓ No discrepancies found!');
         }
 
-        if (!empty($report['recommendations'])) {
+        if (! empty($report['recommendations'])) {
             $this->newLine();
             $this->info('=== Recommendations ===');
             foreach ($report['recommendations'] as $recommendation) {
@@ -108,7 +109,7 @@ class PerformDailyReconciliation extends Command
     }
 
     /**
-     * Display individual discrepancy
+     * Display individual discrepancy.
      */
     private function displayDiscrepancy(array $discrepancy): void
     {
@@ -116,23 +117,23 @@ class PerformDailyReconciliation extends Command
 
         switch ($type) {
             case 'balance_mismatch':
-                $this->error("Balance Mismatch:");
+                $this->error('Balance Mismatch:');
                 $this->line("  Account: {$discrepancy['account_uuid']}");
                 $this->line("  Asset: {$discrepancy['asset_code']}");
-                $this->line("  Internal: $" . number_format($discrepancy['internal_balance'] / 100, 2));
-                $this->line("  External: $" . number_format($discrepancy['external_balance'] / 100, 2));
-                $this->line("  Difference: $" . number_format($discrepancy['difference'] / 100, 2));
+                $this->line('  Internal: $' . number_format($discrepancy['internal_balance'] / 100, 2));
+                $this->line('  External: $' . number_format($discrepancy['external_balance'] / 100, 2));
+                $this->line('  Difference: $' . number_format($discrepancy['difference'] / 100, 2));
                 break;
 
             case 'stale_data':
-                $this->warn("Stale Data:");
+                $this->warn('Stale Data:');
                 $this->line("  Account: {$discrepancy['account_uuid']}");
                 $this->line("  Custodian: {$discrepancy['custodian_id']}");
                 $this->line("  Last Synced: {$discrepancy['last_synced_at']}");
                 break;
 
             case 'orphaned_balance':
-                $this->warn("Orphaned Balance:");
+                $this->warn('Orphaned Balance:');
                 $this->line("  Account: {$discrepancy['account_uuid']}");
                 $this->line("  {$discrepancy['message']}");
                 break;

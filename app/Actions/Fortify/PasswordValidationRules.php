@@ -22,7 +22,7 @@ trait PasswordValidationRules
                 ->numbers()
                 ->symbols()
                 ->uncompromised(),
-            'confirmed'
+            'confirmed',
         ];
     }
 }

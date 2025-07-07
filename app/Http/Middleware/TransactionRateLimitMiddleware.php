@@ -3,9 +3,9 @@
 namespace App\Http\Middleware;
 
 use Closure;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
@@ -13,62 +13,62 @@ use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 class TransactionRateLimitMiddleware
 {
     /**
-     * Transaction-specific rate limits with enhanced security
+     * Transaction-specific rate limits with enhanced security.
      */
     private const TRANSACTION_LIMITS = [
         'deposit' => [
-            'limit' => 10,          // 10 deposits per hour
-            'window' => 3600,       // 1 hour
-            'daily_limit' => 50,    // 50 deposits per day
-            'daily_window' => 86400, // 24 hours
-            'amount_limit' => 100000, // $1000 per hour (in cents)
+            'limit'             => 10,          // 10 deposits per hour
+            'window'            => 3600,       // 1 hour
+            'daily_limit'       => 50,    // 50 deposits per day
+            'daily_window'      => 86400, // 24 hours
+            'amount_limit'      => 100000, // $1000 per hour (in cents)
             'progressive_delay' => true,
         ],
         'withdraw' => [
-            'limit' => 5,           // 5 withdrawals per hour
-            'window' => 3600,       // 1 hour
-            'daily_limit' => 20,    // 20 withdrawals per day
-            'daily_window' => 86400, // 24 hours
-            'amount_limit' => 50000, // $500 per hour (in cents)
+            'limit'             => 5,           // 5 withdrawals per hour
+            'window'            => 3600,       // 1 hour
+            'daily_limit'       => 20,    // 20 withdrawals per day
+            'daily_window'      => 86400, // 24 hours
+            'amount_limit'      => 50000, // $500 per hour (in cents)
             'progressive_delay' => true,
         ],
         'transfer' => [
-            'limit' => 15,          // 15 transfers per hour
-            'window' => 3600,       // 1 hour
-            'daily_limit' => 100,   // 100 transfers per day
-            'daily_window' => 86400, // 24 hours
-            'amount_limit' => 200000, // $2000 per hour (in cents)
+            'limit'             => 15,          // 15 transfers per hour
+            'window'            => 3600,       // 1 hour
+            'daily_limit'       => 100,   // 100 transfers per day
+            'daily_window'      => 86400, // 24 hours
+            'amount_limit'      => 200000, // $2000 per hour (in cents)
             'progressive_delay' => true,
         ],
         'convert' => [
-            'limit' => 20,          // 20 conversions per hour
-            'window' => 3600,       // 1 hour
-            'daily_limit' => 200,   // 200 conversions per day
-            'daily_window' => 86400, // 24 hours
-            'amount_limit' => 500000, // $5000 per hour (in cents)
+            'limit'             => 20,          // 20 conversions per hour
+            'window'            => 3600,       // 1 hour
+            'daily_limit'       => 200,   // 200 conversions per day
+            'daily_window'      => 86400, // 24 hours
+            'amount_limit'      => 500000, // $5000 per hour (in cents)
             'progressive_delay' => false,
         ],
         'vote' => [
-            'limit' => 100,         // 100 votes per day
-            'window' => 86400,      // 24 hours
-            'daily_limit' => 100,   // Same as regular limit
-            'daily_window' => 86400,
+            'limit'             => 100,         // 100 votes per day
+            'window'            => 86400,      // 24 hours
+            'daily_limit'       => 100,   // Same as regular limit
+            'daily_window'      => 86400,
             'progressive_delay' => false,
-        ]
+        ],
     ];
 
     /**
-     * Handle an incoming request with transaction-specific rate limiting
+     * Handle an incoming request with transaction-specific rate limiting.
      */
     public function handle(Request $request, Closure $next, string $transactionType = 'transfer'): SymfonyResponse
     {
         // Skip rate limiting if disabled
-        if (!config('rate_limiting.enabled', true)) {
+        if (! config('rate_limiting.enabled', true)) {
             return $next($request);
         }
 
         // Skip rate limiting in testing environment unless explicitly enabled
-        if (app()->environment('testing') && !config('rate_limiting.force_in_tests', false)) {
+        if (app()->environment('testing') && ! config('rate_limiting.force_in_tests', false)) {
             return $next($request);
         }
 
@@ -76,7 +76,7 @@ class TransactionRateLimitMiddleware
         $config = self::TRANSACTION_LIMITS[$transactionType] ?? self::TRANSACTION_LIMITS['transfer'];
 
         $userId = $request->user()?->id;
-        if (!$userId) {
+        if (! $userId) {
             return response()->json(['error' => 'Authentication required for transaction rate limiting'], 401);
         }
 
@@ -114,7 +114,7 @@ class TransactionRateLimitMiddleware
     }
 
     /**
-     * Check rate limit for a specific period
+     * Check rate limit for a specific period.
      */
     private function checkRateLimit(int $userId, string $transactionType, string $period, int $limit, int $window): true|JsonResponse
     {
@@ -123,25 +123,25 @@ class TransactionRateLimitMiddleware
 
         if ($currentCount >= $limit) {
             Log::warning('Transaction rate limit exceeded', [
-                'user_id' => $userId,
+                'user_id'          => $userId,
                 'transaction_type' => $transactionType,
-                'period' => $period,
-                'limit' => $limit,
-                'current_count' => $currentCount,
+                'period'           => $period,
+                'limit'            => $limit,
+                'current_count'    => $currentCount,
             ]);
 
             return response()->json([
-                'error' => 'Transaction rate limit exceeded',
-                'message' => "You have exceeded the {$period} limit of {$limit} {$transactionType} transactions.",
-                'period' => $period,
-                'limit' => $limit,
+                'error'         => 'Transaction rate limit exceeded',
+                'message'       => "You have exceeded the {$period} limit of {$limit} {$transactionType} transactions.",
+                'period'        => $period,
+                'limit'         => $limit,
                 'current_count' => $currentCount,
-                'reset_time' => now()->addSeconds($window)->toISOString(),
+                'reset_time'    => now()->addSeconds($window)->toISOString(),
             ], 429, [
                 'X-Transaction-RateLimit-Exceeded' => $period,
-                'X-Transaction-Limit' => $limit,
-                'X-Transaction-Remaining' => 0,
-                'Retry-After' => $window,
+                'X-Transaction-Limit'              => $limit,
+                'X-Transaction-Remaining'          => 0,
+                'Retry-After'                      => $window,
             ]);
         }
 
@@ -149,7 +149,7 @@ class TransactionRateLimitMiddleware
     }
 
     /**
-     * Check amount-based rate limits
+     * Check amount-based rate limits.
      */
     private function checkAmountLimit(Request $request, int $userId, string $transactionType, array $config): true|JsonResponse
     {
@@ -163,24 +163,24 @@ class TransactionRateLimitMiddleware
 
         if (($currentAmount + $amount) > $config['amount_limit']) {
             Log::warning('Transaction amount limit exceeded', [
-                'user_id' => $userId,
+                'user_id'          => $userId,
                 'transaction_type' => $transactionType,
-                'amount' => $amount,
-                'current_amount' => $currentAmount,
-                'limit' => $config['amount_limit'],
+                'amount'           => $amount,
+                'current_amount'   => $currentAmount,
+                'limit'            => $config['amount_limit'],
             ]);
 
             return response()->json([
-                'error' => 'Transaction amount limit exceeded',
-                'message' => "This transaction would exceed your hourly amount limit.",
-                'amount_limit' => $config['amount_limit'],
-                'current_amount' => $currentAmount,
+                'error'            => 'Transaction amount limit exceeded',
+                'message'          => 'This transaction would exceed your hourly amount limit.',
+                'amount_limit'     => $config['amount_limit'],
+                'current_amount'   => $currentAmount,
                 'requested_amount' => $amount,
                 'remaining_amount' => max(0, $config['amount_limit'] - $currentAmount),
             ], 429, [
                 'X-Transaction-AmountLimit-Exceeded' => 'true',
-                'X-Transaction-AmountLimit' => $config['amount_limit'],
-                'X-Transaction-AmountRemaining' => max(0, $config['amount_limit'] - $currentAmount),
+                'X-Transaction-AmountLimit'          => $config['amount_limit'],
+                'X-Transaction-AmountRemaining'      => max(0, $config['amount_limit'] - $currentAmount),
             ]);
         }
 
@@ -188,7 +188,7 @@ class TransactionRateLimitMiddleware
     }
 
     /**
-     * Apply progressive delay based on recent transaction frequency
+     * Apply progressive delay based on recent transaction frequency.
      */
     private function applyProgressiveDelay(int $userId, string $transactionType): void
     {
@@ -201,10 +201,10 @@ class TransactionRateLimitMiddleware
             sleep($delay);
 
             Log::info('Progressive delay applied', [
-                'user_id' => $userId,
+                'user_id'          => $userId,
                 'transaction_type' => $transactionType,
-                'recent_count' => $recentCount,
-                'delay_seconds' => $delay,
+                'recent_count'     => $recentCount,
+                'delay_seconds'    => $delay,
             ]);
         }
 
@@ -213,7 +213,7 @@ class TransactionRateLimitMiddleware
     }
 
     /**
-     * Extract transaction amount from request
+     * Extract transaction amount from request.
      */
     private function extractAmount(Request $request): ?int
     {
@@ -226,7 +226,7 @@ class TransactionRateLimitMiddleware
 
                 // Convert to integer (cents) if it's a decimal
                 if (is_numeric($amount)) {
-                    return (int)($amount * 100);
+                    return (int) ($amount * 100);
                 }
             }
         }
@@ -235,7 +235,7 @@ class TransactionRateLimitMiddleware
     }
 
     /**
-     * Increment transaction counters
+     * Increment transaction counters.
      */
     private function incrementCounters(int $userId, string $transactionType, Request $request): void
     {
@@ -260,15 +260,15 @@ class TransactionRateLimitMiddleware
 
         // Log transaction attempt for audit
         Log::info('Transaction rate limit check passed', [
-            'user_id' => $userId,
+            'user_id'          => $userId,
             'transaction_type' => $transactionType,
-            'endpoint' => $request->path(),
-            'amount' => $this->extractAmount($request),
+            'endpoint'         => $request->path(),
+            'amount'           => $this->extractAmount($request),
         ]);
     }
 
     /**
-     * Add transaction-specific headers to response
+     * Add transaction-specific headers to response.
      */
     private function addTransactionHeaders(SymfonyResponse $response, int $userId, string $transactionType, array $config): SymfonyResponse
     {
@@ -295,7 +295,7 @@ class TransactionRateLimitMiddleware
     }
 
     /**
-     * Get transaction rate limit configuration
+     * Get transaction rate limit configuration.
      */
     public static function getTransactionLimits(): array
     {
@@ -303,7 +303,7 @@ class TransactionRateLimitMiddleware
     }
 
     /**
-     * Check if a transaction type is valid
+     * Check if a transaction type is valid.
      */
     public static function isValidTransactionType(string $type): bool
     {

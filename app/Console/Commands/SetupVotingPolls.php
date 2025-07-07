@@ -3,8 +3,8 @@
 namespace App\Console\Commands;
 
 use App\Domain\Governance\Services\VotingTemplateService;
-use Illuminate\Console\Command;
 use Carbon\Carbon;
+use Illuminate\Console\Command;
 
 class SetupVotingPolls extends Command
 {
@@ -47,7 +47,7 @@ class SetupVotingPolls extends Command
 
         $polls = $templateService->scheduleYearlyVotingPolls($year);
 
-        $this->info("Created " . count($polls) . " voting polls for {$year}:");
+        $this->info('Created ' . count($polls) . " voting polls for {$year}:");
 
         foreach ($polls as $poll) {
             $this->line("- {$poll->title} (voting: {$poll->start_date->format('M d')} - {$poll->end_date->format('M d')})");
@@ -63,7 +63,7 @@ class SetupVotingPolls extends Command
             $this->info("Created voting poll: {$poll->title}");
             $this->line("Voting period: {$poll->start_date->format('M d, Y')} - {$poll->end_date->format('M d, Y')}");
         } catch (\Exception $e) {
-            $this->error("Invalid month format. Please use YYYY-MM format.");
+            $this->error('Invalid month format. Please use YYYY-MM format.');
         }
     }
 
@@ -78,7 +78,7 @@ class SetupVotingPolls extends Command
 
         if ($this->confirm('Would you like to activate this poll now?')) {
             $poll->update(['status' => \App\Domain\Governance\Enums\PollStatus::ACTIVE]);
-            $this->info("Poll activated successfully!");
+            $this->info('Poll activated successfully!');
         }
     }
 }

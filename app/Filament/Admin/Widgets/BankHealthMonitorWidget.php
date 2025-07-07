@@ -6,7 +6,6 @@ namespace App\Filament\Admin\Widgets;
 
 use App\Domain\Custodian\Services\CustodianHealthMonitor;
 use Filament\Widgets\Widget;
-use Illuminate\Contracts\View\View;
 
 class BankHealthMonitorWidget extends Widget
 {

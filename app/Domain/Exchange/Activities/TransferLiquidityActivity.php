@@ -52,8 +52,8 @@ class TransferLiquidityActivity extends Activity
             }
 
             return [
-                'transaction_id' => $transactionId,
-                'base_transferred' => $input['base_amount'],
+                'transaction_id'    => $transactionId,
+                'base_transferred'  => $input['base_amount'],
                 'quote_transferred' => $input['quote_amount'],
             ];
         });
@@ -78,8 +78,8 @@ class TransferLiquidityActivity extends Activity
                 amount: $amount,
                 description: "Liquidity provision to pool {$poolId}",
                 metadata: [
-                    'type' => 'liquidity_addition',
-                    'pool_id' => $poolId,
+                    'type'           => 'liquidity_addition',
+                    'pool_id'        => $poolId,
                     'transaction_id' => $transactionId,
                 ]
             )
@@ -105,8 +105,8 @@ class TransferLiquidityActivity extends Activity
                 amount: $amount,
                 description: "Liquidity removal from pool {$poolId}",
                 metadata: [
-                    'type' => 'liquidity_removal',
-                    'pool_id' => $poolId,
+                    'type'           => 'liquidity_removal',
+                    'pool_id'        => $poolId,
                     'transaction_id' => $transactionId,
                 ]
             )

@@ -4,21 +4,22 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Api;
 
-use App\Models\User;
 use App\Models\Account;
 use App\Models\Turnover;
+use App\Models\User;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
 class BalanceControllerTest extends TestCase
 {
     protected User $user;
+
     protected Account $account;
 
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->user = User::factory()->create();
         $this->account = Account::factory()->forUser($this->user)->create([
             'balance' => 15000,
@@ -39,14 +40,14 @@ class BalanceControllerTest extends TestCase
                     'frozen',
                     'last_updated',
                     'turnover',
-                ]
+                ],
             ])
             ->assertJson([
                 'data' => [
                     'account_uuid' => $this->account->uuid,
-                    'balance' => 15000,
-                    'frozen' => false,
-                ]
+                    'balance'      => 15000,
+                    'frozen'       => false,
+                ],
             ]);
     }
 
@@ -56,8 +57,8 @@ class BalanceControllerTest extends TestCase
 
         $turnover = Turnover::factory()->create([
             'account_uuid' => $this->account->uuid,
-            'debit' => 5000,
-            'credit' => 8000,
+            'debit'        => 5000,
+            'credit'       => 8000,
         ]);
 
         $response = $this->getJson("/api/accounts/{$this->account->uuid}/balance");
@@ -67,19 +68,19 @@ class BalanceControllerTest extends TestCase
                 'data' => [
                     'turnover' => [
                         'debit',
-                        'credit', 
+                        'credit',
                         'period_start',
                         'period_end',
-                    ]
-                ]
+                    ],
+                ],
             ])
             ->assertJson([
                 'data' => [
                     'turnover' => [
-                        'debit' => 5000,
+                        'debit'  => 5000,
                         'credit' => 8000,
-                    ]
-                ]
+                    ],
+                ],
             ]);
     }
 
@@ -93,7 +94,7 @@ class BalanceControllerTest extends TestCase
             ->assertJson([
                 'data' => [
                     'turnover' => null,
-                ]
+                ],
             ]);
     }
 
@@ -111,7 +112,7 @@ class BalanceControllerTest extends TestCase
             ->assertJson([
                 'data' => [
                     'frozen' => true,
-                ]
+                ],
             ]);
     }
 
@@ -127,7 +128,7 @@ class BalanceControllerTest extends TestCase
     public function test_requires_authentication()
     {
         $response = $this->getJson("/api/accounts/{$this->account->uuid}/balance");
-        
+
         $response->assertStatus(401);
     }
 
@@ -156,7 +157,7 @@ class BalanceControllerTest extends TestCase
                         'months_analyzed',
                     ],
                     'monthly_turnovers',
-                ]
+                ],
             ]);
     }
 
@@ -167,14 +168,14 @@ class BalanceControllerTest extends TestCase
         // Create specific turnover records for calculation testing
         Turnover::factory()->create([
             'account_uuid' => $this->account->uuid,
-            'debit' => 1000,
-            'credit' => 2000,
+            'debit'        => 1000,
+            'credit'       => 2000,
         ]);
-        
+
         Turnover::factory()->create([
             'account_uuid' => $this->account->uuid,
-            'debit' => 500,
-            'credit' => 1500,
+            'debit'        => 500,
+            'credit'       => 1500,
         ]);
 
         $response = $this->getJson("/api/accounts/{$this->account->uuid}/balance/summary");
@@ -183,12 +184,12 @@ class BalanceControllerTest extends TestCase
             ->assertJson([
                 'data' => [
                     'account_uuid' => $this->account->uuid,
-                    'statistics' => [
+                    'statistics'   => [
                         'total_credit_12_months' => 3500,
-                        'total_debit_12_months' => 1500,
-                        'months_analyzed' => 2,
-                    ]
-                ]
+                        'total_debit_12_months'  => 1500,
+                        'months_analyzed'        => 2,
+                    ],
+                ],
             ]);
     }
 
@@ -204,7 +205,7 @@ class BalanceControllerTest extends TestCase
     public function test_balance_summary_requires_authentication()
     {
         $response = $this->getJson("/api/accounts/{$this->account->uuid}/balance/summary");
-        
+
         $response->assertStatus(401);
     }
 }

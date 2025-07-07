@@ -42,13 +42,15 @@ class RebalanceBasketsCommand extends Command
             // Rebalance specific basket
             $basket = BasketAsset::where('code', $basketCode)->first();
 
-            if (!$basket) {
+            if (! $basket) {
                 $this->error("Basket with code '{$basketCode}' not found.");
+
                 return Command::FAILURE;
             }
 
             if ($basket->type !== 'dynamic') {
                 $this->error("Basket '{$basketCode}' is not a dynamic basket.");
+
                 return Command::FAILURE;
             }
 
@@ -58,8 +60,9 @@ class RebalanceBasketsCommand extends Command
                 $result = $rebalancingService->simulateRebalancing($basket);
                 $this->displaySimulationResults($basket, $result);
             } else {
-                if (!$force && !$rebalancingService->needsRebalancing($basket)) {
-                    $this->info("Basket does not need rebalancing yet. Use --force to override.");
+                if (! $force && ! $rebalancingService->needsRebalancing($basket)) {
+                    $this->info('Basket does not need rebalancing yet. Use --force to override.');
+
                     return Command::SUCCESS;
                 }
 
@@ -76,6 +79,7 @@ class RebalanceBasketsCommand extends Command
 
             if ($baskets->isEmpty()) {
                 $this->info('No dynamic baskets found.');
+
                 return Command::SUCCESS;
             }
 
@@ -94,7 +98,7 @@ class RebalanceBasketsCommand extends Command
                         $this->displayRebalancingResults($basket, $result);
                         $rebalancedCount++;
                     } else {
-                        $this->info("Basket does not need rebalancing yet.");
+                        $this->info('Basket does not need rebalancing yet.');
                     }
                 }
             }
@@ -106,14 +110,15 @@ class RebalanceBasketsCommand extends Command
     }
 
     /**
-     * Display simulation results
+     * Display simulation results.
      */
     private function displaySimulationResults(BasketAsset $basket, array $result): void
     {
         $this->info("Simulation results for {$basket->name}:");
 
         if (empty($result['adjustments'])) {
-            $this->info("No adjustments needed.");
+            $this->info('No adjustments needed.');
+
             return;
         }
 
@@ -131,14 +136,14 @@ class RebalanceBasketsCommand extends Command
     }
 
     /**
-     * Display rebalancing results
+     * Display rebalancing results.
      */
     private function displayRebalancingResults(BasketAsset $basket, array $result): void
     {
         if ($result['status'] === 'completed') {
-            $this->info("✅ Basket rebalanced successfully!");
+            $this->info('✅ Basket rebalanced successfully!');
 
-            if (!empty($result['adjustments'])) {
+            if (! empty($result['adjustments'])) {
                 $this->table(
                     ['Asset', 'Old Weight', 'New Weight', 'Change'],
                     collect($result['adjustments'])->map(function ($adjustment) {
@@ -151,10 +156,10 @@ class RebalanceBasketsCommand extends Command
                     })->toArray()
                 );
             } else {
-                $this->info("No adjustments were made.");
+                $this->info('No adjustments were made.');
             }
         } else {
-            $this->error("❌ Rebalancing failed: " . ($result['message'] ?? 'Unknown error'));
+            $this->error('❌ Rebalancing failed: ' . ($result['message'] ?? 'Unknown error'));
         }
     }
 }

@@ -2,10 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Account;
 use App\Domain\Transaction\Models\Transaction;
-use App\Domain\Payment\Models\PaymentRequest;
-use App\Domain\Banking\Models\BankTransfer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -14,7 +11,7 @@ use Inertia\Inertia;
 class TransactionStatusController extends Controller
 {
     /**
-     * Display the transaction status tracking page
+     * Display the transaction status tracking page.
      */
     public function index(Request $request)
     {
@@ -23,11 +20,11 @@ class TransactionStatusController extends Controller
 
         // Get filter parameters
         $filters = [
-            'status' => $request->get('status', 'all'),
-            'type' => $request->get('type', 'all'),
-            'account' => $request->get('account', 'all'),
+            'status'    => $request->get('status', 'all'),
+            'type'      => $request->get('type', 'all'),
+            'account'   => $request->get('account', 'all'),
             'date_from' => $request->get('date_from'),
-            'date_to' => $request->get('date_to'),
+            'date_to'   => $request->get('date_to'),
         ];
 
         // Get pending transactions
@@ -40,16 +37,16 @@ class TransactionStatusController extends Controller
         $statistics = $this->getTransactionStatistics($user);
 
         return Inertia::render('Transactions/StatusTracking', [
-            'accounts' => $accounts,
-            'pendingTransactions' => $pendingTransactions,
+            'accounts'              => $accounts,
+            'pendingTransactions'   => $pendingTransactions,
             'completedTransactions' => $completedTransactions,
-            'statistics' => $statistics,
-            'filters' => $filters,
+            'statistics'            => $statistics,
+            'filters'               => $filters,
         ]);
     }
 
     /**
-     * Get details for a specific transaction
+     * Get details for a specific transaction.
      */
     public function show($transactionId)
     {
@@ -58,7 +55,7 @@ class TransactionStatusController extends Controller
         // Try to find the transaction in different tables
         $transaction = $this->findTransaction($transactionId, $user);
 
-        if (!$transaction) {
+        if (! $transaction) {
             abort(404, 'Transaction not found');
         }
 
@@ -69,21 +66,21 @@ class TransactionStatusController extends Controller
         $relatedTransactions = $this->getRelatedTransactions($transaction);
 
         return Inertia::render('Transactions/StatusDetail', [
-            'transaction' => $transaction,
-            'timeline' => $timeline,
+            'transaction'         => $transaction,
+            'timeline'            => $timeline,
             'relatedTransactions' => $relatedTransactions,
         ]);
     }
 
     /**
-     * Get real-time status update for a transaction
+     * Get real-time status update for a transaction.
      */
     public function status($transactionId)
     {
         $user = Auth::user();
         $transaction = $this->findTransaction($transactionId, $user);
 
-        if (!$transaction) {
+        if (! $transaction) {
             return response()->json(['error' => 'Transaction not found'], 404);
         }
 
@@ -92,28 +89,28 @@ class TransactionStatusController extends Controller
         $estimatedCompletion = $this->getEstimatedCompletion($transaction);
 
         return response()->json([
-            'id' => $transaction->id,
-            'status' => $currentStatus,
+            'id'                   => $transaction->id,
+            'status'               => $currentStatus,
             'estimated_completion' => $estimatedCompletion,
-            'last_updated' => $transaction->updated_at,
-            'can_cancel' => $this->canCancelTransaction($transaction),
-            'can_retry' => $this->canRetryTransaction($transaction),
+            'last_updated'         => $transaction->updated_at,
+            'can_cancel'           => $this->canCancelTransaction($transaction),
+            'can_retry'            => $this->canRetryTransaction($transaction),
         ]);
     }
 
     /**
-     * Cancel a pending transaction
+     * Cancel a pending transaction.
      */
     public function cancel($transactionId)
     {
         $user = Auth::user();
         $transaction = $this->findTransaction($transactionId, $user);
 
-        if (!$transaction) {
+        if (! $transaction) {
             return response()->json(['error' => 'Transaction not found'], 404);
         }
 
-        if (!$this->canCancelTransaction($transaction)) {
+        if (! $this->canCancelTransaction($transaction)) {
             return response()->json(['error' => 'Transaction cannot be cancelled'], 400);
         }
 
@@ -121,7 +118,7 @@ class TransactionStatusController extends Controller
         try {
             // Update transaction status
             $transaction->update([
-                'status' => 'cancelled',
+                'status'       => 'cancelled',
                 'cancelled_at' => now(),
                 'cancelled_by' => $user->id,
             ]);
@@ -137,23 +134,24 @@ class TransactionStatusController extends Controller
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
+
             return response()->json(['error' => 'Failed to cancel transaction'], 500);
         }
     }
 
     /**
-     * Retry a failed transaction
+     * Retry a failed transaction.
      */
     public function retry($transactionId)
     {
         $user = Auth::user();
         $transaction = $this->findTransaction($transactionId, $user);
 
-        if (!$transaction) {
+        if (! $transaction) {
             return response()->json(['error' => 'Transaction not found'], 404);
         }
 
-        if (!$this->canRetryTransaction($transaction)) {
+        if (! $this->canRetryTransaction($transaction)) {
             return response()->json(['error' => 'Transaction cannot be retried'], 400);
         }
 
@@ -164,25 +162,26 @@ class TransactionStatusController extends Controller
 
             // Mark original as retried
             $transaction->update([
-                'retried_at' => now(),
+                'retried_at'           => now(),
                 'retry_transaction_id' => $newTransaction->id,
             ]);
 
             DB::commit();
 
             return response()->json([
-                'success' => true,
-                'message' => 'Transaction retry initiated',
+                'success'            => true,
+                'message'            => 'Transaction retry initiated',
                 'new_transaction_id' => $newTransaction->id,
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
+
             return response()->json(['error' => 'Failed to retry transaction'], 500);
         }
     }
 
     /**
-     * Get pending transactions for a user
+     * Get pending transactions for a user.
      */
     private function getPendingTransactions($user, $filters)
     {
@@ -218,12 +217,13 @@ class TransactionStatusController extends Controller
             ->map(function ($transaction) {
                 $transaction->estimated_completion = $this->calculateEstimatedCompletion($transaction);
                 $transaction->progress_percentage = $this->calculateProgressPercentage($transaction);
+
                 return $transaction;
             });
     }
 
     /**
-     * Get completed transactions for a user
+     * Get completed transactions for a user.
      */
     private function getCompletedTransactions($user, $filters)
     {
@@ -263,7 +263,7 @@ class TransactionStatusController extends Controller
     }
 
     /**
-     * Get transaction statistics
+     * Get transaction statistics.
      */
     private function getTransactionStatistics($user)
     {
@@ -295,7 +295,7 @@ class TransactionStatusController extends Controller
     }
 
     /**
-     * Find a transaction across different tables
+     * Find a transaction across different tables.
      */
     private function findTransaction($transactionId, $user)
     {
@@ -309,6 +309,7 @@ class TransactionStatusController extends Controller
 
         if ($transaction) {
             $transaction->source = 'transaction';
+
             return $transaction;
         }
 
@@ -322,6 +323,7 @@ class TransactionStatusController extends Controller
 
         if ($payment) {
             $payment->source = 'payment';
+
             return $payment;
         }
 
@@ -333,6 +335,7 @@ class TransactionStatusController extends Controller
 
         if ($transfer) {
             $transfer->source = 'bank_transfer';
+
             return $transfer;
         }
 
@@ -340,7 +343,7 @@ class TransactionStatusController extends Controller
     }
 
     /**
-     * Get transaction timeline
+     * Get transaction timeline.
      */
     private function getTransactionTimeline($transaction)
     {
@@ -348,10 +351,10 @@ class TransactionStatusController extends Controller
 
         // Created event
         $timeline[] = [
-            'event' => 'created',
+            'event'       => 'created',
             'description' => 'Transaction initiated',
-            'timestamp' => $transaction->created_at,
-            'status' => 'completed',
+            'timestamp'   => $transaction->created_at,
+            'status'      => 'completed',
         ];
 
         // Processing events (from metadata or logs)
@@ -370,20 +373,20 @@ class TransactionStatusController extends Controller
         // Current status
         if ($transaction->status === 'processing') {
             $timeline[] = [
-                'event' => 'processing',
+                'event'       => 'processing',
                 'description' => 'Transaction is being processed',
-                'timestamp' => $transaction->updated_at,
-                'status' => 'active',
+                'timestamp'   => $transaction->updated_at,
+                'status'      => 'active',
             ];
         }
 
         // Completion event
         if (in_array($transaction->status, ['completed', 'failed', 'cancelled'])) {
             $timeline[] = [
-                'event' => $transaction->status,
+                'event'       => $transaction->status,
                 'description' => $this->getStatusDescription($transaction->status),
-                'timestamp' => $transaction->updated_at,
-                'status' => $transaction->status === 'completed' ? 'completed' : 'error',
+                'timestamp'   => $transaction->updated_at,
+                'status'      => $transaction->status === 'completed' ? 'completed' : 'error',
             ];
         }
 
@@ -391,7 +394,7 @@ class TransactionStatusController extends Controller
     }
 
     /**
-     * Get related transactions
+     * Get related transactions.
      */
     private function getRelatedTransactions($transaction)
     {
@@ -402,7 +405,7 @@ class TransactionStatusController extends Controller
             $parent = $this->findTransaction($transaction->parent_transaction_id, Auth::user());
             if ($parent) {
                 $related[] = [
-                    'type' => 'parent',
+                    'type'        => 'parent',
                     'transaction' => $parent,
                 ];
             }
@@ -413,7 +416,7 @@ class TransactionStatusController extends Controller
             $retry = $this->findTransaction($transaction->retry_transaction_id, Auth::user());
             if ($retry) {
                 $related[] = [
-                    'type' => 'retry',
+                    'type'        => 'retry',
                     'transaction' => $retry,
                 ];
             }
@@ -428,7 +431,7 @@ class TransactionStatusController extends Controller
 
             foreach ($reversals as $reversal) {
                 $related[] = [
-                    'type' => 'reversal',
+                    'type'        => 'reversal',
                     'transaction' => $reversal,
                 ];
             }
@@ -438,7 +441,7 @@ class TransactionStatusController extends Controller
     }
 
     /**
-     * Get current status of a transaction
+     * Get current status of a transaction.
      */
     private function getCurrentStatus($transaction)
     {
@@ -452,7 +455,7 @@ class TransactionStatusController extends Controller
     }
 
     /**
-     * Get estimated completion time
+     * Get estimated completion time.
      */
     private function getEstimatedCompletion($transaction)
     {
@@ -462,10 +465,10 @@ class TransactionStatusController extends Controller
 
         // Different estimates based on transaction type
         $estimates = [
-            'deposit' => ['card' => 5, 'bank' => 1440], // 5 min for card, 1 day for bank
+            'deposit'    => ['card' => 5, 'bank' => 1440], // 5 min for card, 1 day for bank
             'withdrawal' => ['standard' => 2880, 'express' => 60], // 2 days standard, 1 hour express
-            'transfer' => ['internal' => 1, 'external' => 30], // 1 min internal, 30 min external
-            'exchange' => ['instant' => 1, 'market' => 5], // 1 min instant, 5 min market rate
+            'transfer'   => ['internal' => 1, 'external' => 30], // 1 min internal, 30 min external
+            'exchange'   => ['instant' => 1, 'market' => 5], // 1 min instant, 5 min market rate
         ];
 
         $type = $transaction->type ?? 'transfer';
@@ -477,16 +480,17 @@ class TransactionStatusController extends Controller
     }
 
     /**
-     * Calculate estimated completion time
+     * Calculate estimated completion time.
      */
     private function calculateEstimatedCompletion($transaction)
     {
         $estimate = $this->getEstimatedCompletion($transaction);
+
         return $estimate ? $estimate->toIso8601String() : null;
     }
 
     /**
-     * Calculate progress percentage
+     * Calculate progress percentage.
      */
     private function calculateProgressPercentage($transaction)
     {
@@ -502,7 +506,7 @@ class TransactionStatusController extends Controller
         $created = \Carbon\Carbon::parse($transaction->created_at);
         $estimate = $this->getEstimatedCompletion($transaction);
 
-        if (!$estimate) {
+        if (! $estimate) {
             return 50; // Default to 50% if no estimate
         }
 
@@ -515,12 +519,12 @@ class TransactionStatusController extends Controller
     }
 
     /**
-     * Check if transaction can be cancelled
+     * Check if transaction can be cancelled.
      */
     private function canCancelTransaction($transaction)
     {
         // Only pending transactions can be cancelled
-        if (!in_array($transaction->status, ['pending', 'hold'])) {
+        if (! in_array($transaction->status, ['pending', 'hold'])) {
             return false;
         }
 
@@ -539,7 +543,7 @@ class TransactionStatusController extends Controller
     }
 
     /**
-     * Check if transaction can be retried
+     * Check if transaction can be retried.
      */
     private function canRetryTransaction($transaction)
     {
@@ -563,7 +567,7 @@ class TransactionStatusController extends Controller
     }
 
     /**
-     * Reverse a transaction
+     * Reverse a transaction.
      */
     private function reverseTransaction($transaction)
     {
@@ -571,13 +575,13 @@ class TransactionStatusController extends Controller
         // For now, just log the reversal
         \Log::info('Transaction reversed', [
             'transaction_id' => $transaction->id,
-            'type' => $transaction->type,
-            'amount' => $transaction->amount,
+            'type'           => $transaction->type,
+            'amount'         => $transaction->amount,
         ]);
     }
 
     /**
-     * Create a retry transaction
+     * Create a retry transaction.
      */
     private function createRetryTransaction($originalTransaction)
     {
@@ -593,7 +597,7 @@ class TransactionStatusController extends Controller
     }
 
     /**
-     * Format duration in seconds to human-readable
+     * Format duration in seconds to human-readable.
      */
     private function formatDuration($seconds)
     {
@@ -609,17 +613,17 @@ class TransactionStatusController extends Controller
     }
 
     /**
-     * Get status description
+     * Get status description.
      */
     private function getStatusDescription($status)
     {
         $descriptions = [
-            'completed' => 'Transaction completed successfully',
-            'failed' => 'Transaction failed',
-            'cancelled' => 'Transaction was cancelled',
-            'pending' => 'Transaction is pending',
+            'completed'  => 'Transaction completed successfully',
+            'failed'     => 'Transaction failed',
+            'cancelled'  => 'Transaction was cancelled',
+            'pending'    => 'Transaction is pending',
             'processing' => 'Transaction is being processed',
-            'hold' => 'Transaction is on hold',
+            'hold'       => 'Transaction is on hold',
         ];
 
         return $descriptions[$status] ?? 'Unknown status';

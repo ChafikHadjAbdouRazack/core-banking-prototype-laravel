@@ -3,13 +3,9 @@
 namespace App\Filament\Admin\Resources\AccountResource\RelationManagers;
 
 use App\Filament\Exports\TransactionExporter;
-use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class TransactionsRelationManager extends RelationManager
 {
@@ -31,11 +27,11 @@ class TransactionsRelationManager extends RelationManager
                     ->label('Type')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
-                        'deposit' => 'success',
-                        'withdrawal' => 'warning',
-                        'transfer_in' => 'info',
+                        'deposit'      => 'success',
+                        'withdrawal'   => 'warning',
+                        'transfer_in'  => 'info',
                         'transfer_out' => 'danger',
-                        default => 'gray',
+                        default        => 'gray',
                     }),
                 Tables\Columns\TextColumn::make('amount')
                     ->label('Amount')
@@ -63,9 +59,9 @@ class TransactionsRelationManager extends RelationManager
             ->filters([
                 Tables\Filters\SelectFilter::make('type')
                     ->options([
-                        'deposit' => 'Deposit',
-                        'withdrawal' => 'Withdrawal',
-                        'transfer_in' => 'Transfer In',
+                        'deposit'      => 'Deposit',
+                        'withdrawal'   => 'Withdrawal',
+                        'transfer_in'  => 'Transfer In',
                         'transfer_out' => 'Transfer Out',
                     ]),
             ])

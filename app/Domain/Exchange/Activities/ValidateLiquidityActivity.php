@@ -83,9 +83,9 @@ class ValidateLiquidityActivity extends Activity
         }
 
         return [
-            'valid' => true,
+            'valid'      => true,
             'account_id' => $account->id,
-            'pool' => $pool->toArray(),
+            'pool'       => $pool->toArray(),
         ];
     }
 
@@ -112,8 +112,8 @@ class ValidateLiquidityActivity extends Activity
         }
 
         return [
-            'valid' => true,
-            'pool' => $pool->toArray(),
+            'valid'           => true,
+            'pool'            => $pool->toArray(),
             'provider_shares' => $provider->shares,
         ];
     }

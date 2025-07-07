@@ -8,21 +8,22 @@ use BitWasp\Bitcoin\Key\Factory\HierarchicalKeyFactory;
 use BitWasp\Bitcoin\Mnemonic\Bip39\Bip39SeedGenerator;
 use BitWasp\Bitcoin\Mnemonic\MnemonicFactory;
 use Elliptic\EC;
-use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Crypt;
 use kornrunner\Keccak;
 
 class KeyManagementService
 {
     protected ?EC $ec = null;
+
     protected string $encryptionKey;
 
     // BIP44 derivation paths
     private const DERIVATION_PATHS = [
         'ethereum' => "m/44'/60'/0'/0",
-        'bitcoin' => "m/44'/0'/0'/0",
-        'polygon' => "m/44'/966'/0'/0",
-        'bsc' => "m/44'/60'/0'/0", // Same as Ethereum
+        'bitcoin'  => "m/44'/0'/0'/0",
+        'polygon'  => "m/44'/966'/0'/0",
+        'bsc'      => "m/44'/60'/0'/0", // Same as Ethereum
     ];
 
     public function __construct()
@@ -34,18 +35,19 @@ class KeyManagementService
     }
 
     /**
-     * Generate a new mnemonic phrase
+     * Generate a new mnemonic phrase.
      */
     public function generateMnemonic(int $wordCount = 12): string
     {
         // Convert word count to entropy bits (12 words = 128 bits, 24 words = 256 bits)
         $strength = $wordCount === 24 ? 256 : 128;
         $mnemonic = MnemonicFactory::bip39();
+
         return $mnemonic->create($strength);
     }
 
     /**
-     * Generate HD wallet from mnemonic
+     * Generate HD wallet from mnemonic.
      */
     public function generateHDWallet(string $mnemonic, ?string $passphrase = null): array
     {
@@ -58,12 +60,12 @@ class KeyManagementService
         return [
             'master_public_key' => $masterKey->getPublicKey()->getHex(),
             'master_chain_code' => bin2hex($masterKey->getChainCode()),
-            'encrypted_seed' => $this->encryptSeed($seed->getHex()),
+            'encrypted_seed'    => $this->encryptSeed($seed->getHex()),
         ];
     }
 
     /**
-     * Derive key pair for a specific path
+     * Derive key pair for a specific path.
      */
     public function deriveKeyPair(string $encryptedSeed, string $chain, int $index = 0): array
     {
@@ -83,24 +85,24 @@ class KeyManagementService
             $publicKey = $keyPair->getPublic('hex');
 
             return [
-                'private_key' => $privateKey->getHex(),
-                'public_key' => $publicKey,
-                'address' => $this->getEthereumAddress($publicKey),
+                'private_key'     => $privateKey->getHex(),
+                'public_key'      => $publicKey,
+                'address'         => $this->getEthereumAddress($publicKey),
                 'derivation_path' => $derivationPath,
             ];
         } else {
             // For Bitcoin
             return [
-                'private_key' => $privateKey->getHex(),
-                'public_key' => $derivedKey->getPublicKey()->getHex(),
-                'address' => $derivedKey->getAddress()->getAddress(),
+                'private_key'     => $privateKey->getHex(),
+                'public_key'      => $derivedKey->getPublicKey()->getHex(),
+                'address'         => $derivedKey->getAddress()->getAddress(),
                 'derivation_path' => $derivationPath,
             ];
         }
     }
 
     /**
-     * Generate Ethereum address from public key
+     * Generate Ethereum address from public key.
      */
     protected function getEthereumAddress(string $publicKey): string
     {
@@ -110,11 +112,12 @@ class KeyManagementService
         }
 
         $hash = Keccak::hash(hex2bin($publicKey), 256);
+
         return '0x' . substr($hash, -40);
     }
 
     /**
-     * Sign transaction with private key
+     * Sign transaction with private key.
      */
     public function signTransaction(string $privateKey, array $transaction, string $chain): string
     {
@@ -128,7 +131,7 @@ class KeyManagementService
     }
 
     /**
-     * Sign Ethereum transaction
+     * Sign Ethereum transaction.
      */
     protected function signEthereumTransaction(string $privateKey, array $transaction): string
     {
@@ -138,7 +141,7 @@ class KeyManagementService
     }
 
     /**
-     * Sign Bitcoin transaction
+     * Sign Bitcoin transaction.
      */
     protected function signBitcoinTransaction(string $privateKey, array $transaction): string
     {
@@ -148,7 +151,7 @@ class KeyManagementService
     }
 
     /**
-     * Encrypt seed for storage
+     * Encrypt seed for storage.
      */
     public function encryptSeed(string $seed, string $password): string
     {
@@ -160,7 +163,7 @@ class KeyManagementService
     }
 
     /**
-     * Decrypt seed
+     * Decrypt seed.
      */
     public function decryptSeed(string $encryptedSeed, string $password): string
     {
@@ -172,25 +175,27 @@ class KeyManagementService
     }
 
     /**
-     * Encrypt private key for temporary storage
+     * Encrypt private key for temporary storage.
      */
     public function encryptPrivateKey(string $privateKey, string $userId): string
     {
         $key = $this->getUserEncryptionKey($userId);
+
         return openssl_encrypt($privateKey, 'AES-256-CBC', $key, 0, substr($key, 0, 16));
     }
 
     /**
-     * Decrypt private key
+     * Decrypt private key.
      */
     public function decryptPrivateKey(string $encryptedKey, string $userId): string
     {
         $key = $this->getUserEncryptionKey($userId);
+
         return openssl_decrypt($encryptedKey, 'AES-256-CBC', $key, 0, substr($key, 0, 16));
     }
 
     /**
-     * Get user-specific encryption key
+     * Get user-specific encryption key.
      */
     protected function getUserEncryptionKey(string $userId): string
     {
@@ -198,7 +203,7 @@ class KeyManagementService
     }
 
     /**
-     * Store key temporarily in cache (for signing)
+     * Store key temporarily in cache (for signing).
      */
     public function storeTemporaryKey(string $userId, string $encryptedKey, int $ttl = 300): string
     {
@@ -211,7 +216,7 @@ class KeyManagementService
     }
 
     /**
-     * Retrieve temporary key from cache
+     * Retrieve temporary key from cache.
      */
     public function retrieveTemporaryKey(string $userId, string $token): ?string
     {
@@ -222,12 +227,13 @@ class KeyManagementService
     }
 
     /**
-     * Validate mnemonic phrase
+     * Validate mnemonic phrase.
      */
     public function validateMnemonic(string $mnemonic): bool
     {
         try {
             $mnemonicFactory = MnemonicFactory::bip39();
+
             return $mnemonicFactory->validate($mnemonic);
         } catch (\Exception $e) {
             return false;
@@ -235,36 +241,36 @@ class KeyManagementService
     }
 
     /**
-     * Generate wallet backup
+     * Generate wallet backup.
      */
     public function generateBackup(string $walletId): array
     {
         // In a real implementation, this would fetch wallet data from storage
         // For now, we'll create a minimal backup structure
         $walletData = [
-            'wallet_id' => $walletId,
-            'version' => '1.0',
+            'wallet_id'  => $walletId,
+            'version'    => '1.0',
             'created_at' => now()->toIso8601String(),
-            'addresses' => [],
-            'metadata' => [],
+            'addresses'  => [],
+            'metadata'   => [],
         ];
 
         $encrypted = Crypt::encryptString(json_encode($walletData));
         $checksum = hash('sha256', $encrypted);
 
         return [
-            'backup_id' => uniqid('backup_'),
+            'backup_id'      => uniqid('backup_'),
             'encrypted_data' => $encrypted,
-            'checksum' => $checksum,
+            'checksum'       => $checksum,
         ];
     }
 
     /**
-     * Restore wallet from backup
+     * Restore wallet from backup.
      */
     public function restoreFromBackup(array $backup, string $password): string
     {
-        if (!isset($backup['encrypted_data']) || !isset($backup['checksum'])) {
+        if (! isset($backup['encrypted_data']) || ! isset($backup['checksum'])) {
             throw new KeyManagementException('Invalid backup format');
         }
 
@@ -277,7 +283,7 @@ class KeyManagementService
         $decryptedData = Crypt::decryptString($backup['encrypted_data']);
         $walletData = json_decode($decryptedData, true);
 
-        if (!$walletData || !isset($walletData['wallet_id'])) {
+        if (! $walletData || ! isset($walletData['wallet_id'])) {
             throw new KeyManagementException('Invalid backup data');
         }
 
@@ -286,7 +292,7 @@ class KeyManagementService
     }
 
     /**
-     * Rotate encryption keys
+     * Rotate encryption keys.
      */
     public function rotateKeys(string $walletId, string $oldPassword, string $newPassword): void
     {

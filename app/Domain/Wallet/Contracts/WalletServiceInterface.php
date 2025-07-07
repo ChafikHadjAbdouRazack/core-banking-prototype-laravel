@@ -5,7 +5,7 @@ namespace App\Domain\Wallet\Contracts;
 interface WalletServiceInterface
 {
     /**
-     * Deposit funds to an account for a specific asset
+     * Deposit funds to an account for a specific asset.
      *
      * @param mixed $accountUuid
      * @param string $assetCode
@@ -15,7 +15,7 @@ interface WalletServiceInterface
     public function deposit(mixed $accountUuid, string $assetCode, mixed $amount): void;
 
     /**
-     * Withdraw funds from an account for a specific asset
+     * Withdraw funds from an account for a specific asset.
      *
      * @param mixed $accountUuid
      * @param string $assetCode
@@ -25,7 +25,7 @@ interface WalletServiceInterface
     public function withdraw(mixed $accountUuid, string $assetCode, mixed $amount): void;
 
     /**
-     * Transfer funds between accounts for a specific asset
+     * Transfer funds between accounts for a specific asset.
      *
      * @param mixed $fromAccountUuid
      * @param mixed $toAccountUuid
@@ -37,7 +37,7 @@ interface WalletServiceInterface
     public function transfer(mixed $fromAccountUuid, mixed $toAccountUuid, string $assetCode, mixed $amount, ?string $reference = null): void;
 
     /**
-     * Convert between different assets within the same account
+     * Convert between different assets within the same account.
      *
      * @param mixed $accountUuid
      * @param string $fromAssetCode

@@ -19,7 +19,7 @@ class RegulatoryReportsController extends Controller
     }
 
     /**
-     * Display regulatory reports dashboard
+     * Display regulatory reports dashboard.
      */
     public function index()
     {
@@ -31,10 +31,10 @@ class RegulatoryReportsController extends Controller
 
         // Get statistics
         $stats = [
-            'total_reports' => RegulatoryReport::count(),
+            'total_reports'      => RegulatoryReport::count(),
             'pending_submission' => RegulatoryReport::where('status', 'pending_submission')->count(),
-            'submitted' => RegulatoryReport::where('status', 'submitted')->count(),
-            'this_month' => RegulatoryReport::whereMonth('created_at', now()->month)->count(),
+            'submitted'          => RegulatoryReport::where('status', 'submitted')->count(),
+            'this_month'         => RegulatoryReport::whereMonth('created_at', now()->month)->count(),
         ];
 
         // Get active thresholds
@@ -46,34 +46,34 @@ class RegulatoryReportsController extends Controller
     }
 
     /**
-     * Show report generation form
+     * Show report generation form.
      */
     public function create()
     {
         $this->authorize('generate_regulatory_reports');
 
         $reportTypes = [
-            'ctr' => 'Currency Transaction Report (CTR)',
-            'sar' => 'Suspicious Activity Report (SAR)',
+            'ctr'                => 'Currency Transaction Report (CTR)',
+            'sar'                => 'Suspicious Activity Report (SAR)',
             'monthly_compliance' => 'Monthly Compliance Report',
-            'quarterly_risk' => 'Quarterly Risk Assessment',
-            'annual_aml' => 'Annual AML Report',
+            'quarterly_risk'     => 'Quarterly Risk Assessment',
+            'annual_aml'         => 'Annual AML Report',
         ];
 
         return view('regulatory.reports.create', compact('reportTypes'));
     }
 
     /**
-     * Generate a new regulatory report
+     * Generate a new regulatory report.
      */
     public function store(Request $request)
     {
         $this->authorize('generate_regulatory_reports');
 
         $request->validate([
-            'report_type' => 'required|in:ctr,sar,monthly_compliance,quarterly_risk,annual_aml',
-            'start_date' => 'required|date',
-            'end_date' => 'required|date|after_or_equal:start_date',
+            'report_type'  => 'required|in:ctr,sar,monthly_compliance,quarterly_risk,annual_aml',
+            'start_date'   => 'required|date',
+            'end_date'     => 'required|date|after_or_equal:start_date',
             'jurisdiction' => 'required|string',
         ]);
 
@@ -83,7 +83,7 @@ class RegulatoryReportsController extends Controller
                 $request->start_date,
                 $request->end_date,
                 [
-                    'jurisdiction' => $request->jurisdiction,
+                    'jurisdiction'    => $request->jurisdiction,
                     'include_details' => $request->boolean('include_details'),
                 ]
             );
@@ -96,7 +96,7 @@ class RegulatoryReportsController extends Controller
     }
 
     /**
-     * Display report details
+     * Display report details.
      */
     public function show(RegulatoryReport $report)
     {
@@ -106,13 +106,13 @@ class RegulatoryReportsController extends Controller
     }
 
     /**
-     * Download report
+     * Download report.
      */
     public function download(RegulatoryReport $report)
     {
         $this->authorize('generate_regulatory_reports');
 
-        if (!$report->file_path || !Storage::exists($report->file_path)) {
+        if (! $report->file_path || ! Storage::exists($report->file_path)) {
             return back()->with('error', 'Report file not found.');
         }
 
@@ -120,7 +120,7 @@ class RegulatoryReportsController extends Controller
     }
 
     /**
-     * Submit report to regulatory authority
+     * Submit report to regulatory authority.
      */
     public function submit(RegulatoryReport $report)
     {
@@ -133,7 +133,7 @@ class RegulatoryReportsController extends Controller
         try {
             // In a real system, this would submit to the regulatory authority's API
             $report->update([
-                'status' => 'submitted',
+                'status'       => 'submitted',
                 'submitted_at' => now(),
                 'submitted_by' => Auth::id(),
             ]);

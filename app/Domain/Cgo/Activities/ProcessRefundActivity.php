@@ -4,8 +4,8 @@ namespace App\Domain\Cgo\Activities;
 
 use App\Domain\Cgo\Aggregates\RefundAggregate;
 use App\Models\CgoRefund;
-use App\Services\Cgo\StripePaymentService;
 use App\Services\Cgo\CoinbaseCommerceService;
+use App\Services\Cgo\StripePaymentService;
 use Workflow\Activity;
 
 class ProcessRefundActivity extends Activity
@@ -38,19 +38,19 @@ class ProcessRefundActivity extends Activity
             // This would typically require manual processing or a different flow
             $processorRefundId = 'manual_crypto_refund_' . uniqid();
             $processorResponse = [
-                'type' => 'manual_crypto_refund',
-                'address' => $refund->refund_address,
-                'amount' => $refund->amount,
-                'currency' => $refund->currency
+                'type'     => 'manual_crypto_refund',
+                'address'  => $refund->refund_address,
+                'amount'   => $refund->amount,
+                'currency' => $refund->currency,
             ];
         } elseif ($investment->payment_method === 'bank_transfer') {
             // For bank transfers, this would integrate with banking APIs
             $processorRefundId = 'bank_refund_' . uniqid();
             $processorResponse = [
-                'type' => 'bank_transfer_refund',
+                'type'         => 'bank_transfer_refund',
                 'bank_details' => $refund->bank_details,
-                'amount' => $refund->amount,
-                'currency' => $refund->currency
+                'amount'       => $refund->amount,
+                'currency'     => $refund->currency,
             ];
         }
 
@@ -65,10 +65,10 @@ class ProcessRefundActivity extends Activity
             ->persist();
 
         return [
-            'refund_id' => $input['refund_id'],
+            'refund_id'           => $input['refund_id'],
             'processor_refund_id' => $processorRefundId,
-            'amount_refunded' => $refund->amount,
-            'status' => 'processing'
+            'amount_refunded'     => $refund->amount,
+            'status'              => 'processing',
         ];
     }
 }

@@ -20,7 +20,7 @@ return [
     | These settings ensure the demo environment behaves like production
     |
     */
-    'debug' => false,
+    'debug'           => false,
     'debug_blacklist' => [
         '_ENV' => [
             'APP_KEY',
@@ -43,22 +43,22 @@ return [
     'features' => [
         // Allow demo users to reset data
         'allow_data_reset' => env('DEMO_ALLOW_DATA_RESET', false),
-        
+
         // Show demo banner
         'show_demo_banner' => env('DEMO_SHOW_BANNER', true),
-        
+
         // Demo user credentials (if applicable)
         'demo_users' => [
             'customer' => [
-                'email' => 'demo@finaegis.com',
+                'email'    => 'demo@finaegis.com',
                 'password' => 'demo123',
             ],
             'business' => [
-                'email' => 'business@finaegis.com',
+                'email'    => 'business@finaegis.com',
                 'password' => 'demo123',
             ],
             'admin' => [
-                'email' => 'admin@finaegis.com',
+                'email'    => 'admin@finaegis.com',
                 'password' => 'demo123',
             ],
         ],
@@ -73,7 +73,7 @@ return [
     |
     */
     'rate_limits' => [
-        'api' => env('DEMO_API_RATE_LIMIT', 60),
+        'api'          => env('DEMO_API_RATE_LIMIT', 60),
         'transactions' => env('DEMO_TRANSACTION_RATE_LIMIT', 10),
     ],
 
@@ -88,10 +88,10 @@ return [
     'restrictions' => [
         // Maximum transaction amount in cents
         'max_transaction_amount' => env('DEMO_MAX_TRANSACTION', 100000), // €1,000
-        
+
         // Maximum accounts per user
         'max_accounts_per_user' => env('DEMO_MAX_ACCOUNTS', 5),
-        
+
         // Disable real bank connections
         'disable_real_banks' => env('DEMO_DISABLE_REAL_BANKS', true),
     ],

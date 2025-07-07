@@ -2,16 +2,12 @@
 
 namespace App\Filament\Admin\Resources;
 
-use App\Filament\Admin\Resources\OrderBookResource\Pages;
-use App\Filament\Admin\Resources\OrderBookResource\RelationManagers;
 use App\Domain\Exchange\Projections\OrderBook;
-use Filament\Forms;
+use App\Filament\Admin\Resources\OrderBookResource\Pages;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class OrderBookResource extends Resource
 {
@@ -56,9 +52,9 @@ class OrderBookResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListOrderBooks::route('/'),
+            'index'  => Pages\ListOrderBooks::route('/'),
             'create' => Pages\CreateOrderBook::route('/create'),
-            'edit' => Pages\EditOrderBook::route('/{record}/edit'),
+            'edit'   => Pages\EditOrderBook::route('/{record}/edit'),
         ];
     }
 }

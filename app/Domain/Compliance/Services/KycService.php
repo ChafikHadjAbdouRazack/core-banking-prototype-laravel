@@ -4,23 +4,23 @@ declare(strict_types=1);
 
 namespace App\Domain\Compliance\Services;
 
-use App\Models\User;
-use App\Models\KycDocument;
 use App\Models\AuditLog;
+use App\Models\KycDocument;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class KycService
 {
     /**
-     * Submit KYC documents for a user
+     * Submit KYC documents for a user.
      */
     public function submitKyc(User $user, array $documents): void
     {
         DB::transaction(function () use ($user, $documents) {
             // Update user KYC status
             $user->update([
-                'kyc_status' => 'pending',
+                'kyc_status'       => 'pending',
                 'kyc_submitted_at' => now(),
             ]);
 
@@ -31,21 +31,21 @@ class KycService
 
             // Log the action
             AuditLog::create([
-                'user_uuid' => $user->uuid,
-                'action' => 'kyc.submitted',
+                'user_uuid'      => $user->uuid,
+                'action'         => 'kyc.submitted',
                 'auditable_type' => get_class($user),
-                'auditable_id' => $user->uuid,
-                'new_values' => ['documents' => count($documents)],
-                'metadata' => ['document_types' => array_column($documents, 'type')],
-                'tags' => 'kyc,compliance',
-                'ip_address' => request()?->ip(),
-                'user_agent' => request()?->userAgent(),
+                'auditable_id'   => $user->uuid,
+                'new_values'     => ['documents' => count($documents)],
+                'metadata'       => ['document_types' => array_column($documents, 'type')],
+                'tags'           => 'kyc,compliance',
+                'ip_address'     => request()?->ip(),
+                'user_agent'     => request()?->userAgent(),
             ]);
         });
     }
 
     /**
-     * Store a KYC document
+     * Store a KYC document.
      */
     protected function storeDocument(User $user, array $documentData): KycDocument
     {
@@ -53,21 +53,21 @@ class KycService
         $hash = hash_file('sha256', Storage::disk('private')->path($path));
 
         return KycDocument::create([
-            'user_uuid' => $user->uuid,
+            'user_uuid'     => $user->uuid,
             'document_type' => $documentData['type'],
-            'file_path' => $path,
-            'file_hash' => $hash,
-            'uploaded_at' => now(),
-            'metadata' => [
+            'file_path'     => $path,
+            'file_hash'     => $hash,
+            'uploaded_at'   => now(),
+            'metadata'      => [
                 'original_name' => $documentData['file']->getClientOriginalName(),
-                'mime_type' => $documentData['file']->getMimeType(),
-                'size' => $documentData['file']->getSize(),
+                'mime_type'     => $documentData['file']->getMimeType(),
+                'size'          => $documentData['file']->getSize(),
             ],
         ]);
     }
 
     /**
-     * Verify user KYC
+     * Verify user KYC.
      */
     public function verifyKyc(User $user, string $verifiedBy, array $options = []): void
     {
@@ -76,12 +76,12 @@ class KycService
 
             // Update user status
             $user->update([
-                'kyc_status' => 'approved',
+                'kyc_status'      => 'approved',
                 'kyc_approved_at' => now(),
-                'kyc_expires_at' => $options['expires_at'] ?? now()->addYears(2),
-                'kyc_level' => $options['level'] ?? 'enhanced',
-                'risk_rating' => $options['risk_rating'] ?? 'low',
-                'pep_status' => $options['pep_status'] ?? false,
+                'kyc_expires_at'  => $options['expires_at'] ?? now()->addYears(2),
+                'kyc_level'       => $options['level'] ?? 'enhanced',
+                'risk_rating'     => $options['risk_rating'] ?? 'low',
+                'pep_status'      => $options['pep_status'] ?? false,
             ]);
 
             // Mark all pending documents as verified
@@ -95,8 +95,8 @@ class KycService
             AuditLog::log(
                 'kyc.verified',
                 $user,
-                ['kyc_status' => $oldStatus],
-                ['kyc_status' => 'approved', 'kyc_level' => $user->kyc_level],
+                ['kyc_status'  => $oldStatus],
+                ['kyc_status'  => 'approved', 'kyc_level' => $user->kyc_level],
                 ['verified_by' => $verifiedBy, 'options' => $options],
                 'kyc,compliance,verification'
             );
@@ -104,7 +104,7 @@ class KycService
     }
 
     /**
-     * Reject user KYC
+     * Reject user KYC.
      */
     public function rejectKyc(User $user, string $reason, string $rejectedBy): void
     {
@@ -127,8 +127,8 @@ class KycService
             AuditLog::log(
                 'kyc.rejected',
                 $user,
-                ['kyc_status' => $oldStatus],
-                ['kyc_status' => 'rejected'],
+                ['kyc_status'  => $oldStatus],
+                ['kyc_status'  => 'rejected'],
                 ['rejected_by' => $rejectedBy, 'reason' => $reason],
                 'kyc,compliance,rejection'
             );
@@ -136,7 +136,7 @@ class KycService
     }
 
     /**
-     * Check if KYC is expired and update status
+     * Check if KYC is expired and update status.
      */
     public function checkExpiredKyc(User $user): bool
     {
@@ -159,33 +159,33 @@ class KycService
     }
 
     /**
-     * Get KYC requirements for a specific level
+     * Get KYC requirements for a specific level.
      */
     public function getRequirements(string $level): array
     {
         return match ($level) {
             'basic' => [
                 'documents' => ['national_id', 'selfie'],
-                'limits' => [
-                    'daily_transaction' => 100000, // $1,000
+                'limits'    => [
+                    'daily_transaction'   => 100000, // $1,000
                     'monthly_transaction' => 500000, // $5,000
-                    'max_balance' => 1000000, // $10,000
+                    'max_balance'         => 1000000, // $10,000
                 ],
             ],
             'enhanced' => [
                 'documents' => ['passport', 'utility_bill', 'selfie'],
-                'limits' => [
-                    'daily_transaction' => 1000000, // $10,000
+                'limits'    => [
+                    'daily_transaction'   => 1000000, // $10,000
                     'monthly_transaction' => 5000000, // $50,000
-                    'max_balance' => 10000000, // $100,000
+                    'max_balance'         => 10000000, // $100,000
                 ],
             ],
             'full' => [
                 'documents' => ['passport', 'utility_bill', 'bank_statement', 'selfie', 'proof_of_income'],
-                'limits' => [
-                    'daily_transaction' => null, // No limit
+                'limits'    => [
+                    'daily_transaction'   => null, // No limit
                     'monthly_transaction' => null, // No limit
-                    'max_balance' => null, // No limit
+                    'max_balance'         => null, // No limit
                 ],
             ],
             default => throw new \InvalidArgumentException("Unknown KYC level: {$level}"),

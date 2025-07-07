@@ -4,19 +4,17 @@ namespace Tests;
 
 use App\Domain\Account\Aggregates\LedgerAggregate;
 use App\Domain\Account\Repositories\AccountRepository;
-use App\Domain\Account\Services\AccountService;
 use App\Models\Account;
 use App\Models\Role;
 use App\Models\User;
 use App\Values\DefaultAccountNames;
 use App\Values\UserRoles;
+use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Support\Facades\ParallelTesting;
 use Illuminate\Support\Str;
-use Tests\Domain\Account\Aggregates\LedgerAggregateTest;
 use Throwable;
-use Filament\Facades\Filament;
 
 abstract class TestCase extends BaseTestCase
 {
@@ -28,11 +26,11 @@ abstract class TestCase extends BaseTestCase
     protected User $business_user;
 
     protected Account $account;
-    
+
     protected function tearDown(): void
     {
         parent::tearDown();
-        
+
         // Close any Mockery mocks
         \Mockery::close();
     }
@@ -55,7 +53,7 @@ abstract class TestCase extends BaseTestCase
             $this->business_user = User::factory()->withBusinessRole()->create();
             $this->account = $this->createAccount($this->business_user);
         }
-        
+
         // Set up Filament panel if we're in a Filament test directory
         $testFile = (new \ReflectionClass($this))->getFileName();
         if (str_contains($testFile, '/Filament/') || str_contains($testFile, '\\Filament\\')) {
@@ -74,7 +72,7 @@ abstract class TestCase extends BaseTestCase
         if (str_contains($testFile, '/Security/') || str_contains($testFile, '\\Security\\')) {
             return false;
         }
-        
+
         return true;
     }
 
@@ -83,23 +81,23 @@ abstract class TestCase extends BaseTestCase
      */
     protected function createDefaultAccounts(): void
     {
-        if (!isset($this->user)) {
+        if (! isset($this->user)) {
             $this->user = User::factory()->create();
         }
-        
-        if (!isset($this->business_user)) {
+
+        if (! isset($this->business_user)) {
             $this->business_user = User::factory()->withBusinessRole()->create();
         }
-        
-        if (!isset($this->account)) {
+
+        if (! isset($this->account)) {
             $this->account = $this->createAccount($this->business_user);
         }
     }
 
     /**
-     * @throws \Throwable
+     * @throws Throwable
      */
-    protected function assertExceptionThrown( callable $callable, string $expectedExceptionClass): void
+    protected function assertExceptionThrown(callable $callable, string $expectedExceptionClass): void
     {
         try {
             $callable();
@@ -124,12 +122,12 @@ abstract class TestCase extends BaseTestCase
     {
         $uuid = Str::uuid();
 
-        app( LedgerAggregate::class )->retrieve( $uuid )
+        app(LedgerAggregate::class)->retrieve($uuid)
                                      ->createAccount(
                                          hydrate(
                                              class: \App\Domain\Account\DataObjects\Account::class,
                                              properties: [
-                                                 'name'      => DefaultAccountNames::default(
+                                                 'name' => DefaultAccountNames::default(
                                                  ),
                                                  'user_uuid' => $user->uuid,
                                              ]
@@ -137,7 +135,7 @@ abstract class TestCase extends BaseTestCase
                                      )
                                      ->persist();
 
-        return app( AccountRepository::class )->findByUuid( $uuid );
+        return app(AccountRepository::class)->findByUuid($uuid);
     }
 
     /**
@@ -147,11 +145,11 @@ abstract class TestCase extends BaseTestCase
     {
         // Check if roles already exist in the database
         $existingRoles = Role::whereIn('name', array_column(UserRoles::cases(), 'value'))->count();
-        
+
         if ($existingRoles >= count(UserRoles::cases())) {
             return;
         }
-        
+
         // Create roles without transaction to avoid nesting issues
         collect(UserRoles::cases())->each(function ($role) {
             Role::firstOrCreate(
@@ -169,13 +167,13 @@ abstract class TestCase extends BaseTestCase
     protected function setUpParallelTesting(): void
     {
         $token = ParallelTesting::token();
-        
+
         if ($token) {
             // Prefix Redis connections for isolation
             config([
                 'database.redis.options.prefix' => 'test_' . $token . ':',
-                'cache.prefix' => 'test_' . $token,
-                'horizon.prefix' => 'test_' . $token . '_horizon:',
+                'cache.prefix'                  => 'test_' . $token,
+                'horizon.prefix'                => 'test_' . $token . '_horizon:',
             ]);
 
             // Ensure event sourcing uses isolated storage
@@ -184,15 +182,15 @@ abstract class TestCase extends BaseTestCase
             ]);
         }
     }
-    
+
     /**
-     * Set up Filament for testing
+     * Set up Filament for testing.
      */
     protected function setUpFilament(): void
     {
         // Register and set the admin panel as current
         $panel = Filament::getPanel('admin');
-        
+
         if ($panel) {
             Filament::setCurrentPanel($panel);
             Filament::setServingStatus(true);

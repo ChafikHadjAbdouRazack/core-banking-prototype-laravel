@@ -3,8 +3,8 @@
 namespace App\Providers;
 
 use App\Domain\Custodian\Services\CustodianRegistry;
-use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\ServiceProvider;
 
 class CustodianServiceProvider extends ServiceProvider
 {
@@ -34,7 +34,7 @@ class CustodianServiceProvider extends ServiceProvider
     }
 
     /**
-     * Register all configured custodians
+     * Register all configured custodians.
      */
     private function registerCustodians(): void
     {
@@ -43,14 +43,14 @@ class CustodianServiceProvider extends ServiceProvider
         $default = config('custodians.default');
 
         foreach ($config as $name => $settings) {
-            if (!$settings['enabled'] ?? false) {
+            if (! $settings['enabled'] ?? false) {
                 continue;
             }
 
             try {
                 $connectorClass = $settings['class'] ?? null;
 
-                if (!$connectorClass || !class_exists($connectorClass)) {
+                if (! $connectorClass || ! class_exists($connectorClass)) {
                     Log::warning("Custodian connector class not found: {$connectorClass}");
                     continue;
                 }

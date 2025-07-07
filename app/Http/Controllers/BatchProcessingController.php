@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
-use App\Models\Account;
-use App\Domain\Batch\Models\BatchJob;
 use App\Domain\Batch\Models\BatchItem;
+use App\Domain\Batch\Models\BatchJob;
 use App\Domain\Batch\Services\BatchProcessingService;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -22,7 +21,7 @@ class BatchProcessingController extends Controller
     }
 
     /**
-     * Display batch processing interface
+     * Display batch processing interface.
      */
     public function index(Request $request)
     {
@@ -30,10 +29,10 @@ class BatchProcessingController extends Controller
 
         // Get filter parameters
         $filters = [
-            'status' => $request->get('status', 'all'),
-            'type' => $request->get('type', 'all'),
+            'status'    => $request->get('status', 'all'),
+            'type'      => $request->get('type', 'all'),
             'date_from' => $request->get('date_from'),
-            'date_to' => $request->get('date_to'),
+            'date_to'   => $request->get('date_to'),
         ];
 
         // Get batch jobs
@@ -54,7 +53,7 @@ class BatchProcessingController extends Controller
     }
 
     /**
-     * Show create batch job form
+     * Show create batch job form.
      */
     public function create(Request $request)
     {
@@ -70,52 +69,52 @@ class BatchProcessingController extends Controller
     }
 
     /**
-     * Store a new batch job
+     * Store a new batch job.
      */
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'type' => 'required|in:transfer,payment,conversion',
-            'schedule_at' => 'nullable|date|after:now',
-            'items' => 'required|array|min:1',
+            'name'                 => 'required|string|max:255',
+            'type'                 => 'required|in:transfer,payment,conversion',
+            'schedule_at'          => 'nullable|date|after:now',
+            'items'                => 'required|array|min:1',
             'items.*.from_account' => 'required_if:type,transfer|uuid',
-            'items.*.to_account' => 'required_if:type,transfer|uuid',
-            'items.*.amount' => 'required|numeric|min:0.01',
-            'items.*.currency' => 'required|string|size:3',
-            'items.*.description' => 'nullable|string|max:255',
+            'items.*.to_account'   => 'required_if:type,transfer|uuid',
+            'items.*.amount'       => 'required|numeric|min:0.01',
+            'items.*.currency'     => 'required|string|size:3',
+            'items.*.description'  => 'nullable|string|max:255',
         ]);
 
         DB::beginTransaction();
         try {
             // Create batch job
             $batchJob = BatchJob::create([
-                'uuid' => Str::uuid(),
-                'user_uuid' => Auth::user()->uuid,
-                'name' => $validated['name'],
-                'type' => $validated['type'],
-                'status' => 'pending',
-                'total_items' => count($validated['items']),
+                'uuid'            => Str::uuid(),
+                'user_uuid'       => Auth::user()->uuid,
+                'name'            => $validated['name'],
+                'type'            => $validated['type'],
+                'status'          => 'pending',
+                'total_items'     => count($validated['items']),
                 'processed_items' => 0,
-                'failed_items' => 0,
-                'scheduled_at' => $validated['schedule_at'] ?? now(),
+                'failed_items'    => 0,
+                'scheduled_at'    => $validated['schedule_at'] ?? now(),
             ]);
 
             // Create batch items
             foreach ($validated['items'] as $index => $item) {
                 BatchItem::create([
                     'batch_job_id' => $batchJob->id,
-                    'sequence' => $index + 1,
-                    'type' => $validated['type'],
-                    'status' => 'pending',
-                    'data' => $item,
+                    'sequence'     => $index + 1,
+                    'type'         => $validated['type'],
+                    'status'       => 'pending',
+                    'data'         => $item,
                 ]);
             }
 
             DB::commit();
 
             // Queue for processing if not scheduled
-            if (!isset($validated['schedule_at'])) {
+            if (! isset($validated['schedule_at'])) {
                 $this->batchService->processBatch($batchJob);
             }
 
@@ -124,6 +123,7 @@ class BatchProcessingController extends Controller
                 ->with('success', 'Batch job created successfully');
         } catch (\Exception $e) {
             DB::rollBack();
+
             return back()
                 ->withInput()
                 ->withErrors(['error' => 'Failed to create batch job: ' . $e->getMessage()]);
@@ -131,7 +131,7 @@ class BatchProcessingController extends Controller
     }
 
     /**
-     * Show batch job details
+     * Show batch job details.
      */
     public function show(BatchJob $batchJob)
     {
@@ -157,7 +157,7 @@ class BatchProcessingController extends Controller
     }
 
     /**
-     * Cancel a pending batch job
+     * Cancel a pending batch job.
      */
     public function cancel(BatchJob $batchJob)
     {
@@ -166,7 +166,7 @@ class BatchProcessingController extends Controller
             abort(403);
         }
 
-        if (!in_array($batchJob->status, ['pending', 'processing'])) {
+        if (! in_array($batchJob->status, ['pending', 'processing'])) {
             return back()->withErrors(['error' => 'Cannot cancel this batch job']);
         }
 
@@ -181,7 +181,7 @@ class BatchProcessingController extends Controller
     }
 
     /**
-     * Retry failed items in a batch job
+     * Retry failed items in a batch job.
      */
     public function retry(BatchJob $batchJob)
     {
@@ -200,14 +200,14 @@ class BatchProcessingController extends Controller
         $batchJob->items()
             ->where('status', 'failed')
             ->update([
-                'status' => 'pending',
+                'status'        => 'pending',
                 'error_message' => null,
-                'processed_at' => null,
+                'processed_at'  => null,
             ]);
 
         // Update batch job
         $batchJob->update([
-            'status' => 'processing',
+            'status'       => 'processing',
             'failed_items' => 0,
         ]);
 
@@ -218,7 +218,7 @@ class BatchProcessingController extends Controller
     }
 
     /**
-     * Download batch job report
+     * Download batch job report.
      */
     public function download(BatchJob $batchJob)
     {
@@ -269,7 +269,7 @@ class BatchProcessingController extends Controller
     }
 
     /**
-     * Get batch jobs for user
+     * Get batch jobs for user.
      */
     private function getBatchJobs($user, $filters)
     {
@@ -298,7 +298,7 @@ class BatchProcessingController extends Controller
     }
 
     /**
-     * Get batch statistics
+     * Get batch statistics.
      */
     private function getBatchStatistics($user)
     {
@@ -317,48 +317,49 @@ class BatchProcessingController extends Controller
     }
 
     /**
-     * Get batch templates
+     * Get batch templates.
      */
     private function getBatchTemplates()
     {
         return [
             [
-                'id' => 'salary_payments',
-                'name' => 'Salary Payments',
+                'id'          => 'salary_payments',
+                'name'        => 'Salary Payments',
                 'description' => 'Monthly salary disbursement to employees',
-                'type' => 'transfer',
-                'icon' => 'currency-dollar',
+                'type'        => 'transfer',
+                'icon'        => 'currency-dollar',
             ],
             [
-                'id' => 'vendor_payments',
-                'name' => 'Vendor Payments',
+                'id'          => 'vendor_payments',
+                'name'        => 'Vendor Payments',
                 'description' => 'Bulk payments to suppliers and vendors',
-                'type' => 'payment',
-                'icon' => 'shopping-cart',
+                'type'        => 'payment',
+                'icon'        => 'shopping-cart',
             ],
             [
-                'id' => 'currency_conversion',
-                'name' => 'Currency Conversion',
+                'id'          => 'currency_conversion',
+                'name'        => 'Currency Conversion',
                 'description' => 'Bulk currency conversion operations',
-                'type' => 'conversion',
-                'icon' => 'refresh',
+                'type'        => 'conversion',
+                'icon'        => 'refresh',
             ],
             [
-                'id' => 'dividend_distribution',
-                'name' => 'Dividend Distribution',
+                'id'          => 'dividend_distribution',
+                'name'        => 'Dividend Distribution',
                 'description' => 'Distribute dividends to shareholders',
-                'type' => 'transfer',
-                'icon' => 'chart-bar',
+                'type'        => 'transfer',
+                'icon'        => 'chart-bar',
             ],
         ];
     }
 
     /**
-     * Get specific batch template
+     * Get specific batch template.
      */
     private function getBatchTemplate($templateId)
     {
         $templates = collect($this->getBatchTemplates());
+
         return $templates->firstWhere('id', $templateId);
     }
 }

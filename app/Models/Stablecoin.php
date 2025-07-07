@@ -57,17 +57,17 @@ class Stablecoin extends Model
      * The attributes that should be cast.
      */
     protected $casts = [
-        'peg_ratio' => 'decimal:8',
-        'target_price' => 'decimal:8',
-        'collateral_ratio' => 'decimal:4',
+        'peg_ratio'            => 'decimal:8',
+        'target_price'         => 'decimal:8',
+        'collateral_ratio'     => 'decimal:4',
         'min_collateral_ratio' => 'decimal:4',
-        'liquidation_penalty' => 'decimal:4',
-        'mint_fee' => 'decimal:6',
-        'burn_fee' => 'decimal:6',
-        'is_active' => 'boolean',
-        'minting_enabled' => 'boolean',
-        'burning_enabled' => 'boolean',
-        'metadata' => 'array',
+        'liquidation_penalty'  => 'decimal:4',
+        'mint_fee'             => 'decimal:6',
+        'burn_fee'             => 'decimal:6',
+        'is_active'            => 'boolean',
+        'minting_enabled'      => 'boolean',
+        'burning_enabled'      => 'boolean',
+        'metadata'             => 'array',
     ];
 
     /**

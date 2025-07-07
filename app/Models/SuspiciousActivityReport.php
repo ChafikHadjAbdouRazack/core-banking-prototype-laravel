@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class SuspiciousActivityReport extends Model
 {
@@ -60,77 +60,87 @@ class SuspiciousActivityReport extends Model
     ];
 
     protected $casts = [
-        'subject_details' => 'array',
-        'involved_accounts' => 'array',
-        'involved_parties' => 'array',
-        'activity_types' => 'array',
-        'red_flags' => 'array',
-        'triggering_rules' => 'array',
-        'related_transactions' => 'array',
-        'supporting_documents' => 'array',
-        'actions_taken' => 'array',
-        'filing_details' => 'array',
-        'related_sars' => 'array',
-        'access_log' => 'array',
-        'total_amount' => 'decimal:2',
-        'filed_with_regulator' => 'boolean',
-        'requires_follow_up' => 'boolean',
-        'qa_approved' => 'boolean',
-        'is_confidential' => 'boolean',
-        'activity_start_date' => 'datetime',
-        'activity_end_date' => 'datetime',
-        'investigation_started_at' => 'datetime',
+        'subject_details'            => 'array',
+        'involved_accounts'          => 'array',
+        'involved_parties'           => 'array',
+        'activity_types'             => 'array',
+        'red_flags'                  => 'array',
+        'triggering_rules'           => 'array',
+        'related_transactions'       => 'array',
+        'supporting_documents'       => 'array',
+        'actions_taken'              => 'array',
+        'filing_details'             => 'array',
+        'related_sars'               => 'array',
+        'access_log'                 => 'array',
+        'total_amount'               => 'decimal:2',
+        'filed_with_regulator'       => 'boolean',
+        'requires_follow_up'         => 'boolean',
+        'qa_approved'                => 'boolean',
+        'is_confidential'            => 'boolean',
+        'activity_start_date'        => 'datetime',
+        'activity_end_date'          => 'datetime',
+        'investigation_started_at'   => 'datetime',
         'investigation_completed_at' => 'datetime',
-        'decision_date' => 'datetime',
-        'filing_date' => 'datetime',
-        'follow_up_date' => 'date',
-        'reviewed_at' => 'datetime',
-        'retention_until' => 'datetime',
+        'decision_date'              => 'datetime',
+        'filing_date'                => 'datetime',
+        'follow_up_date'             => 'date',
+        'reviewed_at'                => 'datetime',
+        'retention_until'            => 'datetime',
     ];
 
-    const STATUS_DRAFT = 'draft';
-    const STATUS_PENDING_REVIEW = 'pending_review';
-    const STATUS_SUBMITTED = 'submitted';
-    const STATUS_CLOSED = 'closed';
+    public const STATUS_DRAFT = 'draft';
 
-    const PRIORITY_LOW = 'low';
-    const PRIORITY_MEDIUM = 'medium';
-    const PRIORITY_HIGH = 'high';
-    const PRIORITY_CRITICAL = 'critical';
+    public const STATUS_PENDING_REVIEW = 'pending_review';
 
-    const SUBJECT_TYPE_CUSTOMER = 'customer';
-    const SUBJECT_TYPE_TRANSACTION = 'transaction';
-    const SUBJECT_TYPE_PATTERN = 'pattern';
+    public const STATUS_SUBMITTED = 'submitted';
 
-    const DECISION_FILE_SAR = 'file_sar';
-    const DECISION_NO_ACTION = 'no_action';
-    const DECISION_CONTINUE_MONITORING = 'continue_monitoring';
+    public const STATUS_CLOSED = 'closed';
 
-    const ACTIVITY_TYPES = [
-        'structuring' => 'Structuring',
-        'layering' => 'Layering',
-        'integration' => 'Integration',
-        'tax_evasion' => 'Tax Evasion',
+    public const PRIORITY_LOW = 'low';
+
+    public const PRIORITY_MEDIUM = 'medium';
+
+    public const PRIORITY_HIGH = 'high';
+
+    public const PRIORITY_CRITICAL = 'critical';
+
+    public const SUBJECT_TYPE_CUSTOMER = 'customer';
+
+    public const SUBJECT_TYPE_TRANSACTION = 'transaction';
+
+    public const SUBJECT_TYPE_PATTERN = 'pattern';
+
+    public const DECISION_FILE_SAR = 'file_sar';
+
+    public const DECISION_NO_ACTION = 'no_action';
+
+    public const DECISION_CONTINUE_MONITORING = 'continue_monitoring';
+
+    public const ACTIVITY_TYPES = [
+        'structuring'         => 'Structuring',
+        'layering'            => 'Layering',
+        'integration'         => 'Integration',
+        'tax_evasion'         => 'Tax Evasion',
         'terrorist_financing' => 'Terrorist Financing',
-        'corruption' => 'Corruption/Bribery',
-        'fraud' => 'Fraud',
-        'identity_theft' => 'Identity Theft',
-        'human_trafficking' => 'Human Trafficking',
-        'drug_trafficking' => 'Drug Trafficking',
-        'other' => 'Other Suspicious Activity',
+        'corruption'          => 'Corruption/Bribery',
+        'fraud'               => 'Fraud',
+        'identity_theft'      => 'Identity Theft',
+        'human_trafficking'   => 'Human Trafficking',
+        'drug_trafficking'    => 'Drug Trafficking',
+        'other'               => 'Other Suspicious Activity',
     ];
 
-    const RED_FLAGS = [
+    public const RED_FLAGS = [
         'unusual_transaction_pattern' => 'Unusual transaction patterns',
-        'rapid_movement' => 'Rapid movement of funds',
-        'multiple_accounts' => 'Use of multiple accounts',
-        'high_risk_geography' => 'High-risk geographic exposure',
-        'inconsistent_activity' => 'Activity inconsistent with profile',
-        'reluctant_information' => 'Reluctance to provide information',
-        'complex_structure' => 'Unnecessarily complex transaction structure',
-        'round_amounts' => 'Frequent round-dollar transactions',
-        'no_business_purpose' => 'No apparent business purpose',
-        'third_party_involvement' => 'Unusual third-party involvement',
+        'rapid_movement'              => 'Rapid movement of funds',
+        'multiple_accounts'           => 'Use of multiple accounts',
+        'high_risk_geography'         => 'High-risk geographic exposure',
+        'inconsistent_activity'       => 'Activity inconsistent with profile',
+        'reluctant_information'       => 'Reluctance to provide information',
+        'complex_structure'           => 'Unnecessarily complex transaction structure',
+        'round_amounts'               => 'Frequent round-dollar transactions',
+        'no_business_purpose'         => 'No apparent business purpose',
+        'third_party_involvement'     => 'Unusual third-party involvement',
     ];
 
     protected static function boot()
@@ -138,10 +148,10 @@ class SuspiciousActivityReport extends Model
         parent::boot();
 
         static::creating(function ($sar) {
-            if (!$sar->sar_number) {
+            if (! $sar->sar_number) {
                 $sar->sar_number = static::generateSARNumber();
             }
-            if (!$sar->retention_until) {
+            if (! $sar->retention_until) {
                 $sar->retention_until = now()->addYears(5); // Standard retention period
             }
         });
@@ -225,7 +235,7 @@ class SuspiciousActivityReport extends Model
 
     public function requiresFollowUp(): bool
     {
-        return $this->requires_follow_up && (!$this->follow_up_date || $this->follow_up_date->isFuture());
+        return $this->requires_follow_up && (! $this->follow_up_date || $this->follow_up_date->isFuture());
     }
 
     public function isOverdue(): bool
@@ -241,9 +251,9 @@ class SuspiciousActivityReport extends Model
     public function startInvestigation(User $investigator): void
     {
         $this->update([
-            'investigator_id' => $investigator->id,
+            'investigator_id'          => $investigator->id,
             'investigation_started_at' => now(),
-            'status' => self::STATUS_PENDING_REVIEW,
+            'status'                   => self::STATUS_PENDING_REVIEW,
         ]);
     }
 
@@ -251,18 +261,18 @@ class SuspiciousActivityReport extends Model
     {
         $this->update([
             'investigation_completed_at' => now(),
-            'investigation_findings' => $findings,
-            'supporting_documents' => array_merge($this->supporting_documents ?? [], $supportingDocs),
+            'investigation_findings'     => $findings,
+            'supporting_documents'       => array_merge($this->supporting_documents ?? [], $supportingDocs),
         ]);
     }
 
     public function makeDecision(string $decision, string $rationale, User $decisionMaker): void
     {
         $this->update([
-            'decision' => $decision,
+            'decision'           => $decision,
             'decision_rationale' => $rationale,
-            'decision_maker_id' => $decisionMaker->id,
-            'decision_date' => now(),
+            'decision_maker_id'  => $decisionMaker->id,
+            'decision_date'      => now(),
         ]);
 
         if ($decision === self::DECISION_FILE_SAR) {
@@ -277,10 +287,10 @@ class SuspiciousActivityReport extends Model
     {
         // Generate filing details
         $this->filing_details = [
-            'prepared_at' => now()->toIso8601String(),
-            'preparer_id' => auth()->id(),
+            'prepared_at'      => now()->toIso8601String(),
+            'preparer_id'      => auth()->id(),
             'institution_name' => config('app.name'),
-            'filing_deadline' => now()->addDays(30)->toDateString(), // Standard 30-day deadline
+            'filing_deadline'  => now()->addDays(30)->toDateString(), // Standard 30-day deadline
         ];
         $this->save();
     }
@@ -289,27 +299,27 @@ class SuspiciousActivityReport extends Model
     {
         $this->update([
             'filed_with_regulator' => true,
-            'filing_reference' => $reference,
-            'filing_date' => now(),
-            'filing_jurisdiction' => $jurisdiction,
-            'status' => self::STATUS_SUBMITTED,
+            'filing_reference'     => $reference,
+            'filing_date'          => now(),
+            'filing_jurisdiction'  => $jurisdiction,
+            'status'               => self::STATUS_SUBMITTED,
         ]);
     }
 
     public function addReview(string $comments, bool $approved, User $reviewer): void
     {
         $this->update([
-            'reviewed_by' => $reviewer->id,
-            'reviewed_at' => now(),
+            'reviewed_by'     => $reviewer->id,
+            'reviewed_at'     => now(),
             'review_comments' => $comments,
-            'qa_approved' => $approved,
+            'qa_approved'     => $approved,
         ]);
     }
 
     public function linkTransaction(string $transactionId): void
     {
         $transactions = $this->related_transactions ?? [];
-        if (!in_array($transactionId, $transactions)) {
+        if (! in_array($transactionId, $transactions)) {
             $transactions[] = $transactionId;
             $this->related_transactions = $transactions;
             $this->save();
@@ -319,7 +329,7 @@ class SuspiciousActivityReport extends Model
     public function linkSAR(string $sarId): void
     {
         $sars = $this->related_sars ?? [];
-        if (!in_array($sarId, $sars)) {
+        if (! in_array($sarId, $sars)) {
             $sars[] = $sarId;
             $this->related_sars = $sars;
             $this->save();
@@ -330,10 +340,10 @@ class SuspiciousActivityReport extends Model
     {
         $log = $this->access_log ?? [];
         $log[] = [
-            'user_id' => auth()->id(),
-            'user_name' => auth()->user()->name,
+            'user_id'     => auth()->id(),
+            'user_name'   => auth()->user()->name,
             'accessed_at' => now()->toIso8601String(),
-            'ip_address' => request()->ip(),
+            'ip_address'  => request()->ip(),
         ];
 
         $this->access_log = $log;
@@ -349,7 +359,7 @@ class SuspiciousActivityReport extends Model
 
     public function getActivityDuration(): int
     {
-        if (!$this->activity_start_date || !$this->activity_end_date) {
+        if (! $this->activity_start_date || ! $this->activity_end_date) {
             return 0;
         }
 
@@ -359,16 +369,16 @@ class SuspiciousActivityReport extends Model
     public function getSummary(): array
     {
         return [
-            'sar_number' => $this->sar_number,
-            'status' => $this->status,
-            'priority' => $this->priority,
-            'subject' => $this->subject_details['name'] ?? 'Unknown',
-            'activity_types' => $this->activity_types,
-            'total_amount' => $this->total_amount,
+            'sar_number'        => $this->sar_number,
+            'status'            => $this->status,
+            'priority'          => $this->priority,
+            'subject'           => $this->subject_details['name'] ?? 'Unknown',
+            'activity_types'    => $this->activity_types,
+            'total_amount'      => $this->total_amount,
             'transaction_count' => $this->transaction_count,
             'activity_duration' => $this->getActivityDuration() . ' days',
-            'filed' => $this->filed_with_regulator,
-            'decision' => $this->decision,
+            'filed'             => $this->filed_with_regulator,
+            'decision'          => $this->decision,
         ];
     }
 }

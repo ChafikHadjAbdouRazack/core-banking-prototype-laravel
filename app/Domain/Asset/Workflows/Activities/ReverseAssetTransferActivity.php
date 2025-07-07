@@ -12,7 +12,7 @@ use Workflow\Activity;
 class ReverseAssetTransferActivity extends Activity
 {
     /**
-     * Reverse an initiated asset transfer as part of compensation logic
+     * Reverse an initiated asset transfer as part of compensation logic.
      */
     public function execute(
         string $transferId,
@@ -35,13 +35,13 @@ class ReverseAssetTransferActivity extends Activity
 
         // Log the reversal for audit purposes
         logger()->info('Asset transfer reversed', [
-            'transfer_id' => $transferId,
+            'transfer_id'  => $transferId,
             'from_account' => $fromAccountUuid->toString(),
-            'to_account' => $toAccountUuid->toString(),
-            'from_asset' => $fromAssetCode,
-            'to_asset' => $toAssetCode,
-            'amount' => $fromAmount->getAmount(),
-            'reason' => 'Workflow compensation',
+            'to_account'   => $toAccountUuid->toString(),
+            'from_asset'   => $fromAssetCode,
+            'to_asset'     => $toAssetCode,
+            'amount'       => $fromAmount->getAmount(),
+            'reason'       => 'Workflow compensation',
         ]);
     }
 }

@@ -76,7 +76,7 @@ class MockExchangeRateProvider extends BaseExchangeRateProvider
                 volume24h: 0, // No volume for identity rates
                 change24h: 0, // No change for identity rates
                 metadata: [
-                    'source' => 'mock',
+                    'source'        => 'mock',
                     'identity_rate' => true,
                 ]
             );
@@ -106,7 +106,7 @@ class MockExchangeRateProvider extends BaseExchangeRateProvider
             volume24h: rand(1000000, 10000000) / 100, // Random volume
             change24h: (rand(-500, 500) / 10000), // Random change -5% to +5%
             metadata: [
-                'source' => 'mock',
+                'source'         => 'mock',
                 'mock_base_rate' => $rate,
             ]
         );
@@ -200,7 +200,7 @@ class MockExchangeRateProvider extends BaseExchangeRateProvider
     }
 
     /**
-     * Override isAvailable for mock provider
+     * Override isAvailable for mock provider.
      */
     public function isAvailable(): bool
     {
@@ -208,7 +208,7 @@ class MockExchangeRateProvider extends BaseExchangeRateProvider
     }
 
     /**
-     * Set mock rate for testing
+     * Set mock rate for testing.
      */
     public function setMockRate(string $from, string $to, float $rate): void
     {

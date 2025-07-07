@@ -29,7 +29,7 @@ class LiquidityController extends Controller
     {
         $pool = $this->liquidityService->getPool($poolId);
 
-        if (!$pool) {
+        if (! $pool) {
             abort(404, 'Liquidity pool not found');
         }
 
@@ -48,10 +48,10 @@ class LiquidityController extends Controller
     public function addLiquidity(Request $request): \Illuminate\Http\RedirectResponse
     {
         $validated = $request->validate([
-            'pool_id' => 'required|uuid',
-            'base_amount' => 'required|numeric|min:0.00000001',
+            'pool_id'      => 'required|uuid',
+            'base_amount'  => 'required|numeric|min:0.00000001',
             'quote_amount' => 'required|numeric|min:0.00000001',
-            'min_shares' => 'nullable|numeric|min:0',
+            'min_shares'   => 'nullable|numeric|min:0',
         ]);
 
         try {
@@ -80,9 +80,9 @@ class LiquidityController extends Controller
     public function removeLiquidity(Request $request): \Illuminate\Http\RedirectResponse
     {
         $validated = $request->validate([
-            'pool_id' => 'required|uuid',
-            'shares' => 'required|numeric|min:0.00000001',
-            'min_base_amount' => 'nullable|numeric|min:0',
+            'pool_id'          => 'required|uuid',
+            'shares'           => 'required|numeric|min:0.00000001',
+            'min_base_amount'  => 'nullable|numeric|min:0',
             'min_quote_amount' => 'nullable|numeric|min:0',
         ]);
 
@@ -126,7 +126,7 @@ class LiquidityController extends Controller
             );
 
             $rewardText = collect($rewards)
-                ->map(fn($amount, $currency) => "$amount $currency")
+                ->map(fn ($amount, $currency) => "$amount $currency")
                 ->join(', ');
 
             return redirect()

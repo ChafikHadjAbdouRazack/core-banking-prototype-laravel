@@ -11,81 +11,81 @@ use Illuminate\Support\Collection;
 interface IExternalExchangeConnector
 {
     /**
-     * Get the exchange name
+     * Get the exchange name.
      */
     public function getName(): string;
 
     /**
-     * Check if the exchange is available
+     * Check if the exchange is available.
      */
     public function isAvailable(): bool;
 
     /**
-     * Get supported market pairs
+     * Get supported market pairs.
      *
      * @return Collection<MarketPair>
      */
     public function getSupportedPairs(): Collection;
 
     /**
-     * Get ticker data for a market pair
+     * Get ticker data for a market pair.
      */
     public function getTicker(string $baseCurrency, string $quoteCurrency): ExternalTicker;
 
     /**
-     * Get order book for a market pair
+     * Get order book for a market pair.
      */
     public function getOrderBook(string $baseCurrency, string $quoteCurrency, int $depth = 20): ExternalOrderBook;
 
     /**
-     * Get recent trades for a market pair
+     * Get recent trades for a market pair.
      *
      * @return Collection<ExternalTrade>
      */
     public function getRecentTrades(string $baseCurrency, string $quoteCurrency, int $limit = 100): Collection;
 
     /**
-     * Place a buy order
+     * Place a buy order.
      *
      * @return array Order details
      */
     public function placeBuyOrder(string $baseCurrency, string $quoteCurrency, string $amount, ?string $price = null): array;
 
     /**
-     * Place a sell order
+     * Place a sell order.
      *
      * @return array Order details
      */
     public function placeSellOrder(string $baseCurrency, string $quoteCurrency, string $amount, ?string $price = null): array;
 
     /**
-     * Cancel an order
+     * Cancel an order.
      */
     public function cancelOrder(string $orderId): bool;
 
     /**
-     * Get order status
+     * Get order status.
      *
      * @return array Order details
      */
     public function getOrderStatus(string $orderId): array;
 
     /**
-     * Get account balance
+     * Get account balance.
      *
      * @return array Balance by currency
      */
     public function getBalance(): array;
 
     /**
-     * Get trading fees
+     * Get trading fees.
      *
      * @return array Fee structure
      */
     public function getFees(): array;
 
     /**
-     * Test connectivity
+     * Test connectivity.
      */
     public function ping(): bool;
 }

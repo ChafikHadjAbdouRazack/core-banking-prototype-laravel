@@ -12,9 +12,9 @@ return [
     |
     */
 
-    'primary' => env('PRIMARY_BASKET_CODE', 'PRIMARY'),
-    'primary_code' => env('PRIMARY_BASKET_CODE', 'PRIMARY'),
-    'primary_name' => env('PRIMARY_BASKET_NAME', 'Primary Currency Basket'),
-    'primary_symbol' => env('PRIMARY_BASKET_SYMBOL', '$'),
+    'primary'             => env('PRIMARY_BASKET_CODE', 'PRIMARY'),
+    'primary_code'        => env('PRIMARY_BASKET_CODE', 'PRIMARY'),
+    'primary_name'        => env('PRIMARY_BASKET_NAME', 'Primary Currency Basket'),
+    'primary_symbol'      => env('PRIMARY_BASKET_SYMBOL', '$'),
     'primary_description' => env('PRIMARY_BASKET_DESCRIPTION', 'Platform primary currency basket'),
 ];

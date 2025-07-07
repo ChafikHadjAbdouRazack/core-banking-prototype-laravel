@@ -8,15 +8,15 @@ use App\Domain\Asset\Aggregates\AssetTransactionAggregate;
 use App\Domain\Asset\Events\AssetTransactionCreated;
 
 it('can create credit transaction', function () {
-    $uuid = (string) \Illuminate\Support\Str::uuid();
-    $accountUuid = new AccountUuid((string) \Illuminate\Support\Str::uuid());
+    $uuid = (string) Illuminate\Support\Str::uuid();
+    $accountUuid = new AccountUuid((string) Illuminate\Support\Str::uuid());
     $money = new Money(5000);
-    
+
     $aggregate = AssetTransactionAggregate::retrieve($uuid)
         ->credit($accountUuid, 'USD', $money, 'Test deposit');
-    
+
     $events = $aggregate->getRecordedEvents();
-    
+
     expect($events)->toHaveCount(1);
     expect($events[0])->toBeInstanceOf(AssetTransactionCreated::class);
     expect($events[0]->accountUuid)->toEqual($accountUuid);
@@ -28,15 +28,15 @@ it('can create credit transaction', function () {
 });
 
 it('can create debit transaction', function () {
-    $uuid = (string) \Illuminate\Support\Str::uuid();
-    $accountUuid = new AccountUuid((string) \Illuminate\Support\Str::uuid());
+    $uuid = (string) Illuminate\Support\Str::uuid();
+    $accountUuid = new AccountUuid((string) Illuminate\Support\Str::uuid());
     $money = new Money(3000);
-    
+
     $aggregate = AssetTransactionAggregate::retrieve($uuid)
         ->debit($accountUuid, 'EUR', $money, 'Test withdrawal');
-    
+
     $events = $aggregate->getRecordedEvents();
-    
+
     expect($events)->toHaveCount(1);
     expect($events[0])->toBeInstanceOf(AssetTransactionCreated::class);
     expect($events[0]->accountUuid)->toEqual($accountUuid);
@@ -48,13 +48,13 @@ it('can create debit transaction', function () {
 });
 
 it('can apply asset transaction created event', function () {
-    $uuid = (string) \Illuminate\Support\Str::uuid();
-    $accountUuid = new AccountUuid((string) \Illuminate\Support\Str::uuid());
+    $uuid = (string) Illuminate\Support\Str::uuid();
+    $accountUuid = new AccountUuid((string) Illuminate\Support\Str::uuid());
     $money = new Money(2500);
-    
+
     $aggregate = AssetTransactionAggregate::retrieve($uuid)
         ->credit($accountUuid, 'BTC', $money);
-    
+
     expect($aggregate->getAccountUuid())->toEqual($accountUuid);
     expect($aggregate->getAssetCode())->toBe('BTC');
     expect($aggregate->getMoney())->toEqual($money);

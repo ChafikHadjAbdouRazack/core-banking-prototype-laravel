@@ -19,13 +19,15 @@ class RefundAggregateTest extends TestCase
     use RefreshDatabase;
 
     private string $refundId;
+
     private string $investmentId;
+
     private string $userId;
 
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->refundId = Str::uuid()->toString();
         $this->investmentId = Str::uuid()->toString();
         $this->userId = Str::uuid()->toString();
@@ -58,7 +60,7 @@ class RefundAggregateTest extends TestCase
                     'Customer changed their mind',
                     $this->userId,
                     []
-                )
+                ),
             ]);
     }
 
@@ -75,7 +77,7 @@ class RefundAggregateTest extends TestCase
                     'customer_request',
                     'Customer changed their mind',
                     $this->userId
-                )
+                ),
             ])
             ->when(function (RefundAggregate $aggregate) {
                 $aggregate->approve(
@@ -89,7 +91,7 @@ class RefundAggregateTest extends TestCase
                     'admin-user-id',
                     'Refund approved per company policy',
                     []
-                )
+                ),
             ]);
     }
 
@@ -114,7 +116,7 @@ class RefundAggregateTest extends TestCase
                     $this->refundId,
                     'admin-user-id',
                     'Already approved'
-                )
+                ),
             ])
             ->when(function (RefundAggregate $aggregate) {
                 $aggregate->approve(
@@ -137,7 +139,7 @@ class RefundAggregateTest extends TestCase
                     'customer_request',
                     null,
                     $this->userId
-                )
+                ),
             ])
             ->when(function (RefundAggregate $aggregate) {
                 $aggregate->reject(
@@ -151,7 +153,7 @@ class RefundAggregateTest extends TestCase
                     'admin-user-id',
                     'Refund not eligible per terms and conditions',
                     []
-                )
+                ),
             ]);
     }
 
@@ -173,7 +175,7 @@ class RefundAggregateTest extends TestCase
                     $this->refundId,
                     'admin-user-id',
                     'Approved'
-                )
+                ),
             ])
             ->when(function (RefundAggregate $aggregate) {
                 $aggregate->process(
@@ -191,7 +193,7 @@ class RefundAggregateTest extends TestCase
                     'succeeded',
                     ['stripe_response' => 'data'],
                     []
-                )
+                ),
             ]);
     }
 
@@ -220,7 +222,7 @@ class RefundAggregateTest extends TestCase
                     're_test123',
                     'succeeded',
                     []
-                )
+                ),
             ])
             ->when(function (RefundAggregate $aggregate) {
                 $aggregate->complete(now()->toIso8601String());
@@ -232,7 +234,7 @@ class RefundAggregateTest extends TestCase
                     10000,
                     now()->toIso8601String(),
                     []
-                )
+                ),
             ]);
     }
 
@@ -254,7 +256,7 @@ class RefundAggregateTest extends TestCase
                     $this->refundId,
                     'admin-user-id',
                     'Approved'
-                )
+                ),
             ])
             ->when(function (RefundAggregate $aggregate) {
                 $aggregate->fail(
@@ -268,7 +270,7 @@ class RefundAggregateTest extends TestCase
                     'Payment processor error: Insufficient funds',
                     now()->toIso8601String(),
                     []
-                )
+                ),
             ]);
     }
 
@@ -285,7 +287,7 @@ class RefundAggregateTest extends TestCase
                     'customer_request',
                     null,
                     $this->userId
-                )
+                ),
             ])
             ->when(function (RefundAggregate $aggregate) {
                 $aggregate->cancel(
@@ -301,7 +303,7 @@ class RefundAggregateTest extends TestCase
                     $this->userId,
                     now()->toIso8601String(),
                     []
-                )
+                ),
             ]);
     }
 
@@ -339,7 +341,7 @@ class RefundAggregateTest extends TestCase
                     $this->investmentId,
                     10000,
                     now()->toIso8601String()
-                )
+                ),
             ])
             ->when(function (RefundAggregate $aggregate) {
                 $aggregate->cancel(

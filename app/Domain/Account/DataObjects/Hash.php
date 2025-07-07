@@ -6,7 +6,6 @@ namespace App\Domain\Account\DataObjects;
 
 use InvalidArgumentException;
 use JustSteveKing\DataObjects\Contracts\DataObjectContract;
-use App\Domain\Account\Utils\ValidatesHash;
 
 final readonly class Hash extends DataObject implements DataObjectContract
 {
@@ -16,7 +15,7 @@ final readonly class Hash extends DataObject implements DataObjectContract
     public function __construct(
         private string $hash
     ) {
-        if (!$this->isValidHash($hash)) {
+        if (! $this->isValidHash($hash)) {
             throw new InvalidArgumentException(
                 message: 'Invalid hash hash provided.'
             );
@@ -45,11 +44,11 @@ final readonly class Hash extends DataObject implements DataObjectContract
     }
 
     /**
-     * @param \App\Domain\Account\DataObjects\Hash $hash
+     * @param Hash $hash
      *
      * @return bool
      */
-    public function equals(Hash $hash): bool
+    public function equals(self $hash): bool
     {
         return hash_equals($this->hash, $hash->getHash());
     }

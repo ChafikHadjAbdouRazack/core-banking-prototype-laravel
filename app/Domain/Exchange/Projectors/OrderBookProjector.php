@@ -16,12 +16,12 @@ class OrderBookProjector extends Projector
     public function onOrderBookInitialized(OrderBookInitialized $event): void
     {
         OrderBook::create([
-            'order_book_id' => $event->orderBookId,
-            'base_currency' => $event->baseCurrency,
+            'order_book_id'  => $event->orderBookId,
+            'base_currency'  => $event->baseCurrency,
             'quote_currency' => $event->quoteCurrency,
-            'buy_orders' => json_encode([]),
-            'sell_orders' => json_encode([]),
-            'metadata' => $event->metadata ? json_encode($event->metadata) : null,
+            'buy_orders'     => json_encode([]),
+            'sell_orders'    => json_encode([]),
+            'metadata'       => $event->metadata ? json_encode($event->metadata) : null,
         ]);
     }
 
@@ -30,9 +30,9 @@ class OrderBookProjector extends Projector
         $orderBook = OrderBook::where('order_book_id', $event->orderBookId)->firstOrFail();
 
         $order = [
-            'order_id' => $event->orderId,
-            'price' => $event->price,
-            'amount' => $event->amount,
+            'order_id'  => $event->orderId,
+            'price'     => $event->price,
+            'amount'    => $event->amount,
             'timestamp' => now()->toIso8601String(),
         ];
 
@@ -45,7 +45,7 @@ class OrderBookProjector extends Projector
 
             $orderBook->update([
                 'buy_orders' => $buyOrders->toArray(),
-                'best_bid' => $buyOrders->first()['price'] ?? null,
+                'best_bid'   => $buyOrders->first()['price'] ?? null,
             ]);
         } else {
             $sellOrders = collect($orderBook->sell_orders ?? []);
@@ -56,7 +56,7 @@ class OrderBookProjector extends Projector
 
             $orderBook->update([
                 'sell_orders' => $sellOrders->toArray(),
-                'best_ask' => $sellOrders->first()['price'] ?? null,
+                'best_ask'    => $sellOrders->first()['price'] ?? null,
             ]);
         }
     }
@@ -74,10 +74,10 @@ class OrderBookProjector extends Projector
         })->values();
 
         $orderBook->update([
-            'buy_orders' => $buyOrders->toArray(),
+            'buy_orders'  => $buyOrders->toArray(),
             'sell_orders' => $sellOrders->toArray(),
-            'best_bid' => $buyOrders->first()['price'] ?? null,
-            'best_ask' => $sellOrders->first()['price'] ?? null,
+            'best_bid'    => $buyOrders->first()['price'] ?? null,
+            'best_ask'    => $sellOrders->first()['price'] ?? null,
         ]);
     }
 

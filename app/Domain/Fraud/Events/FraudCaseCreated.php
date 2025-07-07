@@ -21,7 +21,7 @@ class FraudCaseCreated
     }
 
     /**
-     * Get the tags that should be assigned to the event
+     * Get the tags that should be assigned to the event.
      */
     public function tags(): array
     {

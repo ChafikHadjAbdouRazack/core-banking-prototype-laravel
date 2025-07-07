@@ -20,17 +20,17 @@ class WebhookDeliveryFactory extends Factory
     {
         return [
             'webhook_uuid' => Webhook::factory(),
-            'event_type' => fake()->randomElement(array_keys(Webhook::EVENTS)),
-            'payload' => [
+            'event_type'   => fake()->randomElement(array_keys(Webhook::EVENTS)),
+            'payload'      => [
                 'event' => 'test.event',
-                'data' => [
-                    'id' => fake()->uuid(),
-                    'amount' => fake()->numberBetween(100, 10000),
+                'data'  => [
+                    'id'        => fake()->uuid(),
+                    'amount'    => fake()->numberBetween(100, 10000),
                     'timestamp' => now()->toIso8601String(),
                 ],
             ],
             'attempt_number' => 1,
-            'status' => WebhookDelivery::STATUS_PENDING,
+            'status'         => WebhookDelivery::STATUS_PENDING,
         ];
     }
 
@@ -40,14 +40,14 @@ class WebhookDeliveryFactory extends Factory
     public function delivered(): static
     {
         return $this->state(fn (array $attributes) => [
-            'status' => WebhookDelivery::STATUS_DELIVERED,
-            'response_status' => 200,
-            'response_body' => json_encode(['success' => true]),
+            'status'           => WebhookDelivery::STATUS_DELIVERED,
+            'response_status'  => 200,
+            'response_body'    => json_encode(['success' => true]),
             'response_headers' => [
                 'Content-Type' => 'application/json',
                 'X-Request-Id' => fake()->uuid(),
             ],
-            'duration_ms' => fake()->numberBetween(50, 500),
+            'duration_ms'  => fake()->numberBetween(50, 500),
             'delivered_at' => now(),
         ]);
     }
@@ -58,10 +58,10 @@ class WebhookDeliveryFactory extends Factory
     public function failed(string $error = null): static
     {
         return $this->state(fn (array $attributes) => [
-            'status' => WebhookDelivery::STATUS_FAILED,
-            'error_message' => $error ?? 'Connection timeout',
+            'status'          => WebhookDelivery::STATUS_FAILED,
+            'error_message'   => $error ?? 'Connection timeout',
             'response_status' => fake()->randomElement([0, 500, 502, 503]),
-            'next_retry_at' => now()->addMinutes(5),
+            'next_retry_at'   => now()->addMinutes(5),
         ]);
     }
 

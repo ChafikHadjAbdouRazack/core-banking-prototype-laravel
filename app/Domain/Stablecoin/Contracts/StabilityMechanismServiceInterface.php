@@ -7,14 +7,14 @@ use App\Models\Stablecoin;
 interface StabilityMechanismServiceInterface
 {
     /**
-     * Execute all stability mechanisms
+     * Execute all stability mechanisms.
      *
      * @return array
      */
     public function executeStabilityMechanisms(): array;
 
     /**
-     * Execute stability mechanism for specific stablecoin
+     * Execute stability mechanism for specific stablecoin.
      *
      * @param Stablecoin $stablecoin
      * @return array
@@ -22,14 +22,14 @@ interface StabilityMechanismServiceInterface
     public function executeStabilityMechanismForStablecoin(Stablecoin $stablecoin): array;
 
     /**
-     * Check system health
+     * Check system health.
      *
      * @return array
      */
     public function checkSystemHealth(): array;
 
     /**
-     * Rebalance system parameters
+     * Rebalance system parameters.
      *
      * @param array $targetMetrics
      * @return array
@@ -37,7 +37,7 @@ interface StabilityMechanismServiceInterface
     public function rebalanceSystemParameters(array $targetMetrics = []): array;
 
     /**
-     * Check peg deviation
+     * Check peg deviation.
      *
      * @param Stablecoin $stablecoin
      * @return array
@@ -45,7 +45,7 @@ interface StabilityMechanismServiceInterface
     public function checkPegDeviation(Stablecoin $stablecoin): array;
 
     /**
-     * Apply stability mechanism
+     * Apply stability mechanism.
      *
      * @param Stablecoin $stablecoin
      * @param array $mechanism
@@ -55,7 +55,7 @@ interface StabilityMechanismServiceInterface
     public function applyStabilityMechanism(Stablecoin $stablecoin, array $mechanism, bool $dryRun = false): array;
 
     /**
-     * Calculate fee adjustment
+     * Calculate fee adjustment.
      *
      * @param float $deviation
      * @param array $currentFees
@@ -64,7 +64,7 @@ interface StabilityMechanismServiceInterface
     public function calculateFeeAdjustment(float $deviation, array $currentFees): array;
 
     /**
-     * Calculate supply incentives
+     * Calculate supply incentives.
      *
      * @param float $deviation
      * @param float $currentSupply
@@ -74,14 +74,14 @@ interface StabilityMechanismServiceInterface
     public function calculateSupplyIncentives(float $deviation, float $currentSupply, float $targetSupply): array;
 
     /**
-     * Monitor all pegs
+     * Monitor all pegs.
      *
      * @return array
      */
     public function monitorAllPegs(): array;
 
     /**
-     * Execute emergency actions
+     * Execute emergency actions.
      *
      * @param string $action
      * @param array $params

@@ -14,7 +14,7 @@ use Workflow\Activity;
 class InitiateAssetTransferActivity extends Activity
 {
     /**
-     * Execute initiate asset transfer activity
+     * Execute initiate asset transfer activity.
      */
     public function execute(
         AccountUuid $fromAccountUuid,
@@ -28,11 +28,11 @@ class InitiateAssetTransferActivity extends Activity
         $fromAccount = Account::where('uuid', $fromAccountUuid->toString())->first();
         $toAccount = Account::where('uuid', $toAccountUuid->toString())->first();
 
-        if (!$fromAccount) {
+        if (! $fromAccount) {
             throw new \Exception("Source account not found: {$fromAccountUuid->toString()}");
         }
 
-        if (!$toAccount) {
+        if (! $toAccount) {
             throw new \Exception("Destination account not found: {$toAccountUuid->toString()}");
         }
 
@@ -41,7 +41,7 @@ class InitiateAssetTransferActivity extends Activity
             ->where('asset_code', $fromAssetCode)
             ->first();
 
-        if (!$fromBalance || !$fromBalance->hasSufficientBalance($fromAmount->getAmount())) {
+        if (! $fromBalance || ! $fromBalance->hasSufficientBalance($fromAmount->getAmount())) {
             $currentBalance = $fromBalance ? $fromBalance->balance : 0;
             throw new \Exception(
                 "Insufficient {$fromAssetCode} balance. Required: {$fromAmount->getAmount()}, Available: {$currentBalance}"
@@ -66,8 +66,8 @@ class InitiateAssetTransferActivity extends Activity
                 exchangeRate: $fromAssetCode === $toAssetCode ? 1.0 : null,
                 description: $description ?: "Asset transfer: {$fromAssetCode} to {$toAssetCode}",
                 metadata: [
-                    'workflow' => 'AssetTransferWorkflow',
-                    'activity' => 'InitiateAssetTransferActivity',
+                    'workflow'  => 'AssetTransferWorkflow',
+                    'activity'  => 'InitiateAssetTransferActivity',
                     'timestamp' => now()->toISOString(),
                 ]
             )

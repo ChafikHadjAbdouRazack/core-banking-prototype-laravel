@@ -21,14 +21,14 @@ class BatchJobItem extends Model
     ];
 
     protected $casts = [
-        'sequence' => 'integer',
-        'data' => 'array',
-        'result' => 'array',
+        'sequence'     => 'integer',
+        'data'         => 'array',
+        'result'       => 'array',
         'processed_at' => 'datetime',
     ];
 
     /**
-     * Get the batch job this item belongs to
+     * Get the batch job this item belongs to.
      */
     public function batchJob(): BelongsTo
     {
@@ -36,7 +36,7 @@ class BatchJobItem extends Model
     }
 
     /**
-     * Check if the item is pending
+     * Check if the item is pending.
      */
     public function isPending(): bool
     {
@@ -44,7 +44,7 @@ class BatchJobItem extends Model
     }
 
     /**
-     * Check if the item is processing
+     * Check if the item is processing.
      */
     public function isProcessing(): bool
     {
@@ -52,7 +52,7 @@ class BatchJobItem extends Model
     }
 
     /**
-     * Check if the item is completed
+     * Check if the item is completed.
      */
     public function isCompleted(): bool
     {
@@ -60,7 +60,7 @@ class BatchJobItem extends Model
     }
 
     /**
-     * Check if the item has failed
+     * Check if the item has failed.
      */
     public function hasFailed(): bool
     {

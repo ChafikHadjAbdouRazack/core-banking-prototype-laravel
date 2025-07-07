@@ -69,54 +69,58 @@ class FinancialInstitutionPartner extends Model
     ];
 
     protected $casts = [
-        'api_permissions' => 'array',
-        'allowed_ip_addresses' => 'array',
-        'enabled_features' => 'array',
-        'disabled_features' => 'array',
-        'allowed_currencies' => 'array',
-        'allowed_countries' => 'array',
-        'fee_structure' => 'array',
-        'compliance_requirements' => 'array',
-        'primary_contact' => 'array',
-        'technical_contact' => 'array',
-        'compliance_contact' => 'array',
-        'billing_contact' => 'array',
-        'webhook_endpoints' => 'array',
-        'metadata' => 'array',
-        'sandbox_enabled' => 'boolean',
-        'production_enabled' => 'boolean',
-        'webhook_active' => 'boolean',
-        'max_transaction_amount' => 'decimal:2',
-        'daily_transaction_limit' => 'decimal:2',
+        'api_permissions'           => 'array',
+        'allowed_ip_addresses'      => 'array',
+        'enabled_features'          => 'array',
+        'disabled_features'         => 'array',
+        'allowed_currencies'        => 'array',
+        'allowed_countries'         => 'array',
+        'fee_structure'             => 'array',
+        'compliance_requirements'   => 'array',
+        'primary_contact'           => 'array',
+        'technical_contact'         => 'array',
+        'compliance_contact'        => 'array',
+        'billing_contact'           => 'array',
+        'webhook_endpoints'         => 'array',
+        'metadata'                  => 'array',
+        'sandbox_enabled'           => 'boolean',
+        'production_enabled'        => 'boolean',
+        'webhook_active'            => 'boolean',
+        'max_transaction_amount'    => 'decimal:2',
+        'daily_transaction_limit'   => 'decimal:2',
         'monthly_transaction_limit' => 'decimal:2',
-        'revenue_share_percentage' => 'decimal:2',
-        'risk_score' => 'decimal:2',
-        'total_volume' => 'decimal:2',
-        'next_billing_date' => 'date',
-        'last_audit_date' => 'date',
-        'next_audit_date' => 'date',
-        'last_activity_at' => 'datetime',
-        'activated_at' => 'datetime',
-        'suspended_at' => 'datetime',
-        'terminated_at' => 'datetime',
+        'revenue_share_percentage'  => 'decimal:2',
+        'risk_score'                => 'decimal:2',
+        'total_volume'              => 'decimal:2',
+        'next_billing_date'         => 'date',
+        'last_audit_date'           => 'date',
+        'next_audit_date'           => 'date',
+        'last_activity_at'          => 'datetime',
+        'activated_at'              => 'datetime',
+        'suspended_at'              => 'datetime',
+        'terminated_at'             => 'datetime',
     ];
 
     /**
-     * Partner statuses
+     * Partner statuses.
      */
-    const STATUS_ACTIVE = 'active';
-    const STATUS_SUSPENDED = 'suspended';
-    const STATUS_TERMINATED = 'terminated';
+    public const STATUS_ACTIVE = 'active';
+
+    public const STATUS_SUSPENDED = 'suspended';
+
+    public const STATUS_TERMINATED = 'terminated';
 
     /**
-     * Billing cycles
+     * Billing cycles.
      */
-    const BILLING_MONTHLY = 'monthly';
-    const BILLING_QUARTERLY = 'quarterly';
-    const BILLING_ANNUALLY = 'annually';
+    public const BILLING_MONTHLY = 'monthly';
+
+    public const BILLING_QUARTERLY = 'quarterly';
+
+    public const BILLING_ANNUALLY = 'annually';
 
     /**
-     * Boot method
+     * Boot method.
      */
     protected static function boot()
     {
@@ -142,7 +146,7 @@ class FinancialInstitutionPartner extends Model
     }
 
     /**
-     * Generate unique partner code
+     * Generate unique partner code.
      */
     public static function generatePartnerCode(): string
     {
@@ -154,7 +158,7 @@ class FinancialInstitutionPartner extends Model
     }
 
     /**
-     * Generate unique API client ID
+     * Generate unique API client ID.
      */
     public static function generateApiClientId(): string
     {
@@ -166,7 +170,7 @@ class FinancialInstitutionPartner extends Model
     }
 
     /**
-     * Get the application
+     * Get the application.
      */
     public function application()
     {
@@ -174,7 +178,7 @@ class FinancialInstitutionPartner extends Model
     }
 
     /**
-     * Scope for active partners
+     * Scope for active partners.
      */
     public function scopeActive($query)
     {
@@ -182,7 +186,7 @@ class FinancialInstitutionPartner extends Model
     }
 
     /**
-     * Scope for production enabled partners
+     * Scope for production enabled partners.
      */
     public function scopeProductionEnabled($query)
     {
@@ -190,7 +194,7 @@ class FinancialInstitutionPartner extends Model
     }
 
     /**
-     * Check if partner is active
+     * Check if partner is active.
      */
     public function isActive(): bool
     {
@@ -198,7 +202,7 @@ class FinancialInstitutionPartner extends Model
     }
 
     /**
-     * Check if partner is suspended
+     * Check if partner is suspended.
      */
     public function isSuspended(): bool
     {
@@ -206,7 +210,7 @@ class FinancialInstitutionPartner extends Model
     }
 
     /**
-     * Check if partner is terminated
+     * Check if partner is terminated.
      */
     public function isTerminated(): bool
     {
@@ -214,7 +218,7 @@ class FinancialInstitutionPartner extends Model
     }
 
     /**
-     * Check if partner has production access
+     * Check if partner has production access.
      */
     public function hasProductionAccess(): bool
     {
@@ -222,7 +226,7 @@ class FinancialInstitutionPartner extends Model
     }
 
     /**
-     * Check if partner has sandbox access
+     * Check if partner has sandbox access.
      */
     public function hasSandboxAccess(): bool
     {
@@ -230,46 +234,46 @@ class FinancialInstitutionPartner extends Model
     }
 
     /**
-     * Suspend partner
+     * Suspend partner.
      */
     public function suspend(string $reason): void
     {
         $this->update([
-            'status' => self::STATUS_SUSPENDED,
-            'suspended_at' => now(),
-            'suspension_reason' => $reason,
+            'status'             => self::STATUS_SUSPENDED,
+            'suspended_at'       => now(),
+            'suspension_reason'  => $reason,
             'production_enabled' => false,
         ]);
     }
 
     /**
-     * Reactivate partner
+     * Reactivate partner.
      */
     public function reactivate(): void
     {
         $this->update([
-            'status' => self::STATUS_ACTIVE,
-            'suspended_at' => null,
+            'status'            => self::STATUS_ACTIVE,
+            'suspended_at'      => null,
             'suspension_reason' => null,
         ]);
     }
 
     /**
-     * Terminate partner
+     * Terminate partner.
      */
     public function terminate(string $reason): void
     {
         $this->update([
-            'status' => self::STATUS_TERMINATED,
-            'terminated_at' => now(),
+            'status'             => self::STATUS_TERMINATED,
+            'terminated_at'      => now(),
             'termination_reason' => $reason,
             'production_enabled' => false,
-            'sandbox_enabled' => false,
+            'sandbox_enabled'    => false,
         ]);
     }
 
     /**
-     * Update activity metrics
+     * Update activity metrics.
      */
     public function updateActivityMetrics(): void
     {
@@ -280,7 +284,7 @@ class FinancialInstitutionPartner extends Model
     }
 
     /**
-     * Check if IP address is allowed
+     * Check if IP address is allowed.
      */
     public function isIpAllowed(string $ip): bool
     {
@@ -292,7 +296,7 @@ class FinancialInstitutionPartner extends Model
     }
 
     /**
-     * Check if currency is allowed
+     * Check if currency is allowed.
      */
     public function isCurrencyAllowed(string $currency): bool
     {
@@ -304,7 +308,7 @@ class FinancialInstitutionPartner extends Model
     }
 
     /**
-     * Check if country is allowed
+     * Check if country is allowed.
      */
     public function isCountryAllowed(string $country): bool
     {
@@ -316,11 +320,11 @@ class FinancialInstitutionPartner extends Model
     }
 
     /**
-     * Check if feature is enabled
+     * Check if feature is enabled.
      */
     public function isFeatureEnabled(string $feature): bool
     {
-        if (!empty($this->disabled_features) && in_array($feature, $this->disabled_features)) {
+        if (! empty($this->disabled_features) && in_array($feature, $this->disabled_features)) {
             return false;
         }
 
@@ -332,7 +336,7 @@ class FinancialInstitutionPartner extends Model
     }
 
     /**
-     * Check if transaction amount is within limits
+     * Check if transaction amount is within limits.
      */
     public function isWithinTransactionLimit(float $amount): bool
     {
@@ -344,7 +348,7 @@ class FinancialInstitutionPartner extends Model
     }
 
     /**
-     * Get decrypted API client secret
+     * Get decrypted API client secret.
      */
     public function getApiClientSecret(): string
     {
@@ -352,7 +356,7 @@ class FinancialInstitutionPartner extends Model
     }
 
     /**
-     * Get decrypted webhook secret
+     * Get decrypted webhook secret.
      */
     public function getWebhookSecret(): string
     {
@@ -360,7 +364,7 @@ class FinancialInstitutionPartner extends Model
     }
 
     /**
-     * Regenerate API credentials
+     * Regenerate API credentials.
      */
     public function regenerateApiCredentials(): array
     {
@@ -368,26 +372,26 @@ class FinancialInstitutionPartner extends Model
         $newClientSecret = Str::random(64);
 
         $this->update([
-            'api_client_id' => $newClientId,
+            'api_client_id'     => $newClientId,
             'api_client_secret' => encrypt($newClientSecret),
         ]);
 
         return [
-            'client_id' => $newClientId,
+            'client_id'     => $newClientId,
             'client_secret' => $newClientSecret,
         ];
     }
 
     /**
-     * Get status badge color
+     * Get status badge color.
      */
     public function getStatusBadgeColor(): string
     {
         return match ($this->status) {
-            self::STATUS_ACTIVE => 'success',
-            self::STATUS_SUSPENDED => 'warning',
+            self::STATUS_ACTIVE     => 'success',
+            self::STATUS_SUSPENDED  => 'warning',
             self::STATUS_TERMINATED => 'danger',
-            default => 'secondary',
+            default                 => 'secondary',
         };
     }
 }

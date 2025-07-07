@@ -9,7 +9,7 @@ use Illuminate\Support\Collection;
 interface LiquidationServiceInterface
 {
     /**
-     * Liquidate a single position
+     * Liquidate a single position.
      *
      * @param StablecoinCollateralPosition $position
      * @param Account|null $liquidator
@@ -18,7 +18,7 @@ interface LiquidationServiceInterface
     public function liquidatePosition(StablecoinCollateralPosition $position, ?Account $liquidator = null): array;
 
     /**
-     * Batch liquidate multiple positions
+     * Batch liquidate multiple positions.
      *
      * @param Collection $positions
      * @param Account|null $liquidator
@@ -27,7 +27,7 @@ interface LiquidationServiceInterface
     public function batchLiquidate(Collection $positions, ?Account $liquidator = null): array;
 
     /**
-     * Auto-liquidate all eligible positions
+     * Auto-liquidate all eligible positions.
      *
      * @param Account|null $liquidator
      * @return array
@@ -35,7 +35,7 @@ interface LiquidationServiceInterface
     public function liquidateEligiblePositions(?Account $liquidator = null): array;
 
     /**
-     * Calculate liquidation reward
+     * Calculate liquidation reward.
      *
      * @param StablecoinCollateralPosition $position
      * @return array
@@ -43,7 +43,7 @@ interface LiquidationServiceInterface
     public function calculateLiquidationReward(StablecoinCollateralPosition $position): array;
 
     /**
-     * Get profitable liquidation opportunities
+     * Get profitable liquidation opportunities.
      *
      * @param int $limit
      * @return Collection
@@ -51,7 +51,7 @@ interface LiquidationServiceInterface
     public function getLiquidationOpportunities(int $limit = 50): Collection;
 
     /**
-     * Simulate mass liquidation scenario
+     * Simulate mass liquidation scenario.
      *
      * @param string $stablecoinCode
      * @param float $priceDropPercentage
@@ -60,7 +60,7 @@ interface LiquidationServiceInterface
     public function simulateMassLiquidation(string $stablecoinCode, float $priceDropPercentage): array;
 
     /**
-     * Emergency liquidation for system protection
+     * Emergency liquidation for system protection.
      *
      * @param string $stablecoinCode
      * @return array

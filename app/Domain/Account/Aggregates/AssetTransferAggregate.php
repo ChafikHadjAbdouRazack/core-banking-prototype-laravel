@@ -2,13 +2,13 @@
 
 namespace App\Domain\Account\Aggregates;
 
+use App\Domain\Account\DataObjects\AccountUuid;
 use App\Domain\Account\DataObjects\Hash;
 use App\Domain\Account\Events\AssetTransferred;
 use App\Domain\Account\Events\TransferThresholdReached;
 use App\Domain\Account\Repositories\TransferRepository;
 use App\Domain\Account\Repositories\TransferSnapshotRepository;
 use App\Domain\Account\Utils\ValidatesHash;
-use App\Domain\Account\DataObjects\AccountUuid;
 use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
 
 class AssetTransferAggregate extends AggregateRoot
@@ -104,7 +104,7 @@ class AssetTransferAggregate extends AggregateRoot
     }
 
     /**
-     * Generate hash for asset transfer
+     * Generate hash for asset transfer.
      *
      * @param AccountUuid $from
      * @param AccountUuid $to
@@ -126,11 +126,12 @@ class AssetTransferAggregate extends AggregateRoot
             $amount,
             time()
         );
+
         return new Hash(hash('sha3-512', $data));
     }
 
     /**
-     * Validate hash for asset transfer
+     * Validate hash for asset transfer.
      *
      * @param Hash $hash
      * @param AccountUuid $from
@@ -148,7 +149,7 @@ class AssetTransferAggregate extends AggregateRoot
     ): void {
         // For now, just validate that the hash exists and is in correct format
         // In production, you would implement proper hash validation logic
-        if (!$hash->getHash() || strlen($hash->getHash()) !== 128) {
+        if (! $hash->getHash() || strlen($hash->getHash()) !== 128) {
             throw new \InvalidArgumentException('Invalid hash format');
         }
     }

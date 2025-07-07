@@ -2,45 +2,44 @@
 
 namespace App\Domain\Regulatory\Services;
 
-use App\Domain\Regulatory\Models\RegulatoryReport;
-use App\Domain\Regulatory\Models\RegulatoryFilingRecord;
-use App\Domain\Regulatory\Events\ReportSubmitted;
 use App\Domain\Regulatory\Events\ReportAccepted;
 use App\Domain\Regulatory\Events\ReportRejected;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Log;
+use App\Domain\Regulatory\Events\ReportSubmitted;
+use App\Domain\Regulatory\Models\RegulatoryFilingRecord;
+use App\Domain\Regulatory\Models\RegulatoryReport;
 use Illuminate\Support\Facades\Crypt;
-use Carbon\Carbon;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class RegulatoryFilingService
 {
     /**
-     * Submit report to regulatory authority
+     * Submit report to regulatory authority.
      */
     public function submitReport(RegulatoryReport $report, array $options = []): RegulatoryFilingRecord
     {
-        if (!$report->canBeSubmitted()) {
+        if (! $report->canBeSubmitted()) {
             throw new \Exception('Report cannot be submitted in current state');
         }
 
         // Create filing record
         $filing = RegulatoryFilingRecord::create([
             'regulatory_report_id' => $report->id,
-            'filing_type' => $options['filing_type'] ?? RegulatoryFilingRecord::TYPE_INITIAL,
-            'filing_method' => $options['filing_method'] ?? $this->determineFilingMethod($report),
-            'filing_status' => RegulatoryFilingRecord::STATUS_PENDING,
-            'filed_by' => auth()->user()?->name ?? 'System',
-            'filing_credentials' => $this->getFilingCredentials($report->jurisdiction),
+            'filing_type'          => $options['filing_type'] ?? RegulatoryFilingRecord::TYPE_INITIAL,
+            'filing_method'        => $options['filing_method'] ?? $this->determineFilingMethod($report),
+            'filing_status'        => RegulatoryFilingRecord::STATUS_PENDING,
+            'filed_by'             => auth()->user()?->name ?? 'System',
+            'filing_credentials'   => $this->getFilingCredentials($report->jurisdiction),
         ]);
 
         try {
             // Submit based on method
             $result = match ($filing->filing_method) {
-                RegulatoryFilingRecord::METHOD_API => $this->submitViaApi($report, $filing),
+                RegulatoryFilingRecord::METHOD_API    => $this->submitViaApi($report, $filing),
                 RegulatoryFilingRecord::METHOD_PORTAL => $this->submitViaPortal($report, $filing),
-                RegulatoryFilingRecord::METHOD_EMAIL => $this->submitViaEmail($report, $filing),
-                default => throw new \Exception("Unsupported filing method: {$filing->filing_method}"),
+                RegulatoryFilingRecord::METHOD_EMAIL  => $this->submitViaEmail($report, $filing),
+                default                               => throw new \Exception("Unsupported filing method: {$filing->filing_method}"),
             };
 
             // Process result
@@ -62,11 +61,11 @@ class RegulatoryFilingService
     }
 
     /**
-     * Retry failed filing
+     * Retry failed filing.
      */
     public function retryFiling(RegulatoryFilingRecord $filing): RegulatoryFilingRecord
     {
-        if (!$filing->canRetry()) {
+        if (! $filing->canRetry()) {
             throw new \Exception('Filing cannot be retried');
         }
 
@@ -74,10 +73,10 @@ class RegulatoryFilingService
 
         try {
             $result = match ($filing->filing_method) {
-                RegulatoryFilingRecord::METHOD_API => $this->submitViaApi($filing->report, $filing),
+                RegulatoryFilingRecord::METHOD_API    => $this->submitViaApi($filing->report, $filing),
                 RegulatoryFilingRecord::METHOD_PORTAL => $this->submitViaPortal($filing->report, $filing),
-                RegulatoryFilingRecord::METHOD_EMAIL => $this->submitViaEmail($filing->report, $filing),
-                default => throw new \Exception("Unsupported filing method: {$filing->filing_method}"),
+                RegulatoryFilingRecord::METHOD_EMAIL  => $this->submitViaEmail($filing->report, $filing),
+                default                               => throw new \Exception("Unsupported filing method: {$filing->filing_method}"),
             };
 
             $this->processFilingResult($filing, $result);
@@ -96,27 +95,27 @@ class RegulatoryFilingService
     }
 
     /**
-     * Check filing status
+     * Check filing status.
      */
     public function checkFilingStatus(RegulatoryFilingRecord $filing): array
     {
         if (
-            !in_array($filing->filing_status, [
+            ! in_array($filing->filing_status, [
             RegulatoryFilingRecord::STATUS_SUBMITTED,
-            RegulatoryFilingRecord::STATUS_ACKNOWLEDGED
+            RegulatoryFilingRecord::STATUS_ACKNOWLEDGED,
             ])
         ) {
             return [
-                'status' => $filing->filing_status,
+                'status'  => $filing->filing_status,
                 'message' => 'Filing not yet submitted',
             ];
         }
 
         try {
             $status = match ($filing->filing_method) {
-                RegulatoryFilingRecord::METHOD_API => $this->checkApiStatus($filing),
+                RegulatoryFilingRecord::METHOD_API    => $this->checkApiStatus($filing),
                 RegulatoryFilingRecord::METHOD_PORTAL => $this->checkPortalStatus($filing),
-                default => ['status' => 'unknown', 'message' => 'Status check not available'],
+                default                               => ['status' => 'unknown', 'message' => 'Status check not available'],
             };
 
             // Update filing based on status
@@ -132,19 +131,19 @@ class RegulatoryFilingService
         } catch (\Exception $e) {
             Log::error('Failed to check filing status', [
                 'filing_id' => $filing->filing_id,
-                'error' => $e->getMessage(),
+                'error'     => $e->getMessage(),
             ]);
 
             return [
-                'status' => 'error',
+                'status'  => 'error',
                 'message' => 'Failed to check status',
-                'error' => $e->getMessage(),
+                'error'   => $e->getMessage(),
             ];
         }
     }
 
     /**
-     * Submit via API
+     * Submit via API.
      */
     protected function submitViaApi(RegulatoryReport $report, RegulatoryFilingRecord $filing): array
     {
@@ -156,20 +155,20 @@ class RegulatoryFilingService
 
         // Build request
         $request = [
-            'report_type' => $report->report_type,
+            'report_type'      => $report->report_type,
             'reporting_period' => [
                 'start' => $report->reporting_period_start->toDateString(),
-                'end' => $report->reporting_period_end->toDateString(),
+                'end'   => $report->reporting_period_end->toDateString(),
             ],
             'institution' => [
-                'id' => $credentials['institution_id'] ?? config('regulatory.institution_id'),
+                'id'   => $credentials['institution_id'] ?? config('regulatory.institution_id'),
                 'name' => config('app.name'),
             ],
-            'data' => $reportData,
+            'data'     => $reportData,
             'metadata' => [
-                'report_id' => $report->report_id,
+                'report_id'     => $report->report_id,
                 'submission_id' => $filing->filing_id,
-                'submitted_at' => now()->toIso8601String(),
+                'submitted_at'  => now()->toIso8601String(),
             ],
         ];
 
@@ -177,9 +176,9 @@ class RegulatoryFilingService
 
         // Submit to API
         $response = Http::withHeaders([
-            'Authorization' => 'Bearer ' . ($credentials['api_key'] ?? ''),
+            'Authorization'    => 'Bearer ' . ($credentials['api_key'] ?? ''),
             'X-Institution-ID' => $credentials['institution_id'] ?? '',
-            'Content-Type' => 'application/json',
+            'Content-Type'     => 'application/json',
         ])
         ->timeout(60)
         ->post($endpoint, $request);
@@ -194,23 +193,23 @@ class RegulatoryFilingService
 
         if ($response->successful()) {
             return [
-                'success' => true,
-                'reference' => $responseData['reference_number'] ?? null,
+                'success'        => true,
+                'reference'      => $responseData['reference_number'] ?? null,
                 'acknowledgment' => $responseData['acknowledgment_id'] ?? null,
-                'response' => $responseData,
+                'response'       => $responseData,
             ];
         } else {
             return [
-                'success' => false,
-                'error' => $responseData['error'] ?? 'Submission failed',
-                'errors' => $responseData['errors'] ?? [],
+                'success'  => false,
+                'error'    => $responseData['error'] ?? 'Submission failed',
+                'errors'   => $responseData['errors'] ?? [],
                 'response' => $responseData,
             ];
         }
     }
 
     /**
-     * Submit via portal (simulated)
+     * Submit via portal (simulated).
      */
     protected function submitViaPortal(RegulatoryReport $report, RegulatoryFilingRecord $filing): array
     {
@@ -227,23 +226,23 @@ class RegulatoryFilingService
 
         if ($success) {
             return [
-                'success' => true,
-                'reference' => 'PORTAL-' . strtoupper(uniqid()),
+                'success'        => true,
+                'reference'      => 'PORTAL-' . strtoupper(uniqid()),
                 'acknowledgment' => null,
-                'response' => ['method' => 'portal', 'status' => 'queued'],
+                'response'       => ['method' => 'portal', 'status' => 'queued'],
             ];
         } else {
             return [
-                'success' => false,
-                'error' => 'Portal submission failed',
-                'errors' => ['Portal temporarily unavailable'],
+                'success'  => false,
+                'error'    => 'Portal submission failed',
+                'errors'   => ['Portal temporarily unavailable'],
                 'response' => ['method' => 'portal', 'status' => 'failed'],
             ];
         }
     }
 
     /**
-     * Submit via email
+     * Submit via email.
      */
     protected function submitViaEmail(RegulatoryReport $report, RegulatoryFilingRecord $filing): array
     {
@@ -260,24 +259,24 @@ class RegulatoryFilingService
         Log::info('Email submission initiated', [
             'report_id' => $report->report_id,
             'filing_id' => $filing->filing_id,
-            'to' => $emailConfig['to'],
+            'to'        => $emailConfig['to'],
         ]);
 
         // Simulate email sending
         return [
-            'success' => true,
-            'reference' => 'EMAIL-' . strtoupper(uniqid()),
+            'success'        => true,
+            'reference'      => 'EMAIL-' . strtoupper(uniqid()),
             'acknowledgment' => null,
-            'response' => [
-                'method' => 'email',
-                'to' => $emailConfig['to'],
+            'response'       => [
+                'method'  => 'email',
+                'to'      => $emailConfig['to'],
                 'sent_at' => now()->toIso8601String(),
             ],
         ];
     }
 
     /**
-     * Process filing result
+     * Process filing result.
      */
     protected function processFilingResult(RegulatoryFilingRecord $filing, array $result): void
     {
@@ -297,7 +296,7 @@ class RegulatoryFilingService
             }
         } else {
             // Check if it's a validation error
-            if (isset($result['errors']) && !empty($result['errors'])) {
+            if (isset($result['errors']) && ! empty($result['errors'])) {
                 $filing->recordValidationErrors($result['errors']);
                 $filing->markAsRejected($result['error'], $result['errors']);
             } else {
@@ -307,13 +306,13 @@ class RegulatoryFilingService
     }
 
     /**
-     * Check API status
+     * Check API status.
      */
     protected function checkApiStatus(RegulatoryFilingRecord $filing): array
     {
-        if (!$filing->filing_reference) {
+        if (! $filing->filing_reference) {
             return [
-                'status' => 'pending',
+                'status'  => 'pending',
                 'message' => 'No reference number available',
             ];
         }
@@ -322,7 +321,7 @@ class RegulatoryFilingService
         $credentials = $filing->filing_credentials;
 
         $response = Http::withHeaders([
-            'Authorization' => 'Bearer ' . ($credentials['api_key'] ?? ''),
+            'Authorization'    => 'Bearer ' . ($credentials['api_key'] ?? ''),
             'X-Institution-ID' => $credentials['institution_id'] ?? '',
         ])
         ->get($endpoint . '/' . $filing->filing_reference);
@@ -331,22 +330,22 @@ class RegulatoryFilingService
             $data = $response->json();
 
             return [
-                'status' => $data['status'] ?? 'unknown',
-                'message' => $data['message'] ?? '',
-                'reason' => $data['rejection_reason'] ?? null,
-                'errors' => $data['errors'] ?? [],
+                'status'       => $data['status'] ?? 'unknown',
+                'message'      => $data['message'] ?? '',
+                'reason'       => $data['rejection_reason'] ?? null,
+                'errors'       => $data['errors'] ?? [],
                 'last_updated' => $data['last_updated'] ?? null,
             ];
         }
 
         return [
-            'status' => 'error',
+            'status'  => 'error',
             'message' => 'Failed to check status',
         ];
     }
 
     /**
-     * Check portal status (simulated)
+     * Check portal status (simulated).
      */
     protected function checkPortalStatus(RegulatoryFilingRecord $filing): array
     {
@@ -357,14 +356,14 @@ class RegulatoryFilingService
         $randomStatus = $statuses[array_rand($statuses)];
 
         return [
-            'status' => $randomStatus,
+            'status'  => $randomStatus,
             'message' => "Portal status: {$randomStatus}",
-            'reason' => $randomStatus === 'rejected' ? 'Missing required information' : null,
+            'reason'  => $randomStatus === 'rejected' ? 'Missing required information' : null,
         ];
     }
 
     /**
-     * Determine filing method
+     * Determine filing method.
      */
     protected function determineFilingMethod(RegulatoryReport $report): string
     {
@@ -386,7 +385,7 @@ class RegulatoryFilingService
     }
 
     /**
-     * Get filing credentials
+     * Get filing credentials.
      */
     protected function getFilingCredentials(string $jurisdiction): array
     {
@@ -401,7 +400,7 @@ class RegulatoryFilingService
     }
 
     /**
-     * Get API endpoint
+     * Get API endpoint.
      */
     protected function getApiEndpoint(RegulatoryReport $report): string
     {
@@ -412,16 +411,17 @@ class RegulatoryFilingService
     }
 
     /**
-     * Get API status endpoint
+     * Get API status endpoint.
      */
     protected function getApiStatusEndpoint(RegulatoryReport $report): string
     {
         $endpoint = $this->getApiEndpoint($report);
+
         return $endpoint . '/status';
     }
 
     /**
-     * Get email configuration
+     * Get email configuration.
      */
     protected function getEmailConfig(RegulatoryReport $report): array
     {
@@ -431,12 +431,12 @@ class RegulatoryFilingService
             'to' => $emailConfig[$report->jurisdiction][$report->report_type]['to'] ??
                    $emailConfig['default']['to'] ?? 'compliance@regulator.gov',
             'subject' => "{$report->report_type} Report - {$report->report_id}",
-            'cc' => $emailConfig['cc'] ?? [],
+            'cc'      => $emailConfig['cc'] ?? [],
         ];
     }
 
     /**
-     * Prepare report data
+     * Prepare report data.
      */
     protected function prepareReportData(RegulatoryReport $report): array
     {
@@ -445,8 +445,8 @@ class RegulatoryFilingService
 
             return match ($report->file_format) {
                 RegulatoryReport::FORMAT_JSON => json_decode($content, true),
-                RegulatoryReport::FORMAT_XML => $this->parseXml($content),
-                default => ['raw_content' => $content],
+                RegulatoryReport::FORMAT_XML  => $this->parseXml($content),
+                default                       => ['raw_content' => $content],
             };
         }
 
@@ -454,11 +454,12 @@ class RegulatoryFilingService
     }
 
     /**
-     * Parse XML content
+     * Parse XML content.
      */
     protected function parseXml(string $content): array
     {
         $xml = simplexml_load_string($content);
+
         return json_decode(json_encode($xml), true);
     }
 }

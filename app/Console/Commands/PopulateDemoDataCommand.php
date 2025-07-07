@@ -33,8 +33,9 @@ class PopulateDemoDataCommand extends Command
         $this->line('=====================================');
 
         if ($this->option('fresh')) {
-            if (!$this->confirm('This will wipe your database. Are you sure?')) {
+            if (! $this->confirm('This will wipe your database. Are you sure?')) {
                 $this->warn('Operation cancelled.');
+
                 return Command::FAILURE;
             }
 
@@ -65,7 +66,7 @@ class PopulateDemoDataCommand extends Command
     }
 
     /**
-     * Create an admin user for the dashboard
+     * Create an admin user for the dashboard.
      */
     private function createAdminUser(): void
     {
@@ -77,23 +78,24 @@ class PopulateDemoDataCommand extends Command
         // Check if admin already exists
         if (DB::table('users')->where('email', $email)->exists()) {
             $this->warn("Admin user already exists: $email");
+
             return;
         }
 
         // Use Filament command to create admin
         Artisan::call('make:filament-user', [
-            '--name' => 'Admin User',
-            '--email' => $email,
+            '--name'     => 'Admin User',
+            '--email'    => $email,
             '--password' => $password,
         ]);
 
-        $this->info("Admin user created:");
+        $this->info('Admin user created:');
         $this->line("  Email: $email");
         $this->line("  Password: $password");
     }
 
     /**
-     * Display summary of created data
+     * Display summary of created data.
      */
     private function displaySummary(): void
     {

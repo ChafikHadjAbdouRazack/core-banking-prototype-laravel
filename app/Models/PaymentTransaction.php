@@ -32,10 +32,10 @@ class PaymentTransaction extends Model
     ];
 
     protected $casts = [
-        'metadata' => 'array',
+        'metadata'     => 'array',
         'initiated_at' => 'datetime',
         'completed_at' => 'datetime',
-        'failed_at' => 'datetime',
+        'failed_at'    => 'datetime',
     ];
 
     public function account()

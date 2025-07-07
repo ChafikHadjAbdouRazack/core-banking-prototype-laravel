@@ -5,23 +5,26 @@ declare(strict_types=1);
 namespace App\Domain\Custodian\Connectors;
 
 use App\Domain\Account\DataObjects\Money;
+use App\Domain\Custodian\Services\FallbackService;
 use App\Domain\Custodian\ValueObjects\AccountInfo;
 use App\Domain\Custodian\ValueObjects\TransactionReceipt;
 use App\Domain\Custodian\ValueObjects\TransferRequest;
-use App\Domain\Custodian\Services\FallbackService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
 
 class PayseraConnector extends BaseCustodianConnector
 {
     private const API_BASE_URL = 'https://bank.paysera.com/rest/v1';
+
     private const OAUTH_URL = 'https://bank.paysera.com/oauth/v1';
 
     private string $clientId;
+
     private string $clientSecret;
+
     private ?string $accessToken = null;
+
     private ?Carbon $tokenExpiry = null;
 
     public function __construct(array $config)
@@ -37,7 +40,7 @@ class PayseraConnector extends BaseCustodianConnector
         $this->clientSecret = $config['client_secret'] ?? '';
 
         // Allow empty credentials in testing/development environments
-        if ((empty($this->clientId) || empty($this->clientSecret)) && !app()->environment(['local', 'testing'])) {
+        if ((empty($this->clientId) || empty($this->clientSecret)) && ! app()->environment(['local', 'testing'])) {
             throw new \InvalidArgumentException('Paysera client_id and client_secret are required');
         }
     }
@@ -54,7 +57,7 @@ class PayseraConnector extends BaseCustodianConnector
     }
 
     /**
-     * Get or refresh OAuth access token
+     * Get or refresh OAuth access token.
      */
     private function getAccessToken(): string
     {
@@ -65,13 +68,13 @@ class PayseraConnector extends BaseCustodianConnector
         $this->logRequest('POST', self::OAUTH_URL . '/token');
 
         $response = Http::asForm()->post(self::OAUTH_URL . '/token', [
-            'grant_type' => 'client_credentials',
-            'client_id' => $this->clientId,
+            'grant_type'    => 'client_credentials',
+            'client_id'     => $this->clientId,
             'client_secret' => $this->clientSecret,
-            'scope' => 'accounts payments',
+            'scope'         => 'accounts payments',
         ]);
 
-        if (!$response->successful()) {
+        if (! $response->successful()) {
             throw new \Exception('Failed to obtain access token: ' . $response->body());
         }
 
@@ -83,7 +86,7 @@ class PayseraConnector extends BaseCustodianConnector
     }
 
     /**
-     * Make authenticated API request with resilience
+     * Make authenticated API request with resilience.
      */
     private function apiRequest(string $method, string $endpoint, array $data = []): \Illuminate\Http\Client\Response
     {
@@ -104,8 +107,8 @@ class PayseraConnector extends BaseCustodianConnector
         try {
             $response = $this->apiRequest('GET', "/accounts/{$accountId}/balance");
 
-            if (!$response->successful()) {
-                throw new \Exception("Failed to get balance: " . $response->body());
+            if (! $response->successful()) {
+                throw new \Exception('Failed to get balance: ' . $response->body());
             }
 
             $data = $response->json();
@@ -129,10 +132,10 @@ class PayseraConnector extends BaseCustodianConnector
             $fallbackBalance = $fallbackService->getFallbackBalance($this->getName(), $accountId, $assetCode);
 
             if ($fallbackBalance !== null) {
-                Log::warning("Using fallback balance for Paysera", [
+                Log::warning('Using fallback balance for Paysera', [
                     'account' => $accountId,
-                    'asset' => $assetCode,
-                    'error' => $e->getMessage(),
+                    'asset'   => $assetCode,
+                    'error'   => $e->getMessage(),
                 ]);
 
                 return $fallbackBalance;
@@ -147,8 +150,8 @@ class PayseraConnector extends BaseCustodianConnector
     {
         $response = $this->apiRequest('GET', "/accounts/{$accountId}");
 
-        if (!$response->successful()) {
-            throw new \Exception("Failed to get account info: " . $response->body());
+        if (! $response->successful()) {
+            throw new \Exception('Failed to get account info: ' . $response->body());
         }
 
         $data = $response->json();
@@ -171,8 +174,8 @@ class PayseraConnector extends BaseCustodianConnector
             type: $data['type'] ?? 'personal',
             createdAt: isset($data['created_at']) ? Carbon::parse($data['created_at']) : Carbon::now(),
             metadata: [
-                'iban' => $data['iban'] ?? null,
-                'bic' => $data['bic'] ?? null,
+                'iban'      => $data['iban'] ?? null,
+                'bic'       => $data['bic'] ?? null,
                 'connector' => 'PayseraConnector',
             ]
         );
@@ -187,17 +190,17 @@ class PayseraConnector extends BaseCustodianConnector
             operation: function () use ($request) {
                 $paymentData = [
                     'from_account' => $request->fromAccount,
-                    'to_account' => $request->toAccount,
-                    'amount' => $request->amount->getAmount(),
-                    'currency' => $request->assetCode,
-                    'description' => $request->description ?? $request->reference,
-                    'reference' => $request->reference,
+                    'to_account'   => $request->toAccount,
+                    'amount'       => $request->amount->getAmount(),
+                    'currency'     => $request->assetCode,
+                    'description'  => $request->description ?? $request->reference,
+                    'reference'    => $request->reference,
                 ];
 
                 $response = $this->apiRequest('POST', '/payments', $paymentData);
 
-                if (!$response->successful()) {
-                    throw new \Exception("Failed to initiate transfer: " . $response->body());
+                if (! $response->successful()) {
+                    throw new \Exception('Failed to initiate transfer: ' . $response->body());
                 }
 
                 $data = $response->json();
@@ -215,17 +218,17 @@ class PayseraConnector extends BaseCustodianConnector
                     completedAt: isset($data['completed_at']) ? Carbon::parse($data['completed_at']) : null,
                     metadata: [
                         'paysera_status' => $data['status'],
-                        'paysera_id' => $data['id'],
+                        'paysera_id'     => $data['id'],
                     ]
                 );
             },
             fallback: function () use ($request, $fallbackService) {
                 // Queue transfer for retry when service is available
-                Log::warning("Paysera transfer failed, queueing for retry", [
-                    'from' => $request->fromAccount,
-                    'to' => $request->toAccount,
+                Log::warning('Paysera transfer failed, queueing for retry', [
+                    'from'   => $request->fromAccount,
+                    'to'     => $request->toAccount,
                     'amount' => $request->amount->getAmount(),
-                    'asset' => $request->assetCode,
+                    'asset'  => $request->assetCode,
                 ]);
 
                 return $fallbackService->queueTransferForRetry(
@@ -250,8 +253,8 @@ class PayseraConnector extends BaseCustodianConnector
             operation: function () use ($transactionId) {
                 $response = $this->apiRequest('GET', "/payments/{$transactionId}");
 
-                if (!$response->successful()) {
-                    throw new \Exception("Failed to get transaction status: " . $response->body());
+                if (! $response->successful()) {
+                    throw new \Exception('Failed to get transaction status: ' . $response->body());
                 }
 
                 $data = $response->json();
@@ -269,7 +272,7 @@ class PayseraConnector extends BaseCustodianConnector
                     completedAt: isset($data['completed_at']) ? Carbon::parse($data['completed_at']) : null,
                     metadata: [
                         'paysera_status' => $data['status'],
-                        'paysera_id' => $data['id'],
+                        'paysera_id'     => $data['id'],
                     ]
                 );
             },
@@ -278,7 +281,7 @@ class PayseraConnector extends BaseCustodianConnector
                 $status = $fallbackService->getFallbackTransferStatus($this->getName(), $transactionId);
 
                 if ($status !== null) {
-                    Log::warning("Using fallback transaction status for Paysera", [
+                    Log::warning('Using fallback transaction status for Paysera', [
                         'transaction_id' => $transactionId,
                     ]);
 
@@ -286,7 +289,7 @@ class PayseraConnector extends BaseCustodianConnector
                     return $status;
                 }
 
-                throw new \Exception("Cannot retrieve transaction status, service unavailable");
+                throw new \Exception('Cannot retrieve transaction status, service unavailable');
             }
         );
     }
@@ -311,12 +314,13 @@ class PayseraConnector extends BaseCustodianConnector
 
             if ($response->successful()) {
                 $data = $response->json();
+
                 return ($data['status'] ?? '') === 'active';
             }
         } catch (\Exception $e) {
             Log::warning('Account validation failed', [
                 'account_id' => $accountId,
-                'error' => $e->getMessage(),
+                'error'      => $e->getMessage(),
             ]);
         }
 
@@ -326,12 +330,12 @@ class PayseraConnector extends BaseCustodianConnector
     public function getTransactionHistory(string $accountId, ?int $limit = 100, ?int $offset = 0): array
     {
         $response = $this->apiRequest('GET', "/accounts/{$accountId}/payments", [
-            'limit' => $limit,
+            'limit'  => $limit,
             'offset' => $offset,
         ]);
 
-        if (!$response->successful()) {
-            throw new \Exception("Failed to get transaction history: " . $response->body());
+        if (! $response->successful()) {
+            throw new \Exception('Failed to get transaction history: ' . $response->body());
         }
 
         $data = $response->json();
@@ -339,15 +343,15 @@ class PayseraConnector extends BaseCustodianConnector
 
         foreach ($data['payments'] ?? [] as $payment) {
             $transactions[] = [
-                'id' => $payment['id'],
-                'status' => $this->mapTransactionStatus($payment['status']),
+                'id'           => $payment['id'],
+                'status'       => $this->mapTransactionStatus($payment['status']),
                 'from_account' => $payment['from_account'],
-                'to_account' => $payment['to_account'],
-                'asset_code' => $payment['currency'],
-                'amount' => (int) $payment['amount'],
-                'fee' => isset($payment['fee']) ? (int) $payment['fee'] : null,
-                'reference' => $payment['reference'] ?? null,
-                'created_at' => $payment['created_at'],
+                'to_account'   => $payment['to_account'],
+                'asset_code'   => $payment['currency'],
+                'amount'       => (int) $payment['amount'],
+                'fee'          => isset($payment['fee']) ? (int) $payment['fee'] : null,
+                'reference'    => $payment['reference'] ?? null,
+                'created_at'   => $payment['created_at'],
                 'completed_at' => $payment['completed_at'] ?? null,
             ];
         }
@@ -356,7 +360,7 @@ class PayseraConnector extends BaseCustodianConnector
     }
 
     /**
-     * Map Paysera account status to internal status
+     * Map Paysera account status to internal status.
      */
     private function mapAccountStatus(string $payseraStatus): string
     {
@@ -365,12 +369,12 @@ class PayseraConnector extends BaseCustodianConnector
             'pending', 'unverified' => 'pending',
             'blocked', 'suspended' => 'suspended',
             'closed' => 'closed',
-            default => 'unknown',
+            default  => 'unknown',
         };
     }
 
     /**
-     * Map Paysera transaction status to internal status
+     * Map Paysera transaction status to internal status.
      */
     private function mapTransactionStatus(string $payseraStatus): string
     {

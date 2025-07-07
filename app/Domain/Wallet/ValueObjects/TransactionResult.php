@@ -18,14 +18,14 @@ class TransactionResult
     public function toArray(): array
     {
         return array_filter([
-            'hash' => $this->hash,
-            'status' => $this->status,
-            'block_number' => $this->blockNumber,
-            'gas_used' => $this->gasUsed,
+            'hash'                => $this->hash,
+            'status'              => $this->status,
+            'block_number'        => $this->blockNumber,
+            'gas_used'            => $this->gasUsed,
             'effective_gas_price' => $this->effectiveGasPrice,
-            'logs' => $this->logs,
-            'metadata' => $this->metadata,
-        ], fn($value) => $value !== null);
+            'logs'                => $this->logs,
+            'metadata'            => $this->metadata,
+        ], fn ($value) => $value !== null);
     }
 
     public function isSuccess(): bool

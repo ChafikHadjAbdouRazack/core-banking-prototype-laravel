@@ -16,12 +16,19 @@ use Spatie\EventSourcing\StoredEvents\Repositories\StoredEventRepository;
 class RefundAggregate extends AggregateRoot
 {
     protected string $refundId;
+
     protected string $investmentId;
+
     protected string $userId;
+
     protected int $amount;
+
     protected string $currency;
+
     protected string $status = 'pending';
+
     protected ?string $paymentProcessor = null;
+
     protected ?string $processorRefundId = null;
 
     protected function getStoredEventRepository(): StoredEventRepository
@@ -129,7 +136,7 @@ class RefundAggregate extends AggregateRoot
 
     public function fail(string $failureReason, string $failedAt, array $metadata = []): self
     {
-        if (!in_array($this->status, ['approved', 'processing'])) {
+        if (! in_array($this->status, ['approved', 'processing'])) {
             throw new \DomainException("Can only fail approved or processing refunds. Current status: {$this->status}");
         }
 

@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 trait BelongsToTeam
 {
     /**
-     * Boot the trait
+     * Boot the trait.
      */
     protected static function bootBelongsToTeam()
     {
@@ -28,7 +28,7 @@ trait BelongsToTeam
     }
 
     /**
-     * Scope to include all teams (bypass team isolation)
+     * Scope to include all teams (bypass team isolation).
      */
     public function scopeAllTeams($query)
     {
@@ -36,7 +36,7 @@ trait BelongsToTeam
     }
 
     /**
-     * Scope to filter by specific team
+     * Scope to filter by specific team.
      */
     public function scopeForTeam($query, $teamId)
     {
@@ -44,7 +44,7 @@ trait BelongsToTeam
     }
 
     /**
-     * Get the team relationship
+     * Get the team relationship.
      */
     public function team()
     {

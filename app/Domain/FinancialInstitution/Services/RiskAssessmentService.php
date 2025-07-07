@@ -7,27 +7,27 @@ use App\Models\FinancialInstitutionApplication;
 class RiskAssessmentService
 {
     /**
-     * Perform comprehensive risk assessment
+     * Perform comprehensive risk assessment.
      */
     public function assessApplication(FinancialInstitutionApplication $application): array
     {
         $assessment = [
-            'geographic_risk' => $this->assessGeographicRisk($application),
+            'geographic_risk'     => $this->assessGeographicRisk($application),
             'business_model_risk' => $this->assessBusinessModelRisk($application),
-            'volume_risk' => $this->assessVolumeRisk($application),
-            'regulatory_risk' => $this->assessRegulatoryRisk($application),
-            'financial_risk' => $this->assessFinancialRisk($application),
-            'operational_risk' => $this->assessOperationalRisk($application),
+            'volume_risk'         => $this->assessVolumeRisk($application),
+            'regulatory_risk'     => $this->assessRegulatoryRisk($application),
+            'financial_risk'      => $this->assessFinancialRisk($application),
+            'operational_risk'    => $this->assessOperationalRisk($application),
         ];
 
         // Calculate weighted risk score
         $weights = [
-            'geographic_risk' => 0.25,
+            'geographic_risk'     => 0.25,
             'business_model_risk' => 0.20,
-            'volume_risk' => 0.15,
-            'regulatory_risk' => 0.20,
-            'financial_risk' => 0.10,
-            'operational_risk' => 0.10,
+            'volume_risk'         => 0.15,
+            'regulatory_risk'     => 0.20,
+            'financial_risk'      => 0.10,
+            'operational_risk'    => 0.10,
         ];
 
         $totalRisk = 0;
@@ -43,7 +43,7 @@ class RiskAssessmentService
     }
 
     /**
-     * Assess geographic risk
+     * Assess geographic risk.
      */
     private function assessGeographicRisk(FinancialInstitutionApplication $application): array
     {
@@ -86,14 +86,14 @@ class RiskAssessmentService
         }
 
         return [
-            'score' => min($riskScore, 100),
-            'factors' => $factors,
+            'score'               => min($riskScore, 100),
+            'factors'             => $factors,
             'high_risk_exposures' => $highRiskMarkets,
         ];
     }
 
     /**
-     * Assess business model risk
+     * Assess business model risk.
      */
     private function assessBusinessModelRisk(FinancialInstitutionApplication $application): array
     {
@@ -102,15 +102,15 @@ class RiskAssessmentService
 
         // Institution type risk
         $typeRisks = [
-            'bank' => 20,
-            'credit_union' => 15,
-            'investment_firm' => 30,
+            'bank'              => 20,
+            'credit_union'      => 15,
+            'investment_firm'   => 30,
             'payment_processor' => 40,
-            'fintech' => 45,
-            'emi' => 35,
-            'broker_dealer' => 30,
-            'insurance' => 20,
-            'other' => 50,
+            'fintech'           => 45,
+            'emi'               => 35,
+            'broker_dealer'     => 30,
+            'insurance'         => 20,
+            'other'             => 50,
         ];
 
         $riskScore += $typeRisks[$application->institution_type] ?? 50;
@@ -121,7 +121,7 @@ class RiskAssessmentService
         $highRiskProducts = ['crypto', 'derivatives', 'forex', 'binary_options', 'crowdfunding'];
         $riskyProducts = array_intersect($products, $highRiskProducts);
 
-        if (!empty($riskyProducts)) {
+        if (! empty($riskyProducts)) {
             $riskScore += min(15 * count($riskyProducts), 30);
             $factors[] = 'High-risk product offerings';
         }
@@ -138,14 +138,14 @@ class RiskAssessmentService
         }
 
         return [
-            'score' => min($riskScore, 100),
-            'factors' => $factors,
+            'score'          => min($riskScore, 100),
+            'factors'        => $factors,
             'risky_products' => $riskyProducts,
         ];
     }
 
     /**
-     * Assess volume risk
+     * Assess volume risk.
      */
     private function assessVolumeRisk(FinancialInstitutionApplication $application): array
     {
@@ -195,15 +195,15 @@ class RiskAssessmentService
         }
 
         return [
-            'score' => min($riskScore, 100),
-            'factors' => $factors,
-            'monthly_volume' => $monthlyVolume,
+            'score'                => min($riskScore, 100),
+            'factors'              => $factors,
+            'monthly_volume'       => $monthlyVolume,
             'monthly_transactions' => $monthlyTransactions,
         ];
     }
 
     /**
-     * Assess regulatory risk
+     * Assess regulatory risk.
      */
     private function assessRegulatoryRisk(FinancialInstitutionApplication $application): array
     {
@@ -211,30 +211,30 @@ class RiskAssessmentService
         $factors = [];
 
         // No primary regulator
-        if (!$application->primary_regulator) {
+        if (! $application->primary_regulator) {
             $riskScore += 40;
             $factors[] = 'No primary regulator identified';
         } else {
             // Assess regulator strength
             $strongRegulators = ['FCA', 'BaFin', 'FINMA', 'OCC', 'ECB', 'MAS', 'APRA'];
-            if (!in_array($application->primary_regulator, $strongRegulators)) {
+            if (! in_array($application->primary_regulator, $strongRegulators)) {
                 $riskScore += 20;
                 $factors[] = 'Regulator with limited international recognition';
             }
         }
 
         // Compliance gaps
-        if (!$application->has_aml_program) {
+        if (! $application->has_aml_program) {
             $riskScore += 25;
             $factors[] = 'No AML program';
         }
 
-        if (!$application->has_kyc_procedures) {
+        if (! $application->has_kyc_procedures) {
             $riskScore += 20;
             $factors[] = 'No KYC procedures';
         }
 
-        if (!$application->has_data_protection_policy) {
+        if (! $application->has_data_protection_policy) {
             $riskScore += 15;
             $factors[] = 'No data protection policy';
         }
@@ -246,18 +246,18 @@ class RiskAssessmentService
         }
 
         return [
-            'score' => min($riskScore, 100),
-            'factors' => $factors,
+            'score'           => min($riskScore, 100),
+            'factors'         => $factors,
             'compliance_gaps' => array_filter([
-                !$application->has_aml_program ? 'AML' : null,
-                !$application->has_kyc_procedures ? 'KYC' : null,
-                !$application->has_data_protection_policy ? 'Data Protection' : null,
+                ! $application->has_aml_program ? 'AML' : null,
+                ! $application->has_kyc_procedures ? 'KYC' : null,
+                ! $application->has_data_protection_policy ? 'Data Protection' : null,
             ]),
         ];
     }
 
     /**
-     * Assess financial risk
+     * Assess financial risk.
      */
     private function assessFinancialRisk(FinancialInstitutionApplication $application): array
     {
@@ -288,14 +288,14 @@ class RiskAssessmentService
         }
 
         return [
-            'score' => min($riskScore, 100),
-            'factors' => $factors,
+            'score'                   => min($riskScore, 100),
+            'factors'                 => $factors,
             'assets_under_management' => $aum,
         ];
     }
 
     /**
-     * Assess operational risk
+     * Assess operational risk.
      */
     private function assessOperationalRisk(FinancialInstitutionApplication $application): array
     {
@@ -320,7 +320,7 @@ class RiskAssessmentService
         if (empty($secCerts)) {
             $riskScore += 30;
             $factors[] = 'No security certifications';
-        } elseif (!in_array('ISO27001', $secCerts) && !in_array('SOC2', $secCerts)) {
+        } elseif (! in_array('ISO27001', $secCerts) && ! in_array('SOC2', $secCerts)) {
             $riskScore += 15;
             $factors[] = 'Limited security certifications';
         }
@@ -333,19 +333,19 @@ class RiskAssessmentService
         }
 
         // PCI compliance for payment processors
-        if ($application->institution_type === 'payment_processor' && !$application->is_pci_compliant) {
+        if ($application->institution_type === 'payment_processor' && ! $application->is_pci_compliant) {
             $riskScore += 25;
             $factors[] = 'Payment processor without PCI compliance';
         }
 
         return [
-            'score' => min($riskScore, 100),
+            'score'   => min($riskScore, 100),
             'factors' => $factors,
         ];
     }
 
     /**
-     * Get risk rating from score
+     * Get risk rating from score.
      */
     private function getRiskRating(float $score): string
     {

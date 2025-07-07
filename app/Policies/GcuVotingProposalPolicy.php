@@ -2,8 +2,8 @@
 
 namespace App\Policies;
 
-use App\Models\User;
 use App\Models\GcuVotingProposal;
+use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class GcuVotingProposalPolicy
@@ -60,7 +60,7 @@ class GcuVotingProposalPolicy
     {
         // User must have GCU holdings to vote
         $account = $user->accounts()->first();
-        if (!$account) {
+        if (! $account) {
             return false;
         }
 

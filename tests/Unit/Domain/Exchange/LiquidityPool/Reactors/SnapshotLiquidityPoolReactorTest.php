@@ -2,7 +2,6 @@
 
 namespace Tests\Unit\Domain\Exchange\LiquidityPool\Reactors;
 
-use App\Domain\Exchange\Aggregates\LiquidityPool;
 use App\Domain\Exchange\Events\LiquidityAdded;
 use App\Domain\Exchange\Events\LiquidityPoolRebalanced;
 use App\Domain\Exchange\Events\LiquidityRemoved;
@@ -21,7 +20,7 @@ class SnapshotLiquidityPoolReactorTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->reactor = new SnapshotLiquidityPoolReactor;
+        $this->reactor = new SnapshotLiquidityPoolReactor();
         $this->poolId = Str::uuid()->toString();
     }
 

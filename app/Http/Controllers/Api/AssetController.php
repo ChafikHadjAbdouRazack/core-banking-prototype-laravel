@@ -79,7 +79,7 @@ class AssetController extends Controller
         $query = Asset::query();
 
         // By default, only show active assets unless include_inactive is true
-        if (!$request->boolean('include_inactive')) {
+        if (! $request->boolean('include_inactive')) {
             $query->where('is_active', true);
         }
 
@@ -110,21 +110,21 @@ class AssetController extends Controller
         return response()->json([
             'data' => $assets->map(function (Asset $asset) {
                 return [
-                    'code' => $asset->code,
-                    'name' => $asset->name,
-                    'type' => $asset->type,
-                    'symbol' => $asset->symbol,
+                    'code'      => $asset->code,
+                    'name'      => $asset->name,
+                    'type'      => $asset->type,
+                    'symbol'    => $asset->symbol,
                     'precision' => $asset->precision,
                     'is_active' => $asset->is_active,
-                    'metadata' => $asset->metadata,
+                    'metadata'  => $asset->metadata,
                 ];
             }),
             'meta' => [
-                'total' => $total,
+                'total'  => $total,
                 'active' => $active,
-                'types' => [
-                    'fiat' => $types['fiat'] ?? 0,
-                    'crypto' => $types['crypto'] ?? 0,
+                'types'  => [
+                    'fiat'      => $types['fiat'] ?? 0,
+                    'crypto'    => $types['crypto'] ?? 0,
                     'commodity' => $types['commodity'] ?? 0,
                 ],
             ],
@@ -132,7 +132,7 @@ class AssetController extends Controller
     }
 
     /**
-     * Get asset details
+     * Get asset details.
      *
      * Retrieve detailed information about a specific asset.
      *
@@ -168,16 +168,16 @@ class AssetController extends Controller
         $query = Asset::where('code', strtoupper($code));
 
         // By default, only show active assets unless include_inactive is true
-        if (!request()->boolean('include_inactive')) {
+        if (! request()->boolean('include_inactive')) {
             $query->where('is_active', true);
         }
 
         $asset = $query->first();
 
-        if (!$asset) {
+        if (! $asset) {
             return response()->json([
                 'message' => 'Asset not found',
-                'error' => 'The specified asset code was not found',
+                'error'   => 'The specified asset code was not found',
             ], 404);
         }
 
@@ -195,21 +195,21 @@ class AssetController extends Controller
         );
 
         return response()->json([
-            'id' => $asset->id,
-            'code' => $asset->code,
-            'name' => $asset->name,
-            'type' => $asset->type,
-            'symbol' => $asset->symbol,
-            'precision' => $asset->precision,
-            'is_active' => $asset->is_active,
-            'metadata' => $asset->metadata,
+            'id'         => $asset->id,
+            'code'       => $asset->code,
+            'name'       => $asset->name,
+            'type'       => $asset->type,
+            'symbol'     => $asset->symbol,
+            'precision'  => $asset->precision,
+            'is_active'  => $asset->is_active,
+            'metadata'   => $asset->metadata,
             'statistics' => [
-                'total_supply' => null, // These would be calculated based on your business logic
+                'total_supply'       => null, // These would be calculated based on your business logic
                 'circulating_supply' => null,
-                'market_data' => $asset->metadata['market_data'] ?? null,
-                'total_accounts' => $totalAccounts,
-                'total_balance' => $formattedBalance,
-                'active_rates' => $activeRates,
+                'market_data'        => $asset->metadata['market_data'] ?? null,
+                'total_accounts'     => $totalAccounts,
+                'total_balance'      => $formattedBalance,
+                'active_rates'       => $activeRates,
             ],
             'created_at' => $asset->created_at,
             'updated_at' => $asset->updated_at,

@@ -9,9 +9,9 @@ use App\Domain\Governance\Enums\PollStatus;
 use App\Domain\Governance\Enums\PollType;
 use App\Domain\Governance\Models\Poll;
 use App\Domain\Governance\Models\Vote;
-use App\Domain\Governance\ValueObjects\PollResult;
-use App\Domain\Governance\Strategies\OneUserOneVoteStrategy;
 use App\Domain\Governance\Strategies\AssetWeightedVoteStrategy;
+use App\Domain\Governance\Strategies\OneUserOneVoteStrategy;
+use App\Domain\Governance\ValueObjects\PollResult;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
@@ -30,7 +30,7 @@ class GovernanceService
     private function registerVotingStrategies(): void
     {
         $this->votingStrategies = [
-            'one_user_one_vote' => new OneUserOneVoteStrategy(),
+            'one_user_one_vote'   => new OneUserOneVoteStrategy(),
             'asset_weighted_vote' => new AssetWeightedVoteStrategy(),
         ];
     }
@@ -41,21 +41,22 @@ class GovernanceService
 
         try {
             $poll = Poll::create([
-                'title' => $data['title'],
-                'description' => $data['description'] ?? null,
-                'type' => PollType::from($data['type']),
-                'options' => $data['options'],
-                'start_date' => $data['start_date'],
-                'end_date' => $data['end_date'],
-                'status' => PollStatus::from($data['status'] ?? 'draft'),
+                'title'                  => $data['title'],
+                'description'            => $data['description'] ?? null,
+                'type'                   => PollType::from($data['type']),
+                'options'                => $data['options'],
+                'start_date'             => $data['start_date'],
+                'end_date'               => $data['end_date'],
+                'status'                 => PollStatus::from($data['status'] ?? 'draft'),
                 'required_participation' => $data['required_participation'] ?? null,
-                'voting_power_strategy' => $data['voting_power_strategy'] ?? 'one_user_one_vote',
-                'execution_workflow' => $data['execution_workflow'] ?? null,
-                'created_by' => $data['created_by'],
-                'metadata' => $data['metadata'] ?? [],
+                'voting_power_strategy'  => $data['voting_power_strategy'] ?? 'one_user_one_vote',
+                'execution_workflow'     => $data['execution_workflow'] ?? null,
+                'created_by'             => $data['created_by'],
+                'metadata'               => $data['metadata'] ?? [],
             ]);
 
             DB::commit();
+
             return $poll;
         } catch (\Exception $e) {
             DB::rollBack();
@@ -82,7 +83,7 @@ class GovernanceService
 
     public function castVote(Poll $poll, User $user, array $selectedOptions): Vote
     {
-        if (!$poll->canVote()) {
+        if (! $poll->canVote()) {
             throw new InvalidArgumentException('Poll is not available for voting');
         }
 
@@ -92,7 +93,7 @@ class GovernanceService
 
         $strategy = $this->getVotingStrategy($poll->voting_power_strategy);
 
-        if (!$strategy->canVote($user, $poll)) {
+        if (! $strategy->canVote($user, $poll)) {
             throw new InvalidArgumentException('User is not eligible to vote in this poll');
         }
 
@@ -108,19 +109,20 @@ class GovernanceService
 
         try {
             $vote = Vote::create([
-                'poll_id' => $poll->id,
-                'user_uuid' => $user->uuid,
+                'poll_id'          => $poll->id,
+                'user_uuid'        => $user->uuid,
                 'selected_options' => $selectedOptions,
-                'voting_power' => $votingPower,
-                'voted_at' => now(),
-                'metadata' => [
+                'voting_power'     => $votingPower,
+                'voted_at'         => now(),
+                'metadata'         => [
                     'strategy_used' => $poll->voting_power_strategy,
-                    'user_agent' => request()->userAgent(),
-                    'ip_address' => request()->ip(),
+                    'user_agent'    => request()->userAgent(),
+                    'ip_address'    => request()->ip(),
                 ],
             ]);
 
             DB::commit();
+
             return $vote;
         } catch (\Exception $e) {
             DB::rollBack();
@@ -134,7 +136,7 @@ class GovernanceService
             throw new InvalidArgumentException('Only active polls can be completed');
         }
 
-        if (!$poll->isExpired()) {
+        if (! $poll->isExpired()) {
             throw new InvalidArgumentException('Poll has not expired yet');
         }
 
@@ -144,9 +146,9 @@ class GovernanceService
             $result = $poll->calculateResults();
 
             $poll->update([
-                'status' => PollStatus::CLOSED,
+                'status'   => PollStatus::CLOSED,
                 'metadata' => array_merge($poll->metadata ?? [], [
-                    'results' => $result->toArray(),
+                    'results'      => $result->toArray(),
                     'completed_at' => now()->toISOString(),
                 ]),
             ]);
@@ -157,6 +159,7 @@ class GovernanceService
             }
 
             DB::commit();
+
             return $result;
         } catch (\Exception $e) {
             DB::rollBack();
@@ -171,9 +174,9 @@ class GovernanceService
         }
 
         return $poll->update([
-            'status' => PollStatus::CANCELLED,
+            'status'   => PollStatus::CANCELLED,
             'metadata' => array_merge($poll->metadata ?? [], [
-                'cancelled_at' => now()->toISOString(),
+                'cancelled_at'        => now()->toISOString(),
                 'cancellation_reason' => $reason,
             ]),
         ]);
@@ -187,12 +190,13 @@ class GovernanceService
     public function getUserVotingPower(User $user, Poll $poll): int
     {
         $strategy = $this->getVotingStrategy($poll->voting_power_strategy);
+
         return $strategy->calculatePower($user, $poll);
     }
 
     public function canUserVote(User $user, Poll $poll): bool
     {
-        if (!$poll->canVote()) {
+        if (! $poll->canVote()) {
             return false;
         }
 
@@ -201,6 +205,7 @@ class GovernanceService
         }
 
         $strategy = $this->getVotingStrategy($poll->voting_power_strategy);
+
         return $strategy->canVote($user, $poll);
     }
 
@@ -211,7 +216,7 @@ class GovernanceService
 
     public function getVotingStrategy(string $strategyName): IVotingPowerStrategy
     {
-        if (!isset($this->votingStrategies[$strategyName])) {
+        if (! isset($this->votingStrategies[$strategyName])) {
             throw new InvalidArgumentException("Unknown voting strategy: {$strategyName}");
         }
 
@@ -222,7 +227,7 @@ class GovernanceService
     {
         return array_values(array_map(
             fn (IVotingPowerStrategy $strategy) => [
-                'name' => $strategy->getName(),
+                'name'        => $strategy->getName(),
                 'description' => $strategy->getDescription(),
             ],
             $this->votingStrategies
@@ -238,7 +243,7 @@ class GovernanceService
         $validOptionIds = array_column($poll->options ?? [], 'id');
 
         foreach ($selectedOptions as $optionId) {
-            if (!in_array($optionId, $validOptionIds, true)) {
+            if (! in_array($optionId, $validOptionIds, true)) {
                 throw new InvalidArgumentException("Invalid option ID: {$optionId}");
             }
         }
@@ -248,7 +253,7 @@ class GovernanceService
             PollType::SINGLE_CHOICE, PollType::YES_NO => $this->validateSingleChoice($selectedOptions),
             PollType::MULTIPLE_CHOICE => $this->validateMultipleChoice($selectedOptions, count($validOptionIds)),
             PollType::WEIGHTED_CHOICE => $this->validateWeightedChoice($selectedOptions),
-            PollType::RANKED_CHOICE => $this->validateRankedChoice($selectedOptions, $validOptionIds),
+            PollType::RANKED_CHOICE   => $this->validateRankedChoice($selectedOptions, $validOptionIds),
         };
     }
 
@@ -304,9 +309,9 @@ class GovernanceService
     private function executeWorkflow(Poll $poll, PollResult $result): void
     {
         logger()->info('Poll workflow execution requested', [
-            'poll_uuid' => $poll->uuid,
-            'workflow' => $poll->execution_workflow,
-            'winning_option' => $result->winningOption,
+            'poll_uuid'          => $poll->uuid,
+            'workflow'           => $poll->execution_workflow,
+            'winning_option'     => $result->winningOption,
             'participation_rate' => $result->participationRate,
         ]);
 
@@ -319,8 +324,8 @@ class GovernanceService
                 'UpdateConfigurationWorkflow' => app(\App\Domain\Governance\Workflows\UpdateConfigurationWorkflow::class)
                     ->execute($poll, $result),
                 default => [
-                    'success' => false,
-                    'message' => "Unknown workflow: {$poll->execution_workflow}",
+                    'success'   => false,
+                    'message'   => "Unknown workflow: {$poll->execution_workflow}",
                     'poll_uuid' => $poll->uuid,
                 ]
             };
@@ -336,23 +341,23 @@ class GovernanceService
 
             logger()->info('Poll workflow execution completed', [
                 'poll_uuid' => $poll->uuid,
-                'workflow' => $poll->execution_workflow,
-                'result' => $workflowResult,
+                'workflow'  => $poll->execution_workflow,
+                'result'    => $workflowResult,
             ]);
         } catch (\Exception $e) {
             logger()->error('Poll workflow execution failed', [
                 'poll_uuid' => $poll->uuid,
-                'workflow' => $poll->execution_workflow,
-                'error' => $e->getMessage(),
+                'workflow'  => $poll->execution_workflow,
+                'error'     => $e->getMessage(),
             ]);
 
             // Update poll with failure information
             $poll->update([
                 'metadata' => array_merge($poll->metadata ?? [], [
                     'workflow_execution' => [
-                        'success' => false,
-                        'message' => 'Workflow execution failed: ' . $e->getMessage(),
-                        'poll_uuid' => $poll->uuid,
+                        'success'     => false,
+                        'message'     => 'Workflow execution failed: ' . $e->getMessage(),
+                        'poll_uuid'   => $poll->uuid,
                         'executed_at' => now()->toISOString(),
                     ],
                 ]),

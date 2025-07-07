@@ -14,7 +14,7 @@ class CircuitBreakerServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->circuitBreaker = new CircuitBreakerService;
+        $this->circuitBreaker = new CircuitBreakerService();
         Cache::flush(); // Clear any existing circuit breaker state
     }
 
@@ -70,7 +70,7 @@ class CircuitBreakerServiceTest extends TestCase
         Cache::forget('circuit_breaker:test_service:failure_count');
         Cache::forget('circuit_breaker:test_service:success_count');
         Cache::forget('circuit_breaker:test_service:half_open_attempts');
-        
+
         // Manually set state to open with old timestamp to trigger half-open transition
         Cache::put('circuit_breaker:test_service:state', 'open');
         Cache::put('circuit_breaker:test_service:state_changed_at', now()->subMinutes(2)->toIso8601String()); // Use 2 minutes to ensure timeout
@@ -89,7 +89,7 @@ class CircuitBreakerServiceTest extends TestCase
         Cache::forget('circuit_breaker:test_service:failure_count');
         Cache::forget('circuit_breaker:test_service:success_count');
         Cache::forget('circuit_breaker:test_service:half_open_attempts');
-        
+
         // Set circuit to half-open
         Cache::put('circuit_breaker:test_service:state', 'half-open');
         Cache::put('circuit_breaker:test_service:state_changed_at', now());
@@ -135,9 +135,9 @@ class CircuitBreakerServiceTest extends TestCase
         $result = $this->circuitBreaker->call('test_service', function () {
             return 'success';
         });
-        
+
         $this->assertEquals('success', $result);
-        
+
         // After first success, circuit should still be in half-open waiting for SUCCESS_THRESHOLD
         $state = Cache::get('circuit_breaker:test_service:state');
         $this->assertEquals('half-open', $state);
@@ -146,9 +146,9 @@ class CircuitBreakerServiceTest extends TestCase
         $result2 = $this->circuitBreaker->call('test_service', function () {
             return 'success2';
         });
-        
+
         $this->assertEquals('success2', $result2);
-        
+
         // After SUCCESS_THRESHOLD (2) successes, circuit should be closed
         $state = Cache::get('circuit_breaker:test_service:state', 'closed');
         $this->assertEquals('closed', $state);

@@ -46,8 +46,8 @@ class FixerIoProvider extends BaseExchangeRateProvider
             $endpoint = '/latest';
             $params = [
                 'access_key' => $this->config['api_key'],
-                'base' => $fromCurrency,
-                'symbols' => $toCurrency,
+                'base'       => $fromCurrency,
+                'symbols'    => $toCurrency,
             ];
 
             $this->logRequest('GET', $endpoint, $params);
@@ -139,7 +139,7 @@ class FixerIoProvider extends BaseExchangeRateProvider
             $endpoint = '/latest';
             $params = [
                 'access_key' => $this->config['api_key'],
-                'base' => $baseCurrency,
+                'base'       => $baseCurrency,
             ];
 
             if (! empty($symbols)) {

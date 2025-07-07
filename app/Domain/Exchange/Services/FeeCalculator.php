@@ -31,8 +31,8 @@ class FeeCalculator implements FeeCalculatorInterface
         $takerFee = $value->multipliedBy($takerFeeRate)->toScale(18, RoundingMode::DOWN);
 
         return (object) [
-            'makerFee' => $makerFee,
-            'takerFee' => $takerFee,
+            'makerFee'     => $makerFee,
+            'takerFee'     => $takerFee,
             'makerFeeRate' => $makerFeeRate,
             'takerFeeRate' => $takerFeeRate,
         ];

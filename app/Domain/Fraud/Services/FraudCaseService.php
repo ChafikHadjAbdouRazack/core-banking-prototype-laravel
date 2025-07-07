@@ -2,21 +2,21 @@
 
 namespace App\Domain\Fraud\Services;
 
+use App\Domain\Fraud\Events\FraudCaseCreated;
+use App\Domain\Fraud\Events\FraudCaseResolved;
+use App\Domain\Fraud\Events\FraudCaseUpdated;
 use App\Models\FraudCase;
 use App\Models\FraudScore;
-use App\Models\User;
 use App\Models\Transaction;
-use App\Domain\Fraud\Events\FraudCaseCreated;
-use App\Domain\Fraud\Events\FraudCaseUpdated;
-use App\Domain\Fraud\Events\FraudCaseResolved;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class FraudCaseService
 {
     /**
-     * Create fraud case from fraud score
+     * Create fraud case from fraud score.
      */
     public function createFromFraudScore(FraudScore $fraudScore): FraudCase
     {
@@ -26,24 +26,24 @@ class FraudCaseService
 
             // Create case
             $case = FraudCase::create([
-                'case_number' => $this->generateCaseNumber(),
-                'fraud_score_id' => $fraudScore->id,
-                'entity_id' => $fraudScore->entity_id,
-                'entity_type' => $fraudScore->entity_type,
-                'priority' => $priority,
-                'risk_level' => $fraudScore->risk_level,
-                'total_score' => $fraudScore->total_score,
-                'triggered_rules' => $fraudScore->triggered_rules,
-                'risk_factors' => $this->extractRiskFactors($fraudScore),
-                'entity_snapshot' => $fraudScore->entity_snapshot,
-                'initial_decision' => $fraudScore->decision,
-                'status' => FraudCase::STATUS_OPEN,
-                'assigned_to' => $this->autoAssign($priority),
+                'case_number'         => $this->generateCaseNumber(),
+                'fraud_score_id'      => $fraudScore->id,
+                'entity_id'           => $fraudScore->entity_id,
+                'entity_type'         => $fraudScore->entity_type,
+                'priority'            => $priority,
+                'risk_level'          => $fraudScore->risk_level,
+                'total_score'         => $fraudScore->total_score,
+                'triggered_rules'     => $fraudScore->triggered_rules,
+                'risk_factors'        => $this->extractRiskFactors($fraudScore),
+                'entity_snapshot'     => $fraudScore->entity_snapshot,
+                'initial_decision'    => $fraudScore->decision,
+                'status'              => FraudCase::STATUS_OPEN,
+                'assigned_to'         => $this->autoAssign($priority),
                 'investigation_notes' => [[
                     'timestamp' => now()->toIso8601String(),
-                    'type' => 'system',
-                    'note' => 'Case created automatically from fraud detection system',
-                    'author' => 'System',
+                    'type'      => 'system',
+                    'note'      => 'Case created automatically from fraud detection system',
+                    'author'    => 'System',
                 ]],
             ]);
 
@@ -65,7 +65,7 @@ class FraudCaseService
     }
 
     /**
-     * Update case investigation
+     * Update case investigation.
      */
     public function updateInvestigation(FraudCase $case, array $data): FraudCase
     {
@@ -92,8 +92,8 @@ class FraudCaseService
             // Update fields
             $case->update([
                 'assigned_to' => $data['assigned_to'] ?? $case->assigned_to,
-                'priority' => $data['priority'] ?? $case->priority,
-                'tags' => $data['tags'] ?? $case->tags,
+                'priority'    => $data['priority'] ?? $case->priority,
+                'tags'        => $data['tags'] ?? $case->tags,
             ]);
 
             event(new FraudCaseUpdated($case));
@@ -103,20 +103,20 @@ class FraudCaseService
     }
 
     /**
-     * Resolve fraud case
+     * Resolve fraud case.
      */
     public function resolveCase(FraudCase $case, string $resolution, string $outcome): FraudCase
     {
         DB::transaction(function () use ($case, $resolution, $outcome) {
             $case->update([
-                'status' => FraudCase::STATUS_CLOSED,
-                'resolution' => $resolution,
-                'outcome' => $outcome,
-                'resolved_at' => now(),
-                'resolved_by' => Auth::id(),
+                'status'           => FraudCase::STATUS_CLOSED,
+                'resolution'       => $resolution,
+                'outcome'          => $outcome,
+                'resolved_at'      => now(),
+                'resolved_by'      => Auth::id(),
                 'resolution_notes' => [
-                    'resolution' => $resolution,
-                    'outcome' => $outcome,
+                    'resolution'  => $resolution,
+                    'outcome'     => $outcome,
                     'resolved_by' => Auth::user()->name ?? 'Unknown',
                     'resolved_at' => now()->toIso8601String(),
                 ],
@@ -157,7 +157,7 @@ class FraudCaseService
     }
 
     /**
-     * Search fraud cases
+     * Search fraud cases.
      */
     public function searchCases(array $filters): Collection
     {
@@ -220,7 +220,7 @@ class FraudCaseService
     }
 
     /**
-     * Get case statistics
+     * Get case statistics.
      */
     public function getCaseStatistics(array $filters = []): array
     {
@@ -235,55 +235,55 @@ class FraudCaseService
         }
 
         return [
-            'total_cases' => $baseQuery->count(),
-            'open_cases' => (clone $baseQuery)->where('status', FraudCase::STATUS_OPEN)->count(),
+            'total_cases'         => $baseQuery->count(),
+            'open_cases'          => (clone $baseQuery)->where('status', FraudCase::STATUS_OPEN)->count(),
             'investigating_cases' => (clone $baseQuery)->where('status', FraudCase::STATUS_INVESTIGATING)->count(),
-            'closed_cases' => (clone $baseQuery)->where('status', FraudCase::STATUS_CLOSED)->count(),
+            'closed_cases'        => (clone $baseQuery)->where('status', FraudCase::STATUS_CLOSED)->count(),
 
             'by_priority' => [
                 'critical' => (clone $baseQuery)->where('priority', FraudCase::PRIORITY_CRITICAL)->count(),
-                'high' => (clone $baseQuery)->where('priority', FraudCase::PRIORITY_HIGH)->count(),
-                'medium' => (clone $baseQuery)->where('priority', FraudCase::PRIORITY_MEDIUM)->count(),
-                'low' => (clone $baseQuery)->where('priority', FraudCase::PRIORITY_LOW)->count(),
+                'high'     => (clone $baseQuery)->where('priority', FraudCase::PRIORITY_HIGH)->count(),
+                'medium'   => (clone $baseQuery)->where('priority', FraudCase::PRIORITY_MEDIUM)->count(),
+                'low'      => (clone $baseQuery)->where('priority', FraudCase::PRIORITY_LOW)->count(),
             ],
 
             'by_outcome' => [
-                'fraud' => (clone $baseQuery)->where('outcome', FraudCase::OUTCOME_FRAUD)->count(),
+                'fraud'      => (clone $baseQuery)->where('outcome', FraudCase::OUTCOME_FRAUD)->count(),
                 'legitimate' => (clone $baseQuery)->where('outcome', FraudCase::OUTCOME_LEGITIMATE)->count(),
-                'unknown' => (clone $baseQuery)->where('outcome', FraudCase::OUTCOME_UNKNOWN)->count(),
+                'unknown'    => (clone $baseQuery)->where('outcome', FraudCase::OUTCOME_UNKNOWN)->count(),
             ],
 
             'financial_impact' => [
-                'total_loss' => (clone $baseQuery)->sum('loss_amount'),
-                'total_recovered' => (clone $baseQuery)->sum('recovery_amount'),
-                'average_loss' => (clone $baseQuery)->avg('loss_amount'),
+                'total_loss'            => (clone $baseQuery)->sum('loss_amount'),
+                'total_recovered'       => (clone $baseQuery)->sum('recovery_amount'),
+                'average_loss'          => (clone $baseQuery)->avg('loss_amount'),
                 'average_recovery_rate' => (clone $baseQuery)->avg('recovery_percentage'),
             ],
 
             'performance' => [
                 'average_resolution_time' => $this->calculateAverageResolutionTime($baseQuery),
-                'cases_per_investigator' => $this->getCasesPerInvestigator($baseQuery),
+                'cases_per_investigator'  => $this->getCasesPerInvestigator($baseQuery),
             ],
         ];
     }
 
     /**
-     * Escalate case
+     * Escalate case.
      */
     public function escalateCase(FraudCase $case, string $reason): FraudCase
     {
         $newPriority = match ($case->priority) {
-            FraudCase::PRIORITY_LOW => FraudCase::PRIORITY_MEDIUM,
+            FraudCase::PRIORITY_LOW    => FraudCase::PRIORITY_MEDIUM,
             FraudCase::PRIORITY_MEDIUM => FraudCase::PRIORITY_HIGH,
-            FraudCase::PRIORITY_HIGH => FraudCase::PRIORITY_CRITICAL,
-            default => FraudCase::PRIORITY_CRITICAL,
+            FraudCase::PRIORITY_HIGH   => FraudCase::PRIORITY_CRITICAL,
+            default                    => FraudCase::PRIORITY_CRITICAL,
         };
 
         $case->update([
-            'priority' => $newPriority,
-            'escalated' => true,
+            'priority'          => $newPriority,
+            'escalated'         => true,
             'escalation_reason' => $reason,
-            'escalated_at' => now(),
+            'escalated_at'      => now(),
         ]);
 
         $case->addInvestigationNote(
@@ -298,7 +298,7 @@ class FraudCaseService
     }
 
     /**
-     * Link similar cases
+     * Link similar cases.
      */
     public function linkSimilarCases(FraudCase $case): Collection
     {
@@ -312,7 +312,7 @@ class FraudCaseService
                 });
 
                 // Similar risk factors
-                if (!empty($case->risk_factors)) {
+                if (! empty($case->risk_factors)) {
                     $query->orWhere(function ($q) use ($case) {
                         foreach ($case->risk_factors as $factor) {
                             $q->orWhereJsonContains('risk_factors', $factor);
@@ -321,7 +321,7 @@ class FraudCaseService
                 }
 
                 // Similar triggered rules
-                if (!empty($case->triggered_rules)) {
+                if (! empty($case->triggered_rules)) {
                     $query->orWhere(function ($q) use ($case) {
                         foreach ($case->triggered_rules as $rule) {
                             $q->orWhereJsonContains('triggered_rules', $rule);
@@ -343,7 +343,7 @@ class FraudCaseService
     }
 
     /**
-     * Generate case number
+     * Generate case number.
      */
     protected function generateCaseNumber(): string
     {
@@ -365,11 +365,11 @@ class FraudCaseService
     }
 
     /**
-     * Determine priority based on fraud score
+     * Determine priority based on fraud score.
      */
     protected function determinePriority(FraudScore $fraudScore): string
     {
-        if ($fraudScore->total_score >= 90 || !empty($fraudScore->triggered_rules)) {
+        if ($fraudScore->total_score >= 90 || ! empty($fraudScore->triggered_rules)) {
             return FraudCase::PRIORITY_CRITICAL;
         } elseif ($fraudScore->total_score >= 70) {
             return FraudCase::PRIORITY_HIGH;
@@ -381,7 +381,7 @@ class FraudCaseService
     }
 
     /**
-     * Auto-assign case to investigator
+     * Auto-assign case to investigator.
      */
     protected function autoAssign(string $priority): ?int
     {
@@ -391,7 +391,7 @@ class FraudCaseService
     }
 
     /**
-     * Extract risk factors from fraud score
+     * Extract risk factors from fraud score.
      */
     protected function extractRiskFactors(FraudScore $fraudScore): array
     {
@@ -416,7 +416,7 @@ class FraudCaseService
     }
 
     /**
-     * Link related entities to case
+     * Link related entities to case.
      */
     protected function linkRelatedEntities(FraudCase $case, FraudScore $fraudScore): void
     {
@@ -426,22 +426,22 @@ class FraudCaseService
             $transaction = Transaction::find($fraudScore->entity_id);
             if ($transaction) {
                 $relatedEntities[] = [
-                    'type' => 'user',
-                    'id' => $transaction->account->user_id,
+                    'type'        => 'user',
+                    'id'          => $transaction->account->user_id,
                     'description' => 'Transaction owner',
                 ];
 
                 $relatedEntities[] = [
-                    'type' => 'account',
-                    'id' => $transaction->account_id,
+                    'type'        => 'account',
+                    'id'          => $transaction->account_id,
                     'description' => 'Source account',
                 ];
 
                 // Add recipient if available
                 if (isset($transaction->metadata['recipient_account_id'])) {
                     $relatedEntities[] = [
-                        'type' => 'account',
-                        'id' => $transaction->metadata['recipient_account_id'],
+                        'type'        => 'account',
+                        'id'          => $transaction->metadata['recipient_account_id'],
                         'description' => 'Recipient account',
                     ];
                 }
@@ -452,8 +452,8 @@ class FraudCaseService
             if ($user) {
                 foreach ($user->accounts as $account) {
                     $relatedEntities[] = [
-                        'type' => 'account',
-                        'id' => $account->id,
+                        'type'        => 'account',
+                        'id'          => $account->id,
                         'description' => 'User account',
                     ];
                 }
@@ -464,19 +464,19 @@ class FraudCaseService
     }
 
     /**
-     * Add evidence to case
+     * Add evidence to case.
      */
     protected function addEvidence(FraudCase $case, array $evidence): void
     {
         $currentEvidence = $case->evidence ?? [];
 
         $newEvidence = [
-            'id' => uniqid('evidence_'),
-            'type' => $evidence['type'] ?? 'document',
+            'id'          => uniqid('evidence_'),
+            'type'        => $evidence['type'] ?? 'document',
             'description' => $evidence['description'],
-            'added_by' => Auth::user()->name ?? 'Unknown',
-            'added_at' => now()->toIso8601String(),
-            'metadata' => $evidence['metadata'] ?? [],
+            'added_by'    => Auth::user()->name ?? 'Unknown',
+            'added_at'    => now()->toIso8601String(),
+            'metadata'    => $evidence['metadata'] ?? [],
         ];
 
         if (isset($evidence['file_path'])) {
@@ -488,18 +488,18 @@ class FraudCaseService
     }
 
     /**
-     * Update case status
+     * Update case status.
      */
     protected function updateStatus(FraudCase $case, string $newStatus): void
     {
         $oldStatus = $case->status;
 
         $case->update([
-            'status' => $newStatus,
+            'status'            => $newStatus,
             'status_changed_at' => now(),
         ]);
 
-        if ($newStatus === FraudCase::STATUS_INVESTIGATING && !$case->investigation_started_at) {
+        if ($newStatus === FraudCase::STATUS_INVESTIGATING && ! $case->investigation_started_at) {
             $case->update(['investigation_started_at' => now()]);
         }
 
@@ -511,7 +511,7 @@ class FraudCaseService
     }
 
     /**
-     * Update related entities based on case outcome
+     * Update related entities based on case outcome.
      */
     protected function updateRelatedEntities(FraudCase $case, string $outcome): void
     {
@@ -529,7 +529,7 @@ class FraudCaseService
     }
 
     /**
-     * Calculate average resolution time
+     * Calculate average resolution time.
      */
     protected function calculateAverageResolutionTime($baseQuery): ?float
     {
@@ -550,7 +550,7 @@ class FraudCaseService
     }
 
     /**
-     * Get cases per investigator
+     * Get cases per investigator.
      */
     protected function getCasesPerInvestigator($baseQuery): array
     {

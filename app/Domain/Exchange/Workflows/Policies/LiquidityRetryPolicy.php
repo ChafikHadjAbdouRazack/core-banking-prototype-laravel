@@ -13,10 +13,10 @@ class LiquidityRetryPolicy
     public static function standard(): array
     {
         return [
-            'initial_interval' => 1000, // 1 second
-            'backoff_coefficient' => 2.0,
-            'maximum_interval' => 60000, // 60 seconds
-            'maximum_attempts' => 3,
+            'initial_interval'         => 1000, // 1 second
+            'backoff_coefficient'      => 2.0,
+            'maximum_interval'         => 60000, // 60 seconds
+            'maximum_attempts'         => 3,
             'non_retryable_exceptions' => [
                 \DomainException::class,
                 \InvalidArgumentException::class,
@@ -39,10 +39,10 @@ class LiquidityRetryPolicy
     public static function external(): array
     {
         return [
-            'initial_interval' => 2000, // 2 seconds
-            'backoff_coefficient' => 2.0,
-            'maximum_interval' => 120000, // 2 minutes
-            'maximum_attempts' => 5,
+            'initial_interval'         => 2000, // 2 seconds
+            'backoff_coefficient'      => 2.0,
+            'maximum_interval'         => 120000, // 2 minutes
+            'maximum_attempts'         => 5,
             'non_retryable_exceptions' => [
                 \DomainException::class,
             ],
@@ -63,10 +63,10 @@ class LiquidityRetryPolicy
     public static function critical(): array
     {
         return [
-            'initial_interval' => 500, // 500ms
+            'initial_interval'    => 500, // 500ms
             'backoff_coefficient' => 1.5,
-            'maximum_interval' => 30000, // 30 seconds
-            'maximum_attempts' => 10,
+            'maximum_interval'    => 30000, // 30 seconds
+            'maximum_attempts'    => 10,
         ];
         // return RetryOptions::new()
         //     ->withInitialInterval(500) // 500ms

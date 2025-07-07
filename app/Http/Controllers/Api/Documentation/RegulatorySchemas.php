@@ -178,7 +178,6 @@ namespace App\Http\Controllers\Api\Documentation;
  *     @OA\Property(property="created_at", type="string", format="date-time")
  * )
  */
-
 class RegulatorySchemas
 {
     // This class only contains OpenAPI schema definitions

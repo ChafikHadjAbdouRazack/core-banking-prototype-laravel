@@ -7,7 +7,7 @@ use App\Domain\Account\DataObjects\Money;
 interface HasMoney
 {
     /**
-     * @return \App\Domain\Account\DataObjects\Money
+     * @return Money
      */
     public function getMoney(): Money;
 }

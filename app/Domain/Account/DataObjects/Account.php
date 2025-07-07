@@ -47,7 +47,7 @@ final readonly class Account extends DataObject implements DataObjectContract
     /**
      * @param string $uuid
      *
-     * @return \App\Domain\Account\DataObjects\Account
+     * @return Account
      */
     public function withUuid(string $uuid): self
     {

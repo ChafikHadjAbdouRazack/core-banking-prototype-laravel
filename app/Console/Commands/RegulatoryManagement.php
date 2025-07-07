@@ -2,13 +2,13 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
-use App\Domain\Regulatory\Services\EnhancedRegulatoryReportingService;
-use App\Domain\Regulatory\Services\ThresholdMonitoringService;
+use App\Domain\Regulatory\Models\RegulatoryFilingRecord;
 use App\Domain\Regulatory\Models\RegulatoryReport;
 use App\Domain\Regulatory\Models\RegulatoryThreshold;
-use App\Domain\Regulatory\Models\RegulatoryFilingRecord;
+use App\Domain\Regulatory\Services\EnhancedRegulatoryReportingService;
+use App\Domain\Regulatory\Services\ThresholdMonitoringService;
 use Carbon\Carbon;
+use Illuminate\Console\Command;
 
 class RegulatoryManagement extends Command
 {
@@ -32,6 +32,7 @@ class RegulatoryManagement extends Command
     protected $description = 'Manage regulatory reporting and compliance';
 
     protected EnhancedRegulatoryReportingService $reportingService;
+
     protected ThresholdMonitoringService $thresholdService;
 
     public function __construct(
@@ -70,12 +71,13 @@ class RegulatoryManagement extends Command
 
             default:
                 $this->error("Unknown action: {$action}");
+
                 return 1;
         }
     }
 
     /**
-     * Generate regulatory reports
+     * Generate regulatory reports.
      */
     protected function generateReports(bool $dryRun): int
     {
@@ -87,9 +89,9 @@ class RegulatoryManagement extends Command
         $reports = [];
 
         // Generate based on type or all if not specified
-        if (!$type || $type === 'CTR') {
+        if (! $type || $type === 'CTR') {
             $this->info('Generating CTR report...');
-            if (!$dryRun) {
+            if (! $dryRun) {
                 try {
                     $report = $this->reportingService->generateEnhancedCTR($date);
                     $reports[] = $report;
@@ -100,9 +102,9 @@ class RegulatoryManagement extends Command
             }
         }
 
-        if (!$type || $type === 'SAR') {
+        if (! $type || $type === 'SAR') {
             $this->info('Checking for SAR candidates...');
-            if (!$dryRun) {
+            if (! $dryRun) {
                 try {
                     $startDate = $date->copy()->subDays(30);
                     $report = $this->reportingService->generateEnhancedSAR($startDate, $date);
@@ -118,10 +120,10 @@ class RegulatoryManagement extends Command
             }
         }
 
-        if (!$type || $type === 'AML') {
+        if (! $type || $type === 'AML') {
             if ($date->day === $date->copy()->endOfMonth()->day) {
                 $this->info('Generating monthly AML report...');
-                if (!$dryRun) {
+                if (! $dryRun) {
                     try {
                         $report = $this->reportingService->generateAMLReport($date);
                         $reports[] = $report;
@@ -133,9 +135,9 @@ class RegulatoryManagement extends Command
             }
         }
 
-        if (!$type || $type === 'OFAC') {
+        if (! $type || $type === 'OFAC') {
             $this->info('Generating OFAC screening report...');
-            if (!$dryRun) {
+            if (! $dryRun) {
                 try {
                     $report = $this->reportingService->generateOFACReport($date);
                     $reports[] = $report;
@@ -150,10 +152,10 @@ class RegulatoryManagement extends Command
             }
         }
 
-        if (!$type || $type === 'BSA') {
+        if (! $type || $type === 'BSA') {
             if ($date->day === $date->copy()->endOfQuarter()->day) {
                 $this->info('Generating quarterly BSA report...');
-                if (!$dryRun) {
+                if (! $dryRun) {
                     try {
                         $report = $this->reportingService->generateBSAReport($date);
                         $reports[] = $report;
@@ -165,13 +167,13 @@ class RegulatoryManagement extends Command
             }
         }
 
-        $this->info("\nSummary: " . count($reports) . " reports generated");
+        $this->info("\nSummary: " . count($reports) . ' reports generated');
 
         return 0;
     }
 
     /**
-     * Check regulatory thresholds
+     * Check regulatory thresholds.
      */
     protected function checkThresholds(bool $dryRun): int
     {
@@ -179,7 +181,7 @@ class RegulatoryManagement extends Command
 
         $this->info("Running aggregate threshold monitoring for: {$date->toDateString()}");
 
-        if (!$dryRun) {
+        if (! $dryRun) {
             $triggered = $this->thresholdService->runAggregateMonitoring($date);
 
             if ($triggered->isNotEmpty()) {
@@ -190,11 +192,11 @@ class RegulatoryManagement extends Command
                     $this->warn("  - {$threshold->name} ({$threshold->threshold_code})");
 
                     if ($threshold->shouldAutoReport()) {
-                        $this->info("    → Auto-generating report for this threshold");
+                        $this->info('    → Auto-generating report for this threshold');
                     }
                 }
             } else {
-                $this->info("No thresholds triggered");
+                $this->info('No thresholds triggered');
             }
         }
 
@@ -209,7 +211,7 @@ class RegulatoryManagement extends Command
             ->get();
 
         if ($highTriggerThresholds->isNotEmpty()) {
-            $this->info("  Most triggered thresholds:");
+            $this->info('  Most triggered thresholds:');
             foreach ($highTriggerThresholds as $threshold) {
                 $this->info("    - {$threshold->name}: {$threshold->trigger_count} triggers");
             }
@@ -219,22 +221,22 @@ class RegulatoryManagement extends Command
     }
 
     /**
-     * Process pending filings
+     * Process pending filings.
      */
     protected function processFilings(bool $dryRun): int
     {
-        $this->info("Processing regulatory filings...");
+        $this->info('Processing regulatory filings...');
 
         // Check status of submitted filings
         $submittedFilings = RegulatoryFilingRecord::whereIn('filing_status', [
             RegulatoryFilingRecord::STATUS_SUBMITTED,
-            RegulatoryFilingRecord::STATUS_ACKNOWLEDGED
+            RegulatoryFilingRecord::STATUS_ACKNOWLEDGED,
         ])->get();
 
         $this->info("Checking status of {$submittedFilings->count()} submitted filings...");
 
         foreach ($submittedFilings as $filing) {
-            if (!$dryRun) {
+            if (! $dryRun) {
                 try {
                     $status = app(\App\Domain\Regulatory\Services\RegulatoryFilingService::class)
                         ->checkFilingStatus($filing);
@@ -242,7 +244,7 @@ class RegulatoryManagement extends Command
                     $this->info("  {$filing->filing_id}: {$status['status']}");
 
                     if ($status['status'] === 'accepted') {
-                        $this->info("    ✓ Filing accepted");
+                        $this->info('    ✓ Filing accepted');
                     } elseif ($status['status'] === 'rejected') {
                         $this->error("    ✗ Filing rejected: {$status['reason']}");
                     }
@@ -259,7 +261,7 @@ class RegulatoryManagement extends Command
             $this->info("\nRetrying {$failedFilings->count()} failed filings...");
 
             foreach ($failedFilings as $filing) {
-                if (!$dryRun) {
+                if (! $dryRun) {
                     try {
                         app(\App\Domain\Regulatory\Services\RegulatoryFilingService::class)
                             ->retryFiling($filing);
@@ -276,18 +278,19 @@ class RegulatoryManagement extends Command
     }
 
     /**
-     * Check overdue reports
+     * Check overdue reports.
      */
     protected function checkOverdueReports(bool $dryRun): int
     {
-        $this->info("Checking for overdue reports...");
+        $this->info('Checking for overdue reports...');
 
         $overdueReports = RegulatoryReport::overdue()
             ->orderByDesc('days_overdue')
             ->get();
 
         if ($overdueReports->isEmpty()) {
-            $this->info("No overdue reports found");
+            $this->info('No overdue reports found');
+
             return 0;
         }
 

@@ -7,7 +7,7 @@ it('can create a webhook delivery', function () {
     $webhook = Webhook::factory()->create();
     $delivery = WebhookDelivery::factory()->create([
         'webhook_uuid' => $webhook->uuid,
-        'event_type' => 'account.created',
+        'event_type'   => 'account.created',
     ]);
 
     expect($delivery->webhook_uuid)->toBe($webhook->uuid)
@@ -82,7 +82,7 @@ it('can mark delivery as delivered', function () {
 it('can mark delivery as failed with retry', function () {
     $webhook = Webhook::factory()->create(['retry_attempts' => 3]);
     $delivery = WebhookDelivery::factory()->create([
-        'webhook_uuid' => $webhook->uuid,
+        'webhook_uuid'   => $webhook->uuid,
         'attempt_number' => 1,
     ]);
 
@@ -108,7 +108,7 @@ it('can mark delivery as failed with retry', function () {
 it('does not set retry for final attempt', function () {
     $webhook = Webhook::factory()->create(['retry_attempts' => 3]);
     $delivery = WebhookDelivery::factory()->create([
-        'webhook_uuid' => $webhook->uuid,
+        'webhook_uuid'   => $webhook->uuid,
         'attempt_number' => 3,
     ]);
 
@@ -123,8 +123,8 @@ it('does not set retry for final attempt', function () {
 it('can create a retry delivery', function () {
     $delivery = WebhookDelivery::factory()->create([
         'attempt_number' => 2,
-        'event_type' => 'test.event',
-        'payload' => ['test' => 'data'],
+        'event_type'     => 'test.event',
+        'payload'        => ['test' => 'data'],
     ]);
 
     $retry = $delivery->createRetry();

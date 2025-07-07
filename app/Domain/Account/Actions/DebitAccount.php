@@ -8,9 +8,9 @@ use App\Models\Account;
 class DebitAccount extends AccountAction
 {
     /**
-     * @param \App\Domain\Account\Events\AssetBalanceSubtracted $event
+     * @param AssetBalanceSubtracted $event
      *
-     * @return \App\Models\Account
+     * @return Account
      */
     public function __invoke(AssetBalanceSubtracted $event): Account
     {
@@ -21,10 +21,10 @@ class DebitAccount extends AccountAction
         // Find existing asset balance
         $balance = \App\Models\AccountBalance::where([
             'account_uuid' => $account->uuid,
-            'asset_code' => $event->assetCode,
+            'asset_code'   => $event->assetCode,
         ])->first();
 
-        if (!$balance) {
+        if (! $balance) {
             throw new \Exception("Asset balance not found for {$event->assetCode}");
         }
 

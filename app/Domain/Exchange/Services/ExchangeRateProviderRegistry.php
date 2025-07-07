@@ -22,7 +22,7 @@ class ExchangeRateProviderRegistry
     private ?string $defaultProvider = null;
 
     /**
-     * Register a provider
+     * Register a provider.
      */
     public function register(string $name, mixed $provider): void
     {
@@ -42,7 +42,7 @@ class ExchangeRateProviderRegistry
     }
 
     /**
-     * Get a provider by name
+     * Get a provider by name.
      */
     public function get(string $name): IExchangeRateProvider|ExchangeRateProviderInterface
     {
@@ -54,7 +54,7 @@ class ExchangeRateProviderRegistry
     }
 
     /**
-     * Get the default provider
+     * Get the default provider.
      */
     public function getDefault(): IExchangeRateProvider|ExchangeRateProviderInterface
     {
@@ -66,7 +66,7 @@ class ExchangeRateProviderRegistry
     }
 
     /**
-     * Set the default provider
+     * Set the default provider.
      */
     public function setDefault(string $name): void
     {
@@ -78,7 +78,7 @@ class ExchangeRateProviderRegistry
     }
 
     /**
-     * Get all registered providers
+     * Get all registered providers.
      */
     public function all(): array
     {
@@ -86,7 +86,7 @@ class ExchangeRateProviderRegistry
     }
 
     /**
-     * Get all registered providers (interface method)
+     * Get all registered providers (interface method).
      */
     public function getProviders(): array
     {
@@ -94,7 +94,7 @@ class ExchangeRateProviderRegistry
     }
 
     /**
-     * Get available providers (those that pass health check)
+     * Get available providers (those that pass health check).
      */
     public function available(): array
     {
@@ -102,7 +102,7 @@ class ExchangeRateProviderRegistry
     }
 
     /**
-     * Get providers sorted by priority
+     * Get providers sorted by priority.
      */
     public function byPriority(): Collection
     {
@@ -111,7 +111,7 @@ class ExchangeRateProviderRegistry
     }
 
     /**
-     * Find providers that support a currency pair
+     * Find providers that support a currency pair.
      */
     public function findByCurrencyPair(string $fromCurrency, string $toCurrency): array
     {
@@ -121,7 +121,7 @@ class ExchangeRateProviderRegistry
     }
 
     /**
-     * Get rate from the first available provider
+     * Get rate from the first available provider.
      */
     public function getRate(string $fromCurrency, string $toCurrency): ?BigDecimal
     {
@@ -155,8 +155,8 @@ class ExchangeRateProviderRegistry
                 $lastException = $e;
                 Log::warning("Provider {$name} failed to get rate", [
                     'error' => $e->getMessage(),
-                    'from' => $fromCurrency,
-                    'to' => $toCurrency,
+                    'from'  => $fromCurrency,
+                    'to'    => $toCurrency,
                 ]);
             }
         }
@@ -171,7 +171,7 @@ class ExchangeRateProviderRegistry
     }
 
     /**
-     * Get rates from multiple providers for comparison
+     * Get rates from multiple providers for comparison.
      */
     public function getRatesFromAll(string $fromCurrency, string $toCurrency): array
     {
@@ -194,7 +194,7 @@ class ExchangeRateProviderRegistry
     }
 
     /**
-     * Get aggregated rate (average of available providers)
+     * Get aggregated rate (average of available providers).
      */
     public function getAggregatedRate(
         string $fromCurrency,
@@ -245,6 +245,7 @@ class ExchangeRateProviderRegistry
                     return $numericRates[floor($count / 2)];
                 }
 
+                // no break
             case 'min':
                 return min($numericRates);
 
@@ -257,7 +258,7 @@ class ExchangeRateProviderRegistry
     }
 
     /**
-     * Check if a provider is registered
+     * Check if a provider is registered.
      */
     public function has(string $name): bool
     {
@@ -265,7 +266,7 @@ class ExchangeRateProviderRegistry
     }
 
     /**
-     * Remove a provider
+     * Remove a provider.
      */
     public function remove(string $name): void
     {
@@ -278,7 +279,7 @@ class ExchangeRateProviderRegistry
     }
 
     /**
-     * Update provider priority
+     * Update provider priority.
      */
     public function setPriority(string $name, int $priority): void
     {
@@ -290,7 +291,7 @@ class ExchangeRateProviderRegistry
     }
 
     /**
-     * Check provider health
+     * Check provider health.
      */
     public function checkProviderHealth(string $name): array
     {
@@ -300,10 +301,10 @@ class ExchangeRateProviderRegistry
 
         $provider = $this->providers[$name];
         $health = [
-            'name' => $name,
-            'available' => false,
-            'response_time' => null,
-            'last_error' => null,
+            'name'            => $name,
+            'available'       => false,
+            'response_time'   => null,
+            'last_error'      => null,
             'supported_pairs' => [],
         ];
 
@@ -336,7 +337,7 @@ class ExchangeRateProviderRegistry
     }
 
     /**
-     * Get provider names
+     * Get provider names.
      */
     public function names(): array
     {

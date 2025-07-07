@@ -10,7 +10,7 @@ use Illuminate\Support\Str;
 class DocumentVerificationService
 {
     /**
-     * Upload document for application
+     * Upload document for application.
      */
     public function uploadDocument(
         FinancialInstitutionApplication $application,
@@ -19,7 +19,7 @@ class DocumentVerificationService
     ): array {
         // Validate document type
         $requiredDocs = $application->getRequiredDocuments();
-        if (!isset($requiredDocs[$documentType])) {
+        if (! isset($requiredDocs[$documentType])) {
             throw new \InvalidArgumentException("Invalid document type: {$documentType}");
         }
 
@@ -36,13 +36,13 @@ class DocumentVerificationService
         // Update application documents
         $documents = $application->submitted_documents ?? [];
         $documents[$documentType] = [
-            'filename' => $filename,
-            'path' => $path,
-            'original_name' => $file->getClientOriginalName(),
-            'mime_type' => $file->getMimeType(),
-            'size' => $file->getSize(),
-            'uploaded_at' => now()->toIso8601String(),
-            'verified' => false,
+            'filename'            => $filename,
+            'path'                => $path,
+            'original_name'       => $file->getClientOriginalName(),
+            'mime_type'           => $file->getMimeType(),
+            'size'                => $file->getSize(),
+            'uploaded_at'         => now()->toIso8601String(),
+            'verified'            => false,
             'verification_status' => 'pending',
         ];
 
@@ -54,7 +54,7 @@ class DocumentVerificationService
     }
 
     /**
-     * Verify uploaded document
+     * Verify uploaded document.
      */
     public function verifyDocument(
         FinancialInstitutionApplication $application,
@@ -64,7 +64,7 @@ class DocumentVerificationService
     ): void {
         $documents = $application->submitted_documents ?? [];
 
-        if (!isset($documents[$documentType])) {
+        if (! isset($documents[$documentType])) {
             throw new \InvalidArgumentException("Document not found: {$documentType}");
         }
 
@@ -85,7 +85,7 @@ class DocumentVerificationService
     }
 
     /**
-     * Check if all required documents are submitted
+     * Check if all required documents are submitted.
      */
     public function areAllDocumentsSubmitted(FinancialInstitutionApplication $application): bool
     {
@@ -96,18 +96,18 @@ class DocumentVerificationService
     }
 
     /**
-     * Check if all documents are verified
+     * Check if all documents are verified.
      */
     public function areAllDocumentsVerified(FinancialInstitutionApplication $application): bool
     {
         $documents = $application->submitted_documents ?? [];
 
-        if (!$this->areAllDocumentsSubmitted($application)) {
+        if (! $this->areAllDocumentsSubmitted($application)) {
             return false;
         }
 
         foreach ($documents as $doc) {
-            if (!$doc['verified'] || $doc['verification_status'] !== 'approved') {
+            if (! $doc['verified'] || $doc['verification_status'] !== 'approved') {
                 return false;
             }
         }
@@ -116,7 +116,7 @@ class DocumentVerificationService
     }
 
     /**
-     * Get document verification status
+     * Get document verification status.
      */
     public function getVerificationStatus(FinancialInstitutionApplication $application): array
     {
@@ -124,22 +124,22 @@ class DocumentVerificationService
         $submitted = $application->submitted_documents ?? [];
 
         $status = [
-            'total_required' => count($required),
+            'total_required'  => count($required),
             'total_submitted' => count($submitted),
-            'total_verified' => 0,
-            'total_approved' => 0,
-            'documents' => [],
+            'total_verified'  => 0,
+            'total_approved'  => 0,
+            'documents'       => [],
         ];
 
         foreach ($required as $type => $name) {
             $doc = $submitted[$type] ?? null;
 
             $docStatus = [
-                'type' => $type,
-                'name' => $name,
+                'type'      => $type,
+                'name'      => $name,
                 'submitted' => $doc !== null,
-                'verified' => $doc['verified'] ?? false,
-                'status' => $doc['verification_status'] ?? 'not_submitted',
+                'verified'  => $doc['verified'] ?? false,
+                'status'    => $doc['verification_status'] ?? 'not_submitted',
             ];
 
             if ($doc && $doc['verified'] ?? false) {
@@ -160,7 +160,7 @@ class DocumentVerificationService
     }
 
     /**
-     * Download document
+     * Download document.
      */
     public function downloadDocument(
         FinancialInstitutionApplication $application,
@@ -168,7 +168,7 @@ class DocumentVerificationService
     ): ?string {
         $documents = $application->submitted_documents ?? [];
 
-        if (!isset($documents[$documentType])) {
+        if (! isset($documents[$documentType])) {
             return null;
         }
 
@@ -182,7 +182,7 @@ class DocumentVerificationService
     }
 
     /**
-     * Generate secure filename
+     * Generate secure filename.
      */
     private function generateSecureFilename(
         FinancialInstitutionApplication $application,
@@ -197,7 +197,7 @@ class DocumentVerificationService
     }
 
     /**
-     * Check and update if all documents are verified
+     * Check and update if all documents are verified.
      */
     private function checkAllDocumentsVerified(FinancialInstitutionApplication $application): void
     {

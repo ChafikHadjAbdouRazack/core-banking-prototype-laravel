@@ -8,43 +8,45 @@ use App\Jobs\ProcessWebhookDelivery;
 use App\Models\Webhook;
 use App\Models\WebhookDelivery;
 use App\Services\WebhookService;
+use Exception;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Tests\TestCase;
-use Exception;
 
 class ProcessWebhookDeliveryTest extends TestCase
 {
     use RefreshDatabase;
-    
+
     protected function shouldCreateDefaultAccountsInSetup(): bool
     {
         return false;
     }
 
     protected Webhook $webhook;
+
     protected WebhookDelivery $delivery;
+
     protected WebhookService $webhookService;
 
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->webhook = Webhook::factory()->create([
-            'is_active' => true,
+            'is_active'       => true,
             'timeout_seconds' => 30,
-            'secret' => 'test-secret',
+            'secret'          => 'test-secret',
         ]);
-        
+
         $this->delivery = WebhookDelivery::factory()->create([
             'webhook_uuid' => $this->webhook->uuid,
-            'event_type' => 'test.event',
-            'payload' => ['test' => 'data'],
+            'event_type'   => 'test.event',
+            'payload'      => ['test' => 'data'],
         ]);
-        
+
         $this->webhookService = $this->mock(WebhookService::class);
     }
 
@@ -101,7 +103,7 @@ class ProcessWebhookDeliveryTest extends TestCase
 
         // Verify no signature header was sent
         Http::assertSent(function ($request) {
-            return !$request->hasHeader('X-Webhook-Signature');
+            return ! $request->hasHeader('X-Webhook-Signature');
         });
 
         $this->delivery->refresh();
@@ -125,7 +127,7 @@ class ProcessWebhookDeliveryTest extends TestCase
         $job->handle($this->webhookService);
 
         Http::assertNothingSent();
-        
+
         $this->delivery->refresh();
         $this->assertEquals('pending', $this->delivery->status);
     }
@@ -199,7 +201,7 @@ class ProcessWebhookDeliveryTest extends TestCase
                        $context['status_code'] === 200 &&
                        isset($context['duration_ms']) && is_numeric($context['duration_ms']);
             });
-        
+
         // Allow error to be called but not require it
         Log::shouldReceive('error')->andReturnTrue();
 
@@ -267,12 +269,12 @@ class ProcessWebhookDeliveryTest extends TestCase
     public function test_job_handles_failure_callback()
     {
         $exception = new Exception('Job failed permanently');
-        
+
         Log::shouldReceive('error')
             ->once()
             ->with('Webhook delivery job failed permanently', [
                 'delivery_id' => $this->delivery->uuid,
-                'error' => 'Job failed permanently',
+                'error'       => 'Job failed permanently',
             ]);
 
         $job = new ProcessWebhookDelivery($this->delivery);
@@ -282,12 +284,12 @@ class ProcessWebhookDeliveryTest extends TestCase
     public function test_job_retry_configuration()
     {
         $job = new ProcessWebhookDelivery($this->delivery);
-        
+
         // Test retry until
         $retryUntil = $job->retryUntil();
         $this->assertInstanceOf(\DateTime::class, $retryUntil);
         $this->assertGreaterThan(now(), $retryUntil);
-        
+
         // Test backoff strategy
         $backoff = $job->backoff();
         $this->assertEquals([60, 300, 900], $backoff);
@@ -297,7 +299,7 @@ class ProcessWebhookDeliveryTest extends TestCase
     {
         $this->webhook->update([
             'headers' => [
-                'Authorization' => 'Bearer token123',
+                'Authorization'   => 'Bearer token123',
                 'X-Custom-Header' => 'custom-value',
             ],
             'secret' => null, // Remove secret to simplify test
@@ -324,11 +326,11 @@ class ProcessWebhookDeliveryTest extends TestCase
     public function test_job_serialization()
     {
         $job = new ProcessWebhookDelivery($this->delivery);
-        
+
         // Test that the job can be serialized and unserialized
         $serialized = serialize($job);
         $unserialized = unserialize($serialized);
-        
+
         $this->assertEquals($job->delivery->id, $unserialized->delivery->id);
     }
 }

@@ -2,22 +2,23 @@
 
 namespace Tests\Feature\Lending;
 
-use Tests\TestCase;
-use App\Models\User;
 use App\Domain\Account\Aggregates\Account;
 use App\Domain\Account\DataTransferObjects\AccountData;
 use App\Domain\Account\Enums\AccountStatus;
 use App\Domain\Account\Enums\AccountType;
 use App\Domain\Lending\Enums\EmploymentStatus;
 use App\Domain\Lending\Enums\LoanPurpose;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
+use Tests\TestCase;
 
 class LendingControllerTest extends TestCase
 {
     use RefreshDatabase;
 
     protected User $user;
+
     protected string $accountId;
 
     protected function setUp(): void
@@ -63,25 +64,25 @@ class LendingControllerTest extends TestCase
     {
         $response = $this->actingAs($this->user)
             ->post(route('lending.apply.submit'), [
-                'amount' => '10000',
-                'term_months' => '12',
-                'purpose' => LoanPurpose::PERSONAL->value,
+                'amount'              => '10000',
+                'term_months'         => '12',
+                'purpose'             => LoanPurpose::PERSONAL->value,
                 'purpose_description' => 'Personal expenses',
-                'employment_status' => EmploymentStatus::EMPLOYED->value,
-                'monthly_income' => '5000',
-                'monthly_expenses' => '2000',
-                'collateral' => []
+                'employment_status'   => EmploymentStatus::EMPLOYED->value,
+                'monthly_income'      => '5000',
+                'monthly_expenses'    => '2000',
+                'collateral'          => [],
             ]);
 
         $response->assertRedirect();
         $response->assertSessionHas('success');
-        
+
         // Verify application was created
         $this->assertDatabaseHas('loan_applications', [
-            'amount' => '10000.00',
-            'term_months' => 12,
-            'purpose' => LoanPurpose::PERSONAL->value,
-            'employment_status' => EmploymentStatus::EMPLOYED->value
+            'amount'            => '10000.00',
+            'term_months'       => 12,
+            'purpose'           => LoanPurpose::PERSONAL->value,
+            'employment_status' => EmploymentStatus::EMPLOYED->value,
         ]);
     }
 
@@ -89,12 +90,12 @@ class LendingControllerTest extends TestCase
     {
         $response = $this->actingAs($this->user)
             ->post(route('lending.apply.submit'), [
-                'amount' => '-1000', // Invalid negative amount
-                'term_months' => '999', // Too long term
-                'purpose' => 'invalid_purpose',
+                'amount'            => '-1000', // Invalid negative amount
+                'term_months'       => '999', // Too long term
+                'purpose'           => 'invalid_purpose',
                 'employment_status' => 'invalid_status',
-                'monthly_income' => '0',
-                'monthly_expenses' => '10000'
+                'monthly_income'    => '0',
+                'monthly_expenses'  => '10000',
             ]);
 
         $response->assertSessionHasErrors(['amount', 'term_months', 'purpose', 'employment_status']);
@@ -114,15 +115,15 @@ class LendingControllerTest extends TestCase
         // Create a test loan
         $loanId = (string) Str::uuid();
         \App\Models\Loan::create([
-            'id' => $loanId,
-            'application_id' => Str::uuid(),
+            'id'                    => $loanId,
+            'application_id'        => Str::uuid(),
             'borrower_account_uuid' => $this->accountId,
-            'lender_account_uuid' => null,
-            'amount' => '10000.00',
-            'interest_rate' => 8.5,
-            'term_months' => 12,
-            'status' => 'active',
-            'disbursed_at' => now()
+            'lender_account_uuid'   => null,
+            'amount'                => '10000.00',
+            'interest_rate'         => 8.5,
+            'term_months'           => 12,
+            'status'                => 'active',
+            'disbursed_at'          => now(),
         ]);
 
         $response = $this->actingAs($this->user)
@@ -138,15 +139,15 @@ class LendingControllerTest extends TestCase
         // Create a test loan
         $loanId = (string) Str::uuid();
         \App\Models\Loan::create([
-            'id' => $loanId,
-            'application_id' => Str::uuid(),
+            'id'                    => $loanId,
+            'application_id'        => Str::uuid(),
             'borrower_account_uuid' => $this->accountId,
-            'lender_account_uuid' => null,
-            'amount' => '10000.00',
-            'interest_rate' => 8.5,
-            'term_months' => 12,
-            'status' => 'active',
-            'disbursed_at' => now()
+            'lender_account_uuid'   => null,
+            'amount'                => '10000.00',
+            'interest_rate'         => 8.5,
+            'term_months'           => 12,
+            'status'                => 'active',
+            'disbursed_at'          => now(),
         ]);
 
         $response = $this->actingAs($this->user)
@@ -159,7 +160,7 @@ class LendingControllerTest extends TestCase
     public function test_subproduct_page_has_correct_route(): void
     {
         $response = $this->get('/subproducts/lending');
-        
+
         $response->assertStatus(200);
         $response->assertSee('route(\'lending.index\')', false);
         $response->assertDontSee('route(\'loans.index\')', false);

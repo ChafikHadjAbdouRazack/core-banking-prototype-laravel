@@ -36,7 +36,7 @@ class ViewExchangeRate extends ViewRecord
                 ->color(fn () => $this->getRecord()->is_active ? 'danger' : 'success')
                 ->action(function () {
                     $record = $this->getRecord();
-                    $record->update(['is_active' => !$record->is_active]);
+                    $record->update(['is_active' => ! $record->is_active]);
                     $this->dispatch('$refresh');
                 })
                 ->requiresConfirmation(fn () => $this->getRecord()->is_active),

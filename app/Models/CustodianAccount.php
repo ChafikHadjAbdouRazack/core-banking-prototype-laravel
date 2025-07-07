@@ -8,10 +8,9 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Carbon\Carbon;
 
 /**
- * CustodianAccount Model
+ * CustodianAccount Model.
  *
  * Represents the mapping between internal accounts and external custodian accounts.
  * This enables multi-custodian support where a single internal account can have
@@ -55,21 +54,24 @@ class CustodianAccount extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'is_primary' => 'boolean',
-        'metadata' => 'array',
+        'is_primary'     => 'boolean',
+        'metadata'       => 'array',
         'last_synced_at' => 'datetime',
     ];
 
     /**
-     * Status constants
+     * Status constants.
      */
     public const STATUS_ACTIVE = 'active';
+
     public const STATUS_SUSPENDED = 'suspended';
+
     public const STATUS_CLOSED = 'closed';
+
     public const STATUS_PENDING = 'pending';
 
     /**
-     * Get the internal account
+     * Get the internal account.
      */
     public function account(): BelongsTo
     {
@@ -77,7 +79,7 @@ class CustodianAccount extends Model
     }
 
     /**
-     * Scope a query to only include active accounts
+     * Scope a query to only include active accounts.
      */
     public function scopeActive($query)
     {
@@ -85,7 +87,7 @@ class CustodianAccount extends Model
     }
 
     /**
-     * Scope a query to only include primary accounts
+     * Scope a query to only include primary accounts.
      */
     public function scopePrimary($query)
     {
@@ -93,16 +95,15 @@ class CustodianAccount extends Model
     }
 
     /**
-     * Scope a query to only include accounts for a specific custodian
+     * Scope a query to only include accounts for a specific custodian.
      */
     public function scopeForCustodian($query, string $custodianName)
     {
         return $query->where('custodian_name', $custodianName);
     }
 
-
     /**
-     * Check if the account is active
+     * Check if the account is active.
      */
     public function isActive(): bool
     {
@@ -110,7 +111,7 @@ class CustodianAccount extends Model
     }
 
     /**
-     * Set this account as primary
+     * Set this account as primary.
      */
     public function setAsPrimary(): void
     {
@@ -124,7 +125,7 @@ class CustodianAccount extends Model
     }
 
     /**
-     * Get metadata value
+     * Get metadata value.
      */
     public function getMetadata(string $key, $default = null)
     {
@@ -132,7 +133,7 @@ class CustodianAccount extends Model
     }
 
     /**
-     * Set metadata value
+     * Set metadata value.
      */
     public function setMetadata(string $key, $value): void
     {

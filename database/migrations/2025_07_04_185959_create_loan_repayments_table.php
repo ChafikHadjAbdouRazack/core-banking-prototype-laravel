@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class () extends Migration {
     /**
      * Run the migrations.
      */
@@ -21,7 +20,7 @@ return new class extends Migration
             $table->decimal('remaining_balance', 19, 2);
             $table->timestamp('paid_at');
             $table->timestamps();
-            
+
             // $table->foreign('loan_id')->references('id')->on('loans');
             $table->unique(['loan_id', 'payment_number']);
             $table->index('loan_id');

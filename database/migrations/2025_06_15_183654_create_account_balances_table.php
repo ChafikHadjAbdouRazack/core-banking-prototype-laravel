@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class () extends Migration {
     /**
      * Run the migrations.
      */
@@ -17,19 +16,19 @@ return new class extends Migration
             $table->string('asset_code', 10);
             $table->bigInteger('balance')->default(0);
             $table->timestamps();
-            
+
             // Composite unique key
             $table->unique(['account_uuid', 'asset_code']);
-            
+
             // Foreign keys
             $table->foreign('account_uuid')->references('uuid')->on('accounts')->onDelete('cascade');
             $table->foreign('asset_code')->references('code')->on('assets')->onDelete('restrict');
-            
+
             // Indexes
             $table->index('asset_code');
             $table->index('balance');
         });
-        
+
         // Migrate existing account balances to USD
         DB::statement("
             INSERT INTO account_balances (account_uuid, asset_code, balance, created_at, updated_at)
@@ -55,7 +54,7 @@ return new class extends Migration
                 0
             )
         ");
-        
+
         Schema::dropIfExists('account_balances');
     }
 };

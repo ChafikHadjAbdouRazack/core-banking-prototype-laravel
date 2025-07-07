@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Services\Email\SubscriberEmailService;
-use Illuminate\Support\Facades\Crypt;
+use Illuminate\Http\Request;
 
 class SubscriberController extends Controller
 {
@@ -14,7 +13,7 @@ class SubscriberController extends Controller
     }
 
     /**
-     * Handle unsubscribe request
+     * Handle unsubscribe request.
      */
     public function unsubscribe(Request $request, string $encryptedEmail)
     {
@@ -40,13 +39,13 @@ class SubscriberController extends Controller
     }
 
     /**
-     * Handle subscription from various forms
+     * Handle subscription from various forms.
      */
     public function subscribe(Request $request, string $source)
     {
         $validated = $request->validate([
             'email' => 'required|email',
-            'tags' => 'array',
+            'tags'  => 'array',
         ]);
 
         try {

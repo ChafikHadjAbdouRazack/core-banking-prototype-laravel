@@ -2,16 +2,13 @@
 
 namespace App\Filament\Admin\Resources;
 
-use App\Filament\Admin\Resources\OrderResource\Pages;
-use App\Filament\Admin\Resources\OrderResource\RelationManagers;
 use App\Domain\Exchange\Projections\Order;
+use App\Filament\Admin\Resources\OrderResource\Pages;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class OrderResource extends Resource
 {
@@ -37,11 +34,11 @@ class OrderResource extends Resource
                             ->disabled(),
                         Forms\Components\Select::make('status')
                             ->options([
-                                'pending' => 'Pending',
-                                'open' => 'Open',
+                                'pending'          => 'Pending',
+                                'open'             => 'Open',
                                 'partially_filled' => 'Partially Filled',
-                                'filled' => 'Filled',
-                                'cancelled' => 'Cancelled',
+                                'filled'           => 'Filled',
+                                'cancelled'        => 'Cancelled',
                             ])
                             ->disabled(),
                     ])->columns(3),
@@ -79,7 +76,7 @@ class OrderResource extends Resource
                 Tables\Columns\BadgeColumn::make('type')
                     ->colors([
                         'success' => 'buy',
-                        'danger' => 'sell',
+                        'danger'  => 'sell',
                     ]),
                 Tables\Columns\TextColumn::make('order_type')
                     ->label('Order Type')
@@ -95,10 +92,10 @@ class OrderResource extends Resource
                     ->numeric(1),
                 Tables\Columns\BadgeColumn::make('status')
                     ->colors([
-                        'warning' => 'pending',
-                        'info' => 'open',
-                        'primary' => 'partially_filled',
-                        'success' => 'filled',
+                        'warning'   => 'pending',
+                        'info'      => 'open',
+                        'primary'   => 'partially_filled',
+                        'success'   => 'filled',
                         'secondary' => 'cancelled',
                     ]),
                 Tables\Columns\TextColumn::make('account.user.name')
@@ -110,15 +107,15 @@ class OrderResource extends Resource
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
                     ->options([
-                        'pending' => 'Pending',
-                        'open' => 'Open',
+                        'pending'          => 'Pending',
+                        'open'             => 'Open',
                         'partially_filled' => 'Partially Filled',
-                        'filled' => 'Filled',
-                        'cancelled' => 'Cancelled',
+                        'filled'           => 'Filled',
+                        'cancelled'        => 'Cancelled',
                     ]),
                 Tables\Filters\SelectFilter::make('type')
                     ->options([
-                        'buy' => 'Buy',
+                        'buy'  => 'Buy',
                         'sell' => 'Sell',
                     ]),
                 Tables\Filters\SelectFilter::make('base_currency')
@@ -150,7 +147,7 @@ class OrderResource extends Resource
     {
         return [
             'index' => Pages\ListOrders::route('/'),
-            'view' => Pages\ViewOrder::route('/{record}'),
+            'view'  => Pages\ViewOrder::route('/{record}'),
         ];
     }
 

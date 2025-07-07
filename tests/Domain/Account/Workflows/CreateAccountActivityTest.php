@@ -7,8 +7,8 @@ use App\Domain\Account\DataObjects\Account;
 use App\Domain\Account\Workflows\CreateAccountActivity;
 use App\Domain\Account\Workflows\CreateAccountWorkflow;
 use Mockery;
-use Tests\TestCase;
 use PHPUnit\Framework\Attributes\Test;
+use Tests\TestCase;
 use Workflow\Models\StoredWorkflow;
 use Workflow\WorkflowStub;
 
@@ -21,30 +21,33 @@ class CreateAccountActivityTest extends TestCase
     #[Test]
     public function it_creates_account_using_ledger(): void
     {
-        $ledgerMock = Mockery::mock( LedgerAggregate::class );
-        $ledgerMock->expects( 'retrieve' )
+        $ledgerMock = Mockery::mock(LedgerAggregate::class);
+        $ledgerMock->expects('retrieve')
                    ->andReturnSelf();
 
-        $ledgerMock->expects( 'createAccount' )
-                   ->with( Mockery::type( Account::class ) )
+        $ledgerMock->expects('createAccount')
+                   ->with(Mockery::type(Account::class))
                    ->andReturnSelf();
 
-        $ledgerMock->expects( 'persist' )
+        $ledgerMock->expects('persist')
                    ->andReturnSelf();
 
-        $workflow = WorkflowStub::make( CreateAccountWorkflow::class );
-        $storedWorkflow = StoredWorkflow::findOrFail( $workflow->id() );
+        $workflow = WorkflowStub::make(CreateAccountWorkflow::class);
+        $storedWorkflow = StoredWorkflow::findOrFail($workflow->id());
 
         $activity = new CreateAccountActivity(
-            0, now()->toDateTimeString(), $storedWorkflow,
-            $this->fakeAccount(), $ledgerMock
+            0,
+            now()->toDateTimeString(),
+            $storedWorkflow,
+            $this->fakeAccount(),
+            $ledgerMock
         );
 
         $activity->handle();
     }
 
     /**
-     * @return \App\Domain\Account\DataObjects\Account
+     * @return Account
      */
     protected function fakeAccount(): Account
     {

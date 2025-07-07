@@ -2,7 +2,6 @@
 
 use App\Domain\Account\Repositories\TransferSnapshotRepository;
 use App\Domain\Account\Snapshots\TransferSnapshot;
-use Spatie\EventSourcing\AggregateRoots\Exceptions\InvalidEloquentStoredEventModel;
 
 it('extends EloquentSnapshotRepository', function () {
     $reflection = new ReflectionClass(TransferSnapshotRepository::class);
@@ -11,26 +10,26 @@ it('extends EloquentSnapshotRepository', function () {
 
 it('can be instantiated with default snapshot model', function () {
     $repository = new TransferSnapshotRepository();
-    
+
     $reflection = new ReflectionClass($repository);
     $property = $reflection->getProperty('snapshotModel');
     $property->setAccessible(true);
-    
+
     expect($property->getValue($repository))->toBe(TransferSnapshot::class);
 });
 
 it('can be instantiated with custom snapshot model', function () {
     $repository = new TransferSnapshotRepository(TransferSnapshot::class);
-    
+
     $reflection = new ReflectionClass($repository);
     $property = $reflection->getProperty('snapshotModel');
     $property->setAccessible(true);
-    
+
     expect($property->getValue($repository))->toBe(TransferSnapshot::class);
 });
 
 it('throws exception for invalid snapshot model', function () {
-    expect(fn() => new TransferSnapshotRepository('InvalidClass'))
+    expect(fn () => new TransferSnapshotRepository('InvalidClass'))
         ->toThrow(Error::class);
 });
 

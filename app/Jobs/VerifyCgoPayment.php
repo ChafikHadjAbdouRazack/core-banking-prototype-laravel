@@ -19,6 +19,7 @@ class VerifyCgoPayment implements ShouldQueue
     use SerializesModels;
 
     protected CgoInvestment $investment;
+
     protected int $attempt;
 
     /**
@@ -61,6 +62,7 @@ class VerifyCgoPayment implements ShouldQueue
             Log::info('Investment already confirmed, skipping verification', [
                 'investment_id' => $this->investment->id,
             ]);
+
             return;
         }
 
@@ -71,9 +73,9 @@ class VerifyCgoPayment implements ShouldQueue
             ]);
 
             $this->investment->update([
-                'status' => 'cancelled',
-                'cancelled_at' => now(),
-                'payment_status' => 'expired',
+                'status'                 => 'cancelled',
+                'cancelled_at'           => now(),
+                'payment_status'         => 'expired',
                 'payment_failure_reason' => 'Payment window expired',
             ]);
 
@@ -83,21 +85,21 @@ class VerifyCgoPayment implements ShouldQueue
         // Attempt to verify payment
         $verified = $verificationService->verifyPayment($this->investment);
 
-        if (!$verified && $this->attempt < 3) {
+        if (! $verified && $this->attempt < 3) {
             // Retry with exponential backoff
             $delay = $this->attempt * 300; // 5 minutes, 10 minutes, etc.
 
             Log::info('Payment not verified, scheduling retry', [
                 'investment_id' => $this->investment->id,
-                'attempt' => $this->attempt,
-                'delay' => $delay,
+                'attempt'       => $this->attempt,
+                'delay'         => $delay,
             ]);
 
             self::dispatch($this->investment, $this->attempt + 1)->delay(now()->addSeconds($delay));
-        } elseif (!$verified) {
+        } elseif (! $verified) {
             Log::warning('Payment verification failed after multiple attempts', [
                 'investment_id' => $this->investment->id,
-                'attempts' => $this->attempt,
+                'attempts'      => $this->attempt,
             ]);
         }
     }
@@ -119,14 +121,14 @@ class VerifyCgoPayment implements ShouldQueue
     {
         Log::error('CGO payment verification job failed', [
             'investment_id' => $this->investment->id,
-            'error' => $exception->getMessage(),
-            'trace' => $exception->getTraceAsString(),
+            'error'         => $exception->getMessage(),
+            'trace'         => $exception->getTraceAsString(),
         ]);
 
         // Mark payment as requiring manual verification
         $this->investment->update([
             'payment_status' => 'verification_failed',
-            'notes' => 'Automatic payment verification failed. Manual review required.',
+            'notes'          => 'Automatic payment verification failed. Manual review required.',
         ]);
     }
 }

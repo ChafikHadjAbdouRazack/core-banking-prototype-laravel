@@ -12,8 +12,8 @@ class LendingEvent extends EloquentStoredEvent
 
     public $casts = [
         'event_properties' => 'array',
-        'meta_data' => 'array',
-        'created_at' => 'datetime',
+        'meta_data'        => 'array',
+        'created_at'       => 'datetime',
     ];
 
     protected $fillable = [

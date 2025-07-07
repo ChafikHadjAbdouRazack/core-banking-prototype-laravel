@@ -31,7 +31,6 @@ namespace App\Http\Controllers\Api\Documentation;
  * )
  */
 
-
 /**
  * @OA\Schema(
  *     schema="CreateStablecoinRequest",
@@ -116,7 +115,6 @@ namespace App\Http\Controllers\Api\Documentation;
  *     @OA\Property(property="minimum_required_reserve", type="integer", example=1000000)
  * )
  */
-
 class StablecoinSchemas
 {
     // This class only contains OpenAPI schema definitions

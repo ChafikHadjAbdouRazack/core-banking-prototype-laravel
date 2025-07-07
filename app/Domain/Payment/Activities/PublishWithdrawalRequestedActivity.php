@@ -2,8 +2,8 @@
 
 namespace App\Domain\Payment\Activities;
 
-use App\Domain\Payment\DataObjects\BankWithdrawal;
 use App\Domain\Banking\Events\WithdrawalRequested;
+use App\Domain\Payment\DataObjects\BankWithdrawal;
 use Workflow\Activity;
 
 class PublishWithdrawalRequestedActivity extends Activity
@@ -18,7 +18,7 @@ class PublishWithdrawalRequestedActivity extends Activity
             currency: $withdrawal->getCurrency(),
             reference: $withdrawal->getReference(),
             metadata: array_merge($withdrawal->getMetadata(), [
-                'bank_name' => $withdrawal->getBankName(),
+                'bank_name'   => $withdrawal->getBankName(),
                 'transfer_id' => $transferId,
             ])
         ));

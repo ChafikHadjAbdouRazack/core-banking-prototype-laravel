@@ -15,12 +15,17 @@ use Illuminate\Support\Facades\Log;
 class DeutscheBankConnector extends BaseCustodianConnector
 {
     private const API_BASE_URL = 'https://api.db.com/v2';
+
     private const OAUTH_URL = 'https://api.db.com/oauth2/token';
 
     private string $clientId;
+
     private string $clientSecret;
+
     private string $accountId;
+
     private ?string $accessToken = null;
+
     private ?Carbon $tokenExpiry = null;
 
     public function __construct(array $config)
@@ -54,7 +59,7 @@ class DeutscheBankConnector extends BaseCustodianConnector
     }
 
     /**
-     * Get or refresh OAuth access token
+     * Get or refresh OAuth access token.
      */
     private function getAccessToken(): string
     {
@@ -65,13 +70,13 @@ class DeutscheBankConnector extends BaseCustodianConnector
         $this->logRequest('POST', self::OAUTH_URL);
 
         $response = Http::asForm()->post(self::OAUTH_URL, [
-            'grant_type' => 'client_credentials',
-            'client_id' => $this->clientId,
+            'grant_type'    => 'client_credentials',
+            'client_id'     => $this->clientId,
             'client_secret' => $this->clientSecret,
-            'scope' => 'accounts payments sepa instant_payments',
+            'scope'         => 'accounts payments sepa instant_payments',
         ]);
 
-        if (!$response->successful()) {
+        if (! $response->successful()) {
             throw new \Exception('Failed to obtain access token: ' . $response->body());
         }
 
@@ -83,7 +88,7 @@ class DeutscheBankConnector extends BaseCustodianConnector
     }
 
     /**
-     * Make authenticated API request
+     * Make authenticated API request.
      */
     private function apiRequest(string $method, string $endpoint, array $data = []): \Illuminate\Http\Client\Response
     {
@@ -95,16 +100,16 @@ class DeutscheBankConnector extends BaseCustodianConnector
             ->acceptJson()
             ->withHeaders([
                 'X-API-Version' => '2.0',
-                'X-Request-ID' => uniqid('db-'),
+                'X-Request-ID'  => uniqid('db-'),
             ])
             ->timeout(30);
 
         return match (strtoupper($method)) {
-            'GET' => $request->get(self::API_BASE_URL . $endpoint, $data),
-            'POST' => $request->post(self::API_BASE_URL . $endpoint, $data),
-            'PUT' => $request->put(self::API_BASE_URL . $endpoint, $data),
+            'GET'    => $request->get(self::API_BASE_URL . $endpoint, $data),
+            'POST'   => $request->post(self::API_BASE_URL . $endpoint, $data),
+            'PUT'    => $request->put(self::API_BASE_URL . $endpoint, $data),
             'DELETE' => $request->delete(self::API_BASE_URL . $endpoint),
-            default => throw new \InvalidArgumentException("Unsupported HTTP method: {$method}"),
+            default  => throw new \InvalidArgumentException("Unsupported HTTP method: {$method}"),
         };
     }
 
@@ -112,8 +117,8 @@ class DeutscheBankConnector extends BaseCustodianConnector
     {
         $response = $this->apiRequest('GET', "/accounts/{$accountId}/balances");
 
-        if (!$response->successful()) {
-            throw new \Exception("Failed to get balance: " . $response->body());
+        if (! $response->successful()) {
+            throw new \Exception('Failed to get balance: ' . $response->body());
         }
 
         $data = $response->json();
@@ -123,6 +128,7 @@ class DeutscheBankConnector extends BaseCustodianConnector
             if ($balance['currency'] === $assetCode) {
                 // Deutsche Bank returns amounts in decimal format, convert to cents
                 $amountInCents = (int) round((float) $balance['amount'] * 100);
+
                 return new Money($amountInCents);
             }
         }
@@ -135,8 +141,8 @@ class DeutscheBankConnector extends BaseCustodianConnector
     {
         $response = $this->apiRequest('GET', "/accounts/{$accountId}");
 
-        if (!$response->successful()) {
-            throw new \Exception("Failed to get account info: " . $response->body());
+        if (! $response->successful()) {
+            throw new \Exception('Failed to get account info: ' . $response->body());
         }
 
         $data = $response->json();
@@ -160,9 +166,9 @@ class DeutscheBankConnector extends BaseCustodianConnector
             type: $data['accountType'] ?? 'CURRENT',
             createdAt: isset($data['openingDate']) ? Carbon::parse($data['openingDate']) : Carbon::now(),
             metadata: [
-                'iban' => $data['iban'] ?? null,
-                'bic' => $data['bic'] ?? 'DEUTDEFF',
-                'branch' => $data['branch'] ?? null,
+                'iban'      => $data['iban'] ?? null,
+                'bic'       => $data['bic'] ?? 'DEUTDEFF',
+                'branch'    => $data['branch'] ?? null,
                 'connector' => 'DeutscheBankConnector',
             ]
         );
@@ -181,18 +187,18 @@ class DeutscheBankConnector extends BaseCustodianConnector
             ],
             'instructedAmount' => [
                 'currency' => $request->assetCode,
-                'amount' => number_format($request->amount->getAmount() / 100, 2, '.', ''),
+                'amount'   => number_format($request->amount->getAmount() / 100, 2, '.', ''),
             ],
-            'creditorName' => $request->metadata['beneficiary_name'] ?? 'Beneficiary',
+            'creditorName'                      => $request->metadata['beneficiary_name'] ?? 'Beneficiary',
             'remittanceInformationUnstructured' => $request->description ?? $request->reference,
-            'requestedExecutionDate' => Carbon::now()->format('Y-m-d'),
-            'endToEndIdentification' => $request->reference,
+            'requestedExecutionDate'            => Carbon::now()->format('Y-m-d'),
+            'endToEndIdentification'            => $request->reference,
         ];
 
         $response = $this->apiRequest('POST', $endpoint, $paymentData);
 
-        if (!$response->successful()) {
-            throw new \Exception("Failed to initiate transfer: " . $response->body());
+        if (! $response->successful()) {
+            throw new \Exception('Failed to initiate transfer: ' . $response->body());
         }
 
         $data = $response->json();
@@ -210,7 +216,7 @@ class DeutscheBankConnector extends BaseCustodianConnector
             completedAt: isset($data['completionDateTime']) ? Carbon::parse($data['completionDateTime']) : null,
             metadata: [
                 'db_payment_id' => $data['paymentId'],
-                'db_status' => $data['transactionStatus'],
+                'db_status'     => $data['transactionStatus'],
                 'transfer_type' => $endpoint === '/payments/sepa' ? 'SEPA' : 'INSTANT',
             ]
         );
@@ -220,8 +226,8 @@ class DeutscheBankConnector extends BaseCustodianConnector
     {
         $response = $this->apiRequest('GET', "/payments/{$transactionId}");
 
-        if (!$response->successful()) {
-            throw new \Exception("Failed to get transaction status: " . $response->body());
+        if (! $response->successful()) {
+            throw new \Exception('Failed to get transaction status: ' . $response->body());
         }
 
         $data = $response->json();
@@ -239,7 +245,7 @@ class DeutscheBankConnector extends BaseCustodianConnector
             completedAt: isset($data['completionDateTime']) ? Carbon::parse($data['completionDateTime']) : null,
             metadata: [
                 'db_payment_id' => $data['paymentId'],
-                'db_status' => $data['transactionStatus'],
+                'db_status'     => $data['transactionStatus'],
             ]
         );
     }
@@ -264,12 +270,13 @@ class DeutscheBankConnector extends BaseCustodianConnector
 
             if ($response->successful()) {
                 $data = $response->json();
+
                 return in_array($data['status'] ?? '', ['ACTIVE', 'ENABLED']);
             }
         } catch (\Exception $e) {
             Log::warning('Account validation failed', [
                 'account_id' => $accountId,
-                'error' => $e->getMessage(),
+                'error'      => $e->getMessage(),
             ]);
         }
 
@@ -279,14 +286,14 @@ class DeutscheBankConnector extends BaseCustodianConnector
     public function getTransactionHistory(string $accountId, ?int $limit = 100, ?int $offset = 0): array
     {
         $response = $this->apiRequest('GET', "/accounts/{$accountId}/transactions", [
-            'limit' => $limit,
-            'offset' => $offset,
+            'limit'    => $limit,
+            'offset'   => $offset,
             'dateFrom' => Carbon::now()->subDays(90)->format('Y-m-d'),
-            'dateTo' => Carbon::now()->format('Y-m-d'),
+            'dateTo'   => Carbon::now()->format('Y-m-d'),
         ]);
 
-        if (!$response->successful()) {
-            throw new \Exception("Failed to get transaction history: " . $response->body());
+        if (! $response->successful()) {
+            throw new \Exception('Failed to get transaction history: ' . $response->body());
         }
 
         $data = $response->json();
@@ -305,15 +312,15 @@ class DeutscheBankConnector extends BaseCustodianConnector
             }
 
             $transactions[] = [
-                'id' => $transaction['transactionId'],
-                'status' => 'completed',
+                'id'           => $transaction['transactionId'],
+                'status'       => 'completed',
                 'from_account' => $transaction['debtorAccount']['iban'] ?? $accountId,
-                'to_account' => $transaction['creditorAccount']['iban'] ?? $accountId,
-                'asset_code' => $transaction['transactionAmount']['currency'],
-                'amount' => $amount,
-                'fee' => null,
-                'reference' => $transaction['endToEndId'] ?? $transaction['mandateId'] ?? null,
-                'created_at' => $transaction['bookingDate'],
+                'to_account'   => $transaction['creditorAccount']['iban'] ?? $accountId,
+                'asset_code'   => $transaction['transactionAmount']['currency'],
+                'amount'       => $amount,
+                'fee'          => null,
+                'reference'    => $transaction['endToEndId'] ?? $transaction['mandateId'] ?? null,
+                'created_at'   => $transaction['bookingDate'],
                 'completed_at' => $transaction['valueDate'] ?? $transaction['bookingDate'],
             ];
         }
@@ -322,7 +329,7 @@ class DeutscheBankConnector extends BaseCustodianConnector
     }
 
     /**
-     * Determine the appropriate transfer endpoint based on the request
+     * Determine the appropriate transfer endpoint based on the request.
      */
     private function determineTransferEndpoint(TransferRequest $request): string
     {
@@ -341,7 +348,7 @@ class DeutscheBankConnector extends BaseCustodianConnector
     }
 
     /**
-     * Map Deutsche Bank account status to internal status
+     * Map Deutsche Bank account status to internal status.
      */
     private function mapAccountStatus(string $dbStatus): string
     {
@@ -355,7 +362,7 @@ class DeutscheBankConnector extends BaseCustodianConnector
     }
 
     /**
-     * Map Deutsche Bank transaction status to internal status
+     * Map Deutsche Bank transaction status to internal status.
      */
     private function mapTransactionStatus(string $dbStatus): string
     {

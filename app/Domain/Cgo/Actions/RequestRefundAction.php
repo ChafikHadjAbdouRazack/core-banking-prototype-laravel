@@ -24,7 +24,7 @@ class RequestRefundAction
         array $metadata = []
     ): array {
         // Check if investment can be refunded
-        if (!$investment->canBeRefunded()) {
+        if (! $investment->canBeRefunded()) {
             throw new \DomainException('This investment cannot be refunded');
         }
 
@@ -47,9 +47,9 @@ class RequestRefundAction
             initiatedBy: $initiator->id,
             autoApproved: $autoApproved,
             metadata: array_merge($metadata, [
-                'investment_uuid' => $investment->uuid,
+                'investment_uuid'    => $investment->uuid,
                 'investment_package' => $investment->package,
-                'payment_method' => $investment->payment_method,
+                'payment_method'     => $investment->payment_method,
             ])
         );
 
@@ -64,8 +64,8 @@ class RequestRefundAction
         $run = $this->workflowClient->start($workflow, $refundRequest);
 
         return [
-            'workflow_id' => $run->getExecution()->getID(),
-            'status' => 'initiated',
+            'workflow_id'   => $run->getExecution()->getID(),
+            'status'        => 'initiated',
             'auto_approved' => $autoApproved,
         ];
     }

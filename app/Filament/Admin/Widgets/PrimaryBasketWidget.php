@@ -17,9 +17,9 @@ class PrimaryBasketWidget extends Widget
     {
         $basket = BasketAsset::where('code', config('baskets.primary', 'PRIMARY'))->first();
 
-        if (!$basket) {
+        if (! $basket) {
             return [
-                'exists' => false,
+                'exists'     => false,
                 'currencies' => [
                     ['code' => 'USD', 'name' => 'US Dollar', 'weight' => 40],
                     ['code' => 'EUR', 'name' => 'Euro', 'weight' => 30],
@@ -27,20 +27,20 @@ class PrimaryBasketWidget extends Widget
                     ['code' => 'CHF', 'name' => 'Swiss Franc', 'weight' => 10],
                     ['code' => 'JPY', 'name' => 'Japanese Yen', 'weight' => 3],
                     ['code' => 'XAU', 'name' => 'Gold', 'weight' => 2],
-                ]
+                ],
             ];
         }
 
         return [
-            'exists' => true,
-            'basket' => $basket,
+            'exists'     => true,
+            'basket'     => $basket,
             'currencies' => $basket->components()->with('asset')->get()->map(function ($component) {
                 return [
-                    'code' => $component->asset_code,
-                    'name' => $component->asset->name ?? $component->asset_code,
+                    'code'   => $component->asset_code,
+                    'name'   => $component->asset->name ?? $component->asset_code,
                     'weight' => $component->weight,
                 ];
-            })->toArray()
+            })->toArray(),
         ];
     }
 }

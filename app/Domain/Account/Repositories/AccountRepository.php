@@ -2,8 +2,8 @@
 
 namespace App\Domain\Account\Repositories;
 
-use App\Models\Account;
 use App\Domain\Account\DataObjects\Account as AccountDTO;
+use App\Models\Account;
 use Illuminate\Support\LazyCollection;
 
 final class AccountRepository

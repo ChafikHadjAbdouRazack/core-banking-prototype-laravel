@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api;
 
+use App\Domain\Governance\Enums\PollStatus;
 use App\Domain\Governance\Models\Poll;
 use App\Domain\Governance\Models\Vote;
-use App\Domain\Governance\Enums\PollStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserVotingPollResource;
 use Illuminate\Http\JsonResponse;
@@ -47,10 +47,10 @@ class UserVotingController extends Controller
         return response()->json([
             'data' => UserVotingPollResource::collection($polls),
             'meta' => [
-                'basket_name' => config('baskets.primary_name', 'Global Currency Unit'),
-                'basket_code' => config('baskets.primary_code', 'GCU'),
+                'basket_name'   => config('baskets.primary_name', 'Global Currency Unit'),
+                'basket_code'   => config('baskets.primary_code', 'GCU'),
                 'basket_symbol' => config('baskets.primary_symbol', 'Ǥ'),
-            ]
+            ],
         ]);
     }
 
@@ -108,9 +108,9 @@ class UserVotingController extends Controller
         return response()->json([
             'data' => UserVotingPollResource::collection($polls),
             'meta' => [
-                'total_votes' => $votedPollIds->count(),
+                'total_votes'  => $votedPollIds->count(),
                 'member_since' => $user->created_at->format('Y-m-d'),
-            ]
+            ],
         ]);
     }
 
@@ -164,7 +164,7 @@ class UserVotingController extends Controller
 
         // Validate allocations
         $validated = $request->validate([
-            'allocations' => 'required|array',
+            'allocations'   => 'required|array',
             'allocations.*' => 'required|numeric|min:0|max:100',
         ]);
 
@@ -172,8 +172,8 @@ class UserVotingController extends Controller
         $total = array_sum($validated['allocations']);
         if (abs($total - 100) > 0.01) {
             return response()->json([
-                'error' => 'Allocations must sum to 100%',
-                'current_sum' => $total
+                'error'       => 'Allocations must sum to 100%',
+                'current_sum' => $total,
             ], 422);
         }
 
@@ -193,20 +193,20 @@ class UserVotingController extends Controller
 
         // Create vote
         $vote = Vote::create([
-            'poll_id' => $poll->id,
-            'user_uuid' => $user->uuid,
+            'poll_id'          => $poll->id,
+            'user_uuid'        => $user->uuid,
             'selected_options' => ['allocations' => $validated['allocations']],
-            'voting_power' => $votingPower,
-            'metadata' => [
+            'voting_power'     => $votingPower,
+            'metadata'         => [
                 'ip_address' => $request->ip(),
                 'user_agent' => $request->userAgent(),
-                'voted_via' => 'user_voting_api',
+                'voted_via'  => 'user_voting_api',
             ],
         ]);
 
         return response()->json([
-            'message' => 'Your vote has been recorded successfully',
-            'vote_id' => $vote->uuid,
+            'message'           => 'Your vote has been recorded successfully',
+            'vote_id'           => $vote->uuid,
             'voting_power_used' => $votingPower,
         ], 201);
     }
@@ -252,21 +252,21 @@ class UserVotingController extends Controller
             'data' => [
                 'stats' => [
                     'active_polls' => $activePolls,
-                    'votes_cast' => $userVotes,
-                    'gcu_balance' => intval($gcuBalance),
+                    'votes_cast'   => $userVotes,
+                    'gcu_balance'  => intval($gcuBalance),
                     'voting_power' => intval($gcuBalance), // 1 GCU = 1 vote
                 ],
                 'next_poll' => $nextPoll ? [
-                    'title' => $nextPoll->title,
-                    'starts_in' => now()->diffForHumans($nextPoll->start_date),
+                    'title'      => $nextPoll->title,
+                    'starts_in'  => now()->diffForHumans($nextPoll->start_date),
                     'start_date' => $nextPoll->start_date->toISOString(),
                 ] : null,
                 'basket_info' => [
-                    'name' => config('baskets.primary_name', 'Global Currency Unit'),
-                    'code' => config('baskets.primary_code', 'GCU'),
+                    'name'   => config('baskets.primary_name', 'Global Currency Unit'),
+                    'code'   => config('baskets.primary_code', 'GCU'),
                     'symbol' => config('baskets.primary_symbol', 'Ǥ'),
                 ],
-            ]
+            ],
         ]);
     }
 }

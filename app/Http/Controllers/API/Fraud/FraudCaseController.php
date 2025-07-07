@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\API\Fraud;
 
-use App\Http\Controllers\Controller;
 use App\Domain\Fraud\Services\FraudCaseService;
+use App\Http\Controllers\Controller;
 use App\Models\FraudCase;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class FraudCaseController extends Controller
 {
@@ -18,23 +18,23 @@ class FraudCaseController extends Controller
     }
 
     /**
-     * List fraud cases
+     * List fraud cases.
      */
     public function index(Request $request): JsonResponse
     {
         $request->validate([
-            'status' => 'nullable|in:open,investigating,closed',
-            'priority' => 'nullable|in:low,medium,high,critical',
-            'risk_level' => 'nullable|in:very_low,low,medium,high,very_high',
+            'status'      => 'nullable|in:open,investigating,closed',
+            'priority'    => 'nullable|in:low,medium,high,critical',
+            'risk_level'  => 'nullable|in:very_low,low,medium,high,very_high',
             'assigned_to' => 'nullable|integer',
-            'date_from' => 'nullable|date',
-            'date_to' => 'nullable|date|after_or_equal:date_from',
-            'min_amount' => 'nullable|numeric|min:0',
-            'max_amount' => 'nullable|numeric|min:0',
-            'search' => 'nullable|string|max:100',
-            'sort_by' => 'nullable|in:created_at,priority,loss_amount,risk_level',
-            'sort_order' => 'nullable|in:asc,desc',
-            'per_page' => 'nullable|integer|min:10|max:100',
+            'date_from'   => 'nullable|date',
+            'date_to'     => 'nullable|date|after_or_equal:date_from',
+            'min_amount'  => 'nullable|numeric|min:0',
+            'max_amount'  => 'nullable|numeric|min:0',
+            'search'      => 'nullable|string|max:100',
+            'sort_by'     => 'nullable|in:created_at,priority,loss_amount,risk_level',
+            'sort_order'  => 'nullable|in:asc,desc',
+            'per_page'    => 'nullable|integer|min:10|max:100',
         ]);
 
         $cases = $this->caseService->searchCases($request->all());
@@ -43,7 +43,7 @@ class FraudCaseController extends Controller
     }
 
     /**
-     * Get fraud case details
+     * Get fraud case details.
      */
     public function show(string $caseId): JsonResponse
     {
@@ -59,36 +59,36 @@ class FraudCaseController extends Controller
         $similarCases = $this->caseService->linkSimilarCases($case);
 
         return response()->json([
-            'case' => $case,
+            'case'          => $case,
             'similar_cases' => $similarCases->map(function ($similarCase) {
                 return [
-                    'id' => $similarCase->id,
+                    'id'          => $similarCase->id,
                     'case_number' => $similarCase->case_number,
-                    'risk_level' => $similarCase->risk_level,
-                    'status' => $similarCase->status,
-                    'created_at' => $similarCase->created_at,
+                    'risk_level'  => $similarCase->risk_level,
+                    'status'      => $similarCase->status,
+                    'created_at'  => $similarCase->created_at,
                 ];
             }),
         ]);
     }
 
     /**
-     * Update fraud case
+     * Update fraud case.
      */
     public function update(Request $request, string $caseId): JsonResponse
     {
         $request->validate([
-            'status' => 'nullable|in:open,investigating,closed',
-            'priority' => 'nullable|in:low,medium,high,critical',
-            'assigned_to' => 'nullable|integer',
-            'note' => 'nullable|string|max:1000',
-            'note_type' => 'nullable|in:investigation,analysis,action,resolution',
-            'evidence' => 'nullable|array',
-            'evidence.type' => 'required_with:evidence|string',
+            'status'               => 'nullable|in:open,investigating,closed',
+            'priority'             => 'nullable|in:low,medium,high,critical',
+            'assigned_to'          => 'nullable|integer',
+            'note'                 => 'nullable|string|max:1000',
+            'note_type'            => 'nullable|in:investigation,analysis,action,resolution',
+            'evidence'             => 'nullable|array',
+            'evidence.type'        => 'required_with:evidence|string',
             'evidence.description' => 'required_with:evidence|string',
-            'evidence.file_path' => 'nullable|string',
-            'tags' => 'nullable|array',
-            'tags.*' => 'string|max:50',
+            'evidence.file_path'   => 'nullable|string',
+            'tags'                 => 'nullable|array',
+            'tags.*'               => 'string|max:50',
         ]);
 
         $case = FraudCase::findOrFail($caseId);
@@ -100,18 +100,18 @@ class FraudCaseController extends Controller
 
         return response()->json([
             'message' => 'Fraud case updated successfully',
-            'case' => $updatedCase,
+            'case'    => $updatedCase,
         ]);
     }
 
     /**
-     * Resolve fraud case
+     * Resolve fraud case.
      */
     public function resolve(Request $request, string $caseId): JsonResponse
     {
         $request->validate([
-            'resolution' => 'required|string|max:500',
-            'outcome' => 'required|in:fraud,legitimate,unknown',
+            'resolution'      => 'required|string|max:500',
+            'outcome'         => 'required|in:fraud,legitimate,unknown',
             'recovery_amount' => 'nullable|numeric|min:0',
         ]);
 
@@ -133,12 +133,12 @@ class FraudCaseController extends Controller
 
         return response()->json([
             'message' => 'Fraud case resolved successfully',
-            'case' => $resolvedCase,
+            'case'    => $resolvedCase,
         ]);
     }
 
     /**
-     * Escalate fraud case
+     * Escalate fraud case.
      */
     public function escalate(Request $request, string $caseId): JsonResponse
     {
@@ -155,18 +155,18 @@ class FraudCaseController extends Controller
 
         return response()->json([
             'message' => 'Fraud case escalated successfully',
-            'case' => $escalatedCase,
+            'case'    => $escalatedCase,
         ]);
     }
 
     /**
-     * Get fraud case statistics
+     * Get fraud case statistics.
      */
     public function statistics(Request $request): JsonResponse
     {
         $request->validate([
             'date_from' => 'nullable|date',
-            'date_to' => 'nullable|date|after_or_equal:date_from',
+            'date_to'   => 'nullable|date|after_or_equal:date_from',
         ]);
 
         $statistics = $this->caseService->getCaseStatistics($request->all());
@@ -175,7 +175,7 @@ class FraudCaseController extends Controller
     }
 
     /**
-     * Assign case to investigator
+     * Assign case to investigator.
      */
     public function assign(Request $request, string $caseId): JsonResponse
     {
@@ -198,20 +198,20 @@ class FraudCaseController extends Controller
 
         return response()->json([
             'message' => 'Case assigned successfully',
-            'case' => $case,
+            'case'    => $case,
         ]);
     }
 
     /**
-     * Add evidence to case
+     * Add evidence to case.
      */
     public function addEvidence(Request $request, string $caseId): JsonResponse
     {
         $request->validate([
-            'type' => 'required|in:document,screenshot,log,communication,other',
+            'type'        => 'required|in:document,screenshot,log,communication,other',
             'description' => 'required|string|max:500',
-            'file' => 'nullable|file|max:10240', // 10MB max
-            'metadata' => 'nullable|array',
+            'file'        => 'nullable|file|max:10240', // 10MB max
+            'metadata'    => 'nullable|array',
         ]);
 
         $case = FraudCase::findOrFail($caseId);
@@ -220,9 +220,9 @@ class FraudCaseController extends Controller
         $this->authorize('update', $case);
 
         $evidenceData = [
-            'type' => $request->type,
+            'type'        => $request->type,
             'description' => $request->description,
-            'metadata' => $request->metadata ?? [],
+            'metadata'    => $request->metadata ?? [],
         ];
 
         // Handle file upload
@@ -237,12 +237,12 @@ class FraudCaseController extends Controller
 
         return response()->json([
             'message' => 'Evidence added successfully',
-            'case' => $updatedCase,
+            'case'    => $updatedCase,
         ]);
     }
 
     /**
-     * Get case timeline
+     * Get case timeline.
      */
     public function timeline(string $caseId): JsonResponse
     {
@@ -255,44 +255,44 @@ class FraudCaseController extends Controller
 
         // Case created
         $timeline[] = [
-            'timestamp' => $case->created_at,
-            'type' => 'case_created',
+            'timestamp'   => $case->created_at,
+            'type'        => 'case_created',
             'description' => 'Fraud case created',
-            'actor' => 'System',
+            'actor'       => 'System',
         ];
 
         // Investigation started
         if ($case->investigation_started_at) {
             $timeline[] = [
-                'timestamp' => $case->investigation_started_at,
-                'type' => 'investigation_started',
+                'timestamp'   => $case->investigation_started_at,
+                'type'        => 'investigation_started',
                 'description' => 'Investigation started',
-                'actor' => 'System',
+                'actor'       => 'System',
             ];
         }
 
         // Add investigation notes to timeline
         foreach ($case->investigation_notes ?? [] as $note) {
             $timeline[] = [
-                'timestamp' => $note['timestamp'],
-                'type' => $note['type'] ?? 'note',
+                'timestamp'   => $note['timestamp'],
+                'type'        => $note['type'] ?? 'note',
                 'description' => $note['note'],
-                'actor' => $note['author'] ?? 'Unknown',
+                'actor'       => $note['author'] ?? 'Unknown',
             ];
         }
 
         // Case resolved
         if ($case->resolved_at) {
             $timeline[] = [
-                'timestamp' => $case->resolved_at,
-                'type' => 'case_resolved',
+                'timestamp'   => $case->resolved_at,
+                'type'        => 'case_resolved',
                 'description' => "Case resolved: {$case->resolution}",
-                'actor' => $case->resolution_notes['resolved_by'] ?? 'Unknown',
+                'actor'       => $case->resolution_notes['resolved_by'] ?? 'Unknown',
             ];
         }
 
         // Sort by timestamp
-        usort($timeline, fn($a, $b) => $a['timestamp'] <=> $b['timestamp']);
+        usort($timeline, fn ($a, $b) => $a['timestamp'] <=> $b['timestamp']);
 
         return response()->json(['timeline' => $timeline]);
     }

@@ -26,28 +26,28 @@ class StablecoinFactory extends Factory
     {
         $code = strtoupper($this->faker->unique()->lexify('F???'));
         $pegAsset = $this->faker->randomElement(['USD', 'EUR', 'GBP']);
-        
+
         return [
-            'code' => $code,
-            'name' => 'FinAegis ' . $pegAsset,
-            'symbol' => $code,
-            'peg_asset_code' => $pegAsset,
-            'peg_ratio' => 1.0,
-            'target_price' => 1.0,
-            'stability_mechanism' => 'collateralized',
-            'collateral_ratio' => 1.5, // 150%
-            'min_collateral_ratio' => 1.2, // 120%
-            'liquidation_penalty' => 0.05, // 5%
-            'total_supply' => 0,
-            'max_supply' => 1000000000, // 10M
+            'code'                   => $code,
+            'name'                   => 'FinAegis ' . $pegAsset,
+            'symbol'                 => $code,
+            'peg_asset_code'         => $pegAsset,
+            'peg_ratio'              => 1.0,
+            'target_price'           => 1.0,
+            'stability_mechanism'    => 'collateralized',
+            'collateral_ratio'       => 1.5, // 150%
+            'min_collateral_ratio'   => 1.2, // 120%
+            'liquidation_penalty'    => 0.05, // 5%
+            'total_supply'           => 0,
+            'max_supply'             => 1000000000, // 10M
             'total_collateral_value' => 0,
-            'mint_fee' => 0.001, // 0.1%
-            'burn_fee' => 0.001, // 0.1%
-            'precision' => 8,
-            'is_active' => true,
-            'minting_enabled' => true,
-            'burning_enabled' => true,
-            'metadata' => null,
+            'mint_fee'               => 0.001, // 0.1%
+            'burn_fee'               => 0.001, // 0.1%
+            'precision'              => 8,
+            'is_active'              => true,
+            'minting_enabled'        => true,
+            'burning_enabled'        => true,
+            'metadata'               => null,
         ];
     }
 

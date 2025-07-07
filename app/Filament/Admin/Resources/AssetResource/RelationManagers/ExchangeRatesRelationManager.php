@@ -42,7 +42,7 @@ class ExchangeRatesRelationManager extends RelationManager
                     ->label('Source')
                     ->options([
                         ExchangeRate::SOURCE_MANUAL => 'Manual',
-                        ExchangeRate::SOURCE_API => 'API',
+                        ExchangeRate::SOURCE_API    => 'API',
                         ExchangeRate::SOURCE_ORACLE => 'Oracle',
                         ExchangeRate::SOURCE_MARKET => 'Market',
                     ])
@@ -93,10 +93,10 @@ class ExchangeRatesRelationManager extends RelationManager
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         ExchangeRate::SOURCE_MANUAL => 'gray',
-                        ExchangeRate::SOURCE_API => 'success',
+                        ExchangeRate::SOURCE_API    => 'success',
                         ExchangeRate::SOURCE_ORACLE => 'warning',
                         ExchangeRate::SOURCE_MARKET => 'info',
-                        default => 'gray',
+                        default                     => 'gray',
                     }),
 
                 Tables\Columns\TextColumn::make('valid_at')
@@ -119,9 +119,9 @@ class ExchangeRatesRelationManager extends RelationManager
                     ->label('Age')
                     ->state(fn ($record) => $record->getAgeInMinutes() . ' min')
                     ->color(fn ($record) => match (true) {
-                        $record->getAgeInMinutes() < 60 => 'success',
+                        $record->getAgeInMinutes() < 60   => 'success',
                         $record->getAgeInMinutes() < 1440 => 'warning',
-                        default => 'danger',
+                        default                           => 'danger',
                     })
                     ->badge(),
             ])
@@ -129,7 +129,7 @@ class ExchangeRatesRelationManager extends RelationManager
                 Tables\Filters\SelectFilter::make('source')
                     ->options([
                         ExchangeRate::SOURCE_MANUAL => 'Manual',
-                        ExchangeRate::SOURCE_API => 'API',
+                        ExchangeRate::SOURCE_API    => 'API',
                         ExchangeRate::SOURCE_ORACLE => 'Oracle',
                         ExchangeRate::SOURCE_MARKET => 'Market',
                     ]),

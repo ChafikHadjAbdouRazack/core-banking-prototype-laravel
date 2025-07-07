@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use App\Http\Controllers\SitemapController;
+use Illuminate\Console\Command;
 
 class GenerateSitemap extends Command
 {
@@ -47,6 +47,7 @@ class GenerateSitemap extends Command
         }
 
         $this->error('Failed to generate sitemap');
+
         return Command::FAILURE;
     }
 }

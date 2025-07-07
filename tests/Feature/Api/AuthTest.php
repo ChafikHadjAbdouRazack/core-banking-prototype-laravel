@@ -13,8 +13,8 @@ class AuthTest extends TestCase
     public function test_user_endpoint_returns_authenticated_user()
     {
         $user = User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com'
+            'name'  => 'Test User',
+            'email' => 'test@example.com',
         ]);
 
         Sanctum::actingAs($user);
@@ -23,8 +23,8 @@ class AuthTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJson([
-                'id' => $user->id,
-                'name' => 'Test User',
+                'id'    => $user->id,
+                'name'  => 'Test User',
                 'email' => 'test@example.com',
             ]);
     }

@@ -5,10 +5,9 @@ namespace App\Models;
 use App\Domain\Asset\Models\Asset;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Collection;
 
 class BasketAsset extends Model
 {
@@ -38,8 +37,8 @@ class BasketAsset extends Model
      */
     protected $casts = [
         'last_rebalanced_at' => 'datetime',
-        'is_active' => 'boolean',
-        'metadata' => 'array',
+        'is_active'          => 'boolean',
+        'metadata'           => 'array',
     ];
 
     /**
@@ -100,16 +99,16 @@ class BasketAsset extends Model
             return false;
         }
 
-        if (!$this->last_rebalanced_at) {
+        if (! $this->last_rebalanced_at) {
             return true;
         }
 
         $nextRebalanceDate = match ($this->rebalance_frequency) {
-            'daily' => $this->last_rebalanced_at->addDay(),
-            'weekly' => $this->last_rebalanced_at->addWeek(),
-            'monthly' => $this->last_rebalanced_at->addMonth(),
+            'daily'     => $this->last_rebalanced_at->addDay(),
+            'weekly'    => $this->last_rebalanced_at->addWeek(),
+            'monthly'   => $this->last_rebalanced_at->addMonth(),
             'quarterly' => $this->last_rebalanced_at->addQuarter(),
-            default => null,
+            default     => null,
         };
 
         return $nextRebalanceDate && now()->gte($nextRebalanceDate);
@@ -121,6 +120,7 @@ class BasketAsset extends Model
     public function validateWeights(): bool
     {
         $totalWeight = $this->activeComponents()->sum('weight');
+
         return abs($totalWeight - 100) < 0.01; // Allow for floating point precision
     }
 
@@ -132,14 +132,14 @@ class BasketAsset extends Model
         return Asset::firstOrCreate(
             ['code' => $this->code],
             [
-                'name' => $this->name,
-                'type' => 'custom',
+                'name'      => $this->name,
+                'type'      => 'custom',
                 'precision' => 4,
                 'is_active' => $this->is_active ?? true,
                 'is_basket' => true,
-                'metadata' => [
-                    'basket_id' => $this->id,
-                    'basket_type' => $this->type,
+                'metadata'  => [
+                    'basket_id'     => $this->id,
+                    'basket_type'   => $this->type,
                     'asset_subtype' => 'basket',
                 ],
             ]
@@ -155,7 +155,7 @@ class BasketAsset extends Model
 
         foreach ($this->activeComponents as $component) {
             $asset = Asset::find($component->asset_code);
-            if (!$asset) {
+            if (! $asset) {
                 continue;
             }
 

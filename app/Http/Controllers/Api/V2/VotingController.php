@@ -3,11 +3,10 @@
 namespace App\Http\Controllers\Api\V2;
 
 use App\Http\Controllers\Controller;
-use App\Models\GcuVotingProposal;
 use App\Models\GcuVote;
-use App\Models\Account;
-use Illuminate\Http\Request;
+use App\Models\GcuVotingProposal;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class VotingController extends Controller
@@ -65,27 +64,27 @@ class VotingController extends Controller
 
         $proposals = $query->get()->map(function ($proposal) {
             return [
-                'id' => $proposal->id,
-                'title' => $proposal->title,
-                'description' => $proposal->description,
-                'status' => $proposal->status,
-                'proposed_composition' => $proposal->proposed_composition,
-                'current_composition' => $proposal->current_composition,
-                'voting_starts_at' => $proposal->voting_starts_at->toIso8601String(),
-                'voting_ends_at' => $proposal->voting_ends_at->toIso8601String(),
-                'participation_rate' => round($proposal->participation_rate, 2),
-                'approval_rate' => round($proposal->approval_rate, 2),
+                'id'                    => $proposal->id,
+                'title'                 => $proposal->title,
+                'description'           => $proposal->description,
+                'status'                => $proposal->status,
+                'proposed_composition'  => $proposal->proposed_composition,
+                'current_composition'   => $proposal->current_composition,
+                'voting_starts_at'      => $proposal->voting_starts_at->toIso8601String(),
+                'voting_ends_at'        => $proposal->voting_ends_at->toIso8601String(),
+                'participation_rate'    => round($proposal->participation_rate, 2),
+                'approval_rate'         => round($proposal->approval_rate, 2),
                 'minimum_participation' => $proposal->minimum_participation,
-                'minimum_approval' => $proposal->minimum_approval,
-                'votes_for' => $proposal->votes_for,
-                'votes_against' => $proposal->votes_against,
-                'total_votes_cast' => $proposal->total_votes_cast,
+                'minimum_approval'      => $proposal->minimum_approval,
+                'votes_for'             => $proposal->votes_for,
+                'votes_against'         => $proposal->votes_against,
+                'total_votes_cast'      => $proposal->total_votes_cast,
             ];
         });
 
         return response()->json([
             'status' => 'success',
-            'data' => $proposals,
+            'data'   => $proposals,
         ]);
     }
 
@@ -117,26 +116,26 @@ class VotingController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'data' => [
-                'id' => $proposal->id,
-                'title' => $proposal->title,
-                'description' => $proposal->description,
-                'rationale' => $proposal->rationale,
-                'status' => $proposal->status,
-                'proposed_composition' => $proposal->proposed_composition,
-                'current_composition' => $proposal->current_composition,
-                'voting_starts_at' => $proposal->voting_starts_at->toIso8601String(),
-                'voting_ends_at' => $proposal->voting_ends_at->toIso8601String(),
-                'participation_rate' => round($proposal->participation_rate, 2),
-                'approval_rate' => round($proposal->approval_rate, 2),
+            'data'   => [
+                'id'                    => $proposal->id,
+                'title'                 => $proposal->title,
+                'description'           => $proposal->description,
+                'rationale'             => $proposal->rationale,
+                'status'                => $proposal->status,
+                'proposed_composition'  => $proposal->proposed_composition,
+                'current_composition'   => $proposal->current_composition,
+                'voting_starts_at'      => $proposal->voting_starts_at->toIso8601String(),
+                'voting_ends_at'        => $proposal->voting_ends_at->toIso8601String(),
+                'participation_rate'    => round($proposal->participation_rate, 2),
+                'approval_rate'         => round($proposal->approval_rate, 2),
                 'minimum_participation' => $proposal->minimum_participation,
-                'minimum_approval' => $proposal->minimum_approval,
-                'votes_for' => $proposal->votes_for,
-                'votes_against' => $proposal->votes_against,
-                'total_votes_cast' => $proposal->total_votes_cast,
-                'total_gcu_supply' => $proposal->total_gcu_supply,
-                'is_voting_active' => $proposal->isVotingActive(),
-                'time_remaining' => $proposal->time_remaining,
+                'minimum_approval'      => $proposal->minimum_approval,
+                'votes_for'             => $proposal->votes_for,
+                'votes_against'         => $proposal->votes_against,
+                'total_votes_cast'      => $proposal->total_votes_cast,
+                'total_gcu_supply'      => $proposal->total_gcu_supply,
+                'is_voting_active'      => $proposal->isVotingActive(),
+                'time_remaining'        => $proposal->time_remaining,
             ],
         ]);
     }
@@ -178,9 +177,9 @@ class VotingController extends Controller
     {
         $proposal = GcuVotingProposal::findOrFail($id);
 
-        if (!$proposal->isVotingActive()) {
+        if (! $proposal->isVotingActive()) {
             return response()->json([
-                'status' => 'error',
+                'status'  => 'error',
                 'message' => 'Voting is not active for this proposal',
             ], 400);
         }
@@ -197,9 +196,9 @@ class VotingController extends Controller
             ->where('type', 'personal')
             ->first();
 
-        if (!$gcuAccount || $gcuAccount->balance <= 0) {
+        if (! $gcuAccount || $gcuAccount->balance <= 0) {
             return response()->json([
-                'status' => 'error',
+                'status'  => 'error',
                 'message' => 'You need GCU holdings to vote',
             ], 400);
         }
@@ -209,10 +208,10 @@ class VotingController extends Controller
             $vote = GcuVote::updateOrCreate(
                 [
                     'proposal_id' => $proposal->id,
-                    'user_uuid' => $user->uuid,
+                    'user_uuid'   => $user->uuid,
                 ],
                 [
-                    'vote' => $request->vote,
+                    'vote'         => $request->vote,
                     'voting_power' => $gcuAccount->balance,
                 ]
             );
@@ -226,10 +225,10 @@ class VotingController extends Controller
         });
 
         return response()->json([
-            'status' => 'success',
+            'status'  => 'success',
             'message' => 'Your vote has been recorded',
-            'data' => [
-                'vote' => $request->vote,
+            'data'    => [
+                'vote'         => $request->vote,
                 'voting_power' => $gcuAccount->balance,
             ],
         ]);
@@ -267,17 +266,17 @@ class VotingController extends Controller
             ->get()
             ->map(function ($vote) {
                 return [
-                    'proposal_id' => $vote->proposal_id,
+                    'proposal_id'    => $vote->proposal_id,
                     'proposal_title' => $vote->proposal->title,
-                    'vote' => $vote->vote,
-                    'voting_power' => $vote->voting_power,
-                    'voted_at' => $vote->created_at->toIso8601String(),
+                    'vote'           => $vote->vote,
+                    'voting_power'   => $vote->voting_power,
+                    'voted_at'       => $vote->created_at->toIso8601String(),
                 ];
             });
 
         return response()->json([
             'status' => 'success',
-            'data' => $votes,
+            'data'   => $votes,
         ]);
     }
 
@@ -290,8 +289,8 @@ class VotingController extends Controller
         $totalVotes = $votes->sum('voting_power');
 
         $proposal->update([
-            'votes_for' => $votesFor,
-            'votes_against' => $votesAgainst,
+            'votes_for'        => $votesFor,
+            'votes_against'    => $votesAgainst,
             'total_votes_cast' => $totalVotes,
         ]);
     }

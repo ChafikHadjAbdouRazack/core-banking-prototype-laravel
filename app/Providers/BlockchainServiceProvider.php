@@ -2,11 +2,11 @@
 
 namespace App\Providers;
 
-use App\Domain\Wallet\Connectors\SimpleBitcoinConnector;
 use App\Domain\Wallet\Connectors\EthereumConnector;
 use App\Domain\Wallet\Connectors\PolygonConnector;
-use App\Domain\Wallet\Services\KeyManagementService;
+use App\Domain\Wallet\Connectors\SimpleBitcoinConnector;
 use App\Domain\Wallet\Services\BlockchainWalletService;
+use App\Domain\Wallet\Services\KeyManagementService;
 use App\Workflows\BlockchainDepositActivities;
 use App\Workflows\BlockchainWithdrawalActivities;
 use Illuminate\Support\ServiceProvider;
@@ -27,15 +27,15 @@ class BlockchainServiceProvider extends ServiceProvider
         $this->app->bind('blockchain.connectors', function ($app) {
             return [
                 'ethereum' => new EthereumConnector([
-                    'rpc_url' => config('blockchain.ethereum.rpc_url'),
+                    'rpc_url'  => config('blockchain.ethereum.rpc_url'),
                     'chain_id' => config('blockchain.ethereum.chain_id'),
                 ]),
                 'polygon' => new PolygonConnector([
-                    'rpc_url' => config('blockchain.polygon.rpc_url'),
+                    'rpc_url'  => config('blockchain.polygon.rpc_url'),
                     'chain_id' => config('blockchain.polygon.chain_id'),
                 ]),
                 'bsc' => new EthereumConnector([
-                    'rpc_url' => config('blockchain.bsc.rpc_url'),
+                    'rpc_url'  => config('blockchain.bsc.rpc_url'),
                     'chain_id' => config('blockchain.bsc.chain_id'),
                 ]),
                 'bitcoin' => new SimpleBitcoinConnector([

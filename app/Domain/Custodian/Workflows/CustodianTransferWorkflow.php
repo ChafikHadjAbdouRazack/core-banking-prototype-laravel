@@ -17,7 +17,7 @@ use Workflow\Workflow;
 class CustodianTransferWorkflow extends Workflow
 {
     /**
-     * Transfer funds between internal account and custodian account
+     * Transfer funds between internal account and custodian account.
      */
     public function execute(
         AccountUuid $internalAccount,
@@ -45,7 +45,7 @@ class CustodianTransferWorkflow extends Workflow
                 );
 
                 // Add compensation to reverse custodian transfer if needed
-                $this->addCompensation(fn() => ActivityStub::make(
+                $this->addCompensation(fn () => ActivityStub::make(
                     InitiateCustodianTransferActivity::class,
                     $internalAccount->getUuid(),
                     $custodianAccount,
@@ -80,7 +80,7 @@ class CustodianTransferWorkflow extends Workflow
                 );
 
                 // Add compensation to restore internal balance
-                $this->addCompensation(fn() => ChildWorkflowStub::make(
+                $this->addCompensation(fn () => ChildWorkflowStub::make(
                     DepositAccountWorkflow::class,
                     $internalAccount,
                     $amount
@@ -107,11 +107,11 @@ class CustodianTransferWorkflow extends Workflow
             }
 
             return [
-                'status' => 'completed',
+                'status'         => 'completed',
                 'transaction_id' => $transactionId,
-                'direction' => $direction,
-                'amount' => $amount->getAmount(),
-                'asset_code' => $assetCode,
+                'direction'      => $direction,
+                'amount'         => $amount->getAmount(),
+                'asset_code'     => $assetCode,
             ];
         } catch (\Throwable $e) {
             // Execute compensations

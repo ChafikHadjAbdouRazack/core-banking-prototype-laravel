@@ -16,9 +16,9 @@ final class TurnoverRepository
 
     /**
      * @param string $accountUuid
-     * @param \DateTimeInterface $date
+     * @param DateTimeInterface $date
      *
-     * @return \App\Models\Turnover|null
+     * @return Turnover|null
      */
     public function findByAccountAndDate(
         Account $account,
@@ -31,11 +31,11 @@ final class TurnoverRepository
     }
 
     /**
-     * @param \DateTimeInterface $date
+     * @param DateTimeInterface $date
      * @param string $accountUuid
      * @param int $amount
      *
-     * @return \App\Models\Turnover
+     * @return Turnover
      */
     public function incrementForDateById(
         DateTimeInterface $date,
@@ -50,10 +50,10 @@ final class TurnoverRepository
                     'account_uuid' => $accountUuid,
                 ],
                 [
-                    'count'        => 0,
-                    'amount'       => 0,
-                    'debit'        => 0,
-                    'credit'       => 0,
+                    'count'  => 0,
+                    'amount' => 0,
+                    'debit'  => 0,
+                    'credit' => 0,
                 ]
             );
 
@@ -62,10 +62,10 @@ final class TurnoverRepository
     }
 
     /**
-     * @param \App\Models\Turnover $turnover
+     * @param Turnover $turnover
      * @param int $amount
      *
-     * @return \App\Models\Turnover
+     * @return Turnover
      */
     protected function updateTurnover(Turnover $turnover, int $amount): Turnover
     {

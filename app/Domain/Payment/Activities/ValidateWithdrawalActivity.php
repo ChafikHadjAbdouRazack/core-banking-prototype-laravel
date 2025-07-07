@@ -12,9 +12,9 @@ class ValidateWithdrawalActivity extends Activity
     {
         $account = Account::where('uuid', $withdrawal->getAccountUuid())->first();
 
-        if (!$account) {
+        if (! $account) {
             return [
-                'valid' => false,
+                'valid'   => false,
                 'message' => 'Account not found',
             ];
         }
@@ -24,9 +24,9 @@ class ValidateWithdrawalActivity extends Activity
             ->where('asset_code', $withdrawal->getCurrency())
             ->first();
 
-        if (!$balance || $balance->balance < $withdrawal->getAmount()) {
+        if (! $balance || $balance->balance < $withdrawal->getAmount()) {
             return [
-                'valid' => false,
+                'valid'   => false,
                 'message' => 'Insufficient balance',
             ];
         }
@@ -34,7 +34,7 @@ class ValidateWithdrawalActivity extends Activity
         // Check minimum withdrawal amount (e.g., $10)
         if ($withdrawal->getAmount() < 1000) { // 1000 cents = $10
             return [
-                'valid' => false,
+                'valid'   => false,
                 'message' => 'Minimum withdrawal amount is $10',
             ];
         }
@@ -42,13 +42,13 @@ class ValidateWithdrawalActivity extends Activity
         // Check maximum withdrawal amount (e.g., $10,000 per transaction)
         if ($withdrawal->getAmount() > 1000000) { // 1000000 cents = $10,000
             return [
-                'valid' => false,
+                'valid'   => false,
                 'message' => 'Maximum withdrawal amount is $10,000 per transaction',
             ];
         }
 
         return [
-            'valid' => true,
+            'valid'   => true,
             'message' => 'Withdrawal validated successfully',
         ];
     }

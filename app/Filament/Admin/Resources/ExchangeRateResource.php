@@ -9,11 +9,11 @@ use App\Filament\Admin\Resources\ExchangeRateResource\Pages;
 use App\Filament\Admin\Resources\ExchangeRateResource\Widgets;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Infolists;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Filament\Infolists;
-use Filament\Infolists\Infolist;
 use Illuminate\Database\Eloquent\Builder;
 
 class ExchangeRateResource extends Resource
@@ -67,7 +67,7 @@ class ExchangeRateResource extends Resource
                             ->label('Rate Source')
                             ->options([
                                 ExchangeRate::SOURCE_MANUAL => 'Manual Entry',
-                                ExchangeRate::SOURCE_API => 'API Feed',
+                                ExchangeRate::SOURCE_API    => 'API Feed',
                                 ExchangeRate::SOURCE_ORACLE => 'Oracle Service',
                                 ExchangeRate::SOURCE_MARKET => 'Market Data',
                             ])
@@ -143,23 +143,22 @@ class ExchangeRateResource extends Resource
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         ExchangeRate::SOURCE_MANUAL => 'gray',
-                        ExchangeRate::SOURCE_API => 'success',
+                        ExchangeRate::SOURCE_API    => 'success',
                         ExchangeRate::SOURCE_ORACLE => 'warning',
                         ExchangeRate::SOURCE_MARKET => 'info',
-                        default => 'gray',
+                        default                     => 'gray',
                     }),
 
                 Tables\Columns\TextColumn::make('age')
                     ->label('Age')
                     ->state(fn ($record) => self::formatAge($record->getAgeInMinutes()))
                     ->color(fn ($record) => match (true) {
-                        $record->getAgeInMinutes() < 60 => 'success',
+                        $record->getAgeInMinutes() < 60   => 'success',
                         $record->getAgeInMinutes() < 1440 => 'warning',
-                        default => 'danger',
+                        default                           => 'danger',
                     })
                     ->badge()
-                    ->sortable(query: fn (Builder $query, string $direction): Builder =>
-                        $query->orderBy('valid_at', $direction === 'asc' ? 'desc' : 'asc')),
+                    ->sortable(query: fn (Builder $query, string $direction): Builder => $query->orderBy('valid_at', $direction === 'asc' ? 'desc' : 'asc')),
 
                 Tables\Columns\IconColumn::make('is_valid')
                     ->label('Valid')
@@ -195,7 +194,7 @@ class ExchangeRateResource extends Resource
                 Tables\Filters\SelectFilter::make('source')
                     ->options([
                         ExchangeRate::SOURCE_MANUAL => 'Manual',
-                        ExchangeRate::SOURCE_API => 'API',
+                        ExchangeRate::SOURCE_API    => 'API',
                         ExchangeRate::SOURCE_ORACLE => 'Oracle',
                         ExchangeRate::SOURCE_MARKET => 'Market',
                     ]),
@@ -288,10 +287,10 @@ class ExchangeRateResource extends Resource
                             ->badge()
                             ->color(fn (string $state): string => match ($state) {
                                 ExchangeRate::SOURCE_MANUAL => 'gray',
-                                ExchangeRate::SOURCE_API => 'success',
+                                ExchangeRate::SOURCE_API    => 'success',
                                 ExchangeRate::SOURCE_ORACLE => 'warning',
                                 ExchangeRate::SOURCE_MARKET => 'info',
-                                default => 'gray',
+                                default                     => 'gray',
                             }),
                     ])
                     ->columns(2),
@@ -316,9 +315,9 @@ class ExchangeRateResource extends Resource
                             ->state(fn ($record) => self::formatAge($record->getAgeInMinutes()))
                             ->badge()
                             ->color(fn ($record) => match (true) {
-                                $record->getAgeInMinutes() < 60 => 'success',
+                                $record->getAgeInMinutes() < 60   => 'success',
                                 $record->getAgeInMinutes() < 1440 => 'warning',
-                                default => 'danger',
+                                default                           => 'danger',
                             }),
                     ])
                     ->columns(2),
@@ -356,10 +355,10 @@ class ExchangeRateResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListExchangeRates::route('/'),
+            'index'  => Pages\ListExchangeRates::route('/'),
             'create' => Pages\CreateExchangeRate::route('/create'),
-            'view' => Pages\ViewExchangeRate::route('/{record}'),
-            'edit' => Pages\EditExchangeRate::route('/{record}/edit'),
+            'view'   => Pages\ViewExchangeRate::route('/{record}'),
+            'edit'   => Pages\EditExchangeRate::route('/{record}/edit'),
         ];
     }
 
@@ -390,7 +389,7 @@ class ExchangeRateResource extends Resource
         return match (true) {
             $percentage >= 80 => 'success',
             $percentage >= 60 => 'warning',
-            default => 'danger',
+            default           => 'danger',
         };
     }
 
@@ -400,9 +399,11 @@ class ExchangeRateResource extends Resource
             return "{$minutes}m";
         } elseif ($minutes < 1440) {
             $hours = intval($minutes / 60);
+
             return "{$hours}h";
         } else {
             $days = intval($minutes / 1440);
+
             return "{$days}d";
         }
     }

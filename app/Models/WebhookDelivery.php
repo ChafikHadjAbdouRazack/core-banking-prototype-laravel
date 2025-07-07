@@ -13,7 +13,9 @@ class WebhookDelivery extends Model
     use HasUuids;
 
     protected $primaryKey = 'uuid';
+
     public $incrementing = false;
+
     protected $keyType = 'string';
 
     protected $fillable = [
@@ -33,21 +35,24 @@ class WebhookDelivery extends Model
     ];
 
     protected $casts = [
-        'payload' => 'array',
+        'payload'          => 'array',
         'response_headers' => 'array',
-        'attempt_number' => 'integer',
-        'response_status' => 'integer',
-        'duration_ms' => 'integer',
-        'delivered_at' => 'datetime',
-        'next_retry_at' => 'datetime',
+        'attempt_number'   => 'integer',
+        'response_status'  => 'integer',
+        'duration_ms'      => 'integer',
+        'delivered_at'     => 'datetime',
+        'next_retry_at'    => 'datetime',
     ];
 
     /**
-     * Delivery statuses
+     * Delivery statuses.
      */
     public const STATUS_PENDING = 'pending';
+
     public const STATUS_SUCCESS = 'success';
+
     public const STATUS_DELIVERED = 'delivered';
+
     public const STATUS_FAILED = 'failed';
 
     /**
@@ -59,7 +64,7 @@ class WebhookDelivery extends Model
     }
 
     /**
-     * Scope to get pending deliveries
+     * Scope to get pending deliveries.
      */
     public function scopePending($query)
     {
@@ -67,7 +72,7 @@ class WebhookDelivery extends Model
     }
 
     /**
-     * Scope to get failed deliveries
+     * Scope to get failed deliveries.
      */
     public function scopeFailed($query)
     {
@@ -75,7 +80,7 @@ class WebhookDelivery extends Model
     }
 
     /**
-     * Scope to get deliveries ready for retry
+     * Scope to get deliveries ready for retry.
      */
     public function scopeReadyForRetry($query)
     {
@@ -84,24 +89,24 @@ class WebhookDelivery extends Model
     }
 
     /**
-     * Mark delivery as successful
+     * Mark delivery as successful.
      */
     public function markAsDelivered(int $statusCode, ?string $responseBody = null, ?array $responseHeaders = null, int $durationMs = 0): void
     {
         $this->update([
-            'status' => self::STATUS_DELIVERED,
-            'response_status' => $statusCode,
-            'response_body' => $responseBody,
+            'status'           => self::STATUS_DELIVERED,
+            'response_status'  => $statusCode,
+            'response_body'    => $responseBody,
             'response_headers' => $responseHeaders,
-            'duration_ms' => $durationMs,
-            'delivered_at' => now(),
+            'duration_ms'      => $durationMs,
+            'delivered_at'     => now(),
         ]);
 
         $this->webhook->markAsSuccessful();
     }
 
     /**
-     * Mark delivery as failed
+     * Mark delivery as failed.
      */
     public function markAsFailed(?string $errorMessage = null, ?int $statusCode = null, ?string $responseBody = null): void
     {
@@ -115,27 +120,27 @@ class WebhookDelivery extends Model
         }
 
         $this->update([
-            'status' => self::STATUS_FAILED,
-            'error_message' => $errorMessage,
+            'status'          => self::STATUS_FAILED,
+            'error_message'   => $errorMessage,
             'response_status' => $statusCode,
-            'response_body' => $responseBody,
-            'next_retry_at' => $nextRetryAt,
+            'response_body'   => $responseBody,
+            'next_retry_at'   => $nextRetryAt,
         ]);
 
         $this->webhook->markAsFailed();
     }
 
     /**
-     * Create a retry delivery
+     * Create a retry delivery.
      */
     public function createRetry(): self
     {
         return self::create([
-            'webhook_uuid' => $this->webhook_uuid,
-            'event_type' => $this->event_type,
-            'payload' => $this->payload,
+            'webhook_uuid'   => $this->webhook_uuid,
+            'event_type'     => $this->event_type,
+            'payload'        => $this->payload,
             'attempt_number' => $this->attempt_number + 1,
-            'status' => self::STATUS_PENDING,
+            'status'         => self::STATUS_PENDING,
         ]);
     }
 }

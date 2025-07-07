@@ -24,38 +24,38 @@ class BasketPerformanceFactory extends Factory
         $endValue = fake()->randomFloat(4, 0.8, 1.2);
         $returnValue = $endValue - $startValue;
         $returnPercentage = $startValue > 0 ? ($returnValue / $startValue) * 100 : 0;
-        
+
         $periodType = fake()->randomElement(['hour', 'day', 'week', 'month', 'quarter', 'year']);
         $now = now();
-        
+
         [$periodStart, $periodEnd] = match($periodType) {
-            'hour' => [$now->copy()->subHour(), $now],
-            'day' => [$now->copy()->subDay(), $now],
-            'week' => [$now->copy()->subWeek(), $now],
-            'month' => [$now->copy()->subMonth(), $now],
+            'hour'    => [$now->copy()->subHour(), $now],
+            'day'     => [$now->copy()->subDay(), $now],
+            'week'    => [$now->copy()->subWeek(), $now],
+            'month'   => [$now->copy()->subMonth(), $now],
             'quarter' => [$now->copy()->subQuarter(), $now],
-            'year' => [$now->copy()->subYear(), $now],
+            'year'    => [$now->copy()->subYear(), $now],
         };
 
         return [
             'basket_asset_code' => BasketAsset::factory(),
-            'period_type' => $periodType,
-            'period_start' => $periodStart,
-            'period_end' => $periodEnd,
-            'start_value' => $startValue,
-            'end_value' => $endValue,
-            'high_value' => fake()->randomFloat(4, $endValue, $endValue * 1.1),
-            'low_value' => fake()->randomFloat(4, $startValue * 0.9, $startValue),
-            'average_value' => ($startValue + $endValue) / 2,
-            'return_value' => $returnValue,
+            'period_type'       => $periodType,
+            'period_start'      => $periodStart,
+            'period_end'        => $periodEnd,
+            'start_value'       => $startValue,
+            'end_value'         => $endValue,
+            'high_value'        => fake()->randomFloat(4, $endValue, $endValue * 1.1),
+            'low_value'         => fake()->randomFloat(4, $startValue * 0.9, $startValue),
+            'average_value'     => ($startValue + $endValue) / 2,
+            'return_value'      => $returnValue,
             'return_percentage' => round($returnPercentage, 4),
-            'volatility' => fake()->randomFloat(4, 0, 30),
-            'sharpe_ratio' => fake()->randomFloat(4, -2, 3),
-            'max_drawdown' => fake()->randomFloat(4, 0, 20),
-            'value_count' => fake()->numberBetween(1, 100),
-            'metadata' => [
+            'volatility'        => fake()->randomFloat(4, 0, 30),
+            'sharpe_ratio'      => fake()->randomFloat(4, -2, 3),
+            'max_drawdown'      => fake()->randomFloat(4, 0, 20),
+            'value_count'       => fake()->numberBetween(1, 100),
+            'metadata'          => [
                 'calculation_date' => now()->toIso8601String(),
-                'data_points' => fake()->numberBetween(1, 100),
+                'data_points'      => fake()->numberBetween(1, 100),
             ],
         ];
     }
@@ -69,13 +69,13 @@ class BasketPerformanceFactory extends Factory
             $startValue = $attributes['start_value'];
             $gain = fake()->randomFloat(4, 0.01, 0.20); // 1% to 20% gain
             $endValue = $startValue * (1 + $gain);
-            
+
             return [
-                'end_value' => $endValue,
-                'return_value' => $endValue - $startValue,
+                'end_value'         => $endValue,
+                'return_value'      => $endValue - $startValue,
                 'return_percentage' => $gain * 100,
-                'high_value' => $endValue * 1.05,
-                'average_value' => ($startValue + $endValue) / 2,
+                'high_value'        => $endValue * 1.05,
+                'average_value'     => ($startValue + $endValue) / 2,
             ];
         });
     }
@@ -89,13 +89,13 @@ class BasketPerformanceFactory extends Factory
             $startValue = $attributes['start_value'];
             $loss = fake()->randomFloat(4, 0.01, 0.20); // 1% to 20% loss
             $endValue = $startValue * (1 - $loss);
-            
+
             return [
-                'end_value' => $endValue,
-                'return_value' => $endValue - $startValue,
+                'end_value'         => $endValue,
+                'return_value'      => $endValue - $startValue,
                 'return_percentage' => -($loss * 100),
-                'low_value' => $endValue * 0.95,
-                'average_value' => ($startValue + $endValue) / 2,
+                'low_value'         => $endValue * 0.95,
+                'average_value'     => ($startValue + $endValue) / 2,
             ];
         });
     }
@@ -107,22 +107,22 @@ class BasketPerformanceFactory extends Factory
     {
         return $this->state(function (array $attributes) use ($periodType) {
             $now = now();
-            
+
             [$periodStart, $periodEnd] = match($periodType) {
-                'hour' => [$now->copy()->subHour(), $now],
-                'day' => [$now->copy()->subDay(), $now],
-                'week' => [$now->copy()->subWeek(), $now],
-                'month' => [$now->copy()->subMonth(), $now],
-                'quarter' => [$now->copy()->subQuarter(), $now],
-                'year' => [$now->copy()->subYear(), $now],
+                'hour'     => [$now->copy()->subHour(), $now],
+                'day'      => [$now->copy()->subDay(), $now],
+                'week'     => [$now->copy()->subWeek(), $now],
+                'month'    => [$now->copy()->subMonth(), $now],
+                'quarter'  => [$now->copy()->subQuarter(), $now],
+                'year'     => [$now->copy()->subYear(), $now],
                 'all_time' => [$now->copy()->subYears(2), $now],
-                default => [$now->copy()->subDay(), $now],
+                default    => [$now->copy()->subDay(), $now],
             };
-            
+
             return [
-                'period_type' => $periodType,
+                'period_type'  => $periodType,
                 'period_start' => $periodStart,
-                'period_end' => $periodEnd,
+                'period_end'   => $periodEnd,
             ];
         });
     }

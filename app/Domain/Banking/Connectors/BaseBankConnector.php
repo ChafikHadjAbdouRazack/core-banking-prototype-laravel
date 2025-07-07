@@ -5,17 +5,20 @@ declare(strict_types=1);
 namespace App\Domain\Banking\Connectors;
 
 use App\Domain\Banking\Contracts\IBankConnector;
-use App\Domain\Banking\Models\BankCapabilities;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Cache;
 
 abstract class BaseBankConnector implements IBankConnector
 {
     protected string $bankCode;
+
     protected string $bankName;
+
     protected array $config;
+
     protected ?string $accessToken = null;
+
     protected ?\DateTime $tokenExpiry = null;
 
     public function __construct(array $config)
@@ -51,11 +54,13 @@ abstract class BaseBankConnector implements IBankConnector
         return Cache::remember($cacheKey, 60, function () {
             try {
                 $response = Http::timeout(5)->get($this->getHealthCheckUrl());
+
                 return $response->successful();
             } catch (\Exception $e) {
                 Log::warning("Bank availability check failed for {$this->bankCode}", [
-                    'error' => $e->getMessage()
+                    'error' => $e->getMessage(),
                 ]);
+
                 return false;
             }
         });
@@ -95,12 +100,12 @@ abstract class BaseBankConnector implements IBankConnector
     }
 
     /**
-     * Get health check URL for the bank
+     * Get health check URL for the bank.
      */
     abstract protected function getHealthCheckUrl(): string;
 
     /**
-     * Make authenticated API request
+     * Make authenticated API request.
      */
     protected function makeRequest(string $method, string $url, array $data = []): array
     {
@@ -110,23 +115,23 @@ abstract class BaseBankConnector implements IBankConnector
             ->timeout(30)
             ->$method($url, $data);
 
-        if (!$response->successful()) {
-            Log::error("Bank API request failed", [
-                'bank' => $this->bankCode,
-                'method' => $method,
-                'url' => $url,
-                'status' => $response->status(),
-                'response' => $response->body()
+        if (! $response->successful()) {
+            Log::error('Bank API request failed', [
+                'bank'     => $this->bankCode,
+                'method'   => $method,
+                'url'      => $url,
+                'status'   => $response->status(),
+                'response' => $response->body(),
             ]);
 
-            throw new \Exception("Bank API request failed: " . $response->body());
+            throw new \Exception('Bank API request failed: ' . $response->body());
         }
 
         return $response->json();
     }
 
     /**
-     * Ensure we have a valid access token
+     * Ensure we have a valid access token.
      */
     protected function ensureAuthenticated(): void
     {
@@ -138,37 +143,37 @@ abstract class BaseBankConnector implements IBankConnector
     }
 
     /**
-     * Log API request for debugging
+     * Log API request for debugging.
      */
     protected function logRequest(string $method, string $url, array $data = []): void
     {
         if (config('app.debug')) {
-            Log::debug("Bank API Request", [
-                'bank' => $this->bankCode,
+            Log::debug('Bank API Request', [
+                'bank'   => $this->bankCode,
                 'method' => $method,
-                'url' => $url,
-                'data' => $data
+                'url'    => $url,
+                'data'   => $data,
             ]);
         }
     }
 
     /**
-     * Log API response for debugging
+     * Log API response for debugging.
      */
     protected function logResponse(string $method, string $url, array $response): void
     {
         if (config('app.debug')) {
-            Log::debug("Bank API Response", [
-                'bank' => $this->bankCode,
-                'method' => $method,
-                'url' => $url,
-                'response' => $response
+            Log::debug('Bank API Response', [
+                'bank'     => $this->bankCode,
+                'method'   => $method,
+                'url'      => $url,
+                'response' => $response,
             ]);
         }
     }
 
     /**
-     * Convert amount to bank's expected format
+     * Convert amount to bank's expected format.
      */
     protected function formatAmount(float $amount, string $currency): int
     {
@@ -177,7 +182,7 @@ abstract class BaseBankConnector implements IBankConnector
     }
 
     /**
-     * Parse amount from bank's format
+     * Parse amount from bank's format.
      */
     protected function parseAmount(int $amount, string $currency): float
     {

@@ -4,16 +4,11 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources;
 
-use App\Domain\Custodian\Services\DailyReconciliationService;
 use App\Filament\Admin\Resources\ReconciliationReportResource\Pages;
-use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Collection;
 
 class ReconciliationReportResource extends Resource
 {
@@ -68,10 +63,10 @@ class ReconciliationReportResource extends Resource
                     ->label('Status')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
-                        'completed' => 'success',
-                        'failed' => 'danger',
+                        'completed'   => 'success',
+                        'failed'      => 'danger',
                         'in_progress' => 'warning',
-                        default => 'gray',
+                        default       => 'gray',
                     }),
 
                 Tables\Columns\TextColumn::make('duration_minutes')

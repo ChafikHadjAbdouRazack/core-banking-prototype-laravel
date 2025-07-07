@@ -34,7 +34,7 @@ class BenchmarkTransferPerformance extends Command
         $this->info('==============================');
         $this->info("Iterations: {$iterations}");
         $this->info("Parallel: {$parallel}");
-        $this->info("Workflow: " . ($useOptimized ? 'Optimized' : 'Standard'));
+        $this->info('Workflow: ' . ($useOptimized ? 'Optimized' : 'Standard'));
         $this->info('');
 
         // Create test accounts
@@ -74,7 +74,7 @@ class BenchmarkTransferPerformance extends Command
 
             $batchTime = microtime(true) - $batchStart;
             $this->comment(sprintf(
-                "Batch %d/%d completed in %.2fms",
+                'Batch %d/%d completed in %.2fms',
                 count($results) / $parallel,
                 ceil($iterations / $parallel),
                 $batchTime * 1000
@@ -103,8 +103,8 @@ class BenchmarkTransferPerformance extends Command
             // Add USD balance
             AccountBalance::create([
                 'account_uuid' => $account->uuid,
-                'asset_code' => 'USD',
-                'balance' => 1000000, // $10,000
+                'asset_code'   => 'USD',
+                'balance'      => 1000000, // $10,000
             ]);
 
             $accounts[] = $account;
@@ -137,17 +137,17 @@ class BenchmarkTransferPerformance extends Command
             $transferTime = microtime(true) - $transferStart;
 
             return [
-                'success' => true,
-                'time_ms' => round($transferTime * 1000, 2),
+                'success'  => true,
+                'time_ms'  => round($transferTime * 1000, 2),
                 'workflow' => $workflowClass,
             ];
         } catch (\Exception $e) {
             $transferTime = microtime(true) - $transferStart;
 
             return [
-                'success' => false,
-                'time_ms' => round($transferTime * 1000, 2),
-                'error' => $e->getMessage(),
+                'success'  => false,
+                'time_ms'  => round($transferTime * 1000, 2),
+                'error'    => $e->getMessage(),
                 'workflow' => $workflowClass ?? 'unknown',
             ];
         }
@@ -155,8 +155,8 @@ class BenchmarkTransferPerformance extends Command
 
     private function displayResults(array $results, float $totalTime, int $iterations): void
     {
-        $successful = array_filter($results, fn($r) => $r['success']);
-        $failed = array_filter($results, fn($r) => !$r['success']);
+        $successful = array_filter($results, fn ($r) => $r['success']);
+        $failed = array_filter($results, fn ($r) => ! $r['success']);
 
         $times = array_column($successful, 'time_ms');
 
@@ -184,7 +184,7 @@ class BenchmarkTransferPerformance extends Command
             $this->info(sprintf('99th percentile: %.2fms', $p99));
 
             // Check sub-second performance
-            $subSecond = array_filter($times, fn($t) => $t < 1000);
+            $subSecond = array_filter($times, fn ($t) => $t < 1000);
             $this->info('');
             $this->info(sprintf(
                 'Sub-second transfers: %d/%d (%.1f%%)',
@@ -235,7 +235,7 @@ class BenchmarkTransferPerformance extends Command
     {
         DB::beginTransaction();
 
-        $uuids = array_map(fn($a) => $a->uuid, $accounts);
+        $uuids = array_map(fn ($a) => $a->uuid, $accounts);
 
         // Delete balances
         AccountBalance::whereIn('account_uuid', $uuids)->delete();

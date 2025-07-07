@@ -18,16 +18,16 @@ class LoanApplicationActivities
     public function fetchApplicantData(string $userId): array
     {
         $user = User::find($userId);
-        if (!$user) {
+        if (! $user) {
             throw new \Exception('User not found');
         }
 
         // Fetch KYC data, account history, etc.
         return [
-            'user_id' => $userId,
-            'kyc_verified' => $user->kyc_verified_at !== null,
+            'user_id'          => $userId,
+            'kyc_verified'     => $user->kyc_verified_at !== null,
             'account_age_days' => $user->created_at->diffInDays(now()),
-            'total_deposits' => DB::table('transactions')
+            'total_deposits'   => DB::table('transactions')
                 ->join('accounts', 'transactions.account_id', '=', 'accounts.id')
                 ->where('accounts.user_id', $userId)
                 ->where('transactions.type', 'credit')
@@ -37,7 +37,7 @@ class LoanApplicationActivities
 
     public function verifyCreditEligibility(array $applicantData, string $amount): array
     {
-        if (!$applicantData['kyc_verified']) {
+        if (! $applicantData['kyc_verified']) {
             return ['eligible' => false, 'reason' => 'KYC not verified'];
         }
 
@@ -62,7 +62,7 @@ class LoanApplicationActivities
 
         return [
             'credit_score' => $score,
-            'rating' => $this->getCreditRating($score),
+            'rating'       => $this->getCreditRating($score),
         ];
     }
 
@@ -73,7 +73,7 @@ class LoanApplicationActivities
             $score >= 700 => 'good',
             $score >= 650 => 'fair',
             $score >= 600 => 'poor',
-            default => 'very_poor'
+            default       => 'very_poor'
         };
     }
 
@@ -93,7 +93,7 @@ class LoanApplicationActivities
         return [
             'risk_score' => $riskScore,
             'risk_level' => $this->getRiskLevel($riskScore),
-            'approved' => $riskScore < 70, // Approve if risk score < 70
+            'approved'   => $riskScore < 70, // Approve if risk score < 70
         ];
     }
 
@@ -103,7 +103,7 @@ class LoanApplicationActivities
             $score < 30 => 'low',
             $score < 50 => 'medium',
             $score < 70 => 'high',
-            default => 'very_high'
+            default     => 'very_high'
         };
     }
 
@@ -119,18 +119,18 @@ class LoanApplicationActivities
         // Adjust based on credit score
         $creditAdjustment = match ($creditData['rating']) {
             'excellent' => 0,
-            'good' => 0.01,
-            'fair' => 0.02,
-            'poor' => 0.03,
-            default => 0.05
+            'good'      => 0.01,
+            'fair'      => 0.02,
+            'poor'      => 0.03,
+            default     => 0.05
         };
 
         // Adjust based on risk
         $riskAdjustment = match ($riskData['risk_level']) {
-            'low' => 0,
+            'low'    => 0,
             'medium' => 0.01,
-            'high' => 0.02,
-            default => 0.03
+            'high'   => 0.02,
+            default  => 0.03
         };
 
         $interestRate = $baseRate + $creditAdjustment + $riskAdjustment;
@@ -141,10 +141,10 @@ class LoanApplicationActivities
         $monthlyPayment = ($principal * $monthlyRate) / (1 - pow(1 + $monthlyRate, -$termMonths));
 
         return [
-            'interest_rate' => $interestRate,
+            'interest_rate'   => $interestRate,
             'monthly_payment' => round($monthlyPayment, 2),
-            'total_payment' => round($monthlyPayment * $termMonths, 2),
-            'total_interest' => round(($monthlyPayment * $termMonths) - $principal, 2),
+            'total_payment'   => round($monthlyPayment * $termMonths, 2),
+            'total_interest'  => round(($monthlyPayment * $termMonths) - $principal, 2),
         ];
     }
 
@@ -160,9 +160,9 @@ class LoanApplicationActivities
         sleep(5);
 
         return [
-            'approved' => true,
+            'approved'       => true,
             'reviewer_notes' => 'Approved after manual review',
-            'reviewed_at' => now()->toIso8601String(),
+            'reviewed_at'    => now()->toIso8601String(),
         ];
     }
 
@@ -176,18 +176,18 @@ class LoanApplicationActivities
         array $riskData
     ): void {
         DB::table('loan_applications')->insert([
-            'application_id' => $applicationId,
-            'user_id' => $userId,
-            'amount' => $amount,
-            'term_months' => $termMonths,
-            'interest_rate' => $terms['interest_rate'],
+            'application_id'  => $applicationId,
+            'user_id'         => $userId,
+            'amount'          => $amount,
+            'term_months'     => $termMonths,
+            'interest_rate'   => $terms['interest_rate'],
             'monthly_payment' => $terms['monthly_payment'],
-            'credit_score' => $creditData['credit_score'],
-            'credit_rating' => $creditData['rating'],
-            'risk_score' => $riskData['risk_score'],
-            'risk_level' => $riskData['risk_level'],
-            'status' => 'pending',
-            'created_at' => now(),
+            'credit_score'    => $creditData['credit_score'],
+            'credit_rating'   => $creditData['rating'],
+            'risk_score'      => $riskData['risk_score'],
+            'risk_level'      => $riskData['risk_level'],
+            'status'          => 'pending',
+            'created_at'      => now(),
         ]);
     }
 
@@ -197,7 +197,7 @@ class LoanApplicationActivities
         ?string $reason = null
     ): void {
         $update = [
-            'status' => $status,
+            'status'     => $status,
             'updated_at' => now(),
         ];
 
@@ -222,7 +222,7 @@ class LoanApplicationActivities
             ->where('application_id', $applicationId)
             ->first();
 
-        if (!$application) {
+        if (! $application) {
             throw new \Exception('Application not found');
         }
 
@@ -230,18 +230,18 @@ class LoanApplicationActivities
         $loanId = \Str::uuid()->toString();
 
         DB::table('loans')->insert([
-            'loan_id' => $loanId,
-            'application_id' => $applicationId,
-            'user_id' => $application->user_id,
-            'principal_amount' => $application->amount,
-            'interest_rate' => $application->interest_rate,
-            'term_months' => $application->term_months,
-            'monthly_payment' => $application->monthly_payment,
+            'loan_id'           => $loanId,
+            'application_id'    => $applicationId,
+            'user_id'           => $application->user_id,
+            'principal_amount'  => $application->amount,
+            'interest_rate'     => $application->interest_rate,
+            'term_months'       => $application->term_months,
+            'monthly_payment'   => $application->monthly_payment,
             'remaining_balance' => $application->amount,
-            'status' => 'active',
-            'disbursed_at' => now(),
+            'status'            => 'active',
+            'disbursed_at'      => now(),
             'next_payment_date' => now()->addMonth(),
-            'created_at' => now(),
+            'created_at'        => now(),
         ]);
 
         return $loanId;
@@ -256,17 +256,17 @@ class LoanApplicationActivities
             ->where('status', 'active')
             ->first();
 
-        if (!$account) {
+        if (! $account) {
             throw new \Exception('No active account found');
         }
 
         // Credit the loan amount
         DB::table('transactions')->insert([
-            'account_id' => $account->id,
-            'type' => 'credit',
-            'amount' => $amount,
+            'account_id'  => $account->id,
+            'type'        => 'credit',
+            'amount'      => $amount,
             'description' => 'Loan disbursement',
-            'created_at' => now(),
+            'created_at'  => now(),
         ]);
 
         // Update account balance
@@ -279,10 +279,10 @@ class LoanApplicationActivities
     {
         DB::table('notifications')->insert([
             'user_id' => $userId,
-            'type' => 'loan_application',
-            'data' => json_encode([
+            'type'    => 'loan_application',
+            'data'    => json_encode([
                 'application_id' => $applicationId,
-                'status' => $status,
+                'status'         => $status,
             ]),
             'created_at' => now(),
         ]);
@@ -294,7 +294,7 @@ class LoanApplicationActivities
         DB::table('loan_applications')
             ->where('application_id', $applicationId)
             ->update([
-                'status' => 'failed',
+                'status'     => 'failed',
                 'updated_at' => now(),
             ]);
 
@@ -308,7 +308,7 @@ class LoanApplicationActivities
             DB::table('loans')
                 ->where('loan_id', $loan->loan_id)
                 ->update([
-                    'status' => 'cancelled',
+                    'status'       => 'cancelled',
                     'cancelled_at' => now(),
                 ]);
 
@@ -320,12 +320,12 @@ class LoanApplicationActivities
 
             foreach ($transactions as $transaction) {
                 DB::table('transactions')->insert([
-                    'account_id' => $transaction->account_id,
-                    'type' => 'debit',
-                    'amount' => $transaction->amount,
+                    'account_id'  => $transaction->account_id,
+                    'type'        => 'debit',
+                    'amount'      => $transaction->amount,
                     'description' => 'Loan disbursement reversal',
-                    'reference' => $transaction->id,
-                    'created_at' => now(),
+                    'reference'   => $transaction->id,
+                    'created_at'  => now(),
                 ]);
 
                 DB::table('accounts')

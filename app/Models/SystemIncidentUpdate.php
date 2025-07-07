@@ -17,7 +17,7 @@ class SystemIncidentUpdate extends Model
     ];
 
     /**
-     * Get the incident this update belongs to
+     * Get the incident this update belongs to.
      */
     public function incident(): BelongsTo
     {
@@ -25,15 +25,15 @@ class SystemIncidentUpdate extends Model
     }
 
     /**
-     * Get status color for UI
+     * Get status color for UI.
      */
     public function getStatusColorAttribute()
     {
         return match ($this->status) {
-            'resolved' => 'green',
+            'resolved'    => 'green',
             'in_progress' => 'yellow',
-            'identified' => 'red',
-            default => 'gray',
+            'identified'  => 'red',
+            default       => 'gray',
         };
     }
 }

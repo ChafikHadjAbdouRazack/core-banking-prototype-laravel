@@ -28,11 +28,11 @@ final class ExternalOrderBook
             baseCurrency: $data['base_currency'],
             quoteCurrency: $data['quote_currency'],
             bids: collect($data['bids'])->map(fn ($bid) => [
-                'price' => BigDecimal::of($bid['price']),
+                'price'  => BigDecimal::of($bid['price']),
                 'amount' => BigDecimal::of($bid['amount']),
             ]),
             asks: collect($data['asks'])->map(fn ($ask) => [
-                'price' => BigDecimal::of($ask['price']),
+                'price'  => BigDecimal::of($ask['price']),
                 'amount' => BigDecimal::of($ask['amount']),
             ]),
             timestamp: new \DateTimeImmutable($data['timestamp']),
@@ -44,19 +44,19 @@ final class ExternalOrderBook
     public function toArray(): array
     {
         return [
-            'base_currency' => $this->baseCurrency,
+            'base_currency'  => $this->baseCurrency,
             'quote_currency' => $this->quoteCurrency,
-            'bids' => $this->bids->map(fn ($bid) => [
-                'price' => $bid['price']->__toString(),
+            'bids'           => $this->bids->map(fn ($bid) => [
+                'price'  => $bid['price']->__toString(),
                 'amount' => $bid['amount']->__toString(),
             ])->toArray(),
             'asks' => $this->asks->map(fn ($ask) => [
-                'price' => $ask['price']->__toString(),
+                'price'  => $ask['price']->__toString(),
                 'amount' => $ask['amount']->__toString(),
             ])->toArray(),
             'timestamp' => $this->timestamp->format('c'),
-            'exchange' => $this->exchange,
-            'metadata' => $this->metadata,
+            'exchange'  => $this->exchange,
+            'metadata'  => $this->metadata,
         ];
     }
 

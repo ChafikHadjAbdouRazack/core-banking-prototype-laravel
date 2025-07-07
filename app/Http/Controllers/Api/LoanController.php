@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Domain\Lending\Aggregates\Loan as LoanAggregate;
 use App\Http\Controllers\Controller;
 use App\Models\Loan;
-use App\Domain\Lending\Aggregates\Loan as LoanAggregate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -27,8 +27,8 @@ class LoanController extends Controller
             ->findOrFail($id);
 
         return response()->json([
-            'loan' => $loan,
-            'next_payment' => $loan->next_payment,
+            'loan'                => $loan,
+            'next_payment'        => $loan->next_payment,
             'outstanding_balance' => $loan->outstanding_balance,
         ]);
     }
@@ -36,7 +36,7 @@ class LoanController extends Controller
     public function makePayment(Request $request, $id)
     {
         $validated = $request->validate([
-            'amount' => 'required|numeric|min:0.01',
+            'amount'         => 'required|numeric|min:0.01',
             'payment_number' => 'required|integer|min:1',
         ]);
 
@@ -48,7 +48,7 @@ class LoanController extends Controller
         $scheduledPayment = collect($loan->repayment_schedule)
             ->firstWhere('payment_number', $validated['payment_number']);
 
-        if (!$scheduledPayment) {
+        if (! $scheduledPayment) {
             return response()->json([
                 'error' => 'Invalid payment number',
             ], 400);
@@ -69,7 +69,7 @@ class LoanController extends Controller
 
         return response()->json([
             'message' => 'Payment recorded successfully',
-            'loan' => $loan->fresh(),
+            'loan'    => $loan->fresh(),
         ]);
     }
 
@@ -85,11 +85,11 @@ class LoanController extends Controller
         $settlementAmount = $this->calculateEarlySettlementAmount($loan);
 
         return response()->json([
-            'loan_id' => $loan->id,
+            'loan_id'             => $loan->id,
             'outstanding_balance' => $outstandingBalance,
-            'settlement_amount' => $settlementAmount,
-            'savings' => bcsub($outstandingBalance, $settlementAmount, 2),
-            'confirm_url' => route('api.loans.confirm-settlement', $loan->id),
+            'settlement_amount'   => $settlementAmount,
+            'savings'             => bcsub($outstandingBalance, $settlementAmount, 2),
+            'confirm_url'         => route('api.loans.confirm-settlement', $loan->id),
         ]);
     }
 
@@ -112,7 +112,7 @@ class LoanController extends Controller
 
         return response()->json([
             'message' => 'Loan settled successfully',
-            'loan' => $loan->fresh(),
+            'loan'    => $loan->fresh(),
         ]);
     }
 

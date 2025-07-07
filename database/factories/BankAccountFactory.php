@@ -30,36 +30,36 @@ class BankAccountFactory extends Factory
         $accountTypes = ['checking', 'savings', 'business', 'investment'];
         $currencies = ['GBP', 'EUR', 'USD'];
         $statuses = ['pending', 'verified', 'suspended', 'closed'];
-        
+
         $accountNumber = fake()->numerify('########');
         $bankCode = fake()->randomElement($bankCodes);
-        
+
         return [
-            'user_uuid' => User::factory(),
-            'bank_code' => $bankCode,
-            'external_id' => Str::uuid()->toString(),
-            'account_number' => encrypt($accountNumber),
+            'user_uuid'                => User::factory(),
+            'bank_code'                => $bankCode,
+            'external_id'              => Str::uuid()->toString(),
+            'account_number'           => encrypt($accountNumber),
             'account_number_encrypted' => encrypt($accountNumber), // For the accessor
-            'iban' => $this->generateIBAN($bankCode),
-            'swift' => $this->generateSWIFT($bankCode),
-            'currency' => fake()->randomElement($currencies),
-            'account_type' => fake()->randomElement($accountTypes),
-            'status' => fake()->randomElement($statuses),
-            'metadata' => [
-                'nickname' => fake()->optional(0.5)->words(2, true),
-                'is_primary' => fake()->boolean(20),
-                'supported_currencies' => fake()->boolean(30) 
+            'iban'                     => $this->generateIBAN($bankCode),
+            'swift'                    => $this->generateSWIFT($bankCode),
+            'currency'                 => fake()->randomElement($currencies),
+            'account_type'             => fake()->randomElement($accountTypes),
+            'status'                   => fake()->randomElement($statuses),
+            'metadata'                 => [
+                'nickname'             => fake()->optional(0.5)->words(2, true),
+                'is_primary'           => fake()->boolean(20),
+                'supported_currencies' => fake()->boolean(30)
                     ? fake()->randomElements($currencies, fake()->numberBetween(1, 3))
                     : null,
-                'opening_date' => fake()->dateTimeBetween('-5 years', '-1 month')->format('Y-m-d'),
+                'opening_date'        => fake()->dateTimeBetween('-5 years', '-1 month')->format('Y-m-d'),
                 'last_statement_date' => fake()->optional(0.7)->dateTimeBetween('-3 months', 'now')->format('Y-m-d'),
-                'overdraft_limit' => fake()->optional(0.3)->randomFloat(2, 100, 5000),
+                'overdraft_limit'     => fake()->optional(0.3)->randomFloat(2, 100, 5000),
             ],
         ];
     }
 
     /**
-     * Generate a realistic IBAN
+     * Generate a realistic IBAN.
      *
      * @param string $bankCode
      * @return string
@@ -72,12 +72,12 @@ class BankAccountFactory extends Factory
         $bankCodeIBAN = strtoupper(substr($bankCode, 0, 4));
         $sortCode = fake()->numerify('######');
         $accountNumber = fake()->numerify('########');
-        
+
         return $countryCode . $checkDigits . $bankCodeIBAN . $sortCode . $accountNumber;
     }
 
     /**
-     * Generate a realistic SWIFT/BIC code
+     * Generate a realistic SWIFT/BIC code.
      *
      * @param string $bankCode
      * @return string
@@ -89,26 +89,26 @@ class BankAccountFactory extends Factory
         $countryCode = 'GB';
         $locationCode = fake()->randomElement(['2L', '6L', '8M', 'FF']);
         $branchCode = fake()->optional(0.5)->randomElement(['XXX', '001', '002', 'HED']);
-        
+
         return $bankCodeSWIFT . $countryCode . $locationCode . ($branchCode ?? '');
     }
 
     /**
-     * Indicate that the bank account is verified
+     * Indicate that the bank account is verified.
      */
     public function verified(): static
     {
         return $this->state(fn (array $attributes) => [
-            'status' => 'verified',
+            'status'   => 'verified',
             'metadata' => array_merge($attributes['metadata'] ?? [], [
-                'verified_at' => fake()->dateTimeBetween('-1 year', '-1 week')->format('Y-m-d H:i:s'),
+                'verified_at'         => fake()->dateTimeBetween('-1 year', '-1 week')->format('Y-m-d H:i:s'),
                 'verification_method' => fake()->randomElement(['micro_deposit', 'instant', 'manual']),
             ]),
         ]);
     }
 
     /**
-     * Indicate that the bank account is pending verification
+     * Indicate that the bank account is pending verification.
      */
     public function pending(): static
     {
@@ -118,47 +118,47 @@ class BankAccountFactory extends Factory
     }
 
     /**
-     * Indicate that the bank account is suspended
+     * Indicate that the bank account is suspended.
      */
     public function suspended(): static
     {
         return $this->state(fn (array $attributes) => [
-            'status' => 'suspended',
+            'status'   => 'suspended',
             'metadata' => array_merge($attributes['metadata'] ?? [], [
-                'suspended_at' => fake()->dateTimeBetween('-3 months', '-1 day')->format('Y-m-d H:i:s'),
+                'suspended_at'      => fake()->dateTimeBetween('-3 months', '-1 day')->format('Y-m-d H:i:s'),
                 'suspension_reason' => fake()->randomElement(['fraud_suspected', 'kyc_failed', 'user_request', 'compliance']),
             ]),
         ]);
     }
 
     /**
-     * Indicate that the bank account is closed
+     * Indicate that the bank account is closed.
      */
     public function closed(): static
     {
         return $this->state(fn (array $attributes) => [
-            'status' => 'closed',
+            'status'   => 'closed',
             'metadata' => array_merge($attributes['metadata'] ?? [], [
-                'closed_at' => fake()->dateTimeBetween('-6 months', '-1 day')->format('Y-m-d H:i:s'),
+                'closed_at'      => fake()->dateTimeBetween('-6 months', '-1 day')->format('Y-m-d H:i:s'),
                 'closure_reason' => fake()->randomElement(['user_request', 'bank_decision', 'inactive', 'compliance']),
             ]),
         ]);
     }
 
     /**
-     * Set specific bank
+     * Set specific bank.
      */
     public function forBank(string $bankCode): static
     {
         return $this->state(fn (array $attributes) => [
             'bank_code' => $bankCode,
-            'iban' => $this->generateIBAN($bankCode),
-            'swift' => $this->generateSWIFT($bankCode),
+            'iban'      => $this->generateIBAN($bankCode),
+            'swift'     => $this->generateSWIFT($bankCode),
         ]);
     }
 
     /**
-     * Set specific user
+     * Set specific user.
      */
     public function forUser(User $user): static
     {
@@ -168,7 +168,7 @@ class BankAccountFactory extends Factory
     }
 
     /**
-     * Set specific currency
+     * Set specific currency.
      */
     public function withCurrency(string $currency): static
     {
@@ -178,7 +178,7 @@ class BankAccountFactory extends Factory
     }
 
     /**
-     * Set as primary account
+     * Set as primary account.
      */
     public function primary(): static
     {
@@ -190,7 +190,7 @@ class BankAccountFactory extends Factory
     }
 
     /**
-     * Set specific account type
+     * Set specific account type.
      */
     public function ofType(string $type): static
     {
@@ -200,14 +200,14 @@ class BankAccountFactory extends Factory
     }
 
     /**
-     * Business account
+     * Business account.
      */
     public function business(): static
     {
         return $this->state(fn (array $attributes) => [
             'account_type' => 'business',
-            'metadata' => array_merge($attributes['metadata'] ?? [], [
-                'company_name' => fake()->company(),
+            'metadata'     => array_merge($attributes['metadata'] ?? [], [
+                'company_name'        => fake()->company(),
                 'registration_number' => fake()->numerify('########'),
             ]),
         ]);

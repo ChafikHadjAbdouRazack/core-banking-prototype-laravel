@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Str;
 
 class FinancialInstitutionApplication extends Model
 {
@@ -80,80 +79,90 @@ class FinancialInstitutionApplication extends Model
     ];
 
     protected $casts = [
-        'assets_under_management' => 'decimal:2',
-        'expected_monthly_volume' => 'decimal:2',
-        'risk_score' => 'decimal:2',
-        'target_markets' => 'array',
-        'product_offerings' => 'array',
-        'required_currencies' => 'array',
-        'integration_requirements' => 'array',
-        'security_certifications' => 'array',
-        'compliance_certifications' => 'array',
-        'risk_factors' => 'array',
-        'required_documents' => 'array',
-        'submitted_documents' => 'array',
-        'fee_structure' => 'array',
-        'service_level_agreement' => 'array',
-        'metadata' => 'array',
-        'requires_api_access' => 'boolean',
-        'requires_webhooks' => 'boolean',
-        'requires_reporting' => 'boolean',
-        'has_aml_program' => 'boolean',
-        'has_kyc_procedures' => 'boolean',
+        'assets_under_management'    => 'decimal:2',
+        'expected_monthly_volume'    => 'decimal:2',
+        'risk_score'                 => 'decimal:2',
+        'target_markets'             => 'array',
+        'product_offerings'          => 'array',
+        'required_currencies'        => 'array',
+        'integration_requirements'   => 'array',
+        'security_certifications'    => 'array',
+        'compliance_certifications'  => 'array',
+        'risk_factors'               => 'array',
+        'required_documents'         => 'array',
+        'submitted_documents'        => 'array',
+        'fee_structure'              => 'array',
+        'service_level_agreement'    => 'array',
+        'metadata'                   => 'array',
+        'requires_api_access'        => 'boolean',
+        'requires_webhooks'          => 'boolean',
+        'requires_reporting'         => 'boolean',
+        'has_aml_program'            => 'boolean',
+        'has_kyc_procedures'         => 'boolean',
         'has_data_protection_policy' => 'boolean',
-        'is_pci_compliant' => 'boolean',
-        'is_gdpr_compliant' => 'boolean',
-        'documents_verified' => 'boolean',
-        'sandbox_access_granted' => 'boolean',
-        'production_access_granted' => 'boolean',
-        'reviewed_at' => 'datetime',
-        'onboarding_completed_at' => 'datetime',
-        'agreement_start_date' => 'date',
-        'agreement_end_date' => 'date',
+        'is_pci_compliant'           => 'boolean',
+        'is_gdpr_compliant'          => 'boolean',
+        'documents_verified'         => 'boolean',
+        'sandbox_access_granted'     => 'boolean',
+        'production_access_granted'  => 'boolean',
+        'reviewed_at'                => 'datetime',
+        'onboarding_completed_at'    => 'datetime',
+        'agreement_start_date'       => 'date',
+        'agreement_end_date'         => 'date',
     ];
 
     /**
-     * Available institution types
+     * Available institution types.
      */
-    const INSTITUTION_TYPES = [
-        'bank' => 'Commercial Bank',
-        'credit_union' => 'Credit Union',
-        'investment_firm' => 'Investment Firm',
+    public const INSTITUTION_TYPES = [
+        'bank'              => 'Commercial Bank',
+        'credit_union'      => 'Credit Union',
+        'investment_firm'   => 'Investment Firm',
         'payment_processor' => 'Payment Processor',
-        'fintech' => 'FinTech Company',
-        'emi' => 'Electronic Money Institution',
-        'broker_dealer' => 'Broker-Dealer',
-        'insurance' => 'Insurance Company',
-        'other' => 'Other Financial Institution',
+        'fintech'           => 'FinTech Company',
+        'emi'               => 'Electronic Money Institution',
+        'broker_dealer'     => 'Broker-Dealer',
+        'insurance'         => 'Insurance Company',
+        'other'             => 'Other Financial Institution',
     ];
 
     /**
-     * Application statuses
+     * Application statuses.
      */
-    const STATUS_PENDING = 'pending';
-    const STATUS_UNDER_REVIEW = 'under_review';
-    const STATUS_APPROVED = 'approved';
-    const STATUS_REJECTED = 'rejected';
-    const STATUS_ON_HOLD = 'on_hold';
+    public const STATUS_PENDING = 'pending';
+
+    public const STATUS_UNDER_REVIEW = 'under_review';
+
+    public const STATUS_APPROVED = 'approved';
+
+    public const STATUS_REJECTED = 'rejected';
+
+    public const STATUS_ON_HOLD = 'on_hold';
 
     /**
-     * Review stages
+     * Review stages.
      */
-    const STAGE_INITIAL = 'initial';
-    const STAGE_COMPLIANCE = 'compliance';
-    const STAGE_TECHNICAL = 'technical';
-    const STAGE_LEGAL = 'legal';
-    const STAGE_FINAL = 'final';
+    public const STAGE_INITIAL = 'initial';
+
+    public const STAGE_COMPLIANCE = 'compliance';
+
+    public const STAGE_TECHNICAL = 'technical';
+
+    public const STAGE_LEGAL = 'legal';
+
+    public const STAGE_FINAL = 'final';
 
     /**
-     * Risk ratings
+     * Risk ratings.
      */
-    const RISK_LOW = 'low';
-    const RISK_MEDIUM = 'medium';
-    const RISK_HIGH = 'high';
+    public const RISK_LOW = 'low';
+
+    public const RISK_MEDIUM = 'medium';
+
+    public const RISK_HIGH = 'high';
 
     /**
-     * Boot method
+     * Boot method.
      */
     protected static function boot()
     {
@@ -167,7 +176,7 @@ class FinancialInstitutionApplication extends Model
     }
 
     /**
-     * Generate unique application number
+     * Generate unique application number.
      */
     public static function generateApplicationNumber(): string
     {
@@ -187,7 +196,7 @@ class FinancialInstitutionApplication extends Model
     }
 
     /**
-     * Get the reviewer
+     * Get the reviewer.
      */
     public function reviewer()
     {
@@ -195,7 +204,7 @@ class FinancialInstitutionApplication extends Model
     }
 
     /**
-     * Get the partner (after approval)
+     * Get the partner (after approval).
      */
     public function partner()
     {
@@ -203,7 +212,7 @@ class FinancialInstitutionApplication extends Model
     }
 
     /**
-     * Scope for pending applications
+     * Scope for pending applications.
      */
     public function scopePending($query)
     {
@@ -211,7 +220,7 @@ class FinancialInstitutionApplication extends Model
     }
 
     /**
-     * Scope for under review applications
+     * Scope for under review applications.
      */
     public function scopeUnderReview($query)
     {
@@ -219,7 +228,7 @@ class FinancialInstitutionApplication extends Model
     }
 
     /**
-     * Scope for approved applications
+     * Scope for approved applications.
      */
     public function scopeApproved($query)
     {
@@ -227,7 +236,7 @@ class FinancialInstitutionApplication extends Model
     }
 
     /**
-     * Check if application is editable
+     * Check if application is editable.
      */
     public function isEditable(): bool
     {
@@ -235,7 +244,7 @@ class FinancialInstitutionApplication extends Model
     }
 
     /**
-     * Check if application is reviewable
+     * Check if application is reviewable.
      */
     public function isReviewable(): bool
     {
@@ -243,16 +252,16 @@ class FinancialInstitutionApplication extends Model
     }
 
     /**
-     * Get required documents based on institution type
+     * Get required documents based on institution type.
      */
     public function getRequiredDocuments(): array
     {
         $baseDocuments = [
             'certificate_of_incorporation' => 'Certificate of Incorporation',
-            'regulatory_license' => 'Regulatory License',
-            'audited_financials' => 'Audited Financial Statements (Last 3 Years)',
-            'aml_policy' => 'AML/KYC Policy Document',
-            'data_protection_policy' => 'Data Protection Policy',
+            'regulatory_license'           => 'Regulatory License',
+            'audited_financials'           => 'Audited Financial Statements (Last 3 Years)',
+            'aml_policy'                   => 'AML/KYC Policy Document',
+            'data_protection_policy'       => 'Data Protection Policy',
         ];
 
         // Add type-specific documents
@@ -273,7 +282,7 @@ class FinancialInstitutionApplication extends Model
     }
 
     /**
-     * Calculate risk score
+     * Calculate risk score.
      */
     public function calculateRiskScore(): float
     {
@@ -289,28 +298,28 @@ class FinancialInstitutionApplication extends Model
 
         // Institution type risk
         $typeRisk = [
-            'bank' => 10,
-            'credit_union' => 10,
-            'investment_firm' => 15,
+            'bank'              => 10,
+            'credit_union'      => 10,
+            'investment_firm'   => 15,
             'payment_processor' => 20,
-            'fintech' => 25,
-            'emi' => 20,
-            'broker_dealer' => 15,
-            'insurance' => 10,
-            'other' => 30,
+            'fintech'           => 25,
+            'emi'               => 20,
+            'broker_dealer'     => 15,
+            'insurance'         => 10,
+            'other'             => 30,
         ];
         $score += $typeRisk[$this->institution_type] ?? 30;
 
         // Compliance factors
-        if (!$this->has_aml_program) {
+        if (! $this->has_aml_program) {
             $score += 20;
             $factors[] = 'no_aml_program';
         }
-        if (!$this->has_kyc_procedures) {
+        if (! $this->has_kyc_procedures) {
             $score += 15;
             $factors[] = 'no_kyc_procedures';
         }
-        if (!$this->is_pci_compliant && $this->institution_type === 'payment_processor') {
+        if (! $this->is_pci_compliant && $this->institution_type === 'payment_processor') {
             $score += 15;
             $factors[] = 'no_pci_compliance';
         }
@@ -344,30 +353,30 @@ class FinancialInstitutionApplication extends Model
     }
 
     /**
-     * Get display status
+     * Get display status.
      */
     public function getStatusBadgeColor(): string
     {
         return match ($this->status) {
-            self::STATUS_PENDING => 'warning',
+            self::STATUS_PENDING      => 'warning',
             self::STATUS_UNDER_REVIEW => 'info',
-            self::STATUS_APPROVED => 'success',
-            self::STATUS_REJECTED => 'danger',
-            self::STATUS_ON_HOLD => 'secondary',
-            default => 'secondary',
+            self::STATUS_APPROVED     => 'success',
+            self::STATUS_REJECTED     => 'danger',
+            self::STATUS_ON_HOLD      => 'secondary',
+            default                   => 'secondary',
         };
     }
 
     /**
-     * Get risk rating color
+     * Get risk rating color.
      */
     public function getRiskRatingColor(): string
     {
         return match ($this->risk_rating) {
-            self::RISK_LOW => 'success',
+            self::RISK_LOW    => 'success',
             self::RISK_MEDIUM => 'warning',
-            self::RISK_HIGH => 'danger',
-            default => 'secondary',
+            self::RISK_HIGH   => 'danger',
+            default           => 'secondary',
         };
     }
 }

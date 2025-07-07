@@ -17,7 +17,7 @@ class CalculateBasketCompositionActivity extends Activity
     {
         $poll = Poll::where('uuid', $pollUuid)->with('votes')->first();
 
-        if (!$poll) {
+        if (! $poll) {
             throw new \Exception('Poll not found');
         }
 
@@ -27,7 +27,7 @@ class CalculateBasketCompositionActivity extends Activity
 
         // Get the basket voting options structure
         $basketOption = collect($poll->options)->firstWhere('id', 'basket_weights');
-        if (!$basketOption) {
+        if (! $basketOption) {
             throw new \Exception('Invalid poll structure - missing basket weights option');
         }
 
@@ -57,6 +57,7 @@ class CalculateBasketCompositionActivity extends Activity
             foreach ($basketOption['currencies'] as $currency) {
                 $composition[$currency['code']] = $currency['default'];
             }
+
             return $composition;
         }
 

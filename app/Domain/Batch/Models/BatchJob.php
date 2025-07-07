@@ -23,17 +23,17 @@ class BatchJob extends Model
     ];
 
     protected $casts = [
-        'total_items' => 'integer',
+        'total_items'     => 'integer',
         'processed_items' => 'integer',
-        'failed_items' => 'integer',
-        'scheduled_at' => 'datetime',
-        'started_at' => 'datetime',
-        'completed_at' => 'datetime',
-        'metadata' => 'array',
+        'failed_items'    => 'integer',
+        'scheduled_at'    => 'datetime',
+        'started_at'      => 'datetime',
+        'completed_at'    => 'datetime',
+        'metadata'        => 'array',
     ];
 
     /**
-     * Get the items for this batch job
+     * Get the items for this batch job.
      */
     public function items(): HasMany
     {
@@ -41,7 +41,7 @@ class BatchJob extends Model
     }
 
     /**
-     * Get progress percentage
+     * Get progress percentage.
      */
     public function getProgressPercentageAttribute(): float
     {
@@ -53,7 +53,7 @@ class BatchJob extends Model
     }
 
     /**
-     * Get success rate
+     * Get success rate.
      */
     public function getSuccessRateAttribute(): float
     {
@@ -62,11 +62,12 @@ class BatchJob extends Model
         }
 
         $successfulItems = $this->processed_items - $this->failed_items;
+
         return round(($successfulItems / $this->processed_items) * 100, 1);
     }
 
     /**
-     * Check if batch can be cancelled
+     * Check if batch can be cancelled.
      */
     public function canBeCancelled(): bool
     {
@@ -74,7 +75,7 @@ class BatchJob extends Model
     }
 
     /**
-     * Check if batch can be retried
+     * Check if batch can be retried.
      */
     public function canBeRetried(): bool
     {

@@ -10,9 +10,9 @@ use Workflow\Activity;
 class DepositAccountActivity extends Activity
 {
     /**
-     * @param \App\Domain\Account\DataObjects\AccountUuid $uuid
-     * @param \App\Domain\Account\DataObjects\Money $money
-     * @param \App\Domain\Account\Aggregates\TransactionAggregate $transaction
+     * @param AccountUuid $uuid
+     * @param Money $money
+     * @param TransactionAggregate $transaction
      *
      * @return bool
      */

@@ -19,10 +19,10 @@ class UpdateConfigurationWorkflow
         // Extract configuration changes from poll
         $configChanges = $this->extractConfigChangesFromPoll($poll, $result);
 
-        if (empty($configChanges) || !$this->validateConfigChanges($configChanges)) {
+        if (empty($configChanges) || ! $this->validateConfigChanges($configChanges)) {
             return [
-                'success' => false,
-                'message' => 'Invalid configuration changes in poll',
+                'success'   => false,
+                'message'   => 'Invalid configuration changes in poll',
                 'poll_uuid' => $poll->uuid,
             ];
         }
@@ -37,14 +37,14 @@ class UpdateConfigurationWorkflow
                     $this->updateConfiguration($configKey, $newValue);
 
                     $appliedChanges[] = [
-                        'key' => $configKey,
+                        'key'       => $configKey,
                         'old_value' => $oldValue,
                         'new_value' => $newValue,
                     ];
                 } else {
                     logger()->warning('Governance poll attempted to update restricted configuration', [
-                        'poll_uuid' => $poll->uuid,
-                        'config_key' => $configKey,
+                        'poll_uuid'       => $poll->uuid,
+                        'config_key'      => $configKey,
                         'attempted_value' => $newValue,
                     ]);
                 }
@@ -52,37 +52,37 @@ class UpdateConfigurationWorkflow
 
             if (empty($appliedChanges)) {
                 return [
-                    'success' => false,
-                    'message' => 'No configuration changes were allowed',
+                    'success'   => false,
+                    'message'   => 'No configuration changes were allowed',
                     'poll_uuid' => $poll->uuid,
                 ];
             }
 
             // Log the governance action
             logger()->info('Configuration updated via governance poll', [
-                'poll_uuid' => $poll->uuid,
-                'changes' => $appliedChanges,
-                'winning_option' => $result->winningOption,
+                'poll_uuid'          => $poll->uuid,
+                'changes'            => $appliedChanges,
+                'winning_option'     => $result->winningOption,
                 'participation_rate' => $result->participationRate,
             ]);
 
             return [
-                'success' => true,
-                'message' => 'Configuration successfully updated via governance',
-                'poll_uuid' => $poll->uuid,
+                'success'         => true,
+                'message'         => 'Configuration successfully updated via governance',
+                'poll_uuid'       => $poll->uuid,
                 'applied_changes' => $appliedChanges,
-                'changes_count' => count($appliedChanges),
+                'changes_count'   => count($appliedChanges),
             ];
         } catch (\Exception $e) {
             logger()->error('Failed to update configuration via governance poll', [
-                'poll_uuid' => $poll->uuid,
+                'poll_uuid'      => $poll->uuid,
                 'config_changes' => $configChanges,
-                'error' => $e->getMessage(),
+                'error'          => $e->getMessage(),
             ]);
 
             return [
-                'success' => false,
-                'message' => 'Failed to update configuration: ' . $e->getMessage(),
+                'success'   => false,
+                'message'   => 'Failed to update configuration: ' . $e->getMessage(),
                 'poll_uuid' => $poll->uuid,
             ];
         }
@@ -162,7 +162,7 @@ class UpdateConfigurationWorkflow
     {
         foreach ($changes as $key => $value) {
             // Validate key format
-            if (!is_string($key) || empty($key)) {
+            if (! is_string($key) || empty($key)) {
                 return false;
             }
 
@@ -232,8 +232,8 @@ class UpdateConfigurationWorkflow
 
         logger()->info('Configuration updated via governance', [
             'config_key' => $configKey,
-            'new_value' => $newValue,
-            'timestamp' => now()->toISOString(),
+            'new_value'  => $newValue,
+            'timestamp'  => now()->toISOString(),
         ]);
     }
 }

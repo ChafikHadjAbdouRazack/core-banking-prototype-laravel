@@ -45,7 +45,7 @@ class SocialAuthController extends Controller
     {
         $validProviders = ['google', 'facebook', 'github'];
 
-        if (!in_array($provider, $validProviders)) {
+        if (! in_array($provider, $validProviders)) {
             return response()->json(['message' => 'Invalid provider'], 400);
         }
 
@@ -100,7 +100,7 @@ class SocialAuthController extends Controller
     {
         $validProviders = ['google', 'facebook', 'github'];
 
-        if (!in_array($provider, $validProviders)) {
+        if (! in_array($provider, $validProviders)) {
             return response()->json(['message' => 'Invalid provider'], 400);
         }
 
@@ -119,22 +119,22 @@ class SocialAuthController extends Controller
 
             if ($user) {
                 // Update OAuth info if email matched but OAuth info is different
-                if (!$user->oauth_provider) {
+                if (! $user->oauth_provider) {
                     $user->update([
                         'oauth_provider' => $provider,
-                        'oauth_id' => $socialUser->getId(),
-                        'avatar' => $socialUser->getAvatar(),
+                        'oauth_id'       => $socialUser->getId(),
+                        'avatar'         => $socialUser->getAvatar(),
                     ]);
                 }
             } else {
                 // Create new user
                 $user = User::create([
-                    'name' => $socialUser->getName(),
-                    'email' => $socialUser->getEmail(),
-                    'password' => Hash::make(Str::random(32)), // Random password for OAuth users
-                    'oauth_provider' => $provider,
-                    'oauth_id' => $socialUser->getId(),
-                    'avatar' => $socialUser->getAvatar(),
+                    'name'              => $socialUser->getName(),
+                    'email'             => $socialUser->getEmail(),
+                    'password'          => Hash::make(Str::random(32)), // Random password for OAuth users
+                    'oauth_provider'    => $provider,
+                    'oauth_id'          => $socialUser->getId(),
+                    'avatar'            => $socialUser->getAvatar(),
                     'email_verified_at' => now(), // Auto-verify OAuth users
                 ]);
             }
@@ -143,14 +143,14 @@ class SocialAuthController extends Controller
             $token = $user->createToken('api-token')->plainTextToken;
 
             return response()->json([
-                'user' => $user,
-                'token' => $token,
+                'user'    => $user,
+                'token'   => $token,
                 'message' => 'Authenticated successfully',
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Authentication failed',
-                'error' => config('app.debug') ? $e->getMessage() : null
+                'error'   => config('app.debug') ? $e->getMessage() : null,
             ], 400);
         }
     }

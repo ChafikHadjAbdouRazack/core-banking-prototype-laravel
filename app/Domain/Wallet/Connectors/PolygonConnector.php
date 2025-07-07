@@ -7,6 +7,7 @@ use App\Domain\Wallet\ValueObjects\AddressData;
 class PolygonConnector extends EthereumConnector
 {
     protected string $chainId = '137'; // Polygon Mainnet
+
     protected string $rpcUrl;
 
     public function __construct(array $config = [])
@@ -34,7 +35,7 @@ class PolygonConnector extends EthereumConnector
             publicKey: $addressData->publicKey,
             chain: 'polygon',
             metadata: array_merge($addressData->metadata, [
-                'chain' => 'polygon',
+                'chain'   => 'polygon',
                 'chainId' => $this->chainId,
             ])
         );
@@ -52,7 +53,6 @@ class PolygonConnector extends EthereumConnector
 
         return $transaction;
     }
-
 
     private function getPolygonGasPrice(): string
     {
@@ -78,7 +78,6 @@ class PolygonConnector extends EthereumConnector
             return '30000000000';
         }
     }
-
 
     public function getCurrentBlockNumber(): int
     {

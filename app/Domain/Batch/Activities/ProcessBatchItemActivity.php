@@ -22,10 +22,10 @@ class ProcessBatchItemActivity extends Activity
     {
         try {
             $result = match ($item['type']) {
-                'transfer' => $this->processTransfer($item),
-                'payment' => $this->processPayment($item),
+                'transfer'   => $this->processTransfer($item),
+                'payment'    => $this->processPayment($item),
                 'conversion' => $this->processConversion($item),
-                default => throw new \InvalidArgumentException("Unknown item type: {$item['type']}")
+                default      => throw new \InvalidArgumentException("Unknown item type: {$item['type']}")
             };
 
             // Record success
@@ -50,13 +50,13 @@ class ProcessBatchItemActivity extends Activity
         $fromAccount = Account::where('uuid', $item['from_account'])->first();
         $toAccount = Account::where('uuid', $item['to_account'])->first();
 
-        if (!$fromAccount || !$toAccount) {
+        if (! $fromAccount || ! $toAccount) {
             throw new \InvalidArgumentException('Invalid account specified');
         }
 
         // Check balance
         $balance = $fromAccount->getBalance($item['currency']);
-        $amount = (int)($item['amount'] * 100); // Convert to cents
+        $amount = (int) ($item['amount'] * 100); // Convert to cents
 
         if ($balance < $amount) {
             throw new \InvalidArgumentException('Insufficient balance');
@@ -78,7 +78,7 @@ class ProcessBatchItemActivity extends Activity
 
         return [
             'transfer_id' => $transferUuid,
-            'status' => 'completed',
+            'status'      => 'completed',
         ];
     }
 
@@ -93,13 +93,13 @@ class ProcessBatchItemActivity extends Activity
         // Get account
         $account = Account::where('uuid', $item['from_account'])->first();
 
-        if (!$account) {
+        if (! $account) {
             throw new \InvalidArgumentException('Invalid account specified');
         }
 
         // Check balance for from currency
         $balance = $account->getBalance($item['from_currency']);
-        $amount = (int)($item['amount'] * 100); // Convert to cents
+        $amount = (int) ($item['amount'] * 100); // Convert to cents
 
         if ($balance < $amount) {
             throw new \InvalidArgumentException('Insufficient balance');
@@ -114,16 +114,16 @@ class ProcessBatchItemActivity extends Activity
         ];
 
         $rate = $rates[$item['from_currency']][$item['to_currency']] ?? 1;
-        $convertedAmount = (int)($amount * $rate);
+        $convertedAmount = (int) ($amount * $rate);
 
         // Execute conversion using events
         // In production, this would use a proper ExchangeAggregate
         $conversionUuid = (string) Str::uuid();
 
         return [
-            'conversion_id' => $conversionUuid,
+            'conversion_id'    => $conversionUuid,
             'converted_amount' => $convertedAmount,
-            'rate' => $rate,
+            'rate'             => $rate,
         ];
     }
 }

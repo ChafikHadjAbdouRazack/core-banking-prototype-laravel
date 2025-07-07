@@ -27,17 +27,17 @@ class BatchJob extends Model
     ];
 
     protected $casts = [
-        'total_items' => 'integer',
+        'total_items'     => 'integer',
         'processed_items' => 'integer',
-        'failed_items' => 'integer',
-        'metadata' => 'array',
-        'scheduled_at' => 'datetime',
-        'started_at' => 'datetime',
-        'completed_at' => 'datetime',
+        'failed_items'    => 'integer',
+        'metadata'        => 'array',
+        'scheduled_at'    => 'datetime',
+        'started_at'      => 'datetime',
+        'completed_at'    => 'datetime',
     ];
 
     /**
-     * Get the user who created the batch job
+     * Get the user who created the batch job.
      */
     public function user(): BelongsTo
     {
@@ -45,7 +45,7 @@ class BatchJob extends Model
     }
 
     /**
-     * Get the batch job items
+     * Get the batch job items.
      */
     public function items(): HasMany
     {
@@ -53,7 +53,7 @@ class BatchJob extends Model
     }
 
     /**
-     * Check if the batch job is complete
+     * Check if the batch job is complete.
      */
     public function isComplete(): bool
     {
@@ -61,7 +61,7 @@ class BatchJob extends Model
     }
 
     /**
-     * Check if the batch job has failed
+     * Check if the batch job has failed.
      */
     public function hasFailed(): bool
     {
@@ -69,7 +69,7 @@ class BatchJob extends Model
     }
 
     /**
-     * Get the completion percentage
+     * Get the completion percentage.
      */
     public function getCompletionPercentage(): float
     {

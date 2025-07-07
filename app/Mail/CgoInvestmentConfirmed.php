@@ -42,13 +42,13 @@ class CgoInvestmentConfirmed extends Mailable
         return new Content(
             markdown: 'emails.cgo.investment-confirmed',
             with: [
-                'investment' => $this->investment,
-                'amount' => number_format($this->investment->amount, 2),
-                'tier' => ucfirst($this->investment->tier),
-                'shares' => number_format($this->investment->shares_purchased, 4),
-                'certificateNumber' => $this->investment->certificate_number,
+                'investment'          => $this->investment,
+                'amount'              => number_format($this->investment->amount, 2),
+                'tier'                => ucfirst($this->investment->tier),
+                'shares'              => number_format($this->investment->shares_purchased, 4),
+                'certificateNumber'   => $this->investment->certificate_number,
                 'ownershipPercentage' => number_format($this->investment->ownership_percentage, 6),
-                'certificateUrl' => route('cgo.certificate', ['uuid' => $this->investment->uuid]),
+                'certificateUrl'      => route('cgo.certificate', ['uuid' => $this->investment->uuid]),
             ],
         );
     }

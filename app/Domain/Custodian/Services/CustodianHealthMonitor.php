@@ -11,17 +11,21 @@ use Illuminate\Support\Facades\Log;
 class CustodianHealthMonitor
 {
     /**
-     * Health status constants
+     * Health status constants.
      */
     private const STATUS_HEALTHY = 'healthy';
+
     private const STATUS_DEGRADED = 'degraded';
+
     private const STATUS_UNHEALTHY = 'unhealthy';
 
     /**
-     * Thresholds for health status
+     * Thresholds for health status.
      */
     private const DEGRADED_FAILURE_RATE = 0.3; // 30% failure rate
+
     private const UNHEALTHY_FAILURE_RATE = 0.7; // 70% failure rate
+
     private const CIRCUIT_OPEN_UNHEALTHY = true; // Circuit open = unhealthy
 
     public function __construct(
@@ -31,7 +35,7 @@ class CustodianHealthMonitor
     }
 
     /**
-     * Get health status for all custodians
+     * Get health status for all custodians.
      */
     public function getAllCustodiansHealth(): array
     {
@@ -45,7 +49,7 @@ class CustodianHealthMonitor
     }
 
     /**
-     * Get health status for a specific custodian
+     * Get health status for a specific custodian.
      */
     public function getCustodianHealth(string $custodian): array
     {
@@ -77,13 +81,13 @@ class CustodianHealthMonitor
             $this->checkAndNotifyHealthChange($custodian, $status);
 
             return [
-                'custodian' => $custodian,
-                'status' => $status,
-                'available' => $isAvailable,
+                'custodian'               => $custodian,
+                'status'                  => $status,
+                'available'               => $isAvailable,
                 'circuit_breaker_metrics' => $circuitMetrics,
-                'overall_failure_rate' => round($overallFailureRate * 100, 2),
-                'last_check' => now()->toIso8601String(),
-                'recommendations' => $this->getRecommendations($status, $overallFailureRate),
+                'overall_failure_rate'    => round($overallFailureRate * 100, 2),
+                'last_check'              => now()->toIso8601String(),
+                'recommendations'         => $this->getRecommendations($status, $overallFailureRate),
             ];
         } catch (\Exception $e) {
             Log::error("Failed to get health for custodian: {$custodian}", [
@@ -91,21 +95,21 @@ class CustodianHealthMonitor
             ]);
 
             return [
-                'custodian' => $custodian,
-                'status' => self::STATUS_UNHEALTHY,
-                'available' => false,
-                'error' => $e->getMessage(),
+                'custodian'  => $custodian,
+                'status'     => self::STATUS_UNHEALTHY,
+                'available'  => false,
+                'error'      => $e->getMessage(),
                 'last_check' => now()->toIso8601String(),
             ];
         }
     }
 
     /**
-     * Determine health status based on metrics
+     * Determine health status based on metrics.
      */
     private function determineHealthStatus(bool $isAvailable, bool $anyCircuitOpen, float $failureRate): string
     {
-        if (!$isAvailable || ($anyCircuitOpen && self::CIRCUIT_OPEN_UNHEALTHY)) {
+        if (! $isAvailable || ($anyCircuitOpen && self::CIRCUIT_OPEN_UNHEALTHY)) {
             return self::STATUS_UNHEALTHY;
         }
 
@@ -121,7 +125,7 @@ class CustodianHealthMonitor
     }
 
     /**
-     * Get recommendations based on health status
+     * Get recommendations based on health status.
      */
     private function getRecommendations(string $status, float $failureRate): array
     {
@@ -153,7 +157,7 @@ class CustodianHealthMonitor
     }
 
     /**
-     * Check and notify if health status changed
+     * Check and notify if health status changed.
      */
     private function checkAndNotifyHealthChange(string $custodian, string $newStatus): void
     {
@@ -169,10 +173,10 @@ class CustodianHealthMonitor
                 timestamp: now()
             ));
 
-            Log::warning("Custodian health status changed", [
+            Log::warning('Custodian health status changed', [
                 'custodian' => $custodian,
-                'previous' => $previousStatus,
-                'new' => $newStatus,
+                'previous'  => $previousStatus,
+                'new'       => $newStatus,
             ]);
         }
 
@@ -181,7 +185,7 @@ class CustodianHealthMonitor
     }
 
     /**
-     * Get custodian availability percentage over time period
+     * Get custodian availability percentage over time period.
      */
     public function getAvailabilityMetrics(string $custodian, int $hours = 24): array
     {
@@ -191,21 +195,21 @@ class CustodianHealthMonitor
             // In production, this would query time-series data
             // For now, return sample metrics
             return [
-                'custodian' => $custodian,
-                'period_hours' => $hours,
-                'availability_percentage' => 99.5,
-                'total_requests' => 10000,
-                'failed_requests' => 50,
-                'circuit_opens' => 2,
+                'custodian'                => $custodian,
+                'period_hours'             => $hours,
+                'availability_percentage'  => 99.5,
+                'total_requests'           => 10000,
+                'failed_requests'          => 50,
+                'circuit_opens'            => 2,
                 'average_response_time_ms' => 250,
-                'p95_response_time_ms' => 500,
-                'p99_response_time_ms' => 1000,
+                'p95_response_time_ms'     => 500,
+                'p99_response_time_ms'     => 1000,
             ];
         });
     }
 
     /**
-     * Get recommended custodian based on current health
+     * Get recommended custodian based on current health.
      */
     public function getHealthiestCustodian(string $assetCode): ?string
     {
@@ -216,10 +220,10 @@ class CustodianHealthMonitor
 
             // Calculate health score (0-100)
             $score = match ($health['status']) {
-                self::STATUS_HEALTHY => 100 - ($health['overall_failure_rate'] ?? 0),
-                self::STATUS_DEGRADED => 50 - ($health['overall_failure_rate'] ?? 0),
+                self::STATUS_HEALTHY   => 100 - ($health['overall_failure_rate'] ?? 0),
+                self::STATUS_DEGRADED  => 50 - ($health['overall_failure_rate'] ?? 0),
                 self::STATUS_UNHEALTHY => 0,
-                default => 0,
+                default                => 0,
             };
 
             $healthScores[$custodian] = $score;

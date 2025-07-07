@@ -10,17 +10,17 @@ use Illuminate\Support\Facades\Log;
 class RuleEngineService
 {
     /**
-     * Evaluate all active rules against context
+     * Evaluate all active rules against context.
      */
     public function evaluate(array $context): array
     {
         $rules = $this->getActiveRules();
         $results = [
-            'total_score' => 0,
+            'total_score'     => 0,
             'triggered_rules' => [],
-            'blocking_rules' => [],
-            'rule_scores' => [],
-            'rule_details' => [],
+            'blocking_rules'  => [],
+            'rule_scores'     => [],
+            'rule_details'    => [],
         ];
 
         foreach ($rules as $rule) {
@@ -34,11 +34,11 @@ class RuleEngineService
                     $results['total_score'] += $score;
 
                     $results['rule_details'][$rule->code] = [
-                        'name' => $rule->name,
+                        'name'     => $rule->name,
                         'category' => $rule->category,
                         'severity' => $rule->severity,
-                        'score' => $score,
-                        'actions' => $rule->actions,
+                        'score'    => $score,
+                        'actions'  => $rule->actions,
                     ];
 
                     // Check if blocking
@@ -55,7 +55,7 @@ class RuleEngineService
             } catch (\Exception $e) {
                 Log::error('Rule evaluation failed', [
                     'rule_code' => $rule->code,
-                    'error' => $e->getMessage(),
+                    'error'     => $e->getMessage(),
                 ]);
             }
         }
@@ -67,7 +67,7 @@ class RuleEngineService
     }
 
     /**
-     * Get active fraud rules
+     * Get active fraud rules.
      */
     protected function getActiveRules(): Collection
     {
@@ -80,7 +80,7 @@ class RuleEngineService
     }
 
     /**
-     * Evaluate a single rule
+     * Evaluate a single rule.
      */
     protected function evaluateRule(FraudRule $rule, array $context): bool
     {
@@ -111,7 +111,7 @@ class RuleEngineService
     }
 
     /**
-     * Evaluate velocity rule
+     * Evaluate velocity rule.
      */
     protected function evaluateVelocityRule(FraudRule $rule, array $context): bool
     {
@@ -153,7 +153,7 @@ class RuleEngineService
     }
 
     /**
-     * Evaluate pattern rule
+     * Evaluate pattern rule.
      */
     protected function evaluatePatternRule(FraudRule $rule, array $context): bool
     {
@@ -193,7 +193,7 @@ class RuleEngineService
     }
 
     /**
-     * Evaluate amount rule
+     * Evaluate amount rule.
      */
     protected function evaluateAmountRule(FraudRule $rule, array $context): bool
     {
@@ -229,7 +229,7 @@ class RuleEngineService
     }
 
     /**
-     * Evaluate geography rule
+     * Evaluate geography rule.
      */
     protected function evaluateGeographyRule(FraudRule $rule, array $context): bool
     {
@@ -263,7 +263,7 @@ class RuleEngineService
     }
 
     /**
-     * Evaluate device rule
+     * Evaluate device rule.
      */
     protected function evaluateDeviceRule(FraudRule $rule, array $context): bool
     {
@@ -286,7 +286,7 @@ class RuleEngineService
         // Check device trust
         if (isset($conditions['require_trusted_device']) && $conditions['require_trusted_device']) {
             $deviceId = $deviceData['fingerprint_id'] ?? null;
-            if (!$deviceId || !$this->isDeviceTrusted($deviceId)) {
+            if (! $deviceId || ! $this->isDeviceTrusted($deviceId)) {
                 return true;
             }
         }
@@ -303,7 +303,7 @@ class RuleEngineService
     }
 
     /**
-     * Evaluate behavior rule
+     * Evaluate behavior rule.
      */
     protected function evaluateBehaviorRule(FraudRule $rule, array $context): bool
     {
@@ -332,7 +332,7 @@ class RuleEngineService
     }
 
     /**
-     * Execute rule actions
+     * Execute rule actions.
      */
     protected function executeRuleActions(FraudRule $rule, array $context): void
     {
@@ -346,13 +346,13 @@ class RuleEngineService
                     $this->flagTransaction($rule, $context);
                     break;
 
-                // Other actions handled by main fraud detection service
+                    // Other actions handled by main fraud detection service
             }
         }
     }
 
     /**
-     * Detect rapid succession pattern
+     * Detect rapid succession pattern.
      */
     protected function detectRapidSuccession(array $context): bool
     {
@@ -363,7 +363,7 @@ class RuleEngineService
     }
 
     /**
-     * Detect round amounts pattern
+     * Detect round amounts pattern.
      */
     protected function detectRoundAmounts(array $context): bool
     {
@@ -374,7 +374,7 @@ class RuleEngineService
     }
 
     /**
-     * Detect transaction splitting pattern
+     * Detect transaction splitting pattern.
      */
     protected function detectSplitting(array $context): bool
     {
@@ -395,7 +395,7 @@ class RuleEngineService
     }
 
     /**
-     * Detect unusual transaction sequence
+     * Detect unusual transaction sequence.
      */
     protected function detectUnusualSequence(array $context): bool
     {
@@ -417,19 +417,19 @@ class RuleEngineService
     }
 
     /**
-     * Detect impossible travel
+     * Detect impossible travel.
      */
     protected function detectImpossibleTravel(array $context): bool
     {
         $currentLocation = [
-            'country' => $context['ip_country'] ?? null,
-            'city' => $context['ip_city'] ?? null,
+            'country'   => $context['ip_country'] ?? null,
+            'city'      => $context['ip_city'] ?? null,
             'timestamp' => $context['timestamp'] ?? now(),
         ];
 
         $lastLocation = $context['last_location'] ?? null;
 
-        if (!$lastLocation || !$currentLocation['country']) {
+        if (! $lastLocation || ! $currentLocation['country']) {
             return false;
         }
 
@@ -447,19 +447,19 @@ class RuleEngineService
     }
 
     /**
-     * Get transaction count in time window
+     * Get transaction count in time window.
      */
     protected function getTransactionCountInWindow(?int $userId, string $timeWindow): int
     {
-        if (!$userId) {
+        if (! $userId) {
             return 0;
         }
 
         $minutes = match ($timeWindow) {
-            '1h' => 60,
-            '24h' => 1440,
-            '7d' => 10080,
-            '30d' => 43200,
+            '1h'    => 60,
+            '24h'   => 1440,
+            '7d'    => 10080,
+            '30d'   => 43200,
             default => 60,
         };
 
@@ -477,25 +477,27 @@ class RuleEngineService
     }
 
     /**
-     * Check if device is trusted
+     * Check if device is trusted.
      */
     protected function isDeviceTrusted(string $deviceId): bool
     {
         $device = \App\Models\DeviceFingerprint::find($deviceId);
+
         return $device && $device->isTrusted();
     }
 
     /**
-     * Check if device is new
+     * Check if device is new.
      */
     protected function isNewDevice(string $deviceId): bool
     {
         $device = \App\Models\DeviceFingerprint::find($deviceId);
+
         return $device && $device->isNew();
     }
 
     /**
-     * Detect behavioral pattern
+     * Detect behavioral pattern.
      */
     protected function detectBehavioralPattern(string $pattern, array $context): bool
     {
@@ -504,67 +506,67 @@ class RuleEngineService
     }
 
     /**
-     * Send notification for rule
+     * Send notification for rule.
      */
     protected function sendNotification(FraudRule $rule, array $context): void
     {
         // Implement notification logic
         Log::info('Fraud rule triggered notification', [
-            'rule_code' => $rule->code,
+            'rule_code'      => $rule->code,
             'transaction_id' => $context['transaction']['id'] ?? null,
         ]);
     }
 
     /**
-     * Flag transaction
+     * Flag transaction.
      */
     protected function flagTransaction(FraudRule $rule, array $context): void
     {
         // Implement flagging logic
         Log::info('Transaction flagged by rule', [
-            'rule_code' => $rule->code,
+            'rule_code'      => $rule->code,
             'transaction_id' => $context['transaction']['id'] ?? null,
         ]);
     }
 
     /**
-     * Create default fraud rules
+     * Create default fraud rules.
      */
     public function createDefaultRules(): void
     {
         $defaultRules = [
             [
-                'name' => 'High Daily Transaction Volume',
-                'category' => FraudRule::CATEGORY_VELOCITY,
-                'severity' => FraudRule::SEVERITY_HIGH,
+                'name'       => 'High Daily Transaction Volume',
+                'category'   => FraudRule::CATEGORY_VELOCITY,
+                'severity'   => FraudRule::SEVERITY_HIGH,
                 'thresholds' => ['max_daily_volume' => 50000],
                 'base_score' => 60,
             ],
             [
-                'name' => 'Rapid Transactions',
-                'category' => FraudRule::CATEGORY_PATTERN,
-                'severity' => FraudRule::SEVERITY_MEDIUM,
+                'name'       => 'Rapid Transactions',
+                'category'   => FraudRule::CATEGORY_PATTERN,
+                'severity'   => FraudRule::SEVERITY_MEDIUM,
                 'conditions' => [['pattern' => 'rapid_succession']],
                 'base_score' => 40,
             ],
             [
-                'name' => 'Large Transaction Amount',
-                'category' => FraudRule::CATEGORY_AMOUNT,
-                'severity' => FraudRule::SEVERITY_HIGH,
+                'name'       => 'Large Transaction Amount',
+                'category'   => FraudRule::CATEGORY_AMOUNT,
+                'severity'   => FraudRule::SEVERITY_HIGH,
                 'thresholds' => ['max_amount' => 25000],
                 'base_score' => 50,
             ],
             [
-                'name' => 'High Risk Country',
-                'category' => FraudRule::CATEGORY_GEOGRAPHY,
-                'severity' => FraudRule::SEVERITY_HIGH,
+                'name'       => 'High Risk Country',
+                'category'   => FraudRule::CATEGORY_GEOGRAPHY,
+                'severity'   => FraudRule::SEVERITY_HIGH,
                 'conditions' => ['high_risk_countries' => ['NG', 'PK', 'ID']],
                 'base_score' => 45,
             ],
             [
-                'name' => 'VPN/Proxy Detection',
-                'category' => FraudRule::CATEGORY_DEVICE,
-                'severity' => FraudRule::SEVERITY_MEDIUM,
+                'name'       => 'VPN/Proxy Detection',
+                'category'   => FraudRule::CATEGORY_DEVICE,
+                'severity'   => FraudRule::SEVERITY_MEDIUM,
                 'conditions' => ['block_vpn' => true, 'block_proxy' => true],
                 'base_score' => 35,
             ],
@@ -575,7 +577,7 @@ class RuleEngineService
                 ['name' => $ruleData['name']],
                 array_merge($ruleData, [
                     'description' => "Default rule: {$ruleData['name']}",
-                    'actions' => [FraudRule::ACTION_FLAG, FraudRule::ACTION_NOTIFY],
+                    'actions'     => [FraudRule::ACTION_FLAG, FraudRule::ACTION_NOTIFY],
                 ])
             );
         }

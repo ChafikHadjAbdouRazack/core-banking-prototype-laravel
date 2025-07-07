@@ -73,6 +73,7 @@ class BankAccount extends Model
     public function getDisplayNameAttribute(): string
     {
         $lastFour = substr($this->account_number, -4);
+
         return "{$this->bank_code} - ****{$lastFour}";
     }
 

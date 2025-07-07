@@ -19,16 +19,16 @@ it('has execute method', function () {
 it('has logInquiry method', function () {
     $reflection = new ReflectionClass(BalanceInquiryActivity::class);
     $method = $reflection->getMethod('logInquiry');
-    
+
     expect($method->isPrivate())->toBeTrue();
 });
 
 it('execute method has correct signature', function () {
     $reflection = new ReflectionClass(BalanceInquiryActivity::class);
     $method = $reflection->getMethod('execute');
-    
+
     expect($method->getNumberOfParameters())->toBe(3);
-    
+
     $parameters = $method->getParameters();
     expect($parameters[0]->getName())->toBe('uuid');
     expect($parameters[1]->getName())->toBe('requestedBy');
@@ -39,7 +39,7 @@ it('execute method has correct signature', function () {
 it('can access execute method through reflection', function () {
     $reflection = new ReflectionClass(BalanceInquiryActivity::class);
     $method = $reflection->getMethod('execute');
-    
+
     expect($method->isPublic())->toBeTrue();
     expect($method->getNumberOfParameters())->toBe(3);
     expect($method->getReturnType()->getName())->toBe('array');
@@ -48,14 +48,14 @@ it('can access execute method through reflection', function () {
 it('validates balance inquiry has private logInquiry method', function () {
     $reflection = new ReflectionClass(BalanceInquiryActivity::class);
     $logMethod = $reflection->getMethod('logInquiry');
-    
+
     expect($logMethod->isPrivate())->toBeTrue();
     expect($logMethod->getNumberOfParameters())->toBe(2);
 });
 
 it('can create data object instances for balance inquiry testing', function () {
     $uuid = new AccountUuid('balance-test-uuid');
-    
+
     expect($uuid->getUuid())->toBe('balance-test-uuid');
     expect(class_exists(BalanceInquiryActivity::class))->toBeTrue();
 });

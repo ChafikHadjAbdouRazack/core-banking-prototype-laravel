@@ -14,7 +14,7 @@ class SubProductController extends Controller
     }
 
     /**
-     * Get all sub-product statuses
+     * Get all sub-product statuses.
      */
     public function index(): JsonResponse
     {
@@ -24,15 +24,15 @@ class SubProductController extends Controller
     }
 
     /**
-     * Get specific sub-product status
+     * Get specific sub-product status.
      */
     public function show(string $subProduct): JsonResponse
     {
         $allProducts = $this->subProductService->getApiStatus();
 
-        if (!isset($allProducts[$subProduct])) {
+        if (! isset($allProducts[$subProduct])) {
             return response()->json([
-                'error' => 'Sub-product not found',
+                'error'   => 'Sub-product not found',
                 'message' => "The sub-product '{$subProduct}' does not exist.",
             ], 404);
         }
@@ -43,7 +43,7 @@ class SubProductController extends Controller
     }
 
     /**
-     * Get enabled sub-products for the current user (authenticated)
+     * Get enabled sub-products for the current user (authenticated).
      */
     public function enabled(): JsonResponse
     {
@@ -52,11 +52,11 @@ class SubProductController extends Controller
         return response()->json([
             'data' => array_map(function ($product) {
                 return [
-                    'key' => $product['key'],
-                    'name' => $product['name'],
-                    'description' => $product['description'],
-                    'icon' => $product['icon'],
-                    'color' => $product['color'],
+                    'key'              => $product['key'],
+                    'name'             => $product['name'],
+                    'description'      => $product['description'],
+                    'icon'             => $product['icon'],
+                    'color'            => $product['color'],
                     'enabled_features' => $product['enabled_features'],
                 ];
             }, $enabledProducts),

@@ -14,8 +14,11 @@ class ThresholdTriggered
     use SerializesModels;
 
     public RegulatoryThreshold $threshold;
+
     public array $context;
+
     public ?string $entityType;
+
     public ?string $entityId;
 
     public function __construct(
@@ -31,7 +34,7 @@ class ThresholdTriggered
     }
 
     /**
-     * Get the tags that should be assigned to the event
+     * Get the tags that should be assigned to the event.
      */
     public function tags(): array
     {

@@ -3,9 +3,7 @@
 namespace App\Domain\Stablecoin\Services;
 
 use App\Domain\Stablecoin\Contracts\OracleConnector;
-use App\Domain\Stablecoin\Contracts\PriceOracleInterface;
 use App\Domain\Stablecoin\ValueObjects\AggregatedPrice;
-use App\Domain\Stablecoin\ValueObjects\PriceData;
 use Brick\Math\BigDecimal;
 use Brick\Math\RoundingMode;
 use Illuminate\Support\Collection;
@@ -15,7 +13,9 @@ use Illuminate\Support\Facades\Log;
 class OracleAggregator
 {
     private Collection $oracles;
+
     private int $minOracles = 2;
+
     private float $maxDeviation = 0.02; // 2% max deviation
 
     public function __construct()
@@ -24,17 +24,18 @@ class OracleAggregator
     }
 
     /**
-     * Register an oracle connector
+     * Register an oracle connector.
      */
     public function registerOracle(OracleConnector $oracle): self
     {
         $this->oracles->push($oracle);
-        $this->oracles = $this->oracles->sortBy(fn($o) => $o->getPriority());
+        $this->oracles = $this->oracles->sortBy(fn ($o) => $o->getPriority());
+
         return $this;
     }
 
     /**
-     * Get aggregated price from multiple oracles
+     * Get aggregated price from multiple oracles.
      */
     public function getAggregatedPrice(string $base, string $quote): AggregatedPrice
     {
@@ -54,7 +55,7 @@ class OracleAggregator
     }
 
     /**
-     * Collect prices from all healthy oracles
+     * Collect prices from all healthy oracles.
      */
     private function collectPrices(string $base, string $quote): Collection
     {
@@ -62,14 +63,14 @@ class OracleAggregator
 
         foreach ($this->oracles as $oracle) {
             try {
-                if (!$oracle->isHealthy()) {
+                if (! $oracle->isHealthy()) {
                     Log::warning("Oracle {$oracle->getSourceName()} is unhealthy, skipping");
                     continue;
                 }
 
                 $price = $oracle->getPrice($base, $quote);
 
-                if (!$price->isStale()) {
+                if (! $price->isStale()) {
                     $prices->push($price);
                 }
             } catch (\Exception $e) {
@@ -81,7 +82,7 @@ class OracleAggregator
     }
 
     /**
-     * Validate that prices don't deviate too much
+     * Validate that prices don't deviate too much.
      */
     private function validatePriceDeviation(Collection $prices): void
     {
@@ -95,24 +96,24 @@ class OracleAggregator
             return;
         }
 
-        $values = $prices->map(fn($p) => BigDecimal::of($p->price));
+        $values = $prices->map(fn ($p) => BigDecimal::of($p->price));
         $min = $values->min();
         $max = $values->max();
 
         // Calculate average manually for BigDecimal
-        $sum = $values->reduce(fn($carry, $item) => $carry->plus($item), BigDecimal::of('0'));
+        $sum = $values->reduce(fn ($carry, $item) => $carry->plus($item), BigDecimal::of('0'));
         $avg = $sum->dividedBy($values->count(), 18, RoundingMode::HALF_UP);
 
         $deviation = $max->minus($min)->dividedBy($avg, 4, RoundingMode::UP);
 
         if ($deviation->toFloat() > $this->maxDeviation) {
-            Log::warning("Price deviation exceeds threshold", [
+            Log::warning('Price deviation exceeds threshold', [
                 'deviation' => $deviation->toFloat(),
                 'threshold' => $this->maxDeviation,
-                'prices' => $prices->map(fn($p) => [
+                'prices'    => $prices->map(fn ($p) => [
                     'source' => $p->source,
-                    'price' => $p->price
-                ])->toArray()
+                    'price'  => $p->price,
+                ])->toArray(),
             ]);
 
             // Emit event for monitoring
@@ -126,11 +127,11 @@ class OracleAggregator
     }
 
     /**
-     * Calculate the aggregated price using median
+     * Calculate the aggregated price using median.
      */
     private function calculateAggregatedPrice(Collection $prices): AggregatedPrice
     {
-        $values = $prices->map(fn($p) => BigDecimal::of($p->price))->sort()->values();
+        $values = $prices->map(fn ($p) => BigDecimal::of($p->price))->sort()->values();
         $count = $values->count();
 
         // Calculate median
@@ -146,10 +147,10 @@ class OracleAggregator
             base: $prices->first()->base,
             quote: $prices->first()->quote,
             price: $median->toScale(8, RoundingMode::HALF_UP)->__toString(),
-            sources: $prices->map(fn($p) => [
-                'name' => $p->source,
-                'price' => $p->price,
-                'timestamp' => $p->timestamp->toIso8601String()
+            sources: $prices->map(fn ($p) => [
+                'name'      => $p->source,
+                'price'     => $p->price,
+                'timestamp' => $p->timestamp->toIso8601String(),
             ])->toArray(),
             aggregationMethod: 'median',
             timestamp: now(),
@@ -158,7 +159,7 @@ class OracleAggregator
     }
 
     /**
-     * Calculate confidence score based on price agreement
+     * Calculate confidence score based on price agreement.
      */
     private function calculateConfidence(Collection $prices, BigDecimal $median): float
     {
@@ -168,6 +169,7 @@ class OracleAggregator
 
         $deviations = $prices->map(function ($price) use ($median) {
             $value = BigDecimal::of($price->price);
+
             return $value->minus($median)->abs()->dividedBy($median, 4, RoundingMode::UP)->toFloat();
         });
 
@@ -180,7 +182,7 @@ class OracleAggregator
     }
 
     /**
-     * Get historical aggregated price
+     * Get historical aggregated price.
      */
     public function getHistoricalAggregatedPrice(string $base, string $quote, Carbon $timestamp): AggregatedPrice
     {
@@ -196,7 +198,7 @@ class OracleAggregator
         }
 
         if ($prices->isEmpty()) {
-            throw new \RuntimeException("No historical prices available");
+            throw new \RuntimeException('No historical prices available');
         }
 
         return $this->calculateAggregatedPrice($prices);

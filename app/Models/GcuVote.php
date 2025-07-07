@@ -21,11 +21,11 @@ class GcuVote extends Model
 
     protected $casts = [
         'voting_power' => 'decimal:4',
-        'metadata' => 'array',
+        'metadata'     => 'array',
     ];
 
     /**
-     * Get the proposal this vote belongs to
+     * Get the proposal this vote belongs to.
      */
     public function proposal(): BelongsTo
     {
@@ -33,7 +33,7 @@ class GcuVote extends Model
     }
 
     /**
-     * Get the user who cast this vote
+     * Get the user who cast this vote.
      */
     public function user(): BelongsTo
     {
@@ -41,23 +41,23 @@ class GcuVote extends Model
     }
 
     /**
-     * Generate signature for vote verification
+     * Generate signature for vote verification.
      */
     public function generateSignature(): string
     {
         $data = [
-            'proposal_id' => $this->proposal_id,
-            'user_uuid' => $this->user_uuid,
-            'vote' => $this->vote,
+            'proposal_id'  => $this->proposal_id,
+            'user_uuid'    => $this->user_uuid,
+            'vote'         => $this->vote,
             'voting_power' => $this->voting_power,
-            'timestamp' => $this->created_at?->timestamp,
+            'timestamp'    => $this->created_at?->timestamp,
         ];
 
         return hash('sha256', json_encode($data) . config('app.key'));
     }
 
     /**
-     * Verify vote signature
+     * Verify vote signature.
      */
     public function verifySignature(): bool
     {

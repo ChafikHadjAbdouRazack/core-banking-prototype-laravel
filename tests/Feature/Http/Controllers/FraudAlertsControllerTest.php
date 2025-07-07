@@ -2,71 +2,75 @@
 
 namespace Tests\Feature\Http\Controllers;
 
-use Tests\TestCase;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use App\Models\User;
-use App\Models\FraudCase;
 use App\Models\Account;
-use App\Models\Team;
-use Spatie\Permission\Models\Role;
+use App\Models\FraudCase;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
+use Tests\TestCase;
 
 class FraudAlertsControllerTest extends TestCase
 {
     use RefreshDatabase;
 
     protected User $customer;
+
     protected User $staffUser;
+
     protected User $superAdmin;
+
     protected Account $customerAccount;
+
     protected FraudCase $customerFraudCase;
+
     protected FraudCase $otherFraudCase;
 
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Create permissions
         Permission::create(['name' => 'view_fraud_alerts']);
         Permission::create(['name' => 'manage_fraud_cases']);
         Permission::create(['name' => 'export_fraud_data']);
-        
+
         // Create roles
         $customerRole = Role::create(['name' => 'customer_private']);
         $staffRole = Role::create(['name' => 'staff']);
         $staffRole->givePermissionTo(['view_fraud_alerts', 'manage_fraud_cases', 'export_fraud_data']);
-        
+
         $superAdminRole = Role::create(['name' => 'super_admin']);
         $superAdminRole->givePermissionTo(['view_fraud_alerts', 'manage_fraud_cases', 'export_fraud_data']);
-        
+
         // Create users
         $this->customer = User::factory()->create();
         $this->customer->assignRole('customer_private');
-        
+
         $this->staffUser = User::factory()->create();
         $this->staffUser->assignRole('staff');
-        
+
         $this->superAdmin = User::factory()->create();
         $this->superAdmin->assignRole('super_admin');
-        
+
         // Create account and fraud cases
         $this->customerAccount = Account::factory()->create([
             'user_uuid' => $this->customer->uuid,
         ]);
-        
+
         $this->customerFraudCase = FraudCase::factory()->create([
             'subject_type' => Account::class,
-            'subject_id' => $this->customerAccount->id,
-            'status' => 'pending',
-            'type' => 'unauthorized_transaction',
-            'severity' => 'high',
-            'risk_score' => 85,
+            'subject_id'   => $this->customerAccount->id,
+            'status'       => 'pending',
+            'type'         => 'unauthorized_transaction',
+            'severity'     => 'high',
+            'risk_score'   => 85,
         ]);
-        
+
         $otherAccount = Account::factory()->create();
         $this->otherFraudCase = FraudCase::factory()->create([
             'subject_type' => Account::class,
-            'subject_id' => $otherAccount->id,
+            'subject_id'   => $otherAccount->id,
         ]);
     }
 
@@ -79,7 +83,7 @@ class FraudAlertsControllerTest extends TestCase
         $response->assertStatus(200);
         $response->assertViewIs('fraud.alerts.index');
         $response->assertViewHas('fraudCases');
-        
+
         $fraudCases = $response->viewData('fraudCases');
         $this->assertEquals(1, $fraudCases->total());
         $this->assertEquals($this->customerFraudCase->id, $fraudCases->first()->id);
@@ -111,7 +115,7 @@ class FraudAlertsControllerTest extends TestCase
     {
         FraudCase::factory()->create(['status' => 'investigating']);
         FraudCase::factory()->create(['status' => 'resolved']);
-        
+
         $response = $this->actingAs($this->staffUser)
             ->get(route('fraud.alerts.index', ['status' => 'pending']));
 
@@ -138,7 +142,7 @@ class FraudAlertsControllerTest extends TestCase
     {
         FraudCase::factory()->create(['risk_score' => 20]);
         FraudCase::factory()->create(['risk_score' => 50]);
-        
+
         $response = $this->actingAs($this->staffUser)
             ->get(route('fraud.alerts.index', ['risk_score_min' => 60]));
 
@@ -155,7 +159,7 @@ class FraudAlertsControllerTest extends TestCase
             'case_number' => 'FRAUD-12345',
             'description' => 'Suspicious activity detected',
         ]);
-        
+
         $response = $this->actingAs($this->staffUser)
             ->get(route('fraud.alerts.index', ['search' => 'FRAUD-12345']));
 
@@ -168,13 +172,13 @@ class FraudAlertsControllerTest extends TestCase
     {
         FraudCase::factory()->count(5)->create(['status' => 'pending']);
         FraudCase::factory()->count(3)->create(['status' => 'confirmed']);
-        
+
         $response = $this->actingAs($this->staffUser)
             ->get(route('fraud.alerts.index'));
 
         $response->assertViewHas('stats');
         $stats = $response->viewData('stats');
-        
+
         $this->assertArrayHasKey('total_cases', $stats);
         $this->assertArrayHasKey('pending_cases', $stats);
         $this->assertArrayHasKey('confirmed_cases', $stats);
@@ -206,12 +210,12 @@ class FraudAlertsControllerTest extends TestCase
         $response = $this->actingAs($this->staffUser)
             ->put(route('fraud.alerts.update-status', $this->customerFraudCase), [
                 'status' => 'investigating',
-                'notes' => 'Looking into this case',
+                'notes'  => 'Looking into this case',
             ]);
 
         $response->assertRedirect(route('fraud.alerts.show', $this->customerFraudCase));
         $response->assertSessionHas('success');
-        
+
         $this->customerFraudCase->refresh();
         $this->assertEquals('investigating', $this->customerFraudCase->status);
         $this->assertEquals('Looking into this case', $this->customerFraudCase->investigator_notes);
@@ -249,7 +253,7 @@ class FraudAlertsControllerTest extends TestCase
         $response->assertStatus(200);
         $response->assertHeader('Content-Type', 'text/csv');
         $response->assertHeader('Content-Disposition');
-        
+
         $content = $response->streamedContent();
         $this->assertStringContainsString('Case Number', $content);
         $this->assertStringContainsString('Type', $content);
@@ -275,17 +279,17 @@ class FraudAlertsControllerTest extends TestCase
             now()->subDays(1),
             now(),
         ];
-        
+
         foreach ($dates as $date) {
             FraudCase::factory()->create(['detected_at' => $date]);
         }
-        
+
         $response = $this->actingAs($this->staffUser)
             ->get(route('fraud.alerts.index'));
 
         $response->assertViewHas('trendData');
         $trendData = $response->viewData('trendData');
-        
+
         $this->assertIsArray($trendData);
         $this->assertCount(30, $trendData); // 30 days of data
         $this->assertArrayHasKey('date', $trendData[0]);
@@ -299,13 +303,13 @@ class FraudAlertsControllerTest extends TestCase
         FraudCase::factory()->create(['risk_score' => 45]); // medium
         FraudCase::factory()->create(['risk_score' => 70]); // high
         FraudCase::factory()->create(['risk_score' => 90]); // critical
-        
+
         $response = $this->actingAs($this->staffUser)
             ->get(route('fraud.alerts.index'));
 
         $response->assertViewHas('riskDistribution');
         $riskDistribution = $response->viewData('riskDistribution');
-        
+
         $this->assertArrayHasKey('low', $riskDistribution);
         $this->assertArrayHasKey('medium', $riskDistribution);
         $this->assertArrayHasKey('high', $riskDistribution);

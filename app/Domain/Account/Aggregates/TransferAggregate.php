@@ -47,9 +47,9 @@ class TransferAggregate extends AggregateRoot
     }
 
     /**
-     * @param \App\Domain\Account\DataObjects\AccountUuid $from
-     * @param \App\Domain\Account\DataObjects\AccountUuid $to
-     * @param \App\Domain\Account\DataObjects\Money $money
+     * @param AccountUuid $from
+     * @param AccountUuid $to
+     * @param Money $money
      *
      * @return $this
      */
@@ -68,9 +68,9 @@ class TransferAggregate extends AggregateRoot
     }
 
     /**
-     * @param \App\Domain\Account\Events\MoneyTransferred $event
+     * @param MoneyTransferred $event
      *
-     * @return \App\Domain\Account\Aggregates\TransferAggregate
+     * @return TransferAggregate
      */
     public function applyMoneyTransferred(MoneyTransferred $event): static
     {

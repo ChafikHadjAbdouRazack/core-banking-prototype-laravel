@@ -3,8 +3,8 @@
 namespace App\Console\Commands;
 
 use App\Domain\Compliance\Services\RegulatoryReportingService;
-use Illuminate\Console\Command;
 use Carbon\Carbon;
+use Illuminate\Console\Command;
 
 class GenerateRegulatoryReports extends Command
 {
@@ -82,6 +82,7 @@ class GenerateRegulatoryReports extends Command
             return Command::SUCCESS;
         } catch (\Exception $e) {
             $this->error('❌ Error generating reports: ' . $e->getMessage());
+
             return Command::FAILURE;
         }
     }

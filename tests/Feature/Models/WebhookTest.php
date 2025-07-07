@@ -5,8 +5,8 @@ use App\Models\WebhookDelivery;
 
 it('can create a webhook', function () {
     $webhook = Webhook::factory()->create([
-        'name' => 'Test Webhook',
-        'url' => 'https://example.com/webhook',
+        'name'   => 'Test Webhook',
+        'url'    => 'https://example.com/webhook',
         'events' => ['account.created', 'transaction.created'],
     ]);
 
@@ -49,7 +49,7 @@ it('can check if webhook is subscribed to event', function () {
 
 it('can mark webhook as triggered', function () {
     $webhook = Webhook::factory()->create();
-    
+
     expect($webhook->last_triggered_at)->toBeNull();
 
     $webhook->markAsTriggered();
@@ -60,7 +60,7 @@ it('can mark webhook as triggered', function () {
 
 it('can mark webhook as successful', function () {
     $webhook = Webhook::factory()->withFailures(5)->create();
-    
+
     expect($webhook->consecutive_failures)->toBe(5);
 
     $webhook->markAsSuccessful();
@@ -72,7 +72,7 @@ it('can mark webhook as successful', function () {
 
 it('can mark webhook as failed', function () {
     $webhook = Webhook::factory()->create();
-    
+
     expect($webhook->consecutive_failures)->toBe(0);
 
     $webhook->markAsFailed();
@@ -84,7 +84,7 @@ it('can mark webhook as failed', function () {
 
 it('auto-disables webhook after too many failures', function () {
     $webhook = Webhook::factory()->withFailures(9)->create();
-    
+
     expect($webhook->is_active)->toBeTrue();
 
     $webhook->markAsFailed();

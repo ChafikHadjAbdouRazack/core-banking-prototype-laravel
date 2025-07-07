@@ -4,9 +4,9 @@ namespace App\Values;
 
 enum DefaultAccountNames: string
 {
-    case MAIN    = 'Main';
+    case MAIN = 'Main';
     case SAVINGS = 'Savings';
-    case LOAN    = 'Loan';
+    case LOAN = 'Loan';
 
     /**
      * @return self

@@ -2,15 +2,15 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
-use App\Domain\Banking\Contracts\IBankIntegrationService;
-use App\Domain\Banking\Services\BankIntegrationService;
-use App\Domain\Banking\Services\BankHealthMonitor;
-use App\Domain\Banking\Services\BankRoutingService;
-use App\Domain\Custodian\Connectors\PayseraConnector;
-use App\Domain\Custodian\Connectors\DeutscheBankConnector;
-use App\Domain\Custodian\Connectors\SantanderConnector;
 use App\Domain\Banking\Connectors\BankConnectorAdapter;
+use App\Domain\Banking\Contracts\IBankIntegrationService;
+use App\Domain\Banking\Services\BankHealthMonitor;
+use App\Domain\Banking\Services\BankIntegrationService;
+use App\Domain\Banking\Services\BankRoutingService;
+use App\Domain\Custodian\Connectors\DeutscheBankConnector;
+use App\Domain\Custodian\Connectors\PayseraConnector;
+use App\Domain\Custodian\Connectors\SantanderConnector;
+use Illuminate\Support\ServiceProvider;
 
 class BankIntegrationServiceProvider extends ServiceProvider
 {
@@ -54,7 +54,7 @@ class BankIntegrationServiceProvider extends ServiceProvider
     }
 
     /**
-     * Register all bank connectors
+     * Register all bank connectors.
      */
     private function registerBankConnectors(IBankIntegrationService $service): void
     {
@@ -62,10 +62,10 @@ class BankIntegrationServiceProvider extends ServiceProvider
         if (config('services.banks.paysera.enabled', true)) {
             $payseraAdapter = new BankConnectorAdapter(
                 new PayseraConnector([
-                    'name' => 'Paysera',
-                    'client_id' => config('services.banks.paysera.client_id'),
+                    'name'          => 'Paysera',
+                    'client_id'     => config('services.banks.paysera.client_id'),
                     'client_secret' => config('services.banks.paysera.client_secret'),
-                    'base_url' => config('services.banks.paysera.base_url', 'https://bank.paysera.com/rest/v1'),
+                    'base_url'      => config('services.banks.paysera.base_url', 'https://bank.paysera.com/rest/v1'),
                 ]),
                 'PAYSERA',
                 'Paysera'
@@ -77,10 +77,10 @@ class BankIntegrationServiceProvider extends ServiceProvider
         if (config('services.banks.deutsche.enabled', true)) {
             $deutscheAdapter = new BankConnectorAdapter(
                 new DeutscheBankConnector([
-                    'name' => 'Deutsche Bank',
-                    'client_id' => config('services.banks.deutsche.client_id'),
+                    'name'          => 'Deutsche Bank',
+                    'client_id'     => config('services.banks.deutsche.client_id'),
                     'client_secret' => config('services.banks.deutsche.client_secret'),
-                    'base_url' => config('services.banks.deutsche.base_url', 'https://api.db.com/v2'),
+                    'base_url'      => config('services.banks.deutsche.base_url', 'https://api.db.com/v2'),
                 ]),
                 'DEUTSCHE',
                 'Deutsche Bank'
@@ -92,10 +92,10 @@ class BankIntegrationServiceProvider extends ServiceProvider
         if (config('services.banks.santander.enabled', true)) {
             $santanderAdapter = new BankConnectorAdapter(
                 new SantanderConnector([
-                    'name' => 'Santander',
-                    'client_id' => config('services.banks.santander.client_id'),
+                    'name'          => 'Santander',
+                    'client_id'     => config('services.banks.santander.client_id'),
                     'client_secret' => config('services.banks.santander.client_secret'),
-                    'base_url' => config('services.banks.santander.base_url', 'https://api.santander.com/v2'),
+                    'base_url'      => config('services.banks.santander.base_url', 'https://api.santander.com/v2'),
                 ]),
                 'SANTANDER',
                 'Santander'

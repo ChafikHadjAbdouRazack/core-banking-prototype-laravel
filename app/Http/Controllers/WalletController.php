@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Account;
 use App\Domain\Asset\Models\Asset;
 use App\Domain\Asset\Models\ExchangeRate;
+use App\Models\Account;
 use Illuminate\Support\Facades\Auth;
 
 class WalletController extends Controller
 {
     /**
-     * Show the wallet dashboard
+     * Show the wallet dashboard.
      */
     public function index()
     {
@@ -21,7 +21,7 @@ class WalletController extends Controller
     }
 
     /**
-     * Show the deposit form
+     * Show the deposit form.
      */
     public function showDeposit()
     {
@@ -31,9 +31,8 @@ class WalletController extends Controller
         return view('wallet.deposit', compact('account', 'assets'));
     }
 
-
     /**
-     * Show the withdraw form
+     * Show the withdraw form.
      */
     public function showWithdraw()
     {
@@ -43,9 +42,8 @@ class WalletController extends Controller
         return view('wallet.withdraw-options', compact('account', 'balances'));
     }
 
-
     /**
-     * Show the transfer form
+     * Show the transfer form.
      */
     public function showTransfer()
     {
@@ -55,9 +53,8 @@ class WalletController extends Controller
         return view('wallet.transfer', compact('account', 'balances'));
     }
 
-
     /**
-     * Show the convert form
+     * Show the convert form.
      */
     public function showConvert()
     {
@@ -70,17 +67,17 @@ class WalletController extends Controller
     }
 
     /**
-     * Show the transactions list
+     * Show the transactions list.
      */
     public function transactions()
     {
         $account = Auth::user()->accounts()->first();
 
-        if (!$account) {
+        if (! $account) {
             return view('wallet.transactions', [
-                'account' => null,
-                'transactions' => collect(),
-                'transactionsJson' => json_encode([])
+                'account'          => null,
+                'transactions'     => collect(),
+                'transactionsJson' => json_encode([]),
             ]);
         }
 
@@ -93,33 +90,33 @@ class WalletController extends Controller
         // Transform transactions for the view
         $transformedTransactions = $transactions->map(function ($transaction) {
             return [
-                'id' => $transaction->id,
-                'created_at' => $transaction->created_at->toISOString(),
-                'type' => $this->mapTransactionType($transaction->type),
-                'description' => $transaction->description,
-                'reference' => $transaction->reference ?? '',
-                'asset_code' => $transaction->asset_code,
-                'asset_symbol' => $this->getAssetSymbol($transaction->asset_code),
-                'amount' => $transaction->type === 'debit' ? -$transaction->amount : $transaction->amount,
-                'balance_after' => $transaction->balance_after ?? 0
+                'id'            => $transaction->id,
+                'created_at'    => $transaction->created_at->toISOString(),
+                'type'          => $this->mapTransactionType($transaction->type),
+                'description'   => $transaction->description,
+                'reference'     => $transaction->reference ?? '',
+                'asset_code'    => $transaction->asset_code,
+                'asset_symbol'  => $this->getAssetSymbol($transaction->asset_code),
+                'amount'        => $transaction->type === 'debit' ? -$transaction->amount : $transaction->amount,
+                'balance_after' => $transaction->balance_after ?? 0,
             ];
         });
 
         return view('wallet.transactions', [
-            'account' => $account,
-            'transactions' => $transactions,
-            'transactionsJson' => $transformedTransactions->toJson()
+            'account'          => $account,
+            'transactions'     => $transactions,
+            'transactionsJson' => $transformedTransactions->toJson(),
         ]);
     }
 
     private function mapTransactionType($type)
     {
         $typeMap = [
-            'credit' => 'deposit',
-            'debit' => 'withdrawal',
+            'credit'          => 'deposit',
+            'debit'           => 'withdrawal',
             'transfer_credit' => 'transfer_in',
-            'transfer_debit' => 'transfer_out',
-            'conversion' => 'conversion'
+            'transfer_debit'  => 'transfer_out',
+            'conversion'      => 'conversion',
         ];
 
         return $typeMap[$type] ?? $type;
@@ -131,7 +128,7 @@ class WalletController extends Controller
             'GCU' => 'Ǥ',
             'USD' => '$',
             'EUR' => '€',
-            'GBP' => '£'
+            'GBP' => '£',
         ];
 
         return $symbols[$assetCode] ?? $assetCode;

@@ -9,38 +9,38 @@ use Illuminate\Support\Facades\Redis;
 class DynamicRateLimitService
 {
     /**
-     * System load thresholds for dynamic rate limiting
+     * System load thresholds for dynamic rate limiting.
      */
     private const LOAD_THRESHOLDS = [
-        'low' => 0.3,      // < 30% load
-        'medium' => 0.6,   // 30-60% load
-        'high' => 0.8,     // 60-80% load
+        'low'      => 0.3,      // < 30% load
+        'medium'   => 0.6,   // 30-60% load
+        'high'     => 0.8,     // 60-80% load
         'critical' => 1.0, // > 80% load
     ];
 
     /**
-     * Rate limit multipliers based on system load
+     * Rate limit multipliers based on system load.
      */
     private const LOAD_MULTIPLIERS = [
-        'low' => 1.5,      // 150% of base limits
-        'medium' => 1.0,   // 100% of base limits
-        'high' => 0.7,     // 70% of base limits
+        'low'      => 1.5,      // 150% of base limits
+        'medium'   => 1.0,   // 100% of base limits
+        'high'     => 0.7,     // 70% of base limits
         'critical' => 0.4, // 40% of base limits
     ];
 
     /**
-     * User trust levels and their rate limit multipliers
+     * User trust levels and their rate limit multipliers.
      */
     private const TRUST_MULTIPLIERS = [
-        'new' => 0.5,        // 50% of base limits for new users
-        'basic' => 1.0,      // 100% of base limits
+        'new'      => 0.5,        // 50% of base limits for new users
+        'basic'    => 1.0,      // 100% of base limits
         'verified' => 1.5,   // 150% of base limits
-        'premium' => 2.0,    // 200% of base limits
-        'vip' => 3.0,        // 300% of base limits
+        'premium'  => 2.0,    // 200% of base limits
+        'vip'      => 3.0,        // 300% of base limits
     ];
 
     /**
-     * Get dynamic rate limit for a user and endpoint type
+     * Get dynamic rate limit for a user and endpoint type.
      */
     public function getDynamicRateLimit(string $rateLimitType, ?int $userId = null): array
     {
@@ -60,24 +60,24 @@ class DynamicRateLimitService
 
         // Apply multiplier to limits
         $adjustedConfig = $baseConfig;
-        $adjustedConfig['limit'] = (int)ceil($baseConfig['limit'] * $finalMultiplier);
+        $adjustedConfig['limit'] = (int) ceil($baseConfig['limit'] * $finalMultiplier);
         $adjustedConfig['original_limit'] = $baseConfig['limit'];
         $adjustedConfig['multiplier'] = $finalMultiplier;
         $adjustedConfig['adjustments'] = [
-            'load' => $loadMultiplier,
+            'load'  => $loadMultiplier,
             'trust' => $trustMultiplier,
-            'time' => $timeMultiplier,
+            'time'  => $timeMultiplier,
         ];
 
         // Log dynamic adjustment if significant
         if (abs($finalMultiplier - 1.0) > 0.2) {
             Log::info('Dynamic rate limit adjustment applied', [
                 'rate_limit_type' => $rateLimitType,
-                'user_id' => $userId,
-                'original_limit' => $baseConfig['limit'],
-                'adjusted_limit' => $adjustedConfig['limit'],
-                'multiplier' => $finalMultiplier,
-                'adjustments' => $adjustedConfig['adjustments'],
+                'user_id'         => $userId,
+                'original_limit'  => $baseConfig['limit'],
+                'adjusted_limit'  => $adjustedConfig['limit'],
+                'multiplier'      => $finalMultiplier,
+                'adjustments'     => $adjustedConfig['adjustments'],
             ]);
         }
 
@@ -85,7 +85,7 @@ class DynamicRateLimitService
     }
 
     /**
-     * Get system load multiplier
+     * Get system load multiplier.
      */
     private function getLoadMultiplier(): float
     {
@@ -101,7 +101,7 @@ class DynamicRateLimitService
     }
 
     /**
-     * Get current system load (0.0 to 1.0+)
+     * Get current system load (0.0 to 1.0+).
      */
     private function getCurrentSystemLoad(): float
     {
@@ -128,13 +128,14 @@ class DynamicRateLimitService
     }
 
     /**
-     * Get CPU load (simplified)
+     * Get CPU load (simplified).
      */
     private function getCpuLoad(): float
     {
         if (function_exists('sys_getloadavg')) {
             $load = sys_getloadavg();
             $cpuCount = $this->getCpuCount();
+
             return $cpuCount > 0 ? $load[0] / $cpuCount : 0.5;
         }
 
@@ -142,7 +143,7 @@ class DynamicRateLimitService
     }
 
     /**
-     * Get memory load
+     * Get memory load.
      */
     private function getMemoryLoad(): float
     {
@@ -156,7 +157,7 @@ class DynamicRateLimitService
     }
 
     /**
-     * Get Redis load
+     * Get Redis load.
      */
     private function getRedisLoad(): float
     {
@@ -177,12 +178,13 @@ class DynamicRateLimitService
             return min(1.0, $connectedClients / 100);
         } catch (\Exception $e) {
             Log::warning('Failed to get Redis load metrics', ['error' => $e->getMessage()]);
+
             return 0.5;
         }
     }
 
     /**
-     * Get database load (simplified)
+     * Get database load (simplified).
      */
     private function getDatabaseLoad(): float
     {
@@ -195,16 +197,17 @@ class DynamicRateLimitService
             return min(1.0, $connections / 50);
         } catch (\Exception $e) {
             Log::warning('Failed to get database load metrics', ['error' => $e->getMessage()]);
+
             return 0.5;
         }
     }
 
     /**
-     * Get user trust level multiplier
+     * Get user trust level multiplier.
      */
     private function getUserTrustMultiplier(?int $userId): float
     {
-        if (!$userId) {
+        if (! $userId) {
             return self::TRUST_MULTIPLIERS['new'];
         }
 
@@ -212,18 +215,19 @@ class DynamicRateLimitService
 
         return Cache::remember($cacheKey, 3600, function () use ($userId) {
             $trustLevel = $this->calculateUserTrustLevel($userId);
+
             return self::TRUST_MULTIPLIERS[$trustLevel] ?? self::TRUST_MULTIPLIERS['basic'];
         });
     }
 
     /**
-     * Calculate user trust level based on account metrics
+     * Calculate user trust level based on account metrics.
      */
     private function calculateUserTrustLevel(int $userId): string
     {
         try {
             $user = \App\Models\User::find($userId);
-            if (!$user) {
+            if (! $user) {
                 return 'new';
             }
 
@@ -256,18 +260,19 @@ class DynamicRateLimitService
         } catch (\Exception $e) {
             Log::warning('Failed to calculate user trust level', [
                 'user_id' => $userId,
-                'error' => $e->getMessage()
+                'error'   => $e->getMessage(),
             ]);
+
             return 'basic';
         }
     }
 
     /**
-     * Get time-of-day multiplier
+     * Get time-of-day multiplier.
      */
     private function getTimeOfDayMultiplier(): float
     {
-        $hour = (int)now()->format('H');
+        $hour = (int) now()->format('H');
 
         // Business hours (9 AM - 5 PM): higher limits
         if ($hour >= 9 && $hour <= 17) {
@@ -284,34 +289,34 @@ class DynamicRateLimitService
     }
 
     /**
-     * Get base rate limit configuration
+     * Get base rate limit configuration.
      */
     private function getBaseRateLimit(string $rateLimitType): array
     {
         // This would typically come from a configuration service
         $baseRateLimits = [
-            'auth' => ['limit' => 5, 'window' => 60],
+            'auth'        => ['limit' => 5, 'window' => 60],
             'transaction' => ['limit' => 30, 'window' => 60],
-            'query' => ['limit' => 100, 'window' => 60],
-            'admin' => ['limit' => 200, 'window' => 60],
-            'public' => ['limit' => 60, 'window' => 60],
+            'query'       => ['limit' => 100, 'window' => 60],
+            'admin'       => ['limit' => 200, 'window' => 60],
+            'public'      => ['limit' => 60, 'window' => 60],
         ];
 
         return $baseRateLimits[$rateLimitType] ?? $baseRateLimits['query'];
     }
 
     /**
-     * Helper methods for system metrics
+     * Helper methods for system metrics.
      */
     private function getCpuCount(): int
     {
-        return (int)(shell_exec('nproc') ?: 1);
+        return (int) (shell_exec('nproc') ?: 1);
     }
 
     private function getMemoryInfo(): array
     {
         $meminfo = file_get_contents('/proc/meminfo');
-        if (!$meminfo) {
+        if (! $meminfo) {
             return ['total' => 0, 'used' => 0];
         }
 
@@ -334,11 +339,12 @@ class DynamicRateLimitService
     private function getUserViolationCount(int $userId): int
     {
         $key = "user_violations:{$userId}";
+
         return Cache::get($key, 0);
     }
 
     /**
-     * Record rate limit violation for user trust calculation
+     * Record rate limit violation for user trust calculation.
      */
     public function recordViolation(int $userId, string $violationType): void
     {
@@ -347,23 +353,23 @@ class DynamicRateLimitService
         Cache::put($key, $count + 1, 86400 * 30); // 30 days
 
         Log::warning('Rate limit violation recorded', [
-            'user_id' => $userId,
-            'violation_type' => $violationType,
+            'user_id'          => $userId,
+            'violation_type'   => $violationType,
             'total_violations' => $count + 1,
         ]);
     }
 
     /**
-     * Get system load metrics for monitoring
+     * Get system load metrics for monitoring.
      */
     public function getSystemMetrics(): array
     {
         return [
-            'cpu_load' => Cache::get('system_metrics:cpu_load', 0),
-            'memory_load' => Cache::get('system_metrics:memory_load', 0),
-            'redis_load' => Cache::get('system_metrics:redis_load', 0),
+            'cpu_load'      => Cache::get('system_metrics:cpu_load', 0),
+            'memory_load'   => Cache::get('system_metrics:memory_load', 0),
+            'redis_load'    => Cache::get('system_metrics:redis_load', 0),
             'database_load' => Cache::get('system_metrics:database_load', 0),
-            'overall_load' => $this->getCurrentSystemLoad(),
+            'overall_load'  => $this->getCurrentSystemLoad(),
         ];
     }
 }

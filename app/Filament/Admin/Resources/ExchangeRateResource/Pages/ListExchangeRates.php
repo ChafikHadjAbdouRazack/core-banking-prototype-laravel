@@ -6,8 +6,8 @@ namespace App\Filament\Admin\Resources\ExchangeRateResource\Pages;
 
 use App\Filament\Admin\Resources\ExchangeRateResource;
 use Filament\Actions;
-use Filament\Resources\Pages\ListRecords;
 use Filament\Resources\Components\Tab;
+use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Builder;
 
 class ListExchangeRates extends ListRecords

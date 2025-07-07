@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Crypt;
 
 class KycVerification extends Model
@@ -56,21 +56,21 @@ class KycVerification extends Model
     ];
 
     protected $casts = [
-        'verification_data' => 'array',
-        'extracted_data' => 'array',
-        'checks_performed' => 'array',
-        'risk_factors' => 'array',
+        'verification_data'   => 'array',
+        'extracted_data'      => 'array',
+        'checks_performed'    => 'array',
+        'risk_factors'        => 'array',
         'verification_report' => 'array',
-        'confidence_score' => 'decimal:2',
-        'pep_check' => 'boolean',
-        'sanctions_check' => 'boolean',
+        'confidence_score'    => 'decimal:2',
+        'pep_check'           => 'boolean',
+        'sanctions_check'     => 'boolean',
         'adverse_media_check' => 'boolean',
-        'document_expiry' => 'date',
-        'date_of_birth' => 'date',
-        'started_at' => 'datetime',
-        'completed_at' => 'datetime',
-        'expires_at' => 'datetime',
-        'reviewed_at' => 'datetime',
+        'document_expiry'     => 'date',
+        'date_of_birth'       => 'date',
+        'started_at'          => 'datetime',
+        'completed_at'        => 'datetime',
+        'expires_at'          => 'datetime',
+        'reviewed_at'         => 'datetime',
     ];
 
     // Encrypted fields
@@ -85,36 +85,45 @@ class KycVerification extends Model
         'postal_code',
     ];
 
-    const TYPE_IDENTITY = 'identity';
-    const TYPE_ADDRESS = 'address';
-    const TYPE_INCOME = 'income';
-    const TYPE_ENHANCED_DUE_DILIGENCE = 'enhanced_due_diligence';
+    public const TYPE_IDENTITY = 'identity';
 
-    const STATUS_PENDING = 'pending';
-    const STATUS_IN_PROGRESS = 'in_progress';
-    const STATUS_COMPLETED = 'completed';
-    const STATUS_FAILED = 'failed';
-    const STATUS_EXPIRED = 'expired';
+    public const TYPE_ADDRESS = 'address';
 
-    const RISK_LEVEL_LOW = 'low';
-    const RISK_LEVEL_MEDIUM = 'medium';
-    const RISK_LEVEL_HIGH = 'high';
+    public const TYPE_INCOME = 'income';
 
-    const VERIFICATION_TYPES = [
-        self::TYPE_IDENTITY => 'Identity Verification',
-        self::TYPE_ADDRESS => 'Address Verification',
-        self::TYPE_INCOME => 'Income Verification',
+    public const TYPE_ENHANCED_DUE_DILIGENCE = 'enhanced_due_diligence';
+
+    public const STATUS_PENDING = 'pending';
+
+    public const STATUS_IN_PROGRESS = 'in_progress';
+
+    public const STATUS_COMPLETED = 'completed';
+
+    public const STATUS_FAILED = 'failed';
+
+    public const STATUS_EXPIRED = 'expired';
+
+    public const RISK_LEVEL_LOW = 'low';
+
+    public const RISK_LEVEL_MEDIUM = 'medium';
+
+    public const RISK_LEVEL_HIGH = 'high';
+
+    public const VERIFICATION_TYPES = [
+        self::TYPE_IDENTITY               => 'Identity Verification',
+        self::TYPE_ADDRESS                => 'Address Verification',
+        self::TYPE_INCOME                 => 'Income Verification',
         self::TYPE_ENHANCED_DUE_DILIGENCE => 'Enhanced Due Diligence',
     ];
 
-    const DOCUMENT_TYPES = [
-        'passport' => 'Passport',
-        'driving_license' => 'Driving License',
-        'national_id' => 'National ID Card',
+    public const DOCUMENT_TYPES = [
+        'passport'         => 'Passport',
+        'driving_license'  => 'Driving License',
+        'national_id'      => 'National ID Card',
         'residence_permit' => 'Residence Permit',
-        'utility_bill' => 'Utility Bill',
-        'bank_statement' => 'Bank Statement',
-        'tax_return' => 'Tax Return',
+        'utility_bill'     => 'Utility Bill',
+        'bank_statement'   => 'Bank Statement',
+        'tax_return'       => 'Tax Return',
     ];
 
     protected static function boot()
@@ -122,7 +131,7 @@ class KycVerification extends Model
         parent::boot();
 
         static::creating(function ($verification) {
-            if (!$verification->verification_number) {
+            if (! $verification->verification_number) {
                 $verification->verification_number = static::generateVerificationNumber();
             }
         });
@@ -302,7 +311,7 @@ class KycVerification extends Model
     public function markAsCompleted(array $data = []): void
     {
         $this->update(array_merge($data, [
-            'status' => self::STATUS_COMPLETED,
+            'status'       => self::STATUS_COMPLETED,
             'completed_at' => now(),
         ]));
     }
@@ -310,9 +319,9 @@ class KycVerification extends Model
     public function markAsFailed(string $reason): void
     {
         $this->update([
-            'status' => self::STATUS_FAILED,
+            'status'         => self::STATUS_FAILED,
             'failure_reason' => $reason,
-            'completed_at' => now(),
+            'completed_at'   => now(),
         ]);
     }
 

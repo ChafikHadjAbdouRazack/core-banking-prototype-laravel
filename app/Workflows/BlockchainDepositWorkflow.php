@@ -2,14 +2,9 @@
 
 namespace App\Workflows;
 
-use App\Domain\Wallet\Aggregates\BlockchainWallet;
-use App\Domain\Wallet\Services\BlockchainWalletService;
-use App\Domain\Wallet\Contracts\BlockchainConnector;
 use App\Domain\Account\Aggregates\Account;
 use App\Models\User;
 use App\Workflows\Activities\BlockchainDepositActivities;
-use Brick\Math\BigDecimal;
-use Illuminate\Support\Facades\DB;
 use Workflow\ActivityStub;
 use Workflow\Workflow;
 use Workflow\WorkflowStub;
@@ -24,7 +19,7 @@ class BlockchainDepositWorkflow extends Workflow
             BlockchainDepositActivities::class,
             [
                 'startToCloseTimeout' => 300, // 5 minutes
-                'retryAttempts' => 3,
+                'retryAttempts'       => 3,
             ]
         );
     }
@@ -45,7 +40,7 @@ class BlockchainDepositWorkflow extends Workflow
             $transactionHash
         );
 
-        if (!$transactionData['confirmed']) {
+        if (! $transactionData['confirmed']) {
             // Wait for confirmations
             yield $this->activities->waitForConfirmations(
                 $chain,
@@ -77,8 +72,8 @@ class BlockchainDepositWorkflow extends Workflow
 
         if ($isDuplicate) {
             return [
-                'status' => 'duplicate',
-                'message' => 'This transaction has already been processed',
+                'status'           => 'duplicate',
+                'message'          => 'This transaction has already been processed',
                 'transaction_hash' => $transactionHash,
             ];
         }
@@ -114,9 +109,9 @@ class BlockchainDepositWorkflow extends Workflow
             "Blockchain deposit from {$chain}",
             [
                 'transaction_hash' => $transactionHash,
-                'chain' => $chain,
-                'asset' => $asset,
-                'amount' => $amount,
+                'chain'            => $chain,
+                'asset'            => $asset,
+                'amount'           => $amount,
             ]
         );
 
@@ -142,12 +137,12 @@ class BlockchainDepositWorkflow extends Workflow
         );
 
         return [
-            'status' => 'completed',
+            'status'           => 'completed',
             'transaction_hash' => $transactionHash,
-            'amount' => $amount,
-            'asset' => $asset,
-            'fiat_value' => $fiatValue,
-            'chain' => $chain,
+            'amount'           => $amount,
+            'asset'            => $asset,
+            'fiat_value'       => $fiatValue,
+            'chain'            => $chain,
         ];
     }
 }

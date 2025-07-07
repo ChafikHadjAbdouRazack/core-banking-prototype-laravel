@@ -8,9 +8,9 @@ use App\Models\Account;
 class CreateAccount extends AccountAction
 {
     /**
-     * @param \App\Domain\Account\Events\AccountCreated $event
+     * @param AccountCreated $event
      *
-     * @return \App\Models\Account
+     * @return Account
      */
     public function __invoke(AccountCreated $event): Account
     {

@@ -2,15 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\Lending\LoanApplicationService;
+use App\Domain\Lending\DataObjects\LoanApplication;
+use App\Domain\Lending\Projections\Loan;
+use App\Domain\Lending\Services\CollateralManagementService;
 use App\Domain\Lending\Services\CreditScoringService;
 use App\Domain\Lending\Services\RiskAssessmentService;
-use App\Domain\Lending\Services\CollateralManagementService;
-use App\Domain\Lending\DataObjects\LoanApplication;
-use App\Domain\Lending\DataObjects\RepaymentSchedule;
-use App\Domain\Lending\Projections\Loan;
-use App\Domain\Lending\Projections\LoanRepayment;
 use App\Models\Account;
+use App\Services\Lending\LoanApplicationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -26,7 +24,7 @@ class LendingController extends Controller
     }
 
     /**
-     * Display lending dashboard
+     * Display lending dashboard.
      */
     public function index()
     {
@@ -52,7 +50,7 @@ class LendingController extends Controller
     }
 
     /**
-     * Show loan application form
+     * Show loan application form.
      */
     public function apply()
     {
@@ -66,28 +64,28 @@ class LendingController extends Controller
     }
 
     /**
-     * Submit loan application
+     * Submit loan application.
      */
     public function submitApplication(Request $request)
     {
         $validated = $request->validate([
-            'account_id' => 'required|uuid',
-            'loan_product' => 'required|string',
-            'amount' => 'required|numeric|min:100|max:1000000',
-            'term_months' => 'required|integer|min:1|max:360',
-            'purpose' => 'required|string|max:500',
-            'collateral_type' => 'required|in:crypto,asset,none',
-            'collateral_asset' => 'required_unless:collateral_type,none|string',
+            'account_id'        => 'required|uuid',
+            'loan_product'      => 'required|string',
+            'amount'            => 'required|numeric|min:100|max:1000000',
+            'term_months'       => 'required|integer|min:1|max:360',
+            'purpose'           => 'required|string|max:500',
+            'collateral_type'   => 'required|in:crypto,asset,none',
+            'collateral_asset'  => 'required_unless:collateral_type,none|string',
             'collateral_amount' => 'required_unless:collateral_type,none|numeric|min:0',
             'employment_status' => 'required|string',
-            'annual_income' => 'required|numeric|min:0',
+            'annual_income'     => 'required|numeric|min:0',
         ]);
 
         $account = Account::where('uuid', $validated['account_id'])
             ->where('user_uuid', Auth::user()->uuid)
             ->first();
 
-        if (!$account) {
+        if (! $account) {
             return back()->withErrors(['account_id' => 'Invalid account']);
         }
 
@@ -102,7 +100,7 @@ class LendingController extends Controller
                 purpose: $validated['purpose'],
                 collateralType: $validated['collateral_type'],
                 collateralDetails: $validated['collateral_type'] !== 'none' ? [
-                    'asset' => $validated['collateral_asset'],
+                    'asset'  => $validated['collateral_asset'],
                     'amount' => $validated['collateral_amount'],
                 ] : [],
                 employmentStatus: $validated['employment_status'],
@@ -124,13 +122,13 @@ class LendingController extends Controller
     }
 
     /**
-     * Show loan application details
+     * Show loan application details.
      */
     public function showApplication($applicationId)
     {
         $application = $this->getLoanApplication($applicationId);
 
-        if (!$application || !$this->userOwnsApplication($application)) {
+        if (! $application || ! $this->userOwnsApplication($application)) {
             abort(404, 'Application not found');
         }
 
@@ -141,13 +139,13 @@ class LendingController extends Controller
     }
 
     /**
-     * Show loan details
+     * Show loan details.
      */
     public function showLoan($loanId)
     {
         $loan = Loan::where('loan_uuid', $loanId)->first();
 
-        if (!$loan || !$this->userOwnsLoan($loan)) {
+        if (! $loan || ! $this->userOwnsLoan($loan)) {
             abort(404, 'Loan not found');
         }
 
@@ -160,13 +158,13 @@ class LendingController extends Controller
     }
 
     /**
-     * Show repayment form
+     * Show repayment form.
      */
     public function repay($loanId)
     {
         $loan = Loan::where('loan_uuid', $loanId)->first();
 
-        if (!$loan || !$this->userOwnsLoan($loan)) {
+        if (! $loan || ! $this->userOwnsLoan($loan)) {
             abort(404, 'Loan not found');
         }
 
@@ -178,19 +176,19 @@ class LendingController extends Controller
     }
 
     /**
-     * Process loan repayment
+     * Process loan repayment.
      */
     public function processRepayment(Request $request, $loanId)
     {
         $validated = $request->validate([
-            'account_id' => 'required|uuid',
-            'amount' => 'required|numeric|min:0.01',
+            'account_id'   => 'required|uuid',
+            'amount'       => 'required|numeric|min:0.01',
             'payment_type' => 'required|in:scheduled,partial,full',
         ]);
 
         $loan = Loan::where('loan_uuid', $loanId)->first();
 
-        if (!$loan || !$this->userOwnsLoan($loan)) {
+        if (! $loan || ! $this->userOwnsLoan($loan)) {
             abort(404, 'Loan not found');
         }
 
@@ -198,7 +196,7 @@ class LendingController extends Controller
             ->where('user_uuid', Auth::user()->uuid)
             ->first();
 
-        if (!$account) {
+        if (! $account) {
             return back()->withErrors(['account_id' => 'Invalid account']);
         }
 
@@ -221,7 +219,7 @@ class LendingController extends Controller
     }
 
     /**
-     * Calculate user lending statistics
+     * Calculate user lending statistics.
      */
     private function calculateUserStatistics($loans)
     {
@@ -231,60 +229,60 @@ class LendingController extends Controller
         $outstandingBalance = $loans->where('status', 'active')->sum('outstanding_balance');
 
         return [
-            'active_loans' => $activeLoans,
-            'total_loans' => $loans->count(),
-            'total_borrowed' => $totalBorrowed,
-            'total_repaid' => $totalRepaid,
+            'active_loans'        => $activeLoans,
+            'total_loans'         => $loans->count(),
+            'total_borrowed'      => $totalBorrowed,
+            'total_repaid'        => $totalRepaid,
             'outstanding_balance' => $outstandingBalance,
-            'on_time_payments' => $this->calculateOnTimePayments($loans),
+            'on_time_payments'    => $this->calculateOnTimePayments($loans),
         ];
     }
 
     /**
-     * Get available loan products
+     * Get available loan products.
      */
     private function getAvailableLoanProducts()
     {
         return [
             [
-                'id' => 'personal',
-                'name' => 'Personal Loan',
-                'description' => 'Unsecured personal loans for any purpose',
-                'min_amount' => 1000,
-                'max_amount' => 50000,
-                'min_term' => 6,
-                'max_term' => 60,
-                'interest_rate' => 8.5,
+                'id'                  => 'personal',
+                'name'                => 'Personal Loan',
+                'description'         => 'Unsecured personal loans for any purpose',
+                'min_amount'          => 1000,
+                'max_amount'          => 50000,
+                'min_term'            => 6,
+                'max_term'            => 60,
+                'interest_rate'       => 8.5,
                 'collateral_required' => false,
             ],
             [
-                'id' => 'crypto-backed',
-                'name' => 'Crypto-Backed Loan',
-                'description' => 'Loans backed by cryptocurrency collateral',
-                'min_amount' => 100,
-                'max_amount' => 1000000,
-                'min_term' => 1,
-                'max_term' => 36,
-                'interest_rate' => 4.5,
+                'id'                  => 'crypto-backed',
+                'name'                => 'Crypto-Backed Loan',
+                'description'         => 'Loans backed by cryptocurrency collateral',
+                'min_amount'          => 100,
+                'max_amount'          => 1000000,
+                'min_term'            => 1,
+                'max_term'            => 36,
+                'interest_rate'       => 4.5,
                 'collateral_required' => true,
-                'ltv_ratio' => 50, // Loan-to-value ratio
+                'ltv_ratio'           => 50, // Loan-to-value ratio
             ],
             [
-                'id' => 'business',
-                'name' => 'Business Loan',
-                'description' => 'Loans for business expansion and operations',
-                'min_amount' => 5000,
-                'max_amount' => 500000,
-                'min_term' => 12,
-                'max_term' => 120,
-                'interest_rate' => 6.5,
+                'id'                  => 'business',
+                'name'                => 'Business Loan',
+                'description'         => 'Loans for business expansion and operations',
+                'min_amount'          => 5000,
+                'max_amount'          => 500000,
+                'min_term'            => 12,
+                'max_term'            => 120,
+                'interest_rate'       => 6.5,
                 'collateral_required' => false,
             ],
         ];
     }
 
     /**
-     * Get user's credit score
+     * Get user's credit score.
      */
     private function getUserCreditScore()
     {
@@ -292,70 +290,72 @@ class LendingController extends Controller
 
         // Mock credit score calculation
         return [
-            'score' => 720,
-            'rating' => 'Good',
+            'score'   => 720,
+            'rating'  => 'Good',
             'factors' => [
-                'payment_history' => 85,
+                'payment_history'    => 85,
                 'credit_utilization' => 75,
-                'account_history' => 90,
-                'credit_mix' => 70,
-                'new_credit' => 80,
+                'account_history'    => 90,
+                'credit_mix'         => 70,
+                'new_credit'         => 80,
             ],
             'last_updated' => now()->subDays(7),
         ];
     }
 
     /**
-     * Get available collateral assets
+     * Get available collateral assets.
      */
     private function getCollateralAssets()
     {
         return [
-            'BTC' => ['name' => 'Bitcoin', 'ltv' => 50],
-            'ETH' => ['name' => 'Ethereum', 'ltv' => 60],
+            'BTC'  => ['name' => 'Bitcoin', 'ltv' => 50],
+            'ETH'  => ['name' => 'Ethereum', 'ltv' => 60],
             'USDT' => ['name' => 'Tether', 'ltv' => 80],
             'USDC' => ['name' => 'USD Coin', 'ltv' => 80],
         ];
     }
 
     /**
-     * Get loan application
+     * Get loan application.
      */
     private function getLoanApplication($applicationId)
     {
         // Mock loan application data
-        return (object)[
-            'uuid' => $applicationId,
+        return (object) [
+            'uuid'                  => $applicationId,
             'borrower_account_uuid' => Auth::user()->accounts()->first()->uuid,
-            'amount' => 10000,
-            'term_months' => 12,
-            'purpose' => 'Home improvement',
-            'status' => 'pending',
-            'created_at' => now()->subDays(2),
-            'metadata' => [],
+            'amount'                => 10000,
+            'term_months'           => 12,
+            'purpose'               => 'Home improvement',
+            'status'                => 'pending',
+            'created_at'            => now()->subDays(2),
+            'metadata'              => [],
         ];
     }
 
     /**
-     * Check if user owns application
+     * Check if user owns application.
      */
     private function userOwnsApplication($application)
     {
         $userAccountUuids = Auth::user()->accounts()->pluck('uuid')->toArray();
+
         return in_array($application->borrower_account_uuid, $userAccountUuids);
     }
 
     /**
-     * Check if user owns loan
+     * Check if user owns loan.
      */
     private function userOwnsLoan($loan)
     {
         $userAccountUuids = Auth::user()->accounts()->pluck('uuid')->toArray();
+
         return in_array($loan->borrower_account_uuid, $userAccountUuids);
     }
 
     /**
-     * Get next payment for loan
+     * Get next payment for loan.
      */
     private function getNextPayment($loan)
     {
@@ -372,7 +372,7 @@ class LendingController extends Controller
     }
 
     /**
-     * Calculate on-time payment percentage
+     * Calculate on-time payment percentage.
      */
     private function calculateOnTimePayments($loans)
     {

@@ -5,44 +5,44 @@ declare(strict_types=1);
 namespace App\Domain\Banking\Contracts;
 
 use App\Domain\Banking\Models\BankAccount;
+use App\Domain\Banking\Models\BankBalance;
+use App\Domain\Banking\Models\BankCapabilities;
+use App\Domain\Banking\Models\BankStatement;
 use App\Domain\Banking\Models\BankTransaction;
 use App\Domain\Banking\Models\BankTransfer;
-use App\Domain\Banking\Models\BankBalance;
-use App\Domain\Banking\Models\BankStatement;
-use App\Domain\Banking\Models\BankCapabilities;
 use Illuminate\Support\Collection;
 
 interface IBankConnector
 {
     /**
-     * Get unique identifier for this bank connector
+     * Get unique identifier for this bank connector.
      */
     public function getBankCode(): string;
 
     /**
-     * Get human-readable bank name
+     * Get human-readable bank name.
      */
     public function getBankName(): string;
 
     /**
-     * Check if the bank connector is available and operational
+     * Check if the bank connector is available and operational.
      */
     public function isAvailable(): bool;
 
     /**
-     * Get bank capabilities and features
+     * Get bank capabilities and features.
      */
     public function getCapabilities(): BankCapabilities;
 
     /**
-     * Authenticate with the bank API
+     * Authenticate with the bank API.
      *
      * @throws \App\Domain\Banking\Exceptions\BankAuthenticationException
      */
     public function authenticate(): void;
 
     /**
-     * Create a new bank account
+     * Create a new bank account.
      *
      * @param array $accountDetails Account creation parameters
      * @return BankAccount
@@ -51,7 +51,7 @@ interface IBankConnector
     public function createAccount(array $accountDetails): BankAccount;
 
     /**
-     * Get account information
+     * Get account information.
      *
      * @param string $accountId External bank account ID
      * @return BankAccount
@@ -60,7 +60,7 @@ interface IBankConnector
     public function getAccount(string $accountId): BankAccount;
 
     /**
-     * Get account balance
+     * Get account balance.
      *
      * @param string $accountId External bank account ID
      * @param string|null $currency Specific currency (null for all)
@@ -69,7 +69,7 @@ interface IBankConnector
     public function getBalance(string $accountId, ?string $currency = null): BankBalance|Collection;
 
     /**
-     * Initiate a bank transfer
+     * Initiate a bank transfer.
      *
      * @param array $transferDetails Transfer parameters
      * @return BankTransfer
@@ -78,7 +78,7 @@ interface IBankConnector
     public function initiateTransfer(array $transferDetails): BankTransfer;
 
     /**
-     * Get transfer status
+     * Get transfer status.
      *
      * @param string $transferId Bank transfer ID
      * @return BankTransfer
@@ -86,7 +86,7 @@ interface IBankConnector
     public function getTransferStatus(string $transferId): BankTransfer;
 
     /**
-     * Cancel a pending transfer
+     * Cancel a pending transfer.
      *
      * @param string $transferId Bank transfer ID
      * @return bool
@@ -94,7 +94,7 @@ interface IBankConnector
     public function cancelTransfer(string $transferId): bool;
 
     /**
-     * Get transaction history
+     * Get transaction history.
      *
      * @param string $accountId External bank account ID
      * @param \DateTime $from Start date
@@ -105,7 +105,7 @@ interface IBankConnector
     public function getTransactions(string $accountId, \DateTime $from, \DateTime $to, int $limit = 100): Collection;
 
     /**
-     * Get account statement
+     * Get account statement.
      *
      * @param string $accountId External bank account ID
      * @param \DateTime $from Start date
@@ -116,7 +116,7 @@ interface IBankConnector
     public function getStatement(string $accountId, \DateTime $from, \DateTime $to, string $format = 'JSON'): BankStatement;
 
     /**
-     * Validate IBAN
+     * Validate IBAN.
      *
      * @param string $iban IBAN to validate
      * @return bool
@@ -124,14 +124,14 @@ interface IBankConnector
     public function validateIBAN(string $iban): bool;
 
     /**
-     * Get supported currencies
+     * Get supported currencies.
      *
      * @return array<string>
      */
     public function getSupportedCurrencies(): array;
 
     /**
-     * Get transfer limits
+     * Get transfer limits.
      *
      * @param string $accountId External bank account ID
      * @param string $transferType Type of transfer (SEPA, SWIFT, etc.)
@@ -140,7 +140,7 @@ interface IBankConnector
     public function getTransferLimits(string $accountId, string $transferType): array;
 
     /**
-     * Verify webhook signature
+     * Verify webhook signature.
      *
      * @param string $payload Webhook payload
      * @param string $signature Webhook signature
@@ -150,7 +150,7 @@ interface IBankConnector
     public function verifyWebhookSignature(string $payload, string $signature, array $headers): bool;
 
     /**
-     * Process webhook notification
+     * Process webhook notification.
      *
      * @param string $payload Webhook payload
      * @return array Processed webhook data

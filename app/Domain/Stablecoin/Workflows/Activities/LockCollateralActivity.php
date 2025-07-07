@@ -12,7 +12,7 @@ use Workflow\Activity;
 class LockCollateralActivity extends Activity
 {
     /**
-     * Lock collateral from account
+     * Lock collateral from account.
      */
     public function execute(
         AccountUuid $accountUuid,

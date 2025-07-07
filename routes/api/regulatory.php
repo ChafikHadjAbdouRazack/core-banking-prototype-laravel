@@ -1,8 +1,8 @@
 <?php
 
-use App\Http\Controllers\Api\RegulatoryReportingController;
-use App\Http\Controllers\Api\ComplianceController;
 use App\Http\Controllers\Api\AuditController;
+use App\Http\Controllers\Api\ComplianceController;
+use App\Http\Controllers\Api\RegulatoryReportingController;
 use Illuminate\Support\Facades\Route;
 
 /*

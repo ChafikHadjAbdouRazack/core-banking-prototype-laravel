@@ -10,22 +10,22 @@ use App\Domain\Governance\ValueObjects\PollResult;
 interface IPollExecutor
 {
     /**
-     * Execute the poll result if it meets criteria
+     * Execute the poll result if it meets criteria.
      */
     public function execute(Poll $poll, PollResult $result): bool;
 
     /**
-     * Check if poll result can be executed
+     * Check if poll result can be executed.
      */
     public function canExecute(Poll $poll, PollResult $result): bool;
 
     /**
-     * Get execution requirements
+     * Get execution requirements.
      */
     public function getExecutionRequirements(): array;
 
     /**
-     * Get executor name
+     * Get executor name.
      */
     public function getName(): string;
 }

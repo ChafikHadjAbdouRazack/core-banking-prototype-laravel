@@ -27,7 +27,7 @@ class BankAccount
     }
 
     /**
-     * Check if account is active
+     * Check if account is active.
      */
     public function isActive(): bool
     {
@@ -35,7 +35,7 @@ class BankAccount
     }
 
     /**
-     * Check if account is closed
+     * Check if account is closed.
      */
     public function isClosed(): bool
     {
@@ -43,11 +43,11 @@ class BankAccount
     }
 
     /**
-     * Check if account supports a specific currency
+     * Check if account supports a specific currency.
      */
     public function supportsCurrency(string $currency): bool
     {
-        if (!isset($this->metadata['supported_currencies'])) {
+        if (! isset($this->metadata['supported_currencies'])) {
             return $this->currency === $currency;
         }
 
@@ -55,7 +55,7 @@ class BankAccount
     }
 
     /**
-     * Get account label for display
+     * Get account label for display.
      */
     public function getLabel(): string
     {
@@ -68,30 +68,30 @@ class BankAccount
     }
 
     /**
-     * Convert to array for storage
+     * Convert to array for storage.
      */
     public function toArray(): array
     {
         return [
-            'id' => $this->id,
-            'bank_code' => $this->bankCode,
+            'id'             => $this->id,
+            'bank_code'      => $this->bankCode,
             'account_number' => $this->accountNumber,
-            'iban' => $this->iban,
-            'swift' => $this->swift,
-            'currency' => $this->currency,
-            'account_type' => $this->accountType,
-            'status' => $this->status,
-            'holder_name' => $this->holderName,
+            'iban'           => $this->iban,
+            'swift'          => $this->swift,
+            'currency'       => $this->currency,
+            'account_type'   => $this->accountType,
+            'status'         => $this->status,
+            'holder_name'    => $this->holderName,
             'holder_address' => $this->holderAddress,
-            'metadata' => $this->metadata,
-            'created_at' => $this->createdAt->toIso8601String(),
-            'updated_at' => $this->updatedAt->toIso8601String(),
-            'closed_at' => $this->closedAt?->toIso8601String(),
+            'metadata'       => $this->metadata,
+            'created_at'     => $this->createdAt->toIso8601String(),
+            'updated_at'     => $this->updatedAt->toIso8601String(),
+            'closed_at'      => $this->closedAt?->toIso8601String(),
         ];
     }
 
     /**
-     * Create from array
+     * Create from array.
      */
     public static function fromArray(array $data): self
     {

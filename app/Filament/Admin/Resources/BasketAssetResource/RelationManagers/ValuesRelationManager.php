@@ -8,7 +8,6 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class ValuesRelationManager extends RelationManager
 {
@@ -55,8 +54,8 @@ class ValuesRelationManager extends RelationManager
                     ->since()
                     ->color(fn ($state) => match (true) {
                         $state->diffInMinutes() < 5 => 'success',
-                        $state->diffInHours() < 1 => 'warning',
-                        default => 'gray',
+                        $state->diffInHours() < 1   => 'warning',
+                        default                     => 'gray',
                     }),
 
                 Tables\Columns\ViewColumn::make('component_values')
@@ -65,16 +64,13 @@ class ValuesRelationManager extends RelationManager
             ])
             ->filters([
                 Tables\Filters\Filter::make('last_24_hours')
-                    ->query(fn (Builder $query): Builder =>
-                        $query->where('calculated_at', '>=', now()->subDay())),
+                    ->query(fn (Builder $query): Builder => $query->where('calculated_at', '>=', now()->subDay())),
 
                 Tables\Filters\Filter::make('last_7_days')
-                    ->query(fn (Builder $query): Builder =>
-                        $query->where('calculated_at', '>=', now()->subWeek())),
+                    ->query(fn (Builder $query): Builder => $query->where('calculated_at', '>=', now()->subWeek())),
 
                 Tables\Filters\Filter::make('last_30_days')
-                    ->query(fn (Builder $query): Builder =>
-                        $query->where('calculated_at', '>=', now()->subMonth())),
+                    ->query(fn (Builder $query): Builder => $query->where('calculated_at', '>=', now()->subMonth())),
             ])
             ->defaultSort('calculated_at', 'desc')
             ->paginated([10, 25, 50, 100])

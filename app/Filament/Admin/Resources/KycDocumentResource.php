@@ -3,15 +3,11 @@
 namespace App\Filament\Admin\Resources;
 
 use App\Filament\Admin\Resources\KycDocumentResource\Pages;
-use App\Filament\Admin\Resources\KycDocumentResource\RelationManagers;
 use App\Models\KycDocument;
-use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class KycDocumentResource extends Resource
 {
@@ -56,9 +52,9 @@ class KycDocumentResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListKycDocuments::route('/'),
+            'index'  => Pages\ListKycDocuments::route('/'),
             'create' => Pages\CreateKycDocument::route('/create'),
-            'edit' => Pages\EditKycDocument::route('/{record}/edit'),
+            'edit'   => Pages\EditKycDocument::route('/{record}/edit'),
         ];
     }
 }

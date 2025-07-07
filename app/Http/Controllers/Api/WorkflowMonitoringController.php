@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Workflow\Models\StoredWorkflow;
-use Workflow\Models\StoredWorkflowLog;
 use Workflow\Models\StoredWorkflowException;
+use Workflow\Models\StoredWorkflowLog;
 
 /**
  * @OA\Tag(
@@ -18,7 +18,7 @@ use Workflow\Models\StoredWorkflowException;
 class WorkflowMonitoringController extends Controller
 {
     /**
-     * Get all workflows with filtering and pagination
+     * Get all workflows with filtering and pagination.
      *
      * @OA\Get(
      *     path="/api/workflows",
@@ -95,19 +95,19 @@ class WorkflowMonitoringController extends Controller
     public function index(Request $request): JsonResponse
     {
         $request->validate([
-            'status' => 'sometimes|string|in:created,pending,running,completed,failed,waiting',
-            'class' => 'sometimes|string',
-            'per_page' => 'sometimes|integer|min:1|max:100',
-            'search' => 'sometimes|string|max:255',
+            'status'       => 'sometimes|string|in:created,pending,running,completed,failed,waiting',
+            'class'        => 'sometimes|string',
+            'per_page'     => 'sometimes|integer|min:1|max:100',
+            'search'       => 'sometimes|string|max:255',
             'created_from' => 'sometimes|date',
-            'created_to' => 'sometimes|date|after_or_equal:created_from'
+            'created_to'   => 'sometimes|date|after_or_equal:created_from',
         ]);
 
         $query = StoredWorkflow::query()
             ->with(['logs:id,stored_workflow_id,index,class,result,created_at'])
             ->select([
                 'id', 'class', 'status', 'arguments',
-                'output', 'created_at', 'updated_at'
+                'output', 'created_at', 'updated_at',
             ]);
 
         // Apply filters
@@ -144,18 +144,18 @@ class WorkflowMonitoringController extends Controller
             'data' => $workflows->items(),
             'meta' => [
                 'current_page' => $workflows->currentPage(),
-                'last_page' => $workflows->lastPage(),
-                'per_page' => $workflows->perPage(),
-                'total' => $workflows->total(),
-                'from' => $workflows->firstItem(),
-                'to' => $workflows->lastItem(),
+                'last_page'    => $workflows->lastPage(),
+                'per_page'     => $workflows->perPage(),
+                'total'        => $workflows->total(),
+                'from'         => $workflows->firstItem(),
+                'to'           => $workflows->lastItem(),
             ],
-            'stats' => $this->getWorkflowStats()
+            'stats' => $this->getWorkflowStats(),
         ]);
     }
 
     /**
-     * Get specific workflow details with full logs
+     * Get specific workflow details with full logs.
      *
      * @OA\Get(
      *     path="/api/workflows/{id}",
@@ -191,7 +191,7 @@ class WorkflowMonitoringController extends Controller
         $workflow = StoredWorkflow::with([
             'logs' => function ($query) {
                 $query->orderBy('created_at', 'asc');
-            }
+            },
         ])->findOrFail($id);
 
         // Get exceptions for this workflow
@@ -200,15 +200,15 @@ class WorkflowMonitoringController extends Controller
             ->get();
 
         return response()->json([
-            'workflow' => $workflow,
-            'exceptions' => $exceptions,
-            'compensation_info' => $this->getCompensationInfo($workflow),
-            'execution_timeline' => $this->buildExecutionTimeline($workflow)
+            'workflow'           => $workflow,
+            'exceptions'         => $exceptions,
+            'compensation_info'  => $this->getCompensationInfo($workflow),
+            'execution_timeline' => $this->buildExecutionTimeline($workflow),
         ]);
     }
 
     /**
-     * Get workflow statistics dashboard data
+     * Get workflow statistics dashboard data.
      *
      * @OA\Get(
      *     path="/api/workflows/stats",
@@ -238,7 +238,7 @@ class WorkflowMonitoringController extends Controller
     }
 
     /**
-     * Get workflows by status
+     * Get workflows by status.
      *
      * @OA\Get(
      *     path="/api/workflows/status/{status}",
@@ -280,7 +280,7 @@ class WorkflowMonitoringController extends Controller
     {
         $validStatuses = ['created', 'pending', 'running', 'completed', 'failed', 'waiting'];
 
-        if (!in_array($status, $validStatuses)) {
+        if (! in_array($status, $validStatuses)) {
             return response()->json(['error' => 'Invalid status'], 400);
         }
 
@@ -291,19 +291,19 @@ class WorkflowMonitoringController extends Controller
 
         return response()->json([
             'status' => $status,
-            'count' => $workflows->total(),
-            'data' => $workflows->items(),
-            'meta' => [
+            'count'  => $workflows->total(),
+            'data'   => $workflows->items(),
+            'meta'   => [
                 'current_page' => $workflows->currentPage(),
-                'last_page' => $workflows->lastPage(),
-                'per_page' => $workflows->perPage(),
-                'total' => $workflows->total(),
-            ]
+                'last_page'    => $workflows->lastPage(),
+                'per_page'     => $workflows->perPage(),
+                'total'        => $workflows->total(),
+            ],
         ]);
     }
 
     /**
-     * Get failed workflows with detailed error information
+     * Get failed workflows with detailed error information.
      *
      * @OA\Get(
      *     path="/api/workflows/failed",
@@ -349,6 +349,7 @@ class WorkflowMonitoringController extends Controller
 
         $enrichedWorkflows = $failedWorkflows->getCollection()->map(function ($workflow) use ($exceptions) {
             $workflow->exceptions = $exceptions->get($workflow->id, collect());
+
             return $workflow;
         });
 
@@ -356,16 +357,16 @@ class WorkflowMonitoringController extends Controller
             'data' => $enrichedWorkflows,
             'meta' => [
                 'current_page' => $failedWorkflows->currentPage(),
-                'last_page' => $failedWorkflows->lastPage(),
-                'per_page' => $failedWorkflows->perPage(),
-                'total' => $failedWorkflows->total(),
+                'last_page'    => $failedWorkflows->lastPage(),
+                'per_page'     => $failedWorkflows->perPage(),
+                'total'        => $failedWorkflows->total(),
             ],
-            'error_summary' => $this->getErrorSummary()
+            'error_summary' => $this->getErrorSummary(),
         ]);
     }
 
     /**
-     * Get workflow execution metrics
+     * Get workflow execution metrics.
      *
      * @OA\Get(
      *     path="/api/workflows/metrics",
@@ -413,24 +414,24 @@ class WorkflowMonitoringController extends Controller
             'execution_metrics' => [
                 'last_24_hours' => [
                     'total_executions' => StoredWorkflow::where('created_at', '>=', $last24Hours)->count(),
-                    'successful' => StoredWorkflow::where('created_at', '>=', $last24Hours)->where('status', 'completed')->count(),
-                    'failed' => StoredWorkflow::where('created_at', '>=', $last24Hours)->where('status', 'failed')->count(),
-                    'average_duration' => $this->getAverageDuration($last24Hours)
+                    'successful'       => StoredWorkflow::where('created_at', '>=', $last24Hours)->where('status', 'completed')->count(),
+                    'failed'           => StoredWorkflow::where('created_at', '>=', $last24Hours)->where('status', 'failed')->count(),
+                    'average_duration' => $this->getAverageDuration($last24Hours),
                 ],
                 'last_7_days' => [
                     'total_executions' => StoredWorkflow::where('created_at', '>=', $last7Days)->count(),
-                    'successful' => StoredWorkflow::where('created_at', '>=', $last7Days)->where('status', 'completed')->count(),
-                    'failed' => StoredWorkflow::where('created_at', '>=', $last7Days)->where('status', 'failed')->count(),
-                    'average_duration' => $this->getAverageDuration($last7Days)
-                ]
+                    'successful'       => StoredWorkflow::where('created_at', '>=', $last7Days)->where('status', 'completed')->count(),
+                    'failed'           => StoredWorkflow::where('created_at', '>=', $last7Days)->where('status', 'failed')->count(),
+                    'average_duration' => $this->getAverageDuration($last7Days),
+                ],
             ],
-            'workflow_types' => $this->getWorkflowTypeMetrics(),
-            'performance_metrics' => $this->getPerformanceMetrics()
+            'workflow_types'      => $this->getWorkflowTypeMetrics(),
+            'performance_metrics' => $this->getPerformanceMetrics(),
         ]);
     }
 
     /**
-     * Search workflows by various criteria
+     * Search workflows by various criteria.
      *
      * @OA\Post(
      *     path="/api/workflows/search",
@@ -478,9 +479,9 @@ class WorkflowMonitoringController extends Controller
     public function search(Request $request): JsonResponse
     {
         $request->validate([
-            'query' => 'required|string|min:2|max:255',
-            'type' => 'sometimes|string|in:class,arguments,output,exception',
-            'per_page' => 'sometimes|integer|min:1|max:50'
+            'query'    => 'required|string|min:2|max:255',
+            'type'     => 'sometimes|string|in:class,arguments,output,exception',
+            'per_page' => 'sometimes|integer|min:1|max:50',
         ]);
 
         $query = StoredWorkflow::query();
@@ -509,18 +510,18 @@ class WorkflowMonitoringController extends Controller
 
         return response()->json([
             'search_query' => $searchTerm,
-            'search_type' => $searchType,
-            'results' => $results->items(),
-            'meta' => [
-                'total_found' => $results->total(),
+            'search_type'  => $searchType,
+            'results'      => $results->items(),
+            'meta'         => [
+                'total_found'  => $results->total(),
                 'current_page' => $results->currentPage(),
-                'last_page' => $results->lastPage(),
-            ]
+                'last_page'    => $results->lastPage(),
+            ],
         ]);
     }
 
     /**
-     * Get compensation tracking information
+     * Get compensation tracking information.
      *
      * @OA\Get(
      *     path="/api/workflows/compensations",
@@ -571,9 +572,9 @@ class WorkflowMonitoringController extends Controller
 
         $compensationData = $compensatedWorkflows->getCollection()->map(function ($workflow) {
             return [
-                'workflow' => $workflow,
-                'compensation_info' => $this->getCompensationInfo($workflow),
-                'rollback_activities' => $this->getRollbackActivities($workflow)
+                'workflow'            => $workflow,
+                'compensation_info'   => $this->getCompensationInfo($workflow),
+                'rollback_activities' => $this->getRollbackActivities($workflow),
             ];
         });
 
@@ -581,10 +582,10 @@ class WorkflowMonitoringController extends Controller
             'data' => $compensationData,
             'meta' => [
                 'current_page' => $compensatedWorkflows->currentPage(),
-                'last_page' => $compensatedWorkflows->lastPage(),
-                'total' => $compensatedWorkflows->total(),
+                'last_page'    => $compensatedWorkflows->lastPage(),
+                'total'        => $compensatedWorkflows->total(),
             ],
-            'compensation_summary' => $this->getCompensationSummary()
+            'compensation_summary' => $this->getCompensationSummary(),
         ]);
     }
 
@@ -594,12 +595,12 @@ class WorkflowMonitoringController extends Controller
     {
         return [
             'total_workflows' => StoredWorkflow::count(),
-            'by_status' => StoredWorkflow::selectRaw('status, COUNT(*) as count')
+            'by_status'       => StoredWorkflow::selectRaw('status, COUNT(*) as count')
                 ->groupBy('status')
                 ->pluck('count', 'status')
                 ->toArray(),
-            'recent_executions' => StoredWorkflow::where('created_at', '>=', now()->subHour())->count(),
-            'avg_execution_time' => $this->getAverageDuration(now()->subWeek())
+            'recent_executions'  => StoredWorkflow::where('created_at', '>=', now()->subHour())->count(),
+            'avg_execution_time' => $this->getAverageDuration(now()->subWeek()),
         ];
     }
 
@@ -617,9 +618,9 @@ class WorkflowMonitoringController extends Controller
         });
 
         return [
-            'has_compensation' => $compensationLogs->isNotEmpty(),
-            'compensation_logs' => $compensationLogs->values(),
-            'compensation_count' => $compensationLogs->count()
+            'has_compensation'   => $compensationLogs->isNotEmpty(),
+            'compensation_logs'  => $compensationLogs->values(),
+            'compensation_count' => $compensationLogs->count(),
         ];
     }
 
@@ -631,9 +632,9 @@ class WorkflowMonitoringController extends Controller
             $result = json_decode($log->result, true);
             $timeline[] = [
                 'timestamp' => $log->created_at,
-                'index' => $log->index,
-                'class' => $log->class,
-                'result' => $result
+                'index'     => $log->index,
+                'class'     => $log->class,
+                'result'    => $result,
             ];
         }
 
@@ -650,8 +651,8 @@ class WorkflowMonitoringController extends Controller
 
         return [
             'most_common_errors' => $exceptions->toArray(),
-            'total_exceptions' => StoredWorkflowException::count(),
-            'recent_exceptions' => StoredWorkflowException::where('created_at', '>=', now()->subDay())->count()
+            'total_exceptions'   => StoredWorkflowException::count(),
+            'recent_exceptions'  => StoredWorkflowException::where('created_at', '>=', now()->subDay())->count(),
         ];
     }
 
@@ -712,12 +713,12 @@ class WorkflowMonitoringController extends Controller
             ->get();
 
         return [
-            'slow_workflows' => $slowWorkflows->toArray(),
+            'slow_workflows'             => $slowWorkflows->toArray(),
             'average_duration_by_status' => StoredWorkflow::selectRaw("status, {$avgDurationSql} as avg_duration")
                 ->whereNotNull('updated_at')
                 ->groupBy('status')
                 ->pluck('avg_duration', 'status')
-                ->toArray()
+                ->toArray(),
         ];
     }
 
@@ -746,10 +747,10 @@ class WorkflowMonitoringController extends Controller
         $failedWorkflows = StoredWorkflow::where('status', 'failed')->count();
 
         return [
-            'total_workflows' => $totalWorkflows,
-            'failed_workflows' => $failedWorkflows,
-            'failure_rate' => $totalWorkflows > 0 ? round(($failedWorkflows / $totalWorkflows) * 100, 2) : 0,
-            'compensations_triggered' => StoredWorkflowLog::where('class', 'LIKE', '%compensation%')->count()
+            'total_workflows'         => $totalWorkflows,
+            'failed_workflows'        => $failedWorkflows,
+            'failure_rate'            => $totalWorkflows > 0 ? round(($failedWorkflows / $totalWorkflows) * 100, 2) : 0,
+            'compensations_triggered' => StoredWorkflowLog::where('class', 'LIKE', '%compensation%')->count(),
         ];
     }
 }

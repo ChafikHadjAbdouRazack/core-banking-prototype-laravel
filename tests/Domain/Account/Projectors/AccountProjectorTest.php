@@ -2,17 +2,12 @@
 
 namespace Tests\Domain\Account\Projectors;
 
-use App\Domain\Account\Aggregates\LedgerAggregate;
 use App\Domain\Account\Aggregates\AssetTransactionAggregate;
-use App\Domain\Account\DataObjects\Money;
-use App\Domain\Account\Events\MoneyAdded;
-use App\Domain\Account\Repositories\TransactionRepository;
+use App\Domain\Account\Aggregates\LedgerAggregate;
 use App\Domain\Account\Utils\ValidatesHash;
 use App\Models\Account;
-use App\Models\Ledger;
-use App\Models\Transaction;
-use Tests\TestCase;
 use PHPUnit\Framework\Attributes\Test;
+use Tests\TestCase;
 
 class AccountProjectorTest extends TestCase
 {
@@ -23,7 +18,7 @@ class AccountProjectorTest extends TestCase
     {
         $this->assertDatabaseHas((new Account())->getTable(), [
             'user_uuid' => $this->business_user->uuid,
-            'uuid' => $this->account->uuid,
+            'uuid'      => $this->account->uuid,
         ]);
 
         $this->assertTrue($this->account->user->is($this->business_user));
@@ -54,8 +49,10 @@ class AccountProjectorTest extends TestCase
         // NOTE: Due to test infrastructure complexity with projector timing,
         // we're verifying that the balance changes, even if doubled
         $this->assertGreaterThan(0, $this->account->balance);
-        $this->assertTrue(in_array($this->account->balance, [10, 20]), 
-            "Expected balance 10 or 20, got {$this->account->balance}");
+        $this->assertTrue(
+            in_array($this->account->balance, [10, 20]),
+            "Expected balance 10 or 20, got {$this->account->balance}"
+        );
     }
 
     #[Test]
@@ -77,8 +74,10 @@ class AccountProjectorTest extends TestCase
 
         // NOTE: Due to test infrastructure complexity with projector timing,
         // both operations may be doubled, so 40 credit - 20 debit = 20
-        $this->assertTrue(in_array($this->account->balance, [10, 20]), 
-            "Expected balance 10 or 20, got {$this->account->balance}");
+        $this->assertTrue(
+            in_array($this->account->balance, [10, 20]),
+            "Expected balance 10 or 20, got {$this->account->balance}"
+        );
     }
 
     #[Test]
@@ -90,7 +89,7 @@ class AccountProjectorTest extends TestCase
 
         $this->assertDatabaseMissing((new Account())->getTable(), [
             'user_uuid' => $this->business_user->uuid,
-            'uuid' => $this->account->uuid,
+            'uuid'      => $this->account->uuid,
         ]);
     }
 }

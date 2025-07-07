@@ -23,14 +23,14 @@ class BlockchainDepositActivities
             ->where('chain', $chain)
             ->first();
 
-        if (!$wallet) {
+        if (! $wallet) {
             return null;
         }
 
         return [
             'wallet_id' => $wallet->wallet_id,
-            'user_id' => $wallet->user_id,
-            'status' => $wallet->status,
+            'user_id'   => $wallet->user_id,
+            'status'    => $wallet->status,
         ];
     }
 
@@ -48,20 +48,20 @@ class BlockchainDepositActivities
 
         // Get connector for chain
         $connector = $this->connectors[$chain] ?? null;
-        if (!$connector) {
+        if (! $connector) {
             throw new \Exception("No connector available for chain: $chain");
         }
 
         // In production, this would query the blockchain
         // For now, return mock data
         return [
-            'from_address' => '0x1234567890abcdef',
-            'to_address' => '0xfedcba0987654321',
-            'amount' => '1.5',
+            'from_address'  => '0x1234567890abcdef',
+            'to_address'    => '0xfedcba0987654321',
+            'amount'        => '1.5',
             'confirmations' => 12,
-            'status' => 'confirmed',
-            'block_number' => 12345678,
-            'timestamp' => now()->timestamp,
+            'status'        => 'confirmed',
+            'block_number'  => 12345678,
+            'timestamp'     => now()->timestamp,
         ];
     }
 
@@ -82,6 +82,7 @@ class BlockchainDepositActivities
             } elseif ($amountDecimal->isGreaterThan('1')) {
                 return 3; // Medium value
             }
+
             return 1; // Low value
         }
 
@@ -89,6 +90,7 @@ class BlockchainDepositActivities
             if ($amountDecimal->isGreaterThan('5')) {
                 return 12;
             }
+
             return 6;
         }
 
@@ -99,8 +101,8 @@ class BlockchainDepositActivities
     {
         // Placeholder for exchange rate service
         $rates = [
-            'BTC' => '43000',
-            'ETH' => '2200',
+            'BTC'   => '43000',
+            'ETH'   => '2200',
             'MATIC' => '0.65',
         ];
 
@@ -122,19 +124,19 @@ class BlockchainDepositActivities
             ->__toString();
 
         DB::table('blockchain_deposits')->insert([
-            'deposit_id' => $depositId,
-            'user_id' => $userId,
-            'wallet_id' => $walletId,
-            'chain' => $chain,
-            'tx_hash' => $txHash,
-            'from_address' => $txData['from_address'],
-            'to_address' => $txData['to_address'],
+            'deposit_id'    => $depositId,
+            'user_id'       => $userId,
+            'wallet_id'     => $walletId,
+            'chain'         => $chain,
+            'tx_hash'       => $txHash,
+            'from_address'  => $txData['from_address'],
+            'to_address'    => $txData['to_address'],
             'amount_crypto' => $txData['amount'],
-            'amount_fiat' => $fiatAmount,
+            'amount_fiat'   => $fiatAmount,
             'confirmations' => $txData['confirmations'],
-            'block_number' => $txData['block_number'],
-            'status' => 'pending',
-            'created_at' => now(),
+            'block_number'  => $txData['block_number'],
+            'status'        => 'pending',
+            'created_at'    => now(),
         ]);
     }
 
@@ -158,7 +160,7 @@ class BlockchainDepositActivities
             ->where('deposit_id', $depositId)
             ->update([
                 'confirmations' => $confirmations,
-                'updated_at' => now(),
+                'updated_at'    => now(),
             ]);
     }
 
@@ -170,7 +172,7 @@ class BlockchainDepositActivities
             ->where('status', 'active')
             ->first();
 
-        if (!$account) {
+        if (! $account) {
             throw new \Exception('No active USD account found');
         }
 
@@ -184,12 +186,12 @@ class BlockchainDepositActivities
     ): void {
         // Credit user's fiat account
         DB::table('transactions')->insert([
-            'account_id' => $accountId,
-            'type' => 'credit',
-            'amount' => $amount,
+            'account_id'  => $accountId,
+            'type'        => 'credit',
+            'amount'      => $amount,
             'description' => 'Blockchain deposit',
-            'reference' => $depositId,
-            'created_at' => now(),
+            'reference'   => $depositId,
+            'created_at'  => now(),
         ]);
 
         // Update account balance
@@ -205,9 +207,9 @@ class BlockchainDepositActivities
         DB::table('blockchain_deposits')
             ->where('deposit_id', $depositId)
             ->update([
-                'status' => $status,
+                'status'       => $status,
                 'confirmed_at' => $status === 'completed' ? now() : null,
-                'updated_at' => now(),
+                'updated_at'   => now(),
             ]);
     }
 
@@ -218,10 +220,10 @@ class BlockchainDepositActivities
         if ($user) {
             DB::table('notifications')->insert([
                 'user_id' => $userId,
-                'type' => 'blockchain_deposit',
-                'data' => json_encode([
+                'type'    => 'blockchain_deposit',
+                'data'    => json_encode([
                     'deposit_id' => $depositId,
-                    'status' => $status,
+                    'status'     => $status,
                 ]),
                 'created_at' => now(),
             ]);
@@ -234,7 +236,7 @@ class BlockchainDepositActivities
             ->where('deposit_id', $depositId)
             ->first();
 
-        if (!$deposit || $deposit->status !== 'completed') {
+        if (! $deposit || $deposit->status !== 'completed') {
             return;
         }
 
@@ -248,7 +250,7 @@ class BlockchainDepositActivities
         DB::table('blockchain_deposits')
             ->where('deposit_id', $depositId)
             ->update([
-                'status' => 'reversed',
+                'status'     => 'reversed',
                 'updated_at' => now(),
             ]);
     }
@@ -260,14 +262,14 @@ class BlockchainDepositActivities
         string $reason
     ): void {
         DB::table('anomalous_deposits')->insert([
-            'chain' => $chain,
-            'tx_hash' => $txHash,
+            'chain'        => $chain,
+            'tx_hash'      => $txHash,
             'from_address' => $txData['from_address'],
-            'to_address' => $txData['to_address'],
-            'amount' => $txData['amount'],
-            'reason' => $reason,
-            'tx_data' => json_encode($txData),
-            'created_at' => now(),
+            'to_address'   => $txData['to_address'],
+            'amount'       => $txData['amount'],
+            'reason'       => $reason,
+            'tx_data'      => json_encode($txData),
+            'created_at'   => now(),
         ]);
     }
 }

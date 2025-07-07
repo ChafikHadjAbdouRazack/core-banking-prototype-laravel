@@ -48,16 +48,18 @@ class ProcessCustodianWebhook implements ShouldQueue
     {
         $webhook = CustodianWebhook::where('uuid', $this->webhookId)->first();
 
-        if (!$webhook) {
+        if (! $webhook) {
             Log::error('Webhook not found', ['webhook_id' => $this->webhookId]);
+
             return;
         }
 
         if ($webhook->status !== 'pending' && $webhook->status !== 'failed') {
             Log::info('Webhook already processed', [
                 'webhook_id' => $this->webhookId,
-                'status' => $webhook->status,
+                'status'     => $webhook->status,
             ]);
+
             return;
         }
 
@@ -71,7 +73,7 @@ class ProcessCustodianWebhook implements ShouldQueue
 
             Log::info('Webhook processed successfully', [
                 'webhook_id' => $webhook->id,
-                'custodian' => $webhook->custodian_name,
+                'custodian'  => $webhook->custodian_name,
                 'event_type' => $webhook->event_type,
             ]);
         } catch (\Exception $e) {
@@ -79,8 +81,8 @@ class ProcessCustodianWebhook implements ShouldQueue
 
             Log::error('Failed to process webhook', [
                 'webhook_id' => $webhook->id,
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
+                'error'      => $e->getMessage(),
+                'trace'      => $e->getTraceAsString(),
             ]);
 
             // Re-throw to trigger retry mechanism
@@ -95,7 +97,7 @@ class ProcessCustodianWebhook implements ShouldQueue
     {
         Log::error('Webhook processing job failed permanently', [
             'webhook_id' => $this->webhookId,
-            'error' => $exception->getMessage(),
+            'error'      => $exception->getMessage(),
         ]);
     }
 }

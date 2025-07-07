@@ -10,7 +10,7 @@ use Workflow\Activity;
 class CreateAccountActivity extends Activity
 {
     /**
-     * @param \App\Domain\Account\DataObjects\Account $account
+     * @param Account $account
      *
      * @return string
      */

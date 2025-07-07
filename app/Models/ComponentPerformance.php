@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
+use App\Domain\Asset\Models\Asset;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use App\Domain\Asset\Models\Asset;
 
 class ComponentPerformance extends Model
 {
@@ -34,13 +34,13 @@ class ComponentPerformance extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'start_weight' => 'float',
-        'end_weight' => 'float',
-        'average_weight' => 'float',
-        'contribution_value' => 'float',
+        'start_weight'            => 'float',
+        'end_weight'              => 'float',
+        'average_weight'          => 'float',
+        'contribution_value'      => 'float',
         'contribution_percentage' => 'float',
-        'return_value' => 'float',
-        'return_percentage' => 'float',
+        'return_value'            => 'float',
+        'return_percentage'       => 'float',
     ];
 
     /**
@@ -65,6 +65,7 @@ class ComponentPerformance extends Model
     public function getFormattedContributionAttribute(): string
     {
         $prefix = $this->contribution_percentage >= 0 ? '+' : '';
+
         return $prefix . number_format($this->contribution_percentage, 2) . '%';
     }
 
@@ -74,6 +75,7 @@ class ComponentPerformance extends Model
     public function getFormattedReturnAttribute(): string
     {
         $prefix = $this->return_percentage >= 0 ? '+' : '';
+
         return $prefix . number_format($this->return_percentage, 2) . '%';
     }
 

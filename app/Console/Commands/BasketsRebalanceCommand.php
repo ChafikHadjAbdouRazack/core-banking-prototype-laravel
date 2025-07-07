@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Models\GcuVotingProposal;
 use App\Domain\Basket\Services\BasketRebalancingService;
+use App\Models\GcuVotingProposal;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
@@ -40,33 +40,37 @@ class BasketsRebalanceCommand extends Command
             ->orderBy('voting_ends_at', 'desc')
             ->first();
 
-        if (!$proposal) {
+        if (! $proposal) {
             $this->info('No closed voting proposals found.');
+
             return 0;
         }
 
         // Check if it passed
-        if (!$proposal->hasPassed()) {
+        if (! $proposal->hasPassed()) {
             $this->info("Latest proposal '{$proposal->title}' did not pass.");
             $this->info("Participation: {$proposal->participation_rate}% (required: {$proposal->minimum_participation}%)");
             $this->info("Approval: {$proposal->approval_rate}% (required: {$proposal->minimum_approval}%)");
+
             return 0;
         }
 
         // Check if already implemented
         if ($proposal->status === 'implemented') {
             $this->info("Proposal '{$proposal->title}' has already been implemented.");
+
             return 0;
         }
 
         $this->info("Implementing proposal: {$proposal->title}");
-        $this->info("New composition:");
+        $this->info('New composition:');
         foreach ($proposal->proposed_composition as $currency => $percentage) {
             $this->info("  {$currency}: {$percentage}%");
         }
 
         if ($isDryRun) {
             $this->info("\nDRY RUN complete - no changes made.");
+
             return 0;
         }
 
@@ -80,11 +84,11 @@ class BasketsRebalanceCommand extends Command
 
                 // Mark proposal as implemented
                 $proposal->update([
-                    'status' => 'implemented',
-                    'implemented_at' => now(),
+                    'status'                 => 'implemented',
+                    'implemented_at'         => now(),
                     'implementation_details' => [
-                        'executed_by' => 'system',
-                        'execution_time' => now()->toDateTimeString(),
+                        'executed_by'          => 'system',
+                        'execution_time'       => now()->toDateTimeString(),
                         'previous_composition' => $proposal->current_composition,
                     ],
                 ]);
@@ -93,6 +97,7 @@ class BasketsRebalanceCommand extends Command
             $this->info("\nSuccessfully implemented proposal and rebalanced baskets.");
         } catch (\Exception $e) {
             $this->error("Failed to implement proposal: {$e->getMessage()}");
+
             return 1;
         }
 
@@ -100,7 +105,7 @@ class BasketsRebalanceCommand extends Command
     }
 
     /**
-     * Update GCU composition in the system
+     * Update GCU composition in the system.
      */
     protected function updateGcuComposition(array $composition)
     {

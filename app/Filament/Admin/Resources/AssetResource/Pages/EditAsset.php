@@ -6,8 +6,8 @@ namespace App\Filament\Admin\Resources\AssetResource\Pages;
 
 use App\Filament\Admin\Resources\AssetResource;
 use Filament\Actions;
-use Filament\Resources\Pages\EditRecord;
 use Filament\Notifications\Notification;
+use Filament\Resources\Pages\EditRecord;
 
 class EditAsset extends EditRecord
 {

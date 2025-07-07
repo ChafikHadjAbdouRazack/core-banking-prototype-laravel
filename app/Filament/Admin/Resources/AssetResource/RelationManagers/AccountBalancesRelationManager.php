@@ -61,6 +61,7 @@ class AccountBalancesRelationManager extends RelationManager
                     ->formatStateUsing(function ($state, $record) {
                         $asset = $record->asset;
                         $formatted = number_format($state / (10 ** $asset->precision), $asset->precision);
+
                         return "{$formatted} {$asset->code}";
                     })
                     ->sortable()

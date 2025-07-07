@@ -2,14 +2,14 @@
 
 namespace App\Domain\Lending\Aggregates;
 
-use App\Domain\Lending\Events\LoanCreated;
-use App\Domain\Lending\Events\LoanFunded;
-use App\Domain\Lending\Events\LoanDisbursed;
-use App\Domain\Lending\Events\LoanRepaymentMade;
-use App\Domain\Lending\Events\LoanPaymentMissed;
-use App\Domain\Lending\Events\LoanDefaulted;
-use App\Domain\Lending\Events\LoanSettledEarly;
 use App\Domain\Lending\Events\LoanCompleted;
+use App\Domain\Lending\Events\LoanCreated;
+use App\Domain\Lending\Events\LoanDefaulted;
+use App\Domain\Lending\Events\LoanDisbursed;
+use App\Domain\Lending\Events\LoanFunded;
+use App\Domain\Lending\Events\LoanPaymentMissed;
+use App\Domain\Lending\Events\LoanRepaymentMade;
+use App\Domain\Lending\Events\LoanSettledEarly;
 use App\Domain\Lending\Exceptions\LoanException;
 use App\Domain\Lending\Repositories\LendingEventRepository;
 use App\Domain\Lending\ValueObjects\RepaymentSchedule;
@@ -21,22 +21,39 @@ use Spatie\EventSourcing\StoredEvents\Repositories\StoredEventRepository;
 class Loan extends AggregateRoot
 {
     private string $loanId;
+
     private string $applicationId;
+
     private string $borrowerId;
+
     private string $principal;
+
     private float $interestRate;
+
     private int $termMonths;
+
     private string $status = 'created';
+
     private array $investorIds = [];
+
     private ?RepaymentSchedule $schedule = null;
+
     private string $outstandingBalance;
+
     private string $totalPrincipalPaid = '0';
+
     private string $totalInterestPaid = '0';
+
     private int $paymentsReceived = 0;
+
     private int $missedPayments = 0;
+
     private ?\DateTimeImmutable $fundedAt = null;
+
     private ?\DateTimeImmutable $disbursedAt = null;
+
     private ?\DateTimeImmutable $defaultedAt = null;
+
     private ?\DateTimeImmutable $completedAt = null;
 
     protected function getStoredEventRepository(): StoredEventRepository
@@ -91,7 +108,7 @@ class Loan extends AggregateRoot
             throw new LoanException('Can only fund loans in created status');
         }
 
-        if (!BigDecimal::of($fundedAmount)->isEqualTo($this->principal)) {
+        if (! BigDecimal::of($fundedAmount)->isEqualTo($this->principal)) {
             throw new LoanException('Funded amount must equal principal amount');
         }
 
@@ -180,7 +197,7 @@ class Loan extends AggregateRoot
 
     public function markAsDefaulted(string $reason): self
     {
-        if (!in_array($this->status, ['active', 'delinquent'])) {
+        if (! in_array($this->status, ['active', 'delinquent'])) {
             throw new LoanException('Can only mark active or delinquent loans as defaulted');
         }
 
@@ -196,7 +213,7 @@ class Loan extends AggregateRoot
 
     public function settleEarly(string $settlementAmount, string $settledBy): self
     {
-        if (!in_array($this->status, ['active', 'delinquent'])) {
+        if (! in_array($this->status, ['active', 'delinquent'])) {
             throw new LoanException('Can only settle active or delinquent loans');
         }
 
@@ -308,11 +325,11 @@ class Loan extends AggregateRoot
             $remainingBalance = $remainingBalance->minus($principalPayment);
 
             $payments[] = [
-                'payment_number' => $i,
-                'due_date' => now()->addMonths($i)->format('Y-m-d'),
-                'principal' => $principalPayment->__toString(),
-                'interest' => $interestPayment->__toString(),
-                'total' => $monthlyPayment->__toString(),
+                'payment_number'    => $i,
+                'due_date'          => now()->addMonths($i)->format('Y-m-d'),
+                'principal'         => $principalPayment->__toString(),
+                'interest'          => $interestPayment->__toString(),
+                'total'             => $monthlyPayment->__toString(),
                 'remaining_balance' => $remainingBalance->__toString(),
             ];
         }

@@ -24,7 +24,7 @@ Schedule::command('baskets:rebalance')
 
 // Schedule hourly basket value calculations for performance tracking
 Schedule::call(function () {
-    $service = app(\App\Domain\Basket\Services\BasketValueCalculationService::class);
+    $service = app(App\Domain\Basket\Services\BasketValueCalculationService::class);
     $service->calculateAllBasketValues();
 })->hourly()
     ->description('Calculate and store basket values for performance tracking');
@@ -58,7 +58,7 @@ Schedule::command('banks:monitor-health --interval=60')
     ->withoutOverlapping()
     ->onFailure(function () {
         // Alert operations team on monitoring failure
-        \Log::critical('Bank health monitoring failed to run');
+        Log::critical('Bank health monitoring failed to run');
     });
 
 // Custodian Balance Synchronization
@@ -75,7 +75,7 @@ Schedule::command('banks:check-alerts')
     ->appendOutputTo(storage_path('logs/bank-alerts.log'))
     ->withoutOverlapping()
     ->onFailure(function () {
-        \Log::critical('Bank health alert check failed to run');
+        Log::critical('Bank health alert check failed to run');
     });
 
 // Daily Balance Reconciliation
@@ -85,7 +85,7 @@ Schedule::command('reconciliation:daily')
     ->appendOutputTo(storage_path('logs/daily-reconciliation.log'))
     ->withoutOverlapping()
     ->onFailure(function () {
-        \Log::critical('Daily reconciliation failed to run');
+        Log::critical('Daily reconciliation failed to run');
     });
 
 // Basket Performance Calculation
@@ -108,7 +108,7 @@ Schedule::command('system:health-check')
     ->appendOutputTo(storage_path('logs/system-health.log'))
     ->withoutOverlapping()
     ->onFailure(function () {
-        \Log::critical('System health check failed to run');
+        Log::critical('System health check failed to run');
     });
 
 // CGO Payment Verification

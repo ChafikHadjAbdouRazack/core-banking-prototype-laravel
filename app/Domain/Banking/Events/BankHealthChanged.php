@@ -23,7 +23,7 @@ class BankHealthChanged
     }
 
     /**
-     * Check if bank became unhealthy
+     * Check if bank became unhealthy.
      */
     public function becameUnhealthy(): bool
     {
@@ -31,7 +31,7 @@ class BankHealthChanged
     }
 
     /**
-     * Check if bank recovered
+     * Check if bank recovered.
      */
     public function recovered(): bool
     {

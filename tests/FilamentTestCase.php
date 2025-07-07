@@ -15,7 +15,7 @@ abstract class FilamentTestCase extends TestCase
         $admin = User::factory()->create([
             'email' => 'admin@test.com',
         ]);
-        
+
         $this->actingAs($admin);
     }
 

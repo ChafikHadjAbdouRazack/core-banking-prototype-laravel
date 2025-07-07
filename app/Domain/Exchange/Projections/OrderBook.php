@@ -23,9 +23,9 @@ class OrderBook extends Model
     ];
 
     protected $casts = [
-        'buy_orders' => 'array',
+        'buy_orders'  => 'array',
         'sell_orders' => 'array',
-        'metadata' => 'array',
+        'metadata'    => 'array',
     ];
 
     public function getPairAttribute(): string
@@ -132,14 +132,14 @@ class OrderBook extends Model
     {
         return static::firstOrCreate(
             [
-                'base_currency' => $baseCurrency,
+                'base_currency'  => $baseCurrency,
                 'quote_currency' => $quoteCurrency,
             ],
             [
                 'order_book_id' => \Illuminate\Support\Str::uuid()->toString(),
-                'buy_orders' => [],
-                'sell_orders' => [],
-                'metadata' => [],
+                'buy_orders'    => [],
+                'sell_orders'   => [],
+                'metadata'      => [],
             ]
         );
     }

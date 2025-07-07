@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 class ApiKeyController extends Controller
 {
     /**
-     * Display API keys dashboard
+     * Display API keys dashboard.
      */
     public function index()
     {
@@ -24,7 +24,7 @@ class ApiKeyController extends Controller
     }
 
     /**
-     * Show the form for creating a new API key
+     * Show the form for creating a new API key.
      */
     public function create()
     {
@@ -32,39 +32,39 @@ class ApiKeyController extends Controller
     }
 
     /**
-     * Store a newly created API key
+     * Store a newly created API key.
      */
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string|max:1000',
-            'permissions' => 'required|array',
+            'name'          => 'required|string|max:255',
+            'description'   => 'nullable|string|max:1000',
+            'permissions'   => 'required|array',
             'permissions.*' => 'in:read,write,delete,*',
-            'expires_in' => 'nullable|in:30,90,365,never',
-            'ip_whitelist' => 'nullable|string',
+            'expires_in'    => 'nullable|in:30,90,365,never',
+            'ip_whitelist'  => 'nullable|string',
         ]);
 
         // Process expiration
         $expiresAt = null;
-        if ($validated['expires_in'] !== 'never' && !empty($validated['expires_in'])) {
-            $expiresAt = now()->addDays((int)$validated['expires_in']);
+        if ($validated['expires_in'] !== 'never' && ! empty($validated['expires_in'])) {
+            $expiresAt = now()->addDays((int) $validated['expires_in']);
         }
 
         // Process IP whitelist
         $allowedIps = null;
-        if (!empty($validated['ip_whitelist'])) {
+        if (! empty($validated['ip_whitelist'])) {
             $allowedIps = array_map('trim', explode("\n", $validated['ip_whitelist']));
             $allowedIps = array_filter($allowedIps); // Remove empty lines
         }
 
         // Create API key
         $result = ApiKey::createForUser(Auth::user(), [
-            'name' => $validated['name'],
+            'name'        => $validated['name'],
             'description' => $validated['description'] ?? null,
             'permissions' => $validated['permissions'],
             'allowed_ips' => $allowedIps,
-            'expires_at' => $expiresAt,
+            'expires_at'  => $expiresAt,
         ]);
 
         // Store the API key in session to show it once
@@ -75,7 +75,7 @@ class ApiKeyController extends Controller
     }
 
     /**
-     * Display the specified API key
+     * Display the specified API key.
      */
     public function show(ApiKey $apiKey)
     {
@@ -86,11 +86,11 @@ class ApiKeyController extends Controller
 
         // Get usage statistics
         $stats = [
-            'total_requests' => $apiKey->request_count,
-            'requests_today' => $apiKey->logs()->where('created_at', '>=', now()->startOfDay())->count(),
+            'total_requests'      => $apiKey->request_count,
+            'requests_today'      => $apiKey->logs()->where('created_at', '>=', now()->startOfDay())->count(),
             'requests_this_month' => $apiKey->logs()->where('created_at', '>=', now()->startOfMonth())->count(),
-            'avg_response_time' => $apiKey->logs()->where('created_at', '>=', now()->subDays(7))->avg('response_time'),
-            'error_rate' => $apiKey->logs()->where('created_at', '>=', now()->subDays(7))->failed()->count() / max($apiKey->logs()->where('created_at', '>=', now()->subDays(7))->count(), 1) * 100,
+            'avg_response_time'   => $apiKey->logs()->where('created_at', '>=', now()->subDays(7))->avg('response_time'),
+            'error_rate'          => $apiKey->logs()->where('created_at', '>=', now()->subDays(7))->failed()->count() / max($apiKey->logs()->where('created_at', '>=', now()->subDays(7))->count(), 1) * 100,
         ];
 
         // Get recent logs
@@ -103,7 +103,7 @@ class ApiKeyController extends Controller
     }
 
     /**
-     * Show the form for editing the specified API key
+     * Show the form for editing the specified API key.
      */
     public function edit(ApiKey $apiKey)
     {
@@ -116,7 +116,7 @@ class ApiKeyController extends Controller
     }
 
     /**
-     * Update the specified API key
+     * Update the specified API key.
      */
     public function update(Request $request, ApiKey $apiKey)
     {
@@ -126,22 +126,22 @@ class ApiKeyController extends Controller
         }
 
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string|max:1000',
-            'permissions' => 'required|array',
+            'name'          => 'required|string|max:255',
+            'description'   => 'nullable|string|max:1000',
+            'permissions'   => 'required|array',
             'permissions.*' => 'in:read,write,delete,*',
-            'ip_whitelist' => 'nullable|string',
+            'ip_whitelist'  => 'nullable|string',
         ]);
 
         // Process IP whitelist
         $allowedIps = null;
-        if (!empty($validated['ip_whitelist'])) {
+        if (! empty($validated['ip_whitelist'])) {
             $allowedIps = array_map('trim', explode("\n", $validated['ip_whitelist']));
             $allowedIps = array_filter($allowedIps);
         }
 
         $apiKey->update([
-            'name' => $validated['name'],
+            'name'        => $validated['name'],
             'description' => $validated['description'] ?? null,
             'permissions' => $validated['permissions'],
             'allowed_ips' => $allowedIps,
@@ -152,7 +152,7 @@ class ApiKeyController extends Controller
     }
 
     /**
-     * Revoke the specified API key
+     * Revoke the specified API key.
      */
     public function destroy(ApiKey $apiKey)
     {
@@ -168,7 +168,7 @@ class ApiKeyController extends Controller
     }
 
     /**
-     * Regenerate the specified API key
+     * Regenerate the specified API key.
      */
     public function regenerate(ApiKey $apiKey)
     {
@@ -182,11 +182,11 @@ class ApiKeyController extends Controller
 
         // Create new key with same settings
         $result = ApiKey::createForUser(Auth::user(), [
-            'name' => $apiKey->name . ' (Regenerated)',
+            'name'        => $apiKey->name . ' (Regenerated)',
             'description' => $apiKey->description,
             'permissions' => $apiKey->permissions,
             'allowed_ips' => $apiKey->allowed_ips,
-            'expires_at' => $apiKey->expires_at,
+            'expires_at'  => $apiKey->expires_at,
         ]);
 
         // Store the API key in session to show it once

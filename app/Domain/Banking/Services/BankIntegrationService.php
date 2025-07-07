@@ -6,14 +6,14 @@ namespace App\Domain\Banking\Services;
 
 use App\Domain\Banking\Contracts\IBankConnector;
 use App\Domain\Banking\Contracts\IBankIntegrationService;
-use App\Domain\Banking\Exceptions\BankNotFoundException;
 use App\Domain\Banking\Exceptions\BankConnectionException;
+use App\Domain\Banking\Exceptions\BankNotFoundException;
 use App\Domain\Banking\Models\BankAccount;
 use App\Domain\Banking\Models\BankConnection;
 use App\Domain\Banking\Models\BankTransfer;
-use App\Models\User;
-use App\Models\BankConnectionModel;
 use App\Models\BankAccountModel;
+use App\Models\BankConnectionModel;
+use App\Models\User;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -61,7 +61,7 @@ class BankIntegrationService implements IBankIntegrationService
      */
     public function getConnector(string $bankCode): IBankConnector
     {
-        if (!isset($this->connectors[$bankCode])) {
+        if (! isset($this->connectors[$bankCode])) {
             throw new BankNotFoundException("Bank connector not found: {$bankCode}");
         }
 
@@ -74,7 +74,7 @@ class BankIntegrationService implements IBankIntegrationService
     public function getAvailableConnectors(): Collection
     {
         return collect($this->connectors)
-            ->filter(fn($connector) => $connector->isAvailable());
+            ->filter(fn ($connector) => $connector->isAvailable());
     }
 
     /**
@@ -91,16 +91,16 @@ class BankIntegrationService implements IBankIntegrationService
 
             // Store encrypted connection
             $connectionModel = BankConnectionModel::create([
-                'id' => Str::uuid()->toString(),
-                'user_uuid' => $user->uuid,
-                'bank_code' => $bankCode,
-                'status' => 'active',
-                'credentials' => encrypt($credentials),
-                'permissions' => ['accounts', 'transactions', 'transfers'],
+                'id'           => Str::uuid()->toString(),
+                'user_uuid'    => $user->uuid,
+                'bank_code'    => $bankCode,
+                'status'       => 'active',
+                'credentials'  => encrypt($credentials),
+                'permissions'  => ['accounts', 'transactions', 'transfers'],
                 'last_sync_at' => null,
-                'expires_at' => now()->addMonths(3),
-                'metadata' => [
-                    'bank_name' => $connector->getBankName(),
+                'expires_at'   => now()->addMonths(3),
+                'metadata'     => [
+                    'bank_name'    => $connector->getBankName(),
                     'connected_at' => now()->toIso8601String(),
                 ],
             ]);
@@ -114,9 +114,9 @@ class BankIntegrationService implements IBankIntegrationService
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Failed to connect user to bank', [
-                'user_id' => $user->uuid,
+                'user_id'   => $user->uuid,
                 'bank_code' => $bankCode,
-                'error' => $e->getMessage(),
+                'error'     => $e->getMessage(),
             ]);
             throw new BankConnectionException("Failed to connect to {$bankCode}: " . $e->getMessage());
         }
@@ -133,7 +133,7 @@ class BankIntegrationService implements IBankIntegrationService
                 ->where('bank_code', $bankCode)
                 ->where('status', 'active')
                 ->update([
-                    'status' => 'disconnected',
+                    'status'     => 'disconnected',
                     'updated_at' => now(),
                 ]);
 
@@ -142,7 +142,7 @@ class BankIntegrationService implements IBankIntegrationService
                 ->where('bank_code', $bankCode)
                 ->where('status', 'active')
                 ->update([
-                    'status' => 'disconnected',
+                    'status'     => 'disconnected',
                     'updated_at' => now(),
                 ]);
 
@@ -158,7 +158,7 @@ class BankIntegrationService implements IBankIntegrationService
         return BankConnectionModel::where('user_uuid', $user->uuid)
             ->where('status', 'active')
             ->get()
-            ->map(fn($model) => BankConnection::fromArray($model->toArray()));
+            ->map(fn ($model) => BankConnection::fromArray($model->toArray()));
     }
 
     /**
@@ -181,17 +181,17 @@ class BankIntegrationService implements IBankIntegrationService
 
             // Store in database
             $accountModel = BankAccountModel::create([
-                'id' => Str::uuid()->toString(),
-                'user_uuid' => $user->uuid,
-                'bank_code' => $bankCode,
-                'external_id' => $bankAccount->id,
+                'id'             => Str::uuid()->toString(),
+                'user_uuid'      => $user->uuid,
+                'bank_code'      => $bankCode,
+                'external_id'    => $bankAccount->id,
                 'account_number' => encrypt($bankAccount->accountNumber),
-                'iban' => encrypt($bankAccount->iban),
-                'swift' => $bankAccount->swift,
-                'currency' => $bankAccount->currency,
-                'account_type' => $bankAccount->accountType,
-                'status' => 'active',
-                'metadata' => $bankAccount->metadata,
+                'iban'           => encrypt($bankAccount->iban),
+                'swift'          => $bankAccount->swift,
+                'currency'       => $bankAccount->currency,
+                'account_type'   => $bankAccount->accountType,
+                'status'         => 'active',
+                'metadata'       => $bankAccount->metadata,
             ]);
 
             DB::commit();
@@ -258,19 +258,19 @@ class BankIntegrationService implements IBankIntegrationService
             foreach ($accounts as $account) {
                 BankAccountModel::updateOrCreate(
                     [
-                        'user_uuid' => $user->uuid,
-                        'bank_code' => $bankCode,
+                        'user_uuid'   => $user->uuid,
+                        'bank_code'   => $bankCode,
                         'external_id' => $account->id,
                     ],
                     [
                         'account_number' => encrypt($account->accountNumber),
-                        'iban' => encrypt($account->iban),
-                        'swift' => $account->swift,
-                        'currency' => $account->currency,
-                        'account_type' => $account->accountType,
-                        'status' => $account->status,
-                        'metadata' => $account->metadata,
-                        'updated_at' => now(),
+                        'iban'           => encrypt($account->iban),
+                        'swift'          => $account->swift,
+                        'currency'       => $account->currency,
+                        'account_type'   => $account->accountType,
+                        'status'         => $account->status,
+                        'metadata'       => $account->metadata,
+                        'updated_at'     => now(),
                     ]
                 );
             }
@@ -310,7 +310,7 @@ class BankIntegrationService implements IBankIntegrationService
         try {
             // Check balance
             $balance = $fromConnector->getBalance($fromAccountId, $currency);
-            if (!$balance->hasSufficientFunds($amount)) {
+            if (! $balance->hasSufficientFunds($amount)) {
                 throw new \Exception('Insufficient funds');
             }
 
@@ -325,30 +325,30 @@ class BankIntegrationService implements IBankIntegrationService
             // Initiate transfer
             $transfer = $fromConnector->initiateTransfer([
                 'from_account_id' => $fromAccountId,
-                'to_account_id' => $toAccountId,
-                'to_bank_code' => $toBankCode,
-                'amount' => $amount,
-                'currency' => $currency,
-                'type' => $transferType,
-                'reference' => $metadata['reference'] ?? Str::random(16),
-                'description' => $metadata['description'] ?? null,
+                'to_account_id'   => $toAccountId,
+                'to_bank_code'    => $toBankCode,
+                'amount'          => $amount,
+                'currency'        => $currency,
+                'type'            => $transferType,
+                'reference'       => $metadata['reference'] ?? Str::random(16),
+                'description'     => $metadata['description'] ?? null,
             ]);
 
             // Store transfer record
             DB::table('bank_transfers')->insert([
-                'id' => $transfer->id,
-                'user_uuid' => $user->uuid,
-                'from_bank_code' => $fromBankCode,
+                'id'              => $transfer->id,
+                'user_uuid'       => $user->uuid,
+                'from_bank_code'  => $fromBankCode,
                 'from_account_id' => $fromAccountId,
-                'to_bank_code' => $toBankCode,
-                'to_account_id' => $toAccountId,
-                'amount' => $amount,
-                'currency' => $currency,
-                'type' => $transferType,
-                'status' => $transfer->status,
-                'metadata' => json_encode($transfer->metadata),
-                'created_at' => now(),
-                'updated_at' => now(),
+                'to_bank_code'    => $toBankCode,
+                'to_account_id'   => $toAccountId,
+                'amount'          => $amount,
+                'currency'        => $currency,
+                'type'            => $transferType,
+                'status'          => $transfer->status,
+                'metadata'        => json_encode($transfer->metadata),
+                'created_at'      => now(),
+                'updated_at'      => now(),
             ]);
 
             DB::commit();
@@ -395,7 +395,7 @@ class BankIntegrationService implements IBankIntegrationService
             $connections = $this->getUserBankConnections($user);
 
             foreach ($connections as $connection) {
-                if (!$connection->isActive()) {
+                if (! $connection->isActive()) {
                     continue;
                 }
 
@@ -412,7 +412,7 @@ class BankIntegrationService implements IBankIntegrationService
                 } catch (\Exception $e) {
                     Log::warning('Failed to get balance from bank', [
                         'bank_code' => $connection->bankCode,
-                        'error' => $e->getMessage(),
+                        'error'     => $e->getMessage(),
                     ]);
                 }
             }

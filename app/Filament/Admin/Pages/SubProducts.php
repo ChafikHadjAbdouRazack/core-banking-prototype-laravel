@@ -63,7 +63,7 @@ class SubProducts extends Page
                 $featureFields[] = Forms\Components\Toggle::make("{$key}_{$feature}")
                     ->label(str($feature)->replace('_', ' ')->title())
                     ->helperText("Enable {$feature} functionality")
-                    ->disabled(fn (Forms\Get $get) => !$get("{$key}_enabled"))
+                    ->disabled(fn (Forms\Get $get) => ! $get("{$key}_enabled"))
                     ->columnSpan(1);
             }
 
@@ -76,7 +76,7 @@ class SubProducts extends Page
                         ->helperText("Enable or disable the entire {$config['name']} sub-product")
                         ->reactive()
                         ->afterStateUpdated(function ($state, Forms\Set $set) use ($key, $config) {
-                            if (!$state) {
+                            if (! $state) {
                                 // Disable all features when sub-product is disabled
                                 foreach ($config['features'] as $feature => $default) {
                                     $set("{$key}_{$feature}", false);
@@ -121,9 +121,9 @@ class SubProducts extends Page
             // Handle sub-product enable/disable
             $isEnabled = $data["{$key}_enabled"] ?? false;
 
-            if ($isEnabled && !$this->subProductService->isEnabled($key)) {
+            if ($isEnabled && ! $this->subProductService->isEnabled($key)) {
                 $this->subProductService->enableSubProduct($key, $currentUser);
-            } elseif (!$isEnabled && $this->subProductService->isEnabled($key)) {
+            } elseif (! $isEnabled && $this->subProductService->isEnabled($key)) {
                 $this->subProductService->disableSubProduct($key, $currentUser);
             }
 
@@ -131,9 +131,9 @@ class SubProducts extends Page
             foreach ($config['features'] as $feature => $default) {
                 $featureEnabled = $data["{$key}_{$feature}"] ?? false;
 
-                if ($isEnabled && $featureEnabled && !$this->subProductService->isFeatureEnabled($key, $feature)) {
+                if ($isEnabled && $featureEnabled && ! $this->subProductService->isFeatureEnabled($key, $feature)) {
                     $this->subProductService->enableFeature($key, $feature, $currentUser);
-                } elseif ((!$isEnabled || !$featureEnabled) && $this->subProductService->isFeatureEnabled($key, $feature)) {
+                } elseif ((! $isEnabled || ! $featureEnabled) && $this->subProductService->isFeatureEnabled($key, $feature)) {
                     $this->subProductService->disableFeature($key, $feature, $currentUser);
                 }
             }
@@ -147,7 +147,7 @@ class SubProducts extends Page
             ->send();
 
         Log::info('Sub-product configuration updated', [
-            'user' => $currentUser,
+            'user'    => $currentUser,
             'changes' => $data,
         ]);
     }

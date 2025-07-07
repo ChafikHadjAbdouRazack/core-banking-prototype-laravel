@@ -12,7 +12,7 @@ use Illuminate\Validation\ValidationException;
 class LoginController extends Controller
 {
     /**
-     * Login user and create token
+     * Login user and create token.
      *
      * @OA\Post(
      *     path="/api/auth/login",
@@ -71,8 +71,8 @@ class LoginController extends Controller
     public function login(Request $request): JsonResponse
     {
         $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
+            'email'       => 'required|email',
+            'password'    => 'required',
             'device_name' => 'string',
         ]);
 
@@ -112,19 +112,19 @@ class LoginController extends Controller
 
         return response()->json([
             'user' => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
+                'id'                => $user->id,
+                'name'              => $user->name,
+                'email'             => $user->email,
                 'email_verified_at' => $user->email_verified_at,
             ],
             'access_token' => $token,
-            'token_type' => 'Bearer',
-            'expires_in' => config('sanctum.expiration') ? config('sanctum.expiration') * 60 : null,
+            'token_type'   => 'Bearer',
+            'expires_in'   => config('sanctum.expiration') ? config('sanctum.expiration') * 60 : null,
         ]);
     }
 
     /**
-     * Logout user (revoke current token)
+     * Logout user (revoke current token).
      *
      * @OA\Post(
      *     path="/api/auth/logout",
@@ -159,7 +159,7 @@ class LoginController extends Controller
     }
 
     /**
-     * Logout from all devices
+     * Logout from all devices.
      *
      * @OA\Post(
      *     path="/api/auth/logout-all",
@@ -194,7 +194,7 @@ class LoginController extends Controller
     }
 
     /**
-     * Refresh access token
+     * Refresh access token.
      *
      * @OA\Post(
      *     path="/api/auth/refresh",
@@ -234,13 +234,13 @@ class LoginController extends Controller
 
         return response()->json([
             'access_token' => $token,
-            'token_type' => 'Bearer',
-            'expires_in' => config('sanctum.expiration') ? config('sanctum.expiration') * 60 : null,
+            'token_type'   => 'Bearer',
+            'expires_in'   => config('sanctum.expiration') ? config('sanctum.expiration') * 60 : null,
         ]);
     }
 
     /**
-     * Get authenticated user
+     * Get authenticated user.
      *
      * @OA\Get(
      *     path="/api/auth/user",

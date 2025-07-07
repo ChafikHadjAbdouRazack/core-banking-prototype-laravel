@@ -12,47 +12,48 @@ use Tests\UnitTestCase;
 
 class SubProductServiceTest extends UnitTestCase
 {
-    use \Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
+    use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 
     protected SubProductService $service;
 
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Set up default config
         Config::shouldReceive('get')->with('sub_products')->andReturn([
             'exchange' => [
-                'enabled' => true,
+                'enabled'  => true,
                 'features' => [
-                    'fiat_trading' => true,
+                    'fiat_trading'   => true,
                     'crypto_trading' => false,
                 ],
                 'licenses' => ['vasp', 'mica'],
                 'metadata' => ['launch_date' => '2025-03-01'],
             ],
             'lending' => [
-                'enabled' => false,
+                'enabled'  => false,
                 'features' => [
-                    'sme_loans' => true,
+                    'sme_loans'       => true,
                     'p2p_marketplace' => true,
                 ],
                 'licenses' => ['lending_license'],
                 'metadata' => ['launch_date' => '2025-10-01'],
             ],
         ]);
-        
+
         // Mock Feature facade
         Feature::shouldReceive('active')->andReturnUsing(function ($feature) {
             $map = [
-                'sub_product.exchange' => true,
-                'sub_product.lending' => false,
-                'sub_product.exchange.fiat_trading' => true,
+                'sub_product.exchange'                => true,
+                'sub_product.lending'                 => false,
+                'sub_product.exchange.fiat_trading'   => true,
                 'sub_product.exchange.crypto_trading' => false,
             ];
+
             return $map[$feature] ?? false;
         });
-        
+
         $this->service = new SubProductService();
     }
 
@@ -74,7 +75,7 @@ class SubProductServiceTest extends UnitTestCase
     public function it_gets_all_sub_products()
     {
         $products = $this->service->getAllSubProducts();
-        
+
         $this->assertArrayHasKey('exchange', $products);
         $this->assertArrayHasKey('lending', $products);
         $this->assertEquals(2, count($products));
@@ -84,7 +85,7 @@ class SubProductServiceTest extends UnitTestCase
     public function it_gets_enabled_sub_products()
     {
         $enabled = $this->service->getEnabledSubProducts();
-        
+
         $this->assertArrayHasKey('exchange', $enabled);
         $this->assertArrayNotHasKey('lending', $enabled);
         $this->assertEquals(1, count($enabled));
@@ -103,7 +104,7 @@ class SubProductServiceTest extends UnitTestCase
     public function it_gets_sub_product_config()
     {
         $config = $this->service->getSubProductConfig('exchange');
-        
+
         $this->assertArrayHasKey('enabled', $config);
         $this->assertArrayHasKey('features', $config);
         $this->assertArrayHasKey('licenses', $config);
@@ -115,7 +116,7 @@ class SubProductServiceTest extends UnitTestCase
     public function it_returns_null_for_non_existent_sub_product_config()
     {
         $config = $this->service->getSubProductConfig('non_existent');
-        
+
         $this->assertNull($config);
     }
 
@@ -123,7 +124,7 @@ class SubProductServiceTest extends UnitTestCase
     public function it_gets_features_for_sub_product()
     {
         $features = $this->service->getFeatures('exchange');
-        
+
         $this->assertArrayHasKey('fiat_trading', $features);
         $this->assertArrayHasKey('crypto_trading', $features);
         $this->assertTrue($features['fiat_trading']);
@@ -134,7 +135,7 @@ class SubProductServiceTest extends UnitTestCase
     public function it_returns_empty_array_for_non_existent_sub_product_features()
     {
         $features = $this->service->getFeatures('non_existent');
-        
+
         $this->assertEquals([], $features);
     }
 
@@ -142,7 +143,7 @@ class SubProductServiceTest extends UnitTestCase
     public function it_gets_required_licenses()
     {
         $licenses = $this->service->getRequiredLicenses('exchange');
-        
+
         $this->assertContains('vasp', $licenses);
         $this->assertContains('mica', $licenses);
         $this->assertEquals(2, count($licenses));
@@ -152,7 +153,7 @@ class SubProductServiceTest extends UnitTestCase
     public function it_returns_empty_array_for_non_existent_sub_product_licenses()
     {
         $licenses = $this->service->getRequiredLicenses('non_existent');
-        
+
         $this->assertEquals([], $licenses);
     }
 
@@ -160,7 +161,7 @@ class SubProductServiceTest extends UnitTestCase
     public function it_gets_metadata()
     {
         $metadata = $this->service->getMetadata('exchange');
-        
+
         $this->assertArrayHasKey('launch_date', $metadata);
         $this->assertEquals('2025-03-01', $metadata['launch_date']);
     }
@@ -169,7 +170,7 @@ class SubProductServiceTest extends UnitTestCase
     public function it_returns_empty_array_for_non_existent_sub_product_metadata()
     {
         $metadata = $this->service->getMetadata('non_existent');
-        
+
         $this->assertEquals([], $metadata);
     }
 
@@ -178,11 +179,11 @@ class SubProductServiceTest extends UnitTestCase
     {
         // Should not throw for enabled product
         $this->assertNull($this->service->validateAccess('exchange'));
-        
+
         // Should throw for disabled product
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('Sub-product lending is not enabled');
-        
+
         $this->service->validateAccess('lending');
     }
 
@@ -191,11 +192,11 @@ class SubProductServiceTest extends UnitTestCase
     {
         // Should not throw for enabled feature
         $this->assertNull($this->service->validateFeatureAccess('exchange', 'fiat_trading'));
-        
+
         // Should throw for disabled feature
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('Feature crypto_trading is not enabled for sub-product exchange');
-        
+
         $this->service->validateFeatureAccess('exchange', 'crypto_trading');
     }
 
@@ -205,11 +206,11 @@ class SubProductServiceTest extends UnitTestCase
         Config::shouldReceive('set')
             ->once()
             ->with('sub_products.lending.enabled', true);
-        
+
         Feature::shouldReceive('activate')
             ->once()
             ->with('sub_product.lending');
-        
+
         $this->service->enableSubProduct('lending');
     }
 
@@ -219,11 +220,11 @@ class SubProductServiceTest extends UnitTestCase
         Config::shouldReceive('set')
             ->once()
             ->with('sub_products.exchange.enabled', false);
-        
+
         Feature::shouldReceive('deactivate')
             ->once()
             ->with('sub_product.exchange');
-        
+
         $this->service->disableSubProduct('exchange');
     }
 
@@ -233,11 +234,11 @@ class SubProductServiceTest extends UnitTestCase
         Config::shouldReceive('set')
             ->once()
             ->with('sub_products.exchange.features.crypto_trading', true);
-        
+
         Feature::shouldReceive('activate')
             ->once()
             ->with('sub_product.exchange.crypto_trading');
-        
+
         $this->service->enableFeature('exchange', 'crypto_trading');
     }
 
@@ -247,11 +248,11 @@ class SubProductServiceTest extends UnitTestCase
         Config::shouldReceive('set')
             ->once()
             ->with('sub_products.exchange.features.fiat_trading', false);
-        
+
         Feature::shouldReceive('deactivate')
             ->once()
             ->with('sub_product.exchange.fiat_trading');
-        
+
         $this->service->disableFeature('exchange', 'fiat_trading');
     }
 
@@ -264,12 +265,12 @@ class SubProductServiceTest extends UnitTestCase
                 // No features array
             ],
         ]);
-        
+
         $service = new SubProductService();
-        
+
         $features = $service->getFeatures('minimal');
         $this->assertEquals([], $features);
-        
+
         $this->assertFalse($service->isFeatureEnabled('minimal', 'any_feature'));
     }
 
@@ -282,9 +283,9 @@ class SubProductServiceTest extends UnitTestCase
                 // No licenses array
             ],
         ]);
-        
+
         $service = new SubProductService();
-        
+
         $licenses = $service->getRequiredLicenses('minimal');
         $this->assertEquals([], $licenses);
     }
@@ -298,9 +299,9 @@ class SubProductServiceTest extends UnitTestCase
                 // No metadata array
             ],
         ]);
-        
+
         $service = new SubProductService();
-        
+
         $metadata = $service->getMetadata('minimal');
         $this->assertEquals([], $metadata);
     }

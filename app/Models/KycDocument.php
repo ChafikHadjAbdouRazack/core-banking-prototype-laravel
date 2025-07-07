@@ -27,10 +27,10 @@ class KycDocument extends Model
     ];
 
     protected $casts = [
-        'metadata' => 'array',
+        'metadata'    => 'array',
         'uploaded_at' => 'datetime',
         'verified_at' => 'datetime',
-        'expires_at' => 'datetime',
+        'expires_at'  => 'datetime',
     ];
 
     /**
@@ -42,7 +42,7 @@ class KycDocument extends Model
     }
 
     /**
-     * Scope for pending documents
+     * Scope for pending documents.
      */
     public function scopePending($query)
     {
@@ -50,7 +50,7 @@ class KycDocument extends Model
     }
 
     /**
-     * Scope for verified documents
+     * Scope for verified documents.
      */
     public function scopeVerified($query)
     {
@@ -58,7 +58,7 @@ class KycDocument extends Model
     }
 
     /**
-     * Check if document is expired
+     * Check if document is expired.
      */
     public function isExpired(): bool
     {
@@ -67,29 +67,29 @@ class KycDocument extends Model
     }
 
     /**
-     * Mark document as verified
+     * Mark document as verified.
      */
     public function markAsVerified(string $verifiedBy, ?string $expiresAt = null): void
     {
         $this->update([
-            'status' => 'verified',
-            'verified_at' => now(),
-            'verified_by' => $verifiedBy,
-            'expires_at' => $expiresAt,
+            'status'           => 'verified',
+            'verified_at'      => now(),
+            'verified_by'      => $verifiedBy,
+            'expires_at'       => $expiresAt,
             'rejection_reason' => null,
         ]);
     }
 
     /**
-     * Mark document as rejected
+     * Mark document as rejected.
      */
     public function markAsRejected(string $reason, string $rejectedBy): void
     {
         $this->update([
-            'status' => 'rejected',
+            'status'           => 'rejected',
             'rejection_reason' => $reason,
-            'verified_by' => $rejectedBy,
-            'verified_at' => now(),
+            'verified_by'      => $rejectedBy,
+            'verified_at'      => now(),
         ]);
     }
 }

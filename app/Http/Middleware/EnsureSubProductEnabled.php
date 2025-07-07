@@ -17,7 +17,7 @@ class EnsureSubProductEnabled
     /**
      * Handle an incoming request.
      *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * @param  Closure(Request): (Response)  $next
      */
     public function handle(Request $request, Closure $next, string $parameter): Response
     {
@@ -42,15 +42,15 @@ class EnsureSubProductEnabled
                     }
                 }
 
-                if (!$anyEnabled) {
+                if (! $anyEnabled) {
                     return $this->errorResponse(
-                        "None of the required features [" . implode(', ', $featureList) . "] are enabled for sub-product {$subProduct}",
+                        'None of the required features [' . implode(', ', $featureList) . "] are enabled for sub-product {$subProduct}",
                         403
                     );
                 }
             } else {
                 // Single feature check
-                if (!$this->subProductService->isFeatureEnabled($subProduct, $features)) {
+                if (! $this->subProductService->isFeatureEnabled($subProduct, $features)) {
                     return $this->errorResponse(
                         "Feature {$features} is not enabled for sub-product {$subProduct}",
                         403
@@ -61,7 +61,7 @@ class EnsureSubProductEnabled
             // Just sub-product check
             $subProduct = $parameter;
 
-            if (!$this->subProductService->isEnabled($subProduct)) {
+            if (! $this->subProductService->isEnabled($subProduct)) {
                 return $this->errorResponse("Sub-product {$subProduct} is not enabled", 403);
             }
         }
@@ -73,7 +73,7 @@ class EnsureSubProductEnabled
     }
 
     /**
-     * Create error response
+     * Create error response.
      */
     private function errorResponse(string $message, int $statusCode): Response
     {

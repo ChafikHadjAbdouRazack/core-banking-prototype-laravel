@@ -4,7 +4,6 @@ namespace Tests\Feature\Filament;
 
 use App\Filament\Resources\CgoPricingRoundResource;
 use App\Models\CgoPricingRound;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 use Tests\FilamentTestCase;
@@ -16,7 +15,7 @@ class CgoPricingRoundResourceTest extends FilamentTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Additional setup if needed
     }
 
@@ -31,11 +30,11 @@ class CgoPricingRoundResourceTest extends FilamentTestCase
     public function test_can_create_pricing_round()
     {
         $roundData = [
-            'round_number' => 1,
-            'share_price' => 10.5000,
+            'round_number'         => 1,
+            'share_price'          => 10.5000,
             'max_shares_available' => 100000,
-            'is_active' => true,
-            'started_at' => now(),
+            'is_active'            => true,
+            'started_at'           => now(),
         ];
 
         Livewire::test(CgoPricingRoundResource\Pages\CreateCgoPricingRound::class)
@@ -44,12 +43,12 @@ class CgoPricingRoundResourceTest extends FilamentTestCase
             ->assertHasNoFormErrors();
 
         $this->assertDatabaseHas('cgo_pricing_rounds', [
-            'round_number' => 1,
-            'share_price' => 10.5000,
+            'round_number'         => 1,
+            'share_price'          => 10.5000,
             'max_shares_available' => 100000,
-            'is_active' => true,
-            'shares_sold' => 0,
-            'total_raised' => 0,
+            'is_active'            => true,
+            'shares_sold'          => 0,
+            'total_raised'         => 0,
         ]);
     }
 
@@ -60,11 +59,11 @@ class CgoPricingRoundResourceTest extends FilamentTestCase
         ]);
 
         $newRoundData = [
-            'round_number' => 2,
-            'share_price' => 11.5500,
+            'round_number'         => 2,
+            'share_price'          => 11.5500,
             'max_shares_available' => 150000,
-            'is_active' => true,
-            'started_at' => now(),
+            'is_active'            => true,
+            'started_at'           => now(),
         ];
 
         Livewire::test(CgoPricingRoundResource\Pages\CreateCgoPricingRound::class)
@@ -74,10 +73,10 @@ class CgoPricingRoundResourceTest extends FilamentTestCase
 
         $existingRound->refresh();
         $this->assertFalse($existingRound->is_active);
-        
+
         $this->assertDatabaseHas('cgo_pricing_rounds', [
             'round_number' => 2,
-            'is_active' => true,
+            'is_active'    => true,
         ]);
     }
 
@@ -85,7 +84,7 @@ class CgoPricingRoundResourceTest extends FilamentTestCase
     {
         $round = CgoPricingRound::factory()->create([
             'share_price' => 10.0000,
-            'is_active' => false,
+            'is_active'   => false,
         ]);
 
         Livewire::test(CgoPricingRoundResource\Pages\EditCgoPricingRound::class, [
@@ -93,15 +92,15 @@ class CgoPricingRoundResourceTest extends FilamentTestCase
         ])
             ->fillForm([
                 'share_price' => 12.5000,
-                'is_active' => true,
+                'is_active'   => true,
             ])
             ->call('save')
             ->assertHasNoFormErrors();
 
         $this->assertDatabaseHas('cgo_pricing_rounds', [
-            'id' => $round->id,
+            'id'          => $round->id,
             'share_price' => 12.5000,
-            'is_active' => true,
+            'is_active'   => true,
         ]);
     }
 
@@ -124,7 +123,7 @@ class CgoPricingRoundResourceTest extends FilamentTestCase
     {
         $activeRound = CgoPricingRound::factory()->create([
             'is_active' => true,
-            'ended_at' => null,
+            'ended_at'  => null,
         ]);
 
         Livewire::test(CgoPricingRoundResource\Pages\ListCgoPricingRounds::class)
@@ -154,10 +153,10 @@ class CgoPricingRoundResourceTest extends FilamentTestCase
 
         Livewire::test(CgoPricingRoundResource\Pages\CreateCgoPricingRound::class)
             ->fillForm([
-                'round_number' => 1,
-                'share_price' => 10.0000,
+                'round_number'         => 1,
+                'share_price'          => 10.0000,
                 'max_shares_available' => 100000,
-                'started_at' => now(),
+                'started_at'           => now(),
             ])
             ->call('create')
             ->assertHasFormErrors(['round_number']);

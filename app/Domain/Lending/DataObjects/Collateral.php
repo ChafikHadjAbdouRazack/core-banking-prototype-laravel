@@ -2,8 +2,8 @@
 
 namespace App\Domain\Lending\DataObjects;
 
-use App\Domain\Lending\Enums\CollateralType;
 use App\Domain\Lending\Enums\CollateralStatus;
+use App\Domain\Lending\Enums\CollateralType;
 use Illuminate\Support\Carbon;
 
 class Collateral
@@ -43,17 +43,17 @@ class Collateral
     public function toArray(): array
     {
         return [
-            'collateral_id' => $this->collateralId,
-            'loan_id' => $this->loanId,
-            'type' => $this->type->value,
-            'description' => $this->description,
-            'estimated_value' => $this->estimatedValue,
-            'currency' => $this->currency,
-            'status' => $this->status->value,
+            'collateral_id'            => $this->collateralId,
+            'loan_id'                  => $this->loanId,
+            'type'                     => $this->type->value,
+            'description'              => $this->description,
+            'estimated_value'          => $this->estimatedValue,
+            'currency'                 => $this->currency,
+            'status'                   => $this->status->value,
             'verification_document_id' => $this->verificationDocumentId,
-            'verified_at' => $this->verifiedAt?->toIso8601String(),
-            'verified_by' => $this->verifiedBy,
-            'metadata' => $this->metadata
+            'verified_at'              => $this->verifiedAt?->toIso8601String(),
+            'verified_by'              => $this->verifiedBy,
+            'metadata'                 => $this->metadata,
         ];
     }
 

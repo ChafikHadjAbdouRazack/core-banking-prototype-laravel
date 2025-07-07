@@ -2,14 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Domain\Wallet\Contracts\WalletConnectorInterface;
 use App\Domain\Wallet\Contracts\KeyManagementServiceInterface;
-use App\Domain\Wallet\Services\BlockchainWalletService;
+use App\Domain\Wallet\Contracts\WalletConnectorInterface;
 use App\Models\BlockchainAddress;
 use App\Models\BlockchainTransaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class BlockchainWalletController extends Controller
@@ -21,7 +19,7 @@ class BlockchainWalletController extends Controller
     }
 
     /**
-     * Display blockchain wallet dashboard
+     * Display blockchain wallet dashboard.
      */
     public function index()
     {
@@ -50,7 +48,7 @@ class BlockchainWalletController extends Controller
     }
 
     /**
-     * Show form to generate new blockchain address
+     * Show form to generate new blockchain address.
      */
     public function createAddress()
     {
@@ -60,13 +58,13 @@ class BlockchainWalletController extends Controller
     }
 
     /**
-     * Generate new blockchain address
+     * Generate new blockchain address.
      */
     public function generateAddress(Request $request)
     {
         $validated = $request->validate([
-            'chain' => 'required|in:ethereum,bitcoin,polygon,bsc',
-            'label' => 'required|string|max:255',
+            'chain'    => 'required|in:ethereum,bitcoin,polygon,bsc',
+            'label'    => 'required|string|max:255',
             'password' => 'required|string|min:8',
         ]);
 
@@ -79,17 +77,17 @@ class BlockchainWalletController extends Controller
 
             // Store address in database
             $address = BlockchainAddress::create([
-                'uuid' => Str::uuid()->toString(),
-                'user_uuid' => Auth::user()->uuid,
-                'chain' => $validated['chain'],
-                'address' => $addressData['address'],
-                'public_key' => $addressData['public_key'],
+                'uuid'            => Str::uuid()->toString(),
+                'user_uuid'       => Auth::user()->uuid,
+                'chain'           => $validated['chain'],
+                'address'         => $addressData['address'],
+                'public_key'      => $addressData['public_key'],
                 'derivation_path' => $addressData['derivation_path'],
-                'label' => $validated['label'],
-                'is_active' => true,
-                'metadata' => [
+                'label'           => $validated['label'],
+                'is_active'       => true,
+                'metadata'        => [
                     'created_via' => 'web',
-                    'ip_address' => $request->ip(),
+                    'ip_address'  => $request->ip(),
                 ],
             ]);
 
@@ -104,7 +102,7 @@ class BlockchainWalletController extends Controller
     }
 
     /**
-     * Show blockchain address details
+     * Show blockchain address details.
      */
     public function showAddress($addressId)
     {
@@ -130,7 +128,7 @@ class BlockchainWalletController extends Controller
     }
 
     /**
-     * Show send cryptocurrency form
+     * Show send cryptocurrency form.
      */
     public function sendForm($addressId)
     {
@@ -151,7 +149,7 @@ class BlockchainWalletController extends Controller
     }
 
     /**
-     * Send cryptocurrency
+     * Send cryptocurrency.
      */
     public function send(Request $request, $addressId)
     {
@@ -161,15 +159,15 @@ class BlockchainWalletController extends Controller
 
         $validated = $request->validate([
             'recipient_address' => 'required|string',
-            'amount' => 'required|numeric|min:0.00000001',
-            'fee_level' => 'required|in:slow,medium,fast',
-            'password' => 'required|string',
-            'memo' => 'nullable|string|max:255',
+            'amount'            => 'required|numeric|min:0.00000001',
+            'fee_level'         => 'required|in:slow,medium,fast',
+            'password'          => 'required|string',
+            'memo'              => 'nullable|string|max:255',
         ]);
 
         try {
             // Validate recipient address
-            if (!$this->walletConnector->validateAddress($validated['recipient_address'], $address->chain)) {
+            if (! $this->walletConnector->validateAddress($validated['recipient_address'], $address->chain)) {
                 return back()->withErrors(['recipient_address' => 'Invalid recipient address']);
             }
 
@@ -189,25 +187,25 @@ class BlockchainWalletController extends Controller
                 $validated['amount'],
                 $address->chain,
                 [
-                    'fee' => $fee,
+                    'fee'  => $fee,
                     'memo' => $validated['memo'],
                 ]
             );
 
             // Record transaction
             BlockchainTransaction::create([
-                'uuid' => Str::uuid()->toString(),
+                'uuid'         => Str::uuid()->toString(),
                 'address_uuid' => $address->uuid,
-                'tx_hash' => $txHash,
-                'type' => 'send',
-                'amount' => $validated['amount'],
-                'fee' => $fee,
+                'tx_hash'      => $txHash,
+                'type'         => 'send',
+                'amount'       => $validated['amount'],
+                'fee'          => $fee,
                 'from_address' => $address->address,
-                'to_address' => $validated['recipient_address'],
-                'chain' => $address->chain,
-                'status' => 'pending',
-                'metadata' => [
-                    'memo' => $validated['memo'],
+                'to_address'   => $validated['recipient_address'],
+                'chain'        => $address->chain,
+                'status'       => 'pending',
+                'metadata'     => [
+                    'memo'      => $validated['memo'],
                     'fee_level' => $validated['fee_level'],
                 ],
             ]);
@@ -223,7 +221,7 @@ class BlockchainWalletController extends Controller
     }
 
     /**
-     * Show transaction details
+     * Show transaction details.
      */
     public function showTransaction($transactionId)
     {
@@ -246,12 +244,12 @@ class BlockchainWalletController extends Controller
     }
 
     /**
-     * Export wallet backup
+     * Export wallet backup.
      */
     public function exportBackup(Request $request)
     {
         $validated = $request->validate([
-            'password' => 'required|string',
+            'password'             => 'required|string',
             'include_private_keys' => 'boolean',
         ]);
 
@@ -262,10 +260,10 @@ class BlockchainWalletController extends Controller
             $backup = $this->keyManagementService->generateBackup($user->uuid);
 
             return response()->json([
-                'backup_id' => $backup['backup_id'],
-                'encrypted_data' => $backup['encrypted_data'],
-                'checksum' => $backup['checksum'],
-                'created_at' => now()->toIso8601String(),
+                'backup_id'       => $backup['backup_id'],
+                'encrypted_data'  => $backup['encrypted_data'],
+                'checksum'        => $backup['checksum'],
+                'created_at'      => now()->toIso8601String(),
                 'addresses_count' => $addresses->count(),
             ])->header('Content-Disposition', 'attachment; filename="wallet-backup-' . now()->format('Y-m-d') . '.json"');
         } catch (\Exception $e) {
@@ -274,7 +272,7 @@ class BlockchainWalletController extends Controller
     }
 
     /**
-     * Get blockchain balances for addresses
+     * Get blockchain balances for addresses.
      */
     private function getBlockchainBalances($addresses)
     {
@@ -286,10 +284,10 @@ class BlockchainWalletController extends Controller
                 $balances[$address->uuid] = $balance;
             } catch (\Exception $e) {
                 $balances[$address->uuid] = [
-                    'balance' => 0,
+                    'balance'   => 0,
                     'available' => 0,
-                    'pending' => 0,
-                    'error' => true,
+                    'pending'   => 0,
+                    'error'     => true,
                 ];
             }
         }
@@ -298,68 +296,68 @@ class BlockchainWalletController extends Controller
     }
 
     /**
-     * Get supported blockchain networks
+     * Get supported blockchain networks.
      */
     private function getSupportedChains()
     {
         return [
             'ethereum' => [
-                'name' => 'Ethereum',
-                'symbol' => 'ETH',
+                'name'     => 'Ethereum',
+                'symbol'   => 'ETH',
                 'decimals' => 18,
                 'explorer' => 'https://etherscan.io',
-                'icon' => 'eth-icon',
+                'icon'     => 'eth-icon',
             ],
             'bitcoin' => [
-                'name' => 'Bitcoin',
-                'symbol' => 'BTC',
+                'name'     => 'Bitcoin',
+                'symbol'   => 'BTC',
                 'decimals' => 8,
                 'explorer' => 'https://blockstream.info',
-                'icon' => 'btc-icon',
+                'icon'     => 'btc-icon',
             ],
             'polygon' => [
-                'name' => 'Polygon',
-                'symbol' => 'MATIC',
+                'name'     => 'Polygon',
+                'symbol'   => 'MATIC',
                 'decimals' => 18,
                 'explorer' => 'https://polygonscan.com',
-                'icon' => 'matic-icon',
+                'icon'     => 'matic-icon',
             ],
             'bsc' => [
-                'name' => 'BNB Smart Chain',
-                'symbol' => 'BNB',
+                'name'     => 'BNB Smart Chain',
+                'symbol'   => 'BNB',
                 'decimals' => 18,
                 'explorer' => 'https://bscscan.com',
-                'icon' => 'bnb-icon',
+                'icon'     => 'bnb-icon',
             ],
         ];
     }
 
     /**
-     * Get network fees for chain
+     * Get network fees for chain.
      */
     private function getNetworkFees($chain)
     {
         // Mock network fees - in production, fetch from blockchain
         $fees = [
             'ethereum' => [
-                'slow' => ['time' => '10 min', 'amount' => 0.001],
+                'slow'   => ['time' => '10 min', 'amount' => 0.001],
                 'medium' => ['time' => '3 min', 'amount' => 0.002],
-                'fast' => ['time' => '30 sec', 'amount' => 0.003],
+                'fast'   => ['time' => '30 sec', 'amount' => 0.003],
             ],
             'bitcoin' => [
-                'slow' => ['time' => '60 min', 'amount' => 0.00001],
+                'slow'   => ['time' => '60 min', 'amount' => 0.00001],
                 'medium' => ['time' => '30 min', 'amount' => 0.00002],
-                'fast' => ['time' => '10 min', 'amount' => 0.00005],
+                'fast'   => ['time' => '10 min', 'amount' => 0.00005],
             ],
             'polygon' => [
-                'slow' => ['time' => '30 sec', 'amount' => 0.001],
+                'slow'   => ['time' => '30 sec', 'amount' => 0.001],
                 'medium' => ['time' => '15 sec', 'amount' => 0.002],
-                'fast' => ['time' => '5 sec', 'amount' => 0.005],
+                'fast'   => ['time' => '5 sec', 'amount' => 0.005],
             ],
             'bsc' => [
-                'slow' => ['time' => '15 sec', 'amount' => 0.0001],
+                'slow'   => ['time' => '15 sec', 'amount' => 0.0001],
                 'medium' => ['time' => '6 sec', 'amount' => 0.0002],
-                'fast' => ['time' => '3 sec', 'amount' => 0.0005],
+                'fast'   => ['time' => '3 sec', 'amount' => 0.0005],
             ],
         ];
 
@@ -367,7 +365,7 @@ class BlockchainWalletController extends Controller
     }
 
     /**
-     * Get address statistics
+     * Get address statistics.
      */
     private function getAddressStatistics($address)
     {
@@ -375,11 +373,11 @@ class BlockchainWalletController extends Controller
 
         return [
             'total_transactions' => $transactions->count(),
-            'total_sent' => $transactions->where('type', 'send')->sum('amount'),
-            'total_received' => $transactions->where('type', 'receive')->sum('amount'),
-            'total_fees' => $transactions->sum('fee'),
-            'first_transaction' => $transactions->min('created_at'),
-            'last_transaction' => $transactions->max('created_at'),
+            'total_sent'         => $transactions->where('type', 'send')->sum('amount'),
+            'total_received'     => $transactions->where('type', 'receive')->sum('amount'),
+            'total_fees'         => $transactions->sum('fee'),
+            'first_transaction'  => $transactions->min('created_at'),
+            'last_transaction'   => $transactions->max('created_at'),
         ];
     }
 }

@@ -6,8 +6,8 @@ namespace App\Filament\Admin\Resources\ExchangeRateResource\Pages;
 
 use App\Filament\Admin\Resources\ExchangeRateResource;
 use Filament\Actions;
-use Filament\Resources\Pages\EditRecord;
 use Filament\Notifications\Notification;
+use Filament\Resources\Pages\EditRecord;
 
 class EditExchangeRate extends EditRecord
 {
@@ -47,7 +47,7 @@ class EditExchangeRate extends EditRecord
         $data['to_asset_code'] = strtoupper($data['to_asset_code']);
 
         // Add update metadata
-        if (!isset($data['metadata'])) {
+        if (! isset($data['metadata'])) {
             $data['metadata'] = [];
         }
 

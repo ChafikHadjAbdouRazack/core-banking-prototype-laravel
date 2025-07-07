@@ -13,37 +13,37 @@ class BatchJobFactory extends Factory
     public function definition(): array
     {
         return [
-            'uuid' => Str::uuid(),
-            'user_uuid' => Str::uuid(),
-            'name' => $this->faker->sentence(3),
-            'type' => $this->faker->randomElement(['transfer', 'payment', 'conversion']),
-            'status' => $this->faker->randomElement(['pending', 'processing', 'completed', 'failed', 'cancelled']),
-            'total_items' => $this->faker->numberBetween(1, 100),
+            'uuid'            => Str::uuid(),
+            'user_uuid'       => Str::uuid(),
+            'name'            => $this->faker->sentence(3),
+            'type'            => $this->faker->randomElement(['transfer', 'payment', 'conversion']),
+            'status'          => $this->faker->randomElement(['pending', 'processing', 'completed', 'failed', 'cancelled']),
+            'total_items'     => $this->faker->numberBetween(1, 100),
             'processed_items' => 0,
-            'failed_items' => 0,
-            'scheduled_at' => null,
-            'started_at' => null,
-            'completed_at' => null,
-            'metadata' => [],
+            'failed_items'    => 0,
+            'scheduled_at'    => null,
+            'started_at'      => null,
+            'completed_at'    => null,
+            'metadata'        => [],
         ];
     }
 
     public function pending(): static
     {
         return $this->state(fn (array $attributes) => [
-            'status' => 'pending',
+            'status'          => 'pending',
             'processed_items' => 0,
-            'failed_items' => 0,
-            'started_at' => null,
-            'completed_at' => null,
+            'failed_items'    => 0,
+            'started_at'      => null,
+            'completed_at'    => null,
         ]);
     }
 
     public function processing(): static
     {
         return $this->state(fn (array $attributes) => [
-            'status' => 'processing',
-            'started_at' => now(),
+            'status'       => 'processing',
+            'started_at'   => now(),
             'completed_at' => null,
         ]);
     }
@@ -51,19 +51,19 @@ class BatchJobFactory extends Factory
     public function completed(): static
     {
         return $this->state(fn (array $attributes) => [
-            'status' => 'completed',
+            'status'          => 'completed',
             'processed_items' => $attributes['total_items'] ?? 10,
-            'started_at' => now()->subMinutes(5),
-            'completed_at' => now(),
+            'started_at'      => now()->subMinutes(5),
+            'completed_at'    => now(),
         ]);
     }
 
     public function failed(): static
     {
         return $this->state(fn (array $attributes) => [
-            'status' => 'failed',
+            'status'       => 'failed',
             'failed_items' => $attributes['total_items'] ?? 10,
-            'started_at' => now()->subMinutes(5),
+            'started_at'   => now()->subMinutes(5),
             'completed_at' => now(),
         ]);
     }

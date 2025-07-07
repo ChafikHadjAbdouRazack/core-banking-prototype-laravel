@@ -13,7 +13,7 @@ use Spatie\EventSourcing\EventHandlers\Projectors\Projector;
 class AssetBalanceProjector extends Projector implements ShouldQueue
 {
     /**
-     * Handle asset balance addition events
+     * Handle asset balance addition events.
      */
     public function onAssetBalanceAdded(AssetBalanceAdded $event): void
     {
@@ -26,7 +26,7 @@ class AssetBalanceProjector extends Projector implements ShouldQueue
     }
 
     /**
-     * Handle asset balance subtraction events
+     * Handle asset balance subtraction events.
      */
     public function onAssetBalanceSubtracted(AssetBalanceSubtracted $event): void
     {

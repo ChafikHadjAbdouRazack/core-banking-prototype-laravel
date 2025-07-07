@@ -2,9 +2,9 @@
 
 namespace App\Domain\Regulatory\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Model;
 
 class RegulatoryThreshold extends Model
 {
@@ -41,40 +41,52 @@ class RegulatoryThreshold extends Model
     ];
 
     protected $casts = [
-        'conditions' => 'array',
-        'aggregation_rules' => 'array',
-        'actions' => 'array',
-        'amount_threshold' => 'decimal:2',
+        'conditions'           => 'array',
+        'aggregation_rules'    => 'array',
+        'actions'              => 'array',
+        'amount_threshold'     => 'decimal:2',
         'requires_aggregation' => 'boolean',
-        'auto_report' => 'boolean',
-        'requires_review' => 'boolean',
-        'is_active' => 'boolean',
-        'effective_from' => 'datetime',
-        'effective_to' => 'datetime',
-        'last_triggered_at' => 'datetime',
-        'false_positive_rate' => 'decimal:2',
+        'auto_report'          => 'boolean',
+        'requires_review'      => 'boolean',
+        'is_active'            => 'boolean',
+        'effective_from'       => 'datetime',
+        'effective_to'         => 'datetime',
+        'last_triggered_at'    => 'datetime',
+        'false_positive_rate'  => 'decimal:2',
     ];
 
     // Categories
-    const CATEGORY_TRANSACTION = 'transaction';
-    const CATEGORY_CUSTOMER = 'customer';
-    const CATEGORY_ACCOUNT = 'account';
-    const CATEGORY_AGGREGATE = 'aggregate';
+    public const CATEGORY_TRANSACTION = 'transaction';
+
+    public const CATEGORY_CUSTOMER = 'customer';
+
+    public const CATEGORY_ACCOUNT = 'account';
+
+    public const CATEGORY_AGGREGATE = 'aggregate';
 
     // Time periods
-    const PERIOD_DAILY = 'daily';
-    const PERIOD_WEEKLY = 'weekly';
-    const PERIOD_MONTHLY = 'monthly';
-    const PERIOD_QUARTERLY = 'quarterly';
-    const PERIOD_ANNUALLY = 'annually';
-    const PERIOD_ROLLING = 'rolling';
+    public const PERIOD_DAILY = 'daily';
+
+    public const PERIOD_WEEKLY = 'weekly';
+
+    public const PERIOD_MONTHLY = 'monthly';
+
+    public const PERIOD_QUARTERLY = 'quarterly';
+
+    public const PERIOD_ANNUALLY = 'annually';
+
+    public const PERIOD_ROLLING = 'rolling';
 
     // Actions
-    const ACTION_REPORT = 'report';
-    const ACTION_FLAG = 'flag';
-    const ACTION_NOTIFY = 'notify';
-    const ACTION_BLOCK = 'block';
-    const ACTION_REVIEW = 'review';
+    public const ACTION_REPORT = 'report';
+
+    public const ACTION_FLAG = 'flag';
+
+    public const ACTION_NOTIFY = 'notify';
+
+    public const ACTION_BLOCK = 'block';
+
+    public const ACTION_REVIEW = 'review';
 
     // Boot method
     protected static function boot()
@@ -114,13 +126,13 @@ class RegulatoryThreshold extends Model
 
     public function evaluate(array $context): bool
     {
-        if (!$this->isActive()) {
+        if (! $this->isActive()) {
             return false;
         }
 
         // Evaluate all conditions
         foreach ($this->conditions as $condition) {
-            if (!$this->evaluateCondition($condition, $context)) {
+            if (! $this->evaluateCondition($condition, $context)) {
                 return false;
             }
         }
@@ -155,9 +167,9 @@ class RegulatoryThreshold extends Model
             case '<=':
                 return $contextValue <= $value;
             case 'in':
-                return in_array($contextValue, (array)$value);
+                return in_array($contextValue, (array) $value);
             case 'not_in':
-                return !in_array($contextValue, (array)$value);
+                return ! in_array($contextValue, (array) $value);
             case 'contains':
                 return str_contains($contextValue, $value);
             case 'starts_with':
@@ -175,7 +187,7 @@ class RegulatoryThreshold extends Model
 
     public function isActive(): bool
     {
-        if (!$this->is_active) {
+        if (! $this->is_active) {
             return false;
         }
 
@@ -210,18 +222,18 @@ class RegulatoryThreshold extends Model
         }
 
         return match ($this->time_period) {
-            self::PERIOD_DAILY => 1,
-            self::PERIOD_WEEKLY => 7,
-            self::PERIOD_MONTHLY => 30,
+            self::PERIOD_DAILY     => 1,
+            self::PERIOD_WEEKLY    => 7,
+            self::PERIOD_MONTHLY   => 30,
             self::PERIOD_QUARTERLY => 90,
-            self::PERIOD_ANNUALLY => 365,
-            default => 30,
+            self::PERIOD_ANNUALLY  => 365,
+            default                => 30,
         };
     }
 
     public function getEffectiveAmountThreshold(string $currency = null): float
     {
-        if (!$currency || $currency === $this->currency) {
+        if (! $currency || $currency === $this->currency) {
             return $this->amount_threshold;
         }
 
@@ -241,8 +253,8 @@ class RegulatoryThreshold extends Model
     public function getPerformanceMetrics(): array
     {
         return [
-            'trigger_count' => $this->trigger_count,
-            'last_triggered' => $this->last_triggered_at?->diffForHumans(),
+            'trigger_count'       => $this->trigger_count,
+            'last_triggered'      => $this->last_triggered_at?->diffForHumans(),
             'false_positive_rate' => $this->false_positive_rate . '%',
             'effectiveness_score' => $this->calculateEffectivenessScore(),
         ];

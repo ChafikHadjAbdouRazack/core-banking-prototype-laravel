@@ -2,10 +2,9 @@
 
 namespace App\Domain\Regulatory\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Carbon\Carbon;
 
 class RegulatoryFilingRecord extends Model
 {
@@ -43,39 +42,49 @@ class RegulatoryFilingRecord extends Model
     ];
 
     protected $casts = [
-        'filed_at' => 'datetime',
-        'acknowledged_at' => 'datetime',
-        'retry_after' => 'datetime',
-        'filing_credentials' => 'encrypted:array',
-        'filing_request' => 'array',
-        'filing_response' => 'array',
+        'filed_at'               => 'datetime',
+        'acknowledged_at'        => 'datetime',
+        'retry_after'            => 'datetime',
+        'filing_credentials'     => 'encrypted:array',
+        'filing_request'         => 'array',
+        'filing_response'        => 'array',
         'acknowledgment_details' => 'array',
-        'validation_errors' => 'array',
-        'warnings' => 'array',
-        'audit_log' => 'array',
-        'metadata' => 'array',
-        'passed_validation' => 'boolean',
-        'requires_retry' => 'boolean',
+        'validation_errors'      => 'array',
+        'warnings'               => 'array',
+        'audit_log'              => 'array',
+        'metadata'               => 'array',
+        'passed_validation'      => 'boolean',
+        'requires_retry'         => 'boolean',
     ];
 
     // Filing types
-    const TYPE_INITIAL = 'initial';
-    const TYPE_AMENDMENT = 'amendment';
-    const TYPE_CORRECTION = 'correction';
+    public const TYPE_INITIAL = 'initial';
+
+    public const TYPE_AMENDMENT = 'amendment';
+
+    public const TYPE_CORRECTION = 'correction';
 
     // Filing methods
-    const METHOD_API = 'api';
-    const METHOD_MANUAL = 'manual';
-    const METHOD_EMAIL = 'email';
-    const METHOD_PORTAL = 'portal';
+    public const METHOD_API = 'api';
+
+    public const METHOD_MANUAL = 'manual';
+
+    public const METHOD_EMAIL = 'email';
+
+    public const METHOD_PORTAL = 'portal';
 
     // Filing statuses
-    const STATUS_PENDING = 'pending';
-    const STATUS_SUBMITTED = 'submitted';
-    const STATUS_ACKNOWLEDGED = 'acknowledged';
-    const STATUS_ACCEPTED = 'accepted';
-    const STATUS_REJECTED = 'rejected';
-    const STATUS_FAILED = 'failed';
+    public const STATUS_PENDING = 'pending';
+
+    public const STATUS_SUBMITTED = 'submitted';
+
+    public const STATUS_ACKNOWLEDGED = 'acknowledged';
+
+    public const STATUS_ACCEPTED = 'accepted';
+
+    public const STATUS_REJECTED = 'rejected';
+
+    public const STATUS_FAILED = 'failed';
 
     // Boot method
     protected static function boot()
@@ -131,7 +140,7 @@ class RegulatoryFilingRecord extends Model
     public function markAsSubmitted(?string $reference = null): void
     {
         $this->update([
-            'filing_status' => self::STATUS_SUBMITTED,
+            'filing_status'    => self::STATUS_SUBMITTED,
             'filing_reference' => $reference,
         ]);
 
@@ -143,9 +152,9 @@ class RegulatoryFilingRecord extends Model
     public function markAsAcknowledged(string $acknowledgmentNumber, array $details = []): void
     {
         $this->update([
-            'filing_status' => self::STATUS_ACKNOWLEDGED,
-            'acknowledged_at' => now(),
-            'acknowledgment_number' => $acknowledgmentNumber,
+            'filing_status'          => self::STATUS_ACKNOWLEDGED,
+            'acknowledged_at'        => now(),
+            'acknowledgment_number'  => $acknowledgmentNumber,
             'acknowledgment_details' => $details,
         ]);
 
@@ -157,7 +166,7 @@ class RegulatoryFilingRecord extends Model
     public function markAsAccepted(): void
     {
         $this->update([
-            'filing_status' => self::STATUS_ACCEPTED,
+            'filing_status'     => self::STATUS_ACCEPTED,
             'passed_validation' => true,
         ]);
 
@@ -170,11 +179,11 @@ class RegulatoryFilingRecord extends Model
     public function markAsRejected(string $reason, array $errors = []): void
     {
         $this->update([
-            'filing_status' => self::STATUS_REJECTED,
-            'response_message' => $reason,
+            'filing_status'     => self::STATUS_REJECTED,
+            'response_message'  => $reason,
             'validation_errors' => $errors,
-            'requires_retry' => true,
-            'retry_after' => now()->addHours(1),
+            'requires_retry'    => true,
+            'retry_after'       => now()->addHours(1),
         ]);
 
         $this->addAuditEntry('rejected', [
@@ -189,14 +198,14 @@ class RegulatoryFilingRecord extends Model
     public function markAsFailed(string $error): void
     {
         $this->update([
-            'filing_status' => self::STATUS_FAILED,
+            'filing_status'    => self::STATUS_FAILED,
             'response_message' => $error,
-            'requires_retry' => $this->retry_count < $this->max_retries,
-            'retry_after' => now()->addMinutes(30 * ($this->retry_count + 1)), // Exponential backoff
+            'requires_retry'   => $this->retry_count < $this->max_retries,
+            'retry_after'      => now()->addMinutes(30 * ($this->retry_count + 1)), // Exponential backoff
         ]);
 
         $this->addAuditEntry('failed', [
-            'error' => $error,
+            'error'       => $error,
             'retry_count' => $this->retry_count,
         ]);
     }
@@ -204,9 +213,9 @@ class RegulatoryFilingRecord extends Model
     public function recordResponse(int $code, string $message, array $response = []): void
     {
         $this->update([
-            'response_code' => $code,
+            'response_code'    => $code,
             'response_message' => $message,
-            'filing_response' => $response,
+            'filing_response'  => $response,
         ]);
     }
 
@@ -237,7 +246,7 @@ class RegulatoryFilingRecord extends Model
     {
         return $this->requires_retry &&
                $this->retry_count < $this->max_retries &&
-               (!$this->retry_after || $this->retry_after->isPast());
+               (! $this->retry_after || $this->retry_after->isPast());
     }
 
     public function shouldRetry(): bool
@@ -251,10 +260,10 @@ class RegulatoryFilingRecord extends Model
         $auditLog = $this->audit_log ?? [];
 
         $auditLog[] = [
-            'action' => $action,
+            'action'    => $action,
             'timestamp' => now()->toIso8601String(),
-            'user' => auth()->user()?->name ?? 'System',
-            'data' => $data,
+            'user'      => auth()->user()?->name ?? 'System',
+            'data'      => $data,
         ];
 
         $this->update(['audit_log' => $auditLog]);
@@ -262,7 +271,7 @@ class RegulatoryFilingRecord extends Model
 
     public function getProcessingTime(): ?string
     {
-        if (!$this->acknowledged_at) {
+        if (! $this->acknowledged_at) {
             return null;
         }
 
@@ -275,13 +284,13 @@ class RegulatoryFilingRecord extends Model
     public function getStatusLabel(): string
     {
         return match ($this->filing_status) {
-            self::STATUS_PENDING => 'Pending',
-            self::STATUS_SUBMITTED => 'Submitted',
+            self::STATUS_PENDING      => 'Pending',
+            self::STATUS_SUBMITTED    => 'Submitted',
             self::STATUS_ACKNOWLEDGED => 'Acknowledged',
-            self::STATUS_ACCEPTED => 'Accepted',
-            self::STATUS_REJECTED => 'Rejected',
-            self::STATUS_FAILED => 'Failed',
-            default => 'Unknown',
+            self::STATUS_ACCEPTED     => 'Accepted',
+            self::STATUS_REJECTED     => 'Rejected',
+            self::STATUS_FAILED       => 'Failed',
+            default                   => 'Unknown',
         };
     }
 

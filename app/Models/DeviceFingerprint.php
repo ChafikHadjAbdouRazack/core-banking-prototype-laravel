@@ -2,10 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Facades\Hash;
 
 class DeviceFingerprint extends Model
 {
@@ -55,31 +54,33 @@ class DeviceFingerprint extends Model
     ];
 
     protected $casts = [
-        'installed_plugins' => 'array',
-        'installed_fonts' => 'array',
-        'typing_patterns' => 'array',
-        'mouse_patterns' => 'array',
-        'touch_patterns' => 'array',
-        'associated_users' => 'array',
-        'associated_accounts' => 'array',
-        'is_vpn' => 'boolean',
-        'is_proxy' => 'boolean',
-        'is_tor' => 'boolean',
-        'is_trusted' => 'boolean',
-        'is_blocked' => 'boolean',
-        'screen_color_depth' => 'integer',
-        'trust_score' => 'integer',
-        'usage_count' => 'integer',
-        'successful_logins' => 'integer',
-        'failed_logins' => 'integer',
+        'installed_plugins'     => 'array',
+        'installed_fonts'       => 'array',
+        'typing_patterns'       => 'array',
+        'mouse_patterns'        => 'array',
+        'touch_patterns'        => 'array',
+        'associated_users'      => 'array',
+        'associated_accounts'   => 'array',
+        'is_vpn'                => 'boolean',
+        'is_proxy'              => 'boolean',
+        'is_tor'                => 'boolean',
+        'is_trusted'            => 'boolean',
+        'is_blocked'            => 'boolean',
+        'screen_color_depth'    => 'integer',
+        'trust_score'           => 'integer',
+        'usage_count'           => 'integer',
+        'successful_logins'     => 'integer',
+        'failed_logins'         => 'integer',
         'suspicious_activities' => 'integer',
-        'first_seen_at' => 'datetime',
-        'last_seen_at' => 'datetime',
+        'first_seen_at'         => 'datetime',
+        'last_seen_at'          => 'datetime',
     ];
 
-    const DEVICE_TYPE_DESKTOP = 'desktop';
-    const DEVICE_TYPE_MOBILE = 'mobile';
-    const DEVICE_TYPE_TABLET = 'tablet';
+    public const DEVICE_TYPE_DESKTOP = 'desktop';
+
+    public const DEVICE_TYPE_MOBILE = 'mobile';
+
+    public const DEVICE_TYPE_TABLET = 'tablet';
 
     // Relationships
     public function user(): BelongsTo
@@ -91,24 +92,25 @@ class DeviceFingerprint extends Model
     public static function generateFingerprint(array $deviceData): string
     {
         $fingerprintData = [
-            'user_agent' => $deviceData['user_agent'] ?? '',
-            'screen_resolution' => $deviceData['screen_resolution'] ?? '',
-            'timezone' => $deviceData['timezone'] ?? '',
-            'language' => $deviceData['language'] ?? '',
+            'user_agent'         => $deviceData['user_agent'] ?? '',
+            'screen_resolution'  => $deviceData['screen_resolution'] ?? '',
+            'timezone'           => $deviceData['timezone'] ?? '',
+            'language'           => $deviceData['language'] ?? '',
             'canvas_fingerprint' => $deviceData['canvas_fingerprint'] ?? '',
-            'webgl_fingerprint' => $deviceData['webgl_fingerprint'] ?? '',
-            'audio_fingerprint' => $deviceData['audio_fingerprint'] ?? '',
-            'plugins' => implode(',', $deviceData['installed_plugins'] ?? []),
-            'fonts' => implode(',', array_slice($deviceData['installed_fonts'] ?? [], 0, 10)), // Top 10 fonts
+            'webgl_fingerprint'  => $deviceData['webgl_fingerprint'] ?? '',
+            'audio_fingerprint'  => $deviceData['audio_fingerprint'] ?? '',
+            'plugins'            => implode(',', $deviceData['installed_plugins'] ?? []),
+            'fonts'              => implode(',', array_slice($deviceData['installed_fonts'] ?? [], 0, 10)), // Top 10 fonts
         ];
 
         $fingerprintString = implode('|', array_values($fingerprintData));
+
         return hash('sha256', $fingerprintString);
     }
 
     public function isTrusted(): bool
     {
-        return $this->is_trusted && !$this->is_blocked;
+        return $this->is_trusted && ! $this->is_blocked;
     }
 
     public function isBlocked(): bool
@@ -161,7 +163,7 @@ class DeviceFingerprint extends Model
         $this->update(['trust_score' => $newScore]);
 
         // Auto-trust if score is high enough and device is not new
-        if ($newScore >= 80 && !$this->isNew() && !$this->is_blocked) {
+        if ($newScore >= 80 && ! $this->isNew() && ! $this->is_blocked) {
             $this->update(['is_trusted' => true]);
         }
 
@@ -184,8 +186,8 @@ class DeviceFingerprint extends Model
     public function block(string $reason): void
     {
         $this->update([
-            'is_blocked' => true,
-            'is_trusted' => false,
+            'is_blocked'   => true,
+            'is_trusted'   => false,
             'block_reason' => $reason,
         ]);
     }
@@ -193,16 +195,16 @@ class DeviceFingerprint extends Model
     public function unblock(): void
     {
         $this->update([
-            'is_blocked' => false,
+            'is_blocked'   => false,
             'block_reason' => null,
         ]);
     }
 
     public function trust(): void
     {
-        if (!$this->is_blocked) {
+        if (! $this->is_blocked) {
             $this->update([
-                'is_trusted' => true,
+                'is_trusted'  => true,
                 'trust_score' => max($this->trust_score, 80),
             ]);
         }
@@ -211,7 +213,7 @@ class DeviceFingerprint extends Model
     public function associateUser(User $user): void
     {
         $users = $this->associated_users ?? [];
-        if (!in_array($user->id, $users)) {
+        if (! in_array($user->id, $users)) {
             $users[] = $user->id;
             $this->update(['associated_users' => $users]);
         }
@@ -220,7 +222,7 @@ class DeviceFingerprint extends Model
     public function associateAccount(string $accountId): void
     {
         $accounts = $this->associated_accounts ?? [];
-        if (!in_array($accountId, $accounts)) {
+        if (! in_array($accountId, $accounts)) {
             $accounts[] = $accountId;
             $this->update(['associated_accounts' => $accounts]);
         }
@@ -251,7 +253,7 @@ class DeviceFingerprint extends Model
             );
         }
 
-        if (!empty($updates)) {
+        if (! empty($updates)) {
             $this->update($updates);
         }
     }
@@ -260,6 +262,7 @@ class DeviceFingerprint extends Model
     {
         // Keep last 100 patterns for analysis
         $merged = array_merge($existing, $new);
+
         return array_slice($merged, -100);
     }
 
@@ -312,9 +315,9 @@ class DeviceFingerprint extends Model
         return [
             'fingerprint' => substr($this->fingerprint_hash, 0, 8) . '...',
             'device_type' => $this->device_type,
-            'os' => $this->operating_system . ' ' . $this->os_version,
-            'browser' => $this->browser . ' ' . $this->browser_version,
-            'location' => implode(', ', array_filter([
+            'os'          => $this->operating_system . ' ' . $this->os_version,
+            'browser'     => $this->browser . ' ' . $this->browser_version,
+            'location'    => implode(', ', array_filter([
                 $this->ip_city,
                 $this->ip_region,
                 $this->ip_country,
@@ -327,8 +330,8 @@ class DeviceFingerprint extends Model
                 count($this->associated_users ?? []) > 3 ? 'Shared Device' : null,
             ]),
             'trust_score' => $this->trust_score,
-            'risk_score' => $this->getDeviceRiskScore(),
-            'last_seen' => $this->last_seen_at->diffForHumans(),
+            'risk_score'  => $this->getDeviceRiskScore(),
+            'last_seen'   => $this->last_seen_at->diffForHumans(),
         ];
     }
 }

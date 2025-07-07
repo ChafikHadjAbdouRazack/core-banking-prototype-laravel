@@ -76,24 +76,24 @@ class GCUController extends Controller
             }
 
             return [
-                'asset_code' => $component->asset_code,
-                'asset_name' => $component->asset->name,
-                'weight' => $component->weight,
+                'asset_code'         => $component->asset_code,
+                'asset_name'         => $component->asset->name,
+                'weight'             => $component->weight,
                 'value_contribution' => round($valueContribution, 4),
             ];
         });
 
         return response()->json([
             'data' => [
-                'code' => $gcu->code,
-                'name' => $gcu->name,
-                'symbol' => 'Ǥ',
-                'current_value' => $latestValue ? $latestValue->value : 1.0,
-                'value_currency' => 'USD',
+                'code'            => $gcu->code,
+                'name'            => $gcu->name,
+                'symbol'          => 'Ǥ',
+                'current_value'   => $latestValue ? $latestValue->value : 1.0,
+                'value_currency'  => 'USD',
                 'last_rebalanced' => $gcu->last_rebalanced_at?->toIso8601String(),
-                'next_rebalance' => $this->getNextRebalanceDate($gcu),
-                'composition' => $composition,
-                'statistics' => $statistics,
+                'next_rebalance'  => $this->getNextRebalanceDate($gcu),
+                'composition'     => $composition,
+                'statistics'      => $statistics,
             ],
         ]);
     }
@@ -166,8 +166,8 @@ class GCUController extends Controller
 
             $history[] = [
                 'timestamp' => $timestamp,
-                'value' => round($value, 4),
-                'change' => round($change, 2),
+                'value'     => round($value, 4),
+                'change'    => round($change, 2),
             ];
 
             $previousValue = $value;
@@ -181,11 +181,11 @@ class GCUController extends Controller
         return response()->json([
             'data' => $history,
             'meta' => [
-                'period' => $period,
-                'interval' => $interval,
-                'start_value' => $startValue,
-                'end_value' => $endValue,
-                'total_change' => round($totalChange, 4),
+                'period'               => $period,
+                'interval'             => $interval,
+                'start_value'          => $startValue,
+                'end_value'            => $endValue,
+                'total_change'         => round($totalChange, 4),
                 'total_change_percent' => round($totalChangePercent, 2),
             ],
         ]);
@@ -237,17 +237,17 @@ class GCUController extends Controller
             $now = now();
 
             return [
-                'id' => $poll->id,
-                'title' => $poll->title,
-                'description' => $poll->description,
-                'type' => $poll->type,
-                'start_date' => $poll->start_date->toIso8601String(),
-                'end_date' => $endDate->toIso8601String(),
+                'id'                 => $poll->id,
+                'title'              => $poll->title,
+                'description'        => $poll->description,
+                'type'               => $poll->type,
+                'start_date'         => $poll->start_date->toIso8601String(),
+                'end_date'           => $endDate->toIso8601String(),
                 'participation_rate' => $poll->getParticipationRate(),
-                'current_results' => $poll->getResults(),
-                'time_remaining' => [
-                    'days' => $now->diffInDays($endDate),
-                    'hours' => $now->diffInHours($endDate) % 24,
+                'current_results'    => $poll->getResults(),
+                'time_remaining'     => [
+                    'days'           => $now->diffInDays($endDate),
+                    'hours'          => $now->diffInHours($endDate) % 24,
                     'human_readable' => $now->diffForHumans($endDate),
                 ],
             ];
@@ -337,15 +337,15 @@ class GCUController extends Controller
             $changes7d = $this->getAssetPriceChange($component->asset_code, 7);
 
             return [
-                'asset_code' => $component->asset_code,
-                'asset_name' => $asset->name,
-                'asset_type' => $asset->type,
-                'weight' => $component->weight,
-                'current_price_usd' => round($currentPriceUSD, 4),
+                'asset_code'             => $component->asset_code,
+                'asset_name'             => $asset->name,
+                'asset_type'             => $asset->type,
+                'weight'                 => $component->weight,
+                'current_price_usd'      => round($currentPriceUSD, 4),
                 'value_contribution_usd' => round($valueContribution, 4),
-                'percentage_of_basket' => round($percentageOfBasket, 2),
-                '24h_change' => round($changes24h, 2),
-                '7d_change' => round($changes7d, 2),
+                'percentage_of_basket'   => round($percentageOfBasket, 2),
+                '24h_change'             => round($changes24h, 2),
+                '7d_change'              => round($changes7d, 2),
             ];
         });
 
@@ -354,15 +354,15 @@ class GCUController extends Controller
 
         return response()->json([
             'data' => [
-                'basket_code' => 'GCU',
-                'last_updated' => $latestValue ? $latestValue->calculated_at->toIso8601String() : now()->toIso8601String(),
+                'basket_code'     => 'GCU',
+                'last_updated'    => $latestValue ? $latestValue->calculated_at->toIso8601String() : now()->toIso8601String(),
                 'total_value_usd' => $latestValue ? round($latestValue->value, 4) : 1.0,
-                'composition' => $composition,
-                'rebalancing' => [
-                    'frequency' => $gcu->rebalance_frequency,
+                'composition'     => $composition,
+                'rebalancing'     => [
+                    'frequency'       => $gcu->rebalance_frequency,
                     'last_rebalanced' => $gcu->last_rebalanced_at?->toIso8601String(),
-                    'next_rebalance' => $this->getNextRebalanceDate($gcu),
-                    'automatic' => $gcu->rebalance_frequency !== 'never',
+                    'next_rebalance'  => $this->getNextRebalanceDate($gcu),
+                    'automatic'       => $gcu->rebalance_frequency !== 'never',
                 ],
                 'performance' => $performance,
             ],
@@ -400,37 +400,37 @@ class GCUController extends Controller
     {
         $banks = [
             [
-                'code' => 'paysera',
-                'name' => 'Paysera LT',
-                'country' => 'Lithuania',
-                'deposit_protection' => 'EU Deposit Guarantee Scheme',
-                'deposit_protection_amount' => 100000,
+                'code'                        => 'paysera',
+                'name'                        => 'Paysera LT',
+                'country'                     => 'Lithuania',
+                'deposit_protection'          => 'EU Deposit Guarantee Scheme',
+                'deposit_protection_amount'   => 100000,
                 'deposit_protection_currency' => 'EUR',
-                'supported_currencies' => ['EUR', 'USD', 'GBP', 'CHF'],
-                'features' => ['instant_transfers', 'multi_currency', 'api_access'],
-                'status' => $this->getBankStatus('paysera'),
+                'supported_currencies'        => ['EUR', 'USD', 'GBP', 'CHF'],
+                'features'                    => ['instant_transfers', 'multi_currency', 'api_access'],
+                'status'                      => $this->getBankStatus('paysera'),
             ],
             [
-                'code' => 'deutsche_bank',
-                'name' => 'Deutsche Bank',
-                'country' => 'Germany',
-                'deposit_protection' => 'German Deposit Protection Scheme',
-                'deposit_protection_amount' => 100000,
+                'code'                        => 'deutsche_bank',
+                'name'                        => 'Deutsche Bank',
+                'country'                     => 'Germany',
+                'deposit_protection'          => 'German Deposit Protection Scheme',
+                'deposit_protection_amount'   => 100000,
                 'deposit_protection_currency' => 'EUR',
-                'supported_currencies' => ['EUR', 'USD', 'GBP', 'CHF', 'JPY'],
-                'features' => ['corporate_banking', 'fx_trading', 'global_network'],
-                'status' => $this->getBankStatus('deutsche_bank'),
+                'supported_currencies'        => ['EUR', 'USD', 'GBP', 'CHF', 'JPY'],
+                'features'                    => ['corporate_banking', 'fx_trading', 'global_network'],
+                'status'                      => $this->getBankStatus('deutsche_bank'),
             ],
             [
-                'code' => 'santander',
-                'name' => 'Santander',
-                'country' => 'Spain',
-                'deposit_protection' => 'Spanish Deposit Guarantee Fund',
-                'deposit_protection_amount' => 100000,
+                'code'                        => 'santander',
+                'name'                        => 'Santander',
+                'country'                     => 'Spain',
+                'deposit_protection'          => 'Spanish Deposit Guarantee Fund',
+                'deposit_protection_amount'   => 100000,
                 'deposit_protection_currency' => 'EUR',
-                'supported_currencies' => ['EUR', 'USD', 'GBP'],
-                'features' => ['retail_banking', 'mobile_app', 'international_presence'],
-                'status' => $this->getBankStatus('santander'),
+                'supported_currencies'        => ['EUR', 'USD', 'GBP'],
+                'features'                    => ['retail_banking', 'mobile_app', 'international_presence'],
+                'status'                      => $this->getBankStatus('santander'),
             ],
         ];
 
@@ -451,11 +451,11 @@ class GCUController extends Controller
         $changes = $this->calculateValueChanges('GCU');
 
         return [
-            'total_supply' => $totalSupply,
+            'total_supply'  => $totalSupply,
             'holders_count' => $holdersCount,
-            '24h_change' => $changes['24h'],
-            '7d_change' => $changes['7d'],
-            '30d_change' => $changes['30d'],
+            '24h_change'    => $changes['24h'],
+            '7d_change'     => $changes['7d'],
+            '30d_change'    => $changes['30d'],
         ];
     }
 
@@ -490,11 +490,11 @@ class GCUController extends Controller
         $lastRebalanced = $basket->last_rebalanced_at ?? now();
 
         $nextRebalance = match ($basket->rebalance_frequency) {
-            'daily' => $lastRebalanced->copy()->addDay(),
-            'weekly' => $lastRebalanced->copy()->addWeek(),
-            'monthly' => $lastRebalanced->copy()->addMonth(),
+            'daily'     => $lastRebalanced->copy()->addDay(),
+            'weekly'    => $lastRebalanced->copy()->addWeek(),
+            'monthly'   => $lastRebalanced->copy()->addMonth(),
             'quarterly' => $lastRebalanced->copy()->addQuarter(),
-            default => $lastRebalanced->copy()->addMonth(),
+            default     => $lastRebalanced->copy()->addMonth(),
         };
 
         return $nextRebalance->toIso8601String();
@@ -503,11 +503,11 @@ class GCUController extends Controller
     private function getPeriodStartDate(string $period): \Carbon\Carbon
     {
         return match ($period) {
-            '24h' => now()->subDay(),
-            '7d' => now()->subWeek(),
-            '30d' => now()->subMonth(),
-            '90d' => now()->subDays(90),
-            '1y' => now()->subYear(),
+            '24h'   => now()->subDay(),
+            '7d'    => now()->subWeek(),
+            '30d'   => now()->subMonth(),
+            '90d'   => now()->subDays(90),
+            '1y'    => now()->subYear(),
             default => now()->subYears(10),
         };
     }
@@ -518,14 +518,14 @@ class GCUController extends Controller
 
         foreach ($values as $value) {
             $key = match ($interval) {
-                'hourly' => $value->calculated_at->format('Y-m-d H:00:00'),
-                'daily' => $value->calculated_at->format('Y-m-d'),
-                'weekly' => $value->calculated_at->startOfWeek()->format('Y-m-d'),
+                'hourly'  => $value->calculated_at->format('Y-m-d H:00:00'),
+                'daily'   => $value->calculated_at->format('Y-m-d'),
+                'weekly'  => $value->calculated_at->startOfWeek()->format('Y-m-d'),
                 'monthly' => $value->calculated_at->format('Y-m'),
-                default => $value->calculated_at->format('Y-m-d'),
+                default   => $value->calculated_at->format('Y-m-d'),
             };
 
-            if (!isset($grouped[$key])) {
+            if (! isset($grouped[$key])) {
                 $grouped[$key] = [];
             }
 
@@ -548,10 +548,10 @@ class GCUController extends Controller
             $health = $healthMonitor->getCustodianHealth($bankCode);
 
             return match ($health['status']) {
-                'healthy' => 'operational',
-                'degraded' => 'degraded',
+                'healthy'   => 'operational',
+                'degraded'  => 'degraded',
                 'unhealthy' => 'maintenance',
-                default => 'unknown',
+                default     => 'unknown',
             };
         } catch (\Exception $e) {
             return 'unknown';
@@ -577,7 +577,7 @@ class GCUController extends Controller
         }
 
         $oldestRate = $historicalRates->last();
-        if (!$oldestRate || $oldestRate->rate == 0) {
+        if (! $oldestRate || $oldestRate->rate == 0) {
             return 0;
         }
 

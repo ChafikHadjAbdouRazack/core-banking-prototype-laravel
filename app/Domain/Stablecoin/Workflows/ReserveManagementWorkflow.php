@@ -4,8 +4,8 @@ namespace App\Domain\Stablecoin\Workflows;
 
 use App\Domain\Stablecoin\Activities\ReserveManagementActivity;
 use App\Domain\Stablecoin\Workflows\Data\ReserveDepositData;
-use App\Domain\Stablecoin\Workflows\Data\ReserveWithdrawalData;
 use App\Domain\Stablecoin\Workflows\Data\ReserveRebalanceData;
+use App\Domain\Stablecoin\Workflows\Data\ReserveWithdrawalData;
 use Workflow\ActivityStub;
 use Workflow\Workflow;
 
@@ -56,15 +56,15 @@ class ReserveManagementWorkflow extends Workflow
             );
 
             return [
-                'success' => true,
-                'pool_id' => $data->poolId,
-                'asset' => $data->asset,
-                'amount' => $data->amount,
-                'timestamp' => now()->toIso8601String()
+                'success'   => true,
+                'pool_id'   => $data->poolId,
+                'asset'     => $data->asset,
+                'amount'    => $data->amount,
+                'timestamp' => now()->toIso8601String(),
             ];
         } catch (\Throwable $e) {
             yield Workflow::asyncDetached(
-                fn() => $this->compensateDeposit($data, $e->getMessage())
+                fn () => $this->compensateDeposit($data, $e->getMessage())
             );
 
             throw $e;
@@ -107,14 +107,14 @@ class ReserveManagementWorkflow extends Workflow
             );
 
             return [
-                'success' => true,
-                'withdrawal_id' => $withdrawalId,
+                'success'          => true,
+                'withdrawal_id'    => $withdrawalId,
                 'transaction_hash' => $txHash,
-                'timestamp' => now()->toIso8601String()
+                'timestamp'        => now()->toIso8601String(),
             ];
         } catch (\Throwable $e) {
             yield Workflow::asyncDetached(
-                fn() => $this->compensateWithdrawal($data, $e->getMessage())
+                fn () => $this->compensateWithdrawal($data, $e->getMessage())
             );
 
             throw $e;
@@ -143,8 +143,8 @@ class ReserveManagementWorkflow extends Workflow
                 );
 
                 $executedSwaps[] = array_merge($swap, [
-                    'executed_output' => $result['output'],
-                    'transaction_hash' => $result['tx_hash']
+                    'executed_output'  => $result['output'],
+                    'transaction_hash' => $result['tx_hash'],
                 ]);
             }
 
@@ -155,15 +155,15 @@ class ReserveManagementWorkflow extends Workflow
             );
 
             return [
-                'success' => true,
-                'swaps' => $executedSwaps,
+                'success'         => true,
+                'swaps'           => $executedSwaps,
                 'new_allocations' => yield $this->activity->getReserveAllocations($data->poolId),
-                'timestamp' => now()->toIso8601String()
+                'timestamp' => now()->toIso8601String(),
             ];
         } catch (\Throwable $e) {
             // Reverse executed swaps
             yield Workflow::asyncDetached(
-                fn() => $this->compensateRebalance($executedSwaps, $e->getMessage())
+                fn () => $this->compensateRebalance($executedSwaps, $e->getMessage())
             );
 
             throw $e;

@@ -16,28 +16,31 @@ class CoinbaseWebhookController extends Controller
     }
 
     /**
-     * Handle Coinbase Commerce webhook
+     * Handle Coinbase Commerce webhook.
      */
     public function handleWebhook(Request $request)
     {
         $payload = $request->getContent();
         $signature = $request->header('X-CC-Webhook-Signature');
 
-        if (!$signature) {
+        if (! $signature) {
             Log::warning('Coinbase webhook received without signature');
+
             return response()->json(['error' => 'Missing signature'], 400);
         }
 
         // Verify webhook signature
-        if (!$this->coinbaseService->verifyWebhookSignature($payload, $signature)) {
+        if (! $this->coinbaseService->verifyWebhookSignature($payload, $signature)) {
             Log::warning('Coinbase webhook signature verification failed');
+
             return response()->json(['error' => 'Invalid signature'], 400);
         }
 
         $event = json_decode($payload, true);
 
-        if (!$event) {
+        if (! $event) {
             Log::error('Invalid Coinbase webhook payload', ['payload' => $payload]);
+
             return response()->json(['error' => 'Invalid payload'], 400);
         }
 

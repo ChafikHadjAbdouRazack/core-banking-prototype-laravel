@@ -16,7 +16,7 @@ class UpdateBatchItem
     {
         $batchJob = BatchJob::where('uuid', $event->aggregateRootUuid())->first();
 
-        if (!$batchJob) {
+        if (! $batchJob) {
             return;
         }
 
@@ -24,10 +24,10 @@ class UpdateBatchItem
         BatchJobItem::where('batch_job_uuid', $batchJob->uuid)
             ->where('sequence', $event->itemIndex + 1)
             ->update([
-                'status' => $event->status,
-                'result' => $event->result,
+                'status'        => $event->status,
+                'result'        => $event->result,
                 'error_message' => $event->errorMessage,
-                'processed_at' => now(),
+                'processed_at'  => now(),
             ]);
 
         // Update batch job counters

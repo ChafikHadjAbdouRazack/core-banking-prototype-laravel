@@ -53,20 +53,20 @@ class LiquidityPoolController extends Controller
             $metrics = $this->liquidityService->getPoolMetrics($pool->pool_id);
 
             return [
-                'pool_id' => $pool->pool_id,
-                'base_currency' => $pool->base_currency,
+                'pool_id'        => $pool->pool_id,
+                'base_currency'  => $pool->base_currency,
                 'quote_currency' => $pool->quote_currency,
-                'base_reserve' => $pool->base_reserve,
-                'quote_reserve' => $pool->quote_reserve,
-                'fee_rate' => $pool->fee_rate,
-                'tvl' => $metrics['tvl'],
-                'apy' => $metrics['apy'],
-                'volume_24h' => $pool->volume_24h,
+                'base_reserve'   => $pool->base_reserve,
+                'quote_reserve'  => $pool->quote_reserve,
+                'fee_rate'       => $pool->fee_rate,
+                'tvl'            => $metrics['tvl'],
+                'apy'            => $metrics['apy'],
+                'volume_24h'     => $pool->volume_24h,
             ];
         });
 
         return response()->json([
-            'pools' => $poolData
+            'pools' => $poolData,
         ]);
     }
 
@@ -91,14 +91,14 @@ class LiquidityPoolController extends Controller
     {
         $pool = $this->liquidityService->getPool($poolId);
 
-        if (!$pool) {
+        if (! $pool) {
             return response()->json(['error' => 'Pool not found'], 404);
         }
 
         $metrics = $this->liquidityService->getPoolMetrics($poolId);
 
         return response()->json([
-            'pool' => array_merge($pool->toArray(), ['metrics' => $metrics])
+            'pool' => array_merge($pool->toArray(), ['metrics' => $metrics]),
         ]);
     }
 
@@ -131,9 +131,9 @@ class LiquidityPoolController extends Controller
         $this->middleware('auth:sanctum');
 
         $validated = $request->validate([
-            'base_currency' => 'required|string|size:3',
+            'base_currency'  => 'required|string|size:3',
             'quote_currency' => 'required|string|size:3',
-            'fee_rate' => 'nullable|numeric|between:0.0001,0.01',
+            'fee_rate'       => 'nullable|numeric|between:0.0001,0.01',
         ]);
 
         try {
@@ -145,7 +145,7 @@ class LiquidityPoolController extends Controller
 
             return response()->json([
                 'pool_id' => $poolId,
-                'message' => 'Liquidity pool created successfully'
+                'message' => 'Liquidity pool created successfully',
             ], 201);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 400);
@@ -179,14 +179,14 @@ class LiquidityPoolController extends Controller
         $this->middleware('auth:sanctum');
 
         $validated = $request->validate([
-            'pool_id' => 'required|uuid',
-            'base_amount' => 'required|numeric|min:0.00000001',
+            'pool_id'      => 'required|uuid',
+            'base_amount'  => 'required|numeric|min:0.00000001',
             'quote_amount' => 'required|numeric|min:0.00000001',
-            'min_shares' => 'nullable|numeric|min:0',
+            'min_shares'   => 'nullable|numeric|min:0',
         ]);
 
         $pool = $this->liquidityService->getPool($validated['pool_id']);
-        if (!$pool) {
+        if (! $pool) {
             return response()->json(['error' => 'Pool not found'], 404);
         }
 
@@ -234,9 +234,9 @@ class LiquidityPoolController extends Controller
         $this->middleware('auth:sanctum');
 
         $validated = $request->validate([
-            'pool_id' => 'required|uuid',
-            'shares' => 'required|numeric|min:0.00000001',
-            'min_base_amount' => 'nullable|numeric|min:0',
+            'pool_id'          => 'required|uuid',
+            'shares'           => 'required|numeric|min:0.00000001',
+            'min_base_amount'  => 'nullable|numeric|min:0',
             'min_quote_amount' => 'nullable|numeric|min:0',
         ]);
 
@@ -282,9 +282,9 @@ class LiquidityPoolController extends Controller
         $this->middleware('auth:sanctum');
 
         $validated = $request->validate([
-            'pool_id' => 'required|uuid',
-            'input_currency' => 'required|string|size:3',
-            'input_amount' => 'required|numeric|min:0.00000001',
+            'pool_id'           => 'required|uuid',
+            'input_currency'    => 'required|string|size:3',
+            'input_amount'      => 'required|numeric|min:0.00000001',
             'min_output_amount' => 'nullable|numeric|min:0',
         ]);
 
@@ -323,19 +323,19 @@ class LiquidityPoolController extends Controller
 
         $positionData = $positions->map(function ($position) {
             return [
-                'pool_id' => $position->pool_id,
-                'base_currency' => $position->pool->base_currency,
-                'quote_currency' => $position->pool->quote_currency,
-                'shares' => $position->shares,
-                'share_percentage' => $position->share_percentage,
-                'current_value' => $position->current_value,
-                'pending_rewards' => $position->pending_rewards,
+                'pool_id'               => $position->pool_id,
+                'base_currency'         => $position->pool->base_currency,
+                'quote_currency'        => $position->pool->quote_currency,
+                'shares'                => $position->shares,
+                'share_percentage'      => $position->share_percentage,
+                'current_value'         => $position->current_value,
+                'pending_rewards'       => $position->pending_rewards,
                 'total_rewards_claimed' => $position->total_rewards_claimed,
             ];
         });
 
         return response()->json([
-            'positions' => $positionData
+            'positions' => $positionData,
         ]);
     }
 
@@ -374,7 +374,7 @@ class LiquidityPoolController extends Controller
 
             return response()->json([
                 'success' => true,
-                'rewards' => $rewards
+                'rewards' => $rewards,
             ]);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 400);

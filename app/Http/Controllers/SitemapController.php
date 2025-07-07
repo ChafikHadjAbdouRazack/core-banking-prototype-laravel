@@ -2,14 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Route;
 use Carbon\Carbon;
+use Illuminate\Http\Response;
 
 class SitemapController extends Controller
 {
     /**
-     * Generate the sitemap
+     * Generate the sitemap.
      */
     public function index(): Response
     {
@@ -21,7 +20,7 @@ class SitemapController extends Controller
     }
 
     /**
-     * Generate the sitemap XML
+     * Generate the sitemap XML.
      */
     private function generateSitemap(): string
     {
@@ -40,7 +39,7 @@ class SitemapController extends Controller
     }
 
     /**
-     * Generate a single URL entry
+     * Generate a single URL entry.
      */
     private function generateUrlEntry(array $route): string
     {
@@ -55,7 +54,7 @@ class SitemapController extends Controller
     }
 
     /**
-     * Get all public routes for the sitemap
+     * Get all public routes for the sitemap.
      */
     private function getPublicRoutes(): array
     {
@@ -65,213 +64,213 @@ class SitemapController extends Controller
         $routes = [
             // Homepage - highest priority
             [
-                'url' => $baseUrl,
-                'lastmod' => $now,
+                'url'        => $baseUrl,
+                'lastmod'    => $now,
                 'changefreq' => 'daily',
-                'priority' => '1.0',
+                'priority'   => '1.0',
             ],
 
             // Main pages - high priority
             [
-                'url' => $baseUrl . '/about',
-                'lastmod' => $now,
+                'url'        => $baseUrl . '/about',
+                'lastmod'    => $now,
                 'changefreq' => 'weekly',
-                'priority' => '0.9',
+                'priority'   => '0.9',
             ],
             [
-                'url' => $baseUrl . '/platform',
-                'lastmod' => $now,
+                'url'        => $baseUrl . '/platform',
+                'lastmod'    => $now,
                 'changefreq' => 'weekly',
-                'priority' => '0.9',
+                'priority'   => '0.9',
             ],
             [
-                'url' => $baseUrl . '/gcu',
-                'lastmod' => $now,
+                'url'        => $baseUrl . '/gcu',
+                'lastmod'    => $now,
                 'changefreq' => 'weekly',
-                'priority' => '0.9',
+                'priority'   => '0.9',
             ],
             [
-                'url' => $baseUrl . '/pricing',
-                'lastmod' => $now,
+                'url'        => $baseUrl . '/pricing',
+                'lastmod'    => $now,
                 'changefreq' => 'weekly',
-                'priority' => '0.9',
+                'priority'   => '0.9',
             ],
 
             // Feature pages
             [
-                'url' => $baseUrl . '/features',
-                'lastmod' => $now,
+                'url'        => $baseUrl . '/features',
+                'lastmod'    => $now,
                 'changefreq' => 'weekly',
-                'priority' => '0.8',
+                'priority'   => '0.8',
             ],
             [
-                'url' => $baseUrl . '/features/gcu',
-                'lastmod' => $now,
+                'url'        => $baseUrl . '/features/gcu',
+                'lastmod'    => $now,
                 'changefreq' => 'weekly',
-                'priority' => '0.8',
+                'priority'   => '0.8',
             ],
             [
-                'url' => $baseUrl . '/security',
-                'lastmod' => $now,
+                'url'        => $baseUrl . '/security',
+                'lastmod'    => $now,
                 'changefreq' => 'monthly',
-                'priority' => '0.8',
+                'priority'   => '0.8',
             ],
             [
-                'url' => $baseUrl . '/compliance',
-                'lastmod' => $now,
+                'url'        => $baseUrl . '/compliance',
+                'lastmod'    => $now,
                 'changefreq' => 'monthly',
-                'priority' => '0.8',
+                'priority'   => '0.8',
             ],
 
             // Sub-products
             [
-                'url' => $baseUrl . '/sub-products',
-                'lastmod' => $now,
+                'url'        => $baseUrl . '/sub-products',
+                'lastmod'    => $now,
                 'changefreq' => 'weekly',
-                'priority' => '0.8',
+                'priority'   => '0.8',
             ],
             [
-                'url' => $baseUrl . '/subproducts/exchange',
-                'lastmod' => $now,
+                'url'        => $baseUrl . '/subproducts/exchange',
+                'lastmod'    => $now,
                 'changefreq' => 'weekly',
-                'priority' => '0.7',
+                'priority'   => '0.7',
             ],
             [
-                'url' => $baseUrl . '/subproducts/lending',
-                'lastmod' => $now,
+                'url'        => $baseUrl . '/subproducts/lending',
+                'lastmod'    => $now,
                 'changefreq' => 'weekly',
-                'priority' => '0.7',
+                'priority'   => '0.7',
             ],
             [
-                'url' => $baseUrl . '/subproducts/stablecoins',
-                'lastmod' => $now,
+                'url'        => $baseUrl . '/subproducts/stablecoins',
+                'lastmod'    => $now,
                 'changefreq' => 'weekly',
-                'priority' => '0.7',
+                'priority'   => '0.7',
             ],
             [
-                'url' => $baseUrl . '/subproducts/treasury',
-                'lastmod' => $now,
+                'url'        => $baseUrl . '/subproducts/treasury',
+                'lastmod'    => $now,
                 'changefreq' => 'weekly',
-                'priority' => '0.7',
+                'priority'   => '0.7',
             ],
 
             // Developer resources
             [
-                'url' => $baseUrl . '/developers',
-                'lastmod' => $now,
+                'url'        => $baseUrl . '/developers',
+                'lastmod'    => $now,
                 'changefreq' => 'weekly',
-                'priority' => '0.7',
+                'priority'   => '0.7',
             ],
 
             // Support pages
             [
-                'url' => $baseUrl . '/support',
-                'lastmod' => $now,
+                'url'        => $baseUrl . '/support',
+                'lastmod'    => $now,
                 'changefreq' => 'weekly',
-                'priority' => '0.7',
+                'priority'   => '0.7',
             ],
             [
-                'url' => $baseUrl . '/support/contact',
-                'lastmod' => $now,
+                'url'        => $baseUrl . '/support/contact',
+                'lastmod'    => $now,
                 'changefreq' => 'monthly',
-                'priority' => '0.6',
+                'priority'   => '0.6',
             ],
             [
-                'url' => $baseUrl . '/support/faq',
-                'lastmod' => $now,
+                'url'        => $baseUrl . '/support/faq',
+                'lastmod'    => $now,
                 'changefreq' => 'weekly',
-                'priority' => '0.6',
+                'priority'   => '0.6',
             ],
             [
-                'url' => $baseUrl . '/support/guides',
-                'lastmod' => $now,
+                'url'        => $baseUrl . '/support/guides',
+                'lastmod'    => $now,
                 'changefreq' => 'weekly',
-                'priority' => '0.6',
+                'priority'   => '0.6',
             ],
 
             // Other pages
             [
-                'url' => $baseUrl . '/cgo',
-                'lastmod' => $now,
+                'url'        => $baseUrl . '/cgo',
+                'lastmod'    => $now,
                 'changefreq' => 'weekly',
-                'priority' => '0.7',
+                'priority'   => '0.7',
             ],
             [
-                'url' => $baseUrl . '/partners',
-                'lastmod' => $now,
+                'url'        => $baseUrl . '/partners',
+                'lastmod'    => $now,
                 'changefreq' => 'monthly',
-                'priority' => '0.6',
+                'priority'   => '0.6',
             ],
             [
-                'url' => $baseUrl . '/blog',
-                'lastmod' => $now,
+                'url'        => $baseUrl . '/blog',
+                'lastmod'    => $now,
                 'changefreq' => 'daily',
-                'priority' => '0.7',
+                'priority'   => '0.7',
             ],
 
             // Legal pages - lower priority
             [
-                'url' => $baseUrl . '/legal/terms',
-                'lastmod' => $now,
+                'url'        => $baseUrl . '/legal/terms',
+                'lastmod'    => $now,
                 'changefreq' => 'monthly',
-                'priority' => '0.5',
+                'priority'   => '0.5',
             ],
             [
-                'url' => $baseUrl . '/legal/privacy',
-                'lastmod' => $now,
+                'url'        => $baseUrl . '/legal/privacy',
+                'lastmod'    => $now,
                 'changefreq' => 'monthly',
-                'priority' => '0.5',
+                'priority'   => '0.5',
             ],
             [
-                'url' => $baseUrl . '/legal/cookies',
-                'lastmod' => $now,
+                'url'        => $baseUrl . '/legal/cookies',
+                'lastmod'    => $now,
                 'changefreq' => 'monthly',
-                'priority' => '0.5',
+                'priority'   => '0.5',
             ],
             [
-                'url' => $baseUrl . '/cgo/terms',
-                'lastmod' => $now,
+                'url'        => $baseUrl . '/cgo/terms',
+                'lastmod'    => $now,
                 'changefreq' => 'monthly',
-                'priority' => '0.5',
+                'priority'   => '0.5',
             ],
 
             // Status page
             [
-                'url' => $baseUrl . '/status',
-                'lastmod' => $now,
+                'url'        => $baseUrl . '/status',
+                'lastmod'    => $now,
                 'changefreq' => 'hourly',
-                'priority' => '0.6',
+                'priority'   => '0.6',
             ],
 
             // Financial institutions
             [
-                'url' => $baseUrl . '/financial-institutions/apply',
-                'lastmod' => $now,
+                'url'        => $baseUrl . '/financial-institutions/apply',
+                'lastmod'    => $now,
                 'changefreq' => 'monthly',
-                'priority' => '0.6',
+                'priority'   => '0.6',
             ],
         ];
 
         // Add authentication pages
         $routes[] = [
-            'url' => $baseUrl . '/login',
-            'lastmod' => $now,
+            'url'        => $baseUrl . '/login',
+            'lastmod'    => $now,
             'changefreq' => 'monthly',
-            'priority' => '0.7',
+            'priority'   => '0.7',
         ];
 
         $routes[] = [
-            'url' => $baseUrl . '/register',
-            'lastmod' => $now,
+            'url'        => $baseUrl . '/register',
+            'lastmod'    => $now,
             'changefreq' => 'monthly',
-            'priority' => '0.7',
+            'priority'   => '0.7',
         ];
 
         return $routes;
     }
 
     /**
-     * Generate robots.txt file
+     * Generate robots.txt file.
      */
     public function robots(): Response
     {
@@ -294,7 +293,7 @@ class SitemapController extends Controller
         $content .= "Disallow: /teams/\n";
         $content .= "Disallow: /subscriber/unsubscribe/\n";
         $content .= "\n";
-        $content .= "Sitemap: " . config('app.url') . "/sitemap.xml\n";
+        $content .= 'Sitemap: ' . config('app.url') . "/sitemap.xml\n";
 
         return response($content, 200, [
             'Content-Type' => 'text/plain',

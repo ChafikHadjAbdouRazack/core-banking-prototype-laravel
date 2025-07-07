@@ -1,79 +1,77 @@
 <?php
 
-use App\Models\User;
 use App\Domain\Asset\Models\Asset;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Laravel\Sanctum\Sanctum;
-use Tests\TestCase;
 
 uses(RefreshDatabase::class);
 
 beforeEach(function () {
     $this->user = User::factory()->create();
-    
+
     // Create test assets using firstOrCreate to avoid unique constraint issues
     $this->btc = Asset::firstOrCreate(
         ['code' => 'BTC'],
         [
-            'name' => 'Bitcoin',
-            'type' => 'crypto',
+            'name'      => 'Bitcoin',
+            'type'      => 'crypto',
             'precision' => 8,
             'is_active' => true,
-            'metadata' => [
-                'symbol' => '₿',
-                'decimals' => 8,
+            'metadata'  => [
+                'symbol'           => '₿',
+                'decimals'         => 8,
                 'contract_address' => null,
-                'network' => 'bitcoin',
-                'market_cap_rank' => 1
-            ]
+                'network'          => 'bitcoin',
+                'market_cap_rank'  => 1,
+            ],
         ]
     );
-    
+
     $this->eth = Asset::firstOrCreate(
         ['code' => 'ETH'],
         [
-            'name' => 'Ethereum',
-            'type' => 'crypto',
+            'name'      => 'Ethereum',
+            'type'      => 'crypto',
             'precision' => 18,
             'is_active' => true,
-            'metadata' => [
-                'symbol' => 'Ξ',
-                'decimals' => 18,
+            'metadata'  => [
+                'symbol'           => 'Ξ',
+                'decimals'         => 18,
                 'contract_address' => null,
-                'network' => 'ethereum',
-                'market_cap_rank' => 2
-            ]
+                'network'          => 'ethereum',
+                'market_cap_rank'  => 2,
+            ],
         ]
     );
-    
+
     $this->usd = Asset::firstOrCreate(
         ['code' => 'USD'],
         [
-            'name' => 'US Dollar',
-            'type' => 'fiat',
+            'name'      => 'US Dollar',
+            'type'      => 'fiat',
             'precision' => 2,
             'is_active' => true,
-            'metadata' => [
-                'symbol' => '$',
+            'metadata'  => [
+                'symbol'   => '$',
                 'decimals' => 2,
                 'iso_code' => 'USD',
-                'country' => 'United States'
-            ]
+                'country'  => 'United States',
+            ],
         ]
     );
-    
+
     $this->inactiveAsset = Asset::firstOrCreate(
         ['code' => 'INACTIVE'],
         [
-            'name' => 'Inactive Token',
-            'type' => 'crypto',
-            'is_active' => false
+            'name'      => 'Inactive Token',
+            'type'      => 'crypto',
+            'is_active' => false,
         ]
     );
 });
 
 describe('Asset API - Public Endpoints', function () {
-    
+
     test('can list all active assets', function () {
         $response = $this->getJson('/api/v1/assets');
 
@@ -87,14 +85,14 @@ describe('Asset API - Public Endpoints', function () {
                         'symbol',
                         'precision',
                         'is_active',
-                        'metadata'
-                    ]
+                        'metadata',
+                    ],
                 ],
                 'meta' => [
                     'total',
                     'active',
-                    'types'
-                ]
+                    'types',
+                ],
             ]);
 
         // Should return only active assets by default
@@ -107,7 +105,7 @@ describe('Asset API - Public Endpoints', function () {
         $response = $this->getJson('/api/v1/assets?include_inactive=true');
 
         $response->assertStatus(200);
-        
+
         $codes = collect($response->json('data'))->pluck('code')->toArray();
         expect($codes)->toContain('BTC', 'ETH', 'USD', 'INACTIVE');
     });
@@ -116,9 +114,9 @@ describe('Asset API - Public Endpoints', function () {
         $response = $this->getJson('/api/v1/assets?type=crypto');
 
         $response->assertStatus(200);
-        
+
         $assets = collect($response->json('data'));
-        expect($assets->every(fn($asset) => $asset['type'] === 'crypto'))->toBeTrue();
+        expect($assets->every(fn ($asset) => $asset['type'] === 'crypto'))->toBeTrue();
         expect($assets->pluck('code')->toArray())->toContain('BTC', 'ETH');
         expect($assets->pluck('code')->toArray())->not->toContain('USD');
     });
@@ -128,19 +126,19 @@ describe('Asset API - Public Endpoints', function () {
         $response = $this->getJson('/api/v1/assets?type=crypto');
 
         $response->assertStatus(200);
-        
+
         $assets = collect($response->json('data'));
-        expect($assets->every(fn($asset) => $asset['type'] === 'crypto'))->toBeTrue();
+        expect($assets->every(fn ($asset) => $asset['type'] === 'crypto'))->toBeTrue();
         expect($assets->pluck('code')->toArray())->toContain('BTC', 'ETH');
         expect($assets->pluck('code')->toArray())->not->toContain('USD');
-        
+
         // Test filtering by fiat type only
         $response = $this->getJson('/api/v1/assets?type=fiat');
 
         $response->assertStatus(200);
-        
+
         $assets = collect($response->json('data'));
-        expect($assets->every(fn($asset) => $asset['type'] === 'fiat'))->toBeTrue();
+        expect($assets->every(fn ($asset) => $asset['type'] === 'fiat'))->toBeTrue();
         expect($assets->pluck('code')->toArray())->toContain('USD');
         expect($assets->pluck('code')->toArray())->not->toContain('BTC', 'ETH');
     });
@@ -149,7 +147,7 @@ describe('Asset API - Public Endpoints', function () {
         $response = $this->getJson('/api/v1/assets?search=bitcoin');
 
         $response->assertStatus(200);
-        
+
         $assets = collect($response->json('data'));
         expect($assets->where('code', 'BTC'))->toHaveCount(1);
     });
@@ -158,7 +156,7 @@ describe('Asset API - Public Endpoints', function () {
         $response = $this->getJson('/api/v1/assets?search=BT');
 
         $response->assertStatus(200);
-        
+
         $codes = collect($response->json('data'))->pluck('code')->toArray();
         expect($codes)->toContain('BTC');
     });
@@ -177,7 +175,7 @@ describe('Asset API - Public Endpoints', function () {
                 'metadata',
                 'statistics',
                 'created_at',
-                'updated_at'
+                'updated_at',
             ]);
 
         expect($response->json('code'))->toBe('BTC');
@@ -222,7 +220,7 @@ describe('Asset API - Public Endpoints', function () {
         $response = $this->getJson('/api/v1/assets?sort=market_cap');
 
         $response->assertStatus(200);
-        
+
         // Note: Sorting by market cap not yet implemented in controller
         expect($response->json('data'))->toBeArray();
     })->skip('Sorting by market cap not yet implemented');
@@ -231,7 +229,7 @@ describe('Asset API - Public Endpoints', function () {
         $response = $this->getJson('/api/v1/assets?sort=name');
 
         $response->assertStatus(200);
-        
+
         // Note: Custom sorting not yet implemented, controller sorts by 'code' by default
         expect($response->json('data'))->toBeArray();
     })->skip('Custom sorting not yet implemented');
@@ -257,13 +255,13 @@ describe('Asset API - Public Endpoints', function () {
         $this->btc->update([
             'metadata' => array_merge($this->btc->metadata ?? [], [
                 'market_data' => [
-                    'price_usd' => 45000.50,
-                    'market_cap_usd' => 850000000000,
-                    'volume_24h_usd' => 25000000000,
+                    'price_usd'        => 45000.50,
+                    'market_cap_usd'   => 850000000000,
+                    'volume_24h_usd'   => 25000000000,
                     'price_change_24h' => 2.5,
-                    'last_updated' => now()->toISOString()
-                ]
-            ])
+                    'last_updated'     => now()->toISOString(),
+                ],
+            ]),
         ]);
 
         $response = $this->getJson('/api/v1/assets/BTC');
@@ -280,10 +278,10 @@ describe('Asset API - Public Endpoints', function () {
                 'supported_networks' => ['ethereum', 'polygon', 'arbitrum'],
                 'contract_addresses' => [
                     'ethereum' => null, // Native token
-                    'polygon' => '0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619',
-                    'arbitrum' => '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1'
-                ]
-            ])
+                    'polygon'  => '0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619',
+                    'arbitrum' => '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1',
+                ],
+            ]),
         ]);
 
         $response = $this->getJson('/api/v1/assets/ETH');
@@ -301,16 +299,16 @@ describe('Asset API - Public Endpoints', function () {
                 'statistics' => [
                     'total_supply',
                     'circulating_supply',
-                    'market_data'
-                ]
+                    'market_data',
+                ],
             ]);
     });
 
     test('handles asset search with special characters', function () {
         Asset::factory()->create([
-            'code' => 'SPECIAL',
-            'name' => 'Asset with special chars: $%#',
-            'is_active' => true
+            'code'      => 'SPECIAL',
+            'name'      => 'Asset with special chars: $%#',
+            'is_active' => true,
         ]);
 
         $response = $this->getJson('/api/v1/assets?search=' . urlencode('special chars'));
@@ -330,9 +328,9 @@ describe('Asset API - Public Endpoints', function () {
         $response = $this->getJson('/api/v1/assets?type=crypto&search=bit&sort=name');
 
         $response->assertStatus(200);
-        
+
         $assets = collect($response->json('data'));
-        expect($assets->every(fn($asset) => $asset['type'] === 'crypto'))->toBeTrue();
+        expect($assets->every(fn ($asset) => $asset['type'] === 'crypto'))->toBeTrue();
         expect($assets->where('code', 'BTC'))->toHaveCount(1);
     });
 
@@ -358,7 +356,7 @@ describe('Asset API - Public Endpoints', function () {
 
     test('handles concurrent requests efficiently', function () {
         $responses = [];
-        
+
         // Simulate concurrent requests
         for ($i = 0; $i < 5; $i++) {
             $responses[] = $this->getJson('/api/v1/assets');

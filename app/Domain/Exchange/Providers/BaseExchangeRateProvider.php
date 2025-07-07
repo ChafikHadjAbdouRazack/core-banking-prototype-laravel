@@ -42,7 +42,7 @@ abstract class BaseExchangeRateProvider implements IExchangeRateProvider
     protected function getHeaders(): array
     {
         $headers = [
-            'Accept' => 'application/json',
+            'Accept'       => 'application/json',
             'Content-Type' => 'application/json',
         ];
 
@@ -77,7 +77,7 @@ abstract class BaseExchangeRateProvider implements IExchangeRateProvider
     }
 
     /**
-     * Check rate limit
+     * Check rate limit.
      */
     protected function checkRateLimit(): void
     {
@@ -96,7 +96,7 @@ abstract class BaseExchangeRateProvider implements IExchangeRateProvider
     }
 
     /**
-     * Cache a value with provider-specific key
+     * Cache a value with provider-specific key.
      */
     protected function cache(string $key, mixed $value, ?int $minutes = null): void
     {
@@ -105,7 +105,7 @@ abstract class BaseExchangeRateProvider implements IExchangeRateProvider
     }
 
     /**
-     * Get cached value
+     * Get cached value.
      */
     protected function getCached(string $key): mixed
     {
@@ -115,7 +115,7 @@ abstract class BaseExchangeRateProvider implements IExchangeRateProvider
     }
 
     /**
-     * Remember value in cache
+     * Remember value in cache.
      */
     protected function remember(string $key, \Closure $callback, ?int $minutes = null): mixed
     {
@@ -125,36 +125,36 @@ abstract class BaseExchangeRateProvider implements IExchangeRateProvider
     }
 
     /**
-     * Log API request
+     * Log API request.
      */
     protected function logRequest(string $method, string $endpoint, array $data = []): void
     {
         if ($this->config['debug'] ?? false) {
             Log::debug("Exchange rate provider {$this->getName()} request", [
-                'method' => $method,
+                'method'   => $method,
                 'endpoint' => $endpoint,
-                'data' => $data,
+                'data'     => $data,
             ]);
         }
     }
 
     /**
-     * Log API response
+     * Log API response.
      */
     protected function logResponse(string $method, string $endpoint, $response): void
     {
         if ($this->config['debug'] ?? false) {
             Log::debug("Exchange rate provider {$this->getName()} response", [
-                'method' => $method,
+                'method'   => $method,
                 'endpoint' => $endpoint,
-                'status' => $response->status(),
-                'body' => $response->json(),
+                'status'   => $response->status(),
+                'body'     => $response->json(),
             ]);
         }
     }
 
     /**
-     * Handle API errors
+     * Handle API errors.
      */
     protected function handleApiError(\Illuminate\Http\Client\Response $response, string $operation): void
     {
@@ -173,17 +173,17 @@ abstract class BaseExchangeRateProvider implements IExchangeRateProvider
     }
 
     /**
-     * Get base URL for the provider
+     * Get base URL for the provider.
      */
     abstract protected function getBaseUrl(): string;
 
     /**
-     * Get API key header name
+     * Get API key header name.
      */
     abstract protected function getApiKeyHeader(): string;
 
     /**
-     * Get health check endpoint
+     * Get health check endpoint.
      */
     abstract protected function getHealthCheckEndpoint(): string;
 }

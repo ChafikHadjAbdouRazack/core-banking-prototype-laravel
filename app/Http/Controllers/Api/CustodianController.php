@@ -27,7 +27,7 @@ class CustodianController extends Controller
     }
 
     /**
-     * List available custodians
+     * List available custodians.
      *
      * @OA\Get(
      *     path="/api/custodians",
@@ -66,22 +66,22 @@ class CustodianController extends Controller
 
         foreach ($this->registry->all() as $name => $connector) {
             $custodians[] = [
-                'name' => $name,
-                'display_name' => $connector->getName(),
-                'available' => $connector->isAvailable(),
+                'name'             => $name,
+                'display_name'     => $connector->getName(),
+                'available'        => $connector->isAvailable(),
                 'supported_assets' => $connector->getSupportedAssets(),
             ];
         }
 
         return response()->json([
-            'data' => $custodians,
+            'data'    => $custodians,
             'default' => $this->registry->has($this->registry->names()[0] ?? '') ?
                 $this->registry->names()[0] : null,
         ]);
     }
 
     /**
-     * Get custodian account information
+     * Get custodian account information.
      *
      * @OA\Get(
      *     path="/api/custodians/{custodian}/account-info",
@@ -146,14 +146,14 @@ class CustodianController extends Controller
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'error' => 'Failed to retrieve account information',
+                'error'   => 'Failed to retrieve account information',
                 'message' => $e->getMessage(),
             ], 400);
         }
     }
 
     /**
-     * Get custodian account balance
+     * Get custodian account balance.
      *
      * @OA\Get(
      *     path="/api/custodians/{custodian}/balance",
@@ -219,22 +219,22 @@ class CustodianController extends Controller
 
             return response()->json([
                 'data' => [
-                    'account_id' => $validated['account_id'],
-                    'asset_code' => $validated['asset_code'],
-                    'balance' => $balance->getAmount(),
+                    'account_id'        => $validated['account_id'],
+                    'asset_code'        => $validated['asset_code'],
+                    'balance'           => $balance->getAmount(),
                     'formatted_balance' => number_format($balance->getAmount() / 100, 2),
                 ],
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'error' => 'Failed to retrieve balance',
+                'error'   => 'Failed to retrieve balance',
                 'message' => $e->getMessage(),
             ], 400);
         }
     }
 
     /**
-     * Transfer funds between internal and custodian accounts
+     * Transfer funds between internal and custodian accounts.
      *
      * @OA\Post(
      *     path="/api/custodians/{custodian}/transfer",
@@ -292,11 +292,11 @@ class CustodianController extends Controller
     {
         $validated = $request->validate([
             'internal_account_uuid' => 'required|uuid|exists:accounts,uuid',
-            'custodian_account_id' => 'required|string',
-            'asset_code' => 'required|string|size:3',
-            'amount' => 'required|numeric|min:0.01',
-            'direction' => 'required|in:deposit,withdraw',
-            'reference' => 'nullable|string|max:255',
+            'custodian_account_id'  => 'required|string',
+            'asset_code'            => 'required|string|size:3',
+            'amount'                => 'required|numeric|min:0.01',
+            'direction'             => 'required|in:deposit,withdraw',
+            'reference'             => 'nullable|string|max:255',
         ]);
 
         try {
@@ -304,7 +304,7 @@ class CustodianController extends Controller
             $connector = $this->registry->get($custodian);
 
             // Validate custodian account
-            if (!$connector->validateAccount($validated['custodian_account_id'])) {
+            if (! $connector->validateAccount($validated['custodian_account_id'])) {
                 return response()->json([
                     'error' => 'Invalid custodian account',
                 ], 400);
@@ -316,7 +316,7 @@ class CustodianController extends Controller
                 new AccountUuid($validated['internal_account_uuid']),
                 $validated['custodian_account_id'],
                 $validated['asset_code'],
-                new Money((int)($validated['amount'] * 100)),
+                new Money((int) ($validated['amount'] * 100)),
                 $custodian,
                 $validated['direction'],
                 $validated['reference'] ?? null
@@ -324,27 +324,27 @@ class CustodianController extends Controller
 
             // Handle both real and fake workflow responses
             $responseData = $result ?? [
-                'status' => 'completed',
+                'status'         => 'completed',
                 'transaction_id' => 'mock-tx-' . uniqid(),
-                'direction' => $validated['direction'],
-                'amount' => (int)($validated['amount'] * 100),
-                'asset_code' => $validated['asset_code'],
+                'direction'      => $validated['direction'],
+                'amount'         => (int) ($validated['amount'] * 100),
+                'asset_code'     => $validated['asset_code'],
             ];
 
             return response()->json([
-                'data' => $responseData,
+                'data'    => $responseData,
                 'message' => "Transfer {$validated['direction']} initiated successfully",
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'error' => 'Transfer failed',
+                'error'   => 'Transfer failed',
                 'message' => $e->getMessage(),
             ], 400);
         }
     }
 
     /**
-     * Get transaction history from custodian
+     * Get transaction history from custodian.
      *
      * @OA\Get(
      *     path="/api/custodians/{custodian}/transactions",
@@ -419,36 +419,36 @@ class CustodianController extends Controller
     {
         $validated = $request->validate([
             'account_id' => 'required|string',
-            'limit' => 'nullable|integer|min:1|max:1000',
-            'offset' => 'nullable|integer|min:0',
+            'limit'      => 'nullable|integer|min:1|max:1000',
+            'offset'     => 'nullable|integer|min:0',
         ]);
 
         try {
             $connector = $this->registry->get($custodian);
             $history = $connector->getTransactionHistory(
                 $validated['account_id'],
-                (int)($validated['limit'] ?? 100),
-                (int)($validated['offset'] ?? 0)
+                (int) ($validated['limit'] ?? 100),
+                (int) ($validated['offset'] ?? 0)
             );
 
             return response()->json([
                 'data' => $history,
                 'meta' => [
-                    'limit' => (int)($validated['limit'] ?? 100),
-                    'offset' => (int)($validated['offset'] ?? 0),
-                    'count' => count($history),
+                    'limit'  => (int) ($validated['limit'] ?? 100),
+                    'offset' => (int) ($validated['offset'] ?? 0),
+                    'count'  => count($history),
                 ],
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'error' => 'Failed to retrieve transaction history',
+                'error'   => 'Failed to retrieve transaction history',
                 'message' => $e->getMessage(),
             ], 400);
         }
     }
 
     /**
-     * Get transaction status
+     * Get transaction status.
      *
      * @OA\Get(
      *     path="/api/custodians/{custodian}/transactions/{transactionId}",
@@ -507,7 +507,7 @@ class CustodianController extends Controller
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'error' => 'Failed to retrieve transaction status',
+                'error'   => 'Failed to retrieve transaction status',
                 'message' => $e->getMessage(),
             ], 400);
         }

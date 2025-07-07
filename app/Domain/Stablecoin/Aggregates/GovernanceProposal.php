@@ -2,11 +2,11 @@
 
 namespace App\Domain\Stablecoin\Aggregates;
 
-use App\Domain\Stablecoin\Events\ProposalCreated;
-use App\Domain\Stablecoin\Events\ProposalVoteCast;
-use App\Domain\Stablecoin\Events\ProposalExecuted;
 use App\Domain\Stablecoin\Events\ProposalCancelled;
+use App\Domain\Stablecoin\Events\ProposalCreated;
+use App\Domain\Stablecoin\Events\ProposalExecuted;
 use App\Domain\Stablecoin\Events\ProposalFinalized;
+use App\Domain\Stablecoin\Events\ProposalVoteCast;
 use Brick\Math\BigDecimal;
 use Brick\Math\RoundingMode;
 use Carbon\Carbon;
@@ -15,21 +15,33 @@ use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
 class GovernanceProposal extends AggregateRoot
 {
     protected string $proposalType;
+
     protected string $title;
+
     protected string $description;
+
     protected array $parameters;
+
     protected string $proposer;
+
     protected Carbon $startTime;
+
     protected Carbon $endTime;
+
     protected string $status = 'pending';
+
     protected array $votes = []; // voter => [choice, weight]
+
     protected array $votesSummary = [
-        'for' => '0',
+        'for'     => '0',
         'against' => '0',
-        'abstain' => '0'
+        'abstain' => '0',
     ];
+
     protected string $quorumRequired;
+
     protected string $approvalThreshold;
+
     protected ?array $executionResult = null;
 
     public static function create(
@@ -72,7 +84,7 @@ class GovernanceProposal extends AggregateRoot
             throw new \InvalidArgumentException('Proposal is not active for voting');
         }
 
-        if (!in_array($choice, ['for', 'against', 'abstain'])) {
+        if (! in_array($choice, ['for', 'against', 'abstain'])) {
             throw new \InvalidArgumentException('Invalid vote choice');
         }
 
@@ -173,10 +185,10 @@ class GovernanceProposal extends AggregateRoot
     protected function applyProposalVoteCast(ProposalVoteCast $event): void
     {
         $this->votes[$event->voter] = [
-            'choice' => $event->choice,
-            'weight' => $event->votingPower,
-            'reason' => $event->reason,
-            'timestamp' => $event->timestamp
+            'choice'    => $event->choice,
+            'weight'    => $event->votingPower,
+            'reason'    => $event->reason,
+            'timestamp' => $event->timestamp,
         ];
 
         // Update vote summary
@@ -217,7 +229,7 @@ class GovernanceProposal extends AggregateRoot
             ->isGreaterThanOrEqualTo($this->quorumRequired);
 
         $approvalRate = '0';
-        if (!$forVotes->plus($againstVotes)->isZero()) {
+        if (! $forVotes->plus($againstVotes)->isZero()) {
             $approvalRate = $forVotes->dividedBy(
                 $forVotes->plus($againstVotes),
                 4,
@@ -231,11 +243,11 @@ class GovernanceProposal extends AggregateRoot
         }
 
         return [
-            'decision' => $decision,
-            'total_votes' => $totalVotes->__toString(),
-            'votes_summary' => $this->votesSummary,
+            'decision'       => $decision,
+            'total_votes'    => $totalVotes->__toString(),
+            'votes_summary'  => $this->votesSummary,
             'quorum_reached' => $quorumReached,
-            'approval_rate' => $approvalRate
+            'approval_rate'  => $approvalRate,
         ];
     }
 

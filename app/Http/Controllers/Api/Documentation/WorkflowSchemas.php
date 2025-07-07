@@ -116,7 +116,6 @@ namespace App\Http\Controllers\Api\Documentation;
  *     ))
  * )
  */
-
 class WorkflowSchemas
 {
     // This class only contains OpenAPI schema definitions

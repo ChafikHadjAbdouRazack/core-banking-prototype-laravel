@@ -50,7 +50,7 @@ class DistributeRewardsCommand extends Command
                 $this->info("Total Rewards: {$rewards['total_rewards']} {$rewards['reward_currency']}");
                 $this->info("Performance Multiplier: {$rewards['performance_multiplier']}x");
 
-                if (!$isDryRun) {
+                if (! $isDryRun) {
                     $incentivesService->distributeRewards();
                     $this->info('Rewards distributed successfully!');
                 }
@@ -72,6 +72,7 @@ class DistributeRewardsCommand extends Command
             return Command::SUCCESS;
         } catch (\Exception $e) {
             $this->error('Failed to distribute rewards: ' . $e->getMessage());
+
             return Command::FAILURE;
         }
     }

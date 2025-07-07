@@ -2,27 +2,28 @@
 
 namespace Tests\Feature\Http\Controllers;
 
-use Tests\TestCase;
-use App\Models\User;
 use App\Models\Account;
 use App\Models\BatchJob;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
 class BatchProcessingControllerTest extends TestCase
 {
     use RefreshDatabase;
 
     protected User $user;
+
     protected Account $account;
 
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->user = User::factory()->create();
         $this->account = Account::factory()->create([
             'user_uuid' => $this->user->uuid,
-            'status' => 'active',
+            'status'    => 'active',
         ]);
     }
 
@@ -30,7 +31,7 @@ class BatchProcessingControllerTest extends TestCase
     {
         $response = $this->actingAs($this->user)
             ->get(route('batch-processing.index'));
-            
+
         $response->assertStatus(200)
             ->assertViewIs('batch-processing.index')
             ->assertViewHas(['batchJobs', 'statistics']);
@@ -40,7 +41,7 @@ class BatchProcessingControllerTest extends TestCase
     {
         $response = $this->actingAs($this->user)
             ->get(route('batch-processing.create'));
-            
+
         $response->assertStatus(200)
             ->assertViewIs('batch-processing.create')
             ->assertViewHas(['accounts', 'templates']);
@@ -51,10 +52,10 @@ class BatchProcessingControllerTest extends TestCase
         $batchJob = BatchJob::factory()->create([
             'user_uuid' => $this->user->uuid,
         ]);
-        
+
         $response = $this->actingAs($this->user)
             ->get(route('batch-processing.show', $batchJob->uuid));
-            
+
         $response->assertStatus(200)
             ->assertViewIs('batch-processing.show')
             ->assertViewHas(['batchJob', 'items']);
@@ -66,10 +67,10 @@ class BatchProcessingControllerTest extends TestCase
         $batchJob = BatchJob::factory()->create([
             'user_uuid' => $otherUser->uuid,
         ]);
-        
+
         $response = $this->actingAs($this->user)
             ->get(route('batch-processing.show', $batchJob->uuid));
-            
+
         $response->assertStatus(404);
     }
 
@@ -77,11 +78,11 @@ class BatchProcessingControllerTest extends TestCase
     {
         $response = $this->actingAs($this->user)
             ->post(route('batch-processing.store'), [
-                'name' => '',
-                'type' => 'invalid',
+                'name'  => '',
+                'type'  => 'invalid',
                 'items' => 'not-an-array',
             ]);
-            
+
         $response->assertSessionHasErrors(['name', 'type', 'items']);
     }
 
@@ -89,12 +90,12 @@ class BatchProcessingControllerTest extends TestCase
     {
         $batchJob = BatchJob::factory()->create([
             'user_uuid' => $this->user->uuid,
-            'status' => 'pending',
+            'status'    => 'pending',
         ]);
-        
+
         $response = $this->actingAs($this->user)
             ->post(route('batch-processing.cancel', $batchJob->uuid));
-            
+
         $response->assertRedirect()
             ->assertSessionHas('success');
     }
@@ -103,12 +104,12 @@ class BatchProcessingControllerTest extends TestCase
     {
         $batchJob = BatchJob::factory()->create([
             'user_uuid' => $this->user->uuid,
-            'status' => 'completed',
+            'status'    => 'completed',
         ]);
-        
+
         $response = $this->actingAs($this->user)
             ->post(route('batch-processing.cancel', $batchJob->uuid));
-            
+
         $response->assertRedirect()
             ->assertSessionHasErrors();
     }
@@ -116,7 +117,7 @@ class BatchProcessingControllerTest extends TestCase
     public function test_unauthenticated_user_cannot_access_batch_processing()
     {
         $response = $this->get(route('batch-processing.index'));
-        
+
         $response->assertRedirect(route('login'));
     }
 }

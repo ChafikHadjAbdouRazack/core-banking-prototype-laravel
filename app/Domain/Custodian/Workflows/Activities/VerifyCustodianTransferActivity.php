@@ -10,6 +10,7 @@ use Workflow\Activity;
 class VerifyCustodianTransferActivity extends Activity
 {
     private const MAX_RETRIES = 30;
+
     private const RETRY_DELAY = 2; // seconds
 
     public function execute(string $transactionId, string $custodianName): bool
@@ -37,6 +38,6 @@ class VerifyCustodianTransferActivity extends Activity
         }
 
         throw new \Exception("Custodian transfer {$transactionId} timed out after " .
-            (self::MAX_RETRIES * self::RETRY_DELAY) . " seconds");
+            (self::MAX_RETRIES * self::RETRY_DELAY) . ' seconds');
     }
 }

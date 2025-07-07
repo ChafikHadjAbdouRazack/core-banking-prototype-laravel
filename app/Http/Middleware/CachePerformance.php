@@ -15,7 +15,7 @@ class CachePerformance
     /**
      * Handle an incoming request.
      *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * @param  Closure(Request): (Response)  $next
      */
     public function handle(Request $request, Closure $next): Response
     {
@@ -50,8 +50,8 @@ class CachePerformance
                 Log::warning('Low cache hit rate detected', [
                     'endpoint' => $request->path(),
                     'hit_rate' => $hitRate,
-                    'hits' => $requestHits,
-                    'misses' => $requestMisses,
+                    'hits'     => $requestHits,
+                    'misses'   => $requestMisses,
                 ]);
             }
         }

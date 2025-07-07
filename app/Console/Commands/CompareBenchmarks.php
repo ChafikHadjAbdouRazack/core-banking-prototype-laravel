@@ -32,13 +32,15 @@ class CompareBenchmarks extends Command
         $currentPath = $this->argument('current') ?? $this->findLatestBenchmark();
         $threshold = (float) $this->option('threshold');
 
-        if (!file_exists($baselinePath)) {
+        if (! file_exists($baselinePath)) {
             $this->error("Baseline benchmark not found: {$baselinePath}");
+
             return Command::FAILURE;
         }
 
-        if (!$currentPath || !file_exists($currentPath)) {
-            $this->error("Current benchmark not found");
+        if (! $currentPath || ! file_exists($currentPath)) {
+            $this->error('Current benchmark not found');
+
             return Command::FAILURE;
         }
 
@@ -56,7 +58,7 @@ class CompareBenchmarks extends Command
         $results = [];
 
         foreach ($current['results'] as $test => $currentResult) {
-            if (!isset($baseline['results'][$test])) {
+            if (! isset($baseline['results'][$test])) {
                 $this->warn("⚠️  New test: {$test} (no baseline)");
                 continue;
             }
@@ -68,11 +70,11 @@ class CompareBenchmarks extends Command
             $percentChange = (($currentAvg - $baselineAvg) / $baselineAvg) * 100;
 
             $results[] = [
-                'test' => $test,
+                'test'     => $test,
                 'baseline' => sprintf('%.2f ms', $baselineAvg),
-                'current' => sprintf('%.2f ms', $currentAvg),
-                'change' => sprintf('%+.1f%%', $percentChange),
-                'status' => $this->getStatus($percentChange, $threshold),
+                'current'  => sprintf('%.2f ms', $currentAvg),
+                'change'   => sprintf('%+.1f%%', $percentChange),
+                'status'   => $this->getStatus($percentChange, $threshold),
             ];
 
             if ($percentChange > $threshold) {
@@ -97,7 +99,7 @@ class CompareBenchmarks extends Command
         // Summary
         $this->newLine();
         if ($hasRegression) {
-            $this->error("❌ Performance regression detected!");
+            $this->error('❌ Performance regression detected!');
             $this->error("Some tests exceeded the {$threshold}% threshold.");
 
             // Show detailed regression info
@@ -111,7 +113,7 @@ class CompareBenchmarks extends Command
 
             return Command::FAILURE;
         } else {
-            $this->info("✅ No performance regressions detected!");
+            $this->info('✅ No performance regressions detected!');
 
             // Show improvements
             $improvements = collect($results)->filter(function ($result) {
@@ -134,7 +136,7 @@ class CompareBenchmarks extends Command
     {
         $benchmarkDir = storage_path('app/benchmarks');
 
-        if (!is_dir($benchmarkDir)) {
+        if (! is_dir($benchmarkDir)) {
             return null;
         }
 

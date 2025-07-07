@@ -9,7 +9,7 @@ use App\Models\User;
 describe('Vote Model', function () {
     it('has correct fillable attributes', function () {
         $vote = new Vote();
-        
+
         expect($vote->getFillable())->toContain(
             'poll_id',
             'user_uuid',
@@ -24,8 +24,8 @@ describe('Vote Model', function () {
     it('casts attributes correctly', function () {
         $vote = Vote::factory()->create([
             'selected_options' => ['option1', 'option2'],
-            'voting_power' => 25,
-            'metadata' => ['ip' => '127.0.0.1'],
+            'voting_power'     => 25,
+            'metadata'         => ['ip' => '127.0.0.1'],
         ]);
 
         expect($vote->selected_options)->toBeArray();
@@ -36,14 +36,14 @@ describe('Vote Model', function () {
 
     it('sets voted_at on creation', function () {
         $vote = Vote::factory()->create(['voted_at' => null]);
-        
+
         expect($vote->voted_at)->toBeInstanceOf(Carbon\Carbon::class);
         expect($vote->voted_at->diffInSeconds(now()))->toBeLessThan(5);
     });
 
     it('generates signature on creation', function () {
         $vote = Vote::factory()->create(['signature' => null]);
-        
+
         expect($vote->signature)->toBeString();
         expect($vote->signature)->not->toBeEmpty();
     });
@@ -119,7 +119,7 @@ describe('Vote Signature Handling', function () {
 
     it('detects tampered signature', function () {
         $vote = Vote::factory()->create();
-        
+
         // Tamper with the signature
         $vote->signature = 'tampered_signature';
 
@@ -154,7 +154,7 @@ describe('Vote Validation', function () {
     it('validates complete vote', function () {
         $vote = Vote::factory()->create([
             'selected_options' => ['option1'],
-            'voting_power' => 10,
+            'voting_power'     => 10,
         ]);
 
         expect($vote->isValid())->toBeTrue();
@@ -163,7 +163,7 @@ describe('Vote Validation', function () {
     it('invalidates vote with no selected options', function () {
         $vote = Vote::factory()->create([
             'selected_options' => [],
-            'voting_power' => 10,
+            'voting_power'     => 10,
         ]);
 
         expect($vote->isValid())->toBeFalse();
@@ -172,7 +172,7 @@ describe('Vote Validation', function () {
     it('invalidates vote with zero voting power', function () {
         $vote = Vote::factory()->create([
             'selected_options' => ['option1'],
-            'voting_power' => 0,
+            'voting_power'     => 0,
         ]);
 
         expect($vote->isValid())->toBeFalse();
@@ -181,8 +181,8 @@ describe('Vote Validation', function () {
     it('invalidates vote with invalid signature', function () {
         $vote = Vote::factory()->create([
             'selected_options' => ['option1'],
-            'voting_power' => 10,
-            'signature' => 'invalid_signature',
+            'voting_power'     => 10,
+            'signature'        => 'invalid_signature',
         ]);
 
         expect($vote->isValid())->toBeFalse();
@@ -232,7 +232,7 @@ describe('Vote Query Scopes', function () {
 describe('Vote Calculations', function () {
     it('calculates voting power weight', function () {
         $poll = Poll::factory()->create();
-        
+
         // Create votes with different voting powers
         $vote1 = Vote::factory()->forPoll($poll)->create(['voting_power' => 30]);
         $vote2 = Vote::factory()->forPoll($poll)->create(['voting_power' => 20]);
@@ -268,7 +268,7 @@ describe('Vote Array Conversion', function () {
     it('includes additional computed fields in array', function () {
         $vote = Vote::factory()->create([
             'selected_options' => ['option1', 'option2'],
-            'voting_power' => 25,
+            'voting_power'     => 25,
         ]);
 
         $array = $vote->toArray();
@@ -277,7 +277,7 @@ describe('Vote Array Conversion', function () {
         expect($array)->toHaveKey('selected_option_count');
         expect($array)->toHaveKey('voting_power_weight');
         expect($array)->toHaveKey('is_valid');
-        
+
         expect($array['selected_options_string'])->toBe('option1, option2');
         expect($array['selected_option_count'])->toBe(2);
         expect($array['is_valid'])->toBeTrue();

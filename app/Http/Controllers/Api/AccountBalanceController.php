@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api;
 
+use App\Domain\Asset\Models\Asset;
 use App\Http\Controllers\Controller;
 use App\Models\Account;
-use App\Domain\Asset\Models\Asset;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -89,10 +89,10 @@ class AccountBalanceController extends Controller
     {
         $account = Account::where('uuid', $uuid)->first();
 
-        if (!$account) {
+        if (! $account) {
             return response()->json([
                 'message' => 'Account not found',
-                'error' => 'The specified account UUID was not found',
+                'error'   => 'The specified account UUID was not found',
             ], 404);
         }
 
@@ -116,25 +116,25 @@ class AccountBalanceController extends Controller
         return response()->json([
             'data' => [
                 'account_uuid' => $account->uuid,
-                'balances' => $balances->map(function ($balance) {
+                'balances'     => $balances->map(function ($balance) {
                     $asset = $balance->asset;
                     $formatted = $this->formatAmount($balance->balance, $asset);
 
                     return [
                         'asset_code' => $balance->asset_code,
-                        'balance' => $balance->balance,
-                        'formatted' => $formatted,
-                        'asset' => [
-                            'code' => $asset->code,
-                            'name' => $asset->name,
-                            'type' => $asset->type,
-                            'symbol' => $asset->symbol,
+                        'balance'    => $balance->balance,
+                        'formatted'  => $formatted,
+                        'asset'      => [
+                            'code'      => $asset->code,
+                            'name'      => $asset->name,
+                            'type'      => $asset->type,
+                            'symbol'    => $asset->symbol,
                             'precision' => $asset->precision,
                         ],
                     ];
                 }),
                 'summary' => [
-                    'total_assets' => $balances->where('balance', '>', 0)->count(),
+                    'total_assets'         => $balances->where('balance', '>', 0)->count(),
                     'total_usd_equivalent' => number_format($totalUsdEquivalent, 2),
                 ],
             ],
@@ -212,10 +212,10 @@ class AccountBalanceController extends Controller
     public function index(Request $request): JsonResponse
     {
         $request->validate([
-            'asset' => 'sometimes|string|size:3',
+            'asset'       => 'sometimes|string|size:3',
             'min_balance' => 'sometimes|integer|min:0',
-            'user_uuid' => 'sometimes|uuid',
-            'limit' => 'sometimes|integer|min:1|max:100',
+            'user_uuid'   => 'sometimes|uuid',
+            'limit'       => 'sometimes|integer|min:1|max:100',
         ]);
 
         $query = \App\Models\AccountBalance::with(['account', 'asset']);
@@ -247,11 +247,11 @@ class AccountBalanceController extends Controller
             'data' => $balances->map(function ($balance) {
                 return [
                     'account_uuid' => $balance->account_uuid,
-                    'asset_code' => $balance->asset_code,
-                    'balance' => $balance->balance,
-                    'formatted' => $this->formatAmount($balance->balance, $balance->asset),
-                    'account' => [
-                        'uuid' => $balance->account->uuid,
+                    'asset_code'   => $balance->asset_code,
+                    'balance'      => $balance->balance,
+                    'formatted'    => $this->formatAmount($balance->balance, $balance->asset),
+                    'account'      => [
+                        'uuid'      => $balance->account->uuid,
                         'user_uuid' => $balance->account->user_uuid,
                     ],
                 ];
@@ -259,7 +259,7 @@ class AccountBalanceController extends Controller
             'meta' => [
                 'total_accounts' => $totalAccounts,
                 'total_balances' => $totalBalances,
-                'asset_totals' => $assetTotals,
+                'asset_totals'   => $assetTotals,
             ],
         ]);
     }
@@ -313,8 +313,10 @@ class AccountBalanceController extends Controller
                             '.',
                             ''
                         );
+
                         return [$item->asset_code => $formatted];
                     }
+
                     return [$item->asset_code => (string) $item->total];
                 });
 

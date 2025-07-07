@@ -5,19 +5,19 @@ declare(strict_types=1);
 namespace App\Domain\Stablecoin\Workflows;
 
 use App\Domain\Account\DataObjects\AccountUuid;
-use App\Domain\Stablecoin\Workflows\Activities\LockCollateralActivity;
-use App\Domain\Stablecoin\Workflows\Activities\MintStablecoinActivity;
-use App\Domain\Stablecoin\Workflows\Activities\CreatePositionActivity;
-use App\Domain\Stablecoin\Workflows\Activities\ReleaseCollateralActivity;
 use App\Domain\Stablecoin\Workflows\Activities\BurnStablecoinActivity;
 use App\Domain\Stablecoin\Workflows\Activities\ClosePositionActivity;
-use Workflow\Workflow;
+use App\Domain\Stablecoin\Workflows\Activities\CreatePositionActivity;
+use App\Domain\Stablecoin\Workflows\Activities\LockCollateralActivity;
+use App\Domain\Stablecoin\Workflows\Activities\MintStablecoinActivity;
+use App\Domain\Stablecoin\Workflows\Activities\ReleaseCollateralActivity;
 use Workflow\ActivityStub;
+use Workflow\Workflow;
 
 class MintStablecoinWorkflow extends Workflow
 {
     /**
-     * Execute stablecoin minting workflow with compensation pattern
+     * Execute stablecoin minting workflow with compensation pattern.
      */
     public function execute(
         AccountUuid $accountUuid,
@@ -41,7 +41,7 @@ class MintStablecoinWorkflow extends Workflow
             $positionUuid = $positionResult['position_uuid'];
 
             // Add compensation to close position on failure
-            $this->addCompensation(fn() => ActivityStub::make(
+            $this->addCompensation(fn () => ActivityStub::make(
                 ClosePositionActivity::class,
                 $positionUuid,
                 'failed'
@@ -57,7 +57,7 @@ class MintStablecoinWorkflow extends Workflow
             );
 
             // Add compensation to release collateral on failure
-            $this->addCompensation(fn() => ActivityStub::make(
+            $this->addCompensation(fn () => ActivityStub::make(
                 ReleaseCollateralActivity::class,
                 $accountUuid,
                 $positionUuid,
@@ -75,7 +75,7 @@ class MintStablecoinWorkflow extends Workflow
             );
 
             // Add compensation to burn stablecoins on failure
-            $this->addCompensation(fn() => ActivityStub::make(
+            $this->addCompensation(fn () => ActivityStub::make(
                 BurnStablecoinActivity::class,
                 $accountUuid,
                 $positionUuid,

@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Services\PaymentGatewayService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Inertia\Inertia;
 
 class DepositController extends Controller
 {
@@ -17,14 +16,14 @@ class DepositController extends Controller
     }
 
     /**
-     * Show the deposit form
+     * Show the deposit form.
      */
     public function create()
     {
         $user = Auth::user();
         $account = $user->accounts()->first();
 
-        if (!$account) {
+        if (! $account) {
             return redirect()->route('dashboard')
                 ->with('error', 'Please create an account first.');
         }
@@ -33,19 +32,19 @@ class DepositController extends Controller
         $paymentMethods = $this->paymentGateway->getSavedPaymentMethods($user);
 
         return view('wallet.deposit-card', [
-            'account' => $account,
+            'account'        => $account,
             'paymentMethods' => $paymentMethods,
-            'stripeKey' => config('cashier.key'),
+            'stripeKey'      => config('cashier.key'),
         ]);
     }
 
     /**
-     * Create a payment intent for deposit
+     * Create a payment intent for deposit.
      */
     public function store(Request $request)
     {
         $request->validate([
-            'amount' => 'required|numeric|min:1|max:10000',
+            'amount'   => 'required|numeric|min:1|max:10000',
             'currency' => 'required|in:USD,EUR,GBP',
         ]);
 
@@ -61,8 +60,8 @@ class DepositController extends Controller
 
             return response()->json([
                 'client_secret' => $intent->client_secret,
-                'amount' => $amountInCents,
-                'currency' => $request->currency,
+                'amount'        => $amountInCents,
+                'currency'      => $request->currency,
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -72,7 +71,7 @@ class DepositController extends Controller
     }
 
     /**
-     * Confirm a successful deposit
+     * Confirm a successful deposit.
      */
     public function confirm(Request $request)
     {
@@ -92,7 +91,7 @@ class DepositController extends Controller
     }
 
     /**
-     * Add a new payment method
+     * Add a new payment method.
      */
     public function addPaymentMethod(Request $request)
     {
@@ -118,7 +117,7 @@ class DepositController extends Controller
     }
 
     /**
-     * Remove a payment method
+     * Remove a payment method.
      */
     public function removePaymentMethod(Request $request, string $paymentMethodId)
     {

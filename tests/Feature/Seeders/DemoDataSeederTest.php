@@ -2,15 +2,14 @@
 
 declare(strict_types=1);
 
-use Database\Seeders\DemoDataSeeder;
-use App\Models\User;
-use App\Models\Account;
-use App\Models\UserBankPreference;
+use App\Domain\Governance\Enums\PollStatus;
 use App\Domain\Governance\Models\Poll;
 use App\Domain\Governance\Models\Vote;
-use App\Domain\Governance\Enums\PollStatus;
-use Illuminate\Support\Facades\Hash;
+use App\Models\User;
+use App\Models\UserBankPreference;
+use Database\Seeders\DemoDataSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Hash;
 
 uses(RefreshDatabase::class);
 
@@ -22,7 +21,7 @@ beforeEach(function () {
 it('creates five demo users with correct emails', function () {
     $seeder = new DemoDataSeeder();
     $seeder->run();
-    
+
     $expectedEmails = [
         'demo.argentina@gcu.global',
         'demo.nomad@gcu.global',
@@ -30,7 +29,7 @@ it('creates five demo users with correct emails', function () {
         'demo.investor@gcu.global',
         'demo.user@gcu.global',
     ];
-    
+
     foreach ($expectedEmails as $email) {
         $user = User::where('email', $email)->first();
         expect($user)->not->toBeNull();
@@ -43,9 +42,9 @@ it('creates five demo users with correct emails', function () {
 it('creates accounts for all demo users', function () {
     $seeder = new DemoDataSeeder();
     $seeder->run();
-    
+
     $demoUsers = User::where('email', 'like', 'demo.%')->get();
-    
+
     foreach ($demoUsers as $user) {
         expect($user->accounts()->count())->toBe(1);
         $account = $user->accounts()->first();
@@ -56,7 +55,7 @@ it('creates accounts for all demo users', function () {
 it('sets up correct bank preferences for each user', function () {
     $seeder = new DemoDataSeeder();
     $seeder->run();
-    
+
     // Argentina user - 3 banks
     $argentina = User::where('email', 'demo.argentina@gcu.global')->first();
     $argBanks = UserBankPreference::where('user_uuid', $argentina->uuid)->get();
@@ -65,7 +64,7 @@ it('sets up correct bank preferences for each user', function () {
     expect($argBanks->where('bank_code', 'PAYSERA')->first()->allocation_percentage)->toBe('40.00');
     expect($argBanks->where('bank_code', 'DEUTSCHE')->first()->allocation_percentage)->toBe('30.00');
     expect($argBanks->where('bank_code', 'SANTANDER')->first()->allocation_percentage)->toBe('30.00');
-    
+
     // Regular user - 1 bank
     $regular = User::where('email', 'demo.user@gcu.global')->first();
     $regBanks = UserBankPreference::where('user_uuid', $regular->uuid)->get();
@@ -78,13 +77,13 @@ it('sets up correct bank preferences for each user', function () {
 it('funds accounts with appropriate balances', function () {
     $seeder = new DemoDataSeeder();
     $seeder->run();
-    
+
     // Check Argentina user balances
     $argentina = User::where('email', 'demo.argentina@gcu.global')->first();
     $argAccount = $argentina->accounts()->first();
     expect($argAccount->getBalance('USD'))->toBe(50000); // $500.00
     expect($argAccount->getBalance('GCU'))->toBe(45000); // 450 GCU
-    
+
     // Check Business user balances
     $business = User::where('email', 'demo.business@gcu.global')->first();
     $bizAccount = $business->accounts()->first();
@@ -92,7 +91,7 @@ it('funds accounts with appropriate balances', function () {
     expect($bizAccount->getBalance('EUR'))->toBe(800000); // €8,000.00
     expect($bizAccount->getBalance('GBP'))->toBe(500000); // £5,000.00
     expect($bizAccount->getBalance('GCU'))->toBe(950000); // 9,500 GCU
-    
+
     // Check Investor user has gold
     $investor = User::where('email', 'demo.investor@gcu.global')->first();
     $invAccount = $investor->accounts()->first();
@@ -102,12 +101,12 @@ it('funds accounts with appropriate balances', function () {
 it('creates voting polls with correct statuses', function () {
     $seeder = new DemoDataSeeder();
     $seeder->run();
-    
+
     // Should have active poll
     $activePoll = Poll::where('status', PollStatus::ACTIVE)->first();
     expect($activePoll)->not->toBeNull();
     expect($activePoll->title)->toContain('Currency Basket Composition');
-    
+
     // Should have executed poll with results
     $executedPoll = Poll::where('status', PollStatus::EXECUTED)->first();
     expect($executedPoll)->not->toBeNull();
@@ -115,7 +114,7 @@ it('creates voting polls with correct statuses', function () {
     expect($executedPoll->metadata['results'])->toHaveKey('USD');
     expect($executedPoll->metadata['total_votes'])->toBe(127);
     expect($executedPoll->metadata['participation_rate'])->toBe(45.2);
-    
+
     // Draft poll for next month is optional - depends on service dependencies
     // Skip this assertion for CI stability
     expect(true)->toBeTrue();
@@ -124,12 +123,12 @@ it('creates voting polls with correct statuses', function () {
 it('creates demo votes with correct voting power', function () {
     $seeder = new DemoDataSeeder();
     $seeder->run();
-    
+
     $activePoll = Poll::where('status', PollStatus::ACTIVE)->first();
     $votes = Vote::where('poll_id', $activePoll->id)->get();
-    
+
     expect($votes->count())->toBe(3); // Argentina, Investor, Business
-    
+
     // Check Argentina vote
     $argentina = User::where('email', 'demo.argentina@gcu.global')->first();
     $argVote = Vote::where('poll_id', $activePoll->id)
@@ -138,7 +137,7 @@ it('creates demo votes with correct voting power', function () {
     expect($argVote)->not->toBeNull();
     expect($argVote->voting_power)->toBe(450); // Based on GCU holdings
     expect($argVote->selected_options['basket_weights']['USD'])->toBe(40);
-    
+
     // Check Investor vote (highest voting power)
     $investor = User::where('email', 'demo.investor@gcu.global')->first();
     $invVote = Vote::where('poll_id', $activePoll->id)
@@ -151,7 +150,7 @@ it('creates demo votes with correct voting power', function () {
 it('creates transaction history between accounts', function () {
     $seeder = new DemoDataSeeder();
     $seeder->run();
-    
+
     // Since we skip transaction history in demo seeder, this test should just pass
     // Real transactions would be created through API in production
     expect(true)->toBeTrue();
@@ -160,15 +159,15 @@ it('creates transaction history between accounts', function () {
 it('creates users with appropriate personas', function () {
     $seeder = new DemoDataSeeder();
     $seeder->run();
-    
+
     $personas = [
         'demo.argentina@gcu.global' => 'Sofia Martinez',
-        'demo.nomad@gcu.global' => 'Alex Chen',
-        'demo.business@gcu.global' => 'TechCorp Ltd',
-        'demo.investor@gcu.global' => 'Emma Wilson',
-        'demo.user@gcu.global' => 'John Smith',
+        'demo.nomad@gcu.global'     => 'Alex Chen',
+        'demo.business@gcu.global'  => 'TechCorp Ltd',
+        'demo.investor@gcu.global'  => 'Emma Wilson',
+        'demo.user@gcu.global'      => 'John Smith',
     ];
-    
+
     foreach ($personas as $email => $expectedName) {
         $user = User::where('email', $email)->first();
         expect($user->name)->toBe($expectedName);

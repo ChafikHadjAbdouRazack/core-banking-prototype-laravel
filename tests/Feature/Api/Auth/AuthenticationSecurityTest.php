@@ -8,8 +8,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\URL;
 use Laravel\Fortify\RecoveryCode;
-use Tests\TestCase;
 use PHPUnit\Framework\Attributes\Test;
+use Tests\TestCase;
 
 class AuthenticationSecurityTest extends TestCase
 {
@@ -45,10 +45,10 @@ class AuthenticationSecurityTest extends TestCase
         $token = Password::createToken($user);
 
         $response = $this->postJson('/api/auth/reset-password', [
-            'email' => $user->email,
-            'password' => 'newpassword123',
+            'email'                 => $user->email,
+            'password'              => 'newpassword123',
             'password_confirmation' => 'newpassword123',
-            'token' => $token,
+            'token'                 => $token,
         ]);
 
         $response->assertOk()
@@ -85,10 +85,10 @@ class AuthenticationSecurityTest extends TestCase
 
         // Enable 2FA first
         $this->postJson('/api/auth/2fa/enable');
-        
+
         $user = $user->fresh();
         $secret = decrypt($user->two_factor_secret);
-        
+
         // Generate valid OTP code
         $google2fa = new \PragmaRX\Google2FA\Google2FA();
         $validCode = $google2fa->getCurrentOtp($secret);
@@ -110,7 +110,7 @@ class AuthenticationSecurityTest extends TestCase
             'password' => Hash::make('password'),
         ]);
         $user->forceFill([
-            'two_factor_secret' => encrypt('secret'),
+            'two_factor_secret'         => encrypt('secret'),
             'two_factor_recovery_codes' => encrypt(json_encode(RecoveryCode::generate())),
         ])->save();
 
@@ -131,16 +131,16 @@ class AuthenticationSecurityTest extends TestCase
     public function user_can_verify_email_with_valid_link()
     {
         $user = User::factory()->unverified()->create();
-        
+
         $verificationUrl = URL::temporarySignedRoute(
             'api.verification.verify',
             now()->addMinutes(60),
             [
-                'id' => $user->id,
+                'id'   => $user->id,
                 'hash' => sha1($user->email),
             ]
         );
-        
+
         $response = $this->get($verificationUrl);
 
         $response->assertOk()

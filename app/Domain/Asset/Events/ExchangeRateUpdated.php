@@ -19,7 +19,7 @@ class ExchangeRateUpdated extends ShouldBeStored
     }
 
     /**
-     * Get the rate change percentage
+     * Get the rate change percentage.
      */
     public function getChangePercentage(): float
     {
@@ -31,7 +31,7 @@ class ExchangeRateUpdated extends ShouldBeStored
     }
 
     /**
-     * Check if the rate increased
+     * Check if the rate increased.
      */
     public function isIncrease(): bool
     {
@@ -39,7 +39,7 @@ class ExchangeRateUpdated extends ShouldBeStored
     }
 
     /**
-     * Check if the rate decreased
+     * Check if the rate decreased.
      */
     public function isDecrease(): bool
     {
@@ -47,7 +47,7 @@ class ExchangeRateUpdated extends ShouldBeStored
     }
 
     /**
-     * Check if this is a significant change (> 5%)
+     * Check if this is a significant change (> 5%).
      */
     public function isSignificantChange(): bool
     {

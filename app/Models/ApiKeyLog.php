@@ -28,11 +28,11 @@ class ApiKeyLog extends Model
 
     protected $casts = [
         'request_headers' => 'array',
-        'request_body' => 'array',
-        'response_body' => 'array',
-        'created_at' => 'datetime',
-        'response_time' => 'integer',
-        'response_code' => 'integer',
+        'request_body'    => 'array',
+        'response_body'   => 'array',
+        'created_at'      => 'datetime',
+        'response_time'   => 'integer',
+        'response_code'   => 'integer',
     ];
 
     protected static function boot()
@@ -47,7 +47,7 @@ class ApiKeyLog extends Model
     }
 
     /**
-     * Get the API key that owns this log entry
+     * Get the API key that owns this log entry.
      */
     public function apiKey(): BelongsTo
     {
@@ -55,7 +55,7 @@ class ApiKeyLog extends Model
     }
 
     /**
-     * Scope for successful requests
+     * Scope for successful requests.
      */
     public function scopeSuccessful($query)
     {
@@ -63,7 +63,7 @@ class ApiKeyLog extends Model
     }
 
     /**
-     * Scope for failed requests
+     * Scope for failed requests.
      */
     public function scopeFailed($query)
     {
@@ -71,7 +71,7 @@ class ApiKeyLog extends Model
     }
 
     /**
-     * Get formatted response time
+     * Get formatted response time.
      */
     public function getFormattedResponseTimeAttribute(): string
     {

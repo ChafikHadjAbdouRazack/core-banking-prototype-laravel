@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\Exchange;
 
-use Tests\TestCase;
 use App\Domain\Account\Aggregates\Account;
 use App\Domain\Account\DataTransferObjects\AccountData;
 use App\Domain\Account\Enums\AccountStatus;
@@ -11,20 +10,22 @@ use App\Domain\Exchange\Aggregates\Order;
 use App\Domain\Exchange\Aggregates\OrderBook;
 use App\Domain\Exchange\DataTransferObjects\OrderData;
 use App\Domain\Exchange\Enums\OrderSide;
-use App\Domain\Exchange\Enums\OrderType;
 use App\Domain\Exchange\Enums\OrderStatus;
-use App\Domain\Exchange\Workflows\OrderMatchingWorkflow;
+use App\Domain\Exchange\Enums\OrderType;
 use App\Domain\Exchange\ValueObjects\OrderMatchingInput;
-use App\Domain\Transaction\Aggregates\Transaction;
+use App\Domain\Exchange\Workflows\OrderMatchingWorkflow;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
+use Tests\TestCase;
 
 class ExchangeWorkflowTest extends TestCase
 {
     use RefreshDatabase;
 
     protected string $buyerAccountId;
+
     protected string $sellerAccountId;
+
     protected string $orderBookId;
 
     protected function setUp(): void
@@ -79,9 +80,9 @@ class ExchangeWorkflowTest extends TestCase
             status: OrderStatus::PENDING,
             metadata: []
         );
-        
+
         Order::create($sellOrderId, $sellOrderData)->persist();
-        
+
         // Create buy order
         $buyOrderId = (string) Str::uuid();
         $buyOrderData = new OrderData(
@@ -95,7 +96,7 @@ class ExchangeWorkflowTest extends TestCase
             status: OrderStatus::PENDING,
             metadata: []
         );
-        
+
         Order::create($buyOrderId, $buyOrderData)->persist();
 
         // Execute workflow for sell order
@@ -104,17 +105,17 @@ class ExchangeWorkflowTest extends TestCase
             orderId: $sellOrderId,
             maxIterations: 10
         );
-        
+
         $sellResult = iterator_to_array($sellWorkflow->execute($sellInput));
         $this->assertTrue($sellResult[count($sellResult) - 1]->success);
-        
+
         // Execute workflow for buy order
         $buyWorkflow = new OrderMatchingWorkflow();
         $buyInput = new OrderMatchingInput(
             orderId: $buyOrderId,
             maxIterations: 10
         );
-        
+
         $buyResult = iterator_to_array($buyWorkflow->execute($buyInput));
         $this->assertTrue($buyResult[count($buyResult) - 1]->success);
 
@@ -146,7 +147,7 @@ class ExchangeWorkflowTest extends TestCase
             status: OrderStatus::PENDING,
             metadata: []
         );
-        
+
         Order::create($buyOrderId, $buyOrderData)->persist();
 
         // Execute workflow
@@ -155,10 +156,10 @@ class ExchangeWorkflowTest extends TestCase
             orderId: $buyOrderId,
             maxIterations: 10
         );
-        
+
         $result = iterator_to_array($workflow->execute($input));
         $finalResult = $result[count($result) - 1];
-        
+
         $this->assertFalse($finalResult->success);
         $this->assertStringContainsString('Insufficient balance', $finalResult->message);
     }
@@ -178,9 +179,9 @@ class ExchangeWorkflowTest extends TestCase
             status: OrderStatus::PENDING,
             metadata: []
         );
-        
+
         Order::create($sellOrderId, $sellOrderData)->persist();
-        
+
         // Create smaller buy order
         $buyOrderId = (string) Str::uuid();
         $buyOrderData = new OrderData(
@@ -194,22 +195,22 @@ class ExchangeWorkflowTest extends TestCase
             status: OrderStatus::PENDING,
             metadata: []
         );
-        
+
         Order::create($buyOrderId, $buyOrderData)->persist();
 
         // Execute workflows
         $sellWorkflow = new OrderMatchingWorkflow();
         $sellInput = new OrderMatchingInput(orderId: $sellOrderId);
         iterator_to_array($sellWorkflow->execute($sellInput));
-        
+
         $buyWorkflow = new OrderMatchingWorkflow();
         $buyInput = new OrderMatchingInput(orderId: $buyOrderId);
         $buyResult = iterator_to_array($buyWorkflow->execute($buyInput));
-        
+
         $finalResult = $buyResult[count($buyResult) - 1];
         $this->assertTrue($finalResult->success);
         $this->assertEquals('filled', $finalResult->status);
-        
+
         // Check sell order is partially filled
         $sellOrder = Order::retrieve($sellOrderId);
         $this->assertEquals('3.00', $sellOrder->getRemainingAmount()->getValue()); // 5 - 2 = 3

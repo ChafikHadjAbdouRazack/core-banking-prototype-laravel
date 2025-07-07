@@ -9,7 +9,9 @@ use Illuminate\Support\Facades\Log;
 class CoinbaseCommerceService
 {
     protected string $apiKey;
+
     protected string $apiUrl = 'https://api.commerce.coinbase.com';
+
     protected string $webhookSecret;
 
     public function __construct()
@@ -19,7 +21,7 @@ class CoinbaseCommerceService
     }
 
     /**
-     * Create a charge for crypto payment
+     * Create a charge for crypto payment.
      */
     public function createCharge(CgoInvestment $investment): array
     {
@@ -32,28 +34,28 @@ class CoinbaseCommerceService
             'X-CC-Version' => '2018-03-22',
             'Content-Type' => 'application/json',
         ])->post($this->apiUrl . '/charges', [
-            'name' => 'CGO Investment - ' . ucfirst($investment->tier),
-            'description' => 'Investment in FinAegis Continuous Growth Offering',
+            'name'         => 'CGO Investment - ' . ucfirst($investment->tier),
+            'description'  => 'Investment in FinAegis Continuous Growth Offering',
             'pricing_type' => 'fixed_price',
-            'local_price' => [
-                'amount' => (string) $investment->amount,
+            'local_price'  => [
+                'amount'   => (string) $investment->amount,
                 'currency' => 'USD',
             ],
             'metadata' => [
-                'investment_id' => $investment->id,
+                'investment_id'   => $investment->id,
                 'investment_uuid' => $investment->uuid,
-                'tier' => $investment->tier,
-                'customer_email' => $investment->email,
+                'tier'            => $investment->tier,
+                'customer_email'  => $investment->email,
             ],
             'redirect_url' => route('cgo.payment.success', ['investment' => $investment->uuid]),
-            'cancel_url' => route('cgo.payment.cancel', ['investment' => $investment->uuid]),
+            'cancel_url'   => route('cgo.payment.cancel', ['investment' => $investment->uuid]),
         ]);
 
-        if (!$response->successful()) {
+        if (! $response->successful()) {
             Log::error('Coinbase Commerce charge creation failed', [
                 'investment_id' => $investment->id,
-                'status' => $response->status(),
-                'error' => $response->json(),
+                'status'        => $response->status(),
+                'error'         => $response->json(),
             ]);
             throw new \Exception('Failed to create Coinbase Commerce charge: ' . $response->body());
         }
@@ -62,16 +64,16 @@ class CoinbaseCommerceService
 
         // Store charge details
         $investment->update([
-            'coinbase_charge_id' => $chargeData['id'],
+            'coinbase_charge_id'   => $chargeData['id'],
             'coinbase_charge_code' => $chargeData['code'],
-            'crypto_payment_url' => $chargeData['hosted_url'],
+            'crypto_payment_url'   => $chargeData['hosted_url'],
         ]);
 
         return $chargeData;
     }
 
     /**
-     * Get charge details
+     * Get charge details.
      */
     public function getCharge(string $chargeId): array
     {
@@ -80,7 +82,7 @@ class CoinbaseCommerceService
             'X-CC-Version' => '2018-03-22',
         ])->get($this->apiUrl . '/charges/' . $chargeId);
 
-        if (!$response->successful()) {
+        if (! $response->successful()) {
             throw new \Exception('Failed to fetch charge details');
         }
 
@@ -88,16 +90,17 @@ class CoinbaseCommerceService
     }
 
     /**
-     * Verify webhook signature
+     * Verify webhook signature.
      */
     public function verifyWebhookSignature(string $payload, string $signature): bool
     {
         $computedSignature = hash_hmac('sha256', $payload, $this->webhookSecret);
+
         return hash_equals($signature, $computedSignature);
     }
 
     /**
-     * Process webhook event
+     * Process webhook event.
      */
     public function processWebhookEvent(array $event): void
     {
@@ -106,7 +109,7 @@ class CoinbaseCommerceService
 
         Log::info('Processing Coinbase Commerce webhook', [
             'event_type' => $eventType,
-            'charge_id' => $chargeData['id'] ?? null,
+            'charge_id'  => $chargeData['id'] ?? null,
         ]);
 
         switch ($eventType) {
@@ -139,20 +142,20 @@ class CoinbaseCommerceService
     protected function handleChargeCreated(array $chargeData): void
     {
         $investment = $this->findInvestmentByCharge($chargeData);
-        if (!$investment) {
+        if (! $investment) {
             return;
         }
 
         Log::info('Coinbase charge created', [
             'investment_id' => $investment->id,
-            'charge_code' => $chargeData['code'],
+            'charge_code'   => $chargeData['code'],
         ]);
     }
 
     protected function handleChargeConfirmed(array $chargeData): void
     {
         $investment = $this->findInvestmentByCharge($chargeData);
-        if (!$investment) {
+        if (! $investment) {
             return;
         }
 
@@ -164,20 +167,20 @@ class CoinbaseCommerceService
         $txHash = $payment['transaction_id'] ?? null;
 
         $investment->update([
-            'status' => 'confirmed',
-            'payment_status' => 'confirmed',
-            'payment_completed_at' => now(),
+            'status'                  => 'confirmed',
+            'payment_status'          => 'confirmed',
+            'payment_completed_at'    => now(),
             'crypto_transaction_hash' => $txHash,
-            'crypto_amount_paid' => $cryptoAmount,
-            'crypto_currency_paid' => $cryptoCurrency,
-            'amount_paid' => $paidAmount,
+            'crypto_amount_paid'      => $cryptoAmount,
+            'crypto_currency_paid'    => $cryptoCurrency,
+            'amount_paid'             => $paidAmount,
         ]);
 
         Log::info('Coinbase charge confirmed', [
             'investment_id' => $investment->id,
-            'amount_paid' => $paidAmount,
-            'crypto' => $cryptoCurrency,
-            'tx_hash' => $txHash,
+            'amount_paid'   => $paidAmount,
+            'crypto'        => $cryptoCurrency,
+            'tx_hash'       => $txHash,
         ]);
 
         // Send confirmation email
@@ -186,7 +189,7 @@ class CoinbaseCommerceService
         } catch (\Exception $e) {
             Log::error('Failed to send investment confirmation email', [
                 'investment_id' => $investment->id,
-                'error' => $e->getMessage(),
+                'error'         => $e->getMessage(),
             ]);
         }
     }
@@ -194,31 +197,31 @@ class CoinbaseCommerceService
     protected function handleChargeFailed(array $chargeData): void
     {
         $investment = $this->findInvestmentByCharge($chargeData);
-        if (!$investment) {
+        if (! $investment) {
             return;
         }
 
         $investment->update([
-            'payment_status' => 'failed',
-            'payment_failed_at' => now(),
+            'payment_status'         => 'failed',
+            'payment_failed_at'      => now(),
             'payment_failure_reason' => 'Payment expired or cancelled',
         ]);
 
         Log::warning('Coinbase charge failed', [
             'investment_id' => $investment->id,
-            'charge_code' => $chargeData['code'],
+            'charge_code'   => $chargeData['code'],
         ]);
     }
 
     protected function handleChargePending(array $chargeData): void
     {
         $investment = $this->findInvestmentByCharge($chargeData);
-        if (!$investment) {
+        if (! $investment) {
             return;
         }
 
         $investment->update([
-            'payment_status' => 'pending',
+            'payment_status'     => 'pending',
             'payment_pending_at' => now(),
         ]);
 
@@ -231,33 +234,33 @@ class CoinbaseCommerceService
             if ($cryptoCurrency && $cryptoAmount) {
                 $investment->update([
                     'crypto_currency_paid' => $cryptoCurrency,
-                    'crypto_amount_paid' => $cryptoAmount,
+                    'crypto_amount_paid'   => $cryptoAmount,
                 ]);
             }
         }
 
         Log::info('Coinbase charge pending', [
             'investment_id' => $investment->id,
-            'charge_code' => $chargeData['code'] ?? 'unknown',
+            'charge_code'   => $chargeData['code'] ?? 'unknown',
         ]);
     }
 
     protected function handleChargeResolved(array $chargeData): void
     {
         $investment = $this->findInvestmentByCharge($chargeData);
-        if (!$investment) {
+        if (! $investment) {
             return;
         }
 
         // Charge resolved means overpayment was resolved
         $investment->update([
             'status' => 'confirmed',
-            'notes' => 'Payment resolved after overpayment',
+            'notes'  => 'Payment resolved after overpayment',
         ]);
 
         Log::info('Coinbase charge resolved', [
             'investment_id' => $investment->id,
-            'charge_code' => $chargeData['code'],
+            'charge_code'   => $chargeData['code'],
         ]);
     }
 

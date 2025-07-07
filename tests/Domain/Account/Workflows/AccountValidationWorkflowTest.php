@@ -7,7 +7,7 @@ use Workflow\WorkflowStub;
 
 it('can validate account with all checks', function () {
     WorkflowStub::fake();
-    
+
     // Create test account
     $account = Account::factory()->create();
     $accountUuid = new AccountUuid($account->uuid);
@@ -15,13 +15,13 @@ it('can validate account with all checks', function () {
         'kyc_document_verification',
         'address_verification',
         'identity_verification',
-        'compliance_screening'
+        'compliance_screening',
     ];
     $validatedBy = 'compliance-officer-789';
-    
+
     $workflow = WorkflowStub::make(AccountValidationWorkflow::class);
     $workflow->start($accountUuid, $validationChecks, $validatedBy);
-    
+
     expect(true)->toBeTrue(); // Basic test that workflow starts without error
 });
 

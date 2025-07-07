@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use App\Domain\Asset\Models\Asset;
 
 class BasketPerformance extends Model
 {
@@ -42,20 +41,20 @@ class BasketPerformance extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'period_start' => 'datetime',
-        'period_end' => 'datetime',
-        'start_value' => 'float',
-        'end_value' => 'float',
-        'high_value' => 'float',
-        'low_value' => 'float',
-        'average_value' => 'float',
-        'return_value' => 'float',
+        'period_start'      => 'datetime',
+        'period_end'        => 'datetime',
+        'start_value'       => 'float',
+        'end_value'         => 'float',
+        'high_value'        => 'float',
+        'low_value'         => 'float',
+        'average_value'     => 'float',
+        'return_value'      => 'float',
         'return_percentage' => 'float',
-        'volatility' => 'float',
-        'sharpe_ratio' => 'float',
-        'max_drawdown' => 'float',
-        'value_count' => 'integer',
-        'metadata' => 'array',
+        'volatility'        => 'float',
+        'sharpe_ratio'      => 'float',
+        'max_drawdown'      => 'float',
+        'value_count'       => 'integer',
+        'metadata'          => 'array',
     ];
 
     /**
@@ -80,6 +79,7 @@ class BasketPerformance extends Model
     public function getFormattedReturnAttribute(): string
     {
         $prefix = $this->return_percentage >= 0 ? '+' : '';
+
         return $prefix . number_format($this->return_percentage, 2) . '%';
     }
 

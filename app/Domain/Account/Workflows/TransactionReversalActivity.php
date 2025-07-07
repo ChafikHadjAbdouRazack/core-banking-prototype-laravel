@@ -46,12 +46,12 @@ class TransactionReversalActivity extends Activity
         $this->logReversal($accountUuid, $originalAmount, $transactionType, $reversalReason, $authorizedBy);
 
         return [
-            'account_uuid' => $accountUuid->getUuid(),
+            'account_uuid'    => $accountUuid->getUuid(),
             'reversed_amount' => $originalAmount->getAmount(),
-            'original_type' => $transactionType,
+            'original_type'   => $transactionType,
             'reversal_reason' => $reversalReason,
-            'authorized_by' => $authorizedBy,
-            'reversed_at' => now()->toISOString(),
+            'authorized_by'   => $authorizedBy,
+            'reversed_at'     => now()->toISOString(),
         ];
     }
 
@@ -71,12 +71,12 @@ class TransactionReversalActivity extends Activity
         ?string $authorizedBy
     ): void {
         logger()->info('Transaction reversed', [
-            'account_uuid' => $accountUuid->getUuid(),
-            'amount' => $amount->getAmount(),
+            'account_uuid'  => $accountUuid->getUuid(),
+            'amount'        => $amount->getAmount(),
             'original_type' => $transactionType,
-            'reason' => $reason,
+            'reason'        => $reason,
             'authorized_by' => $authorizedBy,
-            'timestamp' => now()->toISOString(),
+            'timestamp'     => now()->toISOString(),
         ]);
     }
 }

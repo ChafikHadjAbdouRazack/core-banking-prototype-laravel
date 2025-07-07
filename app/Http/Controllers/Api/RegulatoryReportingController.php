@@ -10,7 +10,6 @@ use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Validation\ValidationException;
 
 /**
  * @OA\Tag(
@@ -28,7 +27,7 @@ class RegulatoryReportingController extends Controller
     }
 
     /**
-     * Generate Currency Transaction Report (CTR)
+     * Generate Currency Transaction Report (CTR).
      *
      * @OA\Post(
      *     path="/api/regulatory/reports/ctr",
@@ -92,24 +91,24 @@ class RegulatoryReportingController extends Controller
 
             return response()->json([
                 'data' => [
-                    'type' => 'ctr',
-                    'date' => $date->toDateString(),
-                    'filename' => $filename,
+                    'type'         => 'ctr',
+                    'date'         => $date->toDateString(),
+                    'filename'     => $filename,
                     'generated_at' => now()->toISOString(),
                     'download_url' => route('api.regulatory.download', ['filename' => basename($filename)]),
                 ],
-                'message' => 'Currency Transaction Report generated successfully'
+                'message' => 'Currency Transaction Report generated successfully',
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'error' => 'Failed to generate CTR report',
-                'message' => $e->getMessage()
+                'error'   => 'Failed to generate CTR report',
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
 
     /**
-     * Generate Suspicious Activity Report (SAR) candidates
+     * Generate Suspicious Activity Report (SAR) candidates.
      *
      * @OA\Post(
      *     path="/api/regulatory/reports/sar",
@@ -161,7 +160,7 @@ class RegulatoryReportingController extends Controller
     {
         $request->validate([
             'start_date' => 'required|date|before_or_equal:today',
-            'end_date' => 'required|date|after_or_equal:start_date|before_or_equal:today',
+            'end_date'   => 'required|date|after_or_equal:start_date|before_or_equal:today',
         ]);
 
         try {
@@ -172,25 +171,25 @@ class RegulatoryReportingController extends Controller
 
             return response()->json([
                 'data' => [
-                    'type' => 'sar_candidates',
+                    'type'         => 'sar_candidates',
                     'period_start' => $startDate->toDateString(),
-                    'period_end' => $endDate->toDateString(),
-                    'filename' => $filename,
+                    'period_end'   => $endDate->toDateString(),
+                    'filename'     => $filename,
                     'generated_at' => now()->toISOString(),
                     'download_url' => route('api.regulatory.download', ['filename' => basename($filename)]),
                 ],
-                'message' => 'SAR candidates report generated successfully'
+                'message' => 'SAR candidates report generated successfully',
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'error' => 'Failed to generate SAR candidates report',
-                'message' => $e->getMessage()
+                'error'   => 'Failed to generate SAR candidates report',
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
 
     /**
-     * Generate compliance summary report
+     * Generate compliance summary report.
      *
      * @OA\Post(
      *     path="/api/regulatory/reports/compliance-summary",
@@ -254,24 +253,24 @@ class RegulatoryReportingController extends Controller
 
             return response()->json([
                 'data' => [
-                    'type' => 'compliance_summary',
-                    'month' => $month->format('F Y'),
-                    'filename' => $filename,
+                    'type'         => 'compliance_summary',
+                    'month'        => $month->format('F Y'),
+                    'filename'     => $filename,
                     'generated_at' => now()->toISOString(),
                     'download_url' => route('api.regulatory.download', ['filename' => basename($filename)]),
                 ],
-                'message' => 'Compliance summary report generated successfully'
+                'message' => 'Compliance summary report generated successfully',
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'error' => 'Failed to generate compliance summary report',
-                'message' => $e->getMessage()
+                'error'   => 'Failed to generate compliance summary report',
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
 
     /**
-     * Generate KYC compliance report
+     * Generate KYC compliance report.
      *
      * @OA\Post(
      *     path="/api/regulatory/reports/kyc",
@@ -316,23 +315,23 @@ class RegulatoryReportingController extends Controller
 
             return response()->json([
                 'data' => [
-                    'type' => 'kyc_compliance',
-                    'filename' => $filename,
+                    'type'         => 'kyc_compliance',
+                    'filename'     => $filename,
                     'generated_at' => now()->toISOString(),
                     'download_url' => route('api.regulatory.download', ['filename' => basename($filename)]),
                 ],
-                'message' => 'KYC compliance report generated successfully'
+                'message' => 'KYC compliance report generated successfully',
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'error' => 'Failed to generate KYC compliance report',
-                'message' => $e->getMessage()
+                'error'   => 'Failed to generate KYC compliance report',
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
 
     /**
-     * List all available regulatory reports
+     * List all available regulatory reports.
      *
      * @OA\Get(
      *     path="/api/regulatory/reports",
@@ -416,9 +415,9 @@ class RegulatoryReportingController extends Controller
     public function listReports(Request $request): JsonResponse
     {
         $request->validate([
-            'type' => 'sometimes|in:ctr,sar,compliance,kyc',
+            'type'  => 'sometimes|in:ctr,sar,compliance,kyc',
             'limit' => 'sometimes|integer|min:1|max:100',
-            'page' => 'sometimes|integer|min:1',
+            'page'  => 'sometimes|integer|min:1',
         ]);
 
         try {
@@ -428,10 +427,10 @@ class RegulatoryReportingController extends Controller
             $offset = ($page - 1) * $limit;
 
             $directories = [
-                'ctr' => 'regulatory/ctr/',
-                'sar' => 'regulatory/sar/',
+                'ctr'        => 'regulatory/ctr/',
+                'sar'        => 'regulatory/sar/',
                 'compliance' => 'regulatory/compliance/',
-                'kyc' => 'regulatory/kyc/',
+                'kyc'        => 'regulatory/kyc/',
             ];
 
             $reports = collect();
@@ -443,11 +442,11 @@ class RegulatoryReportingController extends Controller
 
                 foreach ($files as $file) {
                     $reports->push([
-                        'type' => $reportType,
-                        'filename' => basename($file),
-                        'full_path' => $file,
-                        'size' => Storage::size($file),
-                        'created_at' => Carbon::createFromTimestamp(Storage::lastModified($file))->toISOString(),
+                        'type'         => $reportType,
+                        'filename'     => basename($file),
+                        'full_path'    => $file,
+                        'size'         => Storage::size($file),
+                        'created_at'   => Carbon::createFromTimestamp(Storage::lastModified($file))->toISOString(),
                         'download_url' => route('api.regulatory.download', ['filename' => basename($file)]),
                     ]);
                 }
@@ -461,30 +460,30 @@ class RegulatoryReportingController extends Controller
 
             return response()->json([
                 'data' => [
-                    'reports' => $paginatedReports,
+                    'reports'    => $paginatedReports,
                     'pagination' => [
-                        'total' => $total,
-                        'per_page' => $limit,
+                        'total'        => $total,
+                        'per_page'     => $limit,
                         'current_page' => $page,
-                        'last_page' => ceil($total / $limit),
-                        'has_more' => $page < ceil($total / $limit),
+                        'last_page'    => ceil($total / $limit),
+                        'has_more'     => $page < ceil($total / $limit),
                     ],
                 ],
                 'meta' => [
                     'available_types' => array_keys($directories),
-                    'total_reports' => $total,
-                ]
+                    'total_reports'   => $total,
+                ],
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'error' => 'Failed to list regulatory reports',
-                'message' => $e->getMessage()
+                'error'   => 'Failed to list regulatory reports',
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
 
     /**
-     * Get specific report content
+     * Get specific report content.
      *
      * @OA\Get(
      *     path="/api/regulatory/reports/{filename}",
@@ -537,9 +536,9 @@ class RegulatoryReportingController extends Controller
     {
         try {
             // Security: Only allow specific file extensions and patterns
-            if (!preg_match('/^[a-zA-Z0-9_\-\.]+\.json$/', $filename)) {
+            if (! preg_match('/^[a-zA-Z0-9_\-\.]+\.json$/', $filename)) {
                 return response()->json([
-                    'error' => 'Invalid filename format'
+                    'error' => 'Invalid filename format',
                 ], 400);
             }
 
@@ -560,9 +559,9 @@ class RegulatoryReportingController extends Controller
                 }
             }
 
-            if (!$filePath) {
+            if (! $filePath) {
                 return response()->json([
-                    'error' => 'Report not found'
+                    'error' => 'Report not found',
                 ], 404);
             }
 
@@ -571,29 +570,29 @@ class RegulatoryReportingController extends Controller
 
             if (json_last_error() !== JSON_ERROR_NONE) {
                 return response()->json([
-                    'error' => 'Invalid report format'
+                    'error' => 'Invalid report format',
                 ], 500);
             }
 
             return response()->json([
                 'data' => [
-                    'filename' => $filename,
-                    'file_path' => $filePath,
-                    'size' => Storage::size($filePath),
+                    'filename'   => $filename,
+                    'file_path'  => $filePath,
+                    'size'       => Storage::size($filePath),
                     'created_at' => Carbon::createFromTimestamp(Storage::lastModified($filePath))->toISOString(),
-                    'content' => $reportData,
-                ]
+                    'content'    => $reportData,
+                ],
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'error' => 'Failed to retrieve report',
-                'message' => $e->getMessage()
+                'error'   => 'Failed to retrieve report',
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
 
     /**
-     * Download report file
+     * Download report file.
      *
      * @OA\Get(
      *     path="/api/regulatory/reports/{filename}/download",
@@ -645,9 +644,9 @@ class RegulatoryReportingController extends Controller
     {
         try {
             // Security: Only allow specific file extensions and patterns
-            if (!preg_match('/^[a-zA-Z0-9_\-\.]+\.json$/', $filename)) {
+            if (! preg_match('/^[a-zA-Z0-9_\-\.]+\.json$/', $filename)) {
                 return response()->json([
-                    'error' => 'Invalid filename format'
+                    'error' => 'Invalid filename format',
                 ], 400);
             }
 
@@ -668,26 +667,26 @@ class RegulatoryReportingController extends Controller
                 }
             }
 
-            if (!$filePath) {
+            if (! $filePath) {
                 return response()->json([
-                    'error' => 'Report not found'
+                    'error' => 'Report not found',
                 ], 404);
             }
 
             return Storage::download($filePath, $filename, [
-                'Content-Type' => 'application/json',
-                'Content-Disposition' => 'attachment; filename="' . $filename . '"'
+                'Content-Type'        => 'application/json',
+                'Content-Disposition' => 'attachment; filename="' . $filename . '"',
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'error' => 'Failed to download report',
-                'message' => $e->getMessage()
+                'error'   => 'Failed to download report',
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
 
     /**
-     * Delete a regulatory report
+     * Delete a regulatory report.
      *
      * @OA\Delete(
      *     path="/api/regulatory/reports/{filename}",
@@ -742,9 +741,9 @@ class RegulatoryReportingController extends Controller
     {
         try {
             // Security: Only allow specific file extensions and patterns
-            if (!preg_match('/^[a-zA-Z0-9_\-\.]+\.json$/', $filename)) {
+            if (! preg_match('/^[a-zA-Z0-9_\-\.]+\.json$/', $filename)) {
                 return response()->json([
-                    'error' => 'Invalid filename format'
+                    'error' => 'Invalid filename format',
                 ], 400);
             }
 
@@ -765,9 +764,9 @@ class RegulatoryReportingController extends Controller
                 }
             }
 
-            if (!$filePath) {
+            if (! $filePath) {
                 return response()->json([
-                    'error' => 'Report not found'
+                    'error' => 'Report not found',
                 ], 404);
             }
 
@@ -775,21 +774,21 @@ class RegulatoryReportingController extends Controller
 
             return response()->json([
                 'data' => [
-                    'filename' => $filename,
+                    'filename'   => $filename,
                     'deleted_at' => now()->toISOString(),
                 ],
-                'message' => 'Report deleted successfully'
+                'message' => 'Report deleted successfully',
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'error' => 'Failed to delete report',
-                'message' => $e->getMessage()
+                'error'   => 'Failed to delete report',
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
 
     /**
-     * Get regulatory metrics summary
+     * Get regulatory metrics summary.
      *
      * @OA\Get(
      *     path="/api/regulatory/metrics",
@@ -853,11 +852,11 @@ class RegulatoryReportingController extends Controller
 
             $endDate = now();
             $startDate = match ($period) {
-                'week' => $endDate->copy()->subWeek(),
-                'month' => $endDate->copy()->subMonth(),
+                'week'    => $endDate->copy()->subWeek(),
+                'month'   => $endDate->copy()->subMonth(),
                 'quarter' => $endDate->copy()->subQuarter(),
-                'year' => $endDate->copy()->subYear(),
-                default => $endDate->copy()->subMonth(),
+                'year'    => $endDate->copy()->subYear(),
+                default   => $endDate->copy()->subMonth(),
             };
 
             // Get summary metrics using reflection to access protected methods
@@ -880,23 +879,23 @@ class RegulatoryReportingController extends Controller
 
             return response()->json([
                 'data' => [
-                    'period' => $period,
+                    'period'       => $period,
                     'period_start' => $startDate->toDateString(),
-                    'period_end' => $endDate->toDateString(),
-                    'metrics' => [
-                        'kyc' => $kycMetrics->invoke($this->regulatoryReportingService, $startDate, $endDate),
+                    'period_end'   => $endDate->toDateString(),
+                    'metrics'      => [
+                        'kyc'          => $kycMetrics->invoke($this->regulatoryReportingService, $startDate, $endDate),
                         'transactions' => $transactionMetrics->invoke($this->regulatoryReportingService, $startDate, $endDate),
-                        'users' => $userMetrics->invoke($this->regulatoryReportingService, $startDate, $endDate),
-                        'risk' => $riskMetrics->invoke($this->regulatoryReportingService),
-                        'gdpr' => $gdprMetrics->invoke($this->regulatoryReportingService, $startDate, $endDate),
+                        'users'        => $userMetrics->invoke($this->regulatoryReportingService, $startDate, $endDate),
+                        'risk'         => $riskMetrics->invoke($this->regulatoryReportingService),
+                        'gdpr'         => $gdprMetrics->invoke($this->regulatoryReportingService, $startDate, $endDate),
                     ],
                     'generated_at' => now()->toISOString(),
-                ]
+                ],
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'error' => 'Failed to retrieve regulatory metrics',
-                'message' => $e->getMessage()
+                'error'   => 'Failed to retrieve regulatory metrics',
+                'message' => $e->getMessage(),
             ], 500);
         }
     }

@@ -4,22 +4,22 @@ declare(strict_types=1);
 
 namespace App\Domain\Custodian\Services;
 
-use App\Models\Account;
-use App\Models\CustodianAccount;
+use App\Domain\Account\DataObjects\AccountUuid;
 use App\Domain\Custodian\Events\AccountBalanceUpdated;
-use App\Domain\Custodian\Services\CustodianRegistry;
 use App\Domain\Custodian\ValueObjects\AccountInfo;
 use App\Domain\Wallet\Services\WalletService;
-use App\Domain\Account\DataObjects\AccountUuid;
+use App\Models\Account;
+use App\Models\CustodianAccount;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Carbon\Carbon;
 
 class BalanceSynchronizationService
 {
     private CustodianRegistry $custodianRegistry;
+
     private WalletService $walletService;
+
     private array $syncResults = [];
 
     public function __construct(CustodianRegistry $custodianRegistry, WalletService $walletService)
@@ -29,16 +29,16 @@ class BalanceSynchronizationService
     }
 
     /**
-     * Synchronize balances for all active custodian accounts
+     * Synchronize balances for all active custodian accounts.
      */
     public function synchronizeAllBalances(): array
     {
         $this->syncResults = [
             'synchronized' => 0,
-            'failed' => 0,
-            'skipped' => 0,
-            'start_time' => now(),
-            'details' => [],
+            'failed'       => 0,
+            'skipped'      => 0,
+            'start_time'   => now(),
+            'details'      => [],
         ];
 
         $custodianAccounts = $this->getActiveCustodianAccounts();
@@ -60,7 +60,7 @@ class BalanceSynchronizationService
     }
 
     /**
-     * Synchronize balance for a specific account
+     * Synchronize balance for a specific account.
      */
     public function synchronizeAccountBalance(CustodianAccount $custodianAccount): bool
     {
@@ -68,14 +68,16 @@ class BalanceSynchronizationService
             // Skip if recently synchronized
             if ($this->isRecentlySynchronized($custodianAccount)) {
                 $this->recordSyncResult($custodianAccount, 'skipped', 'Recently synchronized');
+
                 return true;
             }
 
             // Get custodian connector
             $connector = $this->custodianRegistry->getConnector($custodianAccount->custodian_id);
 
-            if (!$connector->isAvailable()) {
+            if (! $connector->isAvailable()) {
                 $this->recordSyncResult($custodianAccount, 'failed', 'Custodian not available');
+
                 return false;
             }
 
@@ -88,8 +90,8 @@ class BalanceSynchronizationService
             // Update sync timestamp
             $custodianAccount->update([
                 'last_synced_at' => now(),
-                'sync_status' => 'success',
-                'sync_error' => null,
+                'sync_status'    => 'success',
+                'sync_error'     => null,
             ]);
 
             $this->recordSyncResult($custodianAccount, 'synchronized', 'Success');
@@ -98,14 +100,14 @@ class BalanceSynchronizationService
         } catch (\Exception $e) {
             Log::error('Balance synchronization failed', [
                 'custodian_account_id' => $custodianAccount->id,
-                'error' => $e->getMessage(),
+                'error'                => $e->getMessage(),
             ]);
 
             // Update sync status
             $custodianAccount->update([
                 'last_synced_at' => now(),
-                'sync_status' => 'failed',
-                'sync_error' => $e->getMessage(),
+                'sync_status'    => 'failed',
+                'sync_error'     => $e->getMessage(),
             ]);
 
             $this->recordSyncResult($custodianAccount, 'failed', $e->getMessage());
@@ -115,7 +117,7 @@ class BalanceSynchronizationService
     }
 
     /**
-     * Synchronize balances for a specific internal account
+     * Synchronize balances for a specific internal account.
      */
     public function synchronizeAccountBalancesByInternalAccount(string $accountUuid): array
     {
@@ -133,7 +135,7 @@ class BalanceSynchronizationService
     }
 
     /**
-     * Get active custodian accounts that need synchronization
+     * Get active custodian accounts that need synchronization.
      */
     private function getActiveCustodianAccounts(): Collection
     {
@@ -147,11 +149,11 @@ class BalanceSynchronizationService
     }
 
     /**
-     * Check if account was recently synchronized
+     * Check if account was recently synchronized.
      */
     private function isRecentlySynchronized(CustodianAccount $custodianAccount): bool
     {
-        if (!$custodianAccount->last_synced_at) {
+        if (! $custodianAccount->last_synced_at) {
             return false;
         }
 
@@ -160,7 +162,7 @@ class BalanceSynchronizationService
     }
 
     /**
-     * Update account balances from custodian data
+     * Update account balances from custodian data.
      */
     private function updateAccountBalances(CustodianAccount $custodianAccount, AccountInfo $accountInfo): void
     {
@@ -193,12 +195,12 @@ class BalanceSynchronizationService
                     ));
 
                     Log::info('Account balance updated', [
-                        'account_uuid' => $account->uuid,
-                        'custodian_id' => $custodianAccount->custodian_id,
-                        'asset_code' => $assetCode,
+                        'account_uuid'     => $account->uuid,
+                        'custodian_id'     => $custodianAccount->custodian_id,
+                        'asset_code'       => $assetCode,
                         'previous_balance' => $currentBalance,
-                        'new_balance' => $amountInCents,
-                        'difference' => $difference,
+                        'new_balance'      => $amountInCents,
+                        'difference'       => $difference,
                     ]);
                 }
             }
@@ -207,32 +209,32 @@ class BalanceSynchronizationService
             $custodianAccount->update([
                 'metadata' => array_merge($custodianAccount->metadata ?? [], [
                     'last_known_balances' => $accountInfo->balances,
-                    'account_status' => $accountInfo->status,
-                    'synchronized_at' => now()->toISOString(),
+                    'account_status'      => $accountInfo->status,
+                    'synchronized_at'     => now()->toISOString(),
                 ]),
             ]);
         });
     }
 
     /**
-     * Record sync result for reporting
+     * Record sync result for reporting.
      */
     private function recordSyncResult(CustodianAccount $custodianAccount, string $status, string $message): void
     {
         $this->syncResults[$status]++;
         $this->syncResults['details'][] = [
             'custodian_account_id' => $custodianAccount->id,
-            'account_uuid' => $custodianAccount->account_uuid,
-            'custodian_id' => $custodianAccount->custodian_id,
-            'external_account_id' => $custodianAccount->external_account_id,
-            'status' => $status,
-            'message' => $message,
-            'timestamp' => now()->toISOString(),
+            'account_uuid'         => $custodianAccount->account_uuid,
+            'custodian_id'         => $custodianAccount->custodian_id,
+            'external_account_id'  => $custodianAccount->external_account_id,
+            'status'               => $status,
+            'message'              => $message,
+            'timestamp'            => now()->toISOString(),
         ];
     }
 
     /**
-     * Get synchronization statistics
+     * Get synchronization statistics.
      */
     public function getSynchronizationStats(): array
     {
@@ -249,13 +251,13 @@ class BalanceSynchronizationService
             ->count();
 
         return [
-            'total_accounts' => $totalAccounts,
+            'total_accounts'   => $totalAccounts,
             'synced_last_hour' => $syncedLastHour,
             'failed_last_hour' => $failedLastHour,
-            'never_synced' => $neverSynced,
-            'sync_rate' => $totalAccounts > 0 ? round(($syncedLastHour / $totalAccounts) * 100, 2) : 0,
-            'failure_rate' => $syncedLastHour > 0 ? round(($failedLastHour / $syncedLastHour) * 100, 2) : 0,
-            'last_sync_run' => $this->syncResults['end_time'] ?? null,
+            'never_synced'     => $neverSynced,
+            'sync_rate'        => $totalAccounts > 0 ? round(($syncedLastHour / $totalAccounts) * 100, 2) : 0,
+            'failure_rate'     => $syncedLastHour > 0 ? round(($failedLastHour / $syncedLastHour) * 100, 2) : 0,
+            'last_sync_run'    => $this->syncResults['end_time'] ?? null,
         ];
     }
 }

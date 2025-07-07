@@ -5,7 +5,6 @@ namespace App\Actions\Jetstream;
 use App\Models\Team;
 use App\Models\User;
 use App\Traits\HandlesNestedTransactions;
-use Illuminate\Support\Facades\DB;
 use Laravel\Jetstream\Contracts\DeletesTeams;
 use Laravel\Jetstream\Contracts\DeletesUsers;
 

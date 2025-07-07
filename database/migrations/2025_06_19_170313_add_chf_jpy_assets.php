@@ -3,8 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
-return new class extends Migration
-{
+return new class () extends Migration {
     /**
      * Run the migrations.
      */
@@ -13,22 +12,22 @@ return new class extends Migration
         // Add CHF and JPY assets for currency basket
         DB::table('assets')->insert([
             [
-                'code' => 'CHF',
-                'name' => 'Swiss Franc',
-                'type' => 'fiat',
-                'precision' => 2,
-                'is_active' => true,
-                'metadata' => json_encode(['symbol' => 'Fr.', 'iso_code' => 'CHF']),
+                'code'       => 'CHF',
+                'name'       => 'Swiss Franc',
+                'type'       => 'fiat',
+                'precision'  => 2,
+                'is_active'  => true,
+                'metadata'   => json_encode(['symbol' => 'Fr.', 'iso_code' => 'CHF']),
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
-                'code' => 'JPY',
-                'name' => 'Japanese Yen',
-                'type' => 'fiat',
-                'precision' => 0, // JPY doesn't use decimal places
-                'is_active' => true,
-                'metadata' => json_encode(['symbol' => '¥', 'iso_code' => 'JPY']),
+                'code'       => 'JPY',
+                'name'       => 'Japanese Yen',
+                'type'       => 'fiat',
+                'precision'  => 0, // JPY doesn't use decimal places
+                'is_active'  => true,
+                'metadata'   => json_encode(['symbol' => '¥', 'iso_code' => 'JPY']),
                 'created_at' => now(),
                 'updated_at' => now(),
             ],

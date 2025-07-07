@@ -7,7 +7,7 @@ use Carbon\Carbon;
 
 it('can create exchange rate quote', function () {
     $timestamp = Carbon::now();
-    
+
     $quote = new ExchangeRateQuote(
         fromCurrency: 'USD',
         toCurrency: 'EUR',
@@ -20,7 +20,7 @@ it('can create exchange rate quote', function () {
         change24h: 0.02,
         metadata: ['source' => 'test']
     );
-    
+
     expect($quote->fromCurrency)->toBe('USD');
     expect($quote->toCurrency)->toBe('EUR');
     expect($quote->rate)->toBe(0.85);
@@ -43,7 +43,7 @@ it('can calculate spread', function () {
         provider: 'test',
         timestamp: Carbon::now()
     );
-    
+
     expect($quote->getSpread())->toEqualWithDelta(0.01, 0.0001);
     expect($quote->getSpreadPercentage())->toEqualWithDelta(1.0, 0.01);
 });
@@ -58,7 +58,7 @@ it('can check freshness', function () {
         provider: 'test',
         timestamp: Carbon::now()
     );
-    
+
     $staleQuote = new ExchangeRateQuote(
         fromCurrency: 'USD',
         toCurrency: 'EUR',
@@ -68,7 +68,7 @@ it('can check freshness', function () {
         provider: 'test',
         timestamp: Carbon::now()->subMinutes(10)
     );
-    
+
     expect($freshQuote->isFresh(300))->toBeTrue();
     expect($staleQuote->isFresh(300))->toBeFalse();
     expect($freshQuote->getAgeInSeconds())->toBeLessThan(5);
@@ -85,10 +85,10 @@ it('can convert amounts', function () {
         provider: 'test',
         timestamp: Carbon::now()
     );
-    
+
     // Using mid rate
     expect($quote->convert(100))->toBe(85.0);
-    
+
     // Using bid/ask
     expect($quote->convert(100, true, 'buy'))->toEqualWithDelta(85.1, 0.01);
     expect($quote->convert(100, true, 'sell'))->toEqualWithDelta(84.9, 0.01);
@@ -106,9 +106,9 @@ it('can create inverse quote', function () {
         volume24h: 1000000.0,
         change24h: 0.02
     );
-    
+
     $inverse = $quote->inverse();
-    
+
     expect($inverse->fromCurrency)->toBe('EUR');
     expect($inverse->toCurrency)->toBe('USD');
     expect($inverse->rate)->toBeGreaterThan(1.176);
@@ -120,7 +120,7 @@ it('can create inverse quote', function () {
 
 it('converts to array correctly', function () {
     $timestamp = Carbon::now();
-    
+
     $quote = new ExchangeRateQuote(
         fromCurrency: 'USD',
         toCurrency: 'EUR',
@@ -133,9 +133,9 @@ it('converts to array correctly', function () {
         change24h: 0.02,
         metadata: ['source' => 'test']
     );
-    
+
     $array = $quote->toArray();
-    
+
     expect($array)->toHaveKeys([
         'from_currency',
         'to_currency',
@@ -151,7 +151,7 @@ it('converts to array correctly', function () {
         'change_24h',
         'metadata',
     ]);
-    
+
     expect($array['from_currency'])->toBe('USD');
     expect($array['to_currency'])->toBe('EUR');
     expect($array['rate'])->toBe(0.85);
@@ -170,6 +170,6 @@ it('handles zero rate for spread percentage', function () {
         provider: 'test',
         timestamp: Carbon::now()
     );
-    
+
     expect($quote->getSpreadPercentage())->toBe(0.0);
 });

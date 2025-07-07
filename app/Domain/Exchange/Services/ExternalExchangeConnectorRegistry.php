@@ -79,7 +79,7 @@ class ExternalExchangeConnectorRegistry
     }
 
     /**
-     * Get best price across all available exchanges
+     * Get best price across all available exchanges.
      */
     public function getBestBid(string $baseCurrency, string $quoteCurrency): ?array
     {
@@ -101,13 +101,13 @@ class ExternalExchangeConnectorRegistry
         }
 
         return $bestBid ? [
-            'price' => $bestBid,
+            'price'    => $bestBid,
             'exchange' => $bestExchange,
         ] : null;
     }
 
     /**
-     * Get best ask across all available exchanges
+     * Get best ask across all available exchanges.
      */
     public function getBestAsk(string $baseCurrency, string $quoteCurrency): ?array
     {
@@ -129,13 +129,13 @@ class ExternalExchangeConnectorRegistry
         }
 
         return $bestAsk ? [
-            'price' => $bestAsk,
+            'price'    => $bestAsk,
             'exchange' => $bestExchange,
         ] : null;
     }
 
     /**
-     * Get aggregated order book from all available exchanges
+     * Get aggregated order book from all available exchanges.
      */
     public function getAggregatedOrderBook(string $baseCurrency, string $quoteCurrency, int $depth = 20): array
     {
@@ -167,8 +167,8 @@ class ExternalExchangeConnectorRegistry
         $sortedAsks = $aggregatedAsks->sortBy(fn ($ask) => $ask['price']->__toString())->take($depth);
 
         return [
-            'bids' => $sortedBids->values(),
-            'asks' => $sortedAsks->values(),
+            'bids'      => $sortedBids->values(),
+            'asks'      => $sortedAsks->values(),
             'exchanges' => $this->available()->keys(),
         ];
     }

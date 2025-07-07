@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use App\Models\User;
-use App\Domain\Governance\Models\Vote;
 use App\Domain\Governance\Models\Poll;
+use App\Domain\Governance\Models\Vote;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
 
@@ -13,42 +13,42 @@ uses(RefreshDatabase::class);
 beforeEach(function () {
     $this->user = User::factory()->create();
     $this->otherUser = User::factory()->create();
-    
+
     // Create test polls
     $this->poll1 = Poll::factory()->create([
-        'title' => 'Test Poll 1',
-        'status' => 'active'
+        'title'  => 'Test Poll 1',
+        'status' => 'active',
     ]);
-    
+
     $this->poll2 = Poll::factory()->create([
-        'title' => 'Test Poll 2',
-        'status' => 'active'
+        'title'  => 'Test Poll 2',
+        'status' => 'active',
     ]);
-    
+
     // Create test votes for the user
     $this->vote1 = Vote::factory()->create([
-        'user_uuid' => $this->user->uuid,
-        'poll_id' => $this->poll1->id,
+        'user_uuid'        => $this->user->uuid,
+        'poll_id'          => $this->poll1->id,
         'selected_options' => ['option_1'],
-        'voting_power' => 100,
-        'voted_at' => now()->subDays(5)
+        'voting_power'     => 100,
+        'voted_at'         => now()->subDays(5),
     ]);
-    
+
     $this->vote2 = Vote::factory()->create([
-        'user_uuid' => $this->user->uuid,
-        'poll_id' => $this->poll2->id,
+        'user_uuid'        => $this->user->uuid,
+        'poll_id'          => $this->poll2->id,
         'selected_options' => ['option_2'],
-        'voting_power' => 150,
-        'voted_at' => now()->subDays(2)
+        'voting_power'     => 150,
+        'voted_at'         => now()->subDays(2),
     ]);
-    
+
     // Create vote for other user (should not be accessible)
     $this->otherVote = Vote::factory()->create([
-        'user_uuid' => $this->otherUser->uuid,
-        'poll_id' => $this->poll1->id,
+        'user_uuid'        => $this->otherUser->uuid,
+        'poll_id'          => $this->poll1->id,
         'selected_options' => ['option_1'],
-        'voting_power' => 200,
-        'voted_at' => now()->subDay()
+        'voting_power'     => 200,
+        'voted_at'         => now()->subDay(),
     ]);
 });
 
@@ -69,9 +69,9 @@ describe('GET /api/votes', function () {
                         'voting_power',
                         'voted_at',
                         'poll',
-                        'user'
-                    ]
-                ]
+                        'user',
+                    ],
+                ],
             ]);
 
         // Should return only this user's votes, ordered by voted_at DESC
@@ -79,7 +79,7 @@ describe('GET /api/votes', function () {
         expect($data)->toHaveCount(2);
         expect($data[0]['id'])->toBe($this->vote2->id); // Most recent first
         expect($data[1]['id'])->toBe($this->vote1->id);
-        
+
         // Verify user can only see their own votes
         collect($data)->each(function ($vote) {
             expect($vote['user_uuid'])->toBe($this->user->uuid);
@@ -92,7 +92,7 @@ describe('GET /api/votes', function () {
         $response = $this->getJson("/api/votes?poll_id={$this->poll1->id}");
 
         $response->assertStatus(200);
-        
+
         $data = $response->json('data');
         expect($data)->toHaveCount(1);
         expect($data[0]['poll_id'])->toBe($this->poll1->id);
@@ -114,10 +114,10 @@ describe('GET /api/votes', function () {
         $response = $this->getJson('/api/votes?per_page=1');
 
         $response->assertStatus(200);
-        
+
         $data = $response->json('data');
         expect($data)->toHaveCount(1);
-        
+
         // Skip meta validation as the response format may vary
     });
 
@@ -142,7 +142,7 @@ describe('GET /api/votes', function () {
         $response = $this->getJson('/api/votes');
 
         $response->assertStatus(200);
-        
+
         $vote = $response->json('data.0');
         expect($vote['poll'])->not->toBeNull();
         expect($vote['user'])->not->toBeNull();
@@ -167,8 +167,8 @@ describe('GET /api/votes/{id}', function () {
                     'voting_power',
                     'voted_at',
                     'poll',
-                    'user'
-                ]
+                    'user',
+                ],
             ]);
 
         $data = $response->json('data');
@@ -185,7 +185,7 @@ describe('GET /api/votes/{id}', function () {
 
         $response->assertStatus(403)
             ->assertJson([
-                'message' => 'Access denied'
+                'message' => 'Access denied',
             ]);
     });
 
@@ -196,7 +196,7 @@ describe('GET /api/votes/{id}', function () {
 
         $response->assertStatus(404)
             ->assertJson([
-                'message' => 'Vote not found'
+                'message' => 'Vote not found',
             ]);
     });
 
@@ -212,7 +212,7 @@ describe('GET /api/votes/{id}', function () {
         $response = $this->getJson("/api/votes/{$this->vote1->id}");
 
         $response->assertStatus(200);
-        
+
         $data = $response->json('data');
         expect($data['poll'])->not->toBeNull();
         expect($data['user'])->not->toBeNull();
@@ -230,7 +230,7 @@ describe('POST /api/votes/{id}/verify', function () {
         $response->assertStatus(200)
             ->assertJsonStructure([
                 'verified',
-                'message'
+                'message',
             ]);
 
         $data = $response->json();
@@ -245,7 +245,7 @@ describe('POST /api/votes/{id}/verify', function () {
 
         $response->assertStatus(403)
             ->assertJson([
-                'message' => 'Access denied'
+                'message' => 'Access denied',
             ]);
     });
 
@@ -256,7 +256,7 @@ describe('POST /api/votes/{id}/verify', function () {
 
         $response->assertStatus(404)
             ->assertJson([
-                'message' => 'Vote not found'
+                'message' => 'Vote not found',
             ]);
     });
 
@@ -270,11 +270,11 @@ describe('POST /api/votes/{id}/verify', function () {
         // Create a vote with invalid signature using a different poll
         $poll3 = Poll::factory()->create(['title' => 'Test Poll 3', 'status' => 'active']);
         $invalidVote = Vote::factory()->create([
-            'user_uuid' => $this->user->uuid,
-            'poll_id' => $poll3->id,
+            'user_uuid'        => $this->user->uuid,
+            'poll_id'          => $poll3->id,
             'selected_options' => ['option_1'],
-            'voting_power' => 100,
-            'signature' => 'invalid_signature'
+            'voting_power'     => 100,
+            'signature'        => 'invalid_signature',
         ]);
 
         Sanctum::actingAs($this->user);
@@ -282,7 +282,7 @@ describe('POST /api/votes/{id}/verify', function () {
         $response = $this->postJson("/api/votes/{$invalidVote->id}/verify");
 
         $response->assertStatus(200);
-        
+
         $data = $response->json();
         expect($data['verified'])->toBeFalse();
         expect($data['message'])->toContain('invalid');
@@ -301,7 +301,7 @@ describe('GET /api/votes/stats', function () {
                 'total_voting_power',
                 'recent_votes',
                 'avg_voting_power',
-                'participation_rate'
+                'participation_rate',
             ]);
 
         $data = $response->json();
@@ -320,7 +320,7 @@ describe('GET /api/votes/stats', function () {
         $response = $this->getJson('/api/votes/stats');
 
         $response->assertStatus(200);
-        
+
         $data = $response->json();
         expect($data['total_votes'])->toBe(0);
         expect($data['total_voting_power'])->toBe(0);
@@ -333,11 +333,11 @@ describe('GET /api/votes/stats', function () {
         // Create an old vote (older than 30 days) using a different poll
         $poll4 = Poll::factory()->create(['title' => 'Test Poll 4', 'status' => 'active']);
         Vote::factory()->create([
-            'user_uuid' => $this->user->uuid,
-            'poll_id' => $poll4->id,
+            'user_uuid'        => $this->user->uuid,
+            'poll_id'          => $poll4->id,
             'selected_options' => ['abstain'],
-            'voting_power' => 50,
-            'voted_at' => now()->subDays(35)
+            'voting_power'     => 50,
+            'voted_at'         => now()->subDays(35),
         ]);
 
         Sanctum::actingAs($this->user);
@@ -345,7 +345,7 @@ describe('GET /api/votes/stats', function () {
         $response = $this->getJson('/api/votes/stats');
 
         $response->assertStatus(200);
-        
+
         $data = $response->json();
         expect($data['total_votes'])->toBe(3); // All votes
         expect($data['recent_votes'])->toBe(2); // Only votes within last 30 days
@@ -364,7 +364,7 @@ describe('GET /api/votes/stats', function () {
         $response = $this->getJson('/api/votes/stats');
 
         $response->assertStatus(200);
-        
+
         $data = $response->json();
         // Should only count this user's 2 votes, not the other user's 1 vote
         expect($data['total_votes'])->toBe(2);
@@ -374,13 +374,13 @@ describe('GET /api/votes/stats', function () {
     it('calculates participation rate correctly with no polls', function () {
         // Delete all polls
         Poll::truncate();
-        
+
         Sanctum::actingAs($this->user);
 
         $response = $this->getJson('/api/votes/stats');
 
         $response->assertStatus(200);
-        
+
         $data = $response->json();
         expect($data['participation_rate'])->toBe(0);
     });
@@ -402,7 +402,7 @@ describe('Edge cases and security', function () {
         $response = $this->getJson('/api/votes');
 
         $response->assertStatus(200);
-        
+
         $data = $response->json('data');
         expect($data)->toHaveCount(0);
     });
@@ -414,7 +414,7 @@ describe('Edge cases and security', function () {
         $response = $this->getJson("/api/votes?poll_id={$this->poll1->id}");
 
         $response->assertStatus(200);
-        
+
         $data = $response->json('data');
         expect($data)->toHaveCount(1); // Only this user's vote, not the other user's vote
         expect($data[0]['user_uuid'])->toBe($this->user->uuid);

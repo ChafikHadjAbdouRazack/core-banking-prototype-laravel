@@ -2,13 +2,11 @@
 
 namespace App\Domain\Account\Aggregates;
 
-use App\Domain\Account\DataObjects\Hash;
 use App\Domain\Account\DataObjects\Money;
 use App\Domain\Account\Events\AccountLimitHit;
 use App\Domain\Account\Events\MoneyAdded;
 use App\Domain\Account\Events\MoneySubtracted;
 use App\Domain\Account\Events\TransactionThresholdReached;
-use App\Domain\Account\Exceptions\InvalidHashException;
 use App\Domain\Account\Exceptions\NotEnoughFunds;
 use App\Domain\Account\Repositories\TransactionRepository;
 use App\Domain\Account\Repositories\TransactionSnapshotRepository;
@@ -19,7 +17,7 @@ class TransactionAggregate extends AggregateRoot
 {
     use ValidatesHash;
 
-    protected const int ACCOUNT_LIMIT   = 0;
+    protected const int ACCOUNT_LIMIT = 0;
 
     public const int    COUNT_THRESHOLD = 1000;
 
@@ -55,7 +53,7 @@ class TransactionAggregate extends AggregateRoot
     }
 
     /**
-     * @param \App\Domain\Account\DataObjects\Money $money
+     * @param Money $money
      *
      * @return $this
      */
@@ -72,9 +70,9 @@ class TransactionAggregate extends AggregateRoot
     }
 
     /**
-     * @param \App\Domain\Account\Events\MoneyAdded $event
+     * @param MoneyAdded $event
      *
-     * @return \App\Domain\Account\Aggregates\TransactionAggregate
+     * @return TransactionAggregate
      */
     public function applyMoneyAdded(MoneyAdded $event): static
     {
@@ -98,13 +96,13 @@ class TransactionAggregate extends AggregateRoot
     }
 
     /**
-     * @param \App\Domain\Account\DataObjects\Money $money
+     * @param Money $money
      *
-     * @return \App\Domain\Account\Aggregates\TransactionAggregate
+     * @return TransactionAggregate
      */
     public function debit(Money $money): static
     {
-        if (!$this->hasSufficientFundsToSubtractAmount($money)) {
+        if (! $this->hasSufficientFundsToSubtractAmount($money)) {
             $this->recordThat(
                 new AccountLimitHit()
             );
@@ -125,9 +123,9 @@ class TransactionAggregate extends AggregateRoot
     }
 
     /**
-     * @param \App\Domain\Account\Events\MoneySubtracted $event
+     * @param MoneySubtracted $event
      *
-     * @return \App\Domain\Account\Aggregates\TransactionAggregate
+     * @return TransactionAggregate
      */
     public function applyMoneySubtracted(MoneySubtracted $event): static
     {
@@ -144,7 +142,7 @@ class TransactionAggregate extends AggregateRoot
     }
 
     /**
-     * @param \App\Domain\Account\DataObjects\Money $money
+     * @param Money $money
      *
      * @return bool
      */

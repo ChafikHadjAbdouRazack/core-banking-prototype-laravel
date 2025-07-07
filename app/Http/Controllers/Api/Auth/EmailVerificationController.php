@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Api\Auth;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Auth\Events\Verified;
 use App\Models\User;
+use Illuminate\Auth\Events\Verified;
+use Illuminate\Http\Request;
 
 class EmailVerificationController extends Controller
 {
@@ -63,11 +63,11 @@ class EmailVerificationController extends Controller
     {
         $user = User::findOrFail($id);
 
-        if (!hash_equals($hash, sha1($user->getEmailForVerification()))) {
+        if (! hash_equals($hash, sha1($user->getEmailForVerification()))) {
             return response()->json(['message' => 'Invalid verification link.'], 403);
         }
 
-        if (!$request->hasValidSignature()) {
+        if (! $request->hasValidSignature()) {
             return response()->json(['message' => 'Invalid or expired verification link.'], 403);
         }
 

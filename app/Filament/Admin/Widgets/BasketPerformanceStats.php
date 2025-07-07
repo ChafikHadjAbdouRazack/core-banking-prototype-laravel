@@ -4,7 +4,6 @@ namespace App\Filament\Admin\Widgets;
 
 use App\Domain\Basket\Services\BasketPerformanceService;
 use App\Models\BasketAsset;
-use App\Models\BasketPerformance;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Facades\Cache;
@@ -12,6 +11,7 @@ use Illuminate\Support\Facades\Cache;
 class BasketPerformanceStats extends BaseWidget
 {
     protected static ?string $pollingInterval = '60s';
+
     protected static ?int $sort = 2;
 
     protected function getStats(): array
@@ -20,7 +20,7 @@ class BasketPerformanceStats extends BaseWidget
             return BasketAsset::where('code', 'GCU')->first();
         });
 
-        if (!$gcuBasket) {
+        if (! $gcuBasket) {
             return [];
         }
 
@@ -95,7 +95,7 @@ class BasketPerformanceStats extends BaseWidget
     {
         $gcuBasket = BasketAsset::where('code', 'GCU')->first();
 
-        if (!$gcuBasket) {
+        if (! $gcuBasket) {
             return [];
         }
 

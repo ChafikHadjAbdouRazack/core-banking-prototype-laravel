@@ -9,12 +9,12 @@ use Laravel\Pennant\Feature;
 class SubProductService
 {
     /**
-     * Cache duration in seconds (5 minutes)
+     * Cache duration in seconds (5 minutes).
      */
     private const CACHE_TTL = 300;
 
     /**
-     * Check if a sub-product is enabled
+     * Check if a sub-product is enabled.
      */
     public function isEnabled(string $subProduct): bool
     {
@@ -42,12 +42,12 @@ class SubProductService
     }
 
     /**
-     * Check if a specific feature within a sub-product is enabled
+     * Check if a specific feature within a sub-product is enabled.
      */
     public function isFeatureEnabled(string $subProduct, string $feature): bool
     {
         // If sub-product is disabled, all features are disabled
-        if (!$this->isEnabled($subProduct)) {
+        if (! $this->isEnabled($subProduct)) {
             return false;
         }
 
@@ -75,7 +75,7 @@ class SubProductService
     }
 
     /**
-     * Get all enabled sub-products
+     * Get all enabled sub-products.
      */
     public function getEnabledSubProducts(): array
     {
@@ -86,7 +86,7 @@ class SubProductService
             foreach ($subProducts as $key => $config) {
                 if ($this->isEnabled($key)) {
                     $enabled[$key] = array_merge($config, [
-                        'key' => $key,
+                        'key'              => $key,
                         'enabled_features' => $this->getEnabledFeatures($key),
                     ]);
                 }
@@ -97,7 +97,7 @@ class SubProductService
     }
 
     /**
-     * Get all sub-products with their status
+     * Get all sub-products with their status.
      */
     public function getAllSubProducts(): array
     {
@@ -107,8 +107,8 @@ class SubProductService
         foreach ($subProducts as $key => $config) {
             $isEnabled = $this->isEnabled($key);
             $all[$key] = array_merge($config, [
-                'key' => $key,
-                'is_enabled' => $isEnabled,
+                'key'              => $key,
+                'is_enabled'       => $isEnabled,
                 'enabled_features' => $isEnabled ? $this->getEnabledFeatures($key) : [],
             ]);
         }
@@ -117,11 +117,11 @@ class SubProductService
     }
 
     /**
-     * Get enabled features for a sub-product
+     * Get enabled features for a sub-product.
      */
     public function getEnabledFeatures(string $subProduct): array
     {
-        if (!$this->isEnabled($subProduct)) {
+        if (! $this->isEnabled($subProduct)) {
             return [];
         }
 
@@ -138,7 +138,7 @@ class SubProductService
     }
 
     /**
-     * Enable a sub-product (requires admin permission)
+     * Enable a sub-product (requires admin permission).
      */
     public function enableSubProduct(string $subProduct, ?string $enabledBy = null): bool
     {
@@ -148,14 +148,14 @@ class SubProductService
 
             Log::info('Sub-product enabled', [
                 'sub_product' => $subProduct,
-                'enabled_by' => $enabledBy ?? 'system',
+                'enabled_by'  => $enabledBy ?? 'system',
             ]);
 
             return true;
         } catch (\Exception $e) {
             Log::error('Failed to enable sub-product', [
                 'sub_product' => $subProduct,
-                'error' => $e->getMessage(),
+                'error'       => $e->getMessage(),
             ]);
 
             return false;
@@ -163,7 +163,7 @@ class SubProductService
     }
 
     /**
-     * Disable a sub-product (requires admin permission)
+     * Disable a sub-product (requires admin permission).
      */
     public function disableSubProduct(string $subProduct, ?string $disabledBy = null): bool
     {
@@ -180,7 +180,7 @@ class SubProductService
         } catch (\Exception $e) {
             Log::error('Failed to disable sub-product', [
                 'sub_product' => $subProduct,
-                'error' => $e->getMessage(),
+                'error'       => $e->getMessage(),
             ]);
 
             return false;
@@ -188,7 +188,7 @@ class SubProductService
     }
 
     /**
-     * Enable a specific feature within a sub-product
+     * Enable a specific feature within a sub-product.
      */
     public function enableFeature(string $subProduct, string $feature, ?string $enabledBy = null): bool
     {
@@ -198,16 +198,16 @@ class SubProductService
 
             Log::info('Sub-product feature enabled', [
                 'sub_product' => $subProduct,
-                'feature' => $feature,
-                'enabled_by' => $enabledBy ?? 'system',
+                'feature'     => $feature,
+                'enabled_by'  => $enabledBy ?? 'system',
             ]);
 
             return true;
         } catch (\Exception $e) {
             Log::error('Failed to enable sub-product feature', [
                 'sub_product' => $subProduct,
-                'feature' => $feature,
-                'error' => $e->getMessage(),
+                'feature'     => $feature,
+                'error'       => $e->getMessage(),
             ]);
 
             return false;
@@ -215,7 +215,7 @@ class SubProductService
     }
 
     /**
-     * Disable a specific feature within a sub-product
+     * Disable a specific feature within a sub-product.
      */
     public function disableFeature(string $subProduct, string $feature, ?string $disabledBy = null): bool
     {
@@ -225,7 +225,7 @@ class SubProductService
 
             Log::info('Sub-product feature disabled', [
                 'sub_product' => $subProduct,
-                'feature' => $feature,
+                'feature'     => $feature,
                 'disabled_by' => $disabledBy ?? 'system',
             ]);
 
@@ -233,8 +233,8 @@ class SubProductService
         } catch (\Exception $e) {
             Log::error('Failed to disable sub-product feature', [
                 'sub_product' => $subProduct,
-                'feature' => $feature,
-                'error' => $e->getMessage(),
+                'feature'     => $feature,
+                'error'       => $e->getMessage(),
             ]);
 
             return false;
@@ -242,7 +242,7 @@ class SubProductService
     }
 
     /**
-     * Check if user has required licenses for a sub-product
+     * Check if user has required licenses for a sub-product.
      */
     public function hasRequiredLicenses(string $subProduct, array $userLicenses = []): bool
     {
@@ -252,11 +252,11 @@ class SubProductService
             return true;
         }
 
-        return !empty(array_intersect($requiredLicenses, $userLicenses));
+        return ! empty(array_intersect($requiredLicenses, $userLicenses));
     }
 
     /**
-     * Get sub-product configuration
+     * Get sub-product configuration.
      */
     public function getConfiguration(string $subProduct): array
     {
@@ -264,7 +264,7 @@ class SubProductService
     }
 
     /**
-     * Clear all sub-product related caches
+     * Clear all sub-product related caches.
      */
     public function clearCache(): void
     {
@@ -284,7 +284,7 @@ class SubProductService
     }
 
     /**
-     * Get sub-product status for API response
+     * Get sub-product status for API response.
      */
     public function getApiStatus(): array
     {
@@ -293,12 +293,12 @@ class SubProductService
 
         foreach ($subProducts as $key => $config) {
             $status[$key] = [
-                'enabled' => $config['is_enabled'],
-                'name' => $config['name'],
+                'enabled'     => $config['is_enabled'],
+                'name'        => $config['name'],
                 'description' => $config['description'],
-                'features' => array_map(function ($feature) use ($key) {
+                'features'    => array_map(function ($feature) use ($key) {
                     return [
-                        'key' => $feature,
+                        'key'     => $feature,
                         'enabled' => $this->isFeatureEnabled($key, $feature),
                     ];
                 }, array_keys($config['features'])),
@@ -309,16 +309,17 @@ class SubProductService
     }
 
     /**
-     * Get sub-product config
+     * Get sub-product config.
      */
     public function getSubProductConfig(string $subProduct): ?array
     {
         $config = config("sub_products.{$subProduct}");
+
         return $config ?: null;
     }
 
     /**
-     * Get features for sub-product
+     * Get features for sub-product.
      */
     public function getFeatures(string $subProduct): array
     {
@@ -326,7 +327,7 @@ class SubProductService
     }
 
     /**
-     * Get required licenses
+     * Get required licenses.
      */
     public function getRequiredLicenses(string $subProduct): array
     {
@@ -334,7 +335,7 @@ class SubProductService
     }
 
     /**
-     * Get metadata
+     * Get metadata.
      */
     public function getMetadata(string $subProduct): array
     {
@@ -342,11 +343,11 @@ class SubProductService
     }
 
     /**
-     * Validate sub-product access
+     * Validate sub-product access.
      */
     public function validateAccess(string $subProduct, array $context = []): bool
     {
-        if (!$this->isEnabled($subProduct)) {
+        if (! $this->isEnabled($subProduct)) {
             return false;
         }
 

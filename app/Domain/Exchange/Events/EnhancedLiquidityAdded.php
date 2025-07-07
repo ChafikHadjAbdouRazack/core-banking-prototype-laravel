@@ -21,21 +21,21 @@ final class EnhancedLiquidityAdded extends BasePoolEvent
 
         // Calculate and add detailed metrics
         $this->eventMetadata['liquidity_metrics'] = [
-            'provider_share_percentage' => $this->calculateSharePercentage(),
-            'price_impact' => $this->calculatePriceImpact(),
-            'tvl_change' => $this->calculateTvlChange(),
-            'is_first_provider' => BigDecimal::of($newTotalShares)->isEqualTo($sharesMinted),
+            'provider_share_percentage'   => $this->calculateSharePercentage(),
+            'price_impact'                => $this->calculatePriceImpact(),
+            'tvl_change'                  => $this->calculateTvlChange(),
+            'is_first_provider'           => BigDecimal::of($newTotalShares)->isEqualTo($sharesMinted),
             'provider_position_value_usd' => $metadata['position_value_usd'] ?? null,
-            'gas_used' => $metadata['gas_used'] ?? null,
-            'execution_time_ms' => $metadata['execution_time_ms'] ?? null,
+            'gas_used'                    => $metadata['gas_used'] ?? null,
+            'execution_time_ms'           => $metadata['execution_time_ms'] ?? null,
         ];
 
         // Add compliance metadata
         $this->eventMetadata['compliance'] = [
-            'kyc_verified' => $metadata['kyc_verified'] ?? false,
+            'kyc_verified'     => $metadata['kyc_verified'] ?? false,
             'aml_check_passed' => $metadata['aml_check_passed'] ?? true,
-            'jurisdiction' => $metadata['jurisdiction'] ?? null,
-            'source_of_funds' => $metadata['source_of_funds'] ?? 'unknown',
+            'jurisdiction'     => $metadata['jurisdiction'] ?? null,
+            'source_of_funds'  => $metadata['source_of_funds'] ?? 'unknown',
         ];
     }
 
@@ -71,8 +71,8 @@ final class EnhancedLiquidityAdded extends BasePoolEvent
     private function calculateTvlChange(): array
     {
         return [
-            'base_added' => $this->baseAmount,
-            'quote_added' => $this->quoteAmount,
+            'base_added'          => $this->baseAmount,
+            'quote_added'         => $this->quoteAmount,
             'estimated_usd_value' => $this->metadata['usd_value'] ?? null,
         ];
     }

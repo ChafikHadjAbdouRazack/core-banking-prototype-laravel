@@ -2,31 +2,31 @@
 
 namespace Tests\Feature\Http\Controllers\Api\V2;
 
-use Tests\TestCase;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use App\Models\User;
-use App\Models\BankConnectionModel;
-use App\Models\BankAccountModel;
-use App\Domain\Banking\Contracts\IBankIntegrationService;
 use App\Domain\Banking\Contracts\IBankConnector;
+use App\Domain\Banking\Contracts\IBankIntegrationService;
 use App\Domain\Banking\Models\BankCapabilities;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
 use Mockery;
+use Tests\TestCase;
 
 class BankIntegrationControllerTest extends TestCase
 {
     use RefreshDatabase;
 
     protected User $user;
+
     protected string $apiPrefix = '/api/v2';
+
     protected $mockBankService;
 
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->user = User::factory()->create();
-        
+
         // Mock the bank integration service
         $this->mockBankService = Mockery::mock(IBankIntegrationService::class);
         $this->app->instance(IBankIntegrationService::class, $this->mockBankService);
@@ -42,7 +42,7 @@ class BankIntegrationControllerTest extends TestCase
     public function it_lists_available_banks()
     {
         Sanctum::actingAs($this->user);
-        
+
         // Create mock connectors
         $capabilities1 = new BankCapabilities(
             supportedCurrencies: ['EUR', 'USD'],
@@ -64,7 +64,7 @@ class BankIntegrationControllerTest extends TestCase
             requiredDocuments: [],
             availableCountries: ['DE', 'FR', 'ES'],
         );
-        
+
         $capabilities2 = new BankCapabilities(
             supportedCurrencies: ['GBP', 'EUR', 'USD'],
             supportedTransferTypes: ['SWIFT', 'FASTER_PAYMENTS'],
@@ -85,27 +85,27 @@ class BankIntegrationControllerTest extends TestCase
             requiredDocuments: [],
             availableCountries: ['GB', 'US'],
         );
-        
+
         $mockConnector1 = Mockery::mock(IBankConnector::class);
         $mockConnector1->shouldReceive('getBankName')->andReturn('Deutsche Bank');
         $mockConnector1->shouldReceive('isAvailable')->andReturn(true);
         $mockConnector1->shouldReceive('getCapabilities')->andReturn($capabilities1);
-        
+
         $mockConnector2 = Mockery::mock(IBankConnector::class);
         $mockConnector2->shouldReceive('getBankName')->andReturn('HSBC');
         $mockConnector2->shouldReceive('isAvailable')->andReturn(true);
         $mockConnector2->shouldReceive('getCapabilities')->andReturn($capabilities2);
-        
+
         $connectors = collect([
             'deutsche_bank' => $mockConnector1,
-            'hsbc' => $mockConnector2,
+            'hsbc'          => $mockConnector2,
         ]);
-        
+
         $this->mockBankService
             ->shouldReceive('getAvailableConnectors')
             ->once()
             ->andReturn($connectors);
-        
+
         $response = $this->getJson("{$this->apiPrefix}/banks/available");
 
         $response->assertStatus(200);
@@ -132,7 +132,7 @@ class BankIntegrationControllerTest extends TestCase
     public function it_gets_user_bank_connections()
     {
         Sanctum::actingAs($this->user);
-        
+
         $connection1 = Mockery::mock();
         $connection1->id = 'conn_1';
         $connection1->bankCode = 'deutsche_bank';
@@ -143,7 +143,7 @@ class BankIntegrationControllerTest extends TestCase
         $connection1->createdAt = now()->subDays(30);
         $connection1->shouldReceive('isActive')->andReturn(true);
         $connection1->shouldReceive('needsRenewal')->andReturn(false);
-        
+
         $connection2 = Mockery::mock();
         $connection2->id = 'conn_2';
         $connection2->bankCode = 'hsbc';
@@ -154,15 +154,15 @@ class BankIntegrationControllerTest extends TestCase
         $connection2->createdAt = now()->subDays(90);
         $connection2->shouldReceive('isActive')->andReturn(false);
         $connection2->shouldReceive('needsRenewal')->andReturn(true);
-        
+
         $connections = collect([$connection1, $connection2]);
-        
+
         $this->mockBankService
             ->shouldReceive('getUserBankConnections')
             ->with($this->user)
             ->once()
             ->andReturn($connections);
-        
+
         $response = $this->getJson("{$this->apiPrefix}/banks/connections");
 
         $response->assertStatus(200);
@@ -188,24 +188,24 @@ class BankIntegrationControllerTest extends TestCase
     public function it_connects_to_a_bank()
     {
         Sanctum::actingAs($this->user);
-        
+
         $connectionData = [
-            'bank_code' => 'deutsche_bank',
+            'bank_code'             => 'deutsche_bank',
             'consent_duration_days' => 90,
         ];
-        
+
         $this->mockBankService
             ->shouldReceive('connectBank')
             ->with($this->user->uuid, 'deutsche_bank', Mockery::type('array'))
             ->once()
             ->andReturn([
-                'connection_id' => 'conn_123',
-                'bank_code' => 'deutsche_bank',
-                'bank_name' => 'Deutsche Bank',
-                'status' => 'pending',
+                'connection_id'     => 'conn_123',
+                'bank_code'         => 'deutsche_bank',
+                'bank_name'         => 'Deutsche Bank',
+                'status'            => 'pending',
                 'authorization_url' => 'https://deutsche-bank.com/auth?ref=123',
             ]);
-        
+
         $response = $this->postJson("{$this->apiPrefix}/banks/connect", $connectionData);
 
         $response->assertStatus(200);
@@ -224,15 +224,15 @@ class BankIntegrationControllerTest extends TestCase
     public function it_validates_bank_connection_request()
     {
         Sanctum::actingAs($this->user);
-        
+
         // Missing required fields
         $response = $this->postJson("{$this->apiPrefix}/banks/connect", []);
         $response->assertStatus(422);
         $response->assertJsonValidationErrors(['bank_code']);
-        
+
         // Invalid consent duration
         $response = $this->postJson("{$this->apiPrefix}/banks/connect", [
-            'bank_code' => 'deutsche_bank',
+            'bank_code'             => 'deutsche_bank',
             'consent_duration_days' => 'invalid',
         ]);
         $response->assertStatus(422);
@@ -243,13 +243,13 @@ class BankIntegrationControllerTest extends TestCase
     public function it_disconnects_from_a_bank()
     {
         Sanctum::actingAs($this->user);
-        
+
         $this->mockBankService
             ->shouldReceive('disconnectBank')
             ->with($this->user->uuid, 'deutsche_bank')
             ->once()
             ->andReturn(true);
-        
+
         $response = $this->deleteJson("{$this->apiPrefix}/banks/disconnect/deutsche_bank");
 
         $response->assertStatus(200);
@@ -262,38 +262,38 @@ class BankIntegrationControllerTest extends TestCase
     public function it_gets_bank_accounts()
     {
         Sanctum::actingAs($this->user);
-        
+
         $accounts = collect([
             [
-                'id' => 'acc_1',
-                'bank_code' => 'deutsche_bank',
-                'bank_name' => 'Deutsche Bank',
-                'account_name' => 'Main Checking',
-                'iban' => 'DE89370400440532013000',
-                'currency' => 'EUR',
-                'balance' => 150000,
+                'id'                => 'acc_1',
+                'bank_code'         => 'deutsche_bank',
+                'bank_name'         => 'Deutsche Bank',
+                'account_name'      => 'Main Checking',
+                'iban'              => 'DE89370400440532013000',
+                'currency'          => 'EUR',
+                'balance'           => 150000,
                 'available_balance' => 145000,
-                'status' => 'active',
+                'status'            => 'active',
             ],
             [
-                'id' => 'acc_2',
-                'bank_code' => 'hsbc',
-                'bank_name' => 'HSBC',
-                'account_name' => 'Business Account',
-                'iban' => 'GB29NWBK60161331926819',
-                'currency' => 'GBP',
-                'balance' => 250000,
+                'id'                => 'acc_2',
+                'bank_code'         => 'hsbc',
+                'bank_name'         => 'HSBC',
+                'account_name'      => 'Business Account',
+                'iban'              => 'GB29NWBK60161331926819',
+                'currency'          => 'GBP',
+                'balance'           => 250000,
                 'available_balance' => 250000,
-                'status' => 'active',
+                'status'            => 'active',
             ],
         ]);
-        
+
         $this->mockBankService
             ->shouldReceive('getBankAccounts')
             ->with($this->user->uuid)
             ->once()
             ->andReturn($accounts);
-        
+
         $response = $this->getJson("{$this->apiPrefix}/banks/accounts");
 
         $response->assertStatus(200);
@@ -319,18 +319,18 @@ class BankIntegrationControllerTest extends TestCase
     public function it_syncs_bank_accounts()
     {
         Sanctum::actingAs($this->user);
-        
+
         $this->mockBankService
             ->shouldReceive('syncBankAccounts')
             ->with($this->user->uuid, 'deutsche_bank')
             ->once()
             ->andReturn([
-                'synced_accounts' => 3,
-                'new_accounts' => 1,
+                'synced_accounts'  => 3,
+                'new_accounts'     => 1,
                 'updated_accounts' => 2,
-                'sync_timestamp' => now()->toISOString(),
+                'sync_timestamp'   => now()->toISOString(),
             ]);
-        
+
         $response = $this->postJson("{$this->apiPrefix}/banks/accounts/sync/deutsche_bank");
 
         $response->assertStatus(200);
@@ -348,24 +348,24 @@ class BankIntegrationControllerTest extends TestCase
     public function it_gets_aggregated_balance()
     {
         Sanctum::actingAs($this->user);
-        
+
         $balanceData = [
-            'total_balance_eur' => 375000,
+            'total_balance_eur'    => 375000,
             'balances_by_currency' => [
                 ['currency' => 'EUR', 'balance' => 150000],
                 ['currency' => 'GBP', 'balance' => 250000],
                 ['currency' => 'USD', 'balance' => 50000],
             ],
             'accounts_count' => 5,
-            'last_sync' => now()->toISOString(),
+            'last_sync'      => now()->toISOString(),
         ];
-        
+
         $this->mockBankService
             ->shouldReceive('getAggregatedBalance')
             ->with($this->user->uuid)
             ->once()
             ->andReturn($balanceData);
-        
+
         $response = $this->getJson("{$this->apiPrefix}/banks/balance/aggregate");
 
         $response->assertStatus(200);
@@ -383,29 +383,29 @@ class BankIntegrationControllerTest extends TestCase
     public function it_initiates_bank_transfer()
     {
         Sanctum::actingAs($this->user);
-        
+
         $transferData = [
             'source_account_id' => 'acc_123',
-            'beneficiary_name' => 'John Doe',
-            'beneficiary_iban' => 'DE89370400440532013001',
-            'amount' => 10000,
-            'currency' => 'EUR',
-            'reference' => 'Invoice payment #123',
-            'transfer_type' => 'SEPA',
+            'beneficiary_name'  => 'John Doe',
+            'beneficiary_iban'  => 'DE89370400440532013001',
+            'amount'            => 10000,
+            'currency'          => 'EUR',
+            'reference'         => 'Invoice payment #123',
+            'transfer_type'     => 'SEPA',
         ];
-        
+
         $this->mockBankService
             ->shouldReceive('initiateTransfer')
             ->with($this->user->uuid, Mockery::type('array'))
             ->once()
             ->andReturn([
-                'transfer_id' => 'txn_123',
-                'status' => 'pending',
+                'transfer_id'       => 'txn_123',
+                'status'            => 'pending',
                 'estimated_arrival' => now()->addDays(1)->toISOString(),
-                'fees' => 150,
-                'exchange_rate' => null,
+                'fees'              => 150,
+                'exchange_rate'     => null,
             ]);
-        
+
         $response = $this->postJson("{$this->apiPrefix}/banks/transfer", $transferData);
 
         $response->assertStatus(200);
@@ -423,7 +423,7 @@ class BankIntegrationControllerTest extends TestCase
     public function it_validates_transfer_request()
     {
         Sanctum::actingAs($this->user);
-        
+
         // Missing required fields
         $response = $this->postJson("{$this->apiPrefix}/banks/transfer", []);
         $response->assertStatus(422);
@@ -434,14 +434,14 @@ class BankIntegrationControllerTest extends TestCase
             'amount',
             'currency',
         ]);
-        
+
         // Invalid amount
         $response = $this->postJson("{$this->apiPrefix}/banks/transfer", [
             'source_account_id' => 'acc_123',
-            'beneficiary_name' => 'John Doe',
-            'beneficiary_iban' => 'DE89370400440532013001',
-            'amount' => -100,
-            'currency' => 'EUR',
+            'beneficiary_name'  => 'John Doe',
+            'beneficiary_iban'  => 'DE89370400440532013001',
+            'amount'            => -100,
+            'currency'          => 'EUR',
         ]);
         $response->assertStatus(422);
         $response->assertJsonValidationErrors(['amount']);
@@ -451,18 +451,18 @@ class BankIntegrationControllerTest extends TestCase
     public function it_checks_bank_connector_health()
     {
         Sanctum::actingAs($this->user);
-        
+
         $this->mockBankService
             ->shouldReceive('checkBankHealth')
             ->with('deutsche_bank')
             ->once()
             ->andReturn([
-                'status' => 'operational',
+                'status'           => 'operational',
                 'response_time_ms' => 145,
-                'last_check' => now()->toISOString(),
-                'issues' => [],
+                'last_check'       => now()->toISOString(),
+                'issues'           => [],
             ]);
-        
+
         $response = $this->getJson("{$this->apiPrefix}/banks/health/deutsche_bank");
 
         $response->assertStatus(200);
@@ -480,13 +480,13 @@ class BankIntegrationControllerTest extends TestCase
     public function it_gets_recommended_banks()
     {
         Sanctum::actingAs($this->user);
-        
+
         $recommendations = collect([
             [
                 'bank_code' => 'revolut',
                 'bank_name' => 'Revolut',
-                'score' => 95,
-                'reasons' => [
+                'score'     => 95,
+                'reasons'   => [
                     'Multi-currency support',
                     'Low fees',
                     'Instant transfers',
@@ -495,20 +495,20 @@ class BankIntegrationControllerTest extends TestCase
             [
                 'bank_code' => 'wise',
                 'bank_name' => 'Wise',
-                'score' => 90,
-                'reasons' => [
+                'score'     => 90,
+                'reasons'   => [
                     'Excellent exchange rates',
                     'International transfers',
                 ],
             ],
         ]);
-        
+
         $this->mockBankService
             ->shouldReceive('getRecommendedBanks')
             ->with($this->user->uuid, Mockery::type('array'))
             ->once()
             ->andReturn($recommendations);
-        
+
         $response = $this->getJson("{$this->apiPrefix}/banks/recommendations?country=DE&needs[]=multi_currency");
 
         $response->assertStatus(200);
@@ -529,10 +529,10 @@ class BankIntegrationControllerTest extends TestCase
     {
         $response = $this->getJson("{$this->apiPrefix}/banks/available");
         $response->assertStatus(401);
-        
+
         $response = $this->postJson("{$this->apiPrefix}/banks/connect", []);
         $response->assertStatus(401);
-        
+
         $response = $this->getJson("{$this->apiPrefix}/banks/accounts");
         $response->assertStatus(401);
     }
@@ -541,12 +541,12 @@ class BankIntegrationControllerTest extends TestCase
     public function it_handles_bank_service_failures()
     {
         Sanctum::actingAs($this->user);
-        
+
         $this->mockBankService
             ->shouldReceive('getAvailableConnectors')
             ->once()
             ->andThrow(new \Exception('Service temporarily unavailable'));
-        
+
         $response = $this->getJson("{$this->apiPrefix}/banks/available");
 
         $response->assertStatus(500);

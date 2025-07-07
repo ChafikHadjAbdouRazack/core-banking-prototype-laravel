@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class () extends Migration {
     public function up()
     {
         Schema::create('gcu_voting_proposals', function (Blueprint $table) {
@@ -28,7 +27,7 @@ return new class extends Migration
             $table->dateTime('implemented_at')->nullable();
             $table->json('implementation_details')->nullable();
             $table->timestamps();
-            
+
             $table->index(['status', 'voting_starts_at']);
             $table->index(['status', 'voting_ends_at']);
         });

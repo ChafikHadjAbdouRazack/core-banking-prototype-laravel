@@ -2,8 +2,8 @@
 
 namespace App\Domain\Asset\Events;
 
-use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 use Carbon\Carbon;
+use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 
 class BasketValueCalculated extends ShouldBeStored
 {

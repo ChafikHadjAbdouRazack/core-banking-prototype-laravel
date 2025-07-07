@@ -47,8 +47,8 @@ class ReconciliationReport extends Mailable implements ShouldQueue
         return new Content(
             markdown: 'emails.reconciliation-report',
             with: [
-                'summary' => $this->summary,
-                'discrepancies' => $this->discrepancies,
+                'summary'          => $this->summary,
+                'discrepancies'    => $this->discrepancies,
                 'hasDiscrepancies' => $this->summary['discrepancies_found'] > 0,
             ],
         );

@@ -66,22 +66,24 @@ class RebalancePoolsCommand extends Command
             return Command::SUCCESS;
         } catch (\Exception $e) {
             $this->error('Failed to rebalance pools: ' . $e->getMessage());
+
             return Command::FAILURE;
         }
     }
 
     /**
-     * Display rebalancing result for a pool
+     * Display rebalancing result for a pool.
      */
     private function displayRebalancingResult($pool, array $result): void
     {
         $this->info("\nPool: {$pool->base_currency}/{$pool->quote_currency}");
 
-        if (!$result['needs_rebalancing']) {
+        if (! $result['needs_rebalancing']) {
             $this->info('Status: No rebalancing needed');
             if (isset($result['reason'])) {
                 $this->info('Reason: ' . $result['reason']);
             }
+
             return;
         }
 

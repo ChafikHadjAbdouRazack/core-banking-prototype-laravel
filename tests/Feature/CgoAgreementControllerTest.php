@@ -3,13 +3,12 @@
 namespace Tests\Feature;
 
 use App\Models\CgoInvestment;
-use App\Models\CgoPricingRound;
 use App\Models\User;
 use App\Services\Cgo\InvestmentAgreementService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Storage;
-use Tests\TestCase;
 use Mockery;
+use Tests\TestCase;
 
 class CgoAgreementControllerTest extends TestCase
 {
@@ -24,9 +23,9 @@ class CgoAgreementControllerTest extends TestCase
     public function test_generate_agreement_requires_authentication()
     {
         $investment = CgoInvestment::factory()->create();
-        
+
         $response = $this->postJson(route('cgo.agreement.generate', $investment->uuid));
-        
+
         $response->assertUnauthorized();
     }
 
@@ -35,21 +34,21 @@ class CgoAgreementControllerTest extends TestCase
         $user = User::factory()->create();
         $investment = CgoInvestment::factory()->create([
             'user_id' => $user->id,
-            'status' => 'confirmed',
+            'status'  => 'confirmed',
         ]);
-        
+
         // Mock the service
         $serviceMock = Mockery::mock(InvestmentAgreementService::class);
         $serviceMock->shouldReceive('generateAgreement')
             ->once()
             ->with(Mockery::type(CgoInvestment::class))
             ->andReturn('cgo/agreements/test.pdf');
-        
+
         $this->app->instance(InvestmentAgreementService::class, $serviceMock);
-        
+
         $response = $this->actingAs($user)
             ->postJson(route('cgo.agreement.generate', $investment->uuid));
-        
+
         $response->assertOk()
             ->assertJson([
                 'success' => true,
@@ -62,16 +61,16 @@ class CgoAgreementControllerTest extends TestCase
     {
         $user = User::factory()->create();
         $investment = CgoInvestment::factory()->create([
-            'user_id' => $user->id,
+            'user_id'        => $user->id,
             'agreement_path' => 'cgo/agreements/existing.pdf',
         ]);
-        
+
         // Create fake file
         Storage::put('cgo/agreements/existing.pdf', 'existing content');
-        
+
         $response = $this->actingAs($user)
             ->postJson(route('cgo.agreement.generate', $investment->uuid));
-        
+
         // For JSON requests, should return success with download URL
         $response->assertOk()
             ->assertJson([
@@ -85,15 +84,15 @@ class CgoAgreementControllerTest extends TestCase
     {
         $user = User::factory()->create();
         $otherUser = User::factory()->create();
-        
+
         $investment = CgoInvestment::factory()->create([
-            'user_id' => $otherUser->id,
+            'user_id'        => $otherUser->id,
             'agreement_path' => 'cgo/agreements/test.pdf',
         ]);
-        
+
         $response = $this->actingAs($user)
             ->get(route('cgo.agreement.download', $investment->uuid));
-        
+
         $response->assertNotFound();
     }
 
@@ -101,16 +100,16 @@ class CgoAgreementControllerTest extends TestCase
     {
         $user = User::factory()->create();
         $investment = CgoInvestment::factory()->create([
-            'user_id' => $user->id,
+            'user_id'        => $user->id,
             'agreement_path' => 'cgo/agreements/test.pdf',
         ]);
-        
+
         // Create fake file
         Storage::put('cgo/agreements/test.pdf', 'pdf content');
-        
+
         $response = $this->actingAs($user)
             ->get(route('cgo.agreement.download', $investment->uuid));
-        
+
         $response->assertOk()
             ->assertHeader('content-type', 'application/pdf')
             ->assertHeader('content-disposition', 'attachment; filename=Investment_Agreement_' . $investment->uuid . '.pdf');
@@ -121,12 +120,12 @@ class CgoAgreementControllerTest extends TestCase
         $user = User::factory()->create();
         $investment = CgoInvestment::factory()->create([
             'user_id' => $user->id,
-            'status' => 'pending',
+            'status'  => 'pending',
         ]);
-        
+
         $response = $this->actingAs($user)
             ->postJson(route('cgo.certificate.generate', $investment->uuid));
-        
+
         $response->assertStatus(400)
             ->assertJson([
                 'success' => false,
@@ -139,21 +138,21 @@ class CgoAgreementControllerTest extends TestCase
         $user = User::factory()->create();
         $investment = CgoInvestment::factory()->create([
             'user_id' => $user->id,
-            'status' => 'confirmed',
+            'status'  => 'confirmed',
         ]);
-        
+
         // Mock the service
         $serviceMock = Mockery::mock(InvestmentAgreementService::class);
         $serviceMock->shouldReceive('generateCertificate')
             ->once()
             ->with(Mockery::type(CgoInvestment::class))
             ->andReturn('cgo/certificates/test.pdf');
-        
+
         $this->app->instance(InvestmentAgreementService::class, $serviceMock);
-        
+
         $response = $this->actingAs($user)
             ->postJson(route('cgo.certificate.generate', $investment->uuid));
-        
+
         $response->assertOk()
             ->assertJson([
                 'success' => true,
@@ -168,12 +167,12 @@ class CgoAgreementControllerTest extends TestCase
         $investment = CgoInvestment::factory()->create([
             'user_id' => $user->id,
         ]);
-        
+
         $response = $this->actingAs($user)
             ->postJson(route('cgo.agreement.sign', $investment->uuid), [
                 'signature_data' => 'base64_encoded_signature',
             ]);
-        
+
         $response->assertStatus(400)
             ->assertJson([
                 'success' => false,
@@ -185,21 +184,21 @@ class CgoAgreementControllerTest extends TestCase
     {
         $user = User::factory()->create();
         $investment = CgoInvestment::factory()->create([
-            'user_id' => $user->id,
+            'user_id'                => $user->id,
             'agreement_generated_at' => now()->subHour(),
         ]);
-        
+
         $response = $this->actingAs($user)
             ->postJson(route('cgo.agreement.sign', $investment->uuid), [
                 'signature_data' => 'base64_encoded_signature',
             ]);
-        
+
         $response->assertOk()
             ->assertJson([
                 'success' => true,
                 'message' => 'Agreement marked as signed',
             ]);
-        
+
         $investment->refresh();
         $this->assertNotNull($investment->agreement_signed_at);
         $this->assertEquals('base64_encoded_signature', $investment->metadata['signature_data']);
@@ -211,12 +210,12 @@ class CgoAgreementControllerTest extends TestCase
         $investment = CgoInvestment::factory()->create([
             'agreement_path' => 'cgo/agreements/test.pdf',
         ]);
-        
+
         Storage::put('cgo/agreements/test.pdf', 'pdf content');
-        
+
         $response = $this->actingAs($user)
             ->get(route('cgo.agreement.preview', $investment->uuid));
-        
+
         $response->assertForbidden();
     }
 
@@ -224,16 +223,16 @@ class CgoAgreementControllerTest extends TestCase
     {
         $admin = User::factory()->create();
         $admin->assignRole('super_admin');
-        
+
         $investment = CgoInvestment::factory()->create([
             'agreement_path' => 'cgo/agreements/test.pdf',
         ]);
-        
+
         Storage::put('cgo/agreements/test.pdf', 'pdf content');
-        
+
         $response = $this->actingAs($admin)
             ->get(route('cgo.agreement.preview', $investment->uuid));
-        
+
         $response->assertOk()
             ->assertHeader('content-type', 'application/pdf')
             ->assertHeader('content-disposition', 'inline; filename="agreement_preview.pdf"');

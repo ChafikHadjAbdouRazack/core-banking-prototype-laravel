@@ -40,22 +40,22 @@ class Loan extends Model
     ];
 
     protected $casts = [
-        'repayment_schedule' => 'array',
-        'terms' => 'array',
-        'investor_ids' => 'array',
-        'principal' => 'decimal:2',
-        'interest_rate' => 'decimal:2',
-        'funded_amount' => 'decimal:2',
-        'disbursed_amount' => 'decimal:2',
+        'repayment_schedule'   => 'array',
+        'terms'                => 'array',
+        'investor_ids'         => 'array',
+        'principal'            => 'decimal:2',
+        'interest_rate'        => 'decimal:2',
+        'funded_amount'        => 'decimal:2',
+        'disbursed_amount'     => 'decimal:2',
         'total_principal_paid' => 'decimal:2',
-        'total_interest_paid' => 'decimal:2',
-        'settlement_amount' => 'decimal:2',
-        'funded_at' => 'datetime',
-        'disbursed_at' => 'datetime',
-        'last_payment_date' => 'datetime',
-        'settled_at' => 'datetime',
-        'defaulted_at' => 'datetime',
-        'completed_at' => 'datetime',
+        'total_interest_paid'  => 'decimal:2',
+        'settlement_amount'    => 'decimal:2',
+        'funded_at'            => 'datetime',
+        'disbursed_at'         => 'datetime',
+        'last_payment_date'    => 'datetime',
+        'settled_at'           => 'datetime',
+        'defaulted_at'         => 'datetime',
+        'completed_at'         => 'datetime',
     ];
 
     public function application(): BelongsTo

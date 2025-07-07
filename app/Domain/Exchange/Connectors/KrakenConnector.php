@@ -81,8 +81,8 @@ class KrakenConnector implements IExternalExchangeConnector
                     amountPrecision: $pair['lot_decimals'],
                     isActive: true,
                     metadata: [
-                        'pair' => $pairName,
-                        'altname' => $pair['altname'],
+                        'pair'                => $pairName,
+                        'altname'             => $pair['altname'],
                         'fee_volume_currency' => $pair['fee_volume_currency'] ?? null,
                     ]
                 ));
@@ -122,7 +122,7 @@ class KrakenConnector implements IExternalExchangeConnector
             timestamp: new \DateTimeImmutable(),
             exchange: $this->getName(),
             metadata: [
-                'pair' => $pair,
+                'pair'       => $pair,
                 'trades_24h' => $tickerData['t'][1], // 24h trade count
             ]
         );
@@ -132,7 +132,7 @@ class KrakenConnector implements IExternalExchangeConnector
     {
         $pair = $this->formatPair($baseCurrency, $quoteCurrency);
         $response = Http::get($this->getPublicUrl('Depth'), [
-            'pair' => $pair,
+            'pair'  => $pair,
             'count' => $depth,
         ]);
 
@@ -152,11 +152,11 @@ class KrakenConnector implements IExternalExchangeConnector
             baseCurrency: $baseCurrency,
             quoteCurrency: $quoteCurrency,
             bids: collect($bookData['bids'])->map(fn ($bid) => [
-                'price' => BigDecimal::of($bid[0]),
+                'price'  => BigDecimal::of($bid[0]),
                 'amount' => BigDecimal::of($bid[1]),
             ]),
             asks: collect($bookData['asks'])->map(fn ($ask) => [
-                'price' => BigDecimal::of($ask[0]),
+                'price'  => BigDecimal::of($ask[0]),
                 'amount' => BigDecimal::of($ask[1]),
             ]),
             timestamp: new \DateTimeImmutable('@' . $bid[2]),
@@ -194,7 +194,7 @@ class KrakenConnector implements IExternalExchangeConnector
                 timestamp: new \DateTimeImmutable('@' . $trade[2]),
                 exchange: $this->getName(),
                 metadata: [
-                    'pair' => $pair,
+                    'pair'       => $pair,
                     'order_type' => $trade[4] === 'm' ? 'market' : 'limit',
                 ]
             ));
@@ -219,10 +219,10 @@ class KrakenConnector implements IExternalExchangeConnector
         $pair = $this->formatPair($baseCurrency, $quoteCurrency);
 
         $params = [
-            'pair' => $pair,
-            'type' => $type,
+            'pair'      => $pair,
+            'type'      => $type,
             'ordertype' => $price ? 'limit' : 'market',
-            'volume' => $amount,
+            'volume'    => $amount,
         ];
 
         if ($price) {
@@ -283,9 +283,9 @@ class KrakenConnector implements IExternalExchangeConnector
         return collect($response['result'])
             ->mapWithKeys(fn ($balance, $asset) => [
                 $this->normalizeAsset($asset) => [
-                    'free' => $balance,
+                    'free'   => $balance,
                     'locked' => '0', // Kraken doesn't separate locked balance
-                    'total' => $balance,
+                    'total'  => $balance,
                 ],
             ])
             ->toArray();
@@ -294,8 +294,8 @@ class KrakenConnector implements IExternalExchangeConnector
     public function getFees(): array
     {
         return [
-            'maker' => '0.0016', // 0.16%
-            'taker' => '0.0026', // 0.26%
+            'maker'           => '0.0016', // 0.16%
+            'taker'           => '0.0026', // 0.26%
             'volume_discount' => true,
         ];
     }
@@ -377,7 +377,7 @@ class KrakenConnector implements IExternalExchangeConnector
         ));
 
         $response = Http::withHeaders([
-            'API-Key' => $this->apiKey,
+            'API-Key'  => $this->apiKey,
             'API-Sign' => $sign,
         ])->asForm()->post($url, $params);
 

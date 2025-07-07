@@ -6,9 +6,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Domain\Account\DataObjects\AccountUuid;
 use App\Domain\Account\DataObjects\Money;
-use App\Domain\Payment\Workflows\TransferWorkflow;
-use App\Domain\Wallet\Workflows\WalletTransferWorkflow;
 use App\Domain\Asset\Models\Asset;
+use App\Domain\Wallet\Workflows\WalletTransferWorkflow;
 use App\Http\Controllers\Controller;
 use App\Models\Account;
 use App\Models\Transfer;
@@ -62,25 +61,25 @@ class TransferController extends Controller
     {
         $validated = $request->validate([
             'from_account_uuid' => 'sometimes|uuid|exists:accounts,uuid',
-            'to_account_uuid' => 'sometimes|uuid|exists:accounts,uuid|different:from_account_uuid',
-            'from_account' => 'sometimes|uuid|exists:accounts,uuid',
-            'to_account' => 'sometimes|uuid|exists:accounts,uuid|different:from_account',
-            'amount' => 'required|numeric|min:0.01',
-            'asset_code' => 'required|string|exists:assets,code',
-            'reference' => 'sometimes|string|max:255',
-            'description' => 'sometimes|string|max:255',
+            'to_account_uuid'   => 'sometimes|uuid|exists:accounts,uuid|different:from_account_uuid',
+            'from_account'      => 'sometimes|uuid|exists:accounts,uuid',
+            'to_account'        => 'sometimes|uuid|exists:accounts,uuid|different:from_account',
+            'amount'            => 'required|numeric|min:0.01',
+            'asset_code'        => 'required|string|exists:assets,code',
+            'reference'         => 'sometimes|string|max:255',
+            'description'       => 'sometimes|string|max:255',
         ]);
 
         // Support both field name formats for backward compatibility
         $fromAccountUuid = $validated['from_account_uuid'] ?? $validated['from_account'];
         $toAccountUuid = $validated['to_account_uuid'] ?? $validated['to_account'];
 
-        if (!$fromAccountUuid || !$toAccountUuid) {
+        if (! $fromAccountUuid || ! $toAccountUuid) {
             return response()->json([
                 'message' => 'Both from and to account UUIDs are required',
-                'errors' => [
+                'errors'  => [
                     'from_account_uuid' => $fromAccountUuid ? [] : ['The from account uuid field is required.'],
-                    'to_account_uuid' => $toAccountUuid ? [] : ['The to account uuid field is required.'],
+                    'to_account_uuid'   => $toAccountUuid ? [] : ['The to account uuid field is required.'],
                 ],
             ], 422);
         }
@@ -91,14 +90,14 @@ class TransferController extends Controller
         if ($fromAccount && $fromAccount->frozen) {
             return response()->json([
                 'message' => 'Cannot transfer from frozen account',
-                'error' => 'SOURCE_ACCOUNT_FROZEN',
+                'error'   => 'SOURCE_ACCOUNT_FROZEN',
             ], 422);
         }
 
         if ($toAccount && $toAccount->frozen) {
             return response()->json([
                 'message' => 'Cannot transfer to frozen account',
-                'error' => 'DESTINATION_ACCOUNT_FROZEN',
+                'error'   => 'DESTINATION_ACCOUNT_FROZEN',
             ], 422);
         }
 
@@ -110,9 +109,9 @@ class TransferController extends Controller
 
         if ($fromBalance < $amountInMinorUnits) {
             return response()->json([
-                'message' => 'Insufficient funds',
-                'error' => 'INSUFFICIENT_FUNDS',
-                'current_balance' => $fromBalance,
+                'message'          => 'Insufficient funds',
+                'error'            => 'INSUFFICIENT_FUNDS',
+                'current_balance'  => $fromBalance,
                 'requested_amount' => $amountInMinorUnits,
             ], 422);
         }
@@ -127,7 +126,7 @@ class TransferController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Transfer failed',
-                'error' => 'TRANSFER_FAILED',
+                'error'   => 'TRANSFER_FAILED',
             ], 422);
         }
 
@@ -137,21 +136,21 @@ class TransferController extends Controller
 
         return response()->json([
             'data' => [
-                'uuid' => $transferUuid,
-                'status' => 'pending',
+                'uuid'         => $transferUuid,
+                'status'       => 'pending',
                 'from_account' => $fromAccountUuid,
-                'to_account' => $toAccountUuid,
-                'amount' => $validated['amount'],
-                'asset_code' => $validated['asset_code'],
-                'reference' => $validated['reference'] ?? $validated['description'] ?? null,
-                'created_at' => now()->toISOString(),
+                'to_account'   => $toAccountUuid,
+                'amount'       => $validated['amount'],
+                'asset_code'   => $validated['asset_code'],
+                'reference'    => $validated['reference'] ?? $validated['description'] ?? null,
+                'created_at'   => now()->toISOString(),
             ],
             'message' => 'Transfer initiated successfully',
         ], 201);
     }
 
     /**
-     * Get transfer details
+     * Get transfer details.
      */
     public function show(string $uuid): JsonResponse
     {
@@ -161,7 +160,7 @@ class TransferController extends Controller
             ->where('aggregate_uuid', $uuid)
             ->first();
 
-        if (!$event) {
+        if (! $event) {
             abort(404, 'Transfer not found');
         }
 
@@ -169,19 +168,19 @@ class TransferController extends Controller
 
         return response()->json([
             'data' => [
-                'uuid' => $uuid,
+                'uuid'              => $uuid,
                 'from_account_uuid' => $properties['from_uuid'] ?? null,
-                'to_account_uuid' => $properties['to_uuid'] ?? null,
-                'amount' => $properties['money']['amount'] ?? 0,
-                'hash' => $properties['hash']['hash'] ?? null,
-                'created_at' => $event->created_at,
-                'updated_at' => $event->created_at,
+                'to_account_uuid'   => $properties['to_uuid'] ?? null,
+                'amount'            => $properties['money']['amount'] ?? 0,
+                'hash'              => $properties['hash']['hash'] ?? null,
+                'created_at'        => $event->created_at,
+                'updated_at'        => $event->created_at,
             ],
         ]);
     }
 
     /**
-     * Get transfer history for an account
+     * Get transfer history for an account.
      */
     public function history(string $accountUuid): JsonResponse
     {
@@ -203,12 +202,12 @@ class TransferController extends Controller
             $properties = json_decode($event->event_properties, true);
 
             return [
-                'uuid' => $event->aggregate_uuid,
+                'uuid'              => $event->aggregate_uuid,
                 'from_account_uuid' => $properties['from_uuid'] ?? $event->aggregate_uuid,
-                'to_account_uuid' => $properties['to_uuid'] ?? null,
-                'amount' => $properties['money']['amount'] ?? 0,
-                'direction' => ($properties['from_uuid'] ?? $event->aggregate_uuid) === $accountUuid ? 'outgoing' : 'incoming',
-                'created_at' => $event->created_at,
+                'to_account_uuid'   => $properties['to_uuid'] ?? null,
+                'amount'            => $properties['money']['amount'] ?? 0,
+                'direction'         => ($properties['from_uuid'] ?? $event->aggregate_uuid) === $accountUuid ? 'outgoing' : 'incoming',
+                'created_at'        => $event->created_at,
             ];
         });
 
@@ -216,9 +215,9 @@ class TransferController extends Controller
             'data' => $transfers,
             'meta' => [
                 'current_page' => $events->currentPage(),
-                'last_page' => $events->lastPage(),
-                'per_page' => $events->perPage(),
-                'total' => $events->total(),
+                'last_page'    => $events->lastPage(),
+                'per_page'     => $events->perPage(),
+                'total'        => $events->total(),
             ],
         ]);
     }

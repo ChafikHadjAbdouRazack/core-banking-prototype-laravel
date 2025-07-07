@@ -2,20 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
-use App\Models\Account;
-use App\Models\AccountBalance;
-use App\Models\TransactionProjection;
 use App\Domain\Asset\Models\Asset;
+use App\Models\TransactionProjection;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class AssetManagementController extends Controller
 {
     /**
-     * Display asset management dashboard
+     * Display asset management dashboard.
      */
     public function index(Request $request)
     {
@@ -50,7 +48,7 @@ class AssetManagementController extends Controller
     }
 
     /**
-     * Show asset details
+     * Show asset details.
      */
     public function show(Asset $asset)
     {
@@ -78,7 +76,7 @@ class AssetManagementController extends Controller
     }
 
     /**
-     * Show portfolio analytics
+     * Show portfolio analytics.
      */
     public function analytics(Request $request)
     {
@@ -107,7 +105,7 @@ class AssetManagementController extends Controller
     }
 
     /**
-     * Export portfolio report
+     * Export portfolio report.
      */
     public function export(Request $request)
     {
@@ -127,7 +125,7 @@ class AssetManagementController extends Controller
     }
 
     /**
-     * Get portfolio summary
+     * Get portfolio summary.
      */
     private function getPortfolioSummary($accounts)
     {
@@ -156,17 +154,17 @@ class AssetManagementController extends Controller
         $changePercent = $totalValueYesterday > 0 ? ($change / $totalValueYesterday) * 100 : 0;
 
         return [
-            'total_value' => $totalValue,
+            'total_value'           => $totalValue,
             'total_value_yesterday' => $totalValueYesterday,
-            'change' => $change,
-            'change_percent' => $changePercent,
-            'asset_count' => $assetCount,
-            'currency_count' => count($currencies),
+            'change'                => $change,
+            'change_percent'        => $changePercent,
+            'asset_count'           => $assetCount,
+            'currency_count'        => count($currencies),
         ];
     }
 
     /**
-     * Get asset allocation
+     * Get asset allocation.
      */
     private function getAssetAllocation($accounts)
     {
@@ -180,14 +178,14 @@ class AssetManagementController extends Controller
                     $symbol = $balance->asset->symbol;
                     $valueInUSD = $this->convertToUSD($balance->balance, $symbol);
 
-                    if (!isset($allocation[$symbol])) {
+                    if (! isset($allocation[$symbol])) {
                         $allocation[$symbol] = [
-                            'symbol' => $symbol,
-                            'name' => $balance->asset->name,
-                            'amount' => 0,
-                            'value' => 0,
+                            'symbol'     => $symbol,
+                            'name'       => $balance->asset->name,
+                            'amount'     => 0,
+                            'value'      => 0,
                             'percentage' => 0,
-                            'color' => $this->getAssetColor($symbol),
+                            'color'      => $this->getAssetColor($symbol),
                         ];
                     }
 
@@ -212,7 +210,7 @@ class AssetManagementController extends Controller
     }
 
     /**
-     * Get recent transactions
+     * Get recent transactions.
      */
     private function getRecentTransactions($user)
     {
@@ -224,19 +222,19 @@ class AssetManagementController extends Controller
             ->get()
             ->map(function ($transaction) {
                 return [
-                    'id' => $transaction->uuid,
-                    'type' => $transaction->type,
-                    'amount' => $transaction->amount,
-                    'currency' => $transaction->currency,
+                    'id'          => $transaction->uuid,
+                    'type'        => $transaction->type,
+                    'amount'      => $transaction->amount,
+                    'currency'    => $transaction->currency,
                     'description' => $transaction->description,
-                    'status' => $transaction->status,
-                    'created_at' => $transaction->created_at,
+                    'status'      => $transaction->status,
+                    'created_at'  => $transaction->created_at,
                 ];
             });
     }
 
     /**
-     * Get asset performance data
+     * Get asset performance data.
      */
     private function getAssetPerformance()
     {
@@ -247,11 +245,11 @@ class AssetManagementController extends Controller
         foreach ($assets as $asset) {
             $change = rand(-500, 500) / 100; // -5% to +5%
             $performance[] = [
-                'symbol' => $asset,
+                'symbol'     => $asset,
                 'change_24h' => $change,
-                'change_7d' => $change * 2.5,
+                'change_7d'  => $change * 2.5,
                 'change_30d' => $change * 5,
-                'price' => $this->getMockPrice($asset),
+                'price'      => $this->getMockPrice($asset),
             ];
         }
 
@@ -259,7 +257,7 @@ class AssetManagementController extends Controller
     }
 
     /**
-     * Get user's holdings of specific asset
+     * Get user's holdings of specific asset.
      */
     private function getUserAssetHoldings($user, $asset)
     {
@@ -272,8 +270,8 @@ class AssetManagementController extends Controller
             foreach ($account->balances as $balance) {
                 if ($balance->balance > 0) {
                     $holdings[] = [
-                        'account' => $account,
-                        'balance' => $balance,
+                        'account'   => $account,
+                        'balance'   => $balance,
                         'value_usd' => $this->convertToUSD($balance->balance, $asset->symbol),
                     ];
                 }
@@ -284,26 +282,26 @@ class AssetManagementController extends Controller
     }
 
     /**
-     * Get asset statistics
+     * Get asset statistics.
      */
     private function getAssetStatistics($asset)
     {
         return Cache::remember("asset_stats_{$asset->symbol}", 300, function () use ($asset) {
             return [
                 'total_supply' => $asset->symbol === 'GCU' ? 1000000000 : null,
-                'market_cap' => $this->getMockMarketCap($asset->symbol),
-                'holders' => DB::table('account_balances')
+                'market_cap'   => $this->getMockMarketCap($asset->symbol),
+                'holders'      => DB::table('account_balances')
                     ->where('asset_code', $asset->symbol)
                     ->where('balance', '>', 0)
                     ->count(),
                 'transactions_24h' => rand(100, 1000),
-                'volume_24h' => rand(10000, 100000) * 100, // In cents
+                'volume_24h'       => rand(10000, 100000) * 100, // In cents
             ];
         });
     }
 
     /**
-     * Get asset price history
+     * Get asset price history.
      */
     private function getAssetPriceHistory($asset)
     {
@@ -316,8 +314,8 @@ class AssetManagementController extends Controller
             $variation = (100 - rand(0, 10)) / 100; // 90-100% of base price
 
             $history[] = [
-                'date' => $date->format('Y-m-d'),
-                'price' => $basePrice * $variation,
+                'date'   => $date->format('Y-m-d'),
+                'price'  => $basePrice * $variation,
                 'volume' => rand(5000, 50000) * 100,
             ];
         }
@@ -326,7 +324,7 @@ class AssetManagementController extends Controller
     }
 
     /**
-     * Get asset-specific transactions
+     * Get asset-specific transactions.
      */
     private function getAssetTransactions($user, $asset)
     {
@@ -340,7 +338,7 @@ class AssetManagementController extends Controller
     }
 
     /**
-     * Convert amount to USD
+     * Convert amount to USD.
      */
     private function convertToUSD($amount, $currency)
     {
@@ -354,11 +352,12 @@ class AssetManagementController extends Controller
         ];
 
         $rate = $rates[$currency] ?? 1;
+
         return $amount * $rate;
     }
 
     /**
-     * Get asset color for charts
+     * Get asset color for charts.
      */
     private function getAssetColor($symbol)
     {
@@ -374,7 +373,7 @@ class AssetManagementController extends Controller
     }
 
     /**
-     * Get mock price for asset
+     * Get mock price for asset.
      */
     private function getMockPrice($symbol)
     {
@@ -390,7 +389,7 @@ class AssetManagementController extends Controller
     }
 
     /**
-     * Get mock market cap
+     * Get mock market cap.
      */
     private function getMockMarketCap($symbol)
     {
@@ -406,15 +405,15 @@ class AssetManagementController extends Controller
     }
 
     /**
-     * Get portfolio history
+     * Get portfolio history.
      */
     private function getPortfolioHistory($user, $period)
     {
         $days = match ($period) {
-            '7d' => 7,
-            '30d' => 30,
-            '90d' => 90,
-            '1y' => 365,
+            '7d'    => 7,
+            '30d'   => 30,
+            '90d'   => 90,
+            '1y'    => 365,
             default => 30,
         };
 
@@ -427,7 +426,7 @@ class AssetManagementController extends Controller
             $baseValue = $baseValue * $variation;
 
             $history[] = [
-                'date' => $date->format('Y-m-d'),
+                'date'  => $date->format('Y-m-d'),
                 'value' => round($baseValue),
             ];
         }
@@ -436,30 +435,30 @@ class AssetManagementController extends Controller
     }
 
     /**
-     * Get performance metrics
+     * Get performance metrics.
      */
     private function getPerformanceMetrics($user, $period)
     {
         return [
-            'total_return' => rand(5, 20),
+            'total_return'      => rand(5, 20),
             'annualized_return' => rand(10, 30),
-            'best_performer' => 'GCU',
-            'worst_performer' => 'PHP',
-            'volatility' => rand(10, 25),
-            'sharpe_ratio' => rand(50, 150) / 100,
+            'best_performer'    => 'GCU',
+            'worst_performer'   => 'PHP',
+            'volatility'        => rand(10, 25),
+            'sharpe_ratio'      => rand(50, 150) / 100,
         ];
     }
 
     /**
-     * Get risk analysis
+     * Get risk analysis.
      */
     private function getRiskAnalysis($user)
     {
         return [
-            'risk_score' => rand(30, 70),
-            'risk_level' => 'Moderate',
-            'var_95' => rand(500, 1500), // Value at Risk
-            'max_drawdown' => rand(5, 15),
+            'risk_score'      => rand(30, 70),
+            'risk_level'      => 'Moderate',
+            'var_95'          => rand(500, 1500), // Value at Risk
+            'max_drawdown'    => rand(5, 15),
             'recommendations' => [
                 'Consider diversifying into more stable assets',
                 'Your GCU allocation is within recommended limits',
@@ -469,7 +468,7 @@ class AssetManagementController extends Controller
     }
 
     /**
-     * Get diversification score
+     * Get diversification score.
      */
     private function getDiversificationScore($user)
     {
@@ -483,18 +482,18 @@ class AssetManagementController extends Controller
         $score = min(100, ($assetCount * 10) + (100 - $maxAllocation));
 
         return [
-            'score' => $score,
-            'rating' => $score >= 70 ? 'Good' : ($score >= 40 ? 'Fair' : 'Poor'),
+            'score'      => $score,
+            'rating'     => $score >= 70 ? 'Good' : ($score >= 40 ? 'Fair' : 'Poor'),
             'suggestion' => $score < 70 ? 'Consider spreading investments across more assets' : 'Well diversified portfolio',
         ];
     }
 
     /**
-     * Export portfolio as CSV
+     * Export portfolio as CSV.
      */
     private function exportCSV($accounts, $portfolio)
     {
-        $filename = "portfolio_" . now()->format('Y-m-d') . ".csv";
+        $filename = 'portfolio_' . now()->format('Y-m-d') . '.csv';
 
         return response()->streamDownload(function () use ($accounts) {
             $handle = fopen('php://output', 'w');
@@ -519,9 +518,9 @@ class AssetManagementController extends Controller
                         $totalValue += $valueUSD;
 
                         $rows[] = [
-                            'account' => $account->name,
-                            'asset' => $balance->asset->symbol,
-                            'balance' => $balance->balance / 100,
+                            'account'   => $account->name,
+                            'asset'     => $balance->asset->symbol,
+                            'balance'   => $balance->balance / 100,
                             'value_usd' => $valueUSD / 100,
                         ];
                     }
@@ -552,7 +551,7 @@ class AssetManagementController extends Controller
     }
 
     /**
-     * Export portfolio as PDF
+     * Export portfolio as PDF.
      */
     private function exportPDF($accounts, $portfolio)
     {

@@ -10,7 +10,7 @@ use Spatie\EventSourcing\StoredEvents\Repositories\EloquentStoredEventRepository
 final class LiquidityPoolEventRepository extends EloquentStoredEventRepository
 {
     /**
-     * @throws \Spatie\EventSourcing\AggregateRoots\Exceptions\InvalidEloquentStoredEventModel
+     * @throws InvalidEloquentStoredEventModel
      */
     public function __construct(
         protected string $storedEventModel = LiquidityPoolEvent::class

@@ -18,13 +18,13 @@ class GasEstimate
     public function toArray(): array
     {
         return [
-            'gas_limit' => $this->gasLimit,
-            'gas_price' => $this->gasPrice,
-            'max_fee_per_gas' => $this->maxFeePerGas,
+            'gas_limit'                => $this->gasLimit,
+            'gas_price'                => $this->gasPrice,
+            'max_fee_per_gas'          => $this->maxFeePerGas,
             'max_priority_fee_per_gas' => $this->maxPriorityFeePerGas,
-            'estimated_cost' => $this->estimatedCost,
-            'chain' => $this->chain,
-            'metadata' => $this->metadata,
+            'estimated_cost'           => $this->estimatedCost,
+            'chain'                    => $this->chain,
+            'metadata'                 => $this->metadata,
         ];
     }
 

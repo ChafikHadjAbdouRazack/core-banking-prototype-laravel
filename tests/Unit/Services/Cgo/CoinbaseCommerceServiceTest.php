@@ -15,32 +15,32 @@ class CoinbaseCommerceServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         config([
-            'services.coinbase_commerce.api_key' => 'test-api-key',
+            'services.coinbase_commerce.api_key'        => 'test-api-key',
             'services.coinbase_commerce.webhook_secret' => 'test-webhook-secret',
         ]);
-        
+
         $this->service = new CoinbaseCommerceService();
     }
 
     public function test_create_charge_sends_correct_request()
     {
         $investment = CgoInvestment::factory()->create([
-            'uuid' => 'test-uuid',
+            'uuid'   => 'test-uuid',
             'amount' => 1000,
-            'tier' => 'silver',
+            'tier'   => 'silver',
         ]);
 
         Http::fake([
             'https://api.commerce.coinbase.com/charges' => Http::response([
                 'data' => [
-                    'id' => 'test-charge-id',
-                    'code' => 'TEST123',
+                    'id'         => 'test-charge-id',
+                    'code'       => 'TEST123',
                     'hosted_url' => 'https://commerce.coinbase.com/charges/TEST123',
-                    'pricing' => [
+                    'pricing'    => [
                         'local' => [
-                            'amount' => '1000.00',
+                            'amount'   => '1000.00',
                             'currency' => 'USD',
                         ],
                     ],
@@ -52,6 +52,7 @@ class CoinbaseCommerceServiceTest extends TestCase
 
         Http::assertSent(function ($request) use ($investment) {
             $body = json_decode($request->body(), true);
+
             return $request->url() === 'https://api.commerce.coinbase.com/charges' &&
                    $request->hasHeader('X-CC-Api-Key', 'test-api-key') &&
                    $request->hasHeader('X-CC-Version', '2018-03-22') &&
@@ -73,7 +74,7 @@ class CoinbaseCommerceServiceTest extends TestCase
         Http::fake([
             'https://api.commerce.coinbase.com/charges' => Http::response([
                 'error' => [
-                    'type' => 'invalid_request',
+                    'type'    => 'invalid_request',
                     'message' => 'Invalid API key',
                 ],
             ], 401),
@@ -107,25 +108,25 @@ class CoinbaseCommerceServiceTest extends TestCase
     {
         $investment = CgoInvestment::factory()->create([
             'coinbase_charge_id' => 'test-charge-id',
-            'status' => 'pending',
-            'payment_status' => 'pending',
+            'status'             => 'pending',
+            'payment_status'     => 'pending',
         ]);
 
         $event = [
             'type' => 'charge:confirmed',
             'data' => [
-                'id' => 'test-charge-id',
-                'code' => 'TEST123',
+                'id'       => 'test-charge-id',
+                'code'     => 'TEST123',
                 'payments' => [
                     [
                         'status' => 'CONFIRMED',
-                        'value' => [
+                        'value'  => [
                             'local' => [
-                                'amount' => '1000.00',
+                                'amount'   => '1000.00',
                                 'currency' => 'USD',
                             ],
                             'crypto' => [
-                                'amount' => '0.025',
+                                'amount'   => '0.025',
                                 'currency' => 'BTC',
                             ],
                         ],
@@ -147,14 +148,14 @@ class CoinbaseCommerceServiceTest extends TestCase
     {
         $investment = CgoInvestment::factory()->create([
             'coinbase_charge_id' => 'test-charge-id',
-            'status' => 'pending',
-            'payment_status' => 'pending',
+            'status'             => 'pending',
+            'payment_status'     => 'pending',
         ]);
 
         $event = [
             'type' => 'charge:failed',
             'data' => [
-                'id' => 'test-charge-id',
+                'id'   => 'test-charge-id',
                 'code' => 'TEST123',
             ],
         ];
@@ -172,7 +173,7 @@ class CoinbaseCommerceServiceTest extends TestCase
         Log::shouldReceive('info')
             ->once()
             ->with('Processing Coinbase Commerce webhook', \Mockery::any());
-            
+
         Log::shouldReceive('warning')
             ->once()
             ->with('Coinbase webhook: Investment not found', ['charge_id' => 'unknown-charge-id']);
@@ -191,13 +192,13 @@ class CoinbaseCommerceServiceTest extends TestCase
     {
         $investment = CgoInvestment::factory()->create([
             'coinbase_charge_id' => 'test-charge-id',
-            'payment_status' => 'pending',
+            'payment_status'     => 'pending',
         ]);
-        
+
         Log::shouldReceive('info')
             ->once()
             ->with('Processing Coinbase Commerce webhook', \Mockery::any());
-            
+
         Log::shouldReceive('info')
             ->once()
             ->with('Coinbase charge pending', \Mockery::any());
@@ -205,13 +206,13 @@ class CoinbaseCommerceServiceTest extends TestCase
         $event = [
             'type' => 'charge:pending',
             'data' => [
-                'id' => 'test-charge-id',
-                'code' => 'TEST123',
+                'id'       => 'test-charge-id',
+                'code'     => 'TEST123',
                 'payments' => [
                     [
                         'value' => [
                             'crypto' => [
-                                'amount' => '0.001234',
+                                'amount'   => '0.001234',
                                 'currency' => 'BTC',
                             ],
                         ],

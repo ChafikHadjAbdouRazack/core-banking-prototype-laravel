@@ -3,7 +3,6 @@
 namespace App\Domain\Account\Actions;
 
 use App\Domain\Account\Events\HasMoney;
-use App\Domain\Account\Events\MoneyAdded;
 use App\Domain\Account\Events\MoneySubtracted;
 use App\Domain\Account\Repositories\TurnoverRepository;
 use Illuminate\Support\Carbon;
@@ -16,7 +15,7 @@ class UpdateTurnover
     }
 
     /**
-     * @param \App\Domain\Account\Events\HasMoney $event
+     * @param HasMoney $event
      *
      * @return void
      */

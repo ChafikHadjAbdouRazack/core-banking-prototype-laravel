@@ -2,14 +2,13 @@
 
 namespace App\Models;
 
+use App\Domain\Asset\Models\Asset;
+use App\Traits\BelongsToTeam;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use App\Domain\Asset\Models\Asset;
-use App\Models\AccountBalance;
-use App\Traits\BelongsToTeam;
 
 class Account extends Model
 {
@@ -46,7 +45,7 @@ class Account extends Model
     protected $appends = ['balance'];
 
     /**
-     * Get the balance attribute (USD balance for backward compatibility)
+     * Get the balance attribute (USD balance for backward compatibility).
      *
      * @return int
      */
@@ -56,7 +55,7 @@ class Account extends Model
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function user(): BelongsTo
     {
@@ -68,7 +67,7 @@ class Account extends Model
     }
 
     /**
-     * Get all balances for this account
+     * Get all balances for this account.
      */
     public function balances(): HasMany
     {
@@ -76,7 +75,7 @@ class Account extends Model
     }
 
     /**
-     * Get balance for a specific asset
+     * Get balance for a specific asset.
      *
      * @param string $assetCode
      * @return AccountBalance|null
@@ -87,7 +86,7 @@ class Account extends Model
     }
 
     /**
-     * Get balance amount for a specific asset
+     * Get balance amount for a specific asset.
      *
      * @param string $assetCode
      * @return int
@@ -95,13 +94,14 @@ class Account extends Model
     public function getBalance(string $assetCode = 'USD'): int
     {
         $balance = $this->getBalanceForAsset($assetCode);
+
         return $balance ? $balance->balance : 0;
     }
 
     // Balance manipulation methods removed - use event sourcing via services instead
 
     /**
-     * Check if account has sufficient balance for asset
+     * Check if account has sufficient balance for asset.
      *
      * @param string $assetCode
      * @param int $amount
@@ -110,11 +110,12 @@ class Account extends Model
     public function hasSufficientBalance(string $assetCode, int $amount): bool
     {
         $balance = $this->getBalanceForAsset($assetCode);
+
         return $balance && $balance->hasSufficientBalance($amount);
     }
 
     /**
-     * Get all non-zero balances
+     * Get all non-zero balances.
      *
      * @return \Illuminate\Database\Eloquent\Collection
      */
@@ -124,7 +125,7 @@ class Account extends Model
     }
 
     /**
-     * Get the custodian accounts for this account
+     * Get the custodian accounts for this account.
      */
     public function custodianAccounts(): HasMany
     {
@@ -132,7 +133,7 @@ class Account extends Model
     }
 
     /**
-     * Get the primary custodian account
+     * Get the primary custodian account.
      */
     public function primaryCustodianAccount(): ?CustodianAccount
     {
@@ -142,7 +143,7 @@ class Account extends Model
     // Legacy balance manipulation methods removed - use event sourcing via WalletService instead
 
     /**
-     * Get transactions from the transaction projection table
+     * Get transactions from the transaction projection table.
      */
     public function transactions()
     {

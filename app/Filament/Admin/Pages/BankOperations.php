@@ -7,9 +7,9 @@ namespace App\Filament\Admin\Pages;
 use App\Domain\Custodian\Services\CustodianHealthMonitor;
 use App\Domain\Custodian\Services\CustodianRegistry;
 use Filament\Pages\Page;
+use Filament\Tables;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
-use Filament\Tables;
 use Illuminate\Support\Collection;
 
 class BankOperations extends Page implements HasTable
@@ -45,10 +45,10 @@ class BankOperations extends Page implements HasTable
                     ->label('Health Status')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
-                        'healthy' => 'success',
-                        'degraded' => 'warning',
+                        'healthy'   => 'success',
+                        'degraded'  => 'warning',
                         'unhealthy' => 'danger',
-                        default => 'gray',
+                        default     => 'gray',
                     }),
 
                 Tables\Columns\TextColumn::make('overall_failure_rate')

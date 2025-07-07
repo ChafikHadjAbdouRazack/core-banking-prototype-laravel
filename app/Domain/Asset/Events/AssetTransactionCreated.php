@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Domain\Asset\Events;
 
 use App\Domain\Account\DataObjects\AccountUuid;
-use App\Domain\Account\DataObjects\Money;
 use App\Domain\Account\DataObjects\Hash;
+use App\Domain\Account\DataObjects\Money;
 use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 
 class AssetTransactionCreated extends ShouldBeStored
@@ -23,7 +23,7 @@ class AssetTransactionCreated extends ShouldBeStored
     }
 
     /**
-     * Get the transaction type
+     * Get the transaction type.
      */
     public function getType(): string
     {
@@ -31,7 +31,7 @@ class AssetTransactionCreated extends ShouldBeStored
     }
 
     /**
-     * Check if this is a credit transaction
+     * Check if this is a credit transaction.
      */
     public function isCredit(): bool
     {
@@ -39,7 +39,7 @@ class AssetTransactionCreated extends ShouldBeStored
     }
 
     /**
-     * Check if this is a debit transaction
+     * Check if this is a debit transaction.
      */
     public function isDebit(): bool
     {
@@ -47,7 +47,7 @@ class AssetTransactionCreated extends ShouldBeStored
     }
 
     /**
-     * Get the amount in smallest unit
+     * Get the amount in smallest unit.
      */
     public function getAmount(): int
     {

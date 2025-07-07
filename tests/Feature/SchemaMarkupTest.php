@@ -9,7 +9,7 @@ class SchemaMarkupTest extends TestCase
     public function test_homepage_has_organization_and_website_schema()
     {
         $response = $this->get('/');
-        
+
         $response->assertStatus(200);
         $response->assertSee('<script type="application/ld+json">', false);
         $response->assertSee('"@type": "Organization"', false);
@@ -20,7 +20,7 @@ class SchemaMarkupTest extends TestCase
     public function test_gcu_page_has_product_and_breadcrumb_schema()
     {
         $response = $this->get('/gcu');
-        
+
         $response->assertStatus(200);
         $response->assertSee('<script type="application/ld+json">', false);
         $response->assertSee('"@type": "Product"', false);
@@ -31,7 +31,7 @@ class SchemaMarkupTest extends TestCase
     public function test_platform_page_has_software_schema()
     {
         $response = $this->get('/platform');
-        
+
         $response->assertStatus(200);
         $response->assertSee('<script type="application/ld+json">', false);
         $response->assertSee('"@type": "SoftwareApplication"', false);
@@ -41,7 +41,7 @@ class SchemaMarkupTest extends TestCase
     public function test_about_page_has_organization_schema()
     {
         $response = $this->get('/about');
-        
+
         $response->assertStatus(200);
         $response->assertSee('<script type="application/ld+json">', false);
         $response->assertSee('"@type": "Organization"', false);
@@ -50,7 +50,7 @@ class SchemaMarkupTest extends TestCase
     public function test_pricing_page_has_software_schema()
     {
         $response = $this->get('/pricing');
-        
+
         $response->assertStatus(200);
         $response->assertSee('<script type="application/ld+json">', false);
         $response->assertSee('"@type": "SoftwareApplication"', false);
@@ -59,7 +59,7 @@ class SchemaMarkupTest extends TestCase
     public function test_security_page_has_service_schema()
     {
         $response = $this->get('/security');
-        
+
         $response->assertStatus(200);
         $response->assertSee('<script type="application/ld+json">', false);
         $response->assertSee('"@type": "Service"', false);
@@ -69,7 +69,7 @@ class SchemaMarkupTest extends TestCase
     public function test_faq_page_has_faqpage_schema()
     {
         $response = $this->get('/support/faq');
-        
+
         $response->assertStatus(200);
         $response->assertSee('<script type="application/ld+json">', false);
         $response->assertSee('"@type": "FAQPage"', false);
@@ -80,10 +80,10 @@ class SchemaMarkupTest extends TestCase
     public function test_breadcrumb_schema_has_correct_structure()
     {
         $response = $this->get('/gcu');
-        
+
         $response->assertStatus(200);
         $content = $response->getContent();
-        
+
         // Check for breadcrumb structure
         $this->assertStringContainsString('"@type": "BreadcrumbList"', $content);
         $this->assertStringContainsString('"@type": "ListItem"', $content);
@@ -95,12 +95,12 @@ class SchemaMarkupTest extends TestCase
     {
         $response = $this->get('/');
         $content = $response->getContent();
-        
+
         // Extract JSON-LD scripts
         preg_match_all('/<script type="application\/ld\+json">(.*?)<\/script>/s', $content, $matches);
-        
+
         $this->assertNotEmpty($matches[1], 'No JSON-LD scripts found');
-        
+
         foreach ($matches[1] as $jsonString) {
             $json = json_decode($jsonString);
             $this->assertNotNull($json, 'Invalid JSON in schema markup');

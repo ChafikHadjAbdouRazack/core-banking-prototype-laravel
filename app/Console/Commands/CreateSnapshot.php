@@ -7,7 +7,6 @@ namespace App\Console\Commands;
 use App\Domain\Account\Aggregates\LedgerAggregate;
 use App\Domain\Account\Aggregates\TransactionAggregate;
 use App\Domain\Account\Aggregates\TransferAggregate;
-use App\Domain\Account\DataObjects\AccountUuid;
 use App\Models\Account;
 use App\Models\Transaction;
 use App\Models\Transfer;
@@ -65,11 +64,12 @@ class CreateSnapshot extends Command
         });
 
         $this->info('Snapshot creation completed successfully!');
+
         return Command::SUCCESS;
     }
 
     /**
-     * Create transaction snapshots
+     * Create transaction snapshots.
      */
     private function createTransactionSnapshots(?string $accountUuid, bool $force): void
     {
@@ -89,7 +89,7 @@ class CreateSnapshot extends Command
             ->havingRaw('COUNT(*) >= ?', [$force ? 1 : 100])
             ->pluck('aggregate_uuid');
 
-        if (!app()->runningUnitTests() && $aggregateUuids->count() > 0) {
+        if (! app()->runningUnitTests() && $aggregateUuids->count() > 0) {
             $bar = $this->output->createProgressBar($aggregateUuids->count());
             $bar->start();
 
@@ -111,7 +111,7 @@ class CreateSnapshot extends Command
     }
 
     /**
-     * Create transfer snapshots
+     * Create transfer snapshots.
      */
     private function createTransferSnapshots(?string $accountUuid, bool $force): void
     {
@@ -131,7 +131,7 @@ class CreateSnapshot extends Command
             ->havingRaw('COUNT(*) >= ?', [$force ? 1 : 50])
             ->pluck('aggregate_uuid');
 
-        if (!app()->runningUnitTests() && $aggregateUuids->count() > 0) {
+        if (! app()->runningUnitTests() && $aggregateUuids->count() > 0) {
             $bar = $this->output->createProgressBar($aggregateUuids->count());
             $bar->start();
 
@@ -153,7 +153,7 @@ class CreateSnapshot extends Command
     }
 
     /**
-     * Create ledger snapshots
+     * Create ledger snapshots.
      */
     private function createLedgerSnapshots(?string $accountUuid, bool $force): void
     {
@@ -167,7 +167,7 @@ class CreateSnapshot extends Command
         $accounts = $query->pluck('uuid');
         $snapshotCount = 0;
 
-        if (!app()->runningUnitTests() && $accounts->count() > 0) {
+        if (! app()->runningUnitTests() && $accounts->count() > 0) {
             $bar = $this->output->createProgressBar($accounts->count());
             $bar->start();
 

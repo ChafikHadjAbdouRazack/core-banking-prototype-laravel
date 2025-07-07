@@ -3,17 +3,15 @@
 namespace App\Domain\Regulatory\Services;
 
 use App\Domain\Regulatory\Models\RegulatoryReport;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\View;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-use Carbon\Carbon;
 
 class ReportGeneratorService
 {
     /**
-     * Generate report in specified format
+     * Generate report in specified format.
      */
     public function generateReport(RegulatoryReport $report, string $format = null): string
     {
@@ -21,16 +19,16 @@ class ReportGeneratorService
 
         return match ($format) {
             RegulatoryReport::FORMAT_JSON => $this->generateJsonReport($report),
-            RegulatoryReport::FORMAT_XML => $this->generateXmlReport($report),
-            RegulatoryReport::FORMAT_CSV => $this->generateCsvReport($report),
-            RegulatoryReport::FORMAT_PDF => $this->generatePdfReport($report),
+            RegulatoryReport::FORMAT_XML  => $this->generateXmlReport($report),
+            RegulatoryReport::FORMAT_CSV  => $this->generateCsvReport($report),
+            RegulatoryReport::FORMAT_PDF  => $this->generatePdfReport($report),
             RegulatoryReport::FORMAT_XLSX => $this->generateExcelReport($report),
-            default => throw new \InvalidArgumentException("Unsupported format: {$format}"),
+            default                       => throw new \InvalidArgumentException("Unsupported format: {$format}"),
         };
     }
 
     /**
-     * Generate JSON report
+     * Generate JSON report.
      */
     protected function generateJsonReport(RegulatoryReport $report): string
     {
@@ -47,7 +45,7 @@ class ReportGeneratorService
     }
 
     /**
-     * Generate XML report
+     * Generate XML report.
      */
     protected function generateXmlReport(RegulatoryReport $report): string
     {
@@ -67,7 +65,7 @@ class ReportGeneratorService
     }
 
     /**
-     * Generate CSV report
+     * Generate CSV report.
      */
     protected function generateCsvReport(RegulatoryReport $report): string
     {
@@ -96,7 +94,7 @@ class ReportGeneratorService
     }
 
     /**
-     * Generate PDF report
+     * Generate PDF report.
      */
     protected function generatePdfReport(RegulatoryReport $report): string
     {
@@ -106,8 +104,8 @@ class ReportGeneratorService
         $template = $this->getReportTemplate($report->report_type);
 
         $pdf = Pdf::loadView($template, [
-            'report' => $report,
-            'data' => $data,
+            'report'       => $report,
+            'data'         => $data,
             'generated_at' => now(),
         ]);
 
@@ -124,7 +122,7 @@ class ReportGeneratorService
     }
 
     /**
-     * Generate Excel report
+     * Generate Excel report.
      */
     protected function generateExcelReport(RegulatoryReport $report): string
     {
@@ -157,7 +155,7 @@ class ReportGeneratorService
     }
 
     /**
-     * Prepare report data
+     * Prepare report data.
      */
     protected function prepareReportData(RegulatoryReport $report): array
     {
@@ -176,31 +174,31 @@ class ReportGeneratorService
         // Merge with report metadata
         return array_merge($existingData, [
             'report_metadata' => [
-                'report_id' => $report->report_id,
-                'report_type' => $report->report_type,
-                'jurisdiction' => $report->jurisdiction,
+                'report_id'        => $report->report_id,
+                'report_type'      => $report->report_type,
+                'jurisdiction'     => $report->jurisdiction,
                 'reporting_period' => [
                     'start' => $report->reporting_period_start->toDateString(),
-                    'end' => $report->reporting_period_end->toDateString(),
+                    'end'   => $report->reporting_period_end->toDateString(),
                 ],
-                'generated_at' => $report->generated_at->toIso8601String(),
+                'generated_at'   => $report->generated_at->toIso8601String(),
                 'report_version' => '1.0',
-                'institution' => [
-                    'name' => config('app.name'),
+                'institution'    => [
+                    'name'       => config('app.name'),
                     'identifier' => config('regulatory.institution_id'),
                 ],
             ],
-            'report_summary' => $report->report_data ?? [],
+            'report_summary'           => $report->report_data ?? [],
             'compliance_certification' => [
-                'certified_by' => null,
-                'certified_at' => null,
+                'certified_by'            => null,
+                'certified_at'            => null,
                 'certification_statement' => $this->getCertificationStatement($report),
             ],
         ]);
     }
 
     /**
-     * Convert array to XML
+     * Convert array to XML.
      */
     protected function arrayToXml(array $data, \SimpleXMLElement $xml): void
     {
@@ -212,13 +210,13 @@ class ReportGeneratorService
                 $subnode = $xml->addChild($key);
                 $this->arrayToXml($value, $subnode);
             } else {
-                $xml->addChild($key, htmlspecialchars((string)$value));
+                $xml->addChild($key, htmlspecialchars((string) $value));
             }
         }
     }
 
     /**
-     * Extract CSV headers based on report type
+     * Extract CSV headers based on report type.
      */
     protected function extractCsvHeaders(RegulatoryReport $report): array
     {
@@ -243,7 +241,7 @@ class ReportGeneratorService
     }
 
     /**
-     * Extract CSV rows based on report type
+     * Extract CSV rows based on report type.
      */
     protected function extractCsvRows(RegulatoryReport $report, array $data): array
     {
@@ -265,7 +263,7 @@ class ReportGeneratorService
     }
 
     /**
-     * Extract transaction row for CSV
+     * Extract transaction row for CSV.
      */
     protected function extractTransactionRow(array $transaction): array
     {
@@ -289,7 +287,7 @@ class ReportGeneratorService
     }
 
     /**
-     * Extract activity row for CSV
+     * Extract activity row for CSV.
      */
     protected function extractActivityRow(array $activity): array
     {
@@ -309,16 +307,16 @@ class ReportGeneratorService
     }
 
     /**
-     * Get report template path
+     * Get report template path.
      */
     protected function getReportTemplate(string $reportType): string
     {
         $templates = [
-            RegulatoryReport::TYPE_CTR => 'regulatory.reports.ctr',
-            RegulatoryReport::TYPE_SAR => 'regulatory.reports.sar',
-            RegulatoryReport::TYPE_KYC => 'regulatory.reports.kyc',
-            RegulatoryReport::TYPE_AML => 'regulatory.reports.aml',
-            RegulatoryReport::TYPE_BSA => 'regulatory.reports.bsa',
+            RegulatoryReport::TYPE_CTR  => 'regulatory.reports.ctr',
+            RegulatoryReport::TYPE_SAR  => 'regulatory.reports.sar',
+            RegulatoryReport::TYPE_KYC  => 'regulatory.reports.kyc',
+            RegulatoryReport::TYPE_AML  => 'regulatory.reports.aml',
+            RegulatoryReport::TYPE_BSA  => 'regulatory.reports.bsa',
             RegulatoryReport::TYPE_OFAC => 'regulatory.reports.ofac',
         ];
 
@@ -326,7 +324,7 @@ class ReportGeneratorService
     }
 
     /**
-     * Add Excel header
+     * Add Excel header.
      */
     protected function addExcelHeader($sheet, RegulatoryReport $report): void
     {
@@ -351,7 +349,7 @@ class ReportGeneratorService
     }
 
     /**
-     * Add Excel data
+     * Add Excel data.
      */
     protected function addExcelData($sheet, RegulatoryReport $report, array $data): void
     {
@@ -380,7 +378,7 @@ class ReportGeneratorService
     }
 
     /**
-     * Get filename for report
+     * Get filename for report.
      */
     protected function getFilename(RegulatoryReport $report, string $extension): string
     {
@@ -391,7 +389,7 @@ class ReportGeneratorService
     }
 
     /**
-     * Update report file information
+     * Update report file information.
      */
     protected function updateReportFile(RegulatoryReport $report, string $filename, int $size): void
     {
@@ -403,7 +401,7 @@ class ReportGeneratorService
     }
 
     /**
-     * Get certification statement
+     * Get certification statement.
      */
     protected function getCertificationStatement(RegulatoryReport $report): string
     {
@@ -411,7 +409,7 @@ class ReportGeneratorService
             RegulatoryReport::TYPE_CTR => 'I certify that this Currency Transaction Report is complete and accurate to the best of my knowledge.',
             RegulatoryReport::TYPE_SAR => 'I certify that this Suspicious Activity Report contains all known information regarding the suspicious activity.',
             RegulatoryReport::TYPE_BSA => 'I certify compliance with all applicable Bank Secrecy Act requirements.',
-            default => 'I certify that this report is complete and accurate.',
+            default                    => 'I certify that this report is complete and accurate.',
         };
     }
 }

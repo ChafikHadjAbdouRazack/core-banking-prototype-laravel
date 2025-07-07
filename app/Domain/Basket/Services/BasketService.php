@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Domain\Basket\Services;
 
-use App\Domain\Account\DataObjects\AccountUuid;
 use App\Domain\Basket\Workflows\ComposeBasketWorkflow;
 use App\Domain\Basket\Workflows\DecomposeBasketWorkflow;
 use App\Models\Account;
@@ -29,19 +28,19 @@ class BasketService
 
         // Validate basket exists and is active
         $basket = BasketAsset::where('code', $basketCode)->firstOrFail();
-        if (!$basket->is_active) {
+        if (! $basket->is_active) {
             throw new \Exception("Basket {$basketCode} is not active");
         }
 
         // Validate basket weights before composition
-        if (!$basket->validateWeights()) {
+        if (! $basket->validateWeights()) {
             throw new \Exception("Basket {$basketCode} has invalid component weights");
         }
 
         // Calculate required component amounts and validate sufficient balances
         $requiredAmounts = $this->calculateComponentAmounts($basket, $amount);
         foreach ($requiredAmounts as $assetCode => $requiredAmount) {
-            if (!$account->hasSufficientBalance($assetCode, $requiredAmount)) {
+            if (! $account->hasSufficientBalance($assetCode, $requiredAmount)) {
                 $availableBalance = $account->getBalance($assetCode);
                 throw new \Exception("Insufficient {$assetCode} balance. Required: {$requiredAmount}, Available: {$availableBalance}");
             }
@@ -49,6 +48,7 @@ class BasketService
 
         // Start workflow - this handles the actual business logic with proper compensation
         $workflow = WorkflowStub::make(ComposeBasketWorkflow::class);
+
         return $workflow->start($accountUuidObj, $basketCode, $amount);
     }
 
@@ -68,18 +68,19 @@ class BasketService
 
         // Validate basket exists and is active
         $basket = BasketAsset::where('code', $basketCode)->firstOrFail();
-        if (!$basket->is_active) {
+        if (! $basket->is_active) {
             throw new \Exception("Basket {$basketCode} is not active");
         }
 
         // Validate sufficient basket balance
-        if (!$account->hasSufficientBalance($basketCode, $amount)) {
+        if (! $account->hasSufficientBalance($basketCode, $amount)) {
             $availableBalance = $account->getBalance($basketCode);
             throw new \Exception("Insufficient basket balance for decomposition. Required: {$amount}, Available: {$availableBalance}");
         }
 
         // Start workflow - this handles the actual business logic with proper compensation
         $workflow = WorkflowStub::make(DecomposeBasketWorkflow::class);
+
         return $workflow->start($accountUuidObj, $basketCode, $amount);
     }
 
@@ -95,6 +96,7 @@ class BasketService
         // Use the existing basket account service for read operations
         // TODO: Consider moving this to a dedicated query service
         $basketAccountService = app(BasketAccountService::class);
+
         return $basketAccountService->getBasketHoldingsValue($account);
     }
 
@@ -109,6 +111,7 @@ class BasketService
         }
 
         $basket = BasketAsset::where('code', $basketCode)->firstOrFail();
+
         return $this->calculateComponentAmounts($basket, $amount);
     }
 

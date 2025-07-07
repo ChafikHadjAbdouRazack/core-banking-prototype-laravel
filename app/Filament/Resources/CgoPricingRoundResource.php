@@ -181,7 +181,7 @@ class CgoPricingRoundResource extends Resource
                         // Activate this round
                         $record->update(['is_active' => true]);
                     })
-                    ->visible(fn (CgoPricingRound $record) => !$record->is_active),
+                    ->visible(fn (CgoPricingRound $record) => ! $record->is_active),
                 Tables\Actions\Action::make('close')
                     ->label('Close Round')
                     ->icon('heroicon-o-stop')
@@ -190,7 +190,7 @@ class CgoPricingRoundResource extends Resource
                     ->action(function (CgoPricingRound $record) {
                         $record->update([
                             'is_active' => false,
-                            'ended_at' => now(),
+                            'ended_at'  => now(),
                         ]);
                     })
                     ->visible(fn (CgoPricingRound $record) => $record->is_active),
@@ -212,10 +212,10 @@ class CgoPricingRoundResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListCgoPricingRounds::route('/'),
+            'index'  => Pages\ListCgoPricingRounds::route('/'),
             'create' => Pages\CreateCgoPricingRound::route('/create'),
-            'view' => Pages\ViewCgoPricingRound::route('/{record}'),
-            'edit' => Pages\EditCgoPricingRound::route('/{record}/edit'),
+            'view'   => Pages\ViewCgoPricingRound::route('/{record}'),
+            'edit'   => Pages\EditCgoPricingRound::route('/{record}/edit'),
         ];
     }
 

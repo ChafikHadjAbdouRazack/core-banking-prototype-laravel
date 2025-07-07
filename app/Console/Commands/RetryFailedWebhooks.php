@@ -44,6 +44,7 @@ class RetryFailedWebhooks extends Command
 
         if ($webhooks->isEmpty()) {
             $this->info('No failed webhooks found to retry.');
+
             return Command::SUCCESS;
         }
 

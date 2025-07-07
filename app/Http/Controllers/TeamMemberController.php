@@ -6,7 +6,6 @@ use App\Models\Team;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\Password;
 use Spatie\Permission\Models\Role;
 
@@ -17,7 +16,7 @@ class TeamMemberController extends Controller
         $this->authorize('update', $team);
 
         // Only business organizations can manage members
-        if (!$team->is_business_organization) {
+        if (! $team->is_business_organization) {
             abort(403, 'This feature is only available for business organizations.');
         }
 
@@ -32,7 +31,7 @@ class TeamMemberController extends Controller
     {
         $this->authorize('update', $team);
 
-        if (!$team->is_business_organization) {
+        if (! $team->is_business_organization) {
             abort(403, 'This feature is only available for business organizations.');
         }
 
@@ -50,7 +49,7 @@ class TeamMemberController extends Controller
     {
         $this->authorize('update', $team);
 
-        if (!$team->is_business_organization) {
+        if (! $team->is_business_organization) {
             abort(403, 'This feature is only available for business organizations.');
         }
 
@@ -60,16 +59,16 @@ class TeamMemberController extends Controller
         }
 
         $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'name'     => ['required', 'string', 'max:255'],
+            'email'    => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', Password::defaults()],
-            'role' => ['required', 'string', 'in:' . implode(',', $team->getAvailableRoles())],
+            'role'     => ['required', 'string', 'in:' . implode(',', $team->getAvailableRoles())],
         ]);
 
         // Create the user
         $user = User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
+            'name'     => $validated['name'],
+            'email'    => $validated['email'],
             'password' => Hash::make($validated['password']),
         ]);
 
@@ -94,7 +93,7 @@ class TeamMemberController extends Controller
     {
         $this->authorize('update', $team);
 
-        if (!$team->is_business_organization) {
+        if (! $team->is_business_organization) {
             abort(403, 'This feature is only available for business organizations.');
         }
 
@@ -114,7 +113,7 @@ class TeamMemberController extends Controller
     {
         $this->authorize('update', $team);
 
-        if (!$team->is_business_organization) {
+        if (! $team->is_business_organization) {
             abort(403, 'This feature is only available for business organizations.');
         }
 
@@ -141,7 +140,7 @@ class TeamMemberController extends Controller
     {
         $this->authorize('update', $team);
 
-        if (!$team->is_business_organization) {
+        if (! $team->is_business_organization) {
             abort(403, 'This feature is only available for business organizations.');
         }
 
@@ -168,7 +167,7 @@ class TeamMemberController extends Controller
     }
 
     /**
-     * Assign appropriate global role based on team role
+     * Assign appropriate global role based on team role.
      */
     private function assignGlobalRole(User $user, string $teamRole)
     {

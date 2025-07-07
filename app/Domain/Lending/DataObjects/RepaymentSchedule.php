@@ -90,27 +90,27 @@ class RepaymentSchedule
     public function getUpcomingInstallments(int $count = 3): Collection
     {
         return $this->items
-            ->filter(fn($item) => $item->dueDate->isFuture())
+            ->filter(fn ($item) => $item->dueDate->isFuture())
             ->take($count);
     }
 
     public function getOverdueInstallments(): Collection
     {
         return $this->items
-            ->filter(fn($item) => $item->dueDate->isPast() && !$item->isPaid);
+            ->filter(fn ($item) => $item->dueDate->isPast() && ! $item->isPaid);
     }
 
     public function toArray(): array
     {
         return [
-            'loan_id' => $this->loanId,
-            'principal' => $this->principal,
-            'interest_rate' => $this->interestRate,
-            'term_months' => $this->termMonths,
+            'loan_id'         => $this->loanId,
+            'principal'       => $this->principal,
+            'interest_rate'   => $this->interestRate,
+            'term_months'     => $this->termMonths,
             'monthly_payment' => $this->monthlyPayment,
-            'total_interest' => $this->totalInterest,
-            'total_amount' => $this->totalAmount,
-            'items' => $this->items->map(fn($item) => $item->toArray())->toArray()
+            'total_interest'  => $this->totalInterest,
+            'total_amount'    => $this->totalAmount,
+            'items'           => $this->items->map(fn ($item) => $item->toArray())->toArray(),
         ];
     }
 }

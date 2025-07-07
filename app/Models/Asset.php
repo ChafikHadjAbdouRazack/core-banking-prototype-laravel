@@ -4,7 +4,7 @@ namespace App\Models;
 
 /**
  * Asset model for backward compatibility
- * This extends the Domain Asset model
+ * This extends the Domain Asset model.
  */
 class Asset extends \App\Domain\Asset\Models\Asset
 {

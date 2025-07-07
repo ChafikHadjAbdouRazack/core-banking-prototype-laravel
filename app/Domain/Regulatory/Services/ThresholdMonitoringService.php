@@ -3,19 +3,19 @@
 namespace App\Domain\Regulatory\Services;
 
 use App\Domain\Regulatory\Models\RegulatoryThreshold;
+use App\Models\Account;
 use App\Models\Transaction;
 use App\Models\User;
-use App\Models\Account;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class ThresholdMonitoringService
 {
     /**
-     * Monitor transaction against all active thresholds
+     * Monitor transaction against all active thresholds.
      */
     public function monitorTransaction(Transaction $transaction): Collection
     {
@@ -33,8 +33,8 @@ class ThresholdMonitoringService
             if ($threshold->evaluate($context)) {
                 $threshold->recordTrigger();
                 $triggeredThresholds->push([
-                    'threshold' => $threshold,
-                    'context' => $context,
+                    'threshold'    => $threshold,
+                    'context'      => $context,
                     'triggered_at' => now(),
                 ]);
 
@@ -46,7 +46,7 @@ class ThresholdMonitoringService
     }
 
     /**
-     * Monitor customer activity against thresholds
+     * Monitor customer activity against thresholds.
      */
     public function monitorCustomer(User $user): Collection
     {
@@ -64,8 +64,8 @@ class ThresholdMonitoringService
             if ($threshold->evaluate($context)) {
                 $threshold->recordTrigger();
                 $triggeredThresholds->push([
-                    'threshold' => $threshold,
-                    'context' => $context,
+                    'threshold'    => $threshold,
+                    'context'      => $context,
                     'triggered_at' => now(),
                 ]);
 
@@ -77,7 +77,7 @@ class ThresholdMonitoringService
     }
 
     /**
-     * Monitor account activity against thresholds
+     * Monitor account activity against thresholds.
      */
     public function monitorAccount(Account $account): Collection
     {
@@ -95,8 +95,8 @@ class ThresholdMonitoringService
             if ($threshold->evaluate($context)) {
                 $threshold->recordTrigger();
                 $triggeredThresholds->push([
-                    'threshold' => $threshold,
-                    'context' => $context,
+                    'threshold'    => $threshold,
+                    'context'      => $context,
                     'triggered_at' => now(),
                 ]);
 
@@ -108,7 +108,7 @@ class ThresholdMonitoringService
     }
 
     /**
-     * Run aggregate monitoring for a time period
+     * Run aggregate monitoring for a time period.
      */
     public function runAggregateMonitoring(Carbon $date): Collection
     {
@@ -127,10 +127,10 @@ class ThresholdMonitoringService
                 if ($threshold->evaluate($context)) {
                     $threshold->recordTrigger();
                     $triggeredThresholds->push([
-                        'threshold' => $threshold,
+                        'threshold'     => $threshold,
                         'aggregate_key' => $aggregateKey,
-                        'context' => $context,
-                        'triggered_at' => now(),
+                        'context'       => $context,
+                        'triggered_at'  => now(),
                     ]);
 
                     $this->handleAggregateThresholdTrigger($threshold, $aggregateKey, $context);
@@ -142,7 +142,7 @@ class ThresholdMonitoringService
     }
 
     /**
-     * Get applicable thresholds
+     * Get applicable thresholds.
      */
     protected function getApplicableThresholds(string $category, string $jurisdiction): Collection
     {
@@ -163,7 +163,7 @@ class ThresholdMonitoringService
     }
 
     /**
-     * Build transaction context
+     * Build transaction context.
      */
     protected function buildTransactionContext(Transaction $transaction): array
     {
@@ -181,27 +181,27 @@ class ThresholdMonitoringService
 
         return [
             'transaction' => [
-                'id' => $transaction->id,
-                'amount' => $transaction->amount,
-                'currency' => $transaction->currency,
-                'type' => $transaction->type,
+                'id'         => $transaction->id,
+                'amount'     => $transaction->amount,
+                'currency'   => $transaction->currency,
+                'type'       => $transaction->type,
                 'created_at' => $transaction->created_at,
             ],
             'account' => [
-                'id' => $account->id,
-                'type' => $account->type,
-                'balance' => $account->getBalance($transaction->currency),
+                'id'       => $account->id,
+                'type'     => $account->type,
+                'balance'  => $account->getBalance($transaction->currency),
                 'age_days' => $account->created_at->diffInDays(now()),
             ],
             'user' => [
-                'id' => $user->id,
+                'id'          => $user->id,
                 'risk_rating' => $user->risk_rating,
-                'kyc_level' => $user->kyc_level,
-                'pep_status' => $user->pep_status,
-                'country' => $user->country,
+                'kyc_level'   => $user->kyc_level,
+                'pep_status'  => $user->pep_status,
+                'country'     => $user->country,
             ],
             'velocity' => [
-                'daily_transaction_count' => $dailyCount,
+                'daily_transaction_count'  => $dailyCount,
                 'daily_transaction_volume' => $dailyVolume,
             ],
             'metadata' => $transaction->metadata ?? [],
@@ -209,7 +209,7 @@ class ThresholdMonitoringService
     }
 
     /**
-     * Build customer context
+     * Build customer context.
      */
     protected function buildCustomerContext(User $user): array
     {
@@ -234,24 +234,24 @@ class ThresholdMonitoringService
 
         return [
             'user' => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'country' => $user->country,
-                'risk_rating' => $user->risk_rating,
-                'kyc_level' => $user->kyc_level,
-                'kyc_status' => $user->kyc_status,
-                'pep_status' => $user->pep_status,
-                'created_at' => $user->created_at,
+                'id'               => $user->id,
+                'name'             => $user->name,
+                'email'            => $user->email,
+                'country'          => $user->country,
+                'risk_rating'      => $user->risk_rating,
+                'kyc_level'        => $user->kyc_level,
+                'kyc_status'       => $user->kyc_status,
+                'pep_status'       => $user->pep_status,
+                'created_at'       => $user->created_at,
                 'account_age_days' => $user->created_at->diffInDays(now()),
             ],
             'accounts' => [
-                'count' => $accounts->count(),
+                'count'         => $accounts->count(),
                 'total_balance' => $totalBalance,
-                'types' => $accounts->pluck('type')->unique()->values(),
+                'types'         => $accounts->pluck('type')->unique()->values(),
             ],
             'activity' => [
-                'transaction_count_30d' => $transactionCount30d,
+                'transaction_count_30d'  => $transactionCount30d,
                 'transaction_volume_30d' => $transactionVolume30d,
                 'avg_transaction_amount' => $transactionCount30d > 0 ?
                     $transactionVolume30d / $transactionCount30d : 0,
@@ -260,7 +260,7 @@ class ThresholdMonitoringService
     }
 
     /**
-     * Build account context
+     * Build account context.
      */
     protected function buildAccountContext(Account $account): array
     {
@@ -279,31 +279,31 @@ class ThresholdMonitoringService
 
         return [
             'account' => [
-                'id' => $account->id,
-                'type' => $account->type,
-                'currency' => $account->currency,
-                'balance' => $account->getBalance(),
+                'id'         => $account->id,
+                'type'       => $account->type,
+                'currency'   => $account->currency,
+                'balance'    => $account->getBalance(),
                 'created_at' => $account->created_at,
-                'age_days' => $account->created_at->diffInDays(now()),
-                'status' => $account->status,
+                'age_days'   => $account->created_at->diffInDays(now()),
+                'status'     => $account->status,
             ],
             'user' => [
-                'id' => $user->id,
+                'id'          => $user->id,
                 'risk_rating' => $user->risk_rating,
-                'kyc_level' => $user->kyc_level,
-                'country' => $user->country,
+                'kyc_level'   => $user->kyc_level,
+                'country'     => $user->country,
             ],
             'activity' => [
-                'monthly_transaction_count' => $monthlyMetrics->count ?? 0,
+                'monthly_transaction_count'  => $monthlyMetrics->count ?? 0,
                 'monthly_transaction_volume' => $monthlyMetrics->volume ?? 0,
-                'max_transaction_amount' => $monthlyMetrics->max_amount ?? 0,
-                'avg_transaction_amount' => $monthlyMetrics->avg_amount ?? 0,
+                'max_transaction_amount'     => $monthlyMetrics->max_amount ?? 0,
+                'avg_transaction_amount'     => $monthlyMetrics->avg_amount ?? 0,
             ],
         ];
     }
 
     /**
-     * Perform aggregation for threshold
+     * Perform aggregation for threshold.
      */
     protected function performAggregation(RegulatoryThreshold $threshold, Carbon $date): array
     {
@@ -333,7 +333,7 @@ class ThresholdMonitoringService
     }
 
     /**
-     * Aggregate by customer
+     * Aggregate by customer.
      */
     protected function aggregateByCustomer(RegulatoryThreshold $threshold, Carbon $startDate, Carbon $endDate): array
     {
@@ -356,14 +356,14 @@ class ThresholdMonitoringService
             $user = User::find($result->user_id);
             if ($user) {
                 $aggregateData[$result->user_id] = [
-                    'user_id' => $result->user_id,
-                    'user_name' => $user->name,
-                    'user_risk_rating' => $user->risk_rating,
+                    'user_id'           => $result->user_id,
+                    'user_name'         => $user->name,
+                    'user_risk_rating'  => $user->risk_rating,
                     'transaction_count' => $result->transaction_count,
-                    'total_amount' => $result->total_amount,
-                    'max_amount' => $result->max_amount,
-                    'period_start' => $startDate,
-                    'period_end' => $endDate,
+                    'total_amount'      => $result->total_amount,
+                    'max_amount'        => $result->max_amount,
+                    'period_start'      => $startDate,
+                    'period_end'        => $endDate,
                 ];
             }
         }
@@ -372,7 +372,7 @@ class ThresholdMonitoringService
     }
 
     /**
-     * Aggregate by account
+     * Aggregate by account.
      */
     protected function aggregateByAccount(RegulatoryThreshold $threshold, Carbon $startDate, Carbon $endDate): array
     {
@@ -394,14 +394,14 @@ class ThresholdMonitoringService
             $account = Account::find($result->account_id);
             if ($account) {
                 $aggregateData[$result->account_id] = [
-                    'account_id' => $result->account_id,
-                    'account_type' => $account->type,
-                    'user_id' => $account->user_id,
+                    'account_id'        => $result->account_id,
+                    'account_type'      => $account->type,
+                    'user_id'           => $account->user_id,
                     'transaction_count' => $result->transaction_count,
-                    'total_amount' => $result->total_amount,
-                    'active_days' => $result->active_days,
-                    'period_start' => $startDate,
-                    'period_end' => $endDate,
+                    'total_amount'      => $result->total_amount,
+                    'active_days'       => $result->active_days,
+                    'period_start'      => $startDate,
+                    'period_end'        => $endDate,
                 ];
             }
         }
@@ -410,7 +410,7 @@ class ThresholdMonitoringService
     }
 
     /**
-     * Aggregate by country
+     * Aggregate by country.
      */
     protected function aggregateByCountry(RegulatoryThreshold $threshold, Carbon $startDate, Carbon $endDate): array
     {
@@ -431,12 +431,12 @@ class ThresholdMonitoringService
 
         foreach ($results as $result) {
             $aggregateData[$result->country] = [
-                'country' => $result->country,
-                'user_count' => $result->user_count,
+                'country'           => $result->country,
+                'user_count'        => $result->user_count,
                 'transaction_count' => $result->transaction_count,
-                'total_amount' => $result->total_amount,
-                'period_start' => $startDate,
-                'period_end' => $endDate,
+                'total_amount'      => $result->total_amount,
+                'period_start'      => $startDate,
+                'period_end'        => $endDate,
             ];
         }
 
@@ -444,7 +444,7 @@ class ThresholdMonitoringService
     }
 
     /**
-     * Aggregate by merchant
+     * Aggregate by merchant.
      */
     protected function aggregateByMerchant(RegulatoryThreshold $threshold, Carbon $startDate, Carbon $endDate): array
     {
@@ -453,7 +453,7 @@ class ThresholdMonitoringService
     }
 
     /**
-     * Handle threshold trigger
+     * Handle threshold trigger.
      */
     protected function handleThresholdTrigger(RegulatoryThreshold $threshold, $entity, array $context): void
     {
@@ -485,7 +485,7 @@ class ThresholdMonitoringService
     }
 
     /**
-     * Handle aggregate threshold trigger
+     * Handle aggregate threshold trigger.
      */
     protected function handleAggregateThresholdTrigger(
         RegulatoryThreshold $threshold,
@@ -495,8 +495,8 @@ class ThresholdMonitoringService
         // Create alert for aggregate threshold breach
         Log::warning('Aggregate threshold triggered', [
             'threshold_code' => $threshold->threshold_code,
-            'aggregate_key' => $aggregateKey,
-            'context' => $context,
+            'aggregate_key'  => $aggregateKey,
+            'context'        => $context,
         ]);
 
         // Handle actions
@@ -504,20 +504,20 @@ class ThresholdMonitoringService
     }
 
     /**
-     * Create threshold report
+     * Create threshold report.
      */
     protected function createThresholdReport(RegulatoryThreshold $threshold, $entity, array $context): void
     {
         // In production, create actual report
         Log::info('Threshold report created', [
             'threshold_code' => $threshold->threshold_code,
-            'entity_type' => get_class($entity),
-            'entity_id' => $entity->id ?? null,
+            'entity_type'    => get_class($entity),
+            'entity_id'      => $entity->id ?? null,
         ]);
     }
 
     /**
-     * Flag entity
+     * Flag entity.
      */
     protected function flagEntity($entity, RegulatoryThreshold $threshold, array $context): void
     {
@@ -529,7 +529,7 @@ class ThresholdMonitoringService
     }
 
     /**
-     * Send threshold notification
+     * Send threshold notification.
      */
     protected function sendThresholdNotification(RegulatoryThreshold $threshold, $entity, array $context): void
     {
@@ -541,28 +541,28 @@ class ThresholdMonitoringService
     }
 
     /**
-     * Block transaction
+     * Block transaction.
      */
     protected function blockTransaction(Transaction $transaction, RegulatoryThreshold $threshold): void
     {
         $transaction->update([
-            'status' => 'blocked',
+            'status'   => 'blocked',
             'metadata' => array_merge($transaction->metadata ?? [], [
                 'blocked_by_threshold' => $threshold->threshold_code,
-                'blocked_at' => now()->toIso8601String(),
+                'blocked_at'           => now()->toIso8601String(),
             ]),
         ]);
     }
 
     /**
-     * Create review task
+     * Create review task.
      */
     protected function createReviewTask(RegulatoryThreshold $threshold, $entity, array $context): void
     {
         // In production, create task in task management system
         Log::info('Review task created', [
             'threshold_code' => $threshold->threshold_code,
-            'priority' => $threshold->review_priority,
+            'priority'       => $threshold->review_priority,
         ]);
     }
 }

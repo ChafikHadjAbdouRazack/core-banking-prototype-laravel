@@ -10,12 +10,12 @@ use Illuminate\Database\Eloquent\Model;
 trait Auditable
 {
     /**
-     * Boot the auditable trait
+     * Boot the auditable trait.
      */
     public static function bootAuditable(): void
     {
         static::created(function (Model $model) {
-            if (!$model->shouldAudit()) {
+            if (! $model->shouldAudit()) {
                 return;
             }
 
@@ -30,7 +30,7 @@ trait Auditable
         });
 
         static::updated(function (Model $model) {
-            if (!$model->shouldAudit() || !$model->wasChanged()) {
+            if (! $model->shouldAudit() || ! $model->wasChanged()) {
                 return;
             }
 
@@ -44,7 +44,7 @@ trait Auditable
                 }
             }
 
-            if (!empty($old)) {
+            if (! empty($old)) {
                 AuditLog::log(
                     'updated',
                     $model,
@@ -57,7 +57,7 @@ trait Auditable
         });
 
         static::deleted(function (Model $model) {
-            if (!$model->shouldAudit()) {
+            if (! $model->shouldAudit()) {
                 return;
             }
 
@@ -73,7 +73,7 @@ trait Auditable
     }
 
     /**
-     * Get the attributes that should be audited
+     * Get the attributes that should be audited.
      */
     public function getAuditableAttributes(): array
     {
@@ -85,7 +85,7 @@ trait Auditable
     }
 
     /**
-     * Get additional metadata for the audit log
+     * Get additional metadata for the audit log.
      */
     public function getAuditMetadata(): ?array
     {
@@ -93,7 +93,7 @@ trait Auditable
     }
 
     /**
-     * Get tags for the audit log
+     * Get tags for the audit log.
      */
     public function getAuditTags(): ?string
     {
@@ -101,7 +101,7 @@ trait Auditable
     }
 
     /**
-     * Determine if the model should be audited
+     * Determine if the model should be audited.
      */
     public function shouldAudit(): bool
     {
@@ -113,7 +113,7 @@ trait Auditable
     }
 
     /**
-     * Get the audit logs for this model
+     * Get the audit logs for this model.
      */
     public function auditLogs()
     {

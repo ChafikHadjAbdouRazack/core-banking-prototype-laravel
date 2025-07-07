@@ -3,16 +3,15 @@
 namespace App\Services\Cgo;
 
 use App\Models\CgoInvestment;
-use App\Models\CgoPricingRound;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class InvestmentAgreementService
 {
     /**
-     * Generate investment agreement PDF
+     * Generate investment agreement PDF.
      */
     public function generateAgreement(CgoInvestment $investment): string
     {
@@ -40,20 +39,20 @@ class InvestmentAgreementService
 
             // Update investment record
             $investment->update([
-                'agreement_path' => $path,
+                'agreement_path'         => $path,
                 'agreement_generated_at' => now(),
             ]);
 
             Log::info('CGO investment agreement generated', [
                 'investment_id' => $investment->id,
-                'path' => $path,
+                'path'          => $path,
             ]);
 
             return $path;
         } catch (\Exception $e) {
             Log::error('Failed to generate CGO investment agreement', [
                 'investment_id' => $investment->id,
-                'error' => $e->getMessage(),
+                'error'         => $e->getMessage(),
             ]);
 
             throw $e;
@@ -61,7 +60,7 @@ class InvestmentAgreementService
     }
 
     /**
-     * Generate certificate of investment
+     * Generate certificate of investment.
      */
     public function generateCertificate(CgoInvestment $investment): string
     {
@@ -75,9 +74,9 @@ class InvestmentAgreementService
             $investment->load(['user', 'round']);
 
             // Generate certificate number if not exists
-            if (!$investment->certificate_number) {
+            if (! $investment->certificate_number) {
                 $investment->update([
-                    'certificate_number' => $investment->generateCertificateNumber(),
+                    'certificate_number'    => $investment->generateCertificateNumber(),
                     'certificate_issued_at' => now(),
                 ]);
             }
@@ -106,16 +105,16 @@ class InvestmentAgreementService
             ]);
 
             Log::info('CGO investment certificate generated', [
-                'investment_id' => $investment->id,
+                'investment_id'      => $investment->id,
                 'certificate_number' => $investment->certificate_number,
-                'path' => $path,
+                'path'               => $path,
             ]);
 
             return $path;
         } catch (\Exception $e) {
             Log::error('Failed to generate CGO investment certificate', [
                 'investment_id' => $investment->id,
-                'error' => $e->getMessage(),
+                'error'         => $e->getMessage(),
             ]);
 
             throw $e;
@@ -123,7 +122,7 @@ class InvestmentAgreementService
     }
 
     /**
-     * Prepare agreement data
+     * Prepare agreement data.
      */
     protected function prepareAgreementData(CgoInvestment $investment): array
     {
@@ -132,53 +131,53 @@ class InvestmentAgreementService
 
         return [
             'investment' => $investment,
-            'investor' => [
-                'name' => $user->name,
-                'email' => $user->email,
+            'investor'   => [
+                'name'    => $user->name,
+                'email'   => $user->email,
                 'address' => $user->profile?->address ?? 'Not provided',
                 'country' => $user->country_code ?? 'Not provided',
             ],
             'company' => [
-                'name' => config('app.company_name', 'FinAegis Ltd'),
+                'name'         => config('app.company_name', 'FinAegis Ltd'),
                 'registration' => config('app.company_registration', '12345678'),
-                'address' => config('app.company_address', '123 Business St, London, UK'),
-                'email' => config('app.company_email', 'invest@finaegis.com'),
+                'address'      => config('app.company_address', '123 Business St, London, UK'),
+                'email'        => config('app.company_email', 'invest@finaegis.com'),
             ],
             'investment_details' => [
-                'amount' => $investment->amount,
-                'currency' => $investment->currency,
-                'shares' => $investment->shares_purchased,
-                'share_price' => $investment->share_price,
+                'amount'               => $investment->amount,
+                'currency'             => $investment->currency,
+                'shares'               => $investment->shares_purchased,
+                'share_price'          => $investment->share_price,
                 'ownership_percentage' => $investment->ownership_percentage,
-                'tier' => ucfirst($investment->tier),
-                'round_name' => $round->name,
-                'valuation' => $round->pre_money_valuation,
+                'tier'                 => ucfirst($investment->tier),
+                'round_name'           => $round->name,
+                'valuation'            => $round->pre_money_valuation,
             ],
-            'terms' => $this->getInvestmentTerms($investment),
-            'risks' => $this->getInvestmentRisks(),
-            'agreement_date' => now()->format('F d, Y'),
+            'terms'            => $this->getInvestmentTerms($investment),
+            'risks'            => $this->getInvestmentRisks(),
+            'agreement_date'   => now()->format('F d, Y'),
             'agreement_number' => 'CGO-AGR-' . $investment->uuid,
         ];
     }
 
     /**
-     * Prepare certificate data
+     * Prepare certificate data.
      */
     protected function prepareCertificateData(CgoInvestment $investment): array
     {
         return [
-            'certificate_number' => $investment->certificate_number,
-            'investor_name' => $investment->user->name,
-            'investment_amount' => $investment->amount,
-            'currency' => $investment->currency,
-            'shares_purchased' => $investment->shares_purchased,
-            'share_price' => $investment->share_price,
+            'certificate_number'   => $investment->certificate_number,
+            'investor_name'        => $investment->user->name,
+            'investment_amount'    => $investment->amount,
+            'currency'             => $investment->currency,
+            'shares_purchased'     => $investment->shares_purchased,
+            'share_price'          => $investment->share_price,
             'ownership_percentage' => $investment->ownership_percentage,
-            'tier' => ucfirst($investment->tier),
-            'investment_date' => $investment->payment_completed_at->format('F d, Y'),
-            'issue_date' => now()->format('F d, Y'),
-            'company_name' => config('app.company_name', 'FinAegis Ltd'),
-            'signatures' => [
+            'tier'                 => ucfirst($investment->tier),
+            'investment_date'      => $investment->payment_completed_at->format('F d, Y'),
+            'issue_date'           => now()->format('F d, Y'),
+            'company_name'         => config('app.company_name', 'FinAegis Ltd'),
+            'signatures'           => [
                 'ceo' => config('app.ceo_name', 'John Doe'),
                 'cfo' => config('app.cfo_name', 'Jane Smith'),
             ],
@@ -186,17 +185,17 @@ class InvestmentAgreementService
     }
 
     /**
-     * Get investment terms based on tier
+     * Get investment terms based on tier.
      */
     protected function getInvestmentTerms(CgoInvestment $investment): array
     {
         $baseTerms = [
-            'lock_in_period' => '12 months',
-            'dividend_rights' => 'Pro-rata based on ownership percentage',
-            'voting_rights' => 'One vote per share',
+            'lock_in_period'        => '12 months',
+            'dividend_rights'       => 'Pro-rata based on ownership percentage',
+            'voting_rights'         => 'One vote per share',
             'transfer_restrictions' => 'Subject to company approval and right of first refusal',
-            'dilution_protection' => 'None',
-            'information_rights' => 'Annual financial statements',
+            'dilution_protection'   => 'None',
+            'information_rights'    => 'Annual financial statements',
         ];
 
         // Add tier-specific terms
@@ -216,7 +215,7 @@ class InvestmentAgreementService
     }
 
     /**
-     * Get standard investment risks
+     * Get standard investment risks.
      */
     protected function getInvestmentRisks(): array
     {
@@ -233,7 +232,7 @@ class InvestmentAgreementService
     }
 
     /**
-     * Generate unique filename
+     * Generate unique filename.
      */
     protected function generateFilename(CgoInvestment $investment): string
     {
@@ -244,7 +243,7 @@ class InvestmentAgreementService
     }
 
     /**
-     * Send agreement to investor
+     * Send agreement to investor.
      */
     public function sendAgreementToInvestor(CgoInvestment $investment): void
     {
@@ -252,7 +251,7 @@ class InvestmentAgreementService
         // Implementation depends on email system
         Log::info('Agreement email would be sent', [
             'investment_id' => $investment->id,
-            'email' => $investment->user->email,
+            'email'         => $investment->user->email,
         ]);
     }
 }

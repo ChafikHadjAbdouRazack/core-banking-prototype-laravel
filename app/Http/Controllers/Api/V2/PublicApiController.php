@@ -46,36 +46,36 @@ class PublicApiController extends Controller
     public function index(): JsonResponse
     {
         return response()->json([
-            'name' => 'FinAegis Public API',
-            'version' => '2.0.0',
+            'name'        => 'FinAegis Public API',
+            'version'     => '2.0.0',
             'description' => 'Public API for the FinAegis GCU Platform',
-            'status' => 'operational',
-            'endpoints' => [
-                'accounts' => '/v2/accounts',
-                'assets' => '/v2/assets',
+            'status'      => 'operational',
+            'endpoints'   => [
+                'accounts'       => '/v2/accounts',
+                'assets'         => '/v2/assets',
                 'exchange_rates' => '/v2/exchange-rates',
-                'baskets' => '/v2/baskets',
-                'transactions' => '/v2/transactions',
-                'transfers' => '/v2/transfers',
-                'webhooks' => '/v2/webhooks',
-                'gcu' => '/v2/gcu',
+                'baskets'        => '/v2/baskets',
+                'transactions'   => '/v2/transactions',
+                'transfers'      => '/v2/transfers',
+                'webhooks'       => '/v2/webhooks',
+                'gcu'            => '/v2/gcu',
             ],
             'features' => [
                 'multi_asset_support' => true,
-                'basket_assets' => true,
-                'webhooks' => true,
-                'real_time_rates' => true,
-                'bank_integration' => true,
-                'governance_voting' => true,
+                'basket_assets'       => true,
+                'webhooks'            => true,
+                'real_time_rates'     => true,
+                'bank_integration'    => true,
+                'governance_voting'   => true,
             ],
             'rate_limits' => [
                 'requests_per_minute' => 60,
-                'requests_per_hour' => 1000,
-                'burst_limit' => 100,
+                'requests_per_hour'   => 1000,
+                'burst_limit'         => 100,
             ],
             'documentation' => 'https://docs.finaegis.org',
-            'support' => 'api@finaegis.org',
-            'sandbox' => 'https://sandbox.api.finaegis.org',
+            'support'       => 'api@finaegis.org',
+            'sandbox'       => 'https://sandbox.api.finaegis.org',
         ]);
     }
 
@@ -116,20 +116,20 @@ class PublicApiController extends Controller
 
         // Check component status
         $components = [
-            'api' => 'operational',
-            'database' => $this->checkDatabaseStatus(),
-            'redis' => $this->checkRedisStatus(),
+            'api'             => 'operational',
+            'database'        => $this->checkDatabaseStatus(),
+            'redis'           => $this->checkRedisStatus(),
             'bank_connectors' => $this->checkBankConnectorsStatus(),
         ];
 
         $overallStatus = $this->determineOverallStatus($components);
 
         return response()->json([
-            'status' => $overallStatus,
-            'timestamp' => now()->toIso8601String(),
+            'status'     => $overallStatus,
+            'timestamp'  => now()->toIso8601String(),
             'components' => $components,
-            'metrics' => [
-                'response_time_ms' => round((microtime(true) - $startTime) * 1000),
+            'metrics'    => [
+                'response_time_ms'  => round((microtime(true) - $startTime) * 1000),
                 'uptime_percentage' => 99.95, // In production, calculate from monitoring data
             ],
         ]);
@@ -139,6 +139,7 @@ class PublicApiController extends Controller
     {
         try {
             \DB::select('SELECT 1');
+
             return 'operational';
         } catch (\Exception $e) {
             return 'down';
@@ -149,6 +150,7 @@ class PublicApiController extends Controller
     {
         try {
             \Cache::store('redis')->get('health_check');
+
             return 'operational';
         } catch (\Exception $e) {
             return 'down';
@@ -163,10 +165,10 @@ class PublicApiController extends Controller
         $status = [];
         foreach ($allHealth as $custodian => $health) {
             $status[$custodian] = match ($health['status']) {
-                'healthy' => 'operational',
-                'degraded' => 'degraded',
+                'healthy'   => 'operational',
+                'degraded'  => 'degraded',
                 'unhealthy' => 'down',
-                default => 'unknown',
+                default     => 'unknown',
             };
         }
 

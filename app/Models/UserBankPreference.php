@@ -22,68 +22,68 @@ class UserBankPreference extends Model
 
     protected $casts = [
         'allocation_percentage' => 'decimal:2',
-        'is_primary' => 'boolean',
-        'metadata' => 'array',
+        'is_primary'            => 'boolean',
+        'metadata'              => 'array',
     ];
 
     /**
-     * Available banks for the platform
+     * Available banks for the platform.
      */
-    const AVAILABLE_BANKS = [
+    public const AVAILABLE_BANKS = [
         'PAYSERA' => [
-            'code' => 'PAYSERA',
-            'name' => 'Paysera',
-            'country' => 'LT',
-            'type' => 'emi',
+            'code'               => 'PAYSERA',
+            'name'               => 'Paysera',
+            'country'            => 'LT',
+            'type'               => 'emi',
             'default_allocation' => 40.0,
-            'deposit_insurance' => 100000, // EUR
-            'swift_code' => 'EVPULT22XXX',
-            'features' => ['instant_transfers', 'multi_currency', 'api_access'],
+            'deposit_insurance'  => 100000, // EUR
+            'swift_code'         => 'EVPULT22XXX',
+            'features'           => ['instant_transfers', 'multi_currency', 'api_access'],
         ],
         'DEUTSCHE' => [
-            'code' => 'DEUTSCHE',
-            'name' => 'Deutsche Bank',
-            'country' => 'DE',
-            'type' => 'traditional',
+            'code'               => 'DEUTSCHE',
+            'name'               => 'Deutsche Bank',
+            'country'            => 'DE',
+            'type'               => 'traditional',
             'default_allocation' => 30.0,
-            'deposit_insurance' => 100000, // EUR
-            'swift_code' => 'DEUTDEFF',
-            'features' => ['corporate_banking', 'international_wire', 'premium_support'],
+            'deposit_insurance'  => 100000, // EUR
+            'swift_code'         => 'DEUTDEFF',
+            'features'           => ['corporate_banking', 'international_wire', 'premium_support'],
         ],
         'SANTANDER' => [
-            'code' => 'SANTANDER',
-            'name' => 'Santander',
-            'country' => 'ES',
-            'type' => 'traditional',
+            'code'               => 'SANTANDER',
+            'name'               => 'Santander',
+            'country'            => 'ES',
+            'type'               => 'traditional',
             'default_allocation' => 30.0,
-            'deposit_insurance' => 100000, // EUR
-            'swift_code' => 'BSCHESMMXXX',
-            'features' => ['global_presence', 'trade_finance', 'multi_currency'],
+            'deposit_insurance'  => 100000, // EUR
+            'swift_code'         => 'BSCHESMMXXX',
+            'features'           => ['global_presence', 'trade_finance', 'multi_currency'],
         ],
         'REVOLUT' => [
-            'code' => 'REVOLUT',
-            'name' => 'Revolut',
-            'country' => 'LT',
-            'type' => 'emi',
+            'code'               => 'REVOLUT',
+            'name'               => 'Revolut',
+            'country'            => 'LT',
+            'type'               => 'emi',
             'default_allocation' => 0.0,
-            'deposit_insurance' => 100000, // EUR
-            'swift_code' => 'REVOGB21',
-            'features' => ['instant_transfers', 'crypto_support', 'api_access'],
+            'deposit_insurance'  => 100000, // EUR
+            'swift_code'         => 'REVOGB21',
+            'features'           => ['instant_transfers', 'crypto_support', 'api_access'],
         ],
         'WISE' => [
-            'code' => 'WISE',
-            'name' => 'Wise',
-            'country' => 'BE',
-            'type' => 'emi',
+            'code'               => 'WISE',
+            'name'               => 'Wise',
+            'country'            => 'BE',
+            'type'               => 'emi',
             'default_allocation' => 0.0,
-            'deposit_insurance' => 100000, // EUR
-            'swift_code' => 'TRWIGB22',
-            'features' => ['low_fees', 'multi_currency', 'borderless_account'],
+            'deposit_insurance'  => 100000, // EUR
+            'swift_code'         => 'TRWIGB22',
+            'features'           => ['low_fees', 'multi_currency', 'borderless_account'],
         ],
     ];
 
     /**
-     * Get the user that owns the bank preference
+     * Get the user that owns the bank preference.
      */
     public function user(): BelongsTo
     {
@@ -91,7 +91,7 @@ class UserBankPreference extends Model
     }
 
     /**
-     * Scope to get active preferences
+     * Scope to get active preferences.
      */
     public function scopeActive($query)
     {
@@ -99,7 +99,7 @@ class UserBankPreference extends Model
     }
 
     /**
-     * Validate that user's allocations sum to 100%
+     * Validate that user's allocations sum to 100%.
      */
     public static function validateAllocations(string $userUuid): bool
     {
@@ -111,40 +111,40 @@ class UserBankPreference extends Model
     }
 
     /**
-     * Get default bank allocations for new users
+     * Get default bank allocations for new users.
      */
     public static function getDefaultAllocations(): array
     {
         return [
             [
-                'bank_code' => 'PAYSERA',
-                'bank_name' => 'Paysera',
+                'bank_code'             => 'PAYSERA',
+                'bank_name'             => 'Paysera',
                 'allocation_percentage' => 40.0,
-                'is_primary' => true,
-                'status' => 'active',
-                'metadata' => self::AVAILABLE_BANKS['PAYSERA'],
+                'is_primary'            => true,
+                'status'                => 'active',
+                'metadata'              => self::AVAILABLE_BANKS['PAYSERA'],
             ],
             [
-                'bank_code' => 'DEUTSCHE',
-                'bank_name' => 'Deutsche Bank',
+                'bank_code'             => 'DEUTSCHE',
+                'bank_name'             => 'Deutsche Bank',
                 'allocation_percentage' => 30.0,
-                'is_primary' => false,
-                'status' => 'active',
-                'metadata' => self::AVAILABLE_BANKS['DEUTSCHE'],
+                'is_primary'            => false,
+                'status'                => 'active',
+                'metadata'              => self::AVAILABLE_BANKS['DEUTSCHE'],
             ],
             [
-                'bank_code' => 'SANTANDER',
-                'bank_name' => 'Santander',
+                'bank_code'             => 'SANTANDER',
+                'bank_name'             => 'Santander',
                 'allocation_percentage' => 30.0,
-                'is_primary' => false,
-                'status' => 'active',
-                'metadata' => self::AVAILABLE_BANKS['SANTANDER'],
+                'is_primary'            => false,
+                'status'                => 'active',
+                'metadata'              => self::AVAILABLE_BANKS['SANTANDER'],
             ],
         ];
     }
 
     /**
-     * Calculate fund distribution across user's banks
+     * Calculate fund distribution across user's banks.
      *
      * @param string $userUuid
      * @param int $amountInCents
@@ -163,7 +163,7 @@ class UserBankPreference extends Model
         }
 
         // Validate allocations sum to 100%
-        if (!self::validateAllocations($userUuid)) {
+        if (! self::validateAllocations($userUuid)) {
             throw new \Exception('Bank allocations do not sum to 100%');
         }
 
@@ -184,12 +184,12 @@ class UserBankPreference extends Model
             $totalAllocated += $bankAmount;
 
             $distribution[] = [
-                'bank_code' => $preference->bank_code,
-                'bank_name' => $preference->bank_name,
-                'amount' => $bankAmount,
+                'bank_code'  => $preference->bank_code,
+                'bank_name'  => $preference->bank_name,
+                'amount'     => $bankAmount,
                 'percentage' => $preference->allocation_percentage,
                 'is_primary' => $preference->is_primary,
-                'metadata' => $preference->metadata,
+                'metadata'   => $preference->metadata,
             ];
         }
 
@@ -202,7 +202,7 @@ class UserBankPreference extends Model
     }
 
     /**
-     * Get total deposit insurance coverage for user
+     * Get total deposit insurance coverage for user.
      */
     public static function getTotalInsuranceCoverage(string $userUuid): int
     {
@@ -222,7 +222,7 @@ class UserBankPreference extends Model
     }
 
     /**
-     * Check if user has diversified bank allocation
+     * Check if user has diversified bank allocation.
      */
     public static function isDiversified(string $userUuid): bool
     {
@@ -237,6 +237,7 @@ class UserBankPreference extends Model
         }
 
         $maxAllocation = $preferences->max('allocation_percentage');
+
         return $maxAllocation <= 60.0;
     }
 }

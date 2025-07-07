@@ -8,8 +8,8 @@ use App\Domain\Account\Events\AccountDeleted;
 use App\Domain\Account\Events\AccountFrozen;
 use App\Domain\Account\Events\AccountUnfrozen;
 use App\Domain\Account\Repositories\LedgerRepository;
-use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
 use App\Domain\Account\Repositories\LedgerSnapshotRepository;
+use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
 
 class LedgerAggregate extends AggregateRoot
 {
@@ -36,7 +36,7 @@ class LedgerAggregate extends AggregateRoot
     }
 
     /**
-     * @param \App\Domain\Account\DataObjects\Account $account
+     * @param Account $account
      *
      * @return $this
      */

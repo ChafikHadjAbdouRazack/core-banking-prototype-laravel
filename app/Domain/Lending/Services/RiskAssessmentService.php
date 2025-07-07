@@ -3,12 +3,11 @@
 namespace App\Domain\Lending\Services;
 
 use App\Domain\Lending\Aggregates\LoanApplication;
-use App\Domain\Lending\ValueObjects\RiskRating;
 
 interface RiskAssessmentService
 {
     /**
-     * Assess loan risk
+     * Assess loan risk.
      *
      * @param LoanApplication $application
      * @param array $creditScore
@@ -22,7 +21,7 @@ interface RiskAssessmentService
     ): array;
 
     /**
-     * Calculate risk-adjusted interest rate
+     * Calculate risk-adjusted interest rate.
      *
      * @param string $riskRating
      * @param float $baseRate
@@ -31,7 +30,7 @@ interface RiskAssessmentService
     public function calculateRiskAdjustedRate(string $riskRating, float $baseRate): float;
 
     /**
-     * Get risk factors for a borrower
+     * Get risk factors for a borrower.
      *
      * @param string $borrowerId
      * @return array

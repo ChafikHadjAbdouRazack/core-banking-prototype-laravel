@@ -19,10 +19,10 @@ class ExternalExchangeService implements ExternalExchangeServiceInterface
     public function getMarketData(string $exchange, string $pair): array
     {
         return [
-            'exchange' => $exchange,
-            'pair' => $pair,
-            'price' => 0,
-            'volume' => 0,
+            'exchange'  => $exchange,
+            'pair'      => $pair,
+            'price'     => 0,
+            'volume'    => 0,
             'timestamp' => now()->toIso8601String(),
         ];
     }
@@ -38,9 +38,9 @@ class ExternalExchangeService implements ExternalExchangeServiceInterface
     public function getPriceAlignment(): array
     {
         return [
-            'enabled' => false,
+            'enabled'   => false,
             'threshold' => 0.01,
-            'pairs' => [],
+            'pairs'     => [],
         ];
     }
 
@@ -58,7 +58,7 @@ class ExternalExchangeService implements ExternalExchangeServiceInterface
     public function connectExchange(string $userUuid, string $exchange, array $credentials): array
     {
         return [
-            'success' => true,
+            'success'  => true,
             'exchange' => $exchange,
         ];
     }
@@ -69,7 +69,7 @@ class ExternalExchangeService implements ExternalExchangeServiceInterface
     }
 
     /**
-     * Get balances from external exchange
+     * Get balances from external exchange.
      */
     public function getBalances(string $userUuid, string $exchange): array
     {

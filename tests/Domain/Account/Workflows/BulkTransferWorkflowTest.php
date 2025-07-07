@@ -7,16 +7,16 @@ use Workflow\WorkflowStub;
 
 it('can execute bulk transfers successfully', function () {
     WorkflowStub::fake();
-    
+
     $fromAccount = new AccountUuid('from-account-uuid');
     $transfers = [
         ['to' => new AccountUuid('to-account-1'), 'amount' => new Money(100)],
         ['to' => new AccountUuid('to-account-2'), 'amount' => new Money(200)],
     ];
-    
+
     $workflow = WorkflowStub::make(BulkTransferWorkflow::class);
     $workflow->start($fromAccount, $transfers);
-    
+
     expect(true)->toBeTrue(); // Basic test that workflow starts without error
 });
 

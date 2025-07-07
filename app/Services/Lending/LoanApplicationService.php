@@ -2,8 +2,8 @@
 
 namespace App\Services\Lending;
 
-use App\Domain\Lending\Aggregates\LoanApplication;
 use App\Domain\Lending\Aggregates\Loan;
+use App\Domain\Lending\Aggregates\LoanApplication;
 use App\Domain\Lending\Services\CreditScoringService;
 use App\Domain\Lending\Services\RiskAssessmentService;
 use App\Models\User;
@@ -51,8 +51,8 @@ class LoanApplicationService
                 DB::commit();
 
                 return [
-                    'status' => 'rejected',
-                    'reason' => 'KYC check failed',
+                    'status'        => 'rejected',
+                    'reason'        => 'KYC check failed',
                     'applicationId' => $applicationId,
                 ];
             }
@@ -74,7 +74,7 @@ class LoanApplicationService
                 $creditScore,
                 [
                     'requestedAmount' => $requestedAmount,
-                    'termMonths' => $termMonths,
+                    'termMonths'      => $termMonths,
                 ]
             );
 
@@ -121,19 +121,19 @@ class LoanApplicationService
 
                 // Notify borrower
                 $this->notifyBorrower($borrowerId, 'approved', [
-                    'applicationId' => $applicationId,
-                    'loanId' => $loanId,
+                    'applicationId'  => $applicationId,
+                    'loanId'         => $loanId,
                     'approvedAmount' => $decision['approvedAmount'],
-                    'interestRate' => $decision['interestRate'],
-                    'termMonths' => $termMonths,
+                    'interestRate'   => $decision['interestRate'],
+                    'termMonths'     => $termMonths,
                 ]);
 
                 return [
-                    'status' => 'approved',
-                    'applicationId' => $applicationId,
-                    'loanId' => $loanId,
+                    'status'         => 'approved',
+                    'applicationId'  => $applicationId,
+                    'loanId'         => $loanId,
                     'approvedAmount' => $decision['approvedAmount'],
-                    'interestRate' => $decision['interestRate'],
+                    'interestRate'   => $decision['interestRate'],
                 ];
             } else {
                 // Reject application
@@ -145,13 +145,13 @@ class LoanApplicationService
                 // Notify borrower
                 $this->notifyBorrower($borrowerId, 'rejected', [
                     'applicationId' => $applicationId,
-                    'reasons' => $decision['rejectionReasons'],
+                    'reasons'       => $decision['rejectionReasons'],
                 ]);
 
                 return [
-                    'status' => 'rejected',
+                    'status'        => 'rejected',
                     'applicationId' => $applicationId,
-                    'reasons' => $decision['rejectionReasons'],
+                    'reasons'       => $decision['rejectionReasons'],
                 ];
             }
         } catch (\Exception $e) {
@@ -173,10 +173,10 @@ class LoanApplicationService
             // Calculate interest rate
             $baseRate = 5.0; // Base rate
             $riskPremium = match ($riskAssessment['rating']) {
-                'A' => 0,
-                'B' => 2,
-                'C' => 4,
-                'D' => 6,
+                'A'     => 0,
+                'B'     => 2,
+                'C'     => 4,
+                'D'     => 6,
                 default => 10,
             };
 
@@ -184,23 +184,23 @@ class LoanApplicationService
 
             // Determine approved amount (may be less than requested for higher risk)
             $approvalRatio = match ($riskAssessment['rating']) {
-                'A' => 1.0,
-                'B' => 1.0,
-                'C' => 0.9,
-                'D' => 0.8,
+                'A'     => 1.0,
+                'B'     => 1.0,
+                'C'     => 0.9,
+                'D'     => 0.8,
                 default => 0.7,
             };
 
             $approvedAmount = bcmul($requestedAmount, $approvalRatio, 2);
 
             return [
-                'approved' => true,
+                'approved'       => true,
                 'approvedAmount' => $approvedAmount,
-                'interestRate' => $interestRate,
-                'terms' => [
+                'interestRate'   => $interestRate,
+                'terms'          => [
                     'repaymentFrequency' => 'monthly',
-                    'lateFeePercentage' => 5.0,
-                    'gracePeriodDays' => 5,
+                    'lateFeePercentage'  => 5.0,
+                    'gracePeriodDays'    => 5,
                 ],
             ];
         } else {
@@ -210,12 +210,12 @@ class LoanApplicationService
                 $reasons[] = 'Credit score below minimum threshold';
             }
 
-            if (!in_array($riskAssessment['rating'], ['A', 'B', 'C', 'D'])) {
+            if (! in_array($riskAssessment['rating'], ['A', 'B', 'C', 'D'])) {
                 $reasons[] = 'Risk rating too high';
             }
 
             return [
-                'approved' => false,
+                'approved'         => false,
                 'rejectionReasons' => $reasons,
             ];
         }
@@ -224,10 +224,10 @@ class LoanApplicationService
     private function notifyBorrower(string $borrowerId, string $status, array $details): void
     {
         // In production, this would send email/SMS/push notification
-        Log::info("Loan application notification", [
+        Log::info('Loan application notification', [
             'borrowerId' => $borrowerId,
-            'status' => $status,
-            'details' => $details,
+            'status'     => $status,
+            'details'    => $details,
         ]);
     }
 }

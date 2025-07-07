@@ -37,15 +37,15 @@ final class MarketPair
     public function toArray(): array
     {
         return [
-            'base_currency' => $this->baseCurrency,
-            'quote_currency' => $this->quoteCurrency,
-            'min_order_size' => $this->minOrderSize->__toString(),
-            'max_order_size' => $this->maxOrderSize->__toString(),
-            'tick_size' => $this->tickSize->__toString(),
-            'price_precision' => $this->pricePrecision,
+            'base_currency'    => $this->baseCurrency,
+            'quote_currency'   => $this->quoteCurrency,
+            'min_order_size'   => $this->minOrderSize->__toString(),
+            'max_order_size'   => $this->maxOrderSize->__toString(),
+            'tick_size'        => $this->tickSize->__toString(),
+            'price_precision'  => $this->pricePrecision,
             'amount_precision' => $this->amountPrecision,
-            'is_active' => $this->isActive,
-            'metadata' => $this->metadata,
+            'is_active'        => $this->isActive,
+            'metadata'         => $this->metadata,
         ];
     }
 

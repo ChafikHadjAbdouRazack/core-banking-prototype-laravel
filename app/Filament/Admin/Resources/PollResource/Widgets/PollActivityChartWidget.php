@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\PollResource\Widgets;
 
-use App\Domain\Governance\Enums\PollStatus;
 use App\Domain\Governance\Models\Poll;
 use App\Domain\Governance\Models\Vote;
 use Filament\Widgets\ChartWidget;
@@ -35,18 +34,18 @@ class PollActivityChartWidget extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'label' => 'Polls Created',
-                    'data' => $pollsData,
-                    'borderColor' => 'rgb(59, 130, 246)',
+                    'label'           => 'Polls Created',
+                    'data'            => $pollsData,
+                    'borderColor'     => 'rgb(59, 130, 246)',
                     'backgroundColor' => 'rgba(59, 130, 246, 0.1)',
-                    'fill' => true,
+                    'fill'            => true,
                 ],
                 [
-                    'label' => 'Votes Cast',
-                    'data' => $votesData,
-                    'borderColor' => 'rgb(16, 185, 129)',
+                    'label'           => 'Votes Cast',
+                    'data'            => $votesData,
+                    'borderColor'     => 'rgb(16, 185, 129)',
                     'backgroundColor' => 'rgba(16, 185, 129, 0.1)',
-                    'fill' => true,
+                    'fill'            => true,
                 ],
             ],
             'labels' => $labels,

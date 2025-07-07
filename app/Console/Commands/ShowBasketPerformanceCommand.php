@@ -5,7 +5,6 @@ namespace App\Console\Commands;
 use App\Domain\Basket\Services\BasketValueCalculationService;
 use App\Models\BasketAsset;
 use Illuminate\Console\Command;
-use Illuminate\Support\Carbon;
 
 class ShowBasketPerformanceCommand extends Command
 {
@@ -38,8 +37,9 @@ class ShowBasketPerformanceCommand extends Command
         // Find the basket
         $basket = BasketAsset::where('code', $basketCode)->first();
 
-        if (!$basket) {
+        if (! $basket) {
             $this->error("Basket '{$basketCode}' not found.");
+
             return Command::FAILURE;
         }
 
@@ -68,7 +68,7 @@ class ShowBasketPerformanceCommand extends Command
     }
 
     /**
-     * Display current basket value
+     * Display current basket value.
      */
     private function displayCurrentValue(BasketAsset $basket, $value): void
     {
@@ -84,7 +84,7 @@ class ShowBasketPerformanceCommand extends Command
     }
 
     /**
-     * Display performance metrics
+     * Display performance metrics.
      */
     private function displayPerformance(BasketAsset $basket, BasketValueCalculationService $valueService, string $period): void
     {
@@ -92,17 +92,17 @@ class ShowBasketPerformanceCommand extends Command
 
         // Parse period
         $startDate = match ($period) {
-            '1d' => now()->subDay(),
-            '7d' => now()->subDays(7),
-            '30d' => now()->subDays(30),
-            '90d' => now()->subDays(90),
-            '1y' => now()->subYear(),
+            '1d'    => now()->subDay(),
+            '7d'    => now()->subDays(7),
+            '30d'   => now()->subDays(30),
+            '90d'   => now()->subDays(90),
+            '1y'    => now()->subYear(),
             default => now()->subDays(30),
         };
 
         $performance = $valueService->calculatePerformance($basket, $startDate, now());
 
-        if (!empty($performance)) {
+        if (! empty($performance)) {
             $changeClass = $performance['percentage_change'] >= 0 ? 'info' : 'error';
             $changeSymbol = $performance['percentage_change'] >= 0 ? '+' : '';
 
@@ -117,18 +117,18 @@ class ShowBasketPerformanceCommand extends Command
                 ]]
             );
         } else {
-            $this->warn("No performance data available for the selected period.");
+            $this->warn('No performance data available for the selected period.');
         }
 
         $this->newLine();
     }
 
     /**
-     * Display component breakdown
+     * Display component breakdown.
      */
     private function displayComponentBreakdown(BasketAsset $basket, $value): void
     {
-        $this->info("🔍 Component Breakdown:");
+        $this->info('🔍 Component Breakdown:');
 
         $components = $basket->components()
             ->where('is_active', true)
@@ -158,16 +158,17 @@ class ShowBasketPerformanceCommand extends Command
     }
 
     /**
-     * Display recent value history
+     * Display recent value history.
      */
     private function displayRecentHistory(BasketAsset $basket, BasketValueCalculationService $valueService): void
     {
-        $this->info("📈 Recent Value History (Last 7 Days):");
+        $this->info('📈 Recent Value History (Last 7 Days):');
 
         $history = $valueService->getHistoricalValues($basket, now()->subDays(7), now());
 
         if ($history->isEmpty()) {
-            $this->warn("No historical data available.");
+            $this->warn('No historical data available.');
+
             return;
         }
 
@@ -199,7 +200,7 @@ class ShowBasketPerformanceCommand extends Command
     }
 
     /**
-     * Display rebalancing information
+     * Display rebalancing information.
      */
     private function displayRebalancingInfo(BasketAsset $basket): void
     {
@@ -207,7 +208,7 @@ class ShowBasketPerformanceCommand extends Command
             return;
         }
 
-        $this->info("⚖️ Rebalancing Information:");
+        $this->info('⚖️ Rebalancing Information:');
 
         $nextRebalance = $basket->metadata['next_rebalance'] ?? null;
         $lastRebalanced = $basket->last_rebalanced_at;

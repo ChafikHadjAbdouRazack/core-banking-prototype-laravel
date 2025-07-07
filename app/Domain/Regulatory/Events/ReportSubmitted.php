@@ -2,8 +2,8 @@
 
 namespace App\Domain\Regulatory\Events;
 
-use App\Domain\Regulatory\Models\RegulatoryReport;
 use App\Domain\Regulatory\Models\RegulatoryFilingRecord;
+use App\Domain\Regulatory\Models\RegulatoryReport;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
@@ -15,6 +15,7 @@ class ReportSubmitted
     use SerializesModels;
 
     public RegulatoryReport $report;
+
     public RegulatoryFilingRecord $filing;
 
     public function __construct(RegulatoryReport $report, RegulatoryFilingRecord $filing)
@@ -24,7 +25,7 @@ class ReportSubmitted
     }
 
     /**
-     * Get the tags that should be assigned to the event
+     * Get the tags that should be assigned to the event.
      */
     public function tags(): array
     {

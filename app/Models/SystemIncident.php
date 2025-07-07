@@ -22,13 +22,13 @@ class SystemIncident extends Model
     ];
 
     protected $casts = [
-        'started_at' => 'datetime',
-        'resolved_at' => 'datetime',
+        'started_at'        => 'datetime',
+        'resolved_at'       => 'datetime',
         'affected_services' => 'array',
     ];
 
     /**
-     * Get all updates for this incident
+     * Get all updates for this incident.
      */
     public function updates(): HasMany
     {
@@ -36,7 +36,7 @@ class SystemIncident extends Model
     }
 
     /**
-     * Get only active incidents
+     * Get only active incidents.
      */
     public function scopeActive($query)
     {
@@ -44,7 +44,7 @@ class SystemIncident extends Model
     }
 
     /**
-     * Get only resolved incidents
+     * Get only resolved incidents.
      */
     public function scopeResolved($query)
     {
@@ -52,7 +52,7 @@ class SystemIncident extends Model
     }
 
     /**
-     * Get incidents within a time range
+     * Get incidents within a time range.
      */
     public function scopeInTimeRange($query, $start, $end)
     {
@@ -60,12 +60,12 @@ class SystemIncident extends Model
     }
 
     /**
-     * Add an update to the incident
+     * Add an update to the incident.
      */
     public function addUpdate(string $status, string $message)
     {
         $update = $this->updates()->create([
-            'status' => $status,
+            'status'  => $status,
             'message' => $message,
         ]);
 
@@ -73,7 +73,7 @@ class SystemIncident extends Model
         $this->update(['status' => $status]);
 
         // If resolved, set the resolved_at timestamp
-        if ($status === 'resolved' && !$this->resolved_at) {
+        if ($status === 'resolved' && ! $this->resolved_at) {
             $this->update(['resolved_at' => now()]);
         }
 
@@ -81,37 +81,38 @@ class SystemIncident extends Model
     }
 
     /**
-     * Calculate the duration of the incident
+     * Calculate the duration of the incident.
      */
     public function getDurationAttribute()
     {
         $endTime = $this->resolved_at ?? now();
+
         return $this->started_at->diffForHumans($endTime, true);
     }
 
     /**
-     * Get impact color for UI
+     * Get impact color for UI.
      */
     public function getImpactColorAttribute()
     {
         return match ($this->impact) {
-            'minor' => 'yellow',
-            'major' => 'orange',
+            'minor'    => 'yellow',
+            'major'    => 'orange',
             'critical' => 'red',
-            default => 'gray',
+            default    => 'gray',
         };
     }
 
     /**
-     * Get status color for UI
+     * Get status color for UI.
      */
     public function getStatusColorAttribute()
     {
         return match ($this->status) {
-            'resolved' => 'green',
+            'resolved'    => 'green',
             'in_progress' => 'yellow',
-            'identified' => 'red',
-            default => 'gray',
+            'identified'  => 'red',
+            default       => 'gray',
         };
     }
 }

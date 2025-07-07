@@ -7,8 +7,8 @@ namespace App\Http\Controllers\Api;
 use App\Domain\Governance\Enums\PollStatus;
 use App\Domain\Governance\Enums\PollType;
 use App\Domain\Governance\Models\Poll;
-use App\Domain\Governance\Services\GovernanceService;
 use App\Domain\Governance\Services\Cache\PollCacheService;
+use App\Domain\Governance\Services\GovernanceService;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -70,8 +70,8 @@ class PollController extends Controller
     public function index(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'status' => ['sometimes', Rule::enum(PollStatus::class)],
-            'type' => ['sometimes', Rule::enum(PollType::class)],
+            'status'   => ['sometimes', Rule::enum(PollStatus::class)],
+            'type'     => ['sometimes', Rule::enum(PollType::class)],
             'per_page' => ['sometimes', 'integer', 'min:1', 'max:100'],
         ]);
 
@@ -111,7 +111,7 @@ class PollController extends Controller
         $polls = $this->cacheService->getActivePolls();
 
         return response()->json([
-            'data' => $polls,
+            'data'  => $polls,
             'count' => $polls->count(),
         ]);
     }
@@ -160,19 +160,19 @@ class PollController extends Controller
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'title' => ['required', 'string', 'max:255'],
-            'description' => ['sometimes', 'string', 'max:2000'],
-            'type' => ['required', Rule::enum(PollType::class)],
-            'options' => ['required', 'array', 'min:2'],
-            'options.*.id' => ['required', 'string', 'max:50'],
-            'options.*.label' => ['required', 'string', 'max:255'],
-            'options.*.description' => ['sometimes', 'string', 'max:500'],
-            'start_date' => ['required', 'date', 'after:now'],
-            'end_date' => ['required', 'date', 'after:start_date'],
+            'title'                  => ['required', 'string', 'max:255'],
+            'description'            => ['sometimes', 'string', 'max:2000'],
+            'type'                   => ['required', Rule::enum(PollType::class)],
+            'options'                => ['required', 'array', 'min:2'],
+            'options.*.id'           => ['required', 'string', 'max:50'],
+            'options.*.label'        => ['required', 'string', 'max:255'],
+            'options.*.description'  => ['sometimes', 'string', 'max:500'],
+            'start_date'             => ['required', 'date', 'after:now'],
+            'end_date'               => ['required', 'date', 'after:start_date'],
             'required_participation' => ['sometimes', 'integer', 'min:1', 'max:100'],
-            'voting_power_strategy' => ['sometimes', 'string', 'in:one_user_one_vote,asset_weighted_vote'],
-            'execution_workflow' => ['sometimes', 'string', 'max:255'],
-            'metadata' => ['sometimes', 'array'],
+            'voting_power_strategy'  => ['sometimes', 'string', 'in:one_user_one_vote,asset_weighted_vote'],
+            'execution_workflow'     => ['sometimes', 'string', 'max:255'],
+            'metadata'               => ['sometimes', 'array'],
         ]);
 
         $validated['created_by'] = Auth::user()->uuid;
@@ -183,7 +183,7 @@ class PollController extends Controller
         $this->cacheService->forgetActivePolls();
 
         return response()->json([
-            'data' => $poll->load(['creator', 'votes']),
+            'data'    => $poll->load(['creator', 'votes']),
             'message' => 'Poll created successfully',
         ], 201);
     }
@@ -214,7 +214,7 @@ class PollController extends Controller
     {
         $poll = $this->cacheService->getPoll($uuid);
 
-        if (!$poll) {
+        if (! $poll) {
             return response()->json([
                 'message' => 'Poll not found',
             ], 404);
@@ -254,7 +254,7 @@ class PollController extends Controller
     {
         $poll = Poll::where('uuid', $uuid)->first();
 
-        if (!$poll) {
+        if (! $poll) {
             return response()->json([
                 'message' => 'Poll not found',
             ], 404);
@@ -266,7 +266,7 @@ class PollController extends Controller
             $this->cacheService->invalidatePollCache($poll->uuid);
 
             return response()->json([
-                'data' => $poll->fresh(['creator', 'votes']),
+                'data'    => $poll->fresh(['creator', 'votes']),
                 'message' => 'Poll activated successfully',
             ]);
         } catch (\InvalidArgumentException $e) {
@@ -311,13 +311,13 @@ class PollController extends Controller
     public function vote(Request $request, string $uuid): JsonResponse
     {
         $validated = $request->validate([
-            'selected_options' => ['required', 'array', 'min:1'],
+            'selected_options'   => ['required', 'array', 'min:1'],
             'selected_options.*' => ['required', 'string'],
         ]);
 
         $poll = Poll::where('uuid', $uuid)->first();
 
-        if (!$poll) {
+        if (! $poll) {
             return response()->json([
                 'message' => 'Poll not found',
             ], 404);
@@ -335,7 +335,7 @@ class PollController extends Controller
             $this->cacheService->invalidateUserPollCache(Auth::user()->uuid, $poll->uuid);
 
             return response()->json([
-                'data' => $vote->load(['poll', 'user']),
+                'data'    => $vote->load(['poll', 'user']),
                 'message' => 'Vote cast successfully',
             ], 201);
         } catch (\InvalidArgumentException $e) {
@@ -343,9 +343,9 @@ class PollController extends Controller
             if (str_contains($e->getMessage(), 'Invalid option')) {
                 return response()->json([
                     'message' => 'The given data was invalid.',
-                    'errors' => [
-                        'selected_options' => [$e->getMessage()]
-                    ]
+                    'errors'  => [
+                        'selected_options' => [$e->getMessage()],
+                    ],
                 ], 422);
             }
 
@@ -399,7 +399,7 @@ class PollController extends Controller
     {
         $poll = Poll::where('uuid', $uuid)->first();
 
-        if (!$poll) {
+        if (! $poll) {
             return response()->json([
                 'message' => 'Poll not found',
             ], 404);
@@ -442,7 +442,7 @@ class PollController extends Controller
     {
         $poll = Poll::where('uuid', $uuid)->first();
 
-        if (!$poll) {
+        if (! $poll) {
             return response()->json([
                 'message' => 'Poll not found',
             ], 404);
@@ -455,9 +455,9 @@ class PollController extends Controller
 
         return response()->json([
             'voting_power' => $votingPower ?? 0,
-            'can_vote' => $canVote,
-            'has_voted' => $hasVoted,
-            'strategy' => $poll->voting_power_strategy,
+            'can_vote'     => $canVote,
+            'has_voted'    => $hasVoted,
+            'strategy'     => $poll->voting_power_strategy,
         ]);
     }
 }

@@ -20,15 +20,15 @@ class BatchItem extends Model
     ];
 
     protected $casts = [
-        'sequence' => 'integer',
-        'data' => 'array',
-        'result' => 'array',
+        'sequence'     => 'integer',
+        'data'         => 'array',
+        'result'       => 'array',
         'processed_at' => 'datetime',
-        'retry_count' => 'integer',
+        'retry_count'  => 'integer',
     ];
 
     /**
-     * Get the batch job this item belongs to
+     * Get the batch job this item belongs to.
      */
     public function batchJob(): BelongsTo
     {
@@ -36,7 +36,7 @@ class BatchItem extends Model
     }
 
     /**
-     * Check if item can be retried
+     * Check if item can be retried.
      */
     public function canBeRetried(): bool
     {

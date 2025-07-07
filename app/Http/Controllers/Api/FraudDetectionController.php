@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class FraudDetectionController extends Controller
 {
@@ -12,7 +11,7 @@ class FraudDetectionController extends Controller
     {
         return response()->json([
             'message' => 'Fraud detection dashboard endpoint',
-            'data' => []
+            'data'    => [],
         ]);
     }
 
@@ -20,14 +19,14 @@ class FraudDetectionController extends Controller
     {
         return response()->json([
             'data' => [],
-            'meta' => ['total' => 0]
+            'meta' => ['total' => 0],
         ]);
     }
 
     public function getAlertDetails($id): JsonResponse
     {
         return response()->json([
-            'data' => ['id' => $id]
+            'data' => ['id' => $id],
         ]);
     }
 
@@ -35,7 +34,7 @@ class FraudDetectionController extends Controller
     {
         return response()->json([
             'message' => 'Alert acknowledged',
-            'data' => ['id' => $id]
+            'data'    => ['id' => $id],
         ]);
     }
 
@@ -43,21 +42,21 @@ class FraudDetectionController extends Controller
     {
         return response()->json([
             'message' => 'Alert investigation started',
-            'data' => ['id' => $id]
+            'data'    => ['id' => $id],
         ]);
     }
 
     public function getStatistics(): JsonResponse
     {
         return response()->json([
-            'data' => []
+            'data' => [],
         ]);
     }
 
     public function getPatterns(): JsonResponse
     {
         return response()->json([
-            'data' => []
+            'data' => [],
         ]);
     }
 
@@ -65,14 +64,14 @@ class FraudDetectionController extends Controller
     {
         return response()->json([
             'data' => [],
-            'meta' => ['total' => 0]
+            'meta' => ['total' => 0],
         ]);
     }
 
     public function getCaseDetails($id): JsonResponse
     {
         return response()->json([
-            'data' => ['id' => $id]
+            'data' => ['id' => $id],
         ]);
     }
 
@@ -80,7 +79,7 @@ class FraudDetectionController extends Controller
     {
         return response()->json([
             'message' => 'Case updated',
-            'data' => ['id' => $id]
+            'data'    => ['id' => $id],
         ]);
     }
 }

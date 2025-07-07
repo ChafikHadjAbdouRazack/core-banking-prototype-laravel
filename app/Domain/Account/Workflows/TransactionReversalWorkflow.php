@@ -10,7 +10,7 @@ use Workflow\Workflow;
 class TransactionReversalWorkflow extends Workflow
 {
     /**
-     * Reverse a transaction with proper audit trail
+     * Reverse a transaction with proper audit trail.
      *
      * @param AccountUuid $accountUuid
      * @param Money $originalAmount
@@ -42,10 +42,10 @@ class TransactionReversalWorkflow extends Workflow
             // Log reversal failure for audit
             logger()->error('Transaction reversal failed', [
                 'account_uuid' => $accountUuid->getUuid(),
-                'amount' => $originalAmount->getAmount(),
-                'type' => $transactionType,
-                'reason' => $reversalReason,
-                'error' => $th->getMessage(),
+                'amount'       => $originalAmount->getAmount(),
+                'type'         => $transactionType,
+                'reason'       => $reversalReason,
+                'error'        => $th->getMessage(),
             ]);
 
             throw $th;

@@ -14,13 +14,13 @@ beforeEach(function () {
     // Set up custodian registry with mock connector
     $this->registry = new CustodianRegistry();
     $this->mockConnector = new MockBankConnector([
-        'name' => 'Mock Bank',
+        'name'    => 'Mock Bank',
         'enabled' => true,
     ]);
     $this->registry->register('mock', $this->mockConnector);
-    
+
     $this->service = new CustodianAccountService($this->registry);
-    
+
     // Create a test account
     $this->account = Account::factory()->create();
 });
@@ -33,7 +33,7 @@ it('can link an internal account to a custodian account', function () {
         ['additional' => 'metadata'],
         true
     );
-    
+
     expect($custodianAccount)->toBeInstanceOf(CustodianAccount::class);
     expect($custodianAccount->account_uuid)->toBe($this->account->uuid);
     expect($custodianAccount->custodian_name)->toBe('mock');
@@ -46,9 +46,9 @@ it('can link an internal account to a custodian account', function () {
 });
 
 it('throws exception when linking to invalid custodian account', function () {
-    $this->expectException(\InvalidArgumentException::class);
+    $this->expectException(InvalidArgumentException::class);
     $this->expectExceptionMessage('Invalid custodian account: invalid-account');
-    
+
     $this->service->linkAccount(
         $this->account,
         'mock',
@@ -65,10 +65,10 @@ it('can unlink a custodian account', function () {
         [],
         true
     );
-    
+
     // Then unlink it
     $this->service->unlinkAccount($custodianAccount);
-    
+
     expect(CustodianAccount::find($custodianAccount->id))->toBeNull();
 });
 
@@ -81,19 +81,19 @@ it('transfers primary status when unlinking primary account', function () {
         [],
         true
     );
-    
+
     $secondary = $this->service->linkAccount(
         $this->account,
         'mock',
         'mock-account-2'
     );
-    
+
     expect($primary->is_primary)->toBeTrue();
     expect($secondary->fresh()->is_primary)->toBeFalse();
-    
+
     // Unlink primary
     $this->service->unlinkAccount($primary);
-    
+
     // Secondary should now be primary
     expect($secondary->fresh()->is_primary)->toBeTrue();
 });
@@ -104,9 +104,9 @@ it('can get balance from custodian', function () {
         'mock',
         'mock-account-1'
     );
-    
+
     $balance = $this->service->getBalance($custodianAccount, 'USD');
-    
+
     expect($balance)->toBeInstanceOf(Money::class);
     expect($balance->getAmount())->toBe(1000000); // $10,000.00 from mock data
 });
@@ -117,9 +117,9 @@ it('can get all balances from custodian', function () {
         'mock',
         'mock-account-1'
     );
-    
+
     $balances = $this->service->getAllBalances($custodianAccount);
-    
+
     expect($balances)->toBe([
         'USD' => 1000000,
         'EUR' => 500000,
@@ -133,14 +133,14 @@ it('can initiate transfer between custodian accounts', function () {
         'mock',
         'mock-account-1'
     );
-    
+
     $toAccount = Account::factory()->create();
     $toCustodianAccount = $this->service->linkAccount(
         $toAccount,
         'mock',
         'mock-account-2'
     );
-    
+
     $transactionId = $this->service->initiateTransfer(
         $fromAccount,
         $toCustodianAccount,
@@ -149,7 +149,7 @@ it('can initiate transfer between custodian accounts', function () {
         'TEST-REF-123',
         'Test transfer'
     );
-    
+
     expect($transactionId)->toMatch('/^mock-tx-/');
 });
 
@@ -159,17 +159,17 @@ it('throws exception for cross-custodian transfers', function () {
         'mock',
         'mock-account-1'
     );
-    
+
     // Create a fake account with different custodian
     $toAccount = CustodianAccount::factory()->make([
-        'custodian_name' => 'different-custodian',
+        'custodian_name'       => 'different-custodian',
         'custodian_account_id' => 'account-123',
     ]);
     $toAccount->id = 999; // Fake ID for testing
-    
-    $this->expectException(\InvalidArgumentException::class);
+
+    $this->expectException(InvalidArgumentException::class);
     $this->expectExceptionMessage('Cross-custodian transfers are not supported yet');
-    
+
     $this->service->initiateTransfer(
         $fromAccount,
         $toAccount,
@@ -186,14 +186,14 @@ it('can get transaction status', function () {
         'mock',
         'mock-account-1'
     );
-    
+
     $toAccount = Account::factory()->create();
     $toCustodianAccount = $this->service->linkAccount(
         $toAccount,
         'mock',
         'mock-account-2'
     );
-    
+
     $transactionId = $this->service->initiateTransfer(
         $fromAccount,
         $toCustodianAccount,
@@ -201,10 +201,10 @@ it('can get transaction status', function () {
         'USD',
         'TEST-REF-123'
     );
-    
+
     // Get status
     $status = $this->service->getTransactionStatus('mock', $transactionId);
-    
+
     expect($status['id'])->toBe($transactionId);
     expect($status['status'])->toBe('completed');
     expect($status['amount'])->toBe(50000);
@@ -216,10 +216,10 @@ it('can sync account status with custodian', function () {
         'mock',
         'mock-account-1'
     );
-    
+
     // Sync status
     $this->service->syncAccountStatus($custodianAccount);
-    
+
     // Should still be active (from mock data)
     expect($custodianAccount->fresh()->status)->toBe('active');
 });
@@ -230,7 +230,7 @@ it('can get transaction history', function () {
         'mock',
         'mock-account-1'
     );
-    
+
     // Create some transactions
     $toAccount = Account::factory()->create();
     $toCustodianAccount = $this->service->linkAccount(
@@ -238,7 +238,7 @@ it('can get transaction history', function () {
         'mock',
         'mock-account-2'
     );
-    
+
     $this->service->initiateTransfer(
         $custodianAccount,
         $toCustodianAccount,
@@ -246,7 +246,7 @@ it('can get transaction history', function () {
         'USD',
         'TEST-1'
     );
-    
+
     $this->service->initiateTransfer(
         $custodianAccount,
         $toCustodianAccount,
@@ -254,10 +254,10 @@ it('can get transaction history', function () {
         'USD',
         'TEST-2'
     );
-    
+
     // Get history
     $history = $this->service->getTransactionHistory($custodianAccount, 10, 0);
-    
+
     expect($history)->toHaveCount(2);
     expect($history[0]['from_account'])->toBe('mock-account-1');
     expect($history[0]['to_account'])->toBe('mock-account-2');
@@ -271,7 +271,7 @@ it('ensures only one primary custodian account per internal account', function (
         [],
         true
     );
-    
+
     $second = $this->service->linkAccount(
         $this->account,
         'mock',
@@ -279,7 +279,7 @@ it('ensures only one primary custodian account per internal account', function (
         [],
         true
     );
-    
+
     // First should no longer be primary
     expect($first->fresh()->is_primary)->toBeFalse();
     expect($second->fresh()->is_primary)->toBeTrue();
@@ -293,10 +293,10 @@ it('can find custodian accounts through account relationship', function () {
         [],
         true
     );
-    
+
     // Refresh to load relationships
     $this->account->refresh();
-    
+
     expect($this->account->custodianAccounts)->toHaveCount(1);
     expect($this->account->custodianAccounts->first()->id)->toBe($custodianAccount->id);
     expect($this->account->primaryCustodianAccount()->id)->toBe($custodianAccount->id);

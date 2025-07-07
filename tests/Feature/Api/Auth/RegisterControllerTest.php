@@ -13,11 +13,11 @@ class RegisterControllerTest extends TestCase
     public function test_user_can_register_via_api(): void
     {
         $response = $this->postJson('/api/auth/register', [
-            'name' => 'John Doe',
-            'email' => 'john@example.com',
-            'password' => 'password123',
+            'name'                  => 'John Doe',
+            'email'                 => 'john@example.com',
+            'password'              => 'password123',
             'password_confirmation' => 'password123',
-            'is_business_customer' => false,
+            'is_business_customer'  => false,
         ]);
 
         $response->assertStatus(201)
@@ -34,7 +34,7 @@ class RegisterControllerTest extends TestCase
             ]);
 
         $this->assertDatabaseHas('users', [
-            'name' => 'John Doe',
+            'name'  => 'John Doe',
             'email' => 'john@example.com',
         ]);
 
@@ -46,11 +46,11 @@ class RegisterControllerTest extends TestCase
     public function test_business_user_can_register_via_api(): void
     {
         $response = $this->postJson('/api/auth/register', [
-            'name' => 'Business User',
-            'email' => 'business@example.com',
-            'password' => 'password123',
+            'name'                  => 'Business User',
+            'email'                 => 'business@example.com',
+            'password'              => 'password123',
             'password_confirmation' => 'password123',
-            'is_business_customer' => true,
+            'is_business_customer'  => true,
         ]);
 
         $response->assertStatus(201);
@@ -62,9 +62,9 @@ class RegisterControllerTest extends TestCase
     public function test_registration_validates_input(): void
     {
         $response = $this->postJson('/api/auth/register', [
-            'name' => '',
-            'email' => 'invalid-email',
-            'password' => 'short',
+            'name'                  => '',
+            'email'                 => 'invalid-email',
+            'password'              => 'short',
             'password_confirmation' => 'different',
         ]);
 
@@ -77,9 +77,9 @@ class RegisterControllerTest extends TestCase
         User::factory()->create(['email' => 'existing@example.com']);
 
         $response = $this->postJson('/api/auth/register', [
-            'name' => 'John Doe',
-            'email' => 'existing@example.com',
-            'password' => 'password123',
+            'name'                  => 'John Doe',
+            'email'                 => 'existing@example.com',
+            'password'              => 'password123',
             'password_confirmation' => 'password123',
         ]);
 
@@ -90,9 +90,9 @@ class RegisterControllerTest extends TestCase
     public function test_registered_user_receives_access_token(): void
     {
         $response = $this->postJson('/api/auth/register', [
-            'name' => 'John Doe',
-            'email' => 'john@example.com',
-            'password' => 'password123',
+            'name'                  => 'John Doe',
+            'email'                 => 'john@example.com',
+            'password'              => 'password123',
             'password_confirmation' => 'password123',
         ]);
 

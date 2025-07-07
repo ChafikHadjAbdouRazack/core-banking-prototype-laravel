@@ -26,21 +26,22 @@ class LoanCollateral extends Model
         'liquidation_value',
         'last_valuation_date',
         'valuation_history',
-        'metadata'
+        'metadata',
     ];
 
     protected $casts = [
-        'estimated_value' => 'decimal:2',
-        'liquidation_value' => 'decimal:2',
-        'verified_at' => 'datetime',
-        'released_at' => 'datetime',
-        'liquidated_at' => 'datetime',
+        'estimated_value'     => 'decimal:2',
+        'liquidation_value'   => 'decimal:2',
+        'verified_at'         => 'datetime',
+        'released_at'         => 'datetime',
+        'liquidated_at'       => 'datetime',
         'last_valuation_date' => 'datetime',
-        'valuation_history' => 'array',
-        'metadata' => 'array'
+        'valuation_history'   => 'array',
+        'metadata'            => 'array',
     ];
 
     public $incrementing = false;
+
     protected $keyType = 'string';
 
     public function loan(): BelongsTo
@@ -52,11 +53,11 @@ class LoanCollateral extends Model
     {
         return match ($this->status) {
             'pending_verification' => 'yellow',
-            'verified' => 'green',
-            'rejected' => 'red',
-            'released' => 'blue',
-            'liquidated' => 'gray',
-            default => 'gray'
+            'verified'             => 'green',
+            'rejected'             => 'red',
+            'released'             => 'blue',
+            'liquidated'           => 'gray',
+            default                => 'gray'
         };
     }
 

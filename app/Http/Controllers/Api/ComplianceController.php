@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class ComplianceController extends Controller
 {
@@ -12,14 +12,14 @@ class ComplianceController extends Controller
     {
         return response()->json([
             'status' => 'success',
-            'data' => [
+            'data'   => [
                 'overall_compliance_score' => 94.5,
-                'kyc_completion_rate' => 98.2,
-                'pending_reviews' => 12,
-                'active_violations' => 3,
-                'last_audit_date' => '2025-01-03',
-                'next_audit_date' => '2025-02-03'
-            ]
+                'kyc_completion_rate'      => 98.2,
+                'pending_reviews'          => 12,
+                'active_violations'        => 3,
+                'last_audit_date'          => '2025-01-03',
+                'next_audit_date'          => '2025-02-03',
+            ],
         ]);
     }
 
@@ -27,7 +27,7 @@ class ComplianceController extends Controller
     {
         return response()->json([
             'status' => 'success',
-            'data' => []
+            'data'   => [],
         ]);
     }
 
@@ -35,15 +35,15 @@ class ComplianceController extends Controller
     {
         return response()->json([
             'status' => 'success',
-            'data' => null
+            'data'   => null,
         ]);
     }
 
     public function resolveViolation($id): JsonResponse
     {
         return response()->json([
-            'status' => 'success',
-            'message' => 'Violation resolved successfully'
+            'status'  => 'success',
+            'message' => 'Violation resolved successfully',
         ]);
     }
 
@@ -51,7 +51,7 @@ class ComplianceController extends Controller
     {
         return response()->json([
             'status' => 'success',
-            'data' => []
+            'data'   => [],
         ]);
     }
 
@@ -59,7 +59,7 @@ class ComplianceController extends Controller
     {
         return response()->json([
             'status' => 'success',
-            'data' => []
+            'data'   => [],
         ]);
     }
 
@@ -67,15 +67,15 @@ class ComplianceController extends Controller
     {
         return response()->json([
             'status' => 'success',
-            'data' => []
+            'data'   => [],
         ]);
     }
 
     public function runComplianceCheck(Request $request): JsonResponse
     {
         return response()->json([
-            'status' => 'success',
-            'message' => 'Compliance check initiated'
+            'status'  => 'success',
+            'message' => 'Compliance check initiated',
         ]);
     }
 
@@ -83,15 +83,15 @@ class ComplianceController extends Controller
     {
         return response()->json([
             'status' => 'success',
-            'data' => []
+            'data'   => [],
         ]);
     }
 
     public function renewCertification(Request $request): JsonResponse
     {
         return response()->json([
-            'status' => 'success',
-            'message' => 'Certification renewal initiated'
+            'status'  => 'success',
+            'message' => 'Certification renewal initiated',
         ]);
     }
 
@@ -99,15 +99,15 @@ class ComplianceController extends Controller
     {
         return response()->json([
             'status' => 'success',
-            'data' => []
+            'data'   => [],
         ]);
     }
 
     public function updatePolicy($id, Request $request): JsonResponse
     {
         return response()->json([
-            'status' => 'success',
-            'message' => 'Policy updated successfully'
+            'status'  => 'success',
+            'message' => 'Policy updated successfully',
         ]);
     }
 }

@@ -6,15 +6,15 @@ use App\Domain\Account\DataObjects\AccountUuid;
 use App\Domain\Account\DataObjects\Money;
 use App\Domain\Account\Workflows\DepositAccountWorkflow;
 use App\Domain\Account\Workflows\WithdrawAccountWorkflow;
-use Workflow\Workflow;
 use Workflow\ChildWorkflowStub;
+use Workflow\Workflow;
 
 class TransferWorkflow extends Workflow
 {
     /**
-     * @param \App\Domain\Account\DataObjects\AccountUuid $from
-     * @param \App\Domain\Account\DataObjects\AccountUuid $to
-     * @param \App\Domain\Account\DataObjects\Money $money
+     * @param AccountUuid $from
+     * @param AccountUuid $to
+     * @param Money $money
      *
      * @return \Generator
      * @throws \Throwable
@@ -27,7 +27,7 @@ class TransferWorkflow extends Workflow
                 $from,
                 $money
             );
-            $this->addCompensation(fn() => ChildWorkflowStub::make(
+            $this->addCompensation(fn () => ChildWorkflowStub::make(
                 DepositAccountWorkflow::class,
                 $from,
                 $money
@@ -38,7 +38,7 @@ class TransferWorkflow extends Workflow
                 $to,
                 $money
             );
-            $this->addCompensation(fn() => ChildWorkflowStub::make(
+            $this->addCompensation(fn () => ChildWorkflowStub::make(
                 WithdrawAccountWorkflow::class,
                 $to,
                 $money

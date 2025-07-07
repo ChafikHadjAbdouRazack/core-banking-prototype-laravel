@@ -41,20 +41,20 @@ class LoanApplication extends Model
     ];
 
     protected $casts = [
-        'borrower_info' => 'array',
-        'credit_report' => 'array',
-        'risk_factors' => 'array',
-        'terms' => 'array',
-        'rejection_reasons' => 'array',
-        'requested_amount' => 'decimal:2',
-        'approved_amount' => 'decimal:2',
-        'interest_rate' => 'decimal:2',
+        'borrower_info'       => 'array',
+        'credit_report'       => 'array',
+        'risk_factors'        => 'array',
+        'terms'               => 'array',
+        'rejection_reasons'   => 'array',
+        'requested_amount'    => 'decimal:2',
+        'approved_amount'     => 'decimal:2',
+        'interest_rate'       => 'decimal:2',
         'default_probability' => 'decimal:4',
-        'credit_checked_at' => 'datetime',
-        'risk_assessed_at' => 'datetime',
-        'approved_at' => 'datetime',
-        'rejected_at' => 'datetime',
-        'submitted_at' => 'datetime',
+        'credit_checked_at'   => 'datetime',
+        'risk_assessed_at'    => 'datetime',
+        'approved_at'         => 'datetime',
+        'rejected_at'         => 'datetime',
+        'submitted_at'        => 'datetime',
     ];
 
     public function borrower(): BelongsTo

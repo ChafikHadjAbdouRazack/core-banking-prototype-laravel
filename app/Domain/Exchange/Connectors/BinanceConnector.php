@@ -85,7 +85,7 @@ class BinanceConnector implements IExternalExchangeConnector
                     amountPrecision: $symbol['baseAssetPrecision'],
                     isActive: true,
                     metadata: [
-                        'symbol' => $symbol['symbol'],
+                        'symbol'      => $symbol['symbol'],
                         'permissions' => $symbol['permissions'] ?? [],
                     ]
                 ));
@@ -116,8 +116,8 @@ class BinanceConnector implements IExternalExchangeConnector
             timestamp: new \DateTimeImmutable('@' . intval($data['closeTime'] / 1000)),
             exchange: $this->getName(),
             metadata: [
-                'symbol' => $symbol,
-                'count' => $data['count'],
+                'symbol'       => $symbol,
+                'count'        => $data['count'],
                 'quote_volume' => $data['quoteVolume'],
             ]
         );
@@ -128,7 +128,7 @@ class BinanceConnector implements IExternalExchangeConnector
         $symbol = $this->formatSymbol($baseCurrency, $quoteCurrency);
         $response = Http::get($this->baseUrl . '/api/v3/depth', [
             'symbol' => $symbol,
-            'limit' => min($depth, 100),
+            'limit'  => min($depth, 100),
         ]);
 
         if (! $response->successful()) {
@@ -141,17 +141,17 @@ class BinanceConnector implements IExternalExchangeConnector
             baseCurrency: $baseCurrency,
             quoteCurrency: $quoteCurrency,
             bids: collect($data['bids'])->map(fn ($bid) => [
-                'price' => BigDecimal::of($bid[0]),
+                'price'  => BigDecimal::of($bid[0]),
                 'amount' => BigDecimal::of($bid[1]),
             ]),
             asks: collect($data['asks'])->map(fn ($ask) => [
-                'price' => BigDecimal::of($ask[0]),
+                'price'  => BigDecimal::of($ask[0]),
                 'amount' => BigDecimal::of($ask[1]),
             ]),
             timestamp: new \DateTimeImmutable(),
             exchange: $this->getName(),
             metadata: [
-                'symbol' => $symbol,
+                'symbol'         => $symbol,
                 'last_update_id' => $data['lastUpdateId'],
             ]
         );
@@ -162,7 +162,7 @@ class BinanceConnector implements IExternalExchangeConnector
         $symbol = $this->formatSymbol($baseCurrency, $quoteCurrency);
         $response = Http::get($this->baseUrl . '/api/v3/trades', [
             'symbol' => $symbol,
-            'limit' => min($limit, 1000),
+            'limit'  => min($limit, 1000),
         ]);
 
         if (! $response->successful()) {
@@ -181,7 +181,7 @@ class BinanceConnector implements IExternalExchangeConnector
             timestamp: new \DateTimeImmutable('@' . intval($trade['time'] / 1000)),
             exchange: $this->getName(),
             metadata: [
-                'symbol' => $symbol,
+                'symbol'        => $symbol,
                 'is_best_match' => $trade['isBestMatch'],
             ]
         ));
@@ -205,10 +205,10 @@ class BinanceConnector implements IExternalExchangeConnector
 
         $symbol = $this->formatSymbol($baseCurrency, $quoteCurrency);
         $params = [
-            'symbol' => $symbol,
-            'side' => $side,
-            'type' => $price ? 'LIMIT' : 'MARKET',
-            'quantity' => $amount,
+            'symbol'    => $symbol,
+            'side'      => $side,
+            'type'      => $price ? 'LIMIT' : 'MARKET',
+            'quantity'  => $amount,
             'timestamp' => time() * 1000,
         ];
 
@@ -280,9 +280,9 @@ class BinanceConnector implements IExternalExchangeConnector
             ->filter(fn ($balance) => BigDecimal::of($balance['free'])->plus($balance['locked'])->isGreaterThan(0))
             ->mapWithKeys(fn ($balance) => [
                 $balance['asset'] => [
-                    'free' => $balance['free'],
+                    'free'   => $balance['free'],
                     'locked' => $balance['locked'],
-                    'total' => BigDecimal::of($balance['free'])->plus($balance['locked'])->__toString(),
+                    'total'  => BigDecimal::of($balance['free'])->plus($balance['locked'])->__toString(),
                 ],
             ])
             ->toArray();
@@ -291,8 +291,8 @@ class BinanceConnector implements IExternalExchangeConnector
     public function getFees(): array
     {
         return [
-            'maker' => '0.001', // 0.1%
-            'taker' => '0.001', // 0.1%
+            'maker'    => '0.001', // 0.1%
+            'taker'    => '0.001', // 0.1%
             'discount' => [
                 'BNB' => '0.25', // 25% discount when paying fees in BNB
             ],

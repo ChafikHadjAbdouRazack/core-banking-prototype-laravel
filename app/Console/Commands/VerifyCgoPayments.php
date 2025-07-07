@@ -34,8 +34,9 @@ class VerifyCgoPayments extends Command
         if ($investmentUuid = $this->option('investment')) {
             $investment = \App\Models\CgoInvestment::where('uuid', $investmentUuid)->first();
 
-            if (!$investment) {
+            if (! $investment) {
                 $this->error("Investment with UUID {$investmentUuid} not found.");
+
                 return Command::FAILURE;
             }
 

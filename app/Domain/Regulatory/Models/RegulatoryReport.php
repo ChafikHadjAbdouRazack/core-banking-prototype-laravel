@@ -2,10 +2,10 @@
 
 namespace App\Domain\Regulatory\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class RegulatoryReport extends Model
 {
@@ -49,61 +49,87 @@ class RegulatoryReport extends Model
 
     protected $casts = [
         'reporting_period_start' => 'date',
-        'reporting_period_end' => 'date',
-        'generated_at' => 'datetime',
-        'submitted_at' => 'datetime',
-        'reviewed_at' => 'datetime',
-        'due_date' => 'datetime',
-        'submission_response' => 'array',
-        'corrections_required' => 'array',
-        'report_data' => 'array',
-        'entities_included' => 'array',
-        'risk_indicators' => 'array',
-        'audit_trail' => 'array',
-        'tags' => 'array',
-        'is_mandatory' => 'boolean',
-        'is_overdue' => 'boolean',
-        'requires_correction' => 'boolean',
-        'total_amount' => 'decimal:2',
+        'reporting_period_end'   => 'date',
+        'generated_at'           => 'datetime',
+        'submitted_at'           => 'datetime',
+        'reviewed_at'            => 'datetime',
+        'due_date'               => 'datetime',
+        'submission_response'    => 'array',
+        'corrections_required'   => 'array',
+        'report_data'            => 'array',
+        'entities_included'      => 'array',
+        'risk_indicators'        => 'array',
+        'audit_trail'            => 'array',
+        'tags'                   => 'array',
+        'is_mandatory'           => 'boolean',
+        'is_overdue'             => 'boolean',
+        'requires_correction'    => 'boolean',
+        'total_amount'           => 'decimal:2',
     ];
 
     // Report types
-    const TYPE_CTR = 'CTR'; // Currency Transaction Report
-    const TYPE_SAR = 'SAR'; // Suspicious Activity Report
-    const TYPE_OFAC = 'OFAC'; // Office of Foreign Assets Control
-    const TYPE_BSA = 'BSA'; // Bank Secrecy Act
-    const TYPE_CDD = 'CDD'; // Customer Due Diligence
-    const TYPE_EDD = 'EDD'; // Enhanced Due Diligence
-    const TYPE_KYC = 'KYC'; // Know Your Customer
-    const TYPE_AML = 'AML'; // Anti-Money Laundering
-    const TYPE_FATCA = 'FATCA'; // Foreign Account Tax Compliance Act
-    const TYPE_CRS = 'CRS'; // Common Reporting Standard
-    const TYPE_GDPR = 'GDPR'; // General Data Protection Regulation
-    const TYPE_PSD2 = 'PSD2'; // Payment Services Directive 2
-    const TYPE_MIFID = 'MIFID'; // Markets in Financial Instruments Directive
+    public const TYPE_CTR = 'CTR'; // Currency Transaction Report
+
+    public const TYPE_SAR = 'SAR'; // Suspicious Activity Report
+
+    public const TYPE_OFAC = 'OFAC'; // Office of Foreign Assets Control
+
+    public const TYPE_BSA = 'BSA'; // Bank Secrecy Act
+
+    public const TYPE_CDD = 'CDD'; // Customer Due Diligence
+
+    public const TYPE_EDD = 'EDD'; // Enhanced Due Diligence
+
+    public const TYPE_KYC = 'KYC'; // Know Your Customer
+
+    public const TYPE_AML = 'AML'; // Anti-Money Laundering
+
+    public const TYPE_FATCA = 'FATCA'; // Foreign Account Tax Compliance Act
+
+    public const TYPE_CRS = 'CRS'; // Common Reporting Standard
+
+    public const TYPE_GDPR = 'GDPR'; // General Data Protection Regulation
+
+    public const TYPE_PSD2 = 'PSD2'; // Payment Services Directive 2
+
+    public const TYPE_MIFID = 'MIFID'; // Markets in Financial Instruments Directive
 
     // Statuses
-    const STATUS_DRAFT = 'draft';
-    const STATUS_PENDING_REVIEW = 'pending_review';
-    const STATUS_SUBMITTED = 'submitted';
-    const STATUS_ACCEPTED = 'accepted';
-    const STATUS_REJECTED = 'rejected';
+    public const STATUS_DRAFT = 'draft';
+
+    public const STATUS_PENDING_REVIEW = 'pending_review';
+
+    public const STATUS_SUBMITTED = 'submitted';
+
+    public const STATUS_ACCEPTED = 'accepted';
+
+    public const STATUS_REJECTED = 'rejected';
 
     // Jurisdictions
-    const JURISDICTION_US = 'US';
-    const JURISDICTION_EU = 'EU';
-    const JURISDICTION_UK = 'UK';
-    const JURISDICTION_CA = 'CA';
-    const JURISDICTION_AU = 'AU';
-    const JURISDICTION_SG = 'SG';
-    const JURISDICTION_HK = 'HK';
+    public const JURISDICTION_US = 'US';
+
+    public const JURISDICTION_EU = 'EU';
+
+    public const JURISDICTION_UK = 'UK';
+
+    public const JURISDICTION_CA = 'CA';
+
+    public const JURISDICTION_AU = 'AU';
+
+    public const JURISDICTION_SG = 'SG';
+
+    public const JURISDICTION_HK = 'HK';
 
     // File formats
-    const FORMAT_JSON = 'json';
-    const FORMAT_XML = 'xml';
-    const FORMAT_CSV = 'csv';
-    const FORMAT_PDF = 'pdf';
-    const FORMAT_XLSX = 'xlsx';
+    public const FORMAT_JSON = 'json';
+
+    public const FORMAT_XML = 'xml';
+
+    public const FORMAT_CSV = 'csv';
+
+    public const FORMAT_PDF = 'pdf';
+
+    public const FORMAT_XLSX = 'xlsx';
 
     // Boot method to auto-generate report ID
     protected static function boot()
@@ -176,30 +202,30 @@ class RegulatoryReport extends Model
     public function markAsSubmitted(string $submittedBy, ?string $reference = null): void
     {
         $this->update([
-            'status' => self::STATUS_SUBMITTED,
-            'submitted_at' => now(),
-            'submitted_by' => $submittedBy,
+            'status'               => self::STATUS_SUBMITTED,
+            'submitted_at'         => now(),
+            'submitted_by'         => $submittedBy,
             'submission_reference' => $reference,
         ]);
 
         $this->addAuditEntry('submitted', [
             'submitted_by' => $submittedBy,
-            'reference' => $reference,
+            'reference'    => $reference,
         ]);
     }
 
     public function markAsReviewed(string $reviewedBy, string $notes, bool $requiresCorrection = false): void
     {
         $this->update([
-            'reviewed_at' => now(),
-            'reviewed_by' => $reviewedBy,
-            'review_notes' => $notes,
+            'reviewed_at'         => now(),
+            'reviewed_by'         => $reviewedBy,
+            'review_notes'        => $notes,
             'requires_correction' => $requiresCorrection,
-            'status' => $requiresCorrection ? self::STATUS_DRAFT : self::STATUS_PENDING_REVIEW,
+            'status'              => $requiresCorrection ? self::STATUS_DRAFT : self::STATUS_PENDING_REVIEW,
         ]);
 
         $this->addAuditEntry('reviewed', [
-            'reviewed_by' => $reviewedBy,
+            'reviewed_by'         => $reviewedBy,
             'requires_correction' => $requiresCorrection,
         ]);
     }
@@ -209,10 +235,10 @@ class RegulatoryReport extends Model
         $auditTrail = $this->audit_trail ?? [];
 
         $auditTrail[] = [
-            'action' => $action,
+            'action'    => $action,
             'timestamp' => now()->toIso8601String(),
-            'user' => auth()->user()?->name ?? 'System',
-            'data' => $data,
+            'user'      => auth()->user()?->name ?? 'System',
+            'data'      => $data,
         ];
 
         $this->update(['audit_trail' => $auditTrail]);
@@ -223,10 +249,10 @@ class RegulatoryReport extends Model
         $riskIndicators = $this->risk_indicators ?? [];
 
         $riskIndicators[] = [
-            'indicator' => $indicator,
-            'severity' => $severity,
+            'indicator'   => $indicator,
+            'severity'    => $severity,
             'detected_at' => now()->toIso8601String(),
-            'details' => $details,
+            'details'     => $details,
         ];
 
         $this->update(['risk_indicators' => $riskIndicators]);
@@ -237,29 +263,29 @@ class RegulatoryReport extends Model
         $entities = $this->entities_included ?? [];
 
         $entities[] = [
-            'type' => $entityType,
-            'id' => $entityId,
+            'type'        => $entityType,
+            'id'          => $entityId,
             'included_at' => now()->toIso8601String(),
-            'details' => $details,
+            'details'     => $details,
         ];
 
         $this->update([
             'entities_included' => $entities,
-            'record_count' => count($entities),
+            'record_count'      => count($entities),
         ]);
     }
 
     public function canBeSubmitted(): bool
     {
         return in_array($this->status, [self::STATUS_DRAFT, self::STATUS_PENDING_REVIEW]) &&
-               !$this->requires_correction &&
+               ! $this->requires_correction &&
                $this->file_path &&
                $this->file_hash;
     }
 
     public function getTimeUntilDue(): ?string
     {
-        if (!$this->due_date) {
+        if (! $this->due_date) {
             return null;
         }
 
@@ -279,11 +305,11 @@ class RegulatoryReport extends Model
     public function getPriorityLabel(): string
     {
         return match ($this->priority) {
-            5 => 'Critical',
-            4 => 'High',
-            3 => 'Medium',
-            2 => 'Low',
-            1 => 'Very Low',
+            5       => 'Critical',
+            4       => 'High',
+            3       => 'Medium',
+            2       => 'Low',
+            1       => 'Very Low',
             default => 'Unknown',
         };
     }
@@ -291,12 +317,12 @@ class RegulatoryReport extends Model
     public function getStatusLabel(): string
     {
         return match ($this->status) {
-            self::STATUS_DRAFT => 'Draft',
+            self::STATUS_DRAFT          => 'Draft',
             self::STATUS_PENDING_REVIEW => 'Pending Review',
-            self::STATUS_SUBMITTED => 'Submitted',
-            self::STATUS_ACCEPTED => 'Accepted',
-            self::STATUS_REJECTED => 'Rejected',
-            default => 'Unknown',
+            self::STATUS_SUBMITTED      => 'Submitted',
+            self::STATUS_ACCEPTED       => 'Accepted',
+            self::STATUS_REJECTED       => 'Rejected',
+            default                     => 'Unknown',
         };
     }
 

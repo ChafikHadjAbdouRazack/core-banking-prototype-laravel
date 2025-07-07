@@ -15,7 +15,7 @@ class CompleteBatchJob
     {
         BatchJob::where('uuid', $event->aggregateRootUuid())
             ->update([
-                'status' => $event->finalStatus,
+                'status'       => $event->finalStatus,
                 'completed_at' => $event->completedAt,
             ]);
     }

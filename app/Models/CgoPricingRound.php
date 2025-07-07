@@ -25,15 +25,15 @@ class CgoPricingRound extends Model
     ];
 
     protected $casts = [
-        'share_price' => 'decimal:4',
+        'share_price'          => 'decimal:4',
         'max_shares_available' => 'decimal:4',
-        'shares_sold' => 'decimal:4',
-        'total_raised' => 'decimal:2',
-        'pre_money_valuation' => 'decimal:2',
+        'shares_sold'          => 'decimal:4',
+        'total_raised'         => 'decimal:2',
+        'pre_money_valuation'  => 'decimal:2',
         'post_money_valuation' => 'decimal:2',
-        'started_at' => 'datetime',
-        'ended_at' => 'datetime',
-        'is_active' => 'boolean',
+        'started_at'           => 'datetime',
+        'ended_at'             => 'datetime',
+        'is_active'            => 'boolean',
     ];
 
     public function investments(): HasMany
@@ -51,6 +51,7 @@ class CgoPricingRound extends Model
         if ($this->max_shares_available == 0) {
             return 0;
         }
+
         return ($this->shares_sold / $this->max_shares_available) * 100;
     }
 
@@ -67,7 +68,7 @@ class CgoPricingRound extends Model
     public static function getNextSharePrice(): float
     {
         $lastRound = self::orderBy('round_number', 'desc')->first();
-        if (!$lastRound) {
+        if (! $lastRound) {
             return 10.00; // Starting price $10 per share
         }
 

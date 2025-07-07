@@ -2,11 +2,6 @@
 
 namespace App\Workflows;
 
-use App\Domain\Lending\Aggregates\LoanApplication;
-use App\Domain\Lending\Services\CreditScoringService;
-use App\Domain\Lending\Services\RiskAssessmentService;
-use App\Domain\Account\Aggregates\Account;
-use App\Models\User;
 use App\Workflows\Activities\LoanApplicationActivities;
 use Workflow\ActivityStub;
 use Workflow\Workflow;
@@ -22,7 +17,7 @@ class LoanApplicationWorkflow extends Workflow
             LoanApplicationActivities::class,
             [
                 'startToCloseTimeout' => 300, // 5 minutes
-                'retryAttempts' => 3,
+                'retryAttempts'       => 3,
             ]
         );
     }
@@ -48,15 +43,16 @@ class LoanApplicationWorkflow extends Workflow
         // Step 2: Perform KYC check
         $kycResult = yield $this->activities->performKYCCheck($borrowerId);
 
-        if (!$kycResult['passed']) {
+        if (! $kycResult['passed']) {
             yield $this->activities->rejectApplication(
                 $applicationId,
                 ['KYC check failed: ' . $kycResult['reason']],
                 'system'
             );
+
             return [
-                'status' => 'rejected',
-                'reason' => 'KYC check failed',
+                'status'        => 'rejected',
+                'reason'        => 'KYC check failed',
                 'applicationId' => $applicationId,
             ];
         }
@@ -120,20 +116,20 @@ class LoanApplicationWorkflow extends Workflow
                 $borrowerId,
                 'approved',
                 [
-                    'applicationId' => $applicationId,
-                    'loanId' => $loanId,
+                    'applicationId'  => $applicationId,
+                    'loanId'         => $loanId,
                     'approvedAmount' => $decision['approvedAmount'],
-                    'interestRate' => $decision['interestRate'],
-                    'termMonths' => $termMonths,
+                    'interestRate'   => $decision['interestRate'],
+                    'termMonths'     => $termMonths,
                 ]
             );
 
             return [
-                'status' => 'approved',
-                'applicationId' => $applicationId,
-                'loanId' => $loanId,
+                'status'         => 'approved',
+                'applicationId'  => $applicationId,
+                'loanId'         => $loanId,
                 'approvedAmount' => $decision['approvedAmount'],
-                'interestRate' => $decision['interestRate'],
+                'interestRate'   => $decision['interestRate'],
             ];
         } else {
             // Reject application
@@ -148,14 +144,14 @@ class LoanApplicationWorkflow extends Workflow
                 'rejected',
                 [
                     'applicationId' => $applicationId,
-                    'reasons' => $decision['rejectionReasons'],
+                    'reasons'       => $decision['rejectionReasons'],
                 ]
             );
 
             return [
-                'status' => 'rejected',
+                'status'        => 'rejected',
                 'applicationId' => $applicationId,
-                'reasons' => $decision['rejectionReasons'],
+                'reasons'       => $decision['rejectionReasons'],
             ];
         }
     }

@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Domain\Asset\Events;
 
 use App\Domain\Account\DataObjects\AccountUuid;
-use App\Domain\Account\DataObjects\Money;
 use App\Domain\Account\DataObjects\Hash;
+use App\Domain\Account\DataObjects\Money;
 use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 
 class AssetTransferInitiated extends ShouldBeStored
@@ -26,7 +26,7 @@ class AssetTransferInitiated extends ShouldBeStored
     }
 
     /**
-     * Check if this is a same-asset transfer
+     * Check if this is a same-asset transfer.
      */
     public function isSameAssetTransfer(): bool
     {
@@ -34,7 +34,7 @@ class AssetTransferInitiated extends ShouldBeStored
     }
 
     /**
-     * Check if this is a cross-asset transfer (exchange)
+     * Check if this is a cross-asset transfer (exchange).
      */
     public function isCrossAssetTransfer(): bool
     {
@@ -42,7 +42,7 @@ class AssetTransferInitiated extends ShouldBeStored
     }
 
     /**
-     * Get the source amount in smallest unit
+     * Get the source amount in smallest unit.
      */
     public function getFromAmount(): int
     {
@@ -50,7 +50,7 @@ class AssetTransferInitiated extends ShouldBeStored
     }
 
     /**
-     * Get the destination amount in smallest unit
+     * Get the destination amount in smallest unit.
      */
     public function getToAmount(): int
     {

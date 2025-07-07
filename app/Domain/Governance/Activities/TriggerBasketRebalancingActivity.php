@@ -17,7 +17,7 @@ class TriggerBasketRebalancingActivity extends Activity
     {
         $basket = BasketAsset::where('code', $basketCode)->with('components')->first();
 
-        if (!$basket) {
+        if (! $basket) {
             return;
         }
 
@@ -26,7 +26,7 @@ class TriggerBasketRebalancingActivity extends Activity
             $basketCode,
             $basket->components->map(function ($component) {
                 return [
-                    'asset' => $component->asset_code,
+                    'asset'      => $component->asset_code,
                     'old_weight' => $component->weight,
                     'new_weight' => $component->weight,
                     'adjustment' => 0.0,

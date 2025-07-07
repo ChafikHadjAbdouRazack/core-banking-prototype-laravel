@@ -7,7 +7,7 @@ use App\Domain\Account\DataObjects\Hash;
 interface HasHash
 {
     /**
-     * @return \App\Domain\Account\DataObjects\Hash
+     * @return Hash
      */
     public function getHash(): Hash;
 }

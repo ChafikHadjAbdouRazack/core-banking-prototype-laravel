@@ -2,15 +2,15 @@
 
 use App\Domain\Payment\Aggregates\PaymentDepositAggregate;
 use App\Domain\Payment\DataObjects\StripeDeposit;
-use App\Domain\Payment\Events\DepositInitiated;
 use App\Domain\Payment\Events\DepositCompleted;
 use App\Domain\Payment\Events\DepositFailed;
+use App\Domain\Payment\Events\DepositInitiated;
 use Illuminate\Support\Str;
 
 it('can initiate a deposit', function () {
     $depositUuid = Str::uuid()->toString();
     $accountUuid = Str::uuid()->toString();
-    
+
     $deposit = new StripeDeposit(
         accountUuid: $accountUuid,
         amount: 10000,
@@ -21,7 +21,7 @@ it('can initiate a deposit', function () {
         paymentMethodType: 'visa',
         metadata: ['test' => true]
     );
-    
+
     $aggregate = PaymentDepositAggregate::fake($depositUuid)
         ->given([])
         ->when(function (PaymentDepositAggregate $aggregate) use ($deposit) {
@@ -37,7 +37,7 @@ it('can initiate a deposit', function () {
                 paymentMethod: 'card',
                 paymentMethodType: 'visa',
                 metadata: ['test' => true]
-            )
+            ),
         ]);
 });
 
@@ -45,7 +45,7 @@ it('can complete a deposit', function () {
     $depositUuid = Str::uuid()->toString();
     $accountUuid = Str::uuid()->toString();
     $transactionId = 'txn_' . uniqid();
-    
+
     $aggregate = PaymentDepositAggregate::fake($depositUuid)
         ->given([
             new DepositInitiated(
@@ -57,7 +57,7 @@ it('can complete a deposit', function () {
                 paymentMethod: 'card',
                 paymentMethodType: 'visa',
                 metadata: []
-            )
+            ),
         ])
         ->when(function (PaymentDepositAggregate $aggregate) use ($transactionId) {
             $aggregate->completeDeposit($transactionId);
@@ -72,7 +72,7 @@ it('can fail a deposit', function () {
     $depositUuid = Str::uuid()->toString();
     $accountUuid = Str::uuid()->toString();
     $reason = 'Insufficient funds';
-    
+
     $aggregate = PaymentDepositAggregate::fake($depositUuid)
         ->given([
             new DepositInitiated(
@@ -84,7 +84,7 @@ it('can fail a deposit', function () {
                 paymentMethod: 'card',
                 paymentMethodType: 'visa',
                 metadata: []
-            )
+            ),
         ])
         ->when(function (PaymentDepositAggregate $aggregate) use ($reason) {
             $aggregate->failDeposit($reason);
@@ -98,7 +98,7 @@ it('can fail a deposit', function () {
 it('cannot complete a deposit that is not pending', function () {
     $depositUuid = Str::uuid()->toString();
     $accountUuid = Str::uuid()->toString();
-    
+
     expect(function () use ($depositUuid, $accountUuid) {
         PaymentDepositAggregate::fake($depositUuid)
             ->given([
@@ -115,7 +115,7 @@ it('cannot complete a deposit that is not pending', function () {
                 new DepositCompleted(
                     transactionId: 'txn_123',
                     completedAt: now()
-                )
+                ),
             ])
             ->when(function (PaymentDepositAggregate $aggregate) {
                 $aggregate->completeDeposit('txn_456');
@@ -126,7 +126,7 @@ it('cannot complete a deposit that is not pending', function () {
 it('cannot fail a deposit that is not pending', function () {
     $depositUuid = Str::uuid()->toString();
     $accountUuid = Str::uuid()->toString();
-    
+
     expect(function () use ($depositUuid, $accountUuid) {
         PaymentDepositAggregate::fake($depositUuid)
             ->given([
@@ -143,7 +143,7 @@ it('cannot fail a deposit that is not pending', function () {
                 new DepositFailed(
                     reason: 'Card declined',
                     failedAt: now()
-                )
+                ),
             ])
             ->when(function (PaymentDepositAggregate $aggregate) {
                 $aggregate->failDeposit('Another reason');

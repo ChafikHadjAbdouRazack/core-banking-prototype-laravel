@@ -9,7 +9,7 @@ use Workflow\Workflow;
 class AccountValidationWorkflow extends Workflow
 {
     /**
-     * Validate account for compliance/KYC requirements
+     * Validate account for compliance/KYC requirements.
      *
      * @param AccountUuid $uuid
      * @param array $validationChecks

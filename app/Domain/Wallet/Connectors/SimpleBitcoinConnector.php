@@ -6,16 +6,17 @@ use App\Domain\Wallet\Contracts\BlockchainConnector;
 use App\Domain\Wallet\ValueObjects\AddressData;
 use App\Domain\Wallet\ValueObjects\BalanceData;
 use App\Domain\Wallet\ValueObjects\GasEstimate;
-use App\Domain\Wallet\ValueObjects\TransactionData;
 use App\Domain\Wallet\ValueObjects\SignedTransaction;
+use App\Domain\Wallet\ValueObjects\TransactionData;
 use App\Domain\Wallet\ValueObjects\TransactionResult;
 use Illuminate\Support\Facades\Http;
-use kornrunner\Keccak;
 
 class SimpleBitcoinConnector implements BlockchainConnector
 {
     private string $network;
+
     private string $apiUrl;
+
     private ?string $apiKey;
 
     public function __construct(array $config = [])
@@ -48,7 +49,7 @@ class SimpleBitcoinConnector implements BlockchainConnector
             publicKey: $publicKey,
             chain: 'bitcoin',
             metadata: [
-                'type' => 'P2PKH',
+                'type'    => 'P2PKH',
                 'network' => $this->network,
             ]
         );
@@ -58,7 +59,7 @@ class SimpleBitcoinConnector implements BlockchainConnector
     {
         $response = Http::get("{$this->apiUrl}/addrs/{$address}/balance");
 
-        if (!$response->successful()) {
+        if (! $response->successful()) {
             throw new \Exception('Failed to fetch balance');
         }
 
@@ -71,7 +72,7 @@ class SimpleBitcoinConnector implements BlockchainConnector
             chain: 'bitcoin',
             metadata: [
                 'unconfirmed_balance' => (string) ($data['unconfirmed_balance'] ?? 0),
-                'final_balance' => (string) ($data['final_balance'] ?? 0),
+                'final_balance'       => (string) ($data['final_balance'] ?? 0),
             ]
         );
     }
@@ -97,7 +98,7 @@ class SimpleBitcoinConnector implements BlockchainConnector
             estimatedCost: $fee,
             chain: 'bitcoin',
             metadata: [
-                'fee_rate' => $feeRate,
+                'fee_rate'       => $feeRate,
                 'estimated_size' => $txSize,
             ]
         );
@@ -109,7 +110,7 @@ class SimpleBitcoinConnector implements BlockchainConnector
             'tx' => $transaction->rawTransaction,
         ]);
 
-        if (!$response->successful()) {
+        if (! $response->successful()) {
             throw new \Exception('Failed to broadcast transaction: ' . $response->body());
         }
 
@@ -119,8 +120,8 @@ class SimpleBitcoinConnector implements BlockchainConnector
             hash: $data['tx']['hash'],
             status: 'pending',
             metadata: [
-                'network' => $this->network,
-                'submitted_at' => now()->toIso8601String()
+                'network'      => $this->network,
+                'submitted_at' => now()->toIso8601String(),
             ]
         );
     }
@@ -129,7 +130,7 @@ class SimpleBitcoinConnector implements BlockchainConnector
     {
         $response = Http::get("{$this->apiUrl}/txs/{$hash}");
 
-        if (!$response->successful()) {
+        if (! $response->successful()) {
             return null;
         }
 
@@ -154,7 +155,7 @@ class SimpleBitcoinConnector implements BlockchainConnector
             status: $status,
             metadata: [
                 'confirmations' => $data['confirmations'] ?? 0,
-                'fee' => $data['fees'] ?? 0,
+                'fee'           => $data['fees'] ?? 0,
             ]
         );
     }
@@ -163,9 +164,9 @@ class SimpleBitcoinConnector implements BlockchainConnector
     {
         // Return fee estimates in satoshis per byte
         return [
-            'slow' => $this->getEstimatedFeeRate(0.9),
+            'slow'     => $this->getEstimatedFeeRate(0.9),
             'standard' => $this->getEstimatedFeeRate(0.5),
-            'fast' => $this->getEstimatedFeeRate(0.1),
+            'fast'     => $this->getEstimatedFeeRate(0.1),
         ];
     }
 
@@ -189,6 +190,7 @@ class SimpleBitcoinConnector implements BlockchainConnector
     {
         try {
             $response = Http::timeout(5)->get($this->apiUrl);
+
             return $response->successful();
         } catch (\Exception $e) {
             return false;

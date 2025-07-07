@@ -4,26 +4,32 @@ declare(strict_types=1);
 
 namespace App\Domain\Custodian\Services;
 
+use App\Domain\Custodian\Exceptions\CircuitOpenException;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
-use App\Domain\Custodian\Exceptions\CircuitOpenException;
 
 class CircuitBreakerService
 {
     /**
-     * Circuit breaker states
+     * Circuit breaker states.
      */
     private const STATE_CLOSED = 'closed';
+
     private const STATE_OPEN = 'open';
+
     private const STATE_HALF_OPEN = 'half_open';
 
     /**
-     * Default configuration
+     * Default configuration.
      */
     private const DEFAULT_FAILURE_THRESHOLD = 5;
+
     private const DEFAULT_SUCCESS_THRESHOLD = 2;
+
     private const DEFAULT_TIMEOUT = 60; // seconds
+
     private const DEFAULT_FAILURE_RATE_THRESHOLD = 0.5; // 50%
+
     private const DEFAULT_SAMPLE_SIZE = 10;
 
     public function __construct(
@@ -36,7 +42,7 @@ class CircuitBreakerService
     }
 
     /**
-     * Execute a callable within circuit breaker protection
+     * Execute a callable within circuit breaker protection.
      *
      * @template T
      * @param string $service Service identifier (e.g., 'paysera.balance')
@@ -103,7 +109,7 @@ class CircuitBreakerService
     }
 
     /**
-     * Get current circuit state
+     * Get current circuit state.
      */
     public function getState(string $service): string
     {
@@ -111,7 +117,7 @@ class CircuitBreakerService
     }
 
     /**
-     * Check if service is available (circuit not open)
+     * Check if service is available (circuit not open).
      */
     public function isAvailable(string $service): bool
     {
@@ -119,7 +125,7 @@ class CircuitBreakerService
     }
 
     /**
-     * Manually reset circuit to closed state
+     * Manually reset circuit to closed state.
      */
     public function reset(string $service): void
     {
@@ -128,32 +134,32 @@ class CircuitBreakerService
     }
 
     /**
-     * Get circuit breaker metrics
+     * Get circuit breaker metrics.
      */
     public function getMetrics(string $service): array
     {
         $recentCalls = $this->getRecentCalls($service);
-        $failures = array_filter($recentCalls, fn($call) => !$call['success']);
+        $failures = array_filter($recentCalls, fn ($call) => ! $call['success']);
         $successCount = count($recentCalls) - count($failures);
         $failureRate = count($recentCalls) > 0
             ? count($failures) / count($recentCalls)
             : 0;
 
         return [
-            'state' => $this->getState($service),
-            'total_calls' => count($recentCalls),
-            'success_count' => $successCount,
-            'failure_count' => count($failures),
-            'failure_rate' => round($failureRate * 100, 2),
-            'consecutive_failures' => $this->getConsecutiveFailures($service),
+            'state'                 => $this->getState($service),
+            'total_calls'           => count($recentCalls),
+            'success_count'         => $successCount,
+            'failure_count'         => count($failures),
+            'failure_rate'          => round($failureRate * 100, 2),
+            'consecutive_failures'  => $this->getConsecutiveFailures($service),
             'consecutive_successes' => $this->getConsecutiveSuccesses($service),
-            'last_failure_time' => $this->getLastFailureTime($service),
-            'circuit_opened_at' => $this->getCircuitOpenedTime($service),
+            'last_failure_time'     => $this->getLastFailureTime($service),
+            'circuit_opened_at'     => $this->getCircuitOpenedTime($service),
         ];
     }
 
     /**
-     * Record successful operation
+     * Record successful operation.
      */
     private function recordSuccess(string $service): void
     {
@@ -163,7 +169,7 @@ class CircuitBreakerService
     }
 
     /**
-     * Record failed operation
+     * Record failed operation.
      */
     private function recordFailure(string $service): void
     {
@@ -174,7 +180,7 @@ class CircuitBreakerService
     }
 
     /**
-     * Record call to recent calls list
+     * Record call to recent calls list.
      */
     private function recordCall(string $service, bool $success): void
     {
@@ -182,7 +188,7 @@ class CircuitBreakerService
 
         // Add new call
         $recentCalls[] = [
-            'success' => $success,
+            'success'   => $success,
             'timestamp' => now()->timestamp,
         ];
 
@@ -195,7 +201,7 @@ class CircuitBreakerService
     }
 
     /**
-     * Check if circuit should be opened
+     * Check if circuit should be opened.
      */
     private function shouldOpenCircuit(string $service): bool
     {
@@ -208,7 +214,7 @@ class CircuitBreakerService
         // Check failure rate
         $recentCalls = $this->getRecentCalls($service);
         if (count($recentCalls) >= $this->sampleSize) {
-            $failures = array_filter($recentCalls, fn($call) => !$call['success']);
+            $failures = array_filter($recentCalls, fn ($call) => ! $call['success']);
             $failureRate = count($failures) / count($recentCalls);
 
             return $failureRate >= $this->failureRateThreshold;
@@ -218,7 +224,7 @@ class CircuitBreakerService
     }
 
     /**
-     * Check if circuit can be closed
+     * Check if circuit can be closed.
      */
     private function canCloseCircuit(string $service): bool
     {
@@ -226,7 +232,7 @@ class CircuitBreakerService
     }
 
     /**
-     * Check if we should attempt to reset the circuit
+     * Check if we should attempt to reset the circuit.
      */
     private function shouldAttemptReset(string $service): bool
     {
@@ -240,7 +246,7 @@ class CircuitBreakerService
     }
 
     /**
-     * Transition to closed state
+     * Transition to closed state.
      */
     private function transitionToClosed(string $service): void
     {
@@ -251,7 +257,7 @@ class CircuitBreakerService
     }
 
     /**
-     * Transition to open state
+     * Transition to open state.
      */
     private function transitionToOpen(string $service): void
     {
@@ -262,7 +268,7 @@ class CircuitBreakerService
     }
 
     /**
-     * Transition to half-open state
+     * Transition to half-open state.
      */
     private function transitionToHalfOpen(string $service): void
     {
@@ -272,7 +278,7 @@ class CircuitBreakerService
     }
 
     /**
-     * Clear all metrics for a service
+     * Clear all metrics for a service.
      */
     private function clearMetrics(string $service): void
     {
@@ -284,7 +290,7 @@ class CircuitBreakerService
     }
 
     /**
-     * Get recent calls from cache
+     * Get recent calls from cache.
      */
     private function getRecentCalls(string $service): array
     {
@@ -292,7 +298,7 @@ class CircuitBreakerService
     }
 
     /**
-     * Get consecutive failures count
+     * Get consecutive failures count.
      */
     private function getConsecutiveFailures(string $service): int
     {
@@ -300,7 +306,7 @@ class CircuitBreakerService
     }
 
     /**
-     * Get consecutive successes count
+     * Get consecutive successes count.
      */
     private function getConsecutiveSuccesses(string $service): int
     {
@@ -308,20 +314,22 @@ class CircuitBreakerService
     }
 
     /**
-     * Get last failure timestamp
+     * Get last failure timestamp.
      */
     private function getLastFailureTime(string $service): ?int
     {
         $value = Cache::get($this->getLastFailureKey($service));
+
         return $value !== null ? (int) $value : null;
     }
 
     /**
-     * Get circuit opened timestamp
+     * Get circuit opened timestamp.
      */
     private function getCircuitOpenedTime(string $service): ?int
     {
         $value = Cache::get($this->getCircuitOpenedKey($service));
+
         return $value !== null ? (int) $value : null;
     }
 

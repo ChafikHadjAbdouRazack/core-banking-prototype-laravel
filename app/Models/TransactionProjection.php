@@ -17,8 +17,8 @@ class TransactionProjection extends Model
     protected $guarded = [];
 
     protected $casts = [
-        'amount' => 'integer',
-        'metadata' => 'array',
+        'amount'     => 'integer',
+        'metadata'   => 'array',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
@@ -40,7 +40,7 @@ class TransactionProjection extends Model
     }
 
     /**
-     * Get formatted amount (in dollars/cents format)
+     * Get formatted amount (in dollars/cents format).
      */
     public function getFormattedAmountAttribute(): string
     {
@@ -48,7 +48,7 @@ class TransactionProjection extends Model
     }
 
     /**
-     * Scope to get transactions for a specific type
+     * Scope to get transactions for a specific type.
      */
     public function scopeOfType($query, string $type)
     {
@@ -56,7 +56,7 @@ class TransactionProjection extends Model
     }
 
     /**
-     * Scope to get completed transactions
+     * Scope to get completed transactions.
      */
     public function scopeCompleted($query)
     {

@@ -24,7 +24,7 @@ uses(TestCase::class, RefreshDatabase::class)->in('Domain');
 uses(TestCase::class, RefreshDatabase::class)->in('Console');
 
 // Use InteractsWithFilament trait for Filament tests
-uses(\Tests\Traits\InteractsWithFilament::class)->in('Feature/Filament');
+uses(Tests\Traits\InteractsWithFilament::class)->in('Feature/Filament');
 
 /*
 |--------------------------------------------------------------------------

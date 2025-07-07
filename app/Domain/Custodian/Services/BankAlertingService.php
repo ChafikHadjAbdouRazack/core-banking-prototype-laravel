@@ -14,20 +14,22 @@ use Illuminate\Support\Facades\Notification;
 class BankAlertingService
 {
     /**
-     * Alert channels configuration
+     * Alert channels configuration.
      */
     private array $alertChannels = ['mail', 'database'];
 
     /**
-     * Cooldown period for alerts (in minutes)
+     * Cooldown period for alerts (in minutes).
      */
     private const ALERT_COOLDOWN_MINUTES = 30;
 
     /**
-     * Alert severity levels
+     * Alert severity levels.
      */
     private const SEVERITY_INFO = 'info';
+
     private const SEVERITY_WARNING = 'warning';
+
     private const SEVERITY_CRITICAL = 'critical';
 
     public function __construct(
@@ -36,7 +38,7 @@ class BankAlertingService
     }
 
     /**
-     * Handle custodian health change event
+     * Handle custodian health change event.
      */
     public function handleHealthChange(CustodianHealthChanged $event): void
     {
@@ -48,7 +50,7 @@ class BankAlertingService
         }
 
         // Check if we should send an alert (cooldown period)
-        if (!$this->shouldSendAlert($event->custodian, $severity)) {
+        if (! $this->shouldSendAlert($event->custodian, $severity)) {
             return;
         }
 
@@ -57,6 +59,7 @@ class BankAlertingService
 
         if ($recipients->isEmpty()) {
             Log::warning('No alert recipients configured for bank health alerts');
+
             return;
         }
 
@@ -65,16 +68,16 @@ class BankAlertingService
 
         // Log the alert
         Log::warning('Bank health alert sent', [
-            'custodian' => $event->custodian,
-            'previous_status' => $event->previousStatus,
-            'new_status' => $event->newStatus,
-            'severity' => $severity,
+            'custodian'        => $event->custodian,
+            'previous_status'  => $event->previousStatus,
+            'new_status'       => $event->newStatus,
+            'severity'         => $severity,
             'recipients_count' => $recipients->count(),
         ]);
     }
 
     /**
-     * Check system-wide bank health and alert if necessary
+     * Check system-wide bank health and alert if necessary.
      */
     public function performHealthCheck(): void
     {
@@ -104,7 +107,7 @@ class BankAlertingService
     }
 
     /**
-     * Determine alert severity based on status change
+     * Determine alert severity based on status change.
      */
     private function determineSeverity(string $previousStatus, string $newStatus): string
     {
@@ -132,7 +135,7 @@ class BankAlertingService
     }
 
     /**
-     * Check if we should send an alert (respecting cooldown)
+     * Check if we should send an alert (respecting cooldown).
      */
     private function shouldSendAlert(string $custodian, string $severity): bool
     {
@@ -149,7 +152,7 @@ class BankAlertingService
     }
 
     /**
-     * Get alert recipients based on severity
+     * Get alert recipients based on severity.
      */
     private function getAlertRecipients(string $severity)
     {
@@ -159,7 +162,7 @@ class BankAlertingService
     }
 
     /**
-     * Send alert to recipients
+     * Send alert to recipients.
      */
     private function sendAlert($recipients, CustodianHealthChanged $event, string $severity): void
     {
@@ -178,11 +181,11 @@ class BankAlertingService
     }
 
     /**
-     * Send system-wide alert
+     * Send system-wide alert.
      */
     private function sendSystemAlert(string $severity, string $message, array $issues): void
     {
-        if (!$this->shouldSendAlert('system', $severity)) {
+        if (! $this->shouldSendAlert('system', $severity)) {
             return;
         }
 
@@ -194,8 +197,8 @@ class BankAlertingService
 
         Log::alert('System-wide bank health alert', [
             'severity' => $severity,
-            'message' => $message,
-            'issues' => $issues,
+            'message'  => $message,
+            'issues'   => $issues,
         ]);
 
         // In production, send actual notification
@@ -203,25 +206,25 @@ class BankAlertingService
     }
 
     /**
-     * Get alert history for a custodian
+     * Get alert history for a custodian.
      */
     public function getAlertHistory(string $custodian, int $days = 7): array
     {
         // In production, this would query from database
         // For now, return sample data
         return [
-            'custodian' => $custodian,
+            'custodian'   => $custodian,
             'period_days' => $days,
-            'alerts' => [
+            'alerts'      => [
                 [
                     'timestamp' => now()->subDays(2),
-                    'severity' => 'warning',
-                    'message' => 'Status changed from healthy to degraded',
+                    'severity'  => 'warning',
+                    'message'   => 'Status changed from healthy to degraded',
                 ],
                 [
                     'timestamp' => now()->subDays(1),
-                    'severity' => 'info',
-                    'message' => 'Status changed from degraded to healthy',
+                    'severity'  => 'info',
+                    'message'   => 'Status changed from degraded to healthy',
                 ],
             ],
         ];

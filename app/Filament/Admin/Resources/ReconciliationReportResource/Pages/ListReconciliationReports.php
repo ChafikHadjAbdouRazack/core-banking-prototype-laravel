@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\ReconciliationReportResource\Pages;
 
-use App\Filament\Admin\Resources\ReconciliationReportResource;
 use App\Domain\Custodian\Services\DailyReconciliationService;
+use App\Filament\Admin\Resources\ReconciliationReportResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Collection;
@@ -48,6 +48,7 @@ class ListReconciliationReports extends ListRecords
 
         $reports = collect($files)->map(function ($file) {
             $content = json_decode(file_get_contents($file), true);
+
             return $content['summary'] ?? [];
         })->filter()->sortByDesc('date');
 

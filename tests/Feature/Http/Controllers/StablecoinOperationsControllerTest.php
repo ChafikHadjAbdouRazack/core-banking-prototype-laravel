@@ -2,39 +2,40 @@
 
 namespace Tests\Feature\Http\Controllers;
 
-use Tests\TestCase;
-use App\Models\User;
 use App\Models\Account;
-use App\Models\StablecoinOperation;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Permission\Models\Role;
+use Tests\TestCase;
 
 class StablecoinOperationsControllerTest extends TestCase
 {
     use RefreshDatabase;
 
     protected User $adminUser;
+
     protected User $regularUser;
+
     protected Account $account;
 
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Create roles
         Role::create(['name' => 'super_admin']);
         Role::create(['name' => 'stablecoin_operator']);
-        
+
         // Create users
         $this->adminUser = User::factory()->create();
         $this->adminUser->assignRole('super_admin');
-        
+
         $this->regularUser = User::factory()->create();
-        
+
         // Create account for admin user
         $this->account = Account::factory()->create([
             'user_uuid' => $this->adminUser->uuid,
-            'status' => 'active',
+            'status'    => 'active',
         ]);
     }
 
@@ -42,7 +43,7 @@ class StablecoinOperationsControllerTest extends TestCase
     {
         $response = $this->actingAs($this->regularUser)
             ->get(route('stablecoin-operations.index'));
-            
+
         $response->assertStatus(403);
     }
 
@@ -50,7 +51,7 @@ class StablecoinOperationsControllerTest extends TestCase
     {
         $response = $this->actingAs($this->adminUser)
             ->get(route('stablecoin-operations.index'));
-            
+
         $response->assertStatus(200)
             ->assertViewIs('stablecoin-operations.index')
             ->assertViewHas(['stablecoins', 'statistics', 'recentOperations', 'collateral', 'pendingRequests']);
@@ -60,7 +61,7 @@ class StablecoinOperationsControllerTest extends TestCase
     {
         $response = $this->actingAs($this->adminUser)
             ->get(route('stablecoin-operations.mint', ['stablecoin' => 'USDX']));
-            
+
         $response->assertStatus(200)
             ->assertViewIs('stablecoin-operations.mint')
             ->assertViewHas(['stablecoin', 'stablecoinInfo', 'collateralAssets', 'operatorAccounts']);
@@ -70,7 +71,7 @@ class StablecoinOperationsControllerTest extends TestCase
     {
         $response = $this->actingAs($this->adminUser)
             ->get(route('stablecoin-operations.burn', ['stablecoin' => 'USDX']));
-            
+
         $response->assertStatus(200)
             ->assertViewIs('stablecoin-operations.burn')
             ->assertViewHas(['stablecoin', 'stablecoinInfo', 'operatorAccounts']);
@@ -80,7 +81,7 @@ class StablecoinOperationsControllerTest extends TestCase
     {
         $response = $this->actingAs($this->adminUser)
             ->get(route('stablecoin-operations.history'));
-            
+
         $response->assertStatus(200)
             ->assertViewIs('stablecoin-operations.history')
             ->assertViewHas(['operations', 'summary', 'filters']);
@@ -91,9 +92,9 @@ class StablecoinOperationsControllerTest extends TestCase
         $response = $this->actingAs($this->adminUser)
             ->post(route('stablecoin-operations.mint.process'), [
                 'stablecoin' => 'INVALID',
-                'amount' => -100,
+                'amount'     => -100,
             ]);
-            
+
         $response->assertSessionHasErrors(['stablecoin', 'amount']);
     }
 
@@ -102,9 +103,9 @@ class StablecoinOperationsControllerTest extends TestCase
         $response = $this->actingAs($this->adminUser)
             ->post(route('stablecoin-operations.burn.process'), [
                 'stablecoin' => 'INVALID',
-                'amount' => -100,
+                'amount'     => -100,
             ]);
-            
+
         $response->assertSessionHasErrors(['stablecoin', 'amount']);
     }
 }

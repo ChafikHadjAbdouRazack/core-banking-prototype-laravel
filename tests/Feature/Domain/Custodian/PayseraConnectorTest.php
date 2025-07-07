@@ -3,8 +3,8 @@
 use App\Domain\Account\DataObjects\Money;
 use App\Domain\Custodian\Connectors\PayseraConnector;
 use App\Domain\Custodian\ValueObjects\TransferRequest;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
 
 uses(RefreshDatabase::class);
 
@@ -13,23 +13,23 @@ beforeEach(function () {
     Http::fake([
         'https://bank.paysera.com/oauth/v1/token' => Http::response([
             'access_token' => 'mock-access-token',
-            'token_type' => 'Bearer',
-            'expires_in' => 3600,
+            'token_type'   => 'Bearer',
+            'expires_in'   => 3600,
         ], 200),
     ]);
 });
 
 it('throws exception when client credentials are missing', function () {
-    expect(fn() => new PayseraConnector([]))
-        ->toThrow(\InvalidArgumentException::class, 'Paysera client_id and client_secret are required');
+    expect(fn () => new PayseraConnector([]))
+        ->toThrow(InvalidArgumentException::class, 'Paysera client_id and client_secret are required');
 });
 
 it('can be instantiated with valid config', function () {
     $connector = new PayseraConnector([
-        'client_id' => 'test-client-id',
+        'client_id'     => 'test-client-id',
         'client_secret' => 'test-client-secret',
     ]);
-    
+
     expect($connector)->toBeInstanceOf(PayseraConnector::class);
     expect($connector->getName())->toBe('Paysera');
 });
@@ -38,12 +38,12 @@ it('checks availability via health endpoint', function () {
     Http::fake([
         'https://bank.paysera.com/rest/v1/health' => Http::response(['status' => 'ok'], 200),
     ]);
-    
+
     $connector = new PayseraConnector([
-        'client_id' => 'test-client-id',
+        'client_id'     => 'test-client-id',
         'client_secret' => 'test-client-secret',
     ]);
-    
+
     expect($connector->isAvailable())->toBeTrue();
 });
 
@@ -51,12 +51,12 @@ it('returns false when health check fails', function () {
     Http::fake([
         'https://bank.paysera.com/rest/v1/health' => Http::response(['error' => 'Service unavailable'], 503),
     ]);
-    
+
     $connector = new PayseraConnector([
-        'client_id' => 'test-client-id',
+        'client_id'     => 'test-client-id',
         'client_secret' => 'test-client-secret',
     ]);
-    
+
     expect($connector->isAvailable())->toBeFalse();
 });
 
@@ -64,8 +64,8 @@ it('obtains access token with client credentials', function () {
     Http::fake([
         'https://bank.paysera.com/oauth/v1/token' => Http::response([
             'access_token' => 'test-token-123',
-            'token_type' => 'Bearer',
-            'expires_in' => 3600,
+            'token_type'   => 'Bearer',
+            'expires_in'   => 3600,
         ], 200),
         'https://bank.paysera.com/rest/v1/accounts/123/balance' => Http::response([
             'balances' => [
@@ -73,18 +73,18 @@ it('obtains access token with client credentials', function () {
             ],
         ], 200),
     ]);
-    
+
     $connector = new PayseraConnector([
-        'client_id' => 'test-client-id',
+        'client_id'     => 'test-client-id',
         'client_secret' => 'test-client-secret',
     ]);
-    
+
     // This should trigger token acquisition
     $balance = $connector->getBalance('123', 'EUR');
-    
+
     expect($balance)->toBeInstanceOf(Money::class);
     expect($balance->getAmount())->toBe(100000);
-    
+
     // Verify OAuth request was made
     Http::assertSent(function ($request) {
         return $request->url() === 'https://bank.paysera.com/oauth/v1/token' &&
@@ -103,14 +103,14 @@ it('retrieves account balance', function () {
             ],
         ], 200),
     ]);
-    
+
     $connector = new PayseraConnector([
-        'client_id' => 'test-client-id',
+        'client_id'     => 'test-client-id',
         'client_secret' => 'test-client-secret',
     ]);
-    
+
     $balance = $connector->getBalance('ACC123', 'USD');
-    
+
     expect($balance)->toBeInstanceOf(Money::class);
     expect($balance->getAmount())->toBe(25000);
 });
@@ -123,28 +123,28 @@ it('returns zero balance for non-existent currency', function () {
             ],
         ], 200),
     ]);
-    
+
     $connector = new PayseraConnector([
-        'client_id' => 'test-client-id',
+        'client_id'     => 'test-client-id',
         'client_secret' => 'test-client-secret',
     ]);
-    
+
     $balance = $connector->getBalance('ACC123', 'GBP');
-    
+
     expect($balance->getAmount())->toBe(0);
 });
 
 it('retrieves account information', function () {
     Http::fake([
         'https://bank.paysera.com/rest/v1/accounts/ACC123' => Http::response([
-            'id' => 'ACC123',
-            'name' => 'Business Account',
-            'status' => 'active',
+            'id'               => 'ACC123',
+            'name'             => 'Business Account',
+            'status'           => 'active',
             'default_currency' => 'EUR',
-            'type' => 'business',
-            'iban' => 'LT123456789012345678',
-            'bic' => 'PAYSLTXX',
-            'created_at' => '2023-01-15T10:00:00Z',
+            'type'             => 'business',
+            'iban'             => 'LT123456789012345678',
+            'bic'              => 'PAYSLTXX',
+            'created_at'       => '2023-01-15T10:00:00Z',
         ], 200),
         'https://bank.paysera.com/rest/v1/accounts/ACC123/balance' => Http::response([
             'balances' => [
@@ -153,14 +153,14 @@ it('retrieves account information', function () {
             ],
         ], 200),
     ]);
-    
+
     $connector = new PayseraConnector([
-        'client_id' => 'test-client-id',
+        'client_id'     => 'test-client-id',
         'client_secret' => 'test-client-secret',
     ]);
-    
+
     $accountInfo = $connector->getAccountInfo('ACC123');
-    
+
     expect($accountInfo->accountId)->toBe('ACC123');
     expect($accountInfo->name)->toBe('Business Account');
     expect($accountInfo->status)->toBe('active');
@@ -176,23 +176,23 @@ it('retrieves account information', function () {
 it('initiates a transfer', function () {
     Http::fake([
         'https://bank.paysera.com/rest/v1/payments' => Http::response([
-            'id' => 'PAY123',
-            'status' => 'pending',
+            'id'           => 'PAY123',
+            'status'       => 'pending',
             'from_account' => 'ACC001',
-            'to_account' => 'ACC002',
-            'currency' => 'EUR',
-            'amount' => '10000',
-            'fee' => '50',
-            'reference' => 'REF123',
-            'created_at' => '2023-06-17T10:00:00Z',
+            'to_account'   => 'ACC002',
+            'currency'     => 'EUR',
+            'amount'       => '10000',
+            'fee'          => '50',
+            'reference'    => 'REF123',
+            'created_at'   => '2023-06-17T10:00:00Z',
         ], 200),
     ]);
-    
+
     $connector = new PayseraConnector([
-        'client_id' => 'test-client-id',
+        'client_id'     => 'test-client-id',
         'client_secret' => 'test-client-secret',
     ]);
-    
+
     $transferRequest = new TransferRequest(
         fromAccount: 'ACC001',
         toAccount: 'ACC002',
@@ -201,9 +201,9 @@ it('initiates a transfer', function () {
         reference: 'REF123',
         description: 'Test payment'
     );
-    
+
     $receipt = $connector->initiateTransfer($transferRequest);
-    
+
     expect($receipt->id)->toBe('PAY123');
     expect($receipt->status)->toBe('pending');
     expect($receipt->amount)->toBe(10000);
@@ -214,26 +214,26 @@ it('initiates a transfer', function () {
 it('retrieves transaction status', function () {
     Http::fake([
         'https://bank.paysera.com/rest/v1/payments/PAY123' => Http::response([
-            'id' => 'PAY123',
-            'status' => 'completed',
+            'id'           => 'PAY123',
+            'status'       => 'completed',
             'from_account' => 'ACC001',
-            'to_account' => 'ACC002',
-            'currency' => 'EUR',
-            'amount' => '10000',
-            'fee' => '50',
-            'reference' => 'REF123',
-            'created_at' => '2023-06-17T10:00:00Z',
+            'to_account'   => 'ACC002',
+            'currency'     => 'EUR',
+            'amount'       => '10000',
+            'fee'          => '50',
+            'reference'    => 'REF123',
+            'created_at'   => '2023-06-17T10:00:00Z',
             'completed_at' => '2023-06-17T10:05:00Z',
         ], 200),
     ]);
-    
+
     $connector = new PayseraConnector([
-        'client_id' => 'test-client-id',
+        'client_id'     => 'test-client-id',
         'client_secret' => 'test-client-secret',
     ]);
-    
+
     $receipt = $connector->getTransactionStatus('PAY123');
-    
+
     expect($receipt->status)->toBe('completed');
     expect($receipt->isCompleted())->toBeTrue();
     expect($receipt->completedAt)->not->toBeNull();
@@ -243,30 +243,30 @@ it('cancels a transaction', function () {
     Http::fake([
         'https://bank.paysera.com/rest/v1/payments/PAY123/cancel' => Http::response([], 200),
     ]);
-    
+
     $connector = new PayseraConnector([
-        'client_id' => 'test-client-id',
+        'client_id'     => 'test-client-id',
         'client_secret' => 'test-client-secret',
     ]);
-    
+
     $result = $connector->cancelTransaction('PAY123');
-    
+
     expect($result)->toBeTrue();
 });
 
 it('validates account existence', function () {
     Http::fake([
         'https://bank.paysera.com/rest/v1/accounts/ACC123' => Http::response([
-            'id' => 'ACC123',
+            'id'     => 'ACC123',
             'status' => 'active',
         ], 200),
     ]);
-    
+
     $connector = new PayseraConnector([
-        'client_id' => 'test-client-id',
+        'client_id'     => 'test-client-id',
         'client_secret' => 'test-client-secret',
     ]);
-    
+
     expect($connector->validateAccount('ACC123'))->toBeTrue();
 });
 
@@ -274,12 +274,12 @@ it('returns false for invalid account', function () {
     Http::fake([
         'https://bank.paysera.com/rest/v1/accounts/INVALID' => Http::response(['error' => 'Not found'], 404),
     ]);
-    
+
     $connector = new PayseraConnector([
-        'client_id' => 'test-client-id',
+        'client_id'     => 'test-client-id',
         'client_secret' => 'test-client-secret',
     ]);
-    
+
     expect($connector->validateAccount('INVALID'))->toBeFalse();
 });
 
@@ -288,39 +288,39 @@ it('retrieves transaction history', function () {
         'https://bank.paysera.com/rest/v1/accounts/ACC123/payments?limit=10&offset=0' => Http::response([
             'payments' => [
                 [
-                    'id' => 'PAY001',
-                    'status' => 'completed',
+                    'id'           => 'PAY001',
+                    'status'       => 'completed',
                     'from_account' => 'ACC123',
-                    'to_account' => 'ACC456',
-                    'currency' => 'EUR',
-                    'amount' => '5000',
-                    'fee' => '25',
-                    'reference' => 'REF001',
-                    'created_at' => '2023-06-17T09:00:00Z',
+                    'to_account'   => 'ACC456',
+                    'currency'     => 'EUR',
+                    'amount'       => '5000',
+                    'fee'          => '25',
+                    'reference'    => 'REF001',
+                    'created_at'   => '2023-06-17T09:00:00Z',
                     'completed_at' => '2023-06-17T09:05:00Z',
                 ],
                 [
-                    'id' => 'PAY002',
-                    'status' => 'completed',
+                    'id'           => 'PAY002',
+                    'status'       => 'completed',
                     'from_account' => 'ACC789',
-                    'to_account' => 'ACC123',
-                    'currency' => 'EUR',
-                    'amount' => '15000',
-                    'reference' => 'REF002',
-                    'created_at' => '2023-06-17T10:00:00Z',
+                    'to_account'   => 'ACC123',
+                    'currency'     => 'EUR',
+                    'amount'       => '15000',
+                    'reference'    => 'REF002',
+                    'created_at'   => '2023-06-17T10:00:00Z',
                     'completed_at' => '2023-06-17T10:02:00Z',
                 ],
             ],
         ], 200),
     ]);
-    
+
     $connector = new PayseraConnector([
-        'client_id' => 'test-client-id',
+        'client_id'     => 'test-client-id',
         'client_secret' => 'test-client-secret',
     ]);
-    
+
     $history = $connector->getTransactionHistory('ACC123', 10, 0);
-    
+
     expect($history)->toHaveCount(2);
     expect($history[0]['id'])->toBe('PAY001');
     expect($history[0]['amount'])->toBe(5000);
@@ -330,12 +330,12 @@ it('retrieves transaction history', function () {
 
 it('returns supported assets', function () {
     $connector = new PayseraConnector([
-        'client_id' => 'test-client-id',
+        'client_id'     => 'test-client-id',
         'client_secret' => 'test-client-secret',
     ]);
-    
+
     $assets = $connector->getSupportedAssets();
-    
+
     expect($assets)->toContain('EUR');
     expect($assets)->toContain('USD');
     expect($assets)->toContain('GBP');

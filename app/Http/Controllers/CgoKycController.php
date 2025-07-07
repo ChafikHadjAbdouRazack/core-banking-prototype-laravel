@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Domain\Compliance\Services\KycService;
 use App\Models\CgoInvestment;
 use App\Models\KycDocument;
 use App\Services\Cgo\CgoKycService;
-use App\Domain\Compliance\Services\KycService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Log;
 class CgoKycController extends Controller
 {
     protected CgoKycService $cgoKycService;
+
     protected KycService $kycService;
 
     public function __construct(CgoKycService $cgoKycService, KycService $kycService)
@@ -23,7 +24,7 @@ class CgoKycController extends Controller
     }
 
     /**
-     * Check KYC requirements for a specific investment amount
+     * Check KYC requirements for a specific investment amount.
      */
     public function checkRequirements(Request $request)
     {
@@ -36,19 +37,19 @@ class CgoKycController extends Controller
         // Create a temporary investment object for checking requirements
         $tempInvestment = new CgoInvestment([
             'user_id' => $user->id,
-            'amount' => $request->amount,
+            'amount'  => $request->amount,
         ]);
 
         $requirements = $this->cgoKycService->checkKycRequirements($tempInvestment);
 
         return response()->json([
             'success' => true,
-            'data' => $requirements,
+            'data'    => $requirements,
         ]);
     }
 
     /**
-     * Get current KYC status for CGO investments
+     * Get current KYC status for CGO investments.
      */
     public function status()
     {
@@ -63,7 +64,7 @@ class CgoKycController extends Controller
 
         // Get required documents based on next level
         $requiredDocuments = [];
-        if (!$user->kyc_level || $user->kyc_level === 'none') {
+        if (! $user->kyc_level || $user->kyc_level === 'none') {
             $requiredDocuments = $this->kycService->getRequirements('basic')['documents'];
         } elseif ($user->kyc_level === 'basic') {
             $requiredDocuments = $this->kycService->getRequirements('enhanced')['documents'];
@@ -72,24 +73,24 @@ class CgoKycController extends Controller
         }
 
         return view('cgo.kyc-status', [
-            'totalInvested' => $totalInvested,
-            'availableLimit' => $investmentLimits['available_limit'],
-            'documents' => $documents,
+            'totalInvested'     => $totalInvested,
+            'availableLimit'    => $investmentLimits['available_limit'],
+            'documents'         => $documents,
             'requiredDocuments' => $requiredDocuments,
-            'requiredActions' => $this->getRequiredActions($user),
+            'requiredActions'   => $this->getRequiredActions($user),
         ]);
     }
 
     /**
-     * Submit KYC documents for CGO investment
+     * Submit KYC documents for CGO investment.
      */
     public function submitDocuments(Request $request)
     {
         $request->validate([
-            'documents' => 'required|array|min:1',
+            'documents'        => 'required|array|min:1',
             'documents.*.type' => 'required|string|in:passport,driving_license,national_id,utility_bill,bank_statement,selfie,proof_of_income,source_of_funds',
             'documents.*.file' => 'required|file|mimes:jpg,jpeg,png,pdf|max:10240', // 10MB max
-            'investment_id' => 'nullable|exists:cgo_investments,uuid',
+            'investment_id'    => 'nullable|exists:cgo_investments,uuid',
         ]);
 
         $user = Auth::user();
@@ -127,16 +128,16 @@ class CgoKycController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'KYC documents submitted successfully',
-                'data' => [
+                'data'    => [
                     'documents_submitted' => count($request->documents),
-                    'status' => 'pending_review',
+                    'status'              => 'pending_review',
                 ],
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('CGO KYC submission failed', [
                 'user_id' => $user->id,
-                'error' => $e->getMessage(),
+                'error'   => $e->getMessage(),
             ]);
 
             return response()->json([
@@ -147,7 +148,7 @@ class CgoKycController extends Controller
     }
 
     /**
-     * Get KYC documents for current user
+     * Get KYC documents for current user.
      */
     public function documents()
     {
@@ -159,26 +160,26 @@ class CgoKycController extends Controller
             ->get()
             ->map(function ($doc) {
                 return [
-                    'id' => $doc->id,
-                    'type' => $doc->document_type,
-                    'type_label' => KycDocument::DOCUMENT_TYPES[$doc->document_type] ?? $doc->document_type,
-                    'status' => $doc->status,
-                    'uploaded_at' => $doc->uploaded_at,
-                    'verified_at' => $doc->verified_at,
-                    'expires_at' => $doc->expires_at,
+                    'id'               => $doc->id,
+                    'type'             => $doc->document_type,
+                    'type_label'       => KycDocument::DOCUMENT_TYPES[$doc->document_type] ?? $doc->document_type,
+                    'status'           => $doc->status,
+                    'uploaded_at'      => $doc->uploaded_at,
+                    'verified_at'      => $doc->verified_at,
+                    'expires_at'       => $doc->expires_at,
                     'rejection_reason' => $doc->rejection_reason,
-                    'is_expired' => $doc->isExpired(),
+                    'is_expired'       => $doc->isExpired(),
                 ];
             });
 
         return response()->json([
             'success' => true,
-            'data' => $documents,
+            'data'    => $documents,
         ]);
     }
 
     /**
-     * Verify KYC for a specific investment
+     * Verify KYC for a specific investment.
      */
     public function verifyInvestment(Request $request, $investmentUuid)
     {
@@ -201,10 +202,10 @@ class CgoKycController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'KYC verification successful',
-                'data' => [
+                'data'    => [
                     'investment_id' => $investment->uuid,
-                    'kyc_level' => $investment->kyc_level,
-                    'can_proceed' => true,
+                    'kyc_level'     => $investment->kyc_level,
+                    'can_proceed'   => true,
                 ],
             ]);
         } else {
@@ -213,38 +214,38 @@ class CgoKycController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'KYC verification required',
-                'data' => [
-                    'investment_id' => $investment->uuid,
-                    'required_level' => $requirements['required_level'],
-                    'current_level' => $requirements['current_level'],
+                'data'    => [
+                    'investment_id'      => $investment->uuid,
+                    'required_level'     => $requirements['required_level'],
+                    'current_level'      => $requirements['current_level'],
                     'required_documents' => $requirements['required_documents'],
-                    'status' => $investment->status,
+                    'status'             => $investment->status,
                 ],
             ], 422);
         }
     }
 
     /**
-     * Get investment limits based on KYC level
+     * Get investment limits based on KYC level.
      */
     protected function getInvestmentLimits($user): array
     {
         $requirements = $this->kycService->getRequirements($user->kyc_level ?: 'none');
 
         return [
-            'current_level' => $user->kyc_level ?: 'none',
+            'current_level'           => $user->kyc_level ?: 'none',
             'single_investment_limit' => $requirements['limits']['daily_transaction'] ?? 0,
-            'total_investment_limit' => $requirements['limits']['max_balance'] ?? 0,
-            'available_limit' => $this->calculateAvailableLimit($user, $requirements['limits']['max_balance'] ?? 0),
+            'total_investment_limit'  => $requirements['limits']['max_balance'] ?? 0,
+            'available_limit'         => $this->calculateAvailableLimit($user, $requirements['limits']['max_balance'] ?? 0),
         ];
     }
 
     /**
-     * Calculate available investment limit
+     * Calculate available investment limit.
      */
     protected function calculateAvailableLimit($user, $maxLimit): ?float
     {
-        if (!$maxLimit) {
+        if (! $maxLimit) {
             return null; // No limit
         }
 
@@ -256,7 +257,7 @@ class CgoKycController extends Controller
     }
 
     /**
-     * Get pending documents for user
+     * Get pending documents for user.
      */
     protected function getPendingDocuments($user): array
     {
@@ -267,7 +268,7 @@ class CgoKycController extends Controller
     }
 
     /**
-     * Get required actions for user
+     * Get required actions for user.
      */
     protected function getRequiredActions($user): array
     {
@@ -276,8 +277,8 @@ class CgoKycController extends Controller
         // Check if KYC is expired
         if ($user->kyc_expires_at && $user->kyc_expires_at->isPast()) {
             $actions[] = [
-                'type' => 'renew_kyc',
-                'message' => 'Your KYC verification has expired. Please submit updated documents.',
+                'type'     => 'renew_kyc',
+                'message'  => 'Your KYC verification has expired. Please submit updated documents.',
                 'priority' => 'high',
             ];
         }
@@ -290,11 +291,11 @@ class CgoKycController extends Controller
 
         foreach ($expiringDocs as $doc) {
             $actions[] = [
-                'type' => 'update_document',
-                'message' => "Your {$doc->document_type} is expiring soon. Please submit an updated document.",
+                'type'          => 'update_document',
+                'message'       => "Your {$doc->document_type} is expiring soon. Please submit an updated document.",
                 'document_type' => $doc->document_type,
-                'expires_at' => $doc->expires_at,
-                'priority' => 'medium',
+                'expires_at'    => $doc->expires_at,
+                'priority'      => 'medium',
             ];
         }
 
@@ -306,8 +307,8 @@ class CgoKycController extends Controller
 
             if ($totalInvested > 800) { // Getting close to basic limit
                 $actions[] = [
-                    'type' => 'upgrade_kyc',
-                    'message' => 'You are approaching your investment limit. Upgrade to Enhanced KYC to invest more.',
+                    'type'     => 'upgrade_kyc',
+                    'message'  => 'You are approaching your investment limit. Upgrade to Enhanced KYC to invest more.',
                     'priority' => 'low',
                 ];
             }

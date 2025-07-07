@@ -10,7 +10,7 @@ use Workflow\Workflow;
 class WalletDepositWorkflow extends Workflow
 {
     /**
-     * Execute wallet deposit for a specific asset
+     * Execute wallet deposit for a specific asset.
      *
      * @param AccountUuid $accountUuid
      * @param string $assetCode

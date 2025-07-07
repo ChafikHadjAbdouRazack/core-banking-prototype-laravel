@@ -16,11 +16,11 @@ final class EnhancedLiquidityPoolCreated extends BasePoolEvent
 
         // Add pool-specific metadata
         $this->eventMetadata['pool_creation'] = [
-            'pair' => "{$baseCurrency}/{$quoteCurrency}",
+            'pair'             => "{$baseCurrency}/{$quoteCurrency}",
             'fee_basis_points' => (int) ($feeRate * 10000),
-            'creator_type' => $metadata['creator_type'] ?? 'user',
-            'initial_tvl' => $metadata['initial_tvl'] ?? '0',
-            'pool_type' => $metadata['pool_type'] ?? 'constant_product',
+            'creator_type'     => $metadata['creator_type'] ?? 'user',
+            'initial_tvl'      => $metadata['initial_tvl'] ?? '0',
+            'pool_type'        => $metadata['pool_type'] ?? 'constant_product',
         ];
     }
 }

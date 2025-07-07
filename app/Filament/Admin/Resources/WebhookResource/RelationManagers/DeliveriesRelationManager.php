@@ -2,14 +2,10 @@
 
 namespace App\Filament\Admin\Resources\WebhookResource\RelationManagers;
 
-use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class DeliveriesRelationManager extends RelationManager
 {
@@ -35,7 +31,7 @@ class DeliveriesRelationManager extends RelationManager
                     ->colors([
                         'success' => 'delivered',
                         'warning' => 'pending',
-                        'danger' => 'failed',
+                        'danger'  => 'failed',
                     ]),
                 Tables\Columns\TextColumn::make('attempt_number')
                     ->label('Attempt')
@@ -62,9 +58,9 @@ class DeliveriesRelationManager extends RelationManager
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
                     ->options([
-                        'pending' => 'Pending',
+                        'pending'   => 'Pending',
                         'delivered' => 'Delivered',
-                        'failed' => 'Failed',
+                        'failed'    => 'Failed',
                     ]),
                 Tables\Filters\SelectFilter::make('event_type')
                     ->options(fn () => $this->getOwnerRecord()->deliveries()

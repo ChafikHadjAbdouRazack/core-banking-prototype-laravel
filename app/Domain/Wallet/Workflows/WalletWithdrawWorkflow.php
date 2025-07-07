@@ -10,7 +10,7 @@ use Workflow\Workflow;
 class WalletWithdrawWorkflow extends Workflow
 {
     /**
-     * Execute wallet withdrawal for a specific asset
+     * Execute wallet withdrawal for a specific asset.
      *
      * @param AccountUuid $accountUuid
      * @param string $assetCode

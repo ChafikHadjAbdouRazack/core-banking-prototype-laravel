@@ -103,7 +103,7 @@ final readonly class LiquidityShare
     public function toArray(): array
     {
         return [
-            'amount' => $this->amount->__toString(),
+            'amount'     => $this->amount->__toString(),
             'percentage' => $this->percentage->toScale(2, RoundingMode::DOWN)->__toString() . '%',
         ];
     }

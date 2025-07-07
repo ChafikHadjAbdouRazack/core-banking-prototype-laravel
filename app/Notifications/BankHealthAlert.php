@@ -56,7 +56,7 @@ class BankHealthAlert extends Notification implements ShouldQueue
         }
 
         // Add recommendations
-        if (!empty($this->healthData['recommendations'])) {
+        if (! empty($this->healthData['recommendations'])) {
             $mail->line('**Recommendations:**');
             foreach ($this->healthData['recommendations'] as $recommendation) {
                 $mail->line("• {$recommendation}");
@@ -82,37 +82,37 @@ class BankHealthAlert extends Notification implements ShouldQueue
     public function toArray(object $notifiable): array
     {
         return [
-            'type' => 'bank_health_alert',
-            'custodian' => $this->custodian,
+            'type'            => 'bank_health_alert',
+            'custodian'       => $this->custodian,
             'previous_status' => $this->previousStatus,
-            'new_status' => $this->newStatus,
-            'severity' => $this->severity,
-            'failure_rate' => $this->healthData['overall_failure_rate'] ?? null,
-            'timestamp' => $this->timestamp->toIso8601String(),
+            'new_status'      => $this->newStatus,
+            'severity'        => $this->severity,
+            'failure_rate'    => $this->healthData['overall_failure_rate'] ?? null,
+            'timestamp'       => $this->timestamp->toIso8601String(),
         ];
     }
 
     /**
-     * Get email subject based on severity
+     * Get email subject based on severity.
      */
     private function getEmailSubject(): string
     {
         return match ($this->severity) {
             'critical' => "[CRITICAL] Bank Connector {$this->custodian} is {$this->newStatus}",
-            'warning' => "[WARNING] Bank Connector {$this->custodian} is {$this->newStatus}",
-            default => "[INFO] Bank Connector {$this->custodian} status update",
+            'warning'  => "[WARNING] Bank Connector {$this->custodian} is {$this->newStatus}",
+            default    => "[INFO] Bank Connector {$this->custodian} status update",
         };
     }
 
     /**
-     * Get alert color based on severity
+     * Get alert color based on severity.
      */
     private function getAlertColor(): string
     {
         return match ($this->severity) {
             'critical' => 'red',
-            'warning' => 'yellow',
-            default => 'blue',
+            'warning'  => 'yellow',
+            default    => 'blue',
         };
     }
 }
