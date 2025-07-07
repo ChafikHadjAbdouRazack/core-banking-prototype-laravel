@@ -31,7 +31,7 @@ description = "Custom rule for actual secrets"
 id = "finaegis-real-secret"
 regex = '''(?i)(api[_\s\-]?key|secret|token|password|auth|bearer|private[_\s\-]?key)\s*[:=]\s*[\'"]?[a-zA-Z0-9+/]{32,}[\'"]?'''
 # Only match if the value is at least 32 characters and not a placeholder
-[[rules.allowlist]]
+[rules.allowlist]
 regexes = [
     '''(test|demo|example|placeholder|your|my|foo|bar|baz|xxx|fake|dummy|sample)''',
     '''\$\{.*\}''',
