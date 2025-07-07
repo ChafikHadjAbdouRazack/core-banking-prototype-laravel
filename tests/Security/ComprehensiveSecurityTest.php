@@ -9,6 +9,10 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Tests\TestCase;
 
+/**
+ * @group security
+ * @group memory-intensive
+ */
 class ComprehensiveSecurityTest extends TestCase
 {
     /**
@@ -199,7 +203,7 @@ class ComprehensiveSecurityTest extends TestCase
         $this->actingAs($user);
 
         // Test oversized input
-        $oversizedData = str_repeat('a', 1000001); // 1MB+ string
+        $oversizedData = str_repeat('a', 10001); // 10KB+ string
 
         $response = $this->postJson('/api/accounts', [
             'name' => $oversizedData,
