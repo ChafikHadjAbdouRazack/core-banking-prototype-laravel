@@ -289,7 +289,7 @@ class KycController extends Controller
         try {
             // Store the document
             $path = $file->store('kyc/' . $user->uuid, 'private');
-            
+
             // Create document record
             $document = $user->kycDocuments()->create([
                 'document_type' => $type,

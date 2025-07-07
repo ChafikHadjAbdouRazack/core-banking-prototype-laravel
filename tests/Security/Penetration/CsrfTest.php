@@ -255,6 +255,7 @@ class CsrfTest extends TestCase
                 'to_account'   => $destinationAccount->uuid,
                 'amount'       => 100, // Amount in cents
                 'currency'     => 'USD',
+                'asset_code'   => 'USD',
                 'description'  => 'Test transfer ' . $i,
             ]);
 

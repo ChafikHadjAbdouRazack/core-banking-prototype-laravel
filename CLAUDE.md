@@ -41,3 +41,7 @@ php artisan queue:work --queue=events,ledger,transactions
 ```
 
 For the complete command reference and detailed instructions, see the main documentation.
+
+## 🛠 Code Quality and Best Practices
+
+- Always phpcs before creating pull request or updating it.

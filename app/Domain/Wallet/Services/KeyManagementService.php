@@ -331,7 +331,6 @@ class KeyManagementService implements KeyManagementServiceInterface
     {
         // Generate HD wallet from mnemonic
         $hdWallet = $this->generateHDWallet($mnemonic);
-        
         // Default to Ethereum chain
         return $this->deriveKeyPairForChain($hdWallet['encrypted_seed'], 'ethereum', 0);
     }

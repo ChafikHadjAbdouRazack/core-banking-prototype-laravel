@@ -12,12 +12,12 @@ class TestEventSerializer implements EventSerializer
     {
         $properties = [];
         $reflection = new \ReflectionClass($event);
-        
+
         foreach ($reflection->getProperties() as $property) {
             $property->setAccessible(true);
             $properties[$property->getName()] = $property->getValue($event);
         }
-        
+
         return json_encode($properties);
     }
 
@@ -28,10 +28,10 @@ class TestEventSerializer implements EventSerializer
         ?string $metadata = null
     ): ShouldBeStored {
         $data = json_decode($json, true);
-        
+
         // Create instance without constructor
         $event = (new \ReflectionClass($eventClass))->newInstanceWithoutConstructor();
-        
+
         // Set properties directly
         foreach ($data as $property => $value) {
             if (property_exists($event, $property)) {
@@ -40,7 +40,7 @@ class TestEventSerializer implements EventSerializer
                 $reflection->setValue($event, $value);
             }
         }
-        
+
         return $event;
     }
 }
