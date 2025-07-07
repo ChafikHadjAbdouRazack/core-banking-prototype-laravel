@@ -35,14 +35,14 @@ chmod 600 ~/.ssh/authorized_keys
 
 ## 2. Install Required Software
 
-### PHP 8.3
+### PHP 8.4
 ```bash
 sudo add-apt-repository ppa:ondrej/php -y
 sudo apt update
-sudo apt install -y php8.3-fpm php8.3-cli php8.3-common php8.3-mysql \
-    php8.3-pgsql php8.3-sqlite3 php8.3-xml php8.3-mbstring php8.3-curl \
-    php8.3-zip php8.3-bcmath php8.3-intl php8.3-gd php8.3-redis \
-    php8.3-opcache php8.3-soap php8.3-imagick
+sudo apt install -y php8.4-fpm php8.4-cli php8.4-common php8.4-mysql \
+    php8.4-pgsql php8.4-sqlite3 php8.4-xml php8.4-mbstring php8.4-curl \
+    php8.4-zip php8.4-bcmath php8.4-intl php8.4-gd php8.4-redis \
+    php8.4-opcache php8.4-soap php8.4-imagick
 ```
 
 ### Composer
@@ -82,7 +82,7 @@ sudo apt install -y supervisor
 
 Edit PHP-FPM configuration:
 ```bash
-sudo nano /etc/php/8.3/fpm/php.ini
+sudo nano /etc/php/8.4/fpm/php.ini
 ```
 
 Update these values:
@@ -99,7 +99,7 @@ opcache.validate_timestamps=0
 
 Restart PHP-FPM:
 ```bash
-sudo systemctl restart php8.3-fpm
+sudo systemctl restart php8.4-fpm
 ```
 
 ## 4. Configure PostgreSQL
@@ -183,7 +183,7 @@ server {
     error_page 404 /index.php;
 
     location ~ \.php$ {
-        fastcgi_pass unix:/var/run/php/php8.3-fpm.sock;
+        fastcgi_pass unix:/var/run/php/php8.4-fpm.sock;
         fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
         include fastcgi_params;
     }
@@ -400,7 +400,7 @@ curl https://your-domain.com/health
 ### Log Files
 - Application logs: `/srv/finaegis/storage/logs/`
 - Nginx logs: `/var/log/nginx/`
-- PHP-FPM logs: `/var/log/php8.3-fpm.log`
+- PHP-FPM logs: `/var/log/php8.4-fpm.log`
 
 ### Useful Commands
 ```bash

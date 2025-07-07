@@ -73,7 +73,7 @@ envoy run rollback --on=production
 
 ## Server Requirements
 
-- PHP 8.3+
+- PHP 8.4+
 - MariaDB 10.11+
 - Redis 7+
 - Node.js 20+

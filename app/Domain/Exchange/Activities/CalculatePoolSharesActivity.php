@@ -7,8 +7,16 @@ use App\Domain\Exchange\ValueObjects\LiquidityAdditionInput;
 use Brick\Math\BigDecimal;
 use Workflow\Activity;
 
+/**
+ * @property-read PoolProjection $pool
+ */
+
 class CalculatePoolSharesActivity extends Activity
 {
+    /**
+     * @param LiquidityAdditionInput|array{pool_id: string, operation: string, shares?: string} $input
+     * @return array{shares?: string, share_price?: string, base_amount?: string, quote_amount?: string, base_currency?: string, quote_currency?: string, share_ratio?: string, pool_id?: string, base_reserve?: string, quote_reserve?: string, total_shares?: string, fee_rate?: string, is_active?: bool, provider_count?: int, total_volume_24h?: string}
+     */
     public function execute($input): array
     {
         if ($input instanceof LiquidityAdditionInput) {
@@ -16,6 +24,7 @@ class CalculatePoolSharesActivity extends Activity
         }
 
         // Handle other operations
+        /** @var PoolProjection $pool */
         $pool = PoolProjection::where('pool_id', $input['pool_id'])->firstOrFail();
 
         if ($input['operation'] === 'removal') {
@@ -27,8 +36,12 @@ class CalculatePoolSharesActivity extends Activity
         throw new \InvalidArgumentException('Invalid operation for pool shares calculation');
     }
 
+    /**
+     * @return array{shares: string, share_price: string}
+     */
     private function calculateSharesForAddition(LiquidityAdditionInput $input): array
     {
+        /** @var PoolProjection $pool */
         $pool = PoolProjection::where('pool_id', $input->poolId)->firstOrFail();
 
         $baseReserve = BigDecimal::of($pool->base_reserve);
@@ -59,6 +72,9 @@ class CalculatePoolSharesActivity extends Activity
         ];
     }
 
+    /**
+     * @return array{base_amount: string, quote_amount: string, base_currency: string, quote_currency: string, share_ratio: string}
+     */
     private function calculateAmountsForRemoval(PoolProjection $pool, string $shares): array
     {
         $sharesDecimal = BigDecimal::of($shares);
@@ -82,6 +98,9 @@ class CalculatePoolSharesActivity extends Activity
         ];
     }
 
+    /**
+     * @return array{pool_id: string, base_currency: string, quote_currency: string, base_reserve: string, quote_reserve: string, total_shares: string, fee_rate: string, is_active: bool, provider_count: int, total_volume_24h: string}
+     */
     private function getPoolState(PoolProjection $pool): array
     {
         return [

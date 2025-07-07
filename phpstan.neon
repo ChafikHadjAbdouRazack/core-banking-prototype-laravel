@@ -1,0 +1,47 @@
+parameters:
+    level: 5
+    paths:
+        - app
+    excludePaths:
+        - app/Domain/Exchange/Workflows/Policies/LiquidityRetryPolicy.php
+    ignoreErrors:
+        # Eloquent model magic methods
+        - '#Call to an undefined static method App\\Domain\\[a-zA-Z\\]+\\Projections\\[a-zA-Z]+::#'
+        - '#Access to an undefined property App\\Domain\\[a-zA-Z\\]+\\Projections\\[a-zA-Z]+::\$#'
+        - '#Call to an undefined method Illuminate\\Database\\Eloquent\\Model::#'
+        
+        # Workflow Activity make - using ActivityStub instead
+        - '#Call to an undefined static method Workflow\\Activity::make\(\)#'
+        - '#Call to an undefined static method Workflow\\Activity::all\(\)#'
+        
+        # Laravel facades and helpers
+        - '#Call to static method [a-zA-Z]+\(\) on an unknown class Log#'
+        - '#Call to static method [a-zA-Z]+\(\) on an unknown class Cache#'
+        - '#Call to static method [a-zA-Z]+\(\) on an unknown class DB#'
+        
+        # Workflow methods
+        - '#Call to an undefined method [a-zA-Z\\]+Workflow::#'
+        - '#Call to an undefined method React\\Promise\\PromiseInterface::#'
+        - '#Call to an undefined method Workflow\\WorkflowStub::#'
+        
+        # RetryOptions temporarily commented out
+        - '#has invalid return type Workflow\\Exception\\RetryOptions#'
+        
+        # Value objects with magic methods
+        - '#Access to an undefined property App\\Domain\\[a-zA-Z\\]+::\$[a-zA-Z]+#'
+        
+        # Dynamic properties on stdClass/objects
+        - '#Access to an undefined property object::\$#'
+        
+        # Missing return statements in generators
+        - '#should return Generator but return statement is missing#'
+        
+        # Unknown parameter types
+        - '#has no type specified#'
+        - '#has parameter \$[a-zA-Z]+ with no type specified#'
+        
+        # Activity execute methods
+        - '#Method App\\Domain\\[a-zA-Z\\]+\\Activities\\[a-zA-Z]+Activity::execute\(\) has parameter \$#'
+        
+    reportUnmatchedIgnoredErrors: false
+    treatPhpDocTypesAsCertain: false

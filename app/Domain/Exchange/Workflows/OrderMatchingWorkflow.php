@@ -12,7 +12,7 @@ use App\Domain\Exchange\Aggregates\Order;
 use App\Domain\Exchange\ValueObjects\OrderMatchingInput;
 use App\Domain\Exchange\ValueObjects\OrderMatchingResult;
 use Carbon\CarbonInterval;
-use Workflow\Activity;
+use Workflow\ActivityStub;
 use Workflow\Workflow;
 
 class OrderMatchingWorkflow extends Workflow
@@ -20,7 +20,7 @@ class OrderMatchingWorkflow extends Workflow
     public function execute(OrderMatchingInput $input): \Generator
     {
         // Step 1: Validate order
-        $validationResult = yield Activity::make(ValidateOrderActivity::class, $input->orderId);
+        $validationResult = yield ActivityStub::make(ValidateOrderActivity::class, $input->orderId);
 
         if (! $validationResult->isValid) {
             return new OrderMatchingResult(
@@ -31,7 +31,7 @@ class OrderMatchingWorkflow extends Workflow
         }
 
         // Step 2: Lock account balance for the order
-        $lockResult = yield Activity::make(
+        $lockResult = yield ActivityStub::make(
             LockAccountBalanceActivity::class,
             $input->orderId,
             $validationResult->order
@@ -39,7 +39,7 @@ class OrderMatchingWorkflow extends Workflow
 
         // Add compensation to release balance if something goes wrong
         $this->addCompensation(
-            fn () => Activity::make(
+            fn () => ActivityStub::make(
                 ReleaseAccountBalanceActivity::class,
                 $input->orderId,
                 $lockResult->lockId
@@ -57,7 +57,7 @@ class OrderMatchingWorkflow extends Workflow
         }
 
         // Step 3: Add order to order book
-        $orderBookResult = yield Activity::make(
+        $orderBookResult = yield ActivityStub::make(
             UpdateOrderBookActivity::class,
             $input->orderId,
             'add'
@@ -65,7 +65,7 @@ class OrderMatchingWorkflow extends Workflow
 
         // Add compensation to remove from order book
         $this->addCompensation(
-            fn () => Activity::make(
+            fn () => ActivityStub::make(
                 UpdateOrderBookActivity::class,
                 $input->orderId,
                 'remove'
@@ -73,7 +73,7 @@ class OrderMatchingWorkflow extends Workflow
         );
 
         // Step 4: Try to match the order
-        $matchingResult = yield Activity::make(
+        $matchingResult = yield ActivityStub::make(
             MatchOrderActivity::class,
             $input->orderId,
             $input->maxIterations ?? 100
@@ -94,7 +94,7 @@ class OrderMatchingWorkflow extends Workflow
         foreach ($matchingResult->matches as $match) {
             try {
                 // Transfer assets between accounts
-                $transferResult = yield Activity::make(
+                $transferResult = yield ActivityStub::make(
                     TransferAssetsActivity::class,
                     $match->buyOrderId,
                     $match->sellOrderId,
@@ -104,7 +104,7 @@ class OrderMatchingWorkflow extends Workflow
 
                 if (! $transferResult->success) {
                     // Log the error but continue with other matches
-                    yield Activity::make(
+                    yield ActivityStub::make(
                         'App\Domain\Exchange\Activities\LogMatchingErrorActivity',
                         $match,
                         $transferResult->error
@@ -133,7 +133,7 @@ class OrderMatchingWorkflow extends Workflow
                 )->persist();
             } catch (\Exception $e) {
                 // Log error and continue
-                yield Activity::make(
+                yield ActivityStub::make(
                     'App\Domain\Exchange\Activities\LogMatchingErrorActivity',
                     $match,
                     $e->getMessage()
@@ -142,7 +142,7 @@ class OrderMatchingWorkflow extends Workflow
         }
 
         // Step 6: Update order book to remove filled orders
-        yield Activity::make(
+        yield ActivityStub::make(
             UpdateOrderBookActivity::class,
             $input->orderId,
             'update_after_match',

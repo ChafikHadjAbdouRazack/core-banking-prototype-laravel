@@ -7,6 +7,7 @@ use App\Domain\Exchange\Connectors\KrakenConnector;
 use App\Domain\Exchange\Contracts\IExternalExchangeConnector;
 use App\Domain\Exchange\Exceptions\ExternalExchangeException;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 
 class ExternalExchangeConnectorRegistry
 {
@@ -95,7 +96,7 @@ class ExternalExchangeConnectorRegistry
                 }
             } catch (\Exception $e) {
                 // Log and continue with other exchanges
-                \Log::warning("Failed to get ticker from {$name}", ['error' => $e->getMessage()]);
+                Log::warning("Failed to get ticker from {$name}", ['error' => $e->getMessage()]);
             }
         }
 
@@ -123,7 +124,7 @@ class ExternalExchangeConnectorRegistry
                 }
             } catch (\Exception $e) {
                 // Log and continue with other exchanges
-                \Log::warning("Failed to get ticker from {$name}", ['error' => $e->getMessage()]);
+                Log::warning("Failed to get ticker from {$name}", ['error' => $e->getMessage()]);
             }
         }
 
@@ -157,7 +158,7 @@ class ExternalExchangeConnectorRegistry
                 });
             } catch (\Exception $e) {
                 // Log and continue with other exchanges
-                \Log::warning("Failed to get order book from {$name}", ['error' => $e->getMessage()]);
+                Log::warning("Failed to get order book from {$name}", ['error' => $e->getMessage()]);
             }
         }
 

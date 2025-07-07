@@ -14,6 +14,7 @@ use App\Domain\Exchange\Services\CircuitBreakerService;
 use App\Domain\Exchange\ValueObjects\LiquidityAdditionInput;
 use App\Domain\Exchange\Workflows\Policies\LiquidityRetryPolicy;
 use Brick\Math\BigDecimal;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Workflow\Activity;
 use Workflow\ActivityStub;
@@ -348,11 +349,15 @@ class EnhancedLiquidityManagementWorkflow extends Workflow
                 'pool_id' => $poolId,
                 'reason' => $reason,
             ]);
+            
+            yield; // Required for Generator return type
         } catch (\Exception $e) {
             Log::error('Failed to pause pool', [
                 'pool_id' => $poolId,
                 'error' => $e->getMessage(),
             ]);
+            
+            yield; // Required for Generator return type
         }
     }
 

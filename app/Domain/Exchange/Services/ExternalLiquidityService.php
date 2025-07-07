@@ -9,6 +9,7 @@ use App\Domain\Exchange\Models\Trade;
 use Brick\Math\BigDecimal;
 use Brick\Math\RoundingMode;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class ExternalLiquidityService implements ExternalLiquidityServiceInterface
@@ -355,7 +356,7 @@ class ExternalLiquidityService implements ExternalLiquidityServiceInterface
                 }
             } catch (\Exception $e) {
                 // Log error but continue with other exchanges
-                \Log::error("Failed to get order book from {$connector->getName()}: {$e->getMessage()}");
+                Log::error("Failed to get order book from {$connector->getName()}: {$e->getMessage()}");
             }
         }
 
