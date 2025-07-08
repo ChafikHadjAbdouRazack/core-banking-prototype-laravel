@@ -48,6 +48,6 @@
         <env name="SESSION_DRIVER" value="array"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
         <!-- Parallel testing configuration -->
-        <env name="PEST_PARALLEL" value="true"/>
+        <env name="PEST_PARALLEL" value="false"/>
     </php>
 </phpunit>

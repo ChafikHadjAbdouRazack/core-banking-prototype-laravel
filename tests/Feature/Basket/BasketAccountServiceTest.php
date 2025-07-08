@@ -14,6 +14,7 @@ use App\Models\BasketAsset;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 class BasketAccountServiceTest extends TestCase
 {
@@ -74,7 +75,7 @@ class BasketAccountServiceTest extends TestCase
         app(BasketValueCalculationService::class)->calculateValue($this->basket);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_decompose_basket_into_components()
     {
         $this->markTestSkipped('Basket decompose/compose functionality needs event sourcing refactoring');
@@ -107,7 +108,7 @@ class BasketAccountServiceTest extends TestCase
         $this->assertEquals(1250, $this->account->getBalance('GBP'));
     }
 
-    /** @test */
+    #[Test]
     public function it_cannot_decompose_with_insufficient_balance()
     {
         $this->markTestSkipped('Basket decompose/compose functionality needs event sourcing refactoring');
@@ -123,7 +124,7 @@ class BasketAccountServiceTest extends TestCase
         $this->service->decomposeBasket($this->account, 'STABLE_BASKET', 2000); // 20.00 units
     }
 
-    /** @test */
+    #[Test]
     public function it_can_compose_basket_from_components()
     {
         $this->markTestSkipped('Basket decompose/compose functionality needs event sourcing refactoring');
@@ -166,7 +167,7 @@ class BasketAccountServiceTest extends TestCase
         $this->assertEquals(1250, $this->account->getBalance('GBP')); // 2500 - 1250
     }
 
-    /** @test */
+    #[Test]
     public function it_cannot_compose_with_insufficient_components()
     {
         $this->markTestSkipped('Basket decompose/compose functionality needs event sourcing refactoring');
@@ -193,7 +194,7 @@ class BasketAccountServiceTest extends TestCase
         $this->service->composeBasket($this->account, 'STABLE_BASKET', 5000);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_get_basket_holdings_value()
     {
         $this->markTestSkipped('Basket holdings functionality needs event sourcing refactoring');
@@ -245,7 +246,7 @@ class BasketAccountServiceTest extends TestCase
         $this->assertGreaterThan(0, $stableHolding['total_value']);
     }
 
-    /** @test */
+    #[Test]
     public function it_only_decomposes_active_components()
     {
         $this->markTestSkipped('Basket decompose/compose functionality needs event sourcing refactoring');
@@ -269,7 +270,7 @@ class BasketAccountServiceTest extends TestCase
         $this->assertEquals(0, $this->account->getBalance('EUR'));
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_basket_not_found()
     {
         $this->markTestSkipped('Basket decompose/compose functionality needs event sourcing refactoring');
@@ -279,7 +280,7 @@ class BasketAccountServiceTest extends TestCase
         $this->service->decomposeBasket($this->account, 'INVALID_BASKET', 1000);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_inactive_basket()
     {
         $this->markTestSkipped('Basket decompose/compose functionality needs event sourcing refactoring');
@@ -291,7 +292,7 @@ class BasketAccountServiceTest extends TestCase
         $this->service->decomposeBasket($this->account, 'STABLE_BASKET', 1000);
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_positive_amounts()
     {
         $this->markTestSkipped('Basket decompose/compose functionality needs event sourcing refactoring');
@@ -301,7 +302,7 @@ class BasketAccountServiceTest extends TestCase
         $this->service->decomposeBasket($this->account, 'STABLE_BASKET', -1000);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_no_basket_holdings()
     {
         $this->markTestSkipped('Basket holdings functionality needs event sourcing refactoring');
@@ -311,7 +312,7 @@ class BasketAccountServiceTest extends TestCase
         $this->assertEquals(0, $holdings['total_value']);
     }
 
-    /** @test */
+    #[Test]
     public function it_calculates_required_components()
     {
         $this->markTestSkipped('Basket decompose/compose functionality needs event sourcing refactoring');

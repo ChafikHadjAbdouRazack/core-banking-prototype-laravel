@@ -11,6 +11,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 class GCUTradingTest extends TestCase
 {
@@ -29,29 +30,33 @@ class GCUTradingTest extends TestCase
         // Create user and account
         $this->user = User::factory()->create();
         $this->account = Account::factory()->create([
-            'user_id'    => $this->user->id,
-            'is_primary' => true,
+            'user_uuid'  => $this->user->uuid,
         ]);
 
         // Create assets
-        Asset::factory()->create(['code' => 'EUR', 'type' => 'fiat']);
-        Asset::factory()->create(['code' => 'USD', 'type' => 'fiat']);
-        Asset::factory()->create(['code' => 'GBP', 'type' => 'fiat']);
-        Asset::factory()->create(['code' => 'CHF', 'type' => 'fiat']);
-        Asset::factory()->create(['code' => 'GCU', 'type' => 'basket']);
+        Asset::firstOrCreate(['code' => 'EUR'], ['name' => 'Euro', 'type' => 'fiat', 'precision' => 2, 'is_active' => true]);
+        Asset::firstOrCreate(['code' => 'USD'], ['name' => 'US Dollar', 'type' => 'fiat', 'precision' => 2, 'is_active' => true]);
+        Asset::firstOrCreate(['code' => 'GBP'], ['name' => 'British Pound', 'type' => 'fiat', 'precision' => 2, 'is_active' => true]);
+        Asset::firstOrCreate(['code' => 'CHF'], ['name' => 'Swiss Franc', 'type' => 'fiat', 'precision' => 2, 'is_active' => true]);
+        Asset::firstOrCreate(['code' => 'GCU'], ['name' => 'Global Currency Unit', 'type' => 'basket', 'precision' => 4, 'is_active' => true]);
 
         // Create GCU basket
-        $this->gcu = BasketAsset::factory()->create([
-            'code' => 'GCU',
-            'name' => 'Global Currency Unit',
-        ]);
+        $this->gcu = BasketAsset::firstOrCreate(
+            ['code' => 'GCU'],
+            [
+                'name' => 'Global Currency Unit',
+                'type' => 'fixed',
+                'rebalance_frequency' => 'never',
+            ]
+        );
 
         // Create GCU value
         BasketValue::create([
-            'basket_code'      => 'GCU',
-            'value'            => 1.0975,
-            'component_values' => [],
-            'calculated_at'    => now(),
+            'basket_asset_code' => 'GCU',
+            'basket_code'       => 'GCU',
+            'value'             => 1.0975,
+            'component_values'  => [],
+            'calculated_at'     => now(),
         ]);
 
         // Give user some EUR balance
@@ -64,7 +69,7 @@ class GCUTradingTest extends TestCase
         Sanctum::actingAs($this->user);
     }
 
-    /** @test */
+    #[Test]
     public function can_get_quote_for_buying_gcu()
     {
         $response = $this->getJson('/api/v2/gcu/quote?operation=buy&amount=1000&currency=EUR');
@@ -91,7 +96,7 @@ class GCUTradingTest extends TestCase
             ->assertJsonPath('data.output_currency', 'GCU');
     }
 
-    /** @test */
+    #[Test]
     public function can_get_quote_for_selling_gcu()
     {
         $response = $this->getJson('/api/v2/gcu/quote?operation=sell&amount=100&currency=EUR');
@@ -118,7 +123,7 @@ class GCUTradingTest extends TestCase
             ->assertJsonPath('data.output_currency', 'EUR');
     }
 
-    /** @test */
+    #[Test]
     public function can_buy_gcu_with_eur()
     {
         $response = $this->postJson('/api/v2/gcu/buy', [
@@ -158,7 +163,7 @@ class GCUTradingTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function cannot_buy_gcu_with_insufficient_balance()
     {
         $response = $this->postJson('/api/v2/gcu/buy', [
@@ -170,7 +175,7 @@ class GCUTradingTest extends TestCase
             ->assertJsonPath('error', 'Insufficient Balance');
     }
 
-    /** @test */
+    #[Test]
     public function cannot_buy_gcu_below_minimum_amount()
     {
         $response = $this->postJson('/api/v2/gcu/buy', [
@@ -182,7 +187,7 @@ class GCUTradingTest extends TestCase
             ->assertJsonValidationErrors(['amount']);
     }
 
-    /** @test */
+    #[Test]
     public function can_sell_gcu_for_eur()
     {
         // Give user some GCU balance
@@ -218,7 +223,7 @@ class GCUTradingTest extends TestCase
             ->assertJsonPath('data.received_currency', 'EUR');
     }
 
-    /** @test */
+    #[Test]
     public function cannot_sell_gcu_with_insufficient_balance()
     {
         // Give user minimal GCU balance
@@ -237,7 +242,7 @@ class GCUTradingTest extends TestCase
             ->assertJsonPath('error', 'Insufficient Balance');
     }
 
-    /** @test */
+    #[Test]
     public function can_get_trading_limits()
     {
         $response = $this->getJson('/api/v2/gcu/trading-limits');
@@ -261,7 +266,7 @@ class GCUTradingTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function cannot_buy_gcu_with_frozen_account()
     {
         $this->account->update(['frozen_at' => now()]);
@@ -275,7 +280,7 @@ class GCUTradingTest extends TestCase
             ->assertJsonPath('error', 'Account Frozen');
     }
 
-    /** @test */
+    #[Test]
     public function cannot_sell_gcu_with_frozen_account()
     {
         $this->account->update(['frozen_at' => now()]);
@@ -296,7 +301,7 @@ class GCUTradingTest extends TestCase
             ->assertJsonPath('error', 'Account Frozen');
     }
 
-    /** @test */
+    #[Test]
     public function quote_requires_valid_parameters()
     {
         $response = $this->getJson('/api/v2/gcu/quote');
@@ -305,7 +310,7 @@ class GCUTradingTest extends TestCase
             ->assertJsonValidationErrors(['operation', 'amount', 'currency']);
     }
 
-    /** @test */
+    #[Test]
     public function trading_endpoints_require_authentication()
     {
         Sanctum::actingAs(null); // Remove authentication
@@ -323,7 +328,7 @@ class GCUTradingTest extends TestCase
             ->assertUnauthorized();
     }
 
-    /** @test */
+    #[Test]
     public function can_buy_gcu_with_different_currencies()
     {
         $currencies = ['USD', 'GBP', 'CHF'];
