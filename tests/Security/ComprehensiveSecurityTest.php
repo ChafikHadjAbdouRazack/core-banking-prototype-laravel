@@ -310,7 +310,7 @@ class ComprehensiveSecurityTest extends TestCase
         // Test allowed file types
         $user = User::factory()->create();
         $this->actingAs($user);
-        
+
         // Ensure storage disk is set up for testing
         \Storage::fake('private');
 
