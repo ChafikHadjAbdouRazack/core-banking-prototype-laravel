@@ -306,7 +306,14 @@ jobs:
           php artisan migrate --force
           php artisan db:seed --class=TestSeeder
           
+      - name: Start Laravel Server
+        run: |
+          php artisan serve --host=127.0.0.1 --port=8000 &
+          sleep 5
+          
       - name: Run Behat Tests
+        env:
+          BEHAT_BASE_URL: http://127.0.0.1:8000
         run: |
           vendor/bin/behat --format=pretty --format=junit --out=std --out=tests-results
           

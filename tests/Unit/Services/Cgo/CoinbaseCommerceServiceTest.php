@@ -21,17 +21,13 @@ class CoinbaseCommerceServiceTest extends TestCase
             'services.coinbase_commerce.webhook_secret' => 'test-webhook-secret',
         ]);
 
+        Http::preventStrayRequests();
+
         $this->service = new CoinbaseCommerceService();
     }
 
     public function test_create_charge_sends_correct_request()
     {
-        $investment = CgoInvestment::factory()->create([
-            'uuid'   => 'test-uuid',
-            'amount' => 1000,
-            'tier'   => 'silver',
-        ]);
-
         Http::fake([
             'https://api.commerce.coinbase.com/charges' => Http::response([
                 'data' => [
@@ -46,6 +42,12 @@ class CoinbaseCommerceServiceTest extends TestCase
                     ],
                 ],
             ], 201),
+        ]);
+
+        $investment = CgoInvestment::factory()->create([
+            'uuid'   => 'test-uuid',
+            'amount' => 1000,
+            'tier'   => 'silver',
         ]);
 
         $charge = $this->service->createCharge($investment);
@@ -226,7 +228,7 @@ class CoinbaseCommerceServiceTest extends TestCase
         $investment->refresh();
         $this->assertEquals('pending', $investment->payment_status);
         $this->assertNotNull($investment->payment_pending_at);
-        $this->assertEquals('0.001234', $investment->crypto_amount_paid);
+        $this->assertEquals('0.00123400', $investment->crypto_amount_paid);
         $this->assertEquals('BTC', $investment->crypto_currency_paid);
     }
 }

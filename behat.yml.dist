@@ -24,7 +24,7 @@ default:
 
     extensions:
         Behat\MinkExtension:
-            base_url: '%env(BEHAT_BASE_URL)%'
+            base_url: 'http://finaegis.local'
             sessions:
                 default:
                     browserkit_http: ~

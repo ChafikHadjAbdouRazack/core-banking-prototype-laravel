@@ -8,6 +8,7 @@ use App\Models\Setting;
 use App\Services\SettingsService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class SettingsServiceTest extends TestCase
@@ -23,7 +24,7 @@ class SettingsServiceTest extends TestCase
         $this->service = new SettingsService();
     }
 
-    /** @test */
+    #[Test]
     public function it_gets_setting_value()
     {
         Setting::create([
@@ -40,7 +41,7 @@ class SettingsServiceTest extends TestCase
         $this->assertEquals('test_value', $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_default_when_setting_not_found()
     {
         $result = $this->service->get('non.existent.key', 'default');
@@ -48,14 +49,14 @@ class SettingsServiceTest extends TestCase
         $this->assertEquals('default', $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_decrypts_encrypted_settings()
     {
         // Skip this test as it requires encryption setup
         $this->markTestSkipped('Encryption test requires proper setup');
     }
 
-    /** @test */
+    #[Test]
     public function it_casts_boolean_settings()
     {
         Setting::create([
@@ -72,7 +73,7 @@ class SettingsServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_casts_integer_settings()
     {
         Setting::create([
@@ -89,7 +90,7 @@ class SettingsServiceTest extends TestCase
         $this->assertSame(42, $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_casts_json_settings()
     {
         Setting::create([
@@ -106,7 +107,7 @@ class SettingsServiceTest extends TestCase
         $this->assertEquals(['key' => 'value'], $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_casts_array_settings()
     {
         Setting::create([
@@ -123,7 +124,7 @@ class SettingsServiceTest extends TestCase
         $this->assertEquals(['item1', 'item2'], $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_sets_new_setting()
     {
         $this->service->set('test.key', 'test_value');
@@ -136,7 +137,7 @@ class SettingsServiceTest extends TestCase
         $this->assertFalse($setting->is_encrypted);
     }
 
-    /** @test */
+    #[Test]
     public function it_encrypts_sensitive_settings()
     {
         $this->service->set('test.key', 'secret', 'string', true);
@@ -147,7 +148,7 @@ class SettingsServiceTest extends TestCase
         $this->assertTrue($setting->is_encrypted);
     }
 
-    /** @test */
+    #[Test]
     public function it_sets_json_settings()
     {
         $this->service->set('test.key', ['key' => 'value'], 'json');
@@ -159,7 +160,7 @@ class SettingsServiceTest extends TestCase
         $this->assertEquals('json', $setting->type);
     }
 
-    /** @test */
+    #[Test]
     public function it_deletes_setting()
     {
         Setting::create([
@@ -177,7 +178,7 @@ class SettingsServiceTest extends TestCase
         $this->assertNull(Setting::where('key', 'test.key')->first());
     }
 
-    /** @test */
+    #[Test]
     public function it_checks_if_setting_exists()
     {
         Setting::create([
@@ -194,7 +195,7 @@ class SettingsServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_gets_multiple_settings()
     {
         Setting::create([
@@ -223,7 +224,7 @@ class SettingsServiceTest extends TestCase
         ], $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_sets_multiple_settings()
     {
         $this->service->setMultiple([
@@ -235,7 +236,7 @@ class SettingsServiceTest extends TestCase
         $this->assertEquals('value2', Setting::get('key2'));
     }
 
-    /** @test */
+    #[Test]
     public function it_gets_all_settings()
     {
         Setting::create([
@@ -264,7 +265,7 @@ class SettingsServiceTest extends TestCase
         ], $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_gets_settings_by_prefix()
     {
         Setting::create([
@@ -293,7 +294,7 @@ class SettingsServiceTest extends TestCase
         ], $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_caches_settings()
     {
         Setting::create([

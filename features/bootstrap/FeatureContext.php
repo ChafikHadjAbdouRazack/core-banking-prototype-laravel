@@ -6,13 +6,14 @@ use Behat\Gherkin\Node\TableNode;
 use App\Models\User;
 use App\Models\Account;
 use App\Models\Asset;
-use App\Models\ExchangeRate;
+use App\Domain\Asset\Models\ExchangeRate;
 use App\Models\BasketAsset;
 use App\Models\BasketComponent;
 use App\Domain\Basket\Services\BasketRebalancingService;
 use App\Domain\Account\Services\AssetTransferService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\TestCase;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Defines application features from the specific context.
@@ -66,13 +67,15 @@ class FeatureContext implements Context
     public function theFollowingAssetsExist(TableNode $table)
     {
         foreach ($table->getHash() as $row) {
-            $this->assets[$row['code']] = Asset::factory()->create([
-                'code' => $row['code'],
-                'name' => $row['name'],
-                'type' => $row['type'],
-                'precision' => $row['type'] === 'fiat' ? 2 : 8,
-                'is_active' => true,
-            ]);
+            $this->assets[$row['code']] = Asset::firstOrCreate(
+                ['code' => $row['code']],
+                [
+                    'name' => $row['name'],
+                    'type' => $row['type'],
+                    'precision' => $row['type'] === 'fiat' ? 2 : 8,
+                    'is_active' => true,
+                ]
+            );
         }
     }
 
@@ -82,13 +85,17 @@ class FeatureContext implements Context
     public function theFollowingExchangeRatesExist(TableNode $table)
     {
         foreach ($table->getHash() as $row) {
-            ExchangeRate::create([
-                'from_asset_code' => $row['from'],
-                'to_asset_code' => $row['to'],
-                'rate' => (float) $row['rate'],
-                'provider' => $row['provider'] ?? 'ECB',
-                'is_active' => true,
-            ]);
+            ExchangeRate::updateOrCreate(
+                [
+                    'from_asset_code' => $row['from'],
+                    'to_asset_code' => $row['to'],
+                ],
+                [
+                    'rate' => (float) $row['rate'],
+                    'provider' => $row['provider'] ?? 'ECB',
+                    'is_active' => true,
+                ]
+            );
         }
     }
 

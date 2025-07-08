@@ -121,7 +121,7 @@ class ComprehensiveSecurityTest extends TestCase
             ]);
 
             if ($i < 5) {
-                $response->assertStatus(401);
+                $response->assertStatus(422); // Invalid credentials return 422 in Laravel
             } else {
                 $response->assertStatus(429); // Too many attempts
             }
@@ -159,7 +159,7 @@ class ComprehensiveSecurityTest extends TestCase
         ]);
 
         // In testing environment, CSRF might be disabled or return different status
-        $response->assertIn([419, 302, 403]); // CSRF token mismatch or redirect
+        $this->assertContains($response->status(), [419, 302, 403]); // CSRF token mismatch or redirect
 
         // Test with valid CSRF token
         $this->actingAs($user);
@@ -310,6 +310,9 @@ class ComprehensiveSecurityTest extends TestCase
         // Test allowed file types
         $user = User::factory()->create();
         $this->actingAs($user);
+        
+        // Ensure storage disk is set up for testing
+        \Storage::fake('private');
 
         $response = $this->postJson('/api/kyc/documents', [
             'document' => \Illuminate\Http\UploadedFile::fake()->image('passport.jpg', 800, 600),

@@ -9,6 +9,7 @@ use App\Services\SubProductService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Mockery;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\UnitTestCase;
 
 class EnsureSubProductEnabledTest extends UnitTestCase
@@ -33,7 +34,7 @@ class EnsureSubProductEnabledTest extends UnitTestCase
         parent::tearDown();
     }
 
-    /** @test */
+    #[Test]
     public function it_allows_request_when_sub_product_is_enabled()
     {
         $request = Request::create('/api/exchange/orders');
@@ -54,7 +55,7 @@ class EnsureSubProductEnabledTest extends UnitTestCase
         $this->assertEquals('Success', $response->getContent());
     }
 
-    /** @test */
+    #[Test]
     public function it_blocks_request_when_sub_product_is_disabled()
     {
         $request = Request::create('/api/lending/loans');
@@ -77,7 +78,7 @@ class EnsureSubProductEnabledTest extends UnitTestCase
         $this->assertEquals('Sub-product lending is not enabled', $content['error']);
     }
 
-    /** @test */
+    #[Test]
     public function it_allows_request_when_feature_is_enabled()
     {
         $request = Request::create('/api/exchange/crypto');
@@ -98,7 +99,7 @@ class EnsureSubProductEnabledTest extends UnitTestCase
         $this->assertEquals('Success', $response->getContent());
     }
 
-    /** @test */
+    #[Test]
     public function it_blocks_request_when_feature_is_disabled()
     {
         $request = Request::create('/api/exchange/derivatives');
@@ -121,7 +122,7 @@ class EnsureSubProductEnabledTest extends UnitTestCase
         $this->assertEquals('Feature derivatives is not enabled for sub-product exchange', $content['error']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_multiple_features_with_or_logic()
     {
         $request = Request::create('/api/lending/loans');
@@ -148,7 +149,7 @@ class EnsureSubProductEnabledTest extends UnitTestCase
         $this->assertEquals('Success', $response->getContent());
     }
 
-    /** @test */
+    #[Test]
     public function it_blocks_when_all_features_in_or_list_are_disabled()
     {
         $request = Request::create('/api/lending/loans');
@@ -177,7 +178,7 @@ class EnsureSubProductEnabledTest extends UnitTestCase
         $this->assertEquals('None of the required features [sme_loans, p2p_marketplace] are enabled for sub-product lending', $content['error']);
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_parameter_format()
     {
         $request = Request::create('/api/test');
@@ -194,7 +195,7 @@ class EnsureSubProductEnabledTest extends UnitTestCase
         $this->assertEquals('Sub-product parameter is required', $content['error']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_ajax_requests()
     {
         $request = Request::create('/api/lending/loans', 'GET');
@@ -219,7 +220,7 @@ class EnsureSubProductEnabledTest extends UnitTestCase
         $this->assertEquals('Sub-product lending is not enabled', $content['error']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_json_accept_header()
     {
         $request = Request::create('/api/lending/loans', 'GET');
