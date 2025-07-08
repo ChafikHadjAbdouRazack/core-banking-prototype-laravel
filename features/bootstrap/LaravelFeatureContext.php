@@ -7,7 +7,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use App\Models\Account;
+use App\Models\AccountBalance;
 use Laravel\Sanctum\Sanctum;
+use Spatie\Permission\Models\Role;
 
 /**
  * Laravel Feature Context for Behat
@@ -16,9 +18,13 @@ class LaravelFeatureContext implements Context
 {
     protected static $app;
     protected static $kernel;
+    public static $sharedUser; // Share user between contexts
     protected $currentUser;
     protected $lastResponse;
     protected $baseUrl;
+    protected $expectedBalance;
+    protected $lastDeposit = false;
+    protected $lastWithdrawal = false;
 
     /**
      * @BeforeSuite
@@ -26,11 +32,46 @@ class LaravelFeatureContext implements Context
     public static function prepare()
     {
         putenv('APP_ENV=testing');
+        putenv('QUEUE_CONNECTION=sync');
         
         if (!static::$app) {
             static::$app = require __DIR__ . '/../../bootstrap/app.php';
             static::$kernel = static::$app->make(\Illuminate\Contracts\Console\Kernel::class);
             static::$kernel->bootstrap();
+            
+            // Ensure sync queue driver is used
+            config(['queue.default' => 'sync']);
+            
+            // Run migrations and seeders for the test suite
+            Artisan::call('migrate:fresh');
+            Artisan::call('db:seed', ['--class' => 'DatabaseSeeder']);
+            
+            // Ensure required roles exist for all guards
+            self::createRequiredRoles();
+        }
+    }
+    
+    /**
+     * Create required roles for testing
+     */
+    private static function createRequiredRoles(): void
+    {
+        // Create super_admin role for all guards
+        $guards = ['web', 'sanctum', 'api'];
+        foreach ($guards as $guard) {
+            if (!Role::where('name', 'super_admin')->where('guard_name', $guard)->exists()) {
+                Role::create(['name' => 'super_admin', 'guard_name' => $guard]);
+            }
+        }
+        
+        // Create other required roles
+        $roles = ['business', 'private', 'admin'];
+        foreach ($roles as $role) {
+            foreach ($guards as $guard) {
+                if (!Role::where('name', $role)->where('guard_name', $guard)->exists()) {
+                    Role::create(['name' => $role, 'guard_name' => $guard]);
+                }
+            }
         }
     }
 
@@ -41,6 +82,14 @@ class LaravelFeatureContext implements Context
     {
         $this->baseUrl = config('app.url');
         
+        // Ensure sync queue driver for testing
+        config(['queue.default' => 'sync']);
+        config(['queue.connections.sync.driver' => 'sync']);
+        
+        // Also set workflow to use sync connection
+        config(['workflows.monitor_connection' => 'sync']);
+        config(['workflows.monitor_queue' => 'sync']);
+        
         // Start database transaction
         DB::beginTransaction();
         
@@ -49,6 +98,9 @@ class LaravelFeatureContext implements Context
             Artisan::call('migrate:fresh');
             Artisan::call('db:seed', ['--class' => 'DatabaseSeeder']);
         }
+        
+        // Ensure roles exist for current test
+        $this->ensureRolesExist();
     }
 
     /**
@@ -72,6 +124,26 @@ class LaravelFeatureContext implements Context
             return false;
         }
     }
+    
+    /**
+     * Ensure required roles exist
+     */
+    private function ensureRolesExist(): void
+    {
+        // Create super_admin role if it doesn't exist
+        if (!Role::where('name', 'super_admin')->where('guard_name', 'sanctum')->exists()) {
+            Role::create(['name' => 'super_admin', 'guard_name' => 'sanctum']);
+        }
+        
+        // Create other required roles
+        $roles = ['business', 'private', 'admin'];
+        foreach ($roles as $role) {
+            if (!Role::where('name', $role)->where('guard_name', 'sanctum')->exists()) {
+                Role::create(['name' => $role, 'guard_name' => 'sanctum']);
+            }
+        }
+    }
+    
 
     /**
      * @Given I am logged in as :email
@@ -88,6 +160,7 @@ class LaravelFeatureContext implements Context
         }
         
         $this->currentUser = $user;
+        self::$sharedUser = $user; // Share with other contexts
         Sanctum::actingAs($user);
     }
 
@@ -96,19 +169,63 @@ class LaravelFeatureContext implements Context
      */
     public function iHaveAnAccountWithBalance($amount, $currency)
     {
-        $account = Account::factory()->create([
-            'user_uuid' => $this->currentUser->uuid,
-        ]);
-        
         // Convert amount to cents
         $amountInCents = (int) ($amount * 100);
         
-        if ($currency === 'USD') {
+        // Check if we already have a current account (for multi-currency scenarios)
+        $account = $this->currentUser->getAttribute('current_account');
+        
+        if (!$account) {
+            // Create new account
+            $account = Account::factory()->create([
+                'user_uuid' => $this->currentUser->uuid,
+                'balance' => $currency === 'USD' ? $amountInCents : 0,
+            ]);
+        }
+        
+        // Check if currency is a basket and ensure it exists as an asset
+        $asset = \App\Domain\Asset\Models\Asset::where('code', $currency)->first();
+        if (!$asset) {
+            // Check if it's a basket
+            $basket = \App\Models\BasketAsset::where('code', $currency)->first();
+            if ($basket) {
+                // Create the basket as an asset
+                \App\Domain\Asset\Models\Asset::create([
+                    'code' => $currency,
+                    'name' => $basket->name,
+                    'type' => 'basket',
+                    'precision' => 2,
+                    'is_active' => true,
+                ]);
+            }
+        }
+        
+        // Check if balance record already exists
+        $existingBalance = AccountBalance::where('account_uuid', $account->uuid)
+            ->where('asset_code', $currency)
+            ->first();
+            
+        if (!$existingBalance) {
+            // Create balance record for the currency
+            AccountBalance::create([
+                'account_uuid' => $account->uuid,
+                'asset_code'   => $currency,
+                'balance'      => $amountInCents,
+            ]);
+        } else {
+            // Update existing balance
+            $existingBalance->balance = $amountInCents;
+            $existingBalance->save();
+        }
+        
+        // Update legacy balance field if USD
+        if ($currency === 'USD' && !$this->currentUser->getAttribute('current_account')) {
             $account->balance = $amountInCents;
             $account->save();
-        } else {
-            $account->addBalance($currency, $amountInCents);
         }
+        
+        // Refresh to ensure we have the latest data
+        $account->refresh();
         
         $this->currentUser->setAttribute('current_account', $account);
     }
@@ -118,21 +235,36 @@ class LaravelFeatureContext implements Context
      */
     public function iSendAPostRequestTo($endpoint)
     {
-        $headers = ['Accept' => 'application/json'];
+        $headers = ['Accept' => 'application/json', 'Content-Type' => 'application/json'];
         
         if ($this->currentUser) {
             $token = $this->currentUser->createToken('behat-test')->plainTextToken;
             $headers['Authorization'] = 'Bearer ' . $token;
         }
         
+        // Special handling for account creation endpoint
+        $body = null;
+        if ($endpoint === '/api/accounts' && $this->currentUser) {
+            $body = json_encode([
+                'user_uuid' => $this->currentUser->uuid,
+                'name' => 'Test Account'
+            ]);
+        }
+        
+        // Parse body if JSON
+        $parameters = [];
+        if ($body) {
+            $parameters = json_decode($body, true);
+        }
+        
         $request = \Illuminate\Http\Request::create(
             $this->baseUrl . $endpoint,
             'POST',
-            [],
+            $parameters,
             [],
             [],
             $this->transformHeaders($headers),
-            null
+            $body
         );
         
         $this->lastResponse = app()->handle($request);
@@ -146,20 +278,23 @@ class LaravelFeatureContext implements Context
         $account = $this->currentUser->getAttribute('current_account') ??
                    Account::where('user_uuid', $this->currentUser->uuid)->first();
         
-        $amountInCents = (int) ($amount * 100);
-        
         $headers = ['Accept' => 'application/json', 'Content-Type' => 'application/json'];
         $token = $this->currentUser->createToken('behat-test')->plainTextToken;
         $headers['Authorization'] = 'Bearer ' . $token;
         
+        $body = json_encode([
+            'amount' => $amount, // Send amount as decimal, not cents
+            'asset_code' => $currency
+        ]);
+        
         $request = \Illuminate\Http\Request::create(
             $this->baseUrl . "/api/accounts/{$account->uuid}/deposit",
             'POST',
-            [],
+            json_decode($body, true),
             [],
             [],
             $this->transformHeaders($headers),
-            json_encode(['amount' => $amountInCents])
+            $body
         );
         
         $this->lastResponse = app()->handle($request);
@@ -173,20 +308,23 @@ class LaravelFeatureContext implements Context
         $account = $this->currentUser->getAttribute('current_account') ??
                    Account::where('user_uuid', $this->currentUser->uuid)->first();
         
-        $amountInCents = (int) ($amount * 100);
-        
         $headers = ['Accept' => 'application/json', 'Content-Type' => 'application/json'];
         $token = $this->currentUser->createToken('behat-test')->plainTextToken;
         $headers['Authorization'] = 'Bearer ' . $token;
         
+        $body = json_encode([
+            'amount' => $amount, // Send amount as decimal, not cents
+            'asset_code' => $currency
+        ]);
+        
         $request = \Illuminate\Http\Request::create(
             $this->baseUrl . "/api/accounts/{$account->uuid}/withdraw",
             'POST',
-            [],
+            json_decode($body, true),
             [],
             [],
             $this->transformHeaders($headers),
-            json_encode(['amount' => $amountInCents])
+            $body
         );
         
         $this->lastResponse = app()->handle($request);
@@ -261,9 +399,17 @@ class LaravelFeatureContext implements Context
     {
         $content = json_decode($this->lastResponse->getContent(), true);
         
-        if (!array_key_exists($field, $content)) {
-            throw new \Exception("Response does not have field: $field");
+        // Check in root level first
+        if (array_key_exists($field, $content)) {
+            return;
         }
+        
+        // Check in data field if exists
+        if (isset($content['data']) && array_key_exists($field, $content['data'])) {
+            return;
+        }
+        
+        throw new \Exception("Response does not have field: $field");
     }
 
     /**
@@ -273,15 +419,27 @@ class LaravelFeatureContext implements Context
     {
         $content = json_decode($this->lastResponse->getContent(), true);
         
-        if (!isset($content[$field])) {
-            throw new \Exception("Response does not have field: $field");
+        // Check in root level first
+        if (isset($content[$field])) {
+            if ($content[$field] != $value) {
+                throw new \Exception(
+                    "Expected $field to be '$value' but got '{$content[$field]}'"
+                );
+            }
+            return;
         }
         
-        if ($content[$field] != $value) {
-            throw new \Exception(
-                "Expected $field to be '$value' but got '{$content[$field]}'"
-            );
+        // Check in data field if exists
+        if (isset($content['data']) && isset($content['data'][$field])) {
+            if ($content['data'][$field] != $value) {
+                throw new \Exception(
+                    "Expected $field to be '$value' but got '{$content['data'][$field]}'"
+                );
+            }
+            return;
         }
+        
+        throw new \Exception("Response does not have field: $field");
     }
 
     /**
@@ -298,6 +456,12 @@ class LaravelFeatureContext implements Context
     public function theWithdrawalShouldBeSuccessful()
     {
         $this->theResponseStatusCodeShouldBe(200);
+        
+        // Debug: log the response
+        $content = json_decode($this->lastResponse->getContent(), true);
+        if (isset($content['message'])) {
+            error_log('Withdrawal response: ' . json_encode($content));
+        }
     }
 
     /**
@@ -308,7 +472,26 @@ class LaravelFeatureContext implements Context
         $this->theResponseStatusCodeShouldBe(422);
         
         $content = json_decode($this->lastResponse->getContent(), true);
-        if (!isset($content['message']) || !str_contains($content['message'], $message)) {
+        
+        // Check if the message is contained in the response message field or errors field
+        $foundMessage = false;
+        
+        if (isset($content['message']) && str_contains(strtolower($content['message']), strtolower($message))) {
+            $foundMessage = true;
+        }
+        
+        if (!$foundMessage && isset($content['errors'])) {
+            foreach ($content['errors'] as $field => $errors) {
+                foreach ((array)$errors as $error) {
+                    if (str_contains(strtolower($error), strtolower($message))) {
+                        $foundMessage = true;
+                        break 2;
+                    }
+                }
+            }
+        }
+        
+        if (!$foundMessage) {
             throw new \Exception("Expected error message containing '$message' but got: " . json_encode($content));
         }
     }
@@ -339,13 +522,16 @@ class LaravelFeatureContext implements Context
      */
     public function myAccountBalanceShouldBe($amount, $currency)
     {
+        $expectedBalance = (int) ($amount * 100);
+        
         $account = $this->currentUser->getAttribute('current_account') ??
                    Account::where('user_uuid', $this->currentUser->uuid)->first();
         
+        // Refresh to get latest data
         $account->refresh();
+        $account->load('balances');
         
-        $expectedBalance = (int) ($amount * 100);
-        $actualBalance = $currency === 'USD' ? $account->balance : $account->getBalance($currency);
+        $actualBalance = $account->getBalance($currency);
         
         if ($actualBalance != $expectedBalance) {
             throw new \Exception(
@@ -376,8 +562,9 @@ class LaravelFeatureContext implements Context
      */
     public function iCheckMyTotalBalance()
     {
+        // Get the last created account (which should have all balances)
         $account = $this->currentUser->getAttribute('current_account') ??
-                   Account::where('user_uuid', $this->currentUser->uuid)->first();
+                   Account::where('user_uuid', $this->currentUser->uuid)->orderBy('created_at', 'desc')->first();
         
         $headers = ['Accept' => 'application/json'];
         $token = $this->currentUser->createToken('behat-test')->plainTextToken;
@@ -407,9 +594,24 @@ class LaravelFeatureContext implements Context
             $expectedBalance = $row['Balance'];
             
             $found = false;
-            foreach ($content['data'] ?? [] as $balance) {
-                if ($balance['asset_code'] === $currency) {
-                    $actualBalance = number_format($balance['balance'] / 100, 2, '.', '');
+            
+            // Check if response has balances array
+            $balances = $content['data']['balances'] ?? $content['balances'] ?? $content['data'] ?? [];
+            
+            // Ensure it's an array
+            if (!is_array($balances)) {
+                $balances = [$balances];
+            }
+            
+            foreach ($balances as $balance) {
+                if (!is_array($balance)) {
+                    continue;
+                }
+                
+                $assetCode = $balance['asset_code'] ?? $balance['currency'] ?? null;
+                if ($assetCode === $currency) {
+                    $balanceAmount = $balance['balance'] ?? 0;
+                    $actualBalance = number_format($balanceAmount / 100, 2, '.', '');
                     if ($actualBalance == $expectedBalance) {
                         $found = true;
                         break;
@@ -422,7 +624,7 @@ class LaravelFeatureContext implements Context
             }
             
             if (!$found) {
-                throw new \Exception("Currency $currency not found in response");
+                throw new \Exception("Currency $currency not found in response. Response: " . json_encode($content));
             }
         }
     }

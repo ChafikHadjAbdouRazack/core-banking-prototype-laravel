@@ -6,7 +6,7 @@ on:
       php-version:
         description: 'PHP version to use'
         required: false
-        default: '8.3'
+        default: '8.4'
         type: string
       node-version:
         description: 'Node.js version to use'
@@ -314,8 +314,28 @@ jobs:
       - name: Run Behat Tests
         env:
           BEHAT_BASE_URL: http://127.0.0.1:8000
+          QUEUE_CONNECTION: sync
         run: |
-          vendor/bin/behat --format=pretty --format=junit --out=std --out=tests-results
+          # Run Behat tests using the CI script
+          # This ensures only implemented features are tested and prevents interactive prompts
+          ./bin/behat-ci
+          
+          # Also generate JUnit format output for test reporting
+          vendor/bin/behat \
+            --no-interaction \
+            --format=progress \
+            --format=junit \
+            --out=std \
+            --out=tests-results \
+            features/account_management.feature
+          
+          vendor/bin/behat \
+            --no-interaction \
+            --format=progress \
+            --format=junit \
+            --out=std \
+            --out=tests-results \
+            features/basket_management.feature
           
       - name: Upload Behat Results
         if: always()

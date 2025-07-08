@@ -34,6 +34,7 @@ Orchestrates all testing and validation phases:
 - Unit tests (parallel execution)
 - Feature tests (parallel execution)
 - Integration tests
+- Behat acceptance tests (BDD scenarios)
 - Coverage reporting to Codecov
 
 **Security Test Pipeline** (`04-security-tests.yml`):
@@ -97,7 +98,7 @@ gh workflow run 05-performance.yml
 
 ```yaml
 # Global settings
-PHP_VERSION: '8.3'
+PHP_VERSION: '8.4'
 NODE_VERSION: '20'
 COMPOSER_PROCESS_TIMEOUT: 0
 COMPOSER_NO_INTERACTION: 1
@@ -209,6 +210,42 @@ ini-values: |
 - Optimized container resources
 - Efficient database seeding
 - Minimal dependency installation for specific jobs
+
+## 🧪 Behat Acceptance Tests
+
+### Overview
+The Behat tests are integrated into the CI/CD pipeline as part of the test suite. They focus on BDD scenarios for critical user journeys.
+
+### Configuration
+- **Location**: `features/` directory
+- **CI Script**: `bin/behat-ci` - runs only implemented features
+- **Tags**: 
+  - `@wip` - Work in progress scenarios (skipped in CI)
+  - `@web` - Browser-based scenarios (separate suite)
+
+### CI/CD Integration
+```yaml
+# Behat tests run in the test-suite pipeline
+- name: Run Behat Tests
+  env:
+    BEHAT_BASE_URL: http://127.0.0.1:8000
+    QUEUE_CONNECTION: sync  # Force synchronous execution
+  run: |
+    ./bin/behat-ci  # Runs implemented features only
+```
+
+### Key Features
+- Non-interactive mode prevents prompts in CI
+- Synchronous queue driver for predictable test execution
+- JUnit output format for test reporting
+- Proper exit codes (0=success, 1=failure)
+- Automatic Laravel server startup
+
+### Standalone Behat Workflow
+A dedicated `behat-tests.yml` workflow is available for:
+- Testing only Behat feature changes
+- Manual triggering via workflow_dispatch
+- PR triggers when feature files change
 
 ## 📝 Contributing
 

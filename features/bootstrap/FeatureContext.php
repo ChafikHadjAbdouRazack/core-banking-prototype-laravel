@@ -28,6 +28,14 @@ class FeatureContext implements Context
     private $baskets = [];
     private $lastResponse;
     private $lastException;
+    
+    /**
+     * Set the current user (called from LaravelFeatureContext)
+     */
+    public function setCurrentUser($user)
+    {
+        $this->currentUser = $user;
+    }
 
     /**
      * @BeforeSuite
@@ -61,6 +69,7 @@ class FeatureContext implements Context
         DB::rollBack();
     }
 
+
     /**
      * @Given the following assets exist:
      */
@@ -93,11 +102,15 @@ class FeatureContext implements Context
                 [
                     'rate' => (float) $row['rate'],
                     'provider' => $row['provider'] ?? 'ECB',
+                    'source' => $row['provider'] ?? 'ECB',
+                    'valid_at' => now(),
+                    'expires_at' => now()->addDays(1),
                     'is_active' => true,
                 ]
             );
         }
     }
+
 
     /**
      * @Given the following accounts exist:
@@ -138,7 +151,7 @@ class FeatureContext implements Context
 
             foreach ($table->getHash() as $row) {
                 BasketComponent::create([
-                    'basket_code' => $code,
+                    'basket_asset_id' => $basket->id,
                     'asset_code' => $row['asset'],
                     'weight' => (float) $row['weight'],
                     'is_active' => true,
@@ -187,7 +200,7 @@ class FeatureContext implements Context
 
         foreach ($table->getHash() as $row) {
             BasketComponent::create([
-                'basket_code' => $code,
+                'basket_asset_id' => $basket->id,
                 'asset_code' => $row['asset'],
                 'weight' => (float) $row['weight'],
                 'min_weight' => isset($row['min_weight']) ? (float) $row['min_weight'] : null,
@@ -204,8 +217,24 @@ class FeatureContext implements Context
      */
     public function iDecomposeOfBasket($amount, $basketCode)
     {
-        $account = $this->accounts[array_key_first($this->accounts)] ?? 
-                   Account::where('user_uuid', $this->currentUser->uuid)->first();
+        // Get user from LaravelFeatureContext if not set
+        if (!$this->currentUser && class_exists('LaravelFeatureContext')) {
+            $this->currentUser = LaravelFeatureContext::$sharedUser;
+        }
+        
+        // First try to get account from our tracking
+        $account = null;
+        if (!empty($this->accounts)) {
+            $account = $this->accounts[array_key_first($this->accounts)];
+        }
+        
+        // If not found, get from database
+        if (!$account && $this->currentUser) {
+            $account = Account::where('user_uuid', $this->currentUser->uuid)->first();
+            if ($account) {
+                $this->accounts[$account->uuid] = $account;
+            }
+        }
         
         $service = app(\App\Domain\Basket\Services\BasketAccountService::class);
         
@@ -222,8 +251,24 @@ class FeatureContext implements Context
      */
     public function iComposeUnitsOfBasket($amount, $basketCode)
     {
-        $account = $this->accounts[array_key_first($this->accounts)] ?? 
-                   Account::where('user_uuid', $this->currentUser->uuid)->first();
+        // Get user from LaravelFeatureContext if not set
+        if (!$this->currentUser && class_exists('LaravelFeatureContext')) {
+            $this->currentUser = LaravelFeatureContext::$sharedUser;
+        }
+        
+        // First try to get account from our tracking
+        $account = null;
+        if (!empty($this->accounts)) {
+            $account = $this->accounts[array_key_first($this->accounts)];
+        }
+        
+        // If not found, get from database
+        if (!$account && $this->currentUser) {
+            $account = Account::where('user_uuid', $this->currentUser->uuid)->first();
+            if ($account) {
+                $this->accounts[$account->uuid] = $account;
+            }
+        }
         
         $service = app(\App\Domain\Basket\Services\BasketAccountService::class);
         

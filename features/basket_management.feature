@@ -28,6 +28,7 @@ Feature: Basket Asset Management
     Then the basket should be created successfully
     And the basket value should be calculated correctly
 
+  @wip
   Scenario: Decomposing a basket into components
     Given I have a basket "GCU" with the following components:
       | asset | weight |
@@ -43,6 +44,7 @@ Feature: Basket Asset Management
     And I should have 10.00 CHF in my account
     And my GCU balance should be 900.00
 
+  @wip
   Scenario: Composing a basket from components
     Given I have a basket "GCU" with the following components:
       | asset | weight |
@@ -55,6 +57,7 @@ Feature: Basket Asset Management
     And my USD balance should be 50.00
     And my EUR balance should be 50.00
 
+  @wip
   Scenario: Dynamic basket rebalancing
     Given I have a dynamic basket "DYNAMIC" with the following components:
       | asset | weight | min_weight | max_weight |

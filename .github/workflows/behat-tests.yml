@@ -1,0 +1,149 @@
+name: Behat Acceptance Tests
+
+on:
+  pull_request:
+    paths:
+      - 'features/**'
+      - 'tests/behat/**'
+      - 'features/bootstrap/**'
+      - 'behat.yml'
+      - '.github/workflows/behat-tests.yml'
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      php-version:
+        description: 'PHP version to use'
+        required: false
+        default: '8.4'
+        type: string
+
+env:
+  PHP_VERSION: ${{ inputs.php-version || '8.4' }}
+
+jobs:
+  behat:
+    name: Behat Acceptance Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: testing
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+          
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd="redis-cli ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+          
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: mbstring, dom, fileinfo, mysql, redis, opcache, pcntl, gd, bcmath, intl, zip, soap, curl
+          tools: composer:v2
+          coverage: none
+          
+      - name: Get Composer Cache Directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+        
+      - name: Cache Dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+            
+      - name: Install PHP Dependencies
+        run: |
+          composer install --prefer-dist --no-progress --optimize-autoloader
+          composer dump-autoload
+          
+      - name: Setup Environment
+        run: |
+          cp .env.testing .env
+          echo "DB_CONNECTION=mysql" >> .env
+          echo "DB_HOST=127.0.0.1" >> .env
+          echo "DB_PORT=3306" >> .env
+          echo "DB_DATABASE=testing" >> .env
+          echo "DB_USERNAME=root" >> .env
+          echo "DB_PASSWORD=root" >> .env
+          echo "REDIS_HOST=127.0.0.1" >> .env
+          echo "REDIS_PORT=6379" >> .env
+          echo "QUEUE_CONNECTION=sync" >> .env
+          
+      - name: Prepare Laravel Application
+        run: |
+          php artisan key:generate
+          php artisan config:cache
+          php artisan migrate --force
+          php artisan db:seed --class=DatabaseSeeder
+          
+      - name: Start Laravel Server
+        run: |
+          php artisan serve --host=127.0.0.1 --port=8000 &
+          # Wait for server to be ready
+          timeout 30 bash -c 'until curl -s http://127.0.0.1:8000 > /dev/null; do sleep 1; done'
+          
+      - name: Run Behat Tests
+        env:
+          BEHAT_BASE_URL: http://127.0.0.1:8000
+          QUEUE_CONNECTION: sync
+        run: |
+          echo "Running Behat Acceptance Tests..."
+          ./bin/behat-ci
+          
+      - name: Generate Test Report
+        if: always()
+        run: |
+          # Run again with JUnit output for reporting
+          vendor/bin/behat \
+            --no-interaction \
+            --format=junit \
+            --out=behat-results.xml \
+            --tags="~@wip" \
+            features/ || true
+            
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: behat-test-results
+          path: behat-results.xml
+          retention-days: 30
+          
+      - name: Test Summary
+        if: always()
+        uses: test-summary/action@v2
+        with:
+          paths: behat-results.xml
+          
+      - name: Debug Information
+        if: failure()
+        run: |
+          echo "=== Laravel Logs ==="
+          cat storage/logs/laravel.log || echo "No Laravel log found"
+          echo "=== PHP Error Log ==="
+          cat /var/log/php*.log || echo "No PHP error log found"
+          echo "=== Server Check ==="
+          curl -I http://127.0.0.1:8000 || echo "Server not responding"

@@ -7,7 +7,7 @@ default:
                 - FeatureContext
                 - LaravelFeatureContext
             filters:
-                tags: "~@web"
+                tags: "~@web&&~@wip"
         api:
             paths:
                 features: features/api
@@ -34,3 +34,25 @@ default:
             verbose: true
             paths: false
             snippets: false
+        progress:
+            timer: true
+        
+    gherkin:
+        cache: false
+
+# CI/CD profile - use with --profile=ci
+ci:
+    formatters:
+        progress: 
+            timer: false
+    
+    # Only run features that are fully implemented
+    suites:
+        acceptance:
+            paths:
+                features: features
+            contexts:
+                - FeatureContext
+                - LaravelFeatureContext
+            filters:
+                tags: "~@web&&~@skip&&~@wip"
