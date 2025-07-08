@@ -47,7 +47,7 @@ class TestEventSerializer implements EventSerializer
 
                 // Handle Carbon type hints
                 $type = $reflection->getType();
-                if ($type && !$type->isBuiltin() && $type->getName() === Carbon::class) {
+                if ($type && $type instanceof \ReflectionNamedType && !$type->isBuiltin() && $type->getName() === Carbon::class) {
                     $value = Carbon::parse($value);
                 }
 

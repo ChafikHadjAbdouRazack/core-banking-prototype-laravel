@@ -319,7 +319,7 @@ class KeyManagementService implements KeyManagementServiceInterface
     /**
      * Generate wallet backup.
      */
-    public function generateBackup(string $walletId, array $data = null): array
+    public function generateBackup(string $walletId, ?array $data = null): array
     {
         // In a real implementation, this would fetch wallet data from storage
         // For now, we'll create a minimal backup structure
