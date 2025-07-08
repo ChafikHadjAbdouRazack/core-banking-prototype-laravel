@@ -2,6 +2,7 @@
 
 namespace App\Testing;
 
+use Carbon\Carbon;
 use Spatie\EventSourcing\EventSerializers\EventSerializer;
 use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 
@@ -14,7 +15,14 @@ class TestEventSerializer implements EventSerializer
 
         foreach ($reflection->getProperties() as $property) {
             $property->setAccessible(true);
-            $properties[$property->getName()] = $property->getValue($event);
+            $value = $property->getValue($event);
+            
+            // Handle Carbon instances
+            if ($value instanceof Carbon) {
+                $properties[$property->getName()] = $value->toIso8601String();
+            } else {
+                $properties[$property->getName()] = $value;
+            }
         }
 
         return json_encode($properties);
@@ -36,6 +44,13 @@ class TestEventSerializer implements EventSerializer
             if (property_exists($event, $property)) {
                 $reflection = new \ReflectionProperty($event, $property);
                 $reflection->setAccessible(true);
+                
+                // Handle Carbon type hints
+                $type = $reflection->getType();
+                if ($type && !$type->isBuiltin() && $type->getName() === Carbon::class) {
+                    $value = Carbon::parse($value);
+                }
+                
                 $reflection->setValue($event, $value);
             }
         }

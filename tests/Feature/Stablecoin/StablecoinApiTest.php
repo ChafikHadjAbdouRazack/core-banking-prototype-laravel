@@ -8,6 +8,7 @@ use App\Domain\Asset\Models\Asset;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use Tests\Traits\CreatesStablecoins;
 
@@ -30,7 +31,7 @@ class StablecoinApiTest extends TestCase
         $this->ensureAssetsExist();
     }
 
-    /** @test */
+    #[Test]
     public function it_can_list_stablecoins()
     {
         $this->createStablecoinWithAsset([
@@ -102,7 +103,7 @@ class StablecoinApiTest extends TestCase
             ->assertJsonPath('data.0.code', 'FUSD');
     }
 
-    /** @test */
+    #[Test]
     public function it_can_get_stablecoin_details()
     {
         $stablecoin = $this->createStablecoinWithAsset([
@@ -153,7 +154,7 @@ class StablecoinApiTest extends TestCase
             ->assertJsonPath('data.is_adequately_collateralized', true);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_create_a_stablecoin()
     {
         $data = [
@@ -187,7 +188,7 @@ class StablecoinApiTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_stablecoin_creation()
     {
         $data = [
@@ -220,7 +221,7 @@ class StablecoinApiTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_update_a_stablecoin()
     {
         $stablecoin = $this->createStablecoinWithAsset([
@@ -266,7 +267,7 @@ class StablecoinApiTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_get_system_metrics()
     {
         $this->createStablecoinWithAsset([
@@ -313,7 +314,7 @@ class StablecoinApiTest extends TestCase
             ->assertJsonPath('data.FUSD.total_supply', 100000);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_check_system_health()
     {
         $this->createStablecoinWithAsset([
@@ -360,7 +361,7 @@ class StablecoinApiTest extends TestCase
             ->assertJsonPath('data.stablecoin_status.0.status', 'critical');
     }
 
-    /** @test */
+    #[Test]
     public function it_can_deactivate_a_stablecoin()
     {
         $stablecoin = $this->createStablecoinWithAsset([
@@ -400,7 +401,7 @@ class StablecoinApiTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_reactivate_a_stablecoin()
     {
         $stablecoin = $this->createStablecoinWithAsset([

@@ -15,8 +15,8 @@ class RegisterControllerTest extends TestCase
         $response = $this->postJson('/api/auth/register', [
             'name'                  => 'John Doe',
             'email'                 => 'john@example.com',
-            'password'              => 'password123',
-            'password_confirmation' => 'password123',
+            'password'              => 'Test@Pass2024!Secure',
+            'password_confirmation' => 'Test@Pass2024!Secure',
             'is_business_customer'  => false,
         ]);
 
@@ -40,7 +40,7 @@ class RegisterControllerTest extends TestCase
 
         // Verify user has the correct role
         $user = User::where('email', 'john@example.com')->first();
-        $this->assertTrue($user->hasRole('private'));
+        $this->assertTrue($user->hasRole('customer_private'));
     }
 
     public function test_business_user_can_register_via_api(): void
@@ -48,15 +48,15 @@ class RegisterControllerTest extends TestCase
         $response = $this->postJson('/api/auth/register', [
             'name'                  => 'Business User',
             'email'                 => 'business@example.com',
-            'password'              => 'password123',
-            'password_confirmation' => 'password123',
+            'password'              => 'Test@Pass2024!Secure',
+            'password_confirmation' => 'Test@Pass2024!Secure',
             'is_business_customer'  => true,
         ]);
 
         $response->assertStatus(201);
 
         $user = User::where('email', 'business@example.com')->first();
-        $this->assertTrue($user->hasRole('business'));
+        $this->assertTrue($user->hasRole('customer_business'));
     }
 
     public function test_registration_validates_input(): void
@@ -79,8 +79,8 @@ class RegisterControllerTest extends TestCase
         $response = $this->postJson('/api/auth/register', [
             'name'                  => 'John Doe',
             'email'                 => 'existing@example.com',
-            'password'              => 'password123',
-            'password_confirmation' => 'password123',
+            'password'              => 'Test@Pass2024!Secure',
+            'password_confirmation' => 'Test@Pass2024!Secure',
         ]);
 
         $response->assertStatus(422)
@@ -92,8 +92,8 @@ class RegisterControllerTest extends TestCase
         $response = $this->postJson('/api/auth/register', [
             'name'                  => 'John Doe',
             'email'                 => 'john@example.com',
-            'password'              => 'password123',
-            'password_confirmation' => 'password123',
+            'password'              => 'Test@Pass2024!Secure',
+            'password_confirmation' => 'Test@Pass2024!Secure',
         ]);
 
         $response->assertStatus(201);

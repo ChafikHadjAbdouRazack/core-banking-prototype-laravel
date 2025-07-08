@@ -48,7 +48,12 @@ class CoinbaseCommerceServiceTest extends TestCase
             'uuid'   => 'test-uuid',
             'amount' => 1000,
             'tier'   => 'silver',
+            'email'  => 'test@example.com',
         ]);
+
+        // Mock routes to avoid route not found errors
+        $this->app['router']->get('cgo/payment/success/{investment}', fn() => 'success')->name('cgo.payment.success');
+        $this->app['router']->get('cgo/payment/cancel/{investment}', fn() => 'cancel')->name('cgo.payment.cancel');
 
         $charge = $this->service->createCharge($investment);
 
@@ -60,7 +65,7 @@ class CoinbaseCommerceServiceTest extends TestCase
                    $request->hasHeader('X-CC-Version', '2018-03-22') &&
                    $body['name'] === 'CGO Investment - Silver' &&
                    $body['pricing_type'] === 'fixed_price' &&
-                   $body['local_price']['amount'] === '1000' &&
+                   $body['local_price']['amount'] === (string) $investment->amount &&
                    $body['metadata']['investment_uuid'] === $investment->uuid;
         });
 

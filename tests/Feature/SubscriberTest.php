@@ -8,13 +8,14 @@ use App\Models\Subscriber;
 use App\Services\Email\SubscriberEmailService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class SubscriberTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
+    #[Test]
     public function it_creates_a_new_subscriber()
     {
         Mail::fake();
@@ -41,7 +42,7 @@ class SubscriberTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_reactivates_existing_unsubscribed_subscriber()
     {
         Mail::fake();
@@ -65,7 +66,7 @@ class SubscriberTest extends TestCase
         Mail::assertNotQueued(SubscriberWelcome::class);
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_email_format()
     {
         $response = $this->postJson('/subscriber/blog', [
@@ -76,7 +77,7 @@ class SubscriberTest extends TestCase
             ->assertJsonValidationErrors(['email']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_unsubscribe_request()
     {
         $subscriber = Subscriber::factory()->create([
@@ -97,7 +98,7 @@ class SubscriberTest extends TestCase
         $this->assertNotNull($subscriber->unsubscribed_at);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_invalid_unsubscribe_link()
     {
         $response = $this->get('/subscriber/unsubscribe/invalid-encrypted-string');
@@ -106,7 +107,7 @@ class SubscriberTest extends TestCase
             ->assertViewHas('message', 'Invalid unsubscribe link. Please contact support if you need assistance.');
     }
 
-    /** @test */
+    #[Test]
     public function it_adds_tags_to_subscriber()
     {
         $subscriber = Subscriber::factory()->create([
@@ -121,7 +122,7 @@ class SubscriberTest extends TestCase
         $this->assertCount(3, $subscriber->tags);
     }
 
-    /** @test */
+    #[Test]
     public function it_removes_tags_from_subscriber()
     {
         $subscriber = Subscriber::factory()->create([
@@ -136,7 +137,7 @@ class SubscriberTest extends TestCase
         $this->assertCount(2, $subscriber->tags);
     }
 
-    /** @test */
+    #[Test]
     public function it_sends_newsletter_to_active_subscribers()
     {
         Mail::fake();
@@ -165,7 +166,7 @@ class SubscriberTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_filters_newsletter_by_tags()
     {
         Mail::fake();
@@ -198,7 +199,7 @@ class SubscriberTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_filters_newsletter_by_source()
     {
         Mail::fake();

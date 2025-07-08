@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\V2;
 
+use App\Domain\Account\DataObjects\AccountUuid;
 use App\Domain\Account\Services\AccountService;
 use App\Domain\Asset\Services\ExchangeRateService;
-use App\Domain\Asset\Workflows\AssetTransferWorkflow;
+use App\Domain\Wallet\Workflows\WalletConvertWorkflow;
 use App\Http\Controllers\Controller;
 use App\Models\Account;
 use App\Models\AccountBalance;
@@ -93,7 +94,7 @@ class GCUTradingController extends Controller
         $account = Account::where('uuid', $accountUuid)->firstOrFail();
 
         // Verify account belongs to user
-        if ($account->user_id !== $user->id) {
+        if ($account->user_uuid !== $user->uuid) {
             return response()->json([
                 'error'   => 'Unauthorized',
                 'message' => 'Account does not belong to authenticated user',
@@ -101,7 +102,7 @@ class GCUTradingController extends Controller
         }
 
         // Check if account is frozen
-        if ($account->frozen_at) {
+        if ($account->frozen) {
             return response()->json([
                 'error'   => 'Account Frozen',
                 'message' => 'Cannot perform transactions on frozen account',
@@ -122,7 +123,7 @@ class GCUTradingController extends Controller
 
         // Get current GCU value
         $gcuAsset = BasketAsset::where('code', 'GCU')->firstOrFail();
-        $latestValue = BasketValue::where('basket_code', 'GCU')
+        $latestValue = BasketValue::where('basket_asset_code', 'GCU')
             ->orderBy('calculated_at', 'desc')
             ->first();
 
@@ -148,14 +149,13 @@ class GCUTradingController extends Controller
             $transactionId = \Str::uuid()->toString();
 
             // Execute the buy operation using workflows
-            $workflow = WorkflowStub::make(AssetTransferWorkflow::class);
+            // We're converting EUR to GCU
+            $workflow = WorkflowStub::make(WalletConvertWorkflow::class);
             $workflow->start(
-                $accountUuid,
-                $accountUuid,
-                $validated['currency'],
-                'GCU',
-                (int) ($validated['amount'] * 100), // Convert to cents
-                "Buy GCU - Transaction: {$transactionId}"
+                AccountUuid::fromString($accountUuid),
+                $validated['currency'], // From currency (EUR)
+                'GCU', // To currency (GCU)
+                (int) ($validated['amount'] * 100) // Amount in cents
             );
 
             // Get updated GCU balance
@@ -255,7 +255,7 @@ class GCUTradingController extends Controller
         $account = Account::where('uuid', $accountUuid)->firstOrFail();
 
         // Verify account belongs to user
-        if ($account->user_id !== $user->id) {
+        if ($account->user_uuid !== $user->uuid) {
             return response()->json([
                 'error'   => 'Unauthorized',
                 'message' => 'Account does not belong to authenticated user',
@@ -263,7 +263,7 @@ class GCUTradingController extends Controller
         }
 
         // Check if account is frozen
-        if ($account->frozen_at) {
+        if ($account->frozen) {
             return response()->json([
                 'error'   => 'Account Frozen',
                 'message' => 'Cannot perform transactions on frozen account',
@@ -283,7 +283,7 @@ class GCUTradingController extends Controller
         }
 
         // Get current GCU value
-        $latestValue = BasketValue::where('basket_code', 'GCU')
+        $latestValue = BasketValue::where('basket_asset_code', 'GCU')
             ->orderBy('calculated_at', 'desc')
             ->first();
 
@@ -309,14 +309,12 @@ class GCUTradingController extends Controller
             $transactionId = \Str::uuid()->toString();
 
             // Execute the sell operation using workflows
-            $workflow = WorkflowStub::make(AssetTransferWorkflow::class);
+            $workflow = WorkflowStub::make(WalletConvertWorkflow::class);
             $workflow->start(
-                $accountUuid,
-                $accountUuid,
-                'GCU',
-                $validated['currency'],
-                (int) ($validated['amount'] * 10000), // GCU uses 4 decimal places
-                "Sell GCU - Transaction: {$transactionId}"
+                AccountUuid::fromString($accountUuid),
+                'GCU', // From currency (GCU)
+                $validated['currency'], // To currency (EUR)
+                (int) ($validated['amount'] * 10000) // GCU uses 4 decimal places
             );
 
             // Get updated GCU balance
@@ -414,7 +412,7 @@ class GCUTradingController extends Controller
         ]);
 
         // Get current GCU value
-        $latestValue = BasketValue::where('basket_code', 'GCU')
+        $latestValue = BasketValue::where('basket_asset_code', 'GCU')
             ->orderBy('calculated_at', 'desc')
             ->first();
 

@@ -9,6 +9,7 @@ use App\Domain\Wallet\Services\KeyManagementService;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use Mockery;
 use Tests\TestCase;
 
 class BlockchainWalletTest extends TestCase
@@ -25,6 +26,7 @@ class BlockchainWalletTest extends TestCase
     {
         parent::setUp();
 
+        // Use real KeyManagementService now that GMP is installed
         $this->keyManager = new KeyManagementService();
         $this->walletService = new BlockchainWalletService($this->keyManager);
         $this->user = User::factory()->create();

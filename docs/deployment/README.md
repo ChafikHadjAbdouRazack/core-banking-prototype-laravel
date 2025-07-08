@@ -81,8 +81,11 @@ envoy run rollback --on=production
 
 ## Server Requirements
 
-- PHP 8.4+
-- MariaDB 10.11+
+- PHP 8.4+ with extensions:
+  - GMP (required for cryptographic operations)
+  - BCMath, Intl, MB String, PDO
+  - Redis, OPCache, SOAP, Imagick
+- MariaDB 10.11+ or PostgreSQL 14+
 - Redis 7+
 - Node.js 20+
 - Nginx

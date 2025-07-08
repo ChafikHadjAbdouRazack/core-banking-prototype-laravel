@@ -149,6 +149,15 @@ class User extends Authenticatable implements FilamentUser
     }
 
     /**
+     * Get the primary account for the user.
+     * Alias for account() to maintain backward compatibility.
+     */
+    public function primaryAccount()
+    {
+        return $this->account()->first();
+    }
+
+    /**
      * Get the bank preferences for the user.
      */
     public function bankPreferences()

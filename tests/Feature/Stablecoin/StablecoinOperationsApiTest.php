@@ -12,6 +12,7 @@ use App\Models\StablecoinCollateralPosition;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use Tests\Traits\CreatesStablecoins;
 
@@ -72,7 +73,7 @@ class StablecoinOperationsApiTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_mint_stablecoins()
     {
         $this->markTestSkipped('Stablecoin operations need event sourcing refactoring');
@@ -113,7 +114,7 @@ class StablecoinOperationsApiTest extends TestCase
         $this->assertEquals(99500, $this->account->getBalance('FUSD'));
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_mint_request()
     {
         $data = [
@@ -136,7 +137,7 @@ class StablecoinOperationsApiTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_prevents_minting_with_insufficient_collateral()
     {
         $data = [
@@ -153,7 +154,7 @@ class StablecoinOperationsApiTest extends TestCase
             ->assertJsonPath('error', 'Insufficient collateral. Required ratio: 1.5000, provided ratio: 1');
     }
 
-    /** @test */
+    #[Test]
     public function it_can_burn_stablecoins()
     {
         $this->markTestSkipped('Stablecoin operations need event sourcing refactoring');
@@ -200,7 +201,7 @@ class StablecoinOperationsApiTest extends TestCase
         $this->assertEquals(925000, $this->account->getBalance('USD')); // Original - locked + released
     }
 
-    /** @test */
+    #[Test]
     public function it_can_add_collateral_to_position()
     {
         $this->markTestSkipped('Stablecoin operations need event sourcing refactoring');
@@ -229,7 +230,7 @@ class StablecoinOperationsApiTest extends TestCase
             ->assertJsonPath('data.collateral_ratio', '1.5000');
     }
 
-    /** @test */
+    #[Test]
     public function it_can_get_account_positions()
     {
         // Create positions
@@ -264,7 +265,7 @@ class StablecoinOperationsApiTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_get_position_details()
     {
         $position = StablecoinCollateralPosition::create([
@@ -299,7 +300,7 @@ class StablecoinOperationsApiTest extends TestCase
             ->assertJsonPath('data.max_mint_amount', 33333); // Can mint ~$333 more
     }
 
-    /** @test */
+    #[Test]
     public function it_can_get_liquidation_opportunities()
     {
         // Ensure USD to USD exchange rate exists
@@ -348,7 +349,7 @@ class StablecoinOperationsApiTest extends TestCase
         $this->assertIsArray($data);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_get_positions_at_risk()
     {
         // Ensure USD to USD exchange rate exists (should be 1.0)

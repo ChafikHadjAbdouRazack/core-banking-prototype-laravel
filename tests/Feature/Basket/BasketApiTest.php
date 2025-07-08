@@ -13,6 +13,7 @@ use App\Models\BasketAsset;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class BasketApiTest extends TestCase
@@ -76,7 +77,7 @@ class BasketApiTest extends TestCase
         app(BasketValueCalculationService::class)->calculateValue($this->basket);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_list_baskets()
     {
         $response = $this->getJson('/api/v2/baskets');
@@ -102,7 +103,7 @@ class BasketApiTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_can_filter_baskets_by_type()
     {
         // Create a dynamic basket
@@ -126,7 +127,7 @@ class BasketApiTest extends TestCase
             ->assertJsonPath('0.code', 'DYNAMIC_BASKET');
     }
 
-    /** @test */
+    #[Test]
     public function it_can_get_basket_details()
     {
         $response = $this->getJson('/api/v2/baskets/TEST_BASKET');
@@ -155,7 +156,7 @@ class BasketApiTest extends TestCase
         $response->assertJsonCount(3, 'components');
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_404_for_non_existent_basket()
     {
         $response = $this->getJson('/api/v2/baskets/INVALID_BASKET');
@@ -163,7 +164,7 @@ class BasketApiTest extends TestCase
         $response->assertNotFound();
     }
 
-    /** @test */
+    #[Test]
     public function it_can_get_basket_value()
     {
         $response = $this->getJson('/api/v2/baskets/TEST_BASKET/value');
@@ -181,7 +182,7 @@ class BasketApiTest extends TestCase
         $this->assertGreaterThan(0, $response->json('value'));
     }
 
-    /** @test */
+    #[Test]
     public function it_can_create_basket_with_authentication()
     {
         $data = [
@@ -214,7 +215,7 @@ class BasketApiTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_component_weights_sum_to_100()
     {
         $data = [
@@ -235,7 +236,7 @@ class BasketApiTest extends TestCase
             ->assertJsonPath('message', 'Component weights must sum to 100%');
     }
 
-    /** @test */
+    #[Test]
     public function it_can_rebalance_dynamic_basket()
     {
         // Create dynamic basket
@@ -273,7 +274,7 @@ class BasketApiTest extends TestCase
         $response->assertJsonPath('status', 'completed');
     }
 
-    /** @test */
+    #[Test]
     public function it_cannot_rebalance_fixed_basket()
     {
         $response = $this->postJson('/api/v2/baskets/TEST_BASKET/rebalance');
@@ -282,7 +283,7 @@ class BasketApiTest extends TestCase
             ->assertJsonPath('message', 'Only dynamic baskets can be rebalanced');
     }
 
-    /** @test */
+    #[Test]
     public function it_can_simulate_rebalancing()
     {
         $dynamicBasket = BasketAsset::create([
@@ -306,7 +307,7 @@ class BasketApiTest extends TestCase
             ->assertJsonPath('simulated', true);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_get_basket_history()
     {
         $response = $this->getJson('/api/v2/baskets/TEST_BASKET/history?days=7');
@@ -321,7 +322,7 @@ class BasketApiTest extends TestCase
         $response->assertJsonPath('basket_code', 'TEST_BASKET');
     }
 
-    /** @test */
+    #[Test]
     public function it_can_get_basket_performance()
     {
         $response = $this->getJson('/api/v2/baskets/TEST_BASKET/performance?period=30d');
@@ -342,7 +343,7 @@ class BasketApiTest extends TestCase
         $response->assertJsonPath('period', '30d');
     }
 
-    /** @test */
+    #[Test]
     public function it_requires_authentication_for_protected_endpoints()
     {
         // Don't authenticate (start fresh test instance)
@@ -360,7 +361,7 @@ class BasketApiTest extends TestCase
         $response->assertUnauthorized();
     }
 
-    /** @test */
+    #[Test]
     public function it_can_decompose_basket_in_account()
     {
         $this->markTestSkipped('Basket decompose/compose functionality needs event sourcing refactoring');
@@ -396,7 +397,7 @@ class BasketApiTest extends TestCase
         $this->assertEquals(5000, $this->account->fresh()->getBalance('TEST_BASKET'));
     }
 
-    /** @test */
+    #[Test]
     public function it_can_compose_basket_in_account()
     {
         $this->markTestSkipped('Basket decompose/compose functionality needs event sourcing refactoring');
@@ -438,7 +439,7 @@ class BasketApiTest extends TestCase
         $this->assertEquals(5000, $this->account->fresh()->getBalance('TEST_BASKET'));
     }
 
-    /** @test */
+    #[Test]
     public function it_can_get_account_basket_holdings()
     {
         $this->markTestSkipped('Basket holdings functionality needs event sourcing refactoring');

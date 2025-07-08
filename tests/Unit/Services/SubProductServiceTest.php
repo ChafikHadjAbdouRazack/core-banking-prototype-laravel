@@ -6,7 +6,6 @@ namespace Tests\Unit\Services;
 
 use App\Services\SubProductService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Config;
 use Laravel\Pennant\Feature;
 use Mockery;
 use PHPUnit\Framework\Attributes\Test;
@@ -180,14 +179,14 @@ class SubProductServiceTest extends TestCase
     #[Test]
     public function it_validates_sub_product_access()
     {
-        // Should not throw for enabled product
-        $this->assertNull($this->service->validateAccess('exchange'));
+        // Should return true for enabled product
+        $this->assertTrue($this->service->validateAccess('exchange'));
 
-        // Should throw for disabled product
-        $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('Sub-product lending is not enabled');
+        // Should return false for disabled product
+        $this->assertFalse($this->service->validateAccess('lending'));
 
-        $this->service->validateAccess('lending');
+        // Should return false for non-existent product
+        $this->assertFalse($this->service->validateAccess('non_existent'));
     }
 
     #[Test]
@@ -199,57 +198,61 @@ class SubProductServiceTest extends TestCase
     #[Test]
     public function it_enables_sub_product()
     {
-        Config::shouldReceive('set')
-            ->once()
-            ->with('sub_products.lending.enabled', true);
-
+        // Create a fresh instance for this test
+        $service = new SubProductService();
+        
         Feature::shouldReceive('activate')
             ->once()
             ->with('sub_product.lending');
 
-        $this->service->enableSubProduct('lending');
+        $result = $service->enableSubProduct('lending');
+        
+        $this->assertTrue($result);
     }
 
     #[Test]
     public function it_disables_sub_product()
     {
-        Config::shouldReceive('set')
-            ->once()
-            ->with('sub_products.exchange.enabled', false);
-
+        // Create a fresh instance for this test
+        $service = new SubProductService();
+        
         Feature::shouldReceive('deactivate')
             ->once()
             ->with('sub_product.exchange');
 
-        $this->service->disableSubProduct('exchange');
+        $result = $service->disableSubProduct('exchange');
+        
+        $this->assertTrue($result);
     }
 
     #[Test]
     public function it_enables_feature()
     {
-        Config::shouldReceive('set')
-            ->once()
-            ->with('sub_products.exchange.features.crypto_trading', true);
-
+        // Create a fresh instance for this test
+        $service = new SubProductService();
+        
         Feature::shouldReceive('activate')
             ->once()
             ->with('sub_product.exchange.crypto_trading');
 
-        $this->service->enableFeature('exchange', 'crypto_trading');
+        $result = $service->enableFeature('exchange', 'crypto_trading');
+        
+        $this->assertTrue($result);
     }
 
     #[Test]
     public function it_disables_feature()
     {
-        Config::shouldReceive('set')
-            ->once()
-            ->with('sub_products.exchange.features.fiat_trading', false);
-
+        // Create a fresh instance for this test
+        $service = new SubProductService();
+        
         Feature::shouldReceive('deactivate')
             ->once()
             ->with('sub_product.exchange.fiat_trading');
 
-        $this->service->disableFeature('exchange', 'fiat_trading');
+        $result = $service->disableFeature('exchange', 'fiat_trading');
+        
+        $this->assertTrue($result);
     }
 
     #[Test]

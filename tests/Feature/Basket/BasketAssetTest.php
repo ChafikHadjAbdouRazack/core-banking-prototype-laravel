@@ -7,6 +7,7 @@ namespace Tests\Feature\Basket;
 use App\Domain\Asset\Models\Asset;
 use App\Models\BasketAsset;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class BasketAssetTest extends TestCase
@@ -32,7 +33,7 @@ class BasketAssetTest extends TestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function it_can_create_a_basket_asset()
     {
         $basket = BasketAsset::create([
@@ -55,7 +56,7 @@ class BasketAssetTest extends TestCase
         $this->assertEquals('fixed', $basket->type);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_add_components_to_basket()
     {
         $basket = BasketAsset::create([
@@ -75,7 +76,7 @@ class BasketAssetTest extends TestCase
         $this->assertEquals(100.0, $basket->components()->sum('weight'));
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_component_weights_sum_to_100()
     {
         $basket = BasketAsset::create([
@@ -95,7 +96,7 @@ class BasketAssetTest extends TestCase
         $this->assertNotEquals(100.0, $totalWeight);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_check_if_basket_needs_rebalancing()
     {
         // Fixed basket should never need rebalancing
@@ -147,7 +148,7 @@ class BasketAssetTest extends TestCase
         $this->assertTrue($oldBasket->needsRebalancing());
     }
 
-    /** @test */
+    #[Test]
     public function it_can_convert_basket_to_asset()
     {
         $basket = BasketAsset::create([
@@ -171,7 +172,7 @@ class BasketAssetTest extends TestCase
         $this->assertEquals('custom', $asset->type);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_get_active_components()
     {
         $basket = BasketAsset::create([
@@ -192,7 +193,7 @@ class BasketAssetTest extends TestCase
         $this->assertEquals(80.0, $activeComponents->sum('weight'));
     }
 
-    /** @test */
+    #[Test]
     public function it_can_handle_dynamic_weight_ranges()
     {
         $basket = BasketAsset::create([
@@ -215,7 +216,7 @@ class BasketAssetTest extends TestCase
         $this->assertTrue($component->weight <= $component->max_weight);
     }
 
-    /** @test */
+    #[Test]
     public function it_tracks_creation_metadata()
     {
         $userUuid = 'test-user-uuid';
@@ -233,7 +234,7 @@ class BasketAssetTest extends TestCase
         $this->assertNotNull($basket->updated_at);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_basket_relationships()
     {
         $basket = BasketAsset::create([
