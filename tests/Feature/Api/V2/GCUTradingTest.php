@@ -10,8 +10,8 @@ use App\Models\BasketValue;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
-use Tests\TestCase;
 use PHPUnit\Framework\Attributes\Test;
+use Tests\TestCase;
 
 class GCUTradingTest extends TestCase
 {
@@ -30,7 +30,7 @@ class GCUTradingTest extends TestCase
         // Create user and account
         $this->user = User::factory()->create();
         $this->account = Account::factory()->create([
-            'user_uuid'  => $this->user->uuid,
+            'user_uuid' => $this->user->uuid,
         ]);
 
         // Create assets
@@ -44,8 +44,8 @@ class GCUTradingTest extends TestCase
         $this->gcu = BasketAsset::firstOrCreate(
             ['code' => 'GCU'],
             [
-                'name' => 'Global Currency Unit',
-                'type' => 'fixed',
+                'name'                => 'Global Currency Unit',
+                'type'                => 'fixed',
                 'rebalance_frequency' => 'never',
             ]
         );
