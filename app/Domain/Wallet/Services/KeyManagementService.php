@@ -2,8 +2,6 @@
 
 /**
  * Key Management Service for blockchain wallet operations.
- *
- * @package App\Domain\Wallet\Services
  */
 
 namespace App\Domain\Wallet\Services;
@@ -92,7 +90,7 @@ class KeyManagementService implements KeyManagementServiceInterface
             'cart', 'case', 'cash', 'casino', 'castle', 'casual', 'cat', 'catalog',
             'catch', 'category', 'cattle', 'caught', 'cause', 'caution', 'cave', 'ceiling',
             'celery', 'cement', 'census', 'century', 'cereal', 'certain', 'chair', 'chalk',
-            'champion', 'change', 'chaos', 'chapter', 'charge', 'chase', 'chat', 'cheap'
+            'champion', 'change', 'chaos', 'chapter', 'charge', 'chase', 'chat', 'cheap',
         ];
 
         $mnemonic = [];
@@ -313,6 +311,7 @@ class KeyManagementService implements KeyManagementServiceInterface
     {
         // Simple validation: check if it has the right number of words
         $words = explode(' ', trim($mnemonic));
+
         return count($words) === 12 || count($words) === 24;
     }
 

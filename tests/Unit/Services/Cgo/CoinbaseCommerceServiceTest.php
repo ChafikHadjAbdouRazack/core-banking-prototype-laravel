@@ -52,8 +52,8 @@ class CoinbaseCommerceServiceTest extends TestCase
         ]);
 
         // Mock routes to avoid route not found errors
-        $this->app['router']->get('cgo/payment/success/{investment}', fn() => 'success')->name('cgo.payment.success');
-        $this->app['router']->get('cgo/payment/cancel/{investment}', fn() => 'cancel')->name('cgo.payment.cancel');
+        $this->app['router']->get('cgo/payment/success/{investment}', fn () => 'success')->name('cgo.payment.success');
+        $this->app['router']->get('cgo/payment/cancel/{investment}', fn () => 'cancel')->name('cgo.payment.cancel');
 
         $charge = $this->service->createCharge($investment);
 

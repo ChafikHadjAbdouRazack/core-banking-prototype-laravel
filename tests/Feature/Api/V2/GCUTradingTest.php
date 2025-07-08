@@ -2,12 +2,12 @@
 
 namespace Tests\Feature\Api\V2;
 
+use App\Domain\Wallet\Workflows\WalletConvertWorkflow;
 use App\Models\Account;
 use App\Models\AccountBalance;
 use App\Models\Asset;
 use App\Models\BasketAsset;
 use App\Models\BasketValue;
-use App\Domain\Wallet\Workflows\WalletConvertWorkflow;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
@@ -149,24 +149,24 @@ class GCUTradingTest extends TestCase
     {
         // Fake the workflow to test synchronously
         WorkflowStub::fake();
-        
+
         // Mock the workflow to return a successful result
         WorkflowStub::mock(WalletConvertWorkflow::class, [
             'converted_amount' => 91245, // Based on the exchange rate
-            'exchange_rate' => 0.91245,
+            'exchange_rate'    => 0.91245,
         ]);
-        
+
         // Manually update balances since the workflow is mocked
         $this->account->balances()->updateOrCreate(
             ['asset_code' => 'EUR'],
             ['balance' => 900000] // Deduct 1000 EUR (100000 cents)
         );
-        
+
         $this->account->balances()->updateOrCreate(
             ['asset_code' => 'GCU'],
             ['balance' => 91245] // Add GCU
         );
-        
+
         $response = $this->postJson('/api/v2/gcu/buy', [
             'amount'   => 1000,
             'currency' => 'EUR',
@@ -356,7 +356,7 @@ class GCUTradingTest extends TestCase
     {
         // Create a fresh test instance without authentication
         $this->refreshApplication();
-        
+
         $this->postJson('/api/v2/gcu/buy', ['amount' => 1000, 'currency' => 'EUR'])
             ->assertUnauthorized();
 

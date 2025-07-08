@@ -9,7 +9,6 @@ use App\Domain\Wallet\Services\KeyManagementService;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
-use Mockery;
 use Tests\TestCase;
 
 class BlockchainWalletTest extends TestCase

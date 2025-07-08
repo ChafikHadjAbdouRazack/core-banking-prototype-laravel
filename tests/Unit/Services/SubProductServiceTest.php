@@ -200,13 +200,13 @@ class SubProductServiceTest extends TestCase
     {
         // Create a fresh instance for this test
         $service = new SubProductService();
-        
+
         Feature::shouldReceive('activate')
             ->once()
             ->with('sub_product.lending');
 
         $result = $service->enableSubProduct('lending');
-        
+
         $this->assertTrue($result);
     }
 
@@ -215,13 +215,13 @@ class SubProductServiceTest extends TestCase
     {
         // Create a fresh instance for this test
         $service = new SubProductService();
-        
+
         Feature::shouldReceive('deactivate')
             ->once()
             ->with('sub_product.exchange');
 
         $result = $service->disableSubProduct('exchange');
-        
+
         $this->assertTrue($result);
     }
 
@@ -230,13 +230,13 @@ class SubProductServiceTest extends TestCase
     {
         // Create a fresh instance for this test
         $service = new SubProductService();
-        
+
         Feature::shouldReceive('activate')
             ->once()
             ->with('sub_product.exchange.crypto_trading');
 
         $result = $service->enableFeature('exchange', 'crypto_trading');
-        
+
         $this->assertTrue($result);
     }
 
@@ -245,13 +245,13 @@ class SubProductServiceTest extends TestCase
     {
         // Create a fresh instance for this test
         $service = new SubProductService();
-        
+
         Feature::shouldReceive('deactivate')
             ->once()
             ->with('sub_product.exchange.fiat_trading');
 
         $result = $service->disableFeature('exchange', 'fiat_trading');
-        
+
         $this->assertTrue($result);
     }
 
