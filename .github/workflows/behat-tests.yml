@@ -58,7 +58,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ env.PHP_VERSION }}
-          extensions: mbstring, dom, fileinfo, mysql, redis, opcache, pcntl, gd, bcmath, intl, zip, soap, curl
+          extensions: mbstring, dom, fileinfo, mysql, redis, opcache, pcntl, gd, bcmath, intl, zip, soap, curl, gmp
           tools: composer:v2
           coverage: none
           
@@ -139,6 +139,11 @@ jobs:
             --out=behat-results.xml \
             --tags="~@wip" \
             features/ || true
+          
+          # Ensure the file exists for the upload step
+          if [ ! -f behat-results.xml ]; then
+            echo '<?xml version="1.0" encoding="UTF-8"?><testsuites><testsuite name="Behat" errors="1"><testcase name="No results" classname="Behat"><error>No test results generated</error></testcase></testsuite></testsuites>' > behat-results.xml
+          fi
             
       - name: Upload Test Results
         if: always()

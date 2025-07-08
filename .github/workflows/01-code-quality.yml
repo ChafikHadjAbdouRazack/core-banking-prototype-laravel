@@ -34,7 +34,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ env.PHP_VERSION }}
-          extensions: mbstring, dom, fileinfo, mysql, redis, opcache
+          extensions: mbstring, dom, fileinfo, mysql, redis, opcache, gmp
           tools: composer:v2, phpstan, phpcs, php-cs-fixer
           coverage: none
           
