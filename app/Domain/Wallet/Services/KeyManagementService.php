@@ -94,12 +94,12 @@ class KeyManagementService implements KeyManagementServiceInterface
             'celery', 'cement', 'census', 'century', 'cereal', 'certain', 'chair', 'chalk',
             'champion', 'change', 'chaos', 'chapter', 'charge', 'chase', 'chat', 'cheap'
         ];
-        
+
         $mnemonic = [];
         for ($i = 0; $i < $wordCount; $i++) {
             $mnemonic[] = $words[array_rand($words)];
         }
-        
+
         return implode(' ', $mnemonic);
     }
 
@@ -114,11 +114,11 @@ class KeyManagementService implements KeyManagementServiceInterface
     {
         // Generate seed from mnemonic (simplified version)
         $seed = hash_pbkdf2('sha512', $mnemonic, 'mnemonic' . ($passphrase ?? ''), 2048, 64);
-        
+
         // Generate master key from seed
         $masterPrivateKey = substr($seed, 0, 32);
         $chainCode = substr($seed, 32, 32);
-        
+
         // Generate public key from private key using elliptic curve
         if ($this->ec) {
             $keyPair = $this->ec->keyFromPrivate($masterPrivateKey, 'hex');
@@ -127,7 +127,7 @@ class KeyManagementService implements KeyManagementServiceInterface
             // Fallback if EC library not available
             $publicKey = bin2hex(random_bytes(64));
         }
-        
+
         return [
             'master_public_key' => $publicKey,
             'master_chain_code' => bin2hex($chainCode),
@@ -146,14 +146,14 @@ class KeyManagementService implements KeyManagementServiceInterface
     public function deriveKeyPairForChain(string $encryptedSeed, string $chain, int $index = 0): array
     {
         $seed = $this->decryptSeed($encryptedSeed, 'default');
-        
+
         // Simplified key derivation (not BIP32 compliant, but functional for testing)
         $path = self::DERIVATION_PATHS[$chain] ?? self::DERIVATION_PATHS['ethereum'];
         $derivationPath = $path . '/' . $index;
-        
+
         // Derive private key from seed + path
         $privateKey = hash('sha256', $seed . $derivationPath);
-        
+
         if (in_array($chain, ['ethereum', 'polygon', 'bsc'])) {
             // For Ethereum-based chains
             if ($this->ec) {
@@ -163,7 +163,7 @@ class KeyManagementService implements KeyManagementServiceInterface
                 // Fallback
                 $publicKey = '04' . bin2hex(random_bytes(64));
             }
-            
+
             return [
                 'private_key'     => $privateKey,
                 'public_key'      => $publicKey,
