@@ -6,7 +6,17 @@ This directory contains the CI/CD pipelines for the Core Banking Prototype. The 
 
 ### Core Pipeline Structure
 
-The CI/CD system is organized into modular, reusable pipelines:
+The CI/CD system is organized into modular, reusable workflows:
+
+```
+ci-pipeline.yml (Main Orchestrator)
+├── 01-code-quality.yml
+├── 02-security-scan.yml
+├── 03-test-suite.yml
+├── 04-security-tests.yml
+├── 05-performance.yml
+└── 06-build.yml
+```
 
 #### 1. **Main CI Pipeline** (`ci-pipeline.yml`)
 Orchestrates all testing and validation phases:
@@ -263,6 +273,47 @@ When adding new pipeline components:
 - `02-security-scan.yml` - Phase 2 pipelines  
 - `03-test-suite.yml` - Phase 3 pipelines
 - `ci-pipeline.yml` - Main orchestrator
+
+## 🔧 Auxiliary Workflows
+
+### Specialized Workflows
+These workflows serve specific purposes outside the main CI pipeline:
+
+- **`behat-tests.yml`** - Standalone Behat acceptance tests
+  - Triggers on feature file changes or manual dispatch
+  - Useful for rapid Behat development feedback
+  
+- **`claude.yml`** - Claude Code AI assistant integration
+  - Automated code analysis and suggestions
+  
+- **`database-operations.yml`** - Database management tasks
+  - Backup, restore, and migration operations
+  - Manual trigger only
+  
+- **`deploy.yml`** - Deployment automation
+  - Demo and production deployment pipeline
+  - Protected by environment approvals
+  
+- **`test-matrix.yml`** - Test summary reporting
+  - Generates comprehensive test status reports
+  - Runs after CI pipeline completion
+
+## 📋 Workflow Overview
+
+| Workflow | Purpose | Trigger | Part of Main CI |
+|----------|---------|---------|-----------------|
+| ci-pipeline.yml | Main orchestrator | Push/PR to main/develop | ✅ Yes |
+| 01-code-quality.yml | Code standards & analysis | Via ci-pipeline | ✅ Yes |
+| 02-security-scan.yml | Security scanning | Via ci-pipeline | ✅ Yes |
+| 03-test-suite.yml | All tests (Unit/Feature/Integration/Behat) | Via ci-pipeline | ✅ Yes |
+| 04-security-tests.yml | Security test suite | Via ci-pipeline | ✅ Yes |
+| 05-performance.yml | Performance testing | Via ci-pipeline | ✅ Yes |
+| 06-build.yml | Asset compilation | Via ci-pipeline | ✅ Yes |
+| behat-tests.yml | Behat only | Feature changes/Manual | ❌ No |
+| claude.yml | AI assistance | PR events | ❌ No |
+| database-operations.yml | DB management | Manual | ❌ No |
+| deploy.yml | Deployment | Manual/Tag | ❌ No |
+| test-matrix.yml | Reporting | After CI pipeline | ❌ No |
 
 ## 📚 References
 

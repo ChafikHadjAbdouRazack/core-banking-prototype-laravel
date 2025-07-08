@@ -95,9 +95,25 @@ jobs:
       - name: Prepare Laravel Application
         run: |
           php artisan key:generate
+          
+          # Clear and rebuild all caches to ensure configs are loaded
+          php artisan config:clear
+          php artisan cache:clear
           php artisan config:cache
+          
+          # Wait for MySQL to be fully ready
+          timeout 30 bash -c 'until echo "SELECT 1" | mysql -h127.0.0.1 -P3306 -uroot -proot testing; do echo "Waiting for MySQL..."; sleep 2; done'
+          
+          # Run all migrations (permission tables migration already exists in project)
           php artisan migrate --force
-          php artisan db:seed --class=DatabaseSeeder
+          
+          # List tables to verify migrations ran (debug info)
+          echo "=== Database Tables ==="
+          php artisan db:show --counts || true
+          
+          # Seed database with test data (includes roles)
+          echo "=== Seeding Database ==="
+          php artisan db:seed --class=TestSeeder --verbose
           
       - name: Start Laravel Server
         run: |
