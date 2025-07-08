@@ -10,12 +10,13 @@ use PHPUnit\Framework\Assert;
  */
 class WebContext extends MinkContext implements Context
 {
+
     /**
-     * @Given I am on the homepage
+     * @When I visit :path
      */
-    public function iAmOnTheHomepage()
+    public function iVisit($path)
     {
-        $this->visit('/');
+        $this->visit($path);
     }
 
     /**
@@ -40,67 +41,4 @@ class WebContext extends MinkContext implements Context
         }
     }
 
-    /**
-     * @When I check :checkbox
-     */
-    public function iCheck($checkbox)
-    {
-        $this->checkOption($checkbox);
-    }
-
-    /**
-     * @Then I should see :text
-     */
-    public function iShouldSee($text)
-    {
-        $this->assertPageContainsText($text);
-    }
-
-    /**
-     * @Then I should not see :text
-     */
-    public function iShouldNotSee($text)
-    {
-        $this->assertPageNotContainsText($text);
-    }
-
-    /**
-     * @Then I should be on :path
-     */
-    public function iShouldBeOn($path)
-    {
-        $this->assertSession()->addressEquals($path);
-    }
-
-    /**
-     * @Given I am on :path
-     */
-    public function iAmOn($path)
-    {
-        $this->visit($path);
-    }
-
-    /**
-     * @When I fill in :field with :value
-     */
-    public function iFillIn($field, $value)
-    {
-        $this->fillField($field, $value);
-    }
-
-    /**
-     * @When I press :button
-     */
-    public function iPress($button)
-    {
-        $this->pressButton($button);
-    }
-
-    /**
-     * @When I visit :path
-     */
-    public function iVisit($path)
-    {
-        $this->visit($path);
-    }
 }
