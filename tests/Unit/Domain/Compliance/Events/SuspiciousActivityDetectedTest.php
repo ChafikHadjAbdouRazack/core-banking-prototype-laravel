@@ -17,7 +17,7 @@ class SuspiciousActivityDetectedTest extends TestCase
             'event_properties' => [
                 'amount'    => 100000,
                 'assetCode' => 'USD',
-                'metadata'  => ['type' => 'wire_transfer']
+                'metadata'  => ['type' => 'wire_transfer'],
             ],
         ]);
 

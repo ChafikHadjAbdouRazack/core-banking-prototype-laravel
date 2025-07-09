@@ -5,7 +5,6 @@ namespace Database\Factories;
 use App\Models\Account;
 use App\Models\Transaction;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Transaction>
@@ -29,16 +28,16 @@ class TransactionFactory extends Factory
         };
 
         $accountUuid = Account::factory()->create()->uuid;
-        
+
         return [
             'aggregate_uuid'    => $accountUuid,
             'aggregate_version' => fake()->numberBetween(1, 100),
             'event_version'     => 1,
             'event_class'       => 'App\\Domain\\Account\\Events\\MoneyAdded',
             'event_properties'  => [
-                'amount'      => $amount,
-                'assetCode'   => 'USD',
-                'metadata'    => []
+                'amount'    => $amount,
+                'assetCode' => 'USD',
+                'metadata'  => [],
             ],
             'meta_data' => [
                 'type'        => $type,

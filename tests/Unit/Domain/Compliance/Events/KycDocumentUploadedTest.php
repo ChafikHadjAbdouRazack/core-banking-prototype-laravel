@@ -28,11 +28,11 @@ class KycDocumentUploadedTest extends TestCase
     public function test_handles_different_document_types(): void
     {
         $documentTypes = [
-            'passport'         => ['number' => 'AB123456', 'country' => 'US'],
-            'drivers_license'  => ['number' => 'DL789012', 'state' => 'CA'],
-            'national_id'      => ['number' => 'ID345678', 'issued_by' => 'Government'],
-            'utility_bill'     => ['type' => 'electricity', 'date' => '2024-01-01'],
-            'selfie'           => ['timestamp' => '2024-01-01 12:00:00'],
+            'passport'        => ['number' => 'AB123456', 'country' => 'US'],
+            'drivers_license' => ['number' => 'DL789012', 'state' => 'CA'],
+            'national_id'     => ['number' => 'ID345678', 'issued_by' => 'Government'],
+            'utility_bill'    => ['type' => 'electricity', 'date' => '2024-01-01'],
+            'selfie'          => ['timestamp' => '2024-01-01 12:00:00'],
         ];
 
         foreach ($documentTypes as $type => $metadata) {
