@@ -60,11 +60,13 @@ class BasketValueCalculationService
                 $totalValue += $componentData['weighted_value'];
                 $componentValues[$component->asset_code] = $componentData;
             } catch (\Exception $e) {
-                Log::error('Error calculating component value', [
+                Log::error(
+                    'Error calculating component value', [
                     'basket'    => $basket->code,
                     'component' => $component->asset_code,
                     'error'     => $e->getMessage(),
-                ]);
+                    ]
+                );
 
                 $errors[] = [
                     'asset' => $component->asset_code,
@@ -74,25 +76,31 @@ class BasketValueCalculationService
         }
 
         // Store the calculated value
-        return DB::transaction(function () use ($basket, $totalValue, $componentValues, $errors) {
-            // Ensure the basket exists as an asset
-            $basket->toAsset();
+        return DB::transaction(
+            function () use ($basket, $totalValue, $componentValues, $errors) {
+                // Ensure the basket exists as an asset
+                $basket->toAsset();
 
-            $basketValue = BasketValue::create([
-                'basket_asset_code' => $basket->code,
-                'value'             => $totalValue,
-                'calculated_at'     => now(),
-                'component_values'  => array_merge($componentValues, [
-                    '_metadata' => [
+                $basketValue = BasketValue::create(
+                    [
+                    'basket_asset_code' => $basket->code,
+                    'value'             => $totalValue,
+                    'calculated_at'     => now(),
+                    'component_values'  => array_merge(
+                        $componentValues, [
+                        '_metadata' => [
                         'calculation_errors' => $errors,
                         'total_components'   => count($componentValues),
                         'base_currency'      => 'USD',
-                    ],
-                ]),
-            ]);
+                        ],
+                        ]
+                    ),
+                    ]
+                );
 
-            return $basketValue;
-        });
+                return $basketValue;
+            }
+        );
     }
 
     /**
@@ -145,7 +153,8 @@ class BasketValueCalculationService
      */
     private function createEmptyValue(BasketAsset $basket): BasketValue
     {
-        return BasketValue::create([
+        return BasketValue::create(
+            [
             'basket_asset_code' => $basket->code,
             'value'             => 0.0,
             'calculated_at'     => now(),
@@ -156,7 +165,8 @@ class BasketValueCalculationService
                     'base_currency'      => 'USD',
                 ],
             ],
-        ]);
+            ]
+        );
     }
 
     /**
@@ -201,13 +211,15 @@ class BasketValueCalculationService
             ->betweenDates($startDate, $endDate)
             ->orderBy('calculated_at', 'asc')
             ->get()
-            ->map(function ($value) {
-                return [
+            ->map(
+                function ($value) {
+                    return [
                     'value'         => $value->value,
                     'calculated_at' => $value->calculated_at->toISOString(),
                     'components'    => $value->component_values,
-                ];
-            })
+                    ];
+                }
+            )
             ->toArray();
     }
 

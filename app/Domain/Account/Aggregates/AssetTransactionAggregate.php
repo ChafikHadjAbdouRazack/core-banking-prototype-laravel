@@ -55,7 +55,7 @@ class AssetTransactionAggregate extends AggregateRoot
 
     /**
      * @param string $assetCode
-     * @param int $amount
+     * @param int    $amount
      *
      * @return $this
      */
@@ -105,7 +105,7 @@ class AssetTransactionAggregate extends AggregateRoot
 
     /**
      * @param string $assetCode
-     * @param int $amount
+     * @param int    $amount
      *
      * @return AssetTransactionAggregate
      */
@@ -158,7 +158,7 @@ class AssetTransactionAggregate extends AggregateRoot
 
     /**
      * @param string $assetCode
-     * @param int $amount
+     * @param int    $amount
      *
      * @return bool
      */
@@ -170,7 +170,7 @@ class AssetTransactionAggregate extends AggregateRoot
     }
 
     /**
-     * @param string $assetCode
+     * @param  string $assetCode
      * @return int
      */
     public function getBalance(string $assetCode): int
@@ -189,8 +189,8 @@ class AssetTransactionAggregate extends AggregateRoot
     /**
      * Generate hash for asset transaction.
      *
-     * @param string $assetCode
-     * @param int $amount
+     * @param  string $assetCode
+     * @param  int    $amount
      * @return Hash
      */
     protected function generateHashForAsset(string $assetCode, int $amount): Hash
@@ -203,9 +203,9 @@ class AssetTransactionAggregate extends AggregateRoot
     /**
      * Validate hash for asset transaction.
      *
-     * @param Hash $hash
-     * @param string $assetCode
-     * @param int $amount
+     * @param  Hash   $hash
+     * @param  string $assetCode
+     * @param  int    $amount
      * @return void
      * @throws InvalidHashException
      */

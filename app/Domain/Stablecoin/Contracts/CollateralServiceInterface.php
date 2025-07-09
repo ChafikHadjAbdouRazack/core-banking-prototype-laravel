@@ -9,9 +9,9 @@ interface CollateralServiceInterface
     /**
      * Convert collateral value to peg asset.
      *
-     * @param string $fromAsset
-     * @param int $amount
-     * @param string $pegAsset
+     * @param  string $fromAsset
+     * @param  int    $amount
+     * @param  string $pegAsset
      * @return int
      */
     public function convertToPegAsset(string $fromAsset, int $amount, string $pegAsset): int;
@@ -19,7 +19,7 @@ interface CollateralServiceInterface
     /**
      * Calculate total collateral value in the system.
      *
-     * @param string $stablecoinCode
+     * @param  string $stablecoinCode
      * @return int
      */
     public function calculateTotalCollateralValue(string $stablecoinCode): int;
@@ -27,7 +27,7 @@ interface CollateralServiceInterface
     /**
      * Get positions at risk (collateral ratio below warning threshold).
      *
-     * @param float $bufferRatio
+     * @param  float $bufferRatio
      * @return Collection
      */
     public function getPositionsAtRisk(float $bufferRatio = 0.05): Collection;
@@ -42,7 +42,7 @@ interface CollateralServiceInterface
     /**
      * Update position collateral ratio.
      *
-     * @param \App\Models\StablecoinCollateralPosition $position
+     * @param  \App\Models\StablecoinCollateralPosition $position
      * @return void
      */
     public function updatePositionCollateralRatio(\App\Models\StablecoinCollateralPosition $position): void;
@@ -50,7 +50,7 @@ interface CollateralServiceInterface
     /**
      * Calculate position health score.
      *
-     * @param \App\Models\StablecoinCollateralPosition $position
+     * @param  \App\Models\StablecoinCollateralPosition $position
      * @return float
      */
     public function calculatePositionHealthScore(\App\Models\StablecoinCollateralPosition $position): float;
@@ -58,7 +58,7 @@ interface CollateralServiceInterface
     /**
      * Get collateral distribution analysis.
      *
-     * @param string $stablecoinCode
+     * @param  string $stablecoinCode
      * @return array
      */
     public function getCollateralDistribution(string $stablecoinCode): array;

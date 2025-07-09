@@ -65,10 +65,12 @@ class ContactSubmission extends Model
      */
     public function markAsResponded($notes = null)
     {
-        $this->update([
+        $this->update(
+            [
             'status'         => 'responded',
             'responded_at'   => now(),
             'response_notes' => $notes,
-        ]);
+            ]
+        );
     }
 }

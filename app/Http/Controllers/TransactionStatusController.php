@@ -36,13 +36,15 @@ class TransactionStatusController extends Controller
         // Get transaction statistics
         $statistics = $this->getTransactionStatistics($user);
 
-        return Inertia::render('Transactions/StatusTracking', [
+        return Inertia::render(
+            'Transactions/StatusTracking', [
             'accounts'              => $accounts,
             'pendingTransactions'   => $pendingTransactions,
             'completedTransactions' => $completedTransactions,
             'statistics'            => $statistics,
             'filters'               => $filters,
-        ]);
+            ]
+        );
     }
 
     /**
@@ -65,11 +67,13 @@ class TransactionStatusController extends Controller
         // Get related transactions (if any)
         $relatedTransactions = $this->getRelatedTransactions($transaction);
 
-        return Inertia::render('Transactions/StatusDetail', [
+        return Inertia::render(
+            'Transactions/StatusDetail', [
             'transaction'         => $transaction,
             'timeline'            => $timeline,
             'relatedTransactions' => $relatedTransactions,
-        ]);
+            ]
+        );
     }
 
     /**
@@ -88,14 +92,16 @@ class TransactionStatusController extends Controller
         $currentStatus = $this->getCurrentStatus($transaction);
         $estimatedCompletion = $this->getEstimatedCompletion($transaction);
 
-        return response()->json([
+        return response()->json(
+            [
             'id'                   => $transaction->id,
             'status'               => $currentStatus,
             'estimated_completion' => $estimatedCompletion,
             'last_updated'         => $transaction->updated_at,
             'can_cancel'           => $this->canCancelTransaction($transaction),
             'can_retry'            => $this->canRetryTransaction($transaction),
-        ]);
+            ]
+        );
     }
 
     /**
@@ -117,21 +123,25 @@ class TransactionStatusController extends Controller
         DB::beginTransaction();
         try {
             // Update transaction status
-            $transaction->update([
+            $transaction->update(
+                [
                 'status'       => 'cancelled',
                 'cancelled_at' => now(),
                 'cancelled_by' => $user->id,
-            ]);
+                ]
+            );
 
             // Reverse any holds or pending operations
             $this->reverseTransaction($transaction);
 
             DB::commit();
 
-            return response()->json([
+            return response()->json(
+                [
                 'success' => true,
                 'message' => 'Transaction cancelled successfully',
-            ]);
+                ]
+            );
         } catch (\Exception $e) {
             DB::rollBack();
 
@@ -161,18 +171,22 @@ class TransactionStatusController extends Controller
             $newTransaction = $this->createRetryTransaction($transaction);
 
             // Mark original as retried
-            $transaction->update([
+            $transaction->update(
+                [
                 'retried_at'           => now(),
                 'retry_transaction_id' => $newTransaction->id,
-            ]);
+                ]
+            );
 
             DB::commit();
 
-            return response()->json([
+            return response()->json(
+                [
                 'success'            => true,
                 'message'            => 'Transaction retry initiated',
                 'new_transaction_id' => $newTransaction->id,
-            ]);
+                ]
+            );
         } catch (\Exception $e) {
             DB::rollBack();
 
@@ -214,12 +228,14 @@ class TransactionStatusController extends Controller
             ->orderBy('transaction_projections.created_at', 'desc')
             ->limit(50)
             ->get()
-            ->map(function ($transaction) {
-                $transaction->estimated_completion = $this->calculateEstimatedCompletion($transaction);
-                $transaction->progress_percentage = $this->calculateProgressPercentage($transaction);
+            ->map(
+                function ($transaction) {
+                    $transaction->estimated_completion = $this->calculateEstimatedCompletion($transaction);
+                    $transaction->progress_percentage = $this->calculateProgressPercentage($transaction);
 
-                return $transaction;
-            });
+                    return $transaction;
+                }
+            );
     }
 
     /**
@@ -573,11 +589,13 @@ class TransactionStatusController extends Controller
     {
         // This would implement the actual reversal logic
         // For now, just log the reversal
-        \Log::info('Transaction reversed', [
+        \Log::info(
+            'Transaction reversed', [
             'transaction_id' => $transaction->id,
             'type'           => $transaction->type,
             'amount'         => $transaction->amount,
-        ]);
+            ]
+        );
     }
 
     /**

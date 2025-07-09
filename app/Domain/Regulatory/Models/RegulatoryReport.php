@@ -136,23 +136,27 @@ class RegulatoryReport extends Model
     {
         parent::boot();
 
-        static::creating(function ($report) {
-            if (empty($report->report_id)) {
-                $report->report_id = self::generateReportId($report->report_type);
-            }
+        static::creating(
+            function ($report) {
+                if (empty($report->report_id)) {
+                    $report->report_id = self::generateReportId($report->report_type);
+                }
 
-            // Check if overdue
-            if ($report->due_date) {
-                $report->checkOverdueStatus();
+                // Check if overdue
+                if ($report->due_date) {
+                    $report->checkOverdueStatus();
+                }
             }
-        });
+        );
 
-        static::updating(function ($report) {
-            // Update overdue status
-            if ($report->due_date) {
-                $report->checkOverdueStatus();
+        static::updating(
+            function ($report) {
+                // Update overdue status
+                if ($report->due_date) {
+                    $report->checkOverdueStatus();
+                }
             }
-        });
+        );
     }
 
     // Relationships
@@ -201,33 +205,41 @@ class RegulatoryReport extends Model
 
     public function markAsSubmitted(string $submittedBy, ?string $reference = null): void
     {
-        $this->update([
+        $this->update(
+            [
             'status'               => self::STATUS_SUBMITTED,
             'submitted_at'         => now(),
             'submitted_by'         => $submittedBy,
             'submission_reference' => $reference,
-        ]);
+            ]
+        );
 
-        $this->addAuditEntry('submitted', [
+        $this->addAuditEntry(
+            'submitted', [
             'submitted_by' => $submittedBy,
             'reference'    => $reference,
-        ]);
+            ]
+        );
     }
 
     public function markAsReviewed(string $reviewedBy, string $notes, bool $requiresCorrection = false): void
     {
-        $this->update([
+        $this->update(
+            [
             'reviewed_at'         => now(),
             'reviewed_by'         => $reviewedBy,
             'review_notes'        => $notes,
             'requires_correction' => $requiresCorrection,
             'status'              => $requiresCorrection ? self::STATUS_DRAFT : self::STATUS_PENDING_REVIEW,
-        ]);
+            ]
+        );
 
-        $this->addAuditEntry('reviewed', [
+        $this->addAuditEntry(
+            'reviewed', [
             'reviewed_by'         => $reviewedBy,
             'requires_correction' => $requiresCorrection,
-        ]);
+            ]
+        );
     }
 
     public function addAuditEntry(string $action, array $data = []): void
@@ -269,10 +281,12 @@ class RegulatoryReport extends Model
             'details'     => $details,
         ];
 
-        $this->update([
+        $this->update(
+            [
             'entities_included' => $entities,
             'record_count'      => count($entities),
-        ]);
+            ]
+        );
     }
 
     public function canBeSubmitted(): bool
@@ -296,10 +310,12 @@ class RegulatoryReport extends Model
             return "Overdue by {$this->days_overdue} days";
         }
 
-        return $now->diffForHumans($dueDate, [
+        return $now->diffForHumans(
+            $dueDate, [
             'parts' => 2,
             'short' => true,
-        ]);
+            ]
+        );
     }
 
     public function getPriorityLabel(): string
@@ -350,8 +366,8 @@ class RegulatoryReport extends Model
     public function scopeDueSoon($query, int $days = 7)
     {
         return $query->whereNotNull('due_date')
-                    ->where('due_date', '<=', now()->addDays($days))
-                    ->where('status', '!=', self::STATUS_SUBMITTED)
-                    ->where('status', '!=', self::STATUS_ACCEPTED);
+            ->where('due_date', '<=', now()->addDays($days))
+            ->where('status', '!=', self::STATUS_SUBMITTED)
+            ->where('status', '!=', self::STATUS_ACCEPTED);
     }
 }

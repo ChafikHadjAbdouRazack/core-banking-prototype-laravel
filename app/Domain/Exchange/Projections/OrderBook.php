@@ -108,18 +108,22 @@ class OrderBook extends Model
     {
         $orders = $levels ? $this->buy_orders_collection->take($levels) : $this->buy_orders_collection;
 
-        return $orders->reduce(function ($carry, $order) {
-            return bcadd($carry, $order['amount'], 18);
-        }, '0');
+        return $orders->reduce(
+            function ($carry, $order) {
+                return bcadd($carry, $order['amount'], 18);
+            }, '0'
+        );
     }
 
     public function getTotalAskVolume(?int $levels = null): string
     {
         $orders = $levels ? $this->sell_orders_collection->take($levels) : $this->sell_orders_collection;
 
-        return $orders->reduce(function ($carry, $order) {
-            return bcadd($carry, $order['amount'], 18);
-        }, '0');
+        return $orders->reduce(
+            function ($carry, $order) {
+                return bcadd($carry, $order['amount'], 18);
+            }, '0'
+        );
     }
 
     public function scopeForPair($query, string $baseCurrency, string $quoteCurrency)

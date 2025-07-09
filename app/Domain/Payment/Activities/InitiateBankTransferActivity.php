@@ -16,7 +16,8 @@ class InitiateBankTransferActivity extends Activity
         $transferId = 'transfer_' . Str::uuid()->toString();
 
         // Log the transfer initiation
-        \Log::info('Bank transfer initiated', [
+        \Log::info(
+            'Bank transfer initiated', [
             'transfer_id'    => $transferId,
             'transaction_id' => $transactionId,
             'account_uuid'   => $withdrawal->getAccountUuid(),
@@ -24,7 +25,8 @@ class InitiateBankTransferActivity extends Activity
             'currency'       => $withdrawal->getCurrency(),
             'bank_name'      => $withdrawal->getBankName(),
             'account_number' => substr($withdrawal->getAccountNumber(), -4), // Log only last 4 digits
-        ]);
+            ]
+        );
 
         // In production, this would:
         // 1. Call banking partner API

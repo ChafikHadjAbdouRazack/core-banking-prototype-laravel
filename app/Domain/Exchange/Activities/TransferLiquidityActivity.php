@@ -12,51 +12,53 @@ class TransferLiquidityActivity extends Activity
 {
     public function execute($input): array
     {
-        return DB::transaction(function () use ($input) {
-            $transactionId = Str::uuid()->toString();
+        return DB::transaction(
+            function () use ($input) {
+                $transactionId = Str::uuid()->toString();
 
-            if (isset($input['from_account_id'])) {
-                // Transfer from account to pool
-                $this->transferFromAccount(
-                    $input['from_account_id'],
-                    $input['to_pool_id'],
-                    $input['base_currency'],
-                    $input['base_amount'],
-                    $transactionId . '-base'
-                );
+                if (isset($input['from_account_id'])) {
+                    // Transfer from account to pool
+                    $this->transferFromAccount(
+                        $input['from_account_id'],
+                        $input['to_pool_id'],
+                        $input['base_currency'],
+                        $input['base_amount'],
+                        $transactionId . '-base'
+                    );
 
-                $this->transferFromAccount(
-                    $input['from_account_id'],
-                    $input['to_pool_id'],
-                    $input['quote_currency'],
-                    $input['quote_amount'],
-                    $transactionId . '-quote'
-                );
-            } else {
-                // Transfer from pool to account
-                $this->transferFromPool(
-                    $input['from_pool_id'],
-                    $input['to_account_id'],
-                    $input['base_currency'],
-                    $input['base_amount'],
-                    $transactionId . '-base'
-                );
+                    $this->transferFromAccount(
+                        $input['from_account_id'],
+                        $input['to_pool_id'],
+                        $input['quote_currency'],
+                        $input['quote_amount'],
+                        $transactionId . '-quote'
+                    );
+                } else {
+                    // Transfer from pool to account
+                    $this->transferFromPool(
+                        $input['from_pool_id'],
+                        $input['to_account_id'],
+                        $input['base_currency'],
+                        $input['base_amount'],
+                        $transactionId . '-base'
+                    );
 
-                $this->transferFromPool(
-                    $input['from_pool_id'],
-                    $input['to_account_id'],
-                    $input['quote_currency'],
-                    $input['quote_amount'],
-                    $transactionId . '-quote'
-                );
-            }
+                    $this->transferFromPool(
+                        $input['from_pool_id'],
+                        $input['to_account_id'],
+                        $input['quote_currency'],
+                        $input['quote_amount'],
+                        $transactionId . '-quote'
+                    );
+                }
 
-            return [
+                return [
                 'transaction_id'    => $transactionId,
                 'base_transferred'  => $input['base_amount'],
                 'quote_transferred' => $input['quote_amount'],
-            ];
-        });
+                ];
+            }
+        );
     }
 
     private function transferFromAccount(

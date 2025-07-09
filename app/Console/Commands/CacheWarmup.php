@@ -37,12 +37,14 @@ class CacheWarmup extends Command
 
             Account::query()
                 ->where('frozen', false)
-                ->chunk(100, function ($accounts) use ($cacheManager) {
-                    foreach ($accounts as $account) {
-                        $cacheManager->warmUp($account->uuid);
-                        $this->info("Warmed up cache for account: {$account->uuid}");
+                ->chunk(
+                    100, function ($accounts) use ($cacheManager) {
+                        foreach ($accounts as $account) {
+                            $cacheManager->warmUp($account->uuid);
+                            $this->info("Warmed up cache for account: {$account->uuid}");
+                        }
                     }
-                });
+                );
         } else {
             // Warm up specific accounts
             foreach ($accountUuids as $uuid) {

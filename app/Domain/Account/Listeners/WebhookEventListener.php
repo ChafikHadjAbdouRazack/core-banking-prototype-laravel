@@ -35,11 +35,13 @@ class WebhookEventListener extends Projector
             return;
         }
 
-        $this->webhookService->dispatchAccountEvent('account.created', $event->aggregateRootUuid(), [
+        $this->webhookService->dispatchAccountEvent(
+            'account.created', $event->aggregateRootUuid(), [
             'name'      => $account->name,
             'user_uuid' => $account->user_uuid,
             'balance'   => 0,
-        ]);
+            ]
+        );
     }
 
     public function onAccountFrozen(AccountFrozen $event): void
@@ -48,9 +50,11 @@ class WebhookEventListener extends Projector
             return;
         }
 
-        $this->webhookService->dispatchAccountEvent('account.frozen', $event->aggregateRootUuid(), [
+        $this->webhookService->dispatchAccountEvent(
+            'account.frozen', $event->aggregateRootUuid(), [
             'reason' => $event->reason,
-        ]);
+            ]
+        );
     }
 
     public function onAccountUnfrozen(AccountUnfrozen $event): void
@@ -83,21 +87,25 @@ class WebhookEventListener extends Projector
             return;
         }
 
-        $this->webhookService->dispatchTransactionEvent('transaction.created', [
+        $this->webhookService->dispatchTransactionEvent(
+            'transaction.created', [
             'account_uuid'  => $event->aggregateRootUuid(),
             'type'          => 'deposit',
             'amount'        => $event->money->getAmount(),
             'currency'      => 'USD',
             'balance_after' => $account->balance,
             'hash'          => $event->hash->getHash(),
-        ]);
+            ]
+        );
 
         // Check for low balance alerts
         if ($account->balance < 1000) { // $10.00
-            $this->webhookService->dispatchAccountEvent('balance.low', $event->aggregateRootUuid(), [
+            $this->webhookService->dispatchAccountEvent(
+                'balance.low', $event->aggregateRootUuid(), [
                 'balance'   => $account->balance,
                 'threshold' => 1000,
-            ]);
+                ]
+            );
         }
     }
 
@@ -113,20 +121,24 @@ class WebhookEventListener extends Projector
             return;
         }
 
-        $this->webhookService->dispatchTransactionEvent('transaction.created', [
+        $this->webhookService->dispatchTransactionEvent(
+            'transaction.created', [
             'account_uuid'  => $event->aggregateRootUuid(),
             'type'          => 'withdrawal',
             'amount'        => $event->money->getAmount(),
             'currency'      => 'USD',
             'balance_after' => $account->balance,
             'hash'          => $event->hash->getHash(),
-        ]);
+            ]
+        );
 
         // Check for negative balance alerts
         if ($account->balance < 0) {
-            $this->webhookService->dispatchAccountEvent('balance.negative', $event->aggregateRootUuid(), [
+            $this->webhookService->dispatchAccountEvent(
+                'balance.negative', $event->aggregateRootUuid(), [
                 'balance' => $account->balance,
-            ]);
+                ]
+            );
         }
     }
 

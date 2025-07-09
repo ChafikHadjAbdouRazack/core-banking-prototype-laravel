@@ -22,9 +22,11 @@ class ExchangeRateProviderServiceProvider extends ServiceProvider
         $this->app->singleton(ExchangeRateProviderRegistry::class);
 
         // Bind the enhanced service with explicit resolution
-        $this->app->singleton(EnhancedExchangeRateService::class, function ($app) {
-            return new EnhancedExchangeRateService($app->make(ExchangeRateProviderRegistry::class));
-        });
+        $this->app->singleton(
+            EnhancedExchangeRateService::class, function ($app) {
+                return new EnhancedExchangeRateService($app->make(ExchangeRateProviderRegistry::class));
+            }
+        );
 
         // Bind the enhanced service as the default exchange rate service
         $this->app->bind(ExchangeRateService::class, EnhancedExchangeRateService::class);
@@ -90,26 +92,26 @@ class ExchangeRateProviderServiceProvider extends ServiceProvider
         $command = $schedule->job(new \App\Domain\Exchange\Jobs\RefreshExchangeRatesJob());
 
         switch ($frequency) {
-            case 'every_minute':
-                $command->everyMinute();
-                break;
-            case 'every_five_minutes':
-                $command->everyFiveMinutes();
-                break;
-            case 'every_fifteen_minutes':
-                $command->everyFifteenMinutes();
-                break;
-            case 'every_thirty_minutes':
-                $command->everyThirtyMinutes();
-                break;
-            case 'hourly':
-                $command->hourly();
-                break;
-            case 'daily':
-                $command->daily();
-                break;
-            default:
-                $command->hourly();
+        case 'every_minute':
+            $command->everyMinute();
+            break;
+        case 'every_five_minutes':
+            $command->everyFiveMinutes();
+            break;
+        case 'every_fifteen_minutes':
+            $command->everyFifteenMinutes();
+            break;
+        case 'every_thirty_minutes':
+            $command->everyThirtyMinutes();
+            break;
+        case 'hourly':
+            $command->hourly();
+            break;
+        case 'daily':
+            $command->daily();
+            break;
+        default:
+            $command->hourly();
         }
     }
 }

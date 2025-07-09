@@ -37,15 +37,17 @@ class AssetTransactionAggregate extends AggregateRoot
     ): self {
         $hash = $this->generateHash($money);
 
-        $this->recordThat(new AssetTransactionCreated(
-            accountUuid: $accountUuid,
-            assetCode: $assetCode,
-            money: $money,
-            type: 'credit',
-            hash: $hash,
-            description: $description,
-            metadata: $metadata
-        ));
+        $this->recordThat(
+            new AssetTransactionCreated(
+                accountUuid: $accountUuid,
+                assetCode: $assetCode,
+                money: $money,
+                type: 'credit',
+                hash: $hash,
+                description: $description,
+                metadata: $metadata
+            )
+        );
 
         return $this;
     }
@@ -62,15 +64,17 @@ class AssetTransactionAggregate extends AggregateRoot
     ): self {
         $hash = $this->generateHash($money);
 
-        $this->recordThat(new AssetTransactionCreated(
-            accountUuid: $accountUuid,
-            assetCode: $assetCode,
-            money: $money,
-            type: 'debit',
-            hash: $hash,
-            description: $description,
-            metadata: $metadata
-        ));
+        $this->recordThat(
+            new AssetTransactionCreated(
+                accountUuid: $accountUuid,
+                assetCode: $assetCode,
+                money: $money,
+                type: 'debit',
+                hash: $hash,
+                description: $description,
+                metadata: $metadata
+            )
+        );
 
         return $this;
     }

@@ -44,13 +44,15 @@ class StablecoinOperationsController extends Controller
         // Get pending requests
         $pendingRequests = $this->getPendingRequests();
 
-        return view('stablecoin-operations.index', compact(
-            'stablecoins',
-            'statistics',
-            'recentOperations',
-            'collateral',
-            'pendingRequests'
-        ));
+        return view(
+            'stablecoin-operations.index', compact(
+                'stablecoins',
+                'statistics',
+                'recentOperations',
+                'collateral',
+                'pendingRequests'
+            )
+        );
     }
 
     /**
@@ -73,12 +75,14 @@ class StablecoinOperationsController extends Controller
         // Get operator accounts
         $operatorAccounts = $this->getOperatorAccounts($user);
 
-        return view('stablecoin-operations.mint', compact(
-            'stablecoin',
-            'stablecoinInfo',
-            'collateralAssets',
-            'operatorAccounts'
-        ));
+        return view(
+            'stablecoin-operations.mint', compact(
+                'stablecoin',
+                'stablecoinInfo',
+                'collateralAssets',
+                'operatorAccounts'
+            )
+        );
     }
 
     /**
@@ -86,7 +90,8 @@ class StablecoinOperationsController extends Controller
      */
     public function processMint(Request $request)
     {
-        $validated = $request->validate([
+        $validated = $request->validate(
+            [
             'stablecoin'         => 'required|string|in:USDX,EURX,GBPX',
             'amount'             => 'required|numeric|min:100|max:1000000',
             'collateral_asset'   => 'required|string|in:USD,EUR,GBP',
@@ -94,7 +99,8 @@ class StablecoinOperationsController extends Controller
             'recipient_account'  => 'required|uuid',
             'reason'             => 'required|string|max:255',
             'authorization_code' => 'required|string',
-        ]);
+            ]
+        );
 
         $user = Auth::user();
 
@@ -115,9 +121,11 @@ class StablecoinOperationsController extends Controller
         );
 
         if ($validated['collateral_amount'] < $requiredCollateral) {
-            return back()->withErrors([
+            return back()->withErrors(
+                [
                 'collateral_amount' => "Insufficient collateral. Required: {$requiredCollateral} {$validated['collateral_asset']}",
-            ]);
+                ]
+            );
         }
 
         try {
@@ -144,7 +152,8 @@ class StablecoinOperationsController extends Controller
 
             // Record the operation for audit
             $operationId = (string) Str::uuid();
-            StablecoinOperation::create([
+            StablecoinOperation::create(
+                [
                 'uuid'              => $operationId,
                 'type'              => 'mint',
                 'stablecoin'        => $validated['stablecoin'],
@@ -160,7 +169,8 @@ class StablecoinOperationsController extends Controller
                     'authorized_at' => now()->toIso8601String(),
                 ],
                 'executed_at' => now(),
-            ]);
+                ]
+            );
 
             return redirect()
                 ->route('stablecoin-operations.index')
@@ -191,11 +201,13 @@ class StablecoinOperationsController extends Controller
         // Get operator accounts with stablecoin balances
         $operatorAccounts = $this->getOperatorAccountsWithBalance($user, $stablecoin);
 
-        return view('stablecoin-operations.burn', compact(
-            'stablecoin',
-            'stablecoinInfo',
-            'operatorAccounts'
-        ));
+        return view(
+            'stablecoin-operations.burn', compact(
+                'stablecoin',
+                'stablecoinInfo',
+                'operatorAccounts'
+            )
+        );
     }
 
     /**
@@ -203,7 +215,8 @@ class StablecoinOperationsController extends Controller
      */
     public function processBurn(Request $request)
     {
-        $validated = $request->validate([
+        $validated = $request->validate(
+            [
             'stablecoin'         => 'required|string|in:USDX,EURX,GBPX',
             'amount'             => 'required|numeric|min:100|max:1000000',
             'source_account'     => 'required|uuid',
@@ -211,7 +224,8 @@ class StablecoinOperationsController extends Controller
             'collateral_asset'   => 'required_if:return_collateral,true|string|in:USD,EUR,GBP',
             'reason'             => 'required|string|max:255',
             'authorization_code' => 'required|string',
-        ]);
+            ]
+        );
 
         $user = Auth::user();
 
@@ -265,7 +279,8 @@ class StablecoinOperationsController extends Controller
 
             // Record the operation for audit
             $operationId = (string) Str::uuid();
-            StablecoinOperation::create([
+            StablecoinOperation::create(
+                [
                 'uuid'              => $operationId,
                 'type'              => 'burn',
                 'stablecoin'        => $validated['stablecoin'],
@@ -282,7 +297,8 @@ class StablecoinOperationsController extends Controller
                     'authorized_at'     => now()->toIso8601String(),
                 ],
                 'executed_at' => now(),
-            ]);
+                ]
+            );
 
             return redirect()
                 ->route('stablecoin-operations.index')
@@ -320,11 +336,13 @@ class StablecoinOperationsController extends Controller
         // Get summary statistics
         $summary = $this->getOperationSummary($operations);
 
-        return view('stablecoin-operations.history', compact(
-            'operations',
-            'summary',
-            'filters'
-        ));
+        return view(
+            'stablecoin-operations.history', compact(
+                'operations',
+                'summary',
+                'filters'
+            )
+        );
     }
 
     /**
@@ -362,16 +380,18 @@ class StablecoinOperationsController extends Controller
      */
     private function getOperationStatistics()
     {
-        return Cache::remember('stablecoin_stats', 300, function () {
-            return [
+        return Cache::remember(
+            'stablecoin_stats', 300, function () {
+                return [
                 'total_minted_24h'   => rand(50000, 200000) * 100,
                 'total_burned_24h'   => rand(30000, 150000) * 100,
                 'active_stablecoins' => 2,
                 'collateral_locked'  => rand(15000000, 25000000) * 100,
                 'operations_today'   => rand(10, 50),
                 'pending_requests'   => rand(0, 5),
-            ];
-        });
+                ];
+            }
+        );
     }
 
     /**
@@ -383,8 +403,9 @@ class StablecoinOperationsController extends Controller
             ->orderBy('created_at', 'desc')
             ->take(10)
             ->get()
-            ->map(function ($operation) {
-                return [
+            ->map(
+                function ($operation) {
+                    return [
                     'id'         => $operation->uuid,
                     'type'       => $operation->type,
                     'stablecoin' => $operation->stablecoin,
@@ -392,8 +413,9 @@ class StablecoinOperationsController extends Controller
                     'operator'   => $operation->operator->name ?? 'Unknown',
                     'status'     => $operation->status,
                     'created_at' => $operation->created_at,
-                ];
-            });
+                    ];
+                }
+            );
     }
 
     /**
@@ -466,14 +488,18 @@ class StablecoinOperationsController extends Controller
     private function getOperatorAccountsWithBalance($user, $stablecoin)
     {
         return $user->accounts()
-            ->with(['balances' => function ($query) use ($stablecoin) {
-                $query->where('asset_code', $stablecoin)
-                      ->where('balance', '>', 0);
-            }])
+            ->with(
+                ['balances' => function ($query) use ($stablecoin) {
+                    $query->where('asset_code', $stablecoin)
+                        ->where('balance', '>', 0);
+                }]
+            )
             ->get()
-            ->filter(function ($account) {
-                return $account->balances->isNotEmpty();
-            });
+            ->filter(
+                function ($account) {
+                    return $account->balances->isNotEmpty();
+                }
+            );
     }
 
     /**
@@ -541,8 +567,9 @@ class StablecoinOperationsController extends Controller
 
         return $query->orderBy('created_at', 'desc')
             ->get()
-            ->map(function ($operation) {
-                return [
+            ->map(
+                function ($operation) {
+                    return [
                     'id'                => $operation->uuid,
                     'type'              => $operation->type,
                     'stablecoin'        => $operation->stablecoin,
@@ -558,8 +585,9 @@ class StablecoinOperationsController extends Controller
                     'position_uuid'     => $operation->position_uuid,
                     'status'            => $operation->status,
                     'created_at'        => $operation->created_at,
-                ];
-            });
+                    ];
+                }
+            );
     }
 
     /**

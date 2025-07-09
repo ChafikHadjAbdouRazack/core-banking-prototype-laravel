@@ -20,7 +20,8 @@ class FinancialInstitutionApplicationController extends Controller
      */
     public function submit(Request $request)
     {
-        $validated = $request->validate([
+        $validated = $request->validate(
+            [
             'institution_name'       => 'required|string|max:255',
             'country'                => 'required|string|max:255',
             'contact_name'           => 'required|string|max:255',
@@ -31,22 +32,25 @@ class FinancialInstitutionApplicationController extends Controller
             'insurance_coverage'     => 'required|string|min:50',
             'partnership_vision'     => 'nullable|string',
             'terms'                  => 'required|accepted',
-        ], [
+            ], [
             'terms.required'             => 'Please accept the terms and conditions.',
             'terms.accepted'             => 'Please accept the terms and conditions.',
             'technical_capabilities.min' => 'Please provide at least 50 characters describing your technical capabilities.',
             'regulatory_compliance.min'  => 'Please provide at least 50 characters describing your regulatory compliance.',
             'financial_strength.min'     => 'Please provide at least 50 characters describing your financial strength.',
             'insurance_coverage.min'     => 'Please provide at least 50 characters describing your insurance coverage.',
-        ]);
+            ]
+        );
 
         // Log the application
-        Log::info('New financial institution application received', [
+        Log::info(
+            'New financial institution application received', [
             'institution' => $validated['institution_name'],
             'country'     => $validated['country'],
             'contact'     => $validated['contact_name'],
             'email'       => $validated['contact_email'],
-        ]);
+            ]
+        );
 
         // In production, you would:
         // 1. Store in database

@@ -40,12 +40,14 @@ class UpdateBasketCompositionWorkflow extends Workflow
         yield ActivityStub::make(TriggerBasketRebalancingActivity::class, $basketCode);
 
         // Record the governance event
-        yield ActivityStub::make(RecordGovernanceEventActivity::class, [
+        yield ActivityStub::make(
+            RecordGovernanceEventActivity::class, [
             'type'            => 'basket_composition_updated',
             'poll_uuid'       => $pollUuid,
             'basket_code'     => $basketCode,
             'new_composition' => $newComposition,
-        ]);
+            ]
+        );
 
         return true;
     }

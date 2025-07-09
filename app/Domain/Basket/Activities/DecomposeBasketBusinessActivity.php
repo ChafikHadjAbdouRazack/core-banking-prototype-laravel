@@ -23,9 +23,9 @@ class DecomposeBasketBusinessActivity extends Activity
     /**
      * Execute basket decomposition using proper Service → Workflow → Activity → Aggregate pattern.
      *
-     * @param AccountUuid $accountUuid
-     * @param string $basketCode
-     * @param int $amount
+     * @param  AccountUuid $accountUuid
+     * @param  string      $basketCode
+     * @param  int         $amount
      * @return array
      */
     public function execute(AccountUuid $accountUuid, string $basketCode, int $amount): array
@@ -33,39 +33,45 @@ class DecomposeBasketBusinessActivity extends Activity
         $account = Account::where('uuid', (string) $accountUuid)->firstOrFail();
         $basket = BasketAsset::where('code', $basketCode)->firstOrFail();
 
-        return DB::transaction(function () use ($account, $basket, $basketCode, $amount, $accountUuid) {
-            // Calculate component amounts based on weights
-            $componentAmounts = $this->calculateComponentAmounts($basket, $amount);
+        return DB::transaction(
+            function () use ($account, $basket, $basketCode, $amount, $accountUuid) {
+                // Calculate component amounts based on weights
+                $componentAmounts = $this->calculateComponentAmounts($basket, $amount);
 
-            // Use WalletService for proper Service → Workflow → Activity → Aggregate architecture
-            // Subtract basket balance using WalletService
-            $this->walletService->withdraw($accountUuid, $basketCode, $amount);
+                // Use WalletService for proper Service → Workflow → Activity → Aggregate architecture
+                // Subtract basket balance using WalletService
+                $this->walletService->withdraw($accountUuid, $basketCode, $amount);
 
-            // Add component balances using WalletService
-            foreach ($componentAmounts as $assetCode => $componentAmount) {
-                $this->walletService->deposit($accountUuid, $assetCode, $componentAmount);
-            }
+                // Add component balances using WalletService
+                foreach ($componentAmounts as $assetCode => $componentAmount) {
+                    $this->walletService->deposit($accountUuid, $assetCode, $componentAmount);
+                }
 
-            // Record decomposition event
-            event(new BasketDecomposed(
-                accountUuid: (string) $account->uuid,
-                basketCode: $basketCode,
-                amount: $amount,
-                componentAmounts: $componentAmounts,
-                decomposedAt: now()
-            ));
+                // Record decomposition event
+                event(
+                    new BasketDecomposed(
+                        accountUuid: (string) $account->uuid,
+                        basketCode: $basketCode,
+                        amount: $amount,
+                        componentAmounts: $componentAmounts,
+                        decomposedAt: now()
+                    )
+                );
 
-            Log::info("Decomposed {$amount} of basket {$basketCode} for account {$account->uuid}", [
-                'components' => $componentAmounts,
-            ]);
+                Log::info(
+                    "Decomposed {$amount} of basket {$basketCode} for account {$account->uuid}", [
+                    'components' => $componentAmounts,
+                    ]
+                );
 
-            return [
+                return [
                 'basket_code'   => $basketCode,
                 'basket_amount' => $amount,
                 'components'    => $componentAmounts,
                 'decomposed_at' => now()->toISOString(),
-            ];
-        });
+                ];
+            }
+        );
     }
 
     /**

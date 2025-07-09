@@ -10,7 +10,7 @@ class FreezeAccountWorkflow extends Workflow
 {
     /**
      * @param AccountUuid $uuid
-     * @param string $reason
+     * @param string      $reason
      * @param string|null $authorizedBy
      *
      * @return \Generator

@@ -25,11 +25,14 @@ class ViewWebhook extends ViewRecord
     public function infolist(Infolist $infolist): Infolist
     {
         return $infolist
-            ->schema([
+            ->schema(
+                [
                 Section::make('Webhook Details')
-                    ->schema([
+                    ->schema(
+                        [
                         Grid::make(2)
-                            ->schema([
+                            ->schema(
+                                [
                                 TextEntry::make('name'),
                                 TextEntry::make('url'),
                                 TextEntry::make('is_active')
@@ -40,12 +43,16 @@ class ViewWebhook extends ViewRecord
                                 TextEntry::make('events')
                                     ->badge()
                                     ->separator(','),
-                            ]),
-                    ]),
+                                ]
+                            ),
+                        ]
+                    ),
                 Section::make('Configuration')
-                    ->schema([
+                    ->schema(
+                        [
                         Grid::make(2)
-                            ->schema([
+                            ->schema(
+                                [
                                 TextEntry::make('timeout_seconds')
                                     ->label('Timeout')
                                     ->formatStateUsing(fn ($state) => $state . ' seconds'),
@@ -54,12 +61,16 @@ class ViewWebhook extends ViewRecord
                                     ->formatStateUsing(fn ($state) => $state . ' attempts'),
                                 KeyValueEntry::make('headers')
                                     ->label('Headers'),
-                            ]),
-                    ]),
+                                ]
+                            ),
+                        ]
+                    ),
                 Section::make('Delivery Status')
-                    ->schema([
+                    ->schema(
+                        [
                         Grid::make(3)
-                            ->schema([
+                            ->schema(
+                                [
                                 TextEntry::make('last_triggered_at')
                                     ->dateTime(),
                                 TextEntry::make('last_success_at')
@@ -67,31 +78,38 @@ class ViewWebhook extends ViewRecord
                                 TextEntry::make('consecutive_failures')
                                     ->badge()
                                     ->color(fn ($state) => $state > 0 ? ($state >= 5 ? 'danger' : 'warning') : 'gray'),
-                            ]),
+                                ]
+                            ),
                         TextEntry::make('deliveries')
                             ->label('Last Delivery')
-                            ->formatStateUsing(function ($record) {
-                                $lastDelivery = $record->deliveries()->latest()->first();
-                                if (! $lastDelivery) {
-                                    return 'No deliveries yet';
-                                }
+                            ->formatStateUsing(
+                                function ($record) {
+                                    $lastDelivery = $record->deliveries()->latest()->first();
+                                    if (! $lastDelivery) {
+                                        return 'No deliveries yet';
+                                    }
 
-                                return sprintf(
-                                    '%s - Response: %d',
-                                    ucfirst($lastDelivery->status),
-                                    $lastDelivery->response_code
-                                );
-                            })
+                                    return sprintf(
+                                        '%s - Response: %d',
+                                        ucfirst($lastDelivery->status),
+                                        $lastDelivery->response_code
+                                    );
+                                }
+                            )
                             ->badge()
-                            ->color(function ($record) {
-                                $lastDelivery = $record->deliveries()->latest()->first();
-                                if (! $lastDelivery) {
-                                    return 'gray';
-                                }
+                            ->color(
+                                function ($record) {
+                                    $lastDelivery = $record->deliveries()->latest()->first();
+                                    if (! $lastDelivery) {
+                                        return 'gray';
+                                    }
 
-                                return $lastDelivery->status === 'success' ? 'success' : 'danger';
-                            }),
-                    ]),
-            ]);
+                                    return $lastDelivery->status === 'success' ? 'success' : 'danger';
+                                }
+                            ),
+                        ]
+                    ),
+                ]
+            );
     }
 }

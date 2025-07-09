@@ -64,10 +64,12 @@ class SystemIncident extends Model
      */
     public function addUpdate(string $status, string $message)
     {
-        $update = $this->updates()->create([
+        $update = $this->updates()->create(
+            [
             'status'  => $status,
             'message' => $message,
-        ]);
+            ]
+        );
 
         // Update the incident status
         $this->update(['status' => $status]);

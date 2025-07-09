@@ -13,7 +13,7 @@ class AuthenticateApiOrSanctum
     /**
      * Handle an incoming request.
      *
-     * @param  Closure(Request): (Response)  $next
+     * @param Closure(Request): (Response) $next
      */
     public function handle(Request $request, Closure $next, string $permission = 'read'): Response
     {
@@ -38,43 +38,53 @@ class AuthenticateApiOrSanctum
         // Verify API key
         $apiKey = ApiKey::verify($apiKeyString);
         if (! $apiKey) {
-            return response()->json([
+            return response()->json(
+                [
                 'error'   => 'Unauthorized',
                 'message' => 'Invalid API key',
-            ], 401);
+                ], 401
+            );
         }
 
         // Check expiration
         if ($apiKey->expires_at && $apiKey->expires_at->isPast()) {
-            return response()->json([
+            return response()->json(
+                [
                 'error'   => 'Unauthorized',
                 'message' => 'API key expired',
-            ], 401);
+                ], 401
+            );
         }
 
         // Check IP restrictions
         if (! $apiKey->isIpAllowed($request->ip())) {
-            return response()->json([
+            return response()->json(
+                [
                 'error'   => 'Forbidden',
                 'message' => 'Access denied from this IP address',
-            ], 403);
+                ], 403
+            );
         }
 
         // Check permissions
         if (! $apiKey->hasPermission($permission)) {
-            return response()->json([
+            return response()->json(
+                [
                 'error'   => 'Forbidden',
                 'message' => 'Insufficient permissions',
-            ], 403);
+                ], 403
+            );
         }
 
         // Record usage
         $apiKey->recordUsage($request->ip());
 
         // Set the user resolver
-        $request->setUserResolver(function () use ($apiKey) {
-            return $apiKey->user;
-        });
+        $request->setUserResolver(
+            function () use ($apiKey) {
+                return $apiKey->user;
+            }
+        );
 
         return $next($request);
     }
@@ -87,16 +97,20 @@ class AuthenticateApiOrSanctum
         // Apply Sanctum's stateful middleware for SPA requests
         $ensureStateful = app(EnsureFrontendRequestsAreStateful::class);
 
-        return $ensureStateful->handle($request, function ($request) use ($next) {
-            // Check if user is authenticated via Sanctum
-            if (! auth('sanctum')->check()) {
-                return response()->json([
-                    'error'   => 'Unauthorized',
-                    'message' => 'Authentication required',
-                ], 401);
-            }
+        return $ensureStateful->handle(
+            $request, function ($request) use ($next) {
+                // Check if user is authenticated via Sanctum
+                if (! auth('sanctum')->check()) {
+                    return response()->json(
+                        [
+                        'error'   => 'Unauthorized',
+                        'message' => 'Authentication required',
+                        ], 401
+                    );
+                }
 
-            return $next($request);
-        });
+                return $next($request);
+            }
+        );
     }
 }

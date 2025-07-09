@@ -64,32 +64,36 @@ class BinanceConnector implements IExternalExchangeConnector
     {
         $cacheKey = 'binance:exchange_info:' . md5($this->baseUrl);
 
-        return Cache::remember($cacheKey, 3600, function () {
-            $response = Http::get($this->baseUrl . '/api/v3/exchangeInfo');
+        return Cache::remember(
+            $cacheKey, 3600, function () {
+                $response = Http::get($this->baseUrl . '/api/v3/exchangeInfo');
 
-            if (! $response->successful()) {
-                throw new ExternalExchangeException('Failed to get exchange info from Binance');
+                if (! $response->successful()) {
+                    throw new ExternalExchangeException('Failed to get exchange info from Binance');
+                }
+
+                $data = $response->json();
+
+                return collect($data['symbols'])
+                    ->filter(fn ($symbol) => $symbol['status'] === 'TRADING')
+                    ->map(
+                        fn ($symbol) => new MarketPair(
+                            baseCurrency: $symbol['baseAsset'],
+                            quoteCurrency: $symbol['quoteAsset'],
+                            minOrderSize: BigDecimal::of($symbol['filters'][1]['minQty'] ?? '0.00001'),
+                            maxOrderSize: BigDecimal::of($symbol['filters'][1]['maxQty'] ?? '9000000'),
+                            tickSize: BigDecimal::of($symbol['filters'][0]['tickSize'] ?? '0.00001'),
+                            pricePrecision: $symbol['quotePrecision'],
+                            amountPrecision: $symbol['baseAssetPrecision'],
+                            isActive: true,
+                            metadata: [
+                            'symbol'      => $symbol['symbol'],
+                            'permissions' => $symbol['permissions'] ?? [],
+                            ]
+                        )
+                    );
             }
-
-            $data = $response->json();
-
-            return collect($data['symbols'])
-                ->filter(fn ($symbol) => $symbol['status'] === 'TRADING')
-                ->map(fn ($symbol) => new MarketPair(
-                    baseCurrency: $symbol['baseAsset'],
-                    quoteCurrency: $symbol['quoteAsset'],
-                    minOrderSize: BigDecimal::of($symbol['filters'][1]['minQty'] ?? '0.00001'),
-                    maxOrderSize: BigDecimal::of($symbol['filters'][1]['maxQty'] ?? '9000000'),
-                    tickSize: BigDecimal::of($symbol['filters'][0]['tickSize'] ?? '0.00001'),
-                    pricePrecision: $symbol['quotePrecision'],
-                    amountPrecision: $symbol['baseAssetPrecision'],
-                    isActive: true,
-                    metadata: [
-                        'symbol'      => $symbol['symbol'],
-                        'permissions' => $symbol['permissions'] ?? [],
-                    ]
-                ));
-        });
+        );
     }
 
     public function getTicker(string $baseCurrency, string $quoteCurrency): ExternalTicker
@@ -126,10 +130,12 @@ class BinanceConnector implements IExternalExchangeConnector
     public function getOrderBook(string $baseCurrency, string $quoteCurrency, int $depth = 20): ExternalOrderBook
     {
         $symbol = $this->formatSymbol($baseCurrency, $quoteCurrency);
-        $response = Http::get($this->baseUrl . '/api/v3/depth', [
+        $response = Http::get(
+            $this->baseUrl . '/api/v3/depth', [
             'symbol' => $symbol,
             'limit'  => min($depth, 100),
-        ]);
+            ]
+        );
 
         if (! $response->successful()) {
             throw new ExternalExchangeException("Failed to get order book for $symbol from Binance");
@@ -140,14 +146,18 @@ class BinanceConnector implements IExternalExchangeConnector
         return new ExternalOrderBook(
             baseCurrency: $baseCurrency,
             quoteCurrency: $quoteCurrency,
-            bids: collect($data['bids'])->map(fn ($bid) => [
+            bids: collect($data['bids'])->map(
+                fn ($bid) => [
                 'price'  => BigDecimal::of($bid[0]),
                 'amount' => BigDecimal::of($bid[1]),
-            ]),
-            asks: collect($data['asks'])->map(fn ($ask) => [
+                ]
+            ),
+            asks: collect($data['asks'])->map(
+                fn ($ask) => [
                 'price'  => BigDecimal::of($ask[0]),
                 'amount' => BigDecimal::of($ask[1]),
-            ]),
+                ]
+            ),
             timestamp: new \DateTimeImmutable(),
             exchange: $this->getName(),
             metadata: [
@@ -160,10 +170,12 @@ class BinanceConnector implements IExternalExchangeConnector
     public function getRecentTrades(string $baseCurrency, string $quoteCurrency, int $limit = 100): Collection
     {
         $symbol = $this->formatSymbol($baseCurrency, $quoteCurrency);
-        $response = Http::get($this->baseUrl . '/api/v3/trades', [
+        $response = Http::get(
+            $this->baseUrl . '/api/v3/trades', [
             'symbol' => $symbol,
             'limit'  => min($limit, 1000),
-        ]);
+            ]
+        );
 
         if (! $response->successful()) {
             throw new ExternalExchangeException("Failed to get recent trades for $symbol from Binance");
@@ -171,20 +183,22 @@ class BinanceConnector implements IExternalExchangeConnector
 
         $data = $response->json();
 
-        return collect($data)->map(fn ($trade) => new ExternalTrade(
-            tradeId: (string) $trade['id'],
-            baseCurrency: $baseCurrency,
-            quoteCurrency: $quoteCurrency,
-            price: BigDecimal::of($trade['price']),
-            amount: BigDecimal::of($trade['qty']),
-            side: $trade['isBuyerMaker'] ? 'sell' : 'buy',
-            timestamp: new \DateTimeImmutable('@' . intval($trade['time'] / 1000)),
-            exchange: $this->getName(),
-            metadata: [
+        return collect($data)->map(
+            fn ($trade) => new ExternalTrade(
+                tradeId: (string) $trade['id'],
+                baseCurrency: $baseCurrency,
+                quoteCurrency: $quoteCurrency,
+                price: BigDecimal::of($trade['price']),
+                amount: BigDecimal::of($trade['qty']),
+                side: $trade['isBuyerMaker'] ? 'sell' : 'buy',
+                timestamp: new \DateTimeImmutable('@' . intval($trade['time'] / 1000)),
+                exchange: $this->getName(),
+                metadata: [
                 'symbol'        => $symbol,
                 'is_best_match' => $trade['isBestMatch'],
-            ]
-        ));
+                ]
+            )
+        );
     }
 
     public function placeBuyOrder(string $baseCurrency, string $quoteCurrency, string $amount, ?string $price = null): array
@@ -220,9 +234,11 @@ class BinanceConnector implements IExternalExchangeConnector
         $signature = $this->generateSignature($params);
         $params['signature'] = $signature;
 
-        $response = Http::withHeaders([
+        $response = Http::withHeaders(
+            [
             'X-MBX-APIKEY' => $this->apiKey,
-        ])->post($this->baseUrl . '/api/v3/order', $params);
+            ]
+        )->post($this->baseUrl . '/api/v3/order', $params);
 
         if (! $response->successful()) {
             throw new ExternalExchangeException('Failed to place order on Binance: ' . $response->body());
@@ -266,9 +282,11 @@ class BinanceConnector implements IExternalExchangeConnector
         $signature = $this->generateSignature($params);
         $params['signature'] = $signature;
 
-        $response = Http::withHeaders([
+        $response = Http::withHeaders(
+            [
             'X-MBX-APIKEY' => $this->apiKey,
-        ])->get($this->baseUrl . '/api/v3/account', $params);
+            ]
+        )->get($this->baseUrl . '/api/v3/account', $params);
 
         if (! $response->successful()) {
             throw new ExternalExchangeException('Failed to get balance from Binance');
@@ -278,13 +296,15 @@ class BinanceConnector implements IExternalExchangeConnector
 
         return collect($data['balances'])
             ->filter(fn ($balance) => BigDecimal::of($balance['free'])->plus($balance['locked'])->isGreaterThan(0))
-            ->mapWithKeys(fn ($balance) => [
+            ->mapWithKeys(
+                fn ($balance) => [
                 $balance['asset'] => [
                     'free'   => $balance['free'],
                     'locked' => $balance['locked'],
                     'total'  => BigDecimal::of($balance['free'])->plus($balance['locked'])->__toString(),
                 ],
-            ])
+                ]
+            )
             ->toArray();
     }
 

@@ -168,11 +168,13 @@ class FinancialInstitutionApplication extends Model
     {
         parent::boot();
 
-        static::creating(function ($application) {
-            if (empty($application->application_number)) {
-                $application->application_number = static::generateApplicationNumber();
+        static::creating(
+            function ($application) {
+                if (empty($application->application_number)) {
+                    $application->application_number = static::generateApplicationNumber();
+                }
             }
-        });
+        );
     }
 
     /**
@@ -266,16 +268,16 @@ class FinancialInstitutionApplication extends Model
 
         // Add type-specific documents
         switch ($this->institution_type) {
-            case 'bank':
-                $baseDocuments['banking_license'] = 'Banking License';
-                $baseDocuments['basel_compliance'] = 'Basel III Compliance Certificate';
-                break;
-            case 'investment_firm':
-                $baseDocuments['mifid_compliance'] = 'MiFID II Compliance Certificate';
-                break;
-            case 'payment_processor':
-                $baseDocuments['pci_certificate'] = 'PCI-DSS Compliance Certificate';
-                break;
+        case 'bank':
+            $baseDocuments['banking_license'] = 'Banking License';
+            $baseDocuments['basel_compliance'] = 'Basel III Compliance Certificate';
+            break;
+        case 'investment_firm':
+            $baseDocuments['mifid_compliance'] = 'MiFID II Compliance Certificate';
+            break;
+        case 'payment_processor':
+            $baseDocuments['pci_certificate'] = 'PCI-DSS Compliance Certificate';
+            break;
         }
 
         return $baseDocuments;

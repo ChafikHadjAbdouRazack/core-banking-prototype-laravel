@@ -16,13 +16,13 @@ class KycVerificationActivity extends Activity
     /**
      * Execute KYC verification activity.
      *
-     * @param array $input Expected format: [
-     *   'user_uuid' => string,
-     *   'action' => string ('approve' or 'reject'),
-     *   'verified_by' => string,
-     *   'reason' => string (required for reject),
-     *   'options' => array (optional for approve)
-     * ]
+     * @param  array $input Expected format: [
+     *                      'user_uuid' => string,
+     *                      'action' => string ('approve' or 'reject'),
+     *                      'verified_by' => string,
+     *                      'reason' => string (required for reject),
+     *                      'options' => array (optional for approve)
+     *                      ]
      * @return array
      */
     public function execute(array $input): array

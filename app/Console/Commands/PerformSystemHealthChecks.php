@@ -79,7 +79,8 @@ class PerformSystemHealthChecks extends Command
         try {
             $result = call_user_func($method);
 
-            SystemHealthCheck::create([
+            SystemHealthCheck::create(
+                [
                 'service'       => $service,
                 'check_type'    => 'scheduled',
                 'status'        => $result['status'],
@@ -87,7 +88,8 @@ class PerformSystemHealthChecks extends Command
                 'metadata'      => $result['metadata'] ?? null,
                 'error_message' => $result['error_message'] ?? null,
                 'checked_at'    => now(),
-            ]);
+                ]
+            );
 
             $this->line("  Status: {$result['status']}");
 
@@ -100,13 +102,15 @@ class PerformSystemHealthChecks extends Command
         } catch (\Exception $e) {
             $this->error("  Error checking $service: " . $e->getMessage());
 
-            SystemHealthCheck::create([
+            SystemHealthCheck::create(
+                [
                 'service'       => $service,
                 'check_type'    => 'scheduled',
                 'status'        => 'down',
                 'error_message' => $e->getMessage(),
                 'checked_at'    => now(),
-            ]);
+                ]
+            );
 
             $this->manageIncidents($service, 'down');
         }
@@ -338,7 +342,8 @@ class PerformSystemHealthChecks extends Command
 
         if ($status === 'down' && ! $activeIncident) {
             // Create new incident
-            $incident = SystemIncident::create([
+            $incident = SystemIncident::create(
+                [
                 'title'             => ucfirst($service) . ' Service Outage',
                 'description'       => "The {$service} service is experiencing issues and is currently unavailable.",
                 'service'           => $service,
@@ -346,7 +351,8 @@ class PerformSystemHealthChecks extends Command
                 'status'            => 'identified',
                 'started_at'        => now(),
                 'affected_services' => [$service],
-            ]);
+                ]
+            );
 
             $incident->addUpdate('identified', "Automated monitoring detected {$service} service is down.");
 

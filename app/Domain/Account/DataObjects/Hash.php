@@ -33,7 +33,7 @@ final readonly class Hash extends DataObject implements DataObjectContract
     /**
      * Create hash from data using SHA3-512.
      *
-     * @param string $data
+     * @param  string $data
      * @return self
      */
     public static function fromData(string $data): self

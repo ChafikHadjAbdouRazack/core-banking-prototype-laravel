@@ -45,18 +45,20 @@ class Order extends AggregateRoot
         ?string $stopPrice = null,
         array $metadata = []
     ): self {
-        $this->recordThat(new OrderPlaced(
-            orderId: $orderId,
-            accountId: $accountId,
-            type: $type,
-            orderType: $orderType,
-            baseCurrency: $baseCurrency,
-            quoteCurrency: $quoteCurrency,
-            amount: $amount,
-            price: $price,
-            stopPrice: $stopPrice,
-            metadata: $metadata
-        ));
+        $this->recordThat(
+            new OrderPlaced(
+                orderId: $orderId,
+                accountId: $accountId,
+                type: $type,
+                orderType: $orderType,
+                baseCurrency: $baseCurrency,
+                quoteCurrency: $quoteCurrency,
+                amount: $amount,
+                price: $price,
+                stopPrice: $stopPrice,
+                metadata: $metadata
+            )
+        );
 
         return $this;
     }
@@ -70,16 +72,18 @@ class Order extends AggregateRoot
         string $takerFee,
         array $metadata = []
     ): self {
-        $this->recordThat(new OrderMatched(
-            orderId: $this->orderId,
-            matchedOrderId: $matchedOrderId,
-            tradeId: $tradeId,
-            executedPrice: $executedPrice,
-            executedAmount: $executedAmount,
-            makerFee: $makerFee,
-            takerFee: $takerFee,
-            metadata: $metadata
-        ));
+        $this->recordThat(
+            new OrderMatched(
+                orderId: $this->orderId,
+                matchedOrderId: $matchedOrderId,
+                tradeId: $tradeId,
+                executedPrice: $executedPrice,
+                executedAmount: $executedAmount,
+                makerFee: $makerFee,
+                takerFee: $takerFee,
+                metadata: $metadata
+            )
+        );
 
         return $this;
     }
@@ -90,11 +94,13 @@ class Order extends AggregateRoot
             throw new \DomainException('Cannot cancel order in final status: ' . $this->status->value);
         }
 
-        $this->recordThat(new OrderCancelled(
-            orderId: $this->orderId,
-            reason: $reason,
-            metadata: $metadata
-        ));
+        $this->recordThat(
+            new OrderCancelled(
+                orderId: $this->orderId,
+                reason: $reason,
+                metadata: $metadata
+            )
+        );
 
         return $this;
     }

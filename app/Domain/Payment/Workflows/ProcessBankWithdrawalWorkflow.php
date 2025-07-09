@@ -18,7 +18,7 @@ class ProcessBankWithdrawalWorkflow extends Workflow
     /**
      * Process a bank withdrawal through the complete workflow.
      *
-     * @param BankWithdrawal $withdrawal
+     * @param  BankWithdrawal $withdrawal
      * @return \Generator
      */
     public function execute(BankWithdrawal $withdrawal): \Generator
@@ -44,9 +44,9 @@ class ProcessBankWithdrawalWorkflow extends Workflow
                     'amount'              => $withdrawal->getAmount(),
                     'currency'            => $withdrawal->getCurrency(),
                     'reference'           => $withdrawal->getReference(),
-                    'bank_account_number' => $withdrawal->getBankAccountNumber(),
-                    'bank_routing_number' => $withdrawal->getBankRoutingNumber(),
-                    'bank_account_name'   => $withdrawal->getBankAccountName(),
+                    'bank_account_number' => $withdrawal->getAccountNumber(),
+                    'bank_routing_number' => $withdrawal->getRoutingNumber(),
+                    'bank_account_name'   => $withdrawal->getAccountHolderName(),
                     'metadata'            => $withdrawal->getMetadata(),
                 ]
             );

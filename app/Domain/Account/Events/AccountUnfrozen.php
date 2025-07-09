@@ -13,7 +13,7 @@ class AccountUnfrozen extends ShouldBeStored
     public string $queue = EventQueues::LEDGER->value;
 
     /**
-     * @param string $reason
+     * @param string      $reason
      * @param string|null $authorizedBy
      */
     public function __construct(

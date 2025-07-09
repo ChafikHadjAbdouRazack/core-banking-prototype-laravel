@@ -17,15 +17,17 @@ class KycSubmissionWorkflow extends Workflow
 
             // Add compensation to revert KYC submission by rejecting it
             // This restores the user to a state where they can resubmit
-            $this->addCompensation(fn () => ActivityStub::make(
-                'App\Domain\Compliance\Activities\KycVerificationActivity',
-                [
+            $this->addCompensation(
+                fn () => ActivityStub::make(
+                    'App\Domain\Compliance\Activities\KycVerificationActivity',
+                    [
                     'user_uuid'   => $input['user_uuid'],
                     'action'      => 'reject',
                     'verified_by' => 'system',
                     'reason'      => 'Compensation rollback due to workflow failure',
-                ]
-            ));
+                    ]
+                )
+            );
 
             return $result;
         } catch (\Throwable $th) {

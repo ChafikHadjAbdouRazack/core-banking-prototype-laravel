@@ -26,9 +26,11 @@ class WebhookResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
-            ->schema([
+            ->schema(
+                [
                 Forms\Components\Section::make('Webhook Details')
-                    ->schema([
+                    ->schema(
+                        [
                         Forms\Components\TextInput::make('name')
                             ->required()
                             ->maxLength(255),
@@ -40,10 +42,12 @@ class WebhookResource extends Resource
                             ->url()
                             ->maxLength(255)
                             ->columnSpanFull(),
-                    ]),
+                        ]
+                    ),
 
                 Forms\Components\Section::make('Configuration')
-                    ->schema([
+                    ->schema(
+                        [
                         Forms\Components\CheckboxList::make('events')
                             ->options(Webhook::EVENTS)
                             ->columns(2)
@@ -56,10 +60,12 @@ class WebhookResource extends Resource
                         Forms\Components\Toggle::make('is_active')
                             ->label('Active')
                             ->default(true),
-                    ]),
+                        ]
+                    ),
 
                 Forms\Components\Section::make('Advanced Settings')
-                    ->schema([
+                    ->schema(
+                        [
                         Forms\Components\TextInput::make('retry_attempts')
                             ->numeric()
                             ->default(3)
@@ -77,15 +83,18 @@ class WebhookResource extends Resource
                             ->valueLabel('Header Value')
                             ->addButtonLabel('Add Header')
                             ->helperText('Optional custom headers to include in webhook requests'),
-                    ])
+                        ]
+                    )
                     ->collapsible(),
-            ]);
+                ]
+            );
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
+            ->columns(
+                [
                 Tables\Columns\TextColumn::make('name')
                     ->searchable()
                     ->sortable(),
@@ -114,55 +123,72 @@ class WebhookResource extends Resource
                     ->dateTime('M j, Y g:i A')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ])
-            ->filters([
+                ]
+            )
+            ->filters(
+                [
                 Tables\Filters\SelectFilter::make('is_active')
-                    ->options([
+                    ->options(
+                        [
                         '1' => 'Active',
                         '0' => 'Inactive',
-                    ])
+                        ]
+                    )
                     ->label('Status'),
                 Tables\Filters\Filter::make('has_failures')
                     ->query(fn (Builder $query): Builder => $query->where('consecutive_failures', '>', 0))
                     ->label('Has Failures'),
-            ])
-            ->actions([
+                ]
+            )
+            ->actions(
+                [
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\Action::make('test')
                     ->label('Test')
                     ->icon('heroicon-o-play')
                     ->color('gray')
-                    ->action(function (Webhook $record) {
-                        // Trigger a test webhook
-                        $record->deliveries()->create([
-                            'event_type' => 'test.webhook',
-                            'payload'    => [
+                    ->action(
+                        function (Webhook $record) {
+                            // Trigger a test webhook
+                            $record->deliveries()->create(
+                                [
+                                'event_type' => 'test.webhook',
+                                'payload'    => [
                                 'event'     => 'test.webhook',
                                 'timestamp' => now()->toIso8601String(),
                                 'message'   => 'This is a test webhook delivery',
-                            ],
-                            'status' => 'pending',
-                        ]);
+                                ],
+                                'status' => 'pending',
+                                ]
+                            );
 
-                        Notification::make()
-                            ->title('Test webhook created')
-                            ->body('A test delivery has been queued for processing.')
-                            ->success()
-                            ->send();
-                    }),
+                            Notification::make()
+                                ->title('Test webhook created')
+                                ->body('A test delivery has been queued for processing.')
+                                ->success()
+                                ->send();
+                        }
+                    ),
                 Tables\Actions\Action::make('reset_failures')
                     ->label('Reset Failures')
                     ->icon('heroicon-o-arrow-path')
                     ->color('warning')
                     ->visible(fn ($record) => $record->consecutive_failures > 0)
                     ->requiresConfirmation()
-                    ->action(fn (Webhook $record) => $record->update([
-                        'consecutive_failures' => 0,
-                        'is_active'            => true,
-                    ])),
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
+                    ->action(
+                        fn (Webhook $record) => $record->update(
+                            [
+                            'consecutive_failures' => 0,
+                            'is_active'            => true,
+                            ]
+                        )
+                    ),
+                ]
+            )
+            ->bulkActions(
+                [
+                Tables\Actions\BulkActionGroup::make(
+                    [
                     Tables\Actions\DeleteBulkAction::make(),
                     Tables\Actions\BulkAction::make('activate')
                         ->label('Activate')
@@ -176,8 +202,10 @@ class WebhookResource extends Resource
                         ->color('danger')
                         ->action(fn ($records) => $records->each->update(['is_active' => false]))
                         ->requiresConfirmation(),
-                ]),
-            ]);
+                    ]
+                ),
+                ]
+            );
     }
 
     public static function getRelations(): array
@@ -200,8 +228,10 @@ class WebhookResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
-            ->withCount(['deliveries', 'deliveries as failed_deliveries_count' => function ($query) {
-                $query->where('status', 'failed');
-            }]);
+            ->withCount(
+                ['deliveries', 'deliveries as failed_deliveries_count' => function ($query) {
+                    $query->where('status', 'failed');
+                }]
+            );
     }
 }

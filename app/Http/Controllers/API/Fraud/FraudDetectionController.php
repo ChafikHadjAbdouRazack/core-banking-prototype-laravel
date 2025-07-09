@@ -30,7 +30,8 @@ class FraudDetectionController extends Controller
         $this->authorize('analyze', $transaction);
 
         // Get additional context from request
-        $context = $request->only([
+        $context = $request->only(
+            [
             'device_data',
             'ip_address',
             'ip_country',
@@ -38,11 +39,13 @@ class FraudDetectionController extends Controller
             'ip_region',
             'isp',
             'user_agent',
-        ]);
+            ]
+        );
 
         $fraudScore = $this->fraudService->analyzeTransaction($transaction, $context);
 
-        return response()->json([
+        return response()->json(
+            [
             'fraud_score' => [
                 'id'               => $fraudScore->id,
                 'total_score'      => $fraudScore->total_score,
@@ -52,13 +55,16 @@ class FraudDetectionController extends Controller
                 'score_breakdown'  => $fraudScore->score_breakdown,
                 'decision_factors' => $fraudScore->decision_factors,
             ],
-            'requires_action' => in_array($fraudScore->decision, [
+            'requires_action' => in_array(
+                $fraudScore->decision, [
                 FraudScore::DECISION_BLOCK,
                 FraudScore::DECISION_CHALLENGE,
                 FraudScore::DECISION_REVIEW,
-            ]),
+                ]
+            ),
             'action_required' => $fraudScore->decision,
-        ]);
+            ]
+        );
     }
 
     /**
@@ -75,7 +81,8 @@ class FraudDetectionController extends Controller
 
         $fraudScore = $this->fraudService->analyzeUser($user, $context);
 
-        return response()->json([
+        return response()->json(
+            [
             'fraud_score' => [
                 'id'               => $fraudScore->id,
                 'total_score'      => $fraudScore->total_score,
@@ -89,7 +96,8 @@ class FraudDetectionController extends Controller
                 'suggested_rating' => $this->suggestRiskRating($fraudScore),
                 'requires_review'  => $fraudScore->decision === FraudScore::DECISION_REVIEW,
             ],
-        ]);
+            ]
+        );
     }
 
     /**
@@ -102,11 +110,13 @@ class FraudDetectionController extends Controller
         // Ensure user can view this fraud score
         $this->authorize('view', $fraudScore);
 
-        return response()->json([
+        return response()->json(
+            [
             'fraud_score' => $fraudScore,
             'has_case'    => $fraudScore->fraudCase !== null,
             'case_number' => $fraudScore->fraudCase?->case_number,
-        ]);
+            ]
+        );
     }
 
     /**
@@ -114,30 +124,36 @@ class FraudDetectionController extends Controller
      */
     public function updateOutcome(Request $request, string $fraudScoreId): JsonResponse
     {
-        $request->validate([
+        $request->validate(
+            [
             'outcome' => 'required|in:fraud,legitimate,unknown',
             'notes'   => 'nullable|string|max:1000',
-        ]);
+            ]
+        );
 
         $fraudScore = FraudScore::findOrFail($fraudScoreId);
 
         // Ensure user can update this fraud score
         $this->authorize('update', $fraudScore);
 
-        $fraudScore->update([
+        $fraudScore->update(
+            [
             'outcome'            => $request->outcome,
             'outcome_updated_at' => now(),
             'outcome_updated_by' => auth()->id(),
-        ]);
+            ]
+        );
 
         // Train ML model with feedback
         app(\App\Domain\Fraud\Services\MachineLearningService::class)
             ->trainWithFeedback($fraudScore, $request->outcome);
 
-        return response()->json([
+        return response()->json(
+            [
             'message'     => 'Fraud score outcome updated successfully',
             'fraud_score' => $fraudScore,
-        ]);
+            ]
+        );
     }
 
     /**
@@ -145,11 +161,13 @@ class FraudDetectionController extends Controller
      */
     public function getStatistics(Request $request): JsonResponse
     {
-        $request->validate([
+        $request->validate(
+            [
             'date_from'   => 'nullable|date',
             'date_to'     => 'nullable|date|after_or_equal:date_from',
             'entity_type' => 'nullable|in:transaction,user',
-        ]);
+            ]
+        );
 
         $query = FraudScore::query();
 
@@ -202,18 +220,22 @@ class FraudDetectionController extends Controller
         $mlService = app(\App\Domain\Fraud\Services\MachineLearningService::class);
 
         if (! $mlService->isEnabled()) {
-            return response()->json([
+            return response()->json(
+                [
                 'message' => 'ML service is not enabled',
                 'enabled' => false,
-            ]);
+                ]
+            );
         }
 
         $metrics = $mlService->getModelMetrics();
 
-        return response()->json([
+        return response()->json(
+            [
             'enabled' => true,
             'metrics' => $metrics,
-        ]);
+            ]
+        );
     }
 
     /**

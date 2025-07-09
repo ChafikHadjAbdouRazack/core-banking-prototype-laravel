@@ -115,9 +115,11 @@ class ExchangeRateProviderRegistry
      */
     public function findByCurrencyPair(string $fromCurrency, string $toCurrency): array
     {
-        return array_filter($this->providers, function ($provider) use ($fromCurrency, $toCurrency) {
-            return $provider->supportsPair($fromCurrency, $toCurrency);
-        });
+        return array_filter(
+            $this->providers, function ($provider) use ($fromCurrency, $toCurrency) {
+                return $provider->supportsPair($fromCurrency, $toCurrency);
+            }
+        );
     }
 
     /**
@@ -151,18 +153,22 @@ class ExchangeRateProviderRegistry
                 }
             } catch (\Exception $e) {
                 $lastException = $e;
-                Log::warning("Provider {$name} failed to get rate", [
+                Log::warning(
+                    "Provider {$name} failed to get rate", [
                     'error' => $e->getMessage(),
                     'from'  => $fromCurrency,
                     'to'    => $toCurrency,
-                ]);
+                    ]
+                );
             }
         }
 
         if ($lastException) {
-            Log::error("Failed to get rate from any provider for {$fromCurrency}/{$toCurrency}", [
+            Log::error(
+                "Failed to get rate from any provider for {$fromCurrency}/{$toCurrency}", [
                 'error' => $lastException->getMessage(),
-            ]);
+                ]
+            );
         }
 
         return null;
@@ -182,9 +188,11 @@ class ExchangeRateProviderRegistry
                     $results[$name] = $quote;
                 }
             } catch (\Exception $e) {
-                Log::debug("Provider {$name} failed to get rate", [
+                Log::debug(
+                    "Provider {$name} failed to get rate", [
                     'error' => $e->getMessage(),
-                ]);
+                    ]
+                );
             }
         }
 
@@ -220,38 +228,38 @@ class ExchangeRateProviderRegistry
         }
 
         switch ($aggregationMethod) {
-            case 'mean':
-            case 'average':
-                $sum = BigDecimal::of('0');
-                foreach ($numericRates as $rate) {
-                    $sum = $sum->plus($rate);
-                }
+        case 'mean':
+        case 'average':
+            $sum = BigDecimal::of('0');
+            foreach ($numericRates as $rate) {
+                $sum = $sum->plus($rate);
+            }
 
-                return $sum->dividedBy(count($numericRates), 8, RoundingMode::HALF_UP);
+            return $sum->dividedBy(count($numericRates), 8, RoundingMode::HALF_UP);
 
-            case 'median':
-                sort($numericRates);
-                $count = count($numericRates);
-                if ($count % 2 === 0) {
-                    // Even number of rates - average the two middle values
-                    $mid1 = $numericRates[$count / 2 - 1];
-                    $mid2 = $numericRates[$count / 2];
+        case 'median':
+            sort($numericRates);
+            $count = count($numericRates);
+            if ($count % 2 === 0) {
+                // Even number of rates - average the two middle values
+                $mid1 = $numericRates[$count / 2 - 1];
+                $mid2 = $numericRates[$count / 2];
 
-                    return $mid1->plus($mid2)->dividedBy('2', 8, RoundingMode::HALF_UP);
-                } else {
-                    // Odd number of rates - return the middle value
-                    return $numericRates[floor($count / 2)];
-                }
+                return $mid1->plus($mid2)->dividedBy('2', 8, RoundingMode::HALF_UP);
+            } else {
+                // Odd number of rates - return the middle value
+                return $numericRates[floor($count / 2)];
+            }
 
-                // no break
-            case 'min':
-                return min($numericRates);
+            // no break
+        case 'min':
+            return min($numericRates);
 
-            case 'max':
-                return max($numericRates);
+        case 'max':
+            return max($numericRates);
 
-            default:
-                throw new RateProviderException("Unknown aggregation method: {$aggregationMethod}");
+        default:
+            throw new RateProviderException("Unknown aggregation method: {$aggregationMethod}");
         }
     }
 

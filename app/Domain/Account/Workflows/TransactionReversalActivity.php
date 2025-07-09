@@ -10,11 +10,11 @@ use Workflow\Activity;
 class TransactionReversalActivity extends Activity
 {
     /**
-     * @param AccountUuid $accountUuid
-     * @param Money $originalAmount
-     * @param string $transactionType
-     * @param string $reversalReason
-     * @param string|null $authorizedBy
+     * @param AccountUuid          $accountUuid
+     * @param Money                $originalAmount
+     * @param string               $transactionType
+     * @param string               $reversalReason
+     * @param string|null          $authorizedBy
      * @param TransactionAggregate $transaction
      *
      * @return array
@@ -56,11 +56,11 @@ class TransactionReversalActivity extends Activity
     }
 
     /**
-     * @param AccountUuid $accountUuid
-     * @param Money $amount
-     * @param string $transactionType
-     * @param string $reason
-     * @param string|null $authorizedBy
+     * @param  AccountUuid $accountUuid
+     * @param  Money       $amount
+     * @param  string      $transactionType
+     * @param  string      $reason
+     * @param  string|null $authorizedBy
      * @return void
      */
     private function logReversal(
@@ -70,13 +70,15 @@ class TransactionReversalActivity extends Activity
         string $reason,
         ?string $authorizedBy
     ): void {
-        logger()->info('Transaction reversed', [
+        logger()->info(
+            'Transaction reversed', [
             'account_uuid'  => $accountUuid->getUuid(),
             'amount'        => $amount->getAmount(),
             'original_type' => $transactionType,
             'reason'        => $reason,
             'authorized_by' => $authorizedBy,
             'timestamp'     => now()->toISOString(),
-        ]);
+            ]
+        );
     }
 }

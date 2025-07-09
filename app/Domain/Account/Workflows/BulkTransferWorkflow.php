@@ -14,7 +14,7 @@ class BulkTransferWorkflow extends Workflow
      * Execute bulk transfers with compensation handling.
      *
      * @param AccountUuid $from
-     * @param array $transfers - array of ['to' => AccountUuid, 'amount' => Money]
+     * @param array       $transfers - array of ['to' => AccountUuid, 'amount' => Money]
      *
      * @return \Generator
      * @throws \Throwable
@@ -35,14 +35,16 @@ class BulkTransferWorkflow extends Workflow
                 $completedTransfers[] = $transfer;
 
                 // Add compensation for each completed transfer
-                $this->addCompensation(function () use ($from, $transfer) {
-                    return ChildWorkflowStub::make(
-                        TransferWorkflow::class,
-                        $transfer['to'],
-                        $from,
-                        $transfer['amount']
-                    );
-                });
+                $this->addCompensation(
+                    function () use ($from, $transfer) {
+                        return ChildWorkflowStub::make(
+                            TransferWorkflow::class,
+                            $transfer['to'],
+                            $from,
+                            $transfer['amount']
+                        );
+                    }
+                );
             }
 
             return $completedTransfers;

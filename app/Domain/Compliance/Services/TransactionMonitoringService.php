@@ -64,10 +64,12 @@ class TransactionMonitoringService
                 'actions' => array_unique($actions),
             ];
         } catch (\Exception $e) {
-            Log::error('Transaction monitoring failed', [
+            Log::error(
+                'Transaction monitoring failed', [
                 'transaction_id' => $transaction->id,
                 'error'          => $e->getMessage(),
-            ]);
+                ]
+            );
 
             // Fail-safe: allow transaction but flag for review
             return [
@@ -127,20 +129,26 @@ class TransactionMonitoringService
             $customerType = $riskProfile->business_type ? 'business' : 'individual';
             $riskLevel = $riskProfile->risk_rating;
 
-            $query->where(function ($q) use ($customerType, $riskLevel) {
-                $q->whereNull('applies_to_customer_types')
-                  ->orWhereJsonContains('applies_to_customer_types', $customerType);
-            })->where(function ($q) use ($riskLevel) {
-                $q->whereNull('applies_to_risk_levels')
-                  ->orWhereJsonContains('applies_to_risk_levels', $riskLevel);
-            });
+            $query->where(
+                function ($q) use ($customerType, $riskLevel) {
+                    $q->whereNull('applies_to_customer_types')
+                        ->orWhereJsonContains('applies_to_customer_types', $customerType);
+                }
+            )->where(
+                function ($q) use ($riskLevel) {
+                    $q->whereNull('applies_to_risk_levels')
+                        ->orWhereJsonContains('applies_to_risk_levels', $riskLevel);
+                }
+            );
         }
 
         // Filter by transaction type
-        $query->where(function ($q) use ($transaction) {
-            $q->whereNull('applies_to_transaction_types')
-              ->orWhereJsonContains('applies_to_transaction_types', $transaction->type);
-        });
+        $query->where(
+            function ($q) use ($transaction) {
+                $q->whereNull('applies_to_transaction_types')
+                    ->orWhereJsonContains('applies_to_transaction_types', $transaction->type);
+            }
+        );
 
         return $query->get();
     }
@@ -154,23 +162,23 @@ class TransactionMonitoringService
         ?CustomerRiskProfile $riskProfile
     ): bool {
         switch ($rule->category) {
-            case TransactionMonitoringRule::CATEGORY_VELOCITY:
-                return $this->evaluateVelocityRule($rule, $transaction);
+        case TransactionMonitoringRule::CATEGORY_VELOCITY:
+            return $this->evaluateVelocityRule($rule, $transaction);
 
-            case TransactionMonitoringRule::CATEGORY_PATTERN:
-                return $this->evaluatePatternRule($rule, $transaction);
+        case TransactionMonitoringRule::CATEGORY_PATTERN:
+            return $this->evaluatePatternRule($rule, $transaction);
 
-            case TransactionMonitoringRule::CATEGORY_THRESHOLD:
-                return $this->evaluateThresholdRule($rule, $transaction);
+        case TransactionMonitoringRule::CATEGORY_THRESHOLD:
+            return $this->evaluateThresholdRule($rule, $transaction);
 
-            case TransactionMonitoringRule::CATEGORY_GEOGRAPHY:
-                return $this->evaluateGeographyRule($rule, $transaction);
+        case TransactionMonitoringRule::CATEGORY_GEOGRAPHY:
+            return $this->evaluateGeographyRule($rule, $transaction);
 
-            case TransactionMonitoringRule::CATEGORY_BEHAVIOR:
-                return $this->evaluateBehaviorRule($rule, $transaction, $riskProfile);
+        case TransactionMonitoringRule::CATEGORY_BEHAVIOR:
+            return $this->evaluateBehaviorRule($rule, $transaction, $riskProfile);
 
-            default:
-                return false;
+        default:
+            return false;
         }
     }
 
@@ -416,21 +424,21 @@ class TransactionMonitoringService
     {
         foreach ($actions as $action) {
             switch ($action) {
-                case TransactionMonitoringRule::ACTION_BLOCK:
-                    $this->blockTransaction($transaction, $alerts);
-                    break;
+            case TransactionMonitoringRule::ACTION_BLOCK:
+                $this->blockTransaction($transaction, $alerts);
+                break;
 
-                case TransactionMonitoringRule::ACTION_ALERT:
-                    $this->sendAlert($transaction, $alerts);
-                    break;
+            case TransactionMonitoringRule::ACTION_ALERT:
+                $this->sendAlert($transaction, $alerts);
+                break;
 
-                case TransactionMonitoringRule::ACTION_REVIEW:
-                    $this->flagForReview($transaction, $alerts);
-                    break;
+            case TransactionMonitoringRule::ACTION_REVIEW:
+                $this->flagForReview($transaction, $alerts);
+                break;
 
-                case TransactionMonitoringRule::ACTION_REPORT:
-                    $this->createSAR($transaction, $alerts);
-                    break;
+            case TransactionMonitoringRule::ACTION_REPORT:
+                $this->createSAR($transaction, $alerts);
+                break;
             }
         }
     }
@@ -440,14 +448,18 @@ class TransactionMonitoringService
      */
     protected function blockTransaction(Transaction $transaction, array $alerts): void
     {
-        $transaction->update([
+        $transaction->update(
+            [
             'status'   => 'blocked',
-            'metadata' => array_merge($transaction->metadata ?? [], [
+            'metadata' => array_merge(
+                $transaction->metadata ?? [], [
                 'blocked_at'   => now()->toIso8601String(),
                 'block_reason' => 'AML monitoring alert',
                 'alerts'       => $alerts,
-            ]),
-        ]);
+                ]
+            ),
+            ]
+        );
 
         event(new TransactionBlocked($transaction, $alerts));
     }
@@ -465,13 +477,17 @@ class TransactionMonitoringService
      */
     protected function flagForReview(Transaction $transaction, array $alerts): void
     {
-        $transaction->update([
-            'metadata' => array_merge($transaction->metadata ?? [], [
+        $transaction->update(
+            [
+            'metadata' => array_merge(
+                $transaction->metadata ?? [], [
                 'requires_review'     => true,
                 'review_requested_at' => now()->toIso8601String(),
                 'review_alerts'       => $alerts,
-            ]),
-        ]);
+                ]
+            ),
+            ]
+        );
     }
 
     /**
@@ -510,11 +526,13 @@ class TransactionMonitoringService
         $behavioralRisk['last_alert'] = now()->toIso8601String();
         $behavioralRisk['alert_count'] = ($behavioralRisk['alert_count'] ?? 0) + count($alerts);
 
-        $riskProfile->update([
+        $riskProfile->update(
+            [
             'behavioral_risk'             => $behavioralRisk,
             'suspicious_activities_count' => $riskProfile->suspicious_activities_count + 1,
             'last_suspicious_activity_at' => now(),
-        ]);
+            ]
+        );
 
         // Trigger risk reassessment if multiple alerts
         if (count($alerts) >= 3) {

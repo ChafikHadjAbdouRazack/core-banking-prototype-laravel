@@ -34,14 +34,16 @@ class ExchangeRateViewController extends Controller
         // Get rate statistics
         $statistics = $this->getRateStatistics($baseCurrency);
 
-        return view('exchange-rates.index', compact(
-            'assets',
-            'baseCurrency',
-            'selectedAssets',
-            'rates',
-            'historicalData',
-            'statistics'
-        ));
+        return view(
+            'exchange-rates.index', compact(
+                'assets',
+                'baseCurrency',
+                'selectedAssets',
+                'rates',
+                'historicalData',
+                'statistics'
+            )
+        );
     }
 
     /**
@@ -54,11 +56,13 @@ class ExchangeRateViewController extends Controller
 
         $rates = $this->getLatestRates($baseCurrency, $assets);
 
-        return response()->json([
+        return response()->json(
+            [
             'base'      => $baseCurrency,
             'timestamp' => now()->toIso8601String(),
             'rates'     => $rates,
-        ]);
+            ]
+        );
     }
 
     /**
@@ -72,12 +76,14 @@ class ExchangeRateViewController extends Controller
 
         $data = $this->getHistoricalDataForPair($base, $target, $period);
 
-        return response()->json([
+        return response()->json(
+            [
             'base'   => $base,
             'target' => $target,
             'period' => $period,
             'data'   => $data,
-        ]);
+            ]
+        );
     }
 
     /**
@@ -186,12 +192,14 @@ class ExchangeRateViewController extends Controller
             ->where('created_at', '>=', $startDate)
             ->orderBy('created_at')
             ->get()
-            ->map(function ($rate) {
-                return [
+            ->map(
+                function ($rate) {
+                    return [
                     'timestamp' => $rate->created_at->toIso8601String(),
                     'rate'      => $rate->rate,
-                ];
-            });
+                    ];
+                }
+            );
 
         // If no direct rates, try reverse
         if ($rates->isEmpty()) {
@@ -200,12 +208,14 @@ class ExchangeRateViewController extends Controller
                 ->where('created_at', '>=', $startDate)
                 ->orderBy('created_at')
                 ->get()
-                ->map(function ($rate) {
-                    return [
+                ->map(
+                    function ($rate) {
+                        return [
                         'timestamp' => $rate->created_at->toIso8601String(),
                         'rate'      => 1 / $rate->rate,
-                    ];
-                });
+                        ];
+                    }
+                );
         }
 
         return $rates;
@@ -216,32 +226,34 @@ class ExchangeRateViewController extends Controller
      */
     private function getRateStatistics($baseCurrency)
     {
-        return Cache::remember("rate_stats:{$baseCurrency}", 300, function () use ($baseCurrency) {
-            $stats = DB::table('exchange_rates')
-                ->where('from_asset_code', $baseCurrency)
-                ->where('created_at', '>=', now()->subDay())
-                ->select(
-                    DB::raw('COUNT(*) as total_updates'),
-                    DB::raw('COUNT(DISTINCT to_asset_code) as pairs_tracked'),
-                    DB::raw('AVG(rate) as avg_rate'),
-                    DB::raw('MAX(created_at) as last_update')
-                )
-                ->first();
+        return Cache::remember(
+            "rate_stats:{$baseCurrency}", 300, function () use ($baseCurrency) {
+                $stats = DB::table('exchange_rates')
+                    ->where('from_asset_code', $baseCurrency)
+                    ->where('created_at', '>=', now()->subDay())
+                    ->select(
+                        DB::raw('COUNT(*) as total_updates'),
+                        DB::raw('COUNT(DISTINCT to_asset_code) as pairs_tracked'),
+                        DB::raw('AVG(rate) as avg_rate'),
+                        DB::raw('MAX(created_at) as last_update')
+                    )
+                    ->first();
 
-            $providers = DB::table('exchange_rates')
-                ->where('from_asset_code', $baseCurrency)
-                ->where('created_at', '>=', now()->subDay())
-                ->select('source', DB::raw('COUNT(*) as count'))
-                ->groupBy('source')
-                ->get();
+                $providers = DB::table('exchange_rates')
+                    ->where('from_asset_code', $baseCurrency)
+                    ->where('created_at', '>=', now()->subDay())
+                    ->select('source', DB::raw('COUNT(*) as count'))
+                    ->groupBy('source')
+                    ->get();
 
-            return [
+                return [
                 'total_updates' => $stats->total_updates ?? 0,
                 'pairs_tracked' => $stats->pairs_tracked ?? 0,
                 'last_update'   => $stats->last_update ?? now(),
                 'providers'     => $providers,
-            ];
-        });
+                ];
+            }
+        );
     }
 
     /**

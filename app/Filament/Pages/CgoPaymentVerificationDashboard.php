@@ -35,12 +35,15 @@ class CgoPaymentVerificationDashboard extends Page implements Tables\Contracts\H
                 CgoInvestment::query()
                     ->with(['user', 'round'])
                     ->whereIn('payment_status', ['pending', 'processing'])
-                    ->orWhere(function ($query) {
-                        $query->where('status', 'pending')
-                            ->where('payment_method', 'bank_transfer');
-                    })
+                    ->orWhere(
+                        function ($query) {
+                            $query->where('status', 'pending')
+                                ->where('payment_method', 'bank_transfer');
+                        }
+                    )
             )
-            ->columns([
+            ->columns(
+                [
                 Tables\Columns\TextColumn::make('uuid')
                     ->label('ID')
                     ->searchable()
@@ -58,38 +61,48 @@ class CgoPaymentVerificationDashboard extends Page implements Tables\Contracts\H
                     ->money('USD')
                     ->sortable(),
                 Tables\Columns\BadgeColumn::make('tier')
-                    ->colors([
+                    ->colors(
+                        [
                         'warning' => 'bronze',
                         'gray'    => 'silver',
                         'warning' => 'gold',
-                    ]),
+                        ]
+                    ),
                 Tables\Columns\BadgeColumn::make('payment_method')
-                    ->formatStateUsing(fn ($state) => match ($state) {
+                    ->formatStateUsing(
+                        fn ($state) => match ($state) {
                         'stripe'        => 'Card',
                         'bank_transfer' => 'Bank',
                         'crypto'        => 'Crypto',
                         default         => $state,
-                    })
-                    ->colors([
+                        }
+                    )
+                    ->colors(
+                        [
                         'primary' => 'stripe',
                         'success' => 'bank_transfer',
                         'warning' => 'crypto',
-                    ]),
+                        ]
+                    ),
                 Tables\Columns\BadgeColumn::make('payment_status')
-                    ->colors([
+                    ->colors(
+                        [
                         'warning' => 'pending',
                         'info'    => 'processing',
                         'success' => 'completed',
                         'danger'  => 'failed',
-                    ]),
+                        ]
+                    ),
                 Tables\Columns\TextColumn::make('payment_reference')
                     ->label('Reference')
-                    ->getStateUsing(fn ($record) => match ($record->payment_method) {
+                    ->getStateUsing(
+                        fn ($record) => match ($record->payment_method) {
                         'stripe'        => $record->stripe_payment_intent_id ?? 'N/A',
                         'crypto'        => $record->coinbase_charge_code ?? 'N/A',
                         'bank_transfer' => $record->bank_transfer_reference ?? 'N/A',
                         default         => 'N/A',
-                    })
+                        }
+                    )
                     ->copyable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Initiated')
@@ -98,27 +111,37 @@ class CgoPaymentVerificationDashboard extends Page implements Tables\Contracts\H
                 Tables\Columns\TextColumn::make('time_pending')
                     ->label('Time Pending')
                     ->getStateUsing(fn ($record) => $record->created_at->diffForHumans(null, true))
-                    ->color(fn ($record) => $record->created_at->diffInHours() > 24 ? 'danger' :
-                        ($record->created_at->diffInHours() > 12 ? 'warning' : 'gray')),
-            ])
+                    ->color(
+                        fn ($record) => $record->created_at->diffInHours() > 24 ? 'danger' :
+                        ($record->created_at->diffInHours() > 12 ? 'warning' : 'gray')
+                    ),
+                ]
+            )
             ->defaultSort('created_at', 'desc')
-            ->filters([
+            ->filters(
+                [
                 Tables\Filters\SelectFilter::make('payment_method')
-                    ->options([
+                    ->options(
+                        [
                         'stripe'        => 'Card Payment',
                         'bank_transfer' => 'Bank Transfer',
                         'crypto'        => 'Cryptocurrency',
-                    ]),
+                        ]
+                    ),
                 Tables\Filters\SelectFilter::make('payment_status')
-                    ->options([
+                    ->options(
+                        [
                         'pending'    => 'Pending',
                         'processing' => 'Processing',
-                    ]),
+                        ]
+                    ),
                 Tables\Filters\Filter::make('urgent')
                     ->label('Urgent (>24h)')
                     ->query(fn (Builder $query): Builder => $query->where('created_at', '<=', now()->subDay())),
-            ])
-            ->actions([
+                ]
+            )
+            ->actions(
+                [
                 Tables\Actions\Action::make('verify_payment')
                     ->label('Verify')
                     ->icon('heroicon-o-shield-check')
@@ -126,16 +149,19 @@ class CgoPaymentVerificationDashboard extends Page implements Tables\Contracts\H
                     ->requiresConfirmation()
                     ->modalHeading('Verify Payment')
                     ->modalDescription('This will check the payment status with the payment processor.')
-                    ->action(function (CgoInvestment $record) {
-                        $this->verifyPayment($record);
-                    })
+                    ->action(
+                        function (CgoInvestment $record) {
+                            $this->verifyPayment($record);
+                        }
+                    )
                     ->visible(fn (CgoInvestment $record) => in_array($record->payment_method, ['stripe', 'crypto'])),
 
                 Tables\Actions\Action::make('manual_verify')
                     ->label('Manual Verify')
                     ->icon('heroicon-o-check-circle')
                     ->color('primary')
-                    ->form([
+                    ->form(
+                        [
                         Forms\Components\TextInput::make('reference')
                             ->label('Transaction Reference')
                             ->required()
@@ -148,10 +174,13 @@ class CgoPaymentVerificationDashboard extends Page implements Tables\Contracts\H
                         Forms\Components\Textarea::make('notes')
                             ->label('Verification Notes')
                             ->rows(3),
-                    ])
-                    ->action(function (array $data, CgoInvestment $record) {
-                        $this->manualVerifyPayment($record, $data);
-                    })
+                        ]
+                    )
+                    ->action(
+                        function (array $data, CgoInvestment $record) {
+                            $this->manualVerifyPayment($record, $data);
+                        }
+                    )
                     ->visible(fn (CgoInvestment $record) => $record->payment_method === 'bank_transfer'),
 
                 Tables\Actions\Action::make('mark_failed')
@@ -159,41 +188,54 @@ class CgoPaymentVerificationDashboard extends Page implements Tables\Contracts\H
                     ->icon('heroicon-o-x-circle')
                     ->color('danger')
                     ->requiresConfirmation()
-                    ->form([
+                    ->form(
+                        [
                         Forms\Components\Textarea::make('reason')
                             ->label('Failure Reason')
                             ->required()
                             ->rows(3),
-                    ])
-                    ->action(function (array $data, CgoInvestment $record) {
-                        $this->markPaymentFailed($record, $data['reason']);
-                    }),
+                        ]
+                    )
+                    ->action(
+                        function (array $data, CgoInvestment $record) {
+                            $this->markPaymentFailed($record, $data['reason']);
+                        }
+                    ),
 
                 Tables\Actions\Action::make('view_details')
                     ->label('Details')
                     ->icon('heroicon-o-eye')
                     ->color('gray')
-                    ->modalContent(fn (CgoInvestment $record) => view('filament.modals.cgo-payment-details', [
-                        'investment' => $record,
-                    ]))
+                    ->modalContent(
+                        fn (CgoInvestment $record) => view(
+                            'filament.modals.cgo-payment-details', [
+                            'investment' => $record,
+                            ]
+                        )
+                    )
                     ->modalHeading('Payment Details')
                     ->modalSubmitAction(false),
-            ])
-            ->bulkActions([
+                ]
+            )
+            ->bulkActions(
+                [
                 Tables\Actions\BulkAction::make('bulk_verify')
                     ->label('Bulk Verify')
                     ->icon('heroicon-o-shield-check')
                     ->color('success')
                     ->requiresConfirmation()
                     ->deselectRecordsAfterCompletion()
-                    ->action(function ($records) {
-                        foreach ($records as $record) {
-                            if (in_array($record->payment_method, ['stripe', 'crypto'])) {
-                                $this->verifyPayment($record);
+                    ->action(
+                        function ($records) {
+                            foreach ($records as $record) {
+                                if (in_array($record->payment_method, ['stripe', 'crypto'])) {
+                                    $this->verifyPayment($record);
+                                }
                             }
                         }
-                    }),
-            ])
+                    ),
+                ]
+            )
             ->poll('10s');
     }
 
@@ -219,20 +261,24 @@ class CgoPaymentVerificationDashboard extends Page implements Tables\Contracts\H
     protected function manualVerifyPayment(CgoInvestment $investment, array $data): void
     {
         try {
-            $investment->update([
+            $investment->update(
+                [
                 'payment_status'          => 'completed',
                 'status'                  => 'confirmed',
                 'payment_completed_at'    => now(),
                 'bank_transfer_reference' => $data['reference'],
                 'amount_paid'             => $data['amount_received'] * 100, // Convert to cents
-                'metadata'                => array_merge($investment->metadata ?? [], [
+                'metadata'                => array_merge(
+                    $investment->metadata ?? [], [
                     'manual_verification' => [
                         'verified_by' => auth()->id(),
                         'verified_at' => now()->toIso8601String(),
                         'notes'       => $data['notes'],
                     ],
-                ]),
-            ]);
+                    ]
+                ),
+                ]
+            );
 
             // Update pricing round
             if ($investment->round) {
@@ -257,12 +303,14 @@ class CgoPaymentVerificationDashboard extends Page implements Tables\Contracts\H
     protected function markPaymentFailed(CgoInvestment $investment, string $reason): void
     {
         try {
-            $investment->update([
+            $investment->update(
+                [
                 'payment_status'         => 'failed',
                 'status'                 => 'cancelled',
                 'payment_failed_at'      => now(),
                 'payment_failure_reason' => $reason,
-            ]);
+                ]
+            );
 
             Notification::make()
                 ->title('Payment Marked as Failed')

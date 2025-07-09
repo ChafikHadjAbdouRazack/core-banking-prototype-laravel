@@ -51,12 +51,14 @@ class BasketAccountService
         $balance->credit($amount);
 
         // Record event
-        event(new AssetBalanceAdded(
-            assetCode: $basketCode,
-            amount: $amount,
-            hash: new Hash(hash('sha3-512', "basket_deposit:{$account->uuid}:{$basketCode}:{$amount}:" . now()->timestamp)),
-            metadata: ['type' => 'basket_deposit', 'account_uuid' => (string) $account->uuid]
-        ));
+        event(
+            new AssetBalanceAdded(
+                assetCode: $basketCode,
+                amount: $amount,
+                hash: new Hash(hash('sha3-512', "basket_deposit:{$account->uuid}:{$basketCode}:{$amount}:" . now()->timestamp)),
+                metadata: ['type' => 'basket_deposit', 'account_uuid' => (string) $account->uuid]
+            )
+        );
 
         Log::info("Added {$amount} of basket {$basketCode} to account {$account->uuid}");
 
@@ -79,12 +81,14 @@ class BasketAccountService
         $balance->debit($amount);
 
         // Record event
-        event(new AssetBalanceSubtracted(
-            assetCode: $basketCode,
-            amount: $amount,
-            hash: new Hash(hash('sha3-512', "basket_withdraw:{$account->uuid}:{$basketCode}:{$amount}:" . now()->timestamp)),
-            metadata: ['type' => 'basket_withdrawal', 'account_uuid' => (string) $account->uuid]
-        ));
+        event(
+            new AssetBalanceSubtracted(
+                assetCode: $basketCode,
+                amount: $amount,
+                hash: new Hash(hash('sha3-512', "basket_withdraw:{$account->uuid}:{$basketCode}:{$amount}:" . now()->timestamp)),
+                metadata: ['type' => 'basket_withdrawal', 'account_uuid' => (string) $account->uuid]
+            )
+        );
 
         Log::info("Subtracted {$amount} of basket {$basketCode} from account {$account->uuid}");
 
@@ -125,41 +129,47 @@ class BasketAccountService
             throw new \Exception("Insufficient basket balance for decomposition. Required: {$amount}, Available: {$availableBalance}");
         }
 
-        return DB::transaction(function () use ($account, $basket, $basketCode, $amount, $basketBalance) {
-            // Calculate component amounts based on weights
-            $componentAmounts = $this->calculateComponentAmounts($basket, $amount);
+        return DB::transaction(
+            function () use ($account, $basket, $basketCode, $amount, $basketBalance) {
+                // Calculate component amounts based on weights
+                $componentAmounts = $this->calculateComponentAmounts($basket, $amount);
 
-            // Use WalletService for proper Service → Workflow → Activity → Aggregate architecture
-            $accountUuid = AccountUuid::fromString($account->uuid);
+                // Use WalletService for proper Service → Workflow → Activity → Aggregate architecture
+                $accountUuid = AccountUuid::fromString($account->uuid);
 
-            // Subtract basket balance using WalletService
-            $this->walletService->withdraw($accountUuid, $basketCode, $amount);
+                // Subtract basket balance using WalletService
+                $this->walletService->withdraw($accountUuid, $basketCode, $amount);
 
-            // Add component balances using WalletService
-            foreach ($componentAmounts as $assetCode => $componentAmount) {
-                $this->walletService->deposit($accountUuid, $assetCode, $componentAmount);
-            }
+                // Add component balances using WalletService
+                foreach ($componentAmounts as $assetCode => $componentAmount) {
+                    $this->walletService->deposit($accountUuid, $assetCode, $componentAmount);
+                }
 
-            // Record decomposition event
-            event(new BasketDecomposed(
-                accountUuid: (string) $account->uuid,
-                basketCode: $basketCode,
-                amount: $amount,
-                componentAmounts: $componentAmounts,
-                decomposedAt: now()
-            ));
+                // Record decomposition event
+                event(
+                    new BasketDecomposed(
+                        accountUuid: (string) $account->uuid,
+                        basketCode: $basketCode,
+                        amount: $amount,
+                        componentAmounts: $componentAmounts,
+                        decomposedAt: now()
+                    )
+                );
 
-            Log::info("Decomposed {$amount} of basket {$basketCode} for account {$account->uuid}", [
-                'components' => $componentAmounts,
-            ]);
+                Log::info(
+                    "Decomposed {$amount} of basket {$basketCode} for account {$account->uuid}", [
+                    'components' => $componentAmounts,
+                    ]
+                );
 
-            return [
+                return [
                 'basket_code'   => $basketCode,
                 'basket_amount' => $amount,
                 'components'    => $componentAmounts,
                 'decomposed_at' => now()->toISOString(),
-            ];
-        });
+                ];
+            }
+        );
     }
 
     /**
@@ -188,43 +198,47 @@ class BasketAccountService
             throw new \Exception("Basket {$basketCode} has invalid component weights");
         }
 
-        return DB::transaction(function () use ($account, $basket, $basketCode, $amount) {
-            // Calculate required component amounts
-            $requiredAmounts = $this->calculateComponentAmounts($basket, $amount);
+        return DB::transaction(
+            function () use ($account, $basket, $basketCode, $amount) {
+                // Calculate required component amounts
+                $requiredAmounts = $this->calculateComponentAmounts($basket, $amount);
 
-            // Verify account has sufficient component balances
-            foreach ($requiredAmounts as $assetCode => $requiredAmount) {
-                $balance = $account->balances()
-                    ->where('asset_code', $assetCode)
-                    ->first();
+                // Verify account has sufficient component balances
+                foreach ($requiredAmounts as $assetCode => $requiredAmount) {
+                    $balance = $account->balances()
+                        ->where('asset_code', $assetCode)
+                        ->first();
 
-                if (! $balance || $balance->balance < $requiredAmount) {
-                    throw new \Exception("Insufficient {$assetCode} balance. Required: {$requiredAmount}, Available: " . ($balance ? $balance->balance : 0));
+                    if (! $balance || $balance->balance < $requiredAmount) {
+                        throw new \Exception("Insufficient {$assetCode} balance. Required: {$requiredAmount}, Available: " . ($balance ? $balance->balance : 0));
+                    }
                 }
-            }
 
-            // Use WalletService for proper Service → Workflow → Activity → Aggregate architecture
-            $accountUuid = AccountUuid::fromString($account->uuid);
+                // Use WalletService for proper Service → Workflow → Activity → Aggregate architecture
+                $accountUuid = AccountUuid::fromString($account->uuid);
 
-            // Subtract component balances using WalletService
-            foreach ($requiredAmounts as $assetCode => $requiredAmount) {
-                $this->walletService->withdraw($accountUuid, $assetCode, $requiredAmount);
-            }
+                // Subtract component balances using WalletService
+                foreach ($requiredAmounts as $assetCode => $requiredAmount) {
+                    $this->walletService->withdraw($accountUuid, $assetCode, $requiredAmount);
+                }
 
-            // Add basket balance using WalletService
-            $this->walletService->deposit($accountUuid, $basketCode, $amount);
+                // Add basket balance using WalletService
+                $this->walletService->deposit($accountUuid, $basketCode, $amount);
 
-            Log::info("Composed {$amount} of basket {$basketCode} for account {$account->uuid}", [
-                'components_used' => $requiredAmounts,
-            ]);
+                Log::info(
+                    "Composed {$amount} of basket {$basketCode} for account {$account->uuid}", [
+                    'components_used' => $requiredAmounts,
+                    ]
+                );
 
-            return [
+                return [
                 'basket_code'     => $basketCode,
                 'basket_amount'   => $amount,
                 'components_used' => $requiredAmounts,
                 'composed_at'     => now()->toISOString(),
-            ];
-        });
+                ];
+            }
+        );
     }
 
     /**

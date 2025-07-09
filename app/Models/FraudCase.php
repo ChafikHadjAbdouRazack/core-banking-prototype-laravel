@@ -127,14 +127,16 @@ class FraudCase extends Model
     {
         parent::boot();
 
-        static::creating(function ($case) {
-            if (! $case->case_number) {
-                $case->case_number = static::generateCaseNumber();
+        static::creating(
+            function ($case) {
+                if (! $case->case_number) {
+                    $case->case_number = static::generateCaseNumber();
+                }
+                if (! $case->detected_at) {
+                    $case->detected_at = now();
+                }
             }
-            if (! $case->detected_at) {
-                $case->detected_at = now();
-            }
-        });
+        );
     }
 
     public static function generateCaseNumber(): string
@@ -209,18 +211,22 @@ class FraudCase extends Model
 
     public function assign(User $investigator): void
     {
-        $this->update([
+        $this->update(
+            [
             'assigned_to' => $investigator->uuid,
             'status'      => self::STATUS_INVESTIGATING,
-        ]);
+            ]
+        );
     }
 
     public function addEvidence(array $evidence): void
     {
         $currentEvidence = $this->evidence ?? [];
-        $currentEvidence[] = array_merge($evidence, [
+        $currentEvidence[] = array_merge(
+            $evidence, [
             'added_at' => now()->toIso8601String(),
-        ]);
+            ]
+        );
 
         $this->update(['evidence' => $currentEvidence]);
     }
@@ -228,21 +234,25 @@ class FraudCase extends Model
     public function recordAction(string $action, array $details = []): void
     {
         $actions = $this->actions_taken ?? [];
-        $actions[] = array_merge([
+        $actions[] = array_merge(
+            [
             'action'    => $action,
             'timestamp' => now()->toIso8601String(),
-        ], $details);
+            ], $details
+        );
 
         $this->update(['actions_taken' => $actions]);
     }
 
     public function resolve(string $notes): void
     {
-        $this->update([
+        $this->update(
+            [
             'resolution_notes' => $notes,
             'resolved_at'      => now(),
             'status'           => self::STATUS_RESOLVED,
-        ]);
+            ]
+        );
     }
 
     public function getCaseSummary(): array

@@ -64,7 +64,7 @@ class LedgerAggregate extends AggregateRoot
     }
 
     /**
-     * @param string $reason
+     * @param string      $reason
      * @param string|null $authorizedBy
      *
      * @return $this
@@ -82,7 +82,7 @@ class LedgerAggregate extends AggregateRoot
     }
 
     /**
-     * @param string $reason
+     * @param string      $reason
      * @param string|null $authorizedBy
      *
      * @return $this

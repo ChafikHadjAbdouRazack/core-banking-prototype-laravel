@@ -147,21 +147,25 @@ class SuspiciousActivityReport extends Model
     {
         parent::boot();
 
-        static::creating(function ($sar) {
-            if (! $sar->sar_number) {
-                $sar->sar_number = static::generateSARNumber();
+        static::creating(
+            function ($sar) {
+                if (! $sar->sar_number) {
+                    $sar->sar_number = static::generateSARNumber();
+                }
+                if (! $sar->retention_until) {
+                    $sar->retention_until = now()->addYears(5); // Standard retention period
+                }
             }
-            if (! $sar->retention_until) {
-                $sar->retention_until = now()->addYears(5); // Standard retention period
-            }
-        });
+        );
 
         // Log access when retrieved
-        static::retrieved(function ($sar) {
-            if ($sar->is_confidential && auth()->check()) {
-                $sar->logAccess();
+        static::retrieved(
+            function ($sar) {
+                if ($sar->is_confidential && auth()->check()) {
+                    $sar->logAccess();
+                }
             }
-        });
+        );
     }
 
     public static function generateSARNumber(): string
@@ -250,30 +254,36 @@ class SuspiciousActivityReport extends Model
 
     public function startInvestigation(User $investigator): void
     {
-        $this->update([
+        $this->update(
+            [
             'investigator_id'          => $investigator->id,
             'investigation_started_at' => now(),
             'status'                   => self::STATUS_PENDING_REVIEW,
-        ]);
+            ]
+        );
     }
 
     public function completeInvestigation(string $findings, array $supportingDocs = []): void
     {
-        $this->update([
+        $this->update(
+            [
             'investigation_completed_at' => now(),
             'investigation_findings'     => $findings,
             'supporting_documents'       => array_merge($this->supporting_documents ?? [], $supportingDocs),
-        ]);
+            ]
+        );
     }
 
     public function makeDecision(string $decision, string $rationale, User $decisionMaker): void
     {
-        $this->update([
+        $this->update(
+            [
             'decision'           => $decision,
             'decision_rationale' => $rationale,
             'decision_maker_id'  => $decisionMaker->id,
             'decision_date'      => now(),
-        ]);
+            ]
+        );
 
         if ($decision === self::DECISION_FILE_SAR) {
             $this->prepareForFiling();
@@ -297,23 +307,27 @@ class SuspiciousActivityReport extends Model
 
     public function fileWithRegulator(string $reference, string $jurisdiction): void
     {
-        $this->update([
+        $this->update(
+            [
             'filed_with_regulator' => true,
             'filing_reference'     => $reference,
             'filing_date'          => now(),
             'filing_jurisdiction'  => $jurisdiction,
             'status'               => self::STATUS_SUBMITTED,
-        ]);
+            ]
+        );
     }
 
     public function addReview(string $comments, bool $approved, User $reviewer): void
     {
-        $this->update([
+        $this->update(
+            [
             'reviewed_by'     => $reviewer->id,
             'reviewed_at'     => now(),
             'review_comments' => $comments,
             'qa_approved'     => $approved,
-        ]);
+            ]
+        );
     }
 
     public function linkTransaction(string $transactionId): void

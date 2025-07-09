@@ -13,7 +13,7 @@ class AuthenticateApiKey
     /**
      * Handle an incoming request.
      *
-     * @param  Closure(Request): (Response)  $next
+     * @param Closure(Request): (Response) $next
      */
     public function handle(Request $request, Closure $next, string $permission = 'read'): Response
     {
@@ -22,10 +22,12 @@ class AuthenticateApiKey
         // Extract API key from Authorization header
         $authHeader = $request->header('Authorization');
         if (! $authHeader || ! str_starts_with($authHeader, 'Bearer ')) {
-            return response()->json([
+            return response()->json(
+                [
                 'error'   => 'Unauthorized',
                 'message' => 'API key is required',
-            ], 401);
+                ], 401
+            );
         }
 
         $apiKeyString = substr($authHeader, 7); // Remove 'Bearer ' prefix
@@ -33,26 +35,32 @@ class AuthenticateApiKey
         // Verify API key
         $apiKey = ApiKey::verify($apiKeyString);
         if (! $apiKey) {
-            return response()->json([
+            return response()->json(
+                [
                 'error'   => 'Unauthorized',
                 'message' => 'Invalid API key',
-            ], 401);
+                ], 401
+            );
         }
 
         // Check IP restrictions
         if (! $apiKey->isIpAllowed($request->ip())) {
-            return response()->json([
+            return response()->json(
+                [
                 'error'   => 'Forbidden',
                 'message' => 'Access denied from this IP address',
-            ], 403);
+                ], 403
+            );
         }
 
         // Check permissions
         if (! $apiKey->hasPermission($permission)) {
-            return response()->json([
+            return response()->json(
+                [
                 'error'   => 'Forbidden',
                 'message' => 'Insufficient permissions',
-            ], 403);
+                ], 403
+            );
         }
 
         // Record usage
@@ -60,9 +68,11 @@ class AuthenticateApiKey
 
         // Add API key and user to request
         $request->merge(['api_key' => $apiKey]);
-        $request->setUserResolver(function () use ($apiKey) {
-            return $apiKey->user;
-        });
+        $request->setUserResolver(
+            function () use ($apiKey) {
+                return $apiKey->user;
+            }
+        );
 
         // Process request
         $response = $next($request);

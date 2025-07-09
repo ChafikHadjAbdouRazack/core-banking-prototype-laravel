@@ -28,24 +28,30 @@ class CgoKycController extends Controller
      */
     public function checkRequirements(Request $request)
     {
-        $request->validate([
+        $request->validate(
+            [
             'amount' => 'required|numeric|min:1',
-        ]);
+            ]
+        );
 
         $user = Auth::user();
 
         // Create a temporary investment object for checking requirements
-        $tempInvestment = new CgoInvestment([
+        $tempInvestment = new CgoInvestment(
+            [
             'user_id' => $user->id,
             'amount'  => $request->amount,
-        ]);
+            ]
+        );
 
         $requirements = $this->cgoKycService->checkKycRequirements($tempInvestment);
 
-        return response()->json([
+        return response()->json(
+            [
             'success' => true,
             'data'    => $requirements,
-        ]);
+            ]
+        );
     }
 
     /**
@@ -72,13 +78,15 @@ class CgoKycController extends Controller
             $requiredDocuments = $this->kycService->getRequirements('full')['documents'];
         }
 
-        return view('cgo.kyc-status', [
+        return view(
+            'cgo.kyc-status', [
             'totalInvested'     => $totalInvested,
             'availableLimit'    => $investmentLimits['available_limit'],
             'documents'         => $documents,
             'requiredDocuments' => $requiredDocuments,
             'requiredActions'   => $this->getRequiredActions($user),
-        ]);
+            ]
+        );
     }
 
     /**
@@ -86,12 +94,14 @@ class CgoKycController extends Controller
      */
     public function submitDocuments(Request $request)
     {
-        $request->validate([
+        $request->validate(
+            [
             'documents'        => 'required|array|min:1',
             'documents.*.type' => 'required|string|in:passport,driving_license,national_id,utility_bill,bank_statement,selfie,proof_of_income,source_of_funds',
             'documents.*.file' => 'required|file|mimes:jpg,jpeg,png,pdf|max:10240', // 10MB max
             'investment_id'    => 'nullable|exists:cgo_investments,uuid',
-        ]);
+            ]
+        );
 
         $user = Auth::user();
 
@@ -107,10 +117,12 @@ class CgoKycController extends Controller
                 // Check if this investment requires KYC
                 $requirements = $this->cgoKycService->checkKycRequirements($investment);
                 if ($requirements['is_sufficient']) {
-                    return response()->json([
+                    return response()->json(
+                        [
                         'success' => false,
                         'message' => 'KYC is already sufficient for this investment',
-                    ], 400);
+                        ], 400
+                    );
                 }
             }
 
@@ -125,25 +137,31 @@ class CgoKycController extends Controller
 
             DB::commit();
 
-            return response()->json([
+            return response()->json(
+                [
                 'success' => true,
                 'message' => 'KYC documents submitted successfully',
                 'data'    => [
                     'documents_submitted' => count($request->documents),
                     'status'              => 'pending_review',
                 ],
-            ]);
+                ]
+            );
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('CGO KYC submission failed', [
+            Log::error(
+                'CGO KYC submission failed', [
                 'user_id' => $user->id,
                 'error'   => $e->getMessage(),
-            ]);
+                ]
+            );
 
-            return response()->json([
+            return response()->json(
+                [
                 'success' => false,
                 'message' => 'Failed to submit KYC documents',
-            ], 500);
+                ], 500
+            );
         }
     }
 
@@ -158,8 +176,9 @@ class CgoKycController extends Controller
             ->select('id', 'document_type', 'status', 'uploaded_at', 'verified_at', 'expires_at', 'rejection_reason')
             ->orderBy('uploaded_at', 'desc')
             ->get()
-            ->map(function ($doc) {
-                return [
+            ->map(
+                function ($doc) {
+                    return [
                     'id'               => $doc->id,
                     'type'             => $doc->document_type,
                     'type_label'       => KycDocument::DOCUMENT_TYPES[$doc->document_type] ?? $doc->document_type,
@@ -169,13 +188,16 @@ class CgoKycController extends Controller
                     'expires_at'       => $doc->expires_at,
                     'rejection_reason' => $doc->rejection_reason,
                     'is_expired'       => $doc->isExpired(),
-                ];
-            });
+                    ];
+                }
+            );
 
-        return response()->json([
+        return response()->json(
+            [
             'success' => true,
             'data'    => $documents,
-        ]);
+            ]
+        );
     }
 
     /**
@@ -190,16 +212,19 @@ class CgoKycController extends Controller
             ->firstOrFail();
 
         if ($investment->status !== 'kyc_required' && $investment->status !== 'pending') {
-            return response()->json([
+            return response()->json(
+                [
                 'success' => false,
                 'message' => 'Investment is not pending KYC verification',
-            ], 400);
+                ], 400
+            );
         }
 
         $verified = $this->cgoKycService->verifyInvestor($investment);
 
         if ($verified) {
-            return response()->json([
+            return response()->json(
+                [
                 'success' => true,
                 'message' => 'KYC verification successful',
                 'data'    => [
@@ -207,11 +232,13 @@ class CgoKycController extends Controller
                     'kyc_level'     => $investment->kyc_level,
                     'can_proceed'   => true,
                 ],
-            ]);
+                ]
+            );
         } else {
             $requirements = $this->cgoKycService->checkKycRequirements($investment);
 
-            return response()->json([
+            return response()->json(
+                [
                 'success' => false,
                 'message' => 'KYC verification required',
                 'data'    => [
@@ -221,7 +248,8 @@ class CgoKycController extends Controller
                     'required_documents' => $requirements['required_documents'],
                     'status'             => $investment->status,
                 ],
-            ], 422);
+                ], 422
+            );
         }
     }
 

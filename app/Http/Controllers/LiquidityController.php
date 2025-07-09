@@ -47,23 +47,27 @@ class LiquidityController extends Controller
 
     public function addLiquidity(Request $request): \Illuminate\Http\RedirectResponse
     {
-        $validated = $request->validate([
+        $validated = $request->validate(
+            [
             'pool_id'      => 'required|uuid',
             'base_amount'  => 'required|numeric|min:0.00000001',
             'quote_amount' => 'required|numeric|min:0.00000001',
             'min_shares'   => 'nullable|numeric|min:0',
-        ]);
+            ]
+        );
 
         try {
-            $result = $this->liquidityService->addLiquidity(new LiquidityAdditionInput(
-                poolId: $validated['pool_id'],
-                providerId: auth()->user()->account->id,
-                baseCurrency: $request->base_currency,
-                quoteCurrency: $request->quote_currency,
-                baseAmount: $validated['base_amount'],
-                quoteAmount: $validated['quote_amount'],
-                minShares: $validated['min_shares'] ?? '0'
-            ));
+            $result = $this->liquidityService->addLiquidity(
+                new LiquidityAdditionInput(
+                    poolId: $validated['pool_id'],
+                    providerId: auth()->user()->account->id,
+                    baseCurrency: $request->base_currency,
+                    quoteCurrency: $request->quote_currency,
+                    baseAmount: $validated['base_amount'],
+                    quoteAmount: $validated['quote_amount'],
+                    minShares: $validated['min_shares'] ?? '0'
+                )
+            );
 
             if ($result['success']) {
                 return redirect()
@@ -79,32 +83,38 @@ class LiquidityController extends Controller
 
     public function removeLiquidity(Request $request): \Illuminate\Http\RedirectResponse
     {
-        $validated = $request->validate([
+        $validated = $request->validate(
+            [
             'pool_id'          => 'required|uuid',
             'shares'           => 'required|numeric|min:0.00000001',
             'min_base_amount'  => 'nullable|numeric|min:0',
             'min_quote_amount' => 'nullable|numeric|min:0',
-        ]);
+            ]
+        );
 
         try {
-            $result = $this->liquidityService->removeLiquidity(new LiquidityRemovalInput(
-                poolId: $validated['pool_id'],
-                providerId: auth()->user()->account->id,
-                shares: $validated['shares'],
-                minBaseAmount: $validated['min_base_amount'] ?? '0',
-                minQuoteAmount: $validated['min_quote_amount'] ?? '0'
-            ));
+            $result = $this->liquidityService->removeLiquidity(
+                new LiquidityRemovalInput(
+                    poolId: $validated['pool_id'],
+                    providerId: auth()->user()->account->id,
+                    shares: $validated['shares'],
+                    minBaseAmount: $validated['min_base_amount'] ?? '0',
+                    minQuoteAmount: $validated['min_quote_amount'] ?? '0'
+                )
+            );
 
             if ($result['success']) {
                 return redirect()
                     ->route('liquidity.pool', $validated['pool_id'])
-                    ->with('success', sprintf(
-                        'Liquidity removed successfully. Received: %s %s and %s %s',
-                        $result['base_amount'],
-                        $request->base_currency,
-                        $result['quote_amount'],
-                        $request->quote_currency
-                    ));
+                    ->with(
+                        'success', sprintf(
+                            'Liquidity removed successfully. Received: %s %s and %s %s',
+                            $result['base_amount'],
+                            $request->base_currency,
+                            $result['quote_amount'],
+                            $request->quote_currency
+                        )
+                    );
             } else {
                 return back()->with('error', 'Failed to remove liquidity: ' . $result['error']);
             }
@@ -115,9 +125,11 @@ class LiquidityController extends Controller
 
     public function claimRewards(Request $request): \Illuminate\Http\RedirectResponse
     {
-        $validated = $request->validate([
+        $validated = $request->validate(
+            [
             'pool_id' => 'required|uuid',
-        ]);
+            ]
+        );
 
         try {
             $rewards = $this->liquidityService->claimRewards(

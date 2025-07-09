@@ -159,11 +159,13 @@ class AccountGrowthChart extends ChartWidget
             $new = $account?->count ?? 0;
             $cumulative += $new;
 
-            $data->push([
+            $data->push(
+                [
                 'date'       => $current->format($groupBy['format']),
                 'new'        => $new,
                 'cumulative' => $cumulative,
-            ]);
+                ]
+            );
 
             match ($groupBy['interval']) {
                 'day'   => $current->addDay(),

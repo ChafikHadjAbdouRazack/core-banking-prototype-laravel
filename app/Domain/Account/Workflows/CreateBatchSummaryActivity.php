@@ -14,8 +14,8 @@ class CreateBatchSummaryActivity extends Activity
     /**
      * Create a summary of all completed batch operations.
      *
-     * @param array $completedOperations
-     * @param string $batchId
+     * @param  array  $completedOperations
+     * @param  string $batchId
      * @return array
      */
     public function execute(array $completedOperations, string $batchId): array

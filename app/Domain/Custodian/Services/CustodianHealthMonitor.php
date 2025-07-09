@@ -90,9 +90,11 @@ class CustodianHealthMonitor
                 'recommendations'         => $this->getRecommendations($status, $overallFailureRate),
             ];
         } catch (\Exception $e) {
-            Log::error("Failed to get health for custodian: {$custodian}", [
+            Log::error(
+                "Failed to get health for custodian: {$custodian}", [
                 'error' => $e->getMessage(),
-            ]);
+                ]
+            );
 
             return [
                 'custodian'  => $custodian,
@@ -132,25 +134,25 @@ class CustodianHealthMonitor
         $recommendations = [];
 
         switch ($status) {
-            case self::STATUS_UNHEALTHY:
-                $recommendations[] = 'Consider switching to alternative custodian';
-                $recommendations[] = 'Queue non-critical transfers for retry';
-                $recommendations[] = 'Alert operations team immediately';
-                break;
+        case self::STATUS_UNHEALTHY:
+            $recommendations[] = 'Consider switching to alternative custodian';
+            $recommendations[] = 'Queue non-critical transfers for retry';
+            $recommendations[] = 'Alert operations team immediately';
+            break;
 
-            case self::STATUS_DEGRADED:
-                $recommendations[] = 'Monitor closely for further degradation';
-                $recommendations[] = 'Consider reducing traffic to this custodian';
-                if ($failureRate > 0.5) {
-                    $recommendations[] = 'Prepare for potential failover';
-                }
-                break;
+        case self::STATUS_DEGRADED:
+            $recommendations[] = 'Monitor closely for further degradation';
+            $recommendations[] = 'Consider reducing traffic to this custodian';
+            if ($failureRate > 0.5) {
+                $recommendations[] = 'Prepare for potential failover';
+            }
+            break;
 
-            case self::STATUS_HEALTHY:
-                if ($failureRate > 0.1) {
-                    $recommendations[] = 'Continue monitoring for anomalies';
-                }
-                break;
+        case self::STATUS_HEALTHY:
+            if ($failureRate > 0.1) {
+                $recommendations[] = 'Continue monitoring for anomalies';
+            }
+            break;
         }
 
         return $recommendations;
@@ -166,18 +168,22 @@ class CustodianHealthMonitor
 
         if ($previousStatus !== null && $previousStatus !== $newStatus) {
             // Status changed, fire event
-            event(new CustodianHealthChanged(
-                custodian: $custodian,
-                previousStatus: $previousStatus,
-                newStatus: $newStatus,
-                timestamp: now()
-            ));
+            event(
+                new CustodianHealthChanged(
+                    custodian: $custodian,
+                    previousStatus: $previousStatus,
+                    newStatus: $newStatus,
+                    timestamp: now()
+                )
+            );
 
-            Log::warning('Custodian health status changed', [
+            Log::warning(
+                'Custodian health status changed', [
                 'custodian' => $custodian,
                 'previous'  => $previousStatus,
                 'new'       => $newStatus,
-            ]);
+                ]
+            );
         }
 
         // Update cached status
@@ -191,10 +197,11 @@ class CustodianHealthMonitor
     {
         $cacheKey = "custodian:availability:metrics:{$custodian}:{$hours}h";
 
-        return Cache::remember($cacheKey, 300, function () use ($custodian, $hours) {
-            // In production, this would query time-series data
-            // For now, return sample metrics
-            return [
+        return Cache::remember(
+            $cacheKey, 300, function () use ($custodian, $hours) {
+                // In production, this would query time-series data
+                // For now, return sample metrics
+                return [
                 'custodian'                => $custodian,
                 'period_hours'             => $hours,
                 'availability_percentage'  => 99.5,
@@ -204,8 +211,9 @@ class CustodianHealthMonitor
                 'average_response_time_ms' => 250,
                 'p95_response_time_ms'     => 500,
                 'p99_response_time_ms'     => 1000,
-            ];
-        });
+                ];
+            }
+        );
     }
 
     /**

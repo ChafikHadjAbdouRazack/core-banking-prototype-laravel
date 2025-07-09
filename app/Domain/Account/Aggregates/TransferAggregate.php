@@ -49,7 +49,7 @@ class TransferAggregate extends AggregateRoot
     /**
      * @param AccountUuid $from
      * @param AccountUuid $to
-     * @param Money $money
+     * @param Money       $money
      *
      * @return $this
      */

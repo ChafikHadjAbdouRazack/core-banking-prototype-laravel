@@ -25,46 +25,46 @@ class BatchProcessingController extends Controller
      *     summary="Execute batch operations",
      *     description="Execute end-of-day batch processing operations with compensation support",
      *     security={{"bearerAuth":{}}},
-     *     @OA\RequestBody(
+     * @OA\RequestBody(
      *         required=true,
-     *         @OA\JsonContent(
+     * @OA\JsonContent(
      *             required={"operations"},
-     *             @OA\Property(property="operations", type="array",
-     *                 @OA\Items(type="object",
-     *                     @OA\Property(property="type", type="string", enum={"account_interest", "fee_collection", "balance_reconciliation", "report_generation"}, example="account_interest"),
-     *                     @OA\Property(property="parameters", type="object", example={"rate": 0.05, "date": "2023-12-31"}),
-     *                     @OA\Property(property="priority", type="integer", minimum=1, maximum=10, example=5)
+     * @OA\Property(property="operations",         type="array",
+     * @OA\Items(type="object",
+     * @OA\Property(property="type",               type="string", enum={"account_interest", "fee_collection", "balance_reconciliation", "report_generation"}, example="account_interest"),
+     * @OA\Property(property="parameters",         type="object", example={"rate": 0.05, "date": "2023-12-31"}),
+     * @OA\Property(property="priority",           type="integer", minimum=1, maximum=10, example=5)
      *                 )
      *             ),
-     *             @OA\Property(property="batch_name", type="string", example="EOD_2023_12_31"),
-     *             @OA\Property(property="schedule_time", type="string", format="date-time", nullable=true),
-     *             @OA\Property(property="retry_attempts", type="integer", minimum=0, maximum=5, default=3)
+     * @OA\Property(property="batch_name",         type="string", example="EOD_2023_12_31"),
+     * @OA\Property(property="schedule_time",      type="string", format="date-time", nullable=true),
+     * @OA\Property(property="retry_attempts",     type="integer", minimum=0, maximum=5, default=3)
      *         )
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=202,
      *         description="Batch processing initiated successfully",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Batch processing initiated successfully"),
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="batch_id", type="string", example="batch_550e8400_e29b_41d4"),
-     *                 @OA\Property(property="status", type="string", example="initiated"),
-     *                 @OA\Property(property="operations_count", type="integer", example=4),
-     *                 @OA\Property(property="estimated_duration", type="string", example="15-30 minutes"),
-     *                 @OA\Property(property="started_at", type="string", format="date-time"),
-     *                 @OA\Property(property="started_by", type="string", example="admin@finaegis.org")
+     * @OA\JsonContent(
+     * @OA\Property(property="message",            type="string", example="Batch processing initiated successfully"),
+     * @OA\Property(property="data",               type="object",
+     * @OA\Property(property="batch_id",           type="string", example="batch_550e8400_e29b_41d4"),
+     * @OA\Property(property="status",             type="string", example="initiated"),
+     * @OA\Property(property="operations_count",   type="integer", example=4),
+     * @OA\Property(property="estimated_duration", type="string", example="15-30 minutes"),
+     * @OA\Property(property="started_at",         type="string", format="date-time"),
+     * @OA\Property(property="started_by",         type="string", example="admin@finaegis.org")
      *             )
      *         )
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=400,
      *         description="Invalid batch operation request"
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=403,
      *         description="Forbidden - Admin access required"
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=422,
      *         description="Validation error"
      *     )
@@ -77,7 +77,8 @@ class BatchProcessingController extends Controller
             return response()->json(['message' => 'Admin access required'], 403);
         }
 
-        $validated = $request->validate([
+        $validated = $request->validate(
+            [
             'operations'              => 'required|array|min:1',
             'operations.*.type'       => 'required|string|in:account_interest,fee_collection,balance_reconciliation,report_generation,maintenance_tasks',
             'operations.*.parameters' => 'required|array',
@@ -85,7 +86,8 @@ class BatchProcessingController extends Controller
             'batch_name'              => 'nullable|string|max:255',
             'schedule_time'           => 'nullable|date_format:Y-m-d H:i:s',
             'retry_attempts'          => 'integer|min:0|max:5',
-        ]);
+            ]
+        );
 
         try {
             $batchId = 'batch_' . Str::uuid()->toString();
@@ -108,7 +110,8 @@ class BatchProcessingController extends Controller
                 $status = 'initiated';
             }
 
-            return response()->json([
+            return response()->json(
+                [
                 'message' => 'Batch processing initiated successfully',
                 'data'    => [
                     'batch_id'           => $batchId,
@@ -120,18 +123,23 @@ class BatchProcessingController extends Controller
                     'started_by'         => Auth::user()->email,
                     'retry_attempts'     => $validated['retry_attempts'] ?? 3,
                 ],
-            ], 202);
+                ], 202
+            );
         } catch (\Exception $e) {
-            logger()->error('Batch processing initiation failed', [
+            logger()->error(
+                'Batch processing initiation failed', [
                 'operations' => $validated['operations'],
                 'error'      => $e->getMessage(),
                 'user_id'    => Auth::id(),
-            ]);
+                ]
+            );
 
-            return response()->json([
+            return response()->json(
+                [
                 'message' => 'Batch processing initiation failed',
                 'error'   => $e->getMessage(),
-            ], 500);
+                ], 500
+            );
         }
     }
 
@@ -142,42 +150,42 @@ class BatchProcessingController extends Controller
      *     summary="Get batch operation status",
      *     description="Get the current status and progress of a batch operation",
      *     security={{"bearerAuth":{}}},
-     *     @OA\Parameter(
+     * @OA\Parameter(
      *         name="batchId",
      *         in="path",
      *         required=true,
      *         description="Batch ID",
-     *         @OA\Schema(type="string")
+     * @OA\Schema(type="string")
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=200,
      *         description="Batch status retrieved successfully",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="batch_id", type="string", example="batch_550e8400_e29b_41d4"),
-     *                 @OA\Property(property="status", type="string", enum={"initiated", "running", "completed", "failed", "compensating"}, example="running"),
-     *                 @OA\Property(property="progress", type="integer", minimum=0, maximum=100, example=65),
-     *                 @OA\Property(property="operations_total", type="integer", example=4),
-     *                 @OA\Property(property="operations_completed", type="integer", example=2),
-     *                 @OA\Property(property="operations_failed", type="integer", example=0),
-     *                 @OA\Property(property="current_operation", type="string", example="balance_reconciliation"),
-     *                 @OA\Property(property="started_at", type="string", format="date-time"),
-     *                 @OA\Property(property="estimated_completion", type="string", format="date-time"),
-     *                 @OA\Property(property="error_message", type="string", nullable=true),
-     *                 @OA\Property(property="operations", type="array",
-     *                     @OA\Items(type="object",
-     *                         @OA\Property(property="type", type="string", example="account_interest"),
-     *                         @OA\Property(property="status", type="string", example="completed"),
-     *                         @OA\Property(property="started_at", type="string", format="date-time"),
-     *                         @OA\Property(property="completed_at", type="string", format="date-time"),
-     *                         @OA\Property(property="records_processed", type="integer", example=1250),
-     *                         @OA\Property(property="error_message", type="string", nullable=true)
+     * @OA\JsonContent(
+     * @OA\Property(property="data",                 type="object",
+     * @OA\Property(property="batch_id",             type="string", example="batch_550e8400_e29b_41d4"),
+     * @OA\Property(property="status",               type="string", enum={"initiated", "running", "completed", "failed", "compensating"}, example="running"),
+     * @OA\Property(property="progress",             type="integer", minimum=0, maximum=100, example=65),
+     * @OA\Property(property="operations_total",     type="integer", example=4),
+     * @OA\Property(property="operations_completed", type="integer", example=2),
+     * @OA\Property(property="operations_failed",    type="integer", example=0),
+     * @OA\Property(property="current_operation",    type="string", example="balance_reconciliation"),
+     * @OA\Property(property="started_at",           type="string", format="date-time"),
+     * @OA\Property(property="estimated_completion", type="string", format="date-time"),
+     * @OA\Property(property="error_message",        type="string", nullable=true),
+     * @OA\Property(property="operations",           type="array",
+     * @OA\Items(type="object",
+     * @OA\Property(property="type",                 type="string", example="account_interest"),
+     * @OA\Property(property="status",               type="string", example="completed"),
+     * @OA\Property(property="started_at",           type="string", format="date-time"),
+     * @OA\Property(property="completed_at",         type="string", format="date-time"),
+     * @OA\Property(property="records_processed",    type="integer", example=1250),
+     * @OA\Property(property="error_message",        type="string", nullable=true)
      *                     )
      *                 )
      *             )
      *         )
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=404,
      *         description="Batch operation not found"
      *     )
@@ -234,9 +242,11 @@ class BatchProcessingController extends Controller
             ],
         ];
 
-        return response()->json([
+        return response()->json(
+            [
             'data' => $mockStatus,
-        ]);
+            ]
+        );
     }
 
     /**
@@ -246,50 +256,50 @@ class BatchProcessingController extends Controller
      *     summary="Get batch operations history",
      *     description="Get list of recent batch operations with filtering options",
      *     security={{"bearerAuth":{}}},
-     *     @OA\Parameter(
+     * @OA\Parameter(
      *         name="status",
      *         in="query",
      *         description="Filter by status",
-     *         @OA\Schema(type="string", enum={"initiated", "running", "completed", "failed", "scheduled"})
+     * @OA\Schema(type="string",                 enum={"initiated", "running", "completed", "failed", "scheduled"})
      *     ),
-     *     @OA\Parameter(
+     * @OA\Parameter(
      *         name="date_from",
      *         in="query",
      *         description="Filter from date",
-     *         @OA\Schema(type="string", format="date")
+     * @OA\Schema(type="string",                 format="date")
      *     ),
-     *     @OA\Parameter(
+     * @OA\Parameter(
      *         name="date_to",
      *         in="query",
      *         description="Filter to date",
-     *         @OA\Schema(type="string", format="date")
+     * @OA\Schema(type="string",                 format="date")
      *     ),
-     *     @OA\Parameter(
+     * @OA\Parameter(
      *         name="limit",
      *         in="query",
      *         description="Number of results to return",
-     *         @OA\Schema(type="integer", minimum=1, maximum=100, default=20)
+     * @OA\Schema(type="integer",                minimum=1, maximum=100, default=20)
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=200,
      *         description="Batch operations history retrieved successfully",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="data", type="array",
-     *                 @OA\Items(type="object",
-     *                     @OA\Property(property="batch_id", type="string", example="batch_550e8400_e29b_41d4"),
-     *                     @OA\Property(property="batch_name", type="string", example="EOD_2023_12_31"),
-     *                     @OA\Property(property="status", type="string", example="completed"),
-     *                     @OA\Property(property="operations_count", type="integer", example=4),
-     *                     @OA\Property(property="started_at", type="string", format="date-time"),
-     *                     @OA\Property(property="completed_at", type="string", format="date-time"),
-     *                     @OA\Property(property="duration_minutes", type="integer", example=23),
-     *                     @OA\Property(property="started_by", type="string", example="admin@finaegis.org")
+     * @OA\JsonContent(
+     * @OA\Property(property="data",             type="array",
+     * @OA\Items(type="object",
+     * @OA\Property(property="batch_id",         type="string", example="batch_550e8400_e29b_41d4"),
+     * @OA\Property(property="batch_name",       type="string", example="EOD_2023_12_31"),
+     * @OA\Property(property="status",           type="string", example="completed"),
+     * @OA\Property(property="operations_count", type="integer", example=4),
+     * @OA\Property(property="started_at",       type="string", format="date-time"),
+     * @OA\Property(property="completed_at",     type="string", format="date-time"),
+     * @OA\Property(property="duration_minutes", type="integer", example=23),
+     * @OA\Property(property="started_by",       type="string", example="admin@finaegis.org")
      *                 )
      *             ),
-     *             @OA\Property(property="pagination", type="object",
-     *                 @OA\Property(property="total", type="integer", example=87),
-     *                 @OA\Property(property="limit", type="integer", example=20),
-     *                 @OA\Property(property="offset", type="integer", example=0)
+     * @OA\Property(property="pagination",       type="object",
+     * @OA\Property(property="total",            type="integer", example=87),
+     * @OA\Property(property="limit",            type="integer", example=20),
+     * @OA\Property(property="offset",           type="integer", example=0)
      *             )
      *         )
      *     )
@@ -297,12 +307,14 @@ class BatchProcessingController extends Controller
      */
     public function getBatchHistory(Request $request): JsonResponse
     {
-        $validated = $request->validate([
+        $validated = $request->validate(
+            [
             'status'    => 'string|in:initiated,running,completed,failed,scheduled',
             'date_from' => 'date',
             'date_to'   => 'date',
             'limit'     => 'integer|min:1|max:100',
-        ]);
+            ]
+        );
 
         $limit = $validated['limit'] ?? 20;
 
@@ -331,14 +343,16 @@ class BatchProcessingController extends Controller
             ],
         ];
 
-        return response()->json([
+        return response()->json(
+            [
             'data'       => array_slice($mockHistory, 0, $limit),
             'pagination' => [
                 'total'  => count($mockHistory),
                 'limit'  => $limit,
                 'offset' => 0,
             ],
-        ]);
+            ]
+        );
     }
 
     /**
@@ -348,32 +362,32 @@ class BatchProcessingController extends Controller
      *     summary="Cancel batch operation",
      *     description="Cancel a running or scheduled batch operation with compensation",
      *     security={{"bearerAuth":{}}},
-     *     @OA\Parameter(
+     * @OA\Parameter(
      *         name="batchId",
      *         in="path",
      *         required=true,
      *         description="Batch ID",
-     *         @OA\Schema(type="string")
+     * @OA\Schema(type="string")
      *     ),
-     *     @OA\RequestBody(
+     * @OA\RequestBody(
      *         required=true,
-     *         @OA\JsonContent(
+     * @OA\JsonContent(
      *             required={"reason"},
-     *             @OA\Property(property="reason", type="string", example="Emergency maintenance required"),
-     *             @OA\Property(property="compensate", type="boolean", default=true, description="Whether to run compensation for completed operations")
+     * @OA\Property(property="reason",                type="string", example="Emergency maintenance required"),
+     * @OA\Property(property="compensate",            type="boolean", default=true, description="Whether to run compensation for completed operations")
      *         )
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=200,
      *         description="Batch operation cancelled successfully",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Batch operation cancelled successfully"),
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="batch_id", type="string", example="batch_550e8400_e29b_41d4"),
-     *                 @OA\Property(property="status", type="string", example="cancelled"),
-     *                 @OA\Property(property="cancelled_at", type="string", format="date-time"),
-     *                 @OA\Property(property="cancelled_by", type="string", example="admin@finaegis.org"),
-     *                 @OA\Property(property="compensation_required", type="boolean", example=true)
+     * @OA\JsonContent(
+     * @OA\Property(property="message",               type="string", example="Batch operation cancelled successfully"),
+     * @OA\Property(property="data",                  type="object",
+     * @OA\Property(property="batch_id",              type="string", example="batch_550e8400_e29b_41d4"),
+     * @OA\Property(property="status",                type="string", example="cancelled"),
+     * @OA\Property(property="cancelled_at",          type="string", format="date-time"),
+     * @OA\Property(property="cancelled_by",          type="string", example="admin@finaegis.org"),
+     * @OA\Property(property="compensation_required", type="boolean", example=true)
      *             )
      *         )
      *     )
@@ -385,16 +399,19 @@ class BatchProcessingController extends Controller
             return response()->json(['message' => 'Admin access required'], 403);
         }
 
-        $validated = $request->validate([
+        $validated = $request->validate(
+            [
             'reason'     => 'required|string|max:500',
             'compensate' => 'boolean',
-        ]);
+            ]
+        );
 
         try {
             // TODO: Implement actual batch cancellation logic
             // This would involve stopping the workflow and potentially running compensations
 
-            return response()->json([
+            return response()->json(
+                [
                 'message' => 'Batch operation cancelled successfully',
                 'data'    => [
                     'batch_id'              => $batchId,
@@ -404,12 +421,15 @@ class BatchProcessingController extends Controller
                     'reason'                => $validated['reason'],
                     'compensation_required' => $validated['compensate'] ?? true,
                 ],
-            ]);
+                ]
+            );
         } catch (\Exception $e) {
-            return response()->json([
+            return response()->json(
+                [
                 'message' => 'Failed to cancel batch operation',
                 'error'   => $e->getMessage(),
-            ], 500);
+                ], 500
+            );
         }
     }
 
@@ -422,26 +442,26 @@ class BatchProcessingController extends Controller
         $parameters = $operation['parameters'];
 
         switch ($type) {
-            case 'account_interest':
-                if (! isset($parameters['rate']) || ! is_numeric($parameters['rate'])) {
-                    throw new \InvalidArgumentException('Interest rate is required for account_interest operation');
-                }
-                break;
-            case 'fee_collection':
-                if (! isset($parameters['fee_type'])) {
-                    throw new \InvalidArgumentException('Fee type is required for fee_collection operation');
-                }
-                break;
-            case 'balance_reconciliation':
-                if (! isset($parameters['date'])) {
-                    throw new \InvalidArgumentException('Date is required for balance_reconciliation operation');
-                }
-                break;
-            case 'report_generation':
-                if (! isset($parameters['report_type'])) {
-                    throw new \InvalidArgumentException('Report type is required for report_generation operation');
-                }
-                break;
+        case 'account_interest':
+            if (! isset($parameters['rate']) || ! is_numeric($parameters['rate'])) {
+                throw new \InvalidArgumentException('Interest rate is required for account_interest operation');
+            }
+            break;
+        case 'fee_collection':
+            if (! isset($parameters['fee_type'])) {
+                throw new \InvalidArgumentException('Fee type is required for fee_collection operation');
+            }
+            break;
+        case 'balance_reconciliation':
+            if (! isset($parameters['date'])) {
+                throw new \InvalidArgumentException('Date is required for balance_reconciliation operation');
+            }
+            break;
+        case 'report_generation':
+            if (! isset($parameters['report_type'])) {
+                throw new \InvalidArgumentException('Report type is required for report_generation operation');
+            }
+            break;
         }
     }
 

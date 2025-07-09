@@ -36,8 +36,10 @@ class WalletServiceProvider extends ServiceProvider
     public function boot(): void
     {
         // Register projectors
-        Projectionist::addProjectors([
+        Projectionist::addProjectors(
+            [
             BlockchainWalletProjector::class,
-        ]);
+            ]
+        );
     }
 }

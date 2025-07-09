@@ -25,37 +25,39 @@ class VoteController extends Controller
      *     description="Retrieve the authenticated user's voting history",
      *     tags={"Governance - Votes"},
      *     security={{"sanctum": {}}},
-     *     @OA\Parameter(
+     * @OA\Parameter(
      *         name="poll_id",
      *         in="query",
      *         description="Filter by specific poll ID",
      *         required=false,
-     *         @OA\Schema(type="integer")
+     * @OA\Schema(type="integer")
      *     ),
-     *     @OA\Parameter(
+     * @OA\Parameter(
      *         name="per_page",
      *         in="query",
      *         description="Number of votes per page",
      *         required=false,
-     *         @OA\Schema(type="integer", minimum=1, maximum=100, default=15)
+     * @OA\Schema(type="integer",     minimum=1, maximum=100, default=15)
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=200,
      *         description="User's voting history",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/Vote")),
-     *             @OA\Property(property="meta", type="object"),
-     *             @OA\Property(property="links", type="object")
+     * @OA\JsonContent(
+     * @OA\Property(property="data",  type="array", @OA\Items(ref="#/components/schemas/Vote")),
+     * @OA\Property(property="meta",  type="object"),
+     * @OA\Property(property="links", type="object")
      *         )
      *     )
      * )
      */
     public function index(Request $request): JsonResponse
     {
-        $validated = $request->validate([
+        $validated = $request->validate(
+            [
             'poll_id'  => ['sometimes', 'integer', 'exists:polls,id'],
             'per_page' => ['sometimes', 'integer', 'min:1', 'max:100'],
-        ]);
+            ]
+        );
 
         $query = Vote::byUser(Auth::user()->uuid)
             ->with(['poll', 'user'])
@@ -77,21 +79,21 @@ class VoteController extends Controller
      *     description="Retrieve detailed information about a specific vote",
      *     tags={"Governance - Votes"},
      *     security={{"sanctum": {}}},
-     *     @OA\Parameter(
+     * @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
-     *         @OA\Schema(type="integer")
+     * @OA\Schema(type="integer")
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=200,
      *         description="Vote details",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="data", ref="#/components/schemas/Vote")
+     * @OA\JsonContent(
+     * @OA\Property(property="data", ref="#/components/schemas/Vote")
      *         )
      *     ),
-     *     @OA\Response(response=404, description="Vote not found"),
-     *     @OA\Response(response=403, description="Access denied")
+     * @OA\Response(response=404,    description="Vote not found"),
+     * @OA\Response(response=403,    description="Access denied")
      * )
      */
     public function show(string $id): JsonResponse
@@ -99,21 +101,27 @@ class VoteController extends Controller
         $vote = Vote::with(['poll', 'user'])->find($id);
 
         if (! $vote) {
-            return response()->json([
+            return response()->json(
+                [
                 'message' => 'Vote not found',
-            ], 404);
+                ], 404
+            );
         }
 
         // Users can only view their own votes
         if ($vote->user_uuid !== Auth::user()->uuid) {
-            return response()->json([
+            return response()->json(
+                [
                 'message' => 'Access denied',
-            ], 403);
+                ], 403
+            );
         }
 
-        return response()->json([
+        return response()->json(
+            [
             'data' => $vote,
-        ]);
+            ]
+        );
     }
 
     /**
@@ -123,22 +131,22 @@ class VoteController extends Controller
      *     description="Verify the cryptographic signature of a vote",
      *     tags={"Governance - Votes"},
      *     security={{"sanctum": {}}},
-     *     @OA\Parameter(
+     * @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
-     *         @OA\Schema(type="integer")
+     * @OA\Schema(type="integer")
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=200,
      *         description="Vote verification result",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="verified", type="boolean"),
-     *             @OA\Property(property="message", type="string")
+     * @OA\JsonContent(
+     * @OA\Property(property="verified", type="boolean"),
+     * @OA\Property(property="message",  type="string")
      *         )
      *     ),
-     *     @OA\Response(response=404, description="Vote not found"),
-     *     @OA\Response(response=403, description="Access denied")
+     * @OA\Response(response=404,        description="Vote not found"),
+     * @OA\Response(response=403,        description="Access denied")
      * )
      */
     public function verify(string $id): JsonResponse
@@ -146,26 +154,32 @@ class VoteController extends Controller
         $vote = Vote::find($id);
 
         if (! $vote) {
-            return response()->json([
+            return response()->json(
+                [
                 'message' => 'Vote not found',
-            ], 404);
+                ], 404
+            );
         }
 
         // Users can only verify their own votes
         if ($vote->user_uuid !== Auth::user()->uuid) {
-            return response()->json([
+            return response()->json(
+                [
                 'message' => 'Access denied',
-            ], 403);
+                ], 403
+            );
         }
 
         $isValid = $vote->verifySignature();
 
-        return response()->json([
+        return response()->json(
+            [
             'verified' => $isValid,
             'message'  => $isValid
                 ? 'Vote signature is valid and vote has not been tampered with'
                 : 'Vote signature is invalid or vote has been tampered with',
-        ]);
+            ]
+        );
     }
 
     /**
@@ -175,15 +189,15 @@ class VoteController extends Controller
      *     description="Retrieve statistics about the user's voting activity",
      *     tags={"Governance - Votes"},
      *     security={{"sanctum": {}}},
-     *     @OA\Response(
+     * @OA\Response(
      *         response=200,
      *         description="User's voting statistics",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="total_votes", type="integer"),
-     *             @OA\Property(property="total_voting_power", type="integer"),
-     *             @OA\Property(property="recent_votes", type="integer", description="Votes in last 30 days"),
-     *             @OA\Property(property="avg_voting_power", type="number", format="float"),
-     *             @OA\Property(property="participation_rate", type="number", format="float")
+     * @OA\JsonContent(
+     * @OA\Property(property="total_votes",        type="integer"),
+     * @OA\Property(property="total_voting_power", type="integer"),
+     * @OA\Property(property="recent_votes",       type="integer", description="Votes in last 30 days"),
+     * @OA\Property(property="avg_voting_power",   type="number", format="float"),
+     * @OA\Property(property="participation_rate", type="number", format="float")
      *         )
      *     )
      * )
@@ -204,12 +218,14 @@ class VoteController extends Controller
         $totalPolls = \App\Domain\Governance\Models\Poll::count();
         $participationRate = $totalPolls > 0 ? ($totalVotes / $totalPolls) * 100 : 0;
 
-        return response()->json([
+        return response()->json(
+            [
             'total_votes'        => $totalVotes,
             'total_voting_power' => $totalVotingPower,
             'recent_votes'       => $recentVotes,
             'avg_voting_power'   => round($avgVotingPower, 2),
             'participation_rate' => round($participationRate, 2),
-        ]);
+            ]
+        );
     }
 }

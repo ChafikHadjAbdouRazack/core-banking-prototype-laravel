@@ -14,62 +14,68 @@ trait Auditable
      */
     public static function bootAuditable(): void
     {
-        static::created(function (Model $model) {
-            if (! $model->shouldAudit()) {
-                return;
-            }
-
-            AuditLog::log(
-                'created',
-                $model,
-                null,
-                $model->getAuditableAttributes(),
-                $model->getAuditMetadata(),
-                $model->getAuditTags()
-            );
-        });
-
-        static::updated(function (Model $model) {
-            if (! $model->shouldAudit() || ! $model->wasChanged()) {
-                return;
-            }
-
-            $old = [];
-            $new = [];
-
-            foreach ($model->getChanges() as $attribute => $value) {
-                if (in_array($attribute, $model->getAuditableAttributes())) {
-                    $old[$attribute] = $model->getOriginal($attribute);
-                    $new[$attribute] = $value;
+        static::created(
+            function (Model $model) {
+                if (! $model->shouldAudit()) {
+                    return;
                 }
-            }
 
-            if (! empty($old)) {
                 AuditLog::log(
-                    'updated',
+                    'created',
                     $model,
-                    $old,
-                    $new,
+                    null,
+                    $model->getAuditableAttributes(),
                     $model->getAuditMetadata(),
                     $model->getAuditTags()
                 );
             }
-        });
+        );
 
-        static::deleted(function (Model $model) {
-            if (! $model->shouldAudit()) {
-                return;
+        static::updated(
+            function (Model $model) {
+                if (! $model->shouldAudit() || ! $model->wasChanged()) {
+                    return;
+                }
+
+                $old = [];
+                $new = [];
+
+                foreach ($model->getChanges() as $attribute => $value) {
+                    if (in_array($attribute, $model->getAuditableAttributes())) {
+                        $old[$attribute] = $model->getOriginal($attribute);
+                        $new[$attribute] = $value;
+                    }
+                }
+
+                if (! empty($old)) {
+                    AuditLog::log(
+                        'updated',
+                        $model,
+                        $old,
+                        $new,
+                        $model->getAuditMetadata(),
+                        $model->getAuditTags()
+                    );
+                }
             }
+        );
 
-            AuditLog::log(
-                'deleted',
-                $model,
-                $model->getAuditableAttributes(),
-                null,
-                $model->getAuditMetadata(),
-                $model->getAuditTags()
-            );
-        });
+        static::deleted(
+            function (Model $model) {
+                if (! $model->shouldAudit()) {
+                    return;
+                }
+
+                AuditLog::log(
+                    'deleted',
+                    $model,
+                    $model->getAuditableAttributes(),
+                    null,
+                    $model->getAuditMetadata(),
+                    $model->getAuditTags()
+                );
+            }
+        );
     }
 
     /**

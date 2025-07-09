@@ -9,7 +9,7 @@ use App\Models\BatchJobItem;
 class UpdateBatchItem
 {
     /**
-     * @param BatchItemProcessed $event
+     * @param  BatchItemProcessed $event
      * @return void
      */
     public function __invoke(BatchItemProcessed $event): void
@@ -23,12 +23,14 @@ class UpdateBatchItem
         // Update the item
         BatchJobItem::where('batch_job_uuid', $batchJob->uuid)
             ->where('sequence', $event->itemIndex + 1)
-            ->update([
+            ->update(
+                [
                 'status'        => $event->status,
                 'result'        => $event->result,
                 'error_message' => $event->errorMessage,
                 'processed_at'  => now(),
-            ]);
+                ]
+            );
 
         // Update batch job counters
         $batchJob->increment('processed_items');

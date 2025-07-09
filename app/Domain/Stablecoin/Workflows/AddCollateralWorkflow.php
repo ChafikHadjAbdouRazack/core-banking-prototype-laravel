@@ -33,13 +33,15 @@ class AddCollateralWorkflow extends Workflow
             );
 
             // Add compensation to release collateral on failure
-            $this->addCompensation(fn () => ActivityStub::make(
-                ReleaseCollateralActivity::class,
-                $accountUuid,
-                $positionUuid,
-                $collateralAssetCode,
-                $collateralAmount
-            ));
+            $this->addCompensation(
+                fn () => ActivityStub::make(
+                    ReleaseCollateralActivity::class,
+                    $accountUuid,
+                    $positionUuid,
+                    $collateralAssetCode,
+                    $collateralAmount
+                )
+            );
 
             // Update position with new values
             yield ActivityStub::make(

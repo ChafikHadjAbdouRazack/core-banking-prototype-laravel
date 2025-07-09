@@ -92,11 +92,13 @@ class CgoInvestment extends Model
     {
         parent::boot();
 
-        static::creating(function ($model) {
-            if (! $model->uuid) {
-                $model->uuid = (string) Str::uuid();
+        static::creating(
+            function ($model) {
+                if (! $model->uuid) {
+                    $model->uuid = (string) Str::uuid();
+                }
             }
-        });
+        );
     }
 
     public function user(): BelongsTo

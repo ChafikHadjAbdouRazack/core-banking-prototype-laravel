@@ -128,10 +128,12 @@ class Settings extends Page
                 ->success()
                 ->send();
 
-            Log::info('Platform settings updated', [
+            Log::info(
+                'Platform settings updated', [
                 'user'           => auth()->user()->email ?? 'system',
                 'settings_count' => count($data),
-            ]);
+                ]
+            );
         } catch (Halt $exception) {
             return;
         }
@@ -151,9 +153,11 @@ class Settings extends Page
                 ->success()
                 ->send();
 
-            Log::info('Platform settings reset to defaults', [
+            Log::info(
+                'Platform settings reset to defaults', [
                 'user' => auth()->user()->email ?? 'system',
-            ]);
+                ]
+            );
         } catch (\Exception $e) {
             Notification::make()
                 ->title('Error resetting settings')
@@ -176,11 +180,13 @@ class Settings extends Page
             ->send();
 
         // In a real implementation, this would trigger a download
-        Log::info('Settings exported', [
+        Log::info(
+            'Settings exported', [
             'user'           => auth()->user()->email ?? 'system',
             'filename'       => $filename,
             'settings_count' => count($settings),
-        ]);
+            ]
+        );
     }
 
     protected function getHeaderActions(): array

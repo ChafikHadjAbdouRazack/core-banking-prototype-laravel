@@ -88,22 +88,30 @@ class MatchOrderActivity extends Activity
             // For limit orders, find orders that match the price criteria
             if ($order->type === 'buy') {
                 // Buy order: can match with sell orders at or below the limit price
-                $query->where(function ($q) use ($order) {
-                    $q->where('order_type', 'market')
-                        ->orWhere(function ($q2) use ($order) {
-                            $q2->where('order_type', 'limit')
-                                ->whereRaw('CAST(price AS DECIMAL(36,18)) <= ?', [$order->price]);
-                        });
-                });
+                $query->where(
+                    function ($q) use ($order) {
+                        $q->where('order_type', 'market')
+                            ->orWhere(
+                                function ($q2) use ($order) {
+                                    $q2->where('order_type', 'limit')
+                                        ->whereRaw('CAST(price AS DECIMAL(36,18)) <= ?', [$order->price]);
+                                }
+                            );
+                    }
+                );
             } else {
                 // Sell order: can match with buy orders at or above the limit price
-                $query->where(function ($q) use ($order) {
-                    $q->where('order_type', 'market')
-                        ->orWhere(function ($q2) use ($order) {
-                            $q2->where('order_type', 'limit')
-                                ->whereRaw('CAST(price AS DECIMAL(36,18)) >= ?', [$order->price]);
-                        });
-                });
+                $query->where(
+                    function ($q) use ($order) {
+                        $q->where('order_type', 'market')
+                            ->orWhere(
+                                function ($q2) use ($order) {
+                                    $q2->where('order_type', 'limit')
+                                        ->whereRaw('CAST(price AS DECIMAL(36,18)) >= ?', [$order->price]);
+                                }
+                            );
+                    }
+                );
             }
         }
 

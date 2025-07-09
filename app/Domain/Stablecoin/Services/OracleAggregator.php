@@ -41,17 +41,19 @@ class OracleAggregator
     {
         $cacheKey = "oracle_price_{$base}_{$quote}";
 
-        return Cache::remember($cacheKey, 60, function () use ($base, $quote) {
-            $prices = $this->collectPrices($base, $quote);
+        return Cache::remember(
+            $cacheKey, 60, function () use ($base, $quote) {
+                $prices = $this->collectPrices($base, $quote);
 
-            if ($prices->count() < $this->minOracles) {
-                throw new \RuntimeException("Insufficient oracle responses. Got {$prices->count()}, need {$this->minOracles}");
+                if ($prices->count() < $this->minOracles) {
+                    throw new \RuntimeException("Insufficient oracle responses. Got {$prices->count()}, need {$this->minOracles}");
+                }
+
+                $this->validatePriceDeviation($prices);
+
+                return $this->calculateAggregatedPrice($prices);
             }
-
-            $this->validatePriceDeviation($prices);
-
-            return $this->calculateAggregatedPrice($prices);
-        });
+        );
     }
 
     /**
@@ -107,22 +109,28 @@ class OracleAggregator
         $deviation = $max->minus($min)->dividedBy($avg, 4, RoundingMode::UP);
 
         if ($deviation->toFloat() > $this->maxDeviation) {
-            Log::warning('Price deviation exceeds threshold', [
+            Log::warning(
+                'Price deviation exceeds threshold', [
                 'deviation' => $deviation->toFloat(),
                 'threshold' => $this->maxDeviation,
-                'prices'    => $prices->map(fn ($p) => [
+                'prices'    => $prices->map(
+                    fn ($p) => [
                     'source' => $p->source,
                     'price'  => $p->price,
-                ])->toArray(),
-            ]);
+                    ]
+                )->toArray(),
+                ]
+            );
 
             // Emit event for monitoring
-            event(new \App\Domain\Stablecoin\Events\OracleDeviationDetected(
-                base: $base,
-                quote: $quote,
-                deviation: $deviation->toFloat(),
-                prices: $prices->toArray()
-            ));
+            event(
+                new \App\Domain\Stablecoin\Events\OracleDeviationDetected(
+                    base: $base,
+                    quote: $quote,
+                    deviation: $deviation->toFloat(),
+                    prices: $prices->toArray()
+                )
+            );
         }
     }
 
@@ -147,11 +155,13 @@ class OracleAggregator
             base: $prices->first()->base,
             quote: $prices->first()->quote,
             price: $median->toScale(8, RoundingMode::HALF_UP)->__toString(),
-            sources: $prices->map(fn ($p) => [
+            sources: $prices->map(
+                fn ($p) => [
                 'name'      => $p->source,
                 'price'     => $p->price,
                 'timestamp' => $p->timestamp->toIso8601String(),
-            ])->toArray(),
+                ]
+            )->toArray(),
             aggregationMethod: 'median',
             timestamp: now(),
             confidence: $this->calculateConfidence($prices, $median)
@@ -167,11 +177,13 @@ class OracleAggregator
             return 0.5;
         }
 
-        $deviations = $prices->map(function ($price) use ($median) {
-            $value = BigDecimal::of($price->price);
+        $deviations = $prices->map(
+            function ($price) use ($median) {
+                $value = BigDecimal::of($price->price);
 
-            return $value->minus($median)->abs()->dividedBy($median, 4, RoundingMode::UP)->toFloat();
-        });
+                return $value->minus($median)->abs()->dividedBy($median, 4, RoundingMode::UP)->toFloat();
+            }
+        );
 
         $avgDeviation = $deviations->count() > 0 ? $deviations->sum() / $deviations->count() : 0;
 

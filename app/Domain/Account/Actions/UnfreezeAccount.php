@@ -8,7 +8,7 @@ use App\Models\Account;
 class UnfreezeAccount
 {
     /**
-     * @param AccountUnfrozen $event
+     * @param  AccountUnfrozen $event
      * @return void
      */
     public function __invoke(AccountUnfrozen $event): void
@@ -17,8 +17,10 @@ class UnfreezeAccount
             ->where('uuid', $event->aggregateRootUuid())
             ->firstOrFail();
 
-        $account->update([
+        $account->update(
+            [
             'frozen' => false,
-        ]);
+            ]
+        );
     }
 }

@@ -24,10 +24,12 @@ class ExchangeRateChartWidget extends ChartWidget
             $date = now()->subDays($i);
             $count = ExchangeRate::whereDate('created_at', $date)->count();
 
-            $data->push([
+            $data->push(
+                [
                 'date'  => $date->format('M j'),
                 'rates' => $count,
-            ]);
+                ]
+            );
         }
 
         return [

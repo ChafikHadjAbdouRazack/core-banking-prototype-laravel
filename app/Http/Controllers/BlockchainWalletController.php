@@ -27,9 +27,11 @@ class BlockchainWalletController extends Controller
 
         // Get user's blockchain addresses
         $addresses = BlockchainAddress::where('user_uuid', $user->uuid)
-            ->with(['transactions' => function ($query) {
-                $query->latest()->limit(5);
-            }])
+            ->with(
+                ['transactions' => function ($query) {
+                    $query->latest()->limit(5);
+                }]
+            )
             ->get();
 
         // Get blockchain balances
@@ -62,11 +64,13 @@ class BlockchainWalletController extends Controller
      */
     public function generateAddress(Request $request)
     {
-        $validated = $request->validate([
+        $validated = $request->validate(
+            [
             'chain'    => 'required|in:ethereum,bitcoin,polygon,bsc',
             'label'    => 'required|string|max:255',
             'password' => 'required|string|min:8',
-        ]);
+            ]
+        );
 
         try {
             // Generate new address
@@ -76,7 +80,8 @@ class BlockchainWalletController extends Controller
             );
 
             // Store address in database
-            $address = BlockchainAddress::create([
+            $address = BlockchainAddress::create(
+                [
                 'uuid'            => Str::uuid()->toString(),
                 'user_uuid'       => Auth::user()->uuid,
                 'chain'           => $validated['chain'],
@@ -89,7 +94,8 @@ class BlockchainWalletController extends Controller
                     'created_via' => 'web',
                     'ip_address'  => $request->ip(),
                 ],
-            ]);
+                ]
+            );
 
             return redirect()
                 ->route('wallet.blockchain.show', $address->uuid)
@@ -157,13 +163,15 @@ class BlockchainWalletController extends Controller
             ->where('user_uuid', Auth::user()->uuid)
             ->firstOrFail();
 
-        $validated = $request->validate([
+        $validated = $request->validate(
+            [
             'recipient_address' => 'required|string',
             'amount'            => 'required|numeric|min:0.00000001',
             'fee_level'         => 'required|in:slow,medium,fast',
             'password'          => 'required|string',
             'memo'              => 'nullable|string|max:255',
-        ]);
+            ]
+        );
 
         try {
             // Validate recipient address
@@ -193,7 +201,8 @@ class BlockchainWalletController extends Controller
             );
 
             // Record transaction
-            BlockchainTransaction::create([
+            BlockchainTransaction::create(
+                [
                 'uuid'         => Str::uuid()->toString(),
                 'address_uuid' => $address->uuid,
                 'tx_hash'      => $txHash,
@@ -208,7 +217,8 @@ class BlockchainWalletController extends Controller
                     'memo'      => $validated['memo'],
                     'fee_level' => $validated['fee_level'],
                 ],
-            ]);
+                ]
+            );
 
             return redirect()
                 ->route('wallet.blockchain.show', $address->uuid)
@@ -226,9 +236,11 @@ class BlockchainWalletController extends Controller
     public function showTransaction($transactionId)
     {
         $transaction = BlockchainTransaction::where('uuid', $transactionId)
-            ->whereHas('address', function ($query) {
-                $query->where('user_uuid', Auth::user()->uuid);
-            })
+            ->whereHas(
+                'address', function ($query) {
+                    $query->where('user_uuid', Auth::user()->uuid);
+                }
+            )
             ->firstOrFail();
 
         // Get transaction status from blockchain
@@ -248,10 +260,12 @@ class BlockchainWalletController extends Controller
      */
     public function exportBackup(Request $request)
     {
-        $validated = $request->validate([
+        $validated = $request->validate(
+            [
             'password'             => 'required|string',
             'include_private_keys' => 'boolean',
-        ]);
+            ]
+        );
 
         try {
             $user = Auth::user();
@@ -259,13 +273,15 @@ class BlockchainWalletController extends Controller
 
             $backup = $this->keyManagementService->generateBackup($user->uuid);
 
-            return response()->json([
+            return response()->json(
+                [
                 'backup_id'       => $backup['backup_id'],
                 'encrypted_data'  => $backup['encrypted_data'],
                 'checksum'        => $backup['checksum'],
                 'created_at'      => now()->toIso8601String(),
                 'addresses_count' => $addresses->count(),
-            ])->header('Content-Disposition', 'attachment; filename="wallet-backup-' . now()->format('Y-m-d') . '.json"');
+                ]
+            )->header('Content-Disposition', 'attachment; filename="wallet-backup-' . now()->format('Y-m-d') . '.json"');
         } catch (\Exception $e) {
             return back()->withErrors(['error' => 'Failed to export backup: ' . $e->getMessage()]);
         }

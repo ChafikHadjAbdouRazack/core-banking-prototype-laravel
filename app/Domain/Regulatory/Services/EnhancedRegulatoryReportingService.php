@@ -41,7 +41,8 @@ class EnhancedRegulatoryReportingService extends RegulatoryReportingService
         $filename = parent::generateCTR($date);
 
         // Create regulatory report record
-        $report = RegulatoryReport::create([
+        $report = RegulatoryReport::create(
+            [
             'report_type'            => RegulatoryReport::TYPE_CTR,
             'jurisdiction'           => RegulatoryReport::JURISDICTION_US,
             'reporting_period_start' => $date->startOfDay(),
@@ -56,7 +57,8 @@ class EnhancedRegulatoryReportingService extends RegulatoryReportingService
             'regulation_reference'   => '31 CFR 1022.310',
             'is_mandatory'           => true,
             'due_date'               => $date->copy()->addBusinessDays(15),
-        ]);
+            ]
+        );
 
         // Enhance with fraud detection data
         $this->enhanceReportWithFraudData($report, $date);
@@ -111,7 +113,8 @@ class EnhancedRegulatoryReportingService extends RegulatoryReportingService
         Storage::put($filename, json_encode($reportData, JSON_PRETTY_PRINT));
 
         // Create regulatory report record
-        $report = RegulatoryReport::create([
+        $report = RegulatoryReport::create(
+            [
             'report_type'            => RegulatoryReport::TYPE_SAR,
             'jurisdiction'           => RegulatoryReport::JURISDICTION_US,
             'reporting_period_start' => $startDate,
@@ -132,20 +135,25 @@ class EnhancedRegulatoryReportingService extends RegulatoryReportingService
                 'requires_immediate_filing' => $this->requiresImmediateFiling($suspiciousActivities),
             ],
             'record_count' => $suspiciousActivities->count(),
-        ]);
+            ]
+        );
 
         // Add entities and risk indicators
         foreach ($suspiciousActivities as $activity) {
-            $report->addEntity($activity['entity_type'], $activity['entity_id'], [
+            $report->addEntity(
+                $activity['entity_type'], $activity['entity_id'], [
                 'risk_score'    => $activity['risk_score'] ?? null,
                 'fraud_case_id' => $activity['fraud_case_id'] ?? null,
-            ]);
+                ]
+            );
 
             if (! empty($activity['risk_indicators'])) {
                 foreach ($activity['risk_indicators'] as $indicator) {
-                    $report->addRiskIndicator($indicator, 'high', [
+                    $report->addRiskIndicator(
+                        $indicator, 'high', [
                         'activity_id' => $activity['id'],
-                    ]);
+                        ]
+                    );
                 }
             }
         }
@@ -179,7 +187,8 @@ class EnhancedRegulatoryReportingService extends RegulatoryReportingService
         Storage::put($filename, json_encode($reportData, JSON_PRETTY_PRINT));
 
         // Create regulatory report record
-        $report = RegulatoryReport::create([
+        $report = RegulatoryReport::create(
+            [
             'report_type'            => RegulatoryReport::TYPE_AML,
             'jurisdiction'           => RegulatoryReport::JURISDICTION_US,
             'reporting_period_start' => $startDate,
@@ -200,7 +209,8 @@ class EnhancedRegulatoryReportingService extends RegulatoryReportingService
                 'high_risk_customers'          => $reportData['customer_risk_ratings']['high_risk_count'],
                 'sanctions_hits'               => $reportData['sanctions_screening']['total_hits'],
             ],
-        ]);
+            ]
+        );
 
         return $report;
     }
@@ -225,7 +235,8 @@ class EnhancedRegulatoryReportingService extends RegulatoryReportingService
         Storage::put($filename, json_encode($reportData, JSON_PRETTY_PRINT));
 
         // Create regulatory report record
-        $report = RegulatoryReport::create([
+        $report = RegulatoryReport::create(
+            [
             'report_type'            => RegulatoryReport::TYPE_OFAC,
             'jurisdiction'           => RegulatoryReport::JURISDICTION_US,
             'reporting_period_start' => $date->startOfDay(),
@@ -246,7 +257,8 @@ class EnhancedRegulatoryReportingService extends RegulatoryReportingService
                 'blocked_count'             => count($reportData['blocked_transactions']),
                 'requires_immediate_action' => $reportData['screening_results']['matches_found'] > 0,
             ],
-        ]);
+            ]
+        );
 
         return $report;
     }
@@ -276,7 +288,8 @@ class EnhancedRegulatoryReportingService extends RegulatoryReportingService
         Storage::put($filename, json_encode($reportData, JSON_PRETTY_PRINT));
 
         // Create regulatory report record
-        $report = RegulatoryReport::create([
+        $report = RegulatoryReport::create(
+            [
             'report_type'            => RegulatoryReport::TYPE_BSA,
             'jurisdiction'           => RegulatoryReport::JURISDICTION_US,
             'reporting_period_start' => $startDate,
@@ -297,7 +310,8 @@ class EnhancedRegulatoryReportingService extends RegulatoryReportingService
                 'compliance_score' => $reportData['compliance_testing']['overall_score'],
                 'risk_rating'      => $reportData['risk_assessment']['overall_rating'],
             ],
-        ]);
+            ]
+        );
 
         return $report;
     }
@@ -325,10 +339,12 @@ class EnhancedRegulatoryReportingService extends RegulatoryReportingService
         // Add risk indicators
         foreach ($fraudScores as $score) {
             if ($score->risk_level === FraudScore::RISK_LEVEL_VERY_HIGH) {
-                $report->addRiskIndicator('very_high_fraud_risk', 'critical', [
+                $report->addRiskIndicator(
+                    'very_high_fraud_risk', 'critical', [
                     'fraud_score_id' => $score->id,
                     'risk_score'     => $score->total_score,
-                ]);
+                    ]
+                );
             }
         }
     }
@@ -355,10 +371,12 @@ class EnhancedRegulatoryReportingService extends RegulatoryReportingService
                 }
 
                 // Add to report
-                $report->addRiskIndicator("threshold_triggered:{$threshold->threshold_code}", 'high', [
+                $report->addRiskIndicator(
+                    "threshold_triggered:{$threshold->threshold_code}", 'high', [
                     'threshold_name' => $threshold->name,
                     'triggered_at'   => now()->toIso8601String(),
-                ]);
+                    ]
+                );
             }
         }
     }
@@ -385,23 +403,23 @@ class EnhancedRegulatoryReportingService extends RegulatoryReportingService
     protected function applyThresholdAction(RegulatoryReport $report, RegulatoryThreshold $threshold, string $action): void
     {
         switch ($action) {
-            case RegulatoryThreshold::ACTION_REPORT:
-                if ($threshold->shouldAutoReport()) {
-                    $report->update(['status' => RegulatoryReport::STATUS_PENDING_REVIEW]);
-                }
-                break;
+        case RegulatoryThreshold::ACTION_REPORT:
+            if ($threshold->shouldAutoReport()) {
+                $report->update(['status' => RegulatoryReport::STATUS_PENDING_REVIEW]);
+            }
+            break;
 
-            case RegulatoryThreshold::ACTION_FLAG:
-                $report->update(['priority' => min(5, $report->priority + 1)]);
-                break;
+        case RegulatoryThreshold::ACTION_FLAG:
+            $report->update(['priority' => min(5, $report->priority + 1)]);
+            break;
 
-            case RegulatoryThreshold::ACTION_NOTIFY:
-                $this->sendThresholdNotification($report, $threshold);
-                break;
+        case RegulatoryThreshold::ACTION_NOTIFY:
+            $this->sendThresholdNotification($report, $threshold);
+            break;
 
-            case RegulatoryThreshold::ACTION_REVIEW:
-                $report->update(['requires_correction' => true]);
-                break;
+        case RegulatoryThreshold::ACTION_REVIEW:
+            $report->update(['requires_correction' => true]);
+            break;
         }
     }
 
@@ -418,7 +436,8 @@ class EnhancedRegulatoryReportingService extends RegulatoryReportingService
 
         // Add fraud cases
         foreach ($fraudCases as $case) {
-            $activities->push([
+            $activities->push(
+                [
                 'id'              => $case->id,
                 'type'            => 'fraud_case',
                 'entity_type'     => $case->entity_type,
@@ -429,12 +448,14 @@ class EnhancedRegulatoryReportingService extends RegulatoryReportingService
                 'detected_at'     => $case->created_at->toIso8601String(),
                 'status'          => $case->status,
                 'priority'        => $case->priority,
-            ]);
+                ]
+            );
         }
 
         // Add high-risk transactions
         foreach ($highRiskScores as $score) {
-            $activities->push([
+            $activities->push(
+                [
                 'id'              => $score->id,
                 'type'            => 'high_risk_transaction',
                 'entity_type'     => $score->entity_type,
@@ -443,7 +464,8 @@ class EnhancedRegulatoryReportingService extends RegulatoryReportingService
                 'risk_indicators' => $score->triggered_rules,
                 'detected_at'     => $score->created_at->toIso8601String(),
                 'decision'        => $score->decision,
-            ]);
+                ]
+            );
         }
 
         // Add pattern-based suspicious activities
@@ -479,11 +501,13 @@ class EnhancedRegulatoryReportingService extends RegulatoryReportingService
      */
     protected function requiresImmediateFiling(Collection $activities): bool
     {
-        return $activities->contains(function ($activity) {
-            return ($activity['risk_score'] ?? 0) >= 90 ||
+        return $activities->contains(
+            function ($activity) {
+                return ($activity['risk_score'] ?? 0) >= 90 ||
                    ($activity['priority'] ?? 0) >= 5 ||
                    in_array('immediate_threat', $activity['risk_indicators'] ?? []);
-        });
+            }
+        );
     }
 
     /**
@@ -507,11 +531,13 @@ class EnhancedRegulatoryReportingService extends RegulatoryReportingService
      */
     protected function sendThresholdNotification(RegulatoryReport $report, RegulatoryThreshold $threshold): void
     {
-        Log::warning('Regulatory threshold triggered', [
+        Log::warning(
+            'Regulatory threshold triggered', [
             'report_id'      => $report->report_id,
             'threshold_code' => $threshold->threshold_code,
             'threshold_name' => $threshold->name,
-        ]);
+            ]
+        );
 
         // In production, send actual notifications (email, SMS, etc.)
     }

@@ -40,13 +40,15 @@ class ExternalExchangeController extends Controller
         // Get recent external trades
         $recentTrades = $this->getRecentExternalTrades();
 
-        return view('exchange.external.index', compact(
-            'connectedExchanges',
-            'priceComparisons',
-            'arbitrageOpportunities',
-            'externalBalances',
-            'recentTrades'
-        ));
+        return view(
+            'exchange.external.index', compact(
+                'connectedExchanges',
+                'priceComparisons',
+                'arbitrageOpportunities',
+                'externalBalances',
+                'recentTrades'
+            )
+        );
     }
 
     /**
@@ -66,12 +68,14 @@ class ExternalExchangeController extends Controller
         // Get supported trading pairs for arbitrage
         $supportedPairs = $this->getSupportedArbitragePairs();
 
-        return view('exchange.external.arbitrage', compact(
-            'opportunities',
-            'historicalPerformance',
-            'activeStrategies',
-            'supportedPairs'
-        ));
+        return view(
+            'exchange.external.arbitrage', compact(
+                'opportunities',
+                'historicalPerformance',
+                'activeStrategies',
+                'supportedPairs'
+            )
+        );
     }
 
     /**
@@ -79,12 +83,14 @@ class ExternalExchangeController extends Controller
      */
     public function executeArbitrage(Request $request)
     {
-        $validated = $request->validate([
+        $validated = $request->validate(
+            [
             'opportunity_id'     => 'required|string',
             'amount'             => 'required|numeric|min:0.00000001',
             'slippage_tolerance' => 'required|numeric|min:0|max:5',
             'password'           => 'required|string',
-        ]);
+            ]
+        );
 
         try {
             // Execute the arbitrage trade
@@ -124,12 +130,14 @@ class ExternalExchangeController extends Controller
         // Get price alignment history
         $alignmentHistory = $this->getPriceAlignmentHistory();
 
-        return view('exchange.external.price-alignment', compact(
-            'priceDiscrepancies',
-            'ourPrices',
-            'recommendedAdjustments',
-            'alignmentHistory'
-        ));
+        return view(
+            'exchange.external.price-alignment', compact(
+                'priceDiscrepancies',
+                'ourPrices',
+                'recommendedAdjustments',
+                'alignmentHistory'
+            )
+        );
     }
 
     /**
@@ -137,22 +145,26 @@ class ExternalExchangeController extends Controller
      */
     public function updatePriceAlignment(Request $request)
     {
-        $validated = $request->validate([
+        $validated = $request->validate(
+            [
             'auto_align'       => 'boolean',
             'max_spread'       => 'required|numeric|min:0|max:10',
             'update_frequency' => 'required|integer|min:1|max:3600',
             'exchanges'        => 'required|array',
             'exchanges.*'      => 'string|in:binance,kraken,coinbase',
-        ]);
+            ]
+        );
 
         try {
             // Update price alignment settings
-            $this->priceAggregator->updateAlignmentSettings([
+            $this->priceAggregator->updateAlignmentSettings(
+                [
                 'auto_align'          => $validated['auto_align'] ?? false,
                 'max_spread'          => $validated['max_spread'],
                 'update_frequency'    => $validated['update_frequency'],
                 'reference_exchanges' => $validated['exchanges'],
-            ]);
+                ]
+            );
 
             return redirect()
                 ->route('exchange.external.price-alignment')
@@ -169,12 +181,14 @@ class ExternalExchangeController extends Controller
      */
     public function connect(Request $request)
     {
-        $validated = $request->validate([
+        $validated = $request->validate(
+            [
             'exchange'   => 'required|string|in:binance,kraken,coinbase',
             'api_key'    => 'required|string',
             'api_secret' => 'required|string',
             'testnet'    => 'boolean',
-        ]);
+            ]
+        );
 
         try {
             // Connect to external exchange
@@ -227,15 +241,17 @@ class ExternalExchangeController extends Controller
                 ->where('user_uuid', Auth::user()->uuid)
                 ->where('is_active', true)
                 ->get()
-                ->map(function ($connection) {
-                    return [
+                ->map(
+                    function ($connection) {
+                        return [
                         'exchange'     => $connection->exchange,
                         'connected_at' => $connection->created_at,
                         'testnet'      => $connection->testnet,
                         'last_sync'    => $connection->last_sync_at,
                         'status'       => $connection->status,
-                    ];
-                });
+                        ];
+                    }
+                );
         } catch (\Exception $e) {
             // Return empty collection if table doesn't exist
             return collect();

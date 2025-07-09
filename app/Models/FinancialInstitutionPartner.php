@@ -126,23 +126,25 @@ class FinancialInstitutionPartner extends Model
     {
         parent::boot();
 
-        static::creating(function ($partner) {
-            if (empty($partner->partner_code)) {
-                $partner->partner_code = static::generatePartnerCode();
-            }
+        static::creating(
+            function ($partner) {
+                if (empty($partner->partner_code)) {
+                    $partner->partner_code = static::generatePartnerCode();
+                }
 
-            if (empty($partner->api_client_id)) {
-                $partner->api_client_id = static::generateApiClientId();
-            }
+                if (empty($partner->api_client_id)) {
+                    $partner->api_client_id = static::generateApiClientId();
+                }
 
-            if (empty($partner->api_client_secret)) {
-                $partner->api_client_secret = encrypt(Str::random(64));
-            }
+                if (empty($partner->api_client_secret)) {
+                    $partner->api_client_secret = encrypt(Str::random(64));
+                }
 
-            if (empty($partner->webhook_secret)) {
-                $partner->webhook_secret = encrypt(Str::random(32));
+                if (empty($partner->webhook_secret)) {
+                    $partner->webhook_secret = encrypt(Str::random(32));
+                }
             }
-        });
+        );
     }
 
     /**
@@ -238,12 +240,14 @@ class FinancialInstitutionPartner extends Model
      */
     public function suspend(string $reason): void
     {
-        $this->update([
+        $this->update(
+            [
             'status'             => self::STATUS_SUSPENDED,
             'suspended_at'       => now(),
             'suspension_reason'  => $reason,
             'production_enabled' => false,
-        ]);
+            ]
+        );
     }
 
     /**
@@ -251,11 +255,13 @@ class FinancialInstitutionPartner extends Model
      */
     public function reactivate(): void
     {
-        $this->update([
+        $this->update(
+            [
             'status'            => self::STATUS_ACTIVE,
             'suspended_at'      => null,
             'suspension_reason' => null,
-        ]);
+            ]
+        );
     }
 
     /**
@@ -263,13 +269,15 @@ class FinancialInstitutionPartner extends Model
      */
     public function terminate(string $reason): void
     {
-        $this->update([
+        $this->update(
+            [
             'status'             => self::STATUS_TERMINATED,
             'terminated_at'      => now(),
             'termination_reason' => $reason,
             'production_enabled' => false,
             'sandbox_enabled'    => false,
-        ]);
+            ]
+        );
     }
 
     /**
@@ -278,9 +286,11 @@ class FinancialInstitutionPartner extends Model
     public function updateActivityMetrics(): void
     {
         // This would be called from transaction processing
-        $this->update([
+        $this->update(
+            [
             'last_activity_at' => now(),
-        ]);
+            ]
+        );
     }
 
     /**
@@ -371,10 +381,12 @@ class FinancialInstitutionPartner extends Model
         $newClientId = static::generateApiClientId();
         $newClientSecret = Str::random(64);
 
-        $this->update([
+        $this->update(
+            [
             'api_client_id'     => $newClientId,
             'api_client_secret' => encrypt($newClientSecret),
-        ]);
+            ]
+        );
 
         return [
             'client_id'     => $newClientId,

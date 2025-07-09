@@ -23,18 +23,22 @@ class RegulatoryReportingService
         $threshold = 1000000; // $10,000 in cents
 
         // Query large transactions from the event store
-        $largeTransactions = StoredEvent::whereIn('event_class', [
+        $largeTransactions = StoredEvent::whereIn(
+            'event_class', [
             'App\\Domain\\Account\\Events\\MoneyAdded',
             'App\\Domain\\Account\\Events\\MoneySubtracted',
             'App\\Domain\\Account\\Events\\MoneyTransferred',
-        ])
-        ->whereDate('created_at', $date)
-        ->get()
-        ->filter(function ($event) use ($threshold) {
-            $properties = json_decode($event->event_properties, true);
+            ]
+        )
+            ->whereDate('created_at', $date)
+            ->get()
+            ->filter(
+                function ($event) use ($threshold) {
+                    $properties = json_decode($event->event_properties, true);
 
-            return isset($properties['money']['amount']) && $properties['money']['amount'] >= $threshold;
-        });
+                    return isset($properties['money']['amount']) && $properties['money']['amount'] >= $threshold;
+                }
+            );
 
         $report = [
             'report_type'        => 'Currency Transaction Report (CTR)',
@@ -175,15 +179,17 @@ class RegulatoryReportingService
                     ->where('kyc_expires_at', '<=', now()->addDays(30))
                     ->count(),
             ],
-            'pending_verifications' => User::where('kyc_status', 'pending')->get()->map(function ($user) {
-                return [
+            'pending_verifications' => User::where('kyc_status', 'pending')->get()->map(
+                function ($user) {
+                    return [
                     'user_uuid'    => $user->uuid,
                     'name'         => $user->name,
                     'email'        => $user->email,
                     'submitted_at' => $user->kyc_submitted_at,
                     'days_pending' => $user->kyc_submitted_at ? now()->diffInDays($user->kyc_submitted_at) : null,
-                ];
-            }),
+                    ];
+                }
+            ),
         ];
 
         // Save report
@@ -213,97 +219,123 @@ class RegulatoryReportingService
         // Pattern 1: Rapid succession of transactions (potential structuring)
         $rapidTransactions = DB::table('stored_events')
             ->select('aggregate_uuid', DB::raw('count(*) as transaction_count'), DB::raw('min(created_at) as first_transaction'), DB::raw('max(created_at) as last_transaction'))
-            ->whereIn('event_class', [
+            ->whereIn(
+                'event_class', [
                 'App\\Domain\\Account\\Events\\MoneyAdded',
                 'App\\Domain\\Account\\Events\\MoneySubtracted',
-            ])
+                ]
+            )
             ->whereBetween('created_at', [$startDate, $endDate])
             ->groupBy('aggregate_uuid')
             ->having('transaction_count', '>', 10)
             ->get()
-            ->filter(function ($item) {
-                $duration = Carbon::parse($item->first_transaction)->diffInHours(Carbon::parse($item->last_transaction));
+            ->filter(
+                function ($item) {
+                    $duration = Carbon::parse($item->first_transaction)->diffInHours(Carbon::parse($item->last_transaction));
 
-                return $duration <= 24; // More than 10 transactions in 24 hours
-            });
+                    return $duration <= 24; // More than 10 transactions in 24 hours
+                }
+            );
 
         foreach ($rapidTransactions as $item) {
-            $patterns->push([
+            $patterns->push(
+                [
                 'pattern_type'      => 'rapid_transactions',
                 'account_uuid'      => $item->aggregate_uuid,
                 'transaction_count' => $item->transaction_count,
                 'time_span_hours'   => Carbon::parse($item->first_transaction)->diffInHours(Carbon::parse($item->last_transaction)),
                 'first_transaction' => $item->first_transaction,
                 'last_transaction'  => $item->last_transaction,
-            ]);
+                ]
+            );
         }
 
         // Pattern 2: Just-below-threshold transactions
         $thresholdAmount = 999000; // Just below $10,000
-        $justBelowThreshold = StoredEvent::whereIn('event_class', [
+        $justBelowThreshold = StoredEvent::whereIn(
+            'event_class', [
             'App\\Domain\\Account\\Events\\MoneyAdded',
             'App\\Domain\\Account\\Events\\MoneySubtracted',
-        ])
-        ->whereBetween('created_at', [$startDate, $endDate])
-        ->get()
-        ->filter(function ($event) use ($thresholdAmount) {
-            $properties = json_decode($event->event_properties, true);
-            $amount = $properties['money']['amount'] ?? 0;
+            ]
+        )
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->get()
+            ->filter(
+                function ($event) use ($thresholdAmount) {
+                    $properties = json_decode($event->event_properties, true);
+                    $amount = $properties['money']['amount'] ?? 0;
 
-            return $amount >= $thresholdAmount * 0.9 && $amount < $thresholdAmount;
-        })
+                    return $amount >= $thresholdAmount * 0.9 && $amount < $thresholdAmount;
+                }
+            )
         ->groupBy('aggregate_uuid')
-        ->filter(function ($group) {
-            return $group->count() >= 3; // 3 or more just-below-threshold transactions
-        });
+        ->filter(
+            function ($group) {
+                return $group->count() >= 3; // 3 or more just-below-threshold transactions
+            }
+        );
 
         foreach ($justBelowThreshold as $accountUuid => $transactions) {
-            $patterns->push([
+            $patterns->push(
+                [
                 'pattern_type'      => 'threshold_avoidance',
                 'account_uuid'      => $accountUuid,
                 'transaction_count' => $transactions->count(),
-                'transactions'      => $transactions->map(function ($event) {
-                    $properties = json_decode($event->event_properties, true);
+                'transactions'      => $transactions->map(
+                    function ($event) {
+                        $properties = json_decode($event->event_properties, true);
 
-                    return [
+                        return [
                         'id'        => $event->id,
                         'amount'    => $properties['money']['amount'],
                         'timestamp' => Carbon::parse($event->created_at)->toISOString(),
-                    ];
-                })->values(),
-            ]);
+                        ];
+                    }
+                )->values(),
+                ]
+            );
         }
 
         // Pattern 3: Round number transactions
-        $roundNumberTransactions = StoredEvent::whereIn('event_class', [
+        $roundNumberTransactions = StoredEvent::whereIn(
+            'event_class', [
             'App\\Domain\\Account\\Events\\MoneyAdded',
             'App\\Domain\\Account\\Events\\MoneySubtracted',
-        ])
-        ->whereBetween('created_at', [$startDate, $endDate])
-        ->get()
-        ->filter(function ($event) {
-            $properties = json_decode($event->event_properties, true);
-            $amount = $properties['money']['amount'] ?? 0;
+            ]
+        )
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->get()
+            ->filter(
+                function ($event) {
+                    $properties = json_decode($event->event_properties, true);
+                    $amount = $properties['money']['amount'] ?? 0;
 
-            // Check if amount is a round number (ends with at least 3 zeros)
-            return $amount >= 100000 && $amount % 100000 === 0;
-        })
+                    // Check if amount is a round number (ends with at least 3 zeros)
+                    return $amount >= 100000 && $amount % 100000 === 0;
+                }
+            )
         ->groupBy('aggregate_uuid')
-        ->filter(function ($group) {
-            return $group->count() >= 5; // 5 or more round number transactions
-        });
+        ->filter(
+            function ($group) {
+                return $group->count() >= 5; // 5 or more round number transactions
+            }
+        );
 
         foreach ($roundNumberTransactions as $accountUuid => $transactions) {
-            $patterns->push([
+            $patterns->push(
+                [
                 'pattern_type'      => 'round_numbers',
                 'account_uuid'      => $accountUuid,
                 'transaction_count' => $transactions->count(),
-                'total_amount'      => $transactions->sum(function ($event) {
-                    $properties = json_decode($event->event_properties, true);
+                'total_amount'      => $transactions->sum(
+                    function ($event) {
+                        $properties = json_decode($event->event_properties, true);
 
-                    return $properties['money']['amount'] ?? 0;
-                }),
-            ]);
+                        return $properties['money']['amount'] ?? 0;
+                    }
+                ),
+                ]
+            );
         }
 
         return $patterns;
@@ -333,29 +365,35 @@ class RegulatoryReportingService
      */
     protected function getTransactionMetrics(Carbon $startDate, Carbon $endDate): array
     {
-        $events = StoredEvent::whereIn('event_class', [
+        $events = StoredEvent::whereIn(
+            'event_class', [
             'App\\Domain\\Account\\Events\\MoneyAdded',
             'App\\Domain\\Account\\Events\\MoneySubtracted',
             'App\\Domain\\Account\\Events\\MoneyTransferred',
-        ])
-        ->whereBetween('created_at', [$startDate, $endDate])
-        ->get();
+            ]
+        )
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->get();
 
-        $totalVolume = $events->sum(function ($event) {
-            $properties = json_decode($event->event_properties, true);
+        $totalVolume = $events->sum(
+            function ($event) {
+                $properties = json_decode($event->event_properties, true);
 
-            return $properties['money']['amount'] ?? 0;
-        });
+                return $properties['money']['amount'] ?? 0;
+            }
+        );
 
         return [
             'total_count'              => $events->count(),
             'total_volume'             => $totalVolume,
             'average_transaction_size' => $events->count() > 0 ? $totalVolume / $events->count() : 0,
-            'large_transactions'       => $events->filter(function ($event) {
-                $properties = json_decode($event->event_properties, true);
+            'large_transactions'       => $events->filter(
+                function ($event) {
+                    $properties = json_decode($event->event_properties, true);
 
-                return ($properties['money']['amount'] ?? 0) >= 1000000; // $10,000
-            })->count(),
+                    return ($properties['money']['amount'] ?? 0) >= 1000000; // $10,000
+                }
+            )->count(),
         ];
     }
 

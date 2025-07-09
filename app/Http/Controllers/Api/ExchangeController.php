@@ -26,33 +26,34 @@ class ExchangeController extends Controller
      *     tags={"Exchange"},
      *     summary="Place a new order",
      *     security={{"bearerAuth":{}}},
-     *     @OA\RequestBody(
+     * @OA\RequestBody(
      *         required=true,
-     *         @OA\JsonContent(
+     * @OA\JsonContent(
      *             required={"type", "order_type", "base_currency", "quote_currency", "amount"},
-     *             @OA\Property(property="type", type="string", enum={"buy", "sell"}),
-     *             @OA\Property(property="order_type", type="string", enum={"market", "limit"}),
-     *             @OA\Property(property="base_currency", type="string", example="BTC"),
-     *             @OA\Property(property="quote_currency", type="string", example="EUR"),
-     *             @OA\Property(property="amount", type="string", example="0.01"),
-     *             @OA\Property(property="price", type="string", example="50000", description="Required for limit orders"),
-     *             @OA\Property(property="stop_price", type="string", example="49000", description="For stop orders")
+     * @OA\Property(property="type",           type="string", enum={"buy", "sell"}),
+     * @OA\Property(property="order_type",     type="string", enum={"market", "limit"}),
+     * @OA\Property(property="base_currency",  type="string", example="BTC"),
+     * @OA\Property(property="quote_currency", type="string", example="EUR"),
+     * @OA\Property(property="amount",         type="string", example="0.01"),
+     * @OA\Property(property="price",          type="string", example="50000", description="Required for limit orders"),
+     * @OA\Property(property="stop_price",     type="string", example="49000", description="For stop orders")
      *         )
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=200,
      *         description="Order placed successfully",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="order_id", type="string"),
-     *             @OA\Property(property="message", type="string")
+     * @OA\JsonContent(
+     * @OA\Property(property="success",        type="boolean", example=true),
+     * @OA\Property(property="order_id",       type="string"),
+     * @OA\Property(property="message",        type="string")
      *         )
      *     )
      * )
      */
     public function placeOrder(Request $request): JsonResponse
     {
-        $validated = $request->validate([
+        $validated = $request->validate(
+            [
             'type'           => ['required', Rule::in(['buy', 'sell'])],
             'order_type'     => ['required', Rule::in(['market', 'limit'])],
             'base_currency'  => ['required', 'string', 'size:3'],
@@ -60,15 +61,18 @@ class ExchangeController extends Controller
             'amount'         => ['required', 'numeric', 'gt:0'],
             'price'          => ['required_if:order_type,limit', 'nullable', 'numeric', 'gt:0'],
             'stop_price'     => ['nullable', 'numeric', 'gt:0'],
-        ]);
+            ]
+        );
 
         $account = Auth::user()->account;
 
         if (! $account) {
-            return response()->json([
+            return response()->json(
+                [
                 'success' => false,
                 'error'   => 'Account not found. Please complete your account setup.',
-            ], 400);
+                ], 400
+            );
         }
 
         try {
@@ -89,10 +93,12 @@ class ExchangeController extends Controller
 
             return response()->json($result);
         } catch (\Exception $e) {
-            return response()->json([
+            return response()->json(
+                [
                 'success' => false,
                 'error'   => $e->getMessage(),
-            ], 400);
+                ], 400
+            );
         }
     }
 
@@ -102,13 +108,13 @@ class ExchangeController extends Controller
      *     tags={"Exchange"},
      *     summary="Cancel an order",
      *     security={{"bearerAuth":{}}},
-     *     @OA\Parameter(
+     * @OA\Parameter(
      *         name="orderId",
      *         in="path",
      *         required=true,
-     *         @OA\Schema(type="string")
+     * @OA\Schema(type="string")
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=200,
      *         description="Order cancelled successfully"
      *     )
@@ -119,10 +125,12 @@ class ExchangeController extends Controller
         $account = Auth::user()->account;
 
         if (! $account) {
-            return response()->json([
+            return response()->json(
+                [
                 'success' => false,
                 'error'   => 'Account not found. Please complete your account setup.',
-            ], 400);
+                ], 400
+            );
         }
 
         // Verify order belongs to user
@@ -131,10 +139,12 @@ class ExchangeController extends Controller
             ->first();
 
         if (! $order) {
-            return response()->json([
+            return response()->json(
+                [
                 'success' => false,
                 'error'   => 'Order not found',
-            ], 404);
+                ], 404
+            );
         }
 
         try {
@@ -142,10 +152,12 @@ class ExchangeController extends Controller
 
             return response()->json($result);
         } catch (\Exception $e) {
-            return response()->json([
+            return response()->json(
+                [
                 'success' => false,
                 'error'   => $e->getMessage(),
-            ], 400);
+                ], 400
+            );
         }
     }
 
@@ -155,22 +167,22 @@ class ExchangeController extends Controller
      *     tags={"Exchange"},
      *     summary="Get user's orders",
      *     security={{"bearerAuth":{}}},
-     *     @OA\Parameter(
+     * @OA\Parameter(
      *         name="status",
      *         in="query",
-     *         @OA\Schema(type="string", enum={"open", "filled", "cancelled", "all"})
+     * @OA\Schema(type="string", enum={"open", "filled", "cancelled", "all"})
      *     ),
-     *     @OA\Parameter(
+     * @OA\Parameter(
      *         name="base_currency",
      *         in="query",
-     *         @OA\Schema(type="string")
+     * @OA\Schema(type="string")
      *     ),
-     *     @OA\Parameter(
+     * @OA\Parameter(
      *         name="quote_currency",
      *         in="query",
-     *         @OA\Schema(type="string")
+     * @OA\Schema(type="string")
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=200,
      *         description="List of orders"
      *     )
@@ -181,10 +193,12 @@ class ExchangeController extends Controller
         $account = Auth::user()->account;
 
         if (! $account) {
-            return response()->json([
+            return response()->json(
+                [
                 'success' => false,
                 'error'   => 'Account not found. Please complete your account setup.',
-            ], 400);
+                ], 400
+            );
         }
 
         $query = Order::forAccount($account->id);
@@ -213,17 +227,17 @@ class ExchangeController extends Controller
      *     tags={"Exchange"},
      *     summary="Get user's trade history",
      *     security={{"bearerAuth":{}}},
-     *     @OA\Parameter(
+     * @OA\Parameter(
      *         name="base_currency",
      *         in="query",
-     *         @OA\Schema(type="string")
+     * @OA\Schema(type="string")
      *     ),
-     *     @OA\Parameter(
+     * @OA\Parameter(
      *         name="quote_currency",
      *         in="query",
-     *         @OA\Schema(type="string")
+     * @OA\Schema(type="string")
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=200,
      *         description="List of trades"
      *     )
@@ -234,10 +248,12 @@ class ExchangeController extends Controller
         $account = Auth::user()->account;
 
         if (! $account) {
-            return response()->json([
+            return response()->json(
+                [
                 'success' => false,
                 'error'   => 'Account not found. Please complete your account setup.',
-            ], 400);
+                ], 400
+            );
         }
 
         $query = Trade::forAccount($account->id);
@@ -257,24 +273,24 @@ class ExchangeController extends Controller
      *     path="/api/exchange/orderbook/{baseCurrency}/{quoteCurrency}",
      *     tags={"Exchange"},
      *     summary="Get order book for a trading pair",
-     *     @OA\Parameter(
+     * @OA\Parameter(
      *         name="baseCurrency",
      *         in="path",
      *         required=true,
-     *         @OA\Schema(type="string")
+     * @OA\Schema(type="string")
      *     ),
-     *     @OA\Parameter(
+     * @OA\Parameter(
      *         name="quoteCurrency",
      *         in="path",
      *         required=true,
-     *         @OA\Schema(type="string")
+     * @OA\Schema(type="string")
      *     ),
-     *     @OA\Parameter(
+     * @OA\Parameter(
      *         name="depth",
      *         in="query",
-     *         @OA\Schema(type="integer", default=20)
+     * @OA\Schema(type="integer", default=20)
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=200,
      *         description="Order book data"
      *     )
@@ -294,7 +310,7 @@ class ExchangeController extends Controller
      *     path="/api/exchange/markets",
      *     tags={"Exchange"},
      *     summary="Get market data for all trading pairs",
-     *     @OA\Response(
+     * @OA\Response(
      *         response=200,
      *         description="Market data for all pairs"
      *     )
@@ -302,11 +318,27 @@ class ExchangeController extends Controller
      */
     public function getMarkets(): JsonResponse
     {
-        $markets = $this->exchangeService->getMarketData();
+        // For now, return hardcoded trading pairs
+        // In a real implementation, this would come from configuration or database
+        $tradingPairs = [
+            ['base' => 'BTC', 'quote' => 'EUR'],
+            ['base' => 'ETH', 'quote' => 'EUR'],
+        ];
 
-        return response()->json([
+        $markets = [];
+        foreach ($tradingPairs as $pair) {
+            $marketData = $this->exchangeService->getMarketData($pair['base'], $pair['quote']);
+            // Add base and quote currency to the data
+            $marketData['base_currency'] = $pair['base'];
+            $marketData['quote_currency'] = $pair['quote'];
+            $markets[] = $marketData;
+        }
+
+        return response()->json(
+            [
             'success' => true,
             'data'    => $markets,
-        ]);
+            ]
+        );
     }
 }

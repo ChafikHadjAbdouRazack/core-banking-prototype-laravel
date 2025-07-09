@@ -22,30 +22,31 @@ class PublicApiController extends Controller
      *     tags={"Public API"},
      *     summary="Get API information",
      *     description="Returns information about the API including version, status, and available endpoints",
-     *     @OA\Response(
+     * @OA\Response(
      *         response=200,
      *         description="API information",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="name", type="string", example="FinAegis Public API"),
-     *             @OA\Property(property="version", type="string", example="2.0.0"),
-     *             @OA\Property(property="description", type="string"),
-     *             @OA\Property(property="status", type="string", example="operational"),
-     *             @OA\Property(property="endpoints", type="object",
-     *                 @OA\Property(property="accounts", type="string", example="/v2/accounts"),
-     *                 @OA\Property(property="assets", type="string", example="/v2/assets"),
-     *                 @OA\Property(property="exchange_rates", type="string", example="/v2/exchange-rates"),
-     *                 @OA\Property(property="baskets", type="string", example="/v2/baskets"),
-     *                 @OA\Property(property="webhooks", type="string", example="/v2/webhooks")
+     * @OA\JsonContent(
+     * @OA\Property(property="name",           type="string", example="FinAegis Public API"),
+     * @OA\Property(property="version",        type="string", example="2.0.0"),
+     * @OA\Property(property="description",    type="string"),
+     * @OA\Property(property="status",         type="string", example="operational"),
+     * @OA\Property(property="endpoints",      type="object",
+     * @OA\Property(property="accounts",       type="string", example="/v2/accounts"),
+     * @OA\Property(property="assets",         type="string", example="/v2/assets"),
+     * @OA\Property(property="exchange_rates", type="string", example="/v2/exchange-rates"),
+     * @OA\Property(property="baskets",        type="string", example="/v2/baskets"),
+     * @OA\Property(property="webhooks",       type="string", example="/v2/webhooks")
      *             ),
-     *             @OA\Property(property="documentation", type="string", example="https://docs.finaegis.org"),
-     *             @OA\Property(property="support", type="string", example="api@finaegis.org")
+     * @OA\Property(property="documentation",  type="string", example="https://docs.finaegis.org"),
+     * @OA\Property(property="support",        type="string", example="api@finaegis.org")
      *         )
      *     )
      * )
      */
     public function index(): JsonResponse
     {
-        return response()->json([
+        return response()->json(
+            [
             'name'        => 'FinAegis Public API',
             'version'     => '2.0.0',
             'description' => 'Public API for the FinAegis GCU Platform',
@@ -76,7 +77,8 @@ class PublicApiController extends Controller
             'documentation' => 'https://docs.finaegis.org',
             'support'       => 'api@finaegis.org',
             'sandbox'       => 'https://sandbox.api.finaegis.org',
-        ]);
+            ]
+        );
     }
 
     /**
@@ -86,25 +88,25 @@ class PublicApiController extends Controller
      *     tags={"Public API"},
      *     summary="Get API status",
      *     description="Returns the current operational status of the API and its components",
-     *     @OA\Response(
+     * @OA\Response(
      *         response=200,
      *         description="API status",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="status", type="string", example="operational"),
-     *             @OA\Property(property="timestamp", type="string", format="date-time"),
-     *             @OA\Property(property="components", type="object",
-     *                 @OA\Property(property="api", type="string", example="operational"),
-     *                 @OA\Property(property="database", type="string", example="operational"),
-     *                 @OA\Property(property="redis", type="string", example="operational"),
-     *                 @OA\Property(property="bank_connectors", type="object",
-     *                     @OA\Property(property="paysera", type="string", example="operational"),
-     *                     @OA\Property(property="deutsche_bank", type="string", example="operational"),
-     *                     @OA\Property(property="santander", type="string", example="degraded")
+     * @OA\JsonContent(
+     * @OA\Property(property="status",            type="string", example="operational"),
+     * @OA\Property(property="timestamp",         type="string", format="date-time"),
+     * @OA\Property(property="components",        type="object",
+     * @OA\Property(property="api",               type="string", example="operational"),
+     * @OA\Property(property="database",          type="string", example="operational"),
+     * @OA\Property(property="redis",             type="string", example="operational"),
+     * @OA\Property(property="bank_connectors",   type="object",
+     * @OA\Property(property="paysera",           type="string", example="operational"),
+     * @OA\Property(property="deutsche_bank",     type="string", example="operational"),
+     * @OA\Property(property="santander",         type="string", example="degraded")
      *                 )
      *             ),
-     *             @OA\Property(property="metrics", type="object",
-     *                 @OA\Property(property="response_time_ms", type="integer", example=45),
-     *                 @OA\Property(property="uptime_percentage", type="number", example=99.95)
+     * @OA\Property(property="metrics",           type="object",
+     * @OA\Property(property="response_time_ms",  type="integer", example=45),
+     * @OA\Property(property="uptime_percentage", type="number", example=99.95)
      *             )
      *         )
      *     )
@@ -124,7 +126,8 @@ class PublicApiController extends Controller
 
         $overallStatus = $this->determineOverallStatus($components);
 
-        return response()->json([
+        return response()->json(
+            [
             'status'     => $overallStatus,
             'timestamp'  => now()->toIso8601String(),
             'components' => $components,
@@ -132,7 +135,8 @@ class PublicApiController extends Controller
                 'response_time_ms'  => round((microtime(true) - $startTime) * 1000),
                 'uptime_percentage' => 99.95, // In production, calculate from monitoring data
             ],
-        ]);
+            ]
+        );
     }
 
     private function checkDatabaseStatus(): string
@@ -178,9 +182,11 @@ class PublicApiController extends Controller
     private function determineOverallStatus(array $components): string
     {
         $flatComponents = [];
-        array_walk_recursive($components, function ($value) use (&$flatComponents) {
-            $flatComponents[] = $value;
-        });
+        array_walk_recursive(
+            $components, function ($value) use (&$flatComponents) {
+                $flatComponents[] = $value;
+            }
+        );
 
         if (in_array('down', $flatComponents)) {
             return 'major_outage';

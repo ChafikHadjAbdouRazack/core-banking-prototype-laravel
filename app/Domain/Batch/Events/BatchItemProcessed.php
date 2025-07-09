@@ -13,9 +13,9 @@ class BatchItemProcessed extends ShouldBeStored
     public string $queue = EventQueues::TRANSACTIONS->value;
 
     /**
-     * @param int $itemIndex
-     * @param string $status // completed, failed
-     * @param array $result
+     * @param int     $itemIndex
+     * @param string  $status       // completed, failed
+     * @param array   $result
      * @param ?string $errorMessage
      */
     public function __construct(

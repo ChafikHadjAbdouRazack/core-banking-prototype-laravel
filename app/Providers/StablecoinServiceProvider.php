@@ -42,8 +42,10 @@ class StablecoinServiceProvider extends ServiceProvider
     public function boot(): void
     {
         // Register projectors
-        Projectionist::addProjectors([
+        Projectionist::addProjectors(
+            [
             StablecoinProjector::class,
-        ]);
+            ]
+        );
     }
 }

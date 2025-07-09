@@ -33,20 +33,24 @@ class EnhancedKycService
      */
     public function startVerification(User $user, string $type, array $data): KycVerification
     {
-        return DB::transaction(function () use ($user, $type, $data) {
-            $verification = KycVerification::create([
-                'user_id'       => $user->id,
-                'type'          => $type,
-                'status'        => KycVerification::STATUS_PENDING,
-                'provider'      => $data['provider'] ?? 'manual',
-                'document_type' => $data['document_type'] ?? null,
-                'started_at'    => now(),
-            ]);
+        return DB::transaction(
+            function () use ($user, $type, $data) {
+                $verification = KycVerification::create(
+                    [
+                    'user_id'       => $user->id,
+                    'type'          => $type,
+                    'status'        => KycVerification::STATUS_PENDING,
+                    'provider'      => $data['provider'] ?? 'manual',
+                    'document_type' => $data['document_type'] ?? null,
+                    'started_at'    => now(),
+                    ]
+                );
 
-            event(new KycVerificationStarted($verification));
+                event(new KycVerificationStarted($verification));
 
-            return $verification;
-        });
+                return $verification;
+            }
+        );
     }
 
     /**
@@ -58,10 +62,12 @@ class EnhancedKycService
         string $documentType
     ): array {
         try {
-            $verification->update([
+            $verification->update(
+                [
                 'status'        => KycVerification::STATUS_IN_PROGRESS,
                 'document_type' => $documentType,
-            ]);
+                ]
+            );
 
             // Extract document data
             $extractedData = $this->documentService->extractDocumentData($documentPath, $documentType);
@@ -75,7 +81,8 @@ class EnhancedKycService
             // Calculate confidence score
             $confidenceScore = $this->calculateIdentityConfidence($authenticityCheck, $identityCheck);
 
-            $verification->update([
+            $verification->update(
+                [
                 'extracted_data'    => $extractedData,
                 'verification_data' => [
                     'authenticity' => $authenticityCheck,
@@ -89,7 +96,8 @@ class EnhancedKycService
                 'last_name'        => $extractedData['last_name'] ?? null,
                 'date_of_birth'    => $extractedData['date_of_birth'] ?? null,
                 'nationality'      => $extractedData['nationality'] ?? null,
-            ]);
+                ]
+            );
 
             return [
                 'success'          => true,
@@ -97,10 +105,12 @@ class EnhancedKycService
                 'extracted_data'   => $extractedData,
             ];
         } catch (\Exception $e) {
-            Log::error('Identity document verification failed', [
+            Log::error(
+                'Identity document verification failed', [
                 'verification_id' => $verification->id,
                 'error'           => $e->getMessage(),
-            ]);
+                ]
+            );
 
             $verification->markAsFailed($e->getMessage());
             throw $e;
@@ -134,12 +144,14 @@ class EnhancedKycService
                 'face_match' => $faceMatch,
             ];
 
-            $verification->update([
+            $verification->update(
+                [
                 'verification_data' => array_merge(
                     $verification->verification_data ?? [],
                     ['biometric' => $biometricData]
                 ),
-            ]);
+                ]
+            );
 
             return [
                 'success'          => true,
@@ -147,10 +159,12 @@ class EnhancedKycService
                 'face_match_score' => $faceMatch['similarity'] ?? null,
             ];
         } catch (\Exception $e) {
-            Log::error('Biometric verification failed', [
+            Log::error(
+                'Biometric verification failed', [
                 'verification_id' => $verification->id,
                 'error'           => $e->getMessage(),
-            ]);
+                ]
+            );
 
             throw $e;
         }
@@ -174,7 +188,8 @@ class EnhancedKycService
             // Verify document recency (e.g., utility bill not older than 3 months)
             $recencyCheck = $this->documentService->checkDocumentRecency($extractedData);
 
-            $verification->update([
+            $verification->update(
+                [
                 'address_line1'     => $extractedData['line1'] ?? null,
                 'address_line2'     => $extractedData['line2'] ?? null,
                 'city'              => $extractedData['city'] ?? null,
@@ -188,7 +203,8 @@ class EnhancedKycService
                         'document_recency'   => $recencyCheck,
                     ]
                 ),
-            ]);
+                ]
+            );
 
             return [
                 'success'   => true,
@@ -197,10 +213,12 @@ class EnhancedKycService
                 'is_recent' => $recencyCheck['is_recent'],
             ];
         } catch (\Exception $e) {
-            Log::error('Address verification failed', [
+            Log::error(
+                'Address verification failed', [
                 'verification_id' => $verification->id,
                 'error'           => $e->getMessage(),
-            ]);
+                ]
+            );
 
             throw $e;
         }
@@ -211,26 +229,30 @@ class EnhancedKycService
      */
     public function completeVerification(KycVerification $verification): void
     {
-        DB::transaction(function () use ($verification) {
-            // Perform final checks
-            $riskAssessment = $this->assessVerificationRisk($verification);
+        DB::transaction(
+            function () use ($verification) {
+                // Perform final checks
+                $riskAssessment = $this->assessVerificationRisk($verification);
 
-            $verification->update([
-                'status'       => KycVerification::STATUS_COMPLETED,
-                'completed_at' => now(),
-                'risk_level'   => $riskAssessment['level'],
-                'risk_factors' => $riskAssessment['factors'],
-                'expires_at'   => $this->calculateExpiryDate($riskAssessment['level']),
-            ]);
+                $verification->update(
+                    [
+                    'status'       => KycVerification::STATUS_COMPLETED,
+                    'completed_at' => now(),
+                    'risk_level'   => $riskAssessment['level'],
+                    'risk_factors' => $riskAssessment['factors'],
+                    'expires_at'   => $this->calculateExpiryDate($riskAssessment['level']),
+                    ]
+                );
 
-            // Update user KYC status
-            $this->updateUserKycStatus($verification);
+                // Update user KYC status
+                $this->updateUserKycStatus($verification);
 
-            // Update or create risk profile
-            $this->updateRiskProfile($verification);
+                // Update or create risk profile
+                $this->updateRiskProfile($verification);
 
-            event(new KycVerificationCompleted($verification));
-        });
+                event(new KycVerificationCompleted($verification));
+            }
+        );
     }
 
     /**
@@ -366,13 +388,15 @@ class EnhancedKycService
 
         $kycLevel = $this->determineKycLevel($completedTypes);
 
-        $user->update([
+        $user->update(
+            [
             'kyc_status'      => 'approved',
             'kyc_level'       => $kycLevel,
             'kyc_approved_at' => now(),
             'kyc_expires_at'  => $verification->expires_at,
             'risk_rating'     => $verification->risk_level,
-        ]);
+            ]
+        );
     }
 
     /**
@@ -384,9 +408,8 @@ class EnhancedKycService
             return 'full';
         }
 
-        if (
-            in_array(KycVerification::TYPE_INCOME, $completedTypes) &&
-            in_array(KycVerification::TYPE_ADDRESS, $completedTypes)
+        if (in_array(KycVerification::TYPE_INCOME, $completedTypes) 
+            && in_array(KycVerification::TYPE_ADDRESS, $completedTypes)
         ) {
             return 'enhanced';
         }
@@ -416,7 +439,8 @@ class EnhancedKycService
         );
 
         // Update profile based on verification results
-        $profile->update([
+        $profile->update(
+            [
             'last_assessment_at'       => now(),
             'next_review_at'           => $verification->expires_at,
             'is_pep'                   => $verification->pep_check,
@@ -425,7 +449,8 @@ class EnhancedKycService
             'sanctions_verified_at'    => now(),
             'has_adverse_media'        => $verification->adverse_media_check,
             'adverse_media_checked_at' => now(),
-        ]);
+            ]
+        );
 
         // Recalculate risk
         $profile->updateRiskAssessment();

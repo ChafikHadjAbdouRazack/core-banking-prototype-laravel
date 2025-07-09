@@ -37,14 +37,16 @@ class AssetManagementController extends Controller
         // Get available assets
         $availableAssets = Asset::where('is_active', true)->get();
 
-        return view('asset-management.index', compact(
-            'accounts',
-            'portfolio',
-            'allocation',
-            'recentTransactions',
-            'performance',
-            'availableAssets'
-        ));
+        return view(
+            'asset-management.index', compact(
+                'accounts',
+                'portfolio',
+                'allocation',
+                'recentTransactions',
+                'performance',
+                'availableAssets'
+            )
+        );
     }
 
     /**
@@ -66,13 +68,15 @@ class AssetManagementController extends Controller
         // Get related transactions
         $transactions = $this->getAssetTransactions($user, $asset);
 
-        return view('asset-management.show', compact(
-            'asset',
-            'holdings',
-            'statistics',
-            'priceHistory',
-            'transactions'
-        ));
+        return view(
+            'asset-management.show', compact(
+                'asset',
+                'holdings',
+                'statistics',
+                'priceHistory',
+                'transactions'
+            )
+        );
     }
 
     /**
@@ -95,13 +99,15 @@ class AssetManagementController extends Controller
         // Get diversification score
         $diversification = $this->getDiversificationScore($user);
 
-        return view('asset-management.analytics', compact(
-            'portfolioHistory',
-            'metrics',
-            'riskAnalysis',
-            'diversification',
-            'period'
-        ));
+        return view(
+            'asset-management.analytics', compact(
+                'portfolioHistory',
+                'metrics',
+                'riskAnalysis',
+                'diversification',
+                'period'
+            )
+        );
     }
 
     /**
@@ -202,9 +208,11 @@ class AssetManagementController extends Controller
         }
 
         // Sort by value descending
-        usort($allocation, function ($a, $b) {
-            return $b['value'] <=> $a['value'];
-        });
+        usort(
+            $allocation, function ($a, $b) {
+                return $b['value'] <=> $a['value'];
+            }
+        );
 
         return array_values($allocation);
     }
@@ -220,8 +228,9 @@ class AssetManagementController extends Controller
             ->orderBy('created_at', 'desc')
             ->limit(10)
             ->get()
-            ->map(function ($transaction) {
-                return [
+            ->map(
+                function ($transaction) {
+                    return [
                     'id'          => $transaction->uuid,
                     'type'        => $transaction->type,
                     'amount'      => $transaction->amount,
@@ -229,8 +238,9 @@ class AssetManagementController extends Controller
                     'description' => $transaction->description,
                     'status'      => $transaction->status,
                     'created_at'  => $transaction->created_at,
-                ];
-            });
+                    ];
+                }
+            );
     }
 
     /**
@@ -262,9 +272,11 @@ class AssetManagementController extends Controller
     private function getUserAssetHoldings($user, $asset)
     {
         $holdings = [];
-        $accounts = $user->accounts()->with(['balances' => function ($query) use ($asset) {
-            $query->where('asset_code', $asset->symbol);
-        }])->get();
+        $accounts = $user->accounts()->with(
+            ['balances' => function ($query) use ($asset) {
+                $query->where('asset_code', $asset->symbol);
+            }]
+        )->get();
 
         foreach ($accounts as $account) {
             foreach ($account->balances as $balance) {
@@ -286,8 +298,9 @@ class AssetManagementController extends Controller
      */
     private function getAssetStatistics($asset)
     {
-        return Cache::remember("asset_stats_{$asset->symbol}", 300, function () use ($asset) {
-            return [
+        return Cache::remember(
+            "asset_stats_{$asset->symbol}", 300, function () use ($asset) {
+                return [
                 'total_supply' => $asset->symbol === 'GCU' ? 1000000000 : null,
                 'market_cap'   => $this->getMockMarketCap($asset->symbol),
                 'holders'      => DB::table('account_balances')
@@ -296,8 +309,9 @@ class AssetManagementController extends Controller
                     ->count(),
                 'transactions_24h' => rand(100, 1000),
                 'volume_24h'       => rand(10000, 100000) * 100, // In cents
-            ];
-        });
+                ];
+            }
+        );
     }
 
     /**
@@ -495,59 +509,65 @@ class AssetManagementController extends Controller
     {
         $filename = 'portfolio_' . now()->format('Y-m-d') . '.csv';
 
-        return response()->streamDownload(function () use ($accounts) {
-            $handle = fopen('php://output', 'w');
+        return response()->streamDownload(
+            function () use ($accounts) {
+                $handle = fopen('php://output', 'w');
 
-            // Headers
-            fputcsv($handle, [
-                'Account',
-                'Asset',
-                'Balance',
-                'Value (USD)',
-                'Percentage',
-            ]);
+                // Headers
+                fputcsv(
+                    $handle, [
+                    'Account',
+                    'Asset',
+                    'Balance',
+                    'Value (USD)',
+                    'Percentage',
+                    ]
+                );
 
-            // Data
-            $totalValue = 0;
-            $rows = [];
+                // Data
+                $totalValue = 0;
+                $rows = [];
 
-            foreach ($accounts as $account) {
-                foreach ($account->balances as $balance) {
-                    if ($balance->balance > 0) {
-                        $valueUSD = $this->convertToUSD($balance->balance, $balance->asset->symbol);
-                        $totalValue += $valueUSD;
+                foreach ($accounts as $account) {
+                    foreach ($account->balances as $balance) {
+                        if ($balance->balance > 0) {
+                            $valueUSD = $this->convertToUSD($balance->balance, $balance->asset->symbol);
+                            $totalValue += $valueUSD;
 
-                        $rows[] = [
+                            $rows[] = [
                             'account'   => $account->name,
                             'asset'     => $balance->asset->symbol,
                             'balance'   => $balance->balance / 100,
                             'value_usd' => $valueUSD / 100,
-                        ];
+                            ];
+                        }
                     }
                 }
-            }
 
-            // Write rows with percentages
-            foreach ($rows as $row) {
-                $percentage = $totalValue > 0 ? ($row['value_usd'] * 100 / ($totalValue / 100)) : 0;
+                // Write rows with percentages
+                foreach ($rows as $row) {
+                    $percentage = $totalValue > 0 ? ($row['value_usd'] * 100 / ($totalValue / 100)) : 0;
 
-                fputcsv($handle, [
-                    $row['account'],
-                    $row['asset'],
-                    number_format($row['balance'], 2),
-                    number_format($row['value_usd'], 2),
-                    number_format($percentage, 2) . '%',
-                ]);
-            }
+                    fputcsv(
+                        $handle, [
+                        $row['account'],
+                        $row['asset'],
+                        number_format($row['balance'], 2),
+                        number_format($row['value_usd'], 2),
+                        number_format($percentage, 2) . '%',
+                        ]
+                    );
+                }
 
-            // Summary
-            fputcsv($handle, []);
-            fputcsv($handle, ['Total Portfolio Value (USD)', '', '', number_format($totalValue / 100, 2), '100.00%']);
+                // Summary
+                fputcsv($handle, []);
+                fputcsv($handle, ['Total Portfolio Value (USD)', '', '', number_format($totalValue / 100, 2), '100.00%']);
 
-            fclose($handle);
-        }, $filename, [
+                fclose($handle);
+            }, $filename, [
             'Content-Type' => 'text/csv',
-        ]);
+            ]
+        );
     }
 
     /**

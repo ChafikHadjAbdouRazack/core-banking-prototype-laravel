@@ -41,7 +41,7 @@ class BatchAggregate extends AggregateRoot
     }
 
     /**
-     * @param BatchJob $batchJob
+     * @param  BatchJob $batchJob
      * @return $this
      */
     public function createBatchJob(BatchJob $batchJob): static
@@ -70,10 +70,10 @@ class BatchAggregate extends AggregateRoot
     }
 
     /**
-     * @param int $itemIndex
-     * @param string $status
-     * @param array $result
-     * @param string|null $errorMessage
+     * @param  int         $itemIndex
+     * @param  string      $status
+     * @param  array       $result
+     * @param  string|null $errorMessage
      * @return $this
      */
     public function processBatchItem(int $itemIndex, string $status, array $result = [], ?string $errorMessage = null): static
@@ -118,7 +118,7 @@ class BatchAggregate extends AggregateRoot
     }
 
     /**
-     * @param string $reason
+     * @param  string $reason
      * @return $this
      */
     public function cancelBatchJob(string $reason): static

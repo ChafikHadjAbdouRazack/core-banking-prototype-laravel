@@ -93,15 +93,17 @@ class RegulatoryThreshold extends Model
     {
         parent::boot();
 
-        static::creating(function ($threshold) {
-            if (empty($threshold->threshold_code)) {
-                $threshold->threshold_code = self::generateThresholdCode(
-                    $threshold->report_type,
-                    $threshold->jurisdiction,
-                    $threshold->category
-                );
+        static::creating(
+            function ($threshold) {
+                if (empty($threshold->threshold_code)) {
+                    $threshold->threshold_code = self::generateThresholdCode(
+                        $threshold->report_type,
+                        $threshold->jurisdiction,
+                        $threshold->category
+                    );
+                }
             }
-        });
+        );
     }
 
     // Helper methods
@@ -152,36 +154,36 @@ class RegulatoryThreshold extends Model
         }
 
         switch ($operator) {
-            case '=':
-            case '==':
-                return $contextValue == $value;
-            case '!=':
-            case '<>':
-                return $contextValue != $value;
-            case '>':
-                return $contextValue > $value;
-            case '>=':
-                return $contextValue >= $value;
-            case '<':
-                return $contextValue < $value;
-            case '<=':
-                return $contextValue <= $value;
-            case 'in':
-                return in_array($contextValue, (array) $value);
-            case 'not_in':
-                return ! in_array($contextValue, (array) $value);
-            case 'contains':
-                return str_contains($contextValue, $value);
-            case 'starts_with':
-                return str_starts_with($contextValue, $value);
-            case 'ends_with':
-                return str_ends_with($contextValue, $value);
-            case 'between':
-                return $contextValue >= $value[0] && $contextValue <= $value[1];
-            case 'regex':
-                return preg_match($value, $contextValue);
-            default:
-                return false;
+        case '=':
+        case '==':
+            return $contextValue == $value;
+        case '!=':
+        case '<>':
+            return $contextValue != $value;
+        case '>':
+            return $contextValue > $value;
+        case '>=':
+            return $contextValue >= $value;
+        case '<':
+            return $contextValue < $value;
+        case '<=':
+            return $contextValue <= $value;
+        case 'in':
+            return in_array($contextValue, (array) $value);
+        case 'not_in':
+            return ! in_array($contextValue, (array) $value);
+        case 'contains':
+            return str_contains($contextValue, $value);
+        case 'starts_with':
+            return str_starts_with($contextValue, $value);
+        case 'ends_with':
+            return str_ends_with($contextValue, $value);
+        case 'between':
+            return $contextValue >= $value[0] && $contextValue <= $value[1];
+        case 'regex':
+            return preg_match($value, $contextValue);
+        default:
+            return false;
         }
     }
 
@@ -287,15 +289,19 @@ class RegulatoryThreshold extends Model
     public function scopeActive($query)
     {
         return $query->where('is_active', true)
-                    ->where('status', 'active')
-                    ->where(function ($q) {
-                        $q->whereNull('effective_from')
-                          ->orWhere('effective_from', '<=', now());
-                    })
-                    ->where(function ($q) {
-                        $q->whereNull('effective_to')
-                          ->orWhere('effective_to', '>=', now());
-                    });
+            ->where('status', 'active')
+            ->where(
+                function ($q) {
+                    $q->whereNull('effective_from')
+                        ->orWhere('effective_from', '<=', now());
+                }
+            )
+                    ->where(
+                        function ($q) {
+                            $q->whereNull('effective_to')
+                                ->orWhere('effective_to', '>=', now());
+                        }
+                    );
     }
 
     public function scopeByReportType($query, string $reportType)

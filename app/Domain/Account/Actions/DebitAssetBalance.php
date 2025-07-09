@@ -16,10 +16,12 @@ class DebitAssetBalance extends AccountAction
         $account = $this->accountRepository->findByUuid($event->aggregateRootUuid());
 
         // Find existing asset balance
-        $balance = AccountBalance::where([
+        $balance = AccountBalance::where(
+            [
             'account_uuid' => $account->uuid,
             'asset_code'   => $event->assetCode,
-        ])->first();
+            ]
+        )->first();
 
         if (! $balance) {
             throw new \Exception("Asset balance not found for {$event->assetCode}");

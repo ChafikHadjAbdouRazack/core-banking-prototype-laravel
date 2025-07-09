@@ -47,17 +47,19 @@ class RefundAggregate extends AggregateRoot
         string $initiatedBy,
         array $metadata = []
     ): self {
-        $this->recordThat(new RefundRequested(
-            $refundId,
-            $investmentId,
-            $userId,
-            $amount,
-            $currency,
-            $reason,
-            $reasonDetails,
-            $initiatedBy,
-            $metadata
-        ));
+        $this->recordThat(
+            new RefundRequested(
+                $refundId,
+                $investmentId,
+                $userId,
+                $amount,
+                $currency,
+                $reason,
+                $reasonDetails,
+                $initiatedBy,
+                $metadata
+            )
+        );
 
         return $this;
     }
@@ -68,12 +70,14 @@ class RefundAggregate extends AggregateRoot
             throw new \DomainException("Can only approve pending refunds. Current status: {$this->status}");
         }
 
-        $this->recordThat(new RefundApproved(
-            $this->refundId,
-            $approvedBy,
-            $approvalNotes,
-            $metadata
-        ));
+        $this->recordThat(
+            new RefundApproved(
+                $this->refundId,
+                $approvedBy,
+                $approvalNotes,
+                $metadata
+            )
+        );
 
         return $this;
     }
@@ -84,12 +88,14 @@ class RefundAggregate extends AggregateRoot
             throw new \DomainException("Can only reject pending refunds. Current status: {$this->status}");
         }
 
-        $this->recordThat(new RefundRejected(
-            $this->refundId,
-            $rejectedBy,
-            $rejectionReason,
-            $metadata
-        ));
+        $this->recordThat(
+            new RefundRejected(
+                $this->refundId,
+                $rejectedBy,
+                $rejectionReason,
+                $metadata
+            )
+        );
 
         return $this;
     }
@@ -105,14 +111,16 @@ class RefundAggregate extends AggregateRoot
             throw new \DomainException("Can only process approved refunds. Current status: {$this->status}");
         }
 
-        $this->recordThat(new RefundProcessed(
-            $this->refundId,
-            $paymentProcessor,
-            $processorRefundId,
-            $status,
-            $processorResponse,
-            $metadata
-        ));
+        $this->recordThat(
+            new RefundProcessed(
+                $this->refundId,
+                $paymentProcessor,
+                $processorRefundId,
+                $status,
+                $processorResponse,
+                $metadata
+            )
+        );
 
         return $this;
     }
@@ -123,13 +131,15 @@ class RefundAggregate extends AggregateRoot
             throw new \DomainException("Can only complete processing refunds. Current status: {$this->status}");
         }
 
-        $this->recordThat(new RefundCompleted(
-            $this->refundId,
-            $this->investmentId,
-            $this->amount,
-            $completedAt,
-            $metadata
-        ));
+        $this->recordThat(
+            new RefundCompleted(
+                $this->refundId,
+                $this->investmentId,
+                $this->amount,
+                $completedAt,
+                $metadata
+            )
+        );
 
         return $this;
     }
@@ -140,12 +150,14 @@ class RefundAggregate extends AggregateRoot
             throw new \DomainException("Can only fail approved or processing refunds. Current status: {$this->status}");
         }
 
-        $this->recordThat(new RefundFailed(
-            $this->refundId,
-            $failureReason,
-            $failedAt,
-            $metadata
-        ));
+        $this->recordThat(
+            new RefundFailed(
+                $this->refundId,
+                $failureReason,
+                $failedAt,
+                $metadata
+            )
+        );
 
         return $this;
     }
@@ -156,13 +168,15 @@ class RefundAggregate extends AggregateRoot
             throw new \DomainException("Cannot cancel refunds in status: {$this->status}");
         }
 
-        $this->recordThat(new RefundCancelled(
-            $this->refundId,
-            $cancellationReason,
-            $cancelledBy,
-            $cancelledAt,
-            $metadata
-        ));
+        $this->recordThat(
+            new RefundCancelled(
+                $this->refundId,
+                $cancellationReason,
+                $cancelledBy,
+                $cancelledAt,
+                $metadata
+            )
+        );
 
         return $this;
     }

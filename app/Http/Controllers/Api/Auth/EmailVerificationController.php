@@ -18,42 +18,42 @@ class EmailVerificationController extends Controller
      *     tags={"Authentication"},
      *     summary="Verify email address",
      *     description="Verify user's email address using verification link",
-     *     @OA\Parameter(
+     * @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
      *         description="User ID",
-     *         @OA\Schema(type="integer")
+     * @OA\Schema(type="integer")
      *     ),
-     *     @OA\Parameter(
+     * @OA\Parameter(
      *         name="hash",
      *         in="path",
      *         required=true,
      *         description="Verification hash",
-     *         @OA\Schema(type="string")
+     * @OA\Schema(type="string")
      *     ),
-     *     @OA\Parameter(
+     * @OA\Parameter(
      *         name="expires",
      *         in="query",
      *         required=true,
      *         description="Expiration timestamp",
-     *         @OA\Schema(type="integer")
+     * @OA\Schema(type="integer")
      *     ),
-     *     @OA\Parameter(
+     * @OA\Parameter(
      *         name="signature",
      *         in="query",
      *         required=true,
      *         description="URL signature",
-     *         @OA\Schema(type="string")
+     * @OA\Schema(type="string")
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=200,
      *         description="Email verified successfully",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Email verified successfully.")
+     * @OA\JsonContent(
+     * @OA\Property(property="message", type="string", example="Email verified successfully.")
      *         )
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=403,
      *         description="Invalid or expired verification link"
      *     )
@@ -92,21 +92,21 @@ class EmailVerificationController extends Controller
      *     summary="Resend verification email",
      *     description="Resend email verification link to authenticated user",
      *     security={{"sanctum": {}}},
-     *     @OA\Response(
+     * @OA\Response(
      *         response=200,
      *         description="Verification link sent",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Verification link sent.")
+     * @OA\JsonContent(
+     * @OA\Property(property="message", type="string", example="Verification link sent.")
      *         )
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=400,
      *         description="Email already verified",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Email already verified.")
+     * @OA\JsonContent(
+     * @OA\Property(property="message", type="string", example="Email already verified.")
      *         )
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=401,
      *         description="Unauthenticated"
      *     )

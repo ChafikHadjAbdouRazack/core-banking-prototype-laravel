@@ -27,20 +27,24 @@ class ExternalExchangeConnectorRegistry
     {
         // Register Binance
         if ($this->isConnectorEnabled('binance')) {
-            $this->register('binance', new BinanceConnector(
-                config('services.binance.api_key') ?: '',
-                config('services.binance.api_secret') ?: '',
-                config('services.binance.is_us', false),
-                config('services.binance.is_testnet', false)
-            ));
+            $this->register(
+                'binance', new BinanceConnector(
+                    config('services.binance.api_key') ?: '',
+                    config('services.binance.api_secret') ?: '',
+                    config('services.binance.is_us', false),
+                    config('services.binance.is_testnet', false)
+                )
+            );
         }
 
         // Register Kraken
         if ($this->isConnectorEnabled('kraken')) {
-            $this->register('kraken', new KrakenConnector(
-                config('services.kraken.api_key') ?: '',
-                config('services.kraken.api_secret') ?: ''
-            ));
+            $this->register(
+                'kraken', new KrakenConnector(
+                    config('services.kraken.api_key') ?: '',
+                    config('services.kraken.api_secret') ?: ''
+                )
+            );
         }
     }
 
@@ -147,15 +151,19 @@ class ExternalExchangeConnectorRegistry
                 $orderBook = $connector->getOrderBook($baseCurrency, $quoteCurrency, $depth);
 
                 // Add exchange info to each order
-                $orderBook->bids->each(function ($bid) use ($aggregatedBids, $name) {
-                    $bid['exchange'] = $name;
-                    $aggregatedBids->push($bid);
-                });
+                $orderBook->bids->each(
+                    function ($bid) use ($aggregatedBids, $name) {
+                        $bid['exchange'] = $name;
+                        $aggregatedBids->push($bid);
+                    }
+                );
 
-                $orderBook->asks->each(function ($ask) use ($aggregatedAsks, $name) {
-                    $ask['exchange'] = $name;
-                    $aggregatedAsks->push($ask);
-                });
+                $orderBook->asks->each(
+                    function ($ask) use ($aggregatedAsks, $name) {
+                        $ask['exchange'] = $name;
+                        $aggregatedAsks->push($ask);
+                    }
+                );
             } catch (\Exception $e) {
                 // Log and continue with other exchanges
                 Log::warning("Failed to get order book from {$name}", ['error' => $e->getMessage()]);

@@ -70,19 +70,22 @@ class SubProducts extends Page
             $schema[] = Forms\Components\Section::make($config['name'])
                 ->description($config['description'])
                 ->icon($config['icon'] ?? 'heroicon-o-squares-2x2')
-                ->schema([
+                ->schema(
+                    [
                     Forms\Components\Toggle::make("{$key}_enabled")
                         ->label('Enable ' . $config['name'])
                         ->helperText("Enable or disable the entire {$config['name']} sub-product")
                         ->reactive()
-                        ->afterStateUpdated(function ($state, Forms\Set $set) use ($key, $config) {
-                            if (! $state) {
-                                // Disable all features when sub-product is disabled
-                                foreach ($config['features'] as $feature => $default) {
-                                    $set("{$key}_{$feature}", false);
+                        ->afterStateUpdated(
+                            function ($state, Forms\Set $set) use ($key, $config) {
+                                if (! $state) {
+                                    // Disable all features when sub-product is disabled
+                                    foreach ($config['features'] as $feature => $default) {
+                                        $set("{$key}_{$feature}", false);
+                                    }
                                 }
                             }
-                        })
+                        )
                         ->columnSpanFull(),
 
                     Forms\Components\Grid::make(2)
@@ -96,12 +99,15 @@ class SubProducts extends Page
 
                     Forms\Components\Placeholder::make("{$key}_status")
                         ->label('Status')
-                        ->content(fn (Forms\Get $get) => $get("{$key}_enabled") ?
+                        ->content(
+                            fn (Forms\Get $get) => $get("{$key}_enabled") ?
                             '<span class="text-success-600">Active</span>' :
-                            '<span class="text-danger-600">Inactive</span>')
+                            '<span class="text-danger-600">Inactive</span>'
+                        )
                         ->extraAttributes(['class' => 'font-semibold'])
                         ->columnSpanFull(),
-                ])
+                    ]
+                )
                 ->collapsible()
                 ->persistCollapsed();
         }
@@ -146,10 +152,12 @@ class SubProducts extends Page
             ->success()
             ->send();
 
-        Log::info('Sub-product configuration updated', [
+        Log::info(
+            'Sub-product configuration updated', [
             'user'    => $currentUser,
             'changes' => $data,
-        ]);
+            ]
+        );
     }
 
     protected function getHeaderActions(): array
@@ -158,9 +166,13 @@ class SubProducts extends Page
             \Filament\Actions\Action::make('view_status')
                 ->label('View API Status')
                 ->icon('heroicon-o-eye')
-                ->modalContent(fn () => view('filament.modals.sub-product-status', [
-                    'status' => $this->subProductService->getApiStatus(),
-                ]))
+                ->modalContent(
+                    fn () => view(
+                        'filament.modals.sub-product-status', [
+                        'status' => $this->subProductService->getApiStatus(),
+                        ]
+                    )
+                )
                 ->modalWidth('2xl'),
         ];
     }

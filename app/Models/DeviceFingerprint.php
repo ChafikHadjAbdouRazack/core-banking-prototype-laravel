@@ -185,28 +185,34 @@ class DeviceFingerprint extends Model
 
     public function block(string $reason): void
     {
-        $this->update([
+        $this->update(
+            [
             'is_blocked'   => true,
             'is_trusted'   => false,
             'block_reason' => $reason,
-        ]);
+            ]
+        );
     }
 
     public function unblock(): void
     {
-        $this->update([
+        $this->update(
+            [
             'is_blocked'   => false,
             'block_reason' => null,
-        ]);
+            ]
+        );
     }
 
     public function trust(): void
     {
         if (! $this->is_blocked) {
-            $this->update([
+            $this->update(
+                [
                 'is_trusted'  => true,
                 'trust_score' => max($this->trust_score, 80),
-            ]);
+                ]
+            );
         }
     }
 
@@ -317,18 +323,24 @@ class DeviceFingerprint extends Model
             'device_type' => $this->device_type,
             'os'          => $this->operating_system . ' ' . $this->os_version,
             'browser'     => $this->browser . ' ' . $this->browser_version,
-            'location'    => implode(', ', array_filter([
-                $this->ip_city,
-                $this->ip_region,
-                $this->ip_country,
-            ])),
-            'risk_indicators' => array_filter([
+            'location'    => implode(
+                ', ', array_filter(
+                    [
+                    $this->ip_city,
+                    $this->ip_region,
+                    $this->ip_country,
+                    ]
+                )
+            ),
+            'risk_indicators' => array_filter(
+                [
                 $this->is_vpn ? 'VPN' : null,
                 $this->is_proxy ? 'Proxy' : null,
                 $this->is_tor ? 'Tor' : null,
                 $this->isNew() ? 'New Device' : null,
                 count($this->associated_users ?? []) > 3 ? 'Shared Device' : null,
-            ]),
+                ]
+            ),
             'trust_score' => $this->trust_score,
             'risk_score'  => $this->getDeviceRiskScore(),
             'last_seen'   => $this->last_seen_at->diffForHumans(),

@@ -248,11 +248,13 @@ class RiskAssessmentService
         return [
             'score'           => min($riskScore, 100),
             'factors'         => $factors,
-            'compliance_gaps' => array_filter([
+            'compliance_gaps' => array_filter(
+                [
                 ! $application->has_aml_program ? 'AML' : null,
                 ! $application->has_kyc_procedures ? 'KYC' : null,
                 ! $application->has_data_protection_policy ? 'Data Protection' : null,
-            ]),
+                ]
+            ),
         ];
     }
 

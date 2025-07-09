@@ -51,48 +51,72 @@ class ListBasketAssets extends ListRecords
 
             'needs_rebalancing' => Tab::make()
                 ->label('Needs Rebalancing')
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('type', 'dynamic')
-                        ->where(function ($q) {
+                ->modifyQueryUsing(
+                    fn (Builder $query) => $query->where('type', 'dynamic')
+                        ->where(
+                            function ($q) {
                             $q->whereNull('last_rebalanced_at')
-                                ->orWhere(function ($q2) {
+                                ->orWhere(
+                                    function ($q2) {
                                     $q2->where('rebalance_frequency', 'daily')
                                         ->where('last_rebalanced_at', '<', now()->subDay());
-                                })
-                                ->orWhere(function ($q2) {
+                                    }
+                                )
+                                ->orWhere(
+                                    function ($q2) {
                                     $q2->where('rebalance_frequency', 'weekly')
                                         ->where('last_rebalanced_at', '<', now()->subWeek());
-                                })
-                                ->orWhere(function ($q2) {
+                                    }
+                                )
+                                ->orWhere(
+                                    function ($q2) {
                                     $q2->where('rebalance_frequency', 'monthly')
                                         ->where('last_rebalanced_at', '<', now()->subMonth());
-                                })
-                                ->orWhere(function ($q2) {
+                                    }
+                                )
+                                ->orWhere(
+                                    function ($q2) {
                                     $q2->where('rebalance_frequency', 'quarterly')
                                         ->where('last_rebalanced_at', '<', now()->subQuarter());
-                                });
-                        }))
-                ->badge(fn () => BasketAssetResource::getModel()::query()
-                    ->where('type', 'dynamic')
-                    ->where(function ($q) {
-                        $q->whereNull('last_rebalanced_at')
-                            ->orWhere(function ($q2) {
-                                $q2->where('rebalance_frequency', 'daily')
-                                    ->where('last_rebalanced_at', '<', now()->subDay());
-                            })
-                            ->orWhere(function ($q2) {
-                                $q2->where('rebalance_frequency', 'weekly')
-                                    ->where('last_rebalanced_at', '<', now()->subWeek());
-                            })
-                            ->orWhere(function ($q2) {
-                                $q2->where('rebalance_frequency', 'monthly')
-                                    ->where('last_rebalanced_at', '<', now()->subMonth());
-                            })
-                            ->orWhere(function ($q2) {
-                                $q2->where('rebalance_frequency', 'quarterly')
-                                    ->where('last_rebalanced_at', '<', now()->subQuarter());
-                            });
-                    })
-                    ->count())
+                                    }
+                                );
+                            }
+                        )
+                )
+                ->badge(
+                    fn () => BasketAssetResource::getModel()::query()
+                        ->where('type', 'dynamic')
+                        ->where(
+                            function ($q) {
+                            $q->whereNull('last_rebalanced_at')
+                                ->orWhere(
+                                    function ($q2) {
+                                    $q2->where('rebalance_frequency', 'daily')
+                                        ->where('last_rebalanced_at', '<', now()->subDay());
+                                    }
+                                )
+                                ->orWhere(
+                                    function ($q2) {
+                                    $q2->where('rebalance_frequency', 'weekly')
+                                        ->where('last_rebalanced_at', '<', now()->subWeek());
+                                    }
+                                )
+                                ->orWhere(
+                                    function ($q2) {
+                                    $q2->where('rebalance_frequency', 'monthly')
+                                        ->where('last_rebalanced_at', '<', now()->subMonth());
+                                    }
+                                )
+                                ->orWhere(
+                                    function ($q2) {
+                                    $q2->where('rebalance_frequency', 'quarterly')
+                                        ->where('last_rebalanced_at', '<', now()->subQuarter());
+                                    }
+                                );
+                            }
+                        )
+                    ->count()
+                )
                 ->badgeColor('danger'),
         ];
     }

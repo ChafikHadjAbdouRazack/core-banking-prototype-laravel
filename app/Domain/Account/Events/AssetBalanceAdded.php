@@ -16,9 +16,9 @@ class AssetBalanceAdded extends ShouldBeStored implements HasHash
     public string $queue = EventQueues::TRANSACTIONS->value;
 
     /**
-     * @param string $assetCode
-     * @param int $amount
-     * @param Hash $hash
+     * @param string     $assetCode
+     * @param int        $amount
+     * @param Hash       $hash
      * @param array|null $metadata
      */
     public function __construct(

@@ -85,15 +85,17 @@ class CompareBenchmarks extends Command
         // Display results table
         $this->table(
             ['Test', 'Baseline', 'Current', 'Change', 'Status'],
-            collect($results)->map(function ($result) {
-                return [
+            collect($results)->map(
+                function ($result) {
+                    return [
                     $result['test'],
                     $result['baseline'],
                     $result['current'],
                     $result['change'],
                     $result['status'],
-                ];
-            })->toArray()
+                    ];
+                }
+            )->toArray()
         );
 
         // Summary
@@ -116,9 +118,11 @@ class CompareBenchmarks extends Command
             $this->info('✅ No performance regressions detected!');
 
             // Show improvements
-            $improvements = collect($results)->filter(function ($result) {
-                return str_contains($result['status'], '🚀');
-            });
+            $improvements = collect($results)->filter(
+                function ($result) {
+                    return str_contains($result['status'], '🚀');
+                }
+            );
 
             if ($improvements->isNotEmpty()) {
                 $this->newLine();
@@ -147,9 +151,11 @@ class CompareBenchmarks extends Command
         }
 
         // Sort by modification time and get the latest
-        usort($files, function ($a, $b) {
-            return filemtime($b) - filemtime($a);
-        });
+        usort(
+            $files, function ($a, $b) {
+                return filemtime($b) - filemtime($a);
+            }
+        );
 
         return $files[0];
     }

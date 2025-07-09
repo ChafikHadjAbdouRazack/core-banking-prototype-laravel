@@ -15,7 +15,9 @@ class AssetOverviewWidget extends BaseWidget
 
     protected function getStats(): array
     {
-        /** @var Asset $asset */
+        /**
+ * @var Asset $asset 
+*/
         $asset = $this->record;
 
         $totalBalances = $asset->accountBalances()->count();

@@ -67,15 +67,17 @@ class CollateralService implements CollateralServiceInterface
         return StablecoinCollateralPosition::with(['stablecoin', 'account', 'collateralAsset'])
             ->active()
             ->get()
-            ->filter(function ($position) use ($bufferRatio) {
-                // Update position's collateral ratio with current exchange rates
-                $this->updatePositionCollateralRatio($position);
+            ->filter(
+                function ($position) use ($bufferRatio) {
+                    // Update position's collateral ratio with current exchange rates
+                    $this->updatePositionCollateralRatio($position);
 
-                // Check if at risk (within buffer of minimum ratio)
-                $riskThreshold = $position->stablecoin->min_collateral_ratio + $bufferRatio;
+                    // Check if at risk (within buffer of minimum ratio)
+                    $riskThreshold = $position->stablecoin->min_collateral_ratio + $bufferRatio;
 
-                return $position->collateral_ratio <= $riskThreshold;
-            });
+                    return $position->collateral_ratio <= $riskThreshold;
+                }
+            );
     }
 
     /**
@@ -86,12 +88,14 @@ class CollateralService implements CollateralServiceInterface
         return StablecoinCollateralPosition::with(['stablecoin', 'account', 'collateralAsset'])
             ->shouldAutoLiquidate()
             ->get()
-            ->filter(function ($position) {
-                // Double-check with current exchange rates
-                $this->updatePositionCollateralRatio($position);
+            ->filter(
+                function ($position) {
+                    // Double-check with current exchange rates
+                    $this->updatePositionCollateralRatio($position);
 
-                return $position->shouldAutoLiquidate();
-            });
+                    return $position->shouldAutoLiquidate();
+                }
+            );
     }
 
     /**
@@ -151,15 +155,17 @@ class CollateralService implements CollateralServiceInterface
         $totalValue = 0;
 
         foreach ($positions as $assetCode => $assetPositions) {
-            $assetValue = $assetPositions->sum(function ($position) use ($stablecoinCode) {
-                $stablecoin = Stablecoin::find($stablecoinCode);
+            $assetValue = $assetPositions->sum(
+                function ($position) use ($stablecoinCode) {
+                    $stablecoin = Stablecoin::find($stablecoinCode);
 
-                return $this->convertToPegAsset(
-                    $position->collateral_asset_code,
-                    $position->collateral_amount,
-                    $stablecoin->peg_asset_code
-                );
-            });
+                    return $this->convertToPegAsset(
+                        $position->collateral_asset_code,
+                        $position->collateral_amount,
+                        $stablecoin->peg_asset_code
+                    );
+                }
+            );
 
             $distribution[$assetCode] = [
                 'asset_code'     => $assetCode,

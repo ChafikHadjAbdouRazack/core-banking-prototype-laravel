@@ -78,15 +78,17 @@ class MultiBankDistributionWidget extends Widget
             ],
         ];
 
-        return $stats->map(function ($stat) use ($bankMetadata) {
-            $metadata = $bankMetadata[$stat->bank_name] ?? [
+        return $stats->map(
+            function ($stat) use ($bankMetadata) {
+                $metadata = $bankMetadata[$stat->bank_name] ?? [
                 'color'    => 'gray',
                 'country'  => 'EU',
                 'coverage' => '€100,000',
-            ];
+                ];
 
-            return array_merge($stat->toArray(), $metadata);
-        })->toArray();
+                return array_merge($stat->toArray(), $metadata);
+            }
+        )->toArray();
     }
 
     /**

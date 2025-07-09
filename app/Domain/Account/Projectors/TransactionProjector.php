@@ -21,7 +21,8 @@ class TransactionProjector extends Projector
     public function onAssetTransactionCreated(AssetTransactionCreated $event): void
     {
         try {
-            TransactionProjection::create([
+            TransactionProjection::create(
+                [
                 'uuid'         => Str::uuid(),
                 'account_uuid' => (string) $event->accountUuid,
                 'type'         => $event->isCredit() ? 'deposit' : 'withdrawal',
@@ -34,18 +35,23 @@ class TransactionProjector extends Projector
                     'event_type' => 'AssetTransactionCreated',
                     'event_uuid' => $event->aggregateRootUuid(),
                 ],
-            ]);
+                ]
+            );
 
-            Log::info('Transaction projection created for AssetTransactionCreated', [
+            Log::info(
+                'Transaction projection created for AssetTransactionCreated', [
                 'account_uuid' => (string) $event->accountUuid,
                 'asset_code'   => $event->assetCode,
                 'amount'       => $event->getAmount(),
-            ]);
+                ]
+            );
         } catch (\Exception $e) {
-            Log::error('Error creating transaction projection', [
+            Log::error(
+                'Error creating transaction projection', [
                 'event' => 'AssetTransactionCreated',
                 'error' => $e->getMessage(),
-            ]);
+                ]
+            );
         }
     }
 
@@ -56,7 +62,8 @@ class TransactionProjector extends Projector
     {
         try {
             // Create debit transaction for sender
-            TransactionProjection::create([
+            TransactionProjection::create(
+                [
                 'uuid'         => Str::uuid(),
                 'account_uuid' => (string) $event->fromAccountUuid,
                 'type'         => 'transfer_out',
@@ -70,10 +77,12 @@ class TransactionProjector extends Projector
                     'event_uuid' => $event->aggregateRootUuid(),
                     'to_account' => (string) $event->toAccountUuid,
                 ],
-            ]);
+                ]
+            );
 
             // Create credit transaction for receiver
-            TransactionProjection::create([
+            TransactionProjection::create(
+                [
                 'uuid'         => Str::uuid(),
                 'account_uuid' => (string) $event->toAccountUuid,
                 'type'         => 'transfer_in',
@@ -87,19 +96,24 @@ class TransactionProjector extends Projector
                     'event_uuid'   => $event->aggregateRootUuid(),
                     'from_account' => (string) $event->fromAccountUuid,
                 ],
-            ]);
+                ]
+            );
 
-            Log::info('Transaction projections created for AssetTransferCompleted', [
+            Log::info(
+                'Transaction projections created for AssetTransferCompleted', [
                 'from_account' => (string) $event->fromAccountUuid,
                 'to_account'   => (string) $event->toAccountUuid,
                 'asset_code'   => $event->assetCode,
                 'amount'       => $event->amount,
-            ]);
+                ]
+            );
         } catch (\Exception $e) {
-            Log::error('Error creating transaction projections for transfer', [
+            Log::error(
+                'Error creating transaction projections for transfer', [
                 'event' => 'AssetTransferCompleted',
                 'error' => $e->getMessage(),
-            ]);
+                ]
+            );
         }
     }
 
@@ -109,7 +123,8 @@ class TransactionProjector extends Projector
     public function onPaymentDepositCreated(PaymentDepositCreated $event): void
     {
         try {
-            TransactionProjection::create([
+            TransactionProjection::create(
+                [
                 'uuid'         => Str::uuid(),
                 'account_uuid' => (string) $event->accountUuid,
                 'type'         => 'deposit',
@@ -123,18 +138,23 @@ class TransactionProjector extends Projector
                     'event_uuid'     => $event->aggregateRootUuid(),
                     'payment_method' => $event->paymentMethod ?? null,
                 ],
-            ]);
+                ]
+            );
 
-            Log::info('Transaction projection created for PaymentDepositCreated', [
+            Log::info(
+                'Transaction projection created for PaymentDepositCreated', [
                 'account_uuid' => (string) $event->accountUuid,
                 'asset_code'   => $event->assetCode,
                 'amount'       => $event->amount,
-            ]);
+                ]
+            );
         } catch (\Exception $e) {
-            Log::error('Error creating transaction projection for deposit', [
+            Log::error(
+                'Error creating transaction projection for deposit', [
                 'event' => 'PaymentDepositCreated',
                 'error' => $e->getMessage(),
-            ]);
+                ]
+            );
         }
     }
 
@@ -144,7 +164,8 @@ class TransactionProjector extends Projector
     public function onPaymentWithdrawalCreated(PaymentWithdrawalCreated $event): void
     {
         try {
-            TransactionProjection::create([
+            TransactionProjection::create(
+                [
                 'uuid'         => Str::uuid(),
                 'account_uuid' => (string) $event->accountUuid,
                 'type'         => 'withdrawal',
@@ -158,18 +179,23 @@ class TransactionProjector extends Projector
                     'event_uuid'     => $event->aggregateRootUuid(),
                     'payment_method' => $event->paymentMethod ?? null,
                 ],
-            ]);
+                ]
+            );
 
-            Log::info('Transaction projection created for PaymentWithdrawalCreated', [
+            Log::info(
+                'Transaction projection created for PaymentWithdrawalCreated', [
                 'account_uuid' => (string) $event->accountUuid,
                 'asset_code'   => $event->assetCode,
                 'amount'       => $event->amount,
-            ]);
+                ]
+            );
         } catch (\Exception $e) {
-            Log::error('Error creating transaction projection for withdrawal', [
+            Log::error(
+                'Error creating transaction projection for withdrawal', [
                 'event' => 'PaymentWithdrawalCreated',
                 'error' => $e->getMessage(),
-            ]);
+                ]
+            );
         }
     }
 }

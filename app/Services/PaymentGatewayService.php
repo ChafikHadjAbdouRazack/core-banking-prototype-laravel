@@ -31,7 +31,8 @@ class PaymentGatewayService
             }
 
             // Create payment intent
-            $intent = $user->pay($amountInCents, [
+            $intent = $user->pay(
+                $amountInCents, [
                 'currency' => strtolower($currency),
                 'metadata' => [
                     'user_id'      => $user->id,
@@ -40,15 +41,18 @@ class PaymentGatewayService
                 ],
                 'description'        => 'Deposit to FinAegis account',
                 'setup_future_usage' => 'on_session',
-            ]);
+                ]
+            );
 
             return $intent->asStripePaymentIntent();
         } catch (Exception $e) {
-            Log::error('Failed to create deposit payment intent', [
+            Log::error(
+                'Failed to create deposit payment intent', [
                 'user_id' => $user->id,
                 'amount'  => $amountInCents,
                 'error'   => $e->getMessage(),
-            ]);
+                ]
+            );
             throw $e;
         }
     }
@@ -76,7 +80,8 @@ class PaymentGatewayService
 
         // Use PaymentService to process deposit through event sourcing
         $reference = 'DEP-' . strtoupper(uniqid());
-        $this->paymentService->processStripeDeposit([
+        $this->paymentService->processStripeDeposit(
+            [
             'account_uuid'        => $accountUuid,
             'amount'              => $paymentIntent->amount,
             'currency'            => strtoupper($paymentIntent->currency),
@@ -88,7 +93,8 @@ class PaymentGatewayService
                 'stripe_payment_intent_id' => $paymentIntent->id,
                 'processor'                => 'stripe',
             ],
-        ]);
+            ]
+        );
 
         return [
             'account_uuid' => $accountUuid,
@@ -116,7 +122,8 @@ class PaymentGatewayService
         $reference = 'WTH-' . strtoupper(uniqid());
 
         // Use PaymentService to process withdrawal through event sourcing
-        $result = $this->paymentService->processBankWithdrawal([
+        $result = $this->paymentService->processBankWithdrawal(
+            [
             'account_uuid'        => $account->uuid,
             'amount'              => $amountInCents,
             'currency'            => $currency,
@@ -131,7 +138,8 @@ class PaymentGatewayService
                 'processor'    => 'bank_transfer',
                 'initiated_at' => now()->toIso8601String(),
             ],
-        ]);
+            ]
+        );
 
         return [
             'account_uuid' => $account->uuid,
@@ -153,21 +161,25 @@ class PaymentGatewayService
         try {
             $methods = $user->paymentMethods();
 
-            return $methods->map(function ($method) {
-                return [
+            return $methods->map(
+                function ($method) {
+                    return [
                     'id'         => $method->id,
                     'brand'      => $method->card->brand,
                     'last4'      => $method->card->last4,
                     'exp_month'  => $method->card->exp_month,
                     'exp_year'   => $method->card->exp_year,
                     'is_default' => $method->id === optional($this->defaultPaymentMethod())->id,
-                ];
-            })->toArray();
+                    ];
+                }
+            )->toArray();
         } catch (Exception $e) {
-            Log::error('Failed to fetch payment methods', [
+            Log::error(
+                'Failed to fetch payment methods', [
                 'user_id' => $user->id,
                 'error'   => $e->getMessage(),
-            ]);
+                ]
+            );
 
             return [];
         }
@@ -185,11 +197,13 @@ class PaymentGatewayService
 
             return $user->addPaymentMethod($paymentMethodId);
         } catch (Exception $e) {
-            Log::error('Failed to add payment method', [
+            Log::error(
+                'Failed to add payment method', [
                 'user_id'           => $user->id,
                 'payment_method_id' => $paymentMethodId,
                 'error'             => $e->getMessage(),
-            ]);
+                ]
+            );
             throw $e;
         }
     }
@@ -205,11 +219,13 @@ class PaymentGatewayService
                 $paymentMethod->delete();
             }
         } catch (Exception $e) {
-            Log::error('Failed to remove payment method', [
+            Log::error(
+                'Failed to remove payment method', [
                 'user_id'           => $user->id,
                 'payment_method_id' => $paymentMethodId,
                 'error'             => $e->getMessage(),
-            ]);
+                ]
+            );
             throw $e;
         }
     }

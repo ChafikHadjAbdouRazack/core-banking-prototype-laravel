@@ -10,11 +10,11 @@ interface StablecoinIssuanceServiceInterface
     /**
      * Mint stablecoins by locking collateral.
      *
-     * @param Account $account
-     * @param string $stablecoinCode
-     * @param string $collateralAssetCode
-     * @param int $collateralAmount
-     * @param int $mintAmount
+     * @param  Account $account
+     * @param  string  $stablecoinCode
+     * @param  string  $collateralAssetCode
+     * @param  int     $collateralAmount
+     * @param  int     $mintAmount
      * @return StablecoinCollateralPosition
      */
     public function mint(
@@ -28,10 +28,10 @@ interface StablecoinIssuanceServiceInterface
     /**
      * Burn stablecoins and release collateral.
      *
-     * @param Account $account
-     * @param string $stablecoinCode
-     * @param int $burnAmount
-     * @param int|null $collateralReleaseAmount
+     * @param  Account  $account
+     * @param  string   $stablecoinCode
+     * @param  int      $burnAmount
+     * @param  int|null $collateralReleaseAmount
      * @return StablecoinCollateralPosition
      */
     public function burn(
@@ -44,10 +44,10 @@ interface StablecoinIssuanceServiceInterface
     /**
      * Add collateral to an existing position.
      *
-     * @param Account $account
-     * @param string $stablecoinCode
-     * @param string $collateralAssetCode
-     * @param int $collateralAmount
+     * @param  Account $account
+     * @param  string  $stablecoinCode
+     * @param  string  $collateralAssetCode
+     * @param  int     $collateralAmount
      * @return StablecoinCollateralPosition
      */
     public function addCollateral(

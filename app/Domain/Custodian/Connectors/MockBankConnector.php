@@ -226,10 +226,12 @@ class MockBankConnector extends BaseCustodianConnector
 
     public function getTransactionHistory(string $accountId, ?int $limit = 100, ?int $offset = 0): array
     {
-        $this->logRequest('GET', "/accounts/{$accountId}/transactions", [
+        $this->logRequest(
+            'GET', "/accounts/{$accountId}/transactions", [
             'limit'  => $limit,
             'offset' => $offset,
-        ]);
+            ]
+        );
 
         // Return mock transaction history
         $history = [];

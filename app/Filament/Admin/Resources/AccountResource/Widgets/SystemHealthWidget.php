@@ -89,11 +89,13 @@ class SystemHealthWidget extends BaseWidget
 
     private function getTransactionRate(): string
     {
-        $rate = TransactionEvent::whereIn('event_class', [
+        $rate = TransactionEvent::whereIn(
+            'event_class', [
                 'App\\Domain\\Account\\Events\\MoneyAdded',
                 'App\\Domain\\Account\\Events\\MoneySubtracted',
                 'App\\Domain\\Account\\Events\\MoneyTransferred',
-            ])
+            ]
+        )
             ->where('created_at', '>=', now()->subMinute())
             ->count();
 
@@ -189,11 +191,13 @@ class SystemHealthWidget extends BaseWidget
         $data = [];
 
         for ($i = 6; $i >= 0; $i--) {
-            $count = TransactionEvent::whereIn('event_class', [
+            $count = TransactionEvent::whereIn(
+                'event_class', [
                     'App\\Domain\\Account\\Events\\MoneyAdded',
                     'App\\Domain\\Account\\Events\\MoneySubtracted',
                     'App\\Domain\\Account\\Events\\MoneyTransferred',
-                ])
+                ]
+            )
                 ->where('created_at', '>=', now()->subMinutes($i + 1))
                 ->where('created_at', '<', now()->subMinutes($i))
                 ->count();

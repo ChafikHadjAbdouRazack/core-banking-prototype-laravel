@@ -29,14 +29,18 @@ class WebhookService
 
         // Create delivery records and queue them for processing
         foreach ($webhooks as $webhook) {
-            $delivery = $webhook->deliveries()->create([
+            $delivery = $webhook->deliveries()->create(
+                [
                 'event_type' => $eventType,
-                'payload'    => array_merge($payload, [
+                'payload'    => array_merge(
+                    $payload, [
                     'event'     => $eventType,
                     'timestamp' => now()->toIso8601String(),
-                ]),
+                    ]
+                ),
                 'status' => WebhookDelivery::STATUS_PENDING,
-            ]);
+                ]
+            );
 
             // Queue the delivery for processing
             ProcessWebhookDelivery::dispatch($delivery)
@@ -49,9 +53,11 @@ class WebhookService
      */
     public function dispatchAccountEvent(string $eventType, string $accountUuid, array $additionalData = []): void
     {
-        $payload = array_merge([
+        $payload = array_merge(
+            [
             'account_uuid' => $accountUuid,
-        ], $additionalData);
+            ], $additionalData
+        );
 
         $this->dispatch($eventType, $payload);
     }

@@ -14,21 +14,25 @@ enum OrderStatus: string
 
     public function isFinal(): bool
     {
-        return in_array($this, [
+        return in_array(
+            $this, [
             self::FILLED,
             self::CANCELLED,
             self::EXPIRED,
             self::REJECTED,
-        ]);
+            ]
+        );
     }
 
     public function canBeFilled(): bool
     {
-        return in_array($this, [
+        return in_array(
+            $this, [
             self::PENDING,
             self::OPEN,
             self::PARTIALLY_FILLED,
-        ]);
+            ]
+        );
     }
 
     public function getLabel(): string

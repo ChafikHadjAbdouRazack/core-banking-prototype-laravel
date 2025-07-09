@@ -22,7 +22,8 @@ class AccountBalancesRelationManager extends RelationManager
     public function form(Form $form): Form
     {
         return $form
-            ->schema([
+            ->schema(
+                [
                 Forms\Components\Select::make('account_uuid')
                     ->label('Account')
                     ->relationship('account', 'uuid')
@@ -35,14 +36,16 @@ class AccountBalancesRelationManager extends RelationManager
                     ->numeric()
                     ->required()
                     ->helperText('Balance in smallest unit (e.g., cents for USD)'),
-            ]);
+                ]
+            );
     }
 
     public function table(Table $table): Table
     {
         return $table
             ->recordTitleAttribute('account_uuid')
-            ->columns([
+            ->columns(
+                [
                 Tables\Columns\TextColumn::make('account.uuid')
                     ->label('Account UUID')
                     ->searchable()
@@ -58,12 +61,14 @@ class AccountBalancesRelationManager extends RelationManager
 
                 Tables\Columns\TextColumn::make('balance')
                     ->label('Balance')
-                    ->formatStateUsing(function ($state, $record) {
-                        $asset = $record->asset;
-                        $formatted = number_format($state / (10 ** $asset->precision), $asset->precision);
+                    ->formatStateUsing(
+                        function ($state, $record) {
+                            $asset = $record->asset;
+                            $formatted = number_format($state / (10 ** $asset->precision), $asset->precision);
 
-                        return "{$formatted} {$asset->code}";
-                    })
+                            return "{$formatted} {$asset->code}";
+                        }
+                    )
                     ->sortable()
                     ->alignEnd(),
 
@@ -72,8 +77,10 @@ class AccountBalancesRelationManager extends RelationManager
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ])
-            ->filters([
+                ]
+            )
+            ->filters(
+                [
                 Tables\Filters\Filter::make('positive_balance')
                     ->label('Positive Balance Only')
                     ->query(fn (Builder $query): Builder => $query->where('balance', '>', 0)),
@@ -81,22 +88,31 @@ class AccountBalancesRelationManager extends RelationManager
                 Tables\Filters\Filter::make('zero_balance')
                     ->label('Zero Balance Only')
                     ->query(fn (Builder $query): Builder => $query->where('balance', '=', 0)),
-            ])
-            ->headerActions([
+                ]
+            )
+            ->headerActions(
+                [
                 Tables\Actions\CreateAction::make()
                     ->label('Add Balance'),
-            ])
-            ->actions([
+                ]
+            )
+            ->actions(
+                [
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make()
                     ->requiresConfirmation(),
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
+                ]
+            )
+            ->bulkActions(
+                [
+                Tables\Actions\BulkActionGroup::make(
+                    [
                     Tables\Actions\DeleteBulkAction::make()
                         ->requiresConfirmation(),
-                ]),
-            ])
+                    ]
+                ),
+                ]
+            )
             ->defaultSort('balance', 'desc');
     }
 }

@@ -71,10 +71,12 @@ class Trade extends Model
 
     public function scopeForAccount($query, string $accountId)
     {
-        return $query->where(function ($q) use ($accountId) {
-            $q->where('buyer_account_id', $accountId)
-                ->orWhere('seller_account_id', $accountId);
-        });
+        return $query->where(
+            function ($q) use ($accountId) {
+                $q->where('buyer_account_id', $accountId)
+                    ->orWhere('seller_account_id', $accountId);
+            }
+        );
     }
 
     public function scopeRecent($query, int $hours = 24)

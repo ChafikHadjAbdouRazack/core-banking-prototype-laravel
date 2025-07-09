@@ -18,20 +18,21 @@ class GCUController extends Controller
     protected function fetchCompositionData()
     {
         // Cache the API response for 60 seconds to avoid excessive API calls
-        return Cache::remember('gcu_composition', 60, function () {
-            try {
-                // Use internal API endpoint
-                $response = Http::get(url('/api/v2/gcu/composition'));
+        return Cache::remember(
+            'gcu_composition', 60, function () {
+                try {
+                    // Use internal API endpoint
+                    $response = Http::get(url('/api/v2/gcu/composition'));
 
-                if ($response->successful()) {
-                    return $response->json();
+                    if ($response->successful()) {
+                        return $response->json();
+                    }
+                } catch (\Exception $e) {
+                    \Log::error('Failed to fetch GCU composition data: ' . $e->getMessage());
                 }
-            } catch (\Exception $e) {
-                \Log::error('Failed to fetch GCU composition data: ' . $e->getMessage());
-            }
 
-            // Fallback to static config if API fails
-            return [
+                // Fallback to static config if API fails
+                return [
                 'composition' => config('platform.gcu.composition'),
                 'performance' => [
                     'value'      => 1.0000,
@@ -40,7 +41,8 @@ class GCUController extends Controller
                     'change_30d' => 0,
                 ],
                 'last_updated' => now()->toIso8601String(),
-            ];
-        });
+                ];
+            }
+        );
     }
 }

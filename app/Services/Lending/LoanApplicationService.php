@@ -120,13 +120,15 @@ class LoanApplicationService
                 DB::commit();
 
                 // Notify borrower
-                $this->notifyBorrower($borrowerId, 'approved', [
+                $this->notifyBorrower(
+                    $borrowerId, 'approved', [
                     'applicationId'  => $applicationId,
                     'loanId'         => $loanId,
                     'approvedAmount' => $decision['approvedAmount'],
                     'interestRate'   => $decision['interestRate'],
                     'termMonths'     => $termMonths,
-                ]);
+                    ]
+                );
 
                 return [
                     'status'         => 'approved',
@@ -143,10 +145,12 @@ class LoanApplicationService
                 DB::commit();
 
                 // Notify borrower
-                $this->notifyBorrower($borrowerId, 'rejected', [
+                $this->notifyBorrower(
+                    $borrowerId, 'rejected', [
                     'applicationId' => $applicationId,
                     'reasons'       => $decision['rejectionReasons'],
-                ]);
+                    ]
+                );
 
                 return [
                     'status'        => 'rejected',
@@ -224,10 +228,12 @@ class LoanApplicationService
     private function notifyBorrower(string $borrowerId, string $status, array $details): void
     {
         // In production, this would send email/SMS/push notification
-        Log::info('Loan application notification', [
+        Log::info(
+            'Loan application notification', [
             'borrowerId' => $borrowerId,
             'status'     => $status,
             'details'    => $details,
-        ]);
+            ]
+        );
     }
 }

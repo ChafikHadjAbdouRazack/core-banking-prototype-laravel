@@ -20,8 +20,8 @@ class MoneyTransferred extends ShouldBeStored implements HasHash, HasMoney
     /**
      * @param AccountUuid $from
      * @param AccountUuid $to
-     * @param Money $money
-     * @param Hash $hash
+     * @param Money       $money
+     * @param Hash        $hash
      */
     public function __construct(
         public readonly AccountUuid $from,

@@ -348,7 +348,7 @@ class LiquidityIncentivesService
         $dailyReturn = $providerTVL->isZero()
             ? BigDecimal::zero()
             : $recentRewards->dividedBy($providerTVL, 18, RoundingMode::DOWN)
-                ->dividedBy(30, 18, RoundingMode::DOWN); // Average daily
+            ->dividedBy(30, 18, RoundingMode::DOWN); // Average daily
 
         $apy = $dailyReturn->multipliedBy(365)->multipliedBy(100);
 
@@ -358,8 +358,8 @@ class LiquidityIncentivesService
         $feeAPY = $providerTVL->isZero()
             ? BigDecimal::zero()
             : $providerFees24h->dividedBy($providerTVL, 18, RoundingMode::DOWN)
-                ->multipliedBy(365)
-                ->multipliedBy(100);
+            ->multipliedBy(365)
+            ->multipliedBy(100);
 
         return [
             'provider_id' => $providerId,

@@ -31,11 +31,13 @@ class LendingController extends Controller
         $user = Auth::user();
 
         // Get user's loans
-        $loans = Loan::where('borrower_account_uuid', function ($query) use ($user) {
-            $query->select('uuid')
-                ->from('accounts')
-                ->where('user_uuid', $user->uuid);
-        })->with(['repayments', 'collaterals'])->get();
+        $loans = Loan::where(
+            'borrower_account_uuid', function ($query) use ($user) {
+                $query->select('uuid')
+                    ->from('accounts')
+                    ->where('user_uuid', $user->uuid);
+            }
+        )->with(['repayments', 'collaterals'])->get();
 
         // Calculate statistics
         $statistics = $this->calculateUserStatistics($loans);
@@ -68,7 +70,8 @@ class LendingController extends Controller
      */
     public function submitApplication(Request $request)
     {
-        $validated = $request->validate([
+        $validated = $request->validate(
+            [
             'account_id'        => 'required|uuid',
             'loan_product'      => 'required|string',
             'amount'            => 'required|numeric|min:100|max:1000000',
@@ -79,7 +82,8 @@ class LendingController extends Controller
             'collateral_amount' => 'required_unless:collateral_type,none|numeric|min:0',
             'employment_status' => 'required|string',
             'annual_income'     => 'required|numeric|min:0',
-        ]);
+            ]
+        );
 
         $account = Account::where('uuid', $validated['account_id'])
             ->where('user_uuid', Auth::user()->uuid)
@@ -180,11 +184,13 @@ class LendingController extends Controller
      */
     public function processRepayment(Request $request, $loanId)
     {
-        $validated = $request->validate([
+        $validated = $request->validate(
+            [
             'account_id'   => 'required|uuid',
             'amount'       => 'required|numeric|min:0.01',
             'payment_type' => 'required|in:scheduled,partial,full',
-        ]);
+            ]
+        );
 
         $loan = Loan::where('loan_uuid', $loanId)->first();
 

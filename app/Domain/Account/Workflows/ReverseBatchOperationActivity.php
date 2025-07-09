@@ -19,62 +19,70 @@ class ReverseBatchOperationActivity extends Activity
     /**
      * Reverse a batch operation based on its type and result.
      *
-     * @param string $operation
-     * @param string $batchId
-     * @param array $operationResult
+     * @param  string $operation
+     * @param  string $batchId
+     * @param  array  $operationResult
      * @return void
      */
     public function execute(string $operation, string $batchId, array $operationResult): void
     {
-        logger()->info('Reversing batch operation', [
+        logger()->info(
+            'Reversing batch operation', [
             'batch_id'        => $batchId,
             'operation'       => $operation,
             'original_result' => $operationResult,
-        ]);
+            ]
+        );
 
         try {
             switch ($operation) {
-                case 'calculate_daily_turnover':
-                    $this->reverseDailyTurnover($operationResult);
-                    break;
+            case 'calculate_daily_turnover':
+                $this->reverseDailyTurnover($operationResult);
+                break;
 
-                case 'generate_account_statements':
-                    $this->reverseAccountStatements($operationResult);
-                    break;
+            case 'generate_account_statements':
+                $this->reverseAccountStatements($operationResult);
+                break;
 
-                case 'process_interest_calculations':
-                    $this->reverseInterestCalculations($operationResult);
-                    break;
+            case 'process_interest_calculations':
+                $this->reverseInterestCalculations($operationResult);
+                break;
 
-                case 'perform_compliance_checks':
-                    $this->reverseComplianceChecks($operationResult);
-                    break;
+            case 'perform_compliance_checks':
+                $this->reverseComplianceChecks($operationResult);
+                break;
 
-                case 'archive_old_transactions':
-                    $this->reverseArchiveTransactions($operationResult);
-                    break;
+            case 'archive_old_transactions':
+                $this->reverseArchiveTransactions($operationResult);
+                break;
 
-                case 'generate_regulatory_reports':
-                    $this->reverseRegulatoryReports($operationResult);
-                    break;
+            case 'generate_regulatory_reports':
+                $this->reverseRegulatoryReports($operationResult);
+                break;
 
-                default:
-                    logger()->warning('No reversal logic for operation', [
-                        'operation' => $operation,
-                        'batch_id'  => $batchId,
-                    ]);
+            default:
+                logger()->warning(
+                    'No reversal logic for operation', [
+                    'operation' => $operation,
+                    'batch_id'  => $batchId,
+                        ]
+                );
             }
 
-            logger()->info('Successfully reversed batch operation', [
+            logger()->info(
+                'Successfully reversed batch operation', [
                 'batch_id'  => $batchId,
                 'operation' => $operation,
-            ]);
+                ]
+            );
         } catch (\Throwable $th) {
-            logger()->error('Failed to reverse batch operation', [
+            logger()->error(
+                'Failed to reverse batch operation', [
                 'batch_id'  => $batchId,
                 'operation' => $operation,
                 'error'     => $th->getMessage(),
-            ]);
+                ]
+            );
             throw $th;
         }
     }
@@ -101,10 +109,12 @@ class ReverseBatchOperationActivity extends Activity
             } else {
                 // For updated turnovers, we would need to store previous values
                 // For simplicity, we'll just log that we couldn't fully revert
-                logger()->warning('Cannot fully revert updated turnover', [
+                logger()->warning(
+                    'Cannot fully revert updated turnover', [
                     'account_uuid' => $turnoverData['account_uuid'],
                     'date'         => $date,
-                ]);
+                    ]
+                );
             }
         }
     }
@@ -136,22 +146,26 @@ class ReverseBatchOperationActivity extends Activity
             return;
         }
 
-        DB::transaction(function () use ($result) {
-            foreach ($result['result']['interest_transactions'] as $interestTx) {
-                // Delete the interest transaction
-                Transaction::where('uuid', $interestTx['transaction_uuid'])->delete();
+        DB::transaction(
+            function () use ($result) {
+                foreach ($result['result']['interest_transactions'] as $interestTx) {
+                    // Delete the interest transaction
+                    Transaction::where('uuid', $interestTx['transaction_uuid'])->delete();
 
-                // Reverse the balance update
-                Account::where('uuid', $interestTx['account_uuid'])
+                    // Reverse the balance update
+                    Account::where('uuid', $interestTx['account_uuid'])
                     ->decrement('balance', $interestTx['amount']);
 
-                logger()->info('Reversed interest transaction', [
-                    'transaction_uuid' => $interestTx['transaction_uuid'],
-                    'account_uuid'     => $interestTx['account_uuid'],
-                    'amount'           => $interestTx['amount'],
-                ]);
+                    logger()->info(
+                        'Reversed interest transaction', [
+                        'transaction_uuid' => $interestTx['transaction_uuid'],
+                        'account_uuid'     => $interestTx['account_uuid'],
+                        'amount'           => $interestTx['amount'],
+                        ]
+                    );
+                }
             }
-        });
+        );
     }
 
     /**
@@ -183,10 +197,12 @@ class ReverseBatchOperationActivity extends Activity
         $count = Transaction::whereIn('uuid', $result['result']['archived_uuids'])
             ->update(['archived' => false]);
 
-        logger()->info('Unarchived transactions', [
+        logger()->info(
+            'Unarchived transactions', [
             'count'    => $count,
             'expected' => count($result['result']['archived_uuids']),
-        ]);
+            ]
+        );
     }
 
     /**

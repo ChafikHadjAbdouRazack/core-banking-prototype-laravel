@@ -53,18 +53,20 @@ class AssetTransferAggregate extends AggregateRoot
     ): self {
         $hash = $this->generateHash($fromAmount);
 
-        $this->recordThat(new AssetTransferInitiated(
-            fromAccountUuid: $fromAccountUuid,
-            toAccountUuid: $toAccountUuid,
-            fromAssetCode: $fromAssetCode,
-            toAssetCode: $toAssetCode,
-            fromAmount: $fromAmount,
-            toAmount: $toAmount,
-            exchangeRate: $exchangeRate,
-            hash: $hash,
-            description: $description,
-            metadata: $metadata
-        ));
+        $this->recordThat(
+            new AssetTransferInitiated(
+                fromAccountUuid: $fromAccountUuid,
+                toAccountUuid: $toAccountUuid,
+                fromAssetCode: $fromAssetCode,
+                toAssetCode: $toAssetCode,
+                fromAmount: $fromAmount,
+                toAmount: $toAmount,
+                exchangeRate: $exchangeRate,
+                hash: $hash,
+                description: $description,
+                metadata: $metadata
+            )
+        );
 
         return $this;
     }
@@ -80,17 +82,19 @@ class AssetTransferAggregate extends AggregateRoot
             throw new \InvalidArgumentException('Transfer must be initiated before it can be completed');
         }
 
-        $this->recordThat(new AssetTransferCompleted(
-            fromAccountUuid: $this->fromAccountUuid,
-            toAccountUuid: $this->toAccountUuid,
-            fromAssetCode: $this->fromAssetCode,
-            toAssetCode: $this->toAssetCode,
-            fromAmount: $this->fromAmount,
-            toAmount: $this->toAmount,
-            hash: $this->hash,
-            transferId: $transferId,
-            metadata: $metadata
-        ));
+        $this->recordThat(
+            new AssetTransferCompleted(
+                fromAccountUuid: $this->fromAccountUuid,
+                toAccountUuid: $this->toAccountUuid,
+                fromAssetCode: $this->fromAssetCode,
+                toAssetCode: $this->toAssetCode,
+                fromAmount: $this->fromAmount,
+                toAmount: $this->toAmount,
+                hash: $this->hash,
+                transferId: $transferId,
+                metadata: $metadata
+            )
+        );
 
         return $this;
     }
@@ -107,17 +111,19 @@ class AssetTransferAggregate extends AggregateRoot
             throw new \InvalidArgumentException('Transfer must be initiated before it can fail');
         }
 
-        $this->recordThat(new AssetTransferFailed(
-            fromAccountUuid: $this->fromAccountUuid,
-            toAccountUuid: $this->toAccountUuid,
-            fromAssetCode: $this->fromAssetCode,
-            toAssetCode: $this->toAssetCode,
-            fromAmount: $this->fromAmount,
-            reason: $reason,
-            hash: $this->hash,
-            transferId: $transferId,
-            metadata: $metadata
-        ));
+        $this->recordThat(
+            new AssetTransferFailed(
+                fromAccountUuid: $this->fromAccountUuid,
+                toAccountUuid: $this->toAccountUuid,
+                fromAssetCode: $this->fromAssetCode,
+                toAssetCode: $this->toAssetCode,
+                fromAmount: $this->fromAmount,
+                reason: $reason,
+                hash: $this->hash,
+                transferId: $transferId,
+                metadata: $metadata
+            )
+        );
 
         return $this;
     }

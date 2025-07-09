@@ -56,11 +56,13 @@ class Poll extends Model
     {
         parent::boot();
 
-        static::creating(function ($poll) {
-            if (empty($poll->uuid)) {
-                $poll->uuid = (string) Str::uuid();
+        static::creating(
+            function ($poll) {
+                if (empty($poll->uuid)) {
+                    $poll->uuid = (string) Str::uuid();
+                }
             }
-        });
+        );
     }
 
     public function creator(): BelongsTo

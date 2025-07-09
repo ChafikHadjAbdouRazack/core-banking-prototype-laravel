@@ -22,19 +22,23 @@ class CreateNewUser implements CreatesNewUsers
      */
     public function create(array $input): User
     {
-        Validator::make($input, [
+        Validator::make(
+            $input, [
             'name'                 => ['required', 'string', 'max:255'],
             'email'                => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'is_business_customer' => ['boolean'],
             'password'             => $this->passwordRules(),
             'terms'                => Jetstream::hasTermsAndPrivacyPolicyFeature() ? ['accepted', 'required'] : '',
-        ])->validate();
+            ]
+        )->validate();
 
-        $user = User::create([
+        $user = User::create(
+            [
             'name'     => $input['name'],
             'email'    => $input['email'],
             'password' => Hash::make($input['password']),
-        ]);
+            ]
+        );
 
         $team = $this->createTeam($user);
 
@@ -42,7 +46,8 @@ class CreateNewUser implements CreatesNewUsers
             $user->assignRole('customer_business');
 
             // Convert personal team to business organization
-            $team->update([
+            $team->update(
+                [
                 'is_business_organization' => true,
                 'organization_type'        => 'business',
                 'max_users'                => 10, // Default limit for business accounts
@@ -53,7 +58,8 @@ class CreateNewUser implements CreatesNewUsers
                     'operations_manager',
                     'customer_service',
                 ],
-            ]);
+                ]
+            );
 
             // Assign owner role in the team
             $team->assignUserRole($user, 'owner');
@@ -69,10 +75,14 @@ class CreateNewUser implements CreatesNewUsers
      */
     protected function createTeam(User $user): Team
     {
-        return $user->ownedTeams()->save(Team::forceCreate([
-            'user_id'       => $user->id,
-            'name'          => explode(' ', $user->name, 2)[0] . "'s Team",
-            'personal_team' => true,
-        ]));
+        return $user->ownedTeams()->save(
+            Team::forceCreate(
+                [
+                'user_id'       => $user->id,
+                'name'          => explode(' ', $user->name, 2)[0] . "'s Team",
+                'personal_team' => true,
+                ]
+            )
+        );
     }
 }

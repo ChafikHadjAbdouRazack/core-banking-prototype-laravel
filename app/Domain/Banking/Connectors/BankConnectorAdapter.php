@@ -146,15 +146,17 @@ class BankConnectorAdapter implements IBankConnector
         foreach ($this->custodianConnector->getSupportedAssets() as $asset) {
             try {
                 $balance = $this->custodianConnector->getBalance($accountId, $asset);
-                $balances->push(new BankBalance(
-                    accountId: $accountId,
-                    currency: $asset,
-                    available: $balance->amount,
-                    current: $balance->amount,
-                    pending: 0,
-                    reserved: 0,
-                    asOf: Carbon::now()
-                ));
+                $balances->push(
+                    new BankBalance(
+                        accountId: $accountId,
+                        currency: $asset,
+                        available: $balance->amount,
+                        current: $balance->amount,
+                        pending: 0,
+                        reserved: 0,
+                        asOf: Carbon::now()
+                    )
+                );
             } catch (\Exception $e) {
                 // Skip if balance not available for this currency
                 continue;
@@ -236,31 +238,35 @@ class BankConnectorAdapter implements IBankConnector
     {
         $history = $this->custodianConnector->getTransactionHistory($accountId, $limit);
 
-        return collect($history)->map(function ($tx) {
-            return new BankTransaction(
-                id: $tx['id'] ?? Str::uuid()->toString(),
-                bankCode: $this->bankCode,
-                accountId: $tx['account_id'] ?? '',
-                type: $tx['amount'] < 0 ? 'debit' : 'credit',
-                category: $tx['type'] ?? 'transfer',
-                amount: $tx['amount'] ?? 0,
-                currency: $tx['currency'] ?? 'EUR',
-                balanceAfter: $tx['balance_after'] ?? 0,
-                reference: $tx['reference'] ?? null,
-                description: $tx['description'] ?? null,
-                counterpartyName: $tx['counterparty_name'] ?? null,
-                counterpartyAccount: $tx['counterparty_account'] ?? null,
-                counterpartyBank: $tx['counterparty_bank'] ?? null,
-                transactionDate: Carbon::parse($tx['transaction_date'] ?? now()),
-                valueDate: Carbon::parse($tx['value_date'] ?? now()),
-                bookingDate: Carbon::parse($tx['booking_date'] ?? now()),
-                status: $tx['status'] ?? 'completed',
-                metadata: $tx['metadata'] ?? []
-            );
-        })->filter(function ($tx) use ($from, $to) {
-            return $tx->transactionDate >= Carbon::instance($from) &&
+        return collect($history)->map(
+            function ($tx) {
+                return new BankTransaction(
+                    id: $tx['id'] ?? Str::uuid()->toString(),
+                    bankCode: $this->bankCode,
+                    accountId: $tx['account_id'] ?? '',
+                    type: $tx['amount'] < 0 ? 'debit' : 'credit',
+                    category: $tx['type'] ?? 'transfer',
+                    amount: $tx['amount'] ?? 0,
+                    currency: $tx['currency'] ?? 'EUR',
+                    balanceAfter: $tx['balance_after'] ?? 0,
+                    reference: $tx['reference'] ?? null,
+                    description: $tx['description'] ?? null,
+                    counterpartyName: $tx['counterparty_name'] ?? null,
+                    counterpartyAccount: $tx['counterparty_account'] ?? null,
+                    counterpartyBank: $tx['counterparty_bank'] ?? null,
+                    transactionDate: Carbon::parse($tx['transaction_date'] ?? now()),
+                    valueDate: Carbon::parse($tx['value_date'] ?? now()),
+                    bookingDate: Carbon::parse($tx['booking_date'] ?? now()),
+                    status: $tx['status'] ?? 'completed',
+                    metadata: $tx['metadata'] ?? []
+                );
+            }
+        )->filter(
+            function ($tx) use ($from, $to) {
+                return $tx->transactionDate >= Carbon::instance($from) &&
                    $tx->transactionDate <= Carbon::instance($to);
-        });
+            }
+        );
     }
 
     public function getStatement(string $accountId, \DateTime $from, \DateTime $to, string $format = 'JSON'): BankStatement

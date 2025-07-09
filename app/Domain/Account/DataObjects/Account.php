@@ -9,8 +9,8 @@ use JustSteveKing\DataObjects\Contracts\DataObjectContract;
 final readonly class Account extends DataObject implements DataObjectContract
 {
     /**
-     * @param string $name
-     * @param string $userUuid
+     * @param string      $name
+     * @param string      $userUuid
      * @param string|null $uuid
      */
     public function __construct(

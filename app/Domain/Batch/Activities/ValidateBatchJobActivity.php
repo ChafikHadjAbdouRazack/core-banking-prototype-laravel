@@ -10,7 +10,7 @@ use Workflow\Activity;
 class ValidateBatchJobActivity extends Activity
 {
     /**
-     * @param string $batchJobUuid
+     * @param  string $batchJobUuid
      * @return BatchJob
      */
     public function execute(string $batchJobUuid): BatchJob

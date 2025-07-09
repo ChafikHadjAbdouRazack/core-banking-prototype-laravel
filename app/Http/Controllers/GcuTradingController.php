@@ -48,10 +48,12 @@ class GcuTradingController extends Controller
             ->where('accounts.user_uuid', $user->uuid)
             ->where('transaction_projections.type', 'exchange')
             ->where('transaction_projections.status', 'completed')
-            ->where(function ($query) {
-                $query->where('transaction_projections.currency', 'GCU')
-                    ->orWhere('transaction_projections.metadata->target_currency', 'GCU');
-            })
+            ->where(
+                function ($query) {
+                    $query->where('transaction_projections.currency', 'GCU')
+                        ->orWhere('transaction_projections.metadata->target_currency', 'GCU');
+                }
+            )
             ->select(
                 'transaction_projections.*',
                 'accounts.name as account_name'
@@ -60,14 +62,16 @@ class GcuTradingController extends Controller
             ->limit(10)
             ->get();
 
-        return view('gcu.trading', compact(
-            'accounts',
-            'gcuAsset',
-            'currentPrice',
-            'gcuBalance',
-            'usdBalance',
-            'priceHistory',
-            'recentTrades'
-        ));
+        return view(
+            'gcu.trading', compact(
+                'accounts',
+                'gcuAsset',
+                'currentPrice',
+                'gcuBalance',
+                'usdBalance',
+                'priceHistory',
+                'recentTrades'
+            )
+        );
     }
 }

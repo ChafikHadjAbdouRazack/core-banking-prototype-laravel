@@ -74,11 +74,13 @@ class WalletController extends Controller
         $account = Auth::user()->accounts()->first();
 
         if (! $account) {
-            return view('wallet.transactions', [
+            return view(
+                'wallet.transactions', [
                 'account'          => null,
                 'transactions'     => collect(),
                 'transactionsJson' => json_encode([]),
-            ]);
+                ]
+            );
         }
 
         // Get transactions from the Account's transactions relationship
@@ -88,8 +90,9 @@ class WalletController extends Controller
             ->get();
 
         // Transform transactions for the view
-        $transformedTransactions = $transactions->map(function ($transaction) {
-            return [
+        $transformedTransactions = $transactions->map(
+            function ($transaction) {
+                return [
                 'id'            => $transaction->id,
                 'created_at'    => $transaction->created_at->toISOString(),
                 'type'          => $this->mapTransactionType($transaction->type),
@@ -99,14 +102,17 @@ class WalletController extends Controller
                 'asset_symbol'  => $this->getAssetSymbol($transaction->asset_code),
                 'amount'        => $transaction->type === 'debit' ? -$transaction->amount : $transaction->amount,
                 'balance_after' => $transaction->balance_after ?? 0,
-            ];
-        });
+                ];
+            }
+        );
 
-        return view('wallet.transactions', [
+        return view(
+            'wallet.transactions', [
             'account'          => $account,
             'transactions'     => $transactions,
             'transactionsJson' => $transformedTransactions->toJson(),
-        ]);
+            ]
+        );
     }
 
     private function mapTransactionType($type)

@@ -56,37 +56,41 @@ class KrakenConnector implements IExternalExchangeConnector
     {
         $cacheKey = 'kraken:tradable_asset_pairs';
 
-        return Cache::remember($cacheKey, 3600, function () {
-            $response = Http::get($this->getPublicUrl('AssetPairs'));
+        return Cache::remember(
+            $cacheKey, 3600, function () {
+                $response = Http::get($this->getPublicUrl('AssetPairs'));
 
-            if (! $response->successful()) {
-                throw new ExternalExchangeException('Failed to get asset pairs from Kraken');
+                if (! $response->successful()) {
+                    throw new ExternalExchangeException('Failed to get asset pairs from Kraken');
+                }
+
+                $data = $response->json();
+
+                if (isset($data['error']) && ! empty($data['error'])) {
+                    throw new ExternalExchangeException('Kraken API error: ' . implode(', ', $data['error']));
+                }
+
+                return collect($data['result'])
+                    ->filter(fn ($pair) => $pair['status'] === 'online')
+                    ->map(
+                        fn ($pair, $pairName) => new MarketPair(
+                            baseCurrency: $this->normalizeAsset($pair['base']),
+                            quoteCurrency: $this->normalizeAsset($pair['quote']),
+                            minOrderSize: BigDecimal::of($pair['ordermin'] ?? '0.0001'),
+                            maxOrderSize: BigDecimal::of('1000000'), // Kraken doesn't provide max
+                            tickSize: BigDecimal::of(pow(10, -$pair['pair_decimals'])),
+                            pricePrecision: $pair['pair_decimals'],
+                            amountPrecision: $pair['lot_decimals'],
+                            isActive: true,
+                            metadata: [
+                            'pair'                => $pairName,
+                            'altname'             => $pair['altname'],
+                            'fee_volume_currency' => $pair['fee_volume_currency'] ?? null,
+                            ]
+                        )
+                    );
             }
-
-            $data = $response->json();
-
-            if (isset($data['error']) && ! empty($data['error'])) {
-                throw new ExternalExchangeException('Kraken API error: ' . implode(', ', $data['error']));
-            }
-
-            return collect($data['result'])
-                ->filter(fn ($pair) => $pair['status'] === 'online')
-                ->map(fn ($pair, $pairName) => new MarketPair(
-                    baseCurrency: $this->normalizeAsset($pair['base']),
-                    quoteCurrency: $this->normalizeAsset($pair['quote']),
-                    minOrderSize: BigDecimal::of($pair['ordermin'] ?? '0.0001'),
-                    maxOrderSize: BigDecimal::of('1000000'), // Kraken doesn't provide max
-                    tickSize: BigDecimal::of(pow(10, -$pair['pair_decimals'])),
-                    pricePrecision: $pair['pair_decimals'],
-                    amountPrecision: $pair['lot_decimals'],
-                    isActive: true,
-                    metadata: [
-                        'pair'                => $pairName,
-                        'altname'             => $pair['altname'],
-                        'fee_volume_currency' => $pair['fee_volume_currency'] ?? null,
-                    ]
-                ));
-        });
+        );
     }
 
     public function getTicker(string $baseCurrency, string $quoteCurrency): ExternalTicker
@@ -131,10 +135,12 @@ class KrakenConnector implements IExternalExchangeConnector
     public function getOrderBook(string $baseCurrency, string $quoteCurrency, int $depth = 20): ExternalOrderBook
     {
         $pair = $this->formatPair($baseCurrency, $quoteCurrency);
-        $response = Http::get($this->getPublicUrl('Depth'), [
+        $response = Http::get(
+            $this->getPublicUrl('Depth'), [
             'pair'  => $pair,
             'count' => $depth,
-        ]);
+            ]
+        );
 
         if (! $response->successful()) {
             throw new ExternalExchangeException("Failed to get order book for $pair from Kraken");
@@ -151,14 +157,18 @@ class KrakenConnector implements IExternalExchangeConnector
         return new ExternalOrderBook(
             baseCurrency: $baseCurrency,
             quoteCurrency: $quoteCurrency,
-            bids: collect($bookData['bids'])->map(fn ($bid) => [
+            bids: collect($bookData['bids'])->map(
+                fn ($bid) => [
                 'price'  => BigDecimal::of($bid[0]),
                 'amount' => BigDecimal::of($bid[1]),
-            ]),
-            asks: collect($bookData['asks'])->map(fn ($ask) => [
+                ]
+            ),
+            asks: collect($bookData['asks'])->map(
+                fn ($ask) => [
                 'price'  => BigDecimal::of($ask[0]),
                 'amount' => BigDecimal::of($ask[1]),
-            ]),
+                ]
+            ),
             timestamp: new \DateTimeImmutable('@' . $bid[2]),
             exchange: $this->getName(),
             metadata: ['pair' => $pair]
@@ -184,20 +194,22 @@ class KrakenConnector implements IExternalExchangeConnector
 
         return collect($tradesData)
             ->take($limit)
-            ->map(fn ($trade, $index) => new ExternalTrade(
-                tradeId: (string) $index,
-                baseCurrency: $baseCurrency,
-                quoteCurrency: $quoteCurrency,
-                price: BigDecimal::of($trade[0]),
-                amount: BigDecimal::of($trade[1]),
-                side: $trade[3] === 'b' ? 'buy' : 'sell',
-                timestamp: new \DateTimeImmutable('@' . $trade[2]),
-                exchange: $this->getName(),
-                metadata: [
+            ->map(
+                fn ($trade, $index) => new ExternalTrade(
+                    tradeId: (string) $index,
+                    baseCurrency: $baseCurrency,
+                    quoteCurrency: $quoteCurrency,
+                    price: BigDecimal::of($trade[0]),
+                    amount: BigDecimal::of($trade[1]),
+                    side: $trade[3] === 'b' ? 'buy' : 'sell',
+                    timestamp: new \DateTimeImmutable('@' . $trade[2]),
+                    exchange: $this->getName(),
+                    metadata: [
                     'pair'       => $pair,
                     'order_type' => $trade[4] === 'm' ? 'market' : 'limit',
-                ]
-            ));
+                    ]
+                )
+            );
     }
 
     public function placeBuyOrder(string $baseCurrency, string $quoteCurrency, string $amount, ?string $price = null): array
@@ -281,13 +293,15 @@ class KrakenConnector implements IExternalExchangeConnector
         }
 
         return collect($response['result'])
-            ->mapWithKeys(fn ($balance, $asset) => [
+            ->mapWithKeys(
+                fn ($balance, $asset) => [
                 $this->normalizeAsset($asset) => [
                     'free'   => $balance,
                     'locked' => '0', // Kraken doesn't separate locked balance
                     'total'  => $balance,
                 ],
-            ])
+                ]
+            )
             ->toArray();
     }
 
@@ -369,17 +383,21 @@ class KrakenConnector implements IExternalExchangeConnector
         $postData = http_build_query($params);
 
         $path = '/0/private/' . $method;
-        $sign = base64_encode(hash_hmac(
-            'sha512',
-            $path . hash('sha256', $nonce . $postData, true),
-            base64_decode($this->apiSecret),
-            true
-        ));
+        $sign = base64_encode(
+            hash_hmac(
+                'sha512',
+                $path . hash('sha256', $nonce . $postData, true),
+                base64_decode($this->apiSecret),
+                true
+            )
+        );
 
-        $response = Http::withHeaders([
+        $response = Http::withHeaders(
+            [
             'API-Key'  => $this->apiKey,
             'API-Sign' => $sign,
-        ])->asForm()->post($url, $params);
+            ]
+        )->asForm()->post($url, $params);
 
         if (! $response->successful()) {
             throw new ExternalExchangeException('Kraken API request failed');

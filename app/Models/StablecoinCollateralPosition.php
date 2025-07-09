@@ -122,13 +122,17 @@ class StablecoinCollateralPosition extends Model
     {
         return $query->where('status', 'active')
             ->where('auto_liquidation_enabled', true)
-            ->where(function ($q) {
-                $q->whereHas('stablecoin', function ($sq) {
-                    $sq->whereColumn('stablecoin_collateral_positions.collateral_ratio', '<=', 'stablecoins.min_collateral_ratio');
-                })
-                ->orWhereNotNull('stop_loss_ratio')
-                ->whereColumn('collateral_ratio', '<=', 'stop_loss_ratio');
-            });
+            ->where(
+                function ($q) {
+                    $q->whereHas(
+                        'stablecoin', function ($sq) {
+                            $sq->whereColumn('stablecoin_collateral_positions.collateral_ratio', '<=', 'stablecoins.min_collateral_ratio');
+                        }
+                    )
+                    ->orWhereNotNull('stop_loss_ratio')
+                    ->whereColumn('collateral_ratio', '<=', 'stop_loss_ratio');
+                }
+            );
     }
 
     /**
@@ -192,10 +196,12 @@ class StablecoinCollateralPosition extends Model
      */
     public function markAsLiquidated(): void
     {
-        $this->update([
+        $this->update(
+            [
             'status'        => 'liquidated',
             'liquidated_at' => now(),
-        ]);
+            ]
+        );
     }
 
     /**
@@ -220,10 +226,12 @@ class StablecoinCollateralPosition extends Model
     public function scopeAutoLiquidatable($query)
     {
         return $query->where('auto_liquidation_enabled', true)
-                     ->where('status', 'active')
-                     ->where(function ($q) {
-                         $q->whereRaw('collateral_ratio <= (SELECT min_collateral_ratio FROM stablecoins WHERE code = stablecoin_code)')
-                           ->orWhereRaw('stop_loss_ratio IS NOT NULL AND collateral_ratio <= stop_loss_ratio');
-                     });
+            ->where('status', 'active')
+            ->where(
+                function ($q) {
+                    $q->whereRaw('collateral_ratio <= (SELECT min_collateral_ratio FROM stablecoins WHERE code = stablecoin_code)')
+                        ->orWhereRaw('stop_loss_ratio IS NOT NULL AND collateral_ratio <= stop_loss_ratio');
+                }
+            );
     }
 }

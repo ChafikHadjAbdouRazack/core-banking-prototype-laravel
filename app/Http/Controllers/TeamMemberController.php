@@ -58,19 +58,23 @@ class TeamMemberController extends Controller
                 ->with('error', 'Your team has reached the maximum number of users.');
         }
 
-        $validated = $request->validate([
+        $validated = $request->validate(
+            [
             'name'     => ['required', 'string', 'max:255'],
             'email'    => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', Password::defaults()],
             'role'     => ['required', 'string', 'in:' . implode(',', $team->getAvailableRoles())],
-        ]);
+            ]
+        );
 
         // Create the user
-        $user = User::create([
+        $user = User::create(
+            [
             'name'     => $validated['name'],
             'email'    => $validated['email'],
             'password' => Hash::make($validated['password']),
-        ]);
+            ]
+        );
 
         // Add to team
         $team->users()->attach($user);
@@ -122,9 +126,11 @@ class TeamMemberController extends Controller
                 ->with('error', 'Cannot edit the team owner\'s role.');
         }
 
-        $validated = $request->validate([
+        $validated = $request->validate(
+            [
             'role' => ['required', 'string', 'in:' . implode(',', $team->getAvailableRoles())],
-        ]);
+            ]
+        );
 
         // Update global role
         $this->assignGlobalRole($user, $validated['role']);

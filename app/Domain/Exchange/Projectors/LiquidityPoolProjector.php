@@ -23,22 +23,27 @@ class LiquidityPoolProjector extends Projector
     public function onLiquidityPoolCreated(LiquidityPoolCreated $event): void
     {
         // Get system user for pool accounts
-        $systemUser = \App\Models\User::firstOrCreate(['email' => 'system@finaegis.com'], [
+        $systemUser = \App\Models\User::firstOrCreate(
+            ['email' => 'system@finaegis.com'], [
             'name'     => 'System',
             'password' => bcrypt('system'),
             'uuid'     => Str::uuid()->toString(),
-        ]);
+            ]
+        );
 
         // Create a system account for the pool
-        $poolAccount = Account::create([
+        $poolAccount = Account::create(
+            [
             'uuid'      => Str::uuid()->toString(),
             'name'      => "Liquidity Pool {$event->baseCurrency}/{$event->quoteCurrency}",
             'user_uuid' => $systemUser->uuid,
             'balance'   => 0,
             'frozen'    => false,
-        ]);
+            ]
+        );
 
-        LiquidityPool::create([
+        LiquidityPool::create(
+            [
             'pool_id'            => $event->poolId,
             'account_id'         => $poolAccount->uuid,
             'base_currency'      => $event->baseCurrency,
@@ -51,36 +56,43 @@ class LiquidityPoolProjector extends Projector
             'volume_24h'         => '0',
             'fees_collected_24h' => '0',
             'metadata'           => $event->metadata,
-        ]);
+            ]
+        );
     }
 
     public function onLiquidityAdded(LiquidityAdded $event): void
     {
         $pool = LiquidityPool::where('pool_id', $event->poolId)->firstOrFail();
 
-        $pool->update([
+        $pool->update(
+            [
             'base_reserve'  => $event->newBaseReserve,
             'quote_reserve' => $event->newQuoteReserve,
             'total_shares'  => $event->newTotalShares,
-        ]);
+            ]
+        );
 
         // Update or create provider record
-        $provider = LiquidityProvider::firstOrNew([
+        $provider = LiquidityProvider::firstOrNew(
+            [
             'pool_id'     => $event->poolId,
             'provider_id' => $event->providerId,
-        ]);
+            ]
+        );
 
         $currentShares = BigDecimal::of($provider->shares ?? '0');
         $newShares = $currentShares->plus($event->sharesMinted);
 
-        $provider->fill([
+        $provider->fill(
+            [
             'shares'              => $newShares->__toString(),
             'initial_base_amount' => BigDecimal::of($provider->initial_base_amount ?? '0')
                 ->plus($event->baseAmount)->__toString(),
             'initial_quote_amount' => BigDecimal::of($provider->initial_quote_amount ?? '0')
                 ->plus($event->quoteAmount)->__toString(),
             'metadata' => array_merge($provider->metadata ?? [], $event->metadata),
-        ]);
+            ]
+        );
 
         $provider->save();
     }
@@ -89,11 +101,13 @@ class LiquidityPoolProjector extends Projector
     {
         $pool = LiquidityPool::where('pool_id', $event->poolId)->firstOrFail();
 
-        $pool->update([
+        $pool->update(
+            [
             'base_reserve'  => $event->newBaseReserve,
             'quote_reserve' => $event->newQuoteReserve,
             'total_shares'  => $event->newTotalShares,
-        ]);
+            ]
+        );
 
         // Update provider record
         $provider = LiquidityProvider::where('pool_id', $event->poolId)
@@ -107,9 +121,11 @@ class LiquidityPoolProjector extends Projector
             // Remove provider if no shares left
             $provider->delete();
         } else {
-            $provider->update([
+            $provider->update(
+                [
                 'shares' => $newShares->__toString(),
-            ]);
+                ]
+            );
         }
     }
 
@@ -121,13 +137,16 @@ class LiquidityPoolProjector extends Projector
         $currentFees = BigDecimal::of($pool->fees_collected_24h ?? '0');
         $currentVolume = BigDecimal::of($pool->volume_24h ?? '0');
 
-        $pool->update([
+        $pool->update(
+            [
             'fees_collected_24h' => $currentFees->plus($event->feeAmount)->__toString(),
             'volume_24h'         => $currentVolume->plus($event->swapVolume)->__toString(),
-        ]);
+            ]
+        );
 
         // Record swap
-        PoolSwap::create([
+        PoolSwap::create(
+            [
             'swap_id'         => Str::uuid()->toString(),
             'pool_id'         => $event->poolId,
             'account_id'      => $event->metadata['account_id'] ?? null,
@@ -139,7 +158,8 @@ class LiquidityPoolProjector extends Projector
             'price_impact'    => $event->metadata['price_impact'] ?? '0',
             'execution_price' => $event->metadata['execution_price'] ?? '0',
             'metadata'        => $event->metadata,
-        ]);
+            ]
+        );
     }
 
     public function onLiquidityRewardsDistributed(LiquidityRewardsDistributed $event): void
@@ -163,9 +183,11 @@ class LiquidityPoolProjector extends Projector
                     ->plus($providerReward)
                     ->__toString();
 
-                $provider->update([
+                $provider->update(
+                    [
                     'pending_rewards' => $pendingRewards,
-                ]);
+                    ]
+                );
             }
         }
     }
@@ -182,10 +204,12 @@ class LiquidityPoolProjector extends Projector
             $totalClaimed = $totalClaimed->plus($amount);
         }
 
-        $provider->update([
+        $provider->update(
+            [
             'pending_rewards'       => [],
             'total_rewards_claimed' => $totalClaimed->__toString(),
-        ]);
+            ]
+        );
     }
 
     public function onPoolParametersUpdated(PoolParametersUpdated $event): void
@@ -221,8 +245,10 @@ class LiquidityPoolProjector extends Projector
             'currency'  => $event->rebalanceCurrency,
         ];
 
-        $pool->update([
+        $pool->update(
+            [
             'metadata' => $metadata,
-        ]);
+            ]
+        );
     }
 }

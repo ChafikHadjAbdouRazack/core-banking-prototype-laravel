@@ -18,9 +18,11 @@ class FraudAlertsController extends Controller
         // Base query
         if (! $user->can('view_fraud_alerts')) {
             // For regular customers, show only their fraud alerts
-            $query = FraudCase::whereHas('subjectAccount', function ($q) use ($user) {
-                $q->where('user_uuid', $user->uuid);
-            });
+            $query = FraudCase::whereHas(
+                'subjectAccount', function ($q) use ($user) {
+                    $q->where('user_uuid', $user->uuid);
+                }
+            );
         } else {
             // For staff with permission, show fraud cases
             // The BelongsToTeam trait will automatically filter by current team
@@ -59,10 +61,12 @@ class FraudAlertsController extends Controller
 
         if ($request->filled('search')) {
             $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('case_number', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%");
-            });
+            $query->where(
+                function ($q) use ($search) {
+                    $q->where('case_number', 'like', "%{$search}%")
+                        ->orWhere('description', 'like', "%{$search}%");
+                }
+            );
         }
 
         // Sort
@@ -96,13 +100,15 @@ class FraudAlertsController extends Controller
         // Get type distribution
         $typeDistribution = $this->getTypeDistribution($statsQuery);
 
-        return view('fraud.alerts.index', compact(
-            'fraudCases',
-            'stats',
-            'trendData',
-            'riskDistribution',
-            'typeDistribution'
-        ));
+        return view(
+            'fraud.alerts.index', compact(
+                'fraudCases',
+                'stats',
+                'trendData',
+                'riskDistribution',
+                'typeDistribution'
+            )
+        );
     }
 
     /**
@@ -132,17 +138,21 @@ class FraudAlertsController extends Controller
     {
         $this->authorize('manage_fraud_cases');
 
-        $request->validate([
+        $request->validate(
+            [
             'status' => 'required|in:pending,investigating,confirmed,false_positive,resolved',
             'notes'  => 'nullable|string|max:1000',
-        ]);
+            ]
+        );
 
-        $fraudCase->update([
+        $fraudCase->update(
+            [
             'status'             => $request->status,
             'investigator_notes' => $request->notes,
             'investigated_by'    => Auth::id(),
             'investigated_at'    => now(),
-        ]);
+            ]
+        );
 
         return redirect()->route('fraud.alerts.show', $fraudCase)
             ->with('success', 'Fraud case status updated successfully.');
@@ -166,7 +176,8 @@ class FraudAlertsController extends Controller
             $file = fopen('php://output', 'w');
 
             // Headers
-            fputcsv($file, [
+            fputcsv(
+                $file, [
                 'Case Number',
                 'Type',
                 'Status',
@@ -177,16 +188,19 @@ class FraudAlertsController extends Controller
                 'Detected At',
                 'Resolved At',
                 'Description',
-            ]);
+                ]
+            );
 
             // Apply same filters as index
             $user = Auth::user();
             $query = FraudCase::query();
 
             if (! $user->can('view_fraud_alerts')) {
-                $query->whereHas('subjectAccount', function ($q) use ($user) {
-                    $q->where('user_uuid', $user->uuid);
-                });
+                $query->whereHas(
+                    'subjectAccount', function ($q) use ($user) {
+                        $q->where('user_uuid', $user->uuid);
+                    }
+                );
             } elseif ($user->hasRole('super_admin')) {
                 $query->allTeams();
             }
@@ -201,22 +215,26 @@ class FraudAlertsController extends Controller
             }
 
             $query->orderBy('detected_at', 'desc')
-                  ->chunk(100, function ($fraudCases) use ($file) {
-                    foreach ($fraudCases as $case) {
-                        fputcsv($file, [
-                            $case->case_number,
-                            $case->type,
-                            $case->status,
-                            $case->severity,
-                            $case->risk_score,
-                            $case->amount,
-                            $case->currency ?? 'USD',
-                            $case->detected_at->format('Y-m-d H:i:s'),
-                            $case->resolved_at?->format('Y-m-d H:i:s') ?? '',
-                            $case->description ?? '',
-                        ]);
+                ->chunk(
+                    100, function ($fraudCases) use ($file) {
+                        foreach ($fraudCases as $case) {
+                            fputcsv(
+                                $file, [
+                                $case->case_number,
+                                $case->type,
+                                $case->status,
+                                $case->severity,
+                                $case->risk_score,
+                                $case->amount,
+                                $case->currency ?? 'USD',
+                                $case->detected_at->format('Y-m-d H:i:s'),
+                                $case->resolved_at?->format('Y-m-d H:i:s') ?? '',
+                                $case->description ?? '',
+                                ]
+                            );
+                        }
                     }
-                  });
+                );
 
             fclose($file);
         };

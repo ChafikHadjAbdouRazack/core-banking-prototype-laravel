@@ -31,9 +31,11 @@ class VoteResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
-            ->schema([
+            ->schema(
+                [
                 Forms\Components\Section::make('Vote Details')
-                    ->schema([
+                    ->schema(
+                        [
                         Forms\Components\Select::make('poll_id')
                             ->label('Poll')
                             ->options(fn () => Poll::pluck('title', 'id'))
@@ -41,12 +43,14 @@ class VoteResource extends Resource
                             ->searchable()
                             ->preload()
                             ->reactive()
-                            ->afterStateUpdated(function ($state, callable $set) {
-                                $poll = Poll::find($state);
-                                if ($poll) {
-                                    $set('available_options', collect($poll->options)->pluck('label', 'id')->toArray());
+                            ->afterStateUpdated(
+                                function ($state, callable $set) {
+                                    $poll = Poll::find($state);
+                                    if ($poll) {
+                                        $set('available_options', collect($poll->options)->pluck('label', 'id')->toArray());
+                                    }
                                 }
-                            }),
+                            ),
 
                         Forms\Components\Select::make('user_uuid')
                             ->label('User')
@@ -57,19 +61,21 @@ class VoteResource extends Resource
 
                         Forms\Components\CheckboxList::make('selected_options')
                             ->label('Selected Options')
-                            ->options(function (callable $get) {
-                                $pollId = $get('poll_id');
-                                if (! $pollId) {
-                                    return [];
-                                }
+                            ->options(
+                                function (callable $get) {
+                                    $pollId = $get('poll_id');
+                                    if (! $pollId) {
+                                        return [];
+                                    }
 
-                                $poll = Poll::find($pollId);
-                                if (! $poll) {
-                                    return [];
-                                }
+                                    $poll = Poll::find($pollId);
+                                    if (! $poll) {
+                                        return [];
+                                    }
 
-                                return collect($poll->options)->pluck('label', 'id')->toArray();
-                            })
+                                    return collect($poll->options)->pluck('label', 'id')->toArray();
+                                }
+                            )
                             ->required()
                             ->columns(2),
 
@@ -79,11 +85,13 @@ class VoteResource extends Resource
                             ->required()
                             ->default(1)
                             ->minValue(1),
-                    ])
+                        ]
+                    )
                     ->columns(2),
 
                 Forms\Components\Section::make('Vote Metadata')
-                    ->schema([
+                    ->schema(
+                        [
                         Forms\Components\DateTimePicker::make('voted_at')
                             ->label('Vote Cast At')
                             ->default(now())
@@ -100,17 +108,20 @@ class VoteResource extends Resource
                             ->valueLabel('Value')
                             ->addActionLabel('Add metadata')
                             ->columnSpanFull(),
-                    ])
+                        ]
+                    )
                     ->columns(2)
                     ->collapsible()
                     ->collapsed(),
-            ]);
+                ]
+            );
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
+            ->columns(
+                [
                 Tables\Columns\TextColumn::make('poll.title')
                     ->label('Poll')
                     ->searchable()
@@ -153,15 +164,19 @@ class VoteResource extends Resource
                 Tables\Columns\TextColumn::make('poll.status')
                     ->label('Poll Status')
                     ->badge()
-                    ->colors([
+                    ->colors(
+                        [
                         'gray'    => 'draft',
                         'success' => 'active',
                         'danger'  => 'closed',
                         'warning' => 'cancelled',
-                    ])
+                        ]
+                    )
                     ->sortable(),
-            ])
-            ->filters([
+                ]
+            )
+            ->filters(
+                [
                 Tables\Filters\SelectFilter::make('poll_id')
                     ->label('Poll')
                     ->options(fn () => Poll::pluck('title', 'id'))
@@ -185,51 +200,62 @@ class VoteResource extends Resource
                 Tables\Filters\Filter::make('invalid_votes')
                     ->query(fn (Builder $query) => $query->whereRaw('voting_power <= 0 OR selected_options = "[]"'))
                     ->label('Invalid Votes'),
-            ])
-            ->actions([
+                ]
+            )
+            ->actions(
+                [
                 Tables\Actions\Action::make('verify_signature')
                     ->icon('heroicon-o-shield-check')
                     ->color('primary')
-                    ->action(function (Vote $record) {
-                        $isValid = $record->verifySignature();
+                    ->action(
+                        function (Vote $record) {
+                            $isValid = $record->verifySignature();
 
-                        \Filament\Notifications\Notification::make()
-                            ->title($isValid ? 'Signature Valid' : 'Signature Invalid')
-                            ->body($isValid ? 'Vote signature is cryptographically valid' : 'Vote signature verification failed')
-                            ->color($isValid ? 'success' : 'danger')
-                            ->send();
-                    }),
+                            \Filament\Notifications\Notification::make()
+                                ->title($isValid ? 'Signature Valid' : 'Signature Invalid')
+                                ->body($isValid ? 'Vote signature is cryptographically valid' : 'Vote signature verification failed')
+                                ->color($isValid ? 'success' : 'danger')
+                                ->send();
+                        }
+                    ),
 
                 // Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
+                ]
+            )
+            ->bulkActions(
+                [
+                Tables\Actions\BulkActionGroup::make(
+                    [
                     Tables\Actions\BulkAction::make('verify_signatures')
                         ->icon('heroicon-o-shield-check')
                         ->color('primary')
-                        ->action(function ($records) {
-                            $valid = 0;
-                            $invalid = 0;
+                        ->action(
+                            function ($records) {
+                                $valid = 0;
+                                $invalid = 0;
 
-                            foreach ($records as $record) {
-                                if ($record->verifySignature()) {
-                                    $valid++;
-                                } else {
-                                    $invalid++;
+                                foreach ($records as $record) {
+                                    if ($record->verifySignature()) {
+                                        $valid++;
+                                    } else {
+                                        $invalid++;
+                                    }
                                 }
-                            }
 
-                            \Filament\Notifications\Notification::make()
-                                ->title('Signature Verification Complete')
-                                ->body("Valid: {$valid}, Invalid: {$invalid}")
-                                ->color($invalid > 0 ? 'warning' : 'success')
-                                ->send();
-                        }),
+                                \Filament\Notifications\Notification::make()
+                                    ->title('Signature Verification Complete')
+                                    ->body("Valid: {$valid}, Invalid: {$invalid}")
+                                    ->color($invalid > 0 ? 'warning' : 'success')
+                                    ->send();
+                            }
+                        ),
 
                     Tables\Actions\DeleteBulkAction::make(),
-                ]),
-            ])
+                    ]
+                ),
+                ]
+            )
             ->defaultSort('voted_at', 'desc');
     }
 

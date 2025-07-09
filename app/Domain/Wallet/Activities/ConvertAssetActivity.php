@@ -11,10 +11,10 @@ use Workflow\Activity;
 class ConvertAssetActivity extends Activity
 {
     /**
-     * @param AccountUuid $accountUuid
-     * @param string $fromAssetCode
-     * @param string $toAssetCode
-     * @param int $amount
+     * @param AccountUuid            $accountUuid
+     * @param string                 $fromAssetCode
+     * @param string                 $toAssetCode
+     * @param int                    $amount
      * @param AssetTransferAggregate $assetTransfer
      *
      * @return array

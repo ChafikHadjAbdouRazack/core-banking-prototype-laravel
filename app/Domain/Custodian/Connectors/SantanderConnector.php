@@ -83,12 +83,14 @@ class SantanderConnector extends BaseCustodianConnector
 
         $response = Http::asForm()
             ->withHeaders($this->getCommonHeaders())
-            ->post(self::AUTH_URL, [
+            ->post(
+                self::AUTH_URL, [
                 'grant_type'    => 'client_credentials',
                 'client_id'     => $this->apiKey,
                 'client_secret' => $this->apiSecret,
                 'scope'         => 'accounts payments fundsconfirmations',
-            ]);
+                ]
+            );
 
         if (! $response->successful()) {
             throw new \Exception('Failed to obtain access token: ' . $response->body());
@@ -110,9 +112,11 @@ class SantanderConnector extends BaseCustodianConnector
 
         $this->logRequest($method, $endpoint, $data);
 
-        $headers = array_merge($this->getCommonHeaders(), [
+        $headers = array_merge(
+            $this->getCommonHeaders(), [
             'Authorization' => "Bearer {$token}",
-        ]);
+            ]
+        );
 
         $request = Http::withHeaders($headers)
             ->acceptJson()
@@ -120,9 +124,11 @@ class SantanderConnector extends BaseCustodianConnector
 
         // Add certificate if provided
         if ($this->certificate) {
-            $request = $request->withOptions([
+            $request = $request->withOptions(
+                [
                 'cert' => $this->certificate,
-            ]);
+                ]
+            );
         }
 
         return match (strtoupper($method)) {
@@ -297,9 +303,11 @@ class SantanderConnector extends BaseCustodianConnector
     {
         // Santander doesn't support direct payment cancellation in Open Banking
         // Payments can only be rejected during authorization
-        Log::warning('Santander does not support payment cancellation', [
+        Log::warning(
+            'Santander does not support payment cancellation', [
             'transaction_id' => $transactionId,
-        ]);
+            ]
+        );
 
         return false;
     }
@@ -322,10 +330,12 @@ class SantanderConnector extends BaseCustodianConnector
                 return in_array($status, ['Enabled', 'Active']);
             }
         } catch (\Exception $e) {
-            Log::warning('Account validation failed', [
+            Log::warning(
+                'Account validation failed', [
                 'account_id' => $accountId,
                 'error'      => $e->getMessage(),
-            ]);
+                ]
+            );
         }
 
         return false;
@@ -333,10 +343,12 @@ class SantanderConnector extends BaseCustodianConnector
 
     public function getTransactionHistory(string $accountId, ?int $limit = 100, ?int $offset = 0): array
     {
-        $response = $this->apiRequest('GET', "/aisp/accounts/{$accountId}/transactions", [
+        $response = $this->apiRequest(
+            'GET', "/aisp/accounts/{$accountId}/transactions", [
             'fromBookingDateTime' => Carbon::now()->subDays(90)->toIso8601String(),
             'toBookingDateTime'   => Carbon::now()->toIso8601String(),
-        ]);
+            ]
+        );
 
         if (! $response->successful()) {
             throw new \Exception('Failed to get transaction history: ' . $response->body());

@@ -9,9 +9,9 @@ use Workflow\Activity;
 class UnfreezeAccountActivity extends Activity
 {
     /**
-     * @param AccountUuid $uuid
-     * @param string $reason
-     * @param string|null $authorizedBy
+     * @param AccountUuid     $uuid
+     * @param string          $reason
+     * @param string|null     $authorizedBy
      * @param LedgerAggregate $ledger
      *
      * @return bool
@@ -23,8 +23,8 @@ class UnfreezeAccountActivity extends Activity
         LedgerAggregate $ledger
     ): bool {
         $ledger->retrieve($uuid->getUuid())
-               ->unfreezeAccount($reason, $authorizedBy)
-               ->persist();
+            ->unfreezeAccount($reason, $authorizedBy)
+            ->persist();
 
         return true;
     }

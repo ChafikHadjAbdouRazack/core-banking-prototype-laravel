@@ -33,9 +33,11 @@ class GcuVotingProposalResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
-            ->schema([
+            ->schema(
+                [
                 Forms\Components\Section::make('Proposal Details')
-                    ->schema([
+                    ->schema(
+                        [
                         Forms\Components\TextInput::make('title')
                             ->required()
                             ->maxLength(255),
@@ -45,18 +47,22 @@ class GcuVotingProposalResource extends Resource
                         Forms\Components\Textarea::make('rationale')
                             ->required()
                             ->columnSpanFull(),
-                    ]),
+                        ]
+                    ),
 
                 Forms\Components\Section::make('Voting Configuration')
-                    ->schema([
+                    ->schema(
+                        [
                         Forms\Components\Select::make('status')
-                            ->options([
+                            ->options(
+                                [
                                 'draft'       => 'Draft',
                                 'active'      => 'Active',
                                 'closed'      => 'Closed',
                                 'implemented' => 'Implemented',
                                 'rejected'    => 'Rejected',
-                            ])
+                                ]
+                            )
                             ->required(),
                         Forms\Components\DateTimePicker::make('voting_starts_at')
                             ->required(),
@@ -75,35 +81,42 @@ class GcuVotingProposalResource extends Resource
                             ->default(50)
                             ->minValue(1)
                             ->maxValue(100),
-                    ])
+                        ]
+                    )
                     ->columns(2),
 
                 Forms\Components\Section::make('Composition')
-                    ->schema([
+                    ->schema(
+                        [
                         Forms\Components\KeyValue::make('proposed_composition')
                             ->keyLabel('Currency')
                             ->valueLabel('Percentage')
                             ->addButtonLabel('Add Currency')
                             ->required(),
-                    ]),
-            ]);
+                        ]
+                    ),
+                ]
+            );
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
+            ->columns(
+                [
                 Tables\Columns\TextColumn::make('title')
                     ->searchable()
                     ->limit(50),
                 Tables\Columns\BadgeColumn::make('status')
-                    ->colors([
+                    ->colors(
+                        [
                         'secondary' => 'draft',
                         'success'   => 'active',
                         'danger'    => 'rejected',
                         'warning'   => 'closed',
                         'primary'   => 'implemented',
-                    ]),
+                        ]
+                    ),
                 Tables\Columns\TextColumn::make('participation_rate')
                     ->label('Participation')
                     ->formatStateUsing(fn ($state) => number_format($state, 1) . '%')
@@ -120,29 +133,40 @@ class GcuVotingProposalResource extends Resource
                     ->label('End')
                     ->dateTime()
                     ->sortable(),
-            ])
-            ->filters([
+                ]
+            )
+            ->filters(
+                [
                 Tables\Filters\SelectFilter::make('status')
-                    ->options([
+                    ->options(
+                        [
                         'draft'       => 'Draft',
                         'active'      => 'Active',
                         'closed'      => 'Closed',
                         'implemented' => 'Implemented',
                         'rejected'    => 'Rejected',
-                    ]),
-            ])
-            ->actions([
+                        ]
+                    ),
+                ]
+            )
+            ->actions(
+                [
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\Action::make('close')
                     ->action(fn (GcuVotingProposal $record) => $record->update(['status' => 'closed']))
                     ->requiresConfirmation()
                     ->visible(fn (GcuVotingProposal $record) => $record->status === 'active'),
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
+                ]
+            )
+            ->bulkActions(
+                [
+                Tables\Actions\BulkActionGroup::make(
+                    [
                     Tables\Actions\DeleteBulkAction::make(),
-                ]),
-            ])
+                    ]
+                ),
+                ]
+            )
             ->defaultSort('created_at', 'desc');
     }
 

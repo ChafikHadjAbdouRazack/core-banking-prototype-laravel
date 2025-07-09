@@ -130,11 +130,13 @@ class KycVerification extends Model
     {
         parent::boot();
 
-        static::creating(function ($verification) {
-            if (! $verification->verification_number) {
-                $verification->verification_number = static::generateVerificationNumber();
+        static::creating(
+            function ($verification) {
+                if (! $verification->verification_number) {
+                    $verification->verification_number = static::generateVerificationNumber();
+                }
             }
-        });
+        );
     }
 
     public static function generateVerificationNumber(): string
@@ -285,51 +287,63 @@ class KycVerification extends Model
 
     public function getFullName(): string
     {
-        $parts = array_filter([
+        $parts = array_filter(
+            [
             $this->first_name,
             $this->middle_name,
             $this->last_name,
-        ]);
+            ]
+        );
 
         return implode(' ', $parts);
     }
 
     public function getFullAddress(): string
     {
-        $parts = array_filter([
+        $parts = array_filter(
+            [
             $this->address_line1,
             $this->address_line2,
             $this->city,
             $this->state,
             $this->postal_code,
             $this->country,
-        ]);
+            ]
+        );
 
         return implode(', ', $parts);
     }
 
     public function markAsCompleted(array $data = []): void
     {
-        $this->update(array_merge($data, [
-            'status'       => self::STATUS_COMPLETED,
-            'completed_at' => now(),
-        ]));
+        $this->update(
+            array_merge(
+                $data, [
+                'status'       => self::STATUS_COMPLETED,
+                'completed_at' => now(),
+                ]
+            )
+        );
     }
 
     public function markAsFailed(string $reason): void
     {
-        $this->update([
+        $this->update(
+            [
             'status'         => self::STATUS_FAILED,
             'failure_reason' => $reason,
             'completed_at'   => now(),
-        ]);
+            ]
+        );
     }
 
     public function markAsExpired(): void
     {
-        $this->update([
+        $this->update(
+            [
             'status' => self::STATUS_EXPIRED,
-        ]);
+            ]
+        );
     }
 
     public function calculateConfidenceScore(): float

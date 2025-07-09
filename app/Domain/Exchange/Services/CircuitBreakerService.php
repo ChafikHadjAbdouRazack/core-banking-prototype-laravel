@@ -57,10 +57,12 @@ class CircuitBreakerService
         Cache::put("circuit_breaker:{$service}:state", $state, self::TIMEOUT);
         Cache::put("circuit_breaker:{$service}:state_changed_at", now()->toIso8601String(), self::TIMEOUT);
 
-        Log::info('Circuit breaker state changed', [
+        Log::info(
+            'Circuit breaker state changed', [
             'service'   => $service,
             'new_state' => $state,
-        ]);
+            ]
+        );
     }
 
     private function recordSuccess(string $service): void
@@ -94,23 +96,27 @@ class CircuitBreakerService
             $this->setState($service, 'open');
             Cache::forget("circuit_breaker:{$service}:half_open_attempts");
             Cache::forget("circuit_breaker:{$service}:success_count");
-            Log::warning('Circuit breaker failure in half-open state, reopening', [
+            Log::warning(
+                'Circuit breaker failure in half-open state, reopening', [
                 'service'   => $service,
                 'exception' => $exception->getMessage(),
                 'context'   => $context,
-            ]);
+                ]
+            );
 
             return;
         }
 
         $failureCount = Cache::increment("circuit_breaker:{$service}:failure_count");
 
-        Log::warning('Circuit breaker failure recorded', [
+        Log::warning(
+            'Circuit breaker failure recorded', [
             'service'       => $service,
             'failure_count' => $failureCount,
             'exception'     => $exception->getMessage(),
             'context'       => $context,
-        ]);
+            ]
+        );
 
         if ($failureCount >= self::FAILURE_THRESHOLD && $state !== 'open') {
             $this->setState($service, 'open');

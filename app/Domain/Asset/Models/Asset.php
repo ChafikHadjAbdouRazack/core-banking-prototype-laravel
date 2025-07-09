@@ -152,7 +152,7 @@ class Asset extends Model
     /**
      * Format an amount according to the asset's precision.
      *
-     * @param int $amount Amount in smallest unit
+     * @param  int $amount Amount in smallest unit
      * @return string Formatted amount
      */
     public function formatAmount(int $amount): string
@@ -170,7 +170,7 @@ class Asset extends Model
     /**
      * Convert a decimal amount to the smallest unit.
      *
-     * @param float $amount
+     * @param  float $amount
      * @return int
      */
     public function toSmallestUnit(float $amount): int
@@ -181,7 +181,7 @@ class Asset extends Model
     /**
      * Convert from smallest unit to decimal.
      *
-     * @param int $amount
+     * @param  int $amount
      * @return float
      */
     public function fromSmallestUnit(int $amount): float
@@ -222,7 +222,7 @@ class Asset extends Model
     /**
      * Scope for active assets.
      *
-     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param  \Illuminate\Database\Eloquent\Builder $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeActive($query)
@@ -233,8 +233,8 @@ class Asset extends Model
     /**
      * Scope for assets by type.
      *
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param string $type
+     * @param  \Illuminate\Database\Eloquent\Builder $query
+     * @param  string                                $type
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeOfType($query, string $type)

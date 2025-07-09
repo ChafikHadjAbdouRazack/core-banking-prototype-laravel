@@ -34,9 +34,11 @@ class ContactSubmissionResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
-            ->schema([
+            ->schema(
+                [
                 Forms\Components\Section::make('Contact Information')
-                    ->schema([
+                    ->schema(
+                        [
                         Forms\Components\TextInput::make('name')
                             ->required()
                             ->disabled(),
@@ -45,7 +47,8 @@ class ContactSubmissionResource extends Resource
                             ->required()
                             ->disabled(),
                         Forms\Components\Select::make('subject')
-                            ->options([
+                            ->options(
+                                [
                                 'account'    => 'Account Issues',
                                 'technical'  => 'Technical Support',
                                 'billing'    => 'Billing & Payments',
@@ -53,38 +56,47 @@ class ContactSubmissionResource extends Resource
                                 'api'        => 'API & Integration',
                                 'compliance' => 'Compliance & Security',
                                 'other'      => 'Other',
-                            ])
+                                ]
+                            )
                             ->required()
                             ->disabled(),
                         Forms\Components\Select::make('priority')
-                            ->options([
+                            ->options(
+                                [
                                 'low'    => 'Low',
                                 'medium' => 'Medium',
                                 'high'   => 'High',
                                 'urgent' => 'Urgent',
-                            ])
+                                ]
+                            )
                             ->required()
                             ->disabled(),
-                    ])
+                        ]
+                    )
                     ->columns(2),
 
                 Forms\Components\Section::make('Message')
-                    ->schema([
+                    ->schema(
+                        [
                         Forms\Components\Textarea::make('message')
                             ->required()
                             ->disabled()
                             ->rows(5)
                             ->columnSpanFull(),
-                    ]),
+                        ]
+                    ),
 
                 Forms\Components\Section::make('Response')
-                    ->schema([
+                    ->schema(
+                        [
                         Forms\Components\Select::make('status')
-                            ->options([
+                            ->options(
+                                [
                                 'pending'   => 'Pending',
                                 'responded' => 'Responded',
                                 'closed'    => 'Closed',
-                            ])
+                                ]
+                            )
                             ->required(),
                         Forms\Components\DateTimePicker::make('responded_at')
                             ->label('Response Date'),
@@ -92,11 +104,13 @@ class ContactSubmissionResource extends Resource
                             ->label('Internal Notes')
                             ->rows(3)
                             ->columnSpanFull(),
-                    ])
+                        ]
+                    )
                     ->collapsible(),
 
                 Forms\Components\Section::make('Metadata')
-                    ->schema([
+                    ->schema(
+                        [
                         Forms\Components\TextInput::make('ip_address')
                             ->label('IP Address')
                             ->disabled(),
@@ -109,16 +123,19 @@ class ContactSubmissionResource extends Resource
                             ->label('Attachment')
                             ->disabled()
                             ->columnSpanFull(),
-                    ])
+                        ]
+                    )
                     ->collapsed()
                     ->collapsible(),
-            ]);
+                ]
+            );
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
+            ->columns(
+                [
                 Tables\Columns\TextColumn::make('id')
                     ->label('ID')
                     ->sortable(),
@@ -129,7 +146,8 @@ class ContactSubmissionResource extends Resource
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\BadgeColumn::make('subject')
-                    ->formatStateUsing(fn ($state) => match ($state) {
+                    ->formatStateUsing(
+                        fn ($state) => match ($state) {
                         'account'    => 'Account Issues',
                         'technical'  => 'Technical Support',
                         'billing'    => 'Billing & Payments',
@@ -138,19 +156,24 @@ class ContactSubmissionResource extends Resource
                         'compliance' => 'Compliance & Security',
                         'other'      => 'Other',
                         default      => $state,
-                    }),
+                        }
+                    ),
                 Tables\Columns\BadgeColumn::make('priority')
-                    ->colors([
+                    ->colors(
+                        [
                         'secondary' => 'low',
                         'warning'   => 'medium',
                         'danger'    => fn ($state): bool => in_array($state, ['high', 'urgent']),
-                    ]),
+                        ]
+                    ),
                 Tables\Columns\BadgeColumn::make('status')
-                    ->colors([
+                    ->colors(
+                        [
                         'warning'   => 'pending',
                         'success'   => 'responded',
                         'secondary' => 'closed',
-                    ]),
+                        ]
+                    ),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable(),
@@ -159,24 +182,31 @@ class ContactSubmissionResource extends Resource
                     ->boolean()
                     ->trueIcon('heroicon-o-paper-clip')
                     ->falseIcon(''),
-            ])
+                ]
+            )
             ->defaultSort('created_at', 'desc')
-            ->filters([
+            ->filters(
+                [
                 Tables\Filters\SelectFilter::make('status')
-                    ->options([
+                    ->options(
+                        [
                         'pending'   => 'Pending',
                         'responded' => 'Responded',
                         'closed'    => 'Closed',
-                    ]),
+                        ]
+                    ),
                 Tables\Filters\SelectFilter::make('priority')
-                    ->options([
+                    ->options(
+                        [
                         'low'    => 'Low',
                         'medium' => 'Medium',
                         'high'   => 'High',
                         'urgent' => 'Urgent',
-                    ]),
+                        ]
+                    ),
                 Tables\Filters\SelectFilter::make('subject')
-                    ->options([
+                    ->options(
+                        [
                         'account'    => 'Account Issues',
                         'technical'  => 'Technical Support',
                         'billing'    => 'Billing & Payments',
@@ -184,9 +214,12 @@ class ContactSubmissionResource extends Resource
                         'api'        => 'API & Integration',
                         'compliance' => 'Compliance & Security',
                         'other'      => 'Other',
-                    ]),
-            ])
-            ->actions([
+                        ]
+                    ),
+                ]
+            )
+            ->actions(
+                [
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\Action::make('respond')
@@ -196,12 +229,17 @@ class ContactSubmissionResource extends Resource
                     ->requiresConfirmation()
                     ->action(fn (ContactSubmission $record) => $record->markAsResponded())
                     ->visible(fn (ContactSubmission $record) => $record->status === 'pending'),
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
+                ]
+            )
+            ->bulkActions(
+                [
+                Tables\Actions\BulkActionGroup::make(
+                    [
                     Tables\Actions\DeleteBulkAction::make(),
-                ]),
-            ]);
+                    ]
+                ),
+                ]
+            );
     }
 
     public static function getRelations(): array

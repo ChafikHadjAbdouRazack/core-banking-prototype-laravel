@@ -192,24 +192,34 @@ class BasketAsset extends Model
     {
         return $query->where('type', 'dynamic')
             ->where('rebalance_frequency', '!=', 'never')
-            ->where(function ($q) {
-                $q->whereNull('last_rebalanced_at')
-                    ->orWhere(function ($q2) {
-                        $q2->where('rebalance_frequency', 'daily')
-                            ->where('last_rebalanced_at', '<=', now()->subDay());
-                    })
-                    ->orWhere(function ($q2) {
-                        $q2->where('rebalance_frequency', 'weekly')
-                            ->where('last_rebalanced_at', '<=', now()->subWeek());
-                    })
-                    ->orWhere(function ($q2) {
-                        $q2->where('rebalance_frequency', 'monthly')
-                            ->where('last_rebalanced_at', '<=', now()->subMonth());
-                    })
-                    ->orWhere(function ($q2) {
-                        $q2->where('rebalance_frequency', 'quarterly')
-                            ->where('last_rebalanced_at', '<=', now()->subQuarter());
-                    });
-            });
+            ->where(
+                function ($q) {
+                    $q->whereNull('last_rebalanced_at')
+                        ->orWhere(
+                            function ($q2) {
+                                $q2->where('rebalance_frequency', 'daily')
+                                    ->where('last_rebalanced_at', '<=', now()->subDay());
+                            }
+                        )
+                    ->orWhere(
+                        function ($q2) {
+                            $q2->where('rebalance_frequency', 'weekly')
+                                ->where('last_rebalanced_at', '<=', now()->subWeek());
+                        }
+                    )
+                    ->orWhere(
+                        function ($q2) {
+                            $q2->where('rebalance_frequency', 'monthly')
+                                ->where('last_rebalanced_at', '<=', now()->subMonth());
+                        }
+                    )
+                    ->orWhere(
+                        function ($q2) {
+                            $q2->where('rebalance_frequency', 'quarterly')
+                                ->where('last_rebalanced_at', '<=', now()->subQuarter());
+                        }
+                    );
+                }
+            );
     }
 }

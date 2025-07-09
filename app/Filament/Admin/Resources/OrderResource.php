@@ -23,9 +23,11 @@ class OrderResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
-            ->schema([
+            ->schema(
+                [
                 Forms\Components\Section::make('Order Details')
-                    ->schema([
+                    ->schema(
+                        [
                         Forms\Components\TextInput::make('order_id')
                             ->label('Order ID')
                             ->disabled(),
@@ -33,18 +35,22 @@ class OrderResource extends Resource
                             ->label('Account ID')
                             ->disabled(),
                         Forms\Components\Select::make('status')
-                            ->options([
+                            ->options(
+                                [
                                 'pending'          => 'Pending',
                                 'open'             => 'Open',
                                 'partially_filled' => 'Partially Filled',
                                 'filled'           => 'Filled',
                                 'cancelled'        => 'Cancelled',
-                            ])
+                                ]
+                            )
                             ->disabled(),
-                    ])->columns(3),
+                        ]
+                    )->columns(3),
 
                 Forms\Components\Section::make('Trading Details')
-                    ->schema([
+                    ->schema(
+                        [
                         Forms\Components\TextInput::make('base_currency')
                             ->disabled(),
                         Forms\Components\TextInput::make('quote_currency')
@@ -57,14 +63,17 @@ class OrderResource extends Resource
                             ->disabled(),
                         Forms\Components\TextInput::make('price')
                             ->disabled(),
-                    ])->columns(3),
-            ]);
+                        ]
+                    )->columns(3),
+                ]
+            );
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
+            ->columns(
+                [
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Date')
                     ->dateTime()
@@ -74,10 +83,12 @@ class OrderResource extends Resource
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\BadgeColumn::make('type')
-                    ->colors([
+                    ->colors(
+                        [
                         'success' => 'buy',
                         'danger'  => 'sell',
-                    ]),
+                        ]
+                    ),
                 Tables\Columns\TextColumn::make('order_type')
                     ->label('Order Type')
                     ->formatStateUsing(fn (string $state): string => ucfirst($state)),
@@ -91,37 +102,47 @@ class OrderResource extends Resource
                     ->suffix('%')
                     ->numeric(1),
                 Tables\Columns\BadgeColumn::make('status')
-                    ->colors([
+                    ->colors(
+                        [
                         'warning'   => 'pending',
                         'info'      => 'open',
                         'primary'   => 'partially_filled',
                         'success'   => 'filled',
                         'secondary' => 'cancelled',
-                    ]),
+                        ]
+                    ),
                 Tables\Columns\TextColumn::make('account.user.name')
                     ->label('User')
                     ->searchable()
                     ->toggleable(),
-            ])
+                ]
+            )
             ->defaultSort('created_at', 'desc')
-            ->filters([
+            ->filters(
+                [
                 Tables\Filters\SelectFilter::make('status')
-                    ->options([
+                    ->options(
+                        [
                         'pending'          => 'Pending',
                         'open'             => 'Open',
                         'partially_filled' => 'Partially Filled',
                         'filled'           => 'Filled',
                         'cancelled'        => 'Cancelled',
-                    ]),
+                        ]
+                    ),
                 Tables\Filters\SelectFilter::make('type')
-                    ->options([
+                    ->options(
+                        [
                         'buy'  => 'Buy',
                         'sell' => 'Sell',
-                    ]),
+                        ]
+                    ),
                 Tables\Filters\SelectFilter::make('base_currency')
                     ->options(fn () => \App\Models\Asset::where('is_tradeable', true)->pluck('code', 'code')),
-            ])
-            ->actions([
+                ]
+            )
+            ->actions(
+                [
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\Action::make('cancel')
                     ->label('Cancel')
@@ -130,10 +151,13 @@ class OrderResource extends Resource
                     ->requiresConfirmation()
                     ->visible(fn (Order $record): bool => $record->canBeCancelled())
                     ->action(fn (Order $record) => app(\App\Domain\Exchange\Services\ExchangeService::class)->cancelOrder($record->order_id)),
-            ])
-            ->bulkActions([
+                ]
+            )
+            ->bulkActions(
+                [
                 // No bulk actions for orders
-            ]);
+                ]
+            );
     }
 
     public static function getRelations(): array

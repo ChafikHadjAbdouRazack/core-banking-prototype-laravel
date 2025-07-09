@@ -26,32 +26,32 @@ class GCUController extends Controller
      *     tags={"GCU"},
      *     summary="Get GCU information",
      *     description="Get current information about the Global Currency Unit including composition and value",
-     *     @OA\Response(
+     * @OA\Response(
      *         response=200,
      *         description="GCU information",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="code", type="string", example="GCU"),
-     *                 @OA\Property(property="name", type="string", example="Global Currency Unit"),
-     *                 @OA\Property(property="symbol", type="string", example="Ǥ"),
-     *                 @OA\Property(property="current_value", type="number", format="float", example=1.0975),
-     *                 @OA\Property(property="value_currency", type="string", example="USD"),
-     *                 @OA\Property(property="last_rebalanced", type="string", format="date-time"),
-     *                 @OA\Property(property="next_rebalance", type="string", format="date-time"),
-     *                 @OA\Property(property="composition", type="array",
-     *                     @OA\Items(
-     *                         @OA\Property(property="asset_code", type="string"),
-     *                         @OA\Property(property="asset_name", type="string"),
-     *                         @OA\Property(property="weight", type="number", format="float"),
-     *                         @OA\Property(property="value_contribution", type="number", format="float")
+     * @OA\JsonContent(
+     * @OA\Property(property="data",               type="object",
+     * @OA\Property(property="code",               type="string", example="GCU"),
+     * @OA\Property(property="name",               type="string", example="Global Currency Unit"),
+     * @OA\Property(property="symbol",             type="string", example="Ǥ"),
+     * @OA\Property(property="current_value",      type="number", format="float", example=1.0975),
+     * @OA\Property(property="value_currency",     type="string", example="USD"),
+     * @OA\Property(property="last_rebalanced",    type="string", format="date-time"),
+     * @OA\Property(property="next_rebalance",     type="string", format="date-time"),
+     * @OA\Property(property="composition",        type="array",
+     * @OA\Items(
+     * @OA\Property(property="asset_code",         type="string"),
+     * @OA\Property(property="asset_name",         type="string"),
+     * @OA\Property(property="weight",             type="number", format="float"),
+     * @OA\Property(property="value_contribution", type="number", format="float")
      *                     )
      *                 ),
-     *                 @OA\Property(property="statistics", type="object",
-     *                     @OA\Property(property="total_supply", type="integer"),
-     *                     @OA\Property(property="holders_count", type="integer"),
-     *                     @OA\Property(property="24h_change", type="number", format="float"),
-     *                     @OA\Property(property="7d_change", type="number", format="float"),
-     *                     @OA\Property(property="30d_change", type="number", format="float")
+     * @OA\Property(property="statistics",         type="object",
+     * @OA\Property(property="total_supply",       type="integer"),
+     * @OA\Property(property="holders_count",      type="integer"),
+     * @OA\Property(property="24h_change",         type="number", format="float"),
+     * @OA\Property(property="7d_change",          type="number", format="float"),
+     * @OA\Property(property="30d_change",         type="number", format="float")
      *                 )
      *             )
      *         )
@@ -69,21 +69,24 @@ class GCUController extends Controller
         $statistics = $this->calculateGCUStatistics($gcu, $latestValue);
 
         // Get composition with current values
-        $composition = $gcu->components->map(function ($component) use ($latestValue) {
-            $valueContribution = 0;
-            if ($latestValue && isset($latestValue->component_values[$component->asset_code])) {
-                $valueContribution = $latestValue->component_values[$component->asset_code]['weighted_value'] ?? 0;
-            }
+        $composition = $gcu->components->map(
+            function ($component) use ($latestValue) {
+                $valueContribution = 0;
+                if ($latestValue && isset($latestValue->component_values[$component->asset_code])) {
+                    $valueContribution = $latestValue->component_values[$component->asset_code]['weighted_value'] ?? 0;
+                }
 
-            return [
+                return [
                 'asset_code'         => $component->asset_code,
                 'asset_name'         => $component->asset->name,
                 'weight'             => $component->weight,
                 'value_contribution' => round($valueContribution, 4),
-            ];
-        });
+                ];
+            }
+        );
 
-        return response()->json([
+        return response()->json(
+            [
             'data' => [
                 'code'            => $gcu->code,
                 'name'            => $gcu->name,
@@ -95,7 +98,8 @@ class GCUController extends Controller
                 'composition'     => $composition,
                 'statistics'      => $statistics,
             ],
-        ]);
+            ]
+        );
     }
 
     /**
@@ -105,38 +109,38 @@ class GCUController extends Controller
      *     tags={"GCU"},
      *     summary="Get GCU value history",
      *     description="Get historical value data for the Global Currency Unit",
-     *     @OA\Parameter(
+     * @OA\Parameter(
      *         name="period",
      *         in="query",
      *         required=false,
      *         description="Time period for history",
-     *         @OA\Schema(type="string", enum={"24h", "7d", "30d", "90d", "1y", "all"}, default="30d")
+     * @OA\Schema(type="string",                     enum={"24h", "7d", "30d", "90d", "1y", "all"}, default="30d")
      *     ),
-     *     @OA\Parameter(
+     * @OA\Parameter(
      *         name="interval",
      *         in="query",
      *         required=false,
      *         description="Data interval",
-     *         @OA\Schema(type="string", enum={"hourly", "daily", "weekly", "monthly"}, default="daily")
+     * @OA\Schema(type="string",                     enum={"hourly", "daily", "weekly", "monthly"}, default="daily")
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=200,
      *         description="GCU value history",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="data", type="array",
-     *                 @OA\Items(
-     *                     @OA\Property(property="timestamp", type="string", format="date-time"),
-     *                     @OA\Property(property="value", type="number", format="float"),
-     *                     @OA\Property(property="change", type="number", format="float")
+     * @OA\JsonContent(
+     * @OA\Property(property="data",                 type="array",
+     * @OA\Items(
+     * @OA\Property(property="timestamp",            type="string", format="date-time"),
+     * @OA\Property(property="value",                type="number", format="float"),
+     * @OA\Property(property="change",               type="number", format="float")
      *                 )
      *             ),
-     *             @OA\Property(property="meta", type="object",
-     *                 @OA\Property(property="period", type="string"),
-     *                 @OA\Property(property="interval", type="string"),
-     *                 @OA\Property(property="start_value", type="number", format="float"),
-     *                 @OA\Property(property="end_value", type="number", format="float"),
-     *                 @OA\Property(property="total_change", type="number", format="float"),
-     *                 @OA\Property(property="total_change_percent", type="number", format="float")
+     * @OA\Property(property="meta",                 type="object",
+     * @OA\Property(property="period",               type="string"),
+     * @OA\Property(property="interval",             type="string"),
+     * @OA\Property(property="start_value",          type="number", format="float"),
+     * @OA\Property(property="end_value",            type="number", format="float"),
+     * @OA\Property(property="total_change",         type="number", format="float"),
+     * @OA\Property(property="total_change_percent", type="number", format="float")
      *             )
      *         )
      *     )
@@ -178,7 +182,8 @@ class GCUController extends Controller
         $totalChange = $endValue - $startValue;
         $totalChangePercent = $startValue > 0 ? ($totalChange / $startValue * 100) : 0;
 
-        return response()->json([
+        return response()->json(
+            [
             'data' => $history,
             'meta' => [
                 'period'               => $period,
@@ -188,7 +193,8 @@ class GCUController extends Controller
                 'total_change'         => round($totalChange, 4),
                 'total_change_percent' => round($totalChangePercent, 2),
             ],
-        ]);
+            ]
+        );
     }
 
     /**
@@ -198,24 +204,24 @@ class GCUController extends Controller
      *     tags={"GCU"},
      *     summary="Get active GCU governance polls",
      *     description="Get currently active polls related to GCU governance",
-     *     @OA\Response(
+     * @OA\Response(
      *         response=200,
      *         description="Active GCU polls",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="data", type="array",
-     *                 @OA\Items(
-     *                     @OA\Property(property="id", type="integer"),
-     *                     @OA\Property(property="title", type="string"),
-     *                     @OA\Property(property="description", type="string"),
-     *                     @OA\Property(property="type", type="string"),
-     *                     @OA\Property(property="start_date", type="string", format="date-time"),
-     *                     @OA\Property(property="end_date", type="string", format="date-time"),
-     *                     @OA\Property(property="participation_rate", type="number", format="float"),
-     *                     @OA\Property(property="current_results", type="object"),
-     *                     @OA\Property(property="time_remaining", type="object",
-     *                         @OA\Property(property="days", type="integer"),
-     *                         @OA\Property(property="hours", type="integer"),
-     *                         @OA\Property(property="human_readable", type="string")
+     * @OA\JsonContent(
+     * @OA\Property(property="data",               type="array",
+     * @OA\Items(
+     * @OA\Property(property="id",                 type="integer"),
+     * @OA\Property(property="title",              type="string"),
+     * @OA\Property(property="description",        type="string"),
+     * @OA\Property(property="type",               type="string"),
+     * @OA\Property(property="start_date",         type="string", format="date-time"),
+     * @OA\Property(property="end_date",           type="string", format="date-time"),
+     * @OA\Property(property="participation_rate", type="number", format="float"),
+     * @OA\Property(property="current_results",    type="object"),
+     * @OA\Property(property="time_remaining",     type="object",
+     * @OA\Property(property="days",               type="integer"),
+     * @OA\Property(property="hours",              type="integer"),
+     * @OA\Property(property="human_readable",     type="string")
      *                     )
      *                 )
      *             )
@@ -230,13 +236,14 @@ class GCUController extends Controller
             ->with(['votes'])
             ->get();
 
-        $data = $polls->map(function ($poll) {
-            $totalVotes = $poll->votes->count();
-            $totalVotingPower = $poll->votes->sum('voting_power');
-            $endDate = $poll->end_date;
-            $now = now();
+        $data = $polls->map(
+            function ($poll) {
+                $totalVotes = $poll->votes->count();
+                $totalVotingPower = $poll->votes->sum('voting_power');
+                $endDate = $poll->end_date;
+                $now = now();
 
-            return [
+                return [
                 'id'                 => $poll->id,
                 'title'              => $poll->title,
                 'description'        => $poll->description,
@@ -250,8 +257,9 @@ class GCUController extends Controller
                     'hours'          => $now->diffInHours($endDate) % 24,
                     'human_readable' => $now->diffForHumans($endDate),
                 ],
-            ];
-        });
+                ];
+            }
+        );
 
         return response()->json(['data' => $data]);
     }
@@ -263,40 +271,40 @@ class GCUController extends Controller
      *     tags={"GCU"},
      *     summary="Get real-time GCU composition data",
      *     description="Get detailed real-time composition data for the Global Currency Unit including current weights, values, and recent changes",
-     *     @OA\Response(
+     * @OA\Response(
      *         response=200,
      *         description="GCU composition data",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="basket_code", type="string", example="GCU"),
-     *                 @OA\Property(property="last_updated", type="string", format="date-time"),
-     *                 @OA\Property(property="total_value_usd", type="number", format="float"),
-     *                 @OA\Property(property="composition", type="array",
-     *                     @OA\Items(
-     *                         @OA\Property(property="asset_code", type="string"),
-     *                         @OA\Property(property="asset_name", type="string"),
-     *                         @OA\Property(property="asset_type", type="string", enum={"fiat", "crypto", "commodity"}),
-     *                         @OA\Property(property="weight", type="number", format="float"),
-     *                         @OA\Property(property="current_price_usd", type="number", format="float"),
-     *                         @OA\Property(property="value_contribution_usd", type="number", format="float"),
-     *                         @OA\Property(property="percentage_of_basket", type="number", format="float"),
-     *                         @OA\Property(property="24h_change", type="number", format="float"),
-     *                         @OA\Property(property="7d_change", type="number", format="float")
+     * @OA\JsonContent(
+     * @OA\Property(property="data",                   type="object",
+     * @OA\Property(property="basket_code",            type="string", example="GCU"),
+     * @OA\Property(property="last_updated",           type="string", format="date-time"),
+     * @OA\Property(property="total_value_usd",        type="number", format="float"),
+     * @OA\Property(property="composition",            type="array",
+     * @OA\Items(
+     * @OA\Property(property="asset_code",             type="string"),
+     * @OA\Property(property="asset_name",             type="string"),
+     * @OA\Property(property="asset_type",             type="string", enum={"fiat", "crypto", "commodity"}),
+     * @OA\Property(property="weight",                 type="number", format="float"),
+     * @OA\Property(property="current_price_usd",      type="number", format="float"),
+     * @OA\Property(property="value_contribution_usd", type="number", format="float"),
+     * @OA\Property(property="percentage_of_basket",   type="number", format="float"),
+     * @OA\Property(property="24h_change",             type="number", format="float"),
+     * @OA\Property(property="7d_change",              type="number", format="float")
      *                     )
      *                 ),
-     *                 @OA\Property(property="rebalancing", type="object",
-     *                     @OA\Property(property="frequency", type="string"),
-     *                     @OA\Property(property="last_rebalanced", type="string", format="date-time"),
-     *                     @OA\Property(property="next_rebalance", type="string", format="date-time"),
-     *                     @OA\Property(property="automatic", type="boolean")
+     * @OA\Property(property="rebalancing",            type="object",
+     * @OA\Property(property="frequency",              type="string"),
+     * @OA\Property(property="last_rebalanced",        type="string", format="date-time"),
+     * @OA\Property(property="next_rebalance",         type="string", format="date-time"),
+     * @OA\Property(property="automatic",              type="boolean")
      *                 ),
-     *                 @OA\Property(property="performance", type="object",
-     *                     @OA\Property(property="24h_change_usd", type="number", format="float"),
-     *                     @OA\Property(property="24h_change_percent", type="number", format="float"),
-     *                     @OA\Property(property="7d_change_usd", type="number", format="float"),
-     *                     @OA\Property(property="7d_change_percent", type="number", format="float"),
-     *                     @OA\Property(property="30d_change_usd", type="number", format="float"),
-     *                     @OA\Property(property="30d_change_percent", type="number", format="float")
+     * @OA\Property(property="performance",            type="object",
+     * @OA\Property(property="24h_change_usd",         type="number", format="float"),
+     * @OA\Property(property="24h_change_percent",     type="number", format="float"),
+     * @OA\Property(property="7d_change_usd",          type="number", format="float"),
+     * @OA\Property(property="7d_change_percent",      type="number", format="float"),
+     * @OA\Property(property="30d_change_usd",         type="number", format="float"),
+     * @OA\Property(property="30d_change_percent",     type="number", format="float")
      *                 )
      *             )
      *         )
@@ -314,29 +322,30 @@ class GCUController extends Controller
         $exchangeRateService = app(\App\Domain\Asset\Services\ExchangeRateService::class);
 
         // Calculate detailed composition data
-        $composition = $gcu->components->map(function ($component) use ($latestValue, $exchangeRateService) {
-            $asset = $component->asset;
+        $composition = $gcu->components->map(
+            function ($component) use ($latestValue, $exchangeRateService) {
+                $asset = $component->asset;
 
-            // Get current price in USD
-            $currentPriceUSD = 1.0;
-            if ($component->asset_code !== 'USD') {
-                $rate = $exchangeRateService->getRate($component->asset_code, 'USD');
-                $currentPriceUSD = $rate ? $rate->rate : 0;
-            }
+                // Get current price in USD
+                $currentPriceUSD = 1.0;
+                if ($component->asset_code !== 'USD') {
+                    $rate = $exchangeRateService->getRate($component->asset_code, 'USD');
+                    $currentPriceUSD = $rate ? $rate->rate : 0;
+                }
 
-            // Calculate value contribution
-            $valueContribution = 0;
-            $percentageOfBasket = 0;
-            if ($latestValue && isset($latestValue->component_values[$component->asset_code])) {
-                $valueContribution = $latestValue->component_values[$component->asset_code]['weighted_value'] ?? 0;
-                $percentageOfBasket = ($valueContribution / $latestValue->value) * 100;
-            }
+                // Calculate value contribution
+                $valueContribution = 0;
+                $percentageOfBasket = 0;
+                if ($latestValue && isset($latestValue->component_values[$component->asset_code])) {
+                    $valueContribution = $latestValue->component_values[$component->asset_code]['weighted_value'] ?? 0;
+                    $percentageOfBasket = ($valueContribution / $latestValue->value) * 100;
+                }
 
-            // Get historical changes
-            $changes24h = $this->getAssetPriceChange($component->asset_code, 1);
-            $changes7d = $this->getAssetPriceChange($component->asset_code, 7);
+                // Get historical changes
+                $changes24h = $this->getAssetPriceChange($component->asset_code, 1);
+                $changes7d = $this->getAssetPriceChange($component->asset_code, 7);
 
-            return [
+                return [
                 'asset_code'             => $component->asset_code,
                 'asset_name'             => $asset->name,
                 'asset_type'             => $asset->type,
@@ -346,13 +355,15 @@ class GCUController extends Controller
                 'percentage_of_basket'   => round($percentageOfBasket, 2),
                 '24h_change'             => round($changes24h, 2),
                 '7d_change'              => round($changes7d, 2),
-            ];
-        });
+                ];
+            }
+        );
 
         // Calculate performance metrics
         $performance = $this->calculateGCUPerformance('GCU');
 
-        return response()->json([
+        return response()->json(
+            [
             'data' => [
                 'basket_code'     => 'GCU',
                 'last_updated'    => $latestValue ? $latestValue->calculated_at->toIso8601String() : now()->toIso8601String(),
@@ -366,7 +377,8 @@ class GCUController extends Controller
                 ],
                 'performance' => $performance,
             ],
-        ]);
+            ]
+        );
     }
 
     /**
@@ -376,20 +388,20 @@ class GCUController extends Controller
      *     tags={"GCU"},
      *     summary="Get supported banks for GCU",
      *     description="Get list of banks that support GCU deposits and their coverage",
-     *     @OA\Response(
+     * @OA\Response(
      *         response=200,
      *         description="Supported banks",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="data", type="array",
-     *                 @OA\Items(
-     *                     @OA\Property(property="code", type="string"),
-     *                     @OA\Property(property="name", type="string"),
-     *                     @OA\Property(property="country", type="string"),
-     *                     @OA\Property(property="deposit_protection", type="string"),
-     *                     @OA\Property(property="deposit_protection_amount", type="integer"),
-     *                     @OA\Property(property="supported_currencies", type="array", @OA\Items(type="string")),
-     *                     @OA\Property(property="features", type="array", @OA\Items(type="string")),
-     *                     @OA\Property(property="status", type="string", enum={"operational", "degraded", "maintenance"})
+     * @OA\JsonContent(
+     * @OA\Property(property="data",                      type="array",
+     * @OA\Items(
+     * @OA\Property(property="code",                      type="string"),
+     * @OA\Property(property="name",                      type="string"),
+     * @OA\Property(property="country",                   type="string"),
+     * @OA\Property(property="deposit_protection",        type="string"),
+     * @OA\Property(property="deposit_protection_amount", type="integer"),
+     * @OA\Property(property="supported_currencies",      type="array", @OA\Items(type="string")),
+     * @OA\Property(property="features",                  type="array", @OA\Items(type="string")),
+     * @OA\Property(property="status",                    type="string", enum={"operational", "degraded", "maintenance"})
      *                 )
      *             )
      *         )

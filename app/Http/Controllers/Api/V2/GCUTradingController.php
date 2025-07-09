@@ -40,54 +40,56 @@ class GCUTradingController extends Controller
      *     summary="Buy GCU tokens",
      *     description="Purchase GCU tokens using fiat currency",
      *     security={{"sanctum":{}}},
-     *     @OA\RequestBody(
+     * @OA\RequestBody(
      *         required=true,
-     *         @OA\JsonContent(
+     * @OA\JsonContent(
      *             required={"amount", "currency"},
-     *             @OA\Property(property="amount", type="number", format="float", example=1000.00, minimum=100, description="Amount to spend in source currency"),
-     *             @OA\Property(property="currency", type="string", example="EUR", description="Source currency code (EUR, USD, GBP, CHF)"),
-     *             @OA\Property(property="account_uuid", type="string", format="uuid", description="Account UUID (optional, defaults to user's primary account)")
+     * @OA\Property(property="amount",                   type="number", format="float", example=1000.00, minimum=100, description="Amount to spend in source currency"),
+     * @OA\Property(property="currency",                 type="string", example="EUR", description="Source currency code (EUR, USD, GBP, CHF)"),
+     * @OA\Property(property="account_uuid",             type="string", format="uuid", description="Account UUID (optional, defaults to user's primary account)")
      *         )
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=200,
      *         description="GCU purchase successful",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="transaction_id", type="string", format="uuid"),
-     *                 @OA\Property(property="account_uuid", type="string", format="uuid"),
-     *                 @OA\Property(property="spent_amount", type="number", format="float", example=1000.00),
-     *                 @OA\Property(property="spent_currency", type="string", example="EUR"),
-     *                 @OA\Property(property="received_amount", type="number", format="float", example=912.45),
-     *                 @OA\Property(property="received_currency", type="string", example="GCU"),
-     *                 @OA\Property(property="exchange_rate", type="number", format="float", example=0.91245),
-     *                 @OA\Property(property="fee_amount", type="number", format="float", example=10.00),
-     *                 @OA\Property(property="fee_currency", type="string", example="EUR"),
-     *                 @OA\Property(property="new_gcu_balance", type="number", format="float", example=1912.45),
-     *                 @OA\Property(property="timestamp", type="string", format="date-time")
+     * @OA\JsonContent(
+     * @OA\Property(property="data",                     type="object",
+     * @OA\Property(property="transaction_id",           type="string", format="uuid"),
+     * @OA\Property(property="account_uuid",             type="string", format="uuid"),
+     * @OA\Property(property="spent_amount",             type="number", format="float", example=1000.00),
+     * @OA\Property(property="spent_currency",           type="string", example="EUR"),
+     * @OA\Property(property="received_amount",          type="number", format="float", example=912.45),
+     * @OA\Property(property="received_currency",        type="string", example="GCU"),
+     * @OA\Property(property="exchange_rate",            type="number", format="float", example=0.91245),
+     * @OA\Property(property="fee_amount",               type="number", format="float", example=10.00),
+     * @OA\Property(property="fee_currency",             type="string", example="EUR"),
+     * @OA\Property(property="new_gcu_balance",          type="number", format="float", example=1912.45),
+     * @OA\Property(property="timestamp",                type="string", format="date-time")
      *             ),
-     *             @OA\Property(property="message", type="string", example="Successfully purchased 912.45 GCU")
+     * @OA\Property(property="message",                  type="string", example="Successfully purchased 912.45 GCU")
      *         )
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=400,
      *         description="Invalid request parameters",
-     *         @OA\JsonContent(ref="#/components/schemas/Error")
+     * @OA\JsonContent(ref="#/components/schemas/Error")
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=422,
      *         description="Insufficient balance or validation error",
-     *         @OA\JsonContent(ref="#/components/schemas/Error")
+     * @OA\JsonContent(ref="#/components/schemas/Error")
      *     )
      * )
      */
     public function buy(Request $request): JsonResponse
     {
-        $validated = $request->validate([
+        $validated = $request->validate(
+            [
             'amount'       => 'required|numeric|min:100',
             'currency'     => 'required|string|in:EUR,USD,GBP,CHF',
             'account_uuid' => 'sometimes|uuid|exists:accounts,uuid',
-        ]);
+            ]
+        );
 
         $user = $request->user();
         $accountUuid = $validated['account_uuid'] ?? $user->primaryAccount()->uuid;
@@ -95,18 +97,22 @@ class GCUTradingController extends Controller
 
         // Verify account belongs to user
         if ($account->user_uuid !== $user->uuid) {
-            return response()->json([
+            return response()->json(
+                [
                 'error'   => 'Unauthorized',
                 'message' => 'Account does not belong to authenticated user',
-            ], 403);
+                ], 403
+            );
         }
 
         // Check if account is frozen
         if ($account->frozen) {
-            return response()->json([
+            return response()->json(
+                [
                 'error'   => 'Account Frozen',
                 'message' => 'Cannot perform transactions on frozen account',
-            ], 422);
+                ], 422
+            );
         }
 
         // Get source currency balance
@@ -115,10 +121,12 @@ class GCUTradingController extends Controller
             ->first();
 
         if (! $sourceBalance || $sourceBalance->balance < $validated['amount']) {
-            return response()->json([
+            return response()->json(
+                [
                 'error'   => 'Insufficient Balance',
                 'message' => "Insufficient {$validated['currency']} balance",
-            ], 422);
+                ], 422
+            );
         }
 
         // Get current GCU value
@@ -128,10 +136,12 @@ class GCUTradingController extends Controller
             ->first();
 
         if (! $latestValue) {
-            return response()->json([
+            return response()->json(
+                [
                 'error'   => 'GCU Value Not Available',
                 'message' => 'Unable to determine current GCU value',
-            ], 503);
+                ], 503
+            );
         }
 
         // Calculate exchange rate and GCU amount
@@ -167,7 +177,8 @@ class GCUTradingController extends Controller
 
             DB::commit();
 
-            return response()->json([
+            return response()->json(
+                [
                 'data' => [
                     'transaction_id'    => $transactionId,
                     'account_uuid'      => $accountUuid,
@@ -182,14 +193,17 @@ class GCUTradingController extends Controller
                     'timestamp'         => now()->toIso8601String(),
                 ],
                 'message' => sprintf('Successfully purchased %.4f GCU', $gcuAmount),
-            ]);
+                ]
+            );
         } catch (\Exception $e) {
             DB::rollBack();
 
-            return response()->json([
+            return response()->json(
+                [
                 'error'   => 'Transaction Failed',
                 'message' => 'Failed to complete GCU purchase: ' . $e->getMessage(),
-            ], 500);
+                ], 500
+            );
         }
     }
 
@@ -201,54 +215,56 @@ class GCUTradingController extends Controller
      *     summary="Sell GCU tokens",
      *     description="Sell GCU tokens for fiat currency",
      *     security={{"sanctum":{}}},
-     *     @OA\RequestBody(
+     * @OA\RequestBody(
      *         required=true,
-     *         @OA\JsonContent(
+     * @OA\JsonContent(
      *             required={"amount", "currency"},
-     *             @OA\Property(property="amount", type="number", format="float", example=100.00, minimum=10, description="Amount of GCU to sell"),
-     *             @OA\Property(property="currency", type="string", example="EUR", description="Target currency code (EUR, USD, GBP, CHF)"),
-     *             @OA\Property(property="account_uuid", type="string", format="uuid", description="Account UUID (optional, defaults to user's primary account)")
+     * @OA\Property(property="amount",                   type="number", format="float", example=100.00, minimum=10, description="Amount of GCU to sell"),
+     * @OA\Property(property="currency",                 type="string", example="EUR", description="Target currency code (EUR, USD, GBP, CHF)"),
+     * @OA\Property(property="account_uuid",             type="string", format="uuid", description="Account UUID (optional, defaults to user's primary account)")
      *         )
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=200,
      *         description="GCU sale successful",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="transaction_id", type="string", format="uuid"),
-     *                 @OA\Property(property="account_uuid", type="string", format="uuid"),
-     *                 @OA\Property(property="sold_amount", type="number", format="float", example=100.00),
-     *                 @OA\Property(property="sold_currency", type="string", example="GCU"),
-     *                 @OA\Property(property="received_amount", type="number", format="float", example=109.00),
-     *                 @OA\Property(property="received_currency", type="string", example="EUR"),
-     *                 @OA\Property(property="exchange_rate", type="number", format="float", example=1.0956),
-     *                 @OA\Property(property="fee_amount", type="number", format="float", example=1.10),
-     *                 @OA\Property(property="fee_currency", type="string", example="EUR"),
-     *                 @OA\Property(property="new_gcu_balance", type="number", format="float", example=812.45),
-     *                 @OA\Property(property="timestamp", type="string", format="date-time")
+     * @OA\JsonContent(
+     * @OA\Property(property="data",                     type="object",
+     * @OA\Property(property="transaction_id",           type="string", format="uuid"),
+     * @OA\Property(property="account_uuid",             type="string", format="uuid"),
+     * @OA\Property(property="sold_amount",              type="number", format="float", example=100.00),
+     * @OA\Property(property="sold_currency",            type="string", example="GCU"),
+     * @OA\Property(property="received_amount",          type="number", format="float", example=109.00),
+     * @OA\Property(property="received_currency",        type="string", example="EUR"),
+     * @OA\Property(property="exchange_rate",            type="number", format="float", example=1.0956),
+     * @OA\Property(property="fee_amount",               type="number", format="float", example=1.10),
+     * @OA\Property(property="fee_currency",             type="string", example="EUR"),
+     * @OA\Property(property="new_gcu_balance",          type="number", format="float", example=812.45),
+     * @OA\Property(property="timestamp",                type="string", format="date-time")
      *             ),
-     *             @OA\Property(property="message", type="string", example="Successfully sold 100.00 GCU")
+     * @OA\Property(property="message",                  type="string", example="Successfully sold 100.00 GCU")
      *         )
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=400,
      *         description="Invalid request parameters",
-     *         @OA\JsonContent(ref="#/components/schemas/Error")
+     * @OA\JsonContent(ref="#/components/schemas/Error")
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=422,
      *         description="Insufficient GCU balance or validation error",
-     *         @OA\JsonContent(ref="#/components/schemas/Error")
+     * @OA\JsonContent(ref="#/components/schemas/Error")
      *     )
      * )
      */
     public function sell(Request $request): JsonResponse
     {
-        $validated = $request->validate([
+        $validated = $request->validate(
+            [
             'amount'       => 'required|numeric|min:10',
             'currency'     => 'required|string|in:EUR,USD,GBP,CHF',
             'account_uuid' => 'sometimes|uuid|exists:accounts,uuid',
-        ]);
+            ]
+        );
 
         $user = $request->user();
         $accountUuid = $validated['account_uuid'] ?? $user->primaryAccount()->uuid;
@@ -256,18 +272,22 @@ class GCUTradingController extends Controller
 
         // Verify account belongs to user
         if ($account->user_uuid !== $user->uuid) {
-            return response()->json([
+            return response()->json(
+                [
                 'error'   => 'Unauthorized',
                 'message' => 'Account does not belong to authenticated user',
-            ], 403);
+                ], 403
+            );
         }
 
         // Check if account is frozen
         if ($account->frozen) {
-            return response()->json([
+            return response()->json(
+                [
                 'error'   => 'Account Frozen',
                 'message' => 'Cannot perform transactions on frozen account',
-            ], 422);
+                ], 422
+            );
         }
 
         // Get GCU balance
@@ -276,10 +296,12 @@ class GCUTradingController extends Controller
             ->first();
 
         if (! $gcuBalance || $gcuBalance->balance < $validated['amount']) {
-            return response()->json([
+            return response()->json(
+                [
                 'error'   => 'Insufficient Balance',
                 'message' => 'Insufficient GCU balance',
-            ], 422);
+                ], 422
+            );
         }
 
         // Get current GCU value
@@ -288,10 +310,12 @@ class GCUTradingController extends Controller
             ->first();
 
         if (! $latestValue) {
-            return response()->json([
+            return response()->json(
+                [
                 'error'   => 'GCU Value Not Available',
                 'message' => 'Unable to determine current GCU value',
-            ], 503);
+                ], 503
+            );
         }
 
         // Calculate exchange rate and fiat amount
@@ -326,7 +350,8 @@ class GCUTradingController extends Controller
 
             DB::commit();
 
-            return response()->json([
+            return response()->json(
+                [
                 'data' => [
                     'transaction_id'    => $transactionId,
                     'account_uuid'      => $accountUuid,
@@ -341,14 +366,17 @@ class GCUTradingController extends Controller
                     'timestamp'         => now()->toIso8601String(),
                 ],
                 'message' => sprintf('Successfully sold %.4f GCU', $validated['amount']),
-            ]);
+                ]
+            );
         } catch (\Exception $e) {
             DB::rollBack();
 
-            return response()->json([
+            return response()->json(
+                [
                 'error'   => 'Transaction Failed',
                 'message' => 'Failed to complete GCU sale: ' . $e->getMessage(),
-            ], 500);
+                ], 500
+            );
         }
     }
 
@@ -360,44 +388,44 @@ class GCUTradingController extends Controller
      *     summary="Get GCU trading quote",
      *     description="Get a quote for buying or selling GCU",
      *     security={{"sanctum":{}}},
-     *     @OA\Parameter(
+     * @OA\Parameter(
      *         name="operation",
      *         in="query",
      *         required=true,
      *         description="Operation type",
-     *         @OA\Schema(type="string", enum={"buy", "sell"})
+     * @OA\Schema(type="string",                  enum={"buy", "sell"})
      *     ),
-     *     @OA\Parameter(
+     * @OA\Parameter(
      *         name="amount",
      *         in="query",
      *         required=true,
      *         description="Amount (in source currency for buy, in GCU for sell)",
-     *         @OA\Schema(type="number", format="float", minimum=0.01)
+     * @OA\Schema(type="number",                  format="float", minimum=0.01)
      *     ),
-     *     @OA\Parameter(
+     * @OA\Parameter(
      *         name="currency",
      *         in="query",
      *         required=true,
      *         description="Fiat currency code",
-     *         @OA\Schema(type="string", enum={"EUR", "USD", "GBP", "CHF"})
+     * @OA\Schema(type="string",                  enum={"EUR", "USD", "GBP", "CHF"})
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=200,
      *         description="Trading quote",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="operation", type="string", example="buy"),
-     *                 @OA\Property(property="input_amount", type="number", format="float", example=1000.00),
-     *                 @OA\Property(property="input_currency", type="string", example="EUR"),
-     *                 @OA\Property(property="output_amount", type="number", format="float", example=912.45),
-     *                 @OA\Property(property="output_currency", type="string", example="GCU"),
-     *                 @OA\Property(property="exchange_rate", type="number", format="float", example=0.91245),
-     *                 @OA\Property(property="fee_amount", type="number", format="float", example=10.00),
-     *                 @OA\Property(property="fee_currency", type="string", example="EUR"),
-     *                 @OA\Property(property="fee_percentage", type="number", format="float", example=1.0),
-     *                 @OA\Property(property="quote_valid_until", type="string", format="date-time"),
-     *                 @OA\Property(property="minimum_amount", type="number", format="float"),
-     *                 @OA\Property(property="maximum_amount", type="number", format="float")
+     * @OA\JsonContent(
+     * @OA\Property(property="data",              type="object",
+     * @OA\Property(property="operation",         type="string", example="buy"),
+     * @OA\Property(property="input_amount",      type="number", format="float", example=1000.00),
+     * @OA\Property(property="input_currency",    type="string", example="EUR"),
+     * @OA\Property(property="output_amount",     type="number", format="float", example=912.45),
+     * @OA\Property(property="output_currency",   type="string", example="GCU"),
+     * @OA\Property(property="exchange_rate",     type="number", format="float", example=0.91245),
+     * @OA\Property(property="fee_amount",        type="number", format="float", example=10.00),
+     * @OA\Property(property="fee_currency",      type="string", example="EUR"),
+     * @OA\Property(property="fee_percentage",    type="number", format="float", example=1.0),
+     * @OA\Property(property="quote_valid_until", type="string", format="date-time"),
+     * @OA\Property(property="minimum_amount",    type="number", format="float"),
+     * @OA\Property(property="maximum_amount",    type="number", format="float")
      *             )
      *         )
      *     )
@@ -405,11 +433,13 @@ class GCUTradingController extends Controller
      */
     public function quote(Request $request): JsonResponse
     {
-        $validated = $request->validate([
+        $validated = $request->validate(
+            [
             'operation' => 'required|string|in:buy,sell',
             'amount'    => 'required|numeric|min:0.01',
             'currency'  => 'required|string|in:EUR,USD,GBP,CHF',
-        ]);
+            ]
+        );
 
         // Get current GCU value
         $latestValue = BasketValue::where('basket_asset_code', 'GCU')
@@ -417,10 +447,12 @@ class GCUTradingController extends Controller
             ->first();
 
         if (! $latestValue) {
-            return response()->json([
+            return response()->json(
+                [
                 'error'   => 'GCU Value Not Available',
                 'message' => 'Unable to determine current GCU value',
-            ], 503);
+                ], 503
+            );
         }
 
         $feeRate = 0.01; // 1% trading fee
@@ -479,23 +511,23 @@ class GCUTradingController extends Controller
      *     summary="Get user's GCU trading limits",
      *     description="Get the authenticated user's trading limits for GCU operations",
      *     security={{"sanctum":{}}},
-     *     @OA\Response(
+     * @OA\Response(
      *         response=200,
      *         description="Trading limits",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="daily_buy_limit", type="number", format="float", example=10000.00),
-     *                 @OA\Property(property="daily_sell_limit", type="number", format="float", example=10000.00),
-     *                 @OA\Property(property="daily_buy_used", type="number", format="float", example=2500.00),
-     *                 @OA\Property(property="daily_sell_used", type="number", format="float", example=0.00),
-     *                 @OA\Property(property="monthly_buy_limit", type="number", format="float", example=100000.00),
-     *                 @OA\Property(property="monthly_sell_limit", type="number", format="float", example=100000.00),
-     *                 @OA\Property(property="monthly_buy_used", type="number", format="float", example=15000.00),
-     *                 @OA\Property(property="monthly_sell_used", type="number", format="float", example=5000.00),
-     *                 @OA\Property(property="minimum_buy_amount", type="number", format="float", example=100.00),
-     *                 @OA\Property(property="minimum_sell_amount", type="number", format="float", example=10.00),
-     *                 @OA\Property(property="kyc_level", type="integer", example=2),
-     *                 @OA\Property(property="limits_currency", type="string", example="EUR")
+     * @OA\JsonContent(
+     * @OA\Property(property="data",                type="object",
+     * @OA\Property(property="daily_buy_limit",     type="number", format="float", example=10000.00),
+     * @OA\Property(property="daily_sell_limit",    type="number", format="float", example=10000.00),
+     * @OA\Property(property="daily_buy_used",      type="number", format="float", example=2500.00),
+     * @OA\Property(property="daily_sell_used",     type="number", format="float", example=0.00),
+     * @OA\Property(property="monthly_buy_limit",   type="number", format="float", example=100000.00),
+     * @OA\Property(property="monthly_sell_limit",  type="number", format="float", example=100000.00),
+     * @OA\Property(property="monthly_buy_used",    type="number", format="float", example=15000.00),
+     * @OA\Property(property="monthly_sell_used",   type="number", format="float", example=5000.00),
+     * @OA\Property(property="minimum_buy_amount",  type="number", format="float", example=100.00),
+     * @OA\Property(property="minimum_sell_amount", type="number", format="float", example=10.00),
+     * @OA\Property(property="kyc_level",           type="integer", example=2),
+     * @OA\Property(property="limits_currency",     type="string", example="EUR")
      *             )
      *         )
      *     )
@@ -548,7 +580,8 @@ class GCUTradingController extends Controller
         $monthlyBuyUsed = 0;
         $monthlySellUsed = 0;
 
-        return response()->json([
+        return response()->json(
+            [
             'data' => [
                 'daily_buy_limit'     => $limits['daily_buy'],
                 'daily_sell_limit'    => $limits['daily_sell'],
@@ -563,14 +596,15 @@ class GCUTradingController extends Controller
                 'kyc_level'           => $kycLevel,
                 'limits_currency'     => 'EUR',
             ],
-        ]);
+            ]
+        );
     }
 
     /**
      * Calculate the exchange rate from a fiat currency to GCU.
      *
-     * @param string $currency The fiat currency code
-     * @param float $gcuValueInUSD The current GCU value in USD
+     * @param  string $currency      The fiat currency code
+     * @param  float  $gcuValueInUSD The current GCU value in USD
      * @return float The exchange rate (how many GCU per 1 unit of currency)
      */
     private function calculateGCUExchangeRate(string $currency, float $gcuValueInUSD): float

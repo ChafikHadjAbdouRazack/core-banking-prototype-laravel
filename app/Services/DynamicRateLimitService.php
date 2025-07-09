@@ -71,14 +71,16 @@ class DynamicRateLimitService
 
         // Log dynamic adjustment if significant
         if (abs($finalMultiplier - 1.0) > 0.2) {
-            Log::info('Dynamic rate limit adjustment applied', [
+            Log::info(
+                'Dynamic rate limit adjustment applied', [
                 'rate_limit_type' => $rateLimitType,
                 'user_id'         => $userId,
                 'original_limit'  => $baseConfig['limit'],
                 'adjusted_limit'  => $adjustedConfig['limit'],
                 'multiplier'      => $finalMultiplier,
                 'adjustments'     => $adjustedConfig['adjustments'],
-            ]);
+                ]
+            );
         }
 
         return $adjustedConfig;
@@ -107,24 +109,26 @@ class DynamicRateLimitService
     {
         $cacheKey = 'system_load:current';
 
-        return Cache::remember($cacheKey, 30, function () {
-            // Combine multiple load indicators
-            $cpuLoad = $this->getCpuLoad();
-            $memoryLoad = $this->getMemoryLoad();
-            $redisLoad = $this->getRedisLoad();
-            $databaseLoad = $this->getDatabaseLoad();
+        return Cache::remember(
+            $cacheKey, 30, function () {
+                // Combine multiple load indicators
+                $cpuLoad = $this->getCpuLoad();
+                $memoryLoad = $this->getMemoryLoad();
+                $redisLoad = $this->getRedisLoad();
+                $databaseLoad = $this->getDatabaseLoad();
 
-            // Weighted average of different load types
-            $systemLoad = ($cpuLoad * 0.3) + ($memoryLoad * 0.2) + ($redisLoad * 0.25) + ($databaseLoad * 0.25);
+                // Weighted average of different load types
+                $systemLoad = ($cpuLoad * 0.3) + ($memoryLoad * 0.2) + ($redisLoad * 0.25) + ($databaseLoad * 0.25);
 
-            // Cache system load metrics for monitoring
-            Cache::put('system_metrics:cpu_load', $cpuLoad, 300);
-            Cache::put('system_metrics:memory_load', $memoryLoad, 300);
-            Cache::put('system_metrics:redis_load', $redisLoad, 300);
-            Cache::put('system_metrics:database_load', $databaseLoad, 300);
+                // Cache system load metrics for monitoring
+                Cache::put('system_metrics:cpu_load', $cpuLoad, 300);
+                Cache::put('system_metrics:memory_load', $memoryLoad, 300);
+                Cache::put('system_metrics:redis_load', $redisLoad, 300);
+                Cache::put('system_metrics:database_load', $databaseLoad, 300);
 
-            return min(1.5, $systemLoad); // Cap at 150%
-        });
+                return min(1.5, $systemLoad); // Cap at 150%
+            }
+        );
     }
 
     /**
@@ -213,11 +217,13 @@ class DynamicRateLimitService
 
         $cacheKey = "user_trust_level:{$userId}";
 
-        return Cache::remember($cacheKey, 3600, function () use ($userId) {
-            $trustLevel = $this->calculateUserTrustLevel($userId);
+        return Cache::remember(
+            $cacheKey, 3600, function () use ($userId) {
+                $trustLevel = $this->calculateUserTrustLevel($userId);
 
-            return self::TRUST_MULTIPLIERS[$trustLevel] ?? self::TRUST_MULTIPLIERS['basic'];
-        });
+                return self::TRUST_MULTIPLIERS[$trustLevel] ?? self::TRUST_MULTIPLIERS['basic'];
+            }
+        );
     }
 
     /**
@@ -258,10 +264,12 @@ class DynamicRateLimitService
 
             return 'new';
         } catch (\Exception $e) {
-            Log::warning('Failed to calculate user trust level', [
+            Log::warning(
+                'Failed to calculate user trust level', [
                 'user_id' => $userId,
                 'error'   => $e->getMessage(),
-            ]);
+                ]
+            );
 
             return 'basic';
         }
@@ -352,11 +360,13 @@ class DynamicRateLimitService
         $count = Cache::get($key, 0);
         Cache::put($key, $count + 1, 86400 * 30); // 30 days
 
-        Log::warning('Rate limit violation recorded', [
+        Log::warning(
+            'Rate limit violation recorded', [
             'user_id'          => $userId,
             'violation_type'   => $violationType,
             'total_violations' => $count + 1,
-        ]);
+            ]
+        );
     }
 
     /**

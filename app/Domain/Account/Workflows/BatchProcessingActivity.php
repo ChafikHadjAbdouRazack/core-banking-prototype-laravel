@@ -13,7 +13,7 @@ use Workflow\Activity;
 class BatchProcessingActivity extends Activity
 {
     /**
-     * @param array $operations
+     * @param array  $operations
      * @param string $batchId
      *
      * @return array
@@ -23,11 +23,13 @@ class BatchProcessingActivity extends Activity
         $startTime = now();
         $results = [];
 
-        logger()->info('Starting batch processing', [
+        logger()->info(
+            'Starting batch processing', [
             'batch_id'   => $batchId,
             'operations' => $operations,
             'start_time' => $startTime->toISOString(),
-        ]);
+            ]
+        );
 
         foreach ($operations as $operation) {
             try {
@@ -44,11 +46,13 @@ class BatchProcessingActivity extends Activity
                     'error'     => $th->getMessage(),
                 ];
 
-                logger()->error('Batch operation failed', [
+                logger()->error(
+                    'Batch operation failed', [
                     'batch_id'  => $batchId,
                     'operation' => $operation,
                     'error'     => $th->getMessage(),
-                ]);
+                    ]
+                );
             }
         }
 
@@ -72,27 +76,27 @@ class BatchProcessingActivity extends Activity
     }
 
     /**
-     * @param string $operation
-     * @param string $batchId
+     * @param  string $operation
+     * @param  string $batchId
      * @return array
      */
     private function performOperation(string $operation, string $batchId): array
     {
         switch ($operation) {
-            case 'calculate_daily_turnover':
-                return $this->calculateDailyTurnover();
-            case 'generate_account_statements':
-                return $this->generateAccountStatements();
-            case 'process_interest_calculations':
-                return $this->processInterestCalculations();
-            case 'perform_compliance_checks':
-                return $this->performComplianceChecks();
-            case 'archive_old_transactions':
-                return $this->archiveOldTransactions();
-            case 'generate_regulatory_reports':
-                return $this->generateRegulatoryReports();
-            default:
-                throw new \InvalidArgumentException("Unknown batch operation: {$operation}");
+        case 'calculate_daily_turnover':
+            return $this->calculateDailyTurnover();
+        case 'generate_account_statements':
+            return $this->generateAccountStatements();
+        case 'process_interest_calculations':
+            return $this->processInterestCalculations();
+        case 'perform_compliance_checks':
+            return $this->performComplianceChecks();
+        case 'archive_old_transactions':
+            return $this->archiveOldTransactions();
+        case 'generate_regulatory_reports':
+            return $this->generateRegulatoryReports();
+        default:
+            throw new \InvalidArgumentException("Unknown batch operation: {$operation}");
         }
     }
 
@@ -178,14 +182,16 @@ class BatchProcessingActivity extends Activity
                 'total_credits'     => $transactions->where('amount', '>', 0)->sum('amount'),
                 'total_debits'      => $transactions->where('amount', '<', 0)->sum('amount'),
                 'transaction_count' => $transactions->count(),
-                'transactions'      => $transactions->map(function ($transaction) {
-                    return [
+                'transactions'      => $transactions->map(
+                    function ($transaction) {
+                        return [
                         'date'        => $transaction->created_at->toDateString(),
                         'description' => $transaction->reference ?? 'Transaction',
                         'amount'      => $transaction->amount,
                         'balance'     => $transaction->balance_after ?? 0,
-                    ];
-                })->toArray(),
+                        ];
+                    }
+                )->toArray(),
             ];
 
             // In a real system, you would generate PDF or send via email
@@ -228,7 +234,8 @@ class BatchProcessingActivity extends Activity
                 $interestAmount = round($dailyInterest);
 
                 // Create interest transaction
-                DB::table('transactions')->insert([
+                DB::table('transactions')->insert(
+                    [
                     'uuid'          => Str::uuid(),
                     'account_uuid'  => $account->uuid,
                     'amount'        => $interestAmount,
@@ -238,7 +245,8 @@ class BatchProcessingActivity extends Activity
                     'balance_after' => $account->balance + $interestAmount,
                     'created_at'    => now(),
                     'updated_at'    => now(),
-                ]);
+                    ]
+                );
 
                 // Update account balance
                 $account->increment('balance', $interestAmount);
@@ -271,53 +279,63 @@ class BatchProcessingActivity extends Activity
             ->with('account.user')
             ->get();
 
-        $complianceFlags['large_transactions'] = $largeTransactions->map(function ($transaction) {
-            return [
+        $complianceFlags['large_transactions'] = $largeTransactions->map(
+            function ($transaction) {
+                return [
                 'transaction_uuid' => $transaction->uuid,
                 'account_uuid'     => $transaction->account_uuid,
                 'amount'           => $transaction->amount,
                 'user_email'       => $transaction->account->user->email ?? 'Unknown',
                 'flag_reason'      => 'Transaction exceeds $10,000 threshold',
-            ];
-        })->toArray();
+                ];
+            }
+        )->toArray();
 
         // Check for multiple transactions from same account in short time
-        $rapidTransactions = DB::select('
+        $rapidTransactions = DB::select(
+            '
             SELECT account_uuid, COUNT(*) as transaction_count, user_uuid
             FROM transactions t
             JOIN accounts a ON t.account_uuid = a.uuid
             WHERE t.created_at >= ?
             GROUP BY account_uuid, user_uuid
             HAVING COUNT(*) > 10
-        ', [$today]);
+        ', [$today]
+        );
 
-        $complianceFlags['rapid_transactions'] = collect($rapidTransactions)->map(function ($item) {
-            return [
+        $complianceFlags['rapid_transactions'] = collect($rapidTransactions)->map(
+            function ($item) {
+                return [
                 'account_uuid'      => $item->account_uuid,
                 'transaction_count' => $item->transaction_count,
                 'user_uuid'         => $item->user_uuid,
                 'flag_reason'       => 'More than 10 transactions in one day',
-            ];
-        })->toArray();
+                ];
+            }
+        )->toArray();
 
         // Check for unusual account balance patterns
         $highBalanceAccounts = Account::where('balance', '>', 100000000) // > $1M
             ->with('user')
             ->get();
 
-        $complianceFlags['high_balance_accounts'] = $highBalanceAccounts->map(function ($account) {
-            return [
+        $complianceFlags['high_balance_accounts'] = $highBalanceAccounts->map(
+            function ($account) {
+                return [
                 'account_uuid' => $account->uuid,
                 'balance'      => $account->balance,
                 'user_email'   => $account->user->email ?? 'Unknown',
                 'flag_reason'  => 'Account balance exceeds $1,000,000',
-            ];
-        })->toArray();
+                ];
+            }
+        )->toArray();
 
         // Check for round-number transactions (possible structuring)
-        $roundTransactions = Transaction::whereIn('amount', [
+        $roundTransactions = Transaction::whereIn(
+            'amount', [
             1000000, 900000, 800000, 700000, 600000, 500000, // $10k, $9k, etc.
-        ])
+            ]
+        )
             ->whereDate('created_at', $today)
             ->count();
 
@@ -401,8 +419,9 @@ class BatchProcessingActivity extends Activity
             ->whereDate('created_at', $today)
             ->with('account.user')
             ->get()
-            ->map(function ($transaction) {
-                return [
+            ->map(
+                function ($transaction) {
+                    return [
                     'transaction_uuid' => $transaction->uuid,
                     'account_uuid'     => $transaction->account_uuid,
                     'amount'           => $transaction->amount / 100, // Convert to dollars
@@ -410,8 +429,9 @@ class BatchProcessingActivity extends Activity
                     'customer_name'    => $transaction->account->user->name ?? 'Unknown',
                     'customer_email'   => $transaction->account->user->email ?? 'Unknown',
                     'transaction_type' => $transaction->amount > 0 ? 'Credit' : 'Debit',
-                ];
-            });
+                    ];
+                }
+            );
 
         if ($largeTransactions->isNotEmpty()) {
             Storage::disk('local')->put(
@@ -425,14 +445,16 @@ class BatchProcessingActivity extends Activity
         $suspiciousActivities = [];
 
         // Check for structuring (multiple transactions just under $10k)
-        $structuringCandidates = DB::select('
+        $structuringCandidates = DB::select(
+            '
             SELECT account_uuid, COUNT(*) as transaction_count, SUM(amount) as total_amount
             FROM transactions
             WHERE amount BETWEEN 900000 AND 999900
             AND created_at >= ?
             GROUP BY account_uuid
             HAVING COUNT(*) >= 3
-        ', [$today->startOfDay()]);
+        ', [$today->startOfDay()]
+        );
 
         foreach ($structuringCandidates as $candidate) {
             $suspiciousActivities[] = [

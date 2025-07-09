@@ -58,14 +58,16 @@ class RepaymentSchedule
             $remainingBalance -= $principalPayment;
             $totalInterest += $interestPayment;
 
-            $items->push(new RepaymentScheduleItem(
-                installmentNumber: $month,
-                dueDate: $currentDate->copy(),
-                principalAmount: number_format($principalPayment, 2, '.', ''),
-                interestAmount: number_format($interestPayment, 2, '.', ''),
-                totalAmount: number_format($monthlyPayment, 2, '.', ''),
-                remainingBalance: number_format(max(0, $remainingBalance), 2, '.', '')
-            ));
+            $items->push(
+                new RepaymentScheduleItem(
+                    installmentNumber: $month,
+                    dueDate: $currentDate->copy(),
+                    principalAmount: number_format($principalPayment, 2, '.', ''),
+                    interestAmount: number_format($interestPayment, 2, '.', ''),
+                    totalAmount: number_format($monthlyPayment, 2, '.', ''),
+                    remainingBalance: number_format(max(0, $remainingBalance), 2, '.', '')
+                )
+            );
 
             $currentDate->addMonth();
         }

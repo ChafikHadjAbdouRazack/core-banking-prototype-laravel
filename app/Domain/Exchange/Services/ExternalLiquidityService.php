@@ -116,67 +116,69 @@ class ExternalLiquidityService implements ExternalLiquidityServiceInterface
         $placedOrders = [];
         $totalAmount = BigDecimal::of('0');
 
-        DB::transaction(function () use (
-            $baseCurrency,
-            $quoteCurrency,
-            $side,
-            $amount,
-            $systemAccountId,
-            $bestExternal,
-            &$placedOrders,
-            &$totalAmount
-        ) {
-            $requestedAmount = BigDecimal::of($amount);
-            $basePrice = BigDecimal::of($bestExternal['price']);
+        DB::transaction(
+            function () use (
+                $baseCurrency,
+                $quoteCurrency,
+                $side,
+                $amount,
+                $systemAccountId,
+                $bestExternal,
+                &$placedOrders,
+                &$totalAmount
+            ) {
+                $requestedAmount = BigDecimal::of($amount);
+                $basePrice = BigDecimal::of($bestExternal['price']);
 
-            // Split the requested amount into multiple orders for better liquidity distribution
-            $orderCount = 5;
-            $amountPerOrder = $requestedAmount->dividedBy($orderCount, 8, RoundingMode::FLOOR);
+                // Split the requested amount into multiple orders for better liquidity distribution
+                $orderCount = 5;
+                $amountPerOrder = $requestedAmount->dividedBy($orderCount, 8, RoundingMode::FLOOR);
 
-            for ($i = 0; $i < $orderCount; $i++) {
-                // Adjust price based on side and order index
-                if ($side === 'buy') {
-                    // For buy liquidity, we place sell orders at slightly higher prices
-                    $priceMultiplier = BigDecimal::of('1')->plus(BigDecimal::of('0.001')->multipliedBy($i));
-                    $orderType = 'sell';
-                } else {
-                    // For sell liquidity, we place buy orders at slightly lower prices
-                    $priceMultiplier = BigDecimal::of('1')->minus(BigDecimal::of('0.001')->multipliedBy($i));
-                    $orderType = 'buy';
-                }
+                for ($i = 0; $i < $orderCount; $i++) {
+                    // Adjust price based on side and order index
+                    if ($side === 'buy') {
+                        // For buy liquidity, we place sell orders at slightly higher prices
+                        $priceMultiplier = BigDecimal::of('1')->plus(BigDecimal::of('0.001')->multipliedBy($i));
+                        $orderType = 'sell';
+                    } else {
+                        // For sell liquidity, we place buy orders at slightly lower prices
+                        $priceMultiplier = BigDecimal::of('1')->minus(BigDecimal::of('0.001')->multipliedBy($i));
+                        $orderType = 'buy';
+                    }
 
-                $orderPrice = $basePrice->multipliedBy($priceMultiplier);
-                $orderId = Str::uuid()->toString();
+                    $orderPrice = $basePrice->multipliedBy($priceMultiplier);
+                    $orderId = Str::uuid()->toString();
 
-                OrderAggregate::retrieve($orderId)
-                    ->placeOrder(
-                        accountId: $systemAccountId,
-                        type: $orderType,
-                        orderType: 'limit',
-                        baseCurrency: $baseCurrency,
-                        quoteCurrency: $quoteCurrency,
-                        amount: $amountPerOrder->__toString(),
-                        price: $orderPrice->__toString(),
-                        metadata: [
+                    OrderAggregate::retrieve($orderId)
+                        ->placeOrder(
+                            accountId: $systemAccountId,
+                            type: $orderType,
+                            orderType: 'limit',
+                            baseCurrency: $baseCurrency,
+                            quoteCurrency: $quoteCurrency,
+                            amount: $amountPerOrder->__toString(),
+                            price: $orderPrice->__toString(),
+                            metadata: [
                             'source'            => 'external_liquidity',
                             'external_exchange' => $bestExternal['exchange'],
                             'external_price'    => $basePrice->__toString(),
                             'liquidity_side'    => $side,
-                        ]
-                    )
-                    ->persist();
+                            ]
+                        )
+                        ->persist();
 
-                $placedOrders[] = [
-                    'order_id' => $orderId,
-                    'type'     => $orderType,
-                    'amount'   => $amountPerOrder->__toString(),
-                    'price'    => $orderPrice->__toString(),
-                    'exchange' => $bestExternal['exchange'],
-                ];
+                    $placedOrders[] = [
+                        'order_id' => $orderId,
+                        'type'     => $orderType,
+                        'amount'   => $amountPerOrder->__toString(),
+                        'price'    => $orderPrice->__toString(),
+                        'exchange' => $bestExternal['exchange'],
+                    ];
 
-                $totalAmount = $totalAmount->plus($amountPerOrder);
+                    $totalAmount = $totalAmount->plus($amountPerOrder);
+                }
             }
-        });
+        );
 
         $result['success'] = true;
         $result['orders_placed'] = count($placedOrders);

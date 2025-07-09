@@ -175,7 +175,8 @@ class LoanApplicationActivities
         array $creditData,
         array $riskData
     ): void {
-        DB::table('loan_applications')->insert([
+        DB::table('loan_applications')->insert(
+            [
             'application_id'  => $applicationId,
             'user_id'         => $userId,
             'amount'          => $amount,
@@ -188,7 +189,8 @@ class LoanApplicationActivities
             'risk_level'      => $riskData['risk_level'],
             'status'          => 'pending',
             'created_at'      => now(),
-        ]);
+            ]
+        );
     }
 
     public function updateApplicationStatus(
@@ -229,7 +231,8 @@ class LoanApplicationActivities
         // Create loan account
         $loanId = \Str::uuid()->toString();
 
-        DB::table('loans')->insert([
+        DB::table('loans')->insert(
+            [
             'loan_id'           => $loanId,
             'application_id'    => $applicationId,
             'user_id'           => $application->user_id,
@@ -242,7 +245,8 @@ class LoanApplicationActivities
             'disbursed_at'      => now(),
             'next_payment_date' => now()->addMonth(),
             'created_at'        => now(),
-        ]);
+            ]
+        );
 
         return $loanId;
     }
@@ -261,13 +265,15 @@ class LoanApplicationActivities
         }
 
         // Credit the loan amount
-        DB::table('transactions')->insert([
+        DB::table('transactions')->insert(
+            [
             'account_id'  => $account->id,
             'type'        => 'credit',
             'amount'      => $amount,
             'description' => 'Loan disbursement',
             'created_at'  => now(),
-        ]);
+            ]
+        );
 
         // Update account balance
         DB::table('accounts')
@@ -277,15 +283,19 @@ class LoanApplicationActivities
 
     public function notifyApplicant(string $userId, string $applicationId, string $status): void
     {
-        DB::table('notifications')->insert([
+        DB::table('notifications')->insert(
+            [
             'user_id' => $userId,
             'type'    => 'loan_application',
-            'data'    => json_encode([
+            'data'    => json_encode(
+                [
                 'application_id' => $applicationId,
                 'status'         => $status,
-            ]),
+                ]
+            ),
             'created_at' => now(),
-        ]);
+            ]
+        );
     }
 
     public function compensateFailedApplication(string $applicationId): void
@@ -293,10 +303,12 @@ class LoanApplicationActivities
         // Update application status
         DB::table('loan_applications')
             ->where('application_id', $applicationId)
-            ->update([
+            ->update(
+                [
                 'status'     => 'failed',
                 'updated_at' => now(),
-            ]);
+                ]
+            );
 
         // If funds were disbursed, reverse them
         $loan = DB::table('loans')
@@ -307,10 +319,12 @@ class LoanApplicationActivities
             // Mark loan as cancelled
             DB::table('loans')
                 ->where('loan_id', $loan->loan_id)
-                ->update([
+                ->update(
+                    [
                     'status'       => 'cancelled',
                     'cancelled_at' => now(),
-                ]);
+                    ]
+                );
 
             // Reverse any disbursed funds
             $transactions = DB::table('transactions')
@@ -319,14 +333,16 @@ class LoanApplicationActivities
                 ->get();
 
             foreach ($transactions as $transaction) {
-                DB::table('transactions')->insert([
+                DB::table('transactions')->insert(
+                    [
                     'account_id'  => $transaction->account_id,
                     'type'        => 'debit',
                     'amount'      => $transaction->amount,
                     'description' => 'Loan disbursement reversal',
                     'reference'   => $transaction->id,
                     'created_at'  => now(),
-                ]);
+                    ]
+                );
 
                 DB::table('accounts')
                     ->where('id', $transaction->account_id)

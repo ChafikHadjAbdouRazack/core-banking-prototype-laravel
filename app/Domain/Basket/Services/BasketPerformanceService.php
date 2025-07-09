@@ -30,12 +30,14 @@ class BasketPerformanceService
             ->get();
 
         if ($values->count() < 2) {
-            Log::warning("Insufficient data to calculate performance for basket {$basket->code}", [
+            Log::warning(
+                "Insufficient data to calculate performance for basket {$basket->code}", [
                 'period_type'  => $periodType,
                 'period_start' => $periodStart,
                 'period_end'   => $periodEnd,
                 'value_count'  => $values->count(),
-            ]);
+                ]
+            );
 
             return null;
         }
@@ -272,7 +274,8 @@ class BasketPerformanceService
                 ? ($contributionValue / $startValue->value) * 100
                 : 0;
 
-            ComponentPerformance::create([
+            ComponentPerformance::create(
+                [
                 'basket_performance_id'   => $performance->id,
                 'asset_code'              => $assetCode,
                 'start_weight'            => $startWeight,
@@ -282,7 +285,8 @@ class BasketPerformanceService
                 'contribution_percentage' => $contributionPercentage,
                 'return_value'            => $returnValue,
                 'return_percentage'       => $returnPercentage,
-            ]);
+                ]
+            );
         }
     }
 

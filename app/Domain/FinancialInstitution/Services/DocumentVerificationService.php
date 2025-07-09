@@ -46,9 +46,11 @@ class DocumentVerificationService
             'verification_status' => 'pending',
         ];
 
-        $application->update([
+        $application->update(
+            [
             'submitted_documents' => $documents,
-        ]);
+            ]
+        );
 
         return $documents[$documentType];
     }
@@ -76,9 +78,11 @@ class DocumentVerificationService
             $documents[$documentType]['verification_notes'] = $notes;
         }
 
-        $application->update([
+        $application->update(
+            [
             'submitted_documents' => $documents,
-        ]);
+            ]
+        );
 
         // Check if all documents are verified
         $this->checkAllDocumentsVerified($application);
@@ -202,9 +206,11 @@ class DocumentVerificationService
     private function checkAllDocumentsVerified(FinancialInstitutionApplication $application): void
     {
         if ($this->areAllDocumentsVerified($application)) {
-            $application->update([
+            $application->update(
+                [
                 'documents_verified' => true,
-            ]);
+                ]
+            );
         }
     }
 }

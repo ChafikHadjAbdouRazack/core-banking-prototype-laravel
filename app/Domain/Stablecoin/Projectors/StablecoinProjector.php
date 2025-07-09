@@ -19,7 +19,8 @@ class StablecoinProjector extends Projector
 {
     public function onCollateralPositionCreated(CollateralPositionCreated $event): void
     {
-        StablecoinCollateralPosition::create([
+        StablecoinCollateralPosition::create(
+            [
             'uuid'                  => $event->position_uuid,
             'account_uuid'          => $event->account_uuid,
             'stablecoin_code'       => $event->stablecoin_code,
@@ -28,7 +29,8 @@ class StablecoinProjector extends Projector
             'debt_amount'           => $event->debt_amount,
             'collateral_ratio'      => $event->collateral_ratio,
             'status'                => $event->status,
-        ]);
+            ]
+        );
     }
 
     public function onCollateralLocked(CollateralLocked $event): void
@@ -62,31 +64,37 @@ class StablecoinProjector extends Projector
     public function onCollateralPositionUpdated(CollateralPositionUpdated $event): void
     {
         $position = StablecoinCollateralPosition::where('uuid', $event->position_uuid)->firstOrFail();
-        $position->update([
+        $position->update(
+            [
             'collateral_amount' => $event->collateral_amount,
             'debt_amount'       => $event->debt_amount,
             'collateral_ratio'  => $event->collateral_ratio,
             'status'            => $event->status,
-        ]);
+            ]
+        );
     }
 
     public function onCollateralPositionClosed(CollateralPositionClosed $event): void
     {
         $position = StablecoinCollateralPosition::where('uuid', $event->position_uuid)->firstOrFail();
-        $position->update([
+        $position->update(
+            [
             'status'    => 'closed',
             'closed_at' => now(),
-        ]);
+            ]
+        );
     }
 
     public function onCollateralPositionLiquidated(CollateralPositionLiquidated $event): void
     {
         $position = StablecoinCollateralPosition::where('uuid', $event->position_uuid)->firstOrFail();
-        $position->update([
+        $position->update(
+            [
             'status'            => 'liquidated',
             'liquidated_at'     => now(),
             'collateral_amount' => 0,
             'debt_amount'       => 0,
-        ]);
+            ]
+        );
     }
 }

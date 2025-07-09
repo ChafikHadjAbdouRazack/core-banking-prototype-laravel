@@ -16,32 +16,36 @@ class CustomerRiskService
      */
     public function createOrUpdateProfile(User $user, array $additionalData = []): CustomerRiskProfile
     {
-        return DB::transaction(function () use ($user, $additionalData) {
-            $profile = CustomerRiskProfile::firstOrNew(['user_id' => $user->id]);
+        return DB::transaction(
+            function () use ($user, $additionalData) {
+                $profile = CustomerRiskProfile::firstOrNew(['user_id' => $user->id]);
 
-            // Set default values for new profiles
-            if (! $profile->exists) {
-                $profile->fill([
-                    'risk_rating'               => CustomerRiskProfile::RISK_RATING_LOW,
-                    'risk_score'                => 0,
-                    'cdd_level'                 => CustomerRiskProfile::CDD_LEVEL_STANDARD,
-                    'daily_transaction_limit'   => 10000,
-                    'monthly_transaction_limit' => 100000,
-                    'single_transaction_limit'  => 5000,
-                    'monitoring_frequency'      => 30,
-                ]);
+                // Set default values for new profiles
+                if (! $profile->exists) {
+                    $profile->fill(
+                        [
+                        'risk_rating'               => CustomerRiskProfile::RISK_RATING_LOW,
+                        'risk_score'                => 0,
+                        'cdd_level'                 => CustomerRiskProfile::CDD_LEVEL_STANDARD,
+                        'daily_transaction_limit'   => 10000,
+                        'monthly_transaction_limit' => 100000,
+                        'single_transaction_limit'  => 5000,
+                        'monitoring_frequency'      => 30,
+                        ]
+                    );
+                }
+
+                // Update with additional data
+                $profile->fill($additionalData);
+
+                // Calculate initial risk assessment
+                $this->performRiskAssessment($profile, $user);
+
+                $profile->save();
+
+                return $profile;
             }
-
-            // Update with additional data
-            $profile->fill($additionalData);
-
-            // Calculate initial risk assessment
-            $this->performRiskAssessment($profile, $user);
-
-            $profile->save();
-
-            return $profile;
-        });
+        );
     }
 
     /**
@@ -264,37 +268,37 @@ class CustomerRiskService
     protected function applyRiskBasedLimits(CustomerRiskProfile $profile): void
     {
         switch ($profile->risk_rating) {
-            case CustomerRiskProfile::RISK_RATING_HIGH:
-                $profile->daily_transaction_limit = 5000;
-                $profile->monthly_transaction_limit = 50000;
-                $profile->single_transaction_limit = 2000;
-                $profile->enhanced_monitoring = true;
-                $profile->monitoring_frequency = 7; // Weekly review
-                break;
+        case CustomerRiskProfile::RISK_RATING_HIGH:
+            $profile->daily_transaction_limit = 5000;
+            $profile->monthly_transaction_limit = 50000;
+            $profile->single_transaction_limit = 2000;
+            $profile->enhanced_monitoring = true;
+            $profile->monitoring_frequency = 7; // Weekly review
+            break;
 
-            case CustomerRiskProfile::RISK_RATING_MEDIUM:
-                $profile->daily_transaction_limit = 10000;
-                $profile->monthly_transaction_limit = 100000;
-                $profile->single_transaction_limit = 5000;
-                $profile->enhanced_monitoring = false;
-                $profile->monitoring_frequency = 30; // Monthly review
-                break;
+        case CustomerRiskProfile::RISK_RATING_MEDIUM:
+            $profile->daily_transaction_limit = 10000;
+            $profile->monthly_transaction_limit = 100000;
+            $profile->single_transaction_limit = 5000;
+            $profile->enhanced_monitoring = false;
+            $profile->monitoring_frequency = 30; // Monthly review
+            break;
 
-            case CustomerRiskProfile::RISK_RATING_LOW:
-                $profile->daily_transaction_limit = 25000;
-                $profile->monthly_transaction_limit = 250000;
-                $profile->single_transaction_limit = 10000;
-                $profile->enhanced_monitoring = false;
-                $profile->monitoring_frequency = 90; // Quarterly review
-                break;
+        case CustomerRiskProfile::RISK_RATING_LOW:
+            $profile->daily_transaction_limit = 25000;
+            $profile->monthly_transaction_limit = 250000;
+            $profile->single_transaction_limit = 10000;
+            $profile->enhanced_monitoring = false;
+            $profile->monitoring_frequency = 90; // Quarterly review
+            break;
 
-            case CustomerRiskProfile::RISK_RATING_PROHIBITED:
-                $profile->daily_transaction_limit = 0;
-                $profile->monthly_transaction_limit = 0;
-                $profile->single_transaction_limit = 0;
-                $profile->enhanced_monitoring = true;
-                $profile->monitoring_frequency = 1; // Daily monitoring
-                break;
+        case CustomerRiskProfile::RISK_RATING_PROHIBITED:
+            $profile->daily_transaction_limit = 0;
+            $profile->monthly_transaction_limit = 0;
+            $profile->single_transaction_limit = 0;
+            $profile->enhanced_monitoring = true;
+            $profile->monitoring_frequency = 1; // Daily monitoring
+            break;
         }
     }
 

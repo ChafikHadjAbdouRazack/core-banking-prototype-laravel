@@ -44,7 +44,7 @@ class KeyManagementService implements KeyManagementServiceInterface
     /**
      * Generate a new mnemonic phrase with specific word count.
      *
-     * @param int $wordCount Number of words (12 or 24)
+     * @param  int $wordCount Number of words (12 or 24)
      * @return string Generated mnemonic phrase
      */
     public function generateMnemonicWithWordCount(int $wordCount = 12): string
@@ -104,8 +104,8 @@ class KeyManagementService implements KeyManagementServiceInterface
     /**
      * Generate HD wallet from mnemonic.
      *
-     * @param string $mnemonic Mnemonic phrase
-     * @param string|null $passphrase Optional passphrase
+     * @param  string      $mnemonic   Mnemonic phrase
+     * @param  string|null $passphrase Optional passphrase
      * @return array Wallet data with keys and encrypted seed
      */
     public function generateHDWallet(string $mnemonic, ?string $passphrase = null): array
@@ -136,9 +136,9 @@ class KeyManagementService implements KeyManagementServiceInterface
     /**
      * Derive key pair for a specific blockchain chain.
      *
-     * @param string $encryptedSeed Encrypted seed
-     * @param string $chain Blockchain chain name
-     * @param int $index Derivation index
+     * @param  string $encryptedSeed Encrypted seed
+     * @param  string $chain         Blockchain chain name
+     * @param  int    $index         Derivation index
      * @return array Key pair data
      */
     public function deriveKeyPairForChain(string $encryptedSeed, string $chain, int $index = 0): array
@@ -255,20 +255,28 @@ class KeyManagementService implements KeyManagementServiceInterface
     /**
      * Encrypt private key for temporary storage.
      */
-    public function encryptPrivateKey(string $privateKey, string $userId): string
+    public function encryptPrivateKey(string $privateKey, string $userId = ''): string
     {
+        if (empty($userId)) {
+            // Use app key if no userId provided
+            return $this->encrypt($privateKey);
+        }
+        
         $key = $this->getUserEncryptionKey($userId);
-
         return openssl_encrypt($privateKey, 'AES-256-CBC', $key, 0, substr($key, 0, 16));
     }
 
     /**
      * Decrypt private key.
      */
-    public function decryptPrivateKey(string $encryptedKey, string $userId): string
+    public function decryptPrivateKey(string $encryptedKey, string $userId = ''): string
     {
+        if (empty($userId)) {
+            // Use app key if no userId provided
+            return $this->decrypt($encryptedKey);
+        }
+        
         $key = $this->getUserEncryptionKey($userId);
-
         return openssl_decrypt($encryptedKey, 'AES-256-CBC', $key, 0, substr($key, 0, 16));
     }
 
@@ -344,7 +352,7 @@ class KeyManagementService implements KeyManagementServiceInterface
     /**
      * Restore wallet from backup.
      */
-    public function restoreFromBackup(array $backup, string $password): string
+    public function restoreFromBackup(array $backup, ?string $password = null): string
     {
         if (! isset($backup['encrypted_data']) || ! isset($backup['checksum'])) {
             throw new KeyManagementException('Invalid backup format');
@@ -394,9 +402,9 @@ class KeyManagementService implements KeyManagementServiceInterface
     /**
      * Generate a new mnemonic phrase (for interface compatibility).
      */
-    public function generateMnemonic(): string
+    public function generateMnemonic(int $wordCount = 12): string
     {
-        return $this->generateMnemonicWithWordCount(12);
+        return $this->generateMnemonicWithWordCount($wordCount);
     }
 
     /**
@@ -453,5 +461,54 @@ class KeyManagementService implements KeyManagementServiceInterface
         $expectedSignature = hash_hmac('sha256', $data, $publicKey);
 
         return hash_equals($expectedSignature, $signature);
+    }
+
+    /**
+     * Generate a master key.
+     */
+    public function generateMasterKey(): string
+    {
+        return bin2hex(random_bytes(32));
+    }
+
+    /**
+     * Derive wallet from mnemonic.
+     */
+    public function deriveFromMnemonic(string $mnemonic, ?string $passphrase = null): array
+    {
+        return $this->generateHDWallet($mnemonic, $passphrase);
+    }
+
+    /**
+     * Derive child key from parent.
+     */
+    public function deriveChildKey(string $parentKey, int $index): string
+    {
+        // Simple child key derivation
+        return hash('sha256', $parentKey . $index);
+    }
+
+    /**
+     * Sign a message with a private key.
+     */
+    public function signMessage(string $message, string $privateKey): string
+    {
+        return $this->sign($message, $privateKey);
+    }
+
+    /**
+     * Verify a message signature.
+     */
+    public function verifySignature(string $message, string $signature, string $publicKey): bool
+    {
+        return $this->verify($message, $signature, $publicKey);
+    }
+
+    /**
+     * Generate a deterministic key from a seed.
+     */
+    public function generateDeterministicKey(string $seed): string
+    {
+        return hash('sha256', $seed);
     }
 }

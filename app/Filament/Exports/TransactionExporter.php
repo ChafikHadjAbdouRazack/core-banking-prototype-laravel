@@ -20,21 +20,25 @@ class TransactionExporter extends Exporter
                 ->label('Account'),
             ExportColumn::make('type')
                 ->label('Type')
-                ->formatStateUsing(fn (string $state): string => match ($state) {
+                ->formatStateUsing(
+                    fn (string $state): string => match ($state) {
                     'deposit'      => 'Deposit',
                     'withdrawal'   => 'Withdrawal',
                     'transfer_in'  => 'Transfer In',
                     'transfer_out' => 'Transfer Out',
                     default        => $state,
-                }),
+                    }
+                ),
             ExportColumn::make('amount')
                 ->label('Amount')
-                ->formatStateUsing(function ($state, $record) {
-                    $formatted = number_format($state / 100, 2);
-                    $sign = $record->getDirection() === 'credit' ? '+' : '-';
+                ->formatStateUsing(
+                    function ($state, $record) {
+                        $formatted = number_format($state / 100, 2);
+                        $sign = $record->getDirection() === 'credit' ? '+' : '-';
 
-                    return $sign . $formatted;
-                }),
+                        return $sign . $formatted;
+                    }
+                ),
             ExportColumn::make('asset_code')
                 ->label('Currency'),
             ExportColumn::make('description')

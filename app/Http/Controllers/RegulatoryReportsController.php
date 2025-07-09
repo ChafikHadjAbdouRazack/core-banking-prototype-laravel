@@ -70,12 +70,14 @@ class RegulatoryReportsController extends Controller
     {
         $this->authorize('generate_regulatory_reports');
 
-        $request->validate([
+        $request->validate(
+            [
             'report_type'  => 'required|in:ctr,sar,monthly_compliance,quarterly_risk,annual_aml',
             'start_date'   => 'required|date',
             'end_date'     => 'required|date|after_or_equal:start_date',
             'jurisdiction' => 'required|string',
-        ]);
+            ]
+        );
 
         try {
             $report = $this->reportGenerator->generateReport(
@@ -132,11 +134,13 @@ class RegulatoryReportsController extends Controller
 
         try {
             // In a real system, this would submit to the regulatory authority's API
-            $report->update([
+            $report->update(
+                [
                 'status'       => 'submitted',
                 'submitted_at' => now(),
                 'submitted_by' => Auth::id(),
-            ]);
+                ]
+            );
 
             return back()->with('success', 'Report submitted successfully.');
         } catch (\Exception $e) {

@@ -272,11 +272,13 @@ class TransactionMonitoringRule extends Model
             'accuracy_before' => $this->accuracy_rate,
         ];
 
-        $this->update([
+        $this->update(
+            [
             'tuning_history'   => $history,
             'last_modified_by' => $user->id,
             'last_reviewed_at' => now(),
-        ]);
+            ]
+        );
     }
 
     public static function createFromTemplate(string $template, array $overrides = []): self
@@ -288,12 +290,16 @@ class TransactionMonitoringRule extends Model
         $templateData = self::RULE_TEMPLATES[$template];
         $ruleCode = 'TMR-' . str_pad(self::count() + 1, 3, '0', STR_PAD_LEFT);
 
-        return self::create(array_merge($templateData, [
-            'rule_code'       => $ruleCode,
-            'is_active'       => true,
-            'triggers_count'  => 0,
-            'true_positives'  => 0,
-            'false_positives' => 0,
-        ], $overrides));
+        return self::create(
+            array_merge(
+                $templateData, [
+                'rule_code'       => $ruleCode,
+                'is_active'       => true,
+                'triggers_count'  => 0,
+                'true_positives'  => 0,
+                'false_positives' => 0,
+                ], $overrides
+            )
+        );
     }
 }

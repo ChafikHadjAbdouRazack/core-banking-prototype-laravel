@@ -41,11 +41,13 @@ class MintStablecoinWorkflow extends Workflow
             $positionUuid = $positionResult['position_uuid'];
 
             // Add compensation to close position on failure
-            $this->addCompensation(fn () => ActivityStub::make(
-                ClosePositionActivity::class,
-                $positionUuid,
-                'failed'
-            ));
+            $this->addCompensation(
+                fn () => ActivityStub::make(
+                    ClosePositionActivity::class,
+                    $positionUuid,
+                    'failed'
+                )
+            );
 
             // Lock collateral from account
             yield ActivityStub::make(
@@ -57,13 +59,15 @@ class MintStablecoinWorkflow extends Workflow
             );
 
             // Add compensation to release collateral on failure
-            $this->addCompensation(fn () => ActivityStub::make(
-                ReleaseCollateralActivity::class,
-                $accountUuid,
-                $positionUuid,
-                $collateralAssetCode,
-                $collateralAmount
-            ));
+            $this->addCompensation(
+                fn () => ActivityStub::make(
+                    ReleaseCollateralActivity::class,
+                    $accountUuid,
+                    $positionUuid,
+                    $collateralAssetCode,
+                    $collateralAmount
+                )
+            );
 
             // Mint stablecoins to account
             yield ActivityStub::make(
@@ -75,13 +79,15 @@ class MintStablecoinWorkflow extends Workflow
             );
 
             // Add compensation to burn stablecoins on failure
-            $this->addCompensation(fn () => ActivityStub::make(
-                BurnStablecoinActivity::class,
-                $accountUuid,
-                $positionUuid,
-                $stablecoinCode,
-                $mintAmount
-            ));
+            $this->addCompensation(
+                fn () => ActivityStub::make(
+                    BurnStablecoinActivity::class,
+                    $accountUuid,
+                    $positionUuid,
+                    $stablecoinCode,
+                    $mintAmount
+                )
+            );
 
             return $positionUuid;
         } catch (\Throwable $th) {

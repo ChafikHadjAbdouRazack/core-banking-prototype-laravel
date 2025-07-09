@@ -10,8 +10,8 @@ use Workflow\Activity;
 class WithdrawAccountActivity extends Activity
 {
     /**
-     * @param AccountUuid $uuid
-     * @param Money $money
+     * @param AccountUuid          $uuid
+     * @param Money                $money
      * @param TransactionAggregate $transaction
      *
      * @return bool
@@ -19,8 +19,8 @@ class WithdrawAccountActivity extends Activity
     public function execute(AccountUuid $uuid, Money $money, TransactionAggregate $transaction): bool
     {
         $transaction->retrieve($uuid->getUuid())
-               ->debit($money)
-               ->persist();
+            ->debit($money)
+            ->persist();
 
         return true;
     }

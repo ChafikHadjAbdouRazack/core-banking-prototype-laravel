@@ -18,7 +18,7 @@ use Spatie\EventSourcing\EventHandlers\Projectors\Projector;
 class BatchProjector extends Projector implements ShouldQueue
 {
     /**
-     * @param BatchJobCreated $event
+     * @param  BatchJobCreated $event
      * @return void
      */
     public function onBatchJobCreated(BatchJobCreated $event): void
@@ -27,7 +27,7 @@ class BatchProjector extends Projector implements ShouldQueue
     }
 
     /**
-     * @param BatchJobStarted $event
+     * @param  BatchJobStarted $event
      * @return void
      */
     public function onBatchJobStarted(BatchJobStarted $event): void
@@ -36,7 +36,7 @@ class BatchProjector extends Projector implements ShouldQueue
     }
 
     /**
-     * @param BatchItemProcessed $event
+     * @param  BatchItemProcessed $event
      * @return void
      */
     public function onBatchItemProcessed(BatchItemProcessed $event): void
@@ -45,7 +45,7 @@ class BatchProjector extends Projector implements ShouldQueue
     }
 
     /**
-     * @param BatchJobCompleted $event
+     * @param  BatchJobCompleted $event
      * @return void
      */
     public function onBatchJobCompleted(BatchJobCompleted $event): void
@@ -54,7 +54,7 @@ class BatchProjector extends Projector implements ShouldQueue
     }
 
     /**
-     * @param BatchJobCancelled $event
+     * @param  BatchJobCancelled $event
      * @return void
      */
     public function onBatchJobCancelled(BatchJobCancelled $event): void

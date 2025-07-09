@@ -15,11 +15,15 @@ class InternalAMMOracle implements OracleConnector
     {
         try {
             // Find liquidity pool for this pair
-            $pool = LiquidityPool::where(function ($query) use ($base, $quote) {
-                $query->where('base_currency', $base)->where('quote_currency', $quote);
-            })->orWhere(function ($query) use ($base, $quote) {
-                $query->where('base_currency', $quote)->where('quote_currency', $base);
-            })->first();
+            $pool = LiquidityPool::where(
+                function ($query) use ($base, $quote) {
+                    $query->where('base_currency', $base)->where('quote_currency', $quote);
+                }
+            )->orWhere(
+                function ($query) use ($base, $quote) {
+                    $query->where('base_currency', $quote)->where('quote_currency', $base);
+                }
+            )->first();
 
             if (! $pool) {
                 throw new \RuntimeException("No liquidity pool found for {$base}/{$quote}");

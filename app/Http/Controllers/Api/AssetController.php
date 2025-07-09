@@ -25,49 +25,49 @@ class AssetController extends Controller
      *     summary="List all supported assets",
      *     description="Get a list of all assets supported by the platform, including fiat currencies, cryptocurrencies, and commodities",
      *     security={{"sanctum":{}}},
-     *     @OA\Parameter(
+     * @OA\Parameter(
      *         name="include_inactive",
      *         in="query",
      *         required=false,
      *         description="Include inactive assets in the response (default: false)",
-     *         @OA\Schema(type="boolean")
+     * @OA\Schema(type="boolean")
      *     ),
-     *     @OA\Parameter(
+     * @OA\Parameter(
      *         name="type",
      *         in="query",
      *         required=false,
      *         description="Filter by asset type",
-     *         @OA\Schema(type="string", enum={"fiat", "crypto", "commodity"})
+     * @OA\Schema(type="string",          enum={"fiat", "crypto", "commodity"})
      *     ),
-     *     @OA\Parameter(
+     * @OA\Parameter(
      *         name="search",
      *         in="query",
      *         required=false,
      *         description="Search by code or name",
-     *         @OA\Schema(type="string")
+     * @OA\Schema(type="string")
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=200,
      *         description="Successful operation",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="data", type="array",
-     *                 @OA\Items(
-     *                     @OA\Property(property="code", type="string", example="USD"),
-     *                     @OA\Property(property="name", type="string", example="US Dollar"),
-     *                     @OA\Property(property="type", type="string", enum={"fiat", "crypto", "commodity"}),
-     *                     @OA\Property(property="symbol", type="string", example="$"),
-     *                     @OA\Property(property="precision", type="integer", example=2),
-     *                     @OA\Property(property="is_active", type="boolean"),
-     *                     @OA\Property(property="metadata", type="object")
+     * @OA\JsonContent(
+     * @OA\Property(property="data",      type="array",
+     * @OA\Items(
+     * @OA\Property(property="code",      type="string", example="USD"),
+     * @OA\Property(property="name",      type="string", example="US Dollar"),
+     * @OA\Property(property="type",      type="string", enum={"fiat", "crypto", "commodity"}),
+     * @OA\Property(property="symbol",    type="string", example="$"),
+     * @OA\Property(property="precision", type="integer", example=2),
+     * @OA\Property(property="is_active", type="boolean"),
+     * @OA\Property(property="metadata",  type="object")
      *                 )
      *             ),
-     *             @OA\Property(property="meta", type="object",
-     *                 @OA\Property(property="total", type="integer"),
-     *                 @OA\Property(property="active", type="integer"),
-     *                 @OA\Property(property="types", type="object",
-     *                     @OA\Property(property="fiat", type="integer"),
-     *                     @OA\Property(property="crypto", type="integer"),
-     *                     @OA\Property(property="commodity", type="integer")
+     * @OA\Property(property="meta",      type="object",
+     * @OA\Property(property="total",     type="integer"),
+     * @OA\Property(property="active",    type="integer"),
+     * @OA\Property(property="types",     type="object",
+     * @OA\Property(property="fiat",      type="integer"),
+     * @OA\Property(property="crypto",    type="integer"),
+     * @OA\Property(property="commodity", type="integer")
      *                 )
      *             )
      *         )
@@ -91,10 +91,12 @@ class AssetController extends Controller
         // Search by code or name
         if ($request->has('search')) {
             $search = $request->string('search')->toString();
-            $query->where(function ($q) use ($search) {
-                $q->where('code', 'like', "%{$search}%")
-                  ->orWhere('name', 'like', "%{$search}%");
-            });
+            $query->where(
+                function ($q) use ($search) {
+                    $q->where('code', 'like', "%{$search}%")
+                        ->orWhere('name', 'like', "%{$search}%");
+                }
+            );
         }
 
         $assets = $query->orderBy('code')->get();
@@ -107,9 +109,11 @@ class AssetController extends Controller
             ->pluck('count', 'type')
             ->toArray();
 
-        return response()->json([
-            'data' => $assets->map(function (Asset $asset) {
-                return [
+        return response()->json(
+            [
+            'data' => $assets->map(
+                function (Asset $asset) {
+                    return [
                     'code'      => $asset->code,
                     'name'      => $asset->name,
                     'type'      => $asset->type,
@@ -117,8 +121,9 @@ class AssetController extends Controller
                     'precision' => $asset->precision,
                     'is_active' => $asset->is_active,
                     'metadata'  => $asset->metadata,
-                ];
-            }),
+                    ];
+                }
+            ),
             'meta' => [
                 'total'  => $total,
                 'active' => $active,
@@ -128,7 +133,8 @@ class AssetController extends Controller
                     'commodity' => $types['commodity'] ?? 0,
                 ],
             ],
-        ]);
+            ]
+        );
     }
 
     /**
@@ -175,10 +181,12 @@ class AssetController extends Controller
         $asset = $query->first();
 
         if (! $asset) {
-            return response()->json([
+            return response()->json(
+                [
                 'message' => 'Asset not found',
                 'error'   => 'The specified asset code was not found',
-            ], 404);
+                ], 404
+            );
         }
 
         // Calculate statistics
@@ -194,7 +202,8 @@ class AssetController extends Controller
             ''
         );
 
-        return response()->json([
+        return response()->json(
+            [
             'id'         => $asset->id,
             'code'       => $asset->code,
             'name'       => $asset->name,
@@ -213,6 +222,7 @@ class AssetController extends Controller
             ],
             'created_at' => $asset->created_at,
             'updated_at' => $asset->updated_at,
-        ]);
+            ]
+        );
     }
 }

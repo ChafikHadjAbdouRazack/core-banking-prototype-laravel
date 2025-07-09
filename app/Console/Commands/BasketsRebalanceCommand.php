@@ -75,24 +75,28 @@ class BasketsRebalanceCommand extends Command
         }
 
         try {
-            DB::transaction(function () use ($proposal, $rebalancingService) {
-                // Update GCU composition in config/database
-                $this->updateGcuComposition($proposal->proposed_composition);
+            DB::transaction(
+                function () use ($proposal, $rebalancingService) {
+                    // Update GCU composition in config/database
+                    $this->updateGcuComposition($proposal->proposed_composition);
 
-                // Trigger basket rebalancing
-                $rebalancingService->rebalanceAllDynamicBaskets();
+                    // Trigger basket rebalancing
+                    $rebalancingService->rebalanceAllDynamicBaskets();
 
-                // Mark proposal as implemented
-                $proposal->update([
-                    'status'                 => 'implemented',
-                    'implemented_at'         => now(),
-                    'implementation_details' => [
+                    // Mark proposal as implemented
+                    $proposal->update(
+                        [
+                        'status'                 => 'implemented',
+                        'implemented_at'         => now(),
+                        'implementation_details' => [
                         'executed_by'          => 'system',
                         'execution_time'       => now()->toDateTimeString(),
                         'previous_composition' => $proposal->current_composition,
-                    ],
-                ]);
-            });
+                        ],
+                        ]
+                    );
+                }
+            );
 
             $this->info("\nSuccessfully implemented proposal and rebalanced baskets.");
         } catch (\Exception $e) {

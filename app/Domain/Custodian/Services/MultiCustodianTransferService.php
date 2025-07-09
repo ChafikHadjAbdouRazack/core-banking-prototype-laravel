@@ -39,10 +39,12 @@ class MultiCustodianTransferService
     public function __construct(CustodianRegistry $registry)
     {
         $this->registry = $registry;
-        $this->routingStrategy = config('custodians.routing_strategy', [
+        $this->routingStrategy = config(
+            'custodians.routing_strategy', [
             'primary'  => self::ROUTE_SAME_CUSTODIAN,
             'fallback' => self::ROUTE_FASTEST,
-        ]);
+            ]
+        );
     }
 
     /**
@@ -56,12 +58,14 @@ class MultiCustodianTransferService
         ?string $reference = null,
         ?string $description = null
     ): TransactionReceipt {
-        Log::info('Initiating multi-custodian transfer', [
+        Log::info(
+            'Initiating multi-custodian transfer', [
             'from_account' => $fromAccount->uuid,
             'to_account'   => $toAccount->uuid,
             'amount'       => $amount->getAmount(),
             'asset'        => $assetCode,
-        ]);
+            ]
+        );
 
         // Find optimal route
         $route = $this->findOptimalRoute($fromAccount, $toAccount, $amount, $assetCode);
@@ -100,10 +104,12 @@ class MultiCustodianTransferService
             ->get();
 
         if ($fromCustodians->isEmpty() || $toCustodians->isEmpty()) {
-            Log::error('No active custodian accounts found', [
+            Log::error(
+                'No active custodian accounts found', [
                 'from_count' => $fromCustodians->count(),
                 'to_count'   => $toCustodians->count(),
-            ]);
+                ]
+            );
 
             return null;
         }
@@ -264,11 +270,13 @@ class MultiCustodianTransferService
 
             return true;
         } catch (\Exception $e) {
-            Log::warning('Failed to check transfer capability', [
+            Log::warning(
+                'Failed to check transfer capability', [
                 'from'  => $connector->getName(),
                 'to'    => $toCustodian,
                 'error' => $e->getMessage(),
-            ]);
+                ]
+            );
 
             return false;
         }
@@ -284,11 +292,13 @@ class MultiCustodianTransferService
         ?string $reference,
         ?string $description
     ): TransactionReceipt {
-        Log::info('Executing internal transfer', [
+        Log::info(
+            'Executing internal transfer', [
             'custodian' => $route['custodian'],
             'from'      => $route['from']->custodian_account_id,
             'to'        => $route['to']->custodian_account_id,
-        ]);
+            ]
+        );
 
         $connector = $this->registry->getConnector($route['custodian']);
 
@@ -319,12 +329,14 @@ class MultiCustodianTransferService
         ?string $reference,
         ?string $description
     ): TransactionReceipt {
-        Log::info('Executing external transfer', [
+        Log::info(
+            'Executing external transfer', [
             'from_custodian' => $route['from_custodian'],
             'to_custodian'   => $route['to_custodian'],
             'from'           => $route['from']->custodian_account_id,
             'to'             => $route['to']->custodian_account_id,
-        ]);
+            ]
+        );
 
         $connector = $this->registry->getConnector($route['from_custodian']);
 
@@ -360,11 +372,13 @@ class MultiCustodianTransferService
         ?string $reference,
         ?string $description
     ): TransactionReceipt {
-        Log::info('Executing bridge transfer', [
+        Log::info(
+            'Executing bridge transfer', [
             'from'   => $route['route']['from']->custodian_account_id,
             'bridge' => $route['route']['bridge'],
             'to'     => $route['route']['to']->custodian_account_id,
-        ]);
+            ]
+        );
 
         DB::beginTransaction();
 
@@ -432,10 +446,12 @@ class MultiCustodianTransferService
         } catch (\Exception $e) {
             DB::rollback();
 
-            Log::error('Bridge transfer failed', [
+            Log::error(
+                'Bridge transfer failed', [
                 'error' => $e->getMessage(),
                 'route' => $route,
-            ]);
+                ]
+            );
 
             throw new \RuntimeException('Bridge transfer failed: ' . $e->getMessage(), 0, $e);
         }
@@ -488,7 +504,8 @@ class MultiCustodianTransferService
         TransactionReceipt $receipt,
         string $type
     ): void {
-        DB::table('custodian_transfers')->insert([
+        DB::table('custodian_transfers')->insert(
+            [
             'id'                        => $receipt->id,
             'from_account_uuid'         => $from->account_uuid,
             'to_account_uuid'           => $to->account_uuid,
@@ -502,7 +519,8 @@ class MultiCustodianTransferService
             'metadata'                  => json_encode($receipt->metadata),
             'created_at'                => now(),
             'updated_at'                => now(),
-        ]);
+            ]
+        );
     }
 
     /**
@@ -516,7 +534,8 @@ class MultiCustodianTransferService
         if ($driver === 'sqlite') {
             // SQLite-compatible query
             $stats = DB::table('custodian_transfers')
-                ->selectRaw('
+                ->selectRaw(
+                    '
                     COUNT(*) as total_transfers,
                     SUM(CASE WHEN status = "completed" THEN 1 ELSE 0 END) as completed,
                     SUM(CASE WHEN status = "failed" THEN 1 ELSE 0 END) as failed,
@@ -527,12 +546,14 @@ class MultiCustodianTransferService
                     AVG(CASE WHEN status = "completed" AND completed_at IS NOT NULL 
                         THEN (JULIANDAY(completed_at) - JULIANDAY(created_at)) * 86400
                         ELSE NULL END) as avg_completion_seconds
-                ')
+                '
+                )
                 ->first();
         } else {
             // MySQL/MariaDB query
             $stats = DB::table('custodian_transfers')
-                ->selectRaw('
+                ->selectRaw(
+                    '
                     COUNT(*) as total_transfers,
                     SUM(CASE WHEN status = "completed" THEN 1 ELSE 0 END) as completed,
                     SUM(CASE WHEN status = "failed" THEN 1 ELSE 0 END) as failed,
@@ -543,7 +564,8 @@ class MultiCustodianTransferService
                     AVG(CASE WHEN status = "completed" AND completed_at IS NOT NULL 
                         THEN TIMESTAMPDIFF(SECOND, created_at, completed_at)
                         ELSE NULL END) as avg_completion_seconds
-                ')
+                '
+                )
                 ->first();
         }
 

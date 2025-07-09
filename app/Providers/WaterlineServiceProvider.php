@@ -16,10 +16,14 @@ class WaterlineServiceProvider extends WaterlineApplicationServiceProvider
      */
     protected function gate()
     {
-        Gate::define('viewWaterline', function ($user) {
-            return in_array($user->email, [
-                //
-            ]);
-        });
+        Gate::define(
+            'viewWaterline', function ($user) {
+                return in_array(
+                    $user->email, [
+                    //
+                    ]
+                );
+            }
+        );
     }
 }

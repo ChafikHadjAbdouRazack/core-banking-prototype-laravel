@@ -20,68 +20,72 @@ class LoginController extends Controller
      *     description="Authenticate user with email and password to receive an access token",
      *     operationId="login",
      *     tags={"Authentication"},
-     *     @OA\RequestBody(
+     * @OA\RequestBody(
      *         required=true,
-     *         @OA\JsonContent(
+     * @OA\JsonContent(
      *             required={"email","password"},
-     *             @OA\Property(property="email", type="string", format="email", example="john@example.com"),
-     *             @OA\Property(property="password", type="string", format="password", example="password123"),
-     *             @OA\Property(property="device_name", type="string", example="iPhone 12", description="Optional device name for token")
+     * @OA\Property(property="email",             type="string", format="email", example="john@example.com"),
+     * @OA\Property(property="password",          type="string", format="password", example="password123"),
+     * @OA\Property(property="device_name",       type="string", example="iPhone 12", description="Optional device name for token")
      *         )
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=200,
      *         description="Login successful",
-     *         @OA\JsonContent(
-     *             @OA\Property(
+     * @OA\JsonContent(
+     * @OA\Property(
      *                 property="user",
      *                 type="object",
-     *                 @OA\Property(property="id", type="integer", example=1),
-     *                 @OA\Property(property="name", type="string", example="John Doe"),
-     *                 @OA\Property(property="email", type="string", example="john@example.com"),
-     *                 @OA\Property(property="email_verified_at", type="string", nullable=true)
+     * @OA\Property(property="id",                type="integer", example=1),
+     * @OA\Property(property="name",              type="string", example="John Doe"),
+     * @OA\Property(property="email",             type="string", example="john@example.com"),
+     * @OA\Property(property="email_verified_at", type="string", nullable=true)
      *             ),
-     *             @OA\Property(property="access_token", type="string", example="2|VVGVrIVokPBXkWLOi2yK13eHlQwQtQQONX5GCngZ..."),
-     *             @OA\Property(property="token_type", type="string", example="Bearer"),
-     *             @OA\Property(property="expires_in", type="integer", nullable=true, example=null, description="Token expiration time in seconds")
+     * @OA\Property(property="access_token",      type="string", example="2|VVGVrIVokPBXkWLOi2yK13eHlQwQtQQONX5GCngZ..."),
+     * @OA\Property(property="token_type",        type="string", example="Bearer"),
+     * @OA\Property(property="expires_in",        type="integer", nullable=true, example=null, description="Token expiration time in seconds")
      *         )
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=422,
      *         description="Invalid credentials",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="The given data was invalid."),
-     *             @OA\Property(
+     * @OA\JsonContent(
+     * @OA\Property(property="message",           type="string", example="The given data was invalid."),
+     * @OA\Property(
      *                 property="errors",
      *                 type="object",
-     *                 @OA\Property(
+     * @OA\Property(
      *                     property="email",
      *                     type="array",
-     *                     @OA\Items(type="string", example="The provided credentials are incorrect.")
+     * @OA\Items(type="string",                   example="The provided credentials are incorrect.")
      *                 )
      *             )
      *         )
      *     )
      * )
      *
-     * @param Request $request
+     * @param  Request $request
      * @return JsonResponse
      * @throws ValidationException
      */
     public function login(Request $request): JsonResponse
     {
-        $request->validate([
+        $request->validate(
+            [
             'email'       => 'required|email',
             'password'    => 'required',
             'device_name' => 'string',
-        ]);
+            ]
+        );
 
         $user = User::where('email', $request->email)->first();
 
         if (! $user || ! Hash::check($request->password, $user->password)) {
-            throw ValidationException::withMessages([
+            throw ValidationException::withMessages(
+                [
                 'email' => ['The provided credentials are incorrect.'],
-            ]);
+                ]
+            );
         }
 
         // Regenerate session to prevent session fixation attacks
@@ -110,7 +114,8 @@ class LoginController extends Controller
 
         $token = $user->createToken($request->device_name ?? 'api-token')->plainTextToken;
 
-        return response()->json([
+        return response()->json(
+            [
             'user' => [
                 'id'                => $user->id,
                 'name'              => $user->name,
@@ -121,7 +126,8 @@ class LoginController extends Controller
             'token'        => $token, // For backward compatibility
             'token_type'   => 'Bearer',
             'expires_in'   => config('sanctum.expiration') ? config('sanctum.expiration') * 60 : null,
-        ]);
+            ]
+        );
     }
 
     /**
@@ -134,29 +140,31 @@ class LoginController extends Controller
      *     operationId="logout",
      *     tags={"Authentication"},
      *     security={{"bearerAuth":{}}},
-     *     @OA\Response(
+     * @OA\Response(
      *         response=200,
      *         description="Successfully logged out",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Successfully logged out")
+     * @OA\JsonContent(
+     * @OA\Property(property="message", type="string", example="Successfully logged out")
      *         )
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=401,
      *         description="Unauthenticated"
      *     )
      * )
      *
-     * @param Request $request
+     * @param  Request $request
      * @return JsonResponse
      */
     public function logout(Request $request): JsonResponse
     {
         $request->user()->currentAccessToken()->delete();
 
-        return response()->json([
+        return response()->json(
+            [
             'message' => 'Successfully logged out',
-        ]);
+            ]
+        );
     }
 
     /**
@@ -169,29 +177,31 @@ class LoginController extends Controller
      *     operationId="logoutAll",
      *     tags={"Authentication"},
      *     security={{"bearerAuth":{}}},
-     *     @OA\Response(
+     * @OA\Response(
      *         response=200,
      *         description="Successfully logged out from all devices",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Successfully logged out from all devices")
+     * @OA\JsonContent(
+     * @OA\Property(property="message", type="string", example="Successfully logged out from all devices")
      *         )
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=401,
      *         description="Unauthenticated"
      *     )
      * )
      *
-     * @param Request $request
+     * @param  Request $request
      * @return JsonResponse
      */
     public function logoutAll(Request $request): JsonResponse
     {
         $request->user()->tokens()->delete();
 
-        return response()->json([
+        return response()->json(
+            [
             'message' => 'Successfully logged out from all devices',
-        ]);
+            ]
+        );
     }
 
     /**
@@ -204,22 +214,22 @@ class LoginController extends Controller
      *     operationId="refreshToken",
      *     tags={"Authentication"},
      *     security={{"bearerAuth":{}}},
-     *     @OA\Response(
+     * @OA\Response(
      *         response=200,
      *         description="Token refreshed successfully",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="access_token", type="string", example="3|newTokenHere..."),
-     *             @OA\Property(property="token_type", type="string", example="Bearer"),
-     *             @OA\Property(property="expires_in", type="integer", nullable=true)
+     * @OA\JsonContent(
+     * @OA\Property(property="access_token", type="string", example="3|newTokenHere..."),
+     * @OA\Property(property="token_type",   type="string", example="Bearer"),
+     * @OA\Property(property="expires_in",   type="integer", nullable=true)
      *         )
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=401,
      *         description="Unauthenticated"
      *     )
      * )
      *
-     * @param Request $request
+     * @param  Request $request
      * @return JsonResponse
      */
     public function refresh(Request $request): JsonResponse
@@ -233,11 +243,13 @@ class LoginController extends Controller
         // Create new token
         $token = $user->createToken($tokenName)->plainTextToken;
 
-        return response()->json([
+        return response()->json(
+            [
             'access_token' => $token,
             'token_type'   => 'Bearer',
             'expires_in'   => config('sanctum.expiration') ? config('sanctum.expiration') * 60 : null,
-        ]);
+            ]
+        );
     }
 
     /**
@@ -250,35 +262,37 @@ class LoginController extends Controller
      *     operationId="getUser",
      *     tags={"Authentication"},
      *     security={{"bearerAuth":{}}},
-     *     @OA\Response(
+     * @OA\Response(
      *         response=200,
      *         description="User information retrieved successfully",
-     *         @OA\JsonContent(
-     *             @OA\Property(
+     * @OA\JsonContent(
+     * @OA\Property(
      *                 property="user",
      *                 type="object",
-     *                 @OA\Property(property="id", type="integer", example=1),
-     *                 @OA\Property(property="name", type="string", example="John Doe"),
-     *                 @OA\Property(property="email", type="string", format="email", example="john@example.com"),
-     *                 @OA\Property(property="email_verified_at", type="string", format="date-time", nullable=true),
-     *                 @OA\Property(property="created_at", type="string", format="date-time"),
-     *                 @OA\Property(property="updated_at", type="string", format="date-time")
+     * @OA\Property(property="id",                type="integer", example=1),
+     * @OA\Property(property="name",              type="string", example="John Doe"),
+     * @OA\Property(property="email",             type="string", format="email", example="john@example.com"),
+     * @OA\Property(property="email_verified_at", type="string", format="date-time", nullable=true),
+     * @OA\Property(property="created_at",        type="string", format="date-time"),
+     * @OA\Property(property="updated_at",        type="string", format="date-time")
      *             )
      *         )
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=401,
      *         description="Unauthenticated"
      *     )
      * )
      *
-     * @param Request $request
+     * @param  Request $request
      * @return JsonResponse
      */
     public function user(Request $request): JsonResponse
     {
-        return response()->json([
+        return response()->json(
+            [
             'user' => $request->user(),
-        ]);
+            ]
+        );
     }
 }

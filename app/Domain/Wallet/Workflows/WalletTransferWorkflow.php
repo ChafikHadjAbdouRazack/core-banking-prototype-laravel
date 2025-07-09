@@ -12,11 +12,11 @@ class WalletTransferWorkflow extends Workflow
      * Execute wallet transfer between accounts for a specific asset
      * Uses compensation pattern for rollback safety.
      *
-     * @param AccountUuid $fromAccountUuid
-     * @param AccountUuid $toAccountUuid
-     * @param string $assetCode
-     * @param int $amount
-     * @param string|null $reference
+     * @param  AccountUuid $fromAccountUuid
+     * @param  AccountUuid $toAccountUuid
+     * @param  string      $assetCode
+     * @param  int         $amount
+     * @param  string|null $reference
      * @return \Generator
      */
     public function execute(
@@ -36,12 +36,14 @@ class WalletTransferWorkflow extends Workflow
             );
 
             // Add compensation: if deposit fails, re-deposit to source account
-            $this->addCompensation(fn () => ChildWorkflowStub::make(
-                WalletDepositWorkflow::class,
-                $fromAccountUuid,
-                $assetCode,
-                $amount
-            ));
+            $this->addCompensation(
+                fn () => ChildWorkflowStub::make(
+                    WalletDepositWorkflow::class,
+                    $fromAccountUuid,
+                    $assetCode,
+                    $amount
+                )
+            );
 
             // Step 2: Deposit to destination account
             yield ChildWorkflowStub::make(
@@ -52,12 +54,14 @@ class WalletTransferWorkflow extends Workflow
             );
 
             // Add compensation: if needed later, withdraw from destination
-            $this->addCompensation(fn () => ChildWorkflowStub::make(
-                WalletWithdrawWorkflow::class,
-                $toAccountUuid,
-                $assetCode,
-                $amount
-            ));
+            $this->addCompensation(
+                fn () => ChildWorkflowStub::make(
+                    WalletWithdrawWorkflow::class,
+                    $toAccountUuid,
+                    $assetCode,
+                    $amount
+                )
+            );
         } catch (\Throwable $th) {
             // Execute compensation workflows in reverse order
             yield from $this->compensate();

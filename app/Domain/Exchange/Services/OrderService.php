@@ -14,14 +14,14 @@ class OrderService
     /**
      * Place a new order.
      *
-     * @param string $accountId
-     * @param string $type BUY or SELL
-     * @param string $baseCurrency
-     * @param string $quoteCurrency
-     * @param string $price
-     * @param string $quantity
-     * @param string $orderType MARKET or LIMIT
-     * @param array $metadata
+     * @param  string $accountId
+     * @param  string $type          BUY or SELL
+     * @param  string $baseCurrency
+     * @param  string $quoteCurrency
+     * @param  string $price
+     * @param  string $quantity
+     * @param  string $orderType     MARKET or LIMIT
+     * @param  array  $metadata
      * @return array
      */
     public function placeOrder(

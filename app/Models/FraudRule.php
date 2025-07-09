@@ -102,11 +102,13 @@ class FraudRule extends Model
     {
         parent::boot();
 
-        static::creating(function ($rule) {
-            if (! $rule->code) {
-                $rule->code = static::generateRuleCode($rule->category);
+        static::creating(
+            function ($rule) {
+                if (! $rule->code) {
+                    $rule->code = static::generateRuleCode($rule->category);
+                }
             }
-        });
+        );
     }
 
     public static function generateRuleCode(string $category): string

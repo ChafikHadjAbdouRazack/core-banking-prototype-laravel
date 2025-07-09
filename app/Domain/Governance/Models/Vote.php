@@ -45,19 +45,23 @@ class Vote extends Model
     {
         parent::boot();
 
-        static::creating(function ($vote) {
-            if (empty($vote->voted_at)) {
-                $vote->voted_at = now();
+        static::creating(
+            function ($vote) {
+                if (empty($vote->voted_at)) {
+                    $vote->voted_at = now();
+                }
             }
-        });
+        );
 
-        static::created(function ($vote) {
-            // Generate signature after the vote is created and has an ID
-            if (! $vote->skipSignatureGeneration && empty($vote->signature)) {
-                $vote->signature = $vote->generateSignature();
-                $vote->saveQuietly(); // Save without triggering events
+        static::created(
+            function ($vote) {
+                // Generate signature after the vote is created and has an ID
+                if (! $vote->skipSignatureGeneration && empty($vote->signature)) {
+                    $vote->signature = $vote->generateSignature();
+                    $vote->saveQuietly(); // Save without triggering events
+                }
             }
-        });
+        );
     }
 
     public function poll(): BelongsTo
@@ -149,11 +153,13 @@ class Vote extends Model
 
     public function toArray(): array
     {
-        return array_merge(parent::toArray(), [
+        return array_merge(
+            parent::toArray(), [
             'selected_options_string' => $this->getSelectedOptionsAsString(),
             'selected_option_count'   => $this->getSelectedOptionCount(),
             'voting_power_weight'     => $this->getVotingPowerWeight(),
             'is_valid'                => $this->isValid(),
-        ]);
+            ]
+        );
     }
 }

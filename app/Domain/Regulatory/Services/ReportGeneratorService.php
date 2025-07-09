@@ -103,11 +103,13 @@ class ReportGeneratorService
         // Load appropriate template based on report type
         $template = $this->getReportTemplate($report->report_type);
 
-        $pdf = Pdf::loadView($template, [
+        $pdf = Pdf::loadView(
+            $template, [
             'report'       => $report,
             'data'         => $data,
             'generated_at' => now(),
-        ]);
+            ]
+        );
 
         $pdf->setPaper('A4', 'portrait');
 
@@ -172,7 +174,8 @@ class ReportGeneratorService
         }
 
         // Merge with report metadata
-        return array_merge($existingData, [
+        return array_merge(
+            $existingData, [
             'report_metadata' => [
                 'report_id'        => $report->report_id,
                 'report_type'      => $report->report_type,
@@ -194,7 +197,8 @@ class ReportGeneratorService
                 'certified_at'            => null,
                 'certification_statement' => $this->getCertificationStatement($report),
             ],
-        ]);
+            ]
+        );
     }
 
     /**
@@ -393,11 +397,13 @@ class ReportGeneratorService
      */
     protected function updateReportFile(RegulatoryReport $report, string $filename, int $size): void
     {
-        $report->update([
+        $report->update(
+            [
             'file_path' => $filename,
             'file_size' => $size,
             'file_hash' => hash_file('sha256', Storage::path($filename)),
-        ]);
+            ]
+        );
     }
 
     /**

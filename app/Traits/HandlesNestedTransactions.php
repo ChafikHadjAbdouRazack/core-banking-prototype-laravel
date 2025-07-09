@@ -9,7 +9,7 @@ trait HandlesNestedTransactions
     /**
      * Execute a callback within a database transaction, handling nested transactions for tests.
      *
-     * @param callable $callback
+     * @param  callable $callback
      * @return mixed
      */
     protected function executeInTransaction(callable $callback)

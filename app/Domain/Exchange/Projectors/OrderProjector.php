@@ -16,7 +16,8 @@ class OrderProjector extends Projector
 {
     public function onOrderPlaced(OrderPlaced $event): void
     {
-        Order::create([
+        Order::create(
+            [
             'order_id'       => $event->orderId,
             'account_id'     => $event->accountId,
             'type'           => $event->type,
@@ -30,7 +31,8 @@ class OrderProjector extends Projector
             'status'         => 'pending',
             'trades'         => json_encode([]),
             'metadata'       => $event->metadata ? json_encode($event->metadata) : null,
-        ]);
+            ]
+        );
     }
 
     public function onOrderMatched(OrderMatched $event): void
@@ -60,17 +62,20 @@ class OrderProjector extends Projector
         }
         $averagePrice = $totalValue->dividedBy($totalAmount, 18);
 
-        $order->update([
+        $order->update(
+            [
             'filled_amount' => $filledAmount->__toString(),
             'average_price' => $averagePrice->__toString(),
             'trades'        => $trades,
             'status'        => $filledAmount->isEqualTo($order->amount) ? 'filled' : 'partially_filled',
-        ]);
+            ]
+        );
 
         // Create trade record
         $matchedOrder = Order::where('order_id', $event->matchedOrderId)->firstOrFail();
 
-        Trade::create([
+        Trade::create(
+            [
             'trade_id'          => $event->tradeId,
             'buy_order_id'      => $order->type === 'buy' ? $order->order_id : $matchedOrder->order_id,
             'sell_order_id'     => $order->type === 'sell' ? $order->order_id : $matchedOrder->order_id,
@@ -85,33 +90,42 @@ class OrderProjector extends Projector
             'taker_fee'         => $event->takerFee,
             'maker_side'        => $order->type === 'buy' ? 'sell' : 'buy', // Maker is the opposite side
             'metadata'          => $event->metadata,
-        ]);
+            ]
+        );
     }
 
     public function onOrderPartiallyFilled(OrderPartiallyFilled $event): void
     {
-        Order::where('order_id', $event->orderId)->update([
+        Order::where('order_id', $event->orderId)->update(
+            [
             'status' => 'partially_filled',
-        ]);
+            ]
+        );
     }
 
     public function onOrderFilled(OrderFilled $event): void
     {
-        Order::where('order_id', $event->orderId)->update([
+        Order::where('order_id', $event->orderId)->update(
+            [
             'status'    => 'filled',
             'filled_at' => now(),
-        ]);
+            ]
+        );
     }
 
     public function onOrderCancelled(OrderCancelled $event): void
     {
-        Order::where('order_id', $event->orderId)->update([
+        Order::where('order_id', $event->orderId)->update(
+            [
             'status'       => 'cancelled',
             'cancelled_at' => now(),
-            'metadata'     => json_encode(array_merge(
-                Order::where('order_id', $event->orderId)->value('metadata') ?? [],
-                ['cancellation_reason' => $event->reason]
-            )),
-        ]);
+            'metadata'     => json_encode(
+                array_merge(
+                    Order::where('order_id', $event->orderId)->value('metadata') ?? [],
+                    ['cancellation_reason' => $event->reason]
+                )
+            ),
+            ]
+        );
     }
 }

@@ -114,14 +114,16 @@ class BehavioralProfile extends Model
         $amounts = collect($transactions)->pluck('amount');
         $timestamps = collect($transactions)->pluck('created_at');
 
-        $this->update([
+        $this->update(
+            [
             'avg_transaction_amount'     => $amounts->average(),
             'median_transaction_amount'  => $amounts->median(),
             'max_transaction_amount'     => $amounts->max(),
             'transaction_amount_std_dev' => $amounts->count() > 1 ? $amounts->std() : 0,
             'typical_transaction_times'  => $this->calculateTimeDistribution($timestamps),
             'typical_transaction_days'   => $this->calculateDayDistribution($timestamps),
-        ]);
+            ]
+        );
     }
 
     protected function calculateTimeDistribution($timestamps): array
@@ -232,11 +234,13 @@ class BehavioralProfile extends Model
         $devices = $this->trusted_devices ?? [];
         if (! in_array($deviceFingerprintId, $devices)) {
             $devices[] = $deviceFingerprintId;
-            $this->update([
+            $this->update(
+                [
                 'trusted_devices'       => $devices,
                 'device_count'          => count($devices),
                 'uses_multiple_devices' => count($devices) > 1,
-            ]);
+                ]
+            );
         }
     }
 
@@ -372,10 +376,12 @@ class BehavioralProfile extends Model
             'password_change_frequency' => $this->password_change_frequency ?? 0,
         ];
 
-        $this->update([
+        $this->update(
+            [
             'ml_feature_vector'      => $features,
             'ml_features_updated_at' => now(),
-        ]);
+            ]
+        );
 
         return $features;
     }

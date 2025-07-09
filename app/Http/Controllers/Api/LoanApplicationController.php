@@ -29,7 +29,8 @@ class LoanApplicationController extends Controller
 
     public function store(Request $request, LoanApplicationService $service)
     {
-        $validated = $request->validate([
+        $validated = $request->validate(
+            [
             'requested_amount'  => 'required|numeric|min:1000|max:100000',
             'term_months'       => 'required|integer|min:6|max:60',
             'purpose'           => 'required|string|in:personal,business,debt_consolidation,education,medical,home_improvement,other',
@@ -37,7 +38,8 @@ class LoanApplicationController extends Controller
             'monthly_income'    => 'required|numeric|min:0',
             'monthly_expenses'  => 'required|numeric|min:0',
             'additional_info'   => 'nullable|string|max:500',
-        ]);
+            ]
+        );
 
         $applicationId = 'app_' . Str::uuid()->toString();
         $borrowerId = $request->user()->id;
@@ -62,10 +64,12 @@ class LoanApplicationController extends Controller
         // Get the created application
         $application = LoanApplication::find($applicationId);
 
-        return response()->json([
+        return response()->json(
+            [
             'application' => $application,
             'result'      => $result,
-        ], 201);
+            ], 201
+        );
     }
 
     public function cancel($id)
@@ -75,16 +79,20 @@ class LoanApplicationController extends Controller
             ->findOrFail($id);
 
         // In a real implementation, we would trigger a cancellation event
-        $application->update([
+        $application->update(
+            [
             'status'            => 'cancelled',
             'rejected_by'       => 'borrower',
             'rejected_at'       => now(),
             'rejection_reasons' => ['Cancelled by borrower'],
-        ]);
+            ]
+        );
 
-        return response()->json([
+        return response()->json(
+            [
             'message'     => 'Application cancelled successfully',
             'application' => $application,
-        ]);
+            ]
+        );
     }
 }

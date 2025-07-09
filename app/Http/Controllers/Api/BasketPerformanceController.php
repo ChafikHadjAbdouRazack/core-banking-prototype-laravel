@@ -32,35 +32,35 @@ class BasketPerformanceController extends Controller
      *     operationId="getBasketPerformance",
      *     tags={"Basket Performance"},
      *     summary="Get performance metrics for a basket",
-     *     @OA\Parameter(
+     * @OA\Parameter(
      *         name="code",
      *         in="path",
      *         required=true,
      *         description="Basket asset code",
-     *         @OA\Schema(type="string", example="GCU")
+     * @OA\Schema(type="string",                  example="GCU")
      *     ),
-     *     @OA\Parameter(
+     * @OA\Parameter(
      *         name="period",
      *         in="query",
      *         required=false,
      *         description="Performance period",
-     *         @OA\Schema(
+     * @OA\Schema(
      *             type="string",
      *             enum={"hour", "day", "week", "month", "quarter", "year", "all_time"},
      *             default="month"
      *         )
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=200,
      *         description="Performance data",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="basket_code", type="string"),
-     *                 @OA\Property(property="period_type", type="string"),
-     *                 @OA\Property(property="return_percentage", type="number"),
-     *                 @OA\Property(property="volatility", type="number"),
-     *                 @OA\Property(property="sharpe_ratio", type="number"),
-     *                 @OA\Property(property="max_drawdown", type="number")
+     * @OA\JsonContent(
+     * @OA\Property(property="data",              type="object",
+     * @OA\Property(property="basket_code",       type="string"),
+     * @OA\Property(property="period_type",       type="string"),
+     * @OA\Property(property="return_percentage", type="number"),
+     * @OA\Property(property="volatility",        type="number"),
+     * @OA\Property(property="sharpe_ratio",      type="number"),
+     * @OA\Property(property="max_drawdown",      type="number")
      *             )
      *         )
      *     ),
@@ -69,9 +69,11 @@ class BasketPerformanceController extends Controller
      */
     public function show(Request $request, string $code): JsonResponse
     {
-        $request->validate([
+        $request->validate(
+            [
             'period' => ['sometimes', Rule::in(['hour', 'day', 'week', 'month', 'quarter', 'year', 'all_time'])],
-        ]);
+            ]
+        );
 
         $basket = BasketAsset::where('code', $code)->firstOrFail();
         $period = $request->get('period', 'month');
@@ -106,15 +108,19 @@ class BasketPerformanceController extends Controller
         }
 
         if (! $performance) {
-            return response()->json([
+            return response()->json(
+                [
                 'data'    => null,
                 'message' => 'Insufficient data to calculate performance',
-            ], 404);
+                ], 404
+            );
         }
 
-        return response()->json([
+        return response()->json(
+            [
             'data' => new BasketPerformanceResource($performance),
-        ]);
+            ]
+        );
     }
 
     /**
@@ -123,33 +129,33 @@ class BasketPerformanceController extends Controller
      *     operationId="getBasketPerformanceHistory",
      *     tags={"Basket Performance"},
      *     summary="Get historical performance data for a basket",
-     *     @OA\Parameter(
+     * @OA\Parameter(
      *         name="code",
      *         in="path",
      *         required=true,
      *         description="Basket asset code",
-     *         @OA\Schema(type="string", example="GCU")
+     * @OA\Schema(type="string",                               example="GCU")
      *     ),
-     *     @OA\Parameter(
+     * @OA\Parameter(
      *         name="period_type",
      *         in="query",
      *         required=false,
      *         description="Filter by period type",
-     *         @OA\Schema(type="string", enum={"hour", "day", "week", "month", "quarter", "year"})
+     * @OA\Schema(type="string",                               enum={"hour", "day", "week", "month", "quarter", "year"})
      *     ),
-     *     @OA\Parameter(
+     * @OA\Parameter(
      *         name="limit",
      *         in="query",
      *         required=false,
      *         description="Number of records to return",
-     *         @OA\Schema(type="integer", default=30)
+     * @OA\Schema(type="integer",                              default=30)
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=200,
      *         description="Historical performance data",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="data", type="array",
-     *                 @OA\Items(ref="#/components/schemas/BasketPerformance")
+     * @OA\JsonContent(
+     * @OA\Property(property="data",                           type="array",
+     * @OA\Items(ref="#/components/schemas/BasketPerformance")
      *             )
      *         )
      *     ),
@@ -158,10 +164,12 @@ class BasketPerformanceController extends Controller
      */
     public function history(Request $request, string $code): AnonymousResourceCollection
     {
-        $request->validate([
+        $request->validate(
+            [
             'period_type' => ['sometimes', Rule::in(['hour', 'day', 'week', 'month', 'quarter', 'year'])],
             'limit'       => ['sometimes', 'integer', 'min:1', 'max:365'],
-        ]);
+            ]
+        );
 
         $basket = BasketAsset::where('code', $code)->firstOrFail();
 
@@ -187,26 +195,26 @@ class BasketPerformanceController extends Controller
      *     operationId="getBasketPerformanceSummary",
      *     tags={"Basket Performance"},
      *     summary="Get performance summary across multiple periods",
-     *     @OA\Parameter(
+     * @OA\Parameter(
      *         name="code",
      *         in="path",
      *         required=true,
      *         description="Basket asset code",
-     *         @OA\Schema(type="string", example="GCU")
+     * @OA\Schema(type="string",              example="GCU")
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=200,
      *         description="Performance summary",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="basket_code", type="string"),
-     *                 @OA\Property(property="basket_name", type="string"),
-     *                 @OA\Property(property="current_value", type="number"),
-     *                 @OA\Property(property="performances", type="object",
-     *                     @OA\Property(property="day", type="object"),
-     *                     @OA\Property(property="week", type="object"),
-     *                     @OA\Property(property="month", type="object"),
-     *                     @OA\Property(property="year", type="object")
+     * @OA\JsonContent(
+     * @OA\Property(property="data",          type="object",
+     * @OA\Property(property="basket_code",   type="string"),
+     * @OA\Property(property="basket_name",   type="string"),
+     * @OA\Property(property="current_value", type="number"),
+     * @OA\Property(property="performances",  type="object",
+     * @OA\Property(property="day",           type="object"),
+     * @OA\Property(property="week",          type="object"),
+     * @OA\Property(property="month",         type="object"),
+     * @OA\Property(property="year",          type="object")
      *                 )
      *             )
      *         )
@@ -219,9 +227,11 @@ class BasketPerformanceController extends Controller
         $basket = BasketAsset::where('code', $code)->firstOrFail();
         $summary = $this->performanceService->getPerformanceSummary($basket);
 
-        return response()->json([
+        return response()->json(
+            [
             'data' => $summary,
-        ]);
+            ]
+        );
     }
 
     /**
@@ -230,30 +240,30 @@ class BasketPerformanceController extends Controller
      *     operationId="getBasketComponentPerformance",
      *     tags={"Basket Performance"},
      *     summary="Get component-level performance breakdown",
-     *     @OA\Parameter(
+     * @OA\Parameter(
      *         name="code",
      *         in="path",
      *         required=true,
      *         description="Basket asset code",
-     *         @OA\Schema(type="string", example="GCU")
+     * @OA\Schema(type="string",                                  example="GCU")
      *     ),
-     *     @OA\Parameter(
+     * @OA\Parameter(
      *         name="period",
      *         in="query",
      *         required=false,
      *         description="Performance period",
-     *         @OA\Schema(
+     * @OA\Schema(
      *             type="string",
      *             enum={"hour", "day", "week", "month", "quarter", "year"},
      *             default="month"
      *         )
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=200,
      *         description="Component performance data",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="data", type="array",
-     *                 @OA\Items(ref="#/components/schemas/ComponentPerformance")
+     * @OA\JsonContent(
+     * @OA\Property(property="data",                              type="array",
+     * @OA\Items(ref="#/components/schemas/ComponentPerformance")
      *             )
      *         )
      *     ),
@@ -262,9 +272,11 @@ class BasketPerformanceController extends Controller
      */
     public function components(Request $request, string $code): AnonymousResourceCollection
     {
-        $request->validate([
+        $request->validate(
+            [
             'period' => ['sometimes', Rule::in(['hour', 'day', 'week', 'month', 'quarter', 'year'])],
-        ]);
+            ]
+        );
 
         $basket = BasketAsset::where('code', $code)->firstOrFail();
         $period = $request->get('period', 'month');
@@ -291,28 +303,28 @@ class BasketPerformanceController extends Controller
      *     operationId="getBasketTopPerformers",
      *     tags={"Basket Performance"},
      *     summary="Get top performing components",
-     *     @OA\Parameter(
+     * @OA\Parameter(
      *         name="code",
      *         in="path",
      *         required=true,
      *         description="Basket asset code",
-     *         @OA\Schema(type="string", example="GCU")
+     * @OA\Schema(type="string",  example="GCU")
      *     ),
-     *     @OA\Parameter(
+     * @OA\Parameter(
      *         name="period",
      *         in="query",
      *         required=false,
      *         description="Performance period",
-     *         @OA\Schema(type="string", default="month")
+     * @OA\Schema(type="string",  default="month")
      *     ),
-     *     @OA\Parameter(
+     * @OA\Parameter(
      *         name="limit",
      *         in="query",
      *         required=false,
      *         description="Number of components to return",
-     *         @OA\Schema(type="integer", default=5)
+     * @OA\Schema(type="integer", default=5)
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=200,
      *         description="Top performing components"
      *     ),
@@ -321,10 +333,12 @@ class BasketPerformanceController extends Controller
      */
     public function topPerformers(Request $request, string $code): AnonymousResourceCollection
     {
-        $request->validate([
+        $request->validate(
+            [
             'period' => ['sometimes', 'string'],
             'limit'  => ['sometimes', 'integer', 'min:1', 'max:20'],
-        ]);
+            ]
+        );
 
         $basket = BasketAsset::where('code', $code)->firstOrFail();
         $performers = $this->performanceService->getTopPerformers(
@@ -342,28 +356,28 @@ class BasketPerformanceController extends Controller
      *     operationId="getBasketWorstPerformers",
      *     tags={"Basket Performance"},
      *     summary="Get worst performing components",
-     *     @OA\Parameter(
+     * @OA\Parameter(
      *         name="code",
      *         in="path",
      *         required=true,
      *         description="Basket asset code",
-     *         @OA\Schema(type="string", example="GCU")
+     * @OA\Schema(type="string",  example="GCU")
      *     ),
-     *     @OA\Parameter(
+     * @OA\Parameter(
      *         name="period",
      *         in="query",
      *         required=false,
      *         description="Performance period",
-     *         @OA\Schema(type="string", default="month")
+     * @OA\Schema(type="string",  default="month")
      *     ),
-     *     @OA\Parameter(
+     * @OA\Parameter(
      *         name="limit",
      *         in="query",
      *         required=false,
      *         description="Number of components to return",
-     *         @OA\Schema(type="integer", default=5)
+     * @OA\Schema(type="integer", default=5)
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=200,
      *         description="Worst performing components"
      *     ),
@@ -372,10 +386,12 @@ class BasketPerformanceController extends Controller
      */
     public function worstPerformers(Request $request, string $code): AnonymousResourceCollection
     {
-        $request->validate([
+        $request->validate(
+            [
             'period' => ['sometimes', 'string'],
             'limit'  => ['sometimes', 'integer', 'min:1', 'max:20'],
-        ]);
+            ]
+        );
 
         $basket = BasketAsset::where('code', $code)->firstOrFail();
         $performers = $this->performanceService->getWorstPerformers(
@@ -393,25 +409,25 @@ class BasketPerformanceController extends Controller
      *     operationId="calculateBasketPerformance",
      *     tags={"Basket Performance"},
      *     summary="Trigger performance calculation for a basket",
-     *     @OA\Parameter(
+     * @OA\Parameter(
      *         name="code",
      *         in="path",
      *         required=true,
      *         description="Basket asset code",
-     *         @OA\Schema(type="string", example="GCU")
+     * @OA\Schema(type="string",                   example="GCU")
      *     ),
-     *     @OA\RequestBody(
+     * @OA\RequestBody(
      *         required=false,
-     *         @OA\JsonContent(
-     *             @OA\Property(property="period", type="string", enum={"all", "hour", "day", "week", "month", "quarter", "year"})
+     * @OA\JsonContent(
+     * @OA\Property(property="period",             type="string", enum={"all", "hour", "day", "week", "month", "quarter", "year"})
      *         )
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=200,
      *         description="Calculation triggered",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string"),
-     *             @OA\Property(property="calculated_periods", type="array", @OA\Items(type="string"))
+     * @OA\JsonContent(
+     * @OA\Property(property="message",            type="string"),
+     * @OA\Property(property="calculated_periods", type="array", @OA\Items(type="string"))
      *         )
      *     ),
      *     security={{"sanctum": {}}}
@@ -419,9 +435,11 @@ class BasketPerformanceController extends Controller
      */
     public function calculate(Request $request, string $code): JsonResponse
     {
-        $request->validate([
+        $request->validate(
+            [
             'period' => ['sometimes', Rule::in(['all', 'hour', 'day', 'week', 'month', 'quarter', 'year'])],
-        ]);
+            ]
+        );
 
         $basket = BasketAsset::where('code', $code)->firstOrFail();
         $period = $request->get('period', 'all');
@@ -450,10 +468,12 @@ class BasketPerformanceController extends Controller
             $calculatedPeriods = $performance ? [$period] : [];
         }
 
-        return response()->json([
+        return response()->json(
+            [
             'message'            => 'Performance calculation completed',
             'calculated_periods' => $calculatedPeriods,
-        ]);
+            ]
+        );
     }
 
     /**
@@ -462,21 +482,21 @@ class BasketPerformanceController extends Controller
      *     operationId="compareBasketPerformance",
      *     tags={"Basket Performance"},
      *     summary="Compare basket performance against benchmarks",
-     *     @OA\Parameter(
+     * @OA\Parameter(
      *         name="code",
      *         in="path",
      *         required=true,
      *         description="Basket asset code",
-     *         @OA\Schema(type="string", example="GCU")
+     * @OA\Schema(type="string", example="GCU")
      *     ),
-     *     @OA\Parameter(
+     * @OA\Parameter(
      *         name="benchmarks",
      *         in="query",
      *         required=true,
      *         description="Comma-separated list of benchmark basket codes",
-     *         @OA\Schema(type="string", example="USD_STABLE,EUR_STABLE")
+     * @OA\Schema(type="string", example="USD_STABLE,EUR_STABLE")
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=200,
      *         description="Performance comparison data"
      *     ),
@@ -485,17 +505,21 @@ class BasketPerformanceController extends Controller
      */
     public function compare(Request $request, string $code): JsonResponse
     {
-        $request->validate([
+        $request->validate(
+            [
             'benchmarks' => ['required', 'string'],
-        ]);
+            ]
+        );
 
         $basket = BasketAsset::where('code', $code)->firstOrFail();
         $benchmarkCodes = array_map('trim', explode(',', $request->get('benchmarks')));
 
         $comparison = $this->performanceService->compareToBenchmarks($basket, $benchmarkCodes);
 
-        return response()->json([
+        return response()->json(
+            [
             'data' => $comparison,
-        ]);
+            ]
+        );
     }
 }

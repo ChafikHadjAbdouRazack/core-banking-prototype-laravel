@@ -44,11 +44,13 @@ class ApiKey extends Model
     {
         parent::boot();
 
-        static::creating(function ($model) {
-            if (empty($model->uuid)) {
-                $model->uuid = Str::uuid();
+        static::creating(
+            function ($model) {
+                if (empty($model->uuid)) {
+                    $model->uuid = Str::uuid();
+                }
             }
-        });
+        );
     }
 
     /**
@@ -84,7 +86,8 @@ class ApiKey extends Model
         $keyPrefix = substr($plainKey, 0, 8);
         $keyHash = Hash::make($plainKey);
 
-        $apiKey = self::create([
+        $apiKey = self::create(
+            [
             'user_uuid'   => $user->uuid,
             'name'        => $data['name'],
             'key_prefix'  => $keyPrefix,
@@ -94,7 +97,8 @@ class ApiKey extends Model
             'rate_limits' => $data['rate_limits'] ?? null,
             'allowed_ips' => $data['allowed_ips'] ?? null,
             'expires_at'  => $data['expires_at'] ?? null,
-        ]);
+            ]
+        );
 
         return [
             'api_key'   => $apiKey,
@@ -111,10 +115,12 @@ class ApiKey extends Model
 
         $apiKey = self::where('key_prefix', $keyPrefix)
             ->where('is_active', true)
-            ->where(function ($query) {
-                $query->whereNull('expires_at')
-                    ->orWhere('expires_at', '>', now());
-            })
+            ->where(
+                function ($query) {
+                    $query->whereNull('expires_at')
+                        ->orWhere('expires_at', '>', now());
+                }
+            )
             ->first();
 
         if ($apiKey && Hash::check($plainKey, $apiKey->key_hash)) {
@@ -165,11 +171,13 @@ class ApiKey extends Model
      */
     public function recordUsage(string $ip): void
     {
-        $this->update([
+        $this->update(
+            [
             'last_used_at'  => now(),
             'last_used_ip'  => $ip,
             'request_count' => $this->request_count + 1,
-        ]);
+            ]
+        );
     }
 
     /**

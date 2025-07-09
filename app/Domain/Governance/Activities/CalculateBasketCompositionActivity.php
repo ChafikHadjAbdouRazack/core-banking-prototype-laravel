@@ -10,7 +10,7 @@ class CalculateBasketCompositionActivity extends Activity
     /**
      * Execute basket composition calculation activity.
      *
-     * @param string $pollUuid
+     * @param  string $pollUuid
      * @return array
      */
     public function execute(string $pollUuid): array

@@ -28,8 +28,10 @@ class VerifyCustodianTransferActivity extends Activity
             }
 
             if ($receipt->isFailed()) {
-                throw new \Exception("Custodian transfer {$transactionId} failed: " .
-                    ($receipt->metadata['error'] ?? 'Unknown error'));
+                throw new \Exception(
+                    "Custodian transfer {$transactionId} failed: " .
+                    ($receipt->metadata['error'] ?? 'Unknown error')
+                );
             }
 
             // Transaction is still pending, wait and retry
@@ -37,7 +39,9 @@ class VerifyCustodianTransferActivity extends Activity
             $retries++;
         }
 
-        throw new \Exception("Custodian transfer {$transactionId} timed out after " .
-            (self::MAX_RETRIES * self::RETRY_DELAY) . ' seconds');
+        throw new \Exception(
+            "Custodian transfer {$transactionId} timed out after " .
+            (self::MAX_RETRIES * self::RETRY_DELAY) . ' seconds'
+        );
     }
 }

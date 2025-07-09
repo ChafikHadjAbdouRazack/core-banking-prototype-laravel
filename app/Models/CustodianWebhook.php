@@ -85,7 +85,7 @@ class CustodianWebhook extends Model
     public function scopeRetryable($query, int $maxAttempts = 3)
     {
         return $query->where('status', 'failed')
-                     ->where('attempts', '<', $maxAttempts);
+            ->where('attempts', '<', $maxAttempts);
     }
 
     /**
@@ -109,10 +109,12 @@ class CustodianWebhook extends Model
      */
     public function markAsProcessing(): void
     {
-        $this->update([
+        $this->update(
+            [
             'status'   => 'processing',
             'attempts' => $this->attempts + 1,
-        ]);
+            ]
+        );
     }
 
     /**
@@ -120,11 +122,13 @@ class CustodianWebhook extends Model
      */
     public function markAsProcessed(): void
     {
-        $this->update([
+        $this->update(
+            [
             'status'        => 'processed',
             'processed_at'  => now(),
             'error_message' => null,
-        ]);
+            ]
+        );
     }
 
     /**
@@ -132,10 +136,12 @@ class CustodianWebhook extends Model
      */
     public function markAsFailed(string $errorMessage): void
     {
-        $this->update([
+        $this->update(
+            [
             'status'        => 'failed',
             'error_message' => $errorMessage,
-        ]);
+            ]
+        );
     }
 
     /**
@@ -143,10 +149,12 @@ class CustodianWebhook extends Model
      */
     public function markAsIgnored(string $reason = null): void
     {
-        $this->update([
+        $this->update(
+            [
             'status'        => 'ignored',
             'processed_at'  => now(),
             'error_message' => $reason,
-        ]);
+            ]
+        );
     }
 }

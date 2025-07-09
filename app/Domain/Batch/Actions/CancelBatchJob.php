@@ -9,7 +9,7 @@ use App\Models\BatchJob;
 class CancelBatchJob
 {
     /**
-     * @param BatchJobCancelled $event
+     * @param  BatchJobCancelled $event
      * @return void
      */
     public function __invoke(BatchJobCancelled $event): void
@@ -21,13 +21,17 @@ class CancelBatchJob
         }
 
         // Update batch job status
-        $batchJob->update([
+        $batchJob->update(
+            [
             'status'       => 'cancelled',
             'completed_at' => $event->cancelledAt,
-            'metadata'     => array_merge($batchJob->metadata ?? [], [
+            'metadata'     => array_merge(
+                $batchJob->metadata ?? [], [
                 'cancellation_reason' => $event->reason,
-            ]),
-        ]);
+                ]
+            ),
+            ]
+        );
 
         // Cancel all pending items
         BatchItem::where('batch_job_id', $batchJob->id)

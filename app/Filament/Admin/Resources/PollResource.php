@@ -34,9 +34,11 @@ class PollResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
-            ->schema([
+            ->schema(
+                [
                 Forms\Components\Section::make('Poll Details')
-                    ->schema([
+                    ->schema(
+                        [
                         Forms\Components\TextInput::make('title')
                             ->required()
                             ->maxLength(255)
@@ -48,32 +50,40 @@ class PollResource extends Resource
 
                         Forms\Components\Select::make('type')
                             ->required()
-                            ->options([
+                            ->options(
+                                [
                                 PollType::YES_NO->value          => 'Yes/No',
                                 PollType::SINGLE_CHOICE->value   => 'Single Choice',
                                 PollType::MULTIPLE_CHOICE->value => 'Multiple Choice',
                                 PollType::WEIGHTED_CHOICE->value => 'Weighted Choice',
                                 PollType::RANKED_CHOICE->value   => 'Ranked Choice',
-                            ])
+                                ]
+                            )
                             ->reactive()
-                            ->afterStateUpdated(function ($state, callable $set) {
-                                // Reset options when type changes
-                                if ($state === PollType::YES_NO->value) {
-                                    $set('options', [
-                                        ['id' => 'yes', 'label' => 'Yes', 'description' => 'I support this proposal'],
-                                        ['id' => 'no', 'label' => 'No', 'description' => 'I do not support this proposal'],
-                                    ]);
-                                } else {
-                                    $set('options', []);
+                            ->afterStateUpdated(
+                                function ($state, callable $set) {
+                                    // Reset options when type changes
+                                    if ($state === PollType::YES_NO->value) {
+                                        $set(
+                                            'options', [
+                                            ['id' => 'yes', 'label' => 'Yes', 'description' => 'I support this proposal'],
+                                            ['id' => 'no', 'label' => 'No', 'description' => 'I do not support this proposal'],
+                                            ]
+                                        );
+                                    } else {
+                                        $set('options', []);
+                                    }
                                 }
-                            }),
+                            ),
 
                         Forms\Components\Select::make('voting_power_strategy')
                             ->required()
-                            ->options([
+                            ->options(
+                                [
                                 'one_user_one_vote'   => 'One User One Vote',
                                 'asset_weighted_vote' => 'Asset Weighted Vote',
-                            ])
+                                ]
+                            )
                             ->default('one_user_one_vote'),
 
                         Forms\Components\TextInput::make('required_participation')
@@ -82,13 +92,16 @@ class PollResource extends Resource
                             ->minValue(1)
                             ->maxValue(100)
                             ->helperText('Minimum participation rate required for execution'),
-                    ])
+                        ]
+                    )
                     ->columns(2),
 
                 Forms\Components\Section::make('Poll Options')
-                    ->schema([
+                    ->schema(
+                        [
                         Forms\Components\Repeater::make('options')
-                            ->schema([
+                            ->schema(
+                                [
                                 Forms\Components\TextInput::make('id')
                                     ->required()
                                     ->helperText('Unique identifier for this option'),
@@ -99,17 +112,20 @@ class PollResource extends Resource
 
                                 Forms\Components\TextInput::make('description')
                                     ->helperText('Optional description for this option'),
-                            ])
+                                ]
+                            )
                             ->columns(3)
                             ->required()
                             ->minItems(1)
                             ->addActionLabel('Add Option')
                             ->collapsible()
                             ->columnSpanFull(),
-                    ]),
+                        ]
+                    ),
 
                 Forms\Components\Section::make('Schedule & Execution')
-                    ->schema([
+                    ->schema(
+                        [
                         Forms\Components\DateTimePicker::make('start_date')
                             ->required()
                             ->seconds(false)
@@ -122,63 +138,76 @@ class PollResource extends Resource
                             ->after('start_date'),
 
                         Forms\Components\Select::make('execution_workflow')
-                            ->options([
+                            ->options(
+                                [
                                 'AddAssetWorkflow'            => 'Add Asset Workflow',
                                 'FeatureToggleWorkflow'       => 'Feature Toggle Workflow',
                                 'UpdateConfigurationWorkflow' => 'Update Configuration Workflow',
-                            ])
+                                ]
+                            )
                             ->helperText('Optional workflow to execute when poll passes'),
 
                         Forms\Components\Select::make('status')
                             ->required()
-                            ->options([
+                            ->options(
+                                [
                                 PollStatus::DRAFT->value     => 'Draft',
                                 PollStatus::ACTIVE->value    => 'Active',
                                 PollStatus::CLOSED->value    => 'Closed',
                                 PollStatus::CANCELLED->value => 'Cancelled',
-                            ])
+                                ]
+                            )
                             ->default(PollStatus::DRAFT->value),
-                    ])
+                        ]
+                    )
                     ->columns(2),
 
                 Forms\Components\Section::make('Metadata')
-                    ->schema([
+                    ->schema(
+                        [
                         Forms\Components\KeyValue::make('metadata')
                             ->keyLabel('Key')
                             ->valueLabel('Value')
                             ->addActionLabel('Add metadata')
                             ->columnSpanFull(),
-                    ])
+                        ]
+                    )
                     ->collapsible()
                     ->collapsed(),
-            ]);
+                ]
+            );
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
+            ->columns(
+                [
                 Tables\Columns\TextColumn::make('title')
                     ->searchable()
                     ->sortable()
                     ->weight('bold'),
 
                 Tables\Columns\BadgeColumn::make('type')
-                    ->colors([
+                    ->colors(
+                        [
                         'primary' => PollType::YES_NO->value,
                         'success' => PollType::SINGLE_CHOICE->value,
                         'warning' => PollType::MULTIPLE_CHOICE->value,
                         'danger'  => PollType::WEIGHTED_CHOICE->value,
                         'gray'    => PollType::RANKED_CHOICE->value,
-                    ]),
+                        ]
+                    ),
 
                 Tables\Columns\BadgeColumn::make('status')
-                    ->colors([
+                    ->colors(
+                        [
                         'gray'    => PollStatus::DRAFT->value,
                         'success' => PollStatus::ACTIVE->value,
                         'danger'  => PollStatus::CLOSED->value,
                         'warning' => PollStatus::CANCELLED->value,
-                    ]),
+                        ]
+                    ),
 
                 Tables\Columns\TextColumn::make('creator.name')
                     ->label('Created By')
@@ -215,24 +244,30 @@ class PollResource extends Resource
                 Tables\Columns\TextColumn::make('execution_workflow')
                     ->label('Workflow')
                     ->toggleable(isToggledHiddenByDefault: true),
-            ])
-            ->filters([
+                ]
+            )
+            ->filters(
+                [
                 Tables\Filters\SelectFilter::make('status')
-                    ->options([
+                    ->options(
+                        [
                         PollStatus::DRAFT->value     => 'Draft',
                         PollStatus::ACTIVE->value    => 'Active',
                         PollStatus::CLOSED->value    => 'Closed',
                         PollStatus::CANCELLED->value => 'Cancelled',
-                    ]),
+                        ]
+                    ),
 
                 Tables\Filters\SelectFilter::make('type')
-                    ->options([
+                    ->options(
+                        [
                         PollType::YES_NO->value          => 'Yes/No',
                         PollType::SINGLE_CHOICE->value   => 'Single Choice',
                         PollType::MULTIPLE_CHOICE->value => 'Multiple Choice',
                         PollType::WEIGHTED_CHOICE->value => 'Weighted Choice',
                         PollType::RANKED_CHOICE->value   => 'Ranked Choice',
-                    ]),
+                        ]
+                    ),
 
                 Tables\Filters\Filter::make('active')
                     ->query(fn (Builder $query) => $query->active())
@@ -241,77 +276,87 @@ class PollResource extends Resource
                 Tables\Filters\Filter::make('expired')
                     ->query(fn (Builder $query) => $query->expired())
                     ->label('Expired Polls'),
-            ])
-            ->actions([
+                ]
+            )
+            ->actions(
+                [
                 Tables\Actions\Action::make('activate')
                     ->icon('heroicon-o-play')
                     ->color('success')
                     ->visible(fn (Poll $record) => $record->status === PollStatus::DRAFT)
                     ->requiresConfirmation()
-                    ->action(function (Poll $record) {
-                        try {
-                            app(GovernanceService::class)->activatePoll($record);
-                            Notification::make()
-                                ->title('Poll Activated')
-                                ->success()
-                                ->send();
-                        } catch (\Exception $e) {
-                            Notification::make()
-                                ->title('Failed to Activate Poll')
-                                ->body($e->getMessage())
-                                ->danger()
-                                ->send();
+                    ->action(
+                        function (Poll $record) {
+                            try {
+                                app(GovernanceService::class)->activatePoll($record);
+                                Notification::make()
+                                    ->title('Poll Activated')
+                                    ->success()
+                                    ->send();
+                            } catch (\Exception $e) {
+                                Notification::make()
+                                    ->title('Failed to Activate Poll')
+                                    ->body($e->getMessage())
+                                    ->danger()
+                                    ->send();
+                            }
                         }
-                    }),
+                    ),
 
                 Tables\Actions\Action::make('cancel')
                     ->icon('heroicon-o-x-mark')
                     ->color('warning')
                     ->visible(fn (Poll $record) => in_array($record->status, [PollStatus::DRAFT, PollStatus::ACTIVE]))
                     ->requiresConfirmation()
-                    ->form([
+                    ->form(
+                        [
                         Forms\Components\Textarea::make('reason')
                             ->label('Cancellation Reason')
                             ->required()
                             ->rows(3),
-                    ])
-                    ->action(function (Poll $record, array $data) {
-                        try {
-                            app(GovernanceService::class)->cancelPoll($record, $data['reason']);
-                            Notification::make()
-                                ->title('Poll Cancelled')
-                                ->success()
-                                ->send();
-                        } catch (\Exception $e) {
-                            Notification::make()
-                                ->title('Failed to Cancel Poll')
-                                ->body($e->getMessage())
-                                ->danger()
-                                ->send();
+                        ]
+                    )
+                    ->action(
+                        function (Poll $record, array $data) {
+                            try {
+                                app(GovernanceService::class)->cancelPoll($record, $data['reason']);
+                                Notification::make()
+                                    ->title('Poll Cancelled')
+                                    ->success()
+                                    ->send();
+                            } catch (\Exception $e) {
+                                Notification::make()
+                                    ->title('Failed to Cancel Poll')
+                                    ->body($e->getMessage())
+                                    ->danger()
+                                    ->send();
+                            }
                         }
-                    }),
+                    ),
 
                 Tables\Actions\Action::make('complete')
                     ->icon('heroicon-o-check')
                     ->color('primary')
                     ->visible(fn (Poll $record) => $record->status === PollStatus::ACTIVE && $record->isExpired())
                     ->requiresConfirmation()
-                    ->action(function (Poll $record) {
-                        try {
-                            $result = app(GovernanceService::class)->completePoll($record);
-                            Notification::make()
-                                ->title('Poll Completed')
-                                ->body("Winner: {$result->winningOption} with {$result->totalVotes} votes")
-                                ->success()
-                                ->send();
-                        } catch (\Exception $e) {
-                            Notification::make()
-                                ->title('Failed to Complete Poll')
-                                ->body($e->getMessage())
-                                ->danger()
-                                ->send();
+                    ->action(
+                        function (Poll $record) {
+                            try {
+                                $result = app(GovernanceService::class)->completePoll($record);
+                                Notification::make()
+                                    ->title('Poll Completed')
+                                    ->body("Winner: {$result->winningOption} with {$result->totalVotes} votes")
+                                    ->success()
+                                    ->send();
+                            } catch (\Exception $e) {
+                                Notification::make()
+                                    ->title('Failed to Complete Poll')
+                                    ->body($e->getMessage())
+                                    ->danger()
+                                    ->send();
+                            }
                         }
-                    }),
+                    ),
 
                 // Tables\Actions\Action::make('results')
                 //     ->icon('heroicon-o-chart-pie')
@@ -321,38 +366,45 @@ class PollResource extends Resource
 
                 // Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
+                ]
+            )
+            ->bulkActions(
+                [
+                Tables\Actions\BulkActionGroup::make(
+                    [
                     Tables\Actions\BulkAction::make('activate')
                         ->icon('heroicon-o-play')
                         ->color('success')
                         ->requiresConfirmation()
-                        ->action(function ($records) {
-                            $governanceService = app(GovernanceService::class);
-                            $success = 0;
-                            $errors = 0;
+                        ->action(
+                            function ($records) {
+                                $governanceService = app(GovernanceService::class);
+                                $success = 0;
+                                $errors = 0;
 
-                            foreach ($records as $record) {
-                                if ($record->status === PollStatus::DRAFT) {
-                                    try {
-                                        $governanceService->activatePoll($record);
-                                        $success++;
-                                    } catch (\Exception $e) {
-                                        $errors++;
+                                foreach ($records as $record) {
+                                    if ($record->status === PollStatus::DRAFT) {
+                                        try {
+                                            $governanceService->activatePoll($record);
+                                            $success++;
+                                        } catch (\Exception $e) {
+                                            $errors++;
+                                        }
                                     }
                                 }
-                            }
 
-                            Notification::make()
-                                ->title("Activated {$success} polls" . ($errors > 0 ? " ({$errors} failed)" : ''))
-                                ->success()
-                                ->send();
-                        }),
+                                Notification::make()
+                                    ->title("Activated {$success} polls" . ($errors > 0 ? " ({$errors} failed)" : ''))
+                                    ->success()
+                                    ->send();
+                            }
+                        ),
 
                     Tables\Actions\DeleteBulkAction::make(),
-                ]),
-            ])
+                    ]
+                ),
+                ]
+            )
             ->defaultSort('created_at', 'desc');
     }
 

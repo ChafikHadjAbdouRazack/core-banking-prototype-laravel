@@ -23,18 +23,24 @@ class SubscriberController extends Controller
             $unsubscribed = $this->emailService->processUnsubscribe($email, 'User requested unsubscribe');
 
             if ($unsubscribed) {
-                return view('subscriber.unsubscribed', [
+                return view(
+                    'subscriber.unsubscribed', [
                     'message' => 'You have been successfully unsubscribed from our mailing list.',
-                ]);
+                    ]
+                );
             }
 
-            return view('subscriber.unsubscribed', [
+            return view(
+                'subscriber.unsubscribed', [
                 'message' => 'You are already unsubscribed or we could not find your subscription.',
-            ]);
+                ]
+            );
         } catch (\Exception $e) {
-            return view('subscriber.unsubscribed', [
+            return view(
+                'subscriber.unsubscribed', [
                 'message' => 'Invalid unsubscribe link. Please contact support if you need assistance.',
-            ]);
+                ]
+            );
         }
     }
 
@@ -43,10 +49,12 @@ class SubscriberController extends Controller
      */
     public function subscribe(Request $request, string $source)
     {
-        $validated = $request->validate([
+        $validated = $request->validate(
+            [
             'email' => 'required|email',
             'tags'  => 'array',
-        ]);
+            ]
+        );
 
         try {
             $this->emailService->subscribe(
@@ -57,15 +65,19 @@ class SubscriberController extends Controller
                 $request->userAgent()
             );
 
-            return response()->json([
+            return response()->json(
+                [
                 'success' => true,
                 'message' => 'Thank you for subscribing! Please check your email.',
-            ]);
+                ]
+            );
         } catch (\Exception $e) {
-            return response()->json([
+            return response()->json(
+                [
                 'success' => false,
                 'message' => 'An error occurred. Please try again later.',
-            ], 500);
+                ], 500
+            );
         }
     }
 }

@@ -82,14 +82,16 @@ class StablecoinIssuanceService implements StablecoinIssuanceServiceInterface
         );
         $stablecoin->increment('total_collateral_value', $collateralValueInPegAsset);
 
-        Log::info('Stablecoin minted', [
+        Log::info(
+            'Stablecoin minted', [
             'account_uuid'      => $account->uuid,
             'stablecoin_code'   => $stablecoin->code,
             'collateral_asset'  => $collateralAssetCode,
             'collateral_amount' => $collateralAmount,
             'mint_amount'       => $mintAmount,
             'position_id'       => $positionUuid,
-        ]);
+            ]
+        );
 
         // Return the updated position
         return StablecoinCollateralPosition::where('uuid', $positionUuid)->firstOrFail();
@@ -170,14 +172,16 @@ class StablecoinIssuanceService implements StablecoinIssuanceServiceInterface
         );
         $stablecoin->decrement('total_collateral_value', $collateralValueInPegAsset);
 
-        Log::info('Stablecoin burned', [
+        Log::info(
+            'Stablecoin burned', [
             'account_uuid'        => $account->uuid,
             'stablecoin_code'     => $stablecoin->code,
             'burn_amount'         => $burnAmount,
             'collateral_released' => $collateralReleaseAmount,
             'position_id'         => $position->uuid,
             'position_status'     => $newDebtAmount == 0 ? 'closed' : 'active',
-        ]);
+            ]
+        );
 
         // Return the updated position
         return StablecoinCollateralPosition::where('uuid', $position->uuid)->firstOrFail();
@@ -225,11 +229,13 @@ class StablecoinIssuanceService implements StablecoinIssuanceServiceInterface
         );
         $stablecoin->increment('total_collateral_value', $collateralValueInPegAsset);
 
-        Log::info('Collateral added to position', [
+        Log::info(
+            'Collateral added to position', [
             'account_uuid'      => $account->uuid,
             'position_id'       => $position->uuid,
             'collateral_amount' => $collateralAmount,
-        ]);
+            ]
+        );
 
         // Return the updated position
         return StablecoinCollateralPosition::where('uuid', $position->uuid)->firstOrFail();

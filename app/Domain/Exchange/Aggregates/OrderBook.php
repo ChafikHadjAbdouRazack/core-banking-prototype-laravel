@@ -41,12 +41,14 @@ class OrderBook extends AggregateRoot
         string $quoteCurrency,
         array $metadata = []
     ): self {
-        $this->recordThat(new OrderBookInitialized(
-            orderBookId: $orderBookId,
-            baseCurrency: $baseCurrency,
-            quoteCurrency: $quoteCurrency,
-            metadata: $metadata
-        ));
+        $this->recordThat(
+            new OrderBookInitialized(
+                orderBookId: $orderBookId,
+                baseCurrency: $baseCurrency,
+                quoteCurrency: $quoteCurrency,
+                metadata: $metadata
+            )
+        );
 
         return $this;
     }
@@ -58,41 +60,47 @@ class OrderBook extends AggregateRoot
         string $amount,
         array $metadata = []
     ): self {
-        $this->recordThat(new OrderAddedToBook(
-            orderBookId: $this->orderBookId,
-            orderId: $orderId,
-            type: $type,
-            price: $price,
-            amount: $amount,
-            metadata: $metadata
-        ));
+        $this->recordThat(
+            new OrderAddedToBook(
+                orderBookId: $this->orderBookId,
+                orderId: $orderId,
+                type: $type,
+                price: $price,
+                amount: $amount,
+                metadata: $metadata
+            )
+        );
 
         return $this;
     }
 
     public function removeOrder(string $orderId, string $reason, array $metadata = []): self
     {
-        $this->recordThat(new OrderRemovedFromBook(
-            orderBookId: $this->orderBookId,
-            orderId: $orderId,
-            reason: $reason,
-            metadata: $metadata
-        ));
+        $this->recordThat(
+            new OrderRemovedFromBook(
+                orderBookId: $this->orderBookId,
+                orderId: $orderId,
+                reason: $reason,
+                metadata: $metadata
+            )
+        );
 
         return $this;
     }
 
     public function takeSnapshot(array $metadata = []): self
     {
-        $this->recordThat(new OrderBookSnapshotTaken(
-            orderBookId: $this->orderBookId,
-            buyOrders: $this->buyOrders->toArray(),
-            sellOrders: $this->sellOrders->toArray(),
-            bestBid: $this->bestBid?->__toString(),
-            bestAsk: $this->bestAsk?->__toString(),
-            lastPrice: $this->lastPrice?->__toString(),
-            metadata: $metadata
-        ));
+        $this->recordThat(
+            new OrderBookSnapshotTaken(
+                orderBookId: $this->orderBookId,
+                buyOrders: $this->buyOrders->toArray(),
+                sellOrders: $this->sellOrders->toArray(),
+                bestBid: $this->bestBid?->__toString(),
+                bestAsk: $this->bestAsk?->__toString(),
+                lastPrice: $this->lastPrice?->__toString(),
+                metadata: $metadata
+            )
+        );
 
         return $this;
     }
@@ -117,16 +125,20 @@ class OrderBook extends AggregateRoot
 
         if ($event->type === 'buy') {
             $this->buyOrders->push($order);
-            $this->buyOrders = $this->buyOrders->sortByDesc(function ($order) {
-                return $order['price']->__toString();
-            })->values();
+            $this->buyOrders = $this->buyOrders->sortByDesc(
+                function ($order) {
+                    return $order['price']->__toString();
+                }
+            )->values();
 
             $this->bestBid = $this->buyOrders->first()['price'] ?? null;
         } else {
             $this->sellOrders->push($order);
-            $this->sellOrders = $this->sellOrders->sortBy(function ($order) {
-                return $order['price']->__toString();
-            })->values();
+            $this->sellOrders = $this->sellOrders->sortBy(
+                function ($order) {
+                    return $order['price']->__toString();
+                }
+            )->values();
 
             $this->bestAsk = $this->sellOrders->first()['price'] ?? null;
         }
@@ -134,13 +146,17 @@ class OrderBook extends AggregateRoot
 
     protected function applyOrderRemovedFromBook(OrderRemovedFromBook $event): void
     {
-        $this->buyOrders = $this->buyOrders->reject(function ($order) use ($event) {
-            return $order['orderId'] === $event->orderId;
-        })->values();
+        $this->buyOrders = $this->buyOrders->reject(
+            function ($order) use ($event) {
+                return $order['orderId'] === $event->orderId;
+            }
+        )->values();
 
-        $this->sellOrders = $this->sellOrders->reject(function ($order) use ($event) {
-            return $order['orderId'] === $event->orderId;
-        })->values();
+        $this->sellOrders = $this->sellOrders->reject(
+            function ($order) use ($event) {
+                return $order['orderId'] === $event->orderId;
+            }
+        )->values();
 
         $this->bestBid = $this->buyOrders->first()['price'] ?? null;
         $this->bestAsk = $this->sellOrders->first()['price'] ?? null;

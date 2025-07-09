@@ -16,7 +16,7 @@ interface StabilityMechanismServiceInterface
     /**
      * Execute stability mechanism for specific stablecoin.
      *
-     * @param Stablecoin $stablecoin
+     * @param  Stablecoin $stablecoin
      * @return array
      */
     public function executeStabilityMechanismForStablecoin(Stablecoin $stablecoin): array;
@@ -31,7 +31,7 @@ interface StabilityMechanismServiceInterface
     /**
      * Rebalance system parameters.
      *
-     * @param array $targetMetrics
+     * @param  array $targetMetrics
      * @return array
      */
     public function rebalanceSystemParameters(array $targetMetrics = []): array;
@@ -39,7 +39,7 @@ interface StabilityMechanismServiceInterface
     /**
      * Check peg deviation.
      *
-     * @param Stablecoin $stablecoin
+     * @param  Stablecoin $stablecoin
      * @return array
      */
     public function checkPegDeviation(Stablecoin $stablecoin): array;
@@ -47,9 +47,9 @@ interface StabilityMechanismServiceInterface
     /**
      * Apply stability mechanism.
      *
-     * @param Stablecoin $stablecoin
-     * @param array $mechanism
-     * @param bool $dryRun
+     * @param  Stablecoin $stablecoin
+     * @param  array      $mechanism
+     * @param  bool       $dryRun
      * @return array
      */
     public function applyStabilityMechanism(Stablecoin $stablecoin, array $mechanism, bool $dryRun = false): array;
@@ -57,8 +57,8 @@ interface StabilityMechanismServiceInterface
     /**
      * Calculate fee adjustment.
      *
-     * @param float $deviation
-     * @param array $currentFees
+     * @param  float $deviation
+     * @param  array $currentFees
      * @return array
      */
     public function calculateFeeAdjustment(float $deviation, array $currentFees): array;
@@ -66,9 +66,9 @@ interface StabilityMechanismServiceInterface
     /**
      * Calculate supply incentives.
      *
-     * @param float $deviation
-     * @param float $currentSupply
-     * @param float $targetSupply
+     * @param  float $deviation
+     * @param  float $currentSupply
+     * @param  float $targetSupply
      * @return array
      */
     public function calculateSupplyIncentives(float $deviation, float $currentSupply, float $targetSupply): array;
@@ -83,8 +83,8 @@ interface StabilityMechanismServiceInterface
     /**
      * Execute emergency actions.
      *
-     * @param string $action
-     * @param array $params
+     * @param  string $action
+     * @param  array  $params
      * @return array
      */
     public function executeEmergencyActions(string $action, array $params = []): array;

@@ -15,9 +15,9 @@ use Workflow\WorkflowStub;
 class AccountService
 {
     /**
-     * @param LedgerAggregate $ledger
+     * @param LedgerAggregate      $ledger
      * @param TransactionAggregate $transaction
-     * @param TransferAggregate $transfer
+     * @param TransferAggregate    $transfer
      */
     public function __construct(
         protected LedgerAggregate $ledger,

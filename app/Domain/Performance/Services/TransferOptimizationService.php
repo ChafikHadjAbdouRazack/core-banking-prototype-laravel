@@ -28,11 +28,13 @@ class TransferOptimizationService
         $uuid = (string) $accountUuid;
         $cacheKey = "account:{$uuid}";
 
-        return Cache::remember($cacheKey, self::ACCOUNT_CACHE_TTL, function () use ($uuid) {
-            return Account::with(['balances', 'user'])
-                ->where('uuid', $uuid)
-                ->first();
-        });
+        return Cache::remember(
+            $cacheKey, self::ACCOUNT_CACHE_TTL, function () use ($uuid) {
+                return Account::with(['balances', 'user'])
+                    ->where('uuid', $uuid)
+                    ->first();
+            }
+        );
     }
 
     /**
@@ -42,11 +44,13 @@ class TransferOptimizationService
     {
         $cacheKey = "balance:{$accountUuid}:{$assetCode}";
 
-        return Cache::remember($cacheKey, self::BALANCE_CACHE_TTL, function () use ($accountUuid, $assetCode) {
-            return AccountBalance::where('account_uuid', $accountUuid)
-                ->where('asset_code', $assetCode)
-                ->first();
-        });
+        return Cache::remember(
+            $cacheKey, self::BALANCE_CACHE_TTL, function () use ($accountUuid, $assetCode) {
+                return AccountBalance::where('account_uuid', $accountUuid)
+                    ->where('asset_code', $assetCode)
+                    ->first();
+            }
+        );
     }
 
     /**
@@ -62,7 +66,8 @@ class TransferOptimizationService
         $toUuid = (string) $toAccountUuid;
 
         // Single query to fetch both accounts and balance
-        $result = DB::select('
+        $result = DB::select(
+            '
             SELECT 
                 a1.uuid as from_uuid,
                 a1.frozen as from_frozen,
@@ -73,7 +78,8 @@ class TransferOptimizationService
             CROSS JOIN accounts a2
             LEFT JOIN account_balances ab ON ab.account_uuid = a1.uuid AND ab.asset_code = ?
             WHERE a1.uuid = ? AND a2.uuid = ?
-        ', [$fromAssetCode, $fromUuid, $toUuid]);
+        ', [$fromAssetCode, $fromUuid, $toUuid]
+        );
 
         if (empty($result)) {
             throw new \Exception('One or both accounts not found');
@@ -141,16 +147,20 @@ class TransferOptimizationService
         // Fetch all required balances in one query
         $balanceQuery = AccountBalance::query();
         foreach ($balanceChecks as $check) {
-            $balanceQuery->orWhere(function ($q) use ($check) {
-                $q->where('account_uuid', $check['account_uuid'])
-                  ->where('asset_code', $check['asset_code']);
-            });
+            $balanceQuery->orWhere(
+                function ($q) use ($check) {
+                    $q->where('account_uuid', $check['account_uuid'])
+                        ->where('asset_code', $check['asset_code']);
+                }
+            );
         }
 
         $balances = $balanceQuery->get()
-            ->mapWithKeys(function ($balance) {
-                return ["{$balance->account_uuid}:{$balance->asset_code}" => $balance];
-            });
+            ->mapWithKeys(
+                function ($balance) {
+                    return ["{$balance->account_uuid}:{$balance->asset_code}" => $balance];
+                }
+            );
 
         // Validate each transfer
         $results = [];

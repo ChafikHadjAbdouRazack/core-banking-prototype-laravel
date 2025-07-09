@@ -45,13 +45,15 @@ class BlockchainWallet extends AggregateRoot
 
         $wallet = static::retrieve($walletId);
 
-        $wallet->recordThat(new BlockchainWalletCreated(
-            walletId: $walletId,
-            userId: $userId,
-            type: $type,
-            masterPublicKey: $masterPublicKey,
-            settings: $settings
-        ));
+        $wallet->recordThat(
+            new BlockchainWalletCreated(
+                walletId: $walletId,
+                userId: $userId,
+                type: $type,
+                masterPublicKey: $masterPublicKey,
+                settings: $settings
+            )
+        );
 
         return $wallet;
     }
@@ -71,14 +73,16 @@ class BlockchainWallet extends AggregateRoot
             throw new WalletException("Address already exists for chain {$chain}");
         }
 
-        $this->recordThat(new WalletAddressGenerated(
-            walletId: $this->walletId,
-            chain: $chain,
-            address: $address,
-            publicKey: $publicKey,
-            derivationPath: $derivationPath,
-            label: $label
-        ));
+        $this->recordThat(
+            new WalletAddressGenerated(
+                walletId: $this->walletId,
+                chain: $chain,
+                address: $address,
+                publicKey: $publicKey,
+                derivationPath: $derivationPath,
+                label: $label
+            )
+        );
 
         return $this;
     }
@@ -100,11 +104,13 @@ class BlockchainWallet extends AggregateRoot
             }
         }
 
-        $this->recordThat(new WalletSettingsUpdated(
-            walletId: $this->walletId,
-            oldSettings: $this->settings,
-            newSettings: array_merge($this->settings, $settings)
-        ));
+        $this->recordThat(
+            new WalletSettingsUpdated(
+                walletId: $this->walletId,
+                oldSettings: $this->settings,
+                newSettings: array_merge($this->settings, $settings)
+            )
+        );
 
         return $this;
     }
@@ -119,12 +125,14 @@ class BlockchainWallet extends AggregateRoot
             throw new WalletException('Cannot freeze closed wallet');
         }
 
-        $this->recordThat(new WalletFrozen(
-            walletId: $this->walletId,
-            reason: $reason,
-            frozenBy: $frozenBy,
-            frozenAt: now()
-        ));
+        $this->recordThat(
+            new WalletFrozen(
+                walletId: $this->walletId,
+                reason: $reason,
+                frozenBy: $frozenBy,
+                frozenAt: now()
+            )
+        );
 
         return $this;
     }
@@ -135,11 +143,13 @@ class BlockchainWallet extends AggregateRoot
             throw new WalletException('Wallet is not frozen');
         }
 
-        $this->recordThat(new WalletUnfrozen(
-            walletId: $this->walletId,
-            unfrozenBy: $unfrozenBy,
-            unfrozenAt: now()
-        ));
+        $this->recordThat(
+            new WalletUnfrozen(
+                walletId: $this->walletId,
+                unfrozenBy: $unfrozenBy,
+                unfrozenAt: now()
+            )
+        );
 
         return $this;
     }
@@ -158,14 +168,16 @@ class BlockchainWallet extends AggregateRoot
             throw new WalletException('Old public key does not match');
         }
 
-        $this->recordThat(new WalletKeyRotated(
-            walletId: $this->walletId,
-            chain: $chain,
-            oldPublicKey: $oldPublicKey,
-            newPublicKey: $newPublicKey,
-            rotatedBy: $rotatedBy,
-            rotatedAt: now()
-        ));
+        $this->recordThat(
+            new WalletKeyRotated(
+                walletId: $this->walletId,
+                chain: $chain,
+                oldPublicKey: $oldPublicKey,
+                newPublicKey: $newPublicKey,
+                rotatedBy: $rotatedBy,
+                rotatedAt: now()
+            )
+        );
 
         return $this;
     }
@@ -180,14 +192,16 @@ class BlockchainWallet extends AggregateRoot
             throw new WalletException('Backup only available for non-custodial wallets');
         }
 
-        $this->recordThat(new WalletBackupCreated(
-            walletId: $this->walletId,
-            backupId: $backupId,
-            backupMethod: $backupMethod,
-            encryptedData: $encryptedData,
-            createdBy: $createdBy,
-            createdAt: now()
-        ));
+        $this->recordThat(
+            new WalletBackupCreated(
+                walletId: $this->walletId,
+                backupId: $backupId,
+                backupMethod: $backupMethod,
+                encryptedData: $encryptedData,
+                createdBy: $createdBy,
+                createdAt: now()
+            )
+        );
 
         return $this;
     }

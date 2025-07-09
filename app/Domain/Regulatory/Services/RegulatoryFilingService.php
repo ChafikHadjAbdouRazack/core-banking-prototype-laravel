@@ -24,14 +24,16 @@ class RegulatoryFilingService
         }
 
         // Create filing record
-        $filing = RegulatoryFilingRecord::create([
+        $filing = RegulatoryFilingRecord::create(
+            [
             'regulatory_report_id' => $report->id,
             'filing_type'          => $options['filing_type'] ?? RegulatoryFilingRecord::TYPE_INITIAL,
             'filing_method'        => $options['filing_method'] ?? $this->determineFilingMethod($report),
             'filing_status'        => RegulatoryFilingRecord::STATUS_PENDING,
             'filed_by'             => auth()->user()?->name ?? 'System',
             'filing_credentials'   => $this->getFilingCredentials($report->jurisdiction),
-        ]);
+            ]
+        );
 
         try {
             // Submit based on method
@@ -99,11 +101,12 @@ class RegulatoryFilingService
      */
     public function checkFilingStatus(RegulatoryFilingRecord $filing): array
     {
-        if (
-            ! in_array($filing->filing_status, [
-            RegulatoryFilingRecord::STATUS_SUBMITTED,
-            RegulatoryFilingRecord::STATUS_ACKNOWLEDGED,
-            ])
+        if (! in_array(
+            $filing->filing_status, [
+                RegulatoryFilingRecord::STATUS_SUBMITTED,
+                RegulatoryFilingRecord::STATUS_ACKNOWLEDGED,
+                ]
+        )
         ) {
             return [
                 'status'  => $filing->filing_status,
@@ -129,10 +132,12 @@ class RegulatoryFilingService
 
             return $status;
         } catch (\Exception $e) {
-            Log::error('Failed to check filing status', [
+            Log::error(
+                'Failed to check filing status', [
                 'filing_id' => $filing->filing_id,
                 'error'     => $e->getMessage(),
-            ]);
+                ]
+            );
 
             return [
                 'status'  => 'error',
@@ -175,13 +180,15 @@ class RegulatoryFilingService
         $filing->update(['filing_request' => $request]);
 
         // Submit to API
-        $response = Http::withHeaders([
+        $response = Http::withHeaders(
+            [
             'Authorization'    => 'Bearer ' . ($credentials['api_key'] ?? ''),
             'X-Institution-ID' => $credentials['institution_id'] ?? '',
             'Content-Type'     => 'application/json',
-        ])
-        ->timeout(60)
-        ->post($endpoint, $request);
+            ]
+        )
+            ->timeout(60)
+            ->post($endpoint, $request);
 
         $responseData = $response->json();
 
@@ -216,10 +223,12 @@ class RegulatoryFilingService
         // In production, this would automate portal submission
         // For now, we'll simulate the process
 
-        Log::info('Portal submission initiated', [
+        Log::info(
+            'Portal submission initiated', [
             'report_id' => $report->report_id,
             'filing_id' => $filing->filing_id,
-        ]);
+            ]
+        );
 
         // Simulate portal submission
         $success = rand(1, 10) > 2; // 80% success rate
@@ -256,11 +265,13 @@ class RegulatoryFilingService
         }
 
         // In production, send actual email
-        Log::info('Email submission initiated', [
+        Log::info(
+            'Email submission initiated', [
             'report_id' => $report->report_id,
             'filing_id' => $filing->filing_id,
             'to'        => $emailConfig['to'],
-        ]);
+            ]
+        );
 
         // Simulate email sending
         return [
@@ -320,11 +331,13 @@ class RegulatoryFilingService
         $endpoint = $this->getApiStatusEndpoint($filing->report);
         $credentials = $filing->filing_credentials;
 
-        $response = Http::withHeaders([
+        $response = Http::withHeaders(
+            [
             'Authorization'    => 'Bearer ' . ($credentials['api_key'] ?? ''),
             'X-Institution-ID' => $credentials['institution_id'] ?? '',
-        ])
-        ->get($endpoint . '/' . $filing->filing_reference);
+            ]
+        )
+            ->get($endpoint . '/' . $filing->filing_reference);
 
         if ($response->successful()) {
             $data = $response->json();

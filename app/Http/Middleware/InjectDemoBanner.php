@@ -15,10 +15,9 @@ class InjectDemoBanner
         $response = $next($request);
 
         // Only inject banner in demo environment and for HTML responses
-        if (
-            app()->environment('demo') &&
-            config('demo.features.show_demo_banner', true) &&
-            $response->headers->get('Content-Type') === 'text/html; charset=UTF-8'
+        if (app()->environment('demo') 
+            && config('demo.features.show_demo_banner', true) 
+            && $response->headers->get('Content-Type') === 'text/html; charset=UTF-8'
         ) {
             $content = $response->getContent();
 

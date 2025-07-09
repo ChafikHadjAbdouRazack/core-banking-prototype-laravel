@@ -71,13 +71,15 @@ class KycDocument extends Model
      */
     public function markAsVerified(string $verifiedBy, ?string $expiresAt = null): void
     {
-        $this->update([
+        $this->update(
+            [
             'status'           => 'verified',
             'verified_at'      => now(),
             'verified_by'      => $verifiedBy,
             'expires_at'       => $expiresAt,
             'rejection_reason' => null,
-        ]);
+            ]
+        );
     }
 
     /**
@@ -85,11 +87,13 @@ class KycDocument extends Model
      */
     public function markAsRejected(string $reason, string $rejectedBy): void
     {
-        $this->update([
+        $this->update(
+            [
             'status'           => 'rejected',
             'rejection_reason' => $reason,
             'verified_by'      => $rejectedBy,
             'verified_at'      => now(),
-        ]);
+            ]
+        );
     }
 }

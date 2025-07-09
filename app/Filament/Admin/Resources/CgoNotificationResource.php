@@ -25,7 +25,8 @@ class CgoNotificationResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
-            ->schema([
+            ->schema(
+                [
                 Forms\Components\TextInput::make('email')
                     ->email()
                     ->required()
@@ -36,13 +37,15 @@ class CgoNotificationResource extends Resource
                 Forms\Components\Textarea::make('user_agent')
                     ->rows(3)
                     ->disabled(),
-            ]);
+                ]
+            );
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
+            ->columns(
+                [
                 Tables\Columns\TextColumn::make('email')
                     ->searchable()
                     ->sortable()
@@ -56,21 +59,30 @@ class CgoNotificationResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->since(),
-            ])
+                ]
+            )
             ->defaultSort('created_at', 'desc')
-            ->filters([
+            ->filters(
+                [
                 //
-            ])
-            ->actions([
+                ]
+            )
+            ->actions(
+                [
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\DeleteAction::make(),
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
+                ]
+            )
+            ->bulkActions(
+                [
+                Tables\Actions\BulkActionGroup::make(
+                    [
                     Tables\Actions\DeleteBulkAction::make(),
                     Tables\Actions\ExportBulkAction::make(),
-                ]),
-            ]);
+                    ]
+                ),
+                ]
+            );
     }
 
     public static function getNavigationBadge(): ?string

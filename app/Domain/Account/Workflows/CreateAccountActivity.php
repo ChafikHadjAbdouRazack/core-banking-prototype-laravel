@@ -23,8 +23,8 @@ class CreateAccountActivity extends Activity
         $accountWithUuid = $account->withUuid($uuid);
 
         $ledger->retrieve($uuid)
-               ->createAccount($accountWithUuid)
-               ->persist();
+            ->createAccount($accountWithUuid)
+            ->persist();
 
         return $uuid;
     }

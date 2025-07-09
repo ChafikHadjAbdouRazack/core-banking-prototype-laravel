@@ -46,13 +46,15 @@ class CustodianIntegrationController extends Controller
         // Get health metrics
         $healthMetrics = $this->getHealthMetrics();
 
-        return view('custodian-integration.index', compact(
-            'custodians',
-            'recentTransfers',
-            'webhookStats',
-            'syncStatus',
-            'healthMetrics'
-        ));
+        return view(
+            'custodian-integration.index', compact(
+                'custodians',
+                'recentTransfers',
+                'webhookStats',
+                'syncStatus',
+                'healthMetrics'
+            )
+        );
     }
 
     /**
@@ -93,13 +95,15 @@ class CustodianIntegrationController extends Controller
         // Get health history
         $healthHistory = $this->getHealthHistory($custodianCode);
 
-        return view('custodian-integration.show', compact(
-            'custodian',
-            'accounts',
-            'transfers',
-            'webhooks',
-            'healthHistory'
-        ));
+        return view(
+            'custodian-integration.show', compact(
+                'custodian',
+                'accounts',
+                'transfers',
+                'webhooks',
+                'healthHistory'
+            )
+        );
     }
 
     /**
@@ -117,16 +121,20 @@ class CustodianIntegrationController extends Controller
             $connector = $this->custodianRegistry->get($custodianCode);
             $result = $connector->testConnection();
 
-            return response()->json([
+            return response()->json(
+                [
                 'success' => true,
                 'message' => 'Connection successful',
                 'data'    => $result,
-            ]);
+                ]
+            );
         } catch (\Exception $e) {
-            return response()->json([
+            return response()->json(
+                [
                 'success' => false,
                 'message' => 'Connection failed: ' . $e->getMessage(),
-            ], 500);
+                ], 500
+            );
         }
     }
 
@@ -192,8 +200,9 @@ class CustodianIntegrationController extends Controller
             ->orderBy('created_at', 'desc')
             ->take(10)
             ->get()
-            ->map(function ($transfer) {
-                return [
+            ->map(
+                function ($transfer) {
+                    return [
                     'id'          => $transfer->id,
                     'custodian'   => $transfer->custodian_code,
                     'type'        => $transfer->type,
@@ -203,8 +212,9 @@ class CustodianIntegrationController extends Controller
                     'source'      => $transfer->sourceAccount->name ?? 'External',
                     'destination' => $transfer->destinationAccount->name ?? 'External',
                     'created_at'  => $transfer->created_at,
-                ];
-            });
+                    ];
+                }
+            );
     }
 
     /**
@@ -221,9 +231,11 @@ class CustodianIntegrationController extends Controller
             ->select('custodian', 'event_type')
             ->get()
             ->groupBy('custodian')
-            ->map(function ($group) {
-                return $group->groupBy('event_type')->map->count();
-            });
+            ->map(
+                function ($group) {
+                    return $group->groupBy('event_type')->map->count();
+                }
+            );
 
         return [
             'total'               => $total,

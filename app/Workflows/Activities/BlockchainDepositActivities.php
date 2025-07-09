@@ -123,7 +123,8 @@ class BlockchainDepositActivities
             ->toScale(2)
             ->__toString();
 
-        DB::table('blockchain_deposits')->insert([
+        DB::table('blockchain_deposits')->insert(
+            [
             'deposit_id'    => $depositId,
             'user_id'       => $userId,
             'wallet_id'     => $walletId,
@@ -137,7 +138,8 @@ class BlockchainDepositActivities
             'block_number'  => $txData['block_number'],
             'status'        => 'pending',
             'created_at'    => now(),
-        ]);
+            ]
+        );
     }
 
     public function waitForConfirmations(
@@ -158,10 +160,12 @@ class BlockchainDepositActivities
     ): void {
         DB::table('blockchain_deposits')
             ->where('deposit_id', $depositId)
-            ->update([
+            ->update(
+                [
                 'confirmations' => $confirmations,
                 'updated_at'    => now(),
-            ]);
+                ]
+            );
     }
 
     public function getUserFiatAccount(string $userId): string
@@ -185,14 +189,16 @@ class BlockchainDepositActivities
         string $depositId
     ): void {
         // Credit user's fiat account
-        DB::table('transactions')->insert([
+        DB::table('transactions')->insert(
+            [
             'account_id'  => $accountId,
             'type'        => 'credit',
             'amount'      => $amount,
             'description' => 'Blockchain deposit',
             'reference'   => $depositId,
             'created_at'  => now(),
-        ]);
+            ]
+        );
 
         // Update account balance
         DB::table('accounts')
@@ -206,11 +212,13 @@ class BlockchainDepositActivities
     ): void {
         DB::table('blockchain_deposits')
             ->where('deposit_id', $depositId)
-            ->update([
+            ->update(
+                [
                 'status'       => $status,
                 'confirmed_at' => $status === 'completed' ? now() : null,
                 'updated_at'   => now(),
-            ]);
+                ]
+            );
     }
 
     public function notifyUser(string $userId, string $depositId, string $status): void
@@ -218,15 +226,19 @@ class BlockchainDepositActivities
         // Send notification to user
         $user = User::find($userId);
         if ($user) {
-            DB::table('notifications')->insert([
+            DB::table('notifications')->insert(
+                [
                 'user_id' => $userId,
                 'type'    => 'blockchain_deposit',
-                'data'    => json_encode([
+                'data'    => json_encode(
+                    [
                     'deposit_id' => $depositId,
                     'status'     => $status,
-                ]),
+                    ]
+                ),
                 'created_at' => now(),
-            ]);
+                ]
+            );
         }
     }
 
@@ -249,10 +261,12 @@ class BlockchainDepositActivities
         // Update deposit status
         DB::table('blockchain_deposits')
             ->where('deposit_id', $depositId)
-            ->update([
+            ->update(
+                [
                 'status'     => 'reversed',
                 'updated_at' => now(),
-            ]);
+                ]
+            );
     }
 
     public function recordAnomalousDeposit(
@@ -261,7 +275,8 @@ class BlockchainDepositActivities
         array $txData,
         string $reason
     ): void {
-        DB::table('anomalous_deposits')->insert([
+        DB::table('anomalous_deposits')->insert(
+            [
             'chain'        => $chain,
             'tx_hash'      => $txHash,
             'from_address' => $txData['from_address'],
@@ -270,6 +285,7 @@ class BlockchainDepositActivities
             'reason'       => $reason,
             'tx_data'      => json_encode($txData),
             'created_at'   => now(),
-        ]);
+            ]
+        );
     }
 }

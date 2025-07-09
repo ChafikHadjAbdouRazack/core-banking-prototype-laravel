@@ -49,9 +49,9 @@ class AssetTransferAggregate extends AggregateRoot
     /**
      * @param AccountUuid $from
      * @param AccountUuid $to
-     * @param string $assetCode
-     * @param int $amount
-     * @param array|null $metadata
+     * @param string      $assetCode
+     * @param int         $amount
+     * @param array|null  $metadata
      *
      * @return $this
      */
@@ -106,10 +106,10 @@ class AssetTransferAggregate extends AggregateRoot
     /**
      * Generate hash for asset transfer.
      *
-     * @param AccountUuid $from
-     * @param AccountUuid $to
-     * @param string $assetCode
-     * @param int $amount
+     * @param  AccountUuid $from
+     * @param  AccountUuid $to
+     * @param  string      $assetCode
+     * @param  int         $amount
      * @return Hash
      */
     protected function generateHashForAssetTransfer(
@@ -133,11 +133,11 @@ class AssetTransferAggregate extends AggregateRoot
     /**
      * Validate hash for asset transfer.
      *
-     * @param Hash $hash
-     * @param AccountUuid $from
-     * @param AccountUuid $to
-     * @param string $assetCode
-     * @param int $amount
+     * @param  Hash        $hash
+     * @param  AccountUuid $from
+     * @param  AccountUuid $to
+     * @param  string      $assetCode
+     * @param  int         $amount
      * @return void
      */
     protected function validateHashForAssetTransfer(

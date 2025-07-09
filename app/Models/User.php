@@ -56,6 +56,7 @@ class User extends Authenticatable implements FilamentUser
         'kyc_status',
         'kyc_submitted_at',
         'kyc_approved_at',
+        'kyc_rejected_at',
         'kyc_expires_at',
         'kyc_level',
         'pep_status',
@@ -220,10 +221,12 @@ class User extends Authenticatable implements FilamentUser
      */
     public function completeOnboarding(): void
     {
-        $this->update([
+        $this->update(
+            [
             'has_completed_onboarding' => true,
             'onboarding_completed_at'  => now(),
-        ]);
+            ]
+        );
     }
 
     /**

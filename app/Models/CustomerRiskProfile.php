@@ -158,11 +158,13 @@ class CustomerRiskProfile extends Model
     {
         parent::boot();
 
-        static::creating(function ($profile) {
-            if (! $profile->profile_number) {
-                $profile->profile_number = static::generateProfileNumber();
+        static::creating(
+            function ($profile) {
+                if (! $profile->profile_number) {
+                    $profile->profile_number = static::generateProfileNumber();
+                }
             }
-        });
+        );
     }
 
     public static function generateProfileNumber(): string

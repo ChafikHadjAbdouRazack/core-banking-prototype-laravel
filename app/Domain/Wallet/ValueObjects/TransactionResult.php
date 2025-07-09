@@ -17,7 +17,8 @@ class TransactionResult
 
     public function toArray(): array
     {
-        return array_filter([
+        return array_filter(
+            [
             'hash'                => $this->hash,
             'status'              => $this->status,
             'block_number'        => $this->blockNumber,
@@ -25,7 +26,8 @@ class TransactionResult
             'effective_gas_price' => $this->effectiveGasPrice,
             'logs'                => $this->logs,
             'metadata'            => $this->metadata,
-        ], fn ($value) => $value !== null);
+            ], fn ($value) => $value !== null
+        );
     }
 
     public function isSuccess(): bool

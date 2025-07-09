@@ -62,7 +62,8 @@ class AuditLog extends Model
     ): self {
         $request = request();
 
-        return static::create([
+        return static::create(
+            [
             'user_uuid'      => Auth::user()?->uuid,
             'action'         => $action,
             'auditable_type' => $auditable ? get_class($auditable) : null,
@@ -73,7 +74,8 @@ class AuditLog extends Model
             'ip_address'     => $request ? $request->ip() : null,
             'user_agent'     => $request ? $request->userAgent() : null,
             'tags'           => $tags,
-        ]);
+            ]
+        );
     }
 
     /**
@@ -98,7 +100,7 @@ class AuditLog extends Model
     public function scopeForAuditable($query, Model $auditable)
     {
         return $query->where('auditable_type', get_class($auditable))
-                     ->where('auditable_id', $auditable->getKey());
+            ->where('auditable_id', $auditable->getKey());
     }
 
     /**

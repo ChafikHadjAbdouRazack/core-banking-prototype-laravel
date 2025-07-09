@@ -176,13 +176,15 @@ class BlockchainWithdrawalActivities
 
         // This would interact with the Account aggregate to lock funds
         // For now, we'll use a simple DB update
-        DB::table('account_balance_locks')->insert([
+        DB::table('account_balance_locks')->insert(
+            [
             'account_id' => $accountId,
             'amount'     => $amount,
             'reason'     => 'blockchain_withdrawal',
             'expires_at' => now()->addHours(24),
             'created_at' => now(),
-        ]);
+            ]
+        );
     }
 
     public function prepareTransaction(
@@ -256,7 +258,8 @@ class BlockchainWithdrawalActivities
         $txHash = '0x' . hash('sha256', $signature . time());
 
         // Store transaction record
-        DB::table('blockchain_transactions')->insert([
+        DB::table('blockchain_transactions')->insert(
+            [
             'chain'        => $chain,
             'type'         => 'withdrawal',
             'tx_hash'      => $txHash,
@@ -266,7 +269,8 @@ class BlockchainWithdrawalActivities
             'fee'          => $transactionData['fee'],
             'status'       => 'pending',
             'created_at'   => now(),
-        ]);
+            ]
+        );
 
         return $txHash;
     }
@@ -281,7 +285,8 @@ class BlockchainWithdrawalActivities
         array $fees,
         string $txHash
     ): void {
-        DB::table('blockchain_withdrawals')->insert([
+        DB::table('blockchain_withdrawals')->insert(
+            [
             'withdrawal_id' => $withdrawalId,
             'user_id'       => $userId,
             'wallet_id'     => $walletId,
@@ -294,7 +299,8 @@ class BlockchainWithdrawalActivities
             'tx_hash'       => $txHash,
             'status'        => 'processing',
             'created_at'    => now(),
-        ]);
+            ]
+        );
     }
 
     public function waitForConfirmations(string $txHash, string $chain): array
@@ -317,12 +323,14 @@ class BlockchainWithdrawalActivities
     ): void {
         DB::table('blockchain_withdrawals')
             ->where('withdrawal_id', $withdrawalId)
-            ->update([
+            ->update(
+                [
                 'status'        => $status,
                 'confirmations' => $confirmationData['confirmations'],
                 'confirmed_at'  => $status === 'completed' ? now() : null,
                 'updated_at'    => now(),
-            ]);
+                ]
+            );
     }
 
     public function processAccountingEntries(
@@ -337,25 +345,29 @@ class BlockchainWithdrawalActivities
             $totalAmount = BigDecimal::of($amount)->plus($fees['total_fee']);
 
             // This would normally use the Account aggregate's methods
-            DB::table('transactions')->insert([
+            DB::table('transactions')->insert(
+                [
                 'account_id'  => $accountId,
                 'type'        => 'debit',
                 'amount'      => $totalAmount->toScale(2)->__toString(),
                 'description' => 'Blockchain withdrawal',
                 'reference'   => $walletId,
                 'created_at'  => now(),
-            ]);
+                ]
+            );
         }
 
         // Record fees as revenue
         if (BigDecimal::of($fees['platform_fee'])->isGreaterThan(0)) {
-            DB::table('transactions')->insert([
+            DB::table('transactions')->insert(
+                [
                 'account_id'  => 'revenue_account', // Placeholder
                 'type'        => 'credit',
                 'amount'      => $fees['platform_fee'],
                 'description' => 'Withdrawal platform fee',
                 'created_at'  => now(),
-            ]);
+                ]
+            );
         }
     }
 
@@ -366,15 +378,19 @@ class BlockchainWithdrawalActivities
         if ($user) {
             // This would trigger a notification
             // For now, just log it
-            DB::table('notifications')->insert([
+            DB::table('notifications')->insert(
+                [
                 'user_id' => $userId,
                 'type'    => 'blockchain_withdrawal',
-                'data'    => json_encode([
+                'data'    => json_encode(
+                    [
                     'withdrawal_id' => $withdrawalId,
                     'status'        => $status,
-                ]),
+                    ]
+                ),
                 'created_at' => now(),
-            ]);
+                ]
+            );
         }
     }
 
@@ -397,11 +413,13 @@ class BlockchainWithdrawalActivities
         // Update withdrawal status
         DB::table('blockchain_withdrawals')
             ->where('withdrawal_id', $withdrawalId)
-            ->update([
+            ->update(
+                [
                 'status'     => 'failed',
                 'failed_at'  => now(),
                 'updated_at' => now(),
-            ]);
+                ]
+            );
 
         // Reverse any accounting entries
         DB::table('transactions')

@@ -61,9 +61,11 @@ abstract class BaseExchangeRateProvider implements IExchangeRateProvider
 
             return $response->successful();
         } catch (\Exception $e) {
-            Log::error("Exchange rate provider {$this->getName()} health check failed", [
+            Log::error(
+                "Exchange rate provider {$this->getName()} health check failed", [
                 'error' => $e->getMessage(),
-            ]);
+                ]
+            );
 
             return false;
         }
@@ -130,11 +132,13 @@ abstract class BaseExchangeRateProvider implements IExchangeRateProvider
     protected function logRequest(string $method, string $endpoint, array $data = []): void
     {
         if ($this->config['debug'] ?? false) {
-            Log::debug("Exchange rate provider {$this->getName()} request", [
+            Log::debug(
+                "Exchange rate provider {$this->getName()} request", [
                 'method'   => $method,
                 'endpoint' => $endpoint,
                 'data'     => $data,
-            ]);
+                ]
+            );
         }
     }
 
@@ -144,12 +148,14 @@ abstract class BaseExchangeRateProvider implements IExchangeRateProvider
     protected function logResponse(string $method, string $endpoint, $response): void
     {
         if ($this->config['debug'] ?? false) {
-            Log::debug("Exchange rate provider {$this->getName()} response", [
+            Log::debug(
+                "Exchange rate provider {$this->getName()} response", [
                 'method'   => $method,
                 'endpoint' => $endpoint,
                 'status'   => $response->status(),
                 'body'     => $response->json(),
-            ]);
+                ]
+            );
         }
     }
 
@@ -167,9 +173,11 @@ abstract class BaseExchangeRateProvider implements IExchangeRateProvider
             throw new RateLimitException("{$message}: Rate limit exceeded");
         }
 
-        throw new RateProviderException("{$message}: HTTP {$status}", $status, null, [
+        throw new RateProviderException(
+            "{$message}: HTTP {$status}", $status, null, [
             'response' => $body,
-        ]);
+            ]
+        );
     }
 
     /**

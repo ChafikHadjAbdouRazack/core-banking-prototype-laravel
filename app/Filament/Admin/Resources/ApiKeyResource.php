@@ -34,9 +34,11 @@ class ApiKeyResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
-            ->schema([
+            ->schema(
+                [
                 Forms\Components\Section::make('Key Information')
-                    ->schema([
+                    ->schema(
+                        [
                         Forms\Components\TextInput::make('name')
                             ->required(),
                         Forms\Components\Textarea::make('description')
@@ -46,27 +48,33 @@ class ApiKeyResource extends Resource
                             ->disabled(),
                         Forms\Components\Toggle::make('is_active')
                             ->label('Active'),
-                    ]),
+                        ]
+                    ),
 
                 Forms\Components\Section::make('Permissions & Security')
-                    ->schema([
+                    ->schema(
+                        [
                         Forms\Components\CheckboxList::make('permissions')
-                            ->options([
+                            ->options(
+                                [
                                 'read'   => 'Read',
                                 'write'  => 'Write',
                                 'delete' => 'Delete',
                                 '*'      => 'All Permissions',
-                            ])
+                                ]
+                            )
                             ->columns(2),
                         Forms\Components\TagsInput::make('allowed_ips')
                             ->label('IP Whitelist')
                             ->placeholder('Add IP address'),
                         Forms\Components\DateTimePicker::make('expires_at')
                             ->label('Expiration Date'),
-                    ]),
+                        ]
+                    ),
 
                 Forms\Components\Section::make('Usage Information')
-                    ->schema([
+                    ->schema(
+                        [
                         Forms\Components\Placeholder::make('user')
                             ->label('Owner')
                             ->content(fn (ApiKey $record): string => $record->user->name ?? 'N/A'),
@@ -76,15 +84,18 @@ class ApiKeyResource extends Resource
                         Forms\Components\Placeholder::make('request_count')
                             ->label('Total Requests')
                             ->content(fn (ApiKey $record): string => number_format($record->request_count)),
-                    ])
+                        ]
+                    )
                     ->hiddenOn('create'),
-            ]);
+                ]
+            );
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
+            ->columns(
+                [
                 Tables\Columns\TextColumn::make('name')
                     ->searchable()
                     ->sortable(),
@@ -96,12 +107,14 @@ class ApiKeyResource extends Resource
                     ->label('Key')
                     ->formatStateUsing(fn (string $state): string => $state . '...'),
                 Tables\Columns\BadgeColumn::make('permissions')
-                    ->colors([
+                    ->colors(
+                        [
                         'success' => 'read',
                         'warning' => 'write',
                         'danger'  => 'delete',
                         'primary' => '*',
-                    ]),
+                        ]
+                    ),
                 Tables\Columns\IconColumn::make('is_active')
                     ->boolean(),
                 Tables\Columns\TextColumn::make('last_used_at')
@@ -113,15 +126,19 @@ class ApiKeyResource extends Resource
                 Tables\Columns\TextColumn::make('expires_at')
                     ->dateTime()
                     ->sortable(),
-            ])
-            ->filters([
+                ]
+            )
+            ->filters(
+                [
                 Tables\Filters\TernaryFilter::make('is_active'),
                 Tables\Filters\Filter::make('expired')
                     ->query(fn (Builder $query): Builder => $query->where('expires_at', '<', now())),
                 Tables\Filters\Filter::make('never_used')
                     ->query(fn (Builder $query): Builder => $query->whereNull('last_used_at')),
-            ])
-            ->actions([
+                ]
+            )
+            ->actions(
+                [
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\Action::make('revoke')
@@ -130,16 +147,21 @@ class ApiKeyResource extends Resource
                     ->color('danger')
                     ->icon('heroicon-m-x-circle')
                     ->visible(fn (ApiKey $record): bool => $record->is_active),
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
+                ]
+            )
+            ->bulkActions(
+                [
+                Tables\Actions\BulkActionGroup::make(
+                    [
                     Tables\Actions\BulkAction::make('revoke')
                         ->action(fn ($records) => $records->each->revoke())
                         ->requiresConfirmation()
                         ->color('danger')
                         ->icon('heroicon-m-x-circle'),
-                ]),
-            ])
+                    ]
+                ),
+                ]
+            )
             ->defaultSort('created_at', 'desc');
     }
 

@@ -106,9 +106,11 @@ class SimpleBitcoinConnector implements BlockchainConnector
 
     public function broadcastTransaction(SignedTransaction $transaction): TransactionResult
     {
-        $response = Http::post("{$this->apiUrl}/txs/push", [
+        $response = Http::post(
+            "{$this->apiUrl}/txs/push", [
             'tx' => $transaction->rawTransaction,
-        ]);
+            ]
+        );
 
         if (! $response->successful()) {
             throw new \Exception('Failed to broadcast transaction: ' . $response->body());

@@ -23,7 +23,8 @@ class UserResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
-            ->schema([
+            ->schema(
+                [
                 Forms\Components\TextInput::make('uuid')
                     ->label('UUID')
                     ->required(),
@@ -60,13 +61,15 @@ class UserResource extends Resource
                     ->maxLength(4)
                     ->default(null),
                 Forms\Components\DateTimePicker::make('trial_ends_at'),
-            ]);
+                ]
+            );
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
+            ->columns(
+                [
                 Tables\Columns\TextColumn::make('uuid')
                     ->label('UUID'),
                 Tables\Columns\TextColumn::make('name')
@@ -101,18 +104,27 @@ class UserResource extends Resource
                 Tables\Columns\TextColumn::make('trial_ends_at')
                     ->dateTime()
                     ->sortable(),
-            ])
-            ->filters([
+                ]
+            )
+            ->filters(
+                [
                 //
-            ])
-            ->actions([
+                ]
+            )
+            ->actions(
+                [
                 Tables\Actions\EditAction::make(),
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
+                ]
+            )
+            ->bulkActions(
+                [
+                Tables\Actions\BulkActionGroup::make(
+                    [
                     Tables\Actions\DeleteBulkAction::make(),
-                ]),
-            ]);
+                    ]
+                ),
+                ]
+            );
     }
 
     public static function getRelations(): array

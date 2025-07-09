@@ -150,9 +150,11 @@ class OrderMatchingWorkflow extends Workflow
         );
 
         // Calculate total filled amount
-        $totalFilledAmount = $matchingResult->matches->reduce(function ($carry, $match) {
-            return bcadd($carry, $match->executedAmount, 18);
-        }, '0');
+        $totalFilledAmount = $matchingResult->matches->reduce(
+            function ($carry, $match) {
+                return bcadd($carry, $match->executedAmount, 18);
+            }, '0'
+        );
 
         $order = Order::retrieve($input->orderId);
         $status = $order->getRemainingAmount()->isZero() ? 'filled' : 'partially_filled';

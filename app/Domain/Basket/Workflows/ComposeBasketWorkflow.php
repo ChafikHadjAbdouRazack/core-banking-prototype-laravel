@@ -21,12 +21,14 @@ class ComposeBasketWorkflow extends Workflow
             );
 
             // Add compensation to decompose the basket if composition fails later
-            $this->addCompensation(fn () => ActivityStub::make(
-                DecomposeBasketActivity::class,
-                $accountUuid,
-                $basketCode,
-                $amount
-            ));
+            $this->addCompensation(
+                fn () => ActivityStub::make(
+                    DecomposeBasketActivity::class,
+                    $accountUuid,
+                    $basketCode,
+                    $amount
+                )
+            );
 
             return $result;
         } catch (\Throwable $th) {

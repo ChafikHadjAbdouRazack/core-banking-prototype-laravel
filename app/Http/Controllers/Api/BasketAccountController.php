@@ -28,32 +28,32 @@ class BasketAccountController extends Controller
      *     tags={"Basket Operations"},
      *     summary="Decompose basket holdings into component assets",
      *     security={{"bearerAuth":{}}},
-     *     @OA\Parameter(
+     * @OA\Parameter(
      *         name="uuid",
      *         in="path",
      *         description="Account UUID",
      *         required=true,
-     *         @OA\Schema(type="string", format="uuid")
+     * @OA\Schema(type="string",              format="uuid")
      *     ),
-     *     @OA\RequestBody(
+     * @OA\RequestBody(
      *         required=true,
-     *         @OA\JsonContent(
+     * @OA\JsonContent(
      *             required={"basket_code", "amount"},
-     *             @OA\Property(property="basket_code", type="string", example="STABLE_BASKET"),
-     *             @OA\Property(property="amount", type="integer", example=10000, description="Amount in smallest unit")
+     * @OA\Property(property="basket_code",   type="string", example="STABLE_BASKET"),
+     * @OA\Property(property="amount",        type="integer", example=10000, description="Amount in smallest unit")
      *         )
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=200,
      *         description="Basket decomposed successfully",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="basket_code", type="string"),
-     *             @OA\Property(property="basket_amount", type="integer"),
-     *             @OA\Property(property="components", type="object"),
-     *             @OA\Property(property="decomposed_at", type="string", format="date-time")
+     * @OA\JsonContent(
+     * @OA\Property(property="basket_code",   type="string"),
+     * @OA\Property(property="basket_amount", type="integer"),
+     * @OA\Property(property="components",    type="object"),
+     * @OA\Property(property="decomposed_at", type="string", format="date-time")
      *         )
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=422,
      *         description="Validation error or insufficient balance"
      *     )
@@ -61,10 +61,12 @@ class BasketAccountController extends Controller
      */
     public function decompose(Request $request, string $uuid): JsonResponse
     {
-        $validated = $request->validate([
+        $validated = $request->validate(
+            [
             'basket_code' => 'required|string|exists:basket_assets,code',
             'amount'      => 'required|integer|min:1',
-        ]);
+            ]
+        );
 
         $account = Account::where('uuid', $uuid)->firstOrFail();
 
@@ -82,9 +84,11 @@ class BasketAccountController extends Controller
 
             return response()->json($result);
         } catch (\Exception $e) {
-            return response()->json([
+            return response()->json(
+                [
                 'message' => $e->getMessage(),
-            ], 422);
+                ], 422
+            );
         }
     }
 
@@ -95,32 +99,32 @@ class BasketAccountController extends Controller
      *     tags={"Basket Operations"},
      *     summary="Compose component assets into a basket",
      *     security={{"bearerAuth":{}}},
-     *     @OA\Parameter(
+     * @OA\Parameter(
      *         name="uuid",
      *         in="path",
      *         description="Account UUID",
      *         required=true,
-     *         @OA\Schema(type="string", format="uuid")
+     * @OA\Schema(type="string",                format="uuid")
      *     ),
-     *     @OA\RequestBody(
+     * @OA\RequestBody(
      *         required=true,
-     *         @OA\JsonContent(
+     * @OA\JsonContent(
      *             required={"basket_code", "amount"},
-     *             @OA\Property(property="basket_code", type="string", example="STABLE_BASKET"),
-     *             @OA\Property(property="amount", type="integer", example=10000, description="Amount of basket to create")
+     * @OA\Property(property="basket_code",     type="string", example="STABLE_BASKET"),
+     * @OA\Property(property="amount",          type="integer", example=10000, description="Amount of basket to create")
      *         )
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=200,
      *         description="Basket composed successfully",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="basket_code", type="string"),
-     *             @OA\Property(property="basket_amount", type="integer"),
-     *             @OA\Property(property="components_used", type="object"),
-     *             @OA\Property(property="composed_at", type="string", format="date-time")
+     * @OA\JsonContent(
+     * @OA\Property(property="basket_code",     type="string"),
+     * @OA\Property(property="basket_amount",   type="integer"),
+     * @OA\Property(property="components_used", type="object"),
+     * @OA\Property(property="composed_at",     type="string", format="date-time")
      *         )
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=422,
      *         description="Validation error or insufficient component balances"
      *     )
@@ -128,10 +132,12 @@ class BasketAccountController extends Controller
      */
     public function compose(Request $request, string $uuid): JsonResponse
     {
-        $validated = $request->validate([
+        $validated = $request->validate(
+            [
             'basket_code' => 'required|string|exists:basket_assets,code',
             'amount'      => 'required|integer|min:1',
-        ]);
+            ]
+        );
 
         $account = Account::where('uuid', $uuid)->firstOrFail();
 
@@ -149,9 +155,11 @@ class BasketAccountController extends Controller
 
             return response()->json($result);
         } catch (\Exception $e) {
-            return response()->json([
+            return response()->json(
+                [
                 'message' => $e->getMessage(),
-            ], 422);
+                ], 422
+            );
         }
     }
 
@@ -162,27 +170,27 @@ class BasketAccountController extends Controller
      *     tags={"Basket Operations"},
      *     summary="Get basket holdings for an account",
      *     security={{"bearerAuth":{}}},
-     *     @OA\Parameter(
+     * @OA\Parameter(
      *         name="uuid",
      *         in="path",
      *         description="Account UUID",
      *         required=true,
-     *         @OA\Schema(type="string", format="uuid")
+     * @OA\Schema(type="string",                format="uuid")
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=200,
      *         description="Account basket holdings",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="account_uuid", type="string"),
-     *             @OA\Property(property="basket_holdings", type="array", @OA\Items(
-     *                 @OA\Property(property="basket_code", type="string"),
-     *                 @OA\Property(property="basket_name", type="string"),
-     *                 @OA\Property(property="balance", type="integer"),
-     *                 @OA\Property(property="unit_value", type="number"),
-     *                 @OA\Property(property="total_value", type="number")
+     * @OA\JsonContent(
+     * @OA\Property(property="account_uuid",    type="string"),
+     * @OA\Property(property="basket_holdings", type="array", @OA\Items(
+     * @OA\Property(property="basket_code",     type="string"),
+     * @OA\Property(property="basket_name",     type="string"),
+     * @OA\Property(property="balance",         type="integer"),
+     * @OA\Property(property="unit_value",      type="number"),
+     * @OA\Property(property="total_value",     type="number")
      *             )),
-     *             @OA\Property(property="total_value", type="number"),
-     *             @OA\Property(property="currency", type="string")
+     * @OA\Property(property="total_value",     type="number"),
+     * @OA\Property(property="currency",        type="string")
      *         )
      *     )
      * )

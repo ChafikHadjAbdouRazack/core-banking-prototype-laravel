@@ -44,24 +44,28 @@ class OpenBankingWithdrawalController extends Controller
 
         // Get available banks for connection
         $availableBanks = $this->bankIntegration->getAvailableConnectors()
-            ->map(function ($connector, $bankCode) {
-                return [
+            ->map(
+                function ($connector, $bankCode) {
+                    return [
                     'code'                 => $bankCode,
                     'name'                 => $connector->getBankName(),
                     'logo'                 => $connector->getLogoUrl(),
                     'supported_currencies' => $connector->getSupportedCurrencies(),
-                ];
-            });
+                    ];
+                }
+            );
 
         // Get account balances
         $balances = $account->balances()->with('asset')->get();
 
-        return view('wallet.withdraw-openbanking', [
+        return view(
+            'wallet.withdraw-openbanking', [
             'account'        => $account,
             'connectedBanks' => $connectedBanks,
             'availableBanks' => $availableBanks,
             'balances'       => $balances,
-        ]);
+            ]
+        );
     }
 
     /**
@@ -69,11 +73,13 @@ class OpenBankingWithdrawalController extends Controller
      */
     public function initiate(Request $request)
     {
-        $request->validate([
+        $request->validate(
+            [
             'bank_code' => 'required|string',
             'amount'    => 'required|numeric|min:10',
             'currency'  => 'required|in:USD,EUR,GBP',
-        ]);
+            ]
+        );
 
         $user = Auth::user();
         $account = $user->accounts()->first();
@@ -87,31 +93,37 @@ class OpenBankingWithdrawalController extends Controller
         }
 
         // Store withdrawal details in session
-        Session::put('openbanking_withdrawal', [
+        Session::put(
+            'openbanking_withdrawal', [
             'amount'       => $amountInCents,
             'currency'     => $request->currency,
             'bank_code'    => $request->bank_code,
             'account_uuid' => $account->uuid,
-        ]);
+            ]
+        );
 
         try {
             // Get bank connector
             $connector = $this->bankIntegration->getConnector($request->bank_code);
 
             // Generate OAuth URL for bank authorization
-            $authUrl = $connector->getAuthorizationUrl([
+            $authUrl = $connector->getAuthorizationUrl(
+                [
                 'redirect_uri' => route('wallet.withdraw.openbanking.callback'),
                 'scope'        => 'accounts payments',
                 'state'        => csrf_token(),
-            ]);
+                ]
+            );
 
             return redirect($authUrl);
         } catch (\Exception $e) {
-            Log::error('Failed to initiate OpenBanking connection', [
+            Log::error(
+                'Failed to initiate OpenBanking connection', [
                 'user_id'   => $user->id,
                 'bank_code' => $request->bank_code,
                 'error'     => $e->getMessage(),
-            ]);
+                ]
+            );
 
             return back()->with('error', 'Failed to connect to bank. Please try again.');
         }
@@ -141,15 +153,19 @@ class OpenBankingWithdrawalController extends Controller
         try {
             // Exchange authorization code for access token
             $connector = $this->bankIntegration->getConnector($withdrawalDetails['bank_code']);
-            $credentials = $connector->exchangeAuthorizationCode($request->code, [
+            $credentials = $connector->exchangeAuthorizationCode(
+                $request->code, [
                 'redirect_uri' => route('wallet.withdraw.openbanking.callback'),
-            ]);
+                ]
+            );
 
             // Connect user to bank if not already connected
             $connections = $this->bankIntegration->getUserBankConnections($user);
-            $isConnected = $connections->contains(function ($connection) use ($withdrawalDetails) {
-                return $connection->bankCode === $withdrawalDetails['bank_code'] && $connection->isActive();
-            });
+            $isConnected = $connections->contains(
+                function ($connection) use ($withdrawalDetails) {
+                    return $connection->bankCode === $withdrawalDetails['bank_code'] && $connection->isActive();
+                }
+            );
 
             if (! $isConnected) {
                 $this->bankIntegration->connectUserToBank(
@@ -188,7 +204,8 @@ class OpenBankingWithdrawalController extends Controller
             );
 
             // Initiate the actual bank transfer
-            $transfer = $connector->initiatePayment([
+            $transfer = $connector->initiatePayment(
+                [
                 'to_account' => [
                     'iban'           => $bankAccount->iban,
                     'account_number' => $bankAccount->accountNumber,
@@ -198,7 +215,8 @@ class OpenBankingWithdrawalController extends Controller
                 'currency'    => $withdrawalDetails['currency'],
                 'reference'   => $result['reference'],
                 'description' => 'Withdrawal from FinAegis account',
-            ]);
+                ]
+            );
 
             DB::commit();
 
@@ -209,10 +227,12 @@ class OpenBankingWithdrawalController extends Controller
                 ->with('success', 'Withdrawal initiated successfully via OpenBanking. You will receive the funds within 1-2 business days.');
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('OpenBanking withdrawal failed', [
+            Log::error(
+                'OpenBanking withdrawal failed', [
                 'user_id' => $user->id,
                 'error'   => $e->getMessage(),
-            ]);
+                ]
+            );
 
             return redirect()->route('wallet.withdraw.create')
                 ->with('error', 'Failed to process withdrawal: ' . $e->getMessage());
@@ -224,11 +244,13 @@ class OpenBankingWithdrawalController extends Controller
      */
     public function selectAccount(Request $request)
     {
-        $request->validate([
+        $request->validate(
+            [
             'bank_code' => 'required|string',
             'amount'    => 'required|numeric|min:10',
             'currency'  => 'required|in:USD,EUR,GBP',
-        ]);
+            ]
+        );
 
         $user = Auth::user();
         $account = $user->accounts()->first();
@@ -240,13 +262,15 @@ class OpenBankingWithdrawalController extends Controller
             return redirect()->route('wallet.withdraw.openbanking.initiate', $request->all());
         }
 
-        return view('wallet.withdraw-openbanking-accounts', [
+        return view(
+            'wallet.withdraw-openbanking-accounts', [
             'account'      => $account,
             'bankAccounts' => $bankAccounts,
             'bankCode'     => $request->bank_code,
             'amount'       => $request->amount,
             'currency'     => $request->currency,
-        ]);
+            ]
+        );
     }
 
     /**
@@ -254,12 +278,14 @@ class OpenBankingWithdrawalController extends Controller
      */
     public function processWithAccount(Request $request)
     {
-        $request->validate([
+        $request->validate(
+            [
             'bank_code'       => 'required|string',
             'bank_account_id' => 'required|string',
             'amount'          => 'required|numeric|min:10',
             'currency'        => 'required|in:USD,EUR,GBP',
-        ]);
+            ]
+        );
 
         $user = Auth::user();
         $account = $user->accounts()->first();
@@ -295,7 +321,8 @@ class OpenBankingWithdrawalController extends Controller
 
             // Initiate the bank transfer
             $connector = $this->bankIntegration->getConnector($request->bank_code);
-            $transfer = $connector->initiatePayment([
+            $transfer = $connector->initiatePayment(
+                [
                 'to_account' => [
                     'id'             => $selectedAccount->id,
                     'iban'           => $selectedAccount->iban,
@@ -306,7 +333,8 @@ class OpenBankingWithdrawalController extends Controller
                 'currency'    => $request->currency,
                 'reference'   => $result['reference'],
                 'description' => 'Withdrawal from FinAegis account',
-            ]);
+                ]
+            );
 
             DB::commit();
 
@@ -314,10 +342,12 @@ class OpenBankingWithdrawalController extends Controller
                 ->with('success', 'Withdrawal initiated successfully. Funds will arrive in 1-2 business days.');
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('OpenBanking withdrawal failed', [
+            Log::error(
+                'OpenBanking withdrawal failed', [
                 'user_id' => $user->id,
                 'error'   => $e->getMessage(),
-            ]);
+                ]
+            );
 
             return back()->with('error', 'Failed to process withdrawal: ' . $e->getMessage());
         }

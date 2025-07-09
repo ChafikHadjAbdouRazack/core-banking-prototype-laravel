@@ -21,7 +21,8 @@ class StripePaymentService
     public function createCheckoutSession(CgoInvestment $investment): Session
     {
         try {
-            $session = Session::create([
+            $session = Session::create(
+                [
                 'payment_method_types' => ['card'],
                 'line_items'           => [[
                     'price_data' => [
@@ -56,25 +57,32 @@ class StripePaymentService
                         'investment_uuid' => $investment->uuid,
                     ],
                 ],
-            ]);
+                ]
+            );
 
             // Store session ID for later verification
-            $investment->update([
+            $investment->update(
+                [
                 'stripe_session_id' => $session->id,
                 'payment_status'    => 'checkout_created',
-            ]);
+                ]
+            );
 
-            Log::info('Stripe checkout session created', [
+            Log::info(
+                'Stripe checkout session created', [
                 'investment_id' => $investment->id,
                 'session_id'    => $session->id,
-            ]);
+                ]
+            );
 
             return $session;
         } catch (ApiErrorException $e) {
-            Log::error('Stripe API error creating checkout session', [
+            Log::error(
+                'Stripe API error creating checkout session', [
                 'investment_id' => $investment->id,
                 'error'         => $e->getMessage(),
-            ]);
+                ]
+            );
             throw $e;
         }
     }
@@ -92,26 +100,32 @@ class StripePaymentService
             $session = Session::retrieve($investment->stripe_session_id);
 
             if ($session->payment_status === 'paid') {
-                $investment->update([
+                $investment->update(
+                    [
                     'payment_status'           => 'completed',
                     'payment_completed_at'     => now(),
                     'stripe_payment_intent_id' => $session->payment_intent,
-                ]);
+                    ]
+                );
 
-                Log::info('Stripe payment verified as completed', [
+                Log::info(
+                    'Stripe payment verified as completed', [
                     'investment_id'  => $investment->id,
                     'payment_intent' => $session->payment_intent,
-                ]);
+                    ]
+                );
 
                 return true;
             }
 
             return false;
         } catch (ApiErrorException $e) {
-            Log::error('Error verifying Stripe payment', [
+            Log::error(
+                'Error verifying Stripe payment', [
                 'investment_id' => $investment->id,
                 'error'         => $e->getMessage(),
-            ]);
+                ]
+            );
 
             return false;
         }
@@ -126,17 +140,17 @@ class StripePaymentService
         $data = $payload['data']['object'] ?? [];
 
         switch ($event) {
-            case 'checkout.session.completed':
-                $this->handleCheckoutCompleted($data);
-                break;
+        case 'checkout.session.completed':
+            $this->handleCheckoutCompleted($data);
+            break;
 
-            case 'payment_intent.succeeded':
-                $this->handlePaymentSucceeded($data);
-                break;
+        case 'payment_intent.succeeded':
+            $this->handlePaymentSucceeded($data);
+            break;
 
-            case 'payment_intent.payment_failed':
-                $this->handlePaymentFailed($data);
-                break;
+        case 'payment_intent.payment_failed':
+            $this->handlePaymentFailed($data);
+            break;
         }
     }
 
@@ -161,16 +175,20 @@ class StripePaymentService
             return;
         }
 
-        $investment->update([
+        $investment->update(
+            [
             'payment_status'           => 'completed',
             'payment_completed_at'     => now(),
             'stripe_payment_intent_id' => $session['payment_intent'] ?? null,
-        ]);
+            ]
+        );
 
-        Log::info('CGO investment payment completed via webhook', [
+        Log::info(
+            'CGO investment payment completed via webhook', [
             'investment_id'  => $investment->id,
             'payment_intent' => $session['payment_intent'] ?? null,
-        ]);
+            ]
+        );
     }
 
     /**
@@ -187,15 +205,19 @@ class StripePaymentService
         $investment = CgoInvestment::find($investmentId);
 
         if ($investment && $investment->payment_status !== 'completed') {
-            $investment->update([
+            $investment->update(
+                [
                 'payment_status'       => 'completed',
                 'payment_completed_at' => now(),
-            ]);
+                ]
+            );
 
-            Log::info('CGO investment payment succeeded', [
+            Log::info(
+                'CGO investment payment succeeded', [
                 'investment_id'  => $investment->id,
                 'payment_intent' => $paymentIntent['id'],
-            ]);
+                ]
+            );
         }
     }
 
@@ -213,17 +235,21 @@ class StripePaymentService
         $investment = CgoInvestment::find($investmentId);
 
         if ($investment) {
-            $investment->update([
+            $investment->update(
+                [
                 'payment_status'         => 'failed',
                 'payment_failed_at'      => now(),
                 'payment_failure_reason' => $paymentIntent['last_payment_error']['message'] ?? 'Unknown error',
-            ]);
+                ]
+            );
 
-            Log::warning('CGO investment payment failed', [
+            Log::warning(
+                'CGO investment payment failed', [
                 'investment_id'  => $investment->id,
                 'payment_intent' => $paymentIntent['id'] ?? 'unknown',
                 'error'          => $paymentIntent['last_payment_error']['message'] ?? 'Unknown',
-            ]);
+                ]
+            );
         }
     }
 
@@ -233,7 +259,8 @@ class StripePaymentService
     public function createPaymentIntent(CgoInvestment $investment): array
     {
         try {
-            $intent = \Stripe\PaymentIntent::create([
+            $intent = \Stripe\PaymentIntent::create(
+                [
                 'amount'      => $investment->amount * 100, // Amount in cents
                 'currency'    => strtolower(config('cashier.currency')),
                 'description' => 'CGO Investment #' . $investment->uuid,
@@ -243,22 +270,27 @@ class StripePaymentService
                     'user_id'         => $investment->user_id,
                 ],
                 'receipt_email' => $investment->user->email,
-            ]);
+                ]
+            );
 
-            $investment->update([
+            $investment->update(
+                [
                 'stripe_payment_intent_id' => $intent->id,
                 'payment_status'           => 'intent_created',
-            ]);
+                ]
+            );
 
             return [
                 'client_secret' => $intent->client_secret,
                 'intent_id'     => $intent->id,
             ];
         } catch (ApiErrorException $e) {
-            Log::error('Error creating payment intent', [
+            Log::error(
+                'Error creating payment intent', [
                 'investment_id' => $investment->id,
                 'error'         => $e->getMessage(),
-            ]);
+                ]
+            );
             throw $e;
         }
     }
@@ -269,18 +301,22 @@ class StripePaymentService
     public function refundPayment(string $paymentIntentId, int $amount, string $reason = 'requested_by_customer'): array
     {
         try {
-            $refund = \Stripe\Refund::create([
+            $refund = \Stripe\Refund::create(
+                [
                 'payment_intent' => $paymentIntentId,
                 'amount'         => $amount, // Amount in cents
                 'reason'         => $reason,
-            ]);
+                ]
+            );
 
-            Log::info('Stripe refund created', [
+            Log::info(
+                'Stripe refund created', [
                 'refund_id'      => $refund->id,
                 'payment_intent' => $paymentIntentId,
                 'amount'         => $amount,
                 'status'         => $refund->status,
-            ]);
+                ]
+            );
 
             return [
                 'id'       => $refund->id,
@@ -290,11 +326,13 @@ class StripePaymentService
                 'created'  => $refund->created,
             ];
         } catch (ApiErrorException $e) {
-            Log::error('Error creating Stripe refund', [
+            Log::error(
+                'Error creating Stripe refund', [
                 'payment_intent' => $paymentIntentId,
                 'amount'         => $amount,
                 'error'          => $e->getMessage(),
-            ]);
+                ]
+            );
             throw $e;
         }
     }

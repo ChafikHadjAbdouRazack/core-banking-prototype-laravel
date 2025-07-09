@@ -65,10 +65,12 @@ class MachineLearningService
                 'risk_factors'  => $prediction['risk_factors'] ?? [],
             ];
         } catch (\Exception $e) {
-            Log::error('ML prediction failed', [
+            Log::error(
+                'ML prediction failed', [
                 'error'   => $e->getMessage(),
                 'context' => $context,
-            ]);
+                ]
+            );
 
             return [
                 'score'         => 0,
@@ -247,10 +249,12 @@ class MachineLearningService
             // Update fraud score with outcome
             $fraudScore->update(['outcome' => $actualOutcome]);
         } catch (\Exception $e) {
-            Log::error('ML training feedback failed', [
+            Log::error(
+                'ML training feedback failed', [
                 'fraud_score_id' => $fraudScore->id,
                 'error'          => $e->getMessage(),
-            ]);
+                ]
+            );
         }
     }
 
@@ -278,9 +282,10 @@ class MachineLearningService
      */
     public function getModelMetrics(): array
     {
-        return Cache::remember('ml_model_metrics', 3600, function () {
-            // In production, fetch from ML service
-            return [
+        return Cache::remember(
+            'ml_model_metrics', 3600, function () {
+                // In production, fetch from ML service
+                return [
                 'model_version'      => $this->modelVersion,
                 'accuracy'           => 0.94,
                 'precision'          => 0.89,
@@ -290,8 +295,9 @@ class MachineLearningService
                 'last_trained'       => now()->subDays(7)->toIso8601String(),
                 'training_samples'   => 150000,
                 'feature_importance' => $this->getFeatureImportance(),
-            ];
-        });
+                ];
+            }
+        );
     }
 
     /**
@@ -454,10 +460,12 @@ class MachineLearningService
     protected function sendTrainingData(array $data): void
     {
         // In production, this would send to ML training pipeline
-        Log::info('ML training data collected', [
+        Log::info(
+            'ML training data collected', [
             'fraud_score_id' => $data['fraud_score_id'],
             'outcome'        => $data['actual_outcome'],
-        ]);
+            ]
+        );
     }
 
     /**

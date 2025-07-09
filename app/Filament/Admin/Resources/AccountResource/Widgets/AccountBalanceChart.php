@@ -85,11 +85,13 @@ class AccountBalanceChart extends ChartWidget
             $baseTotal = Account::where('created_at', '<=', $current)->sum('balance') / 100;
             $variance = rand(-5, 10) / 100; // Simulate balance changes
 
-            $data->push([
+            $data->push(
+                [
                 'date'    => $current->format($groupBy['format']),
                 'total'   => round($baseTotal * (1 + $variance), 2),
                 'average' => round(($baseTotal * (1 + $variance)) / max(Account::where('created_at', '<=', $current)->count(), 1), 2),
-            ]);
+                ]
+            );
 
             if ($period === '24h') {
                 $current->addHours($groupBy['hours']);

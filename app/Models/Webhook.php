@@ -110,10 +110,12 @@ class Webhook extends Model
      */
     public function markAsSuccessful(): void
     {
-        $this->update([
+        $this->update(
+            [
             'last_success_at'      => now(),
             'consecutive_failures' => 0,
-        ]);
+            ]
+        );
     }
 
     /**

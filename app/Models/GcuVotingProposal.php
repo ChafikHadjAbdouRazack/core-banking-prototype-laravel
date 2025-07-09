@@ -123,10 +123,12 @@ class GcuVotingProposal extends Model
             return null;
         }
 
-        return now()->diffForHumans($this->voting_ends_at, [
+        return now()->diffForHumans(
+            $this->voting_ends_at, [
             'parts' => 2,
             'short' => true,
-        ]);
+            ]
+        );
     }
 
     /**
@@ -135,8 +137,8 @@ class GcuVotingProposal extends Model
     public function scopeActive($query)
     {
         return $query->where('status', 'active')
-                    ->where('voting_starts_at', '<=', now())
-                    ->where('voting_ends_at', '>', now());
+            ->where('voting_starts_at', '<=', now())
+            ->where('voting_ends_at', '>', now());
     }
 
     /**
@@ -145,7 +147,7 @@ class GcuVotingProposal extends Model
     public function scopeUpcoming($query)
     {
         return $query->where('status', 'active')
-                    ->where('voting_starts_at', '>', now());
+            ->where('voting_starts_at', '>', now());
     }
 
     /**

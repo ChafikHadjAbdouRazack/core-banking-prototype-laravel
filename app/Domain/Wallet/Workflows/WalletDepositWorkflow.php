@@ -12,9 +12,9 @@ class WalletDepositWorkflow extends Workflow
     /**
      * Execute wallet deposit for a specific asset.
      *
-     * @param AccountUuid $accountUuid
-     * @param string $assetCode
-     * @param int $amount
+     * @param  AccountUuid $accountUuid
+     * @param  string      $assetCode
+     * @param  int         $amount
      * @return \Generator
      */
     public function execute(AccountUuid $accountUuid, string $assetCode, int $amount): \Generator

@@ -9,7 +9,7 @@ use Workflow\Activity;
 class DestroyAccountActivity extends Activity
 {
     /**
-     * @param AccountUuid $uuid
+     * @param AccountUuid     $uuid
      * @param LedgerAggregate $ledger
      *
      * @return bool
@@ -17,8 +17,8 @@ class DestroyAccountActivity extends Activity
     public function execute(AccountUuid $uuid, LedgerAggregate $ledger): bool
     {
         $ledger->retrieve($uuid->getUuid())
-               ->deleteAccount()
-               ->persist();
+            ->deleteAccount()
+            ->persist();
 
         return true;
     }

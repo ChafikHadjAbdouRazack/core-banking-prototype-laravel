@@ -28,9 +28,9 @@ class VerifyTransactionHashes extends Command
 
     /**
      * @param TransactionRepository $transactionRepository
-     * @param AccountRepository $accountRepository
-     * @param array $erroneous_accounts
-     * @param array $erroneous_transactions
+     * @param AccountRepository     $accountRepository
+     * @param array                 $erroneous_accounts
+     * @param array                 $erroneous_transactions
      */
     public function __construct(
         protected TransactionRepository $transactionRepository,
@@ -50,7 +50,9 @@ class VerifyTransactionHashes extends Command
 
         $accounts = $this->accountRepository->getAllByCursor();
 
-        /** @var \App\Models\Account $account */
+        /**
+ * @var \App\Models\Account $account 
+*/
         foreach ($accounts as $account) {
             $aggregate = TransactionAggregate::retrieve($account->uuid);
 
@@ -86,7 +88,8 @@ class VerifyTransactionHashes extends Command
                     $aggregate->validateHash($event->hash, $event->money);
                 } catch (InvalidHashException $e) {
                     // Log the hash validation error with full context
-                    Log::error('Transaction hash validation failed', [
+                    Log::error(
+                        'Transaction hash validation failed', [
                         'aggregate_uuid'    => $aggregate->uuid(),
                         'event_class'       => get_class($event),
                         'event_uuid'        => method_exists($event, 'aggregateRootUuid') ? $event->aggregateRootUuid() : null,
@@ -96,7 +99,8 @@ class VerifyTransactionHashes extends Command
                         'exception_message' => $e->getMessage(),
                         'exception_code'    => $e->getCode(),
                         'timestamp'         => now()->toISOString(),
-                    ]);
+                        ]
+                    );
 
                     $this->erroneous_transactions[] = $event;
 

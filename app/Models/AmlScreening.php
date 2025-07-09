@@ -118,11 +118,13 @@ class AmlScreening extends Model
     {
         parent::boot();
 
-        static::creating(function ($screening) {
-            if (! $screening->screening_number) {
-                $screening->screening_number = static::generateScreeningNumber();
+        static::creating(
+            function ($screening) {
+                if (! $screening->screening_number) {
+                    $screening->screening_number = static::generateScreeningNumber();
+                }
             }
-        });
+        );
     }
 
     public static function generateScreeningNumber(): string
@@ -214,31 +216,39 @@ class AmlScreening extends Model
 
     public function markAsCompleted(array $results = []): void
     {
-        $this->update(array_merge($results, [
-            'status'          => self::STATUS_COMPLETED,
-            'completed_at'    => now(),
-            'processing_time' => $this->started_at ? now()->diffInSeconds($this->started_at) : null,
-        ]));
+        $this->update(
+            array_merge(
+                $results, [
+                'status'          => self::STATUS_COMPLETED,
+                'completed_at'    => now(),
+                'processing_time' => $this->started_at ? now()->diffInSeconds($this->started_at) : null,
+                ]
+            )
+        );
     }
 
     public function markAsFailed(string $reason = null): void
     {
-        $this->update([
+        $this->update(
+            [
             'status'          => self::STATUS_FAILED,
             'completed_at'    => now(),
             'processing_time' => $this->started_at ? now()->diffInSeconds($this->started_at) : null,
             'review_notes'    => $reason,
-        ]);
+            ]
+        );
     }
 
     public function addReview(string $decision, string $notes, User $reviewer): void
     {
-        $this->update([
+        $this->update(
+            [
             'reviewed_by'     => $reviewer->id,
             'reviewed_at'     => now(),
             'review_decision' => $decision,
             'review_notes'    => $notes,
-        ]);
+            ]
+        );
     }
 
     public function dismissMatch(string $matchId, string $reason): void
@@ -249,23 +259,29 @@ class AmlScreening extends Model
             'reason'       => $reason,
         ];
 
-        $this->update([
+        $this->update(
+            [
             'dismissed_matches_detail' => $dismissed,
             'false_positives'          => $this->false_positives + 1,
-        ]);
+            ]
+        );
     }
 
     public function confirmMatch(string $matchId, array $details = []): void
     {
         $confirmed = $this->confirmed_matches_detail ?? [];
-        $confirmed[$matchId] = array_merge($details, [
+        $confirmed[$matchId] = array_merge(
+            $details, [
             'confirmed_at' => now()->toIso8601String(),
-        ]);
+            ]
+        );
 
-        $this->update([
+        $this->update(
+            [
             'confirmed_matches_detail' => $confirmed,
             'confirmed_matches'        => $this->confirmed_matches + 1,
-        ]);
+            ]
+        );
     }
 
     public function calculateOverallRisk(): string
@@ -281,9 +297,8 @@ class AmlScreening extends Model
         }
 
         // High risk if adverse media with serious allegations
-        if (
-            isset($this->adverse_media_results['serious_allegations']) &&
-            $this->adverse_media_results['serious_allegations'] > 0
+        if (isset($this->adverse_media_results['serious_allegations']) 
+            && $this->adverse_media_results['serious_allegations'] > 0
         ) {
             return self::RISK_HIGH;
         }

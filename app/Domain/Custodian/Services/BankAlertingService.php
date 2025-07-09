@@ -67,13 +67,15 @@ class BankAlertingService
         $this->sendAlert($recipients, $event, $severity);
 
         // Log the alert
-        Log::warning('Bank health alert sent', [
+        Log::warning(
+            'Bank health alert sent', [
             'custodian'        => $event->custodian,
             'previous_status'  => $event->previousStatus,
             'new_status'       => $event->newStatus,
             'severity'         => $severity,
             'recipients_count' => $recipients->count(),
-        ]);
+            ]
+        );
     }
 
     /**
@@ -195,11 +197,13 @@ class BankAlertingService
             return;
         }
 
-        Log::alert('System-wide bank health alert', [
+        Log::alert(
+            'System-wide bank health alert', [
             'severity' => $severity,
             'message'  => $message,
             'issues'   => $issues,
-        ]);
+            ]
+        );
 
         // In production, send actual notification
         // For now, just log it

@@ -34,9 +34,11 @@ class CgoInvestmentStats extends BaseWidget
                 ->color('warning'),
 
             Stat::make('Current Round', $activeRound ? "Round {$activeRound->round_number}" : 'No Active Round')
-                ->description($activeRound ?
+                ->description(
+                    $activeRound ?
                     Number::percentage($activeRound->progress_percentage, 1) . ' sold' :
-                    'Create a new pricing round')
+                    'Create a new pricing round'
+                )
                 ->descriptionIcon('heroicon-m-chart-pie')
                 ->color($activeRound ? 'info' : 'danger'),
         ];

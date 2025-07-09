@@ -107,11 +107,13 @@ class RecentTransactionsChart extends ChartWidget
             DB::raw("COUNT(CASE WHEN event_class LIKE '%MoneySubtracted' THEN 1 END) as withdrawals"),
             DB::raw("COUNT(CASE WHEN event_class LIKE '%MoneyTransferred' THEN 1 END) as transfers")
         )
-            ->whereIn('event_class', [
+            ->whereIn(
+                'event_class', [
                 'App\\Domain\\Account\\Events\\MoneyAdded',
                 'App\\Domain\\Account\\Events\\MoneySubtracted',
                 'App\\Domain\\Account\\Events\\MoneyTransferred',
-            ])
+                ]
+            )
             ->where('created_at', '>=', $startDate)
             ->where('created_at', '<=', $endDate)
             ->groupBy('date')
@@ -127,12 +129,14 @@ class RecentTransactionsChart extends ChartWidget
             $dateKey = $current->format($format);
             $transaction = $transactions->firstWhere('date', $dateKey);
 
-            $data->push([
+            $data->push(
+                [
                 'date'        => $period === '24h' ? $dateKey : $current->format('M d'),
                 'deposits'    => $transaction?->deposits ?? 0,
                 'withdrawals' => $transaction?->withdrawals ?? 0,
                 'transfers'   => $transaction?->transfers ?? 0,
-            ]);
+                ]
+            );
 
             if ($period === '24h') {
                 $current->addHour();

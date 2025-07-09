@@ -47,10 +47,12 @@ class RefundProcessingService
 
             // Update investment status if refund is successful
             if ($refund->status === 'completed') {
-                $investment->update([
+                $investment->update(
+                    [
                     'status'         => 'refunded',
                     'payment_status' => 'refunded',
-                ]);
+                    ]
+                );
 
                 // Update pricing round to reflect refund
                 if ($investment->round) {
@@ -64,10 +66,12 @@ class RefundProcessingService
             return $refund;
         } catch (\Exception $e) {
             DB::rollback();
-            Log::error('Refund processing failed', [
+            Log::error(
+                'Refund processing failed', [
                 'investment_id' => $investment->id,
                 'error'         => $e->getMessage(),
-            ]);
+                ]
+            );
             throw $e;
         }
     }
@@ -112,7 +116,8 @@ class RefundProcessingService
      */
     protected function createRefundRecord(CgoInvestment $investment, array $data): CgoRefund
     {
-        return CgoRefund::create([
+        return CgoRefund::create(
+            [
             'investment_id'  => $investment->id,
             'user_id'        => $investment->user_id,
             'amount'         => $data['amount'] ?? $investment->amount,
@@ -126,7 +131,8 @@ class RefundProcessingService
                 'payment_method'        => $investment->payment_method,
                 'original_payment_date' => $investment->payment_completed_at->toIso8601String(),
             ],
-        ]);
+            ]
+        );
     }
 
     /**
@@ -140,7 +146,8 @@ class RefundProcessingService
             }
 
             // Create Stripe refund
-            $stripeRefund = StripeRefund::create([
+            $stripeRefund = StripeRefund::create(
+                [
                 'payment_intent' => $investment->stripe_payment_intent_id,
                 'amount'         => $refund->amount, // Amount in cents
                 'reason'         => $this->mapRefundReason($refund->reason),
@@ -148,7 +155,8 @@ class RefundProcessingService
                     'investment_id' => $investment->uuid,
                     'refund_id'     => $refund->id,
                 ],
-            ]);
+                ]
+            );
 
             return [
                 'status'              => 'completed',
@@ -161,10 +169,12 @@ class RefundProcessingService
                 ],
             ];
         } catch (\Exception $e) {
-            Log::error('Stripe refund failed', [
+            Log::error(
+                'Stripe refund failed', [
                 'investment_id' => $investment->id,
                 'error'         => $e->getMessage(),
-            ]);
+                ]
+            );
 
             return [
                 'status'         => 'failed',
@@ -185,12 +195,14 @@ class RefundProcessingService
         return [
             'status'           => 'processing',
             'processing_notes' => 'Crypto refund requires manual processing. Finance team has been notified.',
-            'metadata'         => array_merge($refund->metadata ?? [], [
+            'metadata'         => array_merge(
+                $refund->metadata ?? [], [
                 'requires_manual_processing' => true,
                 'original_crypto_address'    => $investment->crypto_address,
                 'original_tx_hash'           => $investment->crypto_tx_hash,
                 'refund_address'             => $refund->refund_address ?? 'To be provided by customer',
-            ]),
+                ]
+            ),
         ];
     }
 
@@ -203,11 +215,13 @@ class RefundProcessingService
         return [
             'status'           => 'processing',
             'processing_notes' => 'Bank transfer refund requires manual processing. Finance team has been notified.',
-            'metadata'         => array_merge($refund->metadata ?? [], [
+            'metadata'         => array_merge(
+                $refund->metadata ?? [], [
                 'requires_manual_processing' => true,
                 'original_reference'         => $investment->bank_transfer_reference,
                 'bank_details'               => $refund->bank_details ?? 'To be provided by customer',
-            ]),
+                ]
+            ),
         ];
     }
 
@@ -233,22 +247,28 @@ class RefundProcessingService
             throw new \Exception('Refund cannot be completed in current status');
         }
 
-        $refund->update([
+        $refund->update(
+            [
             'status'              => 'completed',
             'processed_at'        => now(),
             'processor_reference' => $data['reference'] ?? null,
             'processing_notes'    => $data['notes'] ?? null,
-            'metadata'            => array_merge($refund->metadata ?? [], [
+            'metadata'            => array_merge(
+                $refund->metadata ?? [], [
                 'completed_by'      => auth()->id(),
                 'completion_method' => $data['method'] ?? 'manual',
-            ]),
-        ]);
+                ]
+            ),
+            ]
+        );
 
         // Update investment status
-        $refund->investment->update([
+        $refund->investment->update(
+            [
             'status'         => 'refunded',
             'payment_status' => 'refunded',
-        ]);
+            ]
+        );
 
         return $refund;
     }
@@ -262,14 +282,18 @@ class RefundProcessingService
             throw new \Exception('Only pending or processing refunds can be cancelled');
         }
 
-        $refund->update([
+        $refund->update(
+            [
             'status'              => 'cancelled',
             'cancelled_at'        => now(),
             'cancellation_reason' => $reason,
-            'metadata'            => array_merge($refund->metadata ?? [], [
+            'metadata'            => array_merge(
+                $refund->metadata ?? [], [
                 'cancelled_by' => auth()->id(),
-            ]),
-        ]);
+                ]
+            ),
+            ]
+        );
 
         return $refund;
     }
@@ -279,7 +303,8 @@ class RefundProcessingService
      */
     public function getRefundStatistics(): array
     {
-        $stats = CgoRefund::selectRaw('
+        $stats = CgoRefund::selectRaw(
+            '
             COUNT(*) as total_refunds,
             SUM(CASE WHEN status = "pending" THEN 1 ELSE 0 END) as pending_refunds,
             SUM(CASE WHEN status = "processing" THEN 1 ELSE 0 END) as processing_refunds,
@@ -289,7 +314,8 @@ class RefundProcessingService
             AVG(CASE WHEN status = "completed" AND processed_at IS NOT NULL 
                 THEN TIMESTAMPDIFF(HOUR, created_at, processed_at) 
                 ELSE NULL END) as avg_processing_hours
-        ')->first();
+        '
+        )->first();
 
         return [
             'total_refunds'         => $stats->total_refunds ?? 0,

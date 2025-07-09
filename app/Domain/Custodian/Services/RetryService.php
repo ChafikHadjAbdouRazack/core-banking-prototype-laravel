@@ -35,12 +35,12 @@ class RetryService
      * Execute operation with exponential backoff retry.
      *
      * @template T
-     * @param callable(): T $operation The operation to execute
-     * @param array<class-string<\Throwable>> $retryableExceptions Exceptions that trigger retry
-     * @param string $context Context for logging
-     * @return T
-     * @throws MaxRetriesExceededException When all retry attempts are exhausted
-     * @throws \Throwable When a non-retryable exception occurs
+     * @param    callable(): T                   $operation           The operation to execute
+     * @param    array<class-string<\Throwable>> $retryableExceptions Exceptions that trigger retry
+     * @param    string                          $context             Context for logging
+     * @return   T
+     * @throws   MaxRetriesExceededException When all retry attempts are exhausted
+     * @throws   \Throwable When a non-retryable exception occurs
      */
     public function execute(
         callable $operation,
@@ -59,10 +59,12 @@ class RetryService
 
                 // Log successful retry if not first attempt
                 if ($attempt > 1) {
-                    Log::info('Operation succeeded after retry', [
+                    Log::info(
+                        'Operation succeeded after retry', [
                         'context' => $context,
                         'attempt' => $attempt,
-                    ]);
+                        ]
+                    );
                 }
 
                 return $result;
@@ -82,13 +84,15 @@ class RetryService
                 // Calculate delay with exponential backoff
                 $delayMs = $this->calculateDelay($attempt);
 
-                Log::warning('Operation failed, retrying', [
+                Log::warning(
+                    'Operation failed, retrying', [
                     'context'      => $context,
                     'attempt'      => $attempt,
                     'max_attempts' => $this->maxAttempts,
                     'delay_ms'     => $delayMs,
                     'exception'    => $exception->getMessage(),
-                ]);
+                    ]
+                );
 
                 // Sleep before retry
                 usleep($delayMs * 1000);
@@ -107,8 +111,8 @@ class RetryService
      * Execute operation with custom retry configuration.
      *
      * @template T
-     * @param callable(): T $operation
-     * @param array{
+     * @param    callable(): T $operation
+     * @param    array{
      *     maxAttempts?: int,
      *     initialDelayMs?: int,
      *     maxDelayMs?: int,
@@ -117,7 +121,7 @@ class RetryService
      *     retryableExceptions?: array<class-string<\Throwable>>,
      *     context?: string
      * } $config
-     * @return T
+     * @return   T
      */
     public function executeWithConfig(callable $operation, array $config = []): mixed
     {

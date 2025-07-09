@@ -18,17 +18,21 @@ class SubscriberEmailService
         try {
             Mail::to($subscriber->email)->send(new SubscriberWelcome($subscriber));
 
-            Log::info('Welcome email sent to subscriber', [
+            Log::info(
+                'Welcome email sent to subscriber', [
                 'subscriber_id' => $subscriber->id,
                 'email'         => $subscriber->email,
                 'source'        => $subscriber->source,
-            ]);
+                ]
+            );
         } catch (\Exception $e) {
-            Log::error('Failed to send welcome email', [
+            Log::error(
+                'Failed to send welcome email', [
                 'subscriber_id' => $subscriber->id,
                 'email'         => $subscriber->email,
                 'error'         => $e->getMessage(),
-            ]);
+                ]
+            );
 
             throw $e;
         }
@@ -42,11 +46,13 @@ class SubscriberEmailService
         $query = Subscriber::active();
 
         if (! empty($tags)) {
-            $query->where(function ($q) use ($tags) {
-                foreach ($tags as $tag) {
-                    $q->orWhereJsonContains('tags', $tag);
+            $query->where(
+                function ($q) use ($tags) {
+                    foreach ($tags as $tag) {
+                        $q->orWhereJsonContains('tags', $tag);
+                    }
                 }
-            });
+            );
         }
 
         if ($source) {
@@ -61,28 +67,34 @@ class SubscriberEmailService
                 Mail::to($subscriber->email)->send(new SubscriberNewsletter($subscriber, $subject, $content));
                 $sentCount++;
 
-                Log::info('Newsletter sent to subscriber', [
+                Log::info(
+                    'Newsletter sent to subscriber', [
                     'subscriber_id' => $subscriber->id,
                     'email'         => $subscriber->email,
                     'subject'       => $subject,
-                ]);
+                    ]
+                );
             } catch (\Exception $e) {
-                Log::error('Failed to send newsletter to subscriber', [
+                Log::error(
+                    'Failed to send newsletter to subscriber', [
                     'subscriber_id' => $subscriber->id,
                     'email'         => $subscriber->email,
                     'subject'       => $subject,
                     'error'         => $e->getMessage(),
-                ]);
+                    ]
+                );
             }
         }
 
-        Log::info('Newsletter campaign completed', [
+        Log::info(
+            'Newsletter campaign completed', [
             'subject'          => $subject,
             'total_recipients' => $subscribers->count(),
             'sent_count'       => $sentCount,
             'tags'             => $tags,
             'source'           => $source,
-        ]);
+            ]
+        );
 
         return $sentCount;
     }
@@ -95,16 +107,20 @@ class SubscriberEmailService
         $subscriber = Subscriber::where('email', $email)->first();
 
         if ($subscriber) {
-            $subscriber->update([
+            $subscriber->update(
+                [
                 'status'             => Subscriber::STATUS_BOUNCED,
                 'unsubscribed_at'    => now(),
                 'unsubscribe_reason' => 'Email bounced',
-            ]);
+                ]
+            );
 
-            Log::warning('Subscriber marked as bounced', [
+            Log::warning(
+                'Subscriber marked as bounced', [
                 'subscriber_id' => $subscriber->id,
                 'email'         => $email,
-            ]);
+                ]
+            );
         }
     }
 
@@ -118,11 +134,13 @@ class SubscriberEmailService
         if ($subscriber && $subscriber->isActive()) {
             $subscriber->unsubscribe($reason);
 
-            Log::info('Subscriber unsubscribed', [
+            Log::info(
+                'Subscriber unsubscribed', [
                 'subscriber_id' => $subscriber->id,
                 'email'         => $email,
                 'reason'        => $reason,
-            ]);
+                ]
+            );
 
             return true;
         }
@@ -140,11 +158,13 @@ class SubscriberEmailService
         if ($subscriber->exists) {
             // Reactivate if unsubscribed
             if (! $subscriber->isActive()) {
-                $subscriber->update([
+                $subscriber->update(
+                    [
                     'status'             => Subscriber::STATUS_ACTIVE,
                     'unsubscribed_at'    => null,
                     'unsubscribe_reason' => null,
-                ]);
+                    ]
+                );
             }
 
             // Add new tags
@@ -152,32 +172,38 @@ class SubscriberEmailService
                 $subscriber->addTags($tags);
             }
 
-            Log::info('Existing subscriber reactivated or updated', [
+            Log::info(
+                'Existing subscriber reactivated or updated', [
                 'subscriber_id' => $subscriber->id,
                 'email'         => $email,
                 'source'        => $source,
-            ]);
+                ]
+            );
         } else {
             // New subscriber
-            $subscriber->fill([
+            $subscriber->fill(
+                [
                 'source'       => $source,
                 'status'       => Subscriber::STATUS_ACTIVE,
                 'tags'         => $tags,
                 'ip_address'   => $ipAddress,
                 'user_agent'   => $userAgent,
                 'confirmed_at' => now(),
-            ]);
+                ]
+            );
 
             $subscriber->save();
 
             // Send welcome email
             $this->sendWelcomeEmail($subscriber);
 
-            Log::info('New subscriber created', [
+            Log::info(
+                'New subscriber created', [
                 'subscriber_id' => $subscriber->id,
                 'email'         => $email,
                 'source'        => $source,
-            ]);
+                ]
+            );
         }
 
         return $subscriber;

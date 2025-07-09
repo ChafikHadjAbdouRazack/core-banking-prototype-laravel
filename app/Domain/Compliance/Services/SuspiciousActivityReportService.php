@@ -17,44 +17,48 @@ class SuspiciousActivityReportService
      */
     public function createFromTransaction(Transaction $transaction, array $alerts): SuspiciousActivityReport
     {
-        return DB::transaction(function () use ($transaction, $alerts) {
-            $account = $transaction->account;
-            $user = $account->user;
+        return DB::transaction(
+            function () use ($transaction, $alerts) {
+                $account = $transaction->account;
+                $user = $account->user;
 
-            // Determine priority based on alerts
-            $priority = $this->determinePriority($alerts);
+                // Determine priority based on alerts
+                $priority = $this->determinePriority($alerts);
 
-            // Get related transactions
-            $relatedTransactions = $this->findRelatedTransactions($transaction);
+                // Get related transactions
+                $relatedTransactions = $this->findRelatedTransactions($transaction);
 
-            $sar = SuspiciousActivityReport::create([
-                'status'          => SuspiciousActivityReport::STATUS_DRAFT,
-                'priority'        => $priority,
-                'subject_user_id' => $user?->id,
-                'subject_type'    => SuspiciousActivityReport::SUBJECT_TYPE_TRANSACTION,
-                'subject_details' => [
+                $sar = SuspiciousActivityReport::create(
+                    [
+                    'status'          => SuspiciousActivityReport::STATUS_DRAFT,
+                    'priority'        => $priority,
+                    'subject_user_id' => $user?->id,
+                    'subject_type'    => SuspiciousActivityReport::SUBJECT_TYPE_TRANSACTION,
+                    'subject_details' => [
                     'name'           => $user?->name ?? 'Unknown',
                     'account_number' => $account->account_number,
                     'user_id'        => $user?->id,
-                ],
-                'activity_start_date'  => $relatedTransactions->min('created_at') ?? $transaction->created_at,
-                'activity_end_date'    => $relatedTransactions->max('created_at') ?? $transaction->created_at,
-                'total_amount'         => $relatedTransactions->sum('amount'),
-                'primary_currency'     => $transaction->currency,
-                'transaction_count'    => $relatedTransactions->count(),
-                'involved_accounts'    => [$account->id],
-                'involved_parties'     => $this->extractInvolvedParties($relatedTransactions),
-                'activity_types'       => $this->determineActivityTypes($alerts),
-                'activity_description' => $this->generateActivityDescription($transaction, $alerts),
-                'red_flags'            => $this->extractRedFlags($alerts),
-                'triggering_rules'     => array_column($alerts, 'rule_id'),
-                'related_transactions' => $relatedTransactions->pluck('id')->toArray(),
-            ]);
+                    ],
+                    'activity_start_date'  => $relatedTransactions->min('created_at') ?? $transaction->created_at,
+                    'activity_end_date'    => $relatedTransactions->max('created_at') ?? $transaction->created_at,
+                    'total_amount'         => $relatedTransactions->sum('amount'),
+                    'primary_currency'     => $transaction->currency,
+                    'transaction_count'    => $relatedTransactions->count(),
+                    'involved_accounts'    => [$account->id],
+                    'involved_parties'     => $this->extractInvolvedParties($relatedTransactions),
+                    'activity_types'       => $this->determineActivityTypes($alerts),
+                    'activity_description' => $this->generateActivityDescription($transaction, $alerts),
+                    'red_flags'            => $this->extractRedFlags($alerts),
+                    'triggering_rules'     => array_column($alerts, 'rule_id'),
+                    'related_transactions' => $relatedTransactions->pluck('id')->toArray(),
+                    ]
+                );
 
-            event(new SARCreated($sar));
+                event(new SARCreated($sar));
 
-            return $sar;
-        });
+                return $sar;
+            }
+        );
     }
 
     /**
@@ -62,38 +66,42 @@ class SuspiciousActivityReportService
      */
     public function createFromPattern(array $pattern, Collection $transactions): SuspiciousActivityReport
     {
-        return DB::transaction(function () use ($pattern, $transactions) {
-            $accounts = $transactions->pluck('account')->unique('id');
-            $users = $accounts->pluck('user')->filter()->unique('id');
+        return DB::transaction(
+            function () use ($pattern, $transactions) {
+                $accounts = $transactions->pluck('account')->unique('id');
+                $users = $accounts->pluck('user')->filter()->unique('id');
 
-            $sar = SuspiciousActivityReport::create([
-                'status'          => SuspiciousActivityReport::STATUS_DRAFT,
-                'priority'        => SuspiciousActivityReport::PRIORITY_HIGH,
-                'subject_user_id' => $users->count() === 1 ? $users->first()->id : null,
-                'subject_type'    => SuspiciousActivityReport::SUBJECT_TYPE_PATTERN,
-                'subject_details' => [
+                $sar = SuspiciousActivityReport::create(
+                    [
+                    'status'          => SuspiciousActivityReport::STATUS_DRAFT,
+                    'priority'        => SuspiciousActivityReport::PRIORITY_HIGH,
+                    'subject_user_id' => $users->count() === 1 ? $users->first()->id : null,
+                    'subject_type'    => SuspiciousActivityReport::SUBJECT_TYPE_PATTERN,
+                    'subject_details' => [
                     'pattern_type' => $pattern['type'],
                     'accounts'     => $accounts->pluck('account_number')->toArray(),
                     'users'        => $users->pluck('name')->toArray(),
-                ],
-                'activity_start_date'  => $transactions->min('created_at'),
-                'activity_end_date'    => $transactions->max('created_at'),
-                'total_amount'         => $transactions->sum('amount'),
-                'primary_currency'     => $transactions->first()->currency,
-                'transaction_count'    => $transactions->count(),
-                'involved_accounts'    => $accounts->pluck('id')->toArray(),
-                'involved_parties'     => $this->extractInvolvedParties($transactions),
-                'activity_types'       => $this->getActivityTypesForPattern($pattern['type']),
-                'activity_description' => $this->generatePatternDescription($pattern, $transactions),
-                'red_flags'            => $this->getRedFlagsForPattern($pattern['type']),
-                'triggering_rules'     => [],
-                'related_transactions' => $transactions->pluck('id')->toArray(),
-            ]);
+                    ],
+                    'activity_start_date'  => $transactions->min('created_at'),
+                    'activity_end_date'    => $transactions->max('created_at'),
+                    'total_amount'         => $transactions->sum('amount'),
+                    'primary_currency'     => $transactions->first()->currency,
+                    'transaction_count'    => $transactions->count(),
+                    'involved_accounts'    => $accounts->pluck('id')->toArray(),
+                    'involved_parties'     => $this->extractInvolvedParties($transactions),
+                    'activity_types'       => $this->getActivityTypesForPattern($pattern['type']),
+                    'activity_description' => $this->generatePatternDescription($pattern, $transactions),
+                    'red_flags'            => $this->getRedFlagsForPattern($pattern['type']),
+                    'triggering_rules'     => [],
+                    'related_transactions' => $transactions->pluck('id')->toArray(),
+                    ]
+                );
 
-            event(new SARCreated($sar));
+                event(new SARCreated($sar));
 
-            return $sar;
-        });
+                return $sar;
+            }
+        );
     }
 
     /**
@@ -109,9 +117,13 @@ class SuspiciousActivityReportService
             $sar->startInvestigation($investigator);
         }
 
-        $sar->update(array_merge($additionalData, [
-            'investigation_findings' => $findings,
-        ]));
+        $sar->update(
+            array_merge(
+                $additionalData, [
+                'investigation_findings' => $findings,
+                ]
+            )
+        );
 
         if (isset($additionalData['complete']) && $additionalData['complete']) {
             $sar->completeInvestigation($findings);
@@ -156,15 +168,19 @@ class SuspiciousActivityReportService
 
         return Transaction::where('account_id', $account->id)
             ->where('created_at', '>=', $timeWindow)
-            ->where(function ($query) use ($transaction) {
-                // Similar amounts (within 10%)
-                $query->whereBetween('amount', [
-                    $transaction->amount * 0.9,
-                    $transaction->amount * 1.1,
-                ])
-                // Or same day
-                ->orWhereDate('created_at', $transaction->created_at->toDateString());
-            })
+            ->where(
+                function ($query) use ($transaction) {
+                    // Similar amounts (within 10%)
+                    $query->whereBetween(
+                        'amount', [
+                        $transaction->amount * 0.9,
+                        $transaction->amount * 1.1,
+                        ]
+                    )
+                    // Or same day
+                        ->orWhereDate('created_at', $transaction->created_at->toDateString());
+                }
+            )
             ->get();
     }
 
@@ -248,18 +264,18 @@ class SuspiciousActivityReportService
 
         foreach ($alerts as $alert) {
             switch ($alert['category']) {
-                case 'velocity':
-                    $redFlags[] = 'rapid_movement';
-                    break;
-                case 'pattern':
-                    $redFlags[] = 'unusual_transaction_pattern';
-                    break;
-                case 'geography':
-                    $redFlags[] = 'high_risk_geography';
-                    break;
-                case 'behavior':
-                    $redFlags[] = 'inconsistent_activity';
-                    break;
+            case 'velocity':
+                $redFlags[] = 'rapid_movement';
+                break;
+            case 'pattern':
+                $redFlags[] = 'unusual_transaction_pattern';
+                break;
+            case 'geography':
+                $redFlags[] = 'high_risk_geography';
+                break;
+            case 'behavior':
+                $redFlags[] = 'inconsistent_activity';
+                break;
             }
         }
 

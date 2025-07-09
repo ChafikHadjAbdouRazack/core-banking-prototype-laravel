@@ -29,7 +29,7 @@ class BasketStatsOverview extends BaseWidget
                 \DB::raw('(SELECT basket_code, MAX(calculated_at) as latest FROM basket_values GROUP BY basket_code) as latest_values'),
                 function ($join) {
                     $join->on('basket_values.basket_code', '=', 'latest_values.basket_code')
-                         ->on('basket_values.calculated_at', '=', 'latest_values.latest');
+                        ->on('basket_values.calculated_at', '=', 'latest_values.latest');
                 }
             )
             ->sum('value');

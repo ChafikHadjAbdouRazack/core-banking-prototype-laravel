@@ -146,8 +146,8 @@ class UserBankPreference extends Model
     /**
      * Calculate fund distribution across user's banks.
      *
-     * @param string $userUuid
-     * @param int $amountInCents
+     * @param  string $userUuid
+     * @param  int    $amountInCents
      * @return array Distribution of funds per bank
      */
     public static function calculateDistribution(string $userUuid, int $amountInCents): array

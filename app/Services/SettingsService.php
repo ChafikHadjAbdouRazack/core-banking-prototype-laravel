@@ -299,11 +299,13 @@ class SettingsService
         $validation = $this->validateSetting($key, $value);
 
         if (! $validation['valid']) {
-            Log::warning('Invalid setting update attempt', [
+            Log::warning(
+                'Invalid setting update attempt', [
                 'key'        => $key,
                 'errors'     => $validation['errors'],
                 'updated_by' => $updatedBy,
-            ]);
+                ]
+            );
 
             return false;
         }
@@ -311,19 +313,23 @@ class SettingsService
         $config = $this->getSettingConfig($key);
         $oldValue = Setting::get($key);
 
-        Setting::set($key, $value, [
+        Setting::set(
+            $key, $value, [
             'type'        => $config['type'],
             'label'       => $config['label'],
             'description' => $config['description'],
             'group'       => $config['group'],
-        ]);
+            ]
+        );
 
-        Log::info('Setting updated', [
+        Log::info(
+            'Setting updated', [
             'key'        => $key,
             'old_value'  => $oldValue,
             'new_value'  => $value,
             'updated_by' => $updatedBy,
-        ]);
+            ]
+        );
 
         return true;
     }
@@ -450,11 +456,13 @@ class SettingsService
             }
         }
 
-        Log::info('Settings imported', [
+        Log::info(
+            'Settings imported', [
             'imported_by'   => $importedBy,
             'success_count' => count($results['success']),
             'failed_count'  => count($results['failed']),
-        ]);
+            ]
+        );
 
         return $results;
     }

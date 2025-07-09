@@ -210,13 +210,15 @@ class FraudScore extends Model
             $topFeatures = collect($this->ml_explanation)
                 ->sortByDesc('importance')
                 ->take(2)
-                ->each(function ($feature) use (&$factors) {
-                    $factors[] = [
+                ->each(
+                    function ($feature) use (&$factors) {
+                        $factors[] = [
                         'type'   => 'ml_feature',
                         'name'   => $feature['feature'] ?? 'Unknown Feature',
                         'impact' => $feature['importance'] ?? 0,
-                    ];
-                });
+                        ];
+                    }
+                );
         }
 
         return $factors;
@@ -224,12 +226,14 @@ class FraudScore extends Model
 
     public function confirmOutcome(string $outcome, User $user, string $notes = null): void
     {
-        $this->update([
+        $this->update(
+            [
             'outcome'              => $outcome,
             'outcome_confirmed_at' => now(),
             'confirmed_by'         => $user->id,
             'outcome_notes'        => $notes,
-        ]);
+            ]
+        );
 
         // Update rule effectiveness based on outcome
         if ($this->triggered_rules) {
@@ -244,13 +248,15 @@ class FraudScore extends Model
 
     public function override(string $decision, User $user, string $reason): void
     {
-        $this->update([
+        $this->update(
+            [
             'decision'        => $decision,
             'is_override'     => true,
             'override_by'     => $user->id,
             'override_reason' => $reason,
             'decision_at'     => now(),
-        ]);
+            ]
+        );
     }
 
     public function getDecisionRecommendation(): string

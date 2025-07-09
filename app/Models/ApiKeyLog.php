@@ -39,11 +39,13 @@ class ApiKeyLog extends Model
     {
         parent::boot();
 
-        static::creating(function ($model) {
-            if (empty($model->created_at)) {
-                $model->created_at = now();
+        static::creating(
+            function ($model) {
+                if (empty($model->created_at)) {
+                    $model->created_at = now();
+                }
             }
-        });
+        );
     }
 
     /**

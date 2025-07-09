@@ -15,13 +15,15 @@ class FraudRuleController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $request->validate([
+        $request->validate(
+            [
             'category'    => 'nullable|in:velocity,pattern,amount,geography,device,behavior',
             'severity'    => 'nullable|in:low,medium,high,critical',
             'is_active'   => 'nullable|boolean',
             'is_blocking' => 'nullable|boolean',
             'search'      => 'nullable|string|max:100',
-        ]);
+            ]
+        );
 
         $query = FraudRule::query();
 
@@ -43,16 +45,18 @@ class FraudRuleController extends Controller
 
         if ($request->search) {
             $searchTerm = $request->search;
-            $query->where(function ($q) use ($searchTerm) {
-                $q->where('name', 'like', "%{$searchTerm}%")
-                  ->orWhere('code', 'like', "%{$searchTerm}%")
-                  ->orWhere('description', 'like', "%{$searchTerm}%");
-            });
+            $query->where(
+                function ($q) use ($searchTerm) {
+                    $q->where('name', 'like', "%{$searchTerm}%")
+                        ->orWhere('code', 'like', "%{$searchTerm}%")
+                        ->orWhere('description', 'like', "%{$searchTerm}%");
+                }
+            );
         }
 
         $rules = $query->orderBy('severity', 'desc')
-                      ->orderBy('base_score', 'desc')
-                      ->paginate($request->per_page ?? 20);
+            ->orderBy('base_score', 'desc')
+            ->paginate($request->per_page ?? 20);
 
         return response()->json($rules);
     }
@@ -64,10 +68,12 @@ class FraudRuleController extends Controller
     {
         $rule = FraudRule::findOrFail($ruleId);
 
-        return response()->json([
+        return response()->json(
+            [
             'rule'        => $rule,
             'performance' => $rule->getPerformanceMetrics(),
-        ]);
+            ]
+        );
     }
 
     /**
@@ -75,7 +81,8 @@ class FraudRuleController extends Controller
      */
     public function store(Request $request): JsonResponse
     {
-        $request->validate([
+        $request->validate(
+            [
             'name'            => 'required|string|max:255|unique:fraud_rules',
             'code'            => 'required|string|max:50|unique:fraud_rules',
             'description'     => 'required|string',
@@ -91,7 +98,8 @@ class FraudRuleController extends Controller
             'is_active'       => 'boolean',
             'tags'            => 'nullable|array',
             'tags.*'          => 'string|max:50',
-        ]);
+            ]
+        );
 
         // Ensure user can create fraud rules
         $this->authorize('create', FraudRule::class);
@@ -101,10 +109,12 @@ class FraudRuleController extends Controller
         // Clear rules cache
         Cache::forget('active_fraud_rules');
 
-        return response()->json([
+        return response()->json(
+            [
             'message' => 'Fraud rule created successfully',
             'rule'    => $rule,
-        ], 201);
+            ], 201
+        );
     }
 
     /**
@@ -112,7 +122,8 @@ class FraudRuleController extends Controller
      */
     public function update(Request $request, string $ruleId): JsonResponse
     {
-        $request->validate([
+        $request->validate(
+            [
             'name'            => 'nullable|string|max:255|unique:fraud_rules,name,' . $ruleId,
             'description'     => 'nullable|string',
             'category'        => 'nullable|in:velocity,pattern,amount,geography,device,behavior',
@@ -127,7 +138,8 @@ class FraudRuleController extends Controller
             'is_active'       => 'nullable|boolean',
             'tags'            => 'nullable|array',
             'tags.*'          => 'string|max:50',
-        ]);
+            ]
+        );
 
         $rule = FraudRule::findOrFail($ruleId);
 
@@ -139,10 +151,12 @@ class FraudRuleController extends Controller
         // Clear rules cache
         Cache::forget('active_fraud_rules');
 
-        return response()->json([
+        return response()->json(
+            [
             'message' => 'Fraud rule updated successfully',
             'rule'    => $rule,
-        ]);
+            ]
+        );
     }
 
     /**
@@ -160,9 +174,11 @@ class FraudRuleController extends Controller
         // Clear rules cache
         Cache::forget('active_fraud_rules');
 
-        return response()->json([
+        return response()->json(
+            [
             'message' => 'Fraud rule deleted successfully',
-        ]);
+            ]
+        );
     }
 
     /**
@@ -180,10 +196,12 @@ class FraudRuleController extends Controller
         // Clear rules cache
         Cache::forget('active_fraud_rules');
 
-        return response()->json([
+        return response()->json(
+            [
             'message' => 'Rule status toggled successfully',
             'rule'    => $rule,
-        ]);
+            ]
+        );
     }
 
     /**
@@ -191,9 +209,11 @@ class FraudRuleController extends Controller
      */
     public function test(Request $request, string $ruleId): JsonResponse
     {
-        $request->validate([
+        $request->validate(
+            [
             'context' => 'required|array',
-        ]);
+            ]
+        );
 
         $rule = FraudRule::findOrFail($ruleId);
 
@@ -203,7 +223,8 @@ class FraudRuleController extends Controller
         $triggered = $rule->evaluate($request->context);
         $score = $triggered ? $rule->calculateScore($request->context) : 0;
 
-        return response()->json([
+        return response()->json(
+            [
             'triggered' => $triggered,
             'score'     => $score,
             'rule'      => [
@@ -213,7 +234,8 @@ class FraudRuleController extends Controller
                 'category' => $rule->category,
                 'severity' => $rule->severity,
             ],
-        ]);
+            ]
+        );
     }
 
     /**
@@ -221,10 +243,12 @@ class FraudRuleController extends Controller
      */
     public function statistics(Request $request): JsonResponse
     {
-        $request->validate([
+        $request->validate(
+            [
             'date_from' => 'nullable|date',
             'date_to'   => 'nullable|date|after_or_equal:date_from',
-        ]);
+            ]
+        );
 
         $query = FraudRule::query();
 
@@ -271,10 +295,12 @@ class FraudRuleController extends Controller
         // Clear rules cache
         Cache::forget('active_fraud_rules');
 
-        return response()->json([
+        return response()->json(
+            [
             'message'       => 'Default fraud rules created successfully',
             'rules_created' => FraudRule::count(),
-        ]);
+            ]
+        );
     }
 
     /**
@@ -285,8 +311,9 @@ class FraudRuleController extends Controller
         // Ensure user can export fraud rules
         $this->authorize('export', FraudRule::class);
 
-        $rules = FraudRule::all()->map(function ($rule) {
-            return [
+        $rules = FraudRule::all()->map(
+            function ($rule) {
+                return [
                 'name'            => $rule->name,
                 'code'            => $rule->code,
                 'description'     => $rule->description,
@@ -300,14 +327,17 @@ class FraudRuleController extends Controller
                 'is_blocking'     => $rule->is_blocking,
                 'is_active'       => $rule->is_active,
                 'tags'            => $rule->tags,
-            ];
-        });
+                ];
+            }
+        );
 
-        return response()->json([
+        return response()->json(
+            [
             'rules'       => $rules,
             'exported_at' => now()->toIso8601String(),
             'total_rules' => $rules->count(),
-        ]);
+            ]
+        );
     }
 
     /**
@@ -315,7 +345,8 @@ class FraudRuleController extends Controller
      */
     public function import(Request $request): JsonResponse
     {
-        $request->validate([
+        $request->validate(
+            [
             'rules'              => 'required|array',
             'rules.*.name'       => 'required|string|max:255',
             'rules.*.code'       => 'required|string|max:50',
@@ -324,7 +355,8 @@ class FraudRuleController extends Controller
             'rules.*.conditions' => 'required|array',
             'rules.*.actions'    => 'required|array',
             'rules.*.base_score' => 'required|integer|min:0|max:100',
-        ]);
+            ]
+        );
 
         // Ensure user can import fraud rules
         $this->authorize('import', FraudRule::class);
@@ -346,10 +378,12 @@ class FraudRuleController extends Controller
         // Clear rules cache
         Cache::forget('active_fraud_rules');
 
-        return response()->json([
+        return response()->json(
+            [
             'message'  => 'Rules imported successfully',
             'imported' => $imported,
             'skipped'  => $skipped,
-        ]);
+            ]
+        );
     }
 }

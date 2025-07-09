@@ -26,11 +26,13 @@ class BasketPerformanceWidget extends BaseWidget
                     ? $this->record->performances()->getQuery()
                     : \App\Models\BasketPerformance::query()->whereRaw('1 = 0')
             )
-            ->columns([
+            ->columns(
+                [
                 Tables\Columns\TextColumn::make('period_type')
                     ->label('Period')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
+                    ->color(
+                        fn (string $state): string => match ($state) {
                         'hour'    => 'gray',
                         'day'     => 'info',
                         'week'    => 'primary',
@@ -38,7 +40,8 @@ class BasketPerformanceWidget extends BaseWidget
                         'quarter' => 'warning',
                         'year'    => 'danger',
                         default   => 'secondary',
-                    }),
+                        }
+                    ),
 
                 Tables\Columns\TextColumn::make('period_end')
                     ->label('Date')
@@ -53,90 +56,115 @@ class BasketPerformanceWidget extends BaseWidget
                 Tables\Columns\TextColumn::make('volatility')
                     ->label('Volatility')
                     ->formatStateUsing(fn ($state) => $state ? number_format($state, 2) . '%' : '-')
-                    ->color(fn ($state): string => match (true) {
+                    ->color(
+                        fn ($state): string => match (true) {
                         $state <= 5  => 'success',
                         $state <= 10 => 'primary',
                         $state <= 20 => 'warning',
                         default      => 'danger',
-                    }),
+                        }
+                    ),
 
                 Tables\Columns\TextColumn::make('sharpe_ratio')
                     ->label('Sharpe Ratio')
                     ->formatStateUsing(fn ($state) => $state !== null ? number_format($state, 2) : '-')
-                    ->color(fn ($state): string => match (true) {
+                    ->color(
+                        fn ($state): string => match (true) {
                         $state >= 2 => 'success',
                         $state >= 1 => 'primary',
                         $state >= 0 => 'warning',
                         default     => 'danger',
-                    }),
+                        }
+                    ),
 
                 Tables\Columns\TextColumn::make('max_drawdown')
                     ->label('Max Drawdown')
                     ->formatStateUsing(fn ($state) => $state ? '-' . number_format($state, 2) . '%' : '-')
-                    ->color(fn ($state): string => match (true) {
+                    ->color(
+                        fn ($state): string => match (true) {
                         $state <= 5  => 'success',
                         $state <= 10 => 'primary',
                         $state <= 20 => 'warning',
                         default      => 'danger',
-                    }),
+                        }
+                    ),
 
                 Tables\Columns\TextColumn::make('performance_rating')
                     ->label('Rating')
                     ->badge()
                     ->formatStateUsing(fn ($state) => str_replace('_', ' ', $state))
-                    ->color(fn (string $state): string => match ($state) {
+                    ->color(
+                        fn (string $state): string => match ($state) {
                         'excellent' => 'success',
                         'good'      => 'primary',
                         'neutral'   => 'warning',
                         'poor'      => 'danger',
                         'very_poor' => 'gray',
                         default     => 'secondary',
-                    }),
-            ])
-            ->filters([
+                        }
+                    ),
+                ]
+            )
+            ->filters(
+                [
                 Tables\Filters\SelectFilter::make('period_type')
-                    ->options([
+                    ->options(
+                        [
                         'hour'    => 'Hourly',
                         'day'     => 'Daily',
                         'week'    => 'Weekly',
                         'month'   => 'Monthly',
                         'quarter' => 'Quarterly',
                         'year'    => 'Yearly',
-                    ])
+                        ]
+                    )
                     ->multiple(),
-            ])
+                ]
+            )
             ->defaultSort('period_end', 'desc')
-            ->actions([
+            ->actions(
+                [
                 Tables\Actions\Action::make('view_components')
                     ->label('Components')
                     ->icon('heroicon-m-list-bullet')
                     ->modalHeading(fn ($record) => "Component Performance - {$record->period_type}")
-                    ->modalContent(function ($record) {
-                        $components = $record->componentPerformances()
-                            ->orderBy('contribution_percentage', 'desc')
-                            ->get();
+                    ->modalContent(
+                        function ($record) {
+                            $components = $record->componentPerformances()
+                                ->orderBy('contribution_percentage', 'desc')
+                                ->get();
 
-                        return view('filament.admin.resources.basket-asset-resource.widgets.component-performance-modal', [
-                            'components' => $components,
-                        ]);
-                    })
+                            return view(
+                                'filament.admin.resources.basket-asset-resource.widgets.component-performance-modal', [
+                                'components' => $components,
+                                ]
+                            );
+                        }
+                    )
                     ->modalFooterActions([]),
-            ])
-            ->headerActions([
+                ]
+            )
+            ->headerActions(
+                [
                 Tables\Actions\Action::make('calculate_all')
                     ->label('Calculate All Periods')
                     ->icon('heroicon-m-arrow-path')
                     ->color('primary')
-                    ->action(function () {
-                        $service = app(BasketPerformanceService::class);
-                        $performances = $service->calculateAllPeriods($this->record);
+                    ->action(
+                        function () {
+                            $service = app(BasketPerformanceService::class);
+                            $performances = $service->calculateAllPeriods($this->record);
 
-                        $this->dispatch('notify', [
-                            'type'    => 'success',
-                            'message' => "Calculated {$performances->count()} performance periods",
-                        ]);
-                    }),
-            ])
+                            $this->dispatch(
+                                'notify', [
+                                'type'    => 'success',
+                                'message' => "Calculated {$performances->count()} performance periods",
+                                ]
+                            );
+                        }
+                    ),
+                ]
+            )
             ->paginated([10, 25, 50]);
     }
 }

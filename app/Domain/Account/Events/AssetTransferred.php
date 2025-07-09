@@ -19,10 +19,10 @@ class AssetTransferred extends ShouldBeStored implements HasHash
     /**
      * @param AccountUuid $from
      * @param AccountUuid $to
-     * @param string $assetCode
-     * @param int $amount
-     * @param Hash $hash
-     * @param array|null $metadata
+     * @param string      $assetCode
+     * @param int         $amount
+     * @param Hash        $hash
+     * @param array|null  $metadata
      */
     public function __construct(
         public readonly AccountUuid $from,

@@ -16,7 +16,7 @@ class ProcessRefundWorkflow extends Workflow
     /**
      * Process a CGO refund through the complete workflow.
      *
-     * @param RefundRequest $request
+     * @param  RefundRequest $request
      * @return \Generator
      */
     public function execute(RefundRequest $request): \Generator

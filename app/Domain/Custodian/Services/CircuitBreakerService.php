@@ -45,12 +45,12 @@ class CircuitBreakerService
      * Execute a callable within circuit breaker protection.
      *
      * @template T
-     * @param string $service Service identifier (e.g., 'paysera.balance')
-     * @param callable(): T $operation The operation to execute
-     * @param callable(): T|null $fallback Optional fallback operation
-     * @return T
-     * @throws CircuitOpenException When circuit is open and no fallback provided
-     * @throws \Throwable When operation fails and no fallback provided
+     * @param    string             $service   Service identifier (e.g., 'paysera.balance')
+     * @param    callable(): T      $operation The operation to execute
+     * @param    callable(): T|null $fallback  Optional fallback operation
+     * @return   T
+     * @throws   CircuitOpenException When circuit is open and no fallback provided
+     * @throws   \Throwable When operation fails and no fallback provided
      */
     public function execute(string $service, callable $operation, ?callable $fallback = null): mixed
     {
@@ -96,9 +96,11 @@ class CircuitBreakerService
 
             // If we have a fallback, use it
             if ($fallback !== null) {
-                Log::info("Using fallback for service: {$service}", [
+                Log::info(
+                    "Using fallback for service: {$service}", [
                     'exception' => $exception->getMessage(),
-                ]);
+                    ]
+                );
 
                 return $fallback();
             }

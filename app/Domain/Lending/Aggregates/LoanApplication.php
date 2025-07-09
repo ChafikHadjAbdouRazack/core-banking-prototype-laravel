@@ -60,15 +60,17 @@ class LoanApplication extends AggregateRoot
 
         $application = static::retrieve($applicationId);
 
-        $application->recordThat(new LoanApplicationSubmitted(
-            applicationId: $applicationId,
-            borrowerId: $borrowerId,
-            requestedAmount: $requestedAmount,
-            termMonths: $termMonths,
-            purpose: $purpose,
-            borrowerInfo: $borrowerInfo,
-            submittedAt: new \DateTimeImmutable()
-        ));
+        $application->recordThat(
+            new LoanApplicationSubmitted(
+                applicationId: $applicationId,
+                borrowerId: $borrowerId,
+                requestedAmount: $requestedAmount,
+                termMonths: $termMonths,
+                purpose: $purpose,
+                borrowerInfo: $borrowerInfo,
+                submittedAt: new \DateTimeImmutable()
+            )
+        );
 
         return $application;
     }
@@ -85,14 +87,16 @@ class LoanApplication extends AggregateRoot
 
         $creditScore = new CreditScore($score, $bureau, $creditReport);
 
-        $this->recordThat(new LoanApplicationCreditCheckCompleted(
-            applicationId: $this->applicationId,
-            score: $score,
-            bureau: $bureau,
-            report: $creditReport,
-            checkedBy: $checkedBy,
-            checkedAt: new \DateTimeImmutable()
-        ));
+        $this->recordThat(
+            new LoanApplicationCreditCheckCompleted(
+                applicationId: $this->applicationId,
+                score: $score,
+                bureau: $bureau,
+                report: $creditReport,
+                checkedBy: $checkedBy,
+                checkedAt: new \DateTimeImmutable()
+            )
+        );
 
         return $this;
     }
@@ -113,14 +117,16 @@ class LoanApplication extends AggregateRoot
 
         $riskRating = new RiskRating($rating, $defaultProbability, $riskFactors);
 
-        $this->recordThat(new LoanApplicationRiskAssessmentCompleted(
-            applicationId: $this->applicationId,
-            rating: $rating,
-            defaultProbability: $defaultProbability,
-            riskFactors: $riskFactors,
-            assessedBy: $assessedBy,
-            assessedAt: new \DateTimeImmutable()
-        ));
+        $this->recordThat(
+            new LoanApplicationRiskAssessmentCompleted(
+                applicationId: $this->applicationId,
+                rating: $rating,
+                defaultProbability: $defaultProbability,
+                riskFactors: $riskFactors,
+                assessedBy: $assessedBy,
+                assessedAt: new \DateTimeImmutable()
+            )
+        );
 
         return $this;
     }
@@ -147,14 +153,16 @@ class LoanApplication extends AggregateRoot
             throw new LoanApplicationException('Interest rate must be between 0 and 100');
         }
 
-        $this->recordThat(new LoanApplicationApproved(
-            applicationId: $this->applicationId,
-            approvedAmount: $approvedAmount,
-            interestRate: $interestRate,
-            terms: $terms,
-            approvedBy: $approvedBy,
-            approvedAt: new \DateTimeImmutable()
-        ));
+        $this->recordThat(
+            new LoanApplicationApproved(
+                applicationId: $this->applicationId,
+                approvedAmount: $approvedAmount,
+                interestRate: $interestRate,
+                terms: $terms,
+                approvedBy: $approvedBy,
+                approvedAt: new \DateTimeImmutable()
+            )
+        );
 
         return $this;
     }
@@ -165,12 +173,14 @@ class LoanApplication extends AggregateRoot
             throw new LoanApplicationException('Can only reject pending applications');
         }
 
-        $this->recordThat(new LoanApplicationRejected(
-            applicationId: $this->applicationId,
-            reasons: $reasons,
-            rejectedBy: $rejectedBy,
-            rejectedAt: new \DateTimeImmutable()
-        ));
+        $this->recordThat(
+            new LoanApplicationRejected(
+                applicationId: $this->applicationId,
+                reasons: $reasons,
+                rejectedBy: $rejectedBy,
+                rejectedAt: new \DateTimeImmutable()
+            )
+        );
 
         return $this;
     }
@@ -181,12 +191,14 @@ class LoanApplication extends AggregateRoot
             throw new LoanApplicationException('Cannot withdraw application in current status');
         }
 
-        $this->recordThat(new LoanApplicationWithdrawn(
-            applicationId: $this->applicationId,
-            reason: $reason,
-            withdrawnBy: $withdrawnBy,
-            withdrawnAt: new \DateTimeImmutable()
-        ));
+        $this->recordThat(
+            new LoanApplicationWithdrawn(
+                applicationId: $this->applicationId,
+                reason: $reason,
+                withdrawnBy: $withdrawnBy,
+                withdrawnAt: new \DateTimeImmutable()
+            )
+        );
 
         return $this;
     }

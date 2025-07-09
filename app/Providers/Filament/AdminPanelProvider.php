@@ -26,25 +26,32 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login()
             ->brandName($this->getBrandName())
-            ->colors([
+            ->colors(
+                [
                 'primary' => Color::Blue,
                 'danger'  => Color::Red,
                 'success' => Color::Emerald,
                 'warning' => Color::Amber,
-            ])
+                ]
+            )
             ->discoverResources(in: app_path('Filament/Admin/Resources'), for: 'App\\Filament\\Admin\\Resources')
             ->discoverPages(in: app_path('Filament/Admin/Pages'), for: 'App\\Filament\\Admin\\Pages')
-            ->pages([
+            ->pages(
+                [
                 Dashboard::class,
-            ])
+                ]
+            )
             ->discoverWidgets(in: app_path('Filament/Admin/Widgets'), for: 'App\\Filament\\Admin\\Widgets')
             ->widgets([])
-            ->navigationGroups([
+            ->navigationGroups(
+                [
                 'Banking',
                 'System',
-            ])
+                ]
+            )
             ->sidebarCollapsibleOnDesktop()
-            ->middleware([
+            ->middleware(
+                [
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
                 StartSession::class,
@@ -54,10 +61,13 @@ class AdminPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
-            ])
-            ->authMiddleware([
+                ]
+            )
+            ->authMiddleware(
+                [
                 Authenticate::class,
-            ]);
+                ]
+            );
     }
 
     /**

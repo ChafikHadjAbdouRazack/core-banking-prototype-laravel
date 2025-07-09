@@ -122,27 +122,31 @@ class TransactionRateLimitMiddleware
         $currentCount = Cache::get($key, 0);
 
         if ($currentCount >= $limit) {
-            Log::warning('Transaction rate limit exceeded', [
+            Log::warning(
+                'Transaction rate limit exceeded', [
                 'user_id'          => $userId,
                 'transaction_type' => $transactionType,
                 'period'           => $period,
                 'limit'            => $limit,
                 'current_count'    => $currentCount,
-            ]);
+                ]
+            );
 
-            return response()->json([
+            return response()->json(
+                [
                 'error'         => 'Transaction rate limit exceeded',
                 'message'       => "You have exceeded the {$period} limit of {$limit} {$transactionType} transactions.",
                 'period'        => $period,
                 'limit'         => $limit,
                 'current_count' => $currentCount,
                 'reset_time'    => now()->addSeconds($window)->toISOString(),
-            ], 429, [
+                ], 429, [
                 'X-Transaction-RateLimit-Exceeded' => $period,
                 'X-Transaction-Limit'              => $limit,
                 'X-Transaction-Remaining'          => 0,
                 'Retry-After'                      => $window,
-            ]);
+                ]
+            );
         }
 
         return true;
@@ -162,26 +166,30 @@ class TransactionRateLimitMiddleware
         $currentAmount = Cache::get($key, 0);
 
         if (($currentAmount + $amount) > $config['amount_limit']) {
-            Log::warning('Transaction amount limit exceeded', [
+            Log::warning(
+                'Transaction amount limit exceeded', [
                 'user_id'          => $userId,
                 'transaction_type' => $transactionType,
                 'amount'           => $amount,
                 'current_amount'   => $currentAmount,
                 'limit'            => $config['amount_limit'],
-            ]);
+                ]
+            );
 
-            return response()->json([
+            return response()->json(
+                [
                 'error'            => 'Transaction amount limit exceeded',
                 'message'          => 'This transaction would exceed your hourly amount limit.',
                 'amount_limit'     => $config['amount_limit'],
                 'current_amount'   => $currentAmount,
                 'requested_amount' => $amount,
                 'remaining_amount' => max(0, $config['amount_limit'] - $currentAmount),
-            ], 429, [
+                ], 429, [
                 'X-Transaction-AmountLimit-Exceeded' => 'true',
                 'X-Transaction-AmountLimit'          => $config['amount_limit'],
                 'X-Transaction-AmountRemaining'      => max(0, $config['amount_limit'] - $currentAmount),
-            ]);
+                ]
+            );
         }
 
         return true;
@@ -200,12 +208,14 @@ class TransactionRateLimitMiddleware
             $delay = min(5, $recentCount - 3); // Max 5 second delay
             sleep($delay);
 
-            Log::info('Progressive delay applied', [
+            Log::info(
+                'Progressive delay applied', [
                 'user_id'          => $userId,
                 'transaction_type' => $transactionType,
                 'recent_count'     => $recentCount,
                 'delay_seconds'    => $delay,
-            ]);
+                ]
+            );
         }
 
         // Track recent transactions (5-minute window)
@@ -259,12 +269,14 @@ class TransactionRateLimitMiddleware
         }
 
         // Log transaction attempt for audit
-        Log::info('Transaction rate limit check passed', [
+        Log::info(
+            'Transaction rate limit check passed', [
             'user_id'          => $userId,
             'transaction_type' => $transactionType,
             'endpoint'         => $request->path(),
             'amount'           => $this->extractAmount($request),
-        ]);
+            ]
+        );
     }
 
     /**

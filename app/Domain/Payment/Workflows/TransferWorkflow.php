@@ -14,7 +14,7 @@ class TransferWorkflow extends Workflow
     /**
      * @param AccountUuid $from
      * @param AccountUuid $to
-     * @param Money $money
+     * @param Money       $money
      *
      * @return \Generator
      * @throws \Throwable
@@ -27,22 +27,26 @@ class TransferWorkflow extends Workflow
                 $from,
                 $money
             );
-            $this->addCompensation(fn () => ChildWorkflowStub::make(
-                DepositAccountWorkflow::class,
-                $from,
-                $money
-            ));
+            $this->addCompensation(
+                fn () => ChildWorkflowStub::make(
+                    DepositAccountWorkflow::class,
+                    $from,
+                    $money
+                )
+            );
 
             yield ChildWorkflowStub::make(
                 DepositAccountWorkflow::class,
                 $to,
                 $money
             );
-            $this->addCompensation(fn () => ChildWorkflowStub::make(
-                WithdrawAccountWorkflow::class,
-                $to,
-                $money
-            ));
+            $this->addCompensation(
+                fn () => ChildWorkflowStub::make(
+                    WithdrawAccountWorkflow::class,
+                    $to,
+                    $money
+                )
+            );
         } catch (\Throwable $th) {
             yield from $this->compensate();
             throw $th;

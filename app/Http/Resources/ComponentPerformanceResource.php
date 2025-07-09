@@ -9,21 +9,21 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @OA\Schema(
  *     schema="ComponentPerformance",
  *     type="object",
- *     @OA\Property(property="id", type="integer"),
- *     @OA\Property(property="basket_performance_id", type="integer"),
- *     @OA\Property(property="asset_code", type="string"),
- *     @OA\Property(property="asset_name", type="string"),
- *     @OA\Property(property="start_weight", type="number"),
- *     @OA\Property(property="end_weight", type="number"),
- *     @OA\Property(property="average_weight", type="number"),
- *     @OA\Property(property="weight_change", type="number"),
- *     @OA\Property(property="contribution_value", type="number"),
- *     @OA\Property(property="contribution_percentage", type="number"),
- *     @OA\Property(property="formatted_contribution", type="string"),
- *     @OA\Property(property="return_value", type="number"),
- *     @OA\Property(property="return_percentage", type="number"),
- *     @OA\Property(property="formatted_return", type="string"),
- *     @OA\Property(property="is_positive_contributor", type="boolean")
+ * @OA\Property(property="id",                      type="integer"),
+ * @OA\Property(property="basket_performance_id",   type="integer"),
+ * @OA\Property(property="asset_code",              type="string"),
+ * @OA\Property(property="asset_name",              type="string"),
+ * @OA\Property(property="start_weight",            type="number"),
+ * @OA\Property(property="end_weight",              type="number"),
+ * @OA\Property(property="average_weight",          type="number"),
+ * @OA\Property(property="weight_change",           type="number"),
+ * @OA\Property(property="contribution_value",      type="number"),
+ * @OA\Property(property="contribution_percentage", type="number"),
+ * @OA\Property(property="formatted_contribution",  type="string"),
+ * @OA\Property(property="return_value",            type="number"),
+ * @OA\Property(property="return_percentage",       type="number"),
+ * @OA\Property(property="formatted_return",        type="string"),
+ * @OA\Property(property="is_positive_contributor", type="boolean")
  * )
  */
 class ComponentPerformanceResource extends JsonResource

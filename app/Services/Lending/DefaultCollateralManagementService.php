@@ -15,7 +15,8 @@ class DefaultCollateralManagementService implements CollateralManagementService
 {
     public function registerCollateral(array $collateralData): Collateral
     {
-        $collateral = Collateral::fromArray([
+        $collateral = Collateral::fromArray(
+            [
             'collateral_id'            => Str::uuid()->toString(),
             'loan_id'                  => $collateralData['loan_id'],
             'type'                     => $collateralData['type'],
@@ -25,10 +26,12 @@ class DefaultCollateralManagementService implements CollateralManagementService
             'status'                   => CollateralStatus::PENDING_VERIFICATION->value,
             'verification_document_id' => $collateralData['document_id'] ?? null,
             'metadata'                 => $collateralData['metadata'] ?? [],
-        ]);
+            ]
+        );
 
         // Store in database
-        LoanCollateral::create([
+        LoanCollateral::create(
+            [
             'id'                       => $collateral->collateralId,
             'loan_id'                  => $collateral->loanId,
             'type'                     => $collateral->type->value,
@@ -39,13 +42,16 @@ class DefaultCollateralManagementService implements CollateralManagementService
             'verification_document_id' => $collateral->verificationDocumentId,
             'metadata'                 => $collateral->metadata,
             'last_valuation_date'      => now(),
-        ]);
+            ]
+        );
 
-        Log::info('Collateral registered', [
+        Log::info(
+            'Collateral registered', [
             'collateral_id' => $collateral->collateralId,
             'loan_id'       => $collateral->loanId,
             'type'          => $collateral->type->value,
-        ]);
+            ]
+        );
 
         return $collateral;
     }
@@ -63,25 +69,31 @@ class DefaultCollateralManagementService implements CollateralManagementService
         $verificationPassed = $this->performVerification($model);
 
         if ($verificationPassed) {
-            $model->update([
+            $model->update(
+                [
                 'status'      => CollateralStatus::VERIFIED->value,
                 'verified_at' => now(),
                 'verified_by' => $verifiedBy,
-            ]);
+                ]
+            );
 
-            Log::info('Collateral verified', [
+            Log::info(
+                'Collateral verified', [
                 'collateral_id' => $collateralId,
                 'verified_by'   => $verifiedBy,
-            ]);
+                ]
+            );
 
             return true;
         }
 
-        $model->update([
+        $model->update(
+            [
             'status'      => CollateralStatus::REJECTED->value,
             'verified_at' => now(),
             'verified_by' => $verifiedBy,
-        ]);
+            ]
+        );
 
         return false;
     }
@@ -92,7 +104,8 @@ class DefaultCollateralManagementService implements CollateralManagementService
 
         $oldValue = $model->estimated_value;
 
-        $model->update([
+        $model->update(
+            [
             'estimated_value'     => $newValue,
             'last_valuation_date' => now(),
             'valuation_history'   => array_merge(
@@ -103,13 +116,16 @@ class DefaultCollateralManagementService implements CollateralManagementService
                     'new_value' => $newValue,
                 ]]
             ),
-        ]);
+            ]
+        );
 
-        Log::info('Collateral valuation updated', [
+        Log::info(
+            'Collateral valuation updated', [
             'collateral_id' => $collateralId,
             'old_value'     => $oldValue,
             'new_value'     => $newValue,
-        ]);
+            ]
+        );
 
         return $this->modelToDataObject($model);
     }
@@ -122,10 +138,12 @@ class DefaultCollateralManagementService implements CollateralManagementService
             return false;
         }
 
-        $model->update([
+        $model->update(
+            [
             'status'      => CollateralStatus::RELEASED->value,
             'released_at' => now(),
-        ]);
+            ]
+        );
 
         Log::info('Collateral released', ['collateral_id' => $collateralId]);
 
@@ -140,17 +158,21 @@ class DefaultCollateralManagementService implements CollateralManagementService
         // For now, we'll simulate it
         $liquidationValue = bcmul($model->estimated_value, '0.8', 2); // 80% of estimated value
 
-        $model->update([
+        $model->update(
+            [
             'status'            => CollateralStatus::LIQUIDATED->value,
             'liquidated_at'     => now(),
             'liquidation_value' => $liquidationValue,
-        ]);
+            ]
+        );
 
-        Log::info('Collateral liquidated', [
+        Log::info(
+            'Collateral liquidated', [
             'collateral_id'     => $collateralId,
             'estimated_value'   => $model->estimated_value,
             'liquidation_value' => $liquidationValue,
-        ]);
+            ]
+        );
 
         return [
             'collateral_id'     => $collateralId,

@@ -33,12 +33,14 @@ class FallbackService
         // Try cache first
         $cachedBalance = Cache::get($cacheKey);
         if ($cachedBalance !== null) {
-            Log::info('Using cached balance for fallback', [
+            Log::info(
+                'Using cached balance for fallback', [
                 'custodian' => $custodian,
                 'account'   => $accountId,
                 'asset'     => $assetCode,
                 'balance'   => $cachedBalance,
-            ]);
+                ]
+            );
 
             return new Money((int) $cachedBalance);
         }
@@ -49,13 +51,15 @@ class FallbackService
             ->first();
 
         if ($custodianAccount && $custodianAccount->last_known_balance !== null) {
-            Log::info('Using database balance for fallback', [
+            Log::info(
+                'Using database balance for fallback', [
                 'custodian'   => $custodian,
                 'account'     => $accountId,
                 'asset'       => $assetCode,
                 'balance'     => $custodianAccount->last_known_balance,
                 'last_synced' => $custodianAccount->last_synced_at,
-            ]);
+                ]
+            );
 
             // Note: This assumes single currency per account for simplicity
             // In production, we'd need to store multi-currency balances
@@ -79,10 +83,12 @@ class FallbackService
             ->first();
 
         if ($custodianAccount) {
-            $custodianAccount->update([
+            $custodianAccount->update(
+                [
                 'last_known_balance' => $balance->getAmount(),
                 'last_synced_at'     => now(),
-            ]);
+                ]
+            );
         }
     }
 
@@ -95,10 +101,12 @@ class FallbackService
 
         $cached = Cache::get($cacheKey);
         if ($cached !== null) {
-            Log::info('Using cached account info for fallback', [
+            Log::info(
+                'Using cached account info for fallback', [
                 'custodian' => $custodian,
                 'account'   => $accountId,
-            ]);
+                ]
+            );
 
             return unserialize($cached);
         }
@@ -124,11 +132,13 @@ class FallbackService
             ->first();
 
         if ($transfer) {
-            Log::info('Using database transfer status for fallback', [
+            Log::info(
+                'Using database transfer status for fallback', [
                 'custodian' => $custodian,
                 'transfer'  => $transferId,
                 'status'    => $transfer->status,
-            ]);
+                ]
+            );
 
             return new TransactionReceipt(
                 id: $transfer->id,
@@ -168,7 +178,8 @@ class FallbackService
 
         // Create a pending transfer record
         $transferId = 'QUEUED_' . \Str::uuid()->toString();
-        $transfer = CustodianTransfer::create([
+        $transfer = CustodianTransfer::create(
+            [
             'id'                        => $transferId,
             'from_account_uuid'         => $fromAccount,
             'to_account_uuid'           => $toAccount,
@@ -185,14 +196,17 @@ class FallbackService
                 'custodian'   => $custodian,
                 'description' => $description,
             ],
-        ]);
+            ]
+        );
 
-        Log::warning('Transfer queued for retry', [
+        Log::warning(
+            'Transfer queued for retry', [
             'custodian'   => $custodian,
             'transfer_id' => $transfer->id,
             'amount'      => $amount->getAmount(),
             'asset'       => $assetCode,
-        ]);
+            ]
+        );
 
         // Return a receipt indicating the transfer is queued
         return new TransactionReceipt(
@@ -236,11 +250,13 @@ class FallbackService
             try {
                 $connector = $registry->getConnector($alternative);
                 if ($connector->isAvailable()) {
-                    Log::info('Found alternative custodian', [
+                    Log::info(
+                        'Found alternative custodian', [
                         'failed'      => $failedCustodian,
                         'alternative' => $alternative,
                         'asset'       => $assetCode,
-                    ]);
+                        ]
+                    );
 
                     return $alternative;
                 }

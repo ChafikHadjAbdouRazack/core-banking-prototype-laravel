@@ -39,7 +39,7 @@ final readonly class AccountUuid extends DataObject implements DataObjectContrac
     /**
      * Create from string UUID.
      *
-     * @param string $uuid
+     * @param  string $uuid
      * @return AccountUuid
      */
     public static function fromString(string $uuid): self

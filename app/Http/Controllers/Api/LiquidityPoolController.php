@@ -28,17 +28,17 @@ class LiquidityPoolController extends Controller
      *     path="/api/liquidity/pools",
      *     tags={"Liquidity Pool"},
      *     summary="Get all active liquidity pools",
-     *     @OA\Response(
+     * @OA\Response(
      *         response=200,
      *         description="List of active pools",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="pools", type="array",
-     *                 @OA\Items(
-     *                     @OA\Property(property="pool_id", type="string"),
-     *                     @OA\Property(property="base_currency", type="string"),
-     *                     @OA\Property(property="quote_currency", type="string"),
-     *                     @OA\Property(property="tvl", type="string"),
-     *                     @OA\Property(property="apy", type="string")
+     * @OA\JsonContent(
+     * @OA\Property(property="pools",          type="array",
+     * @OA\Items(
+     * @OA\Property(property="pool_id",        type="string"),
+     * @OA\Property(property="base_currency",  type="string"),
+     * @OA\Property(property="quote_currency", type="string"),
+     * @OA\Property(property="tvl",            type="string"),
+     * @OA\Property(property="apy",            type="string")
      *                 )
      *             )
      *         )
@@ -49,10 +49,11 @@ class LiquidityPoolController extends Controller
     {
         $pools = $this->liquidityService->getActivePools();
 
-        $poolData = $pools->map(function ($pool) {
-            $metrics = $this->liquidityService->getPoolMetrics($pool->pool_id);
+        $poolData = $pools->map(
+            function ($pool) {
+                $metrics = $this->liquidityService->getPoolMetrics($pool->pool_id);
 
-            return [
+                return [
                 'pool_id'        => $pool->pool_id,
                 'base_currency'  => $pool->base_currency,
                 'quote_currency' => $pool->quote_currency,
@@ -62,12 +63,15 @@ class LiquidityPoolController extends Controller
                 'tvl'            => $metrics['tvl'],
                 'apy'            => $metrics['apy'],
                 'volume_24h'     => $pool->volume_24h,
-            ];
-        });
+                ];
+            }
+        );
 
-        return response()->json([
+        return response()->json(
+            [
             'pools' => $poolData,
-        ]);
+            ]
+        );
     }
 
     /**
@@ -75,13 +79,13 @@ class LiquidityPoolController extends Controller
      *     path="/api/liquidity/pools/{poolId}",
      *     tags={"Liquidity Pool"},
      *     summary="Get pool details",
-     *     @OA\Parameter(
+     * @OA\Parameter(
      *         name="poolId",
      *         in="path",
      *         required=true,
-     *         @OA\Schema(type="string", format="uuid")
+     * @OA\Schema(type="string", format="uuid")
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=200,
      *         description="Pool details with metrics"
      *     )
@@ -97,9 +101,11 @@ class LiquidityPoolController extends Controller
 
         $metrics = $this->liquidityService->getPoolMetrics($poolId);
 
-        return response()->json([
+        return response()->json(
+            [
             'pool' => array_merge($pool->toArray(), ['metrics' => $metrics]),
-        ]);
+            ]
+        );
     }
 
     /**
@@ -108,20 +114,20 @@ class LiquidityPoolController extends Controller
      *     tags={"Liquidity Pool"},
      *     summary="Create a new liquidity pool",
      *     security={{"bearerAuth":{}}},
-     *     @OA\RequestBody(
+     * @OA\RequestBody(
      *         required=true,
-     *         @OA\JsonContent(
+     * @OA\JsonContent(
      *             required={"base_currency", "quote_currency"},
-     *             @OA\Property(property="base_currency", type="string", example="BTC"),
-     *             @OA\Property(property="quote_currency", type="string", example="EUR"),
-     *             @OA\Property(property="fee_rate", type="string", example="0.003")
+     * @OA\Property(property="base_currency",  type="string", example="BTC"),
+     * @OA\Property(property="quote_currency", type="string", example="EUR"),
+     * @OA\Property(property="fee_rate",       type="string", example="0.003")
      *         )
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=201,
      *         description="Pool created",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="pool_id", type="string")
+     * @OA\JsonContent(
+     * @OA\Property(property="pool_id",        type="string")
      *         )
      *     )
      * )
@@ -130,11 +136,13 @@ class LiquidityPoolController extends Controller
     {
         $this->middleware('auth:sanctum');
 
-        $validated = $request->validate([
+        $validated = $request->validate(
+            [
             'base_currency'  => 'required|string|size:3',
             'quote_currency' => 'required|string|size:3',
             'fee_rate'       => 'nullable|numeric|between:0.0001,0.01',
-        ]);
+            ]
+        );
 
         try {
             $poolId = $this->liquidityService->createPool(
@@ -143,10 +151,12 @@ class LiquidityPoolController extends Controller
                 $validated['fee_rate'] ?? '0.003'
             );
 
-            return response()->json([
+            return response()->json(
+                [
                 'pool_id' => $poolId,
                 'message' => 'Liquidity pool created successfully',
-            ], 201);
+                ], 201
+            );
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 400);
         }
@@ -158,17 +168,17 @@ class LiquidityPoolController extends Controller
      *     tags={"Liquidity Pool"},
      *     summary="Add liquidity to a pool",
      *     security={{"bearerAuth":{}}},
-     *     @OA\RequestBody(
+     * @OA\RequestBody(
      *         required=true,
-     *         @OA\JsonContent(
+     * @OA\JsonContent(
      *             required={"pool_id", "base_amount", "quote_amount"},
-     *             @OA\Property(property="pool_id", type="string", format="uuid"),
-     *             @OA\Property(property="base_amount", type="string", example="0.1"),
-     *             @OA\Property(property="quote_amount", type="string", example="4800"),
-     *             @OA\Property(property="min_shares", type="string", example="0")
+     * @OA\Property(property="pool_id",      type="string", format="uuid"),
+     * @OA\Property(property="base_amount",  type="string", example="0.1"),
+     * @OA\Property(property="quote_amount", type="string", example="4800"),
+     * @OA\Property(property="min_shares",   type="string", example="0")
      *         )
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=200,
      *         description="Liquidity added"
      *     )
@@ -178,12 +188,14 @@ class LiquidityPoolController extends Controller
     {
         $this->middleware('auth:sanctum');
 
-        $validated = $request->validate([
+        $validated = $request->validate(
+            [
             'pool_id'      => 'required|uuid',
             'base_amount'  => 'required|numeric|min:0.00000001',
             'quote_amount' => 'required|numeric|min:0.00000001',
             'min_shares'   => 'nullable|numeric|min:0',
-        ]);
+            ]
+        );
 
         $pool = $this->liquidityService->getPool($validated['pool_id']);
         if (! $pool) {
@@ -191,15 +203,17 @@ class LiquidityPoolController extends Controller
         }
 
         try {
-            $result = $this->liquidityService->addLiquidity(new LiquidityAdditionInput(
-                poolId: $validated['pool_id'],
-                providerId: $request->user()->account->id,
-                baseCurrency: $pool->base_currency,
-                quoteCurrency: $pool->quote_currency,
-                baseAmount: $validated['base_amount'],
-                quoteAmount: $validated['quote_amount'],
-                minShares: $validated['min_shares'] ?? '0'
-            ));
+            $result = $this->liquidityService->addLiquidity(
+                new LiquidityAdditionInput(
+                    poolId: $validated['pool_id'],
+                    providerId: $request->user()->account->id,
+                    baseCurrency: $pool->base_currency,
+                    quoteCurrency: $pool->quote_currency,
+                    baseAmount: $validated['base_amount'],
+                    quoteAmount: $validated['quote_amount'],
+                    minShares: $validated['min_shares'] ?? '0'
+                )
+            );
 
             return response()->json($result);
         } catch (\Exception $e) {
@@ -213,17 +227,17 @@ class LiquidityPoolController extends Controller
      *     tags={"Liquidity Pool"},
      *     summary="Remove liquidity from a pool",
      *     security={{"bearerAuth":{}}},
-     *     @OA\RequestBody(
+     * @OA\RequestBody(
      *         required=true,
-     *         @OA\JsonContent(
+     * @OA\JsonContent(
      *             required={"pool_id", "shares"},
-     *             @OA\Property(property="pool_id", type="string", format="uuid"),
-     *             @OA\Property(property="shares", type="string", example="100"),
-     *             @OA\Property(property="min_base_amount", type="string", example="0"),
-     *             @OA\Property(property="min_quote_amount", type="string", example="0")
+     * @OA\Property(property="pool_id",          type="string", format="uuid"),
+     * @OA\Property(property="shares",           type="string", example="100"),
+     * @OA\Property(property="min_base_amount",  type="string", example="0"),
+     * @OA\Property(property="min_quote_amount", type="string", example="0")
      *         )
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=200,
      *         description="Liquidity removed"
      *     )
@@ -233,21 +247,25 @@ class LiquidityPoolController extends Controller
     {
         $this->middleware('auth:sanctum');
 
-        $validated = $request->validate([
+        $validated = $request->validate(
+            [
             'pool_id'          => 'required|uuid',
             'shares'           => 'required|numeric|min:0.00000001',
             'min_base_amount'  => 'nullable|numeric|min:0',
             'min_quote_amount' => 'nullable|numeric|min:0',
-        ]);
+            ]
+        );
 
         try {
-            $result = $this->liquidityService->removeLiquidity(new LiquidityRemovalInput(
-                poolId: $validated['pool_id'],
-                providerId: $request->user()->account->id,
-                shares: $validated['shares'],
-                minBaseAmount: $validated['min_base_amount'] ?? '0',
-                minQuoteAmount: $validated['min_quote_amount'] ?? '0'
-            ));
+            $result = $this->liquidityService->removeLiquidity(
+                new LiquidityRemovalInput(
+                    poolId: $validated['pool_id'],
+                    providerId: $request->user()->account->id,
+                    shares: $validated['shares'],
+                    minBaseAmount: $validated['min_base_amount'] ?? '0',
+                    minQuoteAmount: $validated['min_quote_amount'] ?? '0'
+                )
+            );
 
             return response()->json($result);
         } catch (\Exception $e) {
@@ -261,17 +279,17 @@ class LiquidityPoolController extends Controller
      *     tags={"Liquidity Pool"},
      *     summary="Execute a swap through liquidity pool",
      *     security={{"bearerAuth":{}}},
-     *     @OA\RequestBody(
+     * @OA\RequestBody(
      *         required=true,
-     *         @OA\JsonContent(
+     * @OA\JsonContent(
      *             required={"pool_id", "input_currency", "input_amount"},
-     *             @OA\Property(property="pool_id", type="string", format="uuid"),
-     *             @OA\Property(property="input_currency", type="string", example="BTC"),
-     *             @OA\Property(property="input_amount", type="string", example="0.1"),
-     *             @OA\Property(property="min_output_amount", type="string", example="4700")
+     * @OA\Property(property="pool_id",           type="string", format="uuid"),
+     * @OA\Property(property="input_currency",    type="string", example="BTC"),
+     * @OA\Property(property="input_amount",      type="string", example="0.1"),
+     * @OA\Property(property="min_output_amount", type="string", example="4700")
      *         )
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=200,
      *         description="Swap executed"
      *     )
@@ -281,12 +299,14 @@ class LiquidityPoolController extends Controller
     {
         $this->middleware('auth:sanctum');
 
-        $validated = $request->validate([
+        $validated = $request->validate(
+            [
             'pool_id'           => 'required|uuid',
             'input_currency'    => 'required|string|size:3',
             'input_amount'      => 'required|numeric|min:0.00000001',
             'min_output_amount' => 'nullable|numeric|min:0',
-        ]);
+            ]
+        );
 
         try {
             $result = $this->liquidityService->swap(
@@ -309,7 +329,7 @@ class LiquidityPoolController extends Controller
      *     tags={"Liquidity Pool"},
      *     summary="Get user's liquidity positions",
      *     security={{"bearerAuth":{}}},
-     *     @OA\Response(
+     * @OA\Response(
      *         response=200,
      *         description="User's positions"
      *     )
@@ -321,8 +341,9 @@ class LiquidityPoolController extends Controller
 
         $positions = $this->liquidityService->getProviderPositions($request->user()->account->id);
 
-        $positionData = $positions->map(function ($position) {
-            return [
+        $positionData = $positions->map(
+            function ($position) {
+                return [
                 'pool_id'               => $position->pool_id,
                 'base_currency'         => $position->pool->base_currency,
                 'quote_currency'        => $position->pool->quote_currency,
@@ -331,12 +352,15 @@ class LiquidityPoolController extends Controller
                 'current_value'         => $position->current_value,
                 'pending_rewards'       => $position->pending_rewards,
                 'total_rewards_claimed' => $position->total_rewards_claimed,
-            ];
-        });
+                ];
+            }
+        );
 
-        return response()->json([
+        return response()->json(
+            [
             'positions' => $positionData,
-        ]);
+            ]
+        );
     }
 
     /**
@@ -345,14 +369,14 @@ class LiquidityPoolController extends Controller
      *     tags={"Liquidity Pool"},
      *     summary="Claim pending rewards",
      *     security={{"bearerAuth":{}}},
-     *     @OA\RequestBody(
+     * @OA\RequestBody(
      *         required=true,
-     *         @OA\JsonContent(
+     * @OA\JsonContent(
      *             required={"pool_id"},
-     *             @OA\Property(property="pool_id", type="string", format="uuid")
+     * @OA\Property(property="pool_id", type="string", format="uuid")
      *         )
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=200,
      *         description="Rewards claimed"
      *     )
@@ -362,9 +386,11 @@ class LiquidityPoolController extends Controller
     {
         $this->middleware('auth:sanctum');
 
-        $validated = $request->validate([
+        $validated = $request->validate(
+            [
             'pool_id' => 'required|uuid',
-        ]);
+            ]
+        );
 
         try {
             $rewards = $this->liquidityService->claimRewards(
@@ -372,10 +398,12 @@ class LiquidityPoolController extends Controller
                 $request->user()->account->id
             );
 
-            return response()->json([
+            return response()->json(
+                [
                 'success' => true,
                 'rewards' => $rewards,
-            ]);
+                ]
+            );
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 400);
         }

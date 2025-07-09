@@ -11,7 +11,7 @@ class WithdrawAccountWorkflow extends Workflow
 {
     /**
      * @param AccountUuid $uuid
-     * @param Money $money
+     * @param Money       $money
      *
      * @return \Generator
      */

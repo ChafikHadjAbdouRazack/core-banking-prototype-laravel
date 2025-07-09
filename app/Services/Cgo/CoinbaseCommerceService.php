@@ -29,45 +29,53 @@ class CoinbaseCommerceService
             throw new \Exception('Coinbase Commerce API key not configured');
         }
 
-        $response = Http::withHeaders([
+        $response = Http::withHeaders(
+            [
             'X-CC-Api-Key' => $this->apiKey,
             'X-CC-Version' => '2018-03-22',
             'Content-Type' => 'application/json',
-        ])->post($this->apiUrl . '/charges', [
-            'name'         => 'CGO Investment - ' . ucfirst($investment->tier),
-            'description'  => 'Investment in FinAegis Continuous Growth Offering',
-            'pricing_type' => 'fixed_price',
-            'local_price'  => [
+            ]
+        )->post(
+            $this->apiUrl . '/charges', [
+                'name'         => 'CGO Investment - ' . ucfirst($investment->tier),
+                'description'  => 'Investment in FinAegis Continuous Growth Offering',
+                'pricing_type' => 'fixed_price',
+                'local_price'  => [
                 'amount'   => (string) $investment->amount,
                 'currency' => 'USD',
-            ],
-            'metadata' => [
+                ],
+                'metadata' => [
                 'investment_id'   => $investment->id,
                 'investment_uuid' => $investment->uuid,
                 'tier'            => $investment->tier,
                 'customer_email'  => $investment->email,
-            ],
-            'redirect_url' => route('cgo.payment.success', ['investment' => $investment->uuid]),
-            'cancel_url'   => route('cgo.payment.cancel', ['investment' => $investment->uuid]),
-        ]);
+                ],
+                'redirect_url' => route('cgo.payment.success', ['investment' => $investment->uuid]),
+                'cancel_url'   => route('cgo.payment.cancel', ['investment' => $investment->uuid]),
+                ]
+        );
 
         if (! $response->successful()) {
-            Log::error('Coinbase Commerce charge creation failed', [
+            Log::error(
+                'Coinbase Commerce charge creation failed', [
                 'investment_id' => $investment->id,
                 'status'        => $response->status(),
                 'error'         => $response->json(),
-            ]);
+                ]
+            );
             throw new \Exception('Failed to create Coinbase Commerce charge: ' . $response->body());
         }
 
         $chargeData = $response->json()['data'];
 
         // Store charge details
-        $investment->update([
+        $investment->update(
+            [
             'coinbase_charge_id'   => $chargeData['id'],
             'coinbase_charge_code' => $chargeData['code'],
             'crypto_payment_url'   => $chargeData['hosted_url'],
-        ]);
+            ]
+        );
 
         return $chargeData;
     }
@@ -77,10 +85,12 @@ class CoinbaseCommerceService
      */
     public function getCharge(string $chargeId): array
     {
-        $response = Http::withHeaders([
+        $response = Http::withHeaders(
+            [
             'X-CC-Api-Key' => $this->apiKey,
             'X-CC-Version' => '2018-03-22',
-        ])->get($this->apiUrl . '/charges/' . $chargeId);
+            ]
+        )->get($this->apiUrl . '/charges/' . $chargeId);
 
         if (! $response->successful()) {
             throw new \Exception('Failed to fetch charge details');
@@ -107,35 +117,37 @@ class CoinbaseCommerceService
         $eventType = $event['type'] ?? '';
         $chargeData = $event['data'] ?? [];
 
-        Log::info('Processing Coinbase Commerce webhook', [
+        Log::info(
+            'Processing Coinbase Commerce webhook', [
             'event_type' => $eventType,
             'charge_id'  => $chargeData['id'] ?? null,
-        ]);
+            ]
+        );
 
         switch ($eventType) {
-            case 'charge:created':
-                $this->handleChargeCreated($chargeData);
-                break;
+        case 'charge:created':
+            $this->handleChargeCreated($chargeData);
+            break;
 
-            case 'charge:confirmed':
-                $this->handleChargeConfirmed($chargeData);
-                break;
+        case 'charge:confirmed':
+            $this->handleChargeConfirmed($chargeData);
+            break;
 
-            case 'charge:failed':
-                $this->handleChargeFailed($chargeData);
-                break;
+        case 'charge:failed':
+            $this->handleChargeFailed($chargeData);
+            break;
 
-            case 'charge:delayed':
-            case 'charge:pending':
-                $this->handleChargePending($chargeData);
-                break;
+        case 'charge:delayed':
+        case 'charge:pending':
+            $this->handleChargePending($chargeData);
+            break;
 
-            case 'charge:resolved':
-                $this->handleChargeResolved($chargeData);
-                break;
+        case 'charge:resolved':
+            $this->handleChargeResolved($chargeData);
+            break;
 
-            default:
-                Log::warning('Unhandled Coinbase Commerce event type', ['type' => $eventType]);
+        default:
+            Log::warning('Unhandled Coinbase Commerce event type', ['type' => $eventType]);
         }
     }
 
@@ -146,10 +158,12 @@ class CoinbaseCommerceService
             return;
         }
 
-        Log::info('Coinbase charge created', [
+        Log::info(
+            'Coinbase charge created', [
             'investment_id' => $investment->id,
             'charge_code'   => $chargeData['code'],
-        ]);
+            ]
+        );
     }
 
     protected function handleChargeConfirmed(array $chargeData): void
@@ -166,7 +180,8 @@ class CoinbaseCommerceService
         $cryptoAmount = $payment['value']['crypto']['amount'] ?? 0;
         $txHash = $payment['transaction_id'] ?? null;
 
-        $investment->update([
+        $investment->update(
+            [
             'status'                  => 'confirmed',
             'payment_status'          => 'confirmed',
             'payment_completed_at'    => now(),
@@ -174,23 +189,28 @@ class CoinbaseCommerceService
             'crypto_amount_paid'      => $cryptoAmount,
             'crypto_currency_paid'    => $cryptoCurrency,
             'amount_paid'             => $paidAmount,
-        ]);
+            ]
+        );
 
-        Log::info('Coinbase charge confirmed', [
+        Log::info(
+            'Coinbase charge confirmed', [
             'investment_id' => $investment->id,
             'amount_paid'   => $paidAmount,
             'crypto'        => $cryptoCurrency,
             'tx_hash'       => $txHash,
-        ]);
+            ]
+        );
 
         // Send confirmation email
         try {
             \Mail::to($investment->email)->send(new \App\Mail\CgoInvestmentReceived($investment));
         } catch (\Exception $e) {
-            Log::error('Failed to send investment confirmation email', [
+            Log::error(
+                'Failed to send investment confirmation email', [
                 'investment_id' => $investment->id,
                 'error'         => $e->getMessage(),
-            ]);
+                ]
+            );
         }
     }
 
@@ -201,16 +221,20 @@ class CoinbaseCommerceService
             return;
         }
 
-        $investment->update([
+        $investment->update(
+            [
             'payment_status'         => 'failed',
             'payment_failed_at'      => now(),
             'payment_failure_reason' => 'Payment expired or cancelled',
-        ]);
+            ]
+        );
 
-        Log::warning('Coinbase charge failed', [
+        Log::warning(
+            'Coinbase charge failed', [
             'investment_id' => $investment->id,
             'charge_code'   => $chargeData['code'],
-        ]);
+            ]
+        );
     }
 
     protected function handleChargePending(array $chargeData): void
@@ -220,10 +244,12 @@ class CoinbaseCommerceService
             return;
         }
 
-        $investment->update([
+        $investment->update(
+            [
             'payment_status'     => 'pending',
             'payment_pending_at' => now(),
-        ]);
+            ]
+        );
 
         // Extract crypto payment info if available
         $payment = $chargeData['payments'][0] ?? null;
@@ -232,17 +258,21 @@ class CoinbaseCommerceService
             $cryptoAmount = $payment['value']['crypto']['amount'] ?? null;
 
             if ($cryptoCurrency && $cryptoAmount) {
-                $investment->update([
+                $investment->update(
+                    [
                     'crypto_currency_paid' => $cryptoCurrency,
                     'crypto_amount_paid'   => $cryptoAmount,
-                ]);
+                    ]
+                );
             }
         }
 
-        Log::info('Coinbase charge pending', [
+        Log::info(
+            'Coinbase charge pending', [
             'investment_id' => $investment->id,
             'charge_code'   => $chargeData['code'] ?? 'unknown',
-        ]);
+            ]
+        );
     }
 
     protected function handleChargeResolved(array $chargeData): void
@@ -253,15 +283,19 @@ class CoinbaseCommerceService
         }
 
         // Charge resolved means overpayment was resolved
-        $investment->update([
+        $investment->update(
+            [
             'status' => 'confirmed',
             'notes'  => 'Payment resolved after overpayment',
-        ]);
+            ]
+        );
 
-        Log::info('Coinbase charge resolved', [
+        Log::info(
+            'Coinbase charge resolved', [
             'investment_id' => $investment->id,
             'charge_code'   => $chargeData['code'],
-        ]);
+            ]
+        );
     }
 
     protected function findInvestmentByCharge(array $chargeData): ?CgoInvestment
@@ -284,9 +318,11 @@ class CoinbaseCommerceService
             }
         }
 
-        Log::warning('Coinbase webhook: Investment not found', [
+        Log::warning(
+            'Coinbase webhook: Investment not found', [
             'charge_id' => $chargeId,
-        ]);
+            ]
+        );
 
         return null;
     }

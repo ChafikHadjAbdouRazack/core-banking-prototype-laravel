@@ -35,22 +35,24 @@ class BlogPost extends Model
     {
         parent::boot();
 
-        static::creating(function ($post) {
-            if (empty($post->slug)) {
-                $post->slug = Str::slug($post->title);
-            }
+        static::creating(
+            function ($post) {
+                if (empty($post->slug)) {
+                    $post->slug = Str::slug($post->title);
+                }
 
-            if (empty($post->published_at) && $post->is_published) {
-                $post->published_at = now();
+                if (empty($post->published_at) && $post->is_published) {
+                    $post->published_at = now();
+                }
             }
-        });
+        );
     }
 
     public function scopePublished($query)
     {
         return $query->where('is_published', true)
-                     ->whereNotNull('published_at')
-                     ->where('published_at', '<=', now());
+            ->whereNotNull('published_at')
+            ->where('published_at', '<=', now());
     }
 
     public function scopeCategory($query, $category)

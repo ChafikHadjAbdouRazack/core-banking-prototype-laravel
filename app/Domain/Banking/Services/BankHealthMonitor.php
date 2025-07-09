@@ -38,48 +38,52 @@ class BankHealthMonitor
 
         $cacheKey = "bank_health:{$bankCode}";
 
-        return Cache::remember($cacheKey, 60, function () use ($bankCode) {
-            try {
-                $connector = $this->banks[$bankCode];
-                $startTime = microtime(true);
+        return Cache::remember(
+            $cacheKey, 60, function () use ($bankCode) {
+                try {
+                    $connector = $this->banks[$bankCode];
+                    $startTime = microtime(true);
 
-                $isAvailable = $connector->isAvailable();
-                $responseTime = (microtime(true) - $startTime) * 1000; // Convert to ms
+                    $isAvailable = $connector->isAvailable();
+                    $responseTime = (microtime(true) - $startTime) * 1000; // Convert to ms
 
-                $health = [
+                    $health = [
                     'status'           => $isAvailable ? 'healthy' : 'unhealthy',
                     'available'        => $isAvailable,
                     'response_time_ms' => round($responseTime, 2),
                     'last_check'       => now()->toIso8601String(),
                     'capabilities'     => $connector->getCapabilities()->toArray(),
-                ];
+                    ];
 
-                // Additional health checks
-                if ($isAvailable) {
-                    $health['supported_currencies'] = $connector->getSupportedCurrencies();
-                }
+                    // Additional health checks
+                    if ($isAvailable) {
+                        $health['supported_currencies'] = $connector->getSupportedCurrencies();
+                    }
 
-                $this->recordHealthCheck($bankCode, $health);
+                    $this->recordHealthCheck($bankCode, $health);
 
-                return $health;
-            } catch (\Exception $e) {
-                Log::error('Bank health check failed', [
-                    'bank_code' => $bankCode,
-                    'error'     => $e->getMessage(),
-                ]);
+                    return $health;
+                } catch (\Exception $e) {
+                    Log::error(
+                        'Bank health check failed', [
+                        'bank_code' => $bankCode,
+                        'error'     => $e->getMessage(),
+                        ]
+                    );
 
-                $health = [
+                    $health = [
                     'status'     => 'error',
                     'available'  => false,
                     'error'      => $e->getMessage(),
                     'last_check' => now()->toIso8601String(),
-                ];
+                    ];
 
-                $this->recordHealthCheck($bankCode, $health);
+                    $this->recordHealthCheck($bankCode, $health);
 
-                return $health;
+                    return $health;
+                }
             }
-        });
+        );
     }
 
     /**
@@ -107,10 +111,12 @@ class BankHealthMonitor
         // Filter by time range
         $cutoff = now()->subHours($hours);
 
-        return array_filter($history, function ($check) use ($cutoff) {
-            return isset($check['timestamp']) &&
+        return array_filter(
+            $history, function ($check) use ($cutoff) {
+                return isset($check['timestamp']) &&
                    \Carbon\Carbon::parse($check['timestamp'])->isAfter($cutoff);
-        });
+            }
+        );
     }
 
     /**
@@ -158,9 +164,11 @@ class BankHealthMonitor
     private function recordHealthCheck(string $bankCode, array $health): void
     {
         // Store in memory for current process
-        $this->healthChecks[$bankCode][] = array_merge($health, [
+        $this->healthChecks[$bankCode][] = array_merge(
+            $health, [
             'timestamp' => now()->toIso8601String(),
-        ]);
+            ]
+        );
 
         // Keep only last 100 checks per bank
         if (count($this->healthChecks[$bankCode]) > 100) {
@@ -171,9 +179,13 @@ class BankHealthMonitor
         $cacheKey = "bank_health_history:{$bankCode}";
         $history = Cache::get($cacheKey, []);
 
-        array_push($history, array_merge($health, [
-            'timestamp' => now()->toIso8601String(),
-        ]));
+        array_push(
+            $history, array_merge(
+                $health, [
+                'timestamp' => now()->toIso8601String(),
+                ]
+            )
+        );
 
         // Keep only last 1000 checks
         if (count($history) > 1000) {
@@ -195,12 +207,14 @@ class BankHealthMonitor
         $previousStatus = Cache::get($previousKey);
 
         if ($previousStatus !== $currentHealth['status']) {
-            event(new BankHealthChanged(
-                $bankCode,
-                $previousStatus,
-                $currentHealth['status'],
-                $currentHealth
-            ));
+            event(
+                new BankHealthChanged(
+                    $bankCode,
+                    $previousStatus,
+                    $currentHealth['status'],
+                    $currentHealth
+                )
+            );
 
             Cache::put($previousKey, $currentHealth['status'], now()->addDays(1));
         }
@@ -213,9 +227,11 @@ class BankHealthMonitor
     {
         $allHealth = $this->checkAllBanks();
 
-        return array_filter($allHealth, function ($health) use ($status) {
-            return $health['status'] === $status;
-        });
+        return array_filter(
+            $allHealth, function ($health) use ($status) {
+                return $health['status'] === $status;
+            }
+        );
     }
 
     /**
@@ -229,9 +245,11 @@ class BankHealthMonitor
             return 0.0;
         }
 
-        $healthyChecks = array_filter($history, function ($check) {
-            return $check['status'] === 'healthy';
-        });
+        $healthyChecks = array_filter(
+            $history, function ($check) {
+                return $check['status'] === 'healthy';
+            }
+        );
 
         return round((count($healthyChecks) / count($history)) * 100, 2);
     }

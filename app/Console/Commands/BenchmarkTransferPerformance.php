@@ -73,12 +73,14 @@ class BenchmarkTransferPerformance extends Command
             }
 
             $batchTime = microtime(true) - $batchStart;
-            $this->comment(sprintf(
-                'Batch %d/%d completed in %.2fms',
-                count($results) / $parallel,
-                ceil($iterations / $parallel),
-                $batchTime * 1000
-            ));
+            $this->comment(
+                sprintf(
+                    'Batch %d/%d completed in %.2fms',
+                    count($results) / $parallel,
+                    ceil($iterations / $parallel),
+                    $batchTime * 1000
+                )
+            );
         }
 
         $totalTime = microtime(true) - $startTime;
@@ -101,11 +103,13 @@ class BenchmarkTransferPerformance extends Command
             $account = Account::factory()->zeroBalance()->create();
 
             // Add USD balance
-            AccountBalance::create([
+            AccountBalance::create(
+                [
                 'account_uuid' => $account->uuid,
                 'asset_code'   => 'USD',
                 'balance'      => 1000000, // $10,000
-            ]);
+                ]
+            );
 
             $accounts[] = $account;
         }
@@ -186,12 +190,14 @@ class BenchmarkTransferPerformance extends Command
             // Check sub-second performance
             $subSecond = array_filter($times, fn ($t) => $t < 1000);
             $this->info('');
-            $this->info(sprintf(
-                'Sub-second transfers: %d/%d (%.1f%%)',
-                count($subSecond),
-                count($times),
-                (count($subSecond) / count($times)) * 100
-            ));
+            $this->info(
+                sprintf(
+                    'Sub-second transfers: %d/%d (%.1f%%)',
+                    count($subSecond),
+                    count($times),
+                    (count($subSecond) / count($times)) * 100
+                )
+            );
         }
 
         if (count($failed) > 0) {

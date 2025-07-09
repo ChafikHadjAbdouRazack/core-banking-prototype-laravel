@@ -16,10 +16,10 @@ class KycSubmissionActivity extends Activity
     /**
      * Execute KYC submission activity.
      *
-     * @param array $input Expected format: [
-     *   'user_uuid' => string,
-     *   'documents' => array
-     * ]
+     * @param  array $input Expected format: [
+     *                      'user_uuid' => string,
+     *                      'documents' => array
+     *                      ]
      * @return array
      */
     public function execute(array $input): array

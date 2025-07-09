@@ -55,10 +55,12 @@ class ProcessCustodianWebhook implements ShouldQueue
         }
 
         if ($webhook->status !== 'pending' && $webhook->status !== 'failed') {
-            Log::info('Webhook already processed', [
+            Log::info(
+                'Webhook already processed', [
                 'webhook_id' => $this->webhookId,
                 'status'     => $webhook->status,
-            ]);
+                ]
+            );
 
             return;
         }
@@ -71,19 +73,23 @@ class ProcessCustodianWebhook implements ShouldQueue
 
             $webhook->markAsProcessed();
 
-            Log::info('Webhook processed successfully', [
+            Log::info(
+                'Webhook processed successfully', [
                 'webhook_id' => $webhook->id,
                 'custodian'  => $webhook->custodian_name,
                 'event_type' => $webhook->event_type,
-            ]);
+                ]
+            );
         } catch (\Exception $e) {
             $webhook->markAsFailed($e->getMessage());
 
-            Log::error('Failed to process webhook', [
+            Log::error(
+                'Failed to process webhook', [
                 'webhook_id' => $webhook->id,
                 'error'      => $e->getMessage(),
                 'trace'      => $e->getTraceAsString(),
-            ]);
+                ]
+            );
 
             // Re-throw to trigger retry mechanism
             throw $e;
@@ -95,9 +101,11 @@ class ProcessCustodianWebhook implements ShouldQueue
      */
     public function failed(\Throwable $exception): void
     {
-        Log::error('Webhook processing job failed permanently', [
+        Log::error(
+            'Webhook processing job failed permanently', [
             'webhook_id' => $this->webhookId,
             'error'      => $exception->getMessage(),
-        ]);
+            ]
+        );
     }
 }

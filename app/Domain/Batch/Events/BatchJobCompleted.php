@@ -14,9 +14,9 @@ class BatchJobCompleted extends ShouldBeStored
 
     /**
      * @param string $completedAt
-     * @param int $totalProcessed
-     * @param int $totalFailed
-     * @param string $finalStatus // completed, completed_with_errors, failed
+     * @param int    $totalProcessed
+     * @param int    $totalFailed
+     * @param string $finalStatus    // completed, completed_with_errors, failed
      */
     public function __construct(
         public readonly string $completedAt,

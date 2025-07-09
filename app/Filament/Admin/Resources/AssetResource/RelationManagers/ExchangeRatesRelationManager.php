@@ -23,7 +23,8 @@ class ExchangeRatesRelationManager extends RelationManager
     public function form(Form $form): Form
     {
         return $form
-            ->schema([
+            ->schema(
+                [
                 Forms\Components\Select::make('to_asset_code')
                     ->label('To Asset')
                     ->relationship('toAsset', 'code')
@@ -40,12 +41,14 @@ class ExchangeRatesRelationManager extends RelationManager
 
                 Forms\Components\Select::make('source')
                     ->label('Source')
-                    ->options([
+                    ->options(
+                        [
                         ExchangeRate::SOURCE_MANUAL => 'Manual',
                         ExchangeRate::SOURCE_API    => 'API',
                         ExchangeRate::SOURCE_ORACLE => 'Oracle',
                         ExchangeRate::SOURCE_MARKET => 'Market',
-                    ])
+                        ]
+                    )
                     ->default(ExchangeRate::SOURCE_MANUAL)
                     ->required(),
 
@@ -68,14 +71,16 @@ class ExchangeRatesRelationManager extends RelationManager
                     ->keyLabel('Property')
                     ->valueLabel('Value')
                     ->columnSpanFull(),
-            ]);
+                ]
+            );
     }
 
     public function table(Table $table): Table
     {
         return $table
             ->recordTitleAttribute('to_asset_code')
-            ->columns([
+            ->columns(
+                [
                 Tables\Columns\TextColumn::make('to_asset_code')
                     ->label('To Asset')
                     ->badge()
@@ -91,13 +96,15 @@ class ExchangeRatesRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('source')
                     ->label('Source')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
+                    ->color(
+                        fn (string $state): string => match ($state) {
                         ExchangeRate::SOURCE_MANUAL => 'gray',
                         ExchangeRate::SOURCE_API    => 'success',
                         ExchangeRate::SOURCE_ORACLE => 'warning',
                         ExchangeRate::SOURCE_MARKET => 'info',
                         default                     => 'gray',
-                    }),
+                        }
+                    ),
 
                 Tables\Columns\TextColumn::make('valid_at')
                     ->label('Valid From')
@@ -118,21 +125,27 @@ class ExchangeRatesRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('age')
                     ->label('Age')
                     ->state(fn ($record) => $record->getAgeInMinutes() . ' min')
-                    ->color(fn ($record) => match (true) {
+                    ->color(
+                        fn ($record) => match (true) {
                         $record->getAgeInMinutes() < 60   => 'success',
                         $record->getAgeInMinutes() < 1440 => 'warning',
                         default                           => 'danger',
-                    })
+                        }
+                    )
                     ->badge(),
-            ])
-            ->filters([
+                ]
+            )
+            ->filters(
+                [
                 Tables\Filters\SelectFilter::make('source')
-                    ->options([
+                    ->options(
+                        [
                         ExchangeRate::SOURCE_MANUAL => 'Manual',
                         ExchangeRate::SOURCE_API    => 'API',
                         ExchangeRate::SOURCE_ORACLE => 'Oracle',
                         ExchangeRate::SOURCE_MARKET => 'Market',
-                    ]),
+                        ]
+                    ),
 
                 Tables\Filters\TernaryFilter::make('is_active')
                     ->label('Active Status'),
@@ -144,12 +157,16 @@ class ExchangeRatesRelationManager extends RelationManager
                 Tables\Filters\Filter::make('expired')
                     ->label('Expired')
                     ->query(fn (Builder $query): Builder => $query->where('expires_at', '<=', now())),
-            ])
-            ->headerActions([
+                ]
+            )
+            ->headerActions(
+                [
                 Tables\Actions\CreateAction::make()
                     ->label('Add Rate'),
-            ])
-            ->actions([
+                ]
+            )
+            ->actions(
+                [
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make()
                     ->requiresConfirmation(),
@@ -158,16 +175,21 @@ class ExchangeRatesRelationManager extends RelationManager
                     ->label('Refresh Rate')
                     ->icon('heroicon-m-arrow-path')
                     ->color('warning')
-                    ->action(function ($record) {
-                        // Here you would implement rate refreshing logic
-                        // For now, just update the valid_at timestamp
-                        $record->update(['valid_at' => now()]);
-                    })
+                    ->action(
+                        function ($record) {
+                            // Here you would implement rate refreshing logic
+                            // For now, just update the valid_at timestamp
+                            $record->update(['valid_at' => now()]);
+                        }
+                    )
                     ->requiresConfirmation()
                     ->visible(fn ($record) => $record->source !== ExchangeRate::SOURCE_MANUAL),
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
+                ]
+            )
+            ->bulkActions(
+                [
+                Tables\Actions\BulkActionGroup::make(
+                    [
                     Tables\Actions\DeleteBulkAction::make()
                         ->requiresConfirmation(),
 
@@ -185,8 +207,10 @@ class ExchangeRatesRelationManager extends RelationManager
                         ->action(fn ($records) => $records->each->update(['is_active' => false]))
                         ->requiresConfirmation()
                         ->deselectRecordsAfterCompletion(),
-                ]),
-            ])
+                    ]
+                ),
+                ]
+            )
             ->defaultSort('valid_at', 'desc');
     }
 }

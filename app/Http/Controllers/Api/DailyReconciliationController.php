@@ -36,34 +36,34 @@ class DailyReconciliationController extends Controller
      *     summary="Trigger manual reconciliation process",
      *     description="Manually triggers the daily bank account reconciliation process (Admin only)",
      *     security={{"sanctum": {}}},
-     *     @OA\Response(
+     * @OA\Response(
      *         response=200,
      *         description="Reconciliation completed successfully",
-     *         @OA\JsonContent(
-     *             @OA\Property(
+     * @OA\JsonContent(
+     * @OA\Property(
      *                 property="data",
      *                 type="object",
-     *                 @OA\Property(property="reconciliation_triggered", type="boolean", example=true),
-     *                 @OA\Property(property="triggered_at", type="string", format="date-time", example="2024-01-15T10:30:00Z"),
-     *                 @OA\Property(property="report", type="object", description="Reconciliation report details")
+     * @OA\Property(property="reconciliation_triggered", type="boolean", example=true),
+     * @OA\Property(property="triggered_at",             type="string", format="date-time", example="2024-01-15T10:30:00Z"),
+     * @OA\Property(property="report",                   type="object", description="Reconciliation report details")
      *             ),
-     *             @OA\Property(property="message", type="string", example="Daily reconciliation completed successfully")
+     * @OA\Property(property="message",                  type="string", example="Daily reconciliation completed successfully")
      *         )
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=500,
      *         description="Reconciliation failed",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="error", type="string", example="Reconciliation failed"),
-     *             @OA\Property(property="message", type="string", example="Connection to custodian failed"),
-     *             @OA\Property(property="triggered_at", type="string", format="date-time")
+     * @OA\JsonContent(
+     * @OA\Property(property="error",                    type="string", example="Reconciliation failed"),
+     * @OA\Property(property="message",                  type="string", example="Connection to custodian failed"),
+     * @OA\Property(property="triggered_at",             type="string", format="date-time")
      *         )
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=401,
      *         description="Unauthenticated"
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=403,
      *         description="Forbidden - Admin access required"
      *     )
@@ -76,25 +76,31 @@ class DailyReconciliationController extends Controller
 
             $report = $this->reconciliationService->performDailyReconciliation();
 
-            return response()->json([
+            return response()->json(
+                [
                 'data' => [
                     'reconciliation_triggered' => true,
                     'triggered_at'             => now()->toISOString(),
                     'report'                   => $report,
                 ],
                 'message' => 'Daily reconciliation completed successfully',
-            ]);
+                ]
+            );
         } catch (\Exception $e) {
-            Log::error('Manual reconciliation failed', [
+            Log::error(
+                'Manual reconciliation failed', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
-            ]);
+                ]
+            );
 
-            return response()->json([
+            return response()->json(
+                [
                 'error'        => 'Reconciliation failed',
                 'message'      => $e->getMessage(),
                 'triggered_at' => now()->toISOString(),
-            ], 500);
+                ], 500
+            );
         }
     }
 
@@ -108,39 +114,39 @@ class DailyReconciliationController extends Controller
      *     summary="Get the latest reconciliation report",
      *     description="Retrieves the most recent reconciliation report (Admin only)",
      *     security={{"sanctum": {}}},
-     *     @OA\Response(
+     * @OA\Response(
      *         response=200,
      *         description="Latest report retrieved successfully",
-     *         @OA\JsonContent(
-     *             @OA\Property(
+     * @OA\JsonContent(
+     * @OA\Property(
      *                 property="data",
      *                 type="object",
-     *                 @OA\Property(property="report", type="object", description="Full reconciliation report details"),
-     *                 @OA\Property(property="retrieved_at", type="string", format="date-time")
+     * @OA\Property(property="report",       type="object", description="Full reconciliation report details"),
+     * @OA\Property(property="retrieved_at", type="string", format="date-time")
      *             )
      *         )
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=404,
      *         description="No reconciliation reports found",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="data", type="null"),
-     *             @OA\Property(property="message", type="string", example="No reconciliation reports found")
+     * @OA\JsonContent(
+     * @OA\Property(property="data",         type="null"),
+     * @OA\Property(property="message",      type="string", example="No reconciliation reports found")
      *         )
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=500,
      *         description="Failed to retrieve report",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="error", type="string"),
-     *             @OA\Property(property="message", type="string")
+     * @OA\JsonContent(
+     * @OA\Property(property="error",        type="string"),
+     * @OA\Property(property="message",      type="string")
      *         )
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=401,
      *         description="Unauthenticated"
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=403,
      *         description="Forbidden - Admin access required"
      *     )
@@ -152,23 +158,29 @@ class DailyReconciliationController extends Controller
             $report = $this->reconciliationService->getLatestReport();
 
             if (! $report) {
-                return response()->json([
+                return response()->json(
+                    [
                     'data'    => null,
                     'message' => 'No reconciliation reports found',
-                ], 404);
+                    ], 404
+                );
             }
 
-            return response()->json([
+            return response()->json(
+                [
                 'data' => [
                     'report'       => $report,
                     'retrieved_at' => now()->toISOString(),
                 ],
-            ]);
+                ]
+            );
         } catch (\Exception $e) {
-            return response()->json([
+            return response()->json(
+                [
                 'error'   => 'Failed to retrieve latest report',
                 'message' => $e->getMessage(),
-            ], 500);
+                ], 500
+            );
         }
     }
 
@@ -182,55 +194,55 @@ class DailyReconciliationController extends Controller
      *     summary="Get reconciliation history",
      *     description="Retrieves historical reconciliation reports with filtering options (Admin only)",
      *     security={{"sanctum": {}}},
-     *     @OA\Parameter(
+     * @OA\Parameter(
      *         name="days",
      *         in="query",
      *         required=false,
      *         description="Number of days to look back (1-90, default: 30)",
-     *         @OA\Schema(type="integer", minimum=1, maximum=90, default=30)
+     * @OA\Schema(type="integer",                     minimum=1, maximum=90, default=30)
      *     ),
-     *     @OA\Parameter(
+     * @OA\Parameter(
      *         name="limit",
      *         in="query",
      *         required=false,
      *         description="Maximum number of reports to return (1-50, default: 20)",
-     *         @OA\Schema(type="integer", minimum=1, maximum=50, default=20)
+     * @OA\Schema(type="integer",                     minimum=1, maximum=50, default=20)
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=200,
      *         description="History retrieved successfully",
-     *         @OA\JsonContent(
-     *             @OA\Property(
+     * @OA\JsonContent(
+     * @OA\Property(
      *                 property="data",
      *                 type="object",
-     *                 @OA\Property(
+     * @OA\Property(
      *                     property="reports",
      *                     type="array",
-     *                     @OA\Items(
-     *                         @OA\Property(property="date", type="string", format="date", example="2024-01-15"),
-     *                         @OA\Property(property="summary", type="object"),
-     *                         @OA\Property(property="discrepancy_count", type="integer", example=2),
-     *                         @OA\Property(property="recommendations_count", type="integer", example=3),
-     *                         @OA\Property(property="file_path", type="string", example="reconciliation-2024-01-15.json"),
-     *                         @OA\Property(property="file_size", type="integer", example=15248),
-     *                         @OA\Property(property="generated_at", type="string", format="date-time")
+     * @OA\Items(
+     * @OA\Property(property="date",                  type="string", format="date", example="2024-01-15"),
+     * @OA\Property(property="summary",               type="object"),
+     * @OA\Property(property="discrepancy_count",     type="integer", example=2),
+     * @OA\Property(property="recommendations_count", type="integer", example=3),
+     * @OA\Property(property="file_path",             type="string", example="reconciliation-2024-01-15.json"),
+     * @OA\Property(property="file_size",             type="integer", example=15248),
+     * @OA\Property(property="generated_at",          type="string", format="date-time")
      *                     )
      *                 ),
-     *                 @OA\Property(property="total", type="integer", example=15),
-     *                 @OA\Property(property="period_days", type="integer", example=30),
-     *                 @OA\Property(property="retrieved_at", type="string", format="date-time")
+     * @OA\Property(property="total",                 type="integer", example=15),
+     * @OA\Property(property="period_days",           type="integer", example=30),
+     * @OA\Property(property="retrieved_at",          type="string", format="date-time")
      *             )
      *         )
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=500,
      *         description="Failed to retrieve history"
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=401,
      *         description="Unauthenticated"
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=403,
      *         description="Forbidden - Admin access required"
      *     )
@@ -238,10 +250,12 @@ class DailyReconciliationController extends Controller
      */
     public function getHistory(Request $request): JsonResponse
     {
-        $request->validate([
+        $request->validate(
+            [
             'days'  => 'sometimes|integer|min:1|max:90',
             'limit' => 'sometimes|integer|min:1|max:50',
-        ]);
+            ]
+        );
 
         try {
             $days = $request->get('days', 30);
@@ -250,13 +264,15 @@ class DailyReconciliationController extends Controller
             $files = glob(storage_path('app/reconciliation/reconciliation-*.json'));
 
             if (empty($files)) {
-                return response()->json([
+                return response()->json(
+                    [
                     'data' => [
                         'reports' => [],
                         'total'   => 0,
                     ],
                     'message' => 'No reconciliation reports found',
-                ]);
+                    ]
+                );
             }
 
             // Sort by filename (date) descending
@@ -290,19 +306,23 @@ class DailyReconciliationController extends Controller
                 ];
             }
 
-            return response()->json([
+            return response()->json(
+                [
                 'data' => [
                     'reports'      => $reports,
                     'total'        => count($reports),
                     'period_days'  => $days,
                     'retrieved_at' => now()->toISOString(),
                 ],
-            ]);
+                ]
+            );
         } catch (\Exception $e) {
-            return response()->json([
+            return response()->json(
+                [
                 'error'   => 'Failed to retrieve reconciliation history',
                 'message' => $e->getMessage(),
-            ], 500);
+                ], 500
+            );
         }
     }
 
@@ -316,56 +336,56 @@ class DailyReconciliationController extends Controller
      *     summary="Get reconciliation report for specific date",
      *     description="Retrieves the reconciliation report for a specific date (Admin only)",
      *     security={{"sanctum": {}}},
-     *     @OA\Parameter(
+     * @OA\Parameter(
      *         name="date",
      *         in="path",
      *         required=true,
      *         description="Date in YYYY-MM-DD format",
-     *         @OA\Schema(type="string", format="date", example="2024-01-15")
+     * @OA\Schema(type="string",             format="date", example="2024-01-15")
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=200,
      *         description="Report retrieved successfully",
-     *         @OA\JsonContent(
-     *             @OA\Property(
+     * @OA\JsonContent(
+     * @OA\Property(
      *                 property="data",
      *                 type="object",
-     *                 @OA\Property(property="date", type="string", format="date"),
-     *                 @OA\Property(property="report", type="object", description="Full reconciliation report"),
-     *                 @OA\Property(
+     * @OA\Property(property="date",         type="string", format="date"),
+     * @OA\Property(property="report",       type="object", description="Full reconciliation report"),
+     * @OA\Property(
      *                     property="file_info",
      *                     type="object",
-     *                     @OA\Property(property="size", type="integer"),
-     *                     @OA\Property(property="modified_at", type="string", format="date-time")
+     * @OA\Property(property="size",         type="integer"),
+     * @OA\Property(property="modified_at",  type="string", format="date-time")
      *                 ),
-     *                 @OA\Property(property="retrieved_at", type="string", format="date-time")
+     * @OA\Property(property="retrieved_at", type="string", format="date-time")
      *             )
      *         )
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=400,
      *         description="Invalid date format",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="error", type="string", example="Invalid date format. Use YYYY-MM-DD format.")
+     * @OA\JsonContent(
+     * @OA\Property(property="error",        type="string", example="Invalid date format. Use YYYY-MM-DD format.")
      *         )
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=404,
      *         description="Report not found",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="error", type="string"),
-     *             @OA\Property(property="date", type="string")
+     * @OA\JsonContent(
+     * @OA\Property(property="error",        type="string"),
+     * @OA\Property(property="date",         type="string")
      *         )
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=500,
      *         description="Failed to retrieve report"
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=401,
      *         description="Unauthenticated"
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=403,
      *         description="Forbidden - Admin access required"
      *     )
@@ -377,31 +397,38 @@ class DailyReconciliationController extends Controller
             // Validate date format
             $reportDate = Carbon::createFromFormat('Y-m-d', $date);
             if (! $reportDate) {
-                return response()->json([
+                return response()->json(
+                    [
                     'error' => 'Invalid date format. Use YYYY-MM-DD format.',
-                ], 400);
+                    ], 400
+                );
             }
 
             $filename = sprintf('reconciliation-%s.json', $date);
             $filePath = storage_path("app/reconciliation/{$filename}");
 
             if (! file_exists($filePath)) {
-                return response()->json([
+                return response()->json(
+                    [
                     'error' => 'Reconciliation report not found for the specified date',
                     'date'  => $date,
-                ], 404);
+                    ], 404
+                );
             }
 
             $content = file_get_contents($filePath);
             $reportData = json_decode($content, true);
 
             if (! $reportData) {
-                return response()->json([
+                return response()->json(
+                    [
                     'error' => 'Invalid report format',
-                ], 500);
+                    ], 500
+                );
             }
 
-            return response()->json([
+            return response()->json(
+                [
                 'data' => [
                     'date'      => $date,
                     'report'    => $reportData,
@@ -411,12 +438,15 @@ class DailyReconciliationController extends Controller
                     ],
                     'retrieved_at' => now()->toISOString(),
                 ],
-            ]);
+                ]
+            );
         } catch (\Exception $e) {
-            return response()->json([
+            return response()->json(
+                [
                 'error'   => 'Failed to retrieve reconciliation report',
                 'message' => $e->getMessage(),
-            ], 500);
+                ], 500
+            );
         }
     }
 
@@ -430,65 +460,65 @@ class DailyReconciliationController extends Controller
      *     summary="Get reconciliation metrics and analytics",
      *     description="Retrieves summary metrics and analytics for reconciliation processes (Admin only)",
      *     security={{"sanctum": {}}},
-     *     @OA\Parameter(
+     * @OA\Parameter(
      *         name="days",
      *         in="query",
      *         required=false,
      *         description="Number of days to analyze (1-90, default: 30)",
-     *         @OA\Schema(type="integer", minimum=1, maximum=90, default=30)
+     * @OA\Schema(type="integer",                             minimum=1, maximum=90, default=30)
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=200,
      *         description="Metrics retrieved successfully",
-     *         @OA\JsonContent(
-     *             @OA\Property(
+     * @OA\JsonContent(
+     * @OA\Property(
      *                 property="data",
      *                 type="object",
-     *                 @OA\Property(
+     * @OA\Property(
      *                     property="metrics",
      *                     type="object",
-     *                     @OA\Property(property="total_reconciliations", type="integer"),
-     *                     @OA\Property(property="successful_reconciliations", type="integer"),
-     *                     @OA\Property(property="failed_reconciliations", type="integer"),
-     *                     @OA\Property(property="total_discrepancies", type="integer"),
-     *                     @OA\Property(property="total_discrepancy_amount", type="number"),
-     *                     @OA\Property(property="average_duration_minutes", type="number"),
-     *                     @OA\Property(property="accounts_checked_total", type="integer"),
-     *                     @OA\Property(property="average_discrepancies_per_run", type="number"),
-     *                     @OA\Property(property="success_rate", type="number"),
-     *                     @OA\Property(
+     * @OA\Property(property="total_reconciliations",         type="integer"),
+     * @OA\Property(property="successful_reconciliations",    type="integer"),
+     * @OA\Property(property="failed_reconciliations",        type="integer"),
+     * @OA\Property(property="total_discrepancies",           type="integer"),
+     * @OA\Property(property="total_discrepancy_amount",      type="number"),
+     * @OA\Property(property="average_duration_minutes",      type="number"),
+     * @OA\Property(property="accounts_checked_total",        type="integer"),
+     * @OA\Property(property="average_discrepancies_per_run", type="number"),
+     * @OA\Property(property="success_rate",                  type="number"),
+     * @OA\Property(
      *                         property="discrepancy_types",
      *                         type="object",
      *                         additionalProperties={"type": "integer"}
      *                     ),
-     *                     @OA\Property(
+     * @OA\Property(
      *                         property="daily_trends",
      *                         type="array",
-     *                         @OA\Items(
-     *                             @OA\Property(property="date", type="string", format="date"),
-     *                             @OA\Property(property="discrepancies", type="integer"),
-     *                             @OA\Property(property="accounts_checked", type="integer"),
-     *                             @OA\Property(property="duration_minutes", type="number"),
-     *                             @OA\Property(property="status", type="string")
+     * @OA\Items(
+     * @OA\Property(property="date",                          type="string", format="date"),
+     * @OA\Property(property="discrepancies",                 type="integer"),
+     * @OA\Property(property="accounts_checked",              type="integer"),
+     * @OA\Property(property="duration_minutes",              type="number"),
+     * @OA\Property(property="status",                        type="string")
      *                         )
      *                     )
      *                 ),
-     *                 @OA\Property(property="period_days", type="integer"),
-     *                 @OA\Property(property="period_start", type="string", format="date"),
-     *                 @OA\Property(property="period_end", type="string", format="date"),
-     *                 @OA\Property(property="calculated_at", type="string", format="date-time")
+     * @OA\Property(property="period_days",                   type="integer"),
+     * @OA\Property(property="period_start",                  type="string", format="date"),
+     * @OA\Property(property="period_end",                    type="string", format="date"),
+     * @OA\Property(property="calculated_at",                 type="string", format="date-time")
      *             )
      *         )
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=500,
      *         description="Failed to calculate metrics"
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=401,
      *         description="Unauthenticated"
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=403,
      *         description="Forbidden - Admin access required"
      *     )
@@ -496,9 +526,11 @@ class DailyReconciliationController extends Controller
      */
     public function getMetrics(Request $request): JsonResponse
     {
-        $request->validate([
+        $request->validate(
+            [
             'days' => 'sometimes|integer|min:1|max:90',
-        ]);
+            ]
+        );
 
         try {
             $days = $request->get('days', 30);
@@ -507,7 +539,8 @@ class DailyReconciliationController extends Controller
             $files = glob(storage_path('app/reconciliation/reconciliation-*.json'));
 
             if (empty($files)) {
-                return response()->json([
+                return response()->json(
+                    [
                     'data' => [
                         'metrics' => [
                             'total_reconciliations'      => 0,
@@ -521,7 +554,8 @@ class DailyReconciliationController extends Controller
                         'period_days' => $days,
                     ],
                     'message' => 'No reconciliation data found',
-                ]);
+                    ]
+                );
             }
 
             $metrics = [
@@ -596,11 +630,14 @@ class DailyReconciliationController extends Controller
                 : 0;
 
             // Sort daily trends by date
-            usort($metrics['daily_trends'], function ($a, $b) {
-                return strcmp($a['date'], $b['date']);
-            });
+            usort(
+                $metrics['daily_trends'], function ($a, $b) {
+                    return strcmp($a['date'], $b['date']);
+                }
+            );
 
-            return response()->json([
+            return response()->json(
+                [
                 'data' => [
                     'metrics'       => $metrics,
                     'period_days'   => $days,
@@ -608,12 +645,15 @@ class DailyReconciliationController extends Controller
                     'period_end'    => now()->toDateString(),
                     'calculated_at' => now()->toISOString(),
                 ],
-            ]);
+                ]
+            );
         } catch (\Exception $e) {
-            return response()->json([
+            return response()->json(
+                [
                 'error'   => 'Failed to calculate reconciliation metrics',
                 'message' => $e->getMessage(),
-            ], 500);
+                ], 500
+            );
         }
     }
 
@@ -627,40 +667,40 @@ class DailyReconciliationController extends Controller
      *     summary="Get current reconciliation process status",
      *     description="Checks if reconciliation process is currently running and provides status information (Admin only)",
      *     security={{"sanctum": {}}},
-     *     @OA\Response(
+     * @OA\Response(
      *         response=200,
      *         description="Status retrieved successfully",
-     *         @OA\JsonContent(
-     *             @OA\Property(
+     * @OA\JsonContent(
+     * @OA\Property(
      *                 property="data",
      *                 type="object",
-     *                 @OA\Property(property="is_running", type="boolean", example=false),
-     *                 @OA\Property(property="last_run_date", type="string", format="date", nullable=true),
-     *                 @OA\Property(property="next_scheduled_run", type="string", format="date-time"),
-     *                 @OA\Property(property="status_checked_at", type="string", format="date-time"),
-     *                 @OA\Property(property="started_at", type="string", format="date-time", nullable=true),
-     *                 @OA\Property(property="running_duration_minutes", type="number", nullable=true),
-     *                 @OA\Property(
+     * @OA\Property(property="is_running",               type="boolean", example=false),
+     * @OA\Property(property="last_run_date",            type="string", format="date", nullable=true),
+     * @OA\Property(property="next_scheduled_run",       type="string", format="date-time"),
+     * @OA\Property(property="status_checked_at",        type="string", format="date-time"),
+     * @OA\Property(property="started_at",               type="string", format="date-time", nullable=true),
+     * @OA\Property(property="running_duration_minutes", type="number", nullable=true),
+     * @OA\Property(
      *                     property="last_run_summary",
      *                     type="object",
      *                     nullable=true,
-     *                     @OA\Property(property="status", type="string"),
-     *                     @OA\Property(property="accounts_checked", type="integer"),
-     *                     @OA\Property(property="discrepancies_found", type="integer"),
-     *                     @OA\Property(property="duration_minutes", type="number")
+     * @OA\Property(property="status",                   type="string"),
+     * @OA\Property(property="accounts_checked",         type="integer"),
+     * @OA\Property(property="discrepancies_found",      type="integer"),
+     * @OA\Property(property="duration_minutes",         type="number")
      *                 )
      *             )
      *         )
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=500,
      *         description="Failed to get status"
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=401,
      *         description="Unauthenticated"
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=403,
      *         description="Forbidden - Admin access required"
      *     )
@@ -698,14 +738,18 @@ class DailyReconciliationController extends Controller
                 ];
             }
 
-            return response()->json([
+            return response()->json(
+                [
                 'data' => $status,
-            ]);
+                ]
+            );
         } catch (\Exception $e) {
-            return response()->json([
+            return response()->json(
+                [
                 'error'   => 'Failed to get reconciliation status',
                 'message' => $e->getMessage(),
-            ], 500);
+                ], 500
+            );
         }
     }
 }

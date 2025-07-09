@@ -43,9 +43,11 @@ class CgoInvestmentResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
-            ->schema([
+            ->schema(
+                [
                 Forms\Components\Section::make('Investment Details')
-                    ->schema([
+                    ->schema(
+                        [
                         Forms\Components\Select::make('user_id')
                             ->label('Investor')
                             ->relationship('user', 'name')
@@ -65,11 +67,13 @@ class CgoInvestmentResource extends Resource
                             ->required()
                             ->disabled(fn ($record) => $record !== null),
                         Forms\Components\Select::make('tier')
-                            ->options([
+                            ->options(
+                                [
                                 'bronze' => 'Bronze ($1,000 - $9,999)',
                                 'silver' => 'Silver ($10,000 - $49,999)',
                                 'gold'   => 'Gold ($50,000+)',
-                            ])
+                                ]
+                            )
                             ->required()
                             ->disabled(fn ($record) => $record !== null),
                         Forms\Components\TextInput::make('shares_purchased')
@@ -80,34 +84,42 @@ class CgoInvestmentResource extends Resource
                             ->label('Ownership %')
                             ->suffix('%')
                             ->disabled(),
-                    ])
+                        ]
+                    )
                     ->columns(2),
 
                 Forms\Components\Section::make('Payment Information')
-                    ->schema([
+                    ->schema(
+                        [
                         Forms\Components\Select::make('status')
-                            ->options([
+                            ->options(
+                                [
                                 'pending'   => 'Pending',
                                 'confirmed' => 'Confirmed',
                                 'cancelled' => 'Cancelled',
                                 'refunded'  => 'Refunded',
-                            ])
+                                ]
+                            )
                             ->required(),
                         Forms\Components\Select::make('payment_method')
-                            ->options([
+                            ->options(
+                                [
                                 'stripe'        => 'Credit/Debit Card',
                                 'bank_transfer' => 'Bank Transfer',
                                 'crypto'        => 'Cryptocurrency',
-                            ])
+                                ]
+                            )
                             ->disabled(),
                         Forms\Components\Select::make('payment_status')
-                            ->options([
+                            ->options(
+                                [
                                 'pending'    => 'Pending',
                                 'processing' => 'Processing',
                                 'completed'  => 'Completed',
                                 'failed'     => 'Failed',
                                 'refunded'   => 'Refunded',
-                            ]),
+                                ]
+                            ),
                         Forms\Components\DateTimePicker::make('payment_completed_at')
                             ->label('Payment Completed'),
                         Forms\Components\TextInput::make('stripe_session_id')
@@ -122,18 +134,22 @@ class CgoInvestmentResource extends Resource
                         Forms\Components\TextInput::make('crypto_tx_hash')
                             ->label('Crypto Transaction Hash')
                             ->disabled(),
-                    ])
+                        ]
+                    )
                     ->columns(2),
 
                 Forms\Components\Section::make('KYC/AML Information')
-                    ->schema([
+                    ->schema(
+                        [
                         Forms\Components\Select::make('kyc_level')
                             ->label('KYC Level')
-                            ->options([
+                            ->options(
+                                [
                                 'basic'    => 'Basic (Up to $1,000)',
                                 'enhanced' => 'Enhanced (Up to $10,000)',
                                 'full'     => 'Full ($50,000+)',
-                            ])
+                                ]
+                            )
                             ->disabled(),
                         Forms\Components\DateTimePicker::make('kyc_verified_at')
                             ->label('KYC Verified'),
@@ -147,12 +163,14 @@ class CgoInvestmentResource extends Resource
                         Forms\Components\KeyValue::make('aml_flags')
                             ->label('AML Flags')
                             ->disabled(),
-                    ])
+                        ]
+                    )
                     ->columns(2)
                     ->collapsible(),
 
                 Forms\Components\Section::make('Certificate & Agreement')
-                    ->schema([
+                    ->schema(
+                        [
                         Forms\Components\TextInput::make('certificate_number')
                             ->label('Certificate Number')
                             ->disabled(),
@@ -165,28 +183,33 @@ class CgoInvestmentResource extends Resource
                             ->label('Agreement Generated'),
                         Forms\Components\DateTimePicker::make('agreement_signed_at')
                             ->label('Agreement Signed'),
-                    ])
+                        ]
+                    )
                     ->columns(2)
                     ->collapsible(),
 
                 Forms\Components\Section::make('Additional Information')
-                    ->schema([
+                    ->schema(
+                        [
                         Forms\Components\Textarea::make('notes')
                             ->rows(3)
                             ->columnSpanFull(),
                         Forms\Components\KeyValue::make('metadata')
                             ->label('Additional Data')
                             ->columnSpanFull(),
-                    ])
+                        ]
+                    )
                     ->collapsible()
                     ->collapsed(),
-            ]);
+                ]
+            );
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
+            ->columns(
+                [
                 Tables\Columns\TextColumn::make('uuid')
                     ->label('ID')
                     ->searchable()
@@ -204,38 +227,46 @@ class CgoInvestmentResource extends Resource
                     ->money('USD')
                     ->sortable(),
                 Tables\Columns\BadgeColumn::make('tier')
-                    ->colors([
+                    ->colors(
+                        [
                         'warning' => 'bronze',
                         'gray'    => 'silver',
                         'warning' => 'gold',
-                    ])
+                        ]
+                    )
                     ->formatStateUsing(fn ($state) => Str::title($state)),
                 Tables\Columns\TextColumn::make('shares_purchased')
                     ->label('Shares')
                     ->numeric(decimalPlaces: 4)
                     ->sortable(),
                 Tables\Columns\BadgeColumn::make('status')
-                    ->colors([
+                    ->colors(
+                        [
                         'warning'   => 'pending',
                         'success'   => 'confirmed',
                         'danger'    => 'cancelled',
                         'secondary' => 'refunded',
-                    ]),
+                        ]
+                    ),
                 Tables\Columns\BadgeColumn::make('payment_status')
-                    ->colors([
+                    ->colors(
+                        [
                         'warning'   => 'pending',
                         'info'      => 'processing',
                         'success'   => 'completed',
                         'danger'    => 'failed',
                         'secondary' => 'refunded',
-                    ]),
+                        ]
+                    ),
                 Tables\Columns\BadgeColumn::make('payment_method')
-                    ->formatStateUsing(fn ($state) => match ($state) {
+                    ->formatStateUsing(
+                        fn ($state) => match ($state) {
                         'stripe'        => 'Card',
                         'bank_transfer' => 'Bank',
                         'crypto'        => 'Crypto',
                         default         => $state,
-                    }),
+                        }
+                    ),
                 Tables\Columns\IconColumn::make('kyc_verified_at')
                     ->label('KYC')
                     ->boolean()
@@ -251,57 +282,73 @@ class CgoInvestmentResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ])
+                ]
+            )
             ->defaultSort('created_at', 'desc')
-            ->filters([
+            ->filters(
+                [
                 Tables\Filters\SelectFilter::make('status')
-                    ->options([
+                    ->options(
+                        [
                         'pending'   => 'Pending',
                         'confirmed' => 'Confirmed',
                         'cancelled' => 'Cancelled',
                         'refunded'  => 'Refunded',
-                    ]),
+                        ]
+                    ),
                 Tables\Filters\SelectFilter::make('payment_status')
-                    ->options([
+                    ->options(
+                        [
                         'pending'    => 'Pending',
                         'processing' => 'Processing',
                         'completed'  => 'Completed',
                         'failed'     => 'Failed',
                         'refunded'   => 'Refunded',
-                    ]),
+                        ]
+                    ),
                 Tables\Filters\SelectFilter::make('tier')
-                    ->options([
+                    ->options(
+                        [
                         'bronze' => 'Bronze',
                         'silver' => 'Silver',
                         'gold'   => 'Gold',
-                    ]),
+                        ]
+                    ),
                 Tables\Filters\SelectFilter::make('payment_method')
-                    ->options([
+                    ->options(
+                        [
                         'stripe'        => 'Card',
                         'bank_transfer' => 'Bank',
                         'crypto'        => 'Crypto',
-                    ]),
+                        ]
+                    ),
                 Tables\Filters\TernaryFilter::make('kyc_verified_at')
                     ->label('KYC Verified')
                     ->nullable(),
                 Tables\Filters\Filter::make('created_at')
-                    ->form([
+                    ->form(
+                        [
                         Forms\Components\DatePicker::make('created_from'),
                         Forms\Components\DatePicker::make('created_until'),
-                    ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        return $query
-                            ->when(
-                                $data['created_from'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
-                            )
-                            ->when(
-                                $data['created_until'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
-                            );
-                    }),
-            ])
-            ->actions([
+                        ]
+                    )
+                    ->query(
+                        function (Builder $query, array $data): Builder {
+                            return $query
+                                ->when(
+                                    $data['created_from'],
+                                    fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+                                )
+                                ->when(
+                                    $data['created_until'],
+                                    fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
+                                );
+                        }
+                    ),
+                ]
+            )
+            ->actions(
+                [
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\Action::make('verify_payment')
@@ -309,21 +356,27 @@ class CgoInvestmentResource extends Resource
                     ->icon('heroicon-o-shield-check')
                     ->color('success')
                     ->requiresConfirmation()
-                    ->action(function (CgoInvestment $record) {
-                        // Dispatch verification job
-                        \App\Jobs\VerifyCgoPayment::dispatch($record);
-                    })
-                    ->visible(fn (CgoInvestment $record) => $record->payment_status === 'pending' &&
-                        $record->payment_method !== 'bank_transfer'),
+                    ->action(
+                        function (CgoInvestment $record) {
+                            // Dispatch verification job
+                            \App\Jobs\VerifyCgoPayment::dispatch($record);
+                        }
+                    )
+                    ->visible(
+                        fn (CgoInvestment $record) => $record->payment_status === 'pending' &&
+                        $record->payment_method !== 'bank_transfer'
+                    ),
                 Tables\Actions\Action::make('download_agreement')
                     ->label('Download Agreement')
                     ->icon('heroicon-o-document-arrow-down')
                     ->color('primary')
-                    ->action(function (CgoInvestment $record) {
-                        if ($record->agreement_path) {
-                            return response()->download(storage_path('app/' . $record->agreement_path));
+                    ->action(
+                        function (CgoInvestment $record) {
+                            if ($record->agreement_path) {
+                                return response()->download(storage_path('app/' . $record->agreement_path));
+                            }
                         }
-                    })
+                    )
                     ->visible(fn (CgoInvestment $record) => ! empty($record->agreement_path)),
                 Tables\Actions\Action::make('download_certificate')
                     ->label('Download Certificate')
@@ -337,64 +390,77 @@ class CgoInvestmentResource extends Resource
                     ->icon('heroicon-o-receipt-refund')
                     ->color('warning')
                     ->requiresConfirmation()
-                    ->form([
+                    ->form(
+                        [
                         Forms\Components\Select::make('reason')
                             ->label('Refund Reason')
-                            ->options([
+                            ->options(
+                                [
                                 'customer_request'       => 'Customer Request',
                                 'duplicate_payment'      => 'Duplicate Payment',
                                 'payment_error'          => 'Payment Error',
                                 'system_error'           => 'System Error',
                                 'regulatory_requirement' => 'Regulatory Requirement',
                                 'other'                  => 'Other',
-                            ])
+                                ]
+                            )
                             ->required(),
                         Forms\Components\Textarea::make('reason_details')
                             ->label('Additional Details')
                             ->rows(3)
                             ->required(),
-                    ])
-                    ->action(function (CgoInvestment $record, array $data) {
-                        try {
-                            app(RequestRefundAction::class)->execute(
-                                investment: $record,
-                                initiator: auth()->user(),
-                                reason: $data['reason'],
-                                reasonDetails: $data['reason_details']
-                            );
+                        ]
+                    )
+                    ->action(
+                        function (CgoInvestment $record, array $data) {
+                            try {
+                                app(RequestRefundAction::class)->execute(
+                                    investment: $record,
+                                    initiator: auth()->user(),
+                                    reason: $data['reason'],
+                                    reasonDetails: $data['reason_details']
+                                );
 
-                            Notification::make()
-                                ->title('Refund request initiated')
-                                ->success()
-                                ->send();
-                        } catch (\Exception $e) {
-                            Notification::make()
-                                ->title('Refund request failed')
-                                ->body($e->getMessage())
-                                ->danger()
-                                ->send();
+                                Notification::make()
+                                    ->title('Refund request initiated')
+                                    ->success()
+                                    ->send();
+                            } catch (\Exception $e) {
+                                Notification::make()
+                                    ->title('Refund request failed')
+                                    ->body($e->getMessage())
+                                    ->danger()
+                                    ->send();
+                            }
                         }
-                    })
+                    )
                     ->visible(fn (CgoInvestment $record) => $record->canBeRefunded()),
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
+                ]
+            )
+            ->bulkActions(
+                [
+                Tables\Actions\BulkActionGroup::make(
+                    [
                     Tables\Actions\BulkAction::make('verify_payments')
                         ->label('Verify Payments')
                         ->icon('heroicon-o-shield-check')
                         ->color('success')
                         ->requiresConfirmation()
-                        ->action(function ($records) {
-                            foreach ($records as $record) {
-                                if ($record->payment_status === 'pending' && $record->payment_method !== 'bank_transfer') {
-                                    \App\Jobs\VerifyCgoPayment::dispatch($record);
+                        ->action(
+                            function ($records) {
+                                foreach ($records as $record) {
+                                    if ($record->payment_status === 'pending' && $record->payment_method !== 'bank_transfer') {
+                                        \App\Jobs\VerifyCgoPayment::dispatch($record);
+                                    }
                                 }
                             }
-                        }),
+                        ),
                     Tables\Actions\ExportBulkAction::make()
                         ->label('Export to CSV'),
-                ]),
-            ]);
+                    ]
+                ),
+                ]
+            );
     }
 
     public static function getRelations(): array

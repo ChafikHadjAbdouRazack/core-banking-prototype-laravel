@@ -29,7 +29,8 @@ class UserBankPreferenceResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
-            ->schema([
+            ->schema(
+                [
                 Forms\Components\Select::make('user_uuid')
                     ->label('User')
                     ->options(User::all()->pluck('name', 'uuid'))
@@ -38,18 +39,24 @@ class UserBankPreferenceResource extends Resource
                     ->disabled(fn ($context) => $context === 'edit'),
                 Forms\Components\Select::make('bank_code')
                     ->label('Bank')
-                    ->options(collect(UserBankPreference::AVAILABLE_BANKS)->mapWithKeys(function ($bank) {
-                        return [$bank['code'] => $bank['name'] . ' (' . $bank['country'] . ')'];
-                    }))
+                    ->options(
+                        collect(UserBankPreference::AVAILABLE_BANKS)->mapWithKeys(
+                            function ($bank) {
+                                return [$bank['code'] => $bank['name'] . ' (' . $bank['country'] . ')'];
+                            }
+                        )
+                    )
                     ->required()
                     ->reactive()
-                    ->afterStateUpdated(function ($state, Forms\Set $set) {
-                        if ($state && isset(UserBankPreference::AVAILABLE_BANKS[$state])) {
-                            $bank = UserBankPreference::AVAILABLE_BANKS[$state];
-                            $set('bank_name', $bank['name']);
-                            $set('metadata', $bank);
+                    ->afterStateUpdated(
+                        function ($state, Forms\Set $set) {
+                            if ($state && isset(UserBankPreference::AVAILABLE_BANKS[$state])) {
+                                $bank = UserBankPreference::AVAILABLE_BANKS[$state];
+                                $set('bank_name', $bank['name']);
+                                $set('metadata', $bank);
+                            }
                         }
-                    }),
+                    ),
                 Forms\Components\Hidden::make('bank_name'),
                 Forms\Components\TextInput::make('allocation_percentage')
                     ->label('Allocation %')
@@ -63,24 +70,28 @@ class UserBankPreferenceResource extends Resource
                     ->label('Primary Bank')
                     ->helperText('Primary bank will be used for urgent transfers'),
                 Forms\Components\Select::make('status')
-                    ->options([
+                    ->options(
+                        [
                         'active'    => 'Active',
                         'pending'   => 'Pending',
                         'suspended' => 'Suspended',
-                    ])
+                        ]
+                    )
                     ->default('active')
                     ->required(),
                 Forms\Components\KeyValue::make('metadata')
                     ->label('Bank Information')
                     ->disabled()
                     ->columnSpanFull(),
-            ]);
+                ]
+            );
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
+            ->columns(
+                [
                 Tables\Columns\TextColumn::make('user.name')
                     ->label('User')
                     ->searchable()
@@ -101,11 +112,13 @@ class UserBankPreferenceResource extends Resource
                     ->trueIcon('heroicon-o-star')
                     ->falseIcon('heroicon-o-star'),
                 Tables\Columns\BadgeColumn::make('status')
-                    ->colors([
+                    ->colors(
+                        [
                         'success' => 'active',
                         'warning' => 'pending',
                         'danger'  => 'suspended',
-                    ]),
+                        ]
+                    ),
                 Tables\Columns\TextColumn::make('metadata.deposit_insurance')
                     ->label('Insurance')
                     ->money('EUR')
@@ -118,42 +131,57 @@ class UserBankPreferenceResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ])
-            ->filters([
+                ]
+            )
+            ->filters(
+                [
                 Tables\Filters\SelectFilter::make('status')
-                    ->options([
+                    ->options(
+                        [
                         'active'    => 'Active',
                         'pending'   => 'Pending',
                         'suspended' => 'Suspended',
-                    ]),
+                        ]
+                    ),
                 Tables\Filters\Filter::make('is_primary')
                     ->query(fn (Builder $query): Builder => $query->where('is_primary', true))
                     ->label('Primary Banks Only'),
-            ])
-            ->actions([
+                ]
+            )
+            ->actions(
+                [
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\Action::make('setPrimary')
                     ->label('Set as Primary')
                     ->icon('heroicon-o-star')
                     ->color('warning')
                     ->visible(fn (UserBankPreference $record): bool => ! $record->is_primary && $record->status === 'active')
-                    ->action(function (UserBankPreference $record) {
-                        $service = app(\App\Domain\Account\Services\BankAllocationService::class);
-                        $service->setPrimaryBank($record->user, $record->bank_code);
-                    })
+                    ->action(
+                        function (UserBankPreference $record) {
+                            $service = app(\App\Domain\Account\Services\BankAllocationService::class);
+                            $service->setPrimaryBank($record->user, $record->bank_code);
+                        }
+                    )
                     ->requiresConfirmation(),
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
+                ]
+            )
+            ->bulkActions(
+                [
+                Tables\Actions\BulkActionGroup::make(
+                    [
                     Tables\Actions\DeleteBulkAction::make(),
-                ]),
-            ])
+                    ]
+                ),
+                ]
+            )
             ->defaultSort('user.name')
-            ->groups([
+            ->groups(
+                [
                 'user.name',
                 'bank_code',
                 'status',
-            ]);
+                ]
+            );
     }
 
     public static function getRelations(): array

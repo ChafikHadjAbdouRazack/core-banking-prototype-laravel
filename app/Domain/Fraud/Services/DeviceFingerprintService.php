@@ -31,11 +31,13 @@ class DeviceFingerprintService
             }
         } else {
             // New device
-            $fingerprint->fill([
+            $fingerprint->fill(
+                [
                 'user_id'       => $user?->id,
                 'first_seen_at' => now(),
                 'last_seen_at'  => now(),
-            ]);
+                ]
+            );
             $fingerprint->save();
         }
 
@@ -169,7 +171,8 @@ class DeviceFingerprintService
         $ipData = $this->getIpData($ip);
 
         if ($ipData) {
-            $fingerprint->update([
+            $fingerprint->update(
+                [
                 'ip_country' => $ipData['country'] ?? null,
                 'ip_region'  => $ipData['region'] ?? null,
                 'ip_city'    => $ipData['city'] ?? null,
@@ -177,7 +180,8 @@ class DeviceFingerprintService
                 'is_vpn'     => $ipData['is_vpn'] ?? false,
                 'is_proxy'   => $ipData['is_proxy'] ?? false,
                 'is_tor'     => $ipData['is_tor'] ?? false,
-            ]);
+                ]
+            );
         }
     }
 
@@ -186,15 +190,16 @@ class DeviceFingerprintService
      */
     protected function getIpData(string $ip): ?array
     {
-        return Cache::remember("ip_data_{$ip}", 86400, function () use ($ip) {
-            try {
-                // In production, use services like:
-                // - IPQualityScore
-                // - MaxMind
-                // - IP2Proxy
+        return Cache::remember(
+            "ip_data_{$ip}", 86400, function () use ($ip) {
+                try {
+                    // In production, use services like:
+                    // - IPQualityScore
+                    // - MaxMind
+                    // - IP2Proxy
 
-                // Simulated response
-                return [
+                    // Simulated response
+                    return [
                     'country'    => 'US',
                     'region'     => 'California',
                     'city'       => 'San Francisco',
@@ -203,13 +208,14 @@ class DeviceFingerprintService
                     'is_proxy'   => false,
                     'is_tor'     => false,
                     'risk_score' => 10,
-                ];
-            } catch (\Exception $e) {
-                Log::error('IP data lookup failed', ['ip' => $ip, 'error' => $e->getMessage()]);
+                    ];
+                } catch (\Exception $e) {
+                    Log::error('IP data lookup failed', ['ip' => $ip, 'error' => $e->getMessage()]);
 
-                return null;
+                    return null;
+                }
             }
-        });
+        );
     }
 
     /**
@@ -220,34 +226,30 @@ class DeviceFingerprintService
         $indicators = [];
 
         // Check for user agent mismatch
-        if (
-            isset($currentData['user_agent']) &&
-            $currentData['user_agent'] !== $storedFingerprint->user_agent
+        if (isset($currentData['user_agent']) 
+            && $currentData['user_agent'] !== $storedFingerprint->user_agent
         ) {
             $indicators[] = 'user_agent_changed';
         }
 
         // Check for screen resolution mismatch
-        if (
-            isset($currentData['screen_resolution']) &&
-            $currentData['screen_resolution'] !== $storedFingerprint->screen_resolution
+        if (isset($currentData['screen_resolution']) 
+            && $currentData['screen_resolution'] !== $storedFingerprint->screen_resolution
         ) {
             $indicators[] = 'screen_resolution_changed';
         }
 
         // Check for timezone mismatch
-        if (
-            isset($currentData['timezone']) &&
-            $currentData['timezone'] !== $storedFingerprint->timezone
+        if (isset($currentData['timezone']) 
+            && $currentData['timezone'] !== $storedFingerprint->timezone
         ) {
             $indicators[] = 'timezone_changed';
         }
 
         // Check for canvas fingerprint mismatch
-        if (
-            isset($currentData['canvas_fingerprint']) &&
-            $storedFingerprint->canvas_fingerprint &&
-            $currentData['canvas_fingerprint'] !== $storedFingerprint->canvas_fingerprint
+        if (isset($currentData['canvas_fingerprint']) 
+            && $storedFingerprint->canvas_fingerprint 
+            && $currentData['canvas_fingerprint'] !== $storedFingerprint->canvas_fingerprint
         ) {
             $indicators[] = 'canvas_fingerprint_mismatch';
         }
@@ -307,10 +309,9 @@ class DeviceFingerprintService
 
         // Check user agent
         $userAgent = strtolower($deviceData['user_agent'] ?? '');
-        if (
-            str_contains($userAgent, 'headless') ||
-            str_contains($userAgent, 'phantom') ||
-            str_contains($userAgent, 'selenium')
+        if (str_contains($userAgent, 'headless') 
+            || str_contains($userAgent, 'phantom') 
+            || str_contains($userAgent, 'selenium')
         ) {
             return true;
         }
@@ -507,11 +508,13 @@ class DeviceFingerprintService
         // Find devices used by same users
         if (! empty($device->associated_users)) {
             $relatedDevices = DeviceFingerprint::where('id', '!=', $deviceId)
-                ->where(function ($query) use ($device) {
-                    foreach ($device->associated_users as $userId) {
-                        $query->orWhereJsonContains('associated_users', $userId);
+                ->where(
+                    function ($query) use ($device) {
+                        foreach ($device->associated_users as $userId) {
+                            $query->orWhereJsonContains('associated_users', $userId);
+                        }
                     }
-                })
+                )
                 ->limit(10)
                 ->get();
 
@@ -520,10 +523,12 @@ class DeviceFingerprintService
                     'device_id'    => $related->id,
                     'trust_score'  => $related->trust_score,
                     'is_trusted'   => $related->isTrusted(),
-                    'shared_users' => count(array_intersect(
-                        $device->associated_users ?? [],
-                        $related->associated_users ?? []
-                    )),
+                    'shared_users' => count(
+                        array_intersect(
+                            $device->associated_users ?? [],
+                            $related->associated_users ?? []
+                        )
+                    ),
                 ];
             }
         }

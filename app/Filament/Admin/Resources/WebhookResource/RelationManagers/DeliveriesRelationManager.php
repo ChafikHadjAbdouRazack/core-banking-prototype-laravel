@@ -18,7 +18,8 @@ class DeliveriesRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
-            ->columns([
+            ->columns(
+                [
                 Tables\Columns\TextColumn::make('uuid')
                     ->label('Delivery ID')
                     ->limit(20)
@@ -28,11 +29,13 @@ class DeliveriesRelationManager extends RelationManager
                     ->label('Event')
                     ->searchable(),
                 Tables\Columns\BadgeColumn::make('status')
-                    ->colors([
+                    ->colors(
+                        [
                         'success' => 'delivered',
                         'warning' => 'pending',
                         'danger'  => 'failed',
-                    ]),
+                        ]
+                    ),
                 Tables\Columns\TextColumn::make('attempt_number')
                     ->label('Attempt')
                     ->numeric(),
@@ -53,23 +56,31 @@ class DeliveriesRelationManager extends RelationManager
                     ->dateTime('M j, Y g:i:s A')
                     ->placeholder('—')
                     ->toggleable(isToggledHiddenByDefault: true),
-            ])
+                ]
+            )
             ->defaultSort('created_at', 'desc')
-            ->filters([
+            ->filters(
+                [
                 Tables\Filters\SelectFilter::make('status')
-                    ->options([
+                    ->options(
+                        [
                         'pending'   => 'Pending',
                         'delivered' => 'Delivered',
                         'failed'    => 'Failed',
-                    ]),
+                        ]
+                    ),
                 Tables\Filters\SelectFilter::make('event_type')
-                    ->options(fn () => $this->getOwnerRecord()->deliveries()
-                        ->distinct('event_type')
-                        ->pluck('event_type', 'event_type')
-                        ->toArray()),
-            ])
+                    ->options(
+                        fn () => $this->getOwnerRecord()->deliveries()
+                            ->distinct('event_type')
+                            ->pluck('event_type', 'event_type')
+                            ->toArray()
+                    ),
+                ]
+            )
             ->headerActions([])
-            ->actions([
+            ->actions(
+                [
                 Tables\Actions\ViewAction::make()
                     ->modalHeading('Delivery Details')
                     ->modalContent(fn ($record) => view('filament.admin.resources.webhook-resource.delivery-details', ['delivery' => $record])),
@@ -79,16 +90,19 @@ class DeliveriesRelationManager extends RelationManager
                     ->color('warning')
                     ->visible(fn ($record) => $record->status === 'failed')
                     ->requiresConfirmation()
-                    ->action(function ($record) {
-                        $record->createRetry();
+                    ->action(
+                        function ($record) {
+                            $record->createRetry();
 
-                        Notification::make()
-                            ->title('Webhook retry created')
-                            ->body('A new delivery attempt has been queued.')
-                            ->success()
-                            ->send();
-                    }),
-            ])
+                            Notification::make()
+                                ->title('Webhook retry created')
+                                ->body('A new delivery attempt has been queued.')
+                                ->success()
+                                ->send();
+                        }
+                    ),
+                ]
+            )
             ->bulkActions([]);
     }
 }

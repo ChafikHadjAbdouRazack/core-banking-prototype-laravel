@@ -64,27 +64,33 @@ class Subscriber extends Model
 
     public function unsubscribe($reason = null): void
     {
-        $this->update([
+        $this->update(
+            [
             'status'             => self::STATUS_UNSUBSCRIBED,
             'unsubscribed_at'    => now(),
             'unsubscribe_reason' => $reason,
-        ]);
+            ]
+        );
     }
 
     public function addTags(array $tags): void
     {
         $currentTags = $this->tags ?? [];
-        $this->update([
+        $this->update(
+            [
             'tags' => array_unique(array_merge($currentTags, $tags)),
-        ]);
+            ]
+        );
     }
 
     public function removeTags(array $tags): void
     {
         $currentTags = $this->tags ?? [];
-        $this->update([
+        $this->update(
+            [
             'tags' => array_values(array_diff($currentTags, $tags)),
-        ]);
+            ]
+        );
     }
 
     public function hasTag(string $tag): bool

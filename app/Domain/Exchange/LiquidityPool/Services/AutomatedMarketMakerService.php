@@ -69,8 +69,8 @@ class AutomatedMarketMakerService
         $priceDeviation = $externalPrice->isZero()
             ? BigDecimal::zero()
             : $poolPrice->minus($externalPrice)
-                ->abs()
-                ->dividedBy($externalPrice, 18, RoundingMode::HALF_UP);
+            ->abs()
+            ->dividedBy($externalPrice, 18, RoundingMode::HALF_UP);
 
         // Get recent volatility
         $volatility = $this->calculateRecentVolatility($pool);

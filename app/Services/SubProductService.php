@@ -20,25 +20,27 @@ class SubProductService
     {
         $cacheKey = "sub_product.{$subProduct}.enabled";
 
-        return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($subProduct) {
-            // Check if feature flag exists
-            $featureKey = "sub_product.{$subProduct}";
+        return Cache::remember(
+            $cacheKey, self::CACHE_TTL, function () use ($subProduct) {
+                // Check if feature flag exists
+                $featureKey = "sub_product.{$subProduct}";
 
-            try {
-                if (Feature::active($featureKey)) {
-                    return true;
+                try {
+                    if (Feature::active($featureKey)) {
+                        return true;
+                    }
+
+                    if (Feature::inactive($featureKey)) {
+                        return false;
+                    }
+                } catch (\Exception $e) {
+                    // Feature not defined, fall back to config
                 }
 
-                if (Feature::inactive($featureKey)) {
-                    return false;
-                }
-            } catch (\Exception $e) {
-                // Feature not defined, fall back to config
+                // Fall back to config
+                return config("sub_products.{$subProduct}.enabled", false);
             }
-
-            // Fall back to config
-            return config("sub_products.{$subProduct}.enabled", false);
-        });
+        );
     }
 
     /**
@@ -53,25 +55,27 @@ class SubProductService
 
         $cacheKey = "sub_product.{$subProduct}.feature.{$feature}";
 
-        return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($subProduct, $feature) {
-            // Check feature flag
-            $featureKey = "sub_product.{$subProduct}.{$feature}";
+        return Cache::remember(
+            $cacheKey, self::CACHE_TTL, function () use ($subProduct, $feature) {
+                // Check feature flag
+                $featureKey = "sub_product.{$subProduct}.{$feature}";
 
-            try {
-                if (Feature::active($featureKey)) {
-                    return true;
+                try {
+                    if (Feature::active($featureKey)) {
+                        return true;
+                    }
+
+                    if (Feature::inactive($featureKey)) {
+                        return false;
+                    }
+                } catch (\Exception $e) {
+                    // Feature not defined, fall back to config
                 }
 
-                if (Feature::inactive($featureKey)) {
-                    return false;
-                }
-            } catch (\Exception $e) {
-                // Feature not defined, fall back to config
+                // Fall back to config
+                return config("sub_products.{$subProduct}.features.{$feature}", false);
             }
-
-            // Fall back to config
-            return config("sub_products.{$subProduct}.features.{$feature}", false);
-        });
+        );
     }
 
     /**
@@ -79,21 +83,25 @@ class SubProductService
      */
     public function getEnabledSubProducts(): array
     {
-        return Cache::remember('sub_products.enabled', self::CACHE_TTL, function () {
-            $subProducts = config('sub_products', []);
-            $enabled = [];
+        return Cache::remember(
+            'sub_products.enabled', self::CACHE_TTL, function () {
+                $subProducts = config('sub_products', []);
+                $enabled = [];
 
-            foreach ($subProducts as $key => $config) {
-                if ($this->isEnabled($key)) {
-                    $enabled[$key] = array_merge($config, [
-                        'key'              => $key,
-                        'enabled_features' => $this->getEnabledFeatures($key),
-                    ]);
+                foreach ($subProducts as $key => $config) {
+                    if ($this->isEnabled($key)) {
+                        $enabled[$key] = array_merge(
+                            $config, [
+                            'key'              => $key,
+                            'enabled_features' => $this->getEnabledFeatures($key),
+                            ]
+                        );
+                    }
                 }
-            }
 
-            return $enabled;
-        });
+                return $enabled;
+            }
+        );
     }
 
     /**
@@ -106,11 +114,13 @@ class SubProductService
 
         foreach ($subProducts as $key => $config) {
             $isEnabled = $this->isEnabled($key);
-            $all[$key] = array_merge($config, [
+            $all[$key] = array_merge(
+                $config, [
                 'key'              => $key,
                 'is_enabled'       => $isEnabled,
                 'enabled_features' => $isEnabled ? $this->getEnabledFeatures($key) : [],
-            ]);
+                ]
+            );
         }
 
         return $all;
@@ -146,17 +156,21 @@ class SubProductService
             Feature::activate("sub_product.{$subProduct}");
             $this->clearCache();
 
-            Log::info('Sub-product enabled', [
+            Log::info(
+                'Sub-product enabled', [
                 'sub_product' => $subProduct,
                 'enabled_by'  => $enabledBy ?? 'system',
-            ]);
+                ]
+            );
 
             return true;
         } catch (\Exception $e) {
-            Log::error('Failed to enable sub-product', [
+            Log::error(
+                'Failed to enable sub-product', [
                 'sub_product' => $subProduct,
                 'error'       => $e->getMessage(),
-            ]);
+                ]
+            );
 
             return false;
         }
@@ -171,17 +185,21 @@ class SubProductService
             Feature::deactivate("sub_product.{$subProduct}");
             $this->clearCache();
 
-            Log::info('Sub-product disabled', [
+            Log::info(
+                'Sub-product disabled', [
                 'sub_product' => $subProduct,
                 'disabled_by' => $disabledBy ?? 'system',
-            ]);
+                ]
+            );
 
             return true;
         } catch (\Exception $e) {
-            Log::error('Failed to disable sub-product', [
+            Log::error(
+                'Failed to disable sub-product', [
                 'sub_product' => $subProduct,
                 'error'       => $e->getMessage(),
-            ]);
+                ]
+            );
 
             return false;
         }
@@ -196,19 +214,23 @@ class SubProductService
             Feature::activate("sub_product.{$subProduct}.{$feature}");
             $this->clearCache();
 
-            Log::info('Sub-product feature enabled', [
+            Log::info(
+                'Sub-product feature enabled', [
                 'sub_product' => $subProduct,
                 'feature'     => $feature,
                 'enabled_by'  => $enabledBy ?? 'system',
-            ]);
+                ]
+            );
 
             return true;
         } catch (\Exception $e) {
-            Log::error('Failed to enable sub-product feature', [
+            Log::error(
+                'Failed to enable sub-product feature', [
                 'sub_product' => $subProduct,
                 'feature'     => $feature,
                 'error'       => $e->getMessage(),
-            ]);
+                ]
+            );
 
             return false;
         }
@@ -223,19 +245,23 @@ class SubProductService
             Feature::deactivate("sub_product.{$subProduct}.{$feature}");
             $this->clearCache();
 
-            Log::info('Sub-product feature disabled', [
+            Log::info(
+                'Sub-product feature disabled', [
                 'sub_product' => $subProduct,
                 'feature'     => $feature,
                 'disabled_by' => $disabledBy ?? 'system',
-            ]);
+                ]
+            );
 
             return true;
         } catch (\Exception $e) {
-            Log::error('Failed to disable sub-product feature', [
+            Log::error(
+                'Failed to disable sub-product feature', [
                 'sub_product' => $subProduct,
                 'feature'     => $feature,
                 'error'       => $e->getMessage(),
-            ]);
+                ]
+            );
 
             return false;
         }
@@ -296,12 +322,14 @@ class SubProductService
                 'enabled'     => $config['is_enabled'],
                 'name'        => $config['name'],
                 'description' => $config['description'],
-                'features'    => array_map(function ($feature) use ($key) {
-                    return [
+                'features'    => array_map(
+                    function ($feature) use ($key) {
+                        return [
                         'key'     => $feature,
                         'enabled' => $this->isFeatureEnabled($key, $feature),
-                    ];
-                }, array_keys($config['features'])),
+                        ];
+                    }, array_keys($config['features'])
+                ),
             ];
         }
 

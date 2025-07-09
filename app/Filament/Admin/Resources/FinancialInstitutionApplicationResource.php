@@ -29,9 +29,11 @@ class FinancialInstitutionApplicationResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
-            ->schema([
+            ->schema(
+                [
                 Forms\Components\Section::make('Institution Details')
-                    ->schema([
+                    ->schema(
+                        [
                         Forms\Components\TextInput::make('institution_name')
                             ->label('Institution Name')
                             ->required()
@@ -44,7 +46,8 @@ class FinancialInstitutionApplicationResource extends Resource
                             ->label('Country')
                             ->required()
                             ->searchable()
-                            ->options([
+                            ->options(
+                                [
                                 'US' => 'United States',
                                 'GB' => 'United Kingdom',
                                 'DE' => 'Germany',
@@ -65,18 +68,21 @@ class FinancialInstitutionApplicationResource extends Resource
                                 'BE' => 'Belgium',
                                 'CZ' => 'Czech Republic',
                                 'PL' => 'Poland',
-                            ]),
+                                ]
+                            ),
                         Forms\Components\TextInput::make('assets_under_management')
                             ->label('Assets Under Management (USD)')
                             ->required()
                             ->numeric()
                             ->prefix('$')
                             ->maxLength(255),
-                    ])
+                        ]
+                    )
                     ->columns(2),
 
                 Forms\Components\Section::make('Contact Information')
-                    ->schema([
+                    ->schema(
+                        [
                         Forms\Components\TextInput::make('contact_name')
                             ->label('Contact Name')
                             ->required()
@@ -95,15 +101,18 @@ class FinancialInstitutionApplicationResource extends Resource
                             ->label('Contact Position')
                             ->required()
                             ->maxLength(255),
-                    ])
+                        ]
+                    )
                     ->columns(2),
 
                 Forms\Components\Section::make('Integration Details')
-                    ->schema([
+                    ->schema(
+                        [
                         Forms\Components\Select::make('integration_type')
                             ->label('Integration Type')
                             ->required()
-                            ->options([
+                            ->options(
+                                [
                                 'gcu_partner'           => 'GCU Banking Partner',
                                 'exchange_liquidity'    => 'Exchange Liquidity Provider',
                                 'lending_partner'       => 'Lending Partner',
@@ -112,7 +121,8 @@ class FinancialInstitutionApplicationResource extends Resource
                                 'custodian_services'    => 'Custodian Services',
                                 'payment_processor'     => 'Payment Processing',
                                 'regulatory_reporting'  => 'Regulatory Reporting',
-                            ])
+                                ]
+                            )
                             ->multiple(),
                         Forms\Components\TagsInput::make('supported_currencies')
                             ->label('Supported Currencies')
@@ -128,10 +138,12 @@ class FinancialInstitutionApplicationResource extends Resource
                             ->required()
                             ->maxLength(5000)
                             ->rows(4),
-                    ]),
+                        ]
+                    ),
 
                 Forms\Components\Section::make('Additional Information')
-                    ->schema([
+                    ->schema(
+                        [
                         Forms\Components\Textarea::make('partnership_goals')
                             ->label('Partnership Goals')
                             ->required()
@@ -141,15 +153,18 @@ class FinancialInstitutionApplicationResource extends Resource
                             ->label('Terms & Conditions Accepted')
                             ->required()
                             ->disabled(fn (?FinancialInstitutionApplication $record) => $record !== null),
-                    ]),
+                        ]
+                    ),
 
                 Forms\Components\Section::make('Application Status')
-                    ->schema([
+                    ->schema(
+                        [
                         Forms\Components\Select::make('status')
                             ->label('Status')
                             ->required()
                             ->default('pending')
-                            ->options([
+                            ->options(
+                                [
                                 'pending'          => 'Pending Review',
                                 'under_review'     => 'Under Review',
                                 'compliance_check' => 'Compliance Check',
@@ -157,7 +172,8 @@ class FinancialInstitutionApplicationResource extends Resource
                                 'approved'         => 'Approved',
                                 'rejected'         => 'Rejected',
                                 'on_hold'          => 'On Hold',
-                            ])
+                                ]
+                            )
                             ->live(),
                         Forms\Components\Textarea::make('internal_notes')
                             ->label('Internal Notes')
@@ -170,15 +186,18 @@ class FinancialInstitutionApplicationResource extends Resource
                         Forms\Components\TextInput::make('reviewed_by')
                             ->label('Reviewed By')
                             ->visible(fn (Get $get) => in_array($get('status'), ['approved', 'rejected'])),
-                    ])
+                        ]
+                    )
                     ->visible(fn (?FinancialInstitutionApplication $record) => $record !== null),
-            ]);
+                ]
+            );
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
+            ->columns(
+                [
                 Tables\Columns\TextColumn::make('institution_name')
                     ->label('Institution')
                     ->searchable()
@@ -198,12 +217,14 @@ class FinancialInstitutionApplicationResource extends Resource
                     ->copyable()
                     ->copyMessage('Email copied'),
                 Tables\Columns\BadgeColumn::make('status')
-                    ->colors([
+                    ->colors(
+                        [
                         'danger'  => 'rejected',
                         'warning' => fn ($state) => in_array($state, ['pending', 'on_hold']),
                         'info'    => fn ($state) => in_array($state, ['under_review', 'compliance_check', 'technical_review']),
                         'success' => 'approved',
-                    ])
+                        ]
+                    )
                     ->formatStateUsing(fn (string $state): string => str_replace('_', ' ', ucfirst($state))),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Applied')
@@ -213,11 +234,14 @@ class FinancialInstitutionApplicationResource extends Resource
                     ->label('Reviewed')
                     ->dateTime('M j, Y')
                     ->placeholder('Not reviewed'),
-            ])
+                ]
+            )
             ->defaultSort('created_at', 'desc')
-            ->filters([
+            ->filters(
+                [
                 Tables\Filters\SelectFilter::make('status')
-                    ->options([
+                    ->options(
+                        [
                         'pending'          => 'Pending Review',
                         'under_review'     => 'Under Review',
                         'compliance_check' => 'Compliance Check',
@@ -225,26 +249,33 @@ class FinancialInstitutionApplicationResource extends Resource
                         'approved'         => 'Approved',
                         'rejected'         => 'Rejected',
                         'on_hold'          => 'On Hold',
-                    ]),
+                        ]
+                    ),
                 Tables\Filters\SelectFilter::make('country'),
                 Tables\Filters\Filter::make('created_at')
-                    ->form([
+                    ->form(
+                        [
                         Forms\Components\DatePicker::make('created_from'),
                         Forms\Components\DatePicker::make('created_until'),
-                    ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        return $query
-                            ->when(
-                                $data['created_from'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
-                            )
-                            ->when(
-                                $data['created_until'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
-                            );
-                    }),
-            ])
-            ->actions([
+                        ]
+                    )
+                    ->query(
+                        function (Builder $query, array $data): Builder {
+                            return $query
+                                ->when(
+                                    $data['created_from'],
+                                    fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+                                )
+                                ->when(
+                                    $data['created_until'],
+                                    fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
+                                );
+                        }
+                    ),
+                ]
+            )
+            ->actions(
+                [
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\Action::make('approve')
@@ -253,35 +284,50 @@ class FinancialInstitutionApplicationResource extends Resource
                     ->color('success')
                     ->requiresConfirmation()
                     ->visible(fn (FinancialInstitutionApplication $record) => ! in_array($record->status, ['approved', 'rejected']))
-                    ->action(fn (FinancialInstitutionApplication $record) => $record->update([
-                        'status'      => 'approved',
-                        'reviewed_at' => now(),
-                        'reviewed_by' => auth()->user()->name,
-                    ])),
+                    ->action(
+                        fn (FinancialInstitutionApplication $record) => $record->update(
+                            [
+                            'status'      => 'approved',
+                            'reviewed_at' => now(),
+                            'reviewed_by' => auth()->user()->name,
+                            ]
+                        )
+                    ),
                 Tables\Actions\Action::make('reject')
                     ->label('Reject')
                     ->icon('heroicon-o-x-circle')
                     ->color('danger')
                     ->requiresConfirmation()
                     ->visible(fn (FinancialInstitutionApplication $record) => ! in_array($record->status, ['approved', 'rejected']))
-                    ->form([
+                    ->form(
+                        [
                         Forms\Components\Textarea::make('rejection_reason')
                             ->label('Rejection Reason')
                             ->required()
                             ->maxLength(1000),
-                    ])
-                    ->action(fn (FinancialInstitutionApplication $record, array $data) => $record->update([
-                        'status'         => 'rejected',
-                        'reviewed_at'    => now(),
-                        'reviewed_by'    => auth()->user()->name,
-                        'internal_notes' => $record->internal_notes . "\n\n[Rejection Reason]: " . $data['rejection_reason'],
-                    ])),
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
+                        ]
+                    )
+                    ->action(
+                        fn (FinancialInstitutionApplication $record, array $data) => $record->update(
+                            [
+                            'status'         => 'rejected',
+                            'reviewed_at'    => now(),
+                            'reviewed_by'    => auth()->user()->name,
+                            'internal_notes' => $record->internal_notes . "\n\n[Rejection Reason]: " . $data['rejection_reason'],
+                            ]
+                        )
+                    ),
+                ]
+            )
+            ->bulkActions(
+                [
+                Tables\Actions\BulkActionGroup::make(
+                    [
                     Tables\Actions\DeleteBulkAction::make(),
-                ]),
-            ]);
+                    ]
+                ),
+                ]
+            );
     }
 
     public static function getRelations(): array

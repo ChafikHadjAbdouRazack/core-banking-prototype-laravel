@@ -11,7 +11,7 @@ class CheckTokenExpiration
     /**
      * Handle an incoming request.
      *
-     * @param  Closure(Request): (Response)  $next
+     * @param Closure(Request): (Response) $next
      */
     public function handle(Request $request, Closure $next): Response
     {
@@ -22,9 +22,11 @@ class CheckTokenExpiration
             if ($token->expires_at && $token->expires_at->isPast()) {
                 $token->delete();
 
-                return response()->json([
+                return response()->json(
+                    [
                     'message' => 'Token has expired',
-                ], 401);
+                    ], 401
+                );
             }
         }
 

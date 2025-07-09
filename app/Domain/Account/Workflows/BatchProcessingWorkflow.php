@@ -10,7 +10,7 @@ class BatchProcessingWorkflow extends Workflow
     /**
      * Execute end-of-day batch processing operations with compensation.
      *
-     * @param array $operations - array of batch operations to perform
+     * @param array       $operations - array of batch operations to perform
      * @param string|null $batchId
      *
      * @return \Generator
@@ -35,12 +35,14 @@ class BatchProcessingWorkflow extends Workflow
                 ];
 
                 // Add compensation for this specific operation
-                $this->addCompensation(fn () => ActivityStub::make(
-                    ReverseBatchOperationActivity::class,
-                    $operation,
-                    $batchId,
-                    $result
-                ));
+                $this->addCompensation(
+                    fn () => ActivityStub::make(
+                        ReverseBatchOperationActivity::class,
+                        $operation,
+                        $batchId,
+                        $result
+                    )
+                );
             }
 
             // Create summary after all operations complete
@@ -56,12 +58,14 @@ class BatchProcessingWorkflow extends Workflow
             yield from $this->compensate();
 
             // Log batch processing failure
-            logger()->error('Batch processing failed - compensations executed', [
+            logger()->error(
+                'Batch processing failed - compensations executed', [
                 'batch_id'             => $batchId,
                 'operations'           => $operations,
                 'completed_operations' => $completedOperations,
                 'error'                => $th->getMessage(),
-            ]);
+                ]
+            );
 
             throw $th;
         }

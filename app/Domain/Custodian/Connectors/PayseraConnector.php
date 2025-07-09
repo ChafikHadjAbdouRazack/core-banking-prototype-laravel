@@ -67,12 +67,14 @@ class PayseraConnector extends BaseCustodianConnector
 
         $this->logRequest('POST', self::OAUTH_URL . '/token');
 
-        $response = Http::asForm()->post(self::OAUTH_URL . '/token', [
+        $response = Http::asForm()->post(
+            self::OAUTH_URL . '/token', [
             'grant_type'    => 'client_credentials',
             'client_id'     => $this->clientId,
             'client_secret' => $this->clientSecret,
             'scope'         => 'accounts payments',
-        ]);
+            ]
+        );
 
         if (! $response->successful()) {
             throw new \Exception('Failed to obtain access token: ' . $response->body());
@@ -132,11 +134,13 @@ class PayseraConnector extends BaseCustodianConnector
             $fallbackBalance = $fallbackService->getFallbackBalance($this->getName(), $accountId, $assetCode);
 
             if ($fallbackBalance !== null) {
-                Log::warning('Using fallback balance for Paysera', [
+                Log::warning(
+                    'Using fallback balance for Paysera', [
                     'account' => $accountId,
                     'asset'   => $assetCode,
                     'error'   => $e->getMessage(),
-                ]);
+                    ]
+                );
 
                 return $fallbackBalance;
             }
@@ -224,12 +228,14 @@ class PayseraConnector extends BaseCustodianConnector
             },
             fallback: function () use ($request, $fallbackService) {
                 // Queue transfer for retry when service is available
-                Log::warning('Paysera transfer failed, queueing for retry', [
+                Log::warning(
+                    'Paysera transfer failed, queueing for retry', [
                     'from'   => $request->fromAccount,
                     'to'     => $request->toAccount,
                     'amount' => $request->amount->getAmount(),
                     'asset'  => $request->assetCode,
-                ]);
+                    ]
+                );
 
                 return $fallbackService->queueTransferForRetry(
                     $this->getName(),
@@ -281,9 +287,11 @@ class PayseraConnector extends BaseCustodianConnector
                 $status = $fallbackService->getFallbackTransferStatus($this->getName(), $transactionId);
 
                 if ($status !== null) {
-                    Log::warning('Using fallback transaction status for Paysera', [
+                    Log::warning(
+                        'Using fallback transaction status for Paysera', [
                         'transaction_id' => $transactionId,
-                    ]);
+                        ]
+                    );
 
                     // Return the fallback status directly
                     return $status;
@@ -318,10 +326,12 @@ class PayseraConnector extends BaseCustodianConnector
                 return ($data['status'] ?? '') === 'active';
             }
         } catch (\Exception $e) {
-            Log::warning('Account validation failed', [
+            Log::warning(
+                'Account validation failed', [
                 'account_id' => $accountId,
                 'error'      => $e->getMessage(),
-            ]);
+                ]
+            );
         }
 
         return false;
@@ -329,10 +339,12 @@ class PayseraConnector extends BaseCustodianConnector
 
     public function getTransactionHistory(string $accountId, ?int $limit = 100, ?int $offset = 0): array
     {
-        $response = $this->apiRequest('GET', "/accounts/{$accountId}/payments", [
+        $response = $this->apiRequest(
+            'GET', "/accounts/{$accountId}/payments", [
             'limit'  => $limit,
             'offset' => $offset,
-        ]);
+            ]
+        );
 
         if (! $response->successful()) {
             throw new \Exception('Failed to get transaction history: ' . $response->body());

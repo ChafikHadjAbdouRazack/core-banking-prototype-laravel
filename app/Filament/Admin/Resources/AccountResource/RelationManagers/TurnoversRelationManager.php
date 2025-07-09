@@ -19,7 +19,8 @@ class TurnoversRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
-            ->columns([
+            ->columns(
+                [
                 Tables\Columns\TextColumn::make('id')
                     ->label('ID')
                     ->sortable(),
@@ -48,39 +49,48 @@ class TurnoversRelationManager extends RelationManager
                     ->dateTime('M j, Y g:i A')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ])
+                ]
+            )
             ->defaultSort('created_at', 'desc')
-            ->filters([
+            ->filters(
+                [
                 Tables\Filters\Filter::make('created_at')
-                    ->form([
+                    ->form(
+                        [
                         Forms\Components\DatePicker::make('created_from')
                             ->label('From'),
                         Forms\Components\DatePicker::make('created_until')
                             ->label('Until'),
-                    ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        return $query
-                            ->when(
-                                $data['created_from'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
-                            )
-                            ->when(
-                                $data['created_until'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
-                            );
-                    })
-                    ->indicateUsing(function (array $data): array {
-                        $indicators = [];
-                        if ($data['created_from'] ?? null) {
-                            $indicators['created_from'] = 'From ' . \Carbon\Carbon::parse($data['created_from'])->toFormattedDateString();
+                        ]
+                    )
+                    ->query(
+                        function (Builder $query, array $data): Builder {
+                            return $query
+                                ->when(
+                                    $data['created_from'],
+                                    fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+                                )
+                                ->when(
+                                    $data['created_until'],
+                                    fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
+                                );
                         }
-                        if ($data['created_until'] ?? null) {
-                            $indicators['created_until'] = 'Until ' . \Carbon\Carbon::parse($data['created_until'])->toFormattedDateString();
-                        }
+                    )
+                    ->indicateUsing(
+                        function (array $data): array {
+                            $indicators = [];
+                            if ($data['created_from'] ?? null) {
+                                $indicators['created_from'] = 'From ' . \Carbon\Carbon::parse($data['created_from'])->toFormattedDateString();
+                            }
+                            if ($data['created_until'] ?? null) {
+                                $indicators['created_until'] = 'Until ' . \Carbon\Carbon::parse($data['created_until'])->toFormattedDateString();
+                            }
 
-                        return $indicators;
-                    }),
-            ])
+                            return $indicators;
+                        }
+                    ),
+                ]
+            )
             ->headerActions([])
             ->actions([])
             ->bulkActions([]);

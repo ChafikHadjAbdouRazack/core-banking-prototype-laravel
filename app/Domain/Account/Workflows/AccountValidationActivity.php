@@ -11,7 +11,7 @@ class AccountValidationActivity extends Activity
 {
     /**
      * @param AccountUuid $uuid
-     * @param array $validationChecks
+     * @param array       $validationChecks
      * @param string|null $validatedBy
      *
      * @return array
@@ -52,23 +52,23 @@ class AccountValidationActivity extends Activity
     }
 
     /**
-     * @param Account $account
-     * @param string $check
+     * @param  Account $account
+     * @param  string  $check
      * @return array
      */
     private function performValidationCheck(Account $account, string $check): array
     {
         switch ($check) {
-            case 'kyc_document_verification':
-                return $this->validateKycDocuments($account);
-            case 'address_verification':
-                return $this->validateAddress($account);
-            case 'identity_verification':
-                return $this->validateIdentity($account);
-            case 'compliance_screening':
-                return $this->performComplianceScreening($account);
-            default:
-                return [
+        case 'kyc_document_verification':
+            return $this->validateKycDocuments($account);
+        case 'address_verification':
+            return $this->validateAddress($account);
+        case 'identity_verification':
+            return $this->validateIdentity($account);
+        case 'compliance_screening':
+            return $this->performComplianceScreening($account);
+        default:
+            return [
                     'passed'  => false,
                     'message' => "Unknown validation check: {$check}",
                 ];
@@ -76,7 +76,7 @@ class AccountValidationActivity extends Activity
     }
 
     /**
-     * @param Account $account
+     * @param  Account $account
      * @return array
      */
     private function validateKycDocuments(Account $account): array
@@ -127,7 +127,7 @@ class AccountValidationActivity extends Activity
     }
 
     /**
-     * @param Account $account
+     * @param  Account $account
      * @return array
      */
     private function validateAddress(Account $account): array
@@ -175,7 +175,7 @@ class AccountValidationActivity extends Activity
     }
 
     /**
-     * @param Account $account
+     * @param  Account $account
      * @return array
      */
     private function validateIdentity(Account $account): array
@@ -256,7 +256,7 @@ class AccountValidationActivity extends Activity
     }
 
     /**
-     * @param Account $account
+     * @param  Account $account
      * @return array
      */
     private function performComplianceScreening(Account $account): array
@@ -339,11 +339,11 @@ class AccountValidationActivity extends Activity
     }
 
     /**
-     * @param AccountUuid $uuid
-     * @param array $checks
-     * @param array $results
-     * @param bool $allPassed
-     * @param string|null $validatedBy
+     * @param  AccountUuid $uuid
+     * @param  array       $checks
+     * @param  array       $results
+     * @param  bool        $allPassed
+     * @param  string|null $validatedBy
      * @return void
      */
     private function logValidation(
@@ -353,13 +353,15 @@ class AccountValidationActivity extends Activity
         bool $allPassed,
         ?string $validatedBy
     ): void {
-        logger()->info('Account validation performed', [
+        logger()->info(
+            'Account validation performed', [
             'account_uuid'     => $uuid->getUuid(),
             'checks_performed' => $checks,
             'results'          => $results,
             'all_passed'       => $allPassed,
             'validated_by'     => $validatedBy,
             'timestamp'        => now()->toISOString(),
-        ]);
+            ]
+        );
     }
 }

@@ -31,11 +31,13 @@ class DepositController extends Controller
         // Get saved payment methods
         $paymentMethods = $this->paymentGateway->getSavedPaymentMethods($user);
 
-        return view('wallet.deposit-card', [
+        return view(
+            'wallet.deposit-card', [
             'account'        => $account,
             'paymentMethods' => $paymentMethods,
             'stripeKey'      => config('cashier.key'),
-        ]);
+            ]
+        );
     }
 
     /**
@@ -43,10 +45,12 @@ class DepositController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $request->validate(
+            [
             'amount'   => 'required|numeric|min:1|max:10000',
             'currency' => 'required|in:USD,EUR,GBP',
-        ]);
+            ]
+        );
 
         $user = Auth::user();
         $amountInCents = (int) ($request->amount * 100);
@@ -58,15 +62,19 @@ class DepositController extends Controller
                 $request->currency
             );
 
-            return response()->json([
+            return response()->json(
+                [
                 'client_secret' => $intent->client_secret,
                 'amount'        => $amountInCents,
                 'currency'      => $request->currency,
-            ]);
+                ]
+            );
         } catch (\Exception $e) {
-            return response()->json([
+            return response()->json(
+                [
                 'error' => 'Failed to create payment intent. Please try again.',
-            ], 500);
+                ], 500
+            );
         }
     }
 
@@ -75,9 +83,11 @@ class DepositController extends Controller
      */
     public function confirm(Request $request)
     {
-        $request->validate([
+        $request->validate(
+            [
             'payment_intent_id' => 'required|string',
-        ]);
+            ]
+        );
 
         try {
             $result = $this->paymentGateway->processDeposit($request->payment_intent_id);
@@ -95,9 +105,11 @@ class DepositController extends Controller
      */
     public function addPaymentMethod(Request $request)
     {
-        $request->validate([
+        $request->validate(
+            [
             'payment_method_id' => 'required|string',
-        ]);
+            ]
+        );
 
         try {
             $this->paymentGateway->addPaymentMethod(
@@ -105,14 +117,18 @@ class DepositController extends Controller
                 $request->payment_method_id
             );
 
-            return response()->json([
+            return response()->json(
+                [
                 'success' => true,
                 'message' => 'Payment method added successfully.',
-            ]);
+                ]
+            );
         } catch (\Exception $e) {
-            return response()->json([
+            return response()->json(
+                [
                 'error' => 'Failed to add payment method.',
-            ], 500);
+                ], 500
+            );
         }
     }
 

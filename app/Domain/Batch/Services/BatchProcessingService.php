@@ -78,9 +78,11 @@ class BatchProcessingService
         $failedItems = $batchJob->items()
             ->where('status', 'failed')
             ->get()
-            ->map(function ($item) {
-                return $item->data;
-            })
+            ->map(
+                function ($item) {
+                    return $item->data;
+                }
+            )
             ->toArray();
 
         if (empty($failedItems)) {

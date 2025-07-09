@@ -37,11 +37,13 @@ class WithdrawalController extends Controller
         // Get account balances
         $balances = $account->balances()->with('asset')->get();
 
-        return view('wallet.withdraw-bank', [
+        return view(
+            'wallet.withdraw-bank', [
             'account'      => $account,
             'bankAccounts' => $bankAccounts,
             'balances'     => $balances,
-        ]);
+            ]
+        );
     }
 
     /**
@@ -49,7 +51,8 @@ class WithdrawalController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $request->validate(
+            [
             'amount'            => 'required|numeric|min:10',
             'currency'          => 'required|in:USD,EUR,GBP',
             'bank_account_id'   => 'required_if:bank_account_type,saved|exists:bank_accounts,id',
@@ -62,7 +65,8 @@ class WithdrawalController extends Controller
             'iban'                => 'nullable|string|max:50',
             'swift'               => 'nullable|string|max:20',
             'save_bank_account'   => 'boolean',
-        ]);
+            ]
+        );
 
         $user = Auth::user();
         $account = $user->accounts()->first();
@@ -97,7 +101,8 @@ class WithdrawalController extends Controller
 
             // Save bank account if requested
             if ($request->save_bank_account) {
-                $user->bankAccounts()->create([
+                $user->bankAccounts()->create(
+                    [
                     'bank_name'                => $bankDetails['bank_name'],
                     'account_number'           => substr($bankDetails['account_number'], -4),
                     'account_number_encrypted' => encrypt($bankDetails['account_number']),
@@ -106,7 +111,8 @@ class WithdrawalController extends Controller
                     'iban'                     => $bankDetails['iban'],
                     'swift'                    => $bankDetails['swift'],
                     'verified'                 => false, // Requires verification
-                ]);
+                    ]
+                );
             }
         }
 
@@ -130,18 +136,21 @@ class WithdrawalController extends Controller
      */
     public function addBankAccount(Request $request)
     {
-        $request->validate([
+        $request->validate(
+            [
             'bank_name'           => 'required|string|max:255',
             'account_number'      => 'required|string|max:50',
             'account_holder_name' => 'required|string|max:255',
             'routing_number'      => 'nullable|string|max:20',
             'iban'                => 'nullable|string|max:50',
             'swift'               => 'nullable|string|max:20',
-        ]);
+            ]
+        );
 
         $user = Auth::user();
 
-        $bankAccount = $user->bankAccounts()->create([
+        $bankAccount = $user->bankAccounts()->create(
+            [
             'bank_name'                => $request->bank_name,
             'account_number'           => substr($request->account_number, -4),
             'account_number_encrypted' => encrypt($request->account_number),
@@ -150,7 +159,8 @@ class WithdrawalController extends Controller
             'iban'                     => $request->iban,
             'swift'                    => $request->swift,
             'verified'                 => false,
-        ]);
+            ]
+        );
 
         // In production, send verification micro-deposits or use Plaid/other verification service
 

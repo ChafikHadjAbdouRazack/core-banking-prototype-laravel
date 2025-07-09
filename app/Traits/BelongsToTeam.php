@@ -13,28 +13,32 @@ trait BelongsToTeam
     protected static function bootBelongsToTeam()
     {
         // Automatically set team_id when creating models
-        static::creating(function ($model) {
-            // Skip auth check in test environment or when app is not booted
-            if (app()->runningInConsole() && app()->environment('testing')) {
-                return;
-            }
+        static::creating(
+            function ($model) {
+                // Skip auth check in test environment or when app is not booted
+                if (app()->runningInConsole() && app()->environment('testing')) {
+                    return;
+                }
 
-            if (Auth::check() && Auth::user()->currentTeam) {
-                $model->team_id = Auth::user()->currentTeam->id;
+                if (Auth::check() && Auth::user()->currentTeam) {
+                    $model->team_id = Auth::user()->currentTeam->id;
+                }
             }
-        });
+        );
 
         // Global scope to filter by team
-        static::addGlobalScope('team', function (Builder $builder) {
-            // Skip auth check in test environment or when app is not booted
-            if (app()->runningInConsole() && app()->environment('testing')) {
-                return;
-            }
+        static::addGlobalScope(
+            'team', function (Builder $builder) {
+                // Skip auth check in test environment or when app is not booted
+                if (app()->runningInConsole() && app()->environment('testing')) {
+                    return;
+                }
 
-            if (Auth::check() && Auth::user()->currentTeam) {
-                $builder->where('team_id', Auth::user()->currentTeam->id);
+                if (Auth::check() && Auth::user()->currentTeam) {
+                    $builder->where('team_id', Auth::user()->currentTeam->id);
+                }
             }
-        });
+        );
     }
 
     /**

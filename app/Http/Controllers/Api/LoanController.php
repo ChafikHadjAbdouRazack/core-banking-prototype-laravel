@@ -26,19 +26,23 @@ class LoanController extends Controller
             ->with(['application', 'repayments'])
             ->findOrFail($id);
 
-        return response()->json([
+        return response()->json(
+            [
             'loan'                => $loan,
             'next_payment'        => $loan->next_payment,
             'outstanding_balance' => $loan->outstanding_balance,
-        ]);
+            ]
+        );
     }
 
     public function makePayment(Request $request, $id)
     {
-        $validated = $request->validate([
+        $validated = $request->validate(
+            [
             'amount'         => 'required|numeric|min:0.01',
             'payment_number' => 'required|integer|min:1',
-        ]);
+            ]
+        );
 
         $loan = Loan::where('borrower_id', auth()->id())
             ->where('status', 'active')
@@ -49,28 +53,34 @@ class LoanController extends Controller
             ->firstWhere('payment_number', $validated['payment_number']);
 
         if (! $scheduledPayment) {
-            return response()->json([
+            return response()->json(
+                [
                 'error' => 'Invalid payment number',
-            ], 400);
+                ], 400
+            );
         }
 
         // Process payment through aggregate
-        DB::transaction(function () use ($loan, $validated, $scheduledPayment) {
-            $aggregate = LoanAggregate::retrieve($loan->id);
-            $aggregate->recordRepayment(
-                $validated['payment_number'],
-                $validated['amount'],
-                $scheduledPayment['principal'],
-                $scheduledPayment['interest'],
-                auth()->id()
-            );
-            $aggregate->persist();
-        });
+        DB::transaction(
+            function () use ($loan, $validated, $scheduledPayment) {
+                $aggregate = LoanAggregate::retrieve($loan->id);
+                $aggregate->recordRepayment(
+                    $validated['payment_number'],
+                    $validated['amount'],
+                    $scheduledPayment['principal'],
+                    $scheduledPayment['interest'],
+                    auth()->id()
+                );
+                $aggregate->persist();
+            }
+        );
 
-        return response()->json([
+        return response()->json(
+            [
             'message' => 'Payment recorded successfully',
             'loan'    => $loan->fresh(),
-        ]);
+            ]
+        );
     }
 
     public function settleEarly(Request $request, $id)
@@ -84,13 +94,15 @@ class LoanController extends Controller
         // Calculate early settlement amount (might include penalties or discounts)
         $settlementAmount = $this->calculateEarlySettlementAmount($loan);
 
-        return response()->json([
+        return response()->json(
+            [
             'loan_id'             => $loan->id,
             'outstanding_balance' => $outstandingBalance,
             'settlement_amount'   => $settlementAmount,
             'savings'             => bcsub($outstandingBalance, $settlementAmount, 2),
             'confirm_url'         => route('api.loans.confirm-settlement', $loan->id),
-        ]);
+            ]
+        );
     }
 
     public function confirmSettlement(Request $request, $id)
@@ -101,19 +113,23 @@ class LoanController extends Controller
 
         $settlementAmount = $this->calculateEarlySettlementAmount($loan);
 
-        DB::transaction(function () use ($loan, $settlementAmount) {
-            $aggregate = LoanAggregate::retrieve($loan->id);
-            $aggregate->settleEarly(
-                $settlementAmount,
-                auth()->id()
-            );
-            $aggregate->persist();
-        });
+        DB::transaction(
+            function () use ($loan, $settlementAmount) {
+                $aggregate = LoanAggregate::retrieve($loan->id);
+                $aggregate->settleEarly(
+                    $settlementAmount,
+                    auth()->id()
+                );
+                $aggregate->persist();
+            }
+        );
 
-        return response()->json([
+        return response()->json(
+            [
             'message' => 'Loan settled successfully',
             'loan'    => $loan->fresh(),
-        ]);
+            ]
+        );
     }
 
     private function calculateEarlySettlementAmount(Loan $loan): string

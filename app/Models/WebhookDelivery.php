@@ -93,14 +93,16 @@ class WebhookDelivery extends Model
      */
     public function markAsDelivered(int $statusCode, ?string $responseBody = null, ?array $responseHeaders = null, int $durationMs = 0): void
     {
-        $this->update([
+        $this->update(
+            [
             'status'           => self::STATUS_DELIVERED,
             'response_status'  => $statusCode,
             'response_body'    => $responseBody,
             'response_headers' => $responseHeaders,
             'duration_ms'      => $durationMs,
             'delivered_at'     => now(),
-        ]);
+            ]
+        );
 
         $this->webhook->markAsSuccessful();
     }
@@ -119,13 +121,15 @@ class WebhookDelivery extends Model
             $nextRetryAt = now()->addMinutes($delayMinutes);
         }
 
-        $this->update([
+        $this->update(
+            [
             'status'          => self::STATUS_FAILED,
             'error_message'   => $errorMessage,
             'response_status' => $statusCode,
             'response_body'   => $responseBody,
             'next_retry_at'   => $nextRetryAt,
-        ]);
+            ]
+        );
 
         $this->webhook->markAsFailed();
     }
@@ -135,12 +139,14 @@ class WebhookDelivery extends Model
      */
     public function createRetry(): self
     {
-        return self::create([
+        return self::create(
+            [
             'webhook_uuid'   => $this->webhook_uuid,
             'event_type'     => $this->event_type,
             'payload'        => $this->payload,
             'attempt_number' => $this->attempt_number + 1,
             'status'         => self::STATUS_PENDING,
-        ]);
+            ]
+        );
     }
 }

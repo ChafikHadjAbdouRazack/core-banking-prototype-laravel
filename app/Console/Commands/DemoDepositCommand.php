@@ -76,10 +76,12 @@ class DemoDepositCommand extends Command
             $accountService->create($accountData);
 
             // Process queue to ensure account is created
-            $this->call('queue:work', [
+            $this->call(
+                'queue:work', [
                 '--stop-when-empty' => true,
                 '--queue'           => 'default,events,ledger,transactions',
-            ]);
+                ]
+            );
 
             // Refresh to get the created account
             $account = $user->accounts()->first();
@@ -128,10 +130,12 @@ class DemoDepositCommand extends Command
                 ->persist();
 
             // Process event queue
-            $this->call('queue:work', [
+            $this->call(
+                'queue:work', [
                 '--stop-when-empty' => true,
                 '--queue'           => 'events,ledger',
-            ]);
+                ]
+            );
 
             $this->info('✅ Deposit successful!');
             $this->info("Transaction ID: {$transactionId}");

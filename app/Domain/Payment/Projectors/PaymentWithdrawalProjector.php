@@ -12,7 +12,8 @@ class PaymentWithdrawalProjector extends Projector
 {
     public function onWithdrawalInitiated(WithdrawalInitiated $event, string $aggregateUuid): void
     {
-        PaymentTransaction::create([
+        PaymentTransaction::create(
+            [
             'aggregate_uuid'      => $aggregateUuid,
             'account_uuid'        => $event->accountUuid,
             'type'                => 'withdrawal',
@@ -25,26 +26,31 @@ class PaymentWithdrawalProjector extends Projector
             'bank_account_name'   => $event->bankAccountName,
             'metadata'            => $event->metadata,
             'initiated_at'        => now(),
-        ]);
+            ]
+        );
     }
 
     public function onWithdrawalCompleted(WithdrawalCompleted $event, string $aggregateUuid): void
     {
         PaymentTransaction::where('aggregate_uuid', $aggregateUuid)
-            ->update([
+            ->update(
+                [
                 'status'         => 'completed',
                 'transaction_id' => $event->transactionId,
                 'completed_at'   => $event->completedAt,
-            ]);
+                ]
+            );
     }
 
     public function onWithdrawalFailed(WithdrawalFailed $event, string $aggregateUuid): void
     {
         PaymentTransaction::where('aggregate_uuid', $aggregateUuid)
-            ->update([
+            ->update(
+                [
                 'status'        => 'failed',
                 'failed_reason' => $event->reason,
                 'failed_at'     => $event->failedAt,
-            ]);
+                ]
+            );
     }
 }

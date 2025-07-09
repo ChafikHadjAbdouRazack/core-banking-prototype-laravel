@@ -21,20 +21,22 @@ class ListReconciliationReports extends ListRecords
             Actions\Action::make('run_reconciliation')
                 ->label('Run Reconciliation')
                 ->icon('heroicon-m-play')
-                ->action(function () {
-                    $service = app(DailyReconciliationService::class);
+                ->action(
+                    function () {
+                        $service = app(DailyReconciliationService::class);
 
-                    try {
-                        $service->performDailyReconciliation();
+                        try {
+                            $service->performDailyReconciliation();
 
-                        $this->notify('success', 'Reconciliation completed successfully');
+                            $this->notify('success', 'Reconciliation completed successfully');
 
-                        // Refresh the page
-                        $this->redirect(static::getResource()::getUrl('index'));
-                    } catch (\Exception $e) {
-                        $this->notify('danger', 'Reconciliation failed: ' . $e->getMessage());
+                            // Refresh the page
+                            $this->redirect(static::getResource()::getUrl('index'));
+                        } catch (\Exception $e) {
+                            $this->notify('danger', 'Reconciliation failed: ' . $e->getMessage());
+                        }
                     }
-                })
+                )
                 ->requiresConfirmation()
                 ->modalHeading('Run Daily Reconciliation')
                 ->modalDescription('This will perform a full balance reconciliation for all accounts. Continue?'),
@@ -46,11 +48,13 @@ class ListReconciliationReports extends ListRecords
         // Get all reconciliation reports from file system
         $files = glob(storage_path('app/reconciliation/reconciliation-*.json'));
 
-        $reports = collect($files)->map(function ($file) {
-            $content = json_decode(file_get_contents($file), true);
+        $reports = collect($files)->map(
+            function ($file) {
+                $content = json_decode(file_get_contents($file), true);
 
-            return $content['summary'] ?? [];
-        })->filter()->sortByDesc('date');
+                return $content['summary'] ?? [];
+            }
+        )->filter()->sortByDesc('date');
 
         // Convert to paginator
         $page = request()->get('page', 1);

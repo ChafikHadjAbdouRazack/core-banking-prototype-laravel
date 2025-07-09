@@ -17,9 +17,11 @@ class SettingsController extends Controller
             ->get()
             ->mapWithKeys(fn ($setting) => [$setting->key => $setting->value]);
 
-        return response()->json([
+        return response()->json(
+            [
             'data' => $settings,
-        ]);
+            ]
+        );
     }
 
     /**
@@ -32,8 +34,10 @@ class SettingsController extends Controller
             ->get()
             ->mapWithKeys(fn ($setting) => [$setting->key => $setting->value]);
 
-        return response()->json([
+        return response()->json(
+            [
             'data' => $settings,
-        ]);
+            ]
+        );
     }
 }

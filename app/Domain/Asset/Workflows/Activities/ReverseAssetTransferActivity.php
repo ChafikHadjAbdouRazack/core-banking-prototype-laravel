@@ -34,7 +34,8 @@ class ReverseAssetTransferActivity extends Activity
         $aggregate->persist();
 
         // Log the reversal for audit purposes
-        logger()->info('Asset transfer reversed', [
+        logger()->info(
+            'Asset transfer reversed', [
             'transfer_id'  => $transferId,
             'from_account' => $fromAccountUuid->toString(),
             'to_account'   => $toAccountUuid->toString(),
@@ -42,6 +43,7 @@ class ReverseAssetTransferActivity extends Activity
             'to_asset'     => $toAssetCode,
             'amount'       => $fromAmount->getAmount(),
             'reason'       => 'Workflow compensation',
-        ]);
+            ]
+        );
     }
 }

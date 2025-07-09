@@ -19,9 +19,11 @@ class PolygonConnector extends EthereumConnector
         $this->chainId = $config['chain_id'] ?? '137';
 
         // Update Web3 provider for Polygon
-        $this->web3 = new \Web3\Web3(new \Web3\Providers\HttpProvider(
-            new \Web3\RequestManagers\HttpRequestManager($this->rpcUrl)
-        ));
+        $this->web3 = new \Web3\Web3(
+            new \Web3\Providers\HttpProvider(
+                new \Web3\RequestManagers\HttpRequestManager($this->rpcUrl)
+            )
+        );
     }
 
     public function generateAddress(string $publicKey): AddressData
@@ -34,10 +36,12 @@ class PolygonConnector extends EthereumConnector
             address: $addressData->address,
             publicKey: $addressData->publicKey,
             chain: 'polygon',
-            metadata: array_merge($addressData->metadata, [
+            metadata: array_merge(
+                $addressData->metadata, [
                 'chain'   => 'polygon',
                 'chainId' => $this->chainId,
-            ])
+                ]
+            )
         );
     }
 
@@ -59,12 +63,14 @@ class PolygonConnector extends EthereumConnector
         try {
             $gasPrice = null;
 
-            $this->web3->eth->gasPrice(function ($err, $price) use (&$gasPrice) {
-                if ($err !== null) {
-                    throw new \Exception('Failed to get gas price: ' . $err->getMessage());
+            $this->web3->eth->gasPrice(
+                function ($err, $price) use (&$gasPrice) {
+                    if ($err !== null) {
+                        throw new \Exception('Failed to get gas price: ' . $err->getMessage());
+                    }
+                    $gasPrice = $price;
                 }
-                $gasPrice = $price;
-            });
+            );
 
             // Add 20% buffer for Polygon's dynamic fees
             $bufferedPrice = gmp_add(
@@ -83,12 +89,14 @@ class PolygonConnector extends EthereumConnector
     {
         $blockNumber = null;
 
-        $this->web3->eth->blockNumber(function ($err, $number) use (&$blockNumber) {
-            if ($err !== null) {
-                throw new \Exception('Failed to get block number: ' . $err->getMessage());
+        $this->web3->eth->blockNumber(
+            function ($err, $number) use (&$blockNumber) {
+                if ($err !== null) {
+                    throw new \Exception('Failed to get block number: ' . $err->getMessage());
+                }
+                $blockNumber = hexdec($number->toString());
             }
-            $blockNumber = hexdec($number->toString());
-        });
+        );
 
         return $blockNumber;
     }

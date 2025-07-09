@@ -25,43 +25,47 @@ class AmlScreeningService
      */
     public function performComprehensiveScreening($entity, array $parameters = []): AmlScreening
     {
-        return DB::transaction(function () use ($entity, $parameters) {
-            $screening = $this->createScreening($entity, AmlScreening::TYPE_COMPREHENSIVE, $parameters);
+        return DB::transaction(
+            function () use ($entity, $parameters) {
+                $screening = $this->createScreening($entity, AmlScreening::TYPE_COMPREHENSIVE, $parameters);
 
-            try {
-                $screening->update(['status' => AmlScreening::STATUS_IN_PROGRESS]);
+                try {
+                    $screening->update(['status' => AmlScreening::STATUS_IN_PROGRESS]);
 
-                // Perform all screening types
-                $sanctionsResults = $this->performSanctionsScreening($screening);
-                $pepResults = $this->performPEPScreening($screening);
-                $adverseMediaResults = $this->performAdverseMediaScreening($screening);
+                    // Perform all screening types
+                    $sanctionsResults = $this->performSanctionsScreening($screening);
+                    $pepResults = $this->performPEPScreening($screening);
+                    $adverseMediaResults = $this->performAdverseMediaScreening($screening);
 
-                // Calculate overall risk
-                $overallRisk = $this->calculateOverallRisk($sanctionsResults, $pepResults, $adverseMediaResults);
+                    // Calculate overall risk
+                    $overallRisk = $this->calculateOverallRisk($sanctionsResults, $pepResults, $adverseMediaResults);
 
-                // Update screening with results
-                $screening->update([
-                    'sanctions_results'     => $sanctionsResults,
-                    'pep_results'           => $pepResults,
-                    'adverse_media_results' => $adverseMediaResults,
-                    'overall_risk'          => $overallRisk,
-                    'total_matches'         => $this->countTotalMatches($sanctionsResults, $pepResults, $adverseMediaResults),
-                ]);
+                    // Update screening with results
+                    $screening->update(
+                        [
+                        'sanctions_results'     => $sanctionsResults,
+                        'pep_results'           => $pepResults,
+                        'adverse_media_results' => $adverseMediaResults,
+                        'overall_risk'          => $overallRisk,
+                        'total_matches'         => $this->countTotalMatches($sanctionsResults, $pepResults, $adverseMediaResults),
+                        ]
+                    );
 
-                $screening->markAsCompleted();
+                    $screening->markAsCompleted();
 
-                event(new ScreeningCompleted($screening));
+                    event(new ScreeningCompleted($screening));
 
-                if ($screening->hasMatches()) {
-                    event(new ScreeningMatchFound($screening));
+                    if ($screening->hasMatches()) {
+                        event(new ScreeningMatchFound($screening));
+                    }
+
+                    return $screening;
+                } catch (\Exception $e) {
+                    $screening->markAsFailed($e->getMessage());
+                    throw $e;
                 }
-
-                return $screening;
-            } catch (\Exception $e) {
-                $screening->markAsFailed($e->getMessage());
-                throw $e;
             }
-        });
+        );
     }
 
     /**
@@ -114,12 +118,13 @@ class AmlScreeningService
         // In production, this would integrate with a PEP database provider
         // For now, simulate PEP checking
         $results = [
-            'is_pep'     => false,
-            'pep_type'   => null,
-            'position'   => null,
-            'country'    => null,
-            'since_date' => null,
-            'matches'    => [],
+            'is_pep'       => false,
+            'pep_type'     => null,
+            'position'     => null,
+            'country'      => null,
+            'since_date'   => null,
+            'matches'      => [],
+            'total_matches' => 0,
         ];
 
         // Check against known PEP indicators
@@ -138,6 +143,7 @@ class AmlScreeningService
                 'match_score' => 95,
                 'source'      => 'PEP Database',
             ];
+            $results['total_matches'] = 1;
         }
 
         return $results;
@@ -157,6 +163,7 @@ class AmlScreeningService
             'serious_allegations' => 0,
             'categories'          => [],
             'articles'            => [],
+            'total_matches'       => 0,
         ];
 
         // Simulate adverse media check
@@ -165,6 +172,7 @@ class AmlScreeningService
         if (! empty($adverseMedia)) {
             $results['has_adverse_media'] = true;
             $results['total_articles'] = count($adverseMedia);
+            $results['total_matches'] = count($adverseMedia);
             $results['articles'] = $adverseMedia;
 
             foreach ($adverseMedia as $article) {
@@ -190,7 +198,8 @@ class AmlScreeningService
         // Build search parameters based on entity type
         $searchParams = $this->buildSearchParameters($entity, $parameters);
 
-        return AmlScreening::create([
+        return AmlScreening::create(
+            [
             'entity_id'         => $entityId,
             'entity_type'       => $entityType,
             'type'              => $type,
@@ -199,7 +208,8 @@ class AmlScreeningService
             'fuzzy_matching'    => $parameters['fuzzy_matching'] ?? true,
             'match_threshold'   => $parameters['match_threshold'] ?? 85,
             'started_at'        => now(),
-        ]);
+            ]
+        );
     }
 
     /**
@@ -358,14 +368,8 @@ class AmlScreeningService
     protected function countTotalMatches(array $sanctions, array $pep, array $adverseMedia): int
     {
         $count = $sanctions['total_matches'] ?? 0;
-
-        if ($pep['is_pep']) {
-            $count++;
-        }
-
-        if ($adverseMedia['has_adverse_media']) {
-            $count += $adverseMedia['total_articles'] ?? 0;
-        }
+        $count += $pep['total_matches'] ?? 0;
+        $count += $adverseMedia['total_matches'] ?? 0;
 
         return $count;
     }

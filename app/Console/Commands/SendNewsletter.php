@@ -59,20 +59,24 @@ class SendNewsletter extends Command
             }
 
             if (! empty($tags)) {
-                $query->where(function ($q) use ($tags) {
-                    foreach ($tags as $tag) {
-                        $q->orWhereJsonContains('tags', $tag);
+                $query->where(
+                    function ($q) use ($tags) {
+                        foreach ($tags as $tag) {
+                            $q->orWhereJsonContains('tags', $tag);
+                        }
                     }
-                });
+                );
             }
 
             $count = $query->count();
             $this->info("Would send to: $count subscribers");
 
             if ($this->confirm('Show email addresses?')) {
-                $query->pluck('email')->each(function ($email) {
-                    $this->line("  - $email");
-                });
+                $query->pluck('email')->each(
+                    function ($email) {
+                        $this->line("  - $email");
+                    }
+                );
             }
 
             return 0;

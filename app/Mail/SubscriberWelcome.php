@@ -52,9 +52,11 @@ class SubscriberWelcome extends Mailable implements ShouldQueue
         return new Content(
             markdown: 'emails.subscriber.welcome',
             with: [
-                'unsubscribeUrl' => route('subscriber.unsubscribe', [
+                'unsubscribeUrl' => route(
+                    'subscriber.unsubscribe', [
                     'email' => encrypt($this->subscriber->email),
-                ]),
+                    ]
+                ),
             ],
         );
     }

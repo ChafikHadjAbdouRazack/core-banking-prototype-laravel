@@ -79,13 +79,15 @@ class BehavioralAnalysisService
         }
 
         // Calculate behavioral deviation score
-        $deviationScore = $profile->calculateBehaviorScore([
+        $deviationScore = $profile->calculateBehaviorScore(
+            [
             'hour'        => $transaction->created_at->hour,
             'amount'      => $transaction->amount,
             'country'     => $context['ip_country'] ?? null,
             'device_id'   => $context['device_data']['fingerprint_id'] ?? null,
             'daily_count' => $context['daily_transaction_count'] ?? 0,
-        ]);
+            ]
+        );
 
         // Combine scores
         $finalScore = min(100, ($riskScore + $deviationScore) / 2);
@@ -334,9 +336,8 @@ class BehavioralAnalysisService
 
         // Daily transaction count
         $dailyCount = $context['daily_transaction_count'] ?? 0;
-        if (
-            $profile->avg_daily_transaction_count > 0 &&
-            $dailyCount > ($profile->avg_daily_transaction_count * 3)
+        if ($profile->avg_daily_transaction_count > 0 
+            && $dailyCount > ($profile->avg_daily_transaction_count * 3)
         ) {
             $exceedsNormal = true;
             $reasons[] = 'high_daily_count';
@@ -415,29 +416,33 @@ class BehavioralAnalysisService
     {
         $profile = $this->getOrCreateProfile($user);
 
-        DB::transaction(function () use ($profile, $transaction, $fraudScore) {
-            // Update transaction statistics
-            $this->updateTransactionStats($profile, $transaction);
+        DB::transaction(
+            function () use ($profile, $transaction, $fraudScore) {
+                // Update transaction statistics
+                $this->updateTransactionStats($profile, $transaction);
 
-            // Update device trust if legitimate
-            if ($fraudScore->decision === FraudScore::DECISION_ALLOW) {
-                $deviceId = $transaction->metadata['device_fingerprint_id'] ?? null;
-                if ($deviceId && ! in_array($deviceId, $profile->trusted_devices ?? [])) {
-                    $profile->addTrustedDevice($deviceId);
+                // Update device trust if legitimate
+                if ($fraudScore->decision === FraudScore::DECISION_ALLOW) {
+                    $deviceId = $transaction->metadata['device_fingerprint_id'] ?? null;
+                    if ($deviceId && ! in_array($deviceId, $profile->trusted_devices ?? [])) {
+                        $profile->addTrustedDevice($deviceId);
+                    }
                 }
-            }
 
-            // Mark suspicious activity if fraud detected
-            if ($fraudScore->isHighRisk()) {
-                $profile->update([
-                    'last_suspicious_activity' => now(),
-                ]);
-                $profile->increment('suspicious_activities_count');
-            }
+                // Mark suspicious activity if fraud detected
+                if ($fraudScore->isHighRisk()) {
+                    $profile->update(
+                        [
+                        'last_suspicious_activity' => now(),
+                        ]
+                    );
+                    $profile->increment('suspicious_activities_count');
+                }
 
-            // Update profile maturity
-            $this->updateProfileMaturity($profile);
-        });
+                // Update profile maturity
+                $this->updateProfileMaturity($profile);
+            }
+        );
     }
 
     /**
@@ -446,9 +451,11 @@ class BehavioralAnalysisService
     protected function updateTransactionStats(BehavioralProfile $profile, Transaction $transaction): void
     {
         // Get recent transactions for statistics
-        $recentTransactions = Transaction::whereHas('account', function ($query) use ($profile) {
-            $query->where('user_id', $profile->user_id);
-        })
+        $recentTransactions = Transaction::whereHas(
+            'account', function ($query) use ($profile) {
+                $query->where('user_id', $profile->user_id);
+            }
+        )
         ->where('created_at', '>=', now()->subDays(90))
         ->orderBy('created_at', 'desc')
         ->limit(100)
@@ -466,9 +473,11 @@ class BehavioralAnalysisService
         }
 
         // Update daily counts
-        $todayCount = Transaction::whereHas('account', function ($query) use ($profile) {
-            $query->where('user_id', $profile->user_id);
-        })
+        $todayCount = Transaction::whereHas(
+            'account', function ($query) use ($profile) {
+                $query->where('user_id', $profile->user_id);
+            }
+        )
         ->whereDate('created_at', today())
         ->count();
 
@@ -484,10 +493,12 @@ class BehavioralAnalysisService
     {
         $daysSinceFirst = $profile->created_at->diffInDays(now());
 
-        $profile->update([
+        $profile->update(
+            [
             'days_since_first_transaction' => $daysSinceFirst,
             'is_established'               => $daysSinceFirst >= 30 && $profile->total_transaction_count >= 10,
-        ]);
+            ]
+        );
 
         // Generate ML features if established
         if ($profile->is_established) {
@@ -531,9 +542,8 @@ class BehavioralAnalysisService
         }
 
         // No suspicious activity bonus
-        if (
-            ! $profile->last_suspicious_activity ||
-            $profile->last_suspicious_activity->diffInDays(now()) > 90
+        if (! $profile->last_suspicious_activity 
+            || $profile->last_suspicious_activity->diffInDays(now()) > 90
         ) {
             $confidence += 10;
         }
@@ -567,11 +577,10 @@ class BehavioralAnalysisService
         $timeSinceLast = $context['time_since_last_transaction'] ?? null;
 
         // Quick deposit->withdrawal sequence
-        if (
-            $lastTxnType === 'deposit' &&
-            $currentType === 'withdrawal' &&
-            $timeSinceLast !== null &&
-            $timeSinceLast < 30
+        if ($lastTxnType === 'deposit' 
+            && $currentType === 'withdrawal' 
+            && $timeSinceLast !== null 
+            && $timeSinceLast < 30
         ) {
             return true;
         }
@@ -600,25 +609,22 @@ class BehavioralAnalysisService
         $changes = 0;
 
         // New device
-        if (
-            isset($context['device_data']['fingerprint_id']) &&
-            ! in_array($context['device_data']['fingerprint_id'], $profile->trusted_devices ?? [])
+        if (isset($context['device_data']['fingerprint_id']) 
+            && ! in_array($context['device_data']['fingerprint_id'], $profile->trusted_devices ?? [])
         ) {
             $changes++;
         }
 
         // New location
-        if (
-            isset($context['ip_country']) &&
-            $context['ip_country'] !== $profile->primary_country
+        if (isset($context['ip_country']) 
+            && $context['ip_country'] !== $profile->primary_country
         ) {
             $changes++;
         }
 
         // Unusual time
-        if (
-            isset($context['hour_of_day']) &&
-            $profile->isTransactionTimeUnusual($context['hour_of_day'])
+        if (isset($context['hour_of_day']) 
+            && $profile->isTransactionTimeUnusual($context['hour_of_day'])
         ) {
             $changes++;
         }

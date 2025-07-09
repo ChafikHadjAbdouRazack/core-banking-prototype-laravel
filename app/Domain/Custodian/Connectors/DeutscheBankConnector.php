@@ -69,12 +69,14 @@ class DeutscheBankConnector extends BaseCustodianConnector
 
         $this->logRequest('POST', self::OAUTH_URL);
 
-        $response = Http::asForm()->post(self::OAUTH_URL, [
+        $response = Http::asForm()->post(
+            self::OAUTH_URL, [
             'grant_type'    => 'client_credentials',
             'client_id'     => $this->clientId,
             'client_secret' => $this->clientSecret,
             'scope'         => 'accounts payments sepa instant_payments',
-        ]);
+            ]
+        );
 
         if (! $response->successful()) {
             throw new \Exception('Failed to obtain access token: ' . $response->body());
@@ -98,10 +100,12 @@ class DeutscheBankConnector extends BaseCustodianConnector
 
         $request = Http::withToken($token)
             ->acceptJson()
-            ->withHeaders([
+            ->withHeaders(
+                [
                 'X-API-Version' => '2.0',
                 'X-Request-ID'  => uniqid('db-'),
-            ])
+                ]
+            )
             ->timeout(30);
 
         return match (strtoupper($method)) {
@@ -274,10 +278,12 @@ class DeutscheBankConnector extends BaseCustodianConnector
                 return in_array($data['status'] ?? '', ['ACTIVE', 'ENABLED']);
             }
         } catch (\Exception $e) {
-            Log::warning('Account validation failed', [
+            Log::warning(
+                'Account validation failed', [
                 'account_id' => $accountId,
                 'error'      => $e->getMessage(),
-            ]);
+                ]
+            );
         }
 
         return false;
@@ -285,12 +291,14 @@ class DeutscheBankConnector extends BaseCustodianConnector
 
     public function getTransactionHistory(string $accountId, ?int $limit = 100, ?int $offset = 0): array
     {
-        $response = $this->apiRequest('GET', "/accounts/{$accountId}/transactions", [
+        $response = $this->apiRequest(
+            'GET', "/accounts/{$accountId}/transactions", [
             'limit'    => $limit,
             'offset'   => $offset,
             'dateFrom' => Carbon::now()->subDays(90)->format('Y-m-d'),
             'dateTo'   => Carbon::now()->format('Y-m-d'),
-        ]);
+            ]
+        );
 
         if (! $response->successful()) {
             throw new \Exception('Failed to get transaction history: ' . $response->body());

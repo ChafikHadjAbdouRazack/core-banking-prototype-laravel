@@ -39,28 +39,34 @@ class CustodianAccountService
         // Get account info from custodian
         $accountInfo = $custodian->getAccountInfo($custodianAccountId);
 
-        return DB::transaction(function () use ($account, $custodianName, $custodianAccountId, $accountInfo, $metadata, $isPrimary) {
-            $custodianAccount = CustodianAccount::create([
-                'account_uuid'           => $account->uuid,
-                'custodian_name'         => $custodianName,
-                'custodian_account_id'   => $custodianAccountId,
-                'custodian_account_name' => $accountInfo->name,
-                'status'                 => $accountInfo->status,
-                'metadata'               => array_merge($accountInfo->metadata, $metadata),
-            ]);
+        return DB::transaction(
+            function () use ($account, $custodianName, $custodianAccountId, $accountInfo, $metadata, $isPrimary) {
+                $custodianAccount = CustodianAccount::create(
+                    [
+                    'account_uuid'           => $account->uuid,
+                    'custodian_name'         => $custodianName,
+                    'custodian_account_id'   => $custodianAccountId,
+                    'custodian_account_name' => $accountInfo->name,
+                    'status'                 => $accountInfo->status,
+                    'metadata'               => array_merge($accountInfo->metadata, $metadata),
+                    ]
+                );
 
-            if ($isPrimary) {
-                $custodianAccount->setAsPrimary();
+                if ($isPrimary) {
+                    $custodianAccount->setAsPrimary();
+                }
+
+                Log::info(
+                    'Linked custodian account', [
+                    'account_uuid'      => $account->uuid,
+                    'custodian'         => $custodianName,
+                    'custodian_account' => $custodianAccountId,
+                    ]
+                );
+
+                return $custodianAccount;
             }
-
-            Log::info('Linked custodian account', [
-                'account_uuid'      => $account->uuid,
-                'custodian'         => $custodianName,
-                'custodian_account' => $custodianAccountId,
-            ]);
-
-            return $custodianAccount;
-        });
+        );
     }
 
     /**
@@ -68,26 +74,30 @@ class CustodianAccountService
      */
     public function unlinkAccount(CustodianAccount $custodianAccount): void
     {
-        DB::transaction(function () use ($custodianAccount) {
-            // If this was primary, make another one primary
-            if ($custodianAccount->is_primary) {
-                $nextPrimary = CustodianAccount::where('account_uuid', $custodianAccount->account_uuid)
+        DB::transaction(
+            function () use ($custodianAccount) {
+                // If this was primary, make another one primary
+                if ($custodianAccount->is_primary) {
+                    $nextPrimary = CustodianAccount::where('account_uuid', $custodianAccount->account_uuid)
                     ->where('id', '!=', $custodianAccount->id)
                     ->where('status', 'active')
                     ->first();
 
-                if ($nextPrimary) {
-                    $nextPrimary->setAsPrimary();
+                    if ($nextPrimary) {
+                        $nextPrimary->setAsPrimary();
+                    }
                 }
+
+                $custodianAccount->delete();
+
+                Log::info(
+                    'Unlinked custodian account', [
+                    'custodian_account_id' => $custodianAccount->id,
+                    'account_uuid'         => $custodianAccount->account_uuid,
+                    ]
+                );
             }
-
-            $custodianAccount->delete();
-
-            Log::info('Unlinked custodian account', [
-                'custodian_account_id' => $custodianAccount->id,
-                'account_uuid'         => $custodianAccount->account_uuid,
-            ]);
-        });
+        );
     }
 
     /**
@@ -140,13 +150,15 @@ class CustodianAccountService
 
         $receipt = $custodian->initiateTransfer($transferRequest);
 
-        Log::info('Initiated custodian transfer', [
+        Log::info(
+            'Initiated custodian transfer', [
             'transaction_id' => $receipt->id,
             'from_account'   => $fromAccount->custodian_account_id,
             'to_account'     => $toAccount->custodian_account_id,
             'amount'         => $amount->getAmount(),
             'asset'          => $assetCode,
-        ]);
+            ]
+        );
 
         return $receipt->id;
     }
@@ -172,21 +184,27 @@ class CustodianAccountService
         try {
             $accountInfo = $custodian->getAccountInfo($custodianAccount->custodian_account_id);
 
-            $custodianAccount->update([
+            $custodianAccount->update(
+                [
                 'status'                 => $accountInfo->status,
                 'custodian_account_name' => $accountInfo->name,
                 'metadata'               => array_merge($custodianAccount->metadata ?? [], $accountInfo->metadata),
-            ]);
+                ]
+            );
 
-            Log::info('Synced custodian account status', [
+            Log::info(
+                'Synced custodian account status', [
                 'custodian_account_id' => $custodianAccount->id,
                 'new_status'           => $accountInfo->status,
-            ]);
+                ]
+            );
         } catch (\Exception $e) {
-            Log::error('Failed to sync custodian account status', [
+            Log::error(
+                'Failed to sync custodian account status', [
                 'custodian_account_id' => $custodianAccount->id,
                 'error'                => $e->getMessage(),
-            ]);
+                ]
+            );
 
             throw $e;
         }

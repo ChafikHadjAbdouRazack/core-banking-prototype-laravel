@@ -19,19 +19,23 @@ class BankAllocationService
         $defaultAllocations = UserBankPreference::getDefaultAllocations();
         $preferences = collect();
 
-        $this->executeInTransaction(function () use ($user, $defaultAllocations, &$preferences) {
-            foreach ($defaultAllocations as $allocation) {
-                $preference = $user->bankPreferences()->create([
-                    'bank_code'             => $allocation['bank_code'],
-                    'bank_name'             => $allocation['bank_name'],
-                    'allocation_percentage' => $allocation['allocation_percentage'],
-                    'is_primary'            => $allocation['is_primary'],
-                    'status'                => $allocation['status'],
-                    'metadata'              => $allocation['metadata'] ?? [],
-                ]);
-                $preferences->push($preference);
+        $this->executeInTransaction(
+            function () use ($user, $defaultAllocations, &$preferences) {
+                foreach ($defaultAllocations as $allocation) {
+                    $preference = $user->bankPreferences()->create(
+                        [
+                        'bank_code'             => $allocation['bank_code'],
+                        'bank_name'             => $allocation['bank_name'],
+                        'allocation_percentage' => $allocation['allocation_percentage'],
+                        'is_primary'            => $allocation['is_primary'],
+                        'status'                => $allocation['status'],
+                        'metadata'              => $allocation['metadata'] ?? [],
+                        ]
+                    );
+                    $preferences->push($preference);
+                }
             }
-        });
+        );
 
         return $preferences;
     }
@@ -39,8 +43,8 @@ class BankAllocationService
     /**
      * Update user's bank allocations.
      *
-     * @param User $user
-     * @param array $allocations Array of ['bank_code' => percentage]
+     * @param  User  $user
+     * @param  array $allocations Array of ['bank_code' => percentage]
      * @return Collection
      * @throws \Exception
      */
@@ -64,31 +68,35 @@ class BankAllocationService
 
         $preferences = collect();
 
-        $this->executeInTransaction(function () use ($user, $allocations, &$preferences) {
-            // Delete existing preferences (to avoid unique constraint violations)
-            $user->bankPreferences()->delete();
+        $this->executeInTransaction(
+            function () use ($user, $allocations, &$preferences) {
+                // Delete existing preferences (to avoid unique constraint violations)
+                $user->bankPreferences()->delete();
 
-            // Create new preferences
-            $isFirst = true;
-            foreach ($allocations as $bankCode => $percentage) {
-                if ($percentage == 0) {
-                    continue; // Skip banks with 0% allocation
+                // Create new preferences
+                $isFirst = true;
+                foreach ($allocations as $bankCode => $percentage) {
+                    if ($percentage == 0) {
+                        continue; // Skip banks with 0% allocation
+                    }
+
+                    $bankInfo = UserBankPreference::AVAILABLE_BANKS[$bankCode];
+                    $preference = $user->bankPreferences()->create(
+                        [
+                        'bank_code'             => $bankCode,
+                        'bank_name'             => $bankInfo['name'],
+                        'allocation_percentage' => $percentage,
+                        'is_primary'            => $isFirst,
+                        'status'                => 'active',
+                        'metadata'              => $bankInfo,
+                        ]
+                    );
+
+                    $preferences->push($preference);
+                    $isFirst = false;
                 }
-
-                $bankInfo = UserBankPreference::AVAILABLE_BANKS[$bankCode];
-                $preference = $user->bankPreferences()->create([
-                    'bank_code'             => $bankCode,
-                    'bank_name'             => $bankInfo['name'],
-                    'allocation_percentage' => $percentage,
-                    'is_primary'            => $isFirst,
-                    'status'                => 'active',
-                    'metadata'              => $bankInfo,
-                ]);
-
-                $preferences->push($preference);
-                $isFirst = false;
             }
-        });
+        );
 
         return $preferences;
     }
@@ -123,14 +131,16 @@ class BankAllocationService
 
         $bankInfo = UserBankPreference::AVAILABLE_BANKS[$bankCode];
 
-        return $user->bankPreferences()->create([
+        return $user->bankPreferences()->create(
+            [
             'bank_code'             => $bankCode,
             'bank_name'             => $bankInfo['name'],
             'allocation_percentage' => $percentage,
             'is_primary'            => false,
             'status'                => 'active',
             'metadata'              => $bankInfo,
-        ]);
+            ]
+        );
     }
 
     /**
@@ -178,13 +188,15 @@ class BankAllocationService
             throw new \Exception("Bank {$bankCode} not found in user's active allocation");
         }
 
-        $this->executeInTransaction(function () use ($user, $preference) {
-            // Remove primary flag from all banks
-            $user->bankPreferences()->update(['is_primary' => false]);
+        $this->executeInTransaction(
+            function () use ($user, $preference) {
+                // Remove primary flag from all banks
+                $user->bankPreferences()->update(['is_primary' => false]);
 
-            // Set new primary
-            $preference->update(['is_primary' => true]);
-        });
+                // Set new primary
+                $preference->update(['is_primary' => true]);
+            }
+        );
 
         return $preference->fresh();
     }

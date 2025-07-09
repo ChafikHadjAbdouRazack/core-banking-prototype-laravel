@@ -39,7 +39,8 @@ class VotingTemplateService
     {
         $votingMonth = $votingMonth ?? now()->addMonth()->startOfMonth();
 
-        $poll = Poll::create([
+        $poll = Poll::create(
+            [
             'title'                  => "Currency Basket Composition - {$votingMonth->format('F Y')}",
             'description'            => $this->getBasketVotingDescription($votingMonth),
             'type'                   => PollType::WEIGHTED_CHOICE,
@@ -57,7 +58,8 @@ class VotingTemplateService
                 'basket_code'  => config('baskets.primary', 'PRIMARY'),
                 'auto_execute' => true,
             ],
-        ]);
+            ]
+        );
 
         return $poll;
     }
@@ -67,7 +69,8 @@ class VotingTemplateService
      */
     public function createAddCurrencyPoll(string $currencyCode, string $currencyName): Poll
     {
-        $poll = Poll::create([
+        $poll = Poll::create(
+            [
             'title'       => "Add {$currencyName} ({$currencyCode}) to Currency Basket?",
             'description' => "Vote on whether to add {$currencyName} to the currency basket. This would require rebalancing existing allocations.",
             'type'        => PollType::SINGLE_CHOICE,
@@ -87,7 +90,8 @@ class VotingTemplateService
                 'currency_code' => $currencyCode,
                 'currency_name' => $currencyName,
             ],
-        ]);
+            ]
+        );
 
         return $poll;
     }
@@ -97,7 +101,8 @@ class VotingTemplateService
      */
     public function createEmergencyRebalancingPoll(string $reason): Poll
     {
-        $poll = Poll::create([
+        $poll = Poll::create(
+            [
             'title'       => 'Emergency Basket Rebalancing Required',
             'description' => "An emergency rebalancing of the currency basket is proposed due to: {$reason}",
             'type'        => PollType::SINGLE_CHOICE,
@@ -117,7 +122,8 @@ class VotingTemplateService
                 'reason'   => $reason,
                 'urgent'   => true,
             ],
-        ]);
+            ]
+        );
 
         return $poll;
     }

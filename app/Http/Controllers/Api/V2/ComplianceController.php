@@ -45,26 +45,30 @@ class ComplianceController extends Controller
 
         $profile = CustomerRiskProfile::where('user_id', $user->id)->first();
 
-        return response()->json([
+        return response()->json(
+            [
             'data' => [
                 'kyc_level'             => $user->kyc_level,
                 'kyc_status'            => $user->kyc_status,
                 'risk_rating'           => $profile?->risk_rating ?? 'unknown',
                 'requires_verification' => $this->determineRequiredVerifications($user),
-                'verifications'         => $verifications->map(fn ($v) => [
+                'verifications'         => $verifications->map(
+                    fn ($v) => [
                     'id'           => $v->id,
                     'type'         => $v->type,
                     'status'       => $v->status,
                     'completed_at' => $v->completed_at?->toIso8601String(),
                     'expires_at'   => $v->expires_at?->toIso8601String(),
-                ]),
+                    ]
+                ),
                 'limits' => [
                     'daily'   => $profile?->daily_transaction_limit ?? 0,
                     'monthly' => $profile?->monthly_transaction_limit ?? 0,
                     'single'  => $profile?->single_transaction_limit ?? 0,
                 ],
             ],
-        ]);
+            ]
+        );
     }
 
     /**
@@ -72,10 +76,12 @@ class ComplianceController extends Controller
      */
     public function startVerification(Request $request): JsonResponse
     {
-        $validated = $request->validate([
+        $validated = $request->validate(
+            [
             'type'     => 'required|string|in:identity,address,income,enhanced_due_diligence',
             'provider' => 'nullable|string|in:jumio,onfido,manual',
-        ]);
+            ]
+        );
 
         $user = $request->user();
 
@@ -86,7 +92,8 @@ class ComplianceController extends Controller
                 ['provider' => $validated['provider'] ?? 'manual']
             );
 
-            return response()->json([
+            return response()->json(
+                [
                 'data' => [
                     'verification_id'     => $verification->id,
                     'verification_number' => $verification->verification_number,
@@ -95,16 +102,21 @@ class ComplianceController extends Controller
                     'provider'            => $verification->provider,
                     'next_steps'          => $this->getVerificationNextSteps($verification),
                 ],
-            ], 201);
+                ], 201
+            );
         } catch (\Exception $e) {
-            Log::error('Failed to start KYC verification', [
+            Log::error(
+                'Failed to start KYC verification', [
                 'user_id' => $user->id,
                 'error'   => $e->getMessage(),
-            ]);
+                ]
+            );
 
-            return response()->json([
+            return response()->json(
+                [
                 'error' => 'Failed to start verification',
-            ], 422);
+                ], 422
+            );
         }
     }
 
@@ -113,11 +125,13 @@ class ComplianceController extends Controller
      */
     public function uploadDocument(Request $request, string $verificationId): JsonResponse
     {
-        $validated = $request->validate([
+        $validated = $request->validate(
+            [
             'document_type' => 'required|string',
             'document'      => 'required|file|mimes:jpg,jpeg,png,pdf|max:10240',
             'document_side' => 'nullable|string|in:front,back',
-        ]);
+            ]
+        );
 
         $user = $request->user();
         $verification = KycVerification::where('id', $verificationId)
@@ -125,9 +139,11 @@ class ComplianceController extends Controller
             ->firstOrFail();
 
         if (! $verification->isPending() && ! $verification->isInProgress()) {
-            return response()->json([
+            return response()->json(
+                [
                 'error' => 'Verification is not in a valid state for document upload',
-            ], 422);
+                ], 422
+            );
         }
 
         try {
@@ -147,23 +163,29 @@ class ComplianceController extends Controller
                 default => throw new \Exception('Unsupported verification type'),
             };
 
-            return response()->json([
+            return response()->json(
+                [
                 'data' => [
                     'success'          => $result['success'],
                     'verification_id'  => $verification->id,
                     'confidence_score' => $result['confidence_score'] ?? null,
                     'next_steps'       => $this->getVerificationNextSteps($verification->fresh()),
                 ],
-            ]);
+                ]
+            );
         } catch (\Exception $e) {
-            Log::error('Document upload failed', [
+            Log::error(
+                'Document upload failed', [
                 'verification_id' => $verificationId,
                 'error'           => $e->getMessage(),
-            ]);
+                ]
+            );
 
-            return response()->json([
+            return response()->json(
+                [
                 'error' => 'Document verification failed',
-            ], 422);
+                ], 422
+            );
         }
     }
 
@@ -172,9 +194,11 @@ class ComplianceController extends Controller
      */
     public function uploadSelfie(Request $request, string $verificationId): JsonResponse
     {
-        $validated = $request->validate([
+        $validated = $request->validate(
+            [
             'selfie' => 'required|file|mimes:jpg,jpeg,png|max:5120',
-        ]);
+            ]
+        );
 
         $user = $request->user();
         $verification = KycVerification::where('id', $verificationId)
@@ -198,23 +222,29 @@ class ComplianceController extends Controller
                 $this->kycService->completeVerification($verification);
             }
 
-            return response()->json([
+            return response()->json(
+                [
                 'data' => [
                     'success'             => $result['success'],
                     'liveness_score'      => $result['liveness_score'],
                     'face_match_score'    => $result['face_match_score'],
                     'verification_status' => $verification->fresh()->status,
                 ],
-            ]);
+                ]
+            );
         } catch (\Exception $e) {
-            Log::error('Selfie verification failed', [
+            Log::error(
+                'Selfie verification failed', [
                 'verification_id' => $verificationId,
                 'error'           => $e->getMessage(),
-            ]);
+                ]
+            );
 
-            return response()->json([
+            return response()->json(
+                [
                 'error' => 'Biometric verification failed',
-            ], 422);
+                ], 422
+            );
         }
     }
 
@@ -232,13 +262,15 @@ class ComplianceController extends Controller
 
         $profile = CustomerRiskProfile::where('user_id', $user->id)->first();
 
-        return response()->json([
+        return response()->json(
+            [
             'data' => [
                 'is_pep'              => $profile?->is_pep ?? false,
                 'is_sanctioned'       => $profile?->is_sanctioned ?? false,
                 'has_adverse_media'   => $profile?->has_adverse_media ?? false,
                 'last_screening_date' => $screenings->first()?->created_at?->toIso8601String(),
-                'screenings'          => $screenings->map(fn ($s) => [
+                'screenings'          => $screenings->map(
+                    fn ($s) => [
                     'id'               => $s->id,
                     'screening_number' => $s->screening_number,
                     'type'             => $s->type,
@@ -246,9 +278,11 @@ class ComplianceController extends Controller
                     'overall_risk'     => $s->overall_risk,
                     'total_matches'    => $s->total_matches,
                     'completed_at'     => $s->completed_at?->toIso8601String(),
-                ]),
+                    ]
+                ),
             ],
-        ]);
+            ]
+        );
     }
 
     /**
@@ -256,36 +290,46 @@ class ComplianceController extends Controller
      */
     public function requestScreening(Request $request): JsonResponse
     {
-        $validated = $request->validate([
+        $validated = $request->validate(
+            [
             'type'   => 'required|string|in:sanctions,pep,adverse_media,comprehensive',
             'reason' => 'nullable|string|max:500',
-        ]);
+            ]
+        );
 
         $user = $request->user();
 
         try {
-            $screening = $this->amlService->performComprehensiveScreening($user, [
+            $screening = $this->amlService->performComprehensiveScreening(
+                $user, [
                 'requested_by_user' => true,
                 'reason'            => $validated['reason'] ?? null,
-            ]);
+                ]
+            );
 
-            return response()->json([
+            return response()->json(
+                [
                 'data' => [
                     'screening_id'         => $screening->id,
                     'screening_number'     => $screening->screening_number,
                     'status'               => $screening->status,
                     'estimated_completion' => now()->addMinutes(5)->toIso8601String(),
                 ],
-            ], 201);
+                ], 201
+            );
         } catch (\Exception $e) {
-            Log::error('Screening request failed', [
+            Log::error(
+                'Screening request failed', [
                 'user_id' => $user->id,
                 'error'   => $e->getMessage(),
-            ]);
+                ]
+            );
 
-            return response()->json([
+            return response()->json(
+                [
                 'error' => 'Failed to initiate screening',
-            ], 422);
+                ], 422
+            );
         }
     }
 
@@ -301,7 +345,8 @@ class ComplianceController extends Controller
             $profile = $this->riskService->createOrUpdateProfile($user);
         }
 
-        return response()->json([
+        return response()->json(
+            [
             'data' => [
                 'profile_number' => $profile->profile_number,
                 'risk_rating'    => $profile->risk_rating,
@@ -320,7 +365,8 @@ class ComplianceController extends Controller
                 'enhanced_monitoring' => $profile->enhanced_monitoring,
                 'next_review_date'    => $profile->next_review_at?->toIso8601String(),
             ],
-        ]);
+            ]
+        );
     }
 
     /**
@@ -328,12 +374,14 @@ class ComplianceController extends Controller
      */
     public function checkTransactionEligibility(Request $request): JsonResponse
     {
-        $validated = $request->validate([
+        $validated = $request->validate(
+            [
             'amount'              => 'required|numeric|min:0',
             'currency'            => 'required|string|size:3',
             'type'                => 'required|string',
             'destination_country' => 'nullable|string|size:2',
-        ]);
+            ]
+        );
 
         $user = $request->user();
         $result = $this->riskService->canPerformTransaction(
@@ -342,7 +390,8 @@ class ComplianceController extends Controller
             $validated['currency']
         );
 
-        return response()->json([
+        return response()->json(
+            [
             'data' => [
                 'allowed'                          => $result['allowed'],
                 'reason'                           => $result['reason'],
@@ -353,7 +402,8 @@ class ComplianceController extends Controller
                     $validated
                 ),
             ],
-        ]);
+            ]
+        );
     }
 
     /**
@@ -447,9 +497,8 @@ class ComplianceController extends Controller
         }
 
         // High-risk countries
-        if (
-            isset($transaction['destination_country']) &&
-            in_array($transaction['destination_country'], CustomerRiskProfile::HIGH_RISK_COUNTRIES)
+        if (isset($transaction['destination_country']) 
+            && in_array($transaction['destination_country'], CustomerRiskProfile::HIGH_RISK_COUNTRIES)
         ) {
             return true;
         }

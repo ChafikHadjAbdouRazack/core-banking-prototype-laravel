@@ -25,7 +25,8 @@ class ExchangeRateProjector extends Projector
                 ->first();
 
             // Create new rate record
-            $newRate = ExchangeRate::create([
+            $newRate = ExchangeRate::create(
+                [
                 'from_asset_code' => $event->fromAssetCode,
                 'to_asset_code'   => $event->toAssetCode,
                 'rate'            => $event->newRate,
@@ -33,13 +34,16 @@ class ExchangeRateProjector extends Projector
                 'valid_at'        => now(),
                 'expires_at'      => now()->addHours(1), // Default 1 hour expiry
                 'is_active'       => true,
-                'metadata'        => array_merge($event->metadata ?? [], [
+                'metadata'        => array_merge(
+                    $event->metadata ?? [], [
                     'previous_rate'         => $event->oldRate,
                     'change_percentage'     => $event->getChangePercentage(),
                     'is_increase'           => $event->isIncrease(),
                     'is_significant_change' => $event->isSignificantChange(),
-                ]),
-            ]);
+                    ]
+                ),
+                ]
+            );
 
             // Deactivate old rate if it exists
             if ($existingRate) {
@@ -51,33 +55,39 @@ class ExchangeRateProjector extends Projector
 
             // Log significant changes
             if ($event->isSignificantChange()) {
-                Log::warning('Significant exchange rate change detected', [
+                Log::warning(
+                    'Significant exchange rate change detected', [
                     'from_asset'        => $event->fromAssetCode,
                     'to_asset'          => $event->toAssetCode,
                     'old_rate'          => $event->oldRate,
                     'new_rate'          => $event->newRate,
                     'change_percentage' => $event->getChangePercentage(),
                     'source'            => $event->source,
-                ]);
+                    ]
+                );
             } else {
-                Log::info('Exchange rate updated', [
+                Log::info(
+                    'Exchange rate updated', [
                     'from_asset'        => $event->fromAssetCode,
                     'to_asset'          => $event->toAssetCode,
                     'old_rate'          => $event->oldRate,
                     'new_rate'          => $event->newRate,
                     'change_percentage' => $event->getChangePercentage(),
                     'source'            => $event->source,
-                ]);
+                    ]
+                );
             }
         } catch (\Exception $e) {
-            Log::error('Error processing exchange rate update', [
+            Log::error(
+                'Error processing exchange rate update', [
                 'from_asset' => $event->fromAssetCode,
                 'to_asset'   => $event->toAssetCode,
                 'old_rate'   => $event->oldRate,
                 'new_rate'   => $event->newRate,
                 'source'     => $event->source,
                 'error'      => $e->getMessage(),
-            ]);
+                ]
+            );
 
             throw $e;
         }

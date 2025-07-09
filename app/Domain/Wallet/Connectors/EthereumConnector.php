@@ -55,20 +55,24 @@ class EthereumConnector implements BlockchainConnector
         $balance = null;
         $nonce = null;
 
-        $this->web3->eth->getBalance($address, function ($err, $result) use (&$balance) {
-            if ($err !== null) {
-                throw new \Exception('Failed to get balance: ' . $err->getMessage());
+        $this->web3->eth->getBalance(
+            $address, function ($err, $result) use (&$balance) {
+                if ($err !== null) {
+                    throw new \Exception('Failed to get balance: ' . $err->getMessage());
+                }
+                $balance = $result->toString();
             }
-            $balance = $result->toString();
-        });
+        );
 
-        $this->web3->eth->getTransactionCount($address, function ($err, $result) use (&$nonce) {
-            if ($err !== null) {
-                Log::warning('Failed to get nonce: ' . $err->getMessage());
-            } else {
-                $nonce = hexdec($result);
+        $this->web3->eth->getTransactionCount(
+            $address, function ($err, $result) use (&$nonce) {
+                if ($err !== null) {
+                    Log::warning('Failed to get nonce: ' . $err->getMessage());
+                } else {
+                    $nonce = hexdec($result);
+                }
             }
-        });
+        );
 
         return new BalanceData(
             address: $address,
@@ -105,24 +109,28 @@ class EthereumConnector implements BlockchainConnector
             $txParams['data'] = $transaction->data;
         }
 
-        $this->web3->eth->estimateGas($txParams, function ($err, $result) use (&$gasLimit) {
-            if ($err !== null) {
-                // Default gas limit if estimation fails
-                $gasLimit = '21000';
-            } else {
-                $gasLimit = hexdec($result);
+        $this->web3->eth->estimateGas(
+            $txParams, function ($err, $result) use (&$gasLimit) {
+                if ($err !== null) {
+                    // Default gas limit if estimation fails
+                    $gasLimit = '21000';
+                } else {
+                    $gasLimit = hexdec($result);
+                }
             }
-        });
+        );
 
         // Get current gas price
-        $this->web3->eth->gasPrice(function ($err, $result) use (&$gasPrice) {
-            if ($err !== null) {
-                // Default gas price (20 gwei)
-                $gasPrice = '20000000000';
-            } else {
-                $gasPrice = $result->toString();
+        $this->web3->eth->gasPrice(
+            function ($err, $result) use (&$gasPrice) {
+                if ($err !== null) {
+                    // Default gas price (20 gwei)
+                    $gasPrice = '20000000000';
+                } else {
+                    $gasPrice = $result->toString();
+                }
             }
-        });
+        );
 
         // Calculate EIP-1559 gas prices
         $maxPriorityFeePerGas = '2000000000'; // 2 gwei
@@ -170,23 +178,27 @@ class EthereumConnector implements BlockchainConnector
         $transaction = null;
         $receipt = null;
 
-        $this->web3->eth->getTransactionByHash($hash, function ($err, $result) use (&$transaction) {
-            if ($err !== null || $result === null) {
-                return;
+        $this->web3->eth->getTransactionByHash(
+            $hash, function ($err, $result) use (&$transaction) {
+                if ($err !== null || $result === null) {
+                    return;
+                }
+                $transaction = $result;
             }
-            $transaction = $result;
-        });
+        );
 
         if (! $transaction) {
             return null;
         }
 
-        $this->web3->eth->getTransactionReceipt($hash, function ($err, $result) use (&$receipt) {
-            if ($err !== null) {
-                return;
+        $this->web3->eth->getTransactionReceipt(
+            $hash, function ($err, $result) use (&$receipt) {
+                if ($err !== null) {
+                    return;
+                }
+                $receipt = $result;
             }
-            $receipt = $result;
-        });
+        );
 
         $status = 'pending';
         $blockNumber = null;
@@ -216,12 +228,14 @@ class EthereumConnector implements BlockchainConnector
     {
         $gasPrice = null;
 
-        $this->web3->eth->gasPrice(function ($err, $result) use (&$gasPrice) {
-            if ($err !== null) {
-                throw new \Exception('Failed to get gas price: ' . $err->getMessage());
+        $this->web3->eth->gasPrice(
+            function ($err, $result) use (&$gasPrice) {
+                if ($err !== null) {
+                    throw new \Exception('Failed to get gas price: ' . $err->getMessage());
+                }
+                $gasPrice = $result->toString();
             }
-            $gasPrice = $result->toString();
-        });
+        );
 
         // Calculate different priority levels
         $slow = bcmul($gasPrice, '0.8');
@@ -272,12 +286,14 @@ class EthereumConnector implements BlockchainConnector
         try {
             $syncing = null;
 
-            $this->web3->eth->syncing(function ($err, $result) use (&$syncing) {
-                if ($err !== null) {
-                    throw new \Exception($err->getMessage());
+            $this->web3->eth->syncing(
+                function ($err, $result) use (&$syncing) {
+                    if ($err !== null) {
+                        throw new \Exception($err->getMessage());
+                    }
+                    $syncing = $result;
                 }
-                $syncing = $result;
-            });
+            );
 
             // If not syncing (false) or synced, consider healthy
             return $syncing === false || (is_object($syncing) && $syncing->currentBlock === $syncing->highestBlock);

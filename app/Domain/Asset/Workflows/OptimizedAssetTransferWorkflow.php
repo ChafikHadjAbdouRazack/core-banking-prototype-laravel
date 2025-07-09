@@ -22,12 +22,12 @@ class OptimizedAssetTransferWorkflow extends Workflow
     /**
      * Execute optimized asset transfer between accounts.
      *
-     * @param AccountUuid $fromAccountUuid Source account UUID
-     * @param AccountUuid $toAccountUuid Destination account UUID
-     * @param string $fromAssetCode Source asset code
-     * @param string $toAssetCode Destination asset code
-     * @param Money $fromAmount Amount to transfer
-     * @param string|null $description Transfer description
+     * @param  AccountUuid $fromAccountUuid Source account UUID
+     * @param  AccountUuid $toAccountUuid   Destination account UUID
+     * @param  string      $fromAssetCode   Source asset code
+     * @param  string      $toAssetCode     Destination asset code
+     * @param  Money       $fromAmount      Amount to transfer
+     * @param  string|null $description     Transfer description
      * @return array Transfer result with performance metrics
      */
     public function execute(
@@ -42,10 +42,12 @@ class OptimizedAssetTransferWorkflow extends Workflow
 
         // Pre-warm caches for better performance
         $optimizationService = app(TransferOptimizationService::class);
-        $optimizationService->warmUpCaches([
+        $optimizationService->warmUpCaches(
+            [
             (string) $fromAccountUuid,
             (string) $toAccountUuid,
-        ]);
+            ]
+        );
 
         $transferId = null;
 
@@ -62,11 +64,13 @@ class OptimizedAssetTransferWorkflow extends Workflow
             );
 
             // Add compensation to reverse the transfer if something goes wrong
-            $this->addCompensation(fn () => ActivityStub::make(
-                FailAssetTransferActivity::class,
-                $transferId,
-                'Transfer failed during workflow execution'
-            ));
+            $this->addCompensation(
+                fn () => ActivityStub::make(
+                    FailAssetTransferActivity::class,
+                    $transferId,
+                    'Transfer failed during workflow execution'
+                )
+            );
 
             // For same-asset transfers, we can complete immediately
             if ($fromAssetCode === $toAssetCode) {

@@ -44,12 +44,14 @@ class BatchProcessingController extends Controller
         // Get templates
         $templates = $this->getBatchTemplates();
 
-        return view('batch-processing.index', compact(
-            'batchJobs',
-            'statistics',
-            'templates',
-            'filters'
-        ));
+        return view(
+            'batch-processing.index', compact(
+                'batchJobs',
+                'statistics',
+                'templates',
+                'filters'
+            )
+        );
     }
 
     /**
@@ -73,7 +75,8 @@ class BatchProcessingController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
+        $validated = $request->validate(
+            [
             'name'                 => 'required|string|max:255',
             'type'                 => 'required|in:transfer,payment,conversion',
             'schedule_at'          => 'nullable|date|after:now',
@@ -83,12 +86,14 @@ class BatchProcessingController extends Controller
             'items.*.amount'       => 'required|numeric|min:0.01',
             'items.*.currency'     => 'required|string|size:3',
             'items.*.description'  => 'nullable|string|max:255',
-        ]);
+            ]
+        );
 
         DB::beginTransaction();
         try {
             // Create batch job
-            $batchJob = BatchJob::create([
+            $batchJob = BatchJob::create(
+                [
                 'uuid'            => Str::uuid(),
                 'user_uuid'       => Auth::user()->uuid,
                 'name'            => $validated['name'],
@@ -98,17 +103,20 @@ class BatchProcessingController extends Controller
                 'processed_items' => 0,
                 'failed_items'    => 0,
                 'scheduled_at'    => $validated['schedule_at'] ?? now(),
-            ]);
+                ]
+            );
 
             // Create batch items
             foreach ($validated['items'] as $index => $item) {
-                BatchItem::create([
+                BatchItem::create(
+                    [
                     'batch_job_id' => $batchJob->id,
                     'sequence'     => $index + 1,
                     'type'         => $validated['type'],
                     'status'       => 'pending',
                     'data'         => $item,
-                ]);
+                    ]
+                );
             }
 
             DB::commit();
@@ -199,17 +207,21 @@ class BatchProcessingController extends Controller
         // Reset failed items
         $batchJob->items()
             ->where('status', 'failed')
-            ->update([
+            ->update(
+                [
                 'status'        => 'pending',
                 'error_message' => null,
                 'processed_at'  => null,
-            ]);
+                ]
+            );
 
         // Update batch job
-        $batchJob->update([
+        $batchJob->update(
+            [
             'status'       => 'processing',
             'failed_items' => 0,
-        ]);
+            ]
+        );
 
         // Queue for reprocessing
         $this->batchService->processBatch($batchJob);
@@ -229,43 +241,49 @@ class BatchProcessingController extends Controller
 
         $filename = "batch_{$batchJob->uuid}_{$batchJob->created_at->format('Y-m-d')}.csv";
 
-        return response()->streamDownload(function () use ($batchJob) {
-            $handle = fopen('php://output', 'w');
+        return response()->streamDownload(
+            function () use ($batchJob) {
+                $handle = fopen('php://output', 'w');
 
-            // Headers
-            fputcsv($handle, [
-                'Sequence',
-                'Type',
-                'Status',
-                'From Account',
-                'To Account',
-                'Amount',
-                'Currency',
-                'Description',
-                'Processed At',
-                'Error Message',
-            ]);
+                // Headers
+                fputcsv(
+                    $handle, [
+                    'Sequence',
+                    'Type',
+                    'Status',
+                    'From Account',
+                    'To Account',
+                    'Amount',
+                    'Currency',
+                    'Description',
+                    'Processed At',
+                    'Error Message',
+                    ]
+                );
 
-            // Data
-            foreach ($batchJob->items as $item) {
-                fputcsv($handle, [
-                    $item->sequence,
-                    $item->type,
-                    $item->status,
-                    $item->data['from_account'] ?? '',
-                    $item->data['to_account'] ?? '',
-                    $item->data['amount'] ?? '',
-                    $item->data['currency'] ?? '',
-                    $item->data['description'] ?? '',
-                    $item->processed_at,
-                    $item->error_message,
-                ]);
-            }
+                // Data
+                foreach ($batchJob->items as $item) {
+                    fputcsv(
+                        $handle, [
+                        $item->sequence,
+                        $item->type,
+                        $item->status,
+                        $item->data['from_account'] ?? '',
+                        $item->data['to_account'] ?? '',
+                        $item->data['amount'] ?? '',
+                        $item->data['currency'] ?? '',
+                        $item->data['description'] ?? '',
+                        $item->processed_at,
+                        $item->error_message,
+                        ]
+                    );
+                }
 
-            fclose($handle);
-        }, $filename, [
+                fclose($handle);
+            }, $filename, [
             'Content-Type' => 'text/csv',
-        ]);
+            ]
+        );
     }
 
     /**

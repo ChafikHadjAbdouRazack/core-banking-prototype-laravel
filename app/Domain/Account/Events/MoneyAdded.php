@@ -18,7 +18,7 @@ class MoneyAdded extends ShouldBeStored implements HasHash, HasMoney
 
     /**
      * @param Money $money
-     * @param Hash $hash
+     * @param Hash  $hash
      */
     public function __construct(
         public readonly Money $money,

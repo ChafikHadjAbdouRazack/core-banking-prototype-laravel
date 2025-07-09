@@ -27,9 +27,11 @@ class CgoRefundResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
-            ->schema([
+            ->schema(
+                [
                 Forms\Components\Section::make('Refund Information')
-                    ->schema([
+                    ->schema(
+                        [
                         Forms\Components\TextInput::make('id')
                             ->label('Refund ID')
                             ->disabled(),
@@ -58,7 +60,8 @@ class CgoRefundResource extends Resource
                             ->disabled(),
 
                         Forms\Components\Select::make('status')
-                            ->options([
+                            ->options(
+                                [
                                 'pending'    => 'Pending',
                                 'approved'   => 'Approved',
                                 'rejected'   => 'Rejected',
@@ -66,22 +69,27 @@ class CgoRefundResource extends Resource
                                 'completed'  => 'Completed',
                                 'failed'     => 'Failed',
                                 'cancelled'  => 'Cancelled',
-                            ])
+                                ]
+                            )
                             ->disabled(),
-                    ])
+                        ]
+                    )
                     ->columns(2),
 
                 Forms\Components\Section::make('Refund Details')
-                    ->schema([
+                    ->schema(
+                        [
                         Forms\Components\Select::make('reason')
-                            ->options([
+                            ->options(
+                                [
                                 'customer_request'       => 'Customer Request',
                                 'duplicate_payment'      => 'Duplicate Payment',
                                 'payment_error'          => 'Payment Error',
                                 'system_error'           => 'System Error',
                                 'regulatory_requirement' => 'Regulatory Requirement',
                                 'other'                  => 'Other',
-                            ])
+                                ]
+                            )
                             ->disabled(),
 
                         Forms\Components\Textarea::make('reason_details')
@@ -95,10 +103,12 @@ class CgoRefundResource extends Resource
                         Forms\Components\Textarea::make('rejection_reason')
                             ->rows(3)
                             ->visible(fn ($record) => $record && $record->rejected_at),
-                    ]),
+                        ]
+                    ),
 
                 Forms\Components\Section::make('Payment Processing')
-                    ->schema([
+                    ->schema(
+                        [
                         Forms\Components\TextInput::make('payment_processor')
                             ->disabled(),
 
@@ -111,11 +121,13 @@ class CgoRefundResource extends Resource
 
                         Forms\Components\KeyValue::make('processor_response')
                             ->disabled(),
-                    ])
+                        ]
+                    )
                     ->visible(fn ($record) => $record && $record->processor_refund_id),
 
                 Forms\Components\Section::make('Timestamps')
-                    ->schema([
+                    ->schema(
+                        [
                         Forms\Components\DateTimePicker::make('requested_at')
                             ->disabled(),
 
@@ -136,16 +148,19 @@ class CgoRefundResource extends Resource
 
                         Forms\Components\DateTimePicker::make('cancelled_at')
                             ->disabled(),
-                    ])
+                        ]
+                    )
                     ->columns(2)
                     ->collapsed(),
-            ]);
+                ]
+            );
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
+            ->columns(
+                [
                 Tables\Columns\TextColumn::make('id')
                     ->label('ID')
                     ->searchable()
@@ -168,14 +183,16 @@ class CgoRefundResource extends Resource
                     ->sortable(),
 
                 Tables\Columns\BadgeColumn::make('status')
-                    ->colors([
+                    ->colors(
+                        [
                         'warning' => 'pending',
                         'primary' => 'approved',
                         'danger'  => ['rejected', 'failed'],
                         'info'    => 'processing',
                         'success' => 'completed',
                         'gray'    => 'cancelled',
-                    ]),
+                        ]
+                    ),
 
                 Tables\Columns\TextColumn::make('reason')
                     ->formatStateUsing(fn ($state) => str_replace('_', ' ', ucfirst($state))),
@@ -193,10 +210,13 @@ class CgoRefundResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ])
-            ->filters([
+                ]
+            )
+            ->filters(
+                [
                 Tables\Filters\SelectFilter::make('status')
-                    ->options([
+                    ->options(
+                        [
                         'pending'    => 'Pending',
                         'approved'   => 'Approved',
                         'rejected'   => 'Rejected',
@@ -204,37 +224,46 @@ class CgoRefundResource extends Resource
                         'completed'  => 'Completed',
                         'failed'     => 'Failed',
                         'cancelled'  => 'Cancelled',
-                    ])
+                        ]
+                    )
                     ->multiple(),
 
                 Tables\Filters\SelectFilter::make('reason')
-                    ->options([
+                    ->options(
+                        [
                         'customer_request'       => 'Customer Request',
                         'duplicate_payment'      => 'Duplicate Payment',
                         'payment_error'          => 'Payment Error',
                         'system_error'           => 'System Error',
                         'regulatory_requirement' => 'Regulatory Requirement',
                         'other'                  => 'Other',
-                    ]),
+                        ]
+                    ),
 
                 Tables\Filters\Filter::make('created_at')
-                    ->form([
+                    ->form(
+                        [
                         Forms\Components\DatePicker::make('created_from'),
                         Forms\Components\DatePicker::make('created_until'),
-                    ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        return $query
-                            ->when(
-                                $data['created_from'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('requested_at', '>=', $date),
-                            )
-                            ->when(
-                                $data['created_until'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('requested_at', '<=', $date),
-                            );
-                    }),
-            ])
-            ->actions([
+                        ]
+                    )
+                    ->query(
+                        function (Builder $query, array $data): Builder {
+                            return $query
+                                ->when(
+                                    $data['created_from'],
+                                    fn (Builder $query, $date): Builder => $query->whereDate('requested_at', '>=', $date),
+                                )
+                                ->when(
+                                    $data['created_until'],
+                                    fn (Builder $query, $date): Builder => $query->whereDate('requested_at', '<=', $date),
+                                );
+                        }
+                    ),
+                ]
+            )
+            ->actions(
+                [
                 Tables\Actions\ViewAction::make(),
 
                 Tables\Actions\Action::make('approve')
@@ -243,25 +272,29 @@ class CgoRefundResource extends Resource
                     ->color('success')
                     ->requiresConfirmation()
                     ->visible(fn (CgoRefund $record) => $record->canBeApproved())
-                    ->form([
+                    ->form(
+                        [
                         Forms\Components\Textarea::make('approval_notes')
                             ->label('Approval Notes')
                             ->required()
                             ->rows(3),
-                    ])
-                    ->action(function (CgoRefund $record, array $data) {
-                        RefundAggregate::retrieve($record->id)
+                        ]
+                    )
+                    ->action(
+                        function (CgoRefund $record, array $data) {
+                            RefundAggregate::retrieve($record->id)
                             ->approve(
                                 approvedBy: auth()->id(),
                                 approvalNotes: $data['approval_notes']
                             )
                             ->persist();
 
-                        Notification::make()
-                            ->title('Refund approved')
-                            ->success()
-                            ->send();
-                    }),
+                            Notification::make()
+                                ->title('Refund approved')
+                                ->success()
+                                ->send();
+                        }
+                    ),
 
                 Tables\Actions\Action::make('reject')
                     ->label('Reject')
@@ -269,25 +302,29 @@ class CgoRefundResource extends Resource
                     ->color('danger')
                     ->requiresConfirmation()
                     ->visible(fn (CgoRefund $record) => $record->canBeRejected())
-                    ->form([
+                    ->form(
+                        [
                         Forms\Components\Textarea::make('rejection_reason')
                             ->label('Rejection Reason')
                             ->required()
                             ->rows(3),
-                    ])
-                    ->action(function (CgoRefund $record, array $data) {
-                        RefundAggregate::retrieve($record->id)
+                        ]
+                    )
+                    ->action(
+                        function (CgoRefund $record, array $data) {
+                            RefundAggregate::retrieve($record->id)
                             ->reject(
                                 rejectedBy: auth()->id(),
                                 rejectionReason: $data['rejection_reason']
                             )
                             ->persist();
 
-                        Notification::make()
-                            ->title('Refund rejected')
-                            ->warning()
-                            ->send();
-                    }),
+                            Notification::make()
+                                ->title('Refund rejected')
+                                ->warning()
+                                ->send();
+                        }
+                    ),
 
                 Tables\Actions\Action::make('cancel')
                     ->label('Cancel')
@@ -295,14 +332,17 @@ class CgoRefundResource extends Resource
                     ->color('gray')
                     ->requiresConfirmation()
                     ->visible(fn (CgoRefund $record) => $record->canBeCancelled())
-                    ->form([
+                    ->form(
+                        [
                         Forms\Components\Textarea::make('cancellation_reason')
                             ->label('Cancellation Reason')
                             ->required()
                             ->rows(3),
-                    ])
-                    ->action(function (CgoRefund $record, array $data) {
-                        RefundAggregate::retrieve($record->id)
+                        ]
+                    )
+                    ->action(
+                        function (CgoRefund $record, array $data) {
+                            RefundAggregate::retrieve($record->id)
                             ->cancel(
                                 cancellationReason: $data['cancellation_reason'],
                                 cancelledBy: auth()->id(),
@@ -310,16 +350,22 @@ class CgoRefundResource extends Resource
                             )
                             ->persist();
 
-                        Notification::make()
-                            ->title('Refund cancelled')
-                            ->send();
-                    }),
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
+                            Notification::make()
+                                ->title('Refund cancelled')
+                                ->send();
+                        }
+                    ),
+                ]
+            )
+            ->bulkActions(
+                [
+                Tables\Actions\BulkActionGroup::make(
+                    [
                     Tables\Actions\DeleteBulkAction::make(),
-                ]),
-            ])
+                    ]
+                ),
+                ]
+            )
             ->defaultSort('requested_at', 'desc');
     }
 

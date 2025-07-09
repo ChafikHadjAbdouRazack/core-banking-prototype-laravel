@@ -22,10 +22,12 @@ class CreateAccountWorkflow extends Workflow
             );
 
             // Add compensation to delete the created account if workflow fails later
-            $this->addCompensation(fn () => ActivityStub::make(
-                DeleteAccountActivity::class,
-                $account
-            ));
+            $this->addCompensation(
+                fn () => ActivityStub::make(
+                    DeleteAccountActivity::class,
+                    $account
+                )
+            );
 
             return $result;
         } catch (\Throwable $th) {

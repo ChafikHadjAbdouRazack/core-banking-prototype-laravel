@@ -87,17 +87,19 @@ class Loan extends AggregateRoot
         // Generate repayment schedule
         $schedule = $loan->generateRepaymentScheduleForNewLoan($principal, $interestRate, $termMonths);
 
-        $loan->recordThat(new LoanCreated(
-            loanId: $loanId,
-            applicationId: $applicationId,
-            borrowerId: $borrowerId,
-            principal: $principal,
-            interestRate: $interestRate,
-            termMonths: $termMonths,
-            repaymentSchedule: $schedule,
-            terms: $terms,
-            createdAt: new \DateTimeImmutable()
-        ));
+        $loan->recordThat(
+            new LoanCreated(
+                loanId: $loanId,
+                applicationId: $applicationId,
+                borrowerId: $borrowerId,
+                principal: $principal,
+                interestRate: $interestRate,
+                termMonths: $termMonths,
+                repaymentSchedule: $schedule,
+                terms: $terms,
+                createdAt: new \DateTimeImmutable()
+            )
+        );
 
         return $loan;
     }
@@ -112,12 +114,14 @@ class Loan extends AggregateRoot
             throw new LoanException('Funded amount must equal principal amount');
         }
 
-        $this->recordThat(new LoanFunded(
-            loanId: $this->loanId,
-            investorIds: $investorIds,
-            fundedAmount: $fundedAmount,
-            fundedAt: new \DateTimeImmutable()
-        ));
+        $this->recordThat(
+            new LoanFunded(
+                loanId: $this->loanId,
+                investorIds: $investorIds,
+                fundedAmount: $fundedAmount,
+                fundedAt: new \DateTimeImmutable()
+            )
+        );
 
         return $this;
     }
@@ -128,11 +132,13 @@ class Loan extends AggregateRoot
             throw new LoanException('Can only disburse funded loans');
         }
 
-        $this->recordThat(new LoanDisbursed(
-            loanId: $this->loanId,
-            amount: $amount,
-            disbursedAt: new \DateTimeImmutable()
-        ));
+        $this->recordThat(
+            new LoanDisbursed(
+                loanId: $this->loanId,
+                amount: $amount,
+                disbursedAt: new \DateTimeImmutable()
+            )
+        );
 
         return $this;
     }
@@ -157,24 +163,28 @@ class Loan extends AggregateRoot
             ->toScale(2, RoundingMode::DOWN)
             ->__toString();
 
-        $this->recordThat(new LoanRepaymentMade(
-            loanId: $this->loanId,
-            paymentNumber: $paymentNumber,
-            amount: $amount,
-            principalAmount: $principalAmount,
-            interestAmount: $interestAmount,
-            remainingBalance: $remainingBalance,
-            paidAt: new \DateTimeImmutable()
-        ));
+        $this->recordThat(
+            new LoanRepaymentMade(
+                loanId: $this->loanId,
+                paymentNumber: $paymentNumber,
+                amount: $amount,
+                principalAmount: $principalAmount,
+                interestAmount: $interestAmount,
+                remainingBalance: $remainingBalance,
+                paidAt: new \DateTimeImmutable()
+            )
+        );
 
         // Check if loan is fully paid
         if (BigDecimal::of($remainingBalance)->isEqualTo(0)) {
-            $this->recordThat(new LoanCompleted(
-                loanId: $this->loanId,
-                totalPrincipalPaid: $this->principal,
-                totalInterestPaid: bcadd($this->totalInterestPaid, $interestAmount, 2),
-                completedAt: new \DateTimeImmutable()
-            ));
+            $this->recordThat(
+                new LoanCompleted(
+                    loanId: $this->loanId,
+                    totalPrincipalPaid: $this->principal,
+                    totalInterestPaid: bcadd($this->totalInterestPaid, $interestAmount, 2),
+                    completedAt: new \DateTimeImmutable()
+                )
+            );
         }
 
         return $this;
@@ -186,11 +196,13 @@ class Loan extends AggregateRoot
             throw new LoanException('Can only mark payments as missed for active loans');
         }
 
-        $this->recordThat(new LoanPaymentMissed(
-            loanId: $this->loanId,
-            paymentNumber: $paymentNumber,
-            missedAt: new \DateTimeImmutable()
-        ));
+        $this->recordThat(
+            new LoanPaymentMissed(
+                loanId: $this->loanId,
+                paymentNumber: $paymentNumber,
+                missedAt: new \DateTimeImmutable()
+            )
+        );
 
         return $this;
     }
@@ -201,12 +213,14 @@ class Loan extends AggregateRoot
             throw new LoanException('Can only mark active or delinquent loans as defaulted');
         }
 
-        $this->recordThat(new LoanDefaulted(
-            loanId: $this->loanId,
-            reason: $reason,
-            outstandingBalance: $this->outstandingBalance,
-            defaultedAt: new \DateTimeImmutable()
-        ));
+        $this->recordThat(
+            new LoanDefaulted(
+                loanId: $this->loanId,
+                reason: $reason,
+                outstandingBalance: $this->outstandingBalance,
+                defaultedAt: new \DateTimeImmutable()
+            )
+        );
 
         return $this;
     }
@@ -221,13 +235,15 @@ class Loan extends AggregateRoot
             throw new LoanException('Settlement amount must cover outstanding balance');
         }
 
-        $this->recordThat(new LoanSettledEarly(
-            loanId: $this->loanId,
-            settlementAmount: $settlementAmount,
-            outstandingBalance: $this->outstandingBalance,
-            settledBy: $settledBy,
-            settledAt: new \DateTimeImmutable()
-        ));
+        $this->recordThat(
+            new LoanSettledEarly(
+                loanId: $this->loanId,
+                settlementAmount: $settlementAmount,
+                outstandingBalance: $this->outstandingBalance,
+                settledBy: $settledBy,
+                settledAt: new \DateTimeImmutable()
+            )
+        );
 
         return $this;
     }

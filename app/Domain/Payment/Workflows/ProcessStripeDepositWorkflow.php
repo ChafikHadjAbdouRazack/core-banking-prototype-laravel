@@ -16,7 +16,7 @@ class ProcessStripeDepositWorkflow extends Workflow
     /**
      * Process a Stripe deposit through the complete workflow.
      *
-     * @param StripeDeposit $deposit
+     * @param  StripeDeposit $deposit
      * @return \Generator
      */
     public function execute(StripeDeposit $deposit): \Generator

@@ -118,49 +118,53 @@ class BasketRebalancingService
      */
     private function executeRebalancing(BasketAsset $basket, array $adjustments): array
     {
-        return DB::transaction(function () use ($basket, $adjustments) {
-            // Apply weight adjustments to components
-            foreach ($adjustments as $adjustment) {
-                $component = $basket->components()
-                    ->where('asset_code', $adjustment['asset'])
-                    ->first();
+        return DB::transaction(
+            function () use ($basket, $adjustments) {
+                // Apply weight adjustments to components
+                foreach ($adjustments as $adjustment) {
+                    $component = $basket->components()
+                        ->where('asset_code', $adjustment['asset'])
+                        ->first();
 
-                if ($component) {
-                    $component->update(['weight' => $adjustment['target_weight']]);
+                    if ($component) {
+                        $component->update(['weight' => $adjustment['target_weight']]);
+                    }
                 }
-            }
 
-            // Normalize weights to ensure they sum to 100%
-            $this->normalizeWeights($basket);
+                // Normalize weights to ensure they sum to 100%
+                $this->normalizeWeights($basket);
 
-            // Record the rebalancing event
-            $rebalancedEvent = new BasketRebalanced(
-                basketCode: $basket->code,
-                adjustments: $adjustments,
-                rebalancedAt: now()
-            );
-            event($rebalancedEvent);
+                // Record the rebalancing event
+                $rebalancedEvent = new BasketRebalanced(
+                    basketCode: $basket->code,
+                    adjustments: $adjustments,
+                    rebalancedAt: now()
+                );
+                event($rebalancedEvent);
 
-            // Update the basket's last rebalanced timestamp
-            $basket->update(['last_rebalanced_at' => now()]);
+                // Update the basket's last rebalanced timestamp
+                $basket->update(['last_rebalanced_at' => now()]);
 
-            // Invalidate cached values
-            $this->valueCalculationService->invalidateCache($basket);
+                // Invalidate cached values
+                $this->valueCalculationService->invalidateCache($basket);
 
-            // Log the rebalancing
-            Log::info("Basket {$basket->code} rebalanced", [
-                'adjustments' => $adjustments,
-                'timestamp'   => now()->toISOString(),
-            ]);
+                // Log the rebalancing
+                Log::info(
+                    "Basket {$basket->code} rebalanced", [
+                    'adjustments' => $adjustments,
+                    'timestamp'   => now()->toISOString(),
+                    ]
+                );
 
-            return [
+                return [
                 'status'            => 'completed',
                 'basket'            => $basket->code,
                 'adjustments'       => $adjustments,
                 'adjustments_count' => count($adjustments),
                 'rebalanced_at'     => now()->toISOString(),
-            ];
-        });
+                ];
+            }
+        );
     }
 
     /**
@@ -266,10 +270,12 @@ class BasketRebalancingService
                     'error'  => $e->getMessage(),
                 ];
 
-                Log::error("Failed to rebalance basket {$basket->code}", [
+                Log::error(
+                    "Failed to rebalance basket {$basket->code}", [
                     'error' => $e->getMessage(),
                     'trace' => $e->getTraceAsString(),
-                ]);
+                    ]
+                );
             }
         }
 

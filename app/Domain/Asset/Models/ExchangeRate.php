@@ -101,7 +101,7 @@ class ExchangeRate extends Model
     /**
      * Convert an amount from the base asset to the target asset.
      *
-     * @param int $amount Amount in smallest unit
+     * @param  int $amount Amount in smallest unit
      * @return int Converted amount in smallest unit
      */
     public function convert(int $amount): int
@@ -156,7 +156,7 @@ class ExchangeRate extends Model
     /**
      * Scope for active rates.
      *
-     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param  \Illuminate\Database\Eloquent\Builder $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeActive($query)
@@ -167,7 +167,7 @@ class ExchangeRate extends Model
     /**
      * Scope for valid rates (active and within time range).
      *
-     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param  \Illuminate\Database\Eloquent\Builder $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeValid($query)
@@ -176,31 +176,33 @@ class ExchangeRate extends Model
 
         return $query->where('is_active', true)
             ->where('valid_at', '<=', $now)
-            ->where(function ($q) use ($now) {
-                $q->whereNull('expires_at')
-                  ->orWhere('expires_at', '>', $now);
-            });
+            ->where(
+                function ($q) use ($now) {
+                    $q->whereNull('expires_at')
+                        ->orWhere('expires_at', '>', $now);
+                }
+            );
     }
 
     /**
      * Scope for rates between specific assets.
      *
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param string $fromAsset
-     * @param string $toAsset
+     * @param  \Illuminate\Database\Eloquent\Builder $query
+     * @param  string                                $fromAsset
+     * @param  string                                $toAsset
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeBetween($query, string $fromAsset, string $toAsset)
     {
         return $query->where('from_asset_code', $fromAsset)
-                     ->where('to_asset_code', $toAsset);
+            ->where('to_asset_code', $toAsset);
     }
 
     /**
      * Scope for rates by source.
      *
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param string $source
+     * @param  \Illuminate\Database\Eloquent\Builder $query
+     * @param  string                                $source
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeBySource($query, string $source)
@@ -211,7 +213,7 @@ class ExchangeRate extends Model
     /**
      * Scope for latest rates first.
      *
-     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param  \Illuminate\Database\Eloquent\Builder $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeLatest($query)
@@ -242,8 +244,8 @@ class ExchangeRate extends Model
     /**
      * Get exchange rate between two assets.
      *
-     * @param string $fromAsset
-     * @param string $toAsset
+     * @param  string $fromAsset
+     * @param  string $toAsset
      * @return float|null
      */
     public static function getRate(string $fromAsset, string $toAsset): ?float

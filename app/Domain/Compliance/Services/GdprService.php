@@ -16,7 +16,8 @@ class GdprService
      */
     public function exportUserData(User $user): array
     {
-        AuditLog::create([
+        AuditLog::create(
+            [
             'user_uuid'      => $user->uuid,
             'action'         => 'gdpr.data_exported',
             'auditable_type' => get_class($user),
@@ -25,7 +26,8 @@ class GdprService
             'tags'           => 'gdpr,compliance,data-export',
             'ip_address'     => request()?->ip(),
             'user_agent'     => request()?->userAgent(),
-        ]);
+            ]
+        );
 
         return [
             'user'          => $this->getUserData($user),
@@ -42,30 +44,50 @@ class GdprService
      */
     public function deleteUserData(User $user, array $options = []): void
     {
-        DB::transaction(function () use ($user, $options) {
-            // Log the deletion request
-            AuditLog::log(
-                'gdpr.deletion_requested',
-                $user,
-                null,
-                null,
-                ['options' => $options],
-                'gdpr,compliance,deletion'
-            );
+        DB::transaction(
+            function () use ($user, $options) {
+                // Log the deletion request
+                AuditLog::create(
+                    [
+                    'user_uuid'      => $user->uuid,
+                    'action'         => 'gdpr.deletion_requested',
+                    'auditable_type' => get_class($user),
+                    'auditable_id'   => $user->uuid,
+                    'metadata'       => ['options' => $options],
+                    'tags'           => 'gdpr,compliance,deletion',
+                    'ip_address'     => request()?->ip(),
+                    'user_agent'     => request()?->userAgent(),
+                    ]
+                );
 
-            // Anonymize user data instead of hard delete
-            $this->anonymizeUser($user);
+                // Anonymize user data instead of hard delete
+                $this->anonymizeUser($user);
 
-            // Delete KYC documents if requested
-            if ($options['delete_documents'] ?? false) {
-                $this->deleteKycDocuments($user);
+                // Delete KYC documents if requested
+                if ($options['delete_documents'] ?? false) {
+                    $this->deleteKycDocuments($user);
+                }
+
+                // Anonymize transaction data
+                if ($options['anonymize_transactions'] ?? true) {
+                    $this->anonymizeTransactions($user);
+                }
+
+                // Log the deletion completion
+                AuditLog::create(
+                    [
+                    'user_uuid'      => $user->uuid,
+                    'action'         => 'gdpr.deletion_completed',
+                    'auditable_type' => get_class($user),
+                    'auditable_id'   => $user->uuid,
+                    'metadata'       => ['options' => $options],
+                    'tags'           => 'gdpr,compliance,deletion',
+                    'ip_address'     => request()?->ip(),
+                    'user_agent'     => request()?->userAgent(),
+                    ]
+                );
             }
-
-            // Anonymize transaction data
-            if ($options['anonymize_transactions'] ?? true) {
-                $this->anonymizeTransactions($user);
-            }
-        });
+        );
     }
 
     /**
@@ -130,20 +152,24 @@ class GdprService
      */
     protected function getAccountData(User $user): array
     {
-        return $user->accounts->map(function ($account) {
-            return [
+        return $user->accounts->map(
+            function ($account) {
+                return [
                 'uuid'       => $account->uuid,
                 'balance'    => $account->balance,
                 'status'     => $account->status,
                 'created_at' => $account->created_at,
-                'balances'   => $account->balances->map(function ($balance) {
-                    return [
+                'balances'   => $account->balances->map(
+                    function ($balance) {
+                        return [
                         'asset_code' => $balance->asset_code,
                         'balance'    => $balance->balance,
-                    ];
-                })->toArray(),
-            ];
-        })->toArray();
+                        ];
+                    }
+                )->toArray(),
+                ];
+            }
+        )->toArray();
     }
 
     /**
@@ -161,15 +187,17 @@ class GdprService
      */
     protected function getKycData(User $user): array
     {
-        return $user->kycDocuments->map(function ($document) {
-            return [
+        return $user->kycDocuments->map(
+            function ($document) {
+                return [
                 'id'            => $document->id,
                 'document_type' => $document->document_type,
                 'status'        => $document->status,
                 'uploaded_at'   => $document->uploaded_at,
                 'verified_at'   => $document->verified_at,
-            ];
-        })->toArray();
+                ];
+            }
+        )->toArray();
     }
 
     /**
@@ -180,13 +208,15 @@ class GdprService
         return AuditLog::forUser($user->uuid)
             ->limit(1000)
             ->get()
-            ->map(function ($log) {
-                return [
+            ->map(
+                function ($log) {
+                    return [
                     'action'     => $log->action,
                     'created_at' => $log->created_at,
                     'ip_address' => $log->ip_address,
-                ];
-            })
+                    ];
+                }
+            )
             ->toArray();
     }
 
@@ -208,11 +238,13 @@ class GdprService
      */
     protected function anonymizeUser(User $user): void
     {
-        $user->update([
-            'name'     => 'Deleted User ' . substr($user->uuid, 0, 8),
-            'email'    => 'deleted-' . $user->uuid . '@anonymous.local',
+        $user->update(
+            [
+            'name'     => 'ANONYMIZED_' . substr($user->uuid, 0, 8),
+            'email'    => 'deleted-' . $user->uuid . '@anonymized.local',
             'kyc_data' => null,
-        ]);
+            ]
+        );
     }
 
     /**
@@ -220,12 +252,14 @@ class GdprService
      */
     protected function deleteKycDocuments(User $user): void
     {
-        $user->kycDocuments->each(function ($document) {
-            if ($document->file_path && Storage::disk('private')->exists($document->file_path)) {
-                Storage::disk('private')->delete($document->file_path);
+        $user->kycDocuments->each(
+            function ($document) {
+                if ($document->file_path && Storage::disk('private')->exists($document->file_path)) {
+                    Storage::disk('private')->delete($document->file_path);
+                }
+                $document->delete();
             }
-            $document->delete();
-        });
+        );
     }
 
     /**

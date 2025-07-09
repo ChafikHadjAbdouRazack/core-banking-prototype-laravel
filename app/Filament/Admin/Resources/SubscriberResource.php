@@ -29,9 +29,11 @@ class SubscriberResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
-            ->schema([
+            ->schema(
+                [
                 Forms\Components\Section::make('Subscriber Information')
-                    ->schema([
+                    ->schema(
+                        [
                         Forms\Components\TextInput::make('email')
                             ->email()
                             ->required()
@@ -39,46 +41,56 @@ class SubscriberResource extends Resource
                             ->maxLength(255),
                         Forms\Components\Select::make('source')
                             ->required()
-                            ->options([
+                            ->options(
+                                [
                                 Subscriber::SOURCE_BLOG       => 'Blog',
                                 Subscriber::SOURCE_CGO        => 'CGO Early Access',
                                 Subscriber::SOURCE_INVESTMENT => 'Investment',
                                 Subscriber::SOURCE_FOOTER     => 'Footer',
                                 Subscriber::SOURCE_CONTACT    => 'Contact Form',
                                 Subscriber::SOURCE_PARTNER    => 'Partner Application',
-                            ]),
+                                ]
+                            ),
                         Forms\Components\Select::make('status')
                             ->required()
-                            ->options([
+                            ->options(
+                                [
                                 Subscriber::STATUS_ACTIVE       => 'Active',
                                 Subscriber::STATUS_UNSUBSCRIBED => 'Unsubscribed',
                                 Subscriber::STATUS_BOUNCED      => 'Bounced',
-                            ])
+                                ]
+                            )
                             ->default(Subscriber::STATUS_ACTIVE),
                         TagsInput::make('tags')
-                            ->suggestions([
+                            ->suggestions(
+                                [
                                 'newsletter',
                                 'product_updates',
                                 'marketing',
                                 'investor',
                                 'partner',
                                 'early_adopter',
-                            ])
+                                ]
+                            )
                             ->columnSpanFull(),
-                    ])
+                        ]
+                    )
                     ->columns(2),
 
                 Forms\Components\Section::make('Preferences')
-                    ->schema([
+                    ->schema(
+                        [
                         Forms\Components\KeyValue::make('preferences')
                             ->keyLabel('Preference')
                             ->valueLabel('Value')
                             ->columnSpanFull(),
-                    ])
+                        ]
+                    )
                     ->collapsed(),
 
                 Forms\Components\Section::make('Tracking Information')
-                    ->schema([
+                    ->schema(
+                        [
                         Forms\Components\TextInput::make('ip_address')
                             ->maxLength(255)
                             ->disabled(),
@@ -93,16 +105,19 @@ class SubscriberResource extends Resource
                         Forms\Components\TextInput::make('unsubscribe_reason')
                             ->maxLength(255)
                             ->disabled(),
-                    ])
+                        ]
+                    )
                     ->columns(2)
                     ->collapsed(),
-            ]);
+                ]
+            );
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
+            ->columns(
+                [
                 Tables\Columns\TextColumn::make('email')
                     ->searchable()
                     ->copyable()
@@ -110,7 +125,8 @@ class SubscriberResource extends Resource
                 Tables\Columns\TextColumn::make('source')
                     ->badge()
                     ->searchable()
-                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                    ->formatStateUsing(
+                        fn (string $state): string => match ($state) {
                         Subscriber::SOURCE_BLOG       => 'Blog',
                         Subscriber::SOURCE_CGO        => 'CGO Early Access',
                         Subscriber::SOURCE_INVESTMENT => 'Investment',
@@ -118,15 +134,18 @@ class SubscriberResource extends Resource
                         Subscriber::SOURCE_CONTACT    => 'Contact Form',
                         Subscriber::SOURCE_PARTNER    => 'Partner Application',
                         default                       => $state,
-                    }),
+                        }
+                    ),
                 Tables\Columns\TextColumn::make('status')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
+                    ->color(
+                        fn (string $state): string => match ($state) {
                         Subscriber::STATUS_ACTIVE       => 'success',
                         Subscriber::STATUS_UNSUBSCRIBED => 'warning',
                         Subscriber::STATUS_BOUNCED      => 'danger',
                         default                         => 'gray',
-                    })
+                        }
+                    )
                     ->searchable(),
                 Tables\Columns\TagsColumn::make('tags')
                     ->separator(',')
@@ -141,29 +160,37 @@ class SubscriberResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->since(),
-            ])
-            ->filters([
+                ]
+            )
+            ->filters(
+                [
                 SelectFilter::make('status')
-                    ->options([
+                    ->options(
+                        [
                         Subscriber::STATUS_ACTIVE       => 'Active',
                         Subscriber::STATUS_UNSUBSCRIBED => 'Unsubscribed',
                         Subscriber::STATUS_BOUNCED      => 'Bounced',
-                    ])
+                        ]
+                    )
                     ->default(Subscriber::STATUS_ACTIVE),
                 SelectFilter::make('source')
                     ->multiple()
-                    ->options([
+                    ->options(
+                        [
                         Subscriber::SOURCE_BLOG       => 'Blog',
                         Subscriber::SOURCE_CGO        => 'CGO Early Access',
                         Subscriber::SOURCE_INVESTMENT => 'Investment',
                         Subscriber::SOURCE_FOOTER     => 'Footer',
                         Subscriber::SOURCE_CONTACT    => 'Contact Form',
                         Subscriber::SOURCE_PARTNER    => 'Partner Application',
-                    ]),
+                        ]
+                    ),
                 Tables\Filters\Filter::make('confirmed')
                     ->query(fn (Builder $query): Builder => $query->whereNotNull('confirmed_at')),
-            ])
-            ->actions([
+                ]
+            )
+            ->actions(
+                [
                 Tables\Actions\EditAction::make(),
                 Action::make('unsubscribe')
                     ->icon('heroicon-o-x-circle')
@@ -173,75 +200,94 @@ class SubscriberResource extends Resource
                     ->modalDescription('Are you sure you want to unsubscribe this subscriber?')
                     ->modalSubmitActionLabel('Yes, unsubscribe')
                     ->visible(fn (Subscriber $record): bool => $record->isActive())
-                    ->action(function (Subscriber $record): void {
-                        $record->unsubscribe('Manual unsubscribe by admin');
-                        Notification::make()
-                            ->title('Subscriber unsubscribed')
-                            ->success()
-                            ->send();
-                    }),
+                    ->action(
+                        function (Subscriber $record): void {
+                            $record->unsubscribe('Manual unsubscribe by admin');
+                            Notification::make()
+                                ->title('Subscriber unsubscribed')
+                                ->success()
+                                ->send();
+                        }
+                    ),
                 Action::make('resubscribe')
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
                     ->requiresConfirmation()
                     ->visible(fn (Subscriber $record): bool => ! $record->isActive())
-                    ->action(function (Subscriber $record): void {
-                        $record->update([
-                            'status'             => Subscriber::STATUS_ACTIVE,
-                            'unsubscribed_at'    => null,
-                            'unsubscribe_reason' => null,
-                        ]);
-                        Notification::make()
-                            ->title('Subscriber reactivated')
-                            ->success()
-                            ->send();
-                    }),
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
+                    ->action(
+                        function (Subscriber $record): void {
+                            $record->update(
+                                [
+                                'status'             => Subscriber::STATUS_ACTIVE,
+                                'unsubscribed_at'    => null,
+                                'unsubscribe_reason' => null,
+                                ]
+                            );
+                            Notification::make()
+                                ->title('Subscriber reactivated')
+                                ->success()
+                                ->send();
+                        }
+                    ),
+                ]
+            )
+            ->bulkActions(
+                [
+                Tables\Actions\BulkActionGroup::make(
+                    [
                     Tables\Actions\DeleteBulkAction::make(),
                     Tables\Actions\BulkAction::make('bulk_unsubscribe')
                         ->label('Unsubscribe')
                         ->icon('heroicon-o-x-circle')
                         ->color('danger')
                         ->requiresConfirmation()
-                        ->action(function ($records): void {
-                            foreach ($records as $record) {
-                                if ($record->isActive()) {
-                                    $record->unsubscribe('Bulk unsubscribe by admin');
+                        ->action(
+                            function ($records): void {
+                                foreach ($records as $record) {
+                                    if ($record->isActive()) {
+                                        $record->unsubscribe('Bulk unsubscribe by admin');
+                                    }
                                 }
+                                Notification::make()
+                                    ->title('Subscribers unsubscribed')
+                                    ->success()
+                                    ->send();
                             }
-                            Notification::make()
-                                ->title('Subscribers unsubscribed')
-                                ->success()
-                                ->send();
-                        }),
+                        ),
                     Tables\Actions\BulkAction::make('add_tags')
                         ->label('Add Tags')
                         ->icon('heroicon-o-tag')
-                        ->form([
+                        ->form(
+                            [
                             TagsInput::make('tags')
                                 ->required()
-                                ->suggestions([
+                                ->suggestions(
+                                    [
                                     'newsletter',
                                     'product_updates',
                                     'marketing',
                                     'investor',
                                     'partner',
                                     'early_adopter',
-                                ]),
-                        ])
-                        ->action(function ($records, array $data): void {
-                            foreach ($records as $record) {
-                                $record->addTags($data['tags']);
+                                    ]
+                                ),
+                            ]
+                        )
+                        ->action(
+                            function ($records, array $data): void {
+                                foreach ($records as $record) {
+                                    $record->addTags($data['tags']);
+                                }
+                                Notification::make()
+                                    ->title('Tags added to subscribers')
+                                    ->success()
+                                    ->send();
                             }
-                            Notification::make()
-                                ->title('Tags added to subscribers')
-                                ->success()
-                                ->send();
-                        }),
-                ]),
-            ])
+                        ),
+                    ]
+                ),
+                ]
+            )
             ->defaultSort('created_at', 'desc');
     }
 

@@ -58,9 +58,11 @@ class ExchangeServiceProvider extends ServiceProvider
     public function boot(): void
     {
         // Register projectors
-        Projectionist::addProjectors([
+        Projectionist::addProjectors(
+            [
             OrderProjector::class,
             OrderBookProjector::class,
-        ]);
+            ]
+        );
     }
 }

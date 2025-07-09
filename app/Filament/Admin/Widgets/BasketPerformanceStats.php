@@ -16,18 +16,22 @@ class BasketPerformanceStats extends BaseWidget
 
     protected function getStats(): array
     {
-        $gcuBasket = Cache::remember('gcu_basket_stats', 300, function () {
-            return BasketAsset::where('code', 'GCU')->first();
-        });
+        $gcuBasket = Cache::remember(
+            'gcu_basket_stats', 300, function () {
+                return BasketAsset::where('code', 'GCU')->first();
+            }
+        );
 
         if (! $gcuBasket) {
             return [];
         }
 
         $performanceService = app(BasketPerformanceService::class);
-        $summary = Cache::remember('gcu_performance_summary', 300, function () use ($gcuBasket, $performanceService) {
-            return $performanceService->getPerformanceSummary($gcuBasket);
-        });
+        $summary = Cache::remember(
+            'gcu_performance_summary', 300, function () use ($gcuBasket, $performanceService) {
+                return $performanceService->getPerformanceSummary($gcuBasket);
+            }
+        );
 
         $dayPerf = $summary['performances']['day'] ?? null;
         $weekPerf = $summary['performances']['week'] ?? null;
@@ -77,9 +81,11 @@ class BasketPerformanceStats extends BaseWidget
         }
 
         // Top Performer
-        $topPerformer = Cache::remember('gcu_top_performer', 300, function () use ($gcuBasket, $performanceService) {
-            return $performanceService->getTopPerformers($gcuBasket, 'month', 1)->first();
-        });
+        $topPerformer = Cache::remember(
+            'gcu_top_performer', 300, function () use ($gcuBasket, $performanceService) {
+                return $performanceService->getTopPerformers($gcuBasket, 'month', 1)->first();
+            }
+        );
 
         if ($topPerformer) {
             $stats[] = Stat::make('Top Performer', $topPerformer->asset_code)

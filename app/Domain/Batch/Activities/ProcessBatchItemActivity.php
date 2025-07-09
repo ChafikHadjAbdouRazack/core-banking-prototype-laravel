@@ -13,9 +13,9 @@ use Workflow\Activity;
 class ProcessBatchItemActivity extends Activity
 {
     /**
-     * @param string $batchJobUuid
-     * @param int $itemIndex
-     * @param array $item
+     * @param  string $batchJobUuid
+     * @param  int    $itemIndex
+     * @param  array  $item
      * @return array
      */
     public function execute(string $batchJobUuid, int $itemIndex, array $item): array

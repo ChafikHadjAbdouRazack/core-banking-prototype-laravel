@@ -28,11 +28,11 @@ class UserVotingController extends Controller
      *     description="Get all active polls with user's voting context",
      *     tags={"User Voting"},
      *     security={{"sanctum": {}}},
-     *     @OA\Response(
+     * @OA\Response(
      *         response=200,
      *         description="List of voting polls",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/UserVotingPoll"))
+     * @OA\JsonContent(
+     * @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/UserVotingPoll"))
      *         )
      *     )
      * )
@@ -44,14 +44,16 @@ class UserVotingController extends Controller
             ->orderBy('end_date', 'asc')
             ->get();
 
-        return response()->json([
+        return response()->json(
+            [
             'data' => UserVotingPollResource::collection($polls),
             'meta' => [
                 'basket_name'   => config('baskets.primary_name', 'Global Currency Unit'),
                 'basket_code'   => config('baskets.primary_code', 'GCU'),
                 'basket_symbol' => config('baskets.primary_symbol', 'Ǥ'),
             ],
-        ]);
+            ]
+        );
     }
 
     /**
@@ -61,7 +63,7 @@ class UserVotingController extends Controller
      *     description="Get polls that will become active soon",
      *     tags={"User Voting"},
      *     security={{"sanctum": {}}},
-     *     @OA\Response(
+     * @OA\Response(
      *         response=200,
      *         description="List of upcoming polls"
      *     )
@@ -75,9 +77,11 @@ class UserVotingController extends Controller
             ->orderBy('start_date', 'asc')
             ->get();
 
-        return response()->json([
+        return response()->json(
+            [
             'data' => UserVotingPollResource::collection($polls),
-        ]);
+            ]
+        );
     }
 
     /**
@@ -87,7 +91,7 @@ class UserVotingController extends Controller
      *     description="Get all polls the user has participated in",
      *     tags={"User Voting"},
      *     security={{"sanctum": {}}},
-     *     @OA\Response(
+     * @OA\Response(
      *         response=200,
      *         description="User's voting history"
      *     )
@@ -105,13 +109,15 @@ class UserVotingController extends Controller
             ->orderBy('end_date', 'desc')
             ->paginate(10);
 
-        return response()->json([
+        return response()->json(
+            [
             'data' => UserVotingPollResource::collection($polls),
             'meta' => [
                 'total_votes'  => $votedPollIds->count(),
                 'member_since' => $user->created_at->format('Y-m-d'),
             ],
-        ]);
+            ]
+        );
     }
 
     /**
@@ -121,17 +127,17 @@ class UserVotingController extends Controller
      *     description="Submit weighted allocation vote for basket composition",
      *     tags={"User Voting"},
      *     security={{"sanctum": {}}},
-     *     @OA\Parameter(
+     * @OA\Parameter(
      *         name="uuid",
      *         in="path",
      *         required=true,
-     *         @OA\Schema(type="string")
+     * @OA\Schema(type="string")
      *     ),
-     *     @OA\RequestBody(
+     * @OA\RequestBody(
      *         required=true,
-     *         @OA\JsonContent(
+     * @OA\JsonContent(
      *             required={"allocations"},
-     *             @OA\Property(
+     * @OA\Property(
      *                 property="allocations",
      *                 type="object",
      *                 description="Currency allocations (must sum to 100)",
@@ -139,18 +145,18 @@ class UserVotingController extends Controller
      *             )
      *         )
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=201,
      *         description="Vote submitted successfully",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string"),
-     *             @OA\Property(property="vote_id", type="string"),
-     *             @OA\Property(property="voting_power_used", type="integer")
+     * @OA\JsonContent(
+     * @OA\Property(property="message",           type="string"),
+     * @OA\Property(property="vote_id",           type="string"),
+     * @OA\Property(property="voting_power_used", type="integer")
      *         )
      *     ),
-     *     @OA\Response(response=400, description="Invalid vote data"),
-     *     @OA\Response(response=403, description="Cannot vote on this poll"),
-     *     @OA\Response(response=404, description="Poll not found")
+     * @OA\Response(response=400,                 description="Invalid vote data"),
+     * @OA\Response(response=403,                 description="Cannot vote on this poll"),
+     * @OA\Response(response=404,                 description="Poll not found")
      * )
      */
     public function submitBasketVote(Request $request, string $uuid): JsonResponse
@@ -163,18 +169,22 @@ class UserVotingController extends Controller
         }
 
         // Validate allocations
-        $validated = $request->validate([
+        $validated = $request->validate(
+            [
             'allocations'   => 'required|array',
             'allocations.*' => 'required|numeric|min:0|max:100',
-        ]);
+            ]
+        );
 
         // Verify allocations sum to 100
         $total = array_sum($validated['allocations']);
         if (abs($total - 100) > 0.01) {
-            return response()->json([
+            return response()->json(
+                [
                 'error'       => 'Allocations must sum to 100%',
                 'current_sum' => $total,
-            ], 422);
+                ], 422
+            );
         }
 
         // Get user's voting power
@@ -192,7 +202,8 @@ class UserVotingController extends Controller
         }
 
         // Create vote
-        $vote = Vote::create([
+        $vote = Vote::create(
+            [
             'poll_id'          => $poll->id,
             'user_uuid'        => $user->uuid,
             'selected_options' => ['allocations' => $validated['allocations']],
@@ -202,13 +213,16 @@ class UserVotingController extends Controller
                 'user_agent' => $request->userAgent(),
                 'voted_via'  => 'user_voting_api',
             ],
-        ]);
+            ]
+        );
 
-        return response()->json([
+        return response()->json(
+            [
             'message'           => 'Your vote has been recorded successfully',
             'vote_id'           => $vote->uuid,
             'voting_power_used' => $votingPower,
-        ], 201);
+            ], 201
+        );
     }
 
     /**
@@ -218,7 +232,7 @@ class UserVotingController extends Controller
      *     description="Get comprehensive voting dashboard information",
      *     tags={"User Voting"},
      *     security={{"sanctum": {}}},
-     *     @OA\Response(
+     * @OA\Response(
      *         response=200,
      *         description="Dashboard data"
      *     )
@@ -248,7 +262,8 @@ class UserVotingController extends Controller
             ->orderBy('start_date', 'asc')
             ->first();
 
-        return response()->json([
+        return response()->json(
+            [
             'data' => [
                 'stats' => [
                     'active_polls' => $activePolls,
@@ -267,6 +282,7 @@ class UserVotingController extends Controller
                     'symbol' => config('baskets.primary_symbol', 'Ǥ'),
                 ],
             ],
-        ]);
+            ]
+        );
     }
 }

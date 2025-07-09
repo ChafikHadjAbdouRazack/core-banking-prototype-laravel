@@ -34,13 +34,15 @@ class PrimaryBasketWidget extends Widget
         return [
             'exists'     => true,
             'basket'     => $basket,
-            'currencies' => $basket->components()->with('asset')->get()->map(function ($component) {
-                return [
+            'currencies' => $basket->components()->with('asset')->get()->map(
+                function ($component) {
+                    return [
                     'code'   => $component->asset_code,
                     'name'   => $component->asset->name ?? $component->asset_code,
                     'weight' => $component->weight,
-                ];
-            })->toArray(),
+                    ];
+                }
+            )->toArray(),
         ];
     }
 }

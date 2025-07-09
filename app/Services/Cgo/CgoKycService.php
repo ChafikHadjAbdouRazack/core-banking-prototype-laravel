@@ -74,17 +74,21 @@ class CgoKycService
         $kycRequirements = $this->checkKycRequirements($investment);
 
         if (! $kycRequirements['is_sufficient']) {
-            Log::warning('CGO investment blocked - insufficient KYC', [
+            Log::warning(
+                'CGO investment blocked - insufficient KYC', [
                 'investment_id'  => $investment->id,
                 'user_id'        => $user->id,
                 'required_level' => $kycRequirements['required_level'],
                 'current_level'  => $kycRequirements['current_level'],
-            ]);
+                ]
+            );
 
-            $investment->update([
+            $investment->update(
+                [
                 'status' => 'kyc_required',
                 'notes'  => 'Investment requires ' . $kycRequirements['required_level'] . ' KYC verification',
-            ]);
+                ]
+            );
 
             return false;
         }
@@ -94,27 +98,33 @@ class CgoKycService
             $amlCheckResult = $this->performAmlChecks($user, $investment);
 
             if (! $amlCheckResult['passed']) {
-                Log::warning('CGO investment flagged by AML checks', [
+                Log::warning(
+                    'CGO investment flagged by AML checks', [
                     'investment_id' => $investment->id,
                     'user_id'       => $user->id,
                     'flags'         => $amlCheckResult['flags'],
-                ]);
+                    ]
+                );
 
-                $investment->update([
+                $investment->update(
+                    [
                     'status' => 'aml_review',
                     'notes'  => 'Investment flagged for AML review: ' . implode(', ', $amlCheckResult['flags']),
-                ]);
+                    ]
+                );
 
                 return false;
             }
         }
 
         // Update investment with KYC verification details
-        $investment->update([
+        $investment->update(
+            [
             'kyc_verified_at' => now(),
             'kyc_level'       => $kycRequirements['current_level'],
             'risk_assessment' => $this->riskService->calculateRiskScore($user),
-        ]);
+            ]
+        );
 
         return true;
     }
@@ -355,7 +365,8 @@ class CgoKycService
     {
         $user = $investment->user;
 
-        return KycVerification::create([
+        return KycVerification::create(
+            [
             'user_id'           => $user->id,
             'type'              => $level === 'full' ? KycVerification::TYPE_ENHANCED_DUE_DILIGENCE : KycVerification::TYPE_IDENTITY,
             'status'            => KycVerification::STATUS_PENDING,
@@ -368,7 +379,8 @@ class CgoKycService
             ],
             'risk_level' => $this->determineRiskLevel($user, $investment),
             'started_at' => now(),
-        ]);
+            ]
+        );
     }
 
     /**

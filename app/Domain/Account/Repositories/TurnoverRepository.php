@@ -15,7 +15,7 @@ final class TurnoverRepository
     }
 
     /**
-     * @param string $accountUuid
+     * @param string            $accountUuid
      * @param DateTimeInterface $date
      *
      * @return Turnover|null
@@ -32,8 +32,8 @@ final class TurnoverRepository
 
     /**
      * @param DateTimeInterface $date
-     * @param string $accountUuid
-     * @param int $amount
+     * @param string            $accountUuid
+     * @param int               $amount
      *
      * @return Turnover
      */
@@ -42,28 +42,30 @@ final class TurnoverRepository
         string $accountUuid,
         int $amount
     ): Turnover {
-        return DB::transaction(function () use ($date, $accountUuid, $amount) {
-            // Use updateOrCreate with lock for atomic operation
-            $turnover = $this->turnover->lockForUpdate()->updateOrCreate(
-                [
+        return DB::transaction(
+            function () use ($date, $accountUuid, $amount) {
+                // Use updateOrCreate with lock for atomic operation
+                $turnover = $this->turnover->lockForUpdate()->updateOrCreate(
+                    [
                     'date'         => $date->toDateString(),
                     'account_uuid' => $accountUuid,
-                ],
-                [
+                    ],
+                    [
                     'count'  => 0,
                     'amount' => 0,
                     'debit'  => 0,
                     'credit' => 0,
-                ]
-            );
+                    ]
+                );
 
-            return $this->updateTurnover($turnover, $amount);
-        });
+                return $this->updateTurnover($turnover, $amount);
+            }
+        );
     }
 
     /**
      * @param Turnover $turnover
-     * @param int $amount
+     * @param int      $amount
      *
      * @return Turnover
      */

@@ -11,7 +11,7 @@ use Workflow\Workflow;
 class ProcessBatchJobWorkflow extends Workflow
 {
     /**
-     * @param string $batchJobUuid
+     * @param  string $batchJobUuid
      * @return \Generator
      */
     public function execute(string $batchJobUuid): \Generator

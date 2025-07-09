@@ -29,7 +29,8 @@ class FinancialInstitutionController extends Controller
      */
     public function getApplicationForm(): JsonResponse
     {
-        return response()->json([
+        return response()->json(
+            [
             'data' => [
                 'institution_types' => FinancialInstitutionApplication::INSTITUTION_TYPES,
                 'required_fields'   => [
@@ -91,7 +92,8 @@ class FinancialInstitutionController extends Controller
                     'data_protection_policy'       => 'Data Protection Policy',
                 ],
             ],
-        ]);
+            ]
+        );
     }
 
     /**
@@ -99,7 +101,8 @@ class FinancialInstitutionController extends Controller
      */
     public function submitApplication(Request $request): JsonResponse
     {
-        $validated = $request->validate([
+        $validated = $request->validate(
+            [
             // Institution Details
             'institution_name'          => 'required|string|max:255',
             'legal_name'                => 'required|string|max:255',
@@ -158,12 +161,14 @@ class FinancialInstitutionController extends Controller
             // Optional
             'source'        => 'nullable|string',
             'referral_code' => 'nullable|string',
-        ]);
+            ]
+        );
 
         try {
             $application = $this->onboardingService->submitApplication($validated);
 
-            return response()->json([
+            return response()->json(
+                [
                 'data' => [
                     'application_id'     => $application->id,
                     'application_number' => $application->application_number,
@@ -171,16 +176,21 @@ class FinancialInstitutionController extends Controller
                     'required_documents' => $application->required_documents,
                     'message'            => 'Application submitted successfully',
                 ],
-            ], 201);
+                ], 201
+            );
         } catch (\Exception $e) {
-            Log::error('Failed to submit FI application', [
+            Log::error(
+                'Failed to submit FI application', [
                 'error' => $e->getMessage(),
                 'data'  => $validated,
-            ]);
+                ]
+            );
 
-            return response()->json([
+            return response()->json(
+                [
                 'error' => 'Failed to submit application',
-            ], 422);
+                ], 422
+            );
         }
     }
 
@@ -193,14 +203,17 @@ class FinancialInstitutionController extends Controller
             ->first();
 
         if (! $application) {
-            return response()->json([
+            return response()->json(
+                [
                 'error' => 'Application not found',
-            ], 404);
+                ], 404
+            );
         }
 
         $documentStatus = $this->documentService->getVerificationStatus($application);
 
-        return response()->json([
+        return response()->json(
+            [
             'data' => [
                 'application_number' => $application->application_number,
                 'institution_name'   => $application->institution_name,
@@ -211,7 +224,8 @@ class FinancialInstitutionController extends Controller
                 'documents'          => $documentStatus,
                 'is_editable'        => $application->isEditable(),
             ],
-        ]);
+            ]
+        );
     }
 
     /**
@@ -223,21 +237,27 @@ class FinancialInstitutionController extends Controller
             ->first();
 
         if (! $application) {
-            return response()->json([
+            return response()->json(
+                [
                 'error' => 'Application not found',
-            ], 404);
+                ], 404
+            );
         }
 
         if (! $application->isEditable()) {
-            return response()->json([
+            return response()->json(
+                [
                 'error' => 'Application is not editable in current status',
-            ], 422);
+                ], 422
+            );
         }
 
-        $validated = $request->validate([
+        $validated = $request->validate(
+            [
             'document_type' => 'required|string',
             'document'      => 'required|file|mimes:pdf,jpg,jpeg,png|max:10240', // 10MB
-        ]);
+            ]
+        );
 
         try {
             $document = $this->documentService->uploadDocument(
@@ -246,7 +266,8 @@ class FinancialInstitutionController extends Controller
                 $request->file('document')
             );
 
-            return response()->json([
+            return response()->json(
+                [
                 'data' => [
                     'document_type' => $validated['document_type'],
                     'uploaded'      => true,
@@ -254,11 +275,14 @@ class FinancialInstitutionController extends Controller
                     'size'          => $document['size'],
                     'message'       => 'Document uploaded successfully',
                 ],
-            ]);
+                ]
+            );
         } catch (\Exception $e) {
-            return response()->json([
+            return response()->json(
+                [
                 'error' => $e->getMessage(),
-            ], 422);
+                ], 422
+            );
         }
     }
 
@@ -267,7 +291,8 @@ class FinancialInstitutionController extends Controller
      */
     public function getApiDocumentation(): JsonResponse
     {
-        return response()->json([
+        return response()->json(
+            [
             'data' => [
                 'base_url'       => config('app.url') . '/api/partner/v1',
                 'authentication' => [
@@ -322,6 +347,7 @@ class FinancialInstitutionController extends Controller
                     '500' => 'Internal Server Error',
                 ],
             ],
-        ]);
+            ]
+        );
     }
 }

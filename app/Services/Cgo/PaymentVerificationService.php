@@ -26,11 +26,13 @@ class PaymentVerificationService
      */
     public function verifyPayment(CgoInvestment $investment): bool
     {
-        Log::info('Verifying payment for investment', [
+        Log::info(
+            'Verifying payment for investment', [
             'investment_id'  => $investment->id,
             'payment_method' => $investment->payment_method,
             'status'         => $investment->status,
-        ]);
+            ]
+        );
 
         // Don't verify if already confirmed
         if ($investment->status === 'confirmed') {
@@ -40,23 +42,25 @@ class PaymentVerificationService
         $verified = false;
 
         switch ($investment->payment_method) {
-            case 'card':
-                $verified = $this->verifyStripePayment($investment);
-                break;
+        case 'card':
+            $verified = $this->verifyStripePayment($investment);
+            break;
 
-            case 'crypto':
-                $verified = $this->verifyCryptoPayment($investment);
-                break;
+        case 'crypto':
+            $verified = $this->verifyCryptoPayment($investment);
+            break;
 
-            case 'bank_transfer':
-                $verified = $this->verifyBankTransfer($investment);
-                break;
+        case 'bank_transfer':
+            $verified = $this->verifyBankTransfer($investment);
+            break;
 
-            default:
-                Log::warning('Unknown payment method for verification', [
-                    'investment_id'  => $investment->id,
-                    'payment_method' => $investment->payment_method,
-                ]);
+        default:
+            Log::warning(
+                'Unknown payment method for verification', [
+                'investment_id'  => $investment->id,
+                'payment_method' => $investment->payment_method,
+                    ]
+            );
         }
 
         if ($verified) {
@@ -78,10 +82,12 @@ class PaymentVerificationService
         try {
             return $this->stripeService->verifyPayment($investment);
         } catch (\Exception $e) {
-            Log::error('Stripe payment verification failed', [
+            Log::error(
+                'Stripe payment verification failed', [
                 'investment_id' => $investment->id,
                 'error'         => $e->getMessage(),
-            ]);
+                ]
+            );
 
             return false;
         }
@@ -111,10 +117,12 @@ class PaymentVerificationService
 
             return false;
         } catch (\Exception $e) {
-            Log::error('Coinbase payment verification failed', [
+            Log::error(
+                'Coinbase payment verification failed', [
                 'investment_id' => $investment->id,
                 'error'         => $e->getMessage(),
-            ]);
+                ]
+            );
 
             return false;
         }
@@ -136,18 +144,22 @@ class PaymentVerificationService
      */
     protected function confirmInvestment(CgoInvestment $investment): void
     {
-        $investment->update([
+        $investment->update(
+            [
             'status'               => 'confirmed',
             'payment_status'       => 'confirmed',
             'payment_completed_at' => now(),
-        ]);
+            ]
+        );
 
         // Generate certificate number if not already set
         if (! $investment->certificate_number) {
-            $investment->update([
+            $investment->update(
+                [
                 'certificate_number'    => $investment->generateCertificateNumber(),
                 'certificate_issued_at' => now(),
-            ]);
+                ]
+            );
         }
 
         // Update pricing round stats
@@ -160,16 +172,20 @@ class PaymentVerificationService
         try {
             Mail::to($investment->email)->send(new CgoInvestmentConfirmed($investment));
         } catch (\Exception $e) {
-            Log::error('Failed to send investment confirmation email', [
+            Log::error(
+                'Failed to send investment confirmation email', [
                 'investment_id' => $investment->id,
                 'error'         => $e->getMessage(),
-            ]);
+                ]
+            );
         }
 
-        Log::info('Investment confirmed', [
+        Log::info(
+            'Investment confirmed', [
             'investment_id'      => $investment->id,
             'certificate_number' => $investment->certificate_number,
-        ]);
+            ]
+        );
     }
 
     /**
@@ -189,10 +205,12 @@ class PaymentVerificationService
             }
         }
 
-        Log::info('Batch payment verification completed', [
+        Log::info(
+            'Batch payment verification completed', [
             'total_checked' => $pendingInvestments->count(),
             'confirmed'     => $count,
-        ]);
+            ]
+        );
 
         return $count;
     }
@@ -202,16 +220,20 @@ class PaymentVerificationService
      */
     public function markPaymentFailed(CgoInvestment $investment, string $reason): void
     {
-        $investment->update([
+        $investment->update(
+            [
             'payment_status'         => 'failed',
             'payment_failed_at'      => now(),
             'payment_failure_reason' => $reason,
-        ]);
+            ]
+        );
 
-        Log::warning('Investment payment marked as failed', [
+        Log::warning(
+            'Investment payment marked as failed', [
             'investment_id' => $investment->id,
             'reason'        => $reason,
-        ]);
+            ]
+        );
     }
 
     /**
@@ -243,12 +265,14 @@ class PaymentVerificationService
 
         foreach ($pendingInvestments as $investment) {
             if ($this->isPaymentExpired($investment)) {
-                $investment->update([
+                $investment->update(
+                    [
                     'status'                 => 'cancelled',
                     'cancelled_at'           => now(),
                     'payment_status'         => 'expired',
                     'payment_failure_reason' => 'Payment window expired',
-                ]);
+                    ]
+                );
                 $count++;
             }
         }

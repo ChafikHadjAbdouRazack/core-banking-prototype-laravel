@@ -22,7 +22,8 @@ class FraudCaseController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $request->validate([
+        $request->validate(
+            [
             'status'      => 'nullable|in:open,investigating,closed',
             'priority'    => 'nullable|in:low,medium,high,critical',
             'risk_level'  => 'nullable|in:very_low,low,medium,high,very_high',
@@ -35,7 +36,8 @@ class FraudCaseController extends Controller
             'sort_by'     => 'nullable|in:created_at,priority,loss_amount,risk_level',
             'sort_order'  => 'nullable|in:asc,desc',
             'per_page'    => 'nullable|integer|min:10|max:100',
-        ]);
+            ]
+        );
 
         $cases = $this->caseService->searchCases($request->all());
 
@@ -47,10 +49,12 @@ class FraudCaseController extends Controller
      */
     public function show(string $caseId): JsonResponse
     {
-        $case = FraudCase::with([
+        $case = FraudCase::with(
+            [
             'fraudScore',
             'fraudScore.entity',
-        ])->findOrFail($caseId);
+            ]
+        )->findOrFail($caseId);
 
         // Ensure user can view this case
         $this->authorize('view', $case);
@@ -58,18 +62,22 @@ class FraudCaseController extends Controller
         // Get similar cases
         $similarCases = $this->caseService->linkSimilarCases($case);
 
-        return response()->json([
+        return response()->json(
+            [
             'case'          => $case,
-            'similar_cases' => $similarCases->map(function ($similarCase) {
-                return [
+            'similar_cases' => $similarCases->map(
+                function ($similarCase) {
+                    return [
                     'id'          => $similarCase->id,
                     'case_number' => $similarCase->case_number,
                     'risk_level'  => $similarCase->risk_level,
                     'status'      => $similarCase->status,
                     'created_at'  => $similarCase->created_at,
-                ];
-            }),
-        ]);
+                    ];
+                }
+            ),
+            ]
+        );
     }
 
     /**
@@ -77,7 +85,8 @@ class FraudCaseController extends Controller
      */
     public function update(Request $request, string $caseId): JsonResponse
     {
-        $request->validate([
+        $request->validate(
+            [
             'status'               => 'nullable|in:open,investigating,closed',
             'priority'             => 'nullable|in:low,medium,high,critical',
             'assigned_to'          => 'nullable|integer',
@@ -89,7 +98,8 @@ class FraudCaseController extends Controller
             'evidence.file_path'   => 'nullable|string',
             'tags'                 => 'nullable|array',
             'tags.*'               => 'string|max:50',
-        ]);
+            ]
+        );
 
         $case = FraudCase::findOrFail($caseId);
 
@@ -98,10 +108,12 @@ class FraudCaseController extends Controller
 
         $updatedCase = $this->caseService->updateInvestigation($case, $request->all());
 
-        return response()->json([
+        return response()->json(
+            [
             'message' => 'Fraud case updated successfully',
             'case'    => $updatedCase,
-        ]);
+            ]
+        );
     }
 
     /**
@@ -109,11 +121,13 @@ class FraudCaseController extends Controller
      */
     public function resolve(Request $request, string $caseId): JsonResponse
     {
-        $request->validate([
+        $request->validate(
+            [
             'resolution'      => 'required|string|max:500',
             'outcome'         => 'required|in:fraud,legitimate,unknown',
             'recovery_amount' => 'nullable|numeric|min:0',
-        ]);
+            ]
+        );
 
         $case = FraudCase::findOrFail($caseId);
 
@@ -131,10 +145,12 @@ class FraudCaseController extends Controller
             $request->outcome
         );
 
-        return response()->json([
+        return response()->json(
+            [
             'message' => 'Fraud case resolved successfully',
             'case'    => $resolvedCase,
-        ]);
+            ]
+        );
     }
 
     /**
@@ -142,9 +158,11 @@ class FraudCaseController extends Controller
      */
     public function escalate(Request $request, string $caseId): JsonResponse
     {
-        $request->validate([
+        $request->validate(
+            [
             'reason' => 'required|string|max:500',
-        ]);
+            ]
+        );
 
         $case = FraudCase::findOrFail($caseId);
 
@@ -153,10 +171,12 @@ class FraudCaseController extends Controller
 
         $escalatedCase = $this->caseService->escalateCase($case, $request->reason);
 
-        return response()->json([
+        return response()->json(
+            [
             'message' => 'Fraud case escalated successfully',
             'case'    => $escalatedCase,
-        ]);
+            ]
+        );
     }
 
     /**
@@ -164,10 +184,12 @@ class FraudCaseController extends Controller
      */
     public function statistics(Request $request): JsonResponse
     {
-        $request->validate([
+        $request->validate(
+            [
             'date_from' => 'nullable|date',
             'date_to'   => 'nullable|date|after_or_equal:date_from',
-        ]);
+            ]
+        );
 
         $statistics = $this->caseService->getCaseStatistics($request->all());
 
@@ -179,9 +201,11 @@ class FraudCaseController extends Controller
      */
     public function assign(Request $request, string $caseId): JsonResponse
     {
-        $request->validate([
+        $request->validate(
+            [
             'investigator_id' => 'required|integer|exists:users,id',
-        ]);
+            ]
+        );
 
         $case = FraudCase::findOrFail($caseId);
 
@@ -196,10 +220,12 @@ class FraudCaseController extends Controller
             'assignment'
         );
 
-        return response()->json([
+        return response()->json(
+            [
             'message' => 'Case assigned successfully',
             'case'    => $case,
-        ]);
+            ]
+        );
     }
 
     /**
@@ -207,12 +233,14 @@ class FraudCaseController extends Controller
      */
     public function addEvidence(Request $request, string $caseId): JsonResponse
     {
-        $request->validate([
+        $request->validate(
+            [
             'type'        => 'required|in:document,screenshot,log,communication,other',
             'description' => 'required|string|max:500',
             'file'        => 'nullable|file|max:10240', // 10MB max
             'metadata'    => 'nullable|array',
-        ]);
+            ]
+        );
 
         $case = FraudCase::findOrFail($caseId);
 
@@ -231,14 +259,18 @@ class FraudCaseController extends Controller
             $evidenceData['file_path'] = $path;
         }
 
-        $updatedCase = $this->caseService->updateInvestigation($case, [
+        $updatedCase = $this->caseService->updateInvestigation(
+            $case, [
             'evidence' => $evidenceData,
-        ]);
+            ]
+        );
 
-        return response()->json([
+        return response()->json(
+            [
             'message' => 'Evidence added successfully',
             'case'    => $updatedCase,
-        ]);
+            ]
+        );
     }
 
     /**

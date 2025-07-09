@@ -35,7 +35,8 @@ class ReconciliationReportResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
+            ->columns(
+                [
                 Tables\Columns\TextColumn::make('date')
                     ->label('Date')
                     ->sortable()
@@ -62,42 +63,53 @@ class ReconciliationReportResource extends Resource
                 Tables\Columns\TextColumn::make('status')
                     ->label('Status')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
+                    ->color(
+                        fn (string $state): string => match ($state) {
                         'completed'   => 'success',
                         'failed'      => 'danger',
                         'in_progress' => 'warning',
                         default       => 'gray',
-                    }),
+                        }
+                    ),
 
                 Tables\Columns\TextColumn::make('duration_minutes')
                     ->label('Duration')
                     ->numeric()
                     ->suffix(' min')
                     ->sortable(),
-            ])
+                ]
+            )
             ->defaultSort('date', 'desc')
-            ->actions([
+            ->actions(
+                [
                 Tables\Actions\Action::make('view')
                     ->label('View Report')
                     ->icon('heroicon-m-eye')
                     ->modalHeading('Reconciliation Report Details')
-                    ->modalContent(function ($record): string {
-                        return view('filament.admin.resources.reconciliation-report-details', [
-                            'report' => $record,
-                        ])->render();
-                    })
+                    ->modalContent(
+                        function ($record): string {
+                            return view(
+                                'filament.admin.resources.reconciliation-report-details', [
+                                'report' => $record,
+                                ]
+                            )->render();
+                        }
+                    )
                     ->modalWidth('7xl'),
 
                 Tables\Actions\Action::make('download')
                     ->label('Download')
                     ->icon('heroicon-m-arrow-down-tray')
-                    ->action(function ($record) {
-                        $filename = "reconciliation-{$record['date']}.json";
+                    ->action(
+                        function ($record) {
+                            $filename = "reconciliation-{$record['date']}.json";
 
-                        return response()->json($record)
-                            ->header('Content-Disposition', "attachment; filename={$filename}");
-                    }),
-            ])
+                            return response()->json($record)
+                                ->header('Content-Disposition', "attachment; filename={$filename}");
+                        }
+                    ),
+                ]
+            )
             ->bulkActions([]);
     }
 

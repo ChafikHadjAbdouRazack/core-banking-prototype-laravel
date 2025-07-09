@@ -36,12 +36,14 @@ class ReservePool extends AggregateRoot
         string $minimumCollateralizationRatio
     ): self {
         $pool = static::retrieve($poolId);
-        $pool->recordThat(new ReservePoolCreated(
-            poolId: $poolId,
-            stablecoinSymbol: $stablecoinSymbol,
-            targetCollateralizationRatio: $targetCollateralizationRatio,
-            minimumCollateralizationRatio: $minimumCollateralizationRatio
-        ));
+        $pool->recordThat(
+            new ReservePoolCreated(
+                poolId: $poolId,
+                stablecoinSymbol: $stablecoinSymbol,
+                targetCollateralizationRatio: $targetCollateralizationRatio,
+                minimumCollateralizationRatio: $minimumCollateralizationRatio
+            )
+        );
 
         return $pool;
     }
@@ -61,14 +63,16 @@ class ReservePool extends AggregateRoot
             throw new \InvalidArgumentException('Deposit amount must be positive');
         }
 
-        $this->recordThat(new ReserveDeposited(
-            poolId: $this->uuid(),
-            asset: $asset,
-            amount: $amount,
-            custodianId: $custodianId,
-            transactionHash: $transactionHash,
-            metadata: $metadata
-        ));
+        $this->recordThat(
+            new ReserveDeposited(
+                poolId: $this->uuid(),
+                asset: $asset,
+                amount: $amount,
+                custodianId: $custodianId,
+                transactionHash: $transactionHash,
+                metadata: $metadata
+            )
+        );
 
         return $this;
     }
@@ -98,15 +102,17 @@ class ReservePool extends AggregateRoot
             throw new \InvalidArgumentException('Withdrawal would breach minimum collateralization ratio');
         }
 
-        $this->recordThat(new ReserveWithdrawn(
-            poolId: $this->uuid(),
-            asset: $asset,
-            amount: $amount,
-            custodianId: $custodianId,
-            destinationAddress: $destinationAddress,
-            reason: $reason,
-            metadata: $metadata
-        ));
+        $this->recordThat(
+            new ReserveWithdrawn(
+                poolId: $this->uuid(),
+                asset: $asset,
+                amount: $amount,
+                custodianId: $custodianId,
+                destinationAddress: $destinationAddress,
+                reason: $reason,
+                metadata: $metadata
+            )
+        );
 
         return $this;
     }
@@ -117,21 +123,25 @@ class ReservePool extends AggregateRoot
         array $swaps
     ): self {
         // Validate allocations sum to 100%
-        $total = array_reduce($targetAllocations, function ($sum, $allocation) {
-            return BigDecimal::of($sum)->plus($allocation);
-        }, '0');
+        $total = array_reduce(
+            $targetAllocations, function ($sum, $allocation) {
+                return BigDecimal::of($sum)->plus($allocation);
+            }, '0'
+        );
 
         if (! BigDecimal::of($total)->isEqualTo('1')) {
             throw new \InvalidArgumentException('Target allocations must sum to 100%');
         }
 
-        $this->recordThat(new ReserveRebalanced(
-            poolId: $this->uuid(),
-            targetAllocations: $targetAllocations,
-            executedBy: $executedBy,
-            swaps: $swaps,
-            previousAllocations: $this->getCurrentAllocations()
-        ));
+        $this->recordThat(
+            new ReserveRebalanced(
+                poolId: $this->uuid(),
+                targetAllocations: $targetAllocations,
+                executedBy: $executedBy,
+                swaps: $swaps,
+                previousAllocations: $this->getCurrentAllocations()
+            )
+        );
 
         return $this;
     }
@@ -146,13 +156,15 @@ class ReservePool extends AggregateRoot
             throw new \InvalidArgumentException("Custodian {$custodianId} already exists");
         }
 
-        $this->recordThat(new CustodianAdded(
-            poolId: $this->uuid(),
-            custodianId: $custodianId,
-            name: $name,
-            type: $type,
-            config: $config
-        ));
+        $this->recordThat(
+            new CustodianAdded(
+                poolId: $this->uuid(),
+                custodianId: $custodianId,
+                name: $name,
+                type: $type,
+                config: $config
+            )
+        );
 
         return $this;
     }
@@ -163,11 +175,13 @@ class ReservePool extends AggregateRoot
             throw new \InvalidArgumentException("Custodian {$custodianId} not found");
         }
 
-        $this->recordThat(new CustodianRemoved(
-            poolId: $this->uuid(),
-            custodianId: $custodianId,
-            reason: $reason
-        ));
+        $this->recordThat(
+            new CustodianRemoved(
+                poolId: $this->uuid(),
+                custodianId: $custodianId,
+                reason: $reason
+            )
+        );
 
         return $this;
     }
@@ -185,14 +199,16 @@ class ReservePool extends AggregateRoot
             throw new \InvalidArgumentException('Minimum ratio cannot be less than 100%');
         }
 
-        $this->recordThat(new CollateralizationRatioUpdated(
-            poolId: $this->uuid(),
-            oldTargetRatio: $this->targetCollateralizationRatio,
-            newTargetRatio: $newTargetRatio,
-            oldMinimumRatio: $this->minimumCollateralizationRatio,
-            newMinimumRatio: $newMinimumRatio,
-            approvedBy: $approvedBy
-        ));
+        $this->recordThat(
+            new CollateralizationRatioUpdated(
+                poolId: $this->uuid(),
+                oldTargetRatio: $this->targetCollateralizationRatio,
+                newTargetRatio: $newTargetRatio,
+                oldMinimumRatio: $this->minimumCollateralizationRatio,
+                newMinimumRatio: $newMinimumRatio,
+                approvedBy: $approvedBy
+            )
+        );
 
         return $this;
     }

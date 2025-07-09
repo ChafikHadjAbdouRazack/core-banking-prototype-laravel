@@ -142,10 +142,12 @@ class ReserveManagementWorkflow extends Workflow
                     $swap['min_output']
                 );
 
-                $executedSwaps[] = array_merge($swap, [
+                $executedSwaps[] = array_merge(
+                    $swap, [
                     'executed_output'  => $result['output'],
                     'transaction_hash' => $result['tx_hash'],
-                ]);
+                    ]
+                );
             }
 
             // Update reserve allocations

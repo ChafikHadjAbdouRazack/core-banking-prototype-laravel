@@ -61,9 +61,11 @@ class BlogController extends Controller
      */
     public function subscribe(Request $request, SubscriberEmailService $emailService)
     {
-        $validated = $request->validate([
+        $validated = $request->validate(
+            [
             'email' => 'required|email',
-        ]);
+            ]
+        );
 
         try {
             // Use internal subscriber system
@@ -78,20 +80,26 @@ class BlogController extends Controller
             // Also sync with Mailchimp if configured
             $this->syncWithMailchimp($validated['email']);
 
-            return response()->json([
+            return response()->json(
+                [
                 'success' => true,
                 'message' => 'Thank you for subscribing! Check your email for confirmation.',
-            ]);
+                ]
+            );
         } catch (\Exception $e) {
-            Log::error('Subscription error', [
+            Log::error(
+                'Subscription error', [
                 'error' => $e->getMessage(),
                 'email' => $validated['email'],
-            ]);
+                ]
+            );
 
-            return response()->json([
+            return response()->json(
+                [
                 'success' => false,
                 'message' => 'An error occurred. Please try again later.',
-            ], 500);
+                ], 500
+            );
         }
     }
 
@@ -111,16 +119,20 @@ class BlogController extends Controller
 
         try {
             Http::withBasicAuth('apikey', $apiKey)
-                ->post("https://{$dataCenter}.api.mailchimp.com/3.0/lists/{$listId}/members", [
+                ->post(
+                    "https://{$dataCenter}.api.mailchimp.com/3.0/lists/{$listId}/members", [
                     'email_address' => $email,
                     'status'        => 'subscribed',
                     'tags'          => ['blog_subscriber', 'finaegis_demo'],
-                ]);
+                    ]
+                );
         } catch (\Exception $e) {
-            Log::warning('Mailchimp sync failed (non-critical)', [
+            Log::warning(
+                'Mailchimp sync failed (non-critical)', [
                 'error' => $e->getMessage(),
                 'email' => $email,
-            ]);
+                ]
+            );
         }
     }
 

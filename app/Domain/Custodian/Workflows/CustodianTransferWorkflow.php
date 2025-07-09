@@ -45,16 +45,18 @@ class CustodianTransferWorkflow extends Workflow
                 );
 
                 // Add compensation to reverse custodian transfer if needed
-                $this->addCompensation(fn () => ActivityStub::make(
-                    InitiateCustodianTransferActivity::class,
-                    $internalAccount->getUuid(),
-                    $custodianAccount,
-                    $assetCode,
-                    $amount,
-                    $custodianName,
-                    'outgoing',
-                    "Reversal of {$transactionId}"
-                ));
+                $this->addCompensation(
+                    fn () => ActivityStub::make(
+                        InitiateCustodianTransferActivity::class,
+                        $internalAccount->getUuid(),
+                        $custodianAccount,
+                        $assetCode,
+                        $amount,
+                        $custodianName,
+                        'outgoing',
+                        "Reversal of {$transactionId}"
+                    )
+                );
 
                 // Verify transfer completed
                 yield ActivityStub::make(
@@ -80,11 +82,13 @@ class CustodianTransferWorkflow extends Workflow
                 );
 
                 // Add compensation to restore internal balance
-                $this->addCompensation(fn () => ChildWorkflowStub::make(
-                    DepositAccountWorkflow::class,
-                    $internalAccount,
-                    $amount
-                ));
+                $this->addCompensation(
+                    fn () => ChildWorkflowStub::make(
+                        DepositAccountWorkflow::class,
+                        $internalAccount,
+                        $amount
+                    )
+                );
 
                 // Initiate transfer to custodian
                 $transactionId = yield ActivityStub::make(

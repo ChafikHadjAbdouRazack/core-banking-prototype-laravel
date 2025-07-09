@@ -58,18 +58,20 @@ class GovernanceProposal extends AggregateRoot
     ): self {
         $proposal = static::retrieve($proposalId);
 
-        $proposal->recordThat(new ProposalCreated(
-            proposalId: $proposalId,
-            proposalType: $proposalType,
-            title: $title,
-            description: $description,
-            parameters: $parameters,
-            proposer: $proposer,
-            startTime: $startTime,
-            endTime: $endTime,
-            quorumRequired: $quorumRequired,
-            approvalThreshold: $approvalThreshold
-        ));
+        $proposal->recordThat(
+            new ProposalCreated(
+                proposalId: $proposalId,
+                proposalType: $proposalType,
+                title: $title,
+                description: $description,
+                parameters: $parameters,
+                proposer: $proposer,
+                startTime: $startTime,
+                endTime: $endTime,
+                quorumRequired: $quorumRequired,
+                approvalThreshold: $approvalThreshold
+            )
+        );
 
         return $proposal;
     }
@@ -100,14 +102,16 @@ class GovernanceProposal extends AggregateRoot
             throw new \InvalidArgumentException('Voting has ended');
         }
 
-        $this->recordThat(new ProposalVoteCast(
-            proposalId: $this->uuid(),
-            voter: $voter,
-            choice: $choice,
-            votingPower: $votingPower,
-            reason: $reason,
-            timestamp: now()
-        ));
+        $this->recordThat(
+            new ProposalVoteCast(
+                proposalId: $this->uuid(),
+                voter: $voter,
+                choice: $choice,
+                votingPower: $votingPower,
+                reason: $reason,
+                timestamp: now()
+            )
+        );
 
         return $this;
     }
@@ -124,14 +128,16 @@ class GovernanceProposal extends AggregateRoot
 
         $result = $this->calculateResult();
 
-        $this->recordThat(new ProposalFinalized(
-            proposalId: $this->uuid(),
-            result: $result['decision'],
-            totalVotes: $result['total_votes'],
-            votesSummary: $result['votes_summary'],
-            quorumReached: $result['quorum_reached'],
-            approvalRate: $result['approval_rate']
-        ));
+        $this->recordThat(
+            new ProposalFinalized(
+                proposalId: $this->uuid(),
+                result: $result['decision'],
+                totalVotes: $result['total_votes'],
+                votesSummary: $result['votes_summary'],
+                quorumReached: $result['quorum_reached'],
+                approvalRate: $result['approval_rate']
+            )
+        );
 
         return $this;
     }
@@ -142,12 +148,14 @@ class GovernanceProposal extends AggregateRoot
             throw new \InvalidArgumentException('Only passed proposals can be executed');
         }
 
-        $this->recordThat(new ProposalExecuted(
-            proposalId: $this->uuid(),
-            executedBy: $executionData['executed_by'],
-            executionData: $executionData,
-            timestamp: now()
-        ));
+        $this->recordThat(
+            new ProposalExecuted(
+                proposalId: $this->uuid(),
+                executedBy: $executionData['executed_by'],
+                executionData: $executionData,
+                timestamp: now()
+            )
+        );
 
         return $this;
     }
@@ -158,12 +166,14 @@ class GovernanceProposal extends AggregateRoot
             throw new \InvalidArgumentException('Cannot cancel proposal in current status');
         }
 
-        $this->recordThat(new ProposalCancelled(
-            proposalId: $this->uuid(),
-            reason: $reason,
-            cancelledBy: $cancelledBy,
-            timestamp: now()
-        ));
+        $this->recordThat(
+            new ProposalCancelled(
+                proposalId: $this->uuid(),
+                reason: $reason,
+                cancelledBy: $cancelledBy,
+                timestamp: now()
+            )
+        );
 
         return $this;
     }

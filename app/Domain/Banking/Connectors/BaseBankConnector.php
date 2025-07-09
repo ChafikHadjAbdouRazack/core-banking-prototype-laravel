@@ -51,19 +51,23 @@ abstract class BaseBankConnector implements IBankConnector
     {
         $cacheKey = "bank_available:{$this->bankCode}";
 
-        return Cache::remember($cacheKey, 60, function () {
-            try {
-                $response = Http::timeout(5)->get($this->getHealthCheckUrl());
+        return Cache::remember(
+            $cacheKey, 60, function () {
+                try {
+                    $response = Http::timeout(5)->get($this->getHealthCheckUrl());
 
-                return $response->successful();
-            } catch (\Exception $e) {
-                Log::warning("Bank availability check failed for {$this->bankCode}", [
-                    'error' => $e->getMessage(),
-                ]);
+                    return $response->successful();
+                } catch (\Exception $e) {
+                    Log::warning(
+                        "Bank availability check failed for {$this->bankCode}", [
+                        'error' => $e->getMessage(),
+                        ]
+                    );
 
-                return false;
+                    return false;
+                }
             }
-        });
+        );
     }
 
     /**
@@ -116,13 +120,15 @@ abstract class BaseBankConnector implements IBankConnector
             ->$method($url, $data);
 
         if (! $response->successful()) {
-            Log::error('Bank API request failed', [
+            Log::error(
+                'Bank API request failed', [
                 'bank'     => $this->bankCode,
                 'method'   => $method,
                 'url'      => $url,
                 'status'   => $response->status(),
                 'response' => $response->body(),
-            ]);
+                ]
+            );
 
             throw new \Exception('Bank API request failed: ' . $response->body());
         }
@@ -148,12 +154,14 @@ abstract class BaseBankConnector implements IBankConnector
     protected function logRequest(string $method, string $url, array $data = []): void
     {
         if (config('app.debug')) {
-            Log::debug('Bank API Request', [
+            Log::debug(
+                'Bank API Request', [
                 'bank'   => $this->bankCode,
                 'method' => $method,
                 'url'    => $url,
                 'data'   => $data,
-            ]);
+                ]
+            );
         }
     }
 
@@ -163,12 +171,14 @@ abstract class BaseBankConnector implements IBankConnector
     protected function logResponse(string $method, string $url, array $response): void
     {
         if (config('app.debug')) {
-            Log::debug('Bank API Response', [
+            Log::debug(
+                'Bank API Response', [
                 'bank'     => $this->bankCode,
                 'method'   => $method,
                 'url'      => $url,
                 'response' => $response,
-            ]);
+                ]
+            );
         }
     }
 

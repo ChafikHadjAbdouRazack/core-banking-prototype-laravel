@@ -88,13 +88,15 @@ class ApiRateLimitMiddleware
                 Cache::put($blockKey, $blockedUntil, $config['block_duration']);
 
                 // Log rate limit violation
-                Log::warning('Rate limit exceeded with blocking', [
+                Log::warning(
+                    'Rate limit exceeded with blocking', [
                     'ip'              => $request->ip(),
                     'user_id'         => $request->user()?->id,
                     'endpoint'        => $request->path(),
                     'rate_limit_type' => $rateLimitType,
                     'blocked_until'   => $blockedUntil,
-                ]);
+                    ]
+                );
             }
 
             return $this->rateLimitExceededResponse($request, $config);
@@ -170,13 +172,15 @@ class ApiRateLimitMiddleware
             ? "Rate limit exceeded. Access blocked until {$blockedUntil->toDateTimeString()}."
             : "Rate limit exceeded. Try again in {$retryAfter} seconds.";
 
-        return response()->json([
+        return response()->json(
+            [
             'error'       => 'Rate limit exceeded',
             'message'     => $message,
             'retry_after' => $retryAfter,
             'limit'       => $config['limit'],
             'window'      => $config['window'],
-        ], 429, $headers);
+            ], 429, $headers
+        );
     }
 
     /**

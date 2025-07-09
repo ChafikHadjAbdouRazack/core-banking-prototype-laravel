@@ -105,10 +105,12 @@ class BlockchainWalletService
             return $wallet;
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Failed to create wallet', [
+            Log::error(
+                'Failed to create wallet', [
                 'user_id' => $userId,
                 'error'   => $e->getMessage(),
-            ]);
+                ]
+            );
             throw $e;
         }
     }
@@ -327,11 +329,13 @@ class BlockchainWalletService
      */
     protected function storeEncryptedSeed(string $walletId, string $encryptedSeed): void
     {
-        DB::table('wallet_seeds')->insert([
+        DB::table('wallet_seeds')->insert(
+            [
             'wallet_id'      => $walletId,
             'encrypted_seed' => $encryptedSeed,
             'created_at'     => now(),
-        ]);
+            ]
+        );
     }
 
     /**
@@ -422,7 +426,8 @@ class BlockchainWalletService
         TransactionData $transaction,
         TransactionResult $result
     ): void {
-        DB::table('blockchain_transactions')->insert([
+        DB::table('blockchain_transactions')->insert(
+            [
             'wallet_id'        => $walletId,
             'chain'            => $chain,
             'transaction_hash' => $result->hash,
@@ -432,12 +437,15 @@ class BlockchainWalletService
             'gas_limit'        => $transaction->gasLimit,
             'gas_price'        => $transaction->gasPrice,
             'status'           => $result->status,
-            'metadata'         => json_encode(array_merge(
-                $transaction->metadata,
-                $result->metadata
-            )),
+            'metadata'         => json_encode(
+                array_merge(
+                    $transaction->metadata,
+                    $result->metadata
+                )
+            ),
             'created_at' => now(),
-        ]);
+            ]
+        );
     }
 
     /**
@@ -447,17 +455,21 @@ class BlockchainWalletService
     {
         $connector = $this->getConnector($chain);
 
-        $connector->subscribeToEvents($address, function ($event) use ($walletId, $chain, $address) {
-            Log::info('Blockchain event received', [
-                'wallet_id' => $walletId,
-                'chain'     => $chain,
-                'address'   => $address,
-                'event'     => $event,
-            ]);
+        $connector->subscribeToEvents(
+            $address, function ($event) use ($walletId, $chain, $address) {
+                Log::info(
+                    'Blockchain event received', [
+                    'wallet_id' => $walletId,
+                    'chain'     => $chain,
+                    'address'   => $address,
+                    'event'     => $event,
+                    ]
+                );
 
-            // Process event (update balances, record transactions, etc.)
-            $this->processBlockchainEvent($walletId, $chain, $address, $event);
-        });
+                // Process event (update balances, record transactions, etc.)
+                $this->processBlockchainEvent($walletId, $chain, $address, $event);
+            }
+        );
     }
 
     /**

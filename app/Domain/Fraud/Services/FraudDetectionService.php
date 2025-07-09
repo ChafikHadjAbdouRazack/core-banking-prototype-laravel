@@ -43,93 +43,103 @@ class FraudDetectionService
      */
     public function analyzeTransaction(Transaction $transaction, array $context = []): FraudScore
     {
-        return DB::transaction(function () use ($transaction, $context) {
-            // Get user and account
-            $account = $transaction->account;
-            $user = $account->user;
+        return DB::transaction(
+            function () use ($transaction, $context) {
+                // Get user and account
+                $account = $transaction->account;
+                $user = $account->user;
 
-            // Prepare analysis context
-            $analysisContext = $this->prepareContext($transaction, $user, $context);
+                // Prepare analysis context
+                $analysisContext = $this->prepareContext($transaction, $user, $context);
 
-            // Create fraud score record
-            $fraudScore = FraudScore::create([
-                'entity_id'       => $transaction->id,
-                'entity_type'     => Transaction::class,
-                'score_type'      => FraudScore::SCORE_TYPE_REAL_TIME,
-                'entity_snapshot' => $this->createEntitySnapshot($transaction),
-            ]);
-
-            try {
-                // 1. Rule-based analysis
-                $ruleResults = $this->ruleEngine->evaluate($analysisContext);
-
-                // 2. Behavioral analysis
-                $behavioralResults = $this->behavioralAnalysis->analyze($user, $transaction, $analysisContext);
-
-                // 3. Device analysis
-                $deviceResults = $this->deviceService->analyzeDevice($analysisContext['device_data'] ?? []);
-
-                // 4. ML prediction (if enabled)
-                $mlResults = null;
-                if ($this->mlService->isEnabled()) {
-                    $mlResults = $this->mlService->predict($analysisContext);
-                }
-
-                // 5. Calculate final score
-                $totalScore = $this->calculateTotalScore(
-                    $ruleResults,
-                    $behavioralResults,
-                    $deviceResults,
-                    $mlResults
+                // Create fraud score record
+                $fraudScore = FraudScore::create(
+                    [
+                    'entity_id'       => $transaction->id,
+                    'entity_type'     => Transaction::class,
+                    'score_type'      => FraudScore::SCORE_TYPE_REAL_TIME,
+                    'entity_snapshot' => $this->createEntitySnapshot($transaction),
+                    ]
                 );
 
-                // 6. Determine risk level and decision
-                $riskLevel = FraudScore::calculateRiskLevel($totalScore);
-                $decision = $this->makeDecision($totalScore, $riskLevel, $ruleResults);
+                try {
+                    // 1. Rule-based analysis
+                    $ruleResults = $this->ruleEngine->evaluate($analysisContext);
 
-                // 7. Update fraud score
-                $fraudScore->update([
-                    'total_score'        => $totalScore,
-                    'risk_level'         => $riskLevel,
-                    'score_breakdown'    => $this->createScoreBreakdown($ruleResults, $behavioralResults, $deviceResults, $mlResults),
-                    'triggered_rules'    => $ruleResults['triggered_rules'] ?? [],
-                    'behavioral_factors' => $behavioralResults,
-                    'device_factors'     => $deviceResults,
-                    'network_factors'    => $this->extractNetworkFactors($analysisContext),
-                    'ml_score'           => $mlResults['score'] ?? null,
-                    'ml_model_version'   => $mlResults['model_version'] ?? null,
-                    'ml_features'        => $mlResults['features'] ?? null,
-                    'ml_explanation'     => $mlResults['explanation'] ?? null,
-                    'decision'           => $decision,
-                    'decision_factors'   => $this->extractDecisionFactors($totalScore, $ruleResults),
-                    'decision_at'        => now(),
-                ]);
+                    // 2. Behavioral analysis
+                    $behavioralResults = $this->behavioralAnalysis->analyze($user, $transaction, $analysisContext);
 
-                // 8. Take action based on decision
-                $this->executeDecision($transaction, $fraudScore, $decision);
+                    // 3. Device analysis
+                    $deviceResults = $this->deviceService->analyzeDevice($analysisContext['device_data'] ?? []);
 
-                // 9. Update behavioral profile
-                $this->behavioralAnalysis->updateProfile($user, $transaction, $fraudScore);
+                    // 4. ML prediction (if enabled)
+                    $mlResults = null;
+                    if ($this->mlService->isEnabled()) {
+                        $mlResults = $this->mlService->predict($analysisContext);
+                    }
 
-                return $fraudScore;
-            } catch (\Exception $e) {
-                Log::error('Fraud detection failed', [
-                    'transaction_id' => $transaction->id,
-                    'error'          => $e->getMessage(),
-                ]);
+                    // 5. Calculate final score
+                    $totalScore = $this->calculateTotalScore(
+                        $ruleResults,
+                        $behavioralResults,
+                        $deviceResults,
+                        $mlResults
+                    );
 
-                // Fail-safe: allow transaction but flag for review
-                $fraudScore->update([
-                    'total_score'      => 50,
-                    'risk_level'       => FraudScore::RISK_LEVEL_MEDIUM,
-                    'decision'         => FraudScore::DECISION_REVIEW,
-                    'decision_factors' => ['error' => 'Detection system error - flagged for manual review'],
-                    'decision_at'      => now(),
-                ]);
+                    // 6. Determine risk level and decision
+                    $riskLevel = FraudScore::calculateRiskLevel($totalScore);
+                    $decision = $this->makeDecision($totalScore, $riskLevel, $ruleResults);
 
-                return $fraudScore;
+                    // 7. Update fraud score
+                    $fraudScore->update(
+                        [
+                        'total_score'        => $totalScore,
+                        'risk_level'         => $riskLevel,
+                        'score_breakdown'    => $this->createScoreBreakdown($ruleResults, $behavioralResults, $deviceResults, $mlResults),
+                        'triggered_rules'    => $ruleResults['triggered_rules'] ?? [],
+                        'behavioral_factors' => $behavioralResults,
+                        'device_factors'     => $deviceResults,
+                        'network_factors'    => $this->extractNetworkFactors($analysisContext),
+                        'ml_score'           => $mlResults['score'] ?? null,
+                        'ml_model_version'   => $mlResults['model_version'] ?? null,
+                        'ml_features'        => $mlResults['features'] ?? null,
+                        'ml_explanation'     => $mlResults['explanation'] ?? null,
+                        'decision'           => $decision,
+                        'decision_factors'   => $this->extractDecisionFactors($totalScore, $ruleResults),
+                        'decision_at'        => now(),
+                        ]
+                    );
+
+                    // 8. Take action based on decision
+                    $this->executeDecision($transaction, $fraudScore, $decision);
+
+                    // 9. Update behavioral profile
+                    $this->behavioralAnalysis->updateProfile($user, $transaction, $fraudScore);
+
+                    return $fraudScore;
+                } catch (\Exception $e) {
+                    Log::error(
+                        'Fraud detection failed', [
+                        'transaction_id' => $transaction->id,
+                        'error'          => $e->getMessage(),
+                        ]
+                    );
+
+                    // Fail-safe: allow transaction but flag for review
+                    $fraudScore->update(
+                        [
+                        'total_score'      => 50,
+                        'risk_level'       => FraudScore::RISK_LEVEL_MEDIUM,
+                        'decision'         => FraudScore::DECISION_REVIEW,
+                        'decision_factors' => ['error' => 'Detection system error - flagged for manual review'],
+                        'decision_at'      => now(),
+                        ]
+                    );
+
+                    return $fraudScore;
+                }
             }
-        });
+        );
     }
 
     /**
@@ -137,13 +147,16 @@ class FraudDetectionService
      */
     public function analyzeUser(User $user, array $context = []): FraudScore
     {
-        $analysisContext = array_merge($context, [
+        $analysisContext = array_merge(
+            $context, [
             'user'                => $user,
             'account_age_days'    => $user->created_at->diffInDays(now()),
             'transaction_history' => $this->getTransactionHistory($user),
-        ]);
+            ]
+        );
 
-        $fraudScore = FraudScore::create([
+        $fraudScore = FraudScore::create(
+            [
             'entity_id'       => $user->id,
             'entity_type'     => User::class,
             'score_type'      => FraudScore::SCORE_TYPE_BATCH,
@@ -153,19 +166,22 @@ class FraudDetectionService
                 'kyc_level'   => $user->kyc_level,
                 'risk_rating' => $user->risk_rating,
             ],
-        ]);
+            ]
+        );
 
         // Run comprehensive analysis
         $results = $this->performUserAnalysis($user, $analysisContext);
 
-        $fraudScore->update([
+        $fraudScore->update(
+            [
             'total_score'      => $results['total_score'],
             'risk_level'       => $results['risk_level'],
             'score_breakdown'  => $results['breakdown'],
             'decision'         => $results['decision'],
             'decision_factors' => $results['factors'],
             'decision_at'      => now(),
-        ]);
+            ]
+        );
 
         return $fraudScore;
     }
@@ -175,7 +191,8 @@ class FraudDetectionService
      */
     protected function prepareContext(Transaction $transaction, User $user, array $additionalContext): array
     {
-        return array_merge([
+        return array_merge(
+            [
             'transaction' => $transaction->toArray(),
             'user'        => $user->toArray(),
             'account'     => $transaction->account->toArray(),
@@ -199,7 +216,8 @@ class FraudDetectionService
             'day_of_week'                 => $transaction->created_at->dayOfWeek,
             'is_weekend'                  => $transaction->created_at->isWeekend(),
             'time_since_last_transaction' => $this->getTimeSinceLastTransaction($user),
-        ], $additionalContext);
+            ], $additionalContext
+        );
     }
 
     /**
@@ -286,21 +304,21 @@ class FraudDetectionService
     protected function executeDecision(Transaction $transaction, FraudScore $fraudScore, string $decision): void
     {
         switch ($decision) {
-            case FraudScore::DECISION_BLOCK:
-                $this->blockTransaction($transaction, $fraudScore);
-                break;
+        case FraudScore::DECISION_BLOCK:
+            $this->blockTransaction($transaction, $fraudScore);
+            break;
 
-            case FraudScore::DECISION_REVIEW:
-                $this->flagForReview($transaction, $fraudScore);
-                break;
+        case FraudScore::DECISION_REVIEW:
+            $this->flagForReview($transaction, $fraudScore);
+            break;
 
-            case FraudScore::DECISION_CHALLENGE:
-                $this->requestChallenge($transaction, $fraudScore);
-                break;
+        case FraudScore::DECISION_CHALLENGE:
+            $this->requestChallenge($transaction, $fraudScore);
+            break;
 
-            case FraudScore::DECISION_ALLOW:
-                // Transaction proceeds normally
-                break;
+        case FraudScore::DECISION_ALLOW:
+            // Transaction proceeds normally
+            break;
         }
 
         // Create fraud case for high-risk transactions
@@ -314,15 +332,19 @@ class FraudDetectionService
      */
     protected function blockTransaction(Transaction $transaction, FraudScore $fraudScore): void
     {
-        $transaction->update([
+        $transaction->update(
+            [
             'status'   => 'blocked',
-            'metadata' => array_merge($transaction->metadata ?? [], [
+            'metadata' => array_merge(
+                $transaction->metadata ?? [], [
                 'blocked_at'     => now()->toIso8601String(),
                 'block_reason'   => 'Fraud detection system',
                 'fraud_score_id' => $fraudScore->id,
                 'risk_level'     => $fraudScore->risk_level,
-            ]),
-        ]);
+                ]
+            ),
+            ]
+        );
 
         event(new TransactionBlocked($transaction, $fraudScore));
         event(new FraudDetected($fraudScore));
@@ -333,14 +355,18 @@ class FraudDetectionService
      */
     protected function flagForReview(Transaction $transaction, FraudScore $fraudScore): void
     {
-        $transaction->update([
-            'metadata' => array_merge($transaction->metadata ?? [], [
+        $transaction->update(
+            [
+            'metadata' => array_merge(
+                $transaction->metadata ?? [], [
                 'requires_review'     => true,
                 'review_requested_at' => now()->toIso8601String(),
                 'fraud_score_id'      => $fraudScore->id,
                 'risk_level'          => $fraudScore->risk_level,
-            ]),
-        ]);
+                ]
+            ),
+            ]
+        );
 
         // Transaction continues but is flagged
         event(new FraudDetected($fraudScore));
@@ -351,14 +377,18 @@ class FraudDetectionService
      */
     protected function requestChallenge(Transaction $transaction, FraudScore $fraudScore): void
     {
-        $transaction->update([
+        $transaction->update(
+            [
             'status'   => 'pending_challenge',
-            'metadata' => array_merge($transaction->metadata ?? [], [
+            'metadata' => array_merge(
+                $transaction->metadata ?? [], [
                 'challenge_requested_at' => now()->toIso8601String(),
                 'challenge_reason'       => 'Additional verification required',
                 'fraud_score_id'         => $fraudScore->id,
-            ]),
-        ]);
+                ]
+            ),
+            ]
+        );
 
         event(new ChallengeRequired($transaction, $fraudScore));
     }
@@ -372,9 +402,11 @@ class FraudDetectionService
             "user_daily_txn_count_{$user->id}",
             60, // 1 minute cache
             function () use ($user) {
-                return Transaction::whereHas('account', function ($query) use ($user) {
-                    $query->where('user_id', $user->id);
-                })
+                return Transaction::whereHas(
+                    'account', function ($query) use ($user) {
+                        $query->where('user_id', $user->id);
+                    }
+                )
                 ->whereDate('created_at', today())
                 ->count();
             }
@@ -390,9 +422,11 @@ class FraudDetectionService
             "user_daily_txn_volume_{$user->id}",
             60, // 1 minute cache
             function () use ($user) {
-                return Transaction::whereHas('account', function ($query) use ($user) {
-                    $query->where('user_id', $user->id);
-                })
+                return Transaction::whereHas(
+                    'account', function ($query) use ($user) {
+                        $query->where('user_id', $user->id);
+                    }
+                )
                 ->whereDate('created_at', today())
                 ->sum('amount');
             }
@@ -404,9 +438,11 @@ class FraudDetectionService
      */
     protected function getHourlyTransactionCount(User $user): int
     {
-        return Transaction::whereHas('account', function ($query) use ($user) {
-            $query->where('user_id', $user->id);
-        })
+        return Transaction::whereHas(
+            'account', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            }
+        )
         ->where('created_at', '>=', now()->subHour())
         ->count();
     }
@@ -416,9 +452,11 @@ class FraudDetectionService
      */
     protected function getTimeSinceLastTransaction(User $user): ?int
     {
-        $lastTransaction = Transaction::whereHas('account', function ($query) use ($user) {
-            $query->where('user_id', $user->id);
-        })
+        $lastTransaction = Transaction::whereHas(
+            'account', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            }
+        )
         ->orderBy('created_at', 'desc')
         ->skip(1) // Skip current transaction
         ->first();
@@ -431,9 +469,11 @@ class FraudDetectionService
      */
     protected function getTransactionHistory(User $user, int $days = 30): array
     {
-        return Transaction::whereHas('account', function ($query) use ($user) {
-            $query->where('user_id', $user->id);
-        })
+        return Transaction::whereHas(
+            'account', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            }
+        )
         ->where('created_at', '>=', now()->subDays($days))
         ->select('id', 'amount', 'currency', 'type', 'status', 'created_at')
         ->orderBy('created_at', 'desc')
@@ -597,9 +637,11 @@ class FraudDetectionService
         }
 
         // Check for round amounts
-        $roundAmounts = array_filter($transactions, function ($tx) {
-            return $tx['amount'] % 100 == 0;
-        });
+        $roundAmounts = array_filter(
+            $transactions, function ($tx) {
+                return $tx['amount'] % 100 == 0;
+            }
+        );
 
         if (count($roundAmounts) / count($transactions) > 0.8) {
             $score += 15;

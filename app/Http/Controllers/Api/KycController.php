@@ -34,25 +34,25 @@ class KycController extends Controller
      *     summary="Get KYC status for authenticated user",
      *     description="Retrieve the current KYC verification status and documents for the authenticated user",
      *     security={{"sanctum": {}}},
-     *     @OA\Response(
+     * @OA\Response(
      *         response=200,
      *         description="Successful operation",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="status", type="string", enum={"unverified", "pending", "approved", "rejected"}, example="pending"),
-     *             @OA\Property(property="level", type="string", enum={"basic", "enhanced", "full"}, example="enhanced"),
-     *             @OA\Property(property="submitted_at", type="string", format="date-time", example="2025-01-15T10:00:00Z"),
-     *             @OA\Property(property="approved_at", type="string", format="date-time", nullable=true),
-     *             @OA\Property(property="expires_at", type="string", format="date-time", nullable=true),
-     *             @OA\Property(property="needs_kyc", type="boolean", example=true),
-     *             @OA\Property(property="documents", type="array", @OA\Items(
-     *                 @OA\Property(property="id", type="string", example="123"),
-     *                 @OA\Property(property="type", type="string", example="passport"),
-     *                 @OA\Property(property="status", type="string", example="approved"),
-     *                 @OA\Property(property="uploaded_at", type="string", format="date-time")
+     * @OA\JsonContent(
+     * @OA\Property(property="status",       type="string", enum={"unverified", "pending", "approved", "rejected"}, example="pending"),
+     * @OA\Property(property="level",        type="string", enum={"basic", "enhanced", "full"}, example="enhanced"),
+     * @OA\Property(property="submitted_at", type="string", format="date-time", example="2025-01-15T10:00:00Z"),
+     * @OA\Property(property="approved_at",  type="string", format="date-time", nullable=true),
+     * @OA\Property(property="expires_at",   type="string", format="date-time", nullable=true),
+     * @OA\Property(property="needs_kyc",    type="boolean", example=true),
+     * @OA\Property(property="documents",    type="array", @OA\Items(
+     * @OA\Property(property="id",           type="string", example="123"),
+     * @OA\Property(property="type",         type="string", example="passport"),
+     * @OA\Property(property="status",       type="string", example="approved"),
+     * @OA\Property(property="uploaded_at",  type="string", format="date-time")
      *             ))
      *         )
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=401,
      *         description="Unauthenticated"
      *     )
@@ -60,23 +60,29 @@ class KycController extends Controller
      */
     public function status(): JsonResponse
     {
-        /** @var User $user */
+        /**
+ * @var User $user 
+*/
         $user = Auth::user();
 
-        return response()->json([
+        return response()->json(
+            [
             'status'       => $user->kyc_status,
             'level'        => $user->kyc_level,
             'submitted_at' => $user->kyc_submitted_at,
             'approved_at'  => $user->kyc_approved_at,
             'expires_at'   => $user->kyc_expires_at,
             'needs_kyc'    => $user->needsKyc(),
-            'documents'    => $user->kycDocuments->map(fn ($doc) => [
+            'documents'    => $user->kycDocuments->map(
+                fn ($doc) => [
                 'id'          => $doc->id,
                 'type'        => $doc->document_type,
                 'status'      => $doc->status,
                 'uploaded_at' => $doc->uploaded_at,
-            ]),
-        ]);
+                ]
+            ),
+            ]
+        );
     }
 
     /**
@@ -86,44 +92,48 @@ class KycController extends Controller
      *     tags={"KYC"},
      *     summary="Get KYC requirements for a level",
      *     description="Retrieve the document requirements for a specific KYC verification level",
-     *     @OA\Parameter(
+     * @OA\Parameter(
      *         name="level",
      *         in="query",
      *         description="KYC verification level",
      *         required=true,
-     *         @OA\Schema(type="string", enum={"basic", "enhanced", "full"})
+     * @OA\Schema(type="string",                                   enum={"basic", "enhanced", "full"})
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=200,
      *         description="Successful operation",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="level", type="string", example="enhanced"),
-     *             @OA\Property(property="requirements", type="array", @OA\Items(
-     *                 @OA\Property(property="document_type", type="string", example="passport"),
-     *                 @OA\Property(property="description", type="string", example="Valid passport copy"),
-     *                 @OA\Property(property="required", type="boolean", example=true)
+     * @OA\JsonContent(
+     * @OA\Property(property="level",                              type="string", example="enhanced"),
+     * @OA\Property(property="requirements",                       type="array", @OA\Items(
+     * @OA\Property(property="document_type",                      type="string", example="passport"),
+     * @OA\Property(property="description",                        type="string", example="Valid passport copy"),
+     * @OA\Property(property="required",                           type="boolean", example=true)
      *             ))
      *         )
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=422,
      *         description="Validation error",
-     *         @OA\JsonContent(ref="#/components/schemas/ValidationError")
+     * @OA\JsonContent(ref="#/components/schemas/ValidationError")
      *     )
      * )
      */
     public function requirements(Request $request): JsonResponse
     {
-        $request->validate([
+        $request->validate(
+            [
             'level' => 'required|in:basic,enhanced,full',
-        ]);
+            ]
+        );
 
         $requirements = $this->kycService->getRequirements($request->level);
 
-        return response()->json([
+        return response()->json(
+            [
             'level'        => $request->level,
             'requirements' => $requirements,
-        ]);
+            ]
+        );
     }
 
     /**
@@ -134,74 +144,82 @@ class KycController extends Controller
      *     summary="Submit KYC documents",
      *     description="Submit KYC verification documents for review",
      *     security={{"sanctum": {}}},
-     *     @OA\RequestBody(
+     * @OA\RequestBody(
      *         required=true,
-     *         @OA\MediaType(
+     * @OA\MediaType(
      *             mediaType="multipart/form-data",
-     *             @OA\Schema(
-     *                 @OA\Property(
+     * @OA\Schema(
+     * @OA\Property(
      *                     property="documents",
      *                     type="array",
-     *                     @OA\Items(
-     *                         @OA\Property(property="type", type="string", enum={"passport", "national_id", "drivers_license", "residence_permit", "utility_bill", "bank_statement", "selfie", "proof_of_income", "other"}),
-     *                         @OA\Property(property="file", type="string", format="binary", description="Document file (jpg, jpeg, png, pdf - max 10MB)")
+     * @OA\Items(
+     * @OA\Property(property="type",    type="string", enum={"passport", "national_id", "drivers_license", "residence_permit", "utility_bill", "bank_statement", "selfie", "proof_of_income", "other"}),
+     * @OA\Property(property="file",    type="string", format="binary", description="Document file (jpg, jpeg, png, pdf - max 10MB)")
      *                     )
      *                 )
      *             )
      *         )
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=200,
      *         description="Documents submitted successfully",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="KYC documents submitted successfully"),
-     *             @OA\Property(property="status", type="string", example="pending")
+     * @OA\JsonContent(
+     * @OA\Property(property="message", type="string", example="KYC documents submitted successfully"),
+     * @OA\Property(property="status",  type="string", example="pending")
      *         )
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=400,
      *         description="Bad request - KYC already approved",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="error", type="string", example="KYC already approved")
+     * @OA\JsonContent(
+     * @OA\Property(property="error",   type="string", example="KYC already approved")
      *         )
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=422,
      *         description="Validation error"
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=500,
      *         description="Server error",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="error", type="string", example="Failed to submit KYC documents")
+     * @OA\JsonContent(
+     * @OA\Property(property="error",   type="string", example="Failed to submit KYC documents")
      *         )
      *     )
      * )
      */
     public function submit(Request $request): JsonResponse
     {
-        /** @var User $user */
+        /**
+ * @var User $user 
+*/
         $user = Auth::user();
 
         if ($user->kyc_status === 'approved') {
-            return response()->json([
+            return response()->json(
+                [
                 'error' => 'KYC already approved',
-            ], 400);
+                ], 400
+            );
         }
 
-        $request->validate([
+        $request->validate(
+            [
             'documents'        => 'required|array|min:1',
             'documents.*.type' => 'required|in:passport,national_id,drivers_license,residence_permit,utility_bill,bank_statement,selfie,proof_of_income,other',
             'documents.*.file' => 'required|file|mimes:jpg,jpeg,png,pdf|max:10240', // 10MB max
-        ]);
+            ]
+        );
 
         try {
             $this->kycService->submitKyc($user, $request->documents);
 
-            return response()->json([
+            return response()->json(
+                [
                 'message' => 'KYC documents submitted successfully',
                 'status'  => 'pending',
-            ]);
+                ]
+            );
         } catch (\Exception $e) {
             AuditLog::log(
                 'kyc.submission_failed',
@@ -212,9 +230,11 @@ class KycController extends Controller
                 'kyc,error'
             );
 
-            return response()->json([
+            return response()->json(
+                [
                 'error' => 'Failed to submit KYC documents',
-            ], 500);
+                ], 500
+            );
         }
     }
 
@@ -226,26 +246,26 @@ class KycController extends Controller
      *     summary="Download a KYC document",
      *     description="Download a previously uploaded KYC document. Users can only download their own documents.",
      *     security={{"sanctum": {}}},
-     *     @OA\Parameter(
+     * @OA\Parameter(
      *         name="documentId",
      *         in="path",
      *         description="The document ID",
      *         required=true,
-     *         @OA\Schema(type="string")
+     * @OA\Schema(type="string")
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=200,
      *         description="Document file download",
-     *         @OA\MediaType(
+     * @OA\MediaType(
      *             mediaType="application/octet-stream",
-     *             @OA\Schema(type="string", format="binary")
+     * @OA\Schema(type="string", format="binary")
      *         )
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=404,
      *         description="Document not found"
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=401,
      *         description="Unauthenticated"
      *     )
@@ -253,7 +273,9 @@ class KycController extends Controller
      */
     public function downloadDocument(string $documentId): mixed
     {
-        /** @var User $user */
+        /**
+ * @var User $user 
+*/
         $user = Auth::user();
         $document = $user->kycDocuments()->findOrFail($documentId);
 
@@ -281,12 +303,16 @@ class KycController extends Controller
      */
     public function upload(Request $request): JsonResponse
     {
-        $request->validate([
+        $request->validate(
+            [
             'document' => 'required|file|mimes:jpg,jpeg,png,pdf|max:10240',
             'type'     => 'sometimes|string|in:passport,national_id,drivers_license,residence_permit,utility_bill,bank_statement,selfie,proof_of_income,other',
-        ]);
+            ]
+        );
 
-        /** @var User $user */
+        /**
+ * @var User $user 
+*/
         $user = Auth::user();
         $file = $request->file('document');
         $type = $request->input('type', 'other');
@@ -296,7 +322,8 @@ class KycController extends Controller
             $path = $file->store('kyc/' . $user->uuid, 'private');
 
             // Create document record
-            $document = $user->kycDocuments()->create([
+            $document = $user->kycDocuments()->create(
+                [
                 'document_type' => $type,
                 'file_path'     => $path,
                 'status'        => 'pending',
@@ -306,7 +333,8 @@ class KycController extends Controller
                     'mime_type'     => $file->getMimeType(),
                     'size'          => $file->getSize(),
                 ],
-            ]);
+                ]
+            );
 
             AuditLog::log(
                 'kyc.document_uploaded',
@@ -317,10 +345,12 @@ class KycController extends Controller
                 'kyc,document'
             );
 
-            return response()->json([
+            return response()->json(
+                [
                 'message'     => 'Document uploaded successfully',
                 'document_id' => $document->id,
-            ]);
+                ]
+            );
         } catch (\Exception $e) {
             AuditLog::log(
                 'kyc.upload_failed',
@@ -331,9 +361,11 @@ class KycController extends Controller
                 'kyc,error'
             );
 
-            return response()->json([
+            return response()->json(
+                [
                 'error' => 'Failed to upload document',
-            ], 500);
+                ], 500
+            );
         }
     }
 }

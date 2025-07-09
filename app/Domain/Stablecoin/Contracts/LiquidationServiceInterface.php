@@ -11,8 +11,8 @@ interface LiquidationServiceInterface
     /**
      * Liquidate a single position.
      *
-     * @param StablecoinCollateralPosition $position
-     * @param Account|null $liquidator
+     * @param  StablecoinCollateralPosition $position
+     * @param  Account|null                 $liquidator
      * @return array
      */
     public function liquidatePosition(StablecoinCollateralPosition $position, ?Account $liquidator = null): array;
@@ -20,8 +20,8 @@ interface LiquidationServiceInterface
     /**
      * Batch liquidate multiple positions.
      *
-     * @param Collection $positions
-     * @param Account|null $liquidator
+     * @param  Collection   $positions
+     * @param  Account|null $liquidator
      * @return array
      */
     public function batchLiquidate(Collection $positions, ?Account $liquidator = null): array;
@@ -29,7 +29,7 @@ interface LiquidationServiceInterface
     /**
      * Auto-liquidate all eligible positions.
      *
-     * @param Account|null $liquidator
+     * @param  Account|null $liquidator
      * @return array
      */
     public function liquidateEligiblePositions(?Account $liquidator = null): array;
@@ -37,7 +37,7 @@ interface LiquidationServiceInterface
     /**
      * Calculate liquidation reward.
      *
-     * @param StablecoinCollateralPosition $position
+     * @param  StablecoinCollateralPosition $position
      * @return array
      */
     public function calculateLiquidationReward(StablecoinCollateralPosition $position): array;
@@ -45,7 +45,7 @@ interface LiquidationServiceInterface
     /**
      * Get profitable liquidation opportunities.
      *
-     * @param int $limit
+     * @param  int $limit
      * @return Collection
      */
     public function getLiquidationOpportunities(int $limit = 50): Collection;
@@ -53,8 +53,8 @@ interface LiquidationServiceInterface
     /**
      * Simulate mass liquidation scenario.
      *
-     * @param string $stablecoinCode
-     * @param float $priceDropPercentage
+     * @param  string $stablecoinCode
+     * @param  float  $priceDropPercentage
      * @return array
      */
     public function simulateMassLiquidation(string $stablecoinCode, float $priceDropPercentage): array;
@@ -62,7 +62,7 @@ interface LiquidationServiceInterface
     /**
      * Emergency liquidation for system protection.
      *
-     * @param string $stablecoinCode
+     * @param  string $stablecoinCode
      * @return array
      */
     public function emergencyLiquidation(string $stablecoinCode): array;

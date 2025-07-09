@@ -10,7 +10,7 @@ class TriggerBasketRebalancingActivity extends Activity
     /**
      * Execute trigger basket rebalancing activity.
      *
-     * @param string $basketCode
+     * @param  string $basketCode
      * @return void
      */
     public function execute(string $basketCode): void
@@ -22,17 +22,21 @@ class TriggerBasketRebalancingActivity extends Activity
         }
 
         // Trigger rebalancing event
-        event(new \App\Domain\Basket\Events\BasketRebalanced(
-            $basketCode,
-            $basket->components->map(function ($component) {
-                return [
-                    'asset'      => $component->asset_code,
-                    'old_weight' => $component->weight,
-                    'new_weight' => $component->weight,
-                    'adjustment' => 0.0,
-                ];
-            })->toArray(),
-            now()
-        ));
+        event(
+            new \App\Domain\Basket\Events\BasketRebalanced(
+                $basketCode,
+                $basket->components->map(
+                    function ($component) {
+                        return [
+                        'asset'      => $component->asset_code,
+                        'old_weight' => $component->weight,
+                        'new_weight' => $component->weight,
+                        'adjustment' => 0.0,
+                        ];
+                    }
+                )->toArray(),
+                now()
+            )
+        );
     }
 }

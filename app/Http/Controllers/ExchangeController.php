@@ -50,7 +50,8 @@ class ExchangeController extends Controller
         // Get market data for various pairs
         $markets = $this->getMarketPairs();
 
-        return view('exchange.index', [
+        return view(
+            'exchange.index', [
             'baseCurrency'  => $baseCurrency,
             'quoteCurrency' => $quoteCurrency,
             'assets'        => $assets,
@@ -58,7 +59,8 @@ class ExchangeController extends Controller
             'userOrders'    => $userOrders,
             'recentTrades'  => $recentTrades,
             'markets'       => $markets,
-        ]);
+            ]
+        );
     }
 
     public function orders()
@@ -74,9 +76,11 @@ class ExchangeController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(20);
 
-        return view('exchange.orders', [
+        return view(
+            'exchange.orders', [
             'orders' => $orders,
-        ]);
+            ]
+        );
     }
 
     public function trades()
@@ -94,29 +98,35 @@ class ExchangeController extends Controller
 
         // Calculate total fees
         $totalFees = Trade::forAccount($account->id)
-            ->selectRaw('SUM(CASE WHEN buyer_account_id = ? THEN 
+            ->selectRaw(
+                'SUM(CASE WHEN buyer_account_id = ? THEN 
                            CASE WHEN maker_side = \'buy\' THEN maker_fee ELSE taker_fee END
                          ELSE 
                            CASE WHEN maker_side = \'sell\' THEN maker_fee ELSE taker_fee END
-                         END) as total_fees', [$account->id])
+                         END) as total_fees', [$account->id]
+            )
             ->value('total_fees') ?? '0';
 
-        return view('exchange.trades', [
+        return view(
+            'exchange.trades', [
             'trades'    => $trades,
             'totalFees' => $totalFees,
-        ]);
+            ]
+        );
     }
 
     public function placeOrder(Request $request)
     {
-        $validated = $request->validate([
+        $validated = $request->validate(
+            [
             'type'           => ['required', 'in:buy,sell'],
             'order_type'     => ['required', 'in:market,limit'],
             'base_currency'  => ['required', 'string', 'size:3'],
             'quote_currency' => ['required', 'string', 'size:3'],
             'amount'         => ['required', 'numeric', 'gt:0'],
             'price'          => ['required_if:order_type,limit', 'nullable', 'numeric', 'gt:0'],
-        ]);
+            ]
+        );
 
         $account = Auth::user()->account;
 
@@ -139,10 +149,12 @@ class ExchangeController extends Controller
                 ]
             );
 
-            return redirect()->route('exchange.index', [
+            return redirect()->route(
+                'exchange.index', [
                 'base'  => $validated['base_currency'],
                 'quote' => $validated['quote_currency'],
-            ])->with('success', 'Order placed successfully');
+                ]
+            )->with('success', 'Order placed successfully');
         } catch (\Exception $e) {
             return redirect()->back()
                 ->withInput()

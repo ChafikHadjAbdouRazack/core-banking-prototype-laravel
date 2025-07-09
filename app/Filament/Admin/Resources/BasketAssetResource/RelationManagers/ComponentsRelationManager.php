@@ -17,12 +17,15 @@ class ComponentsRelationManager extends RelationManager
     public function form(Form $form): Form
     {
         return $form
-            ->schema([
+            ->schema(
+                [
                 Forms\Components\Select::make('asset_code')
                     ->label('Asset')
                     ->required()
-                    ->options(fn () => \App\Domain\Asset\Models\Asset::where('is_active', true)
-                        ->pluck('name', 'code'))
+                    ->options(
+                        fn () => \App\Domain\Asset\Models\Asset::where('is_active', true)
+                        ->pluck('name', 'code')
+                    )
                     ->searchable()
                     ->helperText('Select the asset to include in the basket'),
 
@@ -37,7 +40,8 @@ class ComponentsRelationManager extends RelationManager
                     ->helperText('Percentage weight in the basket'),
 
                 Forms\Components\Grid::make(2)
-                    ->schema([
+                    ->schema(
+                        [
                         Forms\Components\TextInput::make('min_weight')
                             ->label('Min Weight (%)')
                             ->numeric()
@@ -55,20 +59,23 @@ class ComponentsRelationManager extends RelationManager
                             ->suffix('%')
                             ->step(0.01)
                             ->visible(fn () => $this->getOwnerRecord()->type === 'dynamic'),
-                    ]),
+                        ]
+                    ),
 
                 Forms\Components\Toggle::make('is_active')
                     ->label('Active')
                     ->default(true)
                     ->helperText('Whether this component is active in the basket'),
-            ]);
+                ]
+            );
     }
 
     public function table(Table $table): Table
     {
         return $table
             ->recordTitleAttribute('asset_code')
-            ->columns([
+            ->columns(
+                [
                 Tables\Columns\TextColumn::make('asset.name')
                     ->label('Asset')
                     ->searchable(),
@@ -110,40 +117,57 @@ class ComponentsRelationManager extends RelationManager
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ])
-            ->filters([
+                ]
+            )
+            ->filters(
+                [
                 Tables\Filters\TernaryFilter::make('is_active')
                     ->label('Active Status')
                     ->placeholder('All components')
                     ->trueLabel('Active only')
                     ->falseLabel('Inactive only'),
-            ])
-            ->headerActions([
+                ]
+            )
+            ->headerActions(
+                [
                 Tables\Actions\CreateAction::make()
-                    ->after(function () {
-                        // Recalculate value after adding component
-                        app(\App\Domain\Basket\Services\BasketValueCalculationService::class)
-                            ->calculateValue($this->getOwnerRecord(), false);
-                    }),
-            ])
-            ->actions([
+                    ->after(
+                        function () {
+                            // Recalculate value after adding component
+                            app(\App\Domain\Basket\Services\BasketValueCalculationService::class)
+                                ->calculateValue($this->getOwnerRecord(), false);
+                        }
+                    ),
+                ]
+            )
+            ->actions(
+                [
                 Tables\Actions\EditAction::make()
-                    ->after(function () {
-                        // Recalculate value after editing component
-                        app(\App\Domain\Basket\Services\BasketValueCalculationService::class)
-                            ->calculateValue($this->getOwnerRecord(), false);
-                    }),
+                    ->after(
+                        function () {
+                            // Recalculate value after editing component
+                            app(\App\Domain\Basket\Services\BasketValueCalculationService::class)
+                                ->calculateValue($this->getOwnerRecord(), false);
+                        }
+                    ),
                 Tables\Actions\DeleteAction::make()
-                    ->after(function () {
-                        // Recalculate value after deleting component
-                        app(\App\Domain\Basket\Services\BasketValueCalculationService::class)
-                            ->calculateValue($this->getOwnerRecord(), false);
-                    }),
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
+                    ->after(
+                        function () {
+                            // Recalculate value after deleting component
+                            app(\App\Domain\Basket\Services\BasketValueCalculationService::class)
+                                ->calculateValue($this->getOwnerRecord(), false);
+                        }
+                    ),
+                ]
+            )
+            ->bulkActions(
+                [
+                Tables\Actions\BulkActionGroup::make(
+                    [
                     Tables\Actions\DeleteBulkAction::make(),
-                ]),
-            ]);
+                    ]
+                ),
+                ]
+            );
     }
 }

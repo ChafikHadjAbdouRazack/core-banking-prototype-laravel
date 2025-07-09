@@ -9,9 +9,9 @@ use Workflow\Activity;
 class DepositAssetActivity extends Activity
 {
     /**
-     * @param AccountUuid $accountUuid
-     * @param string $assetCode
-     * @param int $amount
+     * @param AccountUuid               $accountUuid
+     * @param string                    $assetCode
+     * @param int                       $amount
      * @param AssetTransactionAggregate $assetTransaction
      *
      * @return bool

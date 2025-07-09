@@ -15,7 +15,7 @@ class CachePerformance
     /**
      * Handle an incoming request.
      *
-     * @param  Closure(Request): (Response)  $next
+     * @param Closure(Request): (Response) $next
      */
     public function handle(Request $request, Closure $next): Response
     {
@@ -47,12 +47,14 @@ class CachePerformance
 
             // Log if hit rate is low
             if ($hitRate < 50 && $totalRequests > 5) {
-                Log::warning('Low cache hit rate detected', [
+                Log::warning(
+                    'Low cache hit rate detected', [
                     'endpoint' => $request->path(),
                     'hit_rate' => $hitRate,
                     'hits'     => $requestHits,
                     'misses'   => $requestMisses,
-                ]);
+                    ]
+                );
             }
         }
 

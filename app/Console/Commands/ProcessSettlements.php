@@ -111,43 +111,43 @@ class ProcessSettlements extends Command
         $this->newLine();
 
         switch ($type) {
-            case 'net':
-                $this->info('📊 Net Settlement Results:');
-                $this->table(
-                    ['Metric', 'Value'],
-                    [
-                        ['Settlements Processed', $results['settlements']],
-                        ['Total Gross Amount', '$' . number_format($results['total_gross'] / 100, 2)],
-                        ['Total Net Amount', '$' . number_format($results['total_net'] / 100, 2)],
-                        ['Savings', '$' . number_format($results['savings'] / 100, 2)],
-                        ['Savings Percentage', $results['savings_percentage'] . '%'],
-                    ]
-                );
-                break;
+        case 'net':
+            $this->info('📊 Net Settlement Results:');
+            $this->table(
+                ['Metric', 'Value'],
+                [
+                    ['Settlements Processed', $results['settlements']],
+                    ['Total Gross Amount', '$' . number_format($results['total_gross'] / 100, 2)],
+                    ['Total Net Amount', '$' . number_format($results['total_net'] / 100, 2)],
+                    ['Savings', '$' . number_format($results['savings'] / 100, 2)],
+                    ['Savings Percentage', $results['savings_percentage'] . '%'],
+                ]
+            );
+            break;
 
-            case 'batch':
-                $this->info('📦 Batch Settlement Results:');
-                $this->table(
-                    ['Metric', 'Value'],
-                    [
-                        ['Batches Processed', $results['batches']],
-                        ['Transfers Settled', $results['transfers']],
-                        ['Total Amount', '$' . number_format($results['total_amount'] / 100, 2)],
-                    ]
-                );
-                break;
+        case 'batch':
+            $this->info('📦 Batch Settlement Results:');
+            $this->table(
+                ['Metric', 'Value'],
+                [
+                    ['Batches Processed', $results['batches']],
+                    ['Transfers Settled', $results['transfers']],
+                    ['Total Amount', '$' . number_format($results['total_amount'] / 100, 2)],
+                ]
+            );
+            break;
 
-            case 'realtime':
-                $this->info('⚡ Realtime Settlement Results:');
-                $this->table(
-                    ['Metric', 'Value'],
-                    [
-                        ['Settlements Processed', $results['processed']],
-                        ['Failed', $results['failed']],
-                        ['Total Amount', '$' . number_format($results['total_amount'] / 100, 2)],
-                    ]
-                );
-                break;
+        case 'realtime':
+            $this->info('⚡ Realtime Settlement Results:');
+            $this->table(
+                ['Metric', 'Value'],
+                [
+                    ['Settlements Processed', $results['processed']],
+                    ['Failed', $results['failed']],
+                    ['Total Amount', '$' . number_format($results['total_amount'] / 100, 2)],
+                ]
+            );
+            break;
         }
 
         // Show current statistics
@@ -157,13 +157,15 @@ class ProcessSettlements extends Command
 
         $this->table(
             ['Settlement Type', 'Count', 'Amount'],
-            collect($stats['by_type'])->map(function ($data, $type) {
-                return [
+            collect($stats['by_type'])->map(
+                function ($data, $type) {
+                    return [
                     ucfirst($type),
                     $data['count'],
                     '$' . number_format(($data['amount'] ?? 0) / 100, 2),
-                ];
-            })->toArray()
+                    ];
+                }
+            )->toArray()
         );
     }
 }

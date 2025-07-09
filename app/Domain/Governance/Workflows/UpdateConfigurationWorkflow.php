@@ -42,11 +42,13 @@ class UpdateConfigurationWorkflow
                         'new_value' => $newValue,
                     ];
                 } else {
-                    logger()->warning('Governance poll attempted to update restricted configuration', [
+                    logger()->warning(
+                        'Governance poll attempted to update restricted configuration', [
                         'poll_uuid'       => $poll->uuid,
                         'config_key'      => $configKey,
                         'attempted_value' => $newValue,
-                    ]);
+                        ]
+                    );
                 }
             }
 
@@ -59,12 +61,14 @@ class UpdateConfigurationWorkflow
             }
 
             // Log the governance action
-            logger()->info('Configuration updated via governance poll', [
+            logger()->info(
+                'Configuration updated via governance poll', [
                 'poll_uuid'          => $poll->uuid,
                 'changes'            => $appliedChanges,
                 'winning_option'     => $result->winningOption,
                 'participation_rate' => $result->participationRate,
-            ]);
+                ]
+            );
 
             return [
                 'success'         => true,
@@ -74,11 +78,13 @@ class UpdateConfigurationWorkflow
                 'changes_count'   => count($appliedChanges),
             ];
         } catch (\Exception $e) {
-            logger()->error('Failed to update configuration via governance poll', [
+            logger()->error(
+                'Failed to update configuration via governance poll', [
                 'poll_uuid'      => $poll->uuid,
                 'config_changes' => $configChanges,
                 'error'          => $e->getMessage(),
-            ]);
+                ]
+            );
 
             return [
                 'success'   => false,
@@ -230,10 +236,12 @@ class UpdateConfigurationWorkflow
         // In a real implementation, this would also update the persistent configuration store
         // This could be database, configuration management system, or external service
 
-        logger()->info('Configuration updated via governance', [
+        logger()->info(
+            'Configuration updated via governance', [
             'config_key' => $configKey,
             'new_value'  => $newValue,
             'timestamp'  => now()->toISOString(),
-        ]);
+            ]
+        );
     }
 }

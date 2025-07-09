@@ -102,14 +102,16 @@ class EnhancedLiquidityManagementWorkflow extends Workflow
                 'liquidity_transfer',
                 fn () => ActivityStub::make(TransferLiquidityActivity::class)
                     ->withRetryOptions(LiquidityRetryPolicy::critical())
-                    ->execute([
+                    ->execute(
+                        [
                         'from_account_id' => $input->providerId,
                         'to_pool_id'      => $input->poolId,
                         'base_currency'   => $input->baseCurrency,
                         'base_amount'     => $input->baseAmount,
                         'quote_currency'  => $input->quoteCurrency,
                         'quote_amount'    => $input->quoteAmount,
-                    ]),
+                        ]
+                    ),
                 $context
             );
             $this->liquidityTransferred = true;
@@ -122,18 +124,24 @@ class EnhancedLiquidityManagementWorkflow extends Workflow
                     baseAmount: $input->baseAmount,
                     quoteAmount: $input->quoteAmount,
                     minShares: $input->minShares,
-                    metadata: array_merge($context, [
+                    metadata: array_merge(
+                        $context, [
                         'timestamp'         => now()->toIso8601String(),
                         'execution_time_ms' => (microtime(true) - $startTime) * 1000,
                         'shares_minted'     => $shares['shares'],
-                    ])
+                        ]
+                    )
                 )
             );
 
-            Log::info('Liquidity added successfully', array_merge($context, [
-                'shares_minted'     => $shares['shares'],
-                'execution_time_ms' => (microtime(true) - $startTime) * 1000,
-            ]));
+            Log::info(
+                'Liquidity added successfully', array_merge(
+                    $context, [
+                    'shares_minted'     => $shares['shares'],
+                    'execution_time_ms' => (microtime(true) - $startTime) * 1000,
+                    ]
+                )
+            );
 
             return [
                 'success'           => true,
@@ -143,10 +151,14 @@ class EnhancedLiquidityManagementWorkflow extends Workflow
                 'execution_time_ms' => (microtime(true) - $startTime) * 1000,
             ];
         } catch (\Exception $e) {
-            Log::error('Failed to add liquidity', array_merge($context, [
-                'error'             => $e->getMessage(),
-                'execution_time_ms' => (microtime(true) - $startTime) * 1000,
-            ]));
+            Log::error(
+                'Failed to add liquidity', array_merge(
+                    $context, [
+                    'error'             => $e->getMessage(),
+                    'execution_time_ms' => (microtime(true) - $startTime) * 1000,
+                    ]
+                )
+            );
 
             // Enhanced compensation with detailed logging
             yield from $this->compensateAddLiquidity($e, $context);
@@ -179,13 +191,15 @@ class EnhancedLiquidityManagementWorkflow extends Workflow
             try {
                 return yield ActivityStub::make(LockLiquidityActivity::class)
                     ->withRetryOptions(LiquidityRetryPolicy::critical())
-                    ->execute([
+                    ->execute(
+                        [
                         'account_id' => $accountId,
                         'currency'   => $currency,
                         'amount'     => $amount,
                         'pool_id'    => $poolId,
                         'attempt'    => $attempt + 1,
-                    ]);
+                        ]
+                    );
             } catch (\Exception $e) {
                 $attempt++;
 
@@ -193,11 +207,15 @@ class EnhancedLiquidityManagementWorkflow extends Workflow
                     throw $e;
                 }
 
-                Log::warning('Retrying fund lock', array_merge($context, [
-                    'attempt'  => $attempt,
-                    'currency' => $currency,
-                    'error'    => $e->getMessage(),
-                ]));
+                Log::warning(
+                    'Retrying fund lock', array_merge(
+                        $context, [
+                        'attempt'  => $attempt,
+                        'currency' => $currency,
+                        'error'    => $e->getMessage(),
+                        ]
+                    )
+                );
 
                 // Exponential backoff
                 yield $this->timer(pow(2, $attempt) * 1000);
@@ -224,11 +242,13 @@ class EnhancedLiquidityManagementWorkflow extends Workflow
                     throw $e;
                 }
 
-                Log::warning('Retrying pool state update', [
+                Log::warning(
+                    'Retrying pool state update', [
                     'pool_id' => $poolId,
                     'attempt' => $attempt,
                     'error'   => $e->getMessage(),
-                ]);
+                    ]
+                );
 
                 yield $this->timer(100 * $attempt); // Linear backoff
             }
@@ -244,10 +264,12 @@ class EnhancedLiquidityManagementWorkflow extends Workflow
             return yield $this->circuitBreaker->call($service, $operation, $context);
         } catch (\RuntimeException $e) {
             if (str_contains($e->getMessage(), 'Circuit breaker is')) {
-                Log::error('Circuit breaker preventing operation', [
+                Log::error(
+                    'Circuit breaker preventing operation', [
                     'service' => $service,
                     'context' => $context,
-                ]);
+                    ]
+                );
                 throw new \DomainException('Service temporarily unavailable due to high error rate');
             }
             throw $e;
@@ -330,32 +352,40 @@ class EnhancedLiquidityManagementWorkflow extends Workflow
     {
         try {
             $pool = LiquidityPool::retrieve($poolId);
-            $pool->updateParameters(isActive: false, metadata: [
+            $pool->updateParameters(
+                isActive: false, metadata: [
                 'paused_by'    => 'system',
                 'pause_reason' => $reason,
-            ])->persist();
+                ]
+            )->persist();
 
             // Record emergency pause event
-            event(new EmergencyPoolPaused(
-                poolId: $poolId,
-                reason: $reason,
-                pausedBy: 'system',
-                pausedAt: now()->toIso8601String(),
-                poolState: [], // Would include current pool state
-                metadata: ['workflow_id' => $this->workflowId()]
-            ));
+            event(
+                new EmergencyPoolPaused(
+                    poolId: $poolId,
+                    reason: $reason,
+                    pausedBy: 'system',
+                    pausedAt: now()->toIso8601String(),
+                    poolState: [], // Would include current pool state
+                    metadata: ['workflow_id' => $this->workflowId()]
+                )
+            );
 
-            Log::critical('Pool paused due to emergency', [
+            Log::critical(
+                'Pool paused due to emergency', [
                 'pool_id' => $poolId,
                 'reason'  => $reason,
-            ]);
+                ]
+            );
 
             yield; // Required for Generator return type
         } catch (\Exception $e) {
-            Log::error('Failed to pause pool', [
+            Log::error(
+                'Failed to pause pool', [
                 'pool_id' => $poolId,
                 'error'   => $e->getMessage(),
-            ]);
+                ]
+            );
 
             yield; // Required for Generator return type
         }
@@ -368,15 +398,17 @@ class EnhancedLiquidityManagementWorkflow extends Workflow
         string $actualAmount,
         string $slippagePercentage
     ): void {
-        event(new PoolSlippageExceeded(
-            poolId: $poolId,
-            transactionType: $transactionType,
-            expectedAmount: $expectedAmount,
-            actualAmount: $actualAmount,
-            slippagePercentage: $slippagePercentage,
-            maxSlippageTolerance: '1', // 1% default
-            metadata: ['workflow_id' => $this->workflowId()]
-        ));
+        event(
+            new PoolSlippageExceeded(
+                poolId: $poolId,
+                transactionType: $transactionType,
+                expectedAmount: $expectedAmount,
+                actualAmount: $actualAmount,
+                slippagePercentage: $slippagePercentage,
+                maxSlippageTolerance: '1', // 1% default
+                metadata: ['workflow_id' => $this->workflowId()]
+            )
+        );
     }
 
     private function isRetryableError(\Exception $e): bool

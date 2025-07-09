@@ -29,7 +29,7 @@ interface IExchangeRateProvider
     /**
      * Get multiple exchange rates at once.
      *
-     * @param  array<string>  $pairs  Array of currency pairs like ['USD/EUR', 'BTC/USD']
+     * @param  array<string> $pairs Array of currency pairs like ['USD/EUR', 'BTC/USD']
      * @return array<string, ExchangeRateQuote>
      */
     public function getRates(array $pairs): array;

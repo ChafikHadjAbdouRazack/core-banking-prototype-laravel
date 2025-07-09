@@ -110,11 +110,13 @@ class CalculateBasketPerformance extends Command
                 }
             } catch (\Exception $e) {
                 $this->error("  Error calculating performance: {$e->getMessage()}");
-                Log::error('Basket performance calculation failed', [
+                Log::error(
+                    'Basket performance calculation failed', [
                     'basket' => $basket->code,
                     'error'  => $e->getMessage(),
                     'trace'  => $e->getTraceAsString(),
-                ]);
+                    ]
+                );
             }
         }
 

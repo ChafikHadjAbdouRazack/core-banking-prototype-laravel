@@ -121,9 +121,11 @@ class CustodianRegistry
      */
     public function findByAsset(string $assetCode): array
     {
-        return array_filter($this->custodians, function ($custodian) use ($assetCode) {
-            return in_array($assetCode, $custodian->getSupportedAssets());
-        });
+        return array_filter(
+            $this->custodians, function ($custodian) use ($assetCode) {
+                return in_array($assetCode, $custodian->getSupportedAssets());
+            }
+        );
     }
 
     /**

@@ -14,9 +14,11 @@ class ViewApiKey extends ViewRecord
     public function infolist(Infolist $infolist): Infolist
     {
         return $infolist
-            ->schema([
+            ->schema(
+                [
                 Infolists\Components\Section::make('Key Information')
-                    ->schema([
+                    ->schema(
+                        [
                         Infolists\Components\TextEntry::make('name'),
                         Infolists\Components\TextEntry::make('description'),
                         Infolists\Components\TextEntry::make('key_prefix')
@@ -25,20 +27,24 @@ class ViewApiKey extends ViewRecord
                         Infolists\Components\IconEntry::make('is_active')
                             ->label('Active')
                             ->boolean(),
-                    ])
+                        ]
+                    )
                     ->columns(2),
 
                 Infolists\Components\Section::make('Permissions & Security')
-                    ->schema([
+                    ->schema(
+                        [
                         Infolists\Components\TextEntry::make('permissions')
                             ->badge()
-                            ->color(fn (string $state): string => match ($state) {
+                            ->color(
+                                fn (string $state): string => match ($state) {
                                 'read'   => 'success',
                                 'write'  => 'warning',
                                 'delete' => 'danger',
                                 '*'      => 'primary',
                                 default  => 'gray',
-                            }),
+                                }
+                            ),
                         Infolists\Components\TextEntry::make('allowed_ips')
                             ->label('IP Whitelist')
                             ->listWithLineBreaks()
@@ -47,10 +53,12 @@ class ViewApiKey extends ViewRecord
                             ->label('Expiration')
                             ->dateTime()
                             ->default('Never expires'),
-                    ]),
+                        ]
+                    ),
 
                 Infolists\Components\Section::make('Usage Statistics')
-                    ->schema([
+                    ->schema(
+                        [
                         Infolists\Components\TextEntry::make('user.name')
                             ->label('Owner'),
                         Infolists\Components\TextEntry::make('created_at')
@@ -68,52 +76,66 @@ class ViewApiKey extends ViewRecord
                             ->numeric(),
                         Infolists\Components\TextEntry::make('logs_count')
                             ->label('Requests Today')
-                            ->state(function ($record): int {
-                                return $record->logs()
-                                    ->where('created_at', '>=', now()->startOfDay())
-                                    ->count();
-                            }),
-                    ])
+                            ->state(
+                                function ($record): int {
+                                    return $record->logs()
+                                        ->where('created_at', '>=', now()->startOfDay())
+                                        ->count();
+                                }
+                            ),
+                        ]
+                    )
                     ->columns(3),
 
                 Infolists\Components\Section::make('Recent Activity')
-                    ->schema([
+                    ->schema(
+                        [
                         Infolists\Components\RepeatableEntry::make('recentLogs')
                             ->label('')
-                            ->state(function ($record) {
-                                return $record->logs()
-                                    ->orderBy('created_at', 'desc')
-                                    ->limit(10)
-                                    ->get();
-                            })
-                            ->schema([
+                            ->state(
+                                function ($record) {
+                                    return $record->logs()
+                                        ->orderBy('created_at', 'desc')
+                                        ->limit(10)
+                                        ->get();
+                                }
+                            )
+                            ->schema(
+                                [
                                 Infolists\Components\TextEntry::make('created_at')
                                     ->label('Time')
                                     ->dateTime('M d, g:i A'),
                                 Infolists\Components\TextEntry::make('method')
                                     ->badge()
-                                    ->color(fn (string $state): string => match ($state) {
+                                    ->color(
+                                        fn (string $state): string => match ($state) {
                                         'GET'  => 'info',
                                         'POST' => 'success',
                                         'PUT', 'PATCH' => 'warning',
                                         'DELETE' => 'danger',
                                         default  => 'gray',
-                                    }),
+                                        }
+                                    ),
                                 Infolists\Components\TextEntry::make('path'),
                                 Infolists\Components\TextEntry::make('response_code')
                                     ->label('Status')
                                     ->badge()
-                                    ->color(fn (?int $state): string => match (true) {
+                                    ->color(
+                                        fn (?int $state): string => match (true) {
                                         $state >= 200 && $state < 300 => 'success',
                                         $state >= 400                 => 'danger',
                                         default                       => 'warning',
-                                    }),
+                                        }
+                                    ),
                                 Infolists\Components\TextEntry::make('response_time')
                                     ->label('Response Time')
                                     ->formatStateUsing(fn (?int $state): string => $state ? $state . 'ms' : 'N/A'),
-                            ])
+                                ]
+                            )
                             ->columns(5),
-                    ]),
-            ]);
+                        ]
+                    ),
+                ]
+            );
     }
 }

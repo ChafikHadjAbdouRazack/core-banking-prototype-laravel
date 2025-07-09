@@ -19,10 +19,12 @@ class DebitAccount extends AccountAction
         );
 
         // Find existing asset balance
-        $balance = \App\Models\AccountBalance::where([
+        $balance = \App\Models\AccountBalance::where(
+            [
             'account_uuid' => $account->uuid,
             'asset_code'   => $event->assetCode,
-        ])->first();
+            ]
+        )->first();
 
         if (! $balance) {
             throw new \Exception("Asset balance not found for {$event->assetCode}");

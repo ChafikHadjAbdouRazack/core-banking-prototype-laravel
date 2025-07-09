@@ -15,17 +15,21 @@ class ExternalExchangeServiceProvider extends ServiceProvider
     public function register(): void
     {
         // Register the connector registry as a singleton
-        $this->app->singleton(ExternalExchangeConnectorRegistry::class, function ($app) {
-            return new ExternalExchangeConnectorRegistry();
-        });
+        $this->app->singleton(
+            ExternalExchangeConnectorRegistry::class, function ($app) {
+                return new ExternalExchangeConnectorRegistry();
+            }
+        );
 
         // Register the liquidity service
-        $this->app->singleton(ExternalLiquidityService::class, function ($app) {
-            return new ExternalLiquidityService(
-                $app->make(ExternalExchangeConnectorRegistry::class),
-                $app->make(\App\Domain\Exchange\Services\ExchangeService::class)
-            );
-        });
+        $this->app->singleton(
+            ExternalLiquidityService::class, function ($app) {
+                return new ExternalLiquidityService(
+                    $app->make(ExternalExchangeConnectorRegistry::class),
+                    $app->make(\App\Domain\Exchange\Services\ExchangeService::class)
+                );
+            }
+        );
     }
 
     /**
@@ -35,17 +39,19 @@ class ExternalExchangeServiceProvider extends ServiceProvider
     {
         // Schedule arbitrage checking if enabled
         if (config('trading.arbitrage.enabled', false)) {
-            $this->app->booted(function () {
-                $schedule = $this->app->make(\Illuminate\Console\Scheduling\Schedule::class);
+            $this->app->booted(
+                function () {
+                    $schedule = $this->app->make(\Illuminate\Console\Scheduling\Schedule::class);
 
-                $interval = config('trading.arbitrage.check_interval', 60);
+                    $interval = config('trading.arbitrage.check_interval', 60);
 
-                $schedule->job(new CheckArbitrageOpportunitiesJob())
-                    ->everyMinutes($interval / 60)
-                    ->withoutOverlapping()
-                    ->onOneServer()
-                    ->runInBackground();
-            });
+                    $schedule->job(new CheckArbitrageOpportunitiesJob())
+                        ->everyMinutes($interval / 60)
+                        ->withoutOverlapping()
+                        ->onOneServer()
+                        ->runInBackground();
+                }
+            );
         }
     }
 }

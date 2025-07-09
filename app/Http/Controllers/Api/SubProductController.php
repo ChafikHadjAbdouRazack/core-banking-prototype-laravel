@@ -18,9 +18,11 @@ class SubProductController extends Controller
      */
     public function index(): JsonResponse
     {
-        return response()->json([
+        return response()->json(
+            [
             'data' => $this->subProductService->getApiStatus(),
-        ]);
+            ]
+        );
     }
 
     /**
@@ -31,15 +33,19 @@ class SubProductController extends Controller
         $allProducts = $this->subProductService->getApiStatus();
 
         if (! isset($allProducts[$subProduct])) {
-            return response()->json([
+            return response()->json(
+                [
                 'error'   => 'Sub-product not found',
                 'message' => "The sub-product '{$subProduct}' does not exist.",
-            ], 404);
+                ], 404
+            );
         }
 
-        return response()->json([
+        return response()->json(
+            [
             'data' => $allProducts[$subProduct],
-        ]);
+            ]
+        );
     }
 
     /**
@@ -49,17 +55,21 @@ class SubProductController extends Controller
     {
         $enabledProducts = $this->subProductService->getEnabledSubProducts();
 
-        return response()->json([
-            'data' => array_map(function ($product) {
-                return [
+        return response()->json(
+            [
+            'data' => array_map(
+                function ($product) {
+                    return [
                     'key'              => $product['key'],
                     'name'             => $product['name'],
                     'description'      => $product['description'],
                     'icon'             => $product['icon'],
                     'color'            => $product['color'],
                     'enabled_features' => $product['enabled_features'],
-                ];
-            }, $enabledProducts),
-        ]);
+                    ];
+                }, $enabledProducts
+            ),
+            ]
+        );
     }
 }

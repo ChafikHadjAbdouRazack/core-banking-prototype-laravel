@@ -78,12 +78,14 @@ class ProcessWebhookDelivery implements ShouldQueue
                 durationMs: $duration
             );
 
-            Log::info('Webhook delivered successfully', [
+            Log::info(
+                'Webhook delivered successfully', [
                 'webhook_id'  => $webhook->uuid,
                 'delivery_id' => $this->delivery->uuid,
                 'status_code' => $response->status(),
                 'duration_ms' => $duration,
-            ]);
+                ]
+            );
         } catch (\Exception $e) {
             $errorMessage = $e->getMessage();
             $statusCode = $e instanceof \Illuminate\Http\Client\RequestException
@@ -98,12 +100,14 @@ class ProcessWebhookDelivery implements ShouldQueue
                     : null
             );
 
-            Log::error('Webhook delivery failed', [
+            Log::error(
+                'Webhook delivery failed', [
                 'webhook_id'  => $webhook->uuid,
                 'delivery_id' => $this->delivery->uuid,
                 'error'       => $errorMessage,
                 'attempt'     => $this->delivery->attempt_number,
-            ]);
+                ]
+            );
 
             // Re-throw to trigger retry if applicable
             throw $e;
@@ -133,9 +137,11 @@ class ProcessWebhookDelivery implements ShouldQueue
      */
     public function failed(\Throwable $exception): void
     {
-        Log::error('Webhook delivery job failed permanently', [
+        Log::error(
+            'Webhook delivery job failed permanently', [
             'delivery_id' => $this->delivery->uuid,
             'error'       => $exception->getMessage(),
-        ]);
+            ]
+        );
     }
 }

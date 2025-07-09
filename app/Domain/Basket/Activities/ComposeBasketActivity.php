@@ -15,9 +15,9 @@ class ComposeBasketActivity extends Activity
     /**
      * Execute basket composition activity using proper domain pattern.
      *
-     * @param AccountUuid $accountUuid
-     * @param string $basketCode
-     * @param int $amount
+     * @param  AccountUuid $accountUuid
+     * @param  string      $basketCode
+     * @param  int         $amount
      * @return array
      */
     public function execute(AccountUuid $accountUuid, string $basketCode, int $amount): array

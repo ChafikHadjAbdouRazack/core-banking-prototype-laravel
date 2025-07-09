@@ -24,17 +24,19 @@ class BankIntegrationServiceProvider extends ServiceProvider
         $this->app->singleton(BankRoutingService::class);
 
         // Register bank integration service
-        $this->app->singleton(IBankIntegrationService::class, function ($app) {
-            $service = new BankIntegrationService(
-                $app->make(BankHealthMonitor::class),
-                $app->make(BankRoutingService::class)
-            );
+        $this->app->singleton(
+            IBankIntegrationService::class, function ($app) {
+                $service = new BankIntegrationService(
+                    $app->make(BankHealthMonitor::class),
+                    $app->make(BankRoutingService::class)
+                );
 
-            // Register bank connectors
-            $this->registerBankConnectors($service);
+                // Register bank connectors
+                $this->registerBankConnectors($service);
 
-            return $service;
-        });
+                return $service;
+            }
+        );
     }
 
     /**
@@ -43,14 +45,18 @@ class BankIntegrationServiceProvider extends ServiceProvider
     public function boot(): void
     {
         // Schedule health checks
-        $this->app->booted(function () {
-            $schedule = $this->app->make(\Illuminate\Console\Scheduling\Schedule::class);
+        $this->app->booted(
+            function () {
+                $schedule = $this->app->make(\Illuminate\Console\Scheduling\Schedule::class);
 
-            $schedule->call(function () {
-                $monitor = app(BankHealthMonitor::class);
-                $monitor->checkAllBanks();
-            })->everyFiveMinutes()->name('bank-health-check')->withoutOverlapping();
-        });
+                $schedule->call(
+                    function () {
+                        $monitor = app(BankHealthMonitor::class);
+                        $monitor->checkAllBanks();
+                    }
+                )->everyFiveMinutes()->name('bank-health-check')->withoutOverlapping();
+            }
+        );
     }
 
     /**
@@ -61,12 +67,14 @@ class BankIntegrationServiceProvider extends ServiceProvider
         // Paysera
         if (config('services.banks.paysera.enabled', true)) {
             $payseraAdapter = new BankConnectorAdapter(
-                new PayseraConnector([
+                new PayseraConnector(
+                    [
                     'name'          => 'Paysera',
                     'client_id'     => config('services.banks.paysera.client_id'),
                     'client_secret' => config('services.banks.paysera.client_secret'),
                     'base_url'      => config('services.banks.paysera.base_url', 'https://bank.paysera.com/rest/v1'),
-                ]),
+                    ]
+                ),
                 'PAYSERA',
                 'Paysera'
             );
@@ -76,12 +84,14 @@ class BankIntegrationServiceProvider extends ServiceProvider
         // Deutsche Bank
         if (config('services.banks.deutsche.enabled', true)) {
             $deutscheAdapter = new BankConnectorAdapter(
-                new DeutscheBankConnector([
+                new DeutscheBankConnector(
+                    [
                     'name'          => 'Deutsche Bank',
                     'client_id'     => config('services.banks.deutsche.client_id'),
                     'client_secret' => config('services.banks.deutsche.client_secret'),
                     'base_url'      => config('services.banks.deutsche.base_url', 'https://api.db.com/v2'),
-                ]),
+                    ]
+                ),
                 'DEUTSCHE',
                 'Deutsche Bank'
             );
@@ -91,12 +101,14 @@ class BankIntegrationServiceProvider extends ServiceProvider
         // Santander
         if (config('services.banks.santander.enabled', true)) {
             $santanderAdapter = new BankConnectorAdapter(
-                new SantanderConnector([
+                new SantanderConnector(
+                    [
                     'name'          => 'Santander',
                     'client_id'     => config('services.banks.santander.client_id'),
                     'client_secret' => config('services.banks.santander.client_secret'),
                     'base_url'      => config('services.banks.santander.base_url', 'https://api.santander.com/v2'),
-                ]),
+                    ]
+                ),
                 'SANTANDER',
                 'Santander'
             );

@@ -123,20 +123,28 @@ class TurnoverTrendChart extends ChartWidget
             DB::raw('SUM(debit) as total_debit'),
             DB::raw('SUM(credit) as total_credit')
         )
-            ->where(function ($query) use ($startDate, $endDate) {
-                $query->where('year', '>', $startDate->year)
-                    ->orWhere(function ($q) use ($startDate) {
-                        $q->where('year', $startDate->year)
-                          ->where('month', '>=', $startDate->month);
-                    });
-            })
-            ->where(function ($query) use ($endDate) {
-                $query->where('year', '<', $endDate->year)
-                    ->orWhere(function ($q) use ($endDate) {
-                        $q->where('year', $endDate->year)
-                          ->where('month', '<=', $endDate->month);
-                    });
-            })
+            ->where(
+                function ($query) use ($startDate, $endDate) {
+                    $query->where('year', '>', $startDate->year)
+                        ->orWhere(
+                            function ($q) use ($startDate) {
+                                $q->where('year', $startDate->year)
+                                    ->where('month', '>=', $startDate->month);
+                            }
+                        );
+                }
+            )
+            ->where(
+                function ($query) use ($endDate) {
+                    $query->where('year', '<', $endDate->year)
+                        ->orWhere(
+                            function ($q) use ($endDate) {
+                                $q->where('year', $endDate->year)
+                                    ->where('month', '<=', $endDate->month);
+                            }
+                        );
+                }
+            )
             ->groupBy('year', 'month')
             ->orderBy('year')
             ->orderBy('month')
@@ -147,19 +155,23 @@ class TurnoverTrendChart extends ChartWidget
         $current = $startDate->copy();
 
         while ($current <= $endDate) {
-            $turnover = $turnovers->first(function ($t) use ($current) {
-                return $t->year == $current->year && $t->month == $current->month;
-            });
+            $turnover = $turnovers->first(
+                function ($t) use ($current) {
+                    return $t->year == $current->year && $t->month == $current->month;
+                }
+            );
 
             $debit = ($turnover?->total_debit ?? 0) / 100;
             $credit = ($turnover?->total_credit ?? 0) / 100;
 
-            $data->push([
+            $data->push(
+                [
                 'month'  => $current->format('M Y'),
                 'debit'  => round($debit, 2),
                 'credit' => round($credit, 2),
                 'net'    => round($credit - $debit, 2),
-            ]);
+                ]
+            );
 
             $current->addMonth();
         }

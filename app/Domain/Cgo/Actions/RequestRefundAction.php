@@ -46,11 +46,13 @@ class RequestRefundAction
             reasonDetails: $reasonDetails,
             initiatedBy: $initiator->id,
             autoApproved: $autoApproved,
-            metadata: array_merge($metadata, [
+            metadata: array_merge(
+                $metadata, [
                 'investment_uuid'    => $investment->uuid,
                 'investment_package' => $investment->package,
                 'payment_method'     => $investment->payment_method,
-            ])
+                ]
+            )
         );
 
         // Start the refund workflow

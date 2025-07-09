@@ -88,12 +88,14 @@ class LiquidityPoolController extends Controller
      */
     public function store(Request $request, $poolId)
     {
-        $validated = $request->validate([
+        $validated = $request->validate(
+            [
             'account_id'         => 'required|uuid',
             'base_amount'        => 'required|numeric|min:0.01',
             'quote_amount'       => 'required|numeric|min:0.01',
             'slippage_tolerance' => 'required|numeric|min:0.1|max:50',
-        ]);
+            ]
+        );
 
         $poolProjection = $this->liquidityPoolService->getPool($poolId);
 
@@ -164,12 +166,14 @@ class LiquidityPoolController extends Controller
      */
     public function destroy(Request $request, $poolId)
     {
-        $validated = $request->validate([
+        $validated = $request->validate(
+            [
             'account_id'           => 'required|uuid',
             'liquidity_percentage' => 'required|numeric|min:1|max:100',
             'min_base_amount'      => 'required|numeric|min:0',
             'min_quote_amount'     => 'required|numeric|min:0',
-        ]);
+            ]
+        );
 
         $poolProjection = $this->liquidityPoolService->getPool($poolId);
 
@@ -216,7 +220,8 @@ class LiquidityPoolController extends Controller
         }
 
         // Mock data for now - in production, fetch from database
-        return collect([
+        return collect(
+            [
             [
                 'pool_id'          => 'btc-usdt',
                 'base_currency'    => 'BTC',
@@ -237,7 +242,8 @@ class LiquidityPoolController extends Controller
                 'pnl'              => -100,
                 'pnl_percentage'   => -1.25,
             ],
-        ]);
+            ]
+        );
     }
 
     /**

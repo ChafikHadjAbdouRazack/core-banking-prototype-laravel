@@ -94,34 +94,34 @@ class RunLoadTests extends Command
         $startTime = microtime(true);
 
         switch ($test) {
-            case 'account-creation':
-                $this->testAccountCreation($iterations);
-                break;
+        case 'account-creation':
+            $this->testAccountCreation($iterations);
+            break;
 
-            case 'transfers':
-                $this->testTransfers($iterations, $concurrent);
-                break;
+        case 'transfers':
+            $this->testTransfers($iterations, $concurrent);
+            break;
 
-            case 'exchange-rates':
-                $this->testExchangeRates($iterations);
-                break;
+        case 'exchange-rates':
+            $this->testExchangeRates($iterations);
+            break;
 
-            case 'webhooks':
-                $this->testWebhooks($iterations);
-                break;
+        case 'webhooks':
+            $this->testWebhooks($iterations);
+            break;
 
-            case 'database-queries':
-                $this->testDatabaseQueries($iterations);
-                break;
+        case 'database-queries':
+            $this->testDatabaseQueries($iterations);
+            break;
 
-            case 'cache-operations':
-                $this->testCacheOperations($iterations);
-                break;
+        case 'cache-operations':
+            $this->testCacheOperations($iterations);
+            break;
 
-            default:
-                $this->warn("Unknown test: {$test}");
+        default:
+            $this->warn("Unknown test: {$test}");
 
-                return;
+            return;
         }
 
         $totalTime = microtime(true) - $startTime;
@@ -133,12 +133,14 @@ class RunLoadTests extends Command
             'ops_per_second' => $iterations / $totalTime,
         ];
 
-        $this->info(sprintf(
-            '✅ Completed in %.3fs (%.2f ops/sec, avg: %.2fms)',
-            $totalTime,
-            $iterations / $totalTime,
-            ($totalTime / $iterations) * 1000
-        ));
+        $this->info(
+            sprintf(
+                '✅ Completed in %.3fs (%.2f ops/sec, avg: %.2fms)',
+                $totalTime,
+                $iterations / $totalTime,
+                ($totalTime / $iterations) * 1000
+            )
+        );
         $this->newLine();
     }
 
@@ -152,11 +154,13 @@ class RunLoadTests extends Command
             $user = \App\Models\User::factory()->create();
             $account = \App\Models\Account::factory()->forUser($user)->create();
             // Create initial balance for testing
-            \App\Models\AccountBalance::create([
+            \App\Models\AccountBalance::create(
+                [
                 'account_uuid' => $account->uuid,
                 'asset_code'   => 'USD',
                 'balance'      => 100000,
-            ]);
+                ]
+            );
 
             $bar->advance();
         }
@@ -174,11 +178,13 @@ class RunLoadTests extends Command
             $user = \App\Models\User::factory()->create();
             $account = \App\Models\Account::factory()->forUser($user)->create();
             // Create initial balance for testing
-            \App\Models\AccountBalance::create([
+            \App\Models\AccountBalance::create(
+                [
                 'account_uuid' => $account->uuid,
                 'asset_code'   => 'USD',
                 'balance'      => 10000000, // $100,000
-            ]);
+                ]
+            );
             $accounts[] = $account;
         }
 
@@ -234,13 +240,15 @@ class RunLoadTests extends Command
     private function testWebhooks(int $iterations): void
     {
         // Create test webhook
-        $webhook = \App\Models\Webhook::create([
+        $webhook = \App\Models\Webhook::create(
+            [
             'uuid'   => \Illuminate\Support\Str::uuid(),
             'name'   => 'Load Test Webhook',
             'url'    => 'https://httpbin.org/post',
             'events' => ['account.created', 'transaction.completed'],
             'secret' => \Illuminate\Support\Str::random(32),
-        ]);
+            ]
+        );
 
         $bar = $this->output->createProgressBar($iterations);
         $bar->start();
@@ -335,15 +343,17 @@ class RunLoadTests extends Command
 
         $this->table(
             ['Test', 'Iterations', 'Total Time', 'Avg Time (ms)', 'Ops/Sec'],
-            collect($this->results)->map(function ($result, $test) {
-                return [
+            collect($this->results)->map(
+                function ($result, $test) {
+                    return [
                     $test,
                     $result['iterations'],
                     sprintf('%.3fs', $result['total_time']),
                     sprintf('%.2f', $result['avg_time'] * 1000),
                     sprintf('%.2f', $result['ops_per_second']),
-                ];
-            })->toArray()
+                    ];
+                }
+            )->toArray()
         );
 
         // Performance thresholds

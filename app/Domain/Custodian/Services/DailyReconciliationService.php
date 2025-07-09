@@ -61,18 +61,22 @@ class DailyReconciliationService
             $report = $this->generateReconciliationReport();
 
             // Fire reconciliation completed event
-            event(new ReconciliationCompleted(
-                date: $this->reconciliationResults['date'],
-                results: $this->reconciliationResults,
-                discrepancies: $this->discrepancies
-            ));
+            event(
+                new ReconciliationCompleted(
+                    date: $this->reconciliationResults['date'],
+                    results: $this->reconciliationResults,
+                    discrepancies: $this->discrepancies
+                )
+            );
 
             return $report;
         } catch (\Exception $e) {
-            Log::error('Daily reconciliation failed', [
+            Log::error(
+                'Daily reconciliation failed', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
-            ]);
+                ]
+            );
 
             $this->reconciliationResults['status'] = 'failed';
             $this->reconciliationResults['error'] = $e->getMessage();
@@ -166,10 +170,12 @@ class DailyReconciliationService
                 $connector = $this->custodianRegistry->getConnector($custodianAccount->custodian_name);
 
                 if (! $connector->isAvailable()) {
-                    Log::warning('Custodian not available for reconciliation', [
+                    Log::warning(
+                        'Custodian not available for reconciliation', [
                         'custodian' => $custodianAccount->custodian_name,
                         'account'   => $account->uuid,
-                    ]);
+                        ]
+                    );
                     continue;
                 }
 
@@ -179,11 +185,13 @@ class DailyReconciliationService
                     $aggregatedBalances[$assetCode] = ($aggregatedBalances[$assetCode] ?? 0) + $amount;
                 }
             } catch (\Exception $e) {
-                Log::error('Failed to get external balance', [
+                Log::error(
+                    'Failed to get external balance', [
                     'custodian' => $custodianAccount->custodian_name,
                     'account'   => $account->uuid,
                     'error'     => $e->getMessage(),
-                ]);
+                    ]
+                );
             }
         }
 
@@ -291,9 +299,11 @@ class DailyReconciliationService
     {
         // Group discrepancies by severity
         $criticalDiscrepancies = collect($this->discrepancies)
-            ->filter(function ($d) {
-                return isset($d['difference']) && $d['difference'] > 100000; // Over $1000
-            });
+            ->filter(
+                function ($d) {
+                    return isset($d['difference']) && $d['difference'] > 100000; // Over $1000
+                }
+            );
 
         if ($criticalDiscrepancies->isNotEmpty()) {
             // Send immediate alert for critical discrepancies
@@ -309,10 +319,12 @@ class DailyReconciliationService
      */
     private function sendCriticalAlert(Collection $criticalDiscrepancies): void
     {
-        Log::critical('Critical reconciliation discrepancies found', [
+        Log::critical(
+            'Critical reconciliation discrepancies found', [
             'count'        => $criticalDiscrepancies->count(),
             'total_amount' => $criticalDiscrepancies->sum('difference'),
-        ]);
+            ]
+        );
 
         // In production, send alerts to operations team
     }
@@ -325,10 +337,12 @@ class DailyReconciliationService
         $recipients = config('reconciliation.report_recipients', []);
 
         if (! empty($recipients)) {
-            Mail::to($recipients)->send(new ReconciliationReport(
-                $this->reconciliationResults,
-                $this->discrepancies
-            ));
+            Mail::to($recipients)->send(
+                new ReconciliationReport(
+                    $this->reconciliationResults,
+                    $this->discrepancies
+                )
+            );
         }
     }
 

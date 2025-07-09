@@ -60,7 +60,7 @@ class AccountBalance extends Model
      * Increment the balance
      * NOTE: This method should only be used by projectors for event sourcing.
      *
-     * @param int $amount
+     * @param  int $amount
      * @return bool
      */
     public function credit(int $amount): bool
@@ -74,7 +74,7 @@ class AccountBalance extends Model
      * Decrement the balance
      * NOTE: This method should only be used by projectors for event sourcing.
      *
-     * @param int $amount
+     * @param  int $amount
      * @return bool
      * @throws \Exception if insufficient balance
      */
@@ -92,7 +92,7 @@ class AccountBalance extends Model
     /**
      * Check if balance is sufficient for amount.
      *
-     * @param int $amount
+     * @param  int $amount
      * @return bool
      */
     public function hasSufficientBalance(int $amount): bool
@@ -117,7 +117,7 @@ class AccountBalance extends Model
     /**
      * Scope for balances with positive amounts.
      *
-     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param  \Illuminate\Database\Eloquent\Builder $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopePositive($query)
@@ -128,8 +128,8 @@ class AccountBalance extends Model
     /**
      * Scope for balances by asset.
      *
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param string $assetCode
+     * @param  \Illuminate\Database\Eloquent\Builder $query
+     * @param  string                                $assetCode
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeForAsset($query, string $assetCode)

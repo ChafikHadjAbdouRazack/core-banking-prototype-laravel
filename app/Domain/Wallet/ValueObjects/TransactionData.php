@@ -24,7 +24,8 @@ class TransactionData
 
     public function toArray(): array
     {
-        return array_filter([
+        return array_filter(
+            [
             'from'                     => $this->from,
             'to'                       => $this->to,
             'value'                    => $this->value,
@@ -39,7 +40,8 @@ class TransactionData
             'block_number'             => $this->blockNumber,
             'status'                   => $this->status,
             'metadata'                 => $this->metadata,
-        ], fn ($value) => $value !== null);
+            ], fn ($value) => $value !== null
+        );
     }
 
     public function isConfirmed(): bool

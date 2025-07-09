@@ -50,10 +50,12 @@ class CoinbaseWebhookController extends Controller
 
             return response()->json(['success' => true], 200);
         } catch (\Exception $e) {
-            Log::error('Error processing Coinbase webhook', [
+            Log::error(
+                'Error processing Coinbase webhook', [
                 'error' => $e->getMessage(),
                 'event' => $event,
-            ]);
+                ]
+            );
 
             // Return 200 to prevent retries for processing errors
             return response()->json(['error' => 'Processing error'], 200);

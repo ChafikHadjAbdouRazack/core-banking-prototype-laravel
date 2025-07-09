@@ -53,18 +53,22 @@ class OnboardingService
 
             DB::commit();
 
-            Log::info('Financial institution application submitted', [
+            Log::info(
+                'Financial institution application submitted', [
                 'application_id'   => $application->id,
                 'institution_name' => $application->institution_name,
-            ]);
+                ]
+            );
 
             return $application;
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Failed to submit financial institution application', [
+            Log::error(
+                'Failed to submit financial institution application', [
                 'error' => $e->getMessage(),
                 'data'  => $data,
-            ]);
+                ]
+            );
             throw new OnboardingException('Failed to submit application: ' . $e->getMessage());
         }
     }
@@ -78,17 +82,21 @@ class OnboardingService
             throw new OnboardingException('Application is not in a reviewable state');
         }
 
-        $application->update([
+        $application->update(
+            [
             'status'       => FinancialInstitutionApplication::STATUS_UNDER_REVIEW,
             'review_stage' => FinancialInstitutionApplication::STAGE_INITIAL,
             'reviewed_by'  => $reviewerId,
             'reviewed_at'  => now(),
-        ]);
+            ]
+        );
 
-        Log::info('Application review started', [
+        Log::info(
+            'Application review started', [
             'application_id' => $application->id,
             'reviewer_id'    => $reviewerId,
-        ]);
+            ]
+        );
     }
 
     /**
@@ -96,24 +104,32 @@ class OnboardingService
      */
     public function performComplianceCheck(FinancialInstitutionApplication $application): array
     {
-        $application->update([
+        $application->update(
+            [
             'review_stage' => FinancialInstitutionApplication::STAGE_COMPLIANCE,
-        ]);
+            ]
+        );
 
         $results = $this->complianceService->checkApplication($application);
 
         // Update application with compliance results
-        $application->update([
-            'metadata' => array_merge($application->metadata ?? [], [
+        $application->update(
+            [
+            'metadata' => array_merge(
+                $application->metadata ?? [], [
                 'compliance_check'      => $results,
                 'compliance_checked_at' => now()->toIso8601String(),
-            ]),
-        ]);
+                ]
+            ),
+            ]
+        );
 
-        Log::info('Compliance check completed', [
+        Log::info(
+            'Compliance check completed', [
             'application_id' => $application->id,
             'passed'         => $results['passed'],
-        ]);
+            ]
+        );
 
         return $results;
     }
@@ -123,9 +139,11 @@ class OnboardingService
      */
     public function performTechnicalAssessment(FinancialInstitutionApplication $application): array
     {
-        $application->update([
+        $application->update(
+            [
             'review_stage' => FinancialInstitutionApplication::STAGE_TECHNICAL,
-        ]);
+            ]
+        );
 
         $assessment = [
             'api_integration' => $this->assessApiCapabilities($application),
@@ -143,12 +161,16 @@ class OnboardingService
         }
 
         // Update application
-        $application->update([
-            'metadata' => array_merge($application->metadata ?? [], [
+        $application->update(
+            [
+            'metadata' => array_merge(
+                $application->metadata ?? [], [
                 'technical_assessment'  => $assessment,
                 'technical_assessed_at' => now()->toIso8601String(),
-            ]),
-        ]);
+                ]
+            ),
+            ]
+        );
 
         return $assessment;
     }
@@ -168,19 +190,23 @@ class OnboardingService
 
         try {
             // Update application status
-            $application->update([
+            $application->update(
+                [
                 'status'       => FinancialInstitutionApplication::STATUS_APPROVED,
                 'review_stage' => FinancialInstitutionApplication::STAGE_FINAL,
-            ]);
+                ]
+            );
 
             // Create partner
             $partner = $this->createPartner($application, $partnerConfig);
 
             // Update application with partner reference
-            $application->update([
+            $application->update(
+                [
                 'partner_id'              => $partner->id,
                 'onboarding_completed_at' => now(),
-            ]);
+                ]
+            );
 
             // Dispatch event
             event(new ApplicationApproved($application, $partner));
@@ -188,18 +214,22 @@ class OnboardingService
 
             DB::commit();
 
-            Log::info('Application approved and partner created', [
+            Log::info(
+                'Application approved and partner created', [
                 'application_id' => $application->id,
                 'partner_id'     => $partner->id,
-            ]);
+                ]
+            );
 
             return $partner;
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Failed to approve application', [
+            Log::error(
+                'Failed to approve application', [
                 'application_id' => $application->id,
                 'error'          => $e->getMessage(),
-            ]);
+                ]
+            );
             throw new OnboardingException('Failed to approve application: ' . $e->getMessage());
         }
     }
@@ -215,17 +245,21 @@ class OnboardingService
             throw new OnboardingException('Application is not in a reviewable state');
         }
 
-        $application->update([
+        $application->update(
+            [
             'status'           => FinancialInstitutionApplication::STATUS_REJECTED,
             'rejection_reason' => $reason,
-        ]);
+            ]
+        );
 
         event(new ApplicationRejected($application, $reason));
 
-        Log::info('Application rejected', [
+        Log::info(
+            'Application rejected', [
             'application_id' => $application->id,
             'reason'         => $reason,
-        ]);
+            ]
+        );
     }
 
     /**
@@ -235,15 +269,19 @@ class OnboardingService
         FinancialInstitutionApplication $application,
         string $reason
     ): void {
-        $application->update([
+        $application->update(
+            [
             'status'       => FinancialInstitutionApplication::STATUS_ON_HOLD,
             'review_notes' => $reason,
-        ]);
+            ]
+        );
 
-        Log::info('Application put on hold', [
+        Log::info(
+            'Application put on hold', [
             'application_id' => $application->id,
             'reason'         => $reason,
-        ]);
+            ]
+        );
     }
 
     /**

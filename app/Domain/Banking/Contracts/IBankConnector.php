@@ -44,7 +44,7 @@ interface IBankConnector
     /**
      * Create a new bank account.
      *
-     * @param array $accountDetails Account creation parameters
+     * @param  array $accountDetails Account creation parameters
      * @return BankAccount
      * @throws \App\Domain\Banking\Exceptions\BankOperationException
      */
@@ -53,7 +53,7 @@ interface IBankConnector
     /**
      * Get account information.
      *
-     * @param string $accountId External bank account ID
+     * @param  string $accountId External bank account ID
      * @return BankAccount
      * @throws \App\Domain\Banking\Exceptions\AccountNotFoundException
      */
@@ -62,8 +62,8 @@ interface IBankConnector
     /**
      * Get account balance.
      *
-     * @param string $accountId External bank account ID
-     * @param string|null $currency Specific currency (null for all)
+     * @param  string      $accountId External bank account ID
+     * @param  string|null $currency  Specific currency (null for all)
      * @return BankBalance|Collection<BankBalance>
      */
     public function getBalance(string $accountId, ?string $currency = null): BankBalance|Collection;
@@ -71,7 +71,7 @@ interface IBankConnector
     /**
      * Initiate a bank transfer.
      *
-     * @param array $transferDetails Transfer parameters
+     * @param  array $transferDetails Transfer parameters
      * @return BankTransfer
      * @throws \App\Domain\Banking\Exceptions\TransferException
      */
@@ -80,7 +80,7 @@ interface IBankConnector
     /**
      * Get transfer status.
      *
-     * @param string $transferId Bank transfer ID
+     * @param  string $transferId Bank transfer ID
      * @return BankTransfer
      */
     public function getTransferStatus(string $transferId): BankTransfer;
@@ -88,7 +88,7 @@ interface IBankConnector
     /**
      * Cancel a pending transfer.
      *
-     * @param string $transferId Bank transfer ID
+     * @param  string $transferId Bank transfer ID
      * @return bool
      */
     public function cancelTransfer(string $transferId): bool;
@@ -96,10 +96,10 @@ interface IBankConnector
     /**
      * Get transaction history.
      *
-     * @param string $accountId External bank account ID
-     * @param \DateTime $from Start date
-     * @param \DateTime $to End date
-     * @param int $limit Maximum number of transactions
+     * @param  string    $accountId External bank account ID
+     * @param  \DateTime $from      Start date
+     * @param  \DateTime $to        End date
+     * @param  int       $limit     Maximum number of transactions
      * @return Collection<BankTransaction>
      */
     public function getTransactions(string $accountId, \DateTime $from, \DateTime $to, int $limit = 100): Collection;
@@ -107,10 +107,10 @@ interface IBankConnector
     /**
      * Get account statement.
      *
-     * @param string $accountId External bank account ID
-     * @param \DateTime $from Start date
-     * @param \DateTime $to End date
-     * @param string $format Statement format (PDF, CSV, JSON)
+     * @param  string    $accountId External bank account ID
+     * @param  \DateTime $from      Start date
+     * @param  \DateTime $to        End date
+     * @param  string    $format    Statement format (PDF, CSV, JSON)
      * @return BankStatement
      */
     public function getStatement(string $accountId, \DateTime $from, \DateTime $to, string $format = 'JSON'): BankStatement;
@@ -118,7 +118,7 @@ interface IBankConnector
     /**
      * Validate IBAN.
      *
-     * @param string $iban IBAN to validate
+     * @param  string $iban IBAN to validate
      * @return bool
      */
     public function validateIBAN(string $iban): bool;
@@ -133,8 +133,8 @@ interface IBankConnector
     /**
      * Get transfer limits.
      *
-     * @param string $accountId External bank account ID
-     * @param string $transferType Type of transfer (SEPA, SWIFT, etc.)
+     * @param  string $accountId    External bank account ID
+     * @param  string $transferType Type of transfer (SEPA, SWIFT, etc.)
      * @return array
      */
     public function getTransferLimits(string $accountId, string $transferType): array;
@@ -142,9 +142,9 @@ interface IBankConnector
     /**
      * Verify webhook signature.
      *
-     * @param string $payload Webhook payload
-     * @param string $signature Webhook signature
-     * @param array $headers Webhook headers
+     * @param  string $payload   Webhook payload
+     * @param  string $signature Webhook signature
+     * @param  array  $headers   Webhook headers
      * @return bool
      */
     public function verifyWebhookSignature(string $payload, string $signature, array $headers): bool;
@@ -152,7 +152,7 @@ interface IBankConnector
     /**
      * Process webhook notification.
      *
-     * @param string $payload Webhook payload
+     * @param  string $payload Webhook payload
      * @return array Processed webhook data
      */
     public function processWebhook(string $payload): array;

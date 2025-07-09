@@ -24,13 +24,15 @@ class StatusController extends Controller
     {
         $status = $this->checkSystemStatus();
 
-        return response()->json([
+        return response()->json(
+            [
             'status'    => $status,
             'services'  => $this->getServicesStatus(),
             'uptime'    => $this->calculateUptime(),
             'incidents' => $this->getRecentIncidents(true),
             'timestamp' => now()->toIso8601String(),
-        ]);
+            ]
+        );
     }
 
     private function checkSystemStatus()
@@ -52,14 +54,16 @@ class StatusController extends Controller
             $checks[$service] = $check;
 
             // Record the check
-            SystemHealthCheck::create([
+            SystemHealthCheck::create(
+                [
                 'service'       => $service,
                 'check_type'    => 'realtime',
                 'status'        => $check['status'],
                 'response_time' => $check['response_time'] ?? null,
                 'error_message' => $check['status'] !== 'operational' ? ($check['message'] ?? null) : null,
                 'checked_at'    => now(),
-            ]);
+                ]
+            );
         }
 
         // Add checks from database for services not checked in real-time
@@ -247,8 +251,9 @@ class StatusController extends Controller
             ->get();
 
         if ($forApi) {
-            return $incidents->map(function ($incident) {
-                return [
+            return $incidents->map(
+                function ($incident) {
+                    return [
                     'id'          => $incident->id,
                     'title'       => $incident->title,
                     'status'      => $incident->status,
@@ -256,15 +261,18 @@ class StatusController extends Controller
                     'started_at'  => $incident->started_at->toIso8601String(),
                     'resolved_at' => $incident->resolved_at?->toIso8601String(),
                     'duration'    => $incident->duration,
-                    'updates'     => $incident->updates->map(function ($update) {
-                        return [
+                    'updates'     => $incident->updates->map(
+                        function ($update) {
+                            return [
                             'status'     => $update->status,
                             'message'    => $update->message,
                             'created_at' => $update->created_at->toIso8601String(),
-                        ];
-                    }),
-                ];
-            });
+                            ];
+                        }
+                    ),
+                    ];
+                }
+            );
         }
 
         return $incidents;

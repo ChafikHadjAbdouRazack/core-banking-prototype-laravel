@@ -403,16 +403,18 @@ class PoolRebalancingService
             ->where('created_at', '>=', now()->subDays($days))
             ->orderBy('created_at', 'desc')
             ->get()
-            ->map(function ($event) {
-                $eventData = json_decode($event->event_properties, true);
+            ->map(
+                function ($event) {
+                    $eventData = json_decode($event->event_properties, true);
 
-                return [
+                    return [
                     'timestamp'          => $event->created_at,
                     'old_ratio'          => $eventData['old_ratio'] ?? null,
                     'new_ratio'          => $eventData['new_ratio'] ?? null,
                     'rebalance_amount'   => $eventData['rebalance_amount'] ?? null,
                     'rebalance_currency' => $eventData['rebalance_currency'] ?? null,
-                ];
-            });
+                    ];
+                }
+            );
     }
 }

@@ -76,13 +76,15 @@ class LiquidityPool extends AggregateRoot
             throw new \DomainException('Pool already created');
         }
 
-        $this->recordThat(new LiquidityPoolCreated(
-            poolId: $poolId,
-            baseCurrency: $baseCurrency,
-            quoteCurrency: $quoteCurrency,
-            feeRate: $feeRate,
-            metadata: $metadata
-        ));
+        $this->recordThat(
+            new LiquidityPoolCreated(
+                poolId: $poolId,
+                baseCurrency: $baseCurrency,
+                quoteCurrency: $quoteCurrency,
+                feeRate: $feeRate,
+                metadata: $metadata
+            )
+        );
 
         return $this;
     }
@@ -122,17 +124,19 @@ class LiquidityPool extends AggregateRoot
             throw new \DomainException('Slippage tolerance exceeded');
         }
 
-        $this->recordThat(new LiquidityAdded(
-            poolId: $this->poolId,
-            providerId: $providerId,
-            baseAmount: $baseAmount,
-            quoteAmount: $quoteAmount,
-            sharesMinted: $shares->__toString(),
-            newBaseReserve: $this->baseReserve->plus($baseAmountDecimal)->__toString(),
-            newQuoteReserve: $this->quoteReserve->plus($quoteAmountDecimal)->__toString(),
-            newTotalShares: $this->totalShares->plus($shares)->__toString(),
-            metadata: $metadata
-        ));
+        $this->recordThat(
+            new LiquidityAdded(
+                poolId: $this->poolId,
+                providerId: $providerId,
+                baseAmount: $baseAmount,
+                quoteAmount: $quoteAmount,
+                sharesMinted: $shares->__toString(),
+                newBaseReserve: $this->baseReserve->plus($baseAmountDecimal)->__toString(),
+                newQuoteReserve: $this->quoteReserve->plus($quoteAmountDecimal)->__toString(),
+                newTotalShares: $this->totalShares->plus($shares)->__toString(),
+                metadata: $metadata
+            )
+        );
 
         return $this;
     }
@@ -164,17 +168,19 @@ class LiquidityPool extends AggregateRoot
             throw new \DomainException('Slippage tolerance exceeded');
         }
 
-        $this->recordThat(new LiquidityRemoved(
-            poolId: $this->poolId,
-            providerId: $providerId,
-            sharesBurned: $shares,
-            baseAmount: $baseAmount->__toString(),
-            quoteAmount: $quoteAmount->__toString(),
-            newBaseReserve: $this->baseReserve->minus($baseAmount)->__toString(),
-            newQuoteReserve: $this->quoteReserve->minus($quoteAmount)->__toString(),
-            newTotalShares: $this->totalShares->minus($sharesDecimal)->__toString(),
-            metadata: $metadata
-        ));
+        $this->recordThat(
+            new LiquidityRemoved(
+                poolId: $this->poolId,
+                providerId: $providerId,
+                sharesBurned: $shares,
+                baseAmount: $baseAmount->__toString(),
+                quoteAmount: $quoteAmount->__toString(),
+                newBaseReserve: $this->baseReserve->minus($baseAmount)->__toString(),
+                newQuoteReserve: $this->quoteReserve->minus($quoteAmount)->__toString(),
+                newTotalShares: $this->totalShares->minus($sharesDecimal)->__toString(),
+                metadata: $metadata
+            )
+        );
 
         return $this;
     }
@@ -215,13 +221,15 @@ class LiquidityPool extends AggregateRoot
         // Collect fee
         $feeAmount = $inputAmountDecimal->multipliedBy($this->feeRate);
 
-        $this->recordThat(new PoolFeeCollected(
-            poolId: $this->poolId,
-            currency: $inputCurrency,
-            feeAmount: $feeAmount->__toString(),
-            swapVolume: $inputAmount,
-            metadata: ['output_amount' => $outputAmount->__toString()]
-        ));
+        $this->recordThat(
+            new PoolFeeCollected(
+                poolId: $this->poolId,
+                currency: $inputCurrency,
+                feeAmount: $feeAmount->__toString(),
+                swapVolume: $inputAmount,
+                metadata: ['output_amount' => $outputAmount->__toString()]
+            )
+        );
 
         return [
             'outputAmount'   => $outputAmount->__toString(),
@@ -247,14 +255,16 @@ class LiquidityPool extends AggregateRoot
             ->dividedBy($targetRatioDecimal, 18);
 
         if ($deviation->isGreaterThan($maxSlippage)) {
-            $this->recordThat(new LiquidityPoolRebalanced(
-                poolId: $this->poolId,
-                oldRatio: $currentRatio->__toString(),
-                newRatio: $targetRatio,
-                rebalanceAmount: '0', // Calculated by workflow
-                rebalanceCurrency: '', // Determined by workflow
-                metadata: $metadata
-            ));
+            $this->recordThat(
+                new LiquidityPoolRebalanced(
+                    poolId: $this->poolId,
+                    oldRatio: $currentRatio->__toString(),
+                    newRatio: $targetRatio,
+                    rebalanceAmount: '0', // Calculated by workflow
+                    rebalanceCurrency: '', // Determined by workflow
+                    metadata: $metadata
+                )
+            );
         }
 
         return $this;
@@ -269,13 +279,15 @@ class LiquidityPool extends AggregateRoot
             throw new \DomainException('No liquidity providers to distribute rewards to');
         }
 
-        $this->recordThat(new LiquidityRewardsDistributed(
-            poolId: $this->poolId,
-            rewardAmount: $rewardAmount,
-            rewardCurrency: $rewardCurrency,
-            totalShares: $this->totalShares->__toString(),
-            metadata: $metadata
-        ));
+        $this->recordThat(
+            new LiquidityRewardsDistributed(
+                poolId: $this->poolId,
+                rewardAmount: $rewardAmount,
+                rewardCurrency: $rewardCurrency,
+                totalShares: $this->totalShares->__toString(),
+                metadata: $metadata
+            )
+        );
 
         return $this;
     }
@@ -294,12 +306,14 @@ class LiquidityPool extends AggregateRoot
             throw new \DomainException('No rewards to claim');
         }
 
-        $this->recordThat(new LiquidityRewardsClaimed(
-            poolId: $this->poolId,
-            providerId: $providerId,
-            rewards: $pendingRewards,
-            metadata: $metadata
-        ));
+        $this->recordThat(
+            new LiquidityRewardsClaimed(
+                poolId: $this->poolId,
+                providerId: $providerId,
+                rewards: $pendingRewards,
+                metadata: $metadata
+            )
+        );
 
         return $this;
     }
@@ -320,11 +334,13 @@ class LiquidityPool extends AggregateRoot
         }
 
         if (! empty($changes)) {
-            $this->recordThat(new PoolParametersUpdated(
-                poolId: $this->poolId,
-                changes: $changes,
-                metadata: $metadata
-            ));
+            $this->recordThat(
+                new PoolParametersUpdated(
+                    poolId: $this->poolId,
+                    changes: $changes,
+                    metadata: $metadata
+                )
+            );
         }
 
         return $this;

@@ -47,19 +47,23 @@ class CgoController extends Controller
 
     public function notify(Request $request, SubscriberEmailService $emailService)
     {
-        $validated = $request->validate([
+        $validated = $request->validate(
+            [
             'email' => 'required|email|max:255',
-        ]);
+            ]
+        );
 
         // Check if email already exists in CGO notifications
         $existing = CgoNotification::where('email', $validated['email'])->first();
 
         if (! $existing) {
-            CgoNotification::create([
+            CgoNotification::create(
+                [
                 'email'      => $validated['email'],
                 'ip_address' => $request->ip(),
                 'user_agent' => $request->userAgent(),
-            ]);
+                ]
+            );
 
             // Also add to subscriber list
             try {
@@ -105,10 +109,12 @@ class CgoController extends Controller
             // Create temporary investment to check KYC requirements for each package
             $kycRequirements = [];
             foreach (config('cgo.packages', []) as $key => $package) {
-                $tempInvestment = new CgoInvestment([
+                $tempInvestment = new CgoInvestment(
+                    [
                     'user_id' => $user->id,
                     'amount'  => $package['amount'],
-                ]);
+                    ]
+                );
                 $kycRequirements[$key] = $kycService->checkKycRequirements($tempInvestment);
             }
 
@@ -119,16 +125,19 @@ class CgoController extends Controller
             ];
         }
 
-        return view('cgo.invest', [
+        return view(
+            'cgo.invest', [
             'currentRound' => $currentRound,
             'packages'     => config('cgo.packages', []),
             'kycStatus'    => $kycStatus,
-        ]);
+            ]
+        );
     }
 
     public function processInvestment(Request $request, CgoKycService $kycService)
     {
-        $validated = $request->validate([
+        $validated = $request->validate(
+            [
             'name'            => 'required|string|max:255',
             'email'           => 'required|email|max:255',
             'phone'           => 'required|string|max:50',
@@ -136,7 +145,8 @@ class CgoController extends Controller
             'payment_method'  => 'required|in:card,crypto,bank_transfer',
             'crypto_currency' => 'required_if:payment_method,crypto|in:BTC,ETH,USDT,USDC',
             'terms_accepted'  => 'required|accepted',
-        ]);
+            ]
+        );
 
         $user = auth()->user();
 
@@ -167,7 +177,8 @@ class CgoController extends Controller
 
         try {
             // Create investment record
-            $investment = CgoInvestment::create([
+            $investment = CgoInvestment::create(
+                [
                 'user_id'              => $user->id,
                 'round_id'             => $currentRound->id,
                 'tier'                 => $validated['package'],
@@ -187,7 +198,8 @@ class CgoController extends Controller
                     'ip_address'        => $request->ip(),
                     'user_agent'        => $request->userAgent(),
                 ],
-            ]);
+                ]
+            );
 
             // Verify KYC requirements
             $kycVerified = $kycService->verifyInvestor($investment);
@@ -195,27 +207,29 @@ class CgoController extends Controller
             if (! $kycVerified) {
                 DB::commit(); // Keep the investment record but mark it as requiring KYC
 
-                return redirect()->route('cgo.kyc.status')->withErrors([
+                return redirect()->route('cgo.kyc.status')->withErrors(
+                    [
                     'kyc_required'  => 'KYC verification is required for this investment amount. Please complete the verification process to continue.',
                     'investment_id' => $investment->uuid,
-                ]);
+                    ]
+                );
             }
 
             DB::commit();
 
             // Process payment based on method
             switch ($validated['payment_method']) {
-                case 'card':
-                    return $this->processCardPayment($investment);
+            case 'card':
+                return $this->processCardPayment($investment);
 
-                case 'crypto':
-                    return $this->processCryptoPayment($investment, $validated['crypto_currency']);
+            case 'crypto':
+                return $this->processCryptoPayment($investment, $validated['crypto_currency']);
 
-                case 'bank_transfer':
-                    return $this->processBankTransfer($investment);
+            case 'bank_transfer':
+                return $this->processBankTransfer($investment);
 
-                default:
-                    throw new \Exception('Invalid payment method');
+            default:
+                throw new \Exception('Invalid payment method');
             }
         } catch (\Exception $e) {
             DB::rollBack();
@@ -264,24 +278,30 @@ class CgoController extends Controller
 
         // Display warning in non-production environments
         if (! app()->environment('production')) {
-            \Log::warning('CGO Crypto payment in non-production environment', [
+            \Log::warning(
+                'CGO Crypto payment in non-production environment', [
                 'investment_id' => $investment->id,
                 'currency'      => $cryptoCurrency,
                 'address'       => $cryptoAddress,
                 'environment'   => app()->environment(),
-            ]);
+                ]
+            );
         }
 
-        $investment->update([
+        $investment->update(
+            [
             'crypto_address' => $cryptoAddress,
-        ]);
+            ]
+        );
 
-        return view('cgo.crypto-payment', [
+        return view(
+            'cgo.crypto-payment', [
             'investment'     => $investment,
             'cryptoCurrency' => $cryptoCurrency,
             'cryptoAddress'  => $cryptoAddress,
             'amount'         => $investment->amount,
-        ]);
+            ]
+        );
     }
 
     private function processBankTransfer($investment)
@@ -293,15 +313,18 @@ class CgoController extends Controller
         $accountNumber = $bankConfig['account_number'] ?: 'CGO-' . str_pad($investment->id, 8, '0', STR_PAD_LEFT);
 
         // Store the bank transfer reference
-        $investment->update([
+        $investment->update(
+            [
             'bank_transfer_reference' => 'CGO-' . $investment->uuid,
-        ]);
+            ]
+        );
 
         // Schedule payment verification job for bank transfers
         // Check after 1 hour, then every 6 hours
         VerifyCgoPayment::dispatch($investment)->delay(now()->addHour());
 
-        return view('cgo.bank-transfer', [
+        return view(
+            'cgo.bank-transfer', [
             'investment'  => $investment,
             'bankDetails' => [
                 'bank_name'      => $bankConfig['bank_name'] ?: 'Example Bank',
@@ -310,16 +333,19 @@ class CgoController extends Controller
                 'sort_code'      => $bankConfig['sort_code'] ?: '00-00-00',
                 'reference'      => 'CGO-' . $investment->uuid,
             ],
-        ]);
+            ]
+        );
     }
 
     public function thankYou($investmentId)
     {
         $investment = CgoInvestment::where('uuid', $investmentId)->firstOrFail();
 
-        return view('cgo.thank-you', [
+        return view(
+            'cgo.thank-you', [
             'investment' => $investment,
-        ]);
+            ]
+        );
     }
 
     private function processCardPayment($investment)
@@ -329,9 +355,11 @@ class CgoController extends Controller
             $session = $stripeService->createCheckoutSession($investment);
 
             // Store the session ID for later verification
-            $investment->update([
+            $investment->update(
+                [
                 'stripe_session_id' => $session->id,
-            ]);
+                ]
+            );
 
             return redirect($session->url);
         } catch (\Exception $e) {
@@ -350,10 +378,12 @@ class CgoController extends Controller
             try {
                 $stripeService = new StripePaymentService();
                 if ($stripeService->verifyPayment($investment)) {
-                    $investment->update([
+                    $investment->update(
+                        [
                         'status'       => 'confirmed',
                         'confirmed_at' => now(),
-                    ]);
+                        ]
+                    );
 
                     // Send confirmation email
                     try {
@@ -367,9 +397,11 @@ class CgoController extends Controller
             }
         }
 
-        return view('cgo.payment-success', [
+        return view(
+            'cgo.payment-success', [
             'investment' => $investment,
-        ]);
+            ]
+        );
     }
 
     public function paymentCancel(Request $request, $investmentUuid)
@@ -377,13 +409,17 @@ class CgoController extends Controller
         $investment = CgoInvestment::where('uuid', $investmentUuid)->firstOrFail();
 
         // Update status to cancelled
-        $investment->update([
+        $investment->update(
+            [
             'status'       => 'cancelled',
             'cancelled_at' => now(),
-        ]);
+            ]
+        );
 
-        return view('cgo.payment-cancel', [
+        return view(
+            'cgo.payment-cancel', [
             'investment' => $investment,
-        ]);
+            ]
+        );
     }
 }

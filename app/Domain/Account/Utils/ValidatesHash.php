@@ -33,7 +33,7 @@ trait ValidatesHash
     }
 
     /**
-     * @param Hash $hash
+     * @param Hash       $hash
      * @param Money|null $money
      *
      * @return void

@@ -26,40 +26,41 @@ class TransferController extends Controller
      *     summary="Create a money transfer",
      *     description="Transfers money from one account to another",
      *     security={{"sanctum":{}}},
-     *     @OA\RequestBody(
+     * @OA\RequestBody(
      *         required=true,
-     *         @OA\JsonContent(
+     * @OA\JsonContent(
      *             required={"from_account_uuid", "to_account_uuid", "amount"},
-     *             @OA\Property(property="from_account_uuid", type="string", format="uuid", example="550e8400-e29b-41d4-a716-446655440000"),
-     *             @OA\Property(property="to_account_uuid", type="string", format="uuid", example="660e8400-e29b-41d4-a716-446655440000"),
-     *             @OA\Property(property="amount", type="integer", example=5000, minimum=1, description="Amount in cents"),
-     *             @OA\Property(property="description", type="string", example="Payment for services", maxLength=255)
+     * @OA\Property(property="from_account_uuid",        type="string", format="uuid", example="550e8400-e29b-41d4-a716-446655440000"),
+     * @OA\Property(property="to_account_uuid",          type="string", format="uuid", example="660e8400-e29b-41d4-a716-446655440000"),
+     * @OA\Property(property="amount",                   type="integer", example=5000, minimum=1, description="Amount in cents"),
+     * @OA\Property(property="description",              type="string", example="Payment for services", maxLength=255)
      *         )
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=201,
      *         description="Transfer initiated successfully",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="transfer_uuid", type="string", format="uuid"),
-     *                 @OA\Property(property="from_account_uuid", type="string", format="uuid"),
-     *                 @OA\Property(property="to_account_uuid", type="string", format="uuid"),
-     *                 @OA\Property(property="amount", type="integer", example=5000),
-     *                 @OA\Property(property="status", type="string", example="pending")
+     * @OA\JsonContent(
+     * @OA\Property(property="data",                     type="object",
+     * @OA\Property(property="transfer_uuid",            type="string", format="uuid"),
+     * @OA\Property(property="from_account_uuid",        type="string", format="uuid"),
+     * @OA\Property(property="to_account_uuid",          type="string", format="uuid"),
+     * @OA\Property(property="amount",                   type="integer", example=5000),
+     * @OA\Property(property="status",                   type="string", example="pending")
      *             ),
-     *             @OA\Property(property="message", type="string", example="Transfer initiated successfully")
+     * @OA\Property(property="message",                  type="string", example="Transfer initiated successfully")
      *         )
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *         response=422,
      *         description="Validation error or business rule violation",
-     *         @OA\JsonContent(ref="#/components/schemas/Error")
+     * @OA\JsonContent(ref="#/components/schemas/Error")
      *     )
      * )
      */
     public function store(Request $request): JsonResponse
     {
-        $validated = $request->validate([
+        $validated = $request->validate(
+            [
             'from_account_uuid' => 'sometimes|uuid|exists:accounts,uuid',
             'to_account_uuid'   => 'sometimes|uuid|exists:accounts,uuid|different:from_account_uuid',
             'from_account'      => 'sometimes|uuid|exists:accounts,uuid',
@@ -68,37 +69,44 @@ class TransferController extends Controller
             'asset_code'        => 'required|string|exists:assets,code',
             'reference'         => 'sometimes|string|max:255',
             'description'       => 'sometimes|string|max:255',
-        ]);
+            ]
+        );
 
         // Support both field name formats for backward compatibility
-        $fromAccountUuid = $validated['from_account_uuid'] ?? $validated['from_account'];
-        $toAccountUuid = $validated['to_account_uuid'] ?? $validated['to_account'];
+        $fromAccountUuid = $validated['from_account_uuid'] ?? $validated['from_account'] ?? null;
+        $toAccountUuid = $validated['to_account_uuid'] ?? $validated['to_account'] ?? null;
 
         if (! $fromAccountUuid || ! $toAccountUuid) {
-            return response()->json([
+            return response()->json(
+                [
                 'message' => 'Both from and to account UUIDs are required',
                 'errors'  => [
                     'from_account_uuid' => $fromAccountUuid ? [] : ['The from account uuid field is required.'],
                     'to_account_uuid'   => $toAccountUuid ? [] : ['The to account uuid field is required.'],
                 ],
-            ], 422);
+                ], 422
+            );
         }
 
         $fromAccount = Account::where('uuid', $fromAccountUuid)->first();
         $toAccount = Account::where('uuid', $toAccountUuid)->first();
 
         if ($fromAccount && $fromAccount->frozen) {
-            return response()->json([
+            return response()->json(
+                [
                 'message' => 'Cannot transfer from frozen account',
                 'error'   => 'SOURCE_ACCOUNT_FROZEN',
-            ], 422);
+                ], 422
+            );
         }
 
         if ($toAccount && $toAccount->frozen) {
-            return response()->json([
+            return response()->json(
+                [
                 'message' => 'Cannot transfer to frozen account',
                 'error'   => 'DESTINATION_ACCOUNT_FROZEN',
-            ], 422);
+                ], 422
+            );
         }
 
         $asset = Asset::where('code', $validated['asset_code'])->firstOrFail();
@@ -108,12 +116,14 @@ class TransferController extends Controller
         $fromBalance = $fromAccount->getBalance($validated['asset_code']);
 
         if ($fromBalance < $amountInMinorUnits) {
-            return response()->json([
+            return response()->json(
+                [
                 'message'          => 'Insufficient funds',
                 'error'            => 'INSUFFICIENT_FUNDS',
                 'current_balance'  => $fromBalance,
                 'requested_amount' => $amountInMinorUnits,
-            ], 422);
+                ], 422
+            );
         }
 
         $fromUuid = new AccountUuid($fromAccountUuid);
@@ -124,17 +134,20 @@ class TransferController extends Controller
             $workflow = WorkflowStub::make(WalletTransferWorkflow::class);
             $workflow->start($fromUuid, $toUuid, $validated['asset_code'], $amountInMinorUnits);
         } catch (\Exception $e) {
-            return response()->json([
+            return response()->json(
+                [
                 'message' => 'Transfer failed',
                 'error'   => 'TRANSFER_FAILED',
-            ], 422);
+                ], 422
+            );
         }
 
         // Since we're using event sourcing, we don't have a traditional transfer record
         // Just use the provided data for the response
         $transferUuid = Str::uuid()->toString();
 
-        return response()->json([
+        return response()->json(
+            [
             'data' => [
                 'uuid'         => $transferUuid,
                 'status'       => 'pending',
@@ -146,7 +159,8 @@ class TransferController extends Controller
                 'created_at'   => now()->toISOString(),
             ],
             'message' => 'Transfer initiated successfully',
-        ], 201);
+            ], 201
+        );
     }
 
     /**
@@ -166,7 +180,8 @@ class TransferController extends Controller
 
         $properties = json_decode($event->event_properties, true);
 
-        return response()->json([
+        return response()->json(
+            [
             'data' => [
                 'uuid'              => $uuid,
                 'from_account_uuid' => $properties['from_uuid'] ?? null,
@@ -176,7 +191,8 @@ class TransferController extends Controller
                 'created_at'        => $event->created_at,
                 'updated_at'        => $event->created_at,
             ],
-        ]);
+            ]
+        );
     }
 
     /**
@@ -189,29 +205,34 @@ class TransferController extends Controller
         // Since transfers are event sourced, we need to query stored_events
         $events = \DB::table('stored_events')
             ->where('event_class', 'App\Domain\Account\Events\MoneyTransferred')
-            ->where(function ($query) use ($accountUuid) {
-                $query->where('aggregate_uuid', $accountUuid)
-                      ->orWhereRaw("event_properties->>'$.to_uuid' = ?", [$accountUuid])
-                      ->orWhereRaw("event_properties->>'$.from_uuid' = ?", [$accountUuid]);
-            })
+            ->where(
+                function ($query) use ($accountUuid) {
+                    $query->where('aggregate_uuid', $accountUuid)
+                        ->orWhereRaw("event_properties->>'$.to_uuid' = ?", [$accountUuid])
+                        ->orWhereRaw("event_properties->>'$.from_uuid' = ?", [$accountUuid]);
+                }
+            )
             ->orderBy('created_at', 'desc')
             ->paginate(50);
 
         // Transform events to transfer-like format
-        $transfers = collect($events->items())->map(function ($event) use ($accountUuid) {
-            $properties = json_decode($event->event_properties, true);
+        $transfers = collect($events->items())->map(
+            function ($event) use ($accountUuid) {
+                $properties = json_decode($event->event_properties, true);
 
-            return [
+                return [
                 'uuid'              => $event->aggregate_uuid,
                 'from_account_uuid' => $properties['from_uuid'] ?? $event->aggregate_uuid,
                 'to_account_uuid'   => $properties['to_uuid'] ?? null,
                 'amount'            => $properties['money']['amount'] ?? 0,
                 'direction'         => ($properties['from_uuid'] ?? $event->aggregate_uuid) === $accountUuid ? 'outgoing' : 'incoming',
                 'created_at'        => $event->created_at,
-            ];
-        });
+                ];
+            }
+        );
 
-        return response()->json([
+        return response()->json(
+            [
             'data' => $transfers,
             'meta' => [
                 'current_page' => $events->currentPage(),
@@ -219,6 +240,7 @@ class TransferController extends Controller
                 'per_page'     => $events->perPage(),
                 'total'        => $events->total(),
             ],
-        ]);
+            ]
+        );
     }
 }

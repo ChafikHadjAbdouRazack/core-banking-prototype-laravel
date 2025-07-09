@@ -77,7 +77,7 @@ class Account extends Model
     /**
      * Get balance for a specific asset.
      *
-     * @param string $assetCode
+     * @param  string $assetCode
      * @return AccountBalance|null
      */
     public function getBalanceForAsset(string $assetCode): ?AccountBalance
@@ -88,7 +88,7 @@ class Account extends Model
     /**
      * Get balance amount for a specific asset.
      *
-     * @param string $assetCode
+     * @param  string $assetCode
      * @return int
      */
     public function getBalance(string $assetCode = 'USD'): int
@@ -103,8 +103,8 @@ class Account extends Model
     /**
      * Check if account has sufficient balance for asset.
      *
-     * @param string $assetCode
-     * @param int $amount
+     * @param  string $assetCode
+     * @param  int    $amount
      * @return bool
      */
     public function hasSufficientBalance(string $assetCode, int $amount): bool

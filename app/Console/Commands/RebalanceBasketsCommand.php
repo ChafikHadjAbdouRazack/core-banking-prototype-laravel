@@ -124,14 +124,16 @@ class RebalanceBasketsCommand extends Command
 
         $this->table(
             ['Asset', 'Current Weight', 'New Weight', 'Change'],
-            collect($result['adjustments'])->map(function ($adjustment) {
-                return [
+            collect($result['adjustments'])->map(
+                function ($adjustment) {
+                    return [
                     $adjustment['asset_code'],
                     number_format($adjustment['old_weight'], 2) . '%',
                     number_format($adjustment['new_weight'], 2) . '%',
                     ($adjustment['adjustment'] > 0 ? '+' : '') . number_format($adjustment['adjustment'], 2) . '%',
-                ];
-            })->toArray()
+                    ];
+                }
+            )->toArray()
         );
     }
 
@@ -146,14 +148,16 @@ class RebalanceBasketsCommand extends Command
             if (! empty($result['adjustments'])) {
                 $this->table(
                     ['Asset', 'Old Weight', 'New Weight', 'Change'],
-                    collect($result['adjustments'])->map(function ($adjustment) {
-                        return [
+                    collect($result['adjustments'])->map(
+                        function ($adjustment) {
+                            return [
                             $adjustment['asset_code'],
                             number_format($adjustment['old_weight'], 2) . '%',
                             number_format($adjustment['new_weight'], 2) . '%',
                             ($adjustment['adjustment'] > 0 ? '+' : '') . number_format($adjustment['adjustment'], 2) . '%',
-                        ];
-                    })->toArray()
+                            ];
+                        }
+                    )->toArray()
                 );
             } else {
                 $this->info('No adjustments were made.');
