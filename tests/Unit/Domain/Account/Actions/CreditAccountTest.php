@@ -3,7 +3,6 @@
 namespace Tests\Unit\Domain\Account\Actions;
 
 use App\Domain\Account\Actions\CreditAccount;
-use App\Domain\Account\DataObjects\Hash;
 use App\Domain\Account\Events\AssetBalanceAdded;
 use App\Domain\Account\Repositories\AccountRepository;
 use App\Models\Account;
@@ -48,13 +47,13 @@ class CreditAccountTest extends TestCase
         // Create event mock with constructor bypass
         $event = Mockery::mock(AssetBalanceAdded::class)->makePartial();
         $event->shouldReceive('aggregateRootUuid')->andReturn('account-123');
-        
+
         // Use reflection to set readonly properties
         $reflection = new \ReflectionClass($event);
         $assetCodeProp = $reflection->getProperty('assetCode');
         $assetCodeProp->setAccessible(true);
         $assetCodeProp->setValue($event, 'USD');
-        
+
         $amountProp = $reflection->getProperty('amount');
         $amountProp->setAccessible(true);
         $amountProp->setValue($event, 500); // $5.00
