@@ -11,7 +11,7 @@ class AssetBalanceAddedTest extends TestCase
 {
     public function test_creates_event_with_required_properties(): void
     {
-        $hash = new Hash('test-hash-value');
+        $hash = Hash::fromData('test-hash-value');
 
         $event = new AssetBalanceAdded(
             assetCode: 'USD',
@@ -28,7 +28,7 @@ class AssetBalanceAddedTest extends TestCase
 
     public function test_creates_event_with_metadata(): void
     {
-        $hash = new Hash('test-hash-with-metadata');
+        $hash = Hash::fromData('test-hash-with-metadata');
         $metadata = [
             'source'    => 'bank_transfer',
             'reference' => 'TX123456',
@@ -50,7 +50,7 @@ class AssetBalanceAddedTest extends TestCase
         $event = new AssetBalanceAdded(
             assetCode: 'BTC',
             amount: 100000000, // 1 BTC in satoshi
-            hash: new Hash('btc-hash')
+            hash: Hash::fromData('btc-hash')
         );
 
         $this->assertEquals(100000000, $event->getAmount());
@@ -61,7 +61,7 @@ class AssetBalanceAddedTest extends TestCase
         $event = new AssetBalanceAdded(
             assetCode: 'ETH',
             amount: 1000000000000000000, // 1 ETH in wei
-            hash: new Hash('eth-hash')
+            hash: Hash::fromData('eth-hash')
         );
 
         $this->assertEquals('ETH', $event->getAssetCode());
@@ -72,7 +72,7 @@ class AssetBalanceAddedTest extends TestCase
         $event = new AssetBalanceAdded(
             assetCode: 'USDT',
             amount: 0,
-            hash: new Hash('zero-amount-hash')
+            hash: Hash::fromData('zero-amount-hash')
         );
 
         $this->assertEquals(0, $event->amount);
@@ -87,7 +87,7 @@ class AssetBalanceAddedTest extends TestCase
             $event = new AssetBalanceAdded(
                 assetCode: $assetCode,
                 amount: 1000,
-                hash: new Hash("hash-{$assetCode}")
+                hash: Hash::fromData("hash-{$assetCode}")
             );
 
             $this->assertEquals($assetCode, $event->assetCode);
@@ -99,7 +99,7 @@ class AssetBalanceAddedTest extends TestCase
         $event = new AssetBalanceAdded(
             assetCode: 'USD',
             amount: 1000,
-            hash: new Hash('immutable-hash')
+            hash: Hash::fromData('immutable-hash')
         );
 
         // Properties are readonly, so we can't modify them

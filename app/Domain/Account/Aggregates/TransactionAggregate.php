@@ -136,6 +136,13 @@ class TransactionAggregate extends AggregateRoot
 
         $this->balance -= $event->money->getAmount();
 
+        if (++$this->count >= self::COUNT_THRESHOLD) {
+            $this->recordThat(
+                domainEvent: new TransactionThresholdReached()
+            );
+            $this->count = 0;
+        }
+
         $this->storeHash($event->hash);
 
         return $this;

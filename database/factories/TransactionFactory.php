@@ -44,6 +44,8 @@ class TransactionFactory extends Factory
                 'reference'   => fake()->optional()->bothify('REF-####-????'),
                 'description' => fake()->optional()->sentence(),
             ],
+            'created_at' => now(),
+            'updated_at' => now(),
         ];
     }
 

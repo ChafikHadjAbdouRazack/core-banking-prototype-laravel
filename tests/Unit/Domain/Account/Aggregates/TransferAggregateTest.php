@@ -4,6 +4,7 @@ namespace Tests\Unit\Domain\Account\Aggregates;
 
 use App\Domain\Account\Aggregates\TransferAggregate;
 use App\Domain\Account\DataObjects\AccountUuid;
+use App\Domain\Account\DataObjects\Hash;
 use App\Domain\Account\DataObjects\Money;
 use App\Domain\Account\Events\MoneyTransferred;
 use App\Domain\Account\Events\TransferThresholdReached;
@@ -26,8 +27,8 @@ class TransferAggregateTest extends TestCase
 
         // Assert that a MoneyTransferred event was recorded
         $aggregate->assertRecorded(function (MoneyTransferred $event) use ($from, $to, $money) {
-            return $event->from->toString() === $from->toString() &&
-                   $event->to->toString() === $to->toString() &&
+            return (string) $event->from === (string) $from &&
+                   (string) $event->to === (string) $to &&
                    $event->money->getAmount() === $money->getAmount();
         });
     }
@@ -72,8 +73,8 @@ class TransferAggregateTest extends TestCase
         }
 
         // Verify threshold event was recorded
-        $aggregate->assertRecorded(function (TransferThresholdReached $event) {
-            return true;
+        $aggregate->assertRecorded(function ($event) {
+            return $event instanceof TransferThresholdReached;
         });
     }
 
@@ -88,7 +89,7 @@ class TransferAggregateTest extends TestCase
             from: new AccountUuid('from'),
             to: new AccountUuid('to'),
             money: new Money(100),
-            hash: 'unique-hash'
+            hash: Hash::fromData('unique-hash')
         );
 
         $aggregate->applyMoneyTransferred($event);
@@ -138,7 +139,8 @@ class TransferAggregateTest extends TestCase
         $aggregate->transfer($from, $to, new Money(10000000)); // 0.1 BTC
 
         // All transfers should be recorded
-        $aggregate->assertRecordedCount(3);
+        $recordedEvents = $aggregate->getRecordedEvents();
+        $this->assertCount(3, $recordedEvents);
     }
 
     public function test_maintains_count_across_multiple_transfers(): void
@@ -154,7 +156,7 @@ class TransferAggregateTest extends TestCase
                 from: $from,
                 to: $to,
                 money: new Money($i * 100),
-                hash: "hash-{$i}"
+                hash: Hash::fromData("hash-{$i}")
             );
             $aggregate->applyMoneyTransferred($event);
         }
@@ -181,8 +183,11 @@ class TransferAggregateTest extends TestCase
     {
         $aggregate = new TransferAggregate(count: 750);
 
-        // Take snapshot
-        $snapshot = $aggregate->getState();
+        // Use reflection to access protected method
+        $reflection = new \ReflectionClass($aggregate);
+        $method = $reflection->getMethod('getState');
+        $method->setAccessible(true);
+        $snapshot = $method->invoke($aggregate);
 
         // Create new aggregate from snapshot
         $newAggregate = TransferAggregate::fromSnapshot($snapshot);
@@ -201,8 +206,8 @@ class TransferAggregateTest extends TestCase
         $aggregate->transfer($account, $account, $money);
 
         $aggregate->assertRecorded(function (MoneyTransferred $event) use ($account) {
-            return $event->from->toString() === $account->toString()
-                && $event->to->toString() === $account->toString();
+            return (string) $event->from === (string) $account
+                && (string) $event->to === (string) $account;
         });
     }
 }

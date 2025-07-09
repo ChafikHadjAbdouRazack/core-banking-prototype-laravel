@@ -71,10 +71,7 @@ class SuspiciousActivityDetectedTest extends TestCase
 
     public function test_event_serializes_correctly(): void
     {
-        $transaction = Transaction::factory()->create([
-            'reference' => 'SUSP-123',
-            'amount'    => 75000,
-        ]);
+        $transaction = Transaction::factory()->create();
 
         $alerts = [
             ['type' => 'pattern_match', 'pattern' => 'unusual_destination'],

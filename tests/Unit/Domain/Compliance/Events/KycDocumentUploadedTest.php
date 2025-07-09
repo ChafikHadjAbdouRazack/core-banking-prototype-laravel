@@ -31,7 +31,7 @@ class KycDocumentUploadedTest extends TestCase
             'passport'        => ['number' => 'AB123456', 'country' => 'US'],
             'drivers_license' => ['number' => 'DL789012', 'state' => 'CA'],
             'national_id'     => ['number' => 'ID345678', 'issued_by' => 'Government'],
-            'utility_bill'    => ['type' => 'electricity', 'date' => '2024-01-01'],
+            'utility_bill'    => ['subtype' => 'electricity', 'date' => '2024-01-01'],
             'selfie'          => ['timestamp' => '2024-01-01 12:00:00'],
         ];
 

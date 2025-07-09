@@ -44,22 +44,20 @@ class AccountServiceTest extends TestCase
 
     public function test_create_account_with_account_object(): void
     {
-        $account = new Account(
-            name: 'Test Account',
-            type: 'personal',
-            metadata: ['key' => 'value']
-        );
+        $account = new Account([
+            'name' => 'Test Account'
+        ]);
 
-        $workflowMock = Mockery::mock(WorkflowStub::class);
-        $workflowMock->shouldReceive('start')
+        WorkflowStub::shouldReceive('make')
+            ->with(CreateAccountWorkflow::class)
+            ->once()
+            ->andReturnSelf();
+        
+        WorkflowStub::shouldReceive('start')
             ->once()
             ->with(Mockery::on(function ($arg) use ($account) {
                 return $arg instanceof Account && $arg->name === $account->name;
             }));
-
-        WorkflowStub::shouldReceive('make')
-            ->with(CreateAccountWorkflow::class)
-            ->andReturn($workflowMock);
 
         $this->service->create($account);
     }
@@ -67,19 +65,17 @@ class AccountServiceTest extends TestCase
     public function test_create_account_with_array(): void
     {
         $accountData = [
-            'name'     => 'Array Account',
-            'type'     => 'business',
-            'metadata' => ['company' => 'Test Corp'],
+            'name' => 'Array Account'
         ];
-
-        $workflowMock = Mockery::mock(WorkflowStub::class);
-        $workflowMock->shouldReceive('start')
-            ->once()
-            ->with(Mockery::type(Account::class));
 
         WorkflowStub::shouldReceive('make')
             ->with(CreateAccountWorkflow::class)
-            ->andReturn($workflowMock);
+            ->once()
+            ->andReturnSelf();
+        
+        WorkflowStub::shouldReceive('start')
+            ->once()
+            ->with(Mockery::type(Account::class));
 
         $this->service->create($accountData);
     }
@@ -88,16 +84,16 @@ class AccountServiceTest extends TestCase
     {
         $uuid = 'test-account-uuid';
 
-        $workflowMock = Mockery::mock(WorkflowStub::class);
-        $workflowMock->shouldReceive('start')
+        WorkflowStub::shouldReceive('make')
+            ->with(DestroyAccountWorkflow::class)
+            ->once()
+            ->andReturnSelf();
+        
+        WorkflowStub::shouldReceive('start')
             ->once()
             ->with(Mockery::on(function ($arg) use ($uuid) {
                 return $arg->toString() === $uuid;
             }));
-
-        WorkflowStub::shouldReceive('make')
-            ->with(DestroyAccountWorkflow::class)
-            ->andReturn($workflowMock);
 
         $this->service->destroy($uuid);
     }
@@ -107,17 +103,17 @@ class AccountServiceTest extends TestCase
         $uuid = 'deposit-account-uuid';
         $amount = 10000; // $100.00
 
-        $workflowMock = Mockery::mock(WorkflowStub::class);
-        $workflowMock->shouldReceive('start')
+        WorkflowStub::shouldReceive('make')
+            ->with(DepositAccountWorkflow::class)
+            ->once()
+            ->andReturnSelf();
+        
+        WorkflowStub::shouldReceive('start')
             ->once()
             ->with(
                 Mockery::on(fn ($arg) => $arg->toString() === $uuid),
                 Mockery::on(fn ($arg) => $arg->getAmount() === $amount)
             );
-
-        WorkflowStub::shouldReceive('make')
-            ->with(DepositAccountWorkflow::class)
-            ->andReturn($workflowMock);
 
         $this->service->deposit($uuid, $amount);
     }
@@ -127,17 +123,17 @@ class AccountServiceTest extends TestCase
         $uuid = 'withdraw-account-uuid';
         $amount = 5000; // $50.00
 
-        $workflowMock = Mockery::mock(WorkflowStub::class);
-        $workflowMock->shouldReceive('start')
+        WorkflowStub::shouldReceive('make')
+            ->with(WithdrawAccountWorkflow::class)
+            ->once()
+            ->andReturnSelf();
+        
+        WorkflowStub::shouldReceive('start')
             ->once()
             ->with(
                 Mockery::on(fn ($arg) => $arg->toString() === $uuid),
                 Mockery::on(fn ($arg) => $arg->getAmount() === $amount)
             );
-
-        WorkflowStub::shouldReceive('make')
-            ->with(WithdrawAccountWorkflow::class)
-            ->andReturn($workflowMock);
 
         $this->service->withdraw($uuid, $amount);
     }
@@ -150,8 +146,12 @@ class AccountServiceTest extends TestCase
             'amount'   => 2500, // €25.00
         ];
 
-        $workflowMock = Mockery::mock(WorkflowStub::class);
-        $workflowMock->shouldReceive('start')
+        WorkflowStub::shouldReceive('make')
+            ->with(DepositAccountWorkflow::class)
+            ->once()
+            ->andReturnSelf();
+        
+        WorkflowStub::shouldReceive('start')
             ->once()
             ->with(
                 Mockery::on(fn ($arg) => $arg->toString() === $uuid),
@@ -159,10 +159,6 @@ class AccountServiceTest extends TestCase
                     return $money->getCurrency() === 'EUR' && $money->getAmount() === 2500;
                 })
             );
-
-        WorkflowStub::shouldReceive('make')
-            ->with(DepositAccountWorkflow::class)
-            ->andReturn($workflowMock);
 
         $this->service->deposit($uuid, $moneyArray);
     }
@@ -172,12 +168,12 @@ class AccountServiceTest extends TestCase
         $uuid = 'multi-format-account';
 
         // Test with integer
-        $workflowMock = Mockery::mock(WorkflowStub::class);
-        $workflowMock->shouldReceive('start')->once();
-
         WorkflowStub::shouldReceive('make')
             ->with(WithdrawAccountWorkflow::class)
-            ->andReturn($workflowMock);
+            ->once()
+            ->andReturnSelf();
+        
+        WorkflowStub::shouldReceive('start')->once();
 
         $this->service->withdraw($uuid, 1000);
 
@@ -187,12 +183,12 @@ class AccountServiceTest extends TestCase
             'amount'   => 7500,
         ];
 
-        $workflowMock2 = Mockery::mock(WorkflowStub::class);
-        $workflowMock2->shouldReceive('start')->once();
-
         WorkflowStub::shouldReceive('make')
             ->with(WithdrawAccountWorkflow::class)
-            ->andReturn($workflowMock2);
+            ->once()
+            ->andReturnSelf();
+        
+        WorkflowStub::shouldReceive('start')->once();
 
         $this->service->withdraw($uuid, $moneyObject);
     }

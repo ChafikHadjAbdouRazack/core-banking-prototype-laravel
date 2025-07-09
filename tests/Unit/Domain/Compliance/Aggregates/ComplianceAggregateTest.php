@@ -31,15 +31,19 @@ class ComplianceAggregateTest extends TestCase
         $aggregate->submitKyc($userUuid, $documents);
 
         // Should record one submission event
-        $aggregate->assertRecorded([
-            new KycSubmissionReceived($userUuid, $documents),
-        ]);
+        $aggregate->assertRecorded(function ($event) use ($userUuid, $documents) {
+            return $event instanceof KycSubmissionReceived 
+                && $event->userUuid === $userUuid 
+                && $event->documents === $documents;
+        });
 
         // Should record document events for each document
         foreach ($documents as $document) {
-            $aggregate->assertRecorded(
-                new KycDocumentUploaded($userUuid, $document)
-            );
+            $aggregate->assertRecorded(function ($event) use ($userUuid, $document) {
+                return $event instanceof KycDocumentUploaded
+                    && $event->userUuid === $userUuid
+                    && $event->document === $document;
+            });
         }
     }
 
@@ -51,9 +55,11 @@ class ComplianceAggregateTest extends TestCase
 
         $aggregate->approveKyc($userUuid, $level);
 
-        $aggregate->assertRecorded([
-            new KycVerificationCompleted($userUuid, $level),
-        ]);
+        $aggregate->assertRecorded(function ($event) use ($userUuid, $level) {
+            return $event instanceof KycVerificationCompleted
+                && $event->userUuid === $userUuid
+                && $event->level === $level;
+        });
     }
 
     public function test_reject_kyc_records_verification_rejected(): void
@@ -64,9 +70,11 @@ class ComplianceAggregateTest extends TestCase
 
         $aggregate->rejectKyc($userUuid, $reason);
 
-        $aggregate->assertRecorded([
-            new KycVerificationRejected($userUuid, $reason),
-        ]);
+        $aggregate->assertRecorded(function ($event) use ($userUuid, $reason) {
+            return $event instanceof KycVerificationRejected
+                && $event->userUuid === $userUuid
+                && $event->reason === $reason;
+        });
     }
 
     public function test_request_gdpr_export_records_request_event(): void
@@ -103,9 +111,12 @@ class ComplianceAggregateTest extends TestCase
 
         $aggregate->requestGdprDeletion($userUuid, $reason);
 
-        $aggregate->assertRecorded([
-            new GdprRequestReceived($userUuid, 'deletion', ['reason' => $reason]),
-        ]);
+        $aggregate->assertRecorded(function ($event) use ($userUuid, $reason) {
+            return $event instanceof GdprRequestReceived
+                && $event->userUuid === $userUuid
+                && $event->type === 'deletion'
+                && $event->options === ['reason' => $reason];
+        });
     }
 
     public function test_complete_gdpr_deletion_records_deletion_event(): void
@@ -115,9 +126,10 @@ class ComplianceAggregateTest extends TestCase
 
         $aggregate->completeGdprDeletion($userUuid);
 
-        $aggregate->assertRecorded([
-            new GdprDataDeleted($userUuid),
-        ]);
+        $aggregate->assertRecorded(function ($event) use ($userUuid) {
+            return $event instanceof GdprDataDeleted
+                && $event->userUuid === $userUuid;
+        });
     }
 
     public function test_generate_regulatory_report_records_report_event(): void
@@ -132,9 +144,11 @@ class ComplianceAggregateTest extends TestCase
 
         $aggregate->generateRegulatoryReport($reportType, $data);
 
-        $aggregate->assertRecorded([
-            new RegulatoryReportGenerated($reportType, $data),
-        ]);
+        $aggregate->assertRecorded(function ($event) use ($reportType, $data) {
+            return $event instanceof RegulatoryReportGenerated
+                && $event->reportType === $reportType
+                && $event->data === $data;
+        });
     }
 
     public function test_applies_kyc_submission_received_event(): void
@@ -144,10 +158,14 @@ class ComplianceAggregateTest extends TestCase
         $documents = [['type' => 'passport']];
 
         $event = new KycSubmissionReceived($userUuid, $documents);
-        $aggregate->applyKycSubmissionReceived($event);
+        
+        // Use reflection to call protected method
+        $reflection = new \ReflectionClass($aggregate);
+        $method = $reflection->getMethod('applyKycSubmissionReceived');
+        $method->setAccessible(true);
+        $method->invoke($aggregate, $event);
 
         // Use reflection to check private properties
-        $reflection = new \ReflectionClass($aggregate);
         $statusProperty = $reflection->getProperty('kycStatus');
         $statusProperty->setAccessible(true);
 
@@ -161,9 +179,12 @@ class ComplianceAggregateTest extends TestCase
         $level = 'full';
 
         $event = new KycVerificationCompleted($userUuid, $level);
-        $aggregate->applyKycVerificationCompleted($event);
-
+        
+        // Use reflection to call protected method
         $reflection = new \ReflectionClass($aggregate);
+        $method = $reflection->getMethod('applyKycVerificationCompleted');
+        $method->setAccessible(true);
+        $method->invoke($aggregate, $event);
 
         $statusProperty = $reflection->getProperty('kycStatus');
         $statusProperty->setAccessible(true);
@@ -181,9 +202,12 @@ class ComplianceAggregateTest extends TestCase
         $reason = 'Documents expired';
 
         $event = new KycVerificationRejected($userUuid, $reason);
-        $aggregate->applyKycVerificationRejected($event);
-
+        
+        // Use reflection to call protected method
         $reflection = new \ReflectionClass($aggregate);
+        $method = $reflection->getMethod('applyKycVerificationRejected');
+        $method->setAccessible(true);
+        $method->invoke($aggregate, $event);
         $statusProperty = $reflection->getProperty('kycStatus');
         $statusProperty->setAccessible(true);
 

@@ -2,6 +2,7 @@
 
 namespace App\Domain\Compliance\Services;
 
+use App\Domain\Compliance\Aggregates\AmlScreeningAggregate;
 use App\Domain\Compliance\Events\ScreeningCompleted;
 use App\Domain\Compliance\Events\ScreeningMatchFound;
 use App\Models\AmlScreening;
@@ -11,6 +12,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class AmlScreeningService
 {
@@ -20,6 +22,8 @@ class AmlScreeningService
         'UN'   => 'https://api.un.org/sc/suborg/en/sanctions/un-sc-consolidated-list',
     ];
 
+    private string $provider = 'Internal';
+
     /**
      * Perform comprehensive screening.
      */
@@ -27,41 +31,111 @@ class AmlScreeningService
     {
         return DB::transaction(
             function () use ($entity, $parameters) {
-                $screening = $this->createScreening($entity, AmlScreening::TYPE_COMPREHENSIVE, $parameters);
+                $aggregateId = (string) Str::uuid();
+                $screeningNumber = $this->generateUniqueScreeningNumber();
+                $searchParams = $this->buildSearchParameters($entity, $parameters);
+                $startTime = microtime(true);
+
+                // Create aggregate and start screening
+                $aggregate = AmlScreeningAggregate::retrieve($aggregateId)
+                    ->startScreening(
+                        entityId: $entity->id,
+                        entityType: get_class($entity),
+                        screeningNumber: $screeningNumber,
+                        type: AmlScreening::TYPE_COMPREHENSIVE,
+                        provider: $this->provider,
+                        searchParameters: $searchParams,
+                        providerReference: null
+                    );
 
                 try {
-                    $screening->update(['status' => AmlScreening::STATUS_IN_PROGRESS]);
-
-                    // Perform all screening types
-                    $sanctionsResults = $this->performSanctionsScreening($screening);
-                    $pepResults = $this->performPEPScreening($screening);
-                    $adverseMediaResults = $this->performAdverseMediaScreening($screening);
+                    // Perform all screening types with the search parameters
+                    $sanctionsResults = $this->performSanctionsCheck($searchParams);
+                    $pepResults = $this->performPEPCheck($searchParams);
+                    $adverseMediaResults = $this->performAdverseMediaCheck($searchParams);
+                    $otherResults = [];
 
                     // Calculate overall risk
                     $overallRisk = $this->calculateOverallRisk($sanctionsResults, $pepResults, $adverseMediaResults);
+                    $totalMatches = $this->countTotalMatches($sanctionsResults, $pepResults, $adverseMediaResults);
 
-                    // Update screening with results
-                    $screening->update(
-                        [
-                        'sanctions_results'     => $sanctionsResults,
-                        'pep_results'           => $pepResults,
-                        'adverse_media_results' => $adverseMediaResults,
-                        'overall_risk'          => $overallRisk,
-                        'total_matches'         => $this->countTotalMatches($sanctionsResults, $pepResults, $adverseMediaResults),
-                        ]
+                    // Collect all lists checked
+                    $listsChecked = array_merge(
+                        $sanctionsResults['lists_checked'] ?? [],
+                        ['PEP Database'],
+                        ['Adverse Media Sources']
                     );
 
-                    $screening->markAsCompleted();
+                    // Record results
+                    $aggregate->recordResults(
+                        sanctionsResults: $sanctionsResults,
+                        pepResults: $pepResults,
+                        adverseMediaResults: $adverseMediaResults,
+                        otherResults: $otherResults,
+                        totalMatches: $totalMatches,
+                        overallRisk: $overallRisk,
+                        listsChecked: $listsChecked,
+                        apiResponse: null
+                    );
+
+                    // Complete screening
+                    $processingTime = microtime(true) - $startTime;
+                    $aggregate->completeScreening(
+                        finalStatus: 'completed',
+                        processingTime: $processingTime
+                    );
+
+                    // Persist aggregate
+                    $aggregate->persist();
+
+                    // Create a temporary screening object for immediate use
+                    // Note: The actual database record will be created by a projector
+                    $screening = new AmlScreening([
+                        'entity_id' => $entity->id,
+                        'entity_type' => get_class($entity),
+                        'screening_number' => $screeningNumber,
+                        'type' => AmlScreening::TYPE_COMPREHENSIVE,
+                        'status' => 'completed',
+                        'provider' => $this->provider,
+                        'search_parameters' => $searchParams,
+                        'sanctions_results' => $sanctionsResults,
+                        'pep_results' => $pepResults,
+                        'adverse_media_results' => $adverseMediaResults,
+                        'other_results' => $otherResults,
+                        'total_matches' => $totalMatches,
+                        'overall_risk' => $overallRisk,
+                        'lists_checked' => $listsChecked,
+                        'started_at' => now(),
+                        'completed_at' => now(),
+                        'processing_time' => $processingTime,
+                        'aggregate_root_uuid' => $aggregateId,
+                    ]);
+                    
+                    // Set the ID to use the aggregate ID
+                    $screening->id = $aggregateId;
 
                     event(new ScreeningCompleted($screening));
 
-                    if ($screening->hasMatches()) {
+                    if ($totalMatches > 0) {
                         event(new ScreeningMatchFound($screening));
                     }
 
                     return $screening;
                 } catch (\Exception $e) {
-                    $screening->markAsFailed($e->getMessage());
+                    // Record failure
+                    $processingTime = microtime(true) - $startTime;
+                    $aggregate->completeScreening(
+                        finalStatus: 'failed',
+                        processingTime: $processingTime
+                    );
+                    // Persist aggregate
+                    $aggregate->persist();
+
+                    Log::error('AML screening failed', [
+                        'aggregate_id' => $aggregateId,
+                        'error' => $e->getMessage()
+                    ]);
+
                     throw $e;
                 }
             }
@@ -69,17 +143,15 @@ class AmlScreeningService
     }
 
     /**
-     * Perform sanctions screening.
+     * Perform sanctions screening check.
      */
-    public function performSanctionsScreening(AmlScreening $screening): array
+    public function performSanctionsCheck(array $searchParams): array
     {
         $results = [
             'matches'       => [],
             'lists_checked' => [],
             'total_matches' => 0,
         ];
-
-        $searchParams = $screening->search_parameters;
 
         // Check OFAC SDN List
         $ofacResults = $this->checkOFACList($searchParams);
@@ -109,11 +181,10 @@ class AmlScreeningService
     }
 
     /**
-     * Perform PEP screening.
+     * Perform PEP screening check.
      */
-    public function performPEPScreening(AmlScreening $screening): array
+    public function performPEPCheck(array $searchParams): array
     {
-        $searchParams = $screening->search_parameters;
 
         // In production, this would integrate with a PEP database provider
         // For now, simulate PEP checking
@@ -150,11 +221,10 @@ class AmlScreeningService
     }
 
     /**
-     * Perform adverse media screening.
+     * Perform adverse media screening check.
      */
-    public function performAdverseMediaScreening(AmlScreening $screening): array
+    public function performAdverseMediaCheck(array $searchParams): array
     {
-        $searchParams = $screening->search_parameters;
 
         // In production, this would integrate with news aggregation services
         $results = [
@@ -187,30 +257,6 @@ class AmlScreeningService
         return $results;
     }
 
-    /**
-     * Create screening record.
-     */
-    protected function createScreening($entity, string $type, array $parameters): AmlScreening
-    {
-        $entityType = get_class($entity);
-        $entityId = $entity->id;
-
-        // Build search parameters based on entity type
-        $searchParams = $this->buildSearchParameters($entity, $parameters);
-
-        return AmlScreening::create(
-            [
-            'entity_id'         => $entityId,
-            'entity_type'       => $entityType,
-            'type'              => $type,
-            'status'            => AmlScreening::STATUS_PENDING,
-            'search_parameters' => $searchParams,
-            'fuzzy_matching'    => $parameters['fuzzy_matching'] ?? true,
-            'match_threshold'   => $parameters['match_threshold'] ?? 85,
-            'started_at'        => now(),
-            ]
-        );
-    }
 
     /**
      * Build search parameters from entity.
@@ -344,17 +390,17 @@ class AmlScreeningService
     protected function calculateOverallRisk(array $sanctions, array $pep, array $adverseMedia): string
     {
         // Critical if sanctioned
-        if ($sanctions['total_matches'] > 0) {
+        if (($sanctions['total_matches'] ?? 0) > 0) {
             return AmlScreening::RISK_CRITICAL;
         }
 
         // High if PEP or serious adverse media
-        if ($pep['is_pep'] || $adverseMedia['serious_allegations'] > 0) {
+        if (($pep['is_pep'] ?? false) || ($adverseMedia['serious_allegations'] ?? 0) > 0) {
             return AmlScreening::RISK_HIGH;
         }
 
         // Medium if any adverse media
-        if ($adverseMedia['has_adverse_media']) {
+        if ($adverseMedia['has_adverse_media'] ?? false) {
             return AmlScreening::RISK_MEDIUM;
         }
 
@@ -375,11 +421,34 @@ class AmlScreeningService
     }
 
     /**
-     * Review screening results.
+     * Review screening results using aggregate.
      */
     public function reviewScreening(AmlScreening $screening, string $decision, string $notes, User $reviewer): void
     {
-        $screening->addReview($decision, $notes, $reviewer);
+        // Find the aggregate ID - it might be stored as the screening ID or in a separate field
+        $aggregateId = $screening->aggregate_root_uuid ?? $screening->id;
+        
+        try {
+            // Use aggregate for event-sourced screenings
+            $aggregate = AmlScreeningAggregate::retrieve($aggregateId);
+            $aggregate->reviewScreening(
+                reviewedBy: $reviewer->id,
+                decision: $decision,
+                notes: $notes
+            );
+            $aggregate->persist();
+        } catch (\Exception $e) {
+            // Fallback for legacy screenings without aggregate
+            Log::warning('Failed to retrieve aggregate for screening review', [
+                'screening_id' => $screening->id,
+                'aggregate_id' => $aggregateId,
+                'error' => $e->getMessage()
+            ]);
+            
+            if (method_exists($screening, 'addReview')) {
+                $screening->addReview($decision, $notes, $reviewer);
+            }
+        }
 
         // Update risk profile if applicable
         if ($screening->entity_type === User::class) {
@@ -423,5 +492,218 @@ class AmlScreeningService
 
         $profile->update($updates);
         $profile->updateRiskAssessment();
+    }
+
+    /**
+     * Generate a unique screening number.
+     *
+     * @return string
+     */
+    protected function generateUniqueScreeningNumber(): string
+    {
+        $year = date('Y');
+        $lastScreening = AmlScreening::whereYear('created_at', $year)
+            ->orderBy('screening_number', 'desc')
+            ->first();
+
+        if ($lastScreening && preg_match('/AML-\d{4}-(\d{5})/', $lastScreening->screening_number, $matches)) {
+            $nextNumber = intval($matches[1]) + 1;
+        } else {
+            $nextNumber = 1;
+        }
+
+        return sprintf('AML-%s-%05d', $year, $nextNumber);
+    }
+
+    /**
+     * Update match status through aggregate.
+     */
+    public function updateMatchStatus(
+        AmlScreening $screening,
+        string $matchId,
+        string $action,
+        array $details = [],
+        ?string $reason = null
+    ): void {
+        $aggregateId = $screening->aggregate_root_uuid ?? $screening->id;
+        
+        try {
+            $aggregate = AmlScreeningAggregate::retrieve($aggregateId);
+            $aggregate->updateMatchStatus(
+                matchId: $matchId,
+                action: $action,
+                details: $details,
+                reason: $reason
+            );
+            $aggregate->persist();
+        } catch (\Exception $e) {
+            Log::error('Failed to update match status through aggregate', [
+                'screening_id' => $screening->id,
+                'aggregate_id' => $aggregateId,
+                'match_id' => $matchId,
+                'error' => $e->getMessage()
+            ]);
+            throw new \RuntimeException('Cannot update match status: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Perform sanctions screening (legacy method for backward compatibility).
+     */
+    public function performSanctionsScreening(AmlScreening $screening): array
+    {
+        return $this->performSanctionsCheck($screening->search_parameters);
+    }
+
+    /**
+     * Perform PEP screening (legacy method for backward compatibility).
+     */
+    public function performPEPScreening(AmlScreening $screening): array
+    {
+        return $this->performPEPCheck($screening->search_parameters);
+    }
+
+    /**
+     * Perform adverse media screening (legacy method for backward compatibility).
+     */
+    public function performAdverseMediaScreening(AmlScreening $screening): array
+    {
+        return $this->performAdverseMediaCheck($screening->search_parameters);
+    }
+
+    /**
+     * Perform specific type of screening using aggregate.
+     */
+    public function performScreeningByType($entity, string $type, array $parameters = []): AmlScreening
+    {
+        return DB::transaction(
+            function () use ($entity, $type, $parameters) {
+                $aggregateId = (string) Str::uuid();
+                $screeningNumber = $this->generateUniqueScreeningNumber();
+                $searchParams = $this->buildSearchParameters($entity, $parameters);
+                $startTime = microtime(true);
+
+                // Create aggregate and start screening
+                $aggregate = AmlScreeningAggregate::retrieve($aggregateId)
+                    ->startScreening(
+                        entityId: $entity->id,
+                        entityType: get_class($entity),
+                        screeningNumber: $screeningNumber,
+                        type: $type,
+                        provider: $this->provider,
+                        searchParameters: $searchParams,
+                        providerReference: null
+                    );
+
+                try {
+                    // Initialize results
+                    $sanctionsResults = ['matches' => [], 'lists_checked' => [], 'total_matches' => 0];
+                    $pepResults = ['is_pep' => false, 'matches' => [], 'total_matches' => 0];
+                    $adverseMediaResults = ['has_adverse_media' => false, 'articles' => [], 'total_matches' => 0];
+                    $otherResults = [];
+                    $listsChecked = [];
+
+                    // Perform specific screening type
+                    switch ($type) {
+                        case AmlScreening::TYPE_SANCTIONS:
+                            $sanctionsResults = $this->performSanctionsCheck($searchParams);
+                            $listsChecked = $sanctionsResults['lists_checked'] ?? [];
+                            break;
+                            
+                        case AmlScreening::TYPE_PEP:
+                            $pepResults = $this->performPEPCheck($searchParams);
+                            $listsChecked = ['PEP Database'];
+                            break;
+                            
+                        case AmlScreening::TYPE_ADVERSE_MEDIA:
+                            $adverseMediaResults = $this->performAdverseMediaCheck($searchParams);
+                            $listsChecked = ['Adverse Media Sources'];
+                            break;
+                            
+                        case AmlScreening::TYPE_COMPREHENSIVE:
+                            return $this->performComprehensiveScreening($entity, $parameters);
+                            
+                        default:
+                            throw new \InvalidArgumentException("Invalid screening type: {$type}");
+                    }
+
+                    // Calculate overall risk based on specific type results
+                    $overallRisk = $this->calculateOverallRisk($sanctionsResults, $pepResults, $adverseMediaResults);
+                    $totalMatches = $this->countTotalMatches($sanctionsResults, $pepResults, $adverseMediaResults);
+
+                    // Record results
+                    $aggregate->recordResults(
+                        sanctionsResults: $sanctionsResults,
+                        pepResults: $pepResults,
+                        adverseMediaResults: $adverseMediaResults,
+                        otherResults: $otherResults,
+                        totalMatches: $totalMatches,
+                        overallRisk: $overallRisk,
+                        listsChecked: $listsChecked,
+                        apiResponse: null
+                    );
+
+                    // Complete screening
+                    $processingTime = microtime(true) - $startTime;
+                    $aggregate->completeScreening(
+                        finalStatus: 'completed',
+                        processingTime: $processingTime
+                    );
+
+                    // Persist aggregate
+                    $aggregate->persist();
+
+                    // Create a temporary screening object for immediate use
+                    $screening = new AmlScreening([
+                        'entity_id' => $entity->id,
+                        'entity_type' => get_class($entity),
+                        'screening_number' => $screeningNumber,
+                        'type' => $type,
+                        'status' => 'completed',
+                        'provider' => $this->provider,
+                        'search_parameters' => $searchParams,
+                        'sanctions_results' => $sanctionsResults,
+                        'pep_results' => $pepResults,
+                        'adverse_media_results' => $adverseMediaResults,
+                        'other_results' => $otherResults,
+                        'total_matches' => $totalMatches,
+                        'overall_risk' => $overallRisk,
+                        'lists_checked' => $listsChecked,
+                        'started_at' => now(),
+                        'completed_at' => now(),
+                        'processing_time' => $processingTime,
+                        'aggregate_root_uuid' => $aggregateId,
+                    ]);
+                    
+                    // Set the ID to use the aggregate ID
+                    $screening->id = $aggregateId;
+
+                    event(new ScreeningCompleted($screening));
+
+                    if ($totalMatches > 0) {
+                        event(new ScreeningMatchFound($screening));
+                    }
+
+                    return $screening;
+                } catch (\Exception $e) {
+                    // Record failure
+                    $processingTime = microtime(true) - $startTime;
+                    $aggregate->completeScreening(
+                        finalStatus: 'failed',
+                        processingTime: $processingTime
+                    );
+                    // Persist aggregate
+                    $aggregate->persist();
+
+                    Log::error('AML screening failed', [
+                        'aggregate_id' => $aggregateId,
+                        'type' => $type,
+                        'error' => $e->getMessage()
+                    ]);
+
+                    throw $e;
+                }
+            }
+        );
     }
 }

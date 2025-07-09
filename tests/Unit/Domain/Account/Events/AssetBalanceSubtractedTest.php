@@ -11,7 +11,7 @@ class AssetBalanceSubtractedTest extends TestCase
 {
     public function test_creates_event_with_required_properties(): void
     {
-        $hash = new Hash('subtract-hash-value');
+        $hash = Hash::fromData('subtract-hash-value');
 
         $event = new AssetBalanceSubtracted(
             assetCode: 'USD',
@@ -28,7 +28,7 @@ class AssetBalanceSubtractedTest extends TestCase
 
     public function test_creates_event_with_metadata(): void
     {
-        $hash = new Hash('subtract-with-metadata');
+        $hash = Hash::fromData('subtract-with-metadata');
         $metadata = [
             'reason'      => 'withdrawal',
             'destination' => 'external_bank',
@@ -51,7 +51,7 @@ class AssetBalanceSubtractedTest extends TestCase
         $event = new AssetBalanceSubtracted(
             assetCode: 'GBP',
             amount: 75000, // £750.00
-            hash: new Hash('gbp-subtract-hash')
+            hash: Hash::fromData('gbp-subtract-hash')
         );
 
         $this->assertEquals(75000, $event->getAmount());
@@ -62,7 +62,7 @@ class AssetBalanceSubtractedTest extends TestCase
         $event = new AssetBalanceSubtracted(
             assetCode: 'JPY',
             amount: 100000, // ¥100,000
-            hash: new Hash('jpy-subtract-hash')
+            hash: Hash::fromData('jpy-subtract-hash')
         );
 
         $this->assertEquals('JPY', $event->getAssetCode());
@@ -73,7 +73,7 @@ class AssetBalanceSubtractedTest extends TestCase
         $event = new AssetBalanceSubtracted(
             assetCode: 'BTC',
             amount: 500000000, // 5 BTC in satoshi
-            hash: new Hash('large-btc-subtract')
+            hash: Hash::fromData('large-btc-subtract')
         );
 
         $this->assertEquals(500000000, $event->amount);
@@ -100,7 +100,7 @@ class AssetBalanceSubtractedTest extends TestCase
         $event = new AssetBalanceSubtracted(
             assetCode: 'USD',
             amount: 10000,
-            hash: new Hash('complex-metadata-hash'),
+            hash: Hash::fromData('complex-metadata-hash'),
             metadata: $metadata
         );
 
@@ -114,7 +114,7 @@ class AssetBalanceSubtractedTest extends TestCase
         $event = new AssetBalanceSubtracted(
             assetCode: 'CHF',
             amount: 3000,
-            hash: new Hash('readonly-hash')
+            hash: Hash::fromData('readonly-hash')
         );
 
         // Attempting to modify readonly property should cause error
@@ -136,7 +136,7 @@ class AssetBalanceSubtractedTest extends TestCase
             $event = new AssetBalanceSubtracted(
                 assetCode: $assetCode,
                 amount: $amount,
-                hash: new Hash("crypto-hash-{$assetCode}")
+                hash: Hash::fromData("crypto-hash-{$assetCode}")
             );
 
             $this->assertEquals($assetCode, $event->getAssetCode());

@@ -3,6 +3,7 @@
 namespace Tests\Unit\Domain\Account\Aggregates;
 
 use App\Domain\Account\Aggregates\TransactionAggregate;
+use App\Domain\Account\DataObjects\Hash;
 use App\Domain\Account\DataObjects\Money;
 use App\Domain\Account\Events\AccountLimitHit;
 use App\Domain\Account\Events\MoneyAdded;
@@ -42,11 +43,11 @@ class TransactionAggregateTest extends TestCase
         $aggregate->debit($debitMoney);
 
         // Assert that both events were recorded with correct amounts
-        $aggregate->assertRecorded(MoneyAdded::class, function (MoneyAdded $event) use ($creditMoney) {
+        $aggregate->assertRecorded(function (MoneyAdded $event) use ($creditMoney) {
             return $event->money->getAmount() === $creditMoney->getAmount();
         });
 
-        $aggregate->assertRecorded(MoneySubtracted::class, function (MoneySubtracted $event) use ($debitMoney) {
+        $aggregate->assertRecorded(function (MoneySubtracted $event) use ($debitMoney) {
             return $event->money->getAmount() === $debitMoney->getAmount();
         });
     }
@@ -119,8 +120,8 @@ class TransactionAggregateTest extends TestCase
         }
 
         // Verify threshold event was recorded
-        $aggregate->assertRecorded(function (TransactionThresholdReached $event) {
-            return true;
+        $aggregate->assertRecorded(function ($event) {
+            return $event instanceof TransactionThresholdReached;
         });
     }
 
@@ -132,9 +133,15 @@ class TransactionAggregateTest extends TestCase
         // Set count just below threshold
         $aggregate->count = TransactionAggregate::COUNT_THRESHOLD - 1;
 
+        // Use reflection to access protected method
+        $reflection = new \ReflectionClass($aggregate);
+        $method = $reflection->getMethod('generateHash');
+        $method->setAccessible(true);
+        $hash = $method->invoke($aggregate, $money);
+
         $event = new MoneyAdded(
             money: $money,
-            hash: $aggregate->generateHash($money)
+            hash: $hash
         );
 
         $aggregate->applyMoneyAdded($event);
@@ -199,7 +206,8 @@ class TransactionAggregateTest extends TestCase
         $aggregate->credit($eurMoney);
 
         // Both transactions should be recorded
-        $aggregate->assertRecordedCount(2);
+        $recordedEvents = $aggregate->getRecordedEvents();
+        $this->assertCount(2, $recordedEvents);
     }
 
     public function test_maintains_balance_across_multiple_operations(): void
@@ -209,18 +217,18 @@ class TransactionAggregateTest extends TestCase
         // Credit operations
         $aggregate->applyMoneyAdded(new MoneyAdded(
             money: new Money(1000),
-            hash: 'hash1'
+            hash: Hash::fromData('hash1')
         ));
 
         $aggregate->applyMoneyAdded(new MoneyAdded(
             money: new Money(2000),
-            hash: 'hash2'
+            hash: Hash::fromData('hash2')
         ));
 
         // Debit operation
         $aggregate->applyMoneySubtracted(new MoneySubtracted(
             money: new Money(500),
-            hash: 'hash3'
+            hash: Hash::fromData('hash3')
         ));
 
         // Final balance: 1000 + 2000 - 500 = 2500
@@ -232,8 +240,11 @@ class TransactionAggregateTest extends TestCase
     {
         $aggregate = new TransactionAggregate(balance: 10000, count: 500);
 
-        // Take snapshot
-        $snapshot = $aggregate->getState();
+        // Use reflection to access protected method
+        $reflection = new \ReflectionClass($aggregate);
+        $method = $reflection->getMethod('getState');
+        $method->setAccessible(true);
+        $snapshot = $method->invoke($aggregate);
 
         // Create new aggregate from snapshot
         $newAggregate = TransactionAggregate::fromSnapshot($snapshot);

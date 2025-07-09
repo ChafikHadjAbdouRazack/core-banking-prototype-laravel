@@ -63,10 +63,11 @@ class WebhookEventListenerTest extends TestCase
     public function test_handles_account_created_event(): void
     {
         $accountUuid = Uuid::uuid4()->toString();
+        $user = \App\Models\User::factory()->create(['uuid' => 'user-123']);
         $account = Account::factory()->create([
             'uuid'      => $accountUuid,
             'name'      => 'Test Account',
-            'user_uuid' => 'user-123',
+            'user_uuid' => $user->uuid,
             'balance'   => 0,
         ]);
 
@@ -89,7 +90,10 @@ class WebhookEventListenerTest extends TestCase
         $accountUuid = 'account-456';
         $event = Mockery::mock(AccountFrozen::class);
         $event->shouldReceive('aggregateRootUuid')->andReturn($accountUuid);
-        $event->reason = 'Suspicious activity detected';
+        
+        $this->setEventProperties($event, [
+            'reason' => 'Suspicious activity detected'
+        ]);
 
         $this->webhookService->shouldReceive('dispatchAccountEvent')
             ->once()
@@ -137,10 +141,10 @@ class WebhookEventListenerTest extends TestCase
         $event = Mockery::mock(MoneyAdded::class);
         $event->shouldReceive('aggregateRootUuid')->andReturn($accountUuid);
 
-        $money = Mockery::mock();
+        $money = Mockery::mock(\App\Domain\Account\DataObjects\Money::class);
         $money->shouldReceive('getAmount')->andReturn('2500'); // $25.00
 
-        $hash = Mockery::mock();
+        $hash = Mockery::mock(\App\Domain\Account\DataObjects\Hash::class);
         $hash->shouldReceive('getHash')->andReturn('hash123');
 
         $this->setEventProperties($event, [
@@ -176,10 +180,10 @@ class WebhookEventListenerTest extends TestCase
         $event = Mockery::mock(MoneyAdded::class);
         $event->shouldReceive('aggregateRootUuid')->andReturn($accountUuid);
 
-        $money = Mockery::mock();
+        $money = Mockery::mock(\App\Domain\Account\DataObjects\Money::class);
         $money->shouldReceive('getAmount')->andReturn('100');
 
-        $hash = Mockery::mock();
+        $hash = Mockery::mock(\App\Domain\Account\DataObjects\Hash::class);
         $hash->shouldReceive('getHash')->andReturn('hash456');
 
         $this->setEventProperties($event, [
@@ -210,10 +214,10 @@ class WebhookEventListenerTest extends TestCase
         $event = Mockery::mock(MoneySubtracted::class);
         $event->shouldReceive('aggregateRootUuid')->andReturn($accountUuid);
 
-        $money = Mockery::mock();
+        $money = Mockery::mock(\App\Domain\Account\DataObjects\Money::class);
         $money->shouldReceive('getAmount')->andReturn('1000');
 
-        $hash = Mockery::mock();
+        $hash = Mockery::mock(\App\Domain\Account\DataObjects\Hash::class);
         $hash->shouldReceive('getHash')->andReturn('hash789');
 
         $this->setEventProperties($event, [
@@ -249,10 +253,10 @@ class WebhookEventListenerTest extends TestCase
         $event = Mockery::mock(MoneySubtracted::class);
         $event->shouldReceive('aggregateRootUuid')->andReturn($accountUuid);
 
-        $money = Mockery::mock();
+        $money = Mockery::mock(\App\Domain\Account\DataObjects\Money::class);
         $money->shouldReceive('getAmount')->andReturn('1000');
 
-        $hash = Mockery::mock();
+        $hash = Mockery::mock(\App\Domain\Account\DataObjects\Hash::class);
         $hash->shouldReceive('getHash')->andReturn('hash999');
 
         $this->setEventProperties($event, [
@@ -289,19 +293,19 @@ class WebhookEventListenerTest extends TestCase
         $event = Mockery::mock(MoneyTransferred::class);
         $event->shouldReceive('aggregateRootUuid')->andReturn($fromUuid);
 
-        $toAccountUuid = Mockery::mock();
+        $toAccountUuid = Mockery::mock(\App\Domain\Account\DataObjects\AccountUuid::class);
         $toAccountUuid->shouldReceive('toString')->andReturn($toUuid);
 
-        $money = Mockery::mock();
+        $money = Mockery::mock(\App\Domain\Account\DataObjects\Money::class);
         $money->shouldReceive('getAmount')->andReturn('2000');
 
-        $hash = Mockery::mock();
+        $hash = Mockery::mock(\App\Domain\Account\DataObjects\Hash::class);
         $hash->shouldReceive('getHash')->andReturn('transfer123');
 
         $this->setEventProperties($event, [
-            'toAccountUuid' => $toAccountUuid,
-            'money'         => $money,
-            'hash'          => $hash,
+            'to'    => $toAccountUuid,
+            'money' => $money,
+            'hash'  => $hash,
         ]);
 
         $expectedData = [

@@ -3,7 +3,7 @@
 namespace Tests\Unit\Domain\Banking\Events;
 
 use App\Domain\Banking\Events\DepositCompleted;
-use App\Domain\Transaction\Models\Transaction;
+use App\Models\Transaction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 

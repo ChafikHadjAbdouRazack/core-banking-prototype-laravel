@@ -38,7 +38,7 @@ return [
      * A queue is used to guarantee that all events get passed to the projectors in
      * the right order. Here you can set of the name of the queue.
      */
-    'queue' => env('EVENT_PROJECTOR_QUEUE_NAME', App\Values\EventQueues::default()),
+    'queue' => env('EVENT_PROJECTOR_QUEUE_NAME', App\Values\EventQueues::default()->value),
 
     /*
      * When a Projector or Reactor throws an exception the event Projectionist can catch it
@@ -205,6 +205,13 @@ return [
         'loan_defaulted'                             => App\Domain\Lending\Events\LoanDefaulted::class,
         'loan_completed'                             => App\Domain\Lending\Events\LoanCompleted::class,
         'loan_settled_early'                         => App\Domain\Lending\Events\LoanSettledEarly::class,
+
+        // AML Screening events
+        'aml_screening_started'                => App\Domain\Compliance\Events\AmlScreeningStarted::class,
+        'aml_screening_results_recorded'       => App\Domain\Compliance\Events\AmlScreeningResultsRecorded::class,
+        'aml_screening_match_status_updated'   => App\Domain\Compliance\Events\AmlScreeningMatchStatusUpdated::class,
+        'aml_screening_completed'              => App\Domain\Compliance\Events\AmlScreeningCompleted::class,
+        'aml_screening_reviewed'               => App\Domain\Compliance\Events\AmlScreeningReviewed::class,
     ],
 
     /*
