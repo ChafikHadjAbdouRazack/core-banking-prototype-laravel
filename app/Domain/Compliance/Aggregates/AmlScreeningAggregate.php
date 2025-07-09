@@ -1,9 +1,7 @@
 <?php
 
 /**
- * AML Screening Aggregate for event sourcing
- *
- * @package App\Domain\Compliance\Aggregates
+ * AML Screening Aggregate for event sourcing.
  */
 
 namespace App\Domain\Compliance\Aggregates;
@@ -21,25 +19,40 @@ use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
  */
 class AmlScreeningAggregate extends AggregateRoot
 {
-    private string $_entityId;
-    private string $_entityType;
-    private string $_screeningNumber;
-    private string $_type;
-    private string $_status = 'pending';
-    private string $_provider;
-    private ?string $_providerReference = null;
-    private array $_searchParameters = [];
-    private array $_results = [];
-    private int $_totalMatches = 0;
-    private int $_confirmedMatches = 0;
-    private int $_falsePositives = 0;
-    private ?string $_overallRisk = null;
-    private ?string $_reviewedBy = null;
-    private ?string $_reviewDecision = null;
-    private ?string $_reviewNotes = null;
+    private string $entityId;
+
+    private string $entityType;
+
+    private string $screeningNumber;
+
+    private string $type;
+
+    private string $status = 'pending';
+
+    private string $provider;
+
+    private ?string $providerReference = null;
+
+    private array $searchParameters = [];
+
+    private array $results = [];
+
+    private int $totalMatches = 0;
+
+    private int $confirmedMatches = 0;
+
+    private int $falsePositives = 0;
+
+    private ?string $overallRisk = null;
+
+    private ?string $reviewedBy = null;
+
+    private ?string $reviewDecision = null;
+
+    private ?string $reviewNotes = null;
 
     /**
-     * Start a new AML screening
+     * Start a new AML screening.
      *
      * @param string $entityId Entity identifier
      * @param string $entityType Entity type (user, company, etc.)
@@ -75,7 +88,7 @@ class AmlScreeningAggregate extends AggregateRoot
     }
 
     /**
-     * Record screening results from provider
+     * Record screening results from provider.
      *
      * @param array $sanctionsResults Sanctions screening results
      * @param array $pepResults PEP screening results
@@ -114,7 +127,7 @@ class AmlScreeningAggregate extends AggregateRoot
     }
 
     /**
-     * Update match status (confirm, dismiss, or investigate)
+     * Update match status (confirm, dismiss, or investigate).
      *
      * @param string $matchId Match identifier
      * @param string $action Action to take (confirm, dismiss, investigate)
@@ -129,7 +142,7 @@ class AmlScreeningAggregate extends AggregateRoot
         array $details,
         ?string $reason = null
     ): self {
-        if (!in_array($action, ['confirm', 'dismiss', 'investigate'])) {
+        if (! in_array($action, ['confirm', 'dismiss', 'investigate'])) {
             throw new \InvalidArgumentException(
                 'Invalid action. Must be confirm, dismiss, or investigate.'
             );
@@ -148,7 +161,7 @@ class AmlScreeningAggregate extends AggregateRoot
     }
 
     /**
-     * Complete the screening
+     * Complete the screening.
      *
      * @param string $finalStatus Final status (completed or failed)
      * @param float|null $processingTime Processing time in seconds
@@ -159,7 +172,7 @@ class AmlScreeningAggregate extends AggregateRoot
         string $finalStatus,
         ?float $processingTime = null
     ): self {
-        if (!in_array($finalStatus, ['completed', 'failed'])) {
+        if (! in_array($finalStatus, ['completed', 'failed'])) {
             throw new \InvalidArgumentException(
                 'Invalid status. Must be completed or failed.'
             );
@@ -176,7 +189,7 @@ class AmlScreeningAggregate extends AggregateRoot
     }
 
     /**
-     * Review screening results
+     * Review screening results.
      *
      * @param string $reviewedBy Reviewer identifier
      * @param string $decision Review decision (clear, escalate, block)
@@ -189,7 +202,7 @@ class AmlScreeningAggregate extends AggregateRoot
         string $decision,
         string $notes
     ): self {
-        if (!in_array($decision, ['clear', 'escalate', 'block'])) {
+        if (! in_array($decision, ['clear', 'escalate', 'block'])) {
             throw new \InvalidArgumentException(
                 'Invalid decision. Must be clear, escalate, or block.'
             );
@@ -207,25 +220,25 @@ class AmlScreeningAggregate extends AggregateRoot
     }
 
     /**
-     * Apply event handlers
+     * Apply event handlers.
      *
      * @param AmlScreeningStarted $event
      * @return void
      */
     protected function applyAmlScreeningStarted(AmlScreeningStarted $event): void
     {
-        $this->_entityId = $event->entityId;
-        $this->_entityType = $event->entityType;
-        $this->_screeningNumber = $event->screeningNumber;
-        $this->_type = $event->type;
-        $this->_provider = $event->provider;
-        $this->_searchParameters = $event->searchParameters;
-        $this->_providerReference = $event->providerReference;
-        $this->_status = 'in_progress';
+        $this->entityId = $event->entityId;
+        $this->entityType = $event->entityType;
+        $this->screeningNumber = $event->screeningNumber;
+        $this->type = $event->type;
+        $this->provider = $event->provider;
+        $this->searchParameters = $event->searchParameters;
+        $this->providerReference = $event->providerReference;
+        $this->status = 'in_progress';
     }
 
     /**
-     * Apply AML screening results recorded event
+     * Apply AML screening results recorded event.
      *
      * @param AmlScreeningResultsRecorded $event
      * @return void
@@ -233,18 +246,18 @@ class AmlScreeningAggregate extends AggregateRoot
     protected function applyAmlScreeningResultsRecorded(
         AmlScreeningResultsRecorded $event
     ): void {
-        $this->_results = [
-            'sanctions' => $event->sanctionsResults,
-            'pep' => $event->pepResults,
+        $this->results = [
+            'sanctions'     => $event->sanctionsResults,
+            'pep'           => $event->pepResults,
             'adverse_media' => $event->adverseMediaResults,
-            'other' => $event->otherResults,
+            'other'         => $event->otherResults,
         ];
-        $this->_totalMatches = $event->totalMatches;
-        $this->_overallRisk = $event->overallRisk;
+        $this->totalMatches = $event->totalMatches;
+        $this->overallRisk = $event->overallRisk;
     }
 
     /**
-     * Apply AML screening match status updated event
+     * Apply AML screening match status updated event.
      *
      * @param AmlScreeningMatchStatusUpdated $event
      * @return void
@@ -253,103 +266,103 @@ class AmlScreeningAggregate extends AggregateRoot
         AmlScreeningMatchStatusUpdated $event
     ): void {
         if ($event->action === 'confirm') {
-            $this->_confirmedMatches++;
+            $this->confirmedMatches++;
         } elseif ($event->action === 'dismiss') {
-            $this->_falsePositives++;
+            $this->falsePositives++;
         }
     }
 
     /**
-     * Apply AML screening completed event
+     * Apply AML screening completed event.
      *
      * @param AmlScreeningCompleted $event
      * @return void
      */
     protected function applyAmlScreeningCompleted(AmlScreeningCompleted $event): void
     {
-        $this->_status = $event->finalStatus;
+        $this->status = $event->finalStatus;
     }
 
     /**
-     * Apply AML screening reviewed event
+     * Apply AML screening reviewed event.
      *
      * @param AmlScreeningReviewed $event
      * @return void
      */
     protected function applyAmlScreeningReviewed(AmlScreeningReviewed $event): void
     {
-        $this->_reviewedBy = $event->reviewedBy;
-        $this->_reviewDecision = $event->decision;
-        $this->_reviewNotes = $event->notes;
+        $this->reviewedBy = $event->reviewedBy;
+        $this->reviewDecision = $event->decision;
+        $this->reviewNotes = $event->notes;
     }
 
     /**
-     * Getters for aggregate state
+     * Getters for aggregate state.
      *
      * @return string
      */
     public function getStatus(): string
     {
-        return $this->_status;
+        return $this->status;
     }
 
     /**
-     * Get total matches count
+     * Get total matches count.
      *
      * @return int
      */
     public function getTotalMatches(): int
     {
-        return $this->_totalMatches;
+        return $this->totalMatches;
     }
 
     /**
-     * Get confirmed matches count
+     * Get confirmed matches count.
      *
      * @return int
      */
     public function getConfirmedMatches(): int
     {
-        return $this->_confirmedMatches;
+        return $this->confirmedMatches;
     }
 
     /**
-     * Get false positives count
+     * Get false positives count.
      *
      * @return int
      */
     public function getFalsePositives(): int
     {
-        return $this->_falsePositives;
+        return $this->falsePositives;
     }
 
     /**
-     * Get overall risk level
+     * Get overall risk level.
      *
      * @return string|null
      */
     public function getOverallRisk(): ?string
     {
-        return $this->_overallRisk;
+        return $this->overallRisk;
     }
 
     /**
-     * Check if screening has been reviewed
+     * Check if screening has been reviewed.
      *
      * @return bool
      */
     public function isReviewed(): bool
     {
-        return $this->_reviewedBy !== null;
+        return $this->reviewedBy !== null;
     }
 
     /**
-     * Check if screening requires review
+     * Check if screening requires review.
      *
      * @return bool
      */
     public function requiresReview(): bool
     {
-        return $this->_totalMatches > 0 && !$this->isReviewed();
+        return $this->totalMatches > 0 && ! $this->isReviewed();
     }
 }
