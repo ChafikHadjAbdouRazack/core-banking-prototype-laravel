@@ -150,8 +150,7 @@ class CreateNewUserTest extends TestCase
 
     public function test_validates_terms_acceptance_when_feature_enabled(): void
     {
-        Jetstream::termsAndPrivacyPolicy();
-
+        // Terms and privacy policy feature is enabled in config/jetstream.php
         $this->expectException(ValidationException::class);
 
         $this->action->create([
@@ -159,13 +158,13 @@ class CreateNewUserTest extends TestCase
             'email'                 => 'test@example.com',
             'password'              => 'SecureP@ssw0rd#2024!',
             'password_confirmation' => 'SecureP@ssw0rd#2024!',
+            // terms is missing, should fail validation
         ]);
     }
 
     public function test_creates_user_with_terms_accepted(): void
     {
-        Jetstream::termsAndPrivacyPolicy();
-
+        // Terms and privacy policy feature is enabled in config/jetstream.php
         $input = [
             'name'                  => 'Test User',
             'email'                 => 'test@example.com',
@@ -227,12 +226,13 @@ class CreateNewUserTest extends TestCase
         $team = $user->ownedTeams->first();
 
         // Verify the user has owner role in the team
-        $this->assertTrue($team->hasUserWithRole($user, 'owner'));
+        $teamRole = $team->getUserTeamRole($user);
+        $this->assertNotNull($teamRole);
+        $this->assertEquals('owner', $teamRole->role);
     }
 
     protected function tearDown(): void
     {
-        Jetstream::$termsAndPrivacyPolicyCallback = null;
         parent::tearDown();
     }
 }
