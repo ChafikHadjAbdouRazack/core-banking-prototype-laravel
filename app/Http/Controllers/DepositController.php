@@ -32,7 +32,8 @@ class DepositController extends Controller
         $paymentMethods = $this->paymentGateway->getSavedPaymentMethods($user);
 
         return view(
-            'wallet.deposit-card', [
+            'wallet.deposit-card',
+            [
             'account'        => $account,
             'paymentMethods' => $paymentMethods,
             'stripeKey'      => config('cashier.key'),
@@ -73,7 +74,8 @@ class DepositController extends Controller
             return response()->json(
                 [
                 'error' => 'Failed to create payment intent. Please try again.',
-                ], 500
+                ],
+                500
             );
         }
     }
@@ -127,7 +129,8 @@ class DepositController extends Controller
             return response()->json(
                 [
                 'error' => 'Failed to add payment method.',
-                ], 500
+                ],
+                500
             );
         }
     }

@@ -56,7 +56,8 @@ class FraudDetectionController extends Controller
                 'decision_factors' => $fraudScore->decision_factors,
             ],
             'requires_action' => in_array(
-                $fraudScore->decision, [
+                $fraudScore->decision,
+                [
                 FraudScore::DECISION_BLOCK,
                 FraudScore::DECISION_CHALLENGE,
                 FraudScore::DECISION_REVIEW,

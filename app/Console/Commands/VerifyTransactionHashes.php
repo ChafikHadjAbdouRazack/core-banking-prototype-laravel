@@ -51,7 +51,7 @@ class VerifyTransactionHashes extends Command
         $accounts = $this->accountRepository->getAllByCursor();
 
         /**
- * @var \App\Models\Account $account 
+ * @var \App\Models\Account $account
 */
         foreach ($accounts as $account) {
             $aggregate = TransactionAggregate::retrieve($account->uuid);
@@ -89,7 +89,8 @@ class VerifyTransactionHashes extends Command
                 } catch (InvalidHashException $e) {
                     // Log the hash validation error with full context
                     Log::error(
-                        'Transaction hash validation failed', [
+                        'Transaction hash validation failed',
+                        [
                         'aggregate_uuid'    => $aggregate->uuid(),
                         'event_class'       => get_class($event),
                         'event_uuid'        => method_exists($event, 'aggregateRootUuid') ? $event->aggregateRootUuid() : null,

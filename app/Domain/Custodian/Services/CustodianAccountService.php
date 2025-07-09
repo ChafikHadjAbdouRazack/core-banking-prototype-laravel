@@ -57,7 +57,8 @@ class CustodianAccountService
                 }
 
                 Log::info(
-                    'Linked custodian account', [
+                    'Linked custodian account',
+                    [
                     'account_uuid'      => $account->uuid,
                     'custodian'         => $custodianName,
                     'custodian_account' => $custodianAccountId,
@@ -91,7 +92,8 @@ class CustodianAccountService
                 $custodianAccount->delete();
 
                 Log::info(
-                    'Unlinked custodian account', [
+                    'Unlinked custodian account',
+                    [
                     'custodian_account_id' => $custodianAccount->id,
                     'account_uuid'         => $custodianAccount->account_uuid,
                     ]
@@ -151,7 +153,8 @@ class CustodianAccountService
         $receipt = $custodian->initiateTransfer($transferRequest);
 
         Log::info(
-            'Initiated custodian transfer', [
+            'Initiated custodian transfer',
+            [
             'transaction_id' => $receipt->id,
             'from_account'   => $fromAccount->custodian_account_id,
             'to_account'     => $toAccount->custodian_account_id,
@@ -193,14 +196,16 @@ class CustodianAccountService
             );
 
             Log::info(
-                'Synced custodian account status', [
+                'Synced custodian account status',
+                [
                 'custodian_account_id' => $custodianAccount->id,
                 'new_status'           => $accountInfo->status,
                 ]
             );
         } catch (\Exception $e) {
             Log::error(
-                'Failed to sync custodian account status', [
+                'Failed to sync custodian account status',
+                [
                 'custodian_account_id' => $custodianAccount->id,
                 'error'                => $e->getMessage(),
                 ]

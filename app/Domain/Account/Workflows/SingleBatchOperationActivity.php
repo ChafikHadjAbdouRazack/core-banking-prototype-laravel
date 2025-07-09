@@ -30,7 +30,8 @@ class SingleBatchOperationActivity extends Activity
         $startTime = now();
 
         logger()->info(
-            'Starting single batch operation', [
+            'Starting single batch operation',
+            [
             'batch_id'   => $batchId,
             'operation'  => $operation,
             'start_time' => $startTime->toISOString(),
@@ -43,7 +44,8 @@ class SingleBatchOperationActivity extends Activity
             $endTime = now();
 
             logger()->info(
-                'Batch operation completed', [
+                'Batch operation completed',
+                [
                 'batch_id'         => $batchId,
                 'operation'        => $operation,
                 'duration_seconds' => $endTime->diffInSeconds($startTime),
@@ -60,7 +62,8 @@ class SingleBatchOperationActivity extends Activity
             ];
         } catch (\Throwable $th) {
             logger()->error(
-                'Batch operation failed', [
+                'Batch operation failed',
+                [
                 'batch_id'  => $batchId,
                 'operation' => $operation,
                 'error'     => $th->getMessage(),
@@ -79,20 +82,20 @@ class SingleBatchOperationActivity extends Activity
     private function performOperation(string $operation, string $batchId): array
     {
         switch ($operation) {
-        case 'calculate_daily_turnover':
-            return $this->calculateDailyTurnover();
-        case 'generate_account_statements':
-            return $this->generateAccountStatements();
-        case 'process_interest_calculations':
-            return $this->processInterestCalculations();
-        case 'perform_compliance_checks':
-            return $this->performComplianceChecks();
-        case 'archive_old_transactions':
-            return $this->archiveOldTransactions();
-        case 'generate_regulatory_reports':
-            return $this->generateRegulatoryReports();
-        default:
-            throw new \InvalidArgumentException("Unknown batch operation: {$operation}");
+            case 'calculate_daily_turnover':
+                return $this->calculateDailyTurnover();
+            case 'generate_account_statements':
+                return $this->generateAccountStatements();
+            case 'process_interest_calculations':
+                return $this->processInterestCalculations();
+            case 'perform_compliance_checks':
+                return $this->performComplianceChecks();
+            case 'archive_old_transactions':
+                return $this->archiveOldTransactions();
+            case 'generate_regulatory_reports':
+                return $this->generateRegulatoryReports();
+            default:
+                throw new \InvalidArgumentException("Unknown batch operation: {$operation}");
         }
     }
 
@@ -330,7 +333,8 @@ class SingleBatchOperationActivity extends Activity
             WHERE t.created_at >= ?
             GROUP BY account_uuid, user_uuid
             HAVING COUNT(*) > 10
-        ', [$today]
+        ',
+            [$today]
         );
 
         $complianceFlags['rapid_transactions'] = collect($rapidTransactions)->map(
@@ -362,7 +366,8 @@ class SingleBatchOperationActivity extends Activity
 
         // Check for round-number transactions (possible structuring)
         $roundTransactions = Transaction::whereIn(
-            'amount', [
+            'amount',
+            [
             1000000, 900000, 800000, 700000, 600000, 500000, // $10k, $9k, etc.
             ]
         )
@@ -505,7 +510,8 @@ class SingleBatchOperationActivity extends Activity
             AND created_at >= ?
             GROUP BY account_uuid
             HAVING COUNT(*) >= 3
-        ', [$today->startOfDay()]
+        ',
+            [$today->startOfDay()]
         );
 
         foreach ($structuringCandidates as $candidate) {

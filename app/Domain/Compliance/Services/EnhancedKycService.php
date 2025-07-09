@@ -106,7 +106,8 @@ class EnhancedKycService
             ];
         } catch (\Exception $e) {
             Log::error(
-                'Identity document verification failed', [
+                'Identity document verification failed',
+                [
                 'verification_id' => $verification->id,
                 'error'           => $e->getMessage(),
                 ]
@@ -160,7 +161,8 @@ class EnhancedKycService
             ];
         } catch (\Exception $e) {
             Log::error(
-                'Biometric verification failed', [
+                'Biometric verification failed',
+                [
                 'verification_id' => $verification->id,
                 'error'           => $e->getMessage(),
                 ]
@@ -214,7 +216,8 @@ class EnhancedKycService
             ];
         } catch (\Exception $e) {
             Log::error(
-                'Address verification failed', [
+                'Address verification failed',
+                [
                 'verification_id' => $verification->id,
                 'error'           => $e->getMessage(),
                 ]
@@ -408,7 +411,8 @@ class EnhancedKycService
             return 'full';
         }
 
-        if (in_array(KycVerification::TYPE_INCOME, $completedTypes) 
+        if (
+            in_array(KycVerification::TYPE_INCOME, $completedTypes)
             && in_array(KycVerification::TYPE_ADDRESS, $completedTypes)
         ) {
             return 'enhanced';

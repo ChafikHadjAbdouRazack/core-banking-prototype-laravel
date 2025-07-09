@@ -116,7 +116,8 @@ class BankIntegrationService implements IBankIntegrationService
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error(
-                'Failed to connect user to bank', [
+                'Failed to connect user to bank',
+                [
                 'user_id'   => $user->uuid,
                 'bank_code' => $bankCode,
                 'error'     => $e->getMessage(),
@@ -410,7 +411,9 @@ class BankIntegrationService implements IBankIntegrationService
         $cacheKey = "user_balance:{$user->uuid}:{$currency}";
 
         return Cache::remember(
-            $cacheKey, 300, function () use ($user, $currency) {
+            $cacheKey,
+            300,
+            function () use ($user, $currency) {
                 $totalBalance = 0;
 
                 $connections = $this->getUserBankConnections($user);
@@ -432,7 +435,8 @@ class BankIntegrationService implements IBankIntegrationService
                         }
                     } catch (\Exception $e) {
                         Log::warning(
-                            'Failed to get balance from bank', [
+                            'Failed to get balance from bank',
+                            [
                             'bank_code' => $connection->bankCode,
                             'error'     => $e->getMessage(),
                             ]

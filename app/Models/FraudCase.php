@@ -223,7 +223,8 @@ class FraudCase extends Model
     {
         $currentEvidence = $this->evidence ?? [];
         $currentEvidence[] = array_merge(
-            $evidence, [
+            $evidence,
+            [
             'added_at' => now()->toIso8601String(),
             ]
         );
@@ -238,7 +239,8 @@ class FraudCase extends Model
             [
             'action'    => $action,
             'timestamp' => now()->toIso8601String(),
-            ], $details
+            ],
+            $details
         );
 
         $this->update(['actions_taken' => $actions]);

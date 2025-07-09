@@ -84,7 +84,8 @@ class TransferController extends Controller
                     'from_account_uuid' => $fromAccountUuid ? [] : ['The from account uuid field is required.'],
                     'to_account_uuid'   => $toAccountUuid ? [] : ['The to account uuid field is required.'],
                 ],
-                ], 422
+                ],
+                422
             );
         }
 
@@ -96,7 +97,8 @@ class TransferController extends Controller
                 [
                 'message' => 'Cannot transfer from frozen account',
                 'error'   => 'SOURCE_ACCOUNT_FROZEN',
-                ], 422
+                ],
+                422
             );
         }
 
@@ -105,7 +107,8 @@ class TransferController extends Controller
                 [
                 'message' => 'Cannot transfer to frozen account',
                 'error'   => 'DESTINATION_ACCOUNT_FROZEN',
-                ], 422
+                ],
+                422
             );
         }
 
@@ -122,7 +125,8 @@ class TransferController extends Controller
                 'error'            => 'INSUFFICIENT_FUNDS',
                 'current_balance'  => $fromBalance,
                 'requested_amount' => $amountInMinorUnits,
-                ], 422
+                ],
+                422
             );
         }
 
@@ -138,7 +142,8 @@ class TransferController extends Controller
                 [
                 'message' => 'Transfer failed',
                 'error'   => 'TRANSFER_FAILED',
-                ], 422
+                ],
+                422
             );
         }
 
@@ -159,7 +164,8 @@ class TransferController extends Controller
                 'created_at'   => now()->toISOString(),
             ],
             'message' => 'Transfer initiated successfully',
-            ], 201
+            ],
+            201
         );
     }
 

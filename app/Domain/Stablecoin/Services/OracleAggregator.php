@@ -42,7 +42,9 @@ class OracleAggregator
         $cacheKey = "oracle_price_{$base}_{$quote}";
 
         return Cache::remember(
-            $cacheKey, 60, function () use ($base, $quote) {
+            $cacheKey,
+            60,
+            function () use ($base, $quote) {
                 $prices = $this->collectPrices($base, $quote);
 
                 if ($prices->count() < $this->minOracles) {
@@ -110,7 +112,8 @@ class OracleAggregator
 
         if ($deviation->toFloat() > $this->maxDeviation) {
             Log::warning(
-                'Price deviation exceeds threshold', [
+                'Price deviation exceeds threshold',
+                [
                 'deviation' => $deviation->toFloat(),
                 'threshold' => $this->maxDeviation,
                 'prices'    => $prices->map(

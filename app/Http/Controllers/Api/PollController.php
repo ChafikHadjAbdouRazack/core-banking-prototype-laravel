@@ -192,7 +192,8 @@ class PollController extends Controller
             [
             'data'    => $poll->load(['creator', 'votes']),
             'message' => 'Poll created successfully',
-            ], 201
+            ],
+            201
         );
     }
 
@@ -226,7 +227,8 @@ class PollController extends Controller
             return response()->json(
                 [
                 'message' => 'Poll not found',
-                ], 404
+                ],
+                404
             );
         }
 
@@ -270,7 +272,8 @@ class PollController extends Controller
             return response()->json(
                 [
                 'message' => 'Poll not found',
-                ], 404
+                ],
+                404
             );
         }
 
@@ -289,7 +292,8 @@ class PollController extends Controller
             return response()->json(
                 [
                 'message' => $e->getMessage(),
-                ], 400
+                ],
+                400
             );
         }
     }
@@ -341,7 +345,8 @@ class PollController extends Controller
             return response()->json(
                 [
                 'message' => 'Poll not found',
-                ], 404
+                ],
+                404
             );
         }
 
@@ -360,7 +365,8 @@ class PollController extends Controller
                 [
                 'data'    => $vote->load(['poll', 'user']),
                 'message' => 'Vote cast successfully',
-                ], 201
+                ],
+                201
             );
         } catch (\InvalidArgumentException $e) {
             // Check if this is an invalid option error
@@ -371,7 +377,8 @@ class PollController extends Controller
                     'errors'  => [
                         'selected_options' => [$e->getMessage()],
                     ],
-                    ], 422
+                    ],
+                    422
                 );
             }
 
@@ -390,7 +397,8 @@ class PollController extends Controller
                     return response()->json(
                         [
                         'message' => $e->getMessage(),
-                        ], 422
+                        ],
+                        422
                     );
                 }
             }
@@ -398,7 +406,8 @@ class PollController extends Controller
             return response()->json(
                 [
                 'message' => $e->getMessage(),
-                ], 400
+                ],
+                400
             );
         }
     }
@@ -433,7 +442,8 @@ class PollController extends Controller
             return response()->json(
                 [
                 'message' => 'Poll not found',
-                ], 404
+                ],
+                404
             );
         }
 
@@ -480,7 +490,8 @@ class PollController extends Controller
             return response()->json(
                 [
                 'message' => 'Poll not found',
-                ], 404
+                ],
+                404
             );
         }
 

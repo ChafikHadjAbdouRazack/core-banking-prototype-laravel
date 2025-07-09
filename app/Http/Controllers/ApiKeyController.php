@@ -64,7 +64,8 @@ class ApiKeyController extends Controller
 
         // Create API key
         $result = ApiKey::createForUser(
-            Auth::user(), [
+            Auth::user(),
+            [
             'name'        => $validated['name'],
             'description' => $validated['description'] ?? null,
             'permissions' => $validated['permissions'],
@@ -192,7 +193,8 @@ class ApiKeyController extends Controller
 
         // Create new key with same settings
         $result = ApiKey::createForUser(
-            Auth::user(), [
+            Auth::user(),
+            [
             'name'        => $apiKey->name . ' (Regenerated)',
             'description' => $apiKey->description,
             'permissions' => $apiKey->permissions,

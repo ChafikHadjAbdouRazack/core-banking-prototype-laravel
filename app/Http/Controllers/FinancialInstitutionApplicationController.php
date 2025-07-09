@@ -32,7 +32,8 @@ class FinancialInstitutionApplicationController extends Controller
             'insurance_coverage'     => 'required|string|min:50',
             'partnership_vision'     => 'nullable|string',
             'terms'                  => 'required|accepted',
-            ], [
+            ],
+            [
             'terms.required'             => 'Please accept the terms and conditions.',
             'terms.accepted'             => 'Please accept the terms and conditions.',
             'technical_capabilities.min' => 'Please provide at least 50 characters describing your technical capabilities.',
@@ -44,7 +45,8 @@ class FinancialInstitutionApplicationController extends Controller
 
         // Log the application
         Log::info(
-            'New financial institution application received', [
+            'New financial institution application received',
+            [
             'institution' => $validated['institution_name'],
             'country'     => $validated['country'],
             'contact'     => $validated['contact_name'],

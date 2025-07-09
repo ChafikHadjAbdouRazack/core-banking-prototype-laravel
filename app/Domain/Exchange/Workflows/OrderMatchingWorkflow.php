@@ -153,7 +153,8 @@ class OrderMatchingWorkflow extends Workflow
         $totalFilledAmount = $matchingResult->matches->reduce(
             function ($carry, $match) {
                 return bcadd($carry, $match->executedAmount, 18);
-            }, '0'
+            },
+            '0'
         );
 
         $order = Order::retrieve($input->orderId);

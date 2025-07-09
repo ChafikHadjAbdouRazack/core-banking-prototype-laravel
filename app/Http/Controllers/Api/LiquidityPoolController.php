@@ -155,7 +155,8 @@ class LiquidityPoolController extends Controller
                 [
                 'pool_id' => $poolId,
                 'message' => 'Liquidity pool created successfully',
-                ], 201
+                ],
+                201
             );
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 400);

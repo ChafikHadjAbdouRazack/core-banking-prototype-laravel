@@ -75,7 +75,8 @@ class WalletController extends Controller
 
         if (! $account) {
             return view(
-                'wallet.transactions', [
+                'wallet.transactions',
+                [
                 'account'          => null,
                 'transactions'     => collect(),
                 'transactionsJson' => json_encode([]),
@@ -107,7 +108,8 @@ class WalletController extends Controller
         );
 
         return view(
-            'wallet.transactions', [
+            'wallet.transactions',
+            [
             'account'          => $account,
             'transactions'     => $transactions,
             'transactionsJson' => $transformedTransactions->toJson(),

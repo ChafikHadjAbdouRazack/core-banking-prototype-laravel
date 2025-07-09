@@ -77,7 +77,8 @@ class DemoDepositCommand extends Command
 
             // Process queue to ensure account is created
             $this->call(
-                'queue:work', [
+                'queue:work',
+                [
                 '--stop-when-empty' => true,
                 '--queue'           => 'default,events,ledger,transactions',
                 ]
@@ -131,7 +132,8 @@ class DemoDepositCommand extends Command
 
             // Process event queue
             $this->call(
-                'queue:work', [
+                'queue:work',
+                [
                 '--stop-when-empty' => true,
                 '--queue'           => 'events,ledger',
                 ]

@@ -191,7 +191,9 @@ class DeviceFingerprintService
     protected function getIpData(string $ip): ?array
     {
         return Cache::remember(
-            "ip_data_{$ip}", 86400, function () use ($ip) {
+            "ip_data_{$ip}",
+            86400,
+            function () use ($ip) {
                 try {
                     // In production, use services like:
                     // - IPQualityScore
@@ -226,29 +228,33 @@ class DeviceFingerprintService
         $indicators = [];
 
         // Check for user agent mismatch
-        if (isset($currentData['user_agent']) 
+        if (
+            isset($currentData['user_agent'])
             && $currentData['user_agent'] !== $storedFingerprint->user_agent
         ) {
             $indicators[] = 'user_agent_changed';
         }
 
         // Check for screen resolution mismatch
-        if (isset($currentData['screen_resolution']) 
+        if (
+            isset($currentData['screen_resolution'])
             && $currentData['screen_resolution'] !== $storedFingerprint->screen_resolution
         ) {
             $indicators[] = 'screen_resolution_changed';
         }
 
         // Check for timezone mismatch
-        if (isset($currentData['timezone']) 
+        if (
+            isset($currentData['timezone'])
             && $currentData['timezone'] !== $storedFingerprint->timezone
         ) {
             $indicators[] = 'timezone_changed';
         }
 
         // Check for canvas fingerprint mismatch
-        if (isset($currentData['canvas_fingerprint']) 
-            && $storedFingerprint->canvas_fingerprint 
+        if (
+            isset($currentData['canvas_fingerprint'])
+            && $storedFingerprint->canvas_fingerprint
             && $currentData['canvas_fingerprint'] !== $storedFingerprint->canvas_fingerprint
         ) {
             $indicators[] = 'canvas_fingerprint_mismatch';
@@ -309,8 +315,9 @@ class DeviceFingerprintService
 
         // Check user agent
         $userAgent = strtolower($deviceData['user_agent'] ?? '');
-        if (str_contains($userAgent, 'headless') 
-            || str_contains($userAgent, 'phantom') 
+        if (
+            str_contains($userAgent, 'headless')
+            || str_contains($userAgent, 'phantom')
             || str_contains($userAgent, 'selenium')
         ) {
             return true;

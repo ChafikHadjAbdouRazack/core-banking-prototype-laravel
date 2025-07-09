@@ -153,7 +153,8 @@ class GovernanceService
                 [
                 'status'   => PollStatus::CLOSED,
                 'metadata' => array_merge(
-                    $poll->metadata ?? [], [
+                    $poll->metadata ?? [],
+                    [
                     'results'      => $result->toArray(),
                     'completed_at' => now()->toISOString(),
                     ]
@@ -185,7 +186,8 @@ class GovernanceService
             [
             'status'   => PollStatus::CANCELLED,
             'metadata' => array_merge(
-                $poll->metadata ?? [], [
+                $poll->metadata ?? [],
+                [
                 'cancelled_at'        => now()->toISOString(),
                 'cancellation_reason' => $reason,
                 ]
@@ -323,7 +325,8 @@ class GovernanceService
     private function executeWorkflow(Poll $poll, PollResult $result): void
     {
         logger()->info(
-            'Poll workflow execution requested', [
+            'Poll workflow execution requested',
+            [
             'poll_uuid'          => $poll->uuid,
             'workflow'           => $poll->execution_workflow,
             'winning_option'     => $result->winningOption,
@@ -350,9 +353,11 @@ class GovernanceService
             $poll->update(
                 [
                 'metadata' => array_merge(
-                    $poll->metadata ?? [], [
+                    $poll->metadata ?? [],
+                    [
                     'workflow_execution' => array_merge(
-                        $workflowResult, [
+                        $workflowResult,
+                        [
                         'executed_at' => now()->toISOString(),
                         ]
                     ),
@@ -362,7 +367,8 @@ class GovernanceService
             );
 
             logger()->info(
-                'Poll workflow execution completed', [
+                'Poll workflow execution completed',
+                [
                 'poll_uuid' => $poll->uuid,
                 'workflow'  => $poll->execution_workflow,
                 'result'    => $workflowResult,
@@ -370,7 +376,8 @@ class GovernanceService
             );
         } catch (\Exception $e) {
             logger()->error(
-                'Poll workflow execution failed', [
+                'Poll workflow execution failed',
+                [
                 'poll_uuid' => $poll->uuid,
                 'workflow'  => $poll->execution_workflow,
                 'error'     => $e->getMessage(),
@@ -381,7 +388,8 @@ class GovernanceService
             $poll->update(
                 [
                 'metadata' => array_merge(
-                    $poll->metadata ?? [], [
+                    $poll->metadata ?? [],
+                    [
                     'workflow_execution' => [
                         'success'     => false,
                         'message'     => 'Workflow execution failed: ' . $e->getMessage(),

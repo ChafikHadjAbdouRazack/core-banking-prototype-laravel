@@ -31,7 +31,8 @@ class BasketPerformanceService
 
         if ($values->count() < 2) {
             Log::warning(
-                "Insufficient data to calculate performance for basket {$basket->code}", [
+                "Insufficient data to calculate performance for basket {$basket->code}",
+                [
                 'period_type'  => $periodType,
                 'period_start' => $periodStart,
                 'period_end'   => $periodEnd,

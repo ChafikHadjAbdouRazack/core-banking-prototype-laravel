@@ -17,7 +17,8 @@ class InitiateBankTransferActivity extends Activity
 
         // Log the transfer initiation
         \Log::info(
-            'Bank transfer initiated', [
+            'Bank transfer initiated',
+            [
             'transfer_id'    => $transferId,
             'transaction_id' => $transactionId,
             'account_uuid'   => $withdrawal->getAccountUuid(),

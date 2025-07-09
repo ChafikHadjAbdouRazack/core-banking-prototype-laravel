@@ -125,7 +125,8 @@ class BankOperations extends Page implements HasTable
         return collect($healthData)->map(
             function ($health, $custodian) {
                 return array_merge(
-                    $health, [
+                    $health,
+                    [
                     'id' => $custodian, // Add ID for table
                     ]
                 );

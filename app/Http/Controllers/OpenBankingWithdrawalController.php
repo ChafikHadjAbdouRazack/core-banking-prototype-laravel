@@ -59,7 +59,8 @@ class OpenBankingWithdrawalController extends Controller
         $balances = $account->balances()->with('asset')->get();
 
         return view(
-            'wallet.withdraw-openbanking', [
+            'wallet.withdraw-openbanking',
+            [
             'account'        => $account,
             'connectedBanks' => $connectedBanks,
             'availableBanks' => $availableBanks,
@@ -94,7 +95,8 @@ class OpenBankingWithdrawalController extends Controller
 
         // Store withdrawal details in session
         Session::put(
-            'openbanking_withdrawal', [
+            'openbanking_withdrawal',
+            [
             'amount'       => $amountInCents,
             'currency'     => $request->currency,
             'bank_code'    => $request->bank_code,
@@ -118,7 +120,8 @@ class OpenBankingWithdrawalController extends Controller
             return redirect($authUrl);
         } catch (\Exception $e) {
             Log::error(
-                'Failed to initiate OpenBanking connection', [
+                'Failed to initiate OpenBanking connection',
+                [
                 'user_id'   => $user->id,
                 'bank_code' => $request->bank_code,
                 'error'     => $e->getMessage(),
@@ -154,7 +157,8 @@ class OpenBankingWithdrawalController extends Controller
             // Exchange authorization code for access token
             $connector = $this->bankIntegration->getConnector($withdrawalDetails['bank_code']);
             $credentials = $connector->exchangeAuthorizationCode(
-                $request->code, [
+                $request->code,
+                [
                 'redirect_uri' => route('wallet.withdraw.openbanking.callback'),
                 ]
             );
@@ -228,7 +232,8 @@ class OpenBankingWithdrawalController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error(
-                'OpenBanking withdrawal failed', [
+                'OpenBanking withdrawal failed',
+                [
                 'user_id' => $user->id,
                 'error'   => $e->getMessage(),
                 ]
@@ -263,7 +268,8 @@ class OpenBankingWithdrawalController extends Controller
         }
 
         return view(
-            'wallet.withdraw-openbanking-accounts', [
+            'wallet.withdraw-openbanking-accounts',
+            [
             'account'      => $account,
             'bankAccounts' => $bankAccounts,
             'bankCode'     => $request->bank_code,
@@ -343,7 +349,8 @@ class OpenBankingWithdrawalController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error(
-                'OpenBanking withdrawal failed', [
+                'OpenBanking withdrawal failed',
+                [
                 'user_id' => $user->id,
                 'error'   => $e->getMessage(),
                 ]

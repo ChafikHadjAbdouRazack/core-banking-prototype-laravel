@@ -124,7 +124,8 @@ class GcuVotingProposal extends Model
         }
 
         return now()->diffForHumans(
-            $this->voting_ends_at, [
+            $this->voting_ends_at,
+            [
             'parts' => 2,
             'short' => true,
             ]

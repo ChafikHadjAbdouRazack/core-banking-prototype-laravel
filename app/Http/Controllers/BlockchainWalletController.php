@@ -237,7 +237,8 @@ class BlockchainWalletController extends Controller
     {
         $transaction = BlockchainTransaction::where('uuid', $transactionId)
             ->whereHas(
-                'address', function ($query) {
+                'address',
+                function ($query) {
                     $query->where('user_uuid', Auth::user()->uuid);
                 }
             )

@@ -54,7 +54,8 @@ class RuleEngineService
                 }
             } catch (\Exception $e) {
                 Log::error(
-                    'Rule evaluation failed', [
+                    'Rule evaluation failed',
+                    [
                     'rule_code' => $rule->code,
                     'error'     => $e->getMessage(),
                     ]
@@ -74,7 +75,9 @@ class RuleEngineService
     protected function getActiveRules(): Collection
     {
         return Cache::remember(
-            'active_fraud_rules', 300, function () {
+            'active_fraud_rules',
+            300,
+            function () {
                 return FraudRule::where('is_active', true)
                     ->orderBy('severity', 'desc')
                     ->orderBy('base_score', 'desc')
@@ -90,27 +93,27 @@ class RuleEngineService
     {
         // Check category-specific evaluation
         switch ($rule->category) {
-        case FraudRule::CATEGORY_VELOCITY:
-            return $this->evaluateVelocityRule($rule, $context);
+            case FraudRule::CATEGORY_VELOCITY:
+                return $this->evaluateVelocityRule($rule, $context);
 
-        case FraudRule::CATEGORY_PATTERN:
-            return $this->evaluatePatternRule($rule, $context);
+            case FraudRule::CATEGORY_PATTERN:
+                return $this->evaluatePatternRule($rule, $context);
 
-        case FraudRule::CATEGORY_AMOUNT:
-            return $this->evaluateAmountRule($rule, $context);
+            case FraudRule::CATEGORY_AMOUNT:
+                return $this->evaluateAmountRule($rule, $context);
 
-        case FraudRule::CATEGORY_GEOGRAPHY:
-            return $this->evaluateGeographyRule($rule, $context);
+            case FraudRule::CATEGORY_GEOGRAPHY:
+                return $this->evaluateGeographyRule($rule, $context);
 
-        case FraudRule::CATEGORY_DEVICE:
-            return $this->evaluateDeviceRule($rule, $context);
+            case FraudRule::CATEGORY_DEVICE:
+                return $this->evaluateDeviceRule($rule, $context);
 
-        case FraudRule::CATEGORY_BEHAVIOR:
-            return $this->evaluateBehaviorRule($rule, $context);
+            case FraudRule::CATEGORY_BEHAVIOR:
+                return $this->evaluateBehaviorRule($rule, $context);
 
-        default:
-            // Generic evaluation
-            return $rule->evaluate($context);
+            default:
+                // Generic evaluation
+                return $rule->evaluate($context);
         }
     }
 
@@ -122,21 +125,24 @@ class RuleEngineService
         $thresholds = $rule->thresholds ?? [];
 
         // Check transaction count velocity
-        if (isset($thresholds['max_daily_transactions']) 
+        if (
+            isset($thresholds['max_daily_transactions'])
             && ($context['daily_transaction_count'] ?? 0) > $thresholds['max_daily_transactions']
         ) {
             return true;
         }
 
         // Check transaction volume velocity
-        if (isset($thresholds['max_daily_volume']) 
+        if (
+            isset($thresholds['max_daily_volume'])
             && ($context['daily_transaction_volume'] ?? 0) > $thresholds['max_daily_volume']
         ) {
             return true;
         }
 
         // Check hourly velocity
-        if (isset($thresholds['max_hourly_transactions']) 
+        if (
+            isset($thresholds['max_hourly_transactions'])
             && ($context['hourly_transaction_count'] ?? 0) > $thresholds['max_hourly_transactions']
         ) {
             return true;
@@ -164,29 +170,29 @@ class RuleEngineService
             $patternType = $condition['pattern'] ?? null;
 
             switch ($patternType) {
-            case 'rapid_succession':
-                if ($this->detectRapidSuccession($context)) {
-                    return true;
-                }
-                break;
+                case 'rapid_succession':
+                    if ($this->detectRapidSuccession($context)) {
+                        return true;
+                    }
+                    break;
 
-            case 'round_amounts':
-                if ($this->detectRoundAmounts($context)) {
-                    return true;
-                }
-                break;
+                case 'round_amounts':
+                    if ($this->detectRoundAmounts($context)) {
+                        return true;
+                    }
+                    break;
 
-            case 'splitting':
-                if ($this->detectSplitting($context)) {
-                    return true;
-                }
-                break;
+                case 'splitting':
+                    if ($this->detectSplitting($context)) {
+                        return true;
+                    }
+                    break;
 
-            case 'unusual_sequence':
-                if ($this->detectUnusualSequence($context)) {
-                    return true;
-                }
-                break;
+                case 'unusual_sequence':
+                    if ($this->detectUnusualSequence($context)) {
+                        return true;
+                    }
+                    break;
             }
         }
 
@@ -339,13 +345,13 @@ class RuleEngineService
     {
         foreach ($rule->actions as $action) {
             switch ($action) {
-            case FraudRule::ACTION_NOTIFY:
-                $this->sendNotification($rule, $context);
-                break;
+                case FraudRule::ACTION_NOTIFY:
+                    $this->sendNotification($rule, $context);
+                    break;
 
-            case FraudRule::ACTION_FLAG:
-                $this->flagTransaction($rule, $context);
-                break;
+                case FraudRule::ACTION_FLAG:
+                    $this->flagTransaction($rule, $context);
+                    break;
 
                     // Other actions handled by main fraud detection service
             }
@@ -405,9 +411,10 @@ class RuleEngineService
         $timeSinceLast = $context['time_since_last_transaction'] ?? null;
         $lastTransactionType = $context['last_transaction_type'] ?? null;
 
-        if ($transactionType === 'withdrawal' 
-            && $lastTransactionType === 'deposit' 
-            && $timeSinceLast !== null 
+        if (
+            $transactionType === 'withdrawal'
+            && $lastTransactionType === 'deposit'
+            && $timeSinceLast !== null
             && $timeSinceLast < 10
         ) {
             return true;
@@ -468,7 +475,8 @@ class RuleEngineService
             60,
             function () use ($userId, $minutes) {
                 return \App\Models\Transaction::whereHas(
-                    'account', function ($query) use ($userId) {
+                    'account',
+                    function ($query) use ($userId) {
                         $query->where('user_id', $userId);
                     }
                 )
@@ -514,7 +522,8 @@ class RuleEngineService
     {
         // Implement notification logic
         Log::info(
-            'Fraud rule triggered notification', [
+            'Fraud rule triggered notification',
+            [
             'rule_code'      => $rule->code,
             'transaction_id' => $context['transaction']['id'] ?? null,
             ]
@@ -528,7 +537,8 @@ class RuleEngineService
     {
         // Implement flagging logic
         Log::info(
-            'Transaction flagged by rule', [
+            'Transaction flagged by rule',
+            [
             'rule_code'      => $rule->code,
             'transaction_id' => $context['transaction']['id'] ?? null,
             ]
@@ -582,7 +592,8 @@ class RuleEngineService
             FraudRule::firstOrCreate(
                 ['name' => $ruleData['name']],
                 array_merge(
-                    $ruleData, [
+                    $ruleData,
+                    [
                     'description' => "Default rule: {$ruleData['name']}",
                     'actions'     => [FraudRule::ACTION_FLAG, FraudRule::ACTION_NOTIFY],
                     ]

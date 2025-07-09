@@ -183,7 +183,8 @@ class PublicApiController extends Controller
     {
         $flatComponents = [];
         array_walk_recursive(
-            $components, function ($value) use (&$flatComponents) {
+            $components,
+            function ($value) use (&$flatComponents) {
                 $flatComponents[] = $value;
             }
         );

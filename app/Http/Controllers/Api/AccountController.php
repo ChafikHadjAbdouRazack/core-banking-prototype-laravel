@@ -164,7 +164,8 @@ class AccountController extends Controller
                 'created_at' => $account->created_at,
             ],
             'message' => 'Account created successfully',
-            ], 201
+            ],
+            201
         );
     }
 
@@ -264,7 +265,8 @@ class AccountController extends Controller
                 [
                 'message' => 'Cannot delete account with positive balance',
                 'error'   => 'ACCOUNT_HAS_BALANCE',
-                ], 422
+                ],
+                422
             );
         }
 
@@ -273,7 +275,8 @@ class AccountController extends Controller
                 [
                 'message' => 'Cannot delete frozen account',
                 'error'   => 'ACCOUNT_FROZEN',
-                ], 422
+                ],
+                422
             );
         }
 
@@ -342,7 +345,8 @@ class AccountController extends Controller
                 [
                 'message' => 'Account is already frozen',
                 'error'   => 'ACCOUNT_ALREADY_FROZEN',
-                ], 422
+                ],
+                422
             );
         }
 
@@ -415,7 +419,8 @@ class AccountController extends Controller
                 [
                 'message' => 'Account is not frozen',
                 'error'   => 'ACCOUNT_NOT_FROZEN',
-                ], 422
+                ],
+                422
             );
         }
 

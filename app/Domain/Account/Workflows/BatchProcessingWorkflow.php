@@ -59,7 +59,8 @@ class BatchProcessingWorkflow extends Workflow
 
             // Log batch processing failure
             logger()->error(
-                'Batch processing failed - compensations executed', [
+                'Batch processing failed - compensations executed',
+                [
                 'batch_id'             => $batchId,
                 'operations'           => $operations,
                 'completed_operations' => $completedOperations,

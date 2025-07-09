@@ -28,7 +28,8 @@ trait BelongsToTeam
 
         // Global scope to filter by team
         static::addGlobalScope(
-            'team', function (Builder $builder) {
+            'team',
+            function (Builder $builder) {
                 // Skip auth check in test environment or when app is not booted
                 if (app()->runningInConsole() && app()->environment('testing')) {
                     return;

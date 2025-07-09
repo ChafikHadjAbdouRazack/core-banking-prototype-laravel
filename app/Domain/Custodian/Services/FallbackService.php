@@ -34,7 +34,8 @@ class FallbackService
         $cachedBalance = Cache::get($cacheKey);
         if ($cachedBalance !== null) {
             Log::info(
-                'Using cached balance for fallback', [
+                'Using cached balance for fallback',
+                [
                 'custodian' => $custodian,
                 'account'   => $accountId,
                 'asset'     => $assetCode,
@@ -52,7 +53,8 @@ class FallbackService
 
         if ($custodianAccount && $custodianAccount->last_known_balance !== null) {
             Log::info(
-                'Using database balance for fallback', [
+                'Using database balance for fallback',
+                [
                 'custodian'   => $custodian,
                 'account'     => $accountId,
                 'asset'       => $assetCode,
@@ -102,7 +104,8 @@ class FallbackService
         $cached = Cache::get($cacheKey);
         if ($cached !== null) {
             Log::info(
-                'Using cached account info for fallback', [
+                'Using cached account info for fallback',
+                [
                 'custodian' => $custodian,
                 'account'   => $accountId,
                 ]
@@ -133,7 +136,8 @@ class FallbackService
 
         if ($transfer) {
             Log::info(
-                'Using database transfer status for fallback', [
+                'Using database transfer status for fallback',
+                [
                 'custodian' => $custodian,
                 'transfer'  => $transferId,
                 'status'    => $transfer->status,
@@ -200,7 +204,8 @@ class FallbackService
         );
 
         Log::warning(
-            'Transfer queued for retry', [
+            'Transfer queued for retry',
+            [
             'custodian'   => $custodian,
             'transfer_id' => $transfer->id,
             'amount'      => $amount->getAmount(),
@@ -251,7 +256,8 @@ class FallbackService
                 $connector = $registry->getConnector($alternative);
                 if ($connector->isAvailable()) {
                     Log::info(
-                        'Found alternative custodian', [
+                        'Found alternative custodian',
+                        [
                         'failed'      => $failedCustodian,
                         'alternative' => $alternative,
                         'asset'       => $assetCode,

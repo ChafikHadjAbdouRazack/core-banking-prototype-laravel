@@ -50,15 +50,15 @@ class VotingController extends Controller
 
         if ($request->has('status')) {
             switch ($request->status) {
-            case 'active':
-                $query->active();
-                break;
-            case 'upcoming':
-                $query->upcoming();
-                break;
-            case 'past':
-                $query->past();
-                break;
+                case 'active':
+                    $query->active();
+                    break;
+                case 'upcoming':
+                    $query->upcoming();
+                    break;
+                case 'past':
+                    $query->past();
+                    break;
             }
         }
 
@@ -188,7 +188,8 @@ class VotingController extends Controller
                 [
                 'status'  => 'error',
                 'message' => 'Voting is not active for this proposal',
-                ], 400
+                ],
+                400
             );
         }
 
@@ -211,7 +212,8 @@ class VotingController extends Controller
                 [
                 'status'  => 'error',
                 'message' => 'You need GCU holdings to vote',
-                ], 400
+                ],
+                400
             );
         }
 

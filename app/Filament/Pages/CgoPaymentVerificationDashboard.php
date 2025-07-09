@@ -208,7 +208,8 @@ class CgoPaymentVerificationDashboard extends Page implements Tables\Contracts\H
                     ->color('gray')
                     ->modalContent(
                         fn (CgoInvestment $record) => view(
-                            'filament.modals.cgo-payment-details', [
+                            'filament.modals.cgo-payment-details',
+                            [
                             'investment' => $record,
                             ]
                         )
@@ -269,7 +270,8 @@ class CgoPaymentVerificationDashboard extends Page implements Tables\Contracts\H
                 'bank_transfer_reference' => $data['reference'],
                 'amount_paid'             => $data['amount_received'] * 100, // Convert to cents
                 'metadata'                => array_merge(
-                    $investment->metadata ?? [], [
+                    $investment->metadata ?? [],
+                    [
                     'manual_verification' => [
                         'verified_by' => auth()->id(),
                         'verified_at' => now()->toIso8601String(),

@@ -50,7 +50,8 @@ class CheckArbitrageOpportunitiesJob implements ShouldQueue
 
                 if (! empty($opportunities)) {
                     Log::info(
-                        'Arbitrage opportunities found', [
+                        'Arbitrage opportunities found',
+                        [
                         'pair'          => "{$pair['base']}/{$pair['quote']}",
                         'opportunities' => $opportunities,
                         ]
@@ -61,7 +62,8 @@ class CheckArbitrageOpportunitiesJob implements ShouldQueue
                 }
             } catch (\Exception $e) {
                 Log::error(
-                    'Failed to check arbitrage opportunities', [
+                    'Failed to check arbitrage opportunities',
+                    [
                     'pair'  => "{$pair['base']}/{$pair['quote']}",
                     'error' => $e->getMessage(),
                     ]
@@ -73,7 +75,8 @@ class CheckArbitrageOpportunitiesJob implements ShouldQueue
     public function failed(\Throwable $exception): void
     {
         Log::error(
-            'Arbitrage check job failed', [
+            'Arbitrage check job failed',
+            [
             'error' => $exception->getMessage(),
             'trace' => $exception->getTraceAsString(),
             ]

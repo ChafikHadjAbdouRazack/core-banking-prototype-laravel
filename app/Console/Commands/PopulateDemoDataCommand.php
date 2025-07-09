@@ -84,7 +84,8 @@ class PopulateDemoDataCommand extends Command
 
         // Use Filament command to create admin
         Artisan::call(
-            'make:filament-user', [
+            'make:filament-user',
+            [
             '--name'     => 'Admin User',
             '--email'    => $email,
             '--password' => $password,

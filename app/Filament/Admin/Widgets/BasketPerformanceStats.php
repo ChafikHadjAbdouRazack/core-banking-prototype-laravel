@@ -17,7 +17,9 @@ class BasketPerformanceStats extends BaseWidget
     protected function getStats(): array
     {
         $gcuBasket = Cache::remember(
-            'gcu_basket_stats', 300, function () {
+            'gcu_basket_stats',
+            300,
+            function () {
                 return BasketAsset::where('code', 'GCU')->first();
             }
         );
@@ -28,7 +30,9 @@ class BasketPerformanceStats extends BaseWidget
 
         $performanceService = app(BasketPerformanceService::class);
         $summary = Cache::remember(
-            'gcu_performance_summary', 300, function () use ($gcuBasket, $performanceService) {
+            'gcu_performance_summary',
+            300,
+            function () use ($gcuBasket, $performanceService) {
                 return $performanceService->getPerformanceSummary($gcuBasket);
             }
         );
@@ -82,7 +86,9 @@ class BasketPerformanceStats extends BaseWidget
 
         // Top Performer
         $topPerformer = Cache::remember(
-            'gcu_top_performer', 300, function () use ($gcuBasket, $performanceService) {
+            'gcu_top_performer',
+            300,
+            function () use ($gcuBasket, $performanceService) {
                 return $performanceService->getTopPerformers($gcuBasket, 'month', 1)->first();
             }
         );

@@ -70,12 +70,12 @@ class IdentityVerificationService
     public function createVerificationSession(string $provider, array $userData): array
     {
         switch ($provider) {
-        case 'jumio':
-            return $this->createJumioSession($userData);
-        case 'onfido':
-            return $this->createOnfidoSession($userData);
-        default:
-            throw new \InvalidArgumentException("Unknown provider: {$provider}");
+            case 'jumio':
+                return $this->createJumioSession($userData);
+            case 'onfido':
+                return $this->createOnfidoSession($userData);
+            default:
+                throw new \InvalidArgumentException("Unknown provider: {$provider}");
         }
     }
 
@@ -85,12 +85,12 @@ class IdentityVerificationService
     public function getVerificationResult(string $provider, string $sessionId): array
     {
         switch ($provider) {
-        case 'jumio':
-            return $this->getJumioResult($sessionId);
-        case 'onfido':
-            return $this->getOnfidoResult($sessionId);
-        default:
-            throw new \InvalidArgumentException("Unknown provider: {$provider}");
+            case 'jumio':
+                return $this->getJumioResult($sessionId);
+            case 'onfido':
+                return $this->getOnfidoResult($sessionId);
+            default:
+                throw new \InvalidArgumentException("Unknown provider: {$provider}");
         }
     }
 

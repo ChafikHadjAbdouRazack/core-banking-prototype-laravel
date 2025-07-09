@@ -103,7 +103,8 @@ class WebhookProcessorService
                 );
 
                 Log::info(
-                    'Payment completed webhook processed', [
+                    'Payment completed webhook processed',
+                    [
                     'custodian'      => $webhook->custodian_name,
                     'transaction_id' => $transactionId,
                     ]
@@ -136,7 +137,8 @@ class WebhookProcessorService
                 );
 
                 Log::warning(
-                    'Payment failed webhook processed', [
+                    'Payment failed webhook processed',
+                    [
                     'custodian'      => $webhook->custodian_name,
                     'transaction_id' => $transactionId,
                     'reason'         => $reason,
@@ -178,7 +180,8 @@ class WebhookProcessorService
                 );
 
                 Log::info(
-                    'Balance changed webhook processed', [
+                    'Balance changed webhook processed',
+                    [
                     'custodian'  => $webhook->custodian_name,
                     'account_id' => $accountId,
                     'balances'   => $balances,
@@ -214,7 +217,8 @@ class WebhookProcessorService
                 $this->accountService->syncAccountStatus($custodianAccount);
 
                 Log::info(
-                    'Account status changed webhook processed', [
+                    'Account status changed webhook processed',
+                    [
                     'custodian'  => $webhook->custodian_name,
                     'account_id' => $accountId,
                     'new_status' => $newStatus,

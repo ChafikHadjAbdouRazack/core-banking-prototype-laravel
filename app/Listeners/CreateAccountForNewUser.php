@@ -29,7 +29,8 @@ class CreateAccountForNewUser
             );
 
             Log::info(
-                'Created default account for new user', [
+                'Created default account for new user',
+                [
                 'user_uuid'  => $event->user->uuid,
                 'user_email' => $event->user->email,
                 ]
@@ -37,7 +38,8 @@ class CreateAccountForNewUser
         } catch (\Exception $e) {
             // Log the error but don't prevent user registration
             Log::error(
-                'Failed to create account for new user', [
+                'Failed to create account for new user',
+                [
                 'user_uuid' => $event->user->uuid,
                 'error'     => $e->getMessage(),
                 'trace'     => $e->getTraceAsString(),

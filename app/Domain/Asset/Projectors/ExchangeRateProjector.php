@@ -35,7 +35,8 @@ class ExchangeRateProjector extends Projector
                 'expires_at'      => now()->addHours(1), // Default 1 hour expiry
                 'is_active'       => true,
                 'metadata'        => array_merge(
-                    $event->metadata ?? [], [
+                    $event->metadata ?? [],
+                    [
                     'previous_rate'         => $event->oldRate,
                     'change_percentage'     => $event->getChangePercentage(),
                     'is_increase'           => $event->isIncrease(),
@@ -56,7 +57,8 @@ class ExchangeRateProjector extends Projector
             // Log significant changes
             if ($event->isSignificantChange()) {
                 Log::warning(
-                    'Significant exchange rate change detected', [
+                    'Significant exchange rate change detected',
+                    [
                     'from_asset'        => $event->fromAssetCode,
                     'to_asset'          => $event->toAssetCode,
                     'old_rate'          => $event->oldRate,
@@ -67,7 +69,8 @@ class ExchangeRateProjector extends Projector
                 );
             } else {
                 Log::info(
-                    'Exchange rate updated', [
+                    'Exchange rate updated',
+                    [
                     'from_asset'        => $event->fromAssetCode,
                     'to_asset'          => $event->toAssetCode,
                     'old_rate'          => $event->oldRate,
@@ -79,7 +82,8 @@ class ExchangeRateProjector extends Projector
             }
         } catch (\Exception $e) {
             Log::error(
-                'Error processing exchange rate update', [
+                'Error processing exchange rate update',
+                [
                 'from_asset' => $event->fromAssetCode,
                 'to_asset'   => $event->toAssetCode,
                 'old_rate'   => $event->oldRate,

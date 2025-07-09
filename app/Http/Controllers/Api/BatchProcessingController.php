@@ -123,11 +123,13 @@ class BatchProcessingController extends Controller
                     'started_by'         => Auth::user()->email,
                     'retry_attempts'     => $validated['retry_attempts'] ?? 3,
                 ],
-                ], 202
+                ],
+                202
             );
         } catch (\Exception $e) {
             logger()->error(
-                'Batch processing initiation failed', [
+                'Batch processing initiation failed',
+                [
                 'operations' => $validated['operations'],
                 'error'      => $e->getMessage(),
                 'user_id'    => Auth::id(),
@@ -138,7 +140,8 @@ class BatchProcessingController extends Controller
                 [
                 'message' => 'Batch processing initiation failed',
                 'error'   => $e->getMessage(),
-                ], 500
+                ],
+                500
             );
         }
     }
@@ -428,7 +431,8 @@ class BatchProcessingController extends Controller
                 [
                 'message' => 'Failed to cancel batch operation',
                 'error'   => $e->getMessage(),
-                ], 500
+                ],
+                500
             );
         }
     }
@@ -442,26 +446,26 @@ class BatchProcessingController extends Controller
         $parameters = $operation['parameters'];
 
         switch ($type) {
-        case 'account_interest':
-            if (! isset($parameters['rate']) || ! is_numeric($parameters['rate'])) {
-                throw new \InvalidArgumentException('Interest rate is required for account_interest operation');
-            }
-            break;
-        case 'fee_collection':
-            if (! isset($parameters['fee_type'])) {
-                throw new \InvalidArgumentException('Fee type is required for fee_collection operation');
-            }
-            break;
-        case 'balance_reconciliation':
-            if (! isset($parameters['date'])) {
-                throw new \InvalidArgumentException('Date is required for balance_reconciliation operation');
-            }
-            break;
-        case 'report_generation':
-            if (! isset($parameters['report_type'])) {
-                throw new \InvalidArgumentException('Report type is required for report_generation operation');
-            }
-            break;
+            case 'account_interest':
+                if (! isset($parameters['rate']) || ! is_numeric($parameters['rate'])) {
+                    throw new \InvalidArgumentException('Interest rate is required for account_interest operation');
+                }
+                break;
+            case 'fee_collection':
+                if (! isset($parameters['fee_type'])) {
+                    throw new \InvalidArgumentException('Fee type is required for fee_collection operation');
+                }
+                break;
+            case 'balance_reconciliation':
+                if (! isset($parameters['date'])) {
+                    throw new \InvalidArgumentException('Date is required for balance_reconciliation operation');
+                }
+                break;
+            case 'report_generation':
+                if (! isset($parameters['report_type'])) {
+                    throw new \InvalidArgumentException('Report type is required for report_generation operation');
+                }
+                break;
         }
     }
 

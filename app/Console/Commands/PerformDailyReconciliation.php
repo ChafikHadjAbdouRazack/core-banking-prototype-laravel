@@ -116,27 +116,27 @@ class PerformDailyReconciliation extends Command
         $type = $discrepancy['type'];
 
         switch ($type) {
-        case 'balance_mismatch':
-            $this->error('Balance Mismatch:');
-            $this->line("  Account: {$discrepancy['account_uuid']}");
-            $this->line("  Asset: {$discrepancy['asset_code']}");
-            $this->line('  Internal: $' . number_format($discrepancy['internal_balance'] / 100, 2));
-            $this->line('  External: $' . number_format($discrepancy['external_balance'] / 100, 2));
-            $this->line('  Difference: $' . number_format($discrepancy['difference'] / 100, 2));
-            break;
+            case 'balance_mismatch':
+                $this->error('Balance Mismatch:');
+                $this->line("  Account: {$discrepancy['account_uuid']}");
+                $this->line("  Asset: {$discrepancy['asset_code']}");
+                $this->line('  Internal: $' . number_format($discrepancy['internal_balance'] / 100, 2));
+                $this->line('  External: $' . number_format($discrepancy['external_balance'] / 100, 2));
+                $this->line('  Difference: $' . number_format($discrepancy['difference'] / 100, 2));
+                break;
 
-        case 'stale_data':
-            $this->warn('Stale Data:');
-            $this->line("  Account: {$discrepancy['account_uuid']}");
-            $this->line("  Custodian: {$discrepancy['custodian_id']}");
-            $this->line("  Last Synced: {$discrepancy['last_synced_at']}");
-            break;
+            case 'stale_data':
+                $this->warn('Stale Data:');
+                $this->line("  Account: {$discrepancy['account_uuid']}");
+                $this->line("  Custodian: {$discrepancy['custodian_id']}");
+                $this->line("  Last Synced: {$discrepancy['last_synced_at']}");
+                break;
 
-        case 'orphaned_balance':
-            $this->warn('Orphaned Balance:');
-            $this->line("  Account: {$discrepancy['account_uuid']}");
-            $this->line("  {$discrepancy['message']}");
-            break;
+            case 'orphaned_balance':
+                $this->warn('Orphaned Balance:');
+                $this->line("  Account: {$discrepancy['account_uuid']}");
+                $this->line("  {$discrepancy['message']}");
+                break;
         }
 
         $this->newLine();

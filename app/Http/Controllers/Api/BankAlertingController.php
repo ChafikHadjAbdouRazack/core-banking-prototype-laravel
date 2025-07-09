@@ -102,7 +102,8 @@ class BankAlertingController extends Controller
             );
         } catch (\Exception $e) {
             Log::error(
-                'Bank health check failed', [
+                'Bank health check failed',
+                [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
                 ]
@@ -113,7 +114,8 @@ class BankAlertingController extends Controller
                 'error'      => 'Health check failed',
                 'message'    => $e->getMessage(),
                 'checked_at' => now()->toISOString(),
-                ], 500
+                ],
+                500
             );
         }
     }
@@ -209,7 +211,8 @@ class BankAlertingController extends Controller
                 [
                 'error'   => 'Failed to retrieve health status',
                 'message' => $e->getMessage(),
-                ], 500
+                ],
+                500
             );
         }
     }
@@ -260,7 +263,8 @@ class BankAlertingController extends Controller
                     [
                     'error'     => 'Custodian not found',
                     'custodian' => $custodian,
-                    ], 404
+                    ],
+                    404
                 );
             }
 
@@ -278,7 +282,8 @@ class BankAlertingController extends Controller
                 [
                 'error'   => 'Failed to retrieve custodian health',
                 'message' => $e->getMessage(),
-                ], 500
+                ],
+                500
             );
         }
     }
@@ -351,7 +356,8 @@ class BankAlertingController extends Controller
                 [
                 'error'   => 'Failed to retrieve alert history',
                 'message' => $e->getMessage(),
-                ], 500
+                ],
+                500
             );
         }
     }
@@ -456,7 +462,8 @@ class BankAlertingController extends Controller
                 [
                 'error'   => 'Failed to calculate alerting statistics',
                 'message' => $e->getMessage(),
-                ], 500
+                ],
+                500
             );
         }
     }
@@ -524,7 +531,8 @@ class BankAlertingController extends Controller
             $config = [
                 'cooldown_minutes'    => $request->get('cooldown_minutes', 30),
                 'severity_thresholds' => $request->get(
-                    'severity_thresholds', [
+                    'severity_thresholds',
+                    [
                     'failure_rate_warning'   => 10.0,
                     'failure_rate_critical'  => 25.0,
                     'response_time_warning'  => 5000,
@@ -552,7 +560,8 @@ class BankAlertingController extends Controller
                 [
                 'error'   => 'Failed to update alert configuration',
                 'message' => $e->getMessage(),
-                ], 500
+                ],
+                500
             );
         }
     }
@@ -623,7 +632,8 @@ class BankAlertingController extends Controller
                 [
                 'error'   => 'Failed to retrieve alert configuration',
                 'message' => $e->getMessage(),
-                ], 500
+                ],
+                500
             );
         }
     }
@@ -681,7 +691,8 @@ class BankAlertingController extends Controller
             $message = $request->get('message', 'Test alert from API');
 
             Log::info(
-                'Test alert triggered', [
+                'Test alert triggered',
+                [
                 'severity'     => $severity,
                 'custodian'    => $custodian,
                 'message'      => $message,
@@ -708,7 +719,8 @@ class BankAlertingController extends Controller
                 [
                 'error'   => 'Failed to send test alert',
                 'message' => $e->getMessage(),
-                ], 500
+                ],
+                500
             );
         }
     }
@@ -767,7 +779,8 @@ class BankAlertingController extends Controller
 
             // In a real implementation, this would update the alert in database
             Log::info(
-                'Alert acknowledged', [
+                'Alert acknowledged',
+                [
                 'alert_id'         => $alertId,
                 'acknowledged_by'  => auth()->user()->email,
                 'resolution_notes' => $resolutionNotes,
@@ -791,7 +804,8 @@ class BankAlertingController extends Controller
                 [
                 'error'   => 'Failed to acknowledge alert',
                 'message' => $e->getMessage(),
-                ], 500
+                ],
+                500
             );
         }
     }

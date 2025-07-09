@@ -104,7 +104,8 @@ class VoteController extends Controller
             return response()->json(
                 [
                 'message' => 'Vote not found',
-                ], 404
+                ],
+                404
             );
         }
 
@@ -113,7 +114,8 @@ class VoteController extends Controller
             return response()->json(
                 [
                 'message' => 'Access denied',
-                ], 403
+                ],
+                403
             );
         }
 
@@ -157,7 +159,8 @@ class VoteController extends Controller
             return response()->json(
                 [
                 'message' => 'Vote not found',
-                ], 404
+                ],
+                404
             );
         }
 
@@ -166,7 +169,8 @@ class VoteController extends Controller
             return response()->json(
                 [
                 'message' => 'Access denied',
-                ], 403
+                ],
+                403
             );
         }
 

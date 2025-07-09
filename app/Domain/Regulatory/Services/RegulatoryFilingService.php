@@ -101,12 +101,14 @@ class RegulatoryFilingService
      */
     public function checkFilingStatus(RegulatoryFilingRecord $filing): array
     {
-        if (! in_array(
-            $filing->filing_status, [
+        if (
+            ! in_array(
+                $filing->filing_status,
+                [
                 RegulatoryFilingRecord::STATUS_SUBMITTED,
                 RegulatoryFilingRecord::STATUS_ACKNOWLEDGED,
                 ]
-        )
+            )
         ) {
             return [
                 'status'  => $filing->filing_status,
@@ -133,7 +135,8 @@ class RegulatoryFilingService
             return $status;
         } catch (\Exception $e) {
             Log::error(
-                'Failed to check filing status', [
+                'Failed to check filing status',
+                [
                 'filing_id' => $filing->filing_id,
                 'error'     => $e->getMessage(),
                 ]
@@ -224,7 +227,8 @@ class RegulatoryFilingService
         // For now, we'll simulate the process
 
         Log::info(
-            'Portal submission initiated', [
+            'Portal submission initiated',
+            [
             'report_id' => $report->report_id,
             'filing_id' => $filing->filing_id,
             ]
@@ -266,7 +270,8 @@ class RegulatoryFilingService
 
         // In production, send actual email
         Log::info(
-            'Email submission initiated', [
+            'Email submission initiated',
+            [
             'report_id' => $report->report_id,
             'filing_id' => $filing->filing_id,
             'to'        => $emailConfig['to'],

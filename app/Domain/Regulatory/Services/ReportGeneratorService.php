@@ -104,7 +104,8 @@ class ReportGeneratorService
         $template = $this->getReportTemplate($report->report_type);
 
         $pdf = Pdf::loadView(
-            $template, [
+            $template,
+            [
             'report'       => $report,
             'data'         => $data,
             'generated_at' => now(),
@@ -175,7 +176,8 @@ class ReportGeneratorService
 
         // Merge with report metadata
         return array_merge(
-            $existingData, [
+            $existingData,
+            [
             'report_metadata' => [
                 'report_id'        => $report->report_id,
                 'report_type'      => $report->report_type,

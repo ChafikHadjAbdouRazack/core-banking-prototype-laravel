@@ -26,7 +26,8 @@ class AuthenticateApiKey
                 [
                 'error'   => 'Unauthorized',
                 'message' => 'API key is required',
-                ], 401
+                ],
+                401
             );
         }
 
@@ -39,7 +40,8 @@ class AuthenticateApiKey
                 [
                 'error'   => 'Unauthorized',
                 'message' => 'Invalid API key',
-                ], 401
+                ],
+                401
             );
         }
 
@@ -49,7 +51,8 @@ class AuthenticateApiKey
                 [
                 'error'   => 'Forbidden',
                 'message' => 'Access denied from this IP address',
-                ], 403
+                ],
+                403
             );
         }
 
@@ -59,7 +62,8 @@ class AuthenticateApiKey
                 [
                 'error'   => 'Forbidden',
                 'message' => 'Insufficient permissions',
-                ], 403
+                ],
+                403
             );
         }
 

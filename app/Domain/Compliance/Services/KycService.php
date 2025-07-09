@@ -226,7 +226,7 @@ class KycService
     {
         // Check if KYC is expired
         $this->checkExpiredKyc($user);
-        
+
         return $user->kyc_status ?? 'not_submitted';
     }
 

@@ -324,7 +324,8 @@ class DeviceFingerprint extends Model
             'os'          => $this->operating_system . ' ' . $this->os_version,
             'browser'     => $this->browser . ' ' . $this->browser_version,
             'location'    => implode(
-                ', ', array_filter(
+                ', ',
+                array_filter(
                     [
                     $this->ip_city,
                     $this->ip_region,

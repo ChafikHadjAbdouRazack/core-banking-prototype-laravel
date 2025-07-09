@@ -143,7 +143,8 @@ class ReserveManagementWorkflow extends Workflow
                 );
 
                 $executedSwaps[] = array_merge(
-                    $swap, [
+                    $swap,
+                    [
                     'executed_output'  => $result['output'],
                     'transaction_hash' => $result['tx_hash'],
                     ]

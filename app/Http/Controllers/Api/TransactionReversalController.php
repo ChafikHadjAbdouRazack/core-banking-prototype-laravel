@@ -132,11 +132,13 @@ class TransactionReversalController extends Controller
                     'status'                  => 'initiated',
                     'created_at'              => now()->toISOString(),
                 ],
-                ], 200
+                ],
+                200
             );
         } catch (\Exception $e) {
             logger()->error(
-                'Transaction reversal API failed', [
+                'Transaction reversal API failed',
+                [
                 'account_uuid' => $uuid,
                 'amount'       => $validated['amount'],
                 'asset_code'   => $validated['asset_code'],
@@ -149,7 +151,8 @@ class TransactionReversalController extends Controller
                 [
                 'message' => 'Transaction reversal failed',
                 'error'   => $e->getMessage(),
-                ], 500
+                ],
+                500
             );
         }
     }

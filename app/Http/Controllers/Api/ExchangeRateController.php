@@ -86,7 +86,8 @@ class ExchangeRateController extends Controller
                 [
                 'message' => 'Exchange rate not found',
                 'error'   => 'No active exchange rate found for the specified asset pair',
-                ], 404
+                ],
+                404
             );
         }
 
@@ -183,7 +184,8 @@ class ExchangeRateController extends Controller
                 [
                 'message' => 'Conversion not available',
                 'error'   => 'No active exchange rate found for the specified asset pair',
-                ], 404
+                ],
+                404
             );
         }
 
@@ -384,7 +386,8 @@ class ExchangeRateController extends Controller
             return response()->json(
                 [
                 'message' => "Exchange rate not available for {$validated['from_currency']} to {$validated['to_currency']}",
-                ], 422
+                ],
+                422
             );
         }
 
@@ -404,7 +407,8 @@ class ExchangeRateController extends Controller
                 'errors'  => [
                     'amount' => ['Insufficient balance'],
                 ],
-                ], 422
+                ],
+                422
             );
         }
 
@@ -449,7 +453,8 @@ class ExchangeRateController extends Controller
                 [
                 'message' => 'Currency conversion failed',
                 'error'   => 'CONVERSION_FAILED',
-                ], 422
+                ],
+                422
             );
         }
     }

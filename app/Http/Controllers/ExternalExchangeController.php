@@ -41,7 +41,8 @@ class ExternalExchangeController extends Controller
         $recentTrades = $this->getRecentExternalTrades();
 
         return view(
-            'exchange.external.index', compact(
+            'exchange.external.index',
+            compact(
                 'connectedExchanges',
                 'priceComparisons',
                 'arbitrageOpportunities',
@@ -69,7 +70,8 @@ class ExternalExchangeController extends Controller
         $supportedPairs = $this->getSupportedArbitragePairs();
 
         return view(
-            'exchange.external.arbitrage', compact(
+            'exchange.external.arbitrage',
+            compact(
                 'opportunities',
                 'historicalPerformance',
                 'activeStrategies',
@@ -131,7 +133,8 @@ class ExternalExchangeController extends Controller
         $alignmentHistory = $this->getPriceAlignmentHistory();
 
         return view(
-            'exchange.external.price-alignment', compact(
+            'exchange.external.price-alignment',
+            compact(
                 'priceDiscrepancies',
                 'ourPrices',
                 'recommendedAdjustments',

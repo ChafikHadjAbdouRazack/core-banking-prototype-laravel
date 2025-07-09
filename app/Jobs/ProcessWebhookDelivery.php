@@ -79,7 +79,8 @@ class ProcessWebhookDelivery implements ShouldQueue
             );
 
             Log::info(
-                'Webhook delivered successfully', [
+                'Webhook delivered successfully',
+                [
                 'webhook_id'  => $webhook->uuid,
                 'delivery_id' => $this->delivery->uuid,
                 'status_code' => $response->status(),
@@ -101,7 +102,8 @@ class ProcessWebhookDelivery implements ShouldQueue
             );
 
             Log::error(
-                'Webhook delivery failed', [
+                'Webhook delivery failed',
+                [
                 'webhook_id'  => $webhook->uuid,
                 'delivery_id' => $this->delivery->uuid,
                 'error'       => $errorMessage,
@@ -138,7 +140,8 @@ class ProcessWebhookDelivery implements ShouldQueue
     public function failed(\Throwable $exception): void
     {
         Log::error(
-            'Webhook delivery job failed permanently', [
+            'Webhook delivery job failed permanently',
+            [
             'delivery_id' => $this->delivery->uuid,
             'error'       => $exception->getMessage(),
             ]

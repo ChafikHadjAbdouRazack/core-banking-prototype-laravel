@@ -28,7 +28,8 @@ class ExternalExchangeConnectorRegistry
         // Register Binance
         if ($this->isConnectorEnabled('binance')) {
             $this->register(
-                'binance', new BinanceConnector(
+                'binance',
+                new BinanceConnector(
                     config('services.binance.api_key') ?: '',
                     config('services.binance.api_secret') ?: '',
                     config('services.binance.is_us', false),
@@ -40,7 +41,8 @@ class ExternalExchangeConnectorRegistry
         // Register Kraken
         if ($this->isConnectorEnabled('kraken')) {
             $this->register(
-                'kraken', new KrakenConnector(
+                'kraken',
+                new KrakenConnector(
                     config('services.kraken.api_key') ?: '',
                     config('services.kraken.api_secret') ?: ''
                 )

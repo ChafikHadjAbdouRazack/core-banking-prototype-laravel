@@ -28,7 +28,8 @@ class EnsureJsonRequest
                 [
                 'error'   => 'Unsupported Media Type',
                 'message' => 'This API endpoint requires Content-Type: application/json',
-                ], 415
+                ],
+                415
             );
         }
 

@@ -26,7 +26,8 @@ class TransactionResult
             'effective_gas_price' => $this->effectiveGasPrice,
             'logs'                => $this->logs,
             'metadata'            => $this->metadata,
-            ], fn ($value) => $value !== null
+            ],
+            fn ($value) => $value !== null
         );
     }
 

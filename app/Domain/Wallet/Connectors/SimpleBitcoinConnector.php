@@ -107,7 +107,8 @@ class SimpleBitcoinConnector implements BlockchainConnector
     public function broadcastTransaction(SignedTransaction $transaction): TransactionResult
     {
         $response = Http::post(
-            "{$this->apiUrl}/txs/push", [
+            "{$this->apiUrl}/txs/push",
+            [
             'tx' => $transaction->rawTransaction,
             ]
         );

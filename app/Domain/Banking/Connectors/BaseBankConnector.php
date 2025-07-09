@@ -52,14 +52,17 @@ abstract class BaseBankConnector implements IBankConnector
         $cacheKey = "bank_available:{$this->bankCode}";
 
         return Cache::remember(
-            $cacheKey, 60, function () {
+            $cacheKey,
+            60,
+            function () {
                 try {
                     $response = Http::timeout(5)->get($this->getHealthCheckUrl());
 
                     return $response->successful();
                 } catch (\Exception $e) {
                     Log::warning(
-                        "Bank availability check failed for {$this->bankCode}", [
+                        "Bank availability check failed for {$this->bankCode}",
+                        [
                         'error' => $e->getMessage(),
                         ]
                     );
@@ -121,7 +124,8 @@ abstract class BaseBankConnector implements IBankConnector
 
         if (! $response->successful()) {
             Log::error(
-                'Bank API request failed', [
+                'Bank API request failed',
+                [
                 'bank'     => $this->bankCode,
                 'method'   => $method,
                 'url'      => $url,
@@ -155,7 +159,8 @@ abstract class BaseBankConnector implements IBankConnector
     {
         if (config('app.debug')) {
             Log::debug(
-                'Bank API Request', [
+                'Bank API Request',
+                [
                 'bank'   => $this->bankCode,
                 'method' => $method,
                 'url'    => $url,
@@ -172,7 +177,8 @@ abstract class BaseBankConnector implements IBankConnector
     {
         if (config('app.debug')) {
             Log::debug(
-                'Bank API Response', [
+                'Bank API Response',
+                [
                 'bank'     => $this->bankCode,
                 'method'   => $method,
                 'url'      => $url,

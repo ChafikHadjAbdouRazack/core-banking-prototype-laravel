@@ -126,7 +126,8 @@ class CgoController extends Controller
         }
 
         return view(
-            'cgo.invest', [
+            'cgo.invest',
+            [
             'currentRound' => $currentRound,
             'packages'     => config('cgo.packages', []),
             'kycStatus'    => $kycStatus,
@@ -219,17 +220,17 @@ class CgoController extends Controller
 
             // Process payment based on method
             switch ($validated['payment_method']) {
-            case 'card':
-                return $this->processCardPayment($investment);
+                case 'card':
+                    return $this->processCardPayment($investment);
 
-            case 'crypto':
-                return $this->processCryptoPayment($investment, $validated['crypto_currency']);
+                case 'crypto':
+                    return $this->processCryptoPayment($investment, $validated['crypto_currency']);
 
-            case 'bank_transfer':
-                return $this->processBankTransfer($investment);
+                case 'bank_transfer':
+                    return $this->processBankTransfer($investment);
 
-            default:
-                throw new \Exception('Invalid payment method');
+                default:
+                    throw new \Exception('Invalid payment method');
             }
         } catch (\Exception $e) {
             DB::rollBack();
@@ -279,7 +280,8 @@ class CgoController extends Controller
         // Display warning in non-production environments
         if (! app()->environment('production')) {
             \Log::warning(
-                'CGO Crypto payment in non-production environment', [
+                'CGO Crypto payment in non-production environment',
+                [
                 'investment_id' => $investment->id,
                 'currency'      => $cryptoCurrency,
                 'address'       => $cryptoAddress,
@@ -295,7 +297,8 @@ class CgoController extends Controller
         );
 
         return view(
-            'cgo.crypto-payment', [
+            'cgo.crypto-payment',
+            [
             'investment'     => $investment,
             'cryptoCurrency' => $cryptoCurrency,
             'cryptoAddress'  => $cryptoAddress,
@@ -324,7 +327,8 @@ class CgoController extends Controller
         VerifyCgoPayment::dispatch($investment)->delay(now()->addHour());
 
         return view(
-            'cgo.bank-transfer', [
+            'cgo.bank-transfer',
+            [
             'investment'  => $investment,
             'bankDetails' => [
                 'bank_name'      => $bankConfig['bank_name'] ?: 'Example Bank',
@@ -342,7 +346,8 @@ class CgoController extends Controller
         $investment = CgoInvestment::where('uuid', $investmentId)->firstOrFail();
 
         return view(
-            'cgo.thank-you', [
+            'cgo.thank-you',
+            [
             'investment' => $investment,
             ]
         );
@@ -398,7 +403,8 @@ class CgoController extends Controller
         }
 
         return view(
-            'cgo.payment-success', [
+            'cgo.payment-success',
+            [
             'investment' => $investment,
             ]
         );
@@ -417,7 +423,8 @@ class CgoController extends Controller
         );
 
         return view(
-            'cgo.payment-cancel', [
+            'cgo.payment-cancel',
+            [
             'investment' => $investment,
             ]
         );

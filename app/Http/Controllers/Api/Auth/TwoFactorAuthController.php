@@ -89,13 +89,15 @@ class TwoFactorAuthController extends Controller
 
         $user = $request->user();
 
-        if (! $user->two_factor_secret 
+        if (
+            ! $user->two_factor_secret
             || ! $provider->verify(decrypt($user->two_factor_secret), $request->code)
         ) {
             return response()->json(
                 [
                 'message' => 'The provided two factor authentication code was invalid.',
-                ], 422
+                ],
+                422
             );
         }
 
@@ -208,7 +210,8 @@ class TwoFactorAuthController extends Controller
                 return response()->json(
                     [
                     'message' => 'The provided recovery code was invalid.',
-                    ], 422
+                    ],
+                    422
                 );
             }
 
@@ -218,7 +221,8 @@ class TwoFactorAuthController extends Controller
                 return response()->json(
                     [
                     'message' => 'The provided two factor authentication code was invalid.',
-                    ], 422
+                    ],
+                    422
                 );
             }
         }

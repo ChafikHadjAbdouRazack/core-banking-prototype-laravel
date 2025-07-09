@@ -56,7 +56,8 @@ class EthereumConnector implements BlockchainConnector
         $nonce = null;
 
         $this->web3->eth->getBalance(
-            $address, function ($err, $result) use (&$balance) {
+            $address,
+            function ($err, $result) use (&$balance) {
                 if ($err !== null) {
                     throw new \Exception('Failed to get balance: ' . $err->getMessage());
                 }
@@ -65,7 +66,8 @@ class EthereumConnector implements BlockchainConnector
         );
 
         $this->web3->eth->getTransactionCount(
-            $address, function ($err, $result) use (&$nonce) {
+            $address,
+            function ($err, $result) use (&$nonce) {
                 if ($err !== null) {
                     Log::warning('Failed to get nonce: ' . $err->getMessage());
                 } else {
@@ -110,7 +112,8 @@ class EthereumConnector implements BlockchainConnector
         }
 
         $this->web3->eth->estimateGas(
-            $txParams, function ($err, $result) use (&$gasLimit) {
+            $txParams,
+            function ($err, $result) use (&$gasLimit) {
                 if ($err !== null) {
                     // Default gas limit if estimation fails
                     $gasLimit = '21000';
@@ -179,7 +182,8 @@ class EthereumConnector implements BlockchainConnector
         $receipt = null;
 
         $this->web3->eth->getTransactionByHash(
-            $hash, function ($err, $result) use (&$transaction) {
+            $hash,
+            function ($err, $result) use (&$transaction) {
                 if ($err !== null || $result === null) {
                     return;
                 }
@@ -192,7 +196,8 @@ class EthereumConnector implements BlockchainConnector
         }
 
         $this->web3->eth->getTransactionReceipt(
-            $hash, function ($err, $result) use (&$receipt) {
+            $hash,
+            function ($err, $result) use (&$receipt) {
                 if ($err !== null) {
                     return;
                 }

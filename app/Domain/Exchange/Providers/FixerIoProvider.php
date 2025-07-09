@@ -43,7 +43,8 @@ class FixerIoProvider extends BaseExchangeRateProvider
         $cacheKey = "rate:{$fromCurrency}:{$toCurrency}";
 
         return $this->remember(
-            $cacheKey, function () use ($fromCurrency, $toCurrency) {
+            $cacheKey,
+            function () use ($fromCurrency, $toCurrency) {
                 $endpoint = '/latest';
                 $params = [
                 'access_key' => $this->config['api_key'],
@@ -138,7 +139,8 @@ class FixerIoProvider extends BaseExchangeRateProvider
         $cacheKey = "rates:{$baseCurrency}:" . md5(implode(',', $symbols));
 
         return $this->remember(
-            $cacheKey, function () use ($baseCurrency, $symbols) {
+            $cacheKey,
+            function () use ($baseCurrency, $symbols) {
                 $endpoint = '/latest';
                 $params = [
                 'access_key' => $this->config['api_key'],

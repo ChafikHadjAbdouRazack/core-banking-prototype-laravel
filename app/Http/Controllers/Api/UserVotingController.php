@@ -183,7 +183,8 @@ class UserVotingController extends Controller
                 [
                 'error'       => 'Allocations must sum to 100%',
                 'current_sum' => $total,
-                ], 422
+                ],
+                422
             );
         }
 
@@ -221,7 +222,8 @@ class UserVotingController extends Controller
             'message'           => 'Your vote has been recorded successfully',
             'vote_id'           => $vote->uuid,
             'voting_power_used' => $votingPower,
-            ], 201
+            ],
+            201
         );
     }
 

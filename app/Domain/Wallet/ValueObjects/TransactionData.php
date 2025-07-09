@@ -40,7 +40,8 @@ class TransactionData
             'block_number'             => $this->blockNumber,
             'status'                   => $this->status,
             'metadata'                 => $this->metadata,
-            ], fn ($value) => $value !== null
+            ],
+            fn ($value) => $value !== null
         );
     }
 

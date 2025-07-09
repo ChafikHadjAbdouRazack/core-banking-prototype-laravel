@@ -48,7 +48,8 @@ class CachePerformance
             // Log if hit rate is low
             if ($hitRate < 50 && $totalRequests > 5) {
                 Log::warning(
-                    'Low cache hit rate detected', [
+                    'Low cache hit rate detected',
+                    [
                     'endpoint' => $request->path(),
                     'hit_rate' => $hitRate,
                     'hits'     => $requestHits,

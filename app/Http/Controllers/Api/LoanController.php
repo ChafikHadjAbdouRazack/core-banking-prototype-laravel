@@ -56,7 +56,8 @@ class LoanController extends Controller
             return response()->json(
                 [
                 'error' => 'Invalid payment number',
-                ], 400
+                ],
+                400
             );
         }
 

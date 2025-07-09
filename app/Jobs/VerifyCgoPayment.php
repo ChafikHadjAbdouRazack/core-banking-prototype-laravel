@@ -60,7 +60,8 @@ class VerifyCgoPayment implements ShouldQueue
         // Skip if already confirmed
         if ($this->investment->status === 'confirmed') {
             Log::info(
-                'Investment already confirmed, skipping verification', [
+                'Investment already confirmed, skipping verification',
+                [
                 'investment_id' => $this->investment->id,
                 ]
             );
@@ -71,7 +72,8 @@ class VerifyCgoPayment implements ShouldQueue
         // Check if payment is expired
         if ($verificationService->isPaymentExpired($this->investment)) {
             Log::warning(
-                'Payment expired, marking as cancelled', [
+                'Payment expired, marking as cancelled',
+                [
                 'investment_id' => $this->investment->id,
                 ]
             );
@@ -96,7 +98,8 @@ class VerifyCgoPayment implements ShouldQueue
             $delay = $this->attempt * 300; // 5 minutes, 10 minutes, etc.
 
             Log::info(
-                'Payment not verified, scheduling retry', [
+                'Payment not verified, scheduling retry',
+                [
                 'investment_id' => $this->investment->id,
                 'attempt'       => $this->attempt,
                 'delay'         => $delay,
@@ -106,7 +109,8 @@ class VerifyCgoPayment implements ShouldQueue
             self::dispatch($this->investment, $this->attempt + 1)->delay(now()->addSeconds($delay));
         } elseif (! $verified) {
             Log::warning(
-                'Payment verification failed after multiple attempts', [
+                'Payment verification failed after multiple attempts',
+                [
                 'investment_id' => $this->investment->id,
                 'attempts'      => $this->attempt,
                 ]
@@ -130,7 +134,8 @@ class VerifyCgoPayment implements ShouldQueue
     public function failed(\Throwable $exception): void
     {
         Log::error(
-            'CGO payment verification job failed', [
+            'CGO payment verification job failed',
+            [
             'investment_id' => $this->investment->id,
             'error'         => $exception->getMessage(),
             'trace'         => $exception->getTraceAsString(),

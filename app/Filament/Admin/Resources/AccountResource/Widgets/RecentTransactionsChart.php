@@ -108,7 +108,8 @@ class RecentTransactionsChart extends ChartWidget
             DB::raw("COUNT(CASE WHEN event_class LIKE '%MoneyTransferred' THEN 1 END) as transfers")
         )
             ->whereIn(
-                'event_class', [
+                'event_class',
+                [
                 'App\\Domain\\Account\\Events\\MoneyAdded',
                 'App\\Domain\\Account\\Events\\MoneySubtracted',
                 'App\\Domain\\Account\\Events\\MoneyTransferred',

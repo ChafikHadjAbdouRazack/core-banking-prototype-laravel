@@ -230,7 +230,8 @@ class BasketController extends Controller
                 [
                 'message'      => 'Component weights must sum to 100%',
                 'total_weight' => $totalWeight,
-                ], 422
+                ],
+                422
             );
         }
 
@@ -283,7 +284,8 @@ class BasketController extends Controller
                     ];
                 }
             ),
-            ], 201
+            ],
+            201
         );
     }
 
@@ -367,7 +369,8 @@ class BasketController extends Controller
             return response()->json(
                 [
                 'message' => 'Only dynamic baskets can be rebalanced',
-                ], 422
+                ],
+                422
             );
         }
 

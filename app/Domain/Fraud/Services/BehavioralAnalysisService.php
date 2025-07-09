@@ -336,7 +336,8 @@ class BehavioralAnalysisService
 
         // Daily transaction count
         $dailyCount = $context['daily_transaction_count'] ?? 0;
-        if ($profile->avg_daily_transaction_count > 0 
+        if (
+            $profile->avg_daily_transaction_count > 0
             && $dailyCount > ($profile->avg_daily_transaction_count * 3)
         ) {
             $exceedsNormal = true;
@@ -452,7 +453,8 @@ class BehavioralAnalysisService
     {
         // Get recent transactions for statistics
         $recentTransactions = Transaction::whereHas(
-            'account', function ($query) use ($profile) {
+            'account',
+            function ($query) use ($profile) {
                 $query->where('user_id', $profile->user_id);
             }
         )
@@ -474,7 +476,8 @@ class BehavioralAnalysisService
 
         // Update daily counts
         $todayCount = Transaction::whereHas(
-            'account', function ($query) use ($profile) {
+            'account',
+            function ($query) use ($profile) {
                 $query->where('user_id', $profile->user_id);
             }
         )
@@ -542,7 +545,8 @@ class BehavioralAnalysisService
         }
 
         // No suspicious activity bonus
-        if (! $profile->last_suspicious_activity 
+        if (
+            ! $profile->last_suspicious_activity
             || $profile->last_suspicious_activity->diffInDays(now()) > 90
         ) {
             $confidence += 10;
@@ -577,9 +581,10 @@ class BehavioralAnalysisService
         $timeSinceLast = $context['time_since_last_transaction'] ?? null;
 
         // Quick deposit->withdrawal sequence
-        if ($lastTxnType === 'deposit' 
-            && $currentType === 'withdrawal' 
-            && $timeSinceLast !== null 
+        if (
+            $lastTxnType === 'deposit'
+            && $currentType === 'withdrawal'
+            && $timeSinceLast !== null
             && $timeSinceLast < 30
         ) {
             return true;
@@ -609,21 +614,24 @@ class BehavioralAnalysisService
         $changes = 0;
 
         // New device
-        if (isset($context['device_data']['fingerprint_id']) 
+        if (
+            isset($context['device_data']['fingerprint_id'])
             && ! in_array($context['device_data']['fingerprint_id'], $profile->trusted_devices ?? [])
         ) {
             $changes++;
         }
 
         // New location
-        if (isset($context['ip_country']) 
+        if (
+            isset($context['ip_country'])
             && $context['ip_country'] !== $profile->primary_country
         ) {
             $changes++;
         }
 
         // Unusual time
-        if (isset($context['hour_of_day']) 
+        if (
+            isset($context['hour_of_day'])
             && $profile->isTransactionTimeUnusual($context['hour_of_day'])
         ) {
             $changes++;

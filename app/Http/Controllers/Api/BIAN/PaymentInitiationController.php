@@ -140,7 +140,8 @@ class PaymentInitiationController extends Controller
                     'payerAvailableBalance' => $payerBalance,
                     'requestedAmount'       => $validated['paymentAmount'],
                 ],
-                ], 422
+                ],
+                422
             );
         }
 
@@ -197,7 +198,8 @@ class PaymentInitiationController extends Controller
                     'payeeBalance' => $payeeAccount->getBalance('USD'),
                 ],
             ],
-            ], 201
+            ],
+            201
         );
     }
 
@@ -502,7 +504,8 @@ class PaymentInitiationController extends Controller
         $events = \DB::table('stored_events')
             ->where('aggregate_uuid', $crReferenceId)
             ->whereIn(
-                'event_class', [
+                'event_class',
+                [
                 'App\Domain\Account\Events\MoneyTransferred',
                 'App\Domain\Account\Events\MoneyAdded',
                 'App\Domain\Account\Events\MoneySubtracted',

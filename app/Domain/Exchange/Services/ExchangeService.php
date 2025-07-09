@@ -82,7 +82,8 @@ class ExchangeService implements ExchangeServiceInterface
             price: $price,
             stopPrice: $stopPrice,
             metadata: array_merge(
-                $metadata, [
+                $metadata,
+                [
                 'ip_address' => request()->ip(),
                 'user_agent' => request()->userAgent(),
                 'placed_at'  => now()->toIso8601String(),

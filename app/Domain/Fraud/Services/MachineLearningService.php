@@ -66,7 +66,8 @@ class MachineLearningService
             ];
         } catch (\Exception $e) {
             Log::error(
-                'ML prediction failed', [
+                'ML prediction failed',
+                [
                 'error'   => $e->getMessage(),
                 'context' => $context,
                 ]
@@ -250,7 +251,8 @@ class MachineLearningService
             $fraudScore->update(['outcome' => $actualOutcome]);
         } catch (\Exception $e) {
             Log::error(
-                'ML training feedback failed', [
+                'ML training feedback failed',
+                [
                 'fraud_score_id' => $fraudScore->id,
                 'error'          => $e->getMessage(),
                 ]
@@ -283,7 +285,9 @@ class MachineLearningService
     public function getModelMetrics(): array
     {
         return Cache::remember(
-            'ml_model_metrics', 3600, function () {
+            'ml_model_metrics',
+            3600,
+            function () {
                 // In production, fetch from ML service
                 return [
                 'model_version'      => $this->modelVersion,
@@ -461,7 +465,8 @@ class MachineLearningService
     {
         // In production, this would send to ML training pipeline
         Log::info(
-            'ML training data collected', [
+            'ML training data collected',
+            [
             'fraud_score_id' => $data['fraud_score_id'],
             'outcome'        => $data['actual_outcome'],
             ]

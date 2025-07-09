@@ -64,7 +64,8 @@ class AuditController extends Controller
             [
             'message' => 'Audit report generation initiated',
             'data'    => ['report_id' => uniqid()],
-            ], 201
+            ],
+            201
         );
     }
 

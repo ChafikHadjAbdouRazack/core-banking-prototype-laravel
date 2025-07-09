@@ -215,7 +215,8 @@ class RegulatoryReport extends Model
         );
 
         $this->addAuditEntry(
-            'submitted', [
+            'submitted',
+            [
             'submitted_by' => $submittedBy,
             'reference'    => $reference,
             ]
@@ -235,7 +236,8 @@ class RegulatoryReport extends Model
         );
 
         $this->addAuditEntry(
-            'reviewed', [
+            'reviewed',
+            [
             'reviewed_by'         => $reviewedBy,
             'requires_correction' => $requiresCorrection,
             ]
@@ -311,7 +313,8 @@ class RegulatoryReport extends Model
         }
 
         return $now->diffForHumans(
-            $dueDate, [
+            $dueDate,
+            [
             'parts' => 2,
             'short' => true,
             ]

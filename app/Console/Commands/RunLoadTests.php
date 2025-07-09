@@ -94,34 +94,34 @@ class RunLoadTests extends Command
         $startTime = microtime(true);
 
         switch ($test) {
-        case 'account-creation':
-            $this->testAccountCreation($iterations);
-            break;
+            case 'account-creation':
+                $this->testAccountCreation($iterations);
+                break;
 
-        case 'transfers':
-            $this->testTransfers($iterations, $concurrent);
-            break;
+            case 'transfers':
+                $this->testTransfers($iterations, $concurrent);
+                break;
 
-        case 'exchange-rates':
-            $this->testExchangeRates($iterations);
-            break;
+            case 'exchange-rates':
+                $this->testExchangeRates($iterations);
+                break;
 
-        case 'webhooks':
-            $this->testWebhooks($iterations);
-            break;
+            case 'webhooks':
+                $this->testWebhooks($iterations);
+                break;
 
-        case 'database-queries':
-            $this->testDatabaseQueries($iterations);
-            break;
+            case 'database-queries':
+                $this->testDatabaseQueries($iterations);
+                break;
 
-        case 'cache-operations':
-            $this->testCacheOperations($iterations);
-            break;
+            case 'cache-operations':
+                $this->testCacheOperations($iterations);
+                break;
 
-        default:
-            $this->warn("Unknown test: {$test}");
+            default:
+                $this->warn("Unknown test: {$test}");
 
-            return;
+                return;
         }
 
         $totalTime = microtime(true) - $startTime;

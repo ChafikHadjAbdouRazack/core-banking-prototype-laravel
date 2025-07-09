@@ -121,7 +121,9 @@ class LoanApplicationService
 
                 // Notify borrower
                 $this->notifyBorrower(
-                    $borrowerId, 'approved', [
+                    $borrowerId,
+                    'approved',
+                    [
                     'applicationId'  => $applicationId,
                     'loanId'         => $loanId,
                     'approvedAmount' => $decision['approvedAmount'],
@@ -146,7 +148,9 @@ class LoanApplicationService
 
                 // Notify borrower
                 $this->notifyBorrower(
-                    $borrowerId, 'rejected', [
+                    $borrowerId,
+                    'rejected',
+                    [
                     'applicationId' => $applicationId,
                     'reasons'       => $decision['rejectionReasons'],
                     ]
@@ -229,7 +233,8 @@ class LoanApplicationService
     {
         // In production, this would send email/SMS/push notification
         Log::info(
-            'Loan application notification', [
+            'Loan application notification',
+            [
             'borrowerId' => $borrowerId,
             'status'     => $status,
             'details'    => $details,

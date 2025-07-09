@@ -45,7 +45,9 @@ class AddTeamMember implements AddsTeamMembers
             [
             'email' => $email,
             'role'  => $role,
-            ], $this->rules(), [
+            ],
+            $this->rules(),
+            [
             'email.exists' => __('We were unable to find a registered user with this email address.'),
             ]
         )->after(

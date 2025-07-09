@@ -44,7 +44,8 @@ class RefreshExchangeRatesJob implements ShouldQueue
     public function handle(EnhancedExchangeRateService $service): void
     {
         Log::info(
-            'Starting exchange rate refresh job', [
+            'Starting exchange rate refresh job',
+            [
             'pairs' => $this->currencyPairs,
             'force' => $this->forceRefresh,
             ]
@@ -87,7 +88,8 @@ class RefreshExchangeRatesJob implements ShouldQueue
     public function failed(\Throwable $exception): void
     {
         Log::error(
-            'Exchange rate refresh job failed', [
+            'Exchange rate refresh job failed',
+            [
             'error' => $exception->getMessage(),
             'trace' => $exception->getTraceAsString(),
             ]

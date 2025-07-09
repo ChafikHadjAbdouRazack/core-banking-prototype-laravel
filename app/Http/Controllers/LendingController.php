@@ -32,7 +32,8 @@ class LendingController extends Controller
 
         // Get user's loans
         $loans = Loan::where(
-            'borrower_account_uuid', function ($query) use ($user) {
+            'borrower_account_uuid',
+            function ($query) use ($user) {
                 $query->select('uuid')
                     ->from('accounts')
                     ->where('user_uuid', $user->uuid);

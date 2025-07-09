@@ -68,7 +68,8 @@ class LoanApplicationController extends Controller
             [
             'application' => $application,
             'result'      => $result,
-            ], 201
+            ],
+            201
         );
     }
 

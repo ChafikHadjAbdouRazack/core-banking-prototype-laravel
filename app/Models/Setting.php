@@ -131,7 +131,9 @@ class Setting extends Model
     public static function get(string $key, $default = null)
     {
         return Cache::remember(
-            "setting.{$key}", 3600, function () use ($key, $default) {
+            "setting.{$key}",
+            3600,
+            function () use ($key, $default) {
                 $setting = static::where('key', $key)->first();
 
                 return $setting ? $setting->value : $default;
@@ -156,7 +158,9 @@ class Setting extends Model
     public static function getGroup(string $group): array
     {
         return Cache::remember(
-            "settings.group.{$group}", 3600, function () use ($group) {
+            "settings.group.{$group}",
+            3600,
+            function () use ($group) {
                 return static::where('group', $group)
                     ->pluck('value', 'key')
                     ->toArray();
@@ -167,7 +171,9 @@ class Setting extends Model
     public static function getAllGrouped(): array
     {
         return Cache::remember(
-            'settings.all.grouped', 3600, function () {
+            'settings.all.grouped',
+            3600,
+            function () {
                 return static::all()
                     ->groupBy('group')
                     ->map(

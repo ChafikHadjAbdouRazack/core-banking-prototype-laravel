@@ -19,7 +19,8 @@ class SubscriberEmailService
             Mail::to($subscriber->email)->send(new SubscriberWelcome($subscriber));
 
             Log::info(
-                'Welcome email sent to subscriber', [
+                'Welcome email sent to subscriber',
+                [
                 'subscriber_id' => $subscriber->id,
                 'email'         => $subscriber->email,
                 'source'        => $subscriber->source,
@@ -27,7 +28,8 @@ class SubscriberEmailService
             );
         } catch (\Exception $e) {
             Log::error(
-                'Failed to send welcome email', [
+                'Failed to send welcome email',
+                [
                 'subscriber_id' => $subscriber->id,
                 'email'         => $subscriber->email,
                 'error'         => $e->getMessage(),
@@ -68,7 +70,8 @@ class SubscriberEmailService
                 $sentCount++;
 
                 Log::info(
-                    'Newsletter sent to subscriber', [
+                    'Newsletter sent to subscriber',
+                    [
                     'subscriber_id' => $subscriber->id,
                     'email'         => $subscriber->email,
                     'subject'       => $subject,
@@ -76,7 +79,8 @@ class SubscriberEmailService
                 );
             } catch (\Exception $e) {
                 Log::error(
-                    'Failed to send newsletter to subscriber', [
+                    'Failed to send newsletter to subscriber',
+                    [
                     'subscriber_id' => $subscriber->id,
                     'email'         => $subscriber->email,
                     'subject'       => $subject,
@@ -87,7 +91,8 @@ class SubscriberEmailService
         }
 
         Log::info(
-            'Newsletter campaign completed', [
+            'Newsletter campaign completed',
+            [
             'subject'          => $subject,
             'total_recipients' => $subscribers->count(),
             'sent_count'       => $sentCount,
@@ -116,7 +121,8 @@ class SubscriberEmailService
             );
 
             Log::warning(
-                'Subscriber marked as bounced', [
+                'Subscriber marked as bounced',
+                [
                 'subscriber_id' => $subscriber->id,
                 'email'         => $email,
                 ]
@@ -135,7 +141,8 @@ class SubscriberEmailService
             $subscriber->unsubscribe($reason);
 
             Log::info(
-                'Subscriber unsubscribed', [
+                'Subscriber unsubscribed',
+                [
                 'subscriber_id' => $subscriber->id,
                 'email'         => $email,
                 'reason'        => $reason,
@@ -173,7 +180,8 @@ class SubscriberEmailService
             }
 
             Log::info(
-                'Existing subscriber reactivated or updated', [
+                'Existing subscriber reactivated or updated',
+                [
                 'subscriber_id' => $subscriber->id,
                 'email'         => $email,
                 'source'        => $source,
@@ -198,7 +206,8 @@ class SubscriberEmailService
             $this->sendWelcomeEmail($subscriber);
 
             Log::info(
-                'New subscriber created', [
+                'New subscriber created',
+                [
                 'subscriber_id' => $subscriber->id,
                 'email'         => $email,
                 'source'        => $source,

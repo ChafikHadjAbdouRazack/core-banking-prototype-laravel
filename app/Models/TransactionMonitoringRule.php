@@ -292,13 +292,15 @@ class TransactionMonitoringRule extends Model
 
         return self::create(
             array_merge(
-                $templateData, [
+                $templateData,
+                [
                 'rule_code'       => $ruleCode,
                 'is_active'       => true,
                 'triggers_count'  => 0,
                 'true_positives'  => 0,
                 'false_positives' => 0,
-                ], $overrides
+                ],
+                $overrides
             )
         );
     }

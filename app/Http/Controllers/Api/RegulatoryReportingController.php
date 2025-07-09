@@ -108,7 +108,8 @@ class RegulatoryReportingController extends Controller
                 [
                 'error'   => 'Failed to generate CTR report',
                 'message' => $e->getMessage(),
-                ], 500
+                ],
+                500
             );
         }
     }
@@ -195,7 +196,8 @@ class RegulatoryReportingController extends Controller
                 [
                 'error'   => 'Failed to generate SAR candidates report',
                 'message' => $e->getMessage(),
-                ], 500
+                ],
+                500
             );
         }
     }
@@ -282,7 +284,8 @@ class RegulatoryReportingController extends Controller
                 [
                 'error'   => 'Failed to generate compliance summary report',
                 'message' => $e->getMessage(),
-                ], 500
+                ],
+                500
             );
         }
     }
@@ -347,7 +350,8 @@ class RegulatoryReportingController extends Controller
                 [
                 'error'   => 'Failed to generate KYC compliance report',
                 'message' => $e->getMessage(),
-                ], 500
+                ],
+                500
             );
         }
     }
@@ -507,7 +511,8 @@ class RegulatoryReportingController extends Controller
                 [
                 'error'   => 'Failed to list regulatory reports',
                 'message' => $e->getMessage(),
-                ], 500
+                ],
+                500
             );
         }
     }
@@ -570,7 +575,8 @@ class RegulatoryReportingController extends Controller
                 return response()->json(
                     [
                     'error' => 'Invalid filename format',
-                    ], 400
+                    ],
+                    400
                 );
             }
 
@@ -595,7 +601,8 @@ class RegulatoryReportingController extends Controller
                 return response()->json(
                     [
                     'error' => 'Report not found',
-                    ], 404
+                    ],
+                    404
                 );
             }
 
@@ -606,7 +613,8 @@ class RegulatoryReportingController extends Controller
                 return response()->json(
                     [
                     'error' => 'Invalid report format',
-                    ], 500
+                    ],
+                    500
                 );
             }
 
@@ -626,7 +634,8 @@ class RegulatoryReportingController extends Controller
                 [
                 'error'   => 'Failed to retrieve report',
                 'message' => $e->getMessage(),
-                ], 500
+                ],
+                500
             );
         }
     }
@@ -688,7 +697,8 @@ class RegulatoryReportingController extends Controller
                 return response()->json(
                     [
                     'error' => 'Invalid filename format',
-                    ], 400
+                    ],
+                    400
                 );
             }
 
@@ -713,12 +723,15 @@ class RegulatoryReportingController extends Controller
                 return response()->json(
                     [
                     'error' => 'Report not found',
-                    ], 404
+                    ],
+                    404
                 );
             }
 
             return Storage::download(
-                $filePath, $filename, [
+                $filePath,
+                $filename,
+                [
                 'Content-Type'        => 'application/json',
                 'Content-Disposition' => 'attachment; filename="' . $filename . '"',
                 ]
@@ -728,7 +741,8 @@ class RegulatoryReportingController extends Controller
                 [
                 'error'   => 'Failed to download report',
                 'message' => $e->getMessage(),
-                ], 500
+                ],
+                500
             );
         }
     }
@@ -793,7 +807,8 @@ class RegulatoryReportingController extends Controller
                 return response()->json(
                     [
                     'error' => 'Invalid filename format',
-                    ], 400
+                    ],
+                    400
                 );
             }
 
@@ -818,7 +833,8 @@ class RegulatoryReportingController extends Controller
                 return response()->json(
                     [
                     'error' => 'Report not found',
-                    ], 404
+                    ],
+                    404
                 );
             }
 
@@ -838,7 +854,8 @@ class RegulatoryReportingController extends Controller
                 [
                 'error'   => 'Failed to delete report',
                 'message' => $e->getMessage(),
-                ], 500
+                ],
+                500
             );
         }
     }
@@ -957,7 +974,8 @@ class RegulatoryReportingController extends Controller
                 [
                 'error'   => 'Failed to retrieve regulatory metrics',
                 'message' => $e->getMessage(),
-                ], 500
+                ],
+                500
             );
         }
     }

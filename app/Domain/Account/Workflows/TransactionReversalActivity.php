@@ -71,7 +71,8 @@ class TransactionReversalActivity extends Activity
         ?string $authorizedBy
     ): void {
         logger()->info(
-            'Transaction reversed', [
+            'Transaction reversed',
+            [
             'account_uuid'  => $accountUuid->getUuid(),
             'amount'        => $amount->getAmount(),
             'original_type' => $transactionType,

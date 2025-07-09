@@ -21,56 +21,59 @@ class DocumentAnalysisService
         ];
 
         switch ($documentType) {
-        case 'passport':
-            $extractedData = array_merge(
-                $extractedData, [
-                'document_number' => 'P' . rand(100000000, 999999999),
-                'first_name'      => 'John',
-                'last_name'       => 'Doe',
-                'date_of_birth'   => '1990-01-01',
-                'gender'          => 'M',
-                'nationality'     => 'US',
-                'issuing_country' => 'US',
-                'issue_date'      => '2020-01-15',
-                'expiry_date'     => '2030-01-14',
-                'mrz'             => 'P<USADOE<<JOHN<<<<<<<<<<<<<<<<<<<<<<<<<<<<',
+            case 'passport':
+                $extractedData = array_merge(
+                    $extractedData,
+                    [
+                    'document_number' => 'P' . rand(100000000, 999999999),
+                    'first_name'      => 'John',
+                    'last_name'       => 'Doe',
+                    'date_of_birth'   => '1990-01-01',
+                    'gender'          => 'M',
+                    'nationality'     => 'US',
+                    'issuing_country' => 'US',
+                    'issue_date'      => '2020-01-15',
+                    'expiry_date'     => '2030-01-14',
+                    'mrz'             => 'P<USADOE<<JOHN<<<<<<<<<<<<<<<<<<<<<<<<<<<<',
                     ]
-            );
-            break;
+                );
+                break;
 
-        case 'driving_license':
-            $extractedData = array_merge(
-                $extractedData, [
-                'document_number' => 'DL' . rand(1000000, 9999999),
-                'first_name'      => 'John',
-                'last_name'       => 'Doe',
-                'middle_name'     => 'Michael',
-                'date_of_birth'   => '1990-01-01',
-                'gender'          => 'M',
-                'address'         => '123 Main St, Anytown, ST 12345',
-                'issuing_state'   => 'CA',
-                'issue_date'      => '2021-06-01',
-                'expiry_date'     => '2025-06-01',
-                'class'           => 'C',
+            case 'driving_license':
+                $extractedData = array_merge(
+                    $extractedData,
+                    [
+                    'document_number' => 'DL' . rand(1000000, 9999999),
+                    'first_name'      => 'John',
+                    'last_name'       => 'Doe',
+                    'middle_name'     => 'Michael',
+                    'date_of_birth'   => '1990-01-01',
+                    'gender'          => 'M',
+                    'address'         => '123 Main St, Anytown, ST 12345',
+                    'issuing_state'   => 'CA',
+                    'issue_date'      => '2021-06-01',
+                    'expiry_date'     => '2025-06-01',
+                    'class'           => 'C',
                     ]
-            );
-            break;
+                );
+                break;
 
-        case 'national_id':
-            $extractedData = array_merge(
-                $extractedData, [
-                'document_number' => 'ID' . rand(100000000, 999999999),
-                'first_name'      => 'John',
-                'last_name'       => 'Doe',
-                'date_of_birth'   => '1990-01-01',
-                'gender'          => 'M',
-                'nationality'     => 'US',
-                'address'         => '123 Main St, Anytown, ST 12345',
-                'issue_date'      => '2019-03-15',
-                'expiry_date'     => '2029-03-14',
+            case 'national_id':
+                $extractedData = array_merge(
+                    $extractedData,
+                    [
+                    'document_number' => 'ID' . rand(100000000, 999999999),
+                    'first_name'      => 'John',
+                    'last_name'       => 'Doe',
+                    'date_of_birth'   => '1990-01-01',
+                    'gender'          => 'M',
+                    'nationality'     => 'US',
+                    'address'         => '123 Main St, Anytown, ST 12345',
+                    'issue_date'      => '2019-03-15',
+                    'expiry_date'     => '2029-03-14',
                     ]
-            );
-            break;
+                );
+                break;
         }
 
         return $extractedData;
@@ -87,8 +90,8 @@ class DocumentAnalysisService
         $addressData = [];
 
         switch ($documentType) {
-        case 'utility_bill':
-            $addressData = [
+            case 'utility_bill':
+                $addressData = [
                 'line1'          => '123 Main Street',
                 'line2'          => 'Apt 4B',
                 'city'           => 'Anytown',
@@ -97,11 +100,11 @@ class DocumentAnalysisService
                 'country'        => 'US',
                 'bill_date'      => now()->subMonth()->toDateString(),
                 'account_holder' => 'John Doe',
-            ];
-            break;
+                ];
+                break;
 
-        case 'bank_statement':
-            $addressData = [
+            case 'bank_statement':
+                $addressData = [
                 'line1'          => '123 Main Street',
                 'line2'          => 'Apt 4B',
                 'city'           => 'Anytown',
@@ -110,11 +113,11 @@ class DocumentAnalysisService
                 'country'        => 'US',
                 'statement_date' => now()->subMonth()->toDateString(),
                 'account_holder' => 'John Doe',
-            ];
-            break;
+                ];
+                break;
 
-        case 'lease_agreement':
-            $addressData = [
+            case 'lease_agreement':
+                $addressData = [
                 'line1'       => '123 Main Street',
                 'line2'       => 'Apt 4B',
                 'city'        => 'Anytown',
@@ -123,8 +126,8 @@ class DocumentAnalysisService
                 'country'     => 'US',
                 'lease_start' => now()->subMonths(6)->toDateString(),
                 'tenant_name' => 'John Doe',
-            ];
-            break;
+                ];
+                break;
         }
 
         return $addressData;
@@ -219,15 +222,15 @@ class DocumentAnalysisService
         $features = [];
 
         switch ($documentType) {
-        case 'passport':
-            $features = ['watermark', 'hologram', 'machine_readable_zone'];
-            break;
-        case 'driving_license':
-            $features = ['hologram', 'uv_features', 'microprint'];
-            break;
-        case 'national_id':
-            $features = ['watermark', 'security_thread', 'raised_print'];
-            break;
+            case 'passport':
+                $features = ['watermark', 'hologram', 'machine_readable_zone'];
+                break;
+            case 'driving_license':
+                $features = ['hologram', 'uv_features', 'microprint'];
+                break;
+            case 'national_id':
+                $features = ['watermark', 'security_thread', 'raised_print'];
+                break;
         }
 
         return [

@@ -94,7 +94,8 @@ class AccountBalanceController extends Controller
                 [
                 'message' => 'Account not found',
                 'error'   => 'The specified account UUID was not found',
-                ], 404
+                ],
+                404
             );
         }
 
@@ -239,7 +240,8 @@ class AccountBalanceController extends Controller
 
         if ($request->has('user_uuid')) {
             $query->whereHas(
-                'account', function ($q) use ($request) {
+                'account',
+                function ($q) use ($request) {
                     $q->where('user_uuid', $request->string('user_uuid')->toString());
                 }
             );
@@ -314,7 +316,9 @@ class AccountBalanceController extends Controller
     private function calculateAssetTotals(): array
     {
         return Cache::remember(
-            'asset_totals', 300, function () {
+            'asset_totals',
+            300,
+            function () {
                 $totals = \App\Models\AccountBalance::selectRaw('asset_code, SUM(balance) as total')
                     ->groupBy('asset_code')
                     ->with('asset')

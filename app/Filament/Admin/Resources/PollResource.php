@@ -65,7 +65,8 @@ class PollResource extends Resource
                                     // Reset options when type changes
                                     if ($state === PollType::YES_NO->value) {
                                         $set(
-                                            'options', [
+                                            'options',
+                                            [
                                             ['id' => 'yes', 'label' => 'Yes', 'description' => 'I support this proposal'],
                                             ['id' => 'no', 'label' => 'No', 'description' => 'I do not support this proposal'],
                                             ]

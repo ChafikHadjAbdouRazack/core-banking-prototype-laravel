@@ -62,7 +62,8 @@ class TransactionMonitoringController extends Controller
             [
             'message' => 'Rule created',
             'data'    => [],
-            ], 201
+            ],
+            201
         );
     }
 

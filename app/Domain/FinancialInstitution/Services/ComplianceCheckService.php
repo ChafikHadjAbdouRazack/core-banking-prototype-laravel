@@ -327,7 +327,8 @@ class ComplianceCheckService
             return null;
         } catch (\Exception $e) {
             Log::error(
-                'External compliance check failed', [
+                'External compliance check failed',
+                [
                 'application_id' => $application->id,
                 'error'          => $e->getMessage(),
                 ]

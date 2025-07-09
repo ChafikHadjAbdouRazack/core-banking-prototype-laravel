@@ -94,8 +94,10 @@ class LiquidationService implements LiquidationServiceInterface
             ];
 
             Log::info(
-                'Position liquidated', array_merge(
-                    $result, [
+                'Position liquidated',
+                array_merge(
+                    $result,
+                    [
                     'account_uuid'     => $position->account_uuid,
                     'stablecoin_code'  => $stablecoin->code,
                     'collateral_asset' => $position->collateral_asset_code,
@@ -126,7 +128,8 @@ class LiquidationService implements LiquidationServiceInterface
                 $totalProtocolFees += $result['protocol_fee'];
             } catch (\Exception $e) {
                 Log::warning(
-                    'Failed to liquidate position', [
+                    'Failed to liquidate position',
+                    [
                     'position_uuid' => $position->uuid,
                     'error'         => $e->getMessage(),
                     ]
@@ -219,7 +222,8 @@ class LiquidationService implements LiquidationServiceInterface
                 $priority = $this->collateralService->calculateLiquidationPriority($position);
 
                 return array_merge(
-                    $reward, [
+                    $reward,
+                    [
                     'position_uuid'   => $position->uuid,
                     'account_uuid'    => $position->account_uuid,
                     'stablecoin_code' => $position->stablecoin_code,
@@ -316,7 +320,8 @@ class LiquidationService implements LiquidationServiceInterface
         }
 
         Log::critical(
-            'Emergency liquidation triggered', [
+            'Emergency liquidation triggered',
+            [
             'stablecoin_code'   => $stablecoinCode,
             'at_risk_positions' => $atRiskPositions->count(),
             'risk_threshold'    => $riskThreshold,
@@ -333,7 +338,8 @@ class LiquidationService implements LiquidationServiceInterface
         $result = $this->batchLiquidate($eligibleForLiquidation);
 
         return array_merge(
-            $result, [
+            $result,
+            [
             'emergency_triggered' => true,
             'at_risk_positions'   => $atRiskPositions->count(),
             'risk_threshold'      => $riskThreshold,

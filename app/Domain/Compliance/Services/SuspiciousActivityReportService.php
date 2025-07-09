@@ -119,7 +119,8 @@ class SuspiciousActivityReportService
 
         $sar->update(
             array_merge(
-                $additionalData, [
+                $additionalData,
+                [
                 'investigation_findings' => $findings,
                 ]
             )
@@ -172,7 +173,8 @@ class SuspiciousActivityReportService
                 function ($query) use ($transaction) {
                     // Similar amounts (within 10%)
                     $query->whereBetween(
-                        'amount', [
+                        'amount',
+                        [
                         $transaction->amount * 0.9,
                         $transaction->amount * 1.1,
                         ]
@@ -264,18 +266,18 @@ class SuspiciousActivityReportService
 
         foreach ($alerts as $alert) {
             switch ($alert['category']) {
-            case 'velocity':
-                $redFlags[] = 'rapid_movement';
-                break;
-            case 'pattern':
-                $redFlags[] = 'unusual_transaction_pattern';
-                break;
-            case 'geography':
-                $redFlags[] = 'high_risk_geography';
-                break;
-            case 'behavior':
-                $redFlags[] = 'inconsistent_activity';
-                break;
+                case 'velocity':
+                    $redFlags[] = 'rapid_movement';
+                    break;
+                case 'pattern':
+                    $redFlags[] = 'unusual_transaction_pattern';
+                    break;
+                case 'geography':
+                    $redFlags[] = 'high_risk_geography';
+                    break;
+                case 'behavior':
+                    $redFlags[] = 'inconsistent_activity';
+                    break;
             }
         }
 

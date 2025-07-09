@@ -89,7 +89,8 @@ class ReconciliationReportResource extends Resource
                     ->modalContent(
                         function ($record): string {
                             return view(
-                                'filament.admin.resources.reconciliation-report-details', [
+                                'filament.admin.resources.reconciliation-report-details',
+                                [
                                 'report' => $record,
                                 ]
                             )->render();

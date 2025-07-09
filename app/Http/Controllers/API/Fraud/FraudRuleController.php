@@ -113,7 +113,8 @@ class FraudRuleController extends Controller
             [
             'message' => 'Fraud rule created successfully',
             'rule'    => $rule,
-            ], 201
+            ],
+            201
         );
     }
 

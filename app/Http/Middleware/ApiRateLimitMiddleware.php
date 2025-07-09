@@ -89,7 +89,8 @@ class ApiRateLimitMiddleware
 
                 // Log rate limit violation
                 Log::warning(
-                    'Rate limit exceeded with blocking', [
+                    'Rate limit exceeded with blocking',
+                    [
                     'ip'              => $request->ip(),
                     'user_id'         => $request->user()?->id,
                     'endpoint'        => $request->path(),
@@ -179,7 +180,9 @@ class ApiRateLimitMiddleware
             'retry_after' => $retryAfter,
             'limit'       => $config['limit'],
             'window'      => $config['window'],
-            ], 429, $headers
+            ],
+            429,
+            $headers
         );
     }
 

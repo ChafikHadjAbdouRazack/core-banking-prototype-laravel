@@ -176,11 +176,13 @@ class FinancialInstitutionController extends Controller
                     'required_documents' => $application->required_documents,
                     'message'            => 'Application submitted successfully',
                 ],
-                ], 201
+                ],
+                201
             );
         } catch (\Exception $e) {
             Log::error(
-                'Failed to submit FI application', [
+                'Failed to submit FI application',
+                [
                 'error' => $e->getMessage(),
                 'data'  => $validated,
                 ]
@@ -189,7 +191,8 @@ class FinancialInstitutionController extends Controller
             return response()->json(
                 [
                 'error' => 'Failed to submit application',
-                ], 422
+                ],
+                422
             );
         }
     }
@@ -206,7 +209,8 @@ class FinancialInstitutionController extends Controller
             return response()->json(
                 [
                 'error' => 'Application not found',
-                ], 404
+                ],
+                404
             );
         }
 
@@ -240,7 +244,8 @@ class FinancialInstitutionController extends Controller
             return response()->json(
                 [
                 'error' => 'Application not found',
-                ], 404
+                ],
+                404
             );
         }
 
@@ -248,7 +253,8 @@ class FinancialInstitutionController extends Controller
             return response()->json(
                 [
                 'error' => 'Application is not editable in current status',
-                ], 422
+                ],
+                422
             );
         }
 
@@ -281,7 +287,8 @@ class FinancialInstitutionController extends Controller
             return response()->json(
                 [
                 'error' => $e->getMessage(),
-                ], 422
+                ],
+                422
             );
         }
     }

@@ -106,7 +106,8 @@ class BlockchainWalletService
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error(
-                'Failed to create wallet', [
+                'Failed to create wallet',
+                [
                 'user_id' => $userId,
                 'error'   => $e->getMessage(),
                 ]
@@ -456,9 +457,11 @@ class BlockchainWalletService
         $connector = $this->getConnector($chain);
 
         $connector->subscribeToEvents(
-            $address, function ($event) use ($walletId, $chain, $address) {
+            $address,
+            function ($event) use ($walletId, $chain, $address) {
                 Log::info(
-                    'Blockchain event received', [
+                    'Blockchain event received',
+                    [
                     'wallet_id' => $walletId,
                     'chain'     => $chain,
                     'address'   => $address,

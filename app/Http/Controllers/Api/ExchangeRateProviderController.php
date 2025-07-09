@@ -173,7 +173,8 @@ class ExchangeRateProviderController extends Controller
                 return response()->json(
                     [
                     'error' => 'Provider is not available',
-                    ], 503
+                    ],
+                    503
                 );
             }
 
@@ -189,7 +190,8 @@ class ExchangeRateProviderController extends Controller
                 [
                 'error'   => 'Failed to get exchange rate',
                 'message' => $e->getMessage(),
-                ], 400
+                ],
+                400
             );
         }
     }
@@ -259,7 +261,8 @@ class ExchangeRateProviderController extends Controller
                 [
                 'error'   => 'Failed to compare rates',
                 'message' => $e->getMessage(),
-                ], 400
+                ],
+                400
             );
         }
     }
@@ -335,7 +338,8 @@ class ExchangeRateProviderController extends Controller
                 [
                 'error'   => 'Failed to get aggregated rate',
                 'message' => $e->getMessage(),
-                ], 400
+                ],
+                400
             );
         }
     }
@@ -439,7 +443,8 @@ class ExchangeRateProviderController extends Controller
                 [
                 'error'   => 'Failed to refresh rates',
                 'message' => $e->getMessage(),
-                ], 400
+                ],
+                400
             );
         }
     }
@@ -538,7 +543,8 @@ class ExchangeRateProviderController extends Controller
                 [
                 'error'   => 'Failed to get historical rates',
                 'message' => $e->getMessage(),
-                ], 400
+                ],
+                400
             );
         }
     }
@@ -620,7 +626,8 @@ class ExchangeRateProviderController extends Controller
                 [
                 'error'   => 'Failed to validate rate',
                 'message' => $e->getMessage(),
-                ], 400
+                ],
+                400
             );
         }
     }

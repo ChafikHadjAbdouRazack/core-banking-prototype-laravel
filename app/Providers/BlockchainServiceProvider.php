@@ -20,14 +20,16 @@ class BlockchainServiceProvider extends ServiceProvider
     {
         // Register key management service as singleton
         $this->app->singleton(
-            KeyManagementService::class, function ($app) {
+            KeyManagementService::class,
+            function ($app) {
                 return new KeyManagementService();
             }
         );
 
         // Register blockchain connectors
         $this->app->bind(
-            'blockchain.connectors', function ($app) {
+            'blockchain.connectors',
+            function ($app) {
                 return [
                 'ethereum' => new EthereumConnector(
                     [
@@ -60,7 +62,8 @@ class BlockchainServiceProvider extends ServiceProvider
 
         // Register blockchain wallet service
         $this->app->singleton(
-            BlockchainWalletService::class, function ($app) {
+            BlockchainWalletService::class,
+            function ($app) {
                 return new BlockchainWalletService(
                     $app->make(KeyManagementService::class)
                 );
@@ -69,7 +72,8 @@ class BlockchainServiceProvider extends ServiceProvider
 
         // Register workflow activities with connectors
         $this->app->bind(
-            BlockchainDepositActivities::class, function ($app) {
+            BlockchainDepositActivities::class,
+            function ($app) {
                 return new BlockchainDepositActivities(
                     $app->make(BlockchainWalletService::class),
                     $app->make('blockchain.connectors')
@@ -78,7 +82,8 @@ class BlockchainServiceProvider extends ServiceProvider
         );
 
         $this->app->bind(
-            BlockchainWithdrawalActivities::class, function ($app) {
+            BlockchainWithdrawalActivities::class,
+            function ($app) {
                 return new BlockchainWithdrawalActivities(
                     $app->make(BlockchainWalletService::class),
                     $app->make(KeyManagementService::class),
@@ -97,7 +102,8 @@ class BlockchainServiceProvider extends ServiceProvider
         $this->publishes(
             [
             __DIR__ . '/../../config/blockchain.php' => config_path('blockchain.php'),
-            ], 'blockchain-config'
+            ],
+            'blockchain-config'
         );
     }
 }

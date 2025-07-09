@@ -24,7 +24,8 @@ class AssetTransactionProjector extends Projector
 
             if (! $account) {
                 Log::error(
-                    'Account not found for asset transaction', [
+                    'Account not found for asset transaction',
+                    [
                     'account_uuid' => (string) $event->accountUuid,
                     'asset_code'   => $event->assetCode,
                     ]
@@ -50,7 +51,8 @@ class AssetTransactionProjector extends Projector
             } else {
                 if (! $accountBalance->hasSufficientBalance($event->getAmount())) {
                     Log::error(
-                        'Insufficient balance for asset transaction', [
+                        'Insufficient balance for asset transaction',
+                        [
                         'account_uuid'     => (string) $event->accountUuid,
                         'asset_code'       => $event->assetCode,
                         'requested_amount' => $event->getAmount(),
@@ -67,7 +69,8 @@ class AssetTransactionProjector extends Projector
             // No need to create separate transaction records
 
             Log::info(
-                'Asset transaction processed successfully', [
+                'Asset transaction processed successfully',
+                [
                 'account_uuid' => (string) $event->accountUuid,
                 'asset_code'   => $event->assetCode,
                 'type'         => $event->type,
@@ -77,7 +80,8 @@ class AssetTransactionProjector extends Projector
             );
         } catch (\Exception $e) {
             Log::error(
-                'Error processing asset transaction', [
+                'Error processing asset transaction',
+                [
                 'account_uuid' => (string) $event->accountUuid,
                 'asset_code'   => $event->assetCode,
                 'type'         => $event->type,

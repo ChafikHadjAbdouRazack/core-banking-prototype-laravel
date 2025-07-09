@@ -80,7 +80,8 @@ class EnsureSubProductEnabled
         return response()->json(
             [
             'error' => $message,
-            ], $statusCode
+            ],
+            $statusCode
         );
     }
 }

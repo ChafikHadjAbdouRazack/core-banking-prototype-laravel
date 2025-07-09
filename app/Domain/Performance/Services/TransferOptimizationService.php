@@ -29,7 +29,9 @@ class TransferOptimizationService
         $cacheKey = "account:{$uuid}";
 
         return Cache::remember(
-            $cacheKey, self::ACCOUNT_CACHE_TTL, function () use ($uuid) {
+            $cacheKey,
+            self::ACCOUNT_CACHE_TTL,
+            function () use ($uuid) {
                 return Account::with(['balances', 'user'])
                     ->where('uuid', $uuid)
                     ->first();
@@ -45,7 +47,9 @@ class TransferOptimizationService
         $cacheKey = "balance:{$accountUuid}:{$assetCode}";
 
         return Cache::remember(
-            $cacheKey, self::BALANCE_CACHE_TTL, function () use ($accountUuid, $assetCode) {
+            $cacheKey,
+            self::BALANCE_CACHE_TTL,
+            function () use ($accountUuid, $assetCode) {
                 return AccountBalance::where('account_uuid', $accountUuid)
                     ->where('asset_code', $assetCode)
                     ->first();
@@ -78,7 +82,8 @@ class TransferOptimizationService
             CROSS JOIN accounts a2
             LEFT JOIN account_balances ab ON ab.account_uuid = a1.uuid AND ab.asset_code = ?
             WHERE a1.uuid = ? AND a2.uuid = ?
-        ', [$fromAssetCode, $fromUuid, $toUuid]
+        ',
+            [$fromAssetCode, $fromUuid, $toUuid]
         );
 
         if (empty($result)) {

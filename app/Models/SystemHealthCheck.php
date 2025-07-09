@@ -100,7 +100,8 @@ class SystemHealthCheck extends Model
     {
         return self::select('service', 'status', 'response_time', 'checked_at', 'error_message')
             ->whereIn(
-                'id', function ($query) {
+                'id',
+                function ($query) {
                     $query->select(\DB::raw('MAX(id)'))
                         ->from('system_health_checks')
                         ->groupBy('service');

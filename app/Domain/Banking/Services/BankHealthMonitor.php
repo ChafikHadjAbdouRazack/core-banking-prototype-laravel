@@ -39,7 +39,9 @@ class BankHealthMonitor
         $cacheKey = "bank_health:{$bankCode}";
 
         return Cache::remember(
-            $cacheKey, 60, function () use ($bankCode) {
+            $cacheKey,
+            60,
+            function () use ($bankCode) {
                 try {
                     $connector = $this->banks[$bankCode];
                     $startTime = microtime(true);
@@ -65,7 +67,8 @@ class BankHealthMonitor
                     return $health;
                 } catch (\Exception $e) {
                     Log::error(
-                        'Bank health check failed', [
+                        'Bank health check failed',
+                        [
                         'bank_code' => $bankCode,
                         'error'     => $e->getMessage(),
                         ]
@@ -112,7 +115,8 @@ class BankHealthMonitor
         $cutoff = now()->subHours($hours);
 
         return array_filter(
-            $history, function ($check) use ($cutoff) {
+            $history,
+            function ($check) use ($cutoff) {
                 return isset($check['timestamp']) &&
                    \Carbon\Carbon::parse($check['timestamp'])->isAfter($cutoff);
             }
@@ -165,7 +169,8 @@ class BankHealthMonitor
     {
         // Store in memory for current process
         $this->healthChecks[$bankCode][] = array_merge(
-            $health, [
+            $health,
+            [
             'timestamp' => now()->toIso8601String(),
             ]
         );
@@ -180,8 +185,10 @@ class BankHealthMonitor
         $history = Cache::get($cacheKey, []);
 
         array_push(
-            $history, array_merge(
-                $health, [
+            $history,
+            array_merge(
+                $health,
+                [
                 'timestamp' => now()->toIso8601String(),
                 ]
             )
@@ -228,7 +235,8 @@ class BankHealthMonitor
         $allHealth = $this->checkAllBanks();
 
         return array_filter(
-            $allHealth, function ($health) use ($status) {
+            $allHealth,
+            function ($health) use ($status) {
                 return $health['status'] === $status;
             }
         );
@@ -246,7 +254,8 @@ class BankHealthMonitor
         }
 
         $healthyChecks = array_filter(
-            $history, function ($check) {
+            $history,
+            function ($check) {
                 return $check['status'] === 'healthy';
             }
         );

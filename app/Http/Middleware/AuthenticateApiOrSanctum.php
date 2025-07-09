@@ -42,7 +42,8 @@ class AuthenticateApiOrSanctum
                 [
                 'error'   => 'Unauthorized',
                 'message' => 'Invalid API key',
-                ], 401
+                ],
+                401
             );
         }
 
@@ -52,7 +53,8 @@ class AuthenticateApiOrSanctum
                 [
                 'error'   => 'Unauthorized',
                 'message' => 'API key expired',
-                ], 401
+                ],
+                401
             );
         }
 
@@ -62,7 +64,8 @@ class AuthenticateApiOrSanctum
                 [
                 'error'   => 'Forbidden',
                 'message' => 'Access denied from this IP address',
-                ], 403
+                ],
+                403
             );
         }
 
@@ -72,7 +75,8 @@ class AuthenticateApiOrSanctum
                 [
                 'error'   => 'Forbidden',
                 'message' => 'Insufficient permissions',
-                ], 403
+                ],
+                403
             );
         }
 
@@ -98,14 +102,16 @@ class AuthenticateApiOrSanctum
         $ensureStateful = app(EnsureFrontendRequestsAreStateful::class);
 
         return $ensureStateful->handle(
-            $request, function ($request) use ($next) {
+            $request,
+            function ($request) use ($next) {
                 // Check if user is authenticated via Sanctum
                 if (! auth('sanctum')->check()) {
                     return response()->json(
                         [
                         'error'   => 'Unauthorized',
                         'message' => 'Authentication required',
-                        ], 401
+                        ],
+                        401
                     );
                 }
 

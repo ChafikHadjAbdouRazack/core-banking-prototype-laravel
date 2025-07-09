@@ -149,7 +149,8 @@ class RegulatoryFilingRecord extends Model
         );
 
         $this->addAuditEntry(
-            'submitted', [
+            'submitted',
+            [
             'reference' => $reference,
             ]
         );
@@ -167,7 +168,8 @@ class RegulatoryFilingRecord extends Model
         );
 
         $this->addAuditEntry(
-            'acknowledged', [
+            'acknowledged',
+            [
             'acknowledgment_number' => $acknowledgmentNumber,
             ]
         );
@@ -201,7 +203,8 @@ class RegulatoryFilingRecord extends Model
         );
 
         $this->addAuditEntry(
-            'rejected', [
+            'rejected',
+            [
             'reason' => $reason,
             'errors' => $errors,
             ]
@@ -223,7 +226,8 @@ class RegulatoryFilingRecord extends Model
         );
 
         $this->addAuditEntry(
-            'failed', [
+            'failed',
+            [
             'error'       => $error,
             'retry_count' => $this->retry_count,
             ]
@@ -304,7 +308,8 @@ class RegulatoryFilingRecord extends Model
         }
 
         return $this->filed_at->diffForHumans(
-            $this->acknowledged_at, [
+            $this->acknowledged_at,
+            [
             'parts' => 2,
             'short' => true,
             ]

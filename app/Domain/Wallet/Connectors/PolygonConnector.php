@@ -37,7 +37,8 @@ class PolygonConnector extends EthereumConnector
             publicKey: $addressData->publicKey,
             chain: 'polygon',
             metadata: array_merge(
-                $addressData->metadata, [
+                $addressData->metadata,
+                [
                 'chain'   => 'polygon',
                 'chainId' => $this->chainId,
                 ]

@@ -59,16 +59,16 @@ class AccountValidationActivity extends Activity
     private function performValidationCheck(Account $account, string $check): array
     {
         switch ($check) {
-        case 'kyc_document_verification':
-            return $this->validateKycDocuments($account);
-        case 'address_verification':
-            return $this->validateAddress($account);
-        case 'identity_verification':
-            return $this->validateIdentity($account);
-        case 'compliance_screening':
-            return $this->performComplianceScreening($account);
-        default:
-            return [
+            case 'kyc_document_verification':
+                return $this->validateKycDocuments($account);
+            case 'address_verification':
+                return $this->validateAddress($account);
+            case 'identity_verification':
+                return $this->validateIdentity($account);
+            case 'compliance_screening':
+                return $this->performComplianceScreening($account);
+            default:
+                return [
                     'passed'  => false,
                     'message' => "Unknown validation check: {$check}",
                 ];
@@ -354,7 +354,8 @@ class AccountValidationActivity extends Activity
         ?string $validatedBy
     ): void {
         logger()->info(
-            'Account validation performed', [
+            'Account validation performed',
+            [
             'account_uuid'     => $uuid->getUuid(),
             'checks_performed' => $checks,
             'results'          => $results,

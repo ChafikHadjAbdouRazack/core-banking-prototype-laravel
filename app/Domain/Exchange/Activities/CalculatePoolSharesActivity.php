@@ -24,7 +24,7 @@ class CalculatePoolSharesActivity extends Activity
 
         // Handle other operations
         /**
- * @var PoolProjection $pool 
+ * @var PoolProjection $pool
 */
         $pool = PoolProjection::where('pool_id', $input['pool_id'])->firstOrFail();
 
@@ -43,7 +43,7 @@ class CalculatePoolSharesActivity extends Activity
     private function calculateSharesForAddition(LiquidityAdditionInput $input): array
     {
         /**
- * @var PoolProjection $pool 
+ * @var PoolProjection $pool
 */
         $pool = PoolProjection::where('pool_id', $input->poolId)->firstOrFail();
 

@@ -29,7 +29,8 @@ class LiquidityManagementWorkflow extends Workflow
 
             // Step 2: Lock provider's funds
             $lockBase = yield ActivityStub::make(
-                LockLiquidityActivity::class, [
+                LockLiquidityActivity::class,
+                [
                 'account_id' => $input->providerId,
                 'currency'   => $input->baseCurrency,
                 'amount'     => $input->baseAmount,
@@ -39,7 +40,8 @@ class LiquidityManagementWorkflow extends Workflow
             $this->lockedBalances[] = $lockBase;
 
             $lockQuote = yield ActivityStub::make(
-                LockLiquidityActivity::class, [
+                LockLiquidityActivity::class,
+                [
                 'account_id' => $input->providerId,
                 'currency'   => $input->quoteCurrency,
                 'amount'     => $input->quoteAmount,
@@ -53,7 +55,8 @@ class LiquidityManagementWorkflow extends Workflow
 
             // Step 4: Transfer funds to pool
             yield ActivityStub::make(
-                TransferLiquidityActivity::class, [
+                TransferLiquidityActivity::class,
+                [
                 'from_account_id' => $input->providerId,
                 'to_pool_id'      => $input->poolId,
                 'base_currency'   => $input->baseCurrency,
@@ -103,7 +106,8 @@ class LiquidityManagementWorkflow extends Workflow
 
             // Step 2: Calculate amounts to return
             $amounts = yield ActivityStub::make(
-                CalculatePoolSharesActivity::class, [
+                CalculatePoolSharesActivity::class,
+                [
                 'pool_id'   => $input->poolId,
                 'shares'    => $input->shares,
                 'operation' => 'removal',
@@ -126,7 +130,8 @@ class LiquidityManagementWorkflow extends Workflow
 
             // Step 4: Transfer funds back to provider
             yield ActivityStub::make(
-                TransferLiquidityActivity::class, [
+                TransferLiquidityActivity::class,
+                [
                 'from_pool_id'   => $input->poolId,
                 'to_account_id'  => $input->providerId,
                 'base_currency'  => $amounts['base_currency'],
@@ -155,7 +160,8 @@ class LiquidityManagementWorkflow extends Workflow
         try {
             // Step 1: Get current pool state
             $poolState = yield ActivityStub::make(
-                CalculatePoolSharesActivity::class, [
+                CalculatePoolSharesActivity::class,
+                [
                 'pool_id'   => $poolId,
                 'operation' => 'state',
                 ]
@@ -227,7 +233,8 @@ class LiquidityManagementWorkflow extends Workflow
             } catch (\Exception $e) {
                 // Log compensation failure
                 Log::error(
-                    'Failed to release locked balance during compensation', [
+                    'Failed to release locked balance during compensation',
+                    [
                     'lock'  => $lock,
                     'error' => $e->getMessage(),
                     ]
@@ -239,7 +246,8 @@ class LiquidityManagementWorkflow extends Workflow
         if ($this->liquidityTransferred) {
             // This would require a reversal activity
             Log::warning(
-                'Liquidity transfer reversal needed', [
+                'Liquidity transfer reversal needed',
+                [
                 'workflow_id' => $this->workflowId(),
                 'reason'      => $reason,
                 ]

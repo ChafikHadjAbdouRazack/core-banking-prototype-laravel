@@ -37,7 +37,8 @@ class TransactionStatusController extends Controller
         $statistics = $this->getTransactionStatistics($user);
 
         return Inertia::render(
-            'Transactions/StatusTracking', [
+            'Transactions/StatusTracking',
+            [
             'accounts'              => $accounts,
             'pendingTransactions'   => $pendingTransactions,
             'completedTransactions' => $completedTransactions,
@@ -68,7 +69,8 @@ class TransactionStatusController extends Controller
         $relatedTransactions = $this->getRelatedTransactions($transaction);
 
         return Inertia::render(
-            'Transactions/StatusDetail', [
+            'Transactions/StatusDetail',
+            [
             'transaction'         => $transaction,
             'timeline'            => $timeline,
             'relatedTransactions' => $relatedTransactions,
@@ -590,7 +592,8 @@ class TransactionStatusController extends Controller
         // This would implement the actual reversal logic
         // For now, just log the reversal
         \Log::info(
-            'Transaction reversed', [
+            'Transaction reversed',
+            [
             'transaction_id' => $transaction->id,
             'type'           => $transaction->type,
             'amount'         => $transaction->amount,

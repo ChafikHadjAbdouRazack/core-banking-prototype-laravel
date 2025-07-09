@@ -141,7 +141,9 @@ class EnhancedRegulatoryReportingService extends RegulatoryReportingService
         // Add entities and risk indicators
         foreach ($suspiciousActivities as $activity) {
             $report->addEntity(
-                $activity['entity_type'], $activity['entity_id'], [
+                $activity['entity_type'],
+                $activity['entity_id'],
+                [
                 'risk_score'    => $activity['risk_score'] ?? null,
                 'fraud_case_id' => $activity['fraud_case_id'] ?? null,
                 ]
@@ -150,7 +152,9 @@ class EnhancedRegulatoryReportingService extends RegulatoryReportingService
             if (! empty($activity['risk_indicators'])) {
                 foreach ($activity['risk_indicators'] as $indicator) {
                     $report->addRiskIndicator(
-                        $indicator, 'high', [
+                        $indicator,
+                        'high',
+                        [
                         'activity_id' => $activity['id'],
                         ]
                     );
@@ -340,7 +344,9 @@ class EnhancedRegulatoryReportingService extends RegulatoryReportingService
         foreach ($fraudScores as $score) {
             if ($score->risk_level === FraudScore::RISK_LEVEL_VERY_HIGH) {
                 $report->addRiskIndicator(
-                    'very_high_fraud_risk', 'critical', [
+                    'very_high_fraud_risk',
+                    'critical',
+                    [
                     'fraud_score_id' => $score->id,
                     'risk_score'     => $score->total_score,
                     ]
@@ -372,7 +378,9 @@ class EnhancedRegulatoryReportingService extends RegulatoryReportingService
 
                 // Add to report
                 $report->addRiskIndicator(
-                    "threshold_triggered:{$threshold->threshold_code}", 'high', [
+                    "threshold_triggered:{$threshold->threshold_code}",
+                    'high',
+                    [
                     'threshold_name' => $threshold->name,
                     'triggered_at'   => now()->toIso8601String(),
                     ]
@@ -403,23 +411,23 @@ class EnhancedRegulatoryReportingService extends RegulatoryReportingService
     protected function applyThresholdAction(RegulatoryReport $report, RegulatoryThreshold $threshold, string $action): void
     {
         switch ($action) {
-        case RegulatoryThreshold::ACTION_REPORT:
-            if ($threshold->shouldAutoReport()) {
-                $report->update(['status' => RegulatoryReport::STATUS_PENDING_REVIEW]);
-            }
-            break;
+            case RegulatoryThreshold::ACTION_REPORT:
+                if ($threshold->shouldAutoReport()) {
+                    $report->update(['status' => RegulatoryReport::STATUS_PENDING_REVIEW]);
+                }
+                break;
 
-        case RegulatoryThreshold::ACTION_FLAG:
-            $report->update(['priority' => min(5, $report->priority + 1)]);
-            break;
+            case RegulatoryThreshold::ACTION_FLAG:
+                $report->update(['priority' => min(5, $report->priority + 1)]);
+                break;
 
-        case RegulatoryThreshold::ACTION_NOTIFY:
-            $this->sendThresholdNotification($report, $threshold);
-            break;
+            case RegulatoryThreshold::ACTION_NOTIFY:
+                $this->sendThresholdNotification($report, $threshold);
+                break;
 
-        case RegulatoryThreshold::ACTION_REVIEW:
-            $report->update(['requires_correction' => true]);
-            break;
+            case RegulatoryThreshold::ACTION_REVIEW:
+                $report->update(['requires_correction' => true]);
+                break;
         }
     }
 
@@ -532,7 +540,8 @@ class EnhancedRegulatoryReportingService extends RegulatoryReportingService
     protected function sendThresholdNotification(RegulatoryReport $report, RegulatoryThreshold $threshold): void
     {
         Log::warning(
-            'Regulatory threshold triggered', [
+            'Regulatory threshold triggered',
+            [
             'report_id'      => $report->report_id,
             'threshold_code' => $threshold->threshold_code,
             'threshold_name' => $threshold->name,

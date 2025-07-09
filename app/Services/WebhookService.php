@@ -33,7 +33,8 @@ class WebhookService
                 [
                 'event_type' => $eventType,
                 'payload'    => array_merge(
-                    $payload, [
+                    $payload,
+                    [
                     'event'     => $eventType,
                     'timestamp' => now()->toIso8601String(),
                     ]
@@ -56,7 +57,8 @@ class WebhookService
         $payload = array_merge(
             [
             'account_uuid' => $accountUuid,
-            ], $additionalData
+            ],
+            $additionalData
         );
 
         $this->dispatch($eventType, $payload);

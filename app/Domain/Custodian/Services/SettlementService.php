@@ -47,7 +47,8 @@ class SettlementService
     {
         $this->registry = $registry;
         $this->settlementConfig = config(
-            'custodians.settlement', [
+            'custodians.settlement',
+            [
             'type'                   => self::SETTLEMENT_NET,
             'batch_interval_minutes' => 60,
             'min_settlement_amount'  => 10000, // $100.00
@@ -96,7 +97,8 @@ class SettlementService
                 $results['total_amount'] += $transfer->amount;
             } catch (\Exception $e) {
                 Log::error(
-                    'Failed to settle transfer', [
+                    'Failed to settle transfer',
+                    [
                     'transfer_id' => $transfer->id,
                     'error'       => $e->getMessage(),
                     ]
@@ -199,7 +201,8 @@ class SettlementService
                 $results['total_gross'] += $position->gross_amount;
             } catch (\Exception $e) {
                 Log::error(
-                    'Failed to process net settlement', [
+                    'Failed to process net settlement',
+                    [
                     'position' => $position,
                     'error'    => $e->getMessage(),
                     ]
@@ -468,7 +471,8 @@ class SettlementService
                 );
 
             Log::info(
-                'Settlement executed successfully', [
+                'Settlement executed successfully',
+                [
                 'settlement_id' => $settlementId,
                 'amount'        => $settlement->net_amount,
                 'asset'         => $settlement->asset_code,
@@ -478,7 +482,8 @@ class SettlementService
             return true;
         } catch (\Exception $e) {
             Log::error(
-                'Settlement execution failed', [
+                'Settlement execution failed',
+                [
                 'settlement_id' => $settlementId,
                 'error'         => $e->getMessage(),
                 ]

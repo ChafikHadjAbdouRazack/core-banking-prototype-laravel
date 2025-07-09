@@ -44,7 +44,8 @@ class BalanceSynchronizationService
         $custodianAccounts = $this->getActiveCustodianAccounts();
 
         Log::info(
-            'Starting balance synchronization', [
+            'Starting balance synchronization',
+            [
             'total_accounts' => $custodianAccounts->count(),
             ]
         );
@@ -103,7 +104,8 @@ class BalanceSynchronizationService
             return true;
         } catch (\Exception $e) {
             Log::error(
-                'Balance synchronization failed', [
+                'Balance synchronization failed',
+                [
                 'custodian_account_id' => $custodianAccount->id,
                 'error'                => $e->getMessage(),
                 ]
@@ -208,7 +210,8 @@ class BalanceSynchronizationService
                         );
 
                         Log::info(
-                            'Account balance updated', [
+                            'Account balance updated',
+                            [
                             'account_uuid'     => $account->uuid,
                             'custodian_id'     => $custodianAccount->custodian_id,
                             'asset_code'       => $assetCode,
@@ -224,7 +227,8 @@ class BalanceSynchronizationService
                 $custodianAccount->update(
                     [
                     'metadata' => array_merge(
-                        $custodianAccount->metadata ?? [], [
+                        $custodianAccount->metadata ?? [],
+                        [
                         'last_known_balances' => $accountInfo->balances,
                         'account_status'      => $accountInfo->status,
                         'synchronized_at'     => now()->toISOString(),

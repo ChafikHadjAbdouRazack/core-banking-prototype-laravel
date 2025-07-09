@@ -38,7 +38,8 @@ class WithdrawalController extends Controller
         $balances = $account->balances()->with('asset')->get();
 
         return view(
-            'wallet.withdraw-bank', [
+            'wallet.withdraw-bank',
+            [
             'account'      => $account,
             'bankAccounts' => $bankAccounts,
             'balances'     => $balances,

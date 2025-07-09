@@ -112,7 +112,8 @@ class BasketPerformanceController extends Controller
                 [
                 'data'    => null,
                 'message' => 'Insufficient data to calculate performance',
-                ], 404
+                ],
+                404
             );
         }
 

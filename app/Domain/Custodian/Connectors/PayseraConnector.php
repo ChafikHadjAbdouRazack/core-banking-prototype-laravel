@@ -68,7 +68,8 @@ class PayseraConnector extends BaseCustodianConnector
         $this->logRequest('POST', self::OAUTH_URL . '/token');
 
         $response = Http::asForm()->post(
-            self::OAUTH_URL . '/token', [
+            self::OAUTH_URL . '/token',
+            [
             'grant_type'    => 'client_credentials',
             'client_id'     => $this->clientId,
             'client_secret' => $this->clientSecret,
@@ -135,7 +136,8 @@ class PayseraConnector extends BaseCustodianConnector
 
             if ($fallbackBalance !== null) {
                 Log::warning(
-                    'Using fallback balance for Paysera', [
+                    'Using fallback balance for Paysera',
+                    [
                     'account' => $accountId,
                     'asset'   => $assetCode,
                     'error'   => $e->getMessage(),
@@ -229,7 +231,8 @@ class PayseraConnector extends BaseCustodianConnector
             fallback: function () use ($request, $fallbackService) {
                 // Queue transfer for retry when service is available
                 Log::warning(
-                    'Paysera transfer failed, queueing for retry', [
+                    'Paysera transfer failed, queueing for retry',
+                    [
                     'from'   => $request->fromAccount,
                     'to'     => $request->toAccount,
                     'amount' => $request->amount->getAmount(),
@@ -288,7 +291,8 @@ class PayseraConnector extends BaseCustodianConnector
 
                 if ($status !== null) {
                     Log::warning(
-                        'Using fallback transaction status for Paysera', [
+                        'Using fallback transaction status for Paysera',
+                        [
                         'transaction_id' => $transactionId,
                         ]
                     );
@@ -327,7 +331,8 @@ class PayseraConnector extends BaseCustodianConnector
             }
         } catch (\Exception $e) {
             Log::warning(
-                'Account validation failed', [
+                'Account validation failed',
+                [
                 'account_id' => $accountId,
                 'error'      => $e->getMessage(),
                 ]
@@ -340,7 +345,9 @@ class PayseraConnector extends BaseCustodianConnector
     public function getTransactionHistory(string $accountId, ?int $limit = 100, ?int $offset = 0): array
     {
         $response = $this->apiRequest(
-            'GET', "/accounts/{$accountId}/payments", [
+            'GET',
+            "/accounts/{$accountId}/payments",
+            [
             'limit'  => $limit,
             'offset' => $offset,
             ]

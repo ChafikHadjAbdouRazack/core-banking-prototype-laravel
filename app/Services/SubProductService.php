@@ -21,7 +21,9 @@ class SubProductService
         $cacheKey = "sub_product.{$subProduct}.enabled";
 
         return Cache::remember(
-            $cacheKey, self::CACHE_TTL, function () use ($subProduct) {
+            $cacheKey,
+            self::CACHE_TTL,
+            function () use ($subProduct) {
                 // Check if feature flag exists
                 $featureKey = "sub_product.{$subProduct}";
 
@@ -56,7 +58,9 @@ class SubProductService
         $cacheKey = "sub_product.{$subProduct}.feature.{$feature}";
 
         return Cache::remember(
-            $cacheKey, self::CACHE_TTL, function () use ($subProduct, $feature) {
+            $cacheKey,
+            self::CACHE_TTL,
+            function () use ($subProduct, $feature) {
                 // Check feature flag
                 $featureKey = "sub_product.{$subProduct}.{$feature}";
 
@@ -84,14 +88,17 @@ class SubProductService
     public function getEnabledSubProducts(): array
     {
         return Cache::remember(
-            'sub_products.enabled', self::CACHE_TTL, function () {
+            'sub_products.enabled',
+            self::CACHE_TTL,
+            function () {
                 $subProducts = config('sub_products', []);
                 $enabled = [];
 
                 foreach ($subProducts as $key => $config) {
                     if ($this->isEnabled($key)) {
                         $enabled[$key] = array_merge(
-                            $config, [
+                            $config,
+                            [
                             'key'              => $key,
                             'enabled_features' => $this->getEnabledFeatures($key),
                             ]
@@ -115,7 +122,8 @@ class SubProductService
         foreach ($subProducts as $key => $config) {
             $isEnabled = $this->isEnabled($key);
             $all[$key] = array_merge(
-                $config, [
+                $config,
+                [
                 'key'              => $key,
                 'is_enabled'       => $isEnabled,
                 'enabled_features' => $isEnabled ? $this->getEnabledFeatures($key) : [],
@@ -157,7 +165,8 @@ class SubProductService
             $this->clearCache();
 
             Log::info(
-                'Sub-product enabled', [
+                'Sub-product enabled',
+                [
                 'sub_product' => $subProduct,
                 'enabled_by'  => $enabledBy ?? 'system',
                 ]
@@ -166,7 +175,8 @@ class SubProductService
             return true;
         } catch (\Exception $e) {
             Log::error(
-                'Failed to enable sub-product', [
+                'Failed to enable sub-product',
+                [
                 'sub_product' => $subProduct,
                 'error'       => $e->getMessage(),
                 ]
@@ -186,7 +196,8 @@ class SubProductService
             $this->clearCache();
 
             Log::info(
-                'Sub-product disabled', [
+                'Sub-product disabled',
+                [
                 'sub_product' => $subProduct,
                 'disabled_by' => $disabledBy ?? 'system',
                 ]
@@ -195,7 +206,8 @@ class SubProductService
             return true;
         } catch (\Exception $e) {
             Log::error(
-                'Failed to disable sub-product', [
+                'Failed to disable sub-product',
+                [
                 'sub_product' => $subProduct,
                 'error'       => $e->getMessage(),
                 ]
@@ -215,7 +227,8 @@ class SubProductService
             $this->clearCache();
 
             Log::info(
-                'Sub-product feature enabled', [
+                'Sub-product feature enabled',
+                [
                 'sub_product' => $subProduct,
                 'feature'     => $feature,
                 'enabled_by'  => $enabledBy ?? 'system',
@@ -225,7 +238,8 @@ class SubProductService
             return true;
         } catch (\Exception $e) {
             Log::error(
-                'Failed to enable sub-product feature', [
+                'Failed to enable sub-product feature',
+                [
                 'sub_product' => $subProduct,
                 'feature'     => $feature,
                 'error'       => $e->getMessage(),
@@ -246,7 +260,8 @@ class SubProductService
             $this->clearCache();
 
             Log::info(
-                'Sub-product feature disabled', [
+                'Sub-product feature disabled',
+                [
                 'sub_product' => $subProduct,
                 'feature'     => $feature,
                 'disabled_by' => $disabledBy ?? 'system',
@@ -256,7 +271,8 @@ class SubProductService
             return true;
         } catch (\Exception $e) {
             Log::error(
-                'Failed to disable sub-product feature', [
+                'Failed to disable sub-product feature',
+                [
                 'sub_product' => $subProduct,
                 'feature'     => $feature,
                 'error'       => $e->getMessage(),
@@ -328,7 +344,8 @@ class SubProductService
                         'key'     => $feature,
                         'enabled' => $this->isFeatureEnabled($key, $feature),
                         ];
-                    }, array_keys($config['features'])
+                    },
+                    array_keys($config['features'])
                 ),
             ];
         }

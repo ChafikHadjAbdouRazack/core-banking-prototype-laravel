@@ -51,7 +51,8 @@ class ExchangeController extends Controller
         $markets = $this->getMarketPairs();
 
         return view(
-            'exchange.index', [
+            'exchange.index',
+            [
             'baseCurrency'  => $baseCurrency,
             'quoteCurrency' => $quoteCurrency,
             'assets'        => $assets,
@@ -77,7 +78,8 @@ class ExchangeController extends Controller
             ->paginate(20);
 
         return view(
-            'exchange.orders', [
+            'exchange.orders',
+            [
             'orders' => $orders,
             ]
         );
@@ -103,12 +105,14 @@ class ExchangeController extends Controller
                            CASE WHEN maker_side = \'buy\' THEN maker_fee ELSE taker_fee END
                          ELSE 
                            CASE WHEN maker_side = \'sell\' THEN maker_fee ELSE taker_fee END
-                         END) as total_fees', [$account->id]
+                         END) as total_fees',
+                [$account->id]
             )
             ->value('total_fees') ?? '0';
 
         return view(
-            'exchange.trades', [
+            'exchange.trades',
+            [
             'trades'    => $trades,
             'totalFees' => $totalFees,
             ]
@@ -150,7 +154,8 @@ class ExchangeController extends Controller
             );
 
             return redirect()->route(
-                'exchange.index', [
+                'exchange.index',
+                [
                 'base'  => $validated['base_currency'],
                 'quote' => $validated['quote_currency'],
                 ]

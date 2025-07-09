@@ -91,7 +91,8 @@ class CustodianHealthMonitor
             ];
         } catch (\Exception $e) {
             Log::error(
-                "Failed to get health for custodian: {$custodian}", [
+                "Failed to get health for custodian: {$custodian}",
+                [
                 'error' => $e->getMessage(),
                 ]
             );
@@ -134,25 +135,25 @@ class CustodianHealthMonitor
         $recommendations = [];
 
         switch ($status) {
-        case self::STATUS_UNHEALTHY:
-            $recommendations[] = 'Consider switching to alternative custodian';
-            $recommendations[] = 'Queue non-critical transfers for retry';
-            $recommendations[] = 'Alert operations team immediately';
-            break;
+            case self::STATUS_UNHEALTHY:
+                $recommendations[] = 'Consider switching to alternative custodian';
+                $recommendations[] = 'Queue non-critical transfers for retry';
+                $recommendations[] = 'Alert operations team immediately';
+                break;
 
-        case self::STATUS_DEGRADED:
-            $recommendations[] = 'Monitor closely for further degradation';
-            $recommendations[] = 'Consider reducing traffic to this custodian';
-            if ($failureRate > 0.5) {
-                $recommendations[] = 'Prepare for potential failover';
-            }
-            break;
+            case self::STATUS_DEGRADED:
+                $recommendations[] = 'Monitor closely for further degradation';
+                $recommendations[] = 'Consider reducing traffic to this custodian';
+                if ($failureRate > 0.5) {
+                    $recommendations[] = 'Prepare for potential failover';
+                }
+                break;
 
-        case self::STATUS_HEALTHY:
-            if ($failureRate > 0.1) {
-                $recommendations[] = 'Continue monitoring for anomalies';
-            }
-            break;
+            case self::STATUS_HEALTHY:
+                if ($failureRate > 0.1) {
+                    $recommendations[] = 'Continue monitoring for anomalies';
+                }
+                break;
         }
 
         return $recommendations;
@@ -178,7 +179,8 @@ class CustodianHealthMonitor
             );
 
             Log::warning(
-                'Custodian health status changed', [
+                'Custodian health status changed',
+                [
                 'custodian' => $custodian,
                 'previous'  => $previousStatus,
                 'new'       => $newStatus,
@@ -198,7 +200,9 @@ class CustodianHealthMonitor
         $cacheKey = "custodian:availability:metrics:{$custodian}:{$hours}h";
 
         return Cache::remember(
-            $cacheKey, 300, function () use ($custodian, $hours) {
+            $cacheKey,
+            300,
+            function () use ($custodian, $hours) {
                 // In production, this would query time-series data
                 // For now, return sample metrics
                 return [

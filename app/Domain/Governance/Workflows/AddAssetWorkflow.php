@@ -47,7 +47,8 @@ class AddAssetWorkflow
                 'precision' => $assetData['precision'],
                 'is_active' => true,
                 'metadata'  => array_merge(
-                    $assetData['metadata'] ?? [], [
+                    $assetData['metadata'] ?? [],
+                    [
                     'added_via_poll' => $poll->uuid,
                     'poll_result'    => $result->toArray(),
                     'added_at'       => now()->toISOString(),
@@ -58,7 +59,8 @@ class AddAssetWorkflow
 
             // Log the governance action
             logger()->info(
-                'Asset added via governance poll', [
+                'Asset added via governance poll',
+                [
                 'poll_uuid'          => $poll->uuid,
                 'asset_code'         => $asset->code,
                 'winning_option'     => $result->winningOption,
@@ -75,7 +77,8 @@ class AddAssetWorkflow
             ];
         } catch (\Exception $e) {
             logger()->error(
-                'Failed to add asset via governance poll', [
+                'Failed to add asset via governance poll',
+                [
                 'poll_uuid'  => $poll->uuid,
                 'asset_data' => $assetData,
                 'error'      => $e->getMessage(),

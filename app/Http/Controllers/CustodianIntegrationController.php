@@ -47,7 +47,8 @@ class CustodianIntegrationController extends Controller
         $healthMetrics = $this->getHealthMetrics();
 
         return view(
-            'custodian-integration.index', compact(
+            'custodian-integration.index',
+            compact(
                 'custodians',
                 'recentTransfers',
                 'webhookStats',
@@ -96,7 +97,8 @@ class CustodianIntegrationController extends Controller
         $healthHistory = $this->getHealthHistory($custodianCode);
 
         return view(
-            'custodian-integration.show', compact(
+            'custodian-integration.show',
+            compact(
                 'custodian',
                 'accounts',
                 'transfers',
@@ -133,7 +135,8 @@ class CustodianIntegrationController extends Controller
                 [
                 'success' => false,
                 'message' => 'Connection failed: ' . $e->getMessage(),
-                ], 500
+                ],
+                500
             );
         }
     }

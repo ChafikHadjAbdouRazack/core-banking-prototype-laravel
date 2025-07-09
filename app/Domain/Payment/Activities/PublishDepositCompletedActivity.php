@@ -18,7 +18,8 @@ class PublishDepositCompletedActivity extends Activity
                 currency: $deposit->getCurrency(),
                 reference: $deposit->getReference(),
                 metadata: array_merge(
-                    $deposit->getMetadata(), [
+                    $deposit->getMetadata(),
+                    [
                     'payment_method'      => $deposit->getPaymentMethod(),
                     'payment_method_type' => $deposit->getPaymentMethodType(),
                     ]

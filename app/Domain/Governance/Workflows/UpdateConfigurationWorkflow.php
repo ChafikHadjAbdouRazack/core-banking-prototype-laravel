@@ -43,7 +43,8 @@ class UpdateConfigurationWorkflow
                     ];
                 } else {
                     logger()->warning(
-                        'Governance poll attempted to update restricted configuration', [
+                        'Governance poll attempted to update restricted configuration',
+                        [
                         'poll_uuid'       => $poll->uuid,
                         'config_key'      => $configKey,
                         'attempted_value' => $newValue,
@@ -62,7 +63,8 @@ class UpdateConfigurationWorkflow
 
             // Log the governance action
             logger()->info(
-                'Configuration updated via governance poll', [
+                'Configuration updated via governance poll',
+                [
                 'poll_uuid'          => $poll->uuid,
                 'changes'            => $appliedChanges,
                 'winning_option'     => $result->winningOption,
@@ -79,7 +81,8 @@ class UpdateConfigurationWorkflow
             ];
         } catch (\Exception $e) {
             logger()->error(
-                'Failed to update configuration via governance poll', [
+                'Failed to update configuration via governance poll',
+                [
                 'poll_uuid'      => $poll->uuid,
                 'config_changes' => $configChanges,
                 'error'          => $e->getMessage(),
@@ -237,7 +240,8 @@ class UpdateConfigurationWorkflow
         // This could be database, configuration management system, or external service
 
         logger()->info(
-            'Configuration updated via governance', [
+            'Configuration updated via governance',
+            [
             'config_key' => $configKey,
             'new_value'  => $newValue,
             'timestamp'  => now()->toISOString(),

@@ -15,7 +15,9 @@ class SitemapController extends Controller
         $sitemap = $this->generateSitemap();
 
         return response(
-            $sitemap, 200, [
+            $sitemap,
+            200,
+            [
             'Content-Type' => 'application/xml',
             ]
         );
@@ -298,7 +300,9 @@ class SitemapController extends Controller
         $content .= 'Sitemap: ' . config('app.url') . "/sitemap.xml\n";
 
         return response(
-            $content, 200, [
+            $content,
+            200,
+            [
             'Content-Type' => 'text/plain',
             ]
         );

@@ -157,7 +157,8 @@ class BasketAccountService
                 );
 
                 Log::info(
-                    "Decomposed {$amount} of basket {$basketCode} for account {$account->uuid}", [
+                    "Decomposed {$amount} of basket {$basketCode} for account {$account->uuid}",
+                    [
                     'components' => $componentAmounts,
                     ]
                 );
@@ -226,7 +227,8 @@ class BasketAccountService
                 $this->walletService->deposit($accountUuid, $basketCode, $amount);
 
                 Log::info(
-                    "Composed {$amount} of basket {$basketCode} for account {$account->uuid}", [
+                    "Composed {$amount} of basket {$basketCode} for account {$account->uuid}",
+                    [
                     'components_used' => $requiredAmounts,
                     ]
                 );

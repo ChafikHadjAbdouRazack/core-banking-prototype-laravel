@@ -71,7 +71,8 @@ class ExchangeController extends Controller
                 [
                 'success' => false,
                 'error'   => 'Account not found. Please complete your account setup.',
-                ], 400
+                ],
+                400
             );
         }
 
@@ -97,7 +98,8 @@ class ExchangeController extends Controller
                 [
                 'success' => false,
                 'error'   => $e->getMessage(),
-                ], 400
+                ],
+                400
             );
         }
     }
@@ -129,7 +131,8 @@ class ExchangeController extends Controller
                 [
                 'success' => false,
                 'error'   => 'Account not found. Please complete your account setup.',
-                ], 400
+                ],
+                400
             );
         }
 
@@ -143,7 +146,8 @@ class ExchangeController extends Controller
                 [
                 'success' => false,
                 'error'   => 'Order not found',
-                ], 404
+                ],
+                404
             );
         }
 
@@ -156,7 +160,8 @@ class ExchangeController extends Controller
                 [
                 'success' => false,
                 'error'   => $e->getMessage(),
-                ], 400
+                ],
+                400
             );
         }
     }
@@ -197,7 +202,8 @@ class ExchangeController extends Controller
                 [
                 'success' => false,
                 'error'   => 'Account not found. Please complete your account setup.',
-                ], 400
+                ],
+                400
             );
         }
 
@@ -252,7 +258,8 @@ class ExchangeController extends Controller
                 [
                 'success' => false,
                 'error'   => 'Account not found. Please complete your account setup.',
-                ], 400
+                ],
+                400
             );
         }
 

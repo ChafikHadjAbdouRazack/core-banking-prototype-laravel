@@ -208,7 +208,8 @@ class StablecoinController extends Controller
         return response()->json(
             [
             'data' => $stablecoin,
-            ], 201
+            ],
+            201
         );
     }
 
@@ -350,7 +351,8 @@ class StablecoinController extends Controller
             return response()->json(
                 [
                 'error' => 'No metrics available for this stablecoin',
-                ], 404
+                ],
+                404
             );
         }
 

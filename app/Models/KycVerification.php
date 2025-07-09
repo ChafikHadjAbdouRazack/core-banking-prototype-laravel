@@ -318,7 +318,8 @@ class KycVerification extends Model
     {
         $this->update(
             array_merge(
-                $data, [
+                $data,
+                [
                 'status'       => self::STATUS_COMPLETED,
                 'completed_at' => now(),
                 ]

@@ -15,7 +15,8 @@ class CustodianServiceProvider extends ServiceProvider
     {
         // Register CustodianRegistry as singleton
         $this->app->singleton(
-            CustodianRegistry::class, function ($app) {
+            CustodianRegistry::class,
+            function ($app) {
                 return new CustodianRegistry();
             }
         );
@@ -30,7 +31,8 @@ class CustodianServiceProvider extends ServiceProvider
         $this->publishes(
             [
             __DIR__ . '/../../config/custodians.php' => config_path('custodians.php'),
-            ], 'config'
+            ],
+            'config'
         );
 
         // Register custodians from config

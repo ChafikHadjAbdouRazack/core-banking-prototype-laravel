@@ -24,7 +24,8 @@ class LiquidityPoolProjector extends Projector
     {
         // Get system user for pool accounts
         $systemUser = \App\Models\User::firstOrCreate(
-            ['email' => 'system@finaegis.com'], [
+            ['email' => 'system@finaegis.com'],
+            [
             'name'     => 'System',
             'password' => bcrypt('system'),
             'uuid'     => Str::uuid()->toString(),

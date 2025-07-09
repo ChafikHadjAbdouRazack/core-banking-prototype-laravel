@@ -27,7 +27,8 @@ class PaymentVerificationService
     public function verifyPayment(CgoInvestment $investment): bool
     {
         Log::info(
-            'Verifying payment for investment', [
+            'Verifying payment for investment',
+            [
             'investment_id'  => $investment->id,
             'payment_method' => $investment->payment_method,
             'status'         => $investment->status,
@@ -42,25 +43,26 @@ class PaymentVerificationService
         $verified = false;
 
         switch ($investment->payment_method) {
-        case 'card':
-            $verified = $this->verifyStripePayment($investment);
-            break;
+            case 'card':
+                $verified = $this->verifyStripePayment($investment);
+                break;
 
-        case 'crypto':
-            $verified = $this->verifyCryptoPayment($investment);
-            break;
+            case 'crypto':
+                $verified = $this->verifyCryptoPayment($investment);
+                break;
 
-        case 'bank_transfer':
-            $verified = $this->verifyBankTransfer($investment);
-            break;
+            case 'bank_transfer':
+                $verified = $this->verifyBankTransfer($investment);
+                break;
 
-        default:
-            Log::warning(
-                'Unknown payment method for verification', [
-                'investment_id'  => $investment->id,
-                'payment_method' => $investment->payment_method,
+            default:
+                Log::warning(
+                    'Unknown payment method for verification',
+                    [
+                    'investment_id'  => $investment->id,
+                    'payment_method' => $investment->payment_method,
                     ]
-            );
+                );
         }
 
         if ($verified) {
@@ -83,7 +85,8 @@ class PaymentVerificationService
             return $this->stripeService->verifyPayment($investment);
         } catch (\Exception $e) {
             Log::error(
-                'Stripe payment verification failed', [
+                'Stripe payment verification failed',
+                [
                 'investment_id' => $investment->id,
                 'error'         => $e->getMessage(),
                 ]
@@ -118,7 +121,8 @@ class PaymentVerificationService
             return false;
         } catch (\Exception $e) {
             Log::error(
-                'Coinbase payment verification failed', [
+                'Coinbase payment verification failed',
+                [
                 'investment_id' => $investment->id,
                 'error'         => $e->getMessage(),
                 ]
@@ -173,7 +177,8 @@ class PaymentVerificationService
             Mail::to($investment->email)->send(new CgoInvestmentConfirmed($investment));
         } catch (\Exception $e) {
             Log::error(
-                'Failed to send investment confirmation email', [
+                'Failed to send investment confirmation email',
+                [
                 'investment_id' => $investment->id,
                 'error'         => $e->getMessage(),
                 ]
@@ -181,7 +186,8 @@ class PaymentVerificationService
         }
 
         Log::info(
-            'Investment confirmed', [
+            'Investment confirmed',
+            [
             'investment_id'      => $investment->id,
             'certificate_number' => $investment->certificate_number,
             ]
@@ -206,7 +212,8 @@ class PaymentVerificationService
         }
 
         Log::info(
-            'Batch payment verification completed', [
+            'Batch payment verification completed',
+            [
             'total_checked' => $pendingInvestments->count(),
             'confirmed'     => $count,
             ]
@@ -229,7 +236,8 @@ class PaymentVerificationService
         );
 
         Log::warning(
-            'Investment payment marked as failed', [
+            'Investment payment marked as failed',
+            [
             'investment_id' => $investment->id,
             'reason'        => $reason,
             ]

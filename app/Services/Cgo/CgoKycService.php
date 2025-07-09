@@ -75,7 +75,8 @@ class CgoKycService
 
         if (! $kycRequirements['is_sufficient']) {
             Log::warning(
-                'CGO investment blocked - insufficient KYC', [
+                'CGO investment blocked - insufficient KYC',
+                [
                 'investment_id'  => $investment->id,
                 'user_id'        => $user->id,
                 'required_level' => $kycRequirements['required_level'],
@@ -99,7 +100,8 @@ class CgoKycService
 
             if (! $amlCheckResult['passed']) {
                 Log::warning(
-                    'CGO investment flagged by AML checks', [
+                    'CGO investment flagged by AML checks',
+                    [
                     'investment_id' => $investment->id,
                     'user_id'       => $user->id,
                     'flags'         => $amlCheckResult['flags'],

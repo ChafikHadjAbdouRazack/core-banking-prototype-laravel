@@ -19,7 +19,8 @@ class PublishWithdrawalRequestedActivity extends Activity
                 currency: $withdrawal->getCurrency(),
                 reference: $withdrawal->getReference(),
                 metadata: array_merge(
-                    $withdrawal->getMetadata(), [
+                    $withdrawal->getMetadata(),
+                    [
                     'bank_name'   => $withdrawal->getBankName(),
                     'transfer_id' => $transferId,
                     ]

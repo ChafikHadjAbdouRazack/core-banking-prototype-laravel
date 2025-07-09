@@ -24,7 +24,8 @@ class RegulatoryReportingService
 
         // Query large transactions from the event store
         $largeTransactions = StoredEvent::whereIn(
-            'event_class', [
+            'event_class',
+            [
             'App\\Domain\\Account\\Events\\MoneyAdded',
             'App\\Domain\\Account\\Events\\MoneySubtracted',
             'App\\Domain\\Account\\Events\\MoneyTransferred',
@@ -220,7 +221,8 @@ class RegulatoryReportingService
         $rapidTransactions = DB::table('stored_events')
             ->select('aggregate_uuid', DB::raw('count(*) as transaction_count'), DB::raw('min(created_at) as first_transaction'), DB::raw('max(created_at) as last_transaction'))
             ->whereIn(
-                'event_class', [
+                'event_class',
+                [
                 'App\\Domain\\Account\\Events\\MoneyAdded',
                 'App\\Domain\\Account\\Events\\MoneySubtracted',
                 ]
@@ -253,7 +255,8 @@ class RegulatoryReportingService
         // Pattern 2: Just-below-threshold transactions
         $thresholdAmount = 999000; // Just below $10,000
         $justBelowThreshold = StoredEvent::whereIn(
-            'event_class', [
+            'event_class',
+            [
             'App\\Domain\\Account\\Events\\MoneyAdded',
             'App\\Domain\\Account\\Events\\MoneySubtracted',
             ]
@@ -298,7 +301,8 @@ class RegulatoryReportingService
 
         // Pattern 3: Round number transactions
         $roundNumberTransactions = StoredEvent::whereIn(
-            'event_class', [
+            'event_class',
+            [
             'App\\Domain\\Account\\Events\\MoneyAdded',
             'App\\Domain\\Account\\Events\\MoneySubtracted',
             ]
@@ -366,7 +370,8 @@ class RegulatoryReportingService
     protected function getTransactionMetrics(Carbon $startDate, Carbon $endDate): array
     {
         $events = StoredEvent::whereIn(
-            'event_class', [
+            'event_class',
+            [
             'App\\Domain\\Account\\Events\\MoneyAdded',
             'App\\Domain\\Account\\Events\\MoneySubtracted',
             'App\\Domain\\Account\\Events\\MoneyTransferred',

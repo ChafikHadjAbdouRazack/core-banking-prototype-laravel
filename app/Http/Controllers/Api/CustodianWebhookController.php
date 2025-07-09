@@ -188,7 +188,8 @@ class CustodianWebhookController extends Controller
         // Verify signature
         if (! $this->verificationService->verifySignature($custodianName, $payload, $signature, $cleanHeaders)) {
             Log::warning(
-                'Invalid webhook signature', [
+                'Invalid webhook signature',
+                [
                 'custodian' => $custodianName,
                 'signature' => $signature,
                 ]
@@ -202,7 +203,8 @@ class CustodianWebhookController extends Controller
 
         if (json_last_error() !== JSON_ERROR_NONE) {
             Log::error(
-                'Invalid webhook payload', [
+                'Invalid webhook payload',
+                [
                 'custodian' => $custodianName,
                 'error'     => json_last_error_msg(),
                 ]
@@ -233,7 +235,8 @@ class CustodianWebhookController extends Controller
             dispatch(new \App\Jobs\ProcessCustodianWebhook($webhook->uuid));
 
             Log::info(
-                'Webhook received and queued', [
+                'Webhook received and queued',
+                [
                 'custodian'  => $custodianName,
                 'event_type' => $eventType,
                 'webhook_id' => $webhook->id,
@@ -245,7 +248,8 @@ class CustodianWebhookController extends Controller
             // Check if it's a duplicate key violation
             if ($e->getCode() === '23000') {
                 Log::info(
-                    'Duplicate webhook received', [
+                    'Duplicate webhook received',
+                    [
                     'custodian' => $custodianName,
                     'event_id'  => $eventId,
                     ]
@@ -258,7 +262,8 @@ class CustodianWebhookController extends Controller
             throw $e;
         } catch (\Exception $e) {
             Log::error(
-                'Failed to store webhook', [
+                'Failed to store webhook',
+                [
                 'custodian' => $custodianName,
                 'error'     => $e->getMessage(),
                 ]

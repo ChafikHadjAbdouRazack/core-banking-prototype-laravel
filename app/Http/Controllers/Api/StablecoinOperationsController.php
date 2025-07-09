@@ -111,7 +111,8 @@ class StablecoinOperationsController extends Controller
             return response()->json(
                 [
                 'error' => $e->getMessage(),
-                ], 400
+                ],
+                400
             );
         }
     }
@@ -193,7 +194,8 @@ class StablecoinOperationsController extends Controller
             return response()->json(
                 [
                 'error' => $e->getMessage(),
-                ], 400
+                ],
+                400
             );
         }
     }
@@ -273,7 +275,8 @@ class StablecoinOperationsController extends Controller
             return response()->json(
                 [
                 'error' => $e->getMessage(),
-                ], 400
+                ],
+                400
             );
         }
     }
@@ -332,7 +335,8 @@ class StablecoinOperationsController extends Controller
                 $recommendations = $this->collateralService->getPositionRecommendations($position);
 
                 return array_merge(
-                    $position->toArray(), [
+                    $position->toArray(),
+                    [
                     'health_score'    => $healthScore,
                     'recommendations' => $recommendations,
                     ]
@@ -542,7 +546,8 @@ class StablecoinOperationsController extends Controller
             return response()->json(
                 [
                 'error' => $e->getMessage(),
-                ], 400
+                ],
+                400
             );
         }
     }
@@ -711,7 +716,8 @@ class StablecoinOperationsController extends Controller
             return response()->json(
                 [
                 'error' => $e->getMessage(),
-                ], 400
+                ],
+                400
             );
         }
     }
@@ -784,7 +790,8 @@ class StablecoinOperationsController extends Controller
                 }
 
                 return array_merge(
-                    $position->toArray(), [
+                    $position->toArray(),
+                    [
                     'health_score'    => $healthScore,
                     'risk_level'      => $riskLevel,
                     'recommendations' => $recommendations,

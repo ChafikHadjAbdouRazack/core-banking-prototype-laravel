@@ -135,7 +135,8 @@ class BasketPerformanceWidget extends BaseWidget
                                 ->get();
 
                             return view(
-                                'filament.admin.resources.basket-asset-resource.widgets.component-performance-modal', [
+                                'filament.admin.resources.basket-asset-resource.widgets.component-performance-modal',
+                                [
                                 'components' => $components,
                                 ]
                             );
@@ -156,7 +157,8 @@ class BasketPerformanceWidget extends BaseWidget
                             $performances = $service->calculateAllPeriods($this->record);
 
                             $this->dispatch(
-                                'notify', [
+                                'notify',
+                                [
                                 'type'    => 'success',
                                 'message' => "Calculated {$performances->count()} performance periods",
                                 ]

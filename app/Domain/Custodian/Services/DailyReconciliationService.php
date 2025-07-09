@@ -72,7 +72,8 @@ class DailyReconciliationService
             return $report;
         } catch (\Exception $e) {
             Log::error(
-                'Daily reconciliation failed', [
+                'Daily reconciliation failed',
+                [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
                 ]
@@ -171,7 +172,8 @@ class DailyReconciliationService
 
                 if (! $connector->isAvailable()) {
                     Log::warning(
-                        'Custodian not available for reconciliation', [
+                        'Custodian not available for reconciliation',
+                        [
                         'custodian' => $custodianAccount->custodian_name,
                         'account'   => $account->uuid,
                         ]
@@ -186,7 +188,8 @@ class DailyReconciliationService
                 }
             } catch (\Exception $e) {
                 Log::error(
-                    'Failed to get external balance', [
+                    'Failed to get external balance',
+                    [
                     'custodian' => $custodianAccount->custodian_name,
                     'account'   => $account->uuid,
                     'error'     => $e->getMessage(),
@@ -320,7 +323,8 @@ class DailyReconciliationService
     private function sendCriticalAlert(Collection $criticalDiscrepancies): void
     {
         Log::critical(
-            'Critical reconciliation discrepancies found', [
+            'Critical reconciliation discrepancies found',
+            [
             'count'        => $criticalDiscrepancies->count(),
             'total_amount' => $criticalDiscrepancies->sum('difference'),
             ]

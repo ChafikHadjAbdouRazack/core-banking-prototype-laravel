@@ -268,37 +268,37 @@ class CustomerRiskService
     protected function applyRiskBasedLimits(CustomerRiskProfile $profile): void
     {
         switch ($profile->risk_rating) {
-        case CustomerRiskProfile::RISK_RATING_HIGH:
-            $profile->daily_transaction_limit = 5000;
-            $profile->monthly_transaction_limit = 50000;
-            $profile->single_transaction_limit = 2000;
-            $profile->enhanced_monitoring = true;
-            $profile->monitoring_frequency = 7; // Weekly review
-            break;
+            case CustomerRiskProfile::RISK_RATING_HIGH:
+                $profile->daily_transaction_limit = 5000;
+                $profile->monthly_transaction_limit = 50000;
+                $profile->single_transaction_limit = 2000;
+                $profile->enhanced_monitoring = true;
+                $profile->monitoring_frequency = 7; // Weekly review
+                break;
 
-        case CustomerRiskProfile::RISK_RATING_MEDIUM:
-            $profile->daily_transaction_limit = 10000;
-            $profile->monthly_transaction_limit = 100000;
-            $profile->single_transaction_limit = 5000;
-            $profile->enhanced_monitoring = false;
-            $profile->monitoring_frequency = 30; // Monthly review
-            break;
+            case CustomerRiskProfile::RISK_RATING_MEDIUM:
+                $profile->daily_transaction_limit = 10000;
+                $profile->monthly_transaction_limit = 100000;
+                $profile->single_transaction_limit = 5000;
+                $profile->enhanced_monitoring = false;
+                $profile->monitoring_frequency = 30; // Monthly review
+                break;
 
-        case CustomerRiskProfile::RISK_RATING_LOW:
-            $profile->daily_transaction_limit = 25000;
-            $profile->monthly_transaction_limit = 250000;
-            $profile->single_transaction_limit = 10000;
-            $profile->enhanced_monitoring = false;
-            $profile->monitoring_frequency = 90; // Quarterly review
-            break;
+            case CustomerRiskProfile::RISK_RATING_LOW:
+                $profile->daily_transaction_limit = 25000;
+                $profile->monthly_transaction_limit = 250000;
+                $profile->single_transaction_limit = 10000;
+                $profile->enhanced_monitoring = false;
+                $profile->monitoring_frequency = 90; // Quarterly review
+                break;
 
-        case CustomerRiskProfile::RISK_RATING_PROHIBITED:
-            $profile->daily_transaction_limit = 0;
-            $profile->monthly_transaction_limit = 0;
-            $profile->single_transaction_limit = 0;
-            $profile->enhanced_monitoring = true;
-            $profile->monitoring_frequency = 1; // Daily monitoring
-            break;
+            case CustomerRiskProfile::RISK_RATING_PROHIBITED:
+                $profile->daily_transaction_limit = 0;
+                $profile->monthly_transaction_limit = 0;
+                $profile->single_transaction_limit = 0;
+                $profile->enhanced_monitoring = true;
+                $profile->monitoring_frequency = 1; // Daily monitoring
+                break;
         }
     }
 

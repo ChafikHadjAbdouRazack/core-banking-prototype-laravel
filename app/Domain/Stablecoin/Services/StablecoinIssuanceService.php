@@ -83,7 +83,8 @@ class StablecoinIssuanceService implements StablecoinIssuanceServiceInterface
         $stablecoin->increment('total_collateral_value', $collateralValueInPegAsset);
 
         Log::info(
-            'Stablecoin minted', [
+            'Stablecoin minted',
+            [
             'account_uuid'      => $account->uuid,
             'stablecoin_code'   => $stablecoin->code,
             'collateral_asset'  => $collateralAssetCode,
@@ -173,7 +174,8 @@ class StablecoinIssuanceService implements StablecoinIssuanceServiceInterface
         $stablecoin->decrement('total_collateral_value', $collateralValueInPegAsset);
 
         Log::info(
-            'Stablecoin burned', [
+            'Stablecoin burned',
+            [
             'account_uuid'        => $account->uuid,
             'stablecoin_code'     => $stablecoin->code,
             'burn_amount'         => $burnAmount,
@@ -230,7 +232,8 @@ class StablecoinIssuanceService implements StablecoinIssuanceServiceInterface
         $stablecoin->increment('total_collateral_value', $collateralValueInPegAsset);
 
         Log::info(
-            'Collateral added to position', [
+            'Collateral added to position',
+            [
             'account_uuid'      => $account->uuid,
             'position_id'       => $position->uuid,
             'collateral_amount' => $collateralAmount,

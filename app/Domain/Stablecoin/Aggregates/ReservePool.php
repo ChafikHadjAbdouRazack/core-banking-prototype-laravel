@@ -124,9 +124,11 @@ class ReservePool extends AggregateRoot
     ): self {
         // Validate allocations sum to 100%
         $total = array_reduce(
-            $targetAllocations, function ($sum, $allocation) {
+            $targetAllocations,
+            function ($sum, $allocation) {
                 return BigDecimal::of($sum)->plus($allocation);
-            }, '0'
+            },
+            '0'
         );
 
         if (! BigDecimal::of($total)->isEqualTo('1')) {

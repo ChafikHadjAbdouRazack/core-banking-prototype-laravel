@@ -38,7 +38,8 @@ class AssetManagementController extends Controller
         $availableAssets = Asset::where('is_active', true)->get();
 
         return view(
-            'asset-management.index', compact(
+            'asset-management.index',
+            compact(
                 'accounts',
                 'portfolio',
                 'allocation',
@@ -69,7 +70,8 @@ class AssetManagementController extends Controller
         $transactions = $this->getAssetTransactions($user, $asset);
 
         return view(
-            'asset-management.show', compact(
+            'asset-management.show',
+            compact(
                 'asset',
                 'holdings',
                 'statistics',
@@ -100,7 +102,8 @@ class AssetManagementController extends Controller
         $diversification = $this->getDiversificationScore($user);
 
         return view(
-            'asset-management.analytics', compact(
+            'asset-management.analytics',
+            compact(
                 'portfolioHistory',
                 'metrics',
                 'riskAnalysis',
@@ -209,7 +212,8 @@ class AssetManagementController extends Controller
 
         // Sort by value descending
         usort(
-            $allocation, function ($a, $b) {
+            $allocation,
+            function ($a, $b) {
                 return $b['value'] <=> $a['value'];
             }
         );
@@ -299,7 +303,9 @@ class AssetManagementController extends Controller
     private function getAssetStatistics($asset)
     {
         return Cache::remember(
-            "asset_stats_{$asset->symbol}", 300, function () use ($asset) {
+            "asset_stats_{$asset->symbol}",
+            300,
+            function () use ($asset) {
                 return [
                 'total_supply' => $asset->symbol === 'GCU' ? 1000000000 : null,
                 'market_cap'   => $this->getMockMarketCap($asset->symbol),
@@ -515,7 +521,8 @@ class AssetManagementController extends Controller
 
                 // Headers
                 fputcsv(
-                    $handle, [
+                    $handle,
+                    [
                     'Account',
                     'Asset',
                     'Balance',
@@ -549,7 +556,8 @@ class AssetManagementController extends Controller
                     $percentage = $totalValue > 0 ? ($row['value_usd'] * 100 / ($totalValue / 100)) : 0;
 
                     fputcsv(
-                        $handle, [
+                        $handle,
+                        [
                         $row['account'],
                         $row['asset'],
                         number_format($row['balance'], 2),
@@ -564,7 +572,9 @@ class AssetManagementController extends Controller
                 fputcsv($handle, ['Total Portfolio Value (USD)', '', '', number_format($totalValue / 100, 2), '100.00%']);
 
                 fclose($handle);
-            }, $filename, [
+            },
+            $filename,
+            [
             'Content-Type' => 'text/csv',
             ]
         );

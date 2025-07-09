@@ -70,7 +70,8 @@ class DeutscheBankConnector extends BaseCustodianConnector
         $this->logRequest('POST', self::OAUTH_URL);
 
         $response = Http::asForm()->post(
-            self::OAUTH_URL, [
+            self::OAUTH_URL,
+            [
             'grant_type'    => 'client_credentials',
             'client_id'     => $this->clientId,
             'client_secret' => $this->clientSecret,
@@ -279,7 +280,8 @@ class DeutscheBankConnector extends BaseCustodianConnector
             }
         } catch (\Exception $e) {
             Log::warning(
-                'Account validation failed', [
+                'Account validation failed',
+                [
                 'account_id' => $accountId,
                 'error'      => $e->getMessage(),
                 ]
@@ -292,7 +294,9 @@ class DeutscheBankConnector extends BaseCustodianConnector
     public function getTransactionHistory(string $accountId, ?int $limit = 100, ?int $offset = 0): array
     {
         $response = $this->apiRequest(
-            'GET', "/accounts/{$accountId}/transactions", [
+            'GET',
+            "/accounts/{$accountId}/transactions",
+            [
             'limit'    => $limit,
             'offset'   => $offset,
             'dateFrom' => Carbon::now()->subDays(90)->format('Y-m-d'),

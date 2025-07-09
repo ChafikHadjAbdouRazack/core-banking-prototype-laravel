@@ -57,22 +57,22 @@ class RegulatoryManagement extends Command
         }
 
         switch ($action) {
-        case 'generate-reports':
-            return $this->generateReports($dryRun);
+            case 'generate-reports':
+                return $this->generateReports($dryRun);
 
-        case 'check-thresholds':
-            return $this->checkThresholds($dryRun);
+            case 'check-thresholds':
+                return $this->checkThresholds($dryRun);
 
-        case 'process-filings':
-            return $this->processFilings($dryRun);
+            case 'process-filings':
+                return $this->processFilings($dryRun);
 
-        case 'check-overdue':
-            return $this->checkOverdueReports($dryRun);
+            case 'check-overdue':
+                return $this->checkOverdueReports($dryRun);
 
-        default:
-            $this->error("Unknown action: {$action}");
+            default:
+                $this->error("Unknown action: {$action}");
 
-            return 1;
+                return 1;
         }
     }
 
@@ -229,7 +229,8 @@ class RegulatoryManagement extends Command
 
         // Check status of submitted filings
         $submittedFilings = RegulatoryFilingRecord::whereIn(
-            'filing_status', [
+            'filing_status',
+            [
             RegulatoryFilingRecord::STATUS_SUBMITTED,
             RegulatoryFilingRecord::STATUS_ACKNOWLEDGED,
             ]

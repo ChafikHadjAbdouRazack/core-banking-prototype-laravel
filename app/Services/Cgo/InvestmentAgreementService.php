@@ -46,7 +46,8 @@ class InvestmentAgreementService
             );
 
             Log::info(
-                'CGO investment agreement generated', [
+                'CGO investment agreement generated',
+                [
                 'investment_id' => $investment->id,
                 'path'          => $path,
                 ]
@@ -55,7 +56,8 @@ class InvestmentAgreementService
             return $path;
         } catch (\Exception $e) {
             Log::error(
-                'Failed to generate CGO investment agreement', [
+                'Failed to generate CGO investment agreement',
+                [
                 'investment_id' => $investment->id,
                 'error'         => $e->getMessage(),
                 ]
@@ -115,7 +117,8 @@ class InvestmentAgreementService
             );
 
             Log::info(
-                'CGO investment certificate generated', [
+                'CGO investment certificate generated',
+                [
                 'investment_id'      => $investment->id,
                 'certificate_number' => $investment->certificate_number,
                 'path'               => $path,
@@ -125,7 +128,8 @@ class InvestmentAgreementService
             return $path;
         } catch (\Exception $e) {
             Log::error(
-                'Failed to generate CGO investment certificate', [
+                'Failed to generate CGO investment certificate',
+                [
                 'investment_id' => $investment->id,
                 'error'         => $e->getMessage(),
                 ]
@@ -214,15 +218,15 @@ class InvestmentAgreementService
 
         // Add tier-specific terms
         switch ($investment->tier) {
-        case 'gold':
-            $baseTerms['dilution_protection'] = 'Anti-dilution protection for first 24 months';
-            $baseTerms['information_rights'] = 'Quarterly financial statements and board updates';
-            $baseTerms['board_observer'] = 'Board observer rights for investments above $100,000';
-            break;
+            case 'gold':
+                $baseTerms['dilution_protection'] = 'Anti-dilution protection for first 24 months';
+                $baseTerms['information_rights'] = 'Quarterly financial statements and board updates';
+                $baseTerms['board_observer'] = 'Board observer rights for investments above $100,000';
+                break;
 
-        case 'silver':
-            $baseTerms['information_rights'] = 'Semi-annual financial statements';
-            break;
+            case 'silver':
+                $baseTerms['information_rights'] = 'Semi-annual financial statements';
+                break;
         }
 
         return $baseTerms;
@@ -264,7 +268,8 @@ class InvestmentAgreementService
         // This would integrate with email service
         // Implementation depends on email system
         Log::info(
-            'Agreement email would be sent', [
+            'Agreement email would be sent',
+            [
             'investment_id' => $investment->id,
             'email'         => $investment->user->email,
             ]

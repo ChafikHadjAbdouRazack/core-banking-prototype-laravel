@@ -45,7 +45,8 @@ class StablecoinOperationsController extends Controller
         $pendingRequests = $this->getPendingRequests();
 
         return view(
-            'stablecoin-operations.index', compact(
+            'stablecoin-operations.index',
+            compact(
                 'stablecoins',
                 'statistics',
                 'recentOperations',
@@ -76,7 +77,8 @@ class StablecoinOperationsController extends Controller
         $operatorAccounts = $this->getOperatorAccounts($user);
 
         return view(
-            'stablecoin-operations.mint', compact(
+            'stablecoin-operations.mint',
+            compact(
                 'stablecoin',
                 'stablecoinInfo',
                 'collateralAssets',
@@ -202,7 +204,8 @@ class StablecoinOperationsController extends Controller
         $operatorAccounts = $this->getOperatorAccountsWithBalance($user, $stablecoin);
 
         return view(
-            'stablecoin-operations.burn', compact(
+            'stablecoin-operations.burn',
+            compact(
                 'stablecoin',
                 'stablecoinInfo',
                 'operatorAccounts'
@@ -337,7 +340,8 @@ class StablecoinOperationsController extends Controller
         $summary = $this->getOperationSummary($operations);
 
         return view(
-            'stablecoin-operations.history', compact(
+            'stablecoin-operations.history',
+            compact(
                 'operations',
                 'summary',
                 'filters'
@@ -381,7 +385,9 @@ class StablecoinOperationsController extends Controller
     private function getOperationStatistics()
     {
         return Cache::remember(
-            'stablecoin_stats', 300, function () {
+            'stablecoin_stats',
+            300,
+            function () {
                 return [
                 'total_minted_24h'   => rand(50000, 200000) * 100,
                 'total_burned_24h'   => rand(30000, 150000) * 100,

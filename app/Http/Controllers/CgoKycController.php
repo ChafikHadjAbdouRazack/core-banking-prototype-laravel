@@ -79,7 +79,8 @@ class CgoKycController extends Controller
         }
 
         return view(
-            'cgo.kyc-status', [
+            'cgo.kyc-status',
+            [
             'totalInvested'     => $totalInvested,
             'availableLimit'    => $investmentLimits['available_limit'],
             'documents'         => $documents,
@@ -121,7 +122,8 @@ class CgoKycController extends Controller
                         [
                         'success' => false,
                         'message' => 'KYC is already sufficient for this investment',
-                        ], 400
+                        ],
+                        400
                     );
                 }
             }
@@ -150,7 +152,8 @@ class CgoKycController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error(
-                'CGO KYC submission failed', [
+                'CGO KYC submission failed',
+                [
                 'user_id' => $user->id,
                 'error'   => $e->getMessage(),
                 ]
@@ -160,7 +163,8 @@ class CgoKycController extends Controller
                 [
                 'success' => false,
                 'message' => 'Failed to submit KYC documents',
-                ], 500
+                ],
+                500
             );
         }
     }
@@ -216,7 +220,8 @@ class CgoKycController extends Controller
                 [
                 'success' => false,
                 'message' => 'Investment is not pending KYC verification',
-                ], 400
+                ],
+                400
             );
         }
 
@@ -248,7 +253,8 @@ class CgoKycController extends Controller
                     'required_documents' => $requirements['required_documents'],
                     'status'             => $investment->status,
                 ],
-                ], 422
+                ],
+                422
             );
         }
     }

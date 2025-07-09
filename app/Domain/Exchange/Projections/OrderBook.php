@@ -111,7 +111,8 @@ class OrderBook extends Model
         return $orders->reduce(
             function ($carry, $order) {
                 return bcadd($carry, $order['amount'], 18);
-            }, '0'
+            },
+            '0'
         );
     }
 
@@ -122,7 +123,8 @@ class OrderBook extends Model
         return $orders->reduce(
             function ($carry, $order) {
                 return bcadd($carry, $order['amount'], 18);
-            }, '0'
+            },
+            '0'
         );
     }
 

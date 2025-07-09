@@ -46,7 +46,8 @@ class DefaultCollateralManagementService implements CollateralManagementService
         );
 
         Log::info(
-            'Collateral registered', [
+            'Collateral registered',
+            [
             'collateral_id' => $collateral->collateralId,
             'loan_id'       => $collateral->loanId,
             'type'          => $collateral->type->value,
@@ -78,7 +79,8 @@ class DefaultCollateralManagementService implements CollateralManagementService
             );
 
             Log::info(
-                'Collateral verified', [
+                'Collateral verified',
+                [
                 'collateral_id' => $collateralId,
                 'verified_by'   => $verifiedBy,
                 ]
@@ -120,7 +122,8 @@ class DefaultCollateralManagementService implements CollateralManagementService
         );
 
         Log::info(
-            'Collateral valuation updated', [
+            'Collateral valuation updated',
+            [
             'collateral_id' => $collateralId,
             'old_value'     => $oldValue,
             'new_value'     => $newValue,
@@ -167,7 +170,8 @@ class DefaultCollateralManagementService implements CollateralManagementService
         );
 
         Log::info(
-            'Collateral liquidated', [
+            'Collateral liquidated',
+            [
             'collateral_id'     => $collateralId,
             'estimated_value'   => $model->estimated_value,
             'liquidation_value' => $liquidationValue,

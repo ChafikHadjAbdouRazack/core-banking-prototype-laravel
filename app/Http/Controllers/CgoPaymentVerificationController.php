@@ -42,19 +42,19 @@ class CgoPaymentVerificationController extends Controller
             $updated = false;
 
             switch ($investment->payment_method) {
-            case 'stripe':
-                if ($investment->stripe_payment_intent_id) {
-                    $result = $this->verificationService->verifyStripePayment($investment);
-                    $updated = $result['verified'];
-                }
-                break;
+                case 'stripe':
+                    if ($investment->stripe_payment_intent_id) {
+                        $result = $this->verificationService->verifyStripePayment($investment);
+                        $updated = $result['verified'];
+                    }
+                    break;
 
-            case 'crypto':
-                if ($investment->coinbase_charge_id) {
-                    $result = $this->verificationService->verifyCoinbasePayment($investment);
-                    $updated = $result['verified'];
-                }
-                break;
+                case 'crypto':
+                    if ($investment->coinbase_charge_id) {
+                        $result = $this->verificationService->verifyCoinbasePayment($investment);
+                        $updated = $result['verified'];
+                    }
+                    break;
             }
 
             if ($updated) {
@@ -81,7 +81,8 @@ class CgoPaymentVerificationController extends Controller
                 'success' => false,
                 'message' => 'Unable to verify payment at this time',
                 'error'   => config('app.debug') ? $e->getMessage() : null,
-                ], 500
+                ],
+                500
             );
         }
     }
@@ -101,7 +102,8 @@ class CgoPaymentVerificationController extends Controller
                 [
                 'success' => false,
                 'message' => 'Payment has already been completed',
-                ], 400
+                ],
+                400
             );
         }
 
@@ -110,15 +112,15 @@ class CgoPaymentVerificationController extends Controller
             $user = Auth::user();
 
             switch ($investment->payment_method) {
-            case 'bank_transfer':
-                // Send bank transfer instructions
-                \Mail::to($user->email)->send(new \App\Mail\CgoBankTransferInstructions($investment));
-                break;
+                case 'bank_transfer':
+                    // Send bank transfer instructions
+                    \Mail::to($user->email)->send(new \App\Mail\CgoBankTransferInstructions($investment));
+                    break;
 
-            case 'crypto':
-                // Send crypto payment instructions
-                \Mail::to($user->email)->send(new \App\Mail\CgoCryptoPaymentInstructions($investment));
-                break;
+                case 'crypto':
+                    // Send crypto payment instructions
+                    \Mail::to($user->email)->send(new \App\Mail\CgoCryptoPaymentInstructions($investment));
+                    break;
             }
 
             return response()->json(
@@ -132,7 +134,8 @@ class CgoPaymentVerificationController extends Controller
                 [
                 'success' => false,
                 'message' => 'Unable to send instructions at this time',
-                ], 500
+                ],
+                500
             );
         }
     }
@@ -213,7 +216,8 @@ class CgoPaymentVerificationController extends Controller
 
         // Sort by date
         usort(
-            $timeline, function ($a, $b) {
+            $timeline,
+            function ($a, $b) {
                 return $a['date']->timestamp - $b['date']->timestamp;
             }
         );

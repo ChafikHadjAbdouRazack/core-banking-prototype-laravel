@@ -19,7 +19,8 @@ class FraudAlertsController extends Controller
         if (! $user->can('view_fraud_alerts')) {
             // For regular customers, show only their fraud alerts
             $query = FraudCase::whereHas(
-                'subjectAccount', function ($q) use ($user) {
+                'subjectAccount',
+                function ($q) use ($user) {
                     $q->where('user_uuid', $user->uuid);
                 }
             );
@@ -101,7 +102,8 @@ class FraudAlertsController extends Controller
         $typeDistribution = $this->getTypeDistribution($statsQuery);
 
         return view(
-            'fraud.alerts.index', compact(
+            'fraud.alerts.index',
+            compact(
                 'fraudCases',
                 'stats',
                 'trendData',
@@ -177,7 +179,8 @@ class FraudAlertsController extends Controller
 
             // Headers
             fputcsv(
-                $file, [
+                $file,
+                [
                 'Case Number',
                 'Type',
                 'Status',
@@ -197,7 +200,8 @@ class FraudAlertsController extends Controller
 
             if (! $user->can('view_fraud_alerts')) {
                 $query->whereHas(
-                    'subjectAccount', function ($q) use ($user) {
+                    'subjectAccount',
+                    function ($q) use ($user) {
                         $q->where('user_uuid', $user->uuid);
                     }
                 );
@@ -216,10 +220,12 @@ class FraudAlertsController extends Controller
 
             $query->orderBy('detected_at', 'desc')
                 ->chunk(
-                    100, function ($fraudCases) use ($file) {
+                    100,
+                    function ($fraudCases) use ($file) {
                         foreach ($fraudCases as $case) {
                             fputcsv(
-                                $file, [
+                                $file,
+                                [
                                 $case->case_number,
                                 $case->type,
                                 $case->status,

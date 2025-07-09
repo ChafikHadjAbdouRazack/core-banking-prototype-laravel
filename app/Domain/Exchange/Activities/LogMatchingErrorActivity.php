@@ -12,7 +12,8 @@ class LogMatchingErrorActivity extends Activity
         string $error
     ): void {
         Log::error(
-            'Order matching error', [
+            'Order matching error',
+            [
             'buy_order_id'    => $match->buyOrderId ?? null,
             'sell_order_id'   => $match->sellOrderId ?? null,
             'trade_id'        => $match->tradeId ?? null,

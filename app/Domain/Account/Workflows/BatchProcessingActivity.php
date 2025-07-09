@@ -24,7 +24,8 @@ class BatchProcessingActivity extends Activity
         $results = [];
 
         logger()->info(
-            'Starting batch processing', [
+            'Starting batch processing',
+            [
             'batch_id'   => $batchId,
             'operations' => $operations,
             'start_time' => $startTime->toISOString(),
@@ -47,7 +48,8 @@ class BatchProcessingActivity extends Activity
                 ];
 
                 logger()->error(
-                    'Batch operation failed', [
+                    'Batch operation failed',
+                    [
                     'batch_id'  => $batchId,
                     'operation' => $operation,
                     'error'     => $th->getMessage(),
@@ -83,20 +85,20 @@ class BatchProcessingActivity extends Activity
     private function performOperation(string $operation, string $batchId): array
     {
         switch ($operation) {
-        case 'calculate_daily_turnover':
-            return $this->calculateDailyTurnover();
-        case 'generate_account_statements':
-            return $this->generateAccountStatements();
-        case 'process_interest_calculations':
-            return $this->processInterestCalculations();
-        case 'perform_compliance_checks':
-            return $this->performComplianceChecks();
-        case 'archive_old_transactions':
-            return $this->archiveOldTransactions();
-        case 'generate_regulatory_reports':
-            return $this->generateRegulatoryReports();
-        default:
-            throw new \InvalidArgumentException("Unknown batch operation: {$operation}");
+            case 'calculate_daily_turnover':
+                return $this->calculateDailyTurnover();
+            case 'generate_account_statements':
+                return $this->generateAccountStatements();
+            case 'process_interest_calculations':
+                return $this->processInterestCalculations();
+            case 'perform_compliance_checks':
+                return $this->performComplianceChecks();
+            case 'archive_old_transactions':
+                return $this->archiveOldTransactions();
+            case 'generate_regulatory_reports':
+                return $this->generateRegulatoryReports();
+            default:
+                throw new \InvalidArgumentException("Unknown batch operation: {$operation}");
         }
     }
 
@@ -300,7 +302,8 @@ class BatchProcessingActivity extends Activity
             WHERE t.created_at >= ?
             GROUP BY account_uuid, user_uuid
             HAVING COUNT(*) > 10
-        ', [$today]
+        ',
+            [$today]
         );
 
         $complianceFlags['rapid_transactions'] = collect($rapidTransactions)->map(
@@ -332,7 +335,8 @@ class BatchProcessingActivity extends Activity
 
         // Check for round-number transactions (possible structuring)
         $roundTransactions = Transaction::whereIn(
-            'amount', [
+            'amount',
+            [
             1000000, 900000, 800000, 700000, 600000, 500000, // $10k, $9k, etc.
             ]
         )
@@ -453,7 +457,8 @@ class BatchProcessingActivity extends Activity
             AND created_at >= ?
             GROUP BY account_uuid
             HAVING COUNT(*) >= 3
-        ', [$today->startOfDay()]
+        ',
+            [$today->startOfDay()]
         );
 
         foreach ($structuringCandidates as $candidate) {

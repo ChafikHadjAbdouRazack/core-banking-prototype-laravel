@@ -80,13 +80,15 @@ class LockAccountBalanceActivity extends Activity
 
                 // Store lock information for later release
                 \Cache::put(
-                    "order_lock:{$lockId}", [
+                    "order_lock:{$lockId}",
+                    [
                     'order_id'   => $orderId,
                     'account_id' => $order->account_id,
                     'currency'   => $currencyToLock,
                     'amount'     => $amountToLock,
                     'created_at' => now(),
-                    ], now()->addHours(24)
+                    ],
+                    now()->addHours(24)
                 );
 
                 return (object) [

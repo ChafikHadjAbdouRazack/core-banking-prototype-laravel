@@ -15,7 +15,8 @@ enum OrderStatus: string
     public function isFinal(): bool
     {
         return in_array(
-            $this, [
+            $this,
+            [
             self::FILLED,
             self::CANCELLED,
             self::EXPIRED,
@@ -27,7 +28,8 @@ enum OrderStatus: string
     public function canBeFilled(): bool
     {
         return in_array(
-            $this, [
+            $this,
+            [
             self::PENDING,
             self::OPEN,
             self::PARTIALLY_FILLED,

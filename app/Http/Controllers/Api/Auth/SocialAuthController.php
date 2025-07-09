@@ -160,7 +160,8 @@ class SocialAuthController extends Controller
                 [
                 'message' => 'Authentication failed',
                 'error'   => config('app.debug') ? $e->getMessage() : null,
-                ], 400
+                ],
+                400
             );
         }
     }

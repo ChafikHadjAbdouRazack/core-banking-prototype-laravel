@@ -35,7 +35,8 @@ class ExchangeRateViewController extends Controller
         $statistics = $this->getRateStatistics($baseCurrency);
 
         return view(
-            'exchange-rates.index', compact(
+            'exchange-rates.index',
+            compact(
                 'assets',
                 'baseCurrency',
                 'selectedAssets',
@@ -227,7 +228,9 @@ class ExchangeRateViewController extends Controller
     private function getRateStatistics($baseCurrency)
     {
         return Cache::remember(
-            "rate_stats:{$baseCurrency}", 300, function () use ($baseCurrency) {
+            "rate_stats:{$baseCurrency}",
+            300,
+            function () use ($baseCurrency) {
                 $stats = DB::table('exchange_rates')
                     ->where('from_asset_code', $baseCurrency)
                     ->where('created_at', '>=', now()->subDay())

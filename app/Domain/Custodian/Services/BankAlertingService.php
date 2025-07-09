@@ -68,7 +68,8 @@ class BankAlertingService
 
         // Log the alert
         Log::warning(
-            'Bank health alert sent', [
+            'Bank health alert sent',
+            [
             'custodian'        => $event->custodian,
             'previous_status'  => $event->previousStatus,
             'new_status'       => $event->newStatus,
@@ -198,7 +199,8 @@ class BankAlertingService
         }
 
         Log::alert(
-            'System-wide bank health alert', [
+            'System-wide bank health alert',
+            [
             'severity' => $severity,
             'message'  => $message,
             'issues'   => $issues,

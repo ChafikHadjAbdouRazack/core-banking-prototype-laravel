@@ -155,7 +155,8 @@ class CustodianController extends Controller
                 [
                 'error'   => 'Failed to retrieve account information',
                 'message' => $e->getMessage(),
-                ], 400
+                ],
+                400
             );
         }
     }
@@ -242,7 +243,8 @@ class CustodianController extends Controller
                 [
                 'error'   => 'Failed to retrieve balance',
                 'message' => $e->getMessage(),
-                ], 400
+                ],
+                400
             );
         }
     }
@@ -324,7 +326,8 @@ class CustodianController extends Controller
                 return response()->json(
                     [
                     'error' => 'Invalid custodian account',
-                    ], 400
+                    ],
+                    400
                 );
             }
 
@@ -360,7 +363,8 @@ class CustodianController extends Controller
                 [
                 'error'   => 'Transfer failed',
                 'message' => $e->getMessage(),
-                ], 400
+                ],
+                400
             );
         }
     }
@@ -470,7 +474,8 @@ class CustodianController extends Controller
                 [
                 'error'   => 'Failed to retrieve transaction history',
                 'message' => $e->getMessage(),
-                ], 400
+                ],
+                400
             );
         }
     }
@@ -540,7 +545,8 @@ class CustodianController extends Controller
                 [
                 'error'   => 'Failed to retrieve transaction status',
                 'message' => $e->getMessage(),
-                ], 400
+                ],
+                400
             );
         }
     }

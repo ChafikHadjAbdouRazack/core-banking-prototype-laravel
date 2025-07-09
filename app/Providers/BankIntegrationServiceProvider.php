@@ -25,7 +25,8 @@ class BankIntegrationServiceProvider extends ServiceProvider
 
         // Register bank integration service
         $this->app->singleton(
-            IBankIntegrationService::class, function ($app) {
+            IBankIntegrationService::class,
+            function ($app) {
                 $service = new BankIntegrationService(
                     $app->make(BankHealthMonitor::class),
                     $app->make(BankRoutingService::class)

@@ -41,7 +41,8 @@ class UpdateBasketCompositionWorkflow extends Workflow
 
         // Record the governance event
         yield ActivityStub::make(
-            RecordGovernanceEventActivity::class, [
+            RecordGovernanceEventActivity::class,
+            [
             'type'            => 'basket_composition_updated',
             'poll_uuid'       => $pollUuid,
             'basket_code'     => $basketCode,

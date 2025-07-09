@@ -36,7 +36,8 @@ class FeatureToggleWorkflow
 
             // Log the governance action
             logger()->info(
-                'Feature toggled via governance poll', [
+                'Feature toggled via governance poll',
+                [
                 'poll_uuid'          => $poll->uuid,
                 'feature_key'        => $featureConfig['feature_key'],
                 'enabled'            => $enabled,
@@ -54,7 +55,8 @@ class FeatureToggleWorkflow
             ];
         } catch (\Exception $e) {
             logger()->error(
-                'Failed to toggle feature via governance poll', [
+                'Failed to toggle feature via governance poll',
+                [
                 'poll_uuid'      => $poll->uuid,
                 'feature_config' => $featureConfig,
                 'error'          => $e->getMessage(),
@@ -194,7 +196,8 @@ class FeatureToggleWorkflow
 
         // Log for audit purposes
         logger()->info(
-            'Feature flag persisted', [
+            'Feature flag persisted',
+            [
             'feature_key' => $featureKey,
             'enabled'     => $enabled,
             'timestamp'   => now()->toISOString(),

@@ -57,7 +57,9 @@ class KrakenConnector implements IExternalExchangeConnector
         $cacheKey = 'kraken:tradable_asset_pairs';
 
         return Cache::remember(
-            $cacheKey, 3600, function () {
+            $cacheKey,
+            3600,
+            function () {
                 $response = Http::get($this->getPublicUrl('AssetPairs'));
 
                 if (! $response->successful()) {
@@ -136,7 +138,8 @@ class KrakenConnector implements IExternalExchangeConnector
     {
         $pair = $this->formatPair($baseCurrency, $quoteCurrency);
         $response = Http::get(
-            $this->getPublicUrl('Depth'), [
+            $this->getPublicUrl('Depth'),
+            [
             'pair'  => $pair,
             'count' => $depth,
             ]

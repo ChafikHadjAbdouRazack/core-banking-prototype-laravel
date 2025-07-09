@@ -62,7 +62,8 @@ abstract class BaseExchangeRateProvider implements IExchangeRateProvider
             return $response->successful();
         } catch (\Exception $e) {
             Log::error(
-                "Exchange rate provider {$this->getName()} health check failed", [
+                "Exchange rate provider {$this->getName()} health check failed",
+                [
                 'error' => $e->getMessage(),
                 ]
             );
@@ -133,7 +134,8 @@ abstract class BaseExchangeRateProvider implements IExchangeRateProvider
     {
         if ($this->config['debug'] ?? false) {
             Log::debug(
-                "Exchange rate provider {$this->getName()} request", [
+                "Exchange rate provider {$this->getName()} request",
+                [
                 'method'   => $method,
                 'endpoint' => $endpoint,
                 'data'     => $data,
@@ -149,7 +151,8 @@ abstract class BaseExchangeRateProvider implements IExchangeRateProvider
     {
         if ($this->config['debug'] ?? false) {
             Log::debug(
-                "Exchange rate provider {$this->getName()} response", [
+                "Exchange rate provider {$this->getName()} response",
+                [
                 'method'   => $method,
                 'endpoint' => $endpoint,
                 'status'   => $response->status(),
@@ -174,7 +177,10 @@ abstract class BaseExchangeRateProvider implements IExchangeRateProvider
         }
 
         throw new RateProviderException(
-            "{$message}: HTTP {$status}", $status, null, [
+            "{$message}: HTTP {$status}",
+            $status,
+            null,
+            [
             'response' => $body,
             ]
         );

@@ -43,7 +43,8 @@ class FundFlowController extends Controller
         $chartData = $this->getDailyFlowData($user, $dateRange, $filters);
 
         return Inertia::render(
-            'FundFlow/Visualization', [
+            'FundFlow/Visualization',
+            [
             'accounts'    => $accounts,
             'flowData'    => $flowData,
             'statistics'  => $statistics,
@@ -73,7 +74,8 @@ class FundFlowController extends Controller
         $counterparties = $this->getCounterpartyAnalysis($account);
 
         return Inertia::render(
-            'FundFlow/AccountDetail', [
+            'FundFlow/AccountDetail',
+            [
             'account'        => $account->load('balances.asset'),
             'inflows'        => $inflows,
             'outflows'       => $outflows,
@@ -116,25 +118,25 @@ class FundFlowController extends Controller
         $end = now();
 
         switch ($period) {
-        case '24hours':
-            $start = now()->subDay();
-            break;
-        case '7days':
-            $start = now()->subDays(7);
-            break;
-        case '30days':
-            $start = now()->subDays(30);
-            break;
-        case '90days':
-            $start = now()->subDays(90);
-            break;
-        case 'custom':
-            // Handle custom date range from request
-            $start = request()->get('start_date', now()->subDays(7));
-            $end = request()->get('end_date', now());
-            break;
-        default:
-            $start = now()->subDays(7);
+            case '24hours':
+                $start = now()->subDay();
+                break;
+            case '7days':
+                $start = now()->subDays(7);
+                break;
+            case '30days':
+                $start = now()->subDays(30);
+                break;
+            case '90days':
+                $start = now()->subDays(90);
+                break;
+            case 'custom':
+                // Handle custom date range from request
+                $start = request()->get('start_date', now()->subDays(7));
+                $end = request()->get('end_date', now());
+                break;
+            default:
+                $start = now()->subDays(7);
         }
 
         return [
@@ -195,7 +197,8 @@ class FundFlowController extends Controller
 
         // Sort by timestamp
         usort(
-            $flows, function ($a, $b) {
+            $flows,
+            function ($a, $b) {
                 return strtotime($b['timestamp']) - strtotime($a['timestamp']);
             }
         );

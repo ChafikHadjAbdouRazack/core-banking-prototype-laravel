@@ -37,7 +37,8 @@ class SubProductController extends Controller
                 [
                 'error'   => 'Sub-product not found',
                 'message' => "The sub-product '{$subProduct}' does not exist.",
-                ], 404
+                ],
+                404
             );
         }
 
@@ -67,7 +68,8 @@ class SubProductController extends Controller
                     'color'            => $product['color'],
                     'enabled_features' => $product['enabled_features'],
                     ];
-                }, $enabledProducts
+                },
+                $enabledProducts
             ),
             ]
         );

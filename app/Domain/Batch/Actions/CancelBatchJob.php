@@ -26,7 +26,8 @@ class CancelBatchJob
             'status'       => 'cancelled',
             'completed_at' => $event->cancelledAt,
             'metadata'     => array_merge(
-                $batchJob->metadata ?? [], [
+                $batchJob->metadata ?? [],
+                [
                 'cancellation_reason' => $event->reason,
                 ]
             ),

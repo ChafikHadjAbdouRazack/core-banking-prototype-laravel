@@ -102,11 +102,13 @@ class ComplianceController extends Controller
                     'provider'            => $verification->provider,
                     'next_steps'          => $this->getVerificationNextSteps($verification),
                 ],
-                ], 201
+                ],
+                201
             );
         } catch (\Exception $e) {
             Log::error(
-                'Failed to start KYC verification', [
+                'Failed to start KYC verification',
+                [
                 'user_id' => $user->id,
                 'error'   => $e->getMessage(),
                 ]
@@ -115,7 +117,8 @@ class ComplianceController extends Controller
             return response()->json(
                 [
                 'error' => 'Failed to start verification',
-                ], 422
+                ],
+                422
             );
         }
     }
@@ -142,7 +145,8 @@ class ComplianceController extends Controller
             return response()->json(
                 [
                 'error' => 'Verification is not in a valid state for document upload',
-                ], 422
+                ],
+                422
             );
         }
 
@@ -175,7 +179,8 @@ class ComplianceController extends Controller
             );
         } catch (\Exception $e) {
             Log::error(
-                'Document upload failed', [
+                'Document upload failed',
+                [
                 'verification_id' => $verificationId,
                 'error'           => $e->getMessage(),
                 ]
@@ -184,7 +189,8 @@ class ComplianceController extends Controller
             return response()->json(
                 [
                 'error' => 'Document verification failed',
-                ], 422
+                ],
+                422
             );
         }
     }
@@ -234,7 +240,8 @@ class ComplianceController extends Controller
             );
         } catch (\Exception $e) {
             Log::error(
-                'Selfie verification failed', [
+                'Selfie verification failed',
+                [
                 'verification_id' => $verificationId,
                 'error'           => $e->getMessage(),
                 ]
@@ -243,7 +250,8 @@ class ComplianceController extends Controller
             return response()->json(
                 [
                 'error' => 'Biometric verification failed',
-                ], 422
+                ],
+                422
             );
         }
     }
@@ -301,7 +309,8 @@ class ComplianceController extends Controller
 
         try {
             $screening = $this->amlService->performComprehensiveScreening(
-                $user, [
+                $user,
+                [
                 'requested_by_user' => true,
                 'reason'            => $validated['reason'] ?? null,
                 ]
@@ -315,11 +324,13 @@ class ComplianceController extends Controller
                     'status'               => $screening->status,
                     'estimated_completion' => now()->addMinutes(5)->toIso8601String(),
                 ],
-                ], 201
+                ],
+                201
             );
         } catch (\Exception $e) {
             Log::error(
-                'Screening request failed', [
+                'Screening request failed',
+                [
                 'user_id' => $user->id,
                 'error'   => $e->getMessage(),
                 ]
@@ -328,7 +339,8 @@ class ComplianceController extends Controller
             return response()->json(
                 [
                 'error' => 'Failed to initiate screening',
-                ], 422
+                ],
+                422
             );
         }
     }
@@ -497,7 +509,8 @@ class ComplianceController extends Controller
         }
 
         // High-risk countries
-        if (isset($transaction['destination_country']) 
+        if (
+            isset($transaction['destination_country'])
             && in_array($transaction['destination_country'], CustomerRiskProfile::HIGH_RISK_COUNTRIES)
         ) {
             return true;

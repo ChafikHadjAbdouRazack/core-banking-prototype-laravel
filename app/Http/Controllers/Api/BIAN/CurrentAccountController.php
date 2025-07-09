@@ -161,7 +161,8 @@ class CurrentAccountController extends Controller
                     'dateTypeName' => 'AccountOpeningDate',
                 ],
             ],
-            ], 201
+            ],
+            201
         );
     }
 
@@ -407,18 +408,18 @@ class CurrentAccountController extends Controller
         $accountUuid = new AccountUuid($crReferenceId);
 
         switch ($validated['controlAction']) {
-        case 'freeze':
-        case 'suspend':
-            $workflow = WorkflowStub::make(FreezeAccountWorkflow::class);
-            $workflow->start($accountUuid, $validated['controlReason'], auth()->user()->name ?? 'System');
-            $status = 'frozen';
-            break;
-        case 'unfreeze':
-        case 'reactivate':
-            $workflow = WorkflowStub::make(UnfreezeAccountWorkflow::class);
-            $workflow->start($accountUuid, $validated['controlReason'], auth()->user()->name ?? 'System');
-            $status = 'active';
-            break;
+            case 'freeze':
+            case 'suspend':
+                $workflow = WorkflowStub::make(FreezeAccountWorkflow::class);
+                $workflow->start($accountUuid, $validated['controlReason'], auth()->user()->name ?? 'System');
+                $status = 'frozen';
+                break;
+            case 'unfreeze':
+            case 'reactivate':
+                $workflow = WorkflowStub::make(UnfreezeAccountWorkflow::class);
+                $workflow->start($accountUuid, $validated['controlReason'], auth()->user()->name ?? 'System');
+                $status = 'active';
+                break;
         }
 
         return response()->json(
@@ -528,7 +529,8 @@ class CurrentAccountController extends Controller
                     'accountBalance'  => $account->balance,
                     'requestedAmount' => $validated['paymentAmount'],
                 ],
-                ], 422
+                ],
+                422
             );
         }
 
@@ -825,7 +827,8 @@ class CurrentAccountController extends Controller
         $query = \DB::table('stored_events')
             ->where('aggregate_uuid', $crReferenceId)
             ->whereIn(
-                'event_class', [
+                'event_class',
+                [
                 'App\Domain\Account\Events\MoneyAdded',
                 'App\Domain\Account\Events\MoneySubtracted',
                 ]

@@ -97,7 +97,8 @@ class CircuitBreakerService
             // If we have a fallback, use it
             if ($fallback !== null) {
                 Log::info(
-                    "Using fallback for service: {$service}", [
+                    "Using fallback for service: {$service}",
+                    [
                     'exception' => $exception->getMessage(),
                     ]
                 );

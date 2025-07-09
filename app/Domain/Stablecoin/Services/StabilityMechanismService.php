@@ -33,7 +33,8 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
                 $results[$stablecoin->code] = $result;
             } catch (\Exception $e) {
                 Log::error(
-                    'Stability mechanism failed', [
+                    'Stability mechanism failed',
+                    [
                     'stablecoin_code' => $stablecoin->code,
                     'error'           => $e->getMessage(),
                     ]
@@ -222,7 +223,8 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
         Cache::put($cacheKey, true, 3600); // 1 hour cooldown
 
         Log::info(
-            'Collateral ratio adjusted', [
+            'Collateral ratio adjusted',
+            [
             'stablecoin_code' => $stablecoin->code,
             'old_ratio'       => $currentRatio,
             'new_ratio'       => $newRatio,
@@ -253,25 +255,25 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
         $updates = [];
 
         switch ($feeType) {
-        case 'reduce_mint_fee':
-            $newMintFee = max($minFee, $currentMintFee - $adjustment);
-            $updates['mint_fee'] = $newMintFee;
-            break;
+            case 'reduce_mint_fee':
+                $newMintFee = max($minFee, $currentMintFee - $adjustment);
+                $updates['mint_fee'] = $newMintFee;
+                break;
 
-        case 'increase_mint_fee':
-            $newMintFee = min($maxFee, $currentMintFee + $adjustment);
-            $updates['mint_fee'] = $newMintFee;
-            break;
+            case 'increase_mint_fee':
+                $newMintFee = min($maxFee, $currentMintFee + $adjustment);
+                $updates['mint_fee'] = $newMintFee;
+                break;
 
-        case 'reduce_burn_fee':
-            $newBurnFee = max($minFee, $currentBurnFee - $adjustment);
-            $updates['burn_fee'] = $newBurnFee;
-            break;
+            case 'reduce_burn_fee':
+                $newBurnFee = max($minFee, $currentBurnFee - $adjustment);
+                $updates['burn_fee'] = $newBurnFee;
+                break;
 
-        case 'increase_burn_fee':
-            $newBurnFee = min($maxFee, $currentBurnFee + $adjustment);
-            $updates['burn_fee'] = $newBurnFee;
-            break;
+            case 'increase_burn_fee':
+                $newBurnFee = min($maxFee, $currentBurnFee + $adjustment);
+                $updates['burn_fee'] = $newBurnFee;
+                break;
         }
 
         // Don't adjust fees too frequently
@@ -288,7 +290,8 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
         Cache::put($cacheKey, true, 1800); // 30 minute cooldown
 
         Log::info(
-            'Fee adjusted', [
+            'Fee adjusted',
+            [
             'stablecoin_code' => $stablecoin->code,
             'fee_type'        => $feeType,
             'old_mint_fee'    => $currentMintFee,
@@ -512,24 +515,25 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
         }
 
         switch ($stablecoin->stability_mechanism) {
-        case 'collateralized':
-            $actions = $this->applyCollateralizedMechanism($stablecoin, $deviation);
-            break;
-        case 'algorithmic':
-            $actions = $this->applyAlgorithmicMechanism($stablecoin, $deviation);
-            break;
-        case 'hybrid':
-            $actions = array_merge(
-                $this->applyCollateralizedMechanism($stablecoin, $deviation),
-                $this->applyAlgorithmicMechanism($stablecoin, $deviation)
-            );
-            break;
+            case 'collateralized':
+                $actions = $this->applyCollateralizedMechanism($stablecoin, $deviation);
+                break;
+            case 'algorithmic':
+                $actions = $this->applyAlgorithmicMechanism($stablecoin, $deviation);
+                break;
+            case 'hybrid':
+                $actions = array_merge(
+                    $this->applyCollateralizedMechanism($stablecoin, $deviation),
+                    $this->applyAlgorithmicMechanism($stablecoin, $deviation)
+                );
+                break;
         }
 
         // Fire event if not dry run
         if (! $dryRun) {
             event(
-                'stability.mechanism.applied', [
+                'stability.mechanism.applied',
+                [
                 'stablecoin_code' => $stablecoin->code,
                 'deviation'       => $deviation,
                 'actions'         => $actions,
@@ -550,7 +554,8 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
         // Adjust fees based on deviation
         $feeAdjustment = $this->calculateFeeAdjustment($stablecoin->code);
 
-        if ($feeAdjustment['new_mint_fee'] !== $stablecoin->mint_fee 
+        if (
+            $feeAdjustment['new_mint_fee'] !== $stablecoin->mint_fee
             || $feeAdjustment['new_burn_fee'] !== $stablecoin->burn_fee
         ) {
             $stablecoin->mint_fee = $feeAdjustment['new_mint_fee'];
@@ -748,7 +753,8 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
         $recommendations = [];
 
         // Check collateralization
-        if ($stablecoin->stability_mechanism === 'collateralized' 
+        if (
+            $stablecoin->stability_mechanism === 'collateralized'
             || $stablecoin->stability_mechanism === 'hybrid'
         ) {
             $globalRatio = $stablecoin->total_collateral_value / max(1, $stablecoin->total_supply);
@@ -779,7 +785,8 @@ class StabilityMechanismService implements StabilityMechanismServiceInterface
                     'current_utilization' => $utilization,
                 ];
 
-                if ($stablecoin->stability_mechanism === 'algorithmic' 
+                if (
+                    $stablecoin->stability_mechanism === 'algorithmic'
                     || $stablecoin->stability_mechanism === 'hybrid'
                 ) {
                     $recommendations[] = [

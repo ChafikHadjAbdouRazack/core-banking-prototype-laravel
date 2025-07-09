@@ -218,7 +218,8 @@ class AmlScreening extends Model
     {
         $this->update(
             array_merge(
-                $results, [
+                $results,
+                [
                 'status'          => self::STATUS_COMPLETED,
                 'completed_at'    => now(),
                 'processing_time' => $this->started_at ? now()->diffInSeconds($this->started_at) : null,
@@ -271,7 +272,8 @@ class AmlScreening extends Model
     {
         $confirmed = $this->confirmed_matches_detail ?? [];
         $confirmed[$matchId] = array_merge(
-            $details, [
+            $details,
+            [
             'confirmed_at' => now()->toIso8601String(),
             ]
         );
@@ -297,7 +299,8 @@ class AmlScreening extends Model
         }
 
         // High risk if adverse media with serious allegations
-        if (isset($this->adverse_media_results['serious_allegations']) 
+        if (
+            isset($this->adverse_media_results['serious_allegations'])
             && $this->adverse_media_results['serious_allegations'] > 0
         ) {
             return self::RISK_HIGH;

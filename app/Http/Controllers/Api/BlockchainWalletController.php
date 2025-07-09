@@ -56,7 +56,8 @@ class BlockchainWalletController extends Controller
                     [
                     'message' => 'Invalid mnemonic phrase',
                     'errors'  => ['mnemonic' => ['The provided mnemonic phrase is invalid']],
-                    ], 422
+                    ],
+                    422
                 );
             }
         }
@@ -226,7 +227,8 @@ class BlockchainWalletController extends Controller
             return response()->json(
                 [
                 'message' => 'Only non-custodial wallets can be backed up',
-                ], 422
+                ],
+                422
             );
         }
 

@@ -60,7 +60,8 @@ class VotingSetupCommand extends Command
 
         // Get current composition from config
         $currentComposition = config(
-            'platform.gcu.composition', [
+            'platform.gcu.composition',
+            [
             'USD' => 30,
             'EUR' => 25,
             'GBP' => 15,

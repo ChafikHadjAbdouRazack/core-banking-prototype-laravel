@@ -61,7 +61,7 @@ class KycController extends Controller
     public function status(): JsonResponse
     {
         /**
- * @var User $user 
+ * @var User $user
 */
         $user = Auth::user();
 
@@ -191,7 +191,7 @@ class KycController extends Controller
     public function submit(Request $request): JsonResponse
     {
         /**
- * @var User $user 
+ * @var User $user
 */
         $user = Auth::user();
 
@@ -199,7 +199,8 @@ class KycController extends Controller
             return response()->json(
                 [
                 'error' => 'KYC already approved',
-                ], 400
+                ],
+                400
             );
         }
 
@@ -233,7 +234,8 @@ class KycController extends Controller
             return response()->json(
                 [
                 'error' => 'Failed to submit KYC documents',
-                ], 500
+                ],
+                500
             );
         }
     }
@@ -274,7 +276,7 @@ class KycController extends Controller
     public function downloadDocument(string $documentId): mixed
     {
         /**
- * @var User $user 
+ * @var User $user
 */
         $user = Auth::user();
         $document = $user->kycDocuments()->findOrFail($documentId);
@@ -311,7 +313,7 @@ class KycController extends Controller
         );
 
         /**
- * @var User $user 
+ * @var User $user
 */
         $user = Auth::user();
         $file = $request->file('document');
@@ -364,7 +366,8 @@ class KycController extends Controller
             return response()->json(
                 [
                 'error' => 'Failed to upload document',
-                ], 500
+                ],
+                500
             );
         }
     }

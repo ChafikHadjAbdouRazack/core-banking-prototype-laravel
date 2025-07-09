@@ -123,7 +123,8 @@ class TransactionRateLimitMiddleware
 
         if ($currentCount >= $limit) {
             Log::warning(
-                'Transaction rate limit exceeded', [
+                'Transaction rate limit exceeded',
+                [
                 'user_id'          => $userId,
                 'transaction_type' => $transactionType,
                 'period'           => $period,
@@ -140,7 +141,9 @@ class TransactionRateLimitMiddleware
                 'limit'         => $limit,
                 'current_count' => $currentCount,
                 'reset_time'    => now()->addSeconds($window)->toISOString(),
-                ], 429, [
+                ],
+                429,
+                [
                 'X-Transaction-RateLimit-Exceeded' => $period,
                 'X-Transaction-Limit'              => $limit,
                 'X-Transaction-Remaining'          => 0,
@@ -167,7 +170,8 @@ class TransactionRateLimitMiddleware
 
         if (($currentAmount + $amount) > $config['amount_limit']) {
             Log::warning(
-                'Transaction amount limit exceeded', [
+                'Transaction amount limit exceeded',
+                [
                 'user_id'          => $userId,
                 'transaction_type' => $transactionType,
                 'amount'           => $amount,
@@ -184,7 +188,9 @@ class TransactionRateLimitMiddleware
                 'current_amount'   => $currentAmount,
                 'requested_amount' => $amount,
                 'remaining_amount' => max(0, $config['amount_limit'] - $currentAmount),
-                ], 429, [
+                ],
+                429,
+                [
                 'X-Transaction-AmountLimit-Exceeded' => 'true',
                 'X-Transaction-AmountLimit'          => $config['amount_limit'],
                 'X-Transaction-AmountRemaining'      => max(0, $config['amount_limit'] - $currentAmount),
@@ -209,7 +215,8 @@ class TransactionRateLimitMiddleware
             sleep($delay);
 
             Log::info(
-                'Progressive delay applied', [
+                'Progressive delay applied',
+                [
                 'user_id'          => $userId,
                 'transaction_type' => $transactionType,
                 'recent_count'     => $recentCount,
@@ -270,7 +277,8 @@ class TransactionRateLimitMiddleware
 
         // Log transaction attempt for audit
         Log::info(
-            'Transaction rate limit check passed', [
+            'Transaction rate limit check passed',
+            [
             'user_id'          => $userId,
             'transaction_type' => $transactionType,
             'endpoint'         => $request->path(),

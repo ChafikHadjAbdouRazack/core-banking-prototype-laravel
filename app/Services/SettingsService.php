@@ -300,7 +300,8 @@ class SettingsService
 
         if (! $validation['valid']) {
             Log::warning(
-                'Invalid setting update attempt', [
+                'Invalid setting update attempt',
+                [
                 'key'        => $key,
                 'errors'     => $validation['errors'],
                 'updated_by' => $updatedBy,
@@ -314,7 +315,9 @@ class SettingsService
         $oldValue = Setting::get($key);
 
         Setting::set(
-            $key, $value, [
+            $key,
+            $value,
+            [
             'type'        => $config['type'],
             'label'       => $config['label'],
             'description' => $config['description'],
@@ -323,7 +326,8 @@ class SettingsService
         );
 
         Log::info(
-            'Setting updated', [
+            'Setting updated',
+            [
             'key'        => $key,
             'old_value'  => $oldValue,
             'new_value'  => $value,
@@ -457,7 +461,8 @@ class SettingsService
         }
 
         Log::info(
-            'Settings imported', [
+            'Settings imported',
+            [
             'imported_by'   => $importedBy,
             'success_count' => count($results['success']),
             'failed_count'  => count($results['failed']),

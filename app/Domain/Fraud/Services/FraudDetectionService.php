@@ -119,7 +119,8 @@ class FraudDetectionService
                     return $fraudScore;
                 } catch (\Exception $e) {
                     Log::error(
-                        'Fraud detection failed', [
+                        'Fraud detection failed',
+                        [
                         'transaction_id' => $transaction->id,
                         'error'          => $e->getMessage(),
                         ]
@@ -148,7 +149,8 @@ class FraudDetectionService
     public function analyzeUser(User $user, array $context = []): FraudScore
     {
         $analysisContext = array_merge(
-            $context, [
+            $context,
+            [
             'user'                => $user,
             'account_age_days'    => $user->created_at->diffInDays(now()),
             'transaction_history' => $this->getTransactionHistory($user),
@@ -216,7 +218,8 @@ class FraudDetectionService
             'day_of_week'                 => $transaction->created_at->dayOfWeek,
             'is_weekend'                  => $transaction->created_at->isWeekend(),
             'time_since_last_transaction' => $this->getTimeSinceLastTransaction($user),
-            ], $additionalContext
+            ],
+            $additionalContext
         );
     }
 
@@ -304,21 +307,21 @@ class FraudDetectionService
     protected function executeDecision(Transaction $transaction, FraudScore $fraudScore, string $decision): void
     {
         switch ($decision) {
-        case FraudScore::DECISION_BLOCK:
-            $this->blockTransaction($transaction, $fraudScore);
-            break;
+            case FraudScore::DECISION_BLOCK:
+                $this->blockTransaction($transaction, $fraudScore);
+                break;
 
-        case FraudScore::DECISION_REVIEW:
-            $this->flagForReview($transaction, $fraudScore);
-            break;
+            case FraudScore::DECISION_REVIEW:
+                $this->flagForReview($transaction, $fraudScore);
+                break;
 
-        case FraudScore::DECISION_CHALLENGE:
-            $this->requestChallenge($transaction, $fraudScore);
-            break;
+            case FraudScore::DECISION_CHALLENGE:
+                $this->requestChallenge($transaction, $fraudScore);
+                break;
 
-        case FraudScore::DECISION_ALLOW:
-            // Transaction proceeds normally
-            break;
+            case FraudScore::DECISION_ALLOW:
+                // Transaction proceeds normally
+                break;
         }
 
         // Create fraud case for high-risk transactions
@@ -336,7 +339,8 @@ class FraudDetectionService
             [
             'status'   => 'blocked',
             'metadata' => array_merge(
-                $transaction->metadata ?? [], [
+                $transaction->metadata ?? [],
+                [
                 'blocked_at'     => now()->toIso8601String(),
                 'block_reason'   => 'Fraud detection system',
                 'fraud_score_id' => $fraudScore->id,
@@ -358,7 +362,8 @@ class FraudDetectionService
         $transaction->update(
             [
             'metadata' => array_merge(
-                $transaction->metadata ?? [], [
+                $transaction->metadata ?? [],
+                [
                 'requires_review'     => true,
                 'review_requested_at' => now()->toIso8601String(),
                 'fraud_score_id'      => $fraudScore->id,
@@ -381,7 +386,8 @@ class FraudDetectionService
             [
             'status'   => 'pending_challenge',
             'metadata' => array_merge(
-                $transaction->metadata ?? [], [
+                $transaction->metadata ?? [],
+                [
                 'challenge_requested_at' => now()->toIso8601String(),
                 'challenge_reason'       => 'Additional verification required',
                 'fraud_score_id'         => $fraudScore->id,
@@ -403,7 +409,8 @@ class FraudDetectionService
             60, // 1 minute cache
             function () use ($user) {
                 return Transaction::whereHas(
-                    'account', function ($query) use ($user) {
+                    'account',
+                    function ($query) use ($user) {
                         $query->where('user_id', $user->id);
                     }
                 )
@@ -423,7 +430,8 @@ class FraudDetectionService
             60, // 1 minute cache
             function () use ($user) {
                 return Transaction::whereHas(
-                    'account', function ($query) use ($user) {
+                    'account',
+                    function ($query) use ($user) {
                         $query->where('user_id', $user->id);
                     }
                 )
@@ -439,7 +447,8 @@ class FraudDetectionService
     protected function getHourlyTransactionCount(User $user): int
     {
         return Transaction::whereHas(
-            'account', function ($query) use ($user) {
+            'account',
+            function ($query) use ($user) {
                 $query->where('user_id', $user->id);
             }
         )
@@ -453,7 +462,8 @@ class FraudDetectionService
     protected function getTimeSinceLastTransaction(User $user): ?int
     {
         $lastTransaction = Transaction::whereHas(
-            'account', function ($query) use ($user) {
+            'account',
+            function ($query) use ($user) {
                 $query->where('user_id', $user->id);
             }
         )
@@ -470,7 +480,8 @@ class FraudDetectionService
     protected function getTransactionHistory(User $user, int $days = 30): array
     {
         return Transaction::whereHas(
-            'account', function ($query) use ($user) {
+            'account',
+            function ($query) use ($user) {
                 $query->where('user_id', $user->id);
             }
         )
@@ -638,7 +649,8 @@ class FraudDetectionService
 
         // Check for round amounts
         $roundAmounts = array_filter(
-            $transactions, function ($tx) {
+            $transactions,
+            function ($tx) {
                 return $tx['amount'] % 100 == 0;
             }
         );

@@ -185,7 +185,8 @@ class AssetController extends Controller
                 [
                 'message' => 'Asset not found',
                 'error'   => 'The specified asset code was not found',
-                ], 404
+                ],
+                404
             );
         }
 

@@ -47,7 +47,8 @@ class RequestRefundAction
             initiatedBy: $initiator->id,
             autoApproved: $autoApproved,
             metadata: array_merge(
-                $metadata, [
+                $metadata,
+                [
                 'investment_uuid'    => $investment->uuid,
                 'investment_package' => $investment->package,
                 'payment_method'     => $investment->payment_method,

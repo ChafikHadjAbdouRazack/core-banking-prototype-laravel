@@ -101,7 +101,8 @@ class GCUTradingController extends Controller
                 [
                 'error'   => 'Unauthorized',
                 'message' => 'Account does not belong to authenticated user',
-                ], 403
+                ],
+                403
             );
         }
 
@@ -111,7 +112,8 @@ class GCUTradingController extends Controller
                 [
                 'error'   => 'Account Frozen',
                 'message' => 'Cannot perform transactions on frozen account',
-                ], 422
+                ],
+                422
             );
         }
 
@@ -125,7 +127,8 @@ class GCUTradingController extends Controller
                 [
                 'error'   => 'Insufficient Balance',
                 'message' => "Insufficient {$validated['currency']} balance",
-                ], 422
+                ],
+                422
             );
         }
 
@@ -140,7 +143,8 @@ class GCUTradingController extends Controller
                 [
                 'error'   => 'GCU Value Not Available',
                 'message' => 'Unable to determine current GCU value',
-                ], 503
+                ],
+                503
             );
         }
 
@@ -202,7 +206,8 @@ class GCUTradingController extends Controller
                 [
                 'error'   => 'Transaction Failed',
                 'message' => 'Failed to complete GCU purchase: ' . $e->getMessage(),
-                ], 500
+                ],
+                500
             );
         }
     }
@@ -276,7 +281,8 @@ class GCUTradingController extends Controller
                 [
                 'error'   => 'Unauthorized',
                 'message' => 'Account does not belong to authenticated user',
-                ], 403
+                ],
+                403
             );
         }
 
@@ -286,7 +292,8 @@ class GCUTradingController extends Controller
                 [
                 'error'   => 'Account Frozen',
                 'message' => 'Cannot perform transactions on frozen account',
-                ], 422
+                ],
+                422
             );
         }
 
@@ -300,7 +307,8 @@ class GCUTradingController extends Controller
                 [
                 'error'   => 'Insufficient Balance',
                 'message' => 'Insufficient GCU balance',
-                ], 422
+                ],
+                422
             );
         }
 
@@ -314,7 +322,8 @@ class GCUTradingController extends Controller
                 [
                 'error'   => 'GCU Value Not Available',
                 'message' => 'Unable to determine current GCU value',
-                ], 503
+                ],
+                503
             );
         }
 
@@ -375,7 +384,8 @@ class GCUTradingController extends Controller
                 [
                 'error'   => 'Transaction Failed',
                 'message' => 'Failed to complete GCU sale: ' . $e->getMessage(),
-                ], 500
+                ],
+                500
             );
         }
     }
@@ -451,7 +461,8 @@ class GCUTradingController extends Controller
                 [
                 'error'   => 'GCU Value Not Available',
                 'message' => 'Unable to determine current GCU value',
-                ], 503
+                ],
+                503
             );
         }
 

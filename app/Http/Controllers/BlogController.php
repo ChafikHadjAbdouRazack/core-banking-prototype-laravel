@@ -88,7 +88,8 @@ class BlogController extends Controller
             );
         } catch (\Exception $e) {
             Log::error(
-                'Subscription error', [
+                'Subscription error',
+                [
                 'error' => $e->getMessage(),
                 'email' => $validated['email'],
                 ]
@@ -98,7 +99,8 @@ class BlogController extends Controller
                 [
                 'success' => false,
                 'message' => 'An error occurred. Please try again later.',
-                ], 500
+                ],
+                500
             );
         }
     }
@@ -120,7 +122,8 @@ class BlogController extends Controller
         try {
             Http::withBasicAuth('apikey', $apiKey)
                 ->post(
-                    "https://{$dataCenter}.api.mailchimp.com/3.0/lists/{$listId}/members", [
+                    "https://{$dataCenter}.api.mailchimp.com/3.0/lists/{$listId}/members",
+                    [
                     'email_address' => $email,
                     'status'        => 'subscribed',
                     'tags'          => ['blog_subscriber', 'finaegis_demo'],
@@ -128,7 +131,8 @@ class BlogController extends Controller
                 );
         } catch (\Exception $e) {
             Log::warning(
-                'Mailchimp sync failed (non-critical)', [
+                'Mailchimp sync failed (non-critical)',
+                [
                 'error' => $e->getMessage(),
                 'email' => $email,
                 ]

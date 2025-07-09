@@ -87,7 +87,8 @@ class BasketAccountController extends Controller
             return response()->json(
                 [
                 'message' => $e->getMessage(),
-                ], 422
+                ],
+                422
             );
         }
     }
@@ -158,7 +159,8 @@ class BasketAccountController extends Controller
             return response()->json(
                 [
                 'message' => $e->getMessage(),
-                ], 422
+                ],
+                422
             );
         }
     }

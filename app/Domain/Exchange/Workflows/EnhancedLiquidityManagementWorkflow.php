@@ -125,7 +125,8 @@ class EnhancedLiquidityManagementWorkflow extends Workflow
                     quoteAmount: $input->quoteAmount,
                     minShares: $input->minShares,
                     metadata: array_merge(
-                        $context, [
+                        $context,
+                        [
                         'timestamp'         => now()->toIso8601String(),
                         'execution_time_ms' => (microtime(true) - $startTime) * 1000,
                         'shares_minted'     => $shares['shares'],
@@ -135,8 +136,10 @@ class EnhancedLiquidityManagementWorkflow extends Workflow
             );
 
             Log::info(
-                'Liquidity added successfully', array_merge(
-                    $context, [
+                'Liquidity added successfully',
+                array_merge(
+                    $context,
+                    [
                     'shares_minted'     => $shares['shares'],
                     'execution_time_ms' => (microtime(true) - $startTime) * 1000,
                     ]
@@ -152,8 +155,10 @@ class EnhancedLiquidityManagementWorkflow extends Workflow
             ];
         } catch (\Exception $e) {
             Log::error(
-                'Failed to add liquidity', array_merge(
-                    $context, [
+                'Failed to add liquidity',
+                array_merge(
+                    $context,
+                    [
                     'error'             => $e->getMessage(),
                     'execution_time_ms' => (microtime(true) - $startTime) * 1000,
                     ]
@@ -208,8 +213,10 @@ class EnhancedLiquidityManagementWorkflow extends Workflow
                 }
 
                 Log::warning(
-                    'Retrying fund lock', array_merge(
-                        $context, [
+                    'Retrying fund lock',
+                    array_merge(
+                        $context,
+                        [
                         'attempt'  => $attempt,
                         'currency' => $currency,
                         'error'    => $e->getMessage(),
@@ -243,7 +250,8 @@ class EnhancedLiquidityManagementWorkflow extends Workflow
                 }
 
                 Log::warning(
-                    'Retrying pool state update', [
+                    'Retrying pool state update',
+                    [
                     'pool_id' => $poolId,
                     'attempt' => $attempt,
                     'error'   => $e->getMessage(),
@@ -265,7 +273,8 @@ class EnhancedLiquidityManagementWorkflow extends Workflow
         } catch (\RuntimeException $e) {
             if (str_contains($e->getMessage(), 'Circuit breaker is')) {
                 Log::error(
-                    'Circuit breaker preventing operation', [
+                    'Circuit breaker preventing operation',
+                    [
                     'service' => $service,
                     'context' => $context,
                     ]
@@ -353,7 +362,8 @@ class EnhancedLiquidityManagementWorkflow extends Workflow
         try {
             $pool = LiquidityPool::retrieve($poolId);
             $pool->updateParameters(
-                isActive: false, metadata: [
+                isActive: false,
+                metadata: [
                 'paused_by'    => 'system',
                 'pause_reason' => $reason,
                 ]
@@ -372,7 +382,8 @@ class EnhancedLiquidityManagementWorkflow extends Workflow
             );
 
             Log::critical(
-                'Pool paused due to emergency', [
+                'Pool paused due to emergency',
+                [
                 'pool_id' => $poolId,
                 'reason'  => $reason,
                 ]
@@ -381,7 +392,8 @@ class EnhancedLiquidityManagementWorkflow extends Workflow
             yield; // Required for Generator return type
         } catch (\Exception $e) {
             Log::error(
-                'Failed to pause pool', [
+                'Failed to pause pool',
+                [
                 'pool_id' => $poolId,
                 'error'   => $e->getMessage(),
                 ]

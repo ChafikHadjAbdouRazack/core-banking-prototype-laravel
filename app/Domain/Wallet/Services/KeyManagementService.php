@@ -261,7 +261,7 @@ class KeyManagementService implements KeyManagementServiceInterface
             // Use app key if no userId provided
             return $this->encrypt($privateKey);
         }
-        
+
         $key = $this->getUserEncryptionKey($userId);
         return openssl_encrypt($privateKey, 'AES-256-CBC', $key, 0, substr($key, 0, 16));
     }
@@ -275,7 +275,7 @@ class KeyManagementService implements KeyManagementServiceInterface
             // Use app key if no userId provided
             return $this->decrypt($encryptedKey);
         }
-        
+
         $key = $this->getUserEncryptionKey($userId);
         return openssl_decrypt($encryptedKey, 'AES-256-CBC', $key, 0, substr($key, 0, 16));
     }

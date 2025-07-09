@@ -154,36 +154,36 @@ class RegulatoryThreshold extends Model
         }
 
         switch ($operator) {
-        case '=':
-        case '==':
-            return $contextValue == $value;
-        case '!=':
-        case '<>':
-            return $contextValue != $value;
-        case '>':
-            return $contextValue > $value;
-        case '>=':
-            return $contextValue >= $value;
-        case '<':
-            return $contextValue < $value;
-        case '<=':
-            return $contextValue <= $value;
-        case 'in':
-            return in_array($contextValue, (array) $value);
-        case 'not_in':
-            return ! in_array($contextValue, (array) $value);
-        case 'contains':
-            return str_contains($contextValue, $value);
-        case 'starts_with':
-            return str_starts_with($contextValue, $value);
-        case 'ends_with':
-            return str_ends_with($contextValue, $value);
-        case 'between':
-            return $contextValue >= $value[0] && $contextValue <= $value[1];
-        case 'regex':
-            return preg_match($value, $contextValue);
-        default:
-            return false;
+            case '=':
+            case '==':
+                return $contextValue == $value;
+            case '!=':
+            case '<>':
+                return $contextValue != $value;
+            case '>':
+                return $contextValue > $value;
+            case '>=':
+                return $contextValue >= $value;
+            case '<':
+                return $contextValue < $value;
+            case '<=':
+                return $contextValue <= $value;
+            case 'in':
+                return in_array($contextValue, (array) $value);
+            case 'not_in':
+                return ! in_array($contextValue, (array) $value);
+            case 'contains':
+                return str_contains($contextValue, $value);
+            case 'starts_with':
+                return str_starts_with($contextValue, $value);
+            case 'ends_with':
+                return str_ends_with($contextValue, $value);
+            case 'between':
+                return $contextValue >= $value[0] && $contextValue <= $value[1];
+            case 'regex':
+                return preg_match($value, $contextValue);
+            default:
+                return false;
         }
     }
 

@@ -142,7 +142,8 @@ class WebhookController extends Controller
                 'is_active'  => $webhook->is_active,
                 'created_at' => $webhook->created_at->toIso8601String(),
             ],
-            ], 201
+            ],
+            201
         );
     }
 

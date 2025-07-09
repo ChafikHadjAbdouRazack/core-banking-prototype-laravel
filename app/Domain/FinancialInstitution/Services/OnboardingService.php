@@ -54,7 +54,8 @@ class OnboardingService
             DB::commit();
 
             Log::info(
-                'Financial institution application submitted', [
+                'Financial institution application submitted',
+                [
                 'application_id'   => $application->id,
                 'institution_name' => $application->institution_name,
                 ]
@@ -64,7 +65,8 @@ class OnboardingService
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error(
-                'Failed to submit financial institution application', [
+                'Failed to submit financial institution application',
+                [
                 'error' => $e->getMessage(),
                 'data'  => $data,
                 ]
@@ -92,7 +94,8 @@ class OnboardingService
         );
 
         Log::info(
-            'Application review started', [
+            'Application review started',
+            [
             'application_id' => $application->id,
             'reviewer_id'    => $reviewerId,
             ]
@@ -116,7 +119,8 @@ class OnboardingService
         $application->update(
             [
             'metadata' => array_merge(
-                $application->metadata ?? [], [
+                $application->metadata ?? [],
+                [
                 'compliance_check'      => $results,
                 'compliance_checked_at' => now()->toIso8601String(),
                 ]
@@ -125,7 +129,8 @@ class OnboardingService
         );
 
         Log::info(
-            'Compliance check completed', [
+            'Compliance check completed',
+            [
             'application_id' => $application->id,
             'passed'         => $results['passed'],
             ]
@@ -164,7 +169,8 @@ class OnboardingService
         $application->update(
             [
             'metadata' => array_merge(
-                $application->metadata ?? [], [
+                $application->metadata ?? [],
+                [
                 'technical_assessment'  => $assessment,
                 'technical_assessed_at' => now()->toIso8601String(),
                 ]
@@ -215,7 +221,8 @@ class OnboardingService
             DB::commit();
 
             Log::info(
-                'Application approved and partner created', [
+                'Application approved and partner created',
+                [
                 'application_id' => $application->id,
                 'partner_id'     => $partner->id,
                 ]
@@ -225,7 +232,8 @@ class OnboardingService
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error(
-                'Failed to approve application', [
+                'Failed to approve application',
+                [
                 'application_id' => $application->id,
                 'error'          => $e->getMessage(),
                 ]
@@ -255,7 +263,8 @@ class OnboardingService
         event(new ApplicationRejected($application, $reason));
 
         Log::info(
-            'Application rejected', [
+            'Application rejected',
+            [
             'application_id' => $application->id,
             'reason'         => $reason,
             ]
@@ -277,7 +286,8 @@ class OnboardingService
         );
 
         Log::info(
-            'Application put on hold', [
+            'Application put on hold',
+            [
             'application_id' => $application->id,
             'reason'         => $reason,
             ]

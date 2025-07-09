@@ -44,7 +44,8 @@ class GcuVotingController extends Controller
         }
 
         return view(
-            'gcu.voting.index', compact(
+            'gcu.voting.index',
+            compact(
                 'activeProposals',
                 'upcomingProposals',
                 'pastProposals',

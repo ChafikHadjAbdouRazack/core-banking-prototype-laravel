@@ -41,7 +41,8 @@ class TransactionReversalWorkflow extends Workflow
         } catch (\Throwable $th) {
             // Log reversal failure for audit
             logger()->error(
-                'Transaction reversal failed', [
+                'Transaction reversal failed',
+                [
                 'account_uuid' => $accountUuid->getUuid(),
                 'amount'       => $originalAmount->getAmount(),
                 'type'         => $transactionType,

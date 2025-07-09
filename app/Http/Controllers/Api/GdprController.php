@@ -177,7 +177,8 @@ class GdprController extends Controller
             return response()->json(
                 [
                 'error' => 'Failed to process data export request',
-                ], 500
+                ],
+                500
             );
         }
     }
@@ -241,7 +242,8 @@ class GdprController extends Controller
                 [
                 'error'   => 'Account cannot be deleted at this time',
                 'reasons' => $check['reasons'],
-                ], 400
+                ],
+                400
             );
         }
 
@@ -249,7 +251,8 @@ class GdprController extends Controller
             // In a real application, this would queue a job and require
             // additional confirmation steps
             $this->gdprService->deleteUserData(
-                $user, [
+                $user,
+                [
                 'reason'                 => $request->reason,
                 'delete_documents'       => true,
                 'anonymize_transactions' => true,
@@ -265,7 +268,8 @@ class GdprController extends Controller
             return response()->json(
                 [
                 'error' => 'Failed to process deletion request',
-                ], 500
+                ],
+                500
             );
         }
     }

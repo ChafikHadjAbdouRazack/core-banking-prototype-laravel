@@ -45,7 +45,8 @@ class BatchProcessingController extends Controller
         $templates = $this->getBatchTemplates();
 
         return view(
-            'batch-processing.index', compact(
+            'batch-processing.index',
+            compact(
                 'batchJobs',
                 'statistics',
                 'templates',
@@ -247,7 +248,8 @@ class BatchProcessingController extends Controller
 
                 // Headers
                 fputcsv(
-                    $handle, [
+                    $handle,
+                    [
                     'Sequence',
                     'Type',
                     'Status',
@@ -264,7 +266,8 @@ class BatchProcessingController extends Controller
                 // Data
                 foreach ($batchJob->items as $item) {
                     fputcsv(
-                        $handle, [
+                        $handle,
+                        [
                         $item->sequence,
                         $item->type,
                         $item->status,
@@ -280,7 +283,9 @@ class BatchProcessingController extends Controller
                 }
 
                 fclose($handle);
-            }, $filename, [
+            },
+            $filename,
+            [
             'Content-Type' => 'text/csv',
             ]
         );

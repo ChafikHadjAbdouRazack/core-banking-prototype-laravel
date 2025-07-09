@@ -107,7 +107,8 @@ class LiquidityController extends Controller
                 return redirect()
                     ->route('liquidity.pool', $validated['pool_id'])
                     ->with(
-                        'success', sprintf(
+                        'success',
+                        sprintf(
                             'Liquidity removed successfully. Received: %s %s and %s %s',
                             $result['base_amount'],
                             $request->base_currency,

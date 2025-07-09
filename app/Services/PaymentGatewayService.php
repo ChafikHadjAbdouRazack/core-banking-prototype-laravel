@@ -32,7 +32,8 @@ class PaymentGatewayService
 
             // Create payment intent
             $intent = $user->pay(
-                $amountInCents, [
+                $amountInCents,
+                [
                 'currency' => strtolower($currency),
                 'metadata' => [
                     'user_id'      => $user->id,
@@ -47,7 +48,8 @@ class PaymentGatewayService
             return $intent->asStripePaymentIntent();
         } catch (Exception $e) {
             Log::error(
-                'Failed to create deposit payment intent', [
+                'Failed to create deposit payment intent',
+                [
                 'user_id' => $user->id,
                 'amount'  => $amountInCents,
                 'error'   => $e->getMessage(),
@@ -175,7 +177,8 @@ class PaymentGatewayService
             )->toArray();
         } catch (Exception $e) {
             Log::error(
-                'Failed to fetch payment methods', [
+                'Failed to fetch payment methods',
+                [
                 'user_id' => $user->id,
                 'error'   => $e->getMessage(),
                 ]
@@ -198,7 +201,8 @@ class PaymentGatewayService
             return $user->addPaymentMethod($paymentMethodId);
         } catch (Exception $e) {
             Log::error(
-                'Failed to add payment method', [
+                'Failed to add payment method',
+                [
                 'user_id'           => $user->id,
                 'payment_method_id' => $paymentMethodId,
                 'error'             => $e->getMessage(),
@@ -220,7 +224,8 @@ class PaymentGatewayService
             }
         } catch (Exception $e) {
             Log::error(
-                'Failed to remove payment method', [
+                'Failed to remove payment method',
+                [
                 'user_id'           => $user->id,
                 'payment_method_id' => $paymentMethodId,
                 'error'             => $e->getMessage(),

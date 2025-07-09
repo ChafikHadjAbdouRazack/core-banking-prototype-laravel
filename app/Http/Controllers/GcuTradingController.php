@@ -63,7 +63,8 @@ class GcuTradingController extends Controller
             ->get();
 
         return view(
-            'gcu.trading', compact(
+            'gcu.trading',
+            compact(
                 'accounts',
                 'gcuAsset',
                 'currentPrice',

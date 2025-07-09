@@ -52,7 +52,8 @@ class BankIntegrationController extends Controller
             return response()->json(
                 [
                 'error' => 'Failed to retrieve available banks',
-                ], 500
+                ],
+                500
             );
         }
     }
@@ -87,7 +88,8 @@ class BankIntegrationController extends Controller
             );
         } catch (\Exception $e) {
             Log::error(
-                'Failed to get user bank connections', [
+                'Failed to get user bank connections',
+                [
                 'user_id' => $request->user()->uuid,
                 'error'   => $e->getMessage(),
                 ]
@@ -96,7 +98,8 @@ class BankIntegrationController extends Controller
             return response()->json(
                 [
                 'error' => 'Failed to retrieve bank connections',
-                ], 500
+                ],
+                500
             );
         }
     }
@@ -129,11 +132,13 @@ class BankIntegrationController extends Controller
                     'expires_at' => $connection->expiresAt?->toIso8601String(),
                     'message'    => 'Successfully connected to bank',
                 ],
-                ], 201
+                ],
+                201
             );
         } catch (\Exception $e) {
             Log::error(
-                'Failed to connect to bank', [
+                'Failed to connect to bank',
+                [
                 'user_id'   => $request->user()->uuid,
                 'bank_code' => $validated['bank_code'],
                 'error'     => $e->getMessage(),
@@ -143,7 +148,8 @@ class BankIntegrationController extends Controller
             return response()->json(
                 [
                 'error' => 'Failed to connect to bank: ' . $e->getMessage(),
-                ], 422
+                ],
+                422
             );
         }
     }
@@ -169,12 +175,14 @@ class BankIntegrationController extends Controller
                 return response()->json(
                     [
                     'error' => 'Bank connection not found',
-                    ], 404
+                    ],
+                    404
                 );
             }
         } catch (\Exception $e) {
             Log::error(
-                'Failed to disconnect from bank', [
+                'Failed to disconnect from bank',
+                [
                 'user_id'   => $request->user()->uuid,
                 'bank_code' => $bankCode,
                 'error'     => $e->getMessage(),
@@ -184,7 +192,8 @@ class BankIntegrationController extends Controller
             return response()->json(
                 [
                 'error' => 'Failed to disconnect from bank',
-                ], 500
+                ],
+                500
             );
         }
     }
@@ -221,7 +230,8 @@ class BankIntegrationController extends Controller
             );
         } catch (\Exception $e) {
             Log::error(
-                'Failed to get bank accounts', [
+                'Failed to get bank accounts',
+                [
                 'user_id'   => $request->user()->uuid,
                 'bank_code' => $bankCode,
                 'error'     => $e->getMessage(),
@@ -231,7 +241,8 @@ class BankIntegrationController extends Controller
             return response()->json(
                 [
                 'error' => 'Failed to retrieve bank accounts',
-                ], 500
+                ],
+                500
             );
         }
     }
@@ -252,7 +263,8 @@ class BankIntegrationController extends Controller
             );
         } catch (\Exception $e) {
             Log::error(
-                'Failed to sync bank accounts', [
+                'Failed to sync bank accounts',
+                [
                 'user_id'   => $request->user()->uuid,
                 'bank_code' => $bankCode,
                 'error'     => $e->getMessage(),
@@ -262,7 +274,8 @@ class BankIntegrationController extends Controller
             return response()->json(
                 [
                 'error' => 'Failed to sync bank accounts',
-                ], 500
+                ],
+                500
             );
         }
     }
@@ -295,7 +308,8 @@ class BankIntegrationController extends Controller
             );
         } catch (\Exception $e) {
             Log::error(
-                'Failed to get aggregated balance', [
+                'Failed to get aggregated balance',
+                [
                 'user_id'  => $request->user()->uuid,
                 'currency' => $validated['currency'],
                 'error'    => $e->getMessage(),
@@ -305,7 +319,8 @@ class BankIntegrationController extends Controller
             return response()->json(
                 [
                 'error' => 'Failed to retrieve aggregated balance',
-                ], 500
+                ],
+                500
             );
         }
     }
@@ -357,11 +372,13 @@ class BankIntegrationController extends Controller
                     'estimated_arrival' => $transfer->getEstimatedArrival()?->toIso8601String(),
                     'created_at'        => $transfer->createdAt->toIso8601String(),
                 ],
-                ], 201
+                ],
+                201
             );
         } catch (\Exception $e) {
             Log::error(
-                'Failed to initiate transfer', [
+                'Failed to initiate transfer',
+                [
                 'user_id'       => $request->user()->uuid,
                 'transfer_data' => $validated,
                 'error'         => $e->getMessage(),
@@ -371,7 +388,8 @@ class BankIntegrationController extends Controller
             return response()->json(
                 [
                 'error' => 'Failed to initiate transfer: ' . $e->getMessage(),
-                ], 422
+                ],
+                422
             );
         }
     }
@@ -391,7 +409,8 @@ class BankIntegrationController extends Controller
             );
         } catch (\Exception $e) {
             Log::error(
-                'Failed to get bank health', [
+                'Failed to get bank health',
+                [
                 'bank_code' => $bankCode,
                 'error'     => $e->getMessage(),
                 ]
@@ -400,7 +419,8 @@ class BankIntegrationController extends Controller
             return response()->json(
                 [
                 'error' => 'Failed to retrieve bank health status',
-                ], 500
+                ],
+                500
             );
         }
     }
@@ -435,7 +455,8 @@ class BankIntegrationController extends Controller
             );
         } catch (\Exception $e) {
             Log::error(
-                'Failed to get bank recommendations', [
+                'Failed to get bank recommendations',
+                [
                 'user_id'      => $request->user()->uuid,
                 'requirements' => $validated,
                 'error'        => $e->getMessage(),
@@ -445,7 +466,8 @@ class BankIntegrationController extends Controller
             return response()->json(
                 [
                 'error' => 'Failed to retrieve bank recommendations',
-                ], 500
+                ],
+                500
             );
         }
     }

@@ -36,7 +36,9 @@ class WebhookEventListener extends Projector
         }
 
         $this->webhookService->dispatchAccountEvent(
-            'account.created', $event->aggregateRootUuid(), [
+            'account.created',
+            $event->aggregateRootUuid(),
+            [
             'name'      => $account->name,
             'user_uuid' => $account->user_uuid,
             'balance'   => 0,
@@ -51,7 +53,9 @@ class WebhookEventListener extends Projector
         }
 
         $this->webhookService->dispatchAccountEvent(
-            'account.frozen', $event->aggregateRootUuid(), [
+            'account.frozen',
+            $event->aggregateRootUuid(),
+            [
             'reason' => $event->reason,
             ]
         );
@@ -88,7 +92,8 @@ class WebhookEventListener extends Projector
         }
 
         $this->webhookService->dispatchTransactionEvent(
-            'transaction.created', [
+            'transaction.created',
+            [
             'account_uuid'  => $event->aggregateRootUuid(),
             'type'          => 'deposit',
             'amount'        => $event->money->getAmount(),
@@ -101,7 +106,9 @@ class WebhookEventListener extends Projector
         // Check for low balance alerts
         if ($account->balance < 1000) { // $10.00
             $this->webhookService->dispatchAccountEvent(
-                'balance.low', $event->aggregateRootUuid(), [
+                'balance.low',
+                $event->aggregateRootUuid(),
+                [
                 'balance'   => $account->balance,
                 'threshold' => 1000,
                 ]
@@ -122,7 +129,8 @@ class WebhookEventListener extends Projector
         }
 
         $this->webhookService->dispatchTransactionEvent(
-            'transaction.created', [
+            'transaction.created',
+            [
             'account_uuid'  => $event->aggregateRootUuid(),
             'type'          => 'withdrawal',
             'amount'        => $event->money->getAmount(),
@@ -135,7 +143,9 @@ class WebhookEventListener extends Projector
         // Check for negative balance alerts
         if ($account->balance < 0) {
             $this->webhookService->dispatchAccountEvent(
-                'balance.negative', $event->aggregateRootUuid(), [
+                'balance.negative',
+                $event->aggregateRootUuid(),
+                [
                 'balance' => $account->balance,
                 ]
             );

@@ -80,7 +80,8 @@ abstract class BaseCustodianConnector implements ICustodianConnector
             );
         } catch (\Exception $e) {
             Log::error(
-                "Custodian {$this->getName()} health check failed", [
+                "Custodian {$this->getName()} health check failed",
+                [
                 'error'                 => $e->getMessage(),
                 'circuit_breaker_state' => $this->circuitBreaker->getState("{$this->getName()}.GET:{$this->getHealthCheckEndpoint()}"),
                 ]
@@ -94,7 +95,8 @@ abstract class BaseCustodianConnector implements ICustodianConnector
     {
         if ($this->config['debug'] ?? false) {
             Log::debug(
-                "Custodian {$this->getName()} request", [
+                "Custodian {$this->getName()} request",
+                [
                 'method'   => $method,
                 'endpoint' => $endpoint,
                 'data'     => $data,
@@ -107,7 +109,8 @@ abstract class BaseCustodianConnector implements ICustodianConnector
     {
         if ($this->config['debug'] ?? false) {
             Log::debug(
-                "Custodian {$this->getName()} response", [
+                "Custodian {$this->getName()} response",
+                [
                 'method'   => $method,
                 'endpoint' => $endpoint,
                 'status'   => $response->status(),

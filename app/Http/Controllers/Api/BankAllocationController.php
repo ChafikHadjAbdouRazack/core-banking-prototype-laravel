@@ -187,7 +187,8 @@ class BankAllocationController extends Controller
                 [
                 'message' => 'Failed to update bank allocations',
                 'error'   => $e->getMessage(),
-                ], 422
+                ],
+                422
             );
         }
     }
@@ -250,14 +251,16 @@ class BankAllocationController extends Controller
                     'is_primary'            => $preference->is_primary,
                     'status'                => $preference->status,
                 ],
-                ], 201
+                ],
+                201
             );
         } catch (\Exception $e) {
             return response()->json(
                 [
                 'message' => 'Failed to add bank to allocation',
                 'error'   => $e->getMessage(),
-                ], 422
+                ],
+                422
             );
         }
     }
@@ -313,7 +316,8 @@ class BankAllocationController extends Controller
                 [
                 'message' => 'Failed to remove bank from allocation',
                 'error'   => $e->getMessage(),
-                ], 422
+                ],
+                422
             );
         }
     }
@@ -373,7 +377,8 @@ class BankAllocationController extends Controller
                 [
                 'message' => 'Failed to set primary bank',
                 'error'   => $e->getMessage(),
-                ], 422
+                ],
+                422
             );
         }
     }
@@ -485,7 +490,8 @@ class BankAllocationController extends Controller
                 [
                 'message' => 'Failed to generate distribution preview',
                 'error'   => $summary['error'],
-                ], 422
+                ],
+                422
             );
         }
 

@@ -47,7 +47,8 @@ class BalanceInquiryActivity extends Activity
     {
         // Log to audit trail (could be a separate event or database log)
         logger()->info(
-            'Balance inquiry', [
+            'Balance inquiry',
+            [
             'account_uuid' => $uuid->getUuid(),
             'requested_by' => $requestedBy,
             'timestamp'    => now()->toISOString(),

@@ -154,7 +154,8 @@ class Vote extends Model
     public function toArray(): array
     {
         return array_merge(
-            parent::toArray(), [
+            parent::toArray(),
+            [
             'selected_options_string' => $this->getSelectedOptionsAsString(),
             'selected_option_count'   => $this->getSelectedOptionCount(),
             'voting_power_weight'     => $this->getVotingPowerWeight(),

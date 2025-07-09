@@ -65,7 +65,8 @@ class TransactionMonitoringService
             ];
         } catch (\Exception $e) {
             Log::error(
-                'Transaction monitoring failed', [
+                'Transaction monitoring failed',
+                [
                 'transaction_id' => $transaction->id,
                 'error'          => $e->getMessage(),
                 ]
@@ -162,23 +163,23 @@ class TransactionMonitoringService
         ?CustomerRiskProfile $riskProfile
     ): bool {
         switch ($rule->category) {
-        case TransactionMonitoringRule::CATEGORY_VELOCITY:
-            return $this->evaluateVelocityRule($rule, $transaction);
+            case TransactionMonitoringRule::CATEGORY_VELOCITY:
+                return $this->evaluateVelocityRule($rule, $transaction);
 
-        case TransactionMonitoringRule::CATEGORY_PATTERN:
-            return $this->evaluatePatternRule($rule, $transaction);
+            case TransactionMonitoringRule::CATEGORY_PATTERN:
+                return $this->evaluatePatternRule($rule, $transaction);
 
-        case TransactionMonitoringRule::CATEGORY_THRESHOLD:
-            return $this->evaluateThresholdRule($rule, $transaction);
+            case TransactionMonitoringRule::CATEGORY_THRESHOLD:
+                return $this->evaluateThresholdRule($rule, $transaction);
 
-        case TransactionMonitoringRule::CATEGORY_GEOGRAPHY:
-            return $this->evaluateGeographyRule($rule, $transaction);
+            case TransactionMonitoringRule::CATEGORY_GEOGRAPHY:
+                return $this->evaluateGeographyRule($rule, $transaction);
 
-        case TransactionMonitoringRule::CATEGORY_BEHAVIOR:
-            return $this->evaluateBehaviorRule($rule, $transaction, $riskProfile);
+            case TransactionMonitoringRule::CATEGORY_BEHAVIOR:
+                return $this->evaluateBehaviorRule($rule, $transaction, $riskProfile);
 
-        default:
-            return false;
+            default:
+                return false;
         }
     }
 
@@ -424,21 +425,21 @@ class TransactionMonitoringService
     {
         foreach ($actions as $action) {
             switch ($action) {
-            case TransactionMonitoringRule::ACTION_BLOCK:
-                $this->blockTransaction($transaction, $alerts);
-                break;
+                case TransactionMonitoringRule::ACTION_BLOCK:
+                    $this->blockTransaction($transaction, $alerts);
+                    break;
 
-            case TransactionMonitoringRule::ACTION_ALERT:
-                $this->sendAlert($transaction, $alerts);
-                break;
+                case TransactionMonitoringRule::ACTION_ALERT:
+                    $this->sendAlert($transaction, $alerts);
+                    break;
 
-            case TransactionMonitoringRule::ACTION_REVIEW:
-                $this->flagForReview($transaction, $alerts);
-                break;
+                case TransactionMonitoringRule::ACTION_REVIEW:
+                    $this->flagForReview($transaction, $alerts);
+                    break;
 
-            case TransactionMonitoringRule::ACTION_REPORT:
-                $this->createSAR($transaction, $alerts);
-                break;
+                case TransactionMonitoringRule::ACTION_REPORT:
+                    $this->createSAR($transaction, $alerts);
+                    break;
             }
         }
     }
@@ -452,7 +453,8 @@ class TransactionMonitoringService
             [
             'status'   => 'blocked',
             'metadata' => array_merge(
-                $transaction->metadata ?? [], [
+                $transaction->metadata ?? [],
+                [
                 'blocked_at'   => now()->toIso8601String(),
                 'block_reason' => 'AML monitoring alert',
                 'alerts'       => $alerts,
@@ -480,7 +482,8 @@ class TransactionMonitoringService
         $transaction->update(
             [
             'metadata' => array_merge(
-                $transaction->metadata ?? [], [
+                $transaction->metadata ?? [],
+                [
                 'requires_review'     => true,
                 'review_requested_at' => now()->toIso8601String(),
                 'review_alerts'       => $alerts,

@@ -59,7 +59,8 @@ class DecomposeBasketBusinessActivity extends Activity
                 );
 
                 Log::info(
-                    "Decomposed {$amount} of basket {$basketCode} for account {$account->uuid}", [
+                    "Decomposed {$amount} of basket {$basketCode} for account {$account->uuid}",
+                    [
                     'components' => $componentAmounts,
                     ]
                 );

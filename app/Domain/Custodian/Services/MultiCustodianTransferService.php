@@ -40,7 +40,8 @@ class MultiCustodianTransferService
     {
         $this->registry = $registry;
         $this->routingStrategy = config(
-            'custodians.routing_strategy', [
+            'custodians.routing_strategy',
+            [
             'primary'  => self::ROUTE_SAME_CUSTODIAN,
             'fallback' => self::ROUTE_FASTEST,
             ]
@@ -59,7 +60,8 @@ class MultiCustodianTransferService
         ?string $description = null
     ): TransactionReceipt {
         Log::info(
-            'Initiating multi-custodian transfer', [
+            'Initiating multi-custodian transfer',
+            [
             'from_account' => $fromAccount->uuid,
             'to_account'   => $toAccount->uuid,
             'amount'       => $amount->getAmount(),
@@ -105,7 +107,8 @@ class MultiCustodianTransferService
 
         if ($fromCustodians->isEmpty() || $toCustodians->isEmpty()) {
             Log::error(
-                'No active custodian accounts found', [
+                'No active custodian accounts found',
+                [
                 'from_count' => $fromCustodians->count(),
                 'to_count'   => $toCustodians->count(),
                 ]
@@ -271,7 +274,8 @@ class MultiCustodianTransferService
             return true;
         } catch (\Exception $e) {
             Log::warning(
-                'Failed to check transfer capability', [
+                'Failed to check transfer capability',
+                [
                 'from'  => $connector->getName(),
                 'to'    => $toCustodian,
                 'error' => $e->getMessage(),
@@ -293,7 +297,8 @@ class MultiCustodianTransferService
         ?string $description
     ): TransactionReceipt {
         Log::info(
-            'Executing internal transfer', [
+            'Executing internal transfer',
+            [
             'custodian' => $route['custodian'],
             'from'      => $route['from']->custodian_account_id,
             'to'        => $route['to']->custodian_account_id,
@@ -330,7 +335,8 @@ class MultiCustodianTransferService
         ?string $description
     ): TransactionReceipt {
         Log::info(
-            'Executing external transfer', [
+            'Executing external transfer',
+            [
             'from_custodian' => $route['from_custodian'],
             'to_custodian'   => $route['to_custodian'],
             'from'           => $route['from']->custodian_account_id,
@@ -373,7 +379,8 @@ class MultiCustodianTransferService
         ?string $description
     ): TransactionReceipt {
         Log::info(
-            'Executing bridge transfer', [
+            'Executing bridge transfer',
+            [
             'from'   => $route['route']['from']->custodian_account_id,
             'bridge' => $route['route']['bridge'],
             'to'     => $route['route']['to']->custodian_account_id,
@@ -447,7 +454,8 @@ class MultiCustodianTransferService
             DB::rollback();
 
             Log::error(
-                'Bridge transfer failed', [
+                'Bridge transfer failed',
+                [
                 'error' => $e->getMessage(),
                 'route' => $route,
                 ]

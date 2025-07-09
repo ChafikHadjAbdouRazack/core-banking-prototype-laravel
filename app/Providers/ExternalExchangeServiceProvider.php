@@ -16,14 +16,16 @@ class ExternalExchangeServiceProvider extends ServiceProvider
     {
         // Register the connector registry as a singleton
         $this->app->singleton(
-            ExternalExchangeConnectorRegistry::class, function ($app) {
+            ExternalExchangeConnectorRegistry::class,
+            function ($app) {
                 return new ExternalExchangeConnectorRegistry();
             }
         );
 
         // Register the liquidity service
         $this->app->singleton(
-            ExternalLiquidityService::class, function ($app) {
+            ExternalLiquidityService::class,
+            function ($app) {
                 return new ExternalLiquidityService(
                     $app->make(ExternalExchangeConnectorRegistry::class),
                     $app->make(\App\Domain\Exchange\Services\ExchangeService::class)

@@ -25,7 +25,8 @@ class CheckTokenExpiration
                 return response()->json(
                     [
                     'message' => 'Token has expired',
-                    ], 401
+                    ],
+                    401
                 );
             }
         }

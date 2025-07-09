@@ -88,7 +88,8 @@ class DailyReconciliationController extends Controller
             );
         } catch (\Exception $e) {
             Log::error(
-                'Manual reconciliation failed', [
+                'Manual reconciliation failed',
+                [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
                 ]
@@ -99,7 +100,8 @@ class DailyReconciliationController extends Controller
                 'error'        => 'Reconciliation failed',
                 'message'      => $e->getMessage(),
                 'triggered_at' => now()->toISOString(),
-                ], 500
+                ],
+                500
             );
         }
     }
@@ -162,7 +164,8 @@ class DailyReconciliationController extends Controller
                     [
                     'data'    => null,
                     'message' => 'No reconciliation reports found',
-                    ], 404
+                    ],
+                    404
                 );
             }
 
@@ -179,7 +182,8 @@ class DailyReconciliationController extends Controller
                 [
                 'error'   => 'Failed to retrieve latest report',
                 'message' => $e->getMessage(),
-                ], 500
+                ],
+                500
             );
         }
     }
@@ -321,7 +325,8 @@ class DailyReconciliationController extends Controller
                 [
                 'error'   => 'Failed to retrieve reconciliation history',
                 'message' => $e->getMessage(),
-                ], 500
+                ],
+                500
             );
         }
     }
@@ -400,7 +405,8 @@ class DailyReconciliationController extends Controller
                 return response()->json(
                     [
                     'error' => 'Invalid date format. Use YYYY-MM-DD format.',
-                    ], 400
+                    ],
+                    400
                 );
             }
 
@@ -412,7 +418,8 @@ class DailyReconciliationController extends Controller
                     [
                     'error' => 'Reconciliation report not found for the specified date',
                     'date'  => $date,
-                    ], 404
+                    ],
+                    404
                 );
             }
 
@@ -423,7 +430,8 @@ class DailyReconciliationController extends Controller
                 return response()->json(
                     [
                     'error' => 'Invalid report format',
-                    ], 500
+                    ],
+                    500
                 );
             }
 
@@ -445,7 +453,8 @@ class DailyReconciliationController extends Controller
                 [
                 'error'   => 'Failed to retrieve reconciliation report',
                 'message' => $e->getMessage(),
-                ], 500
+                ],
+                500
             );
         }
     }
@@ -631,7 +640,8 @@ class DailyReconciliationController extends Controller
 
             // Sort daily trends by date
             usort(
-                $metrics['daily_trends'], function ($a, $b) {
+                $metrics['daily_trends'],
+                function ($a, $b) {
                     return strcmp($a['date'], $b['date']);
                 }
             );
@@ -652,7 +662,8 @@ class DailyReconciliationController extends Controller
                 [
                 'error'   => 'Failed to calculate reconciliation metrics',
                 'message' => $e->getMessage(),
-                ], 500
+                ],
+                500
             );
         }
     }
@@ -748,7 +759,8 @@ class DailyReconciliationController extends Controller
                 [
                 'error'   => 'Failed to get reconciliation status',
                 'message' => $e->getMessage(),
-                ], 500
+                ],
+                500
             );
         }
     }

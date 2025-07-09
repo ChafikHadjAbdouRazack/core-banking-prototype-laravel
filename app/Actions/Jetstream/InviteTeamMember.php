@@ -48,7 +48,9 @@ class InviteTeamMember implements InvitesTeamMembers
             [
             'email' => $email,
             'role'  => $role,
-            ], $this->rules($team), [
+            ],
+            $this->rules($team),
+            [
             'email.unique' => __('This user has already been invited to the team.'),
             ]
         )->after(

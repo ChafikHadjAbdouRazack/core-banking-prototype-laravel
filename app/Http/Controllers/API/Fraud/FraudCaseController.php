@@ -260,7 +260,8 @@ class FraudCaseController extends Controller
         }
 
         $updatedCase = $this->caseService->updateInvestigation(
-            $case, [
+            $case,
+            [
             'evidence' => $evidenceData,
             ]
         );

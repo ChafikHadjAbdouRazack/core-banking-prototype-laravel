@@ -152,7 +152,8 @@ class CompareBenchmarks extends Command
 
         // Sort by modification time and get the latest
         usort(
-            $files, function ($a, $b) {
+            $files,
+            function ($a, $b) {
                 return filemtime($b) - filemtime($a);
             }
         );

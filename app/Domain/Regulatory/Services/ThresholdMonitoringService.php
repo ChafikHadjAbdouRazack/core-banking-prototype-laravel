@@ -324,21 +324,21 @@ class ThresholdMonitoringService
         $startDate = $date->copy()->subDays($timePeriodDays);
 
         switch ($threshold->aggregation_key) {
-        case 'customer':
-            $aggregateData = $this->aggregateByCustomer($threshold, $startDate, $date);
-            break;
+            case 'customer':
+                $aggregateData = $this->aggregateByCustomer($threshold, $startDate, $date);
+                break;
 
-        case 'account':
-            $aggregateData = $this->aggregateByAccount($threshold, $startDate, $date);
-            break;
+            case 'account':
+                $aggregateData = $this->aggregateByAccount($threshold, $startDate, $date);
+                break;
 
-        case 'country':
-            $aggregateData = $this->aggregateByCountry($threshold, $startDate, $date);
-            break;
+            case 'country':
+                $aggregateData = $this->aggregateByCountry($threshold, $startDate, $date);
+                break;
 
-        case 'merchant':
-            $aggregateData = $this->aggregateByMerchant($threshold, $startDate, $date);
-            break;
+            case 'merchant':
+                $aggregateData = $this->aggregateByMerchant($threshold, $startDate, $date);
+                break;
         }
 
         return $aggregateData;
@@ -471,27 +471,27 @@ class ThresholdMonitoringService
     {
         foreach ($threshold->actions as $action) {
             switch ($action) {
-            case RegulatoryThreshold::ACTION_REPORT:
-                $this->createThresholdReport($threshold, $entity, $context);
-                break;
+                case RegulatoryThreshold::ACTION_REPORT:
+                    $this->createThresholdReport($threshold, $entity, $context);
+                    break;
 
-            case RegulatoryThreshold::ACTION_FLAG:
-                $this->flagEntity($entity, $threshold, $context);
-                break;
+                case RegulatoryThreshold::ACTION_FLAG:
+                    $this->flagEntity($entity, $threshold, $context);
+                    break;
 
-            case RegulatoryThreshold::ACTION_NOTIFY:
-                $this->sendThresholdNotification($threshold, $entity, $context);
-                break;
+                case RegulatoryThreshold::ACTION_NOTIFY:
+                    $this->sendThresholdNotification($threshold, $entity, $context);
+                    break;
 
-            case RegulatoryThreshold::ACTION_BLOCK:
-                if ($entity instanceof Transaction) {
-                    $this->blockTransaction($entity, $threshold);
-                }
-                break;
+                case RegulatoryThreshold::ACTION_BLOCK:
+                    if ($entity instanceof Transaction) {
+                        $this->blockTransaction($entity, $threshold);
+                    }
+                    break;
 
-            case RegulatoryThreshold::ACTION_REVIEW:
-                $this->createReviewTask($threshold, $entity, $context);
-                break;
+                case RegulatoryThreshold::ACTION_REVIEW:
+                    $this->createReviewTask($threshold, $entity, $context);
+                    break;
             }
         }
     }
@@ -506,7 +506,8 @@ class ThresholdMonitoringService
     ): void {
         // Create alert for aggregate threshold breach
         Log::warning(
-            'Aggregate threshold triggered', [
+            'Aggregate threshold triggered',
+            [
             'threshold_code' => $threshold->threshold_code,
             'aggregate_key'  => $aggregateKey,
             'context'        => $context,
@@ -524,7 +525,8 @@ class ThresholdMonitoringService
     {
         // In production, create actual report
         Log::info(
-            'Threshold report created', [
+            'Threshold report created',
+            [
             'threshold_code' => $threshold->threshold_code,
             'entity_type'    => get_class($entity),
             'entity_id'      => $entity->id ?? null,
@@ -551,7 +553,8 @@ class ThresholdMonitoringService
     {
         // In production, send actual notification
         Log::warning(
-            'Threshold notification sent', [
+            'Threshold notification sent',
+            [
             'threshold_code' => $threshold->threshold_code,
             'threshold_name' => $threshold->name,
             ]
@@ -567,7 +570,8 @@ class ThresholdMonitoringService
             [
             'status'   => 'blocked',
             'metadata' => array_merge(
-                $transaction->metadata ?? [], [
+                $transaction->metadata ?? [],
+                [
                 'blocked_by_threshold' => $threshold->threshold_code,
                 'blocked_at'           => now()->toIso8601String(),
                 ]
@@ -583,7 +587,8 @@ class ThresholdMonitoringService
     {
         // In production, create task in task management system
         Log::info(
-            'Review task created', [
+            'Review task created',
+            [
             'threshold_code' => $threshold->threshold_code,
             'priority'       => $threshold->review_priority,
             ]

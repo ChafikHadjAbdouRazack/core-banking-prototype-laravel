@@ -125,7 +125,8 @@ class StablecoinCollateralPosition extends Model
             ->where(
                 function ($q) {
                     $q->whereHas(
-                        'stablecoin', function ($sq) {
+                        'stablecoin',
+                        function ($sq) {
                             $sq->whereColumn('stablecoin_collateral_positions.collateral_ratio', '<=', 'stablecoins.min_collateral_ratio');
                         }
                     )

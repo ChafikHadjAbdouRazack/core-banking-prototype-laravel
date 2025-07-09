@@ -19,7 +19,9 @@ class GCUController extends Controller
     {
         // Cache the API response for 60 seconds to avoid excessive API calls
         return Cache::remember(
-            'gcu_composition', 60, function () {
+            'gcu_composition',
+            60,
+            function () {
                 try {
                     // Use internal API endpoint
                     $response = Http::get(url('/api/v2/gcu/composition'));

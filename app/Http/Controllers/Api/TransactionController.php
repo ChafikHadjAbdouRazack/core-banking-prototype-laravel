@@ -86,7 +86,8 @@ class TransactionController extends Controller
                 [
                 'message' => 'Access denied to this account',
                 'error'   => 'FORBIDDEN',
-                ], 403
+                ],
+                403
             );
         }
 
@@ -95,7 +96,8 @@ class TransactionController extends Controller
                 [
                 'message' => 'Cannot deposit to frozen account',
                 'error'   => 'ACCOUNT_FROZEN',
-                ], 422
+                ],
+                422
             );
         }
 
@@ -189,7 +191,8 @@ class TransactionController extends Controller
                 [
                 'message' => 'Access denied to this account',
                 'error'   => 'FORBIDDEN',
-                ], 403
+                ],
+                403
             );
         }
 
@@ -198,7 +201,8 @@ class TransactionController extends Controller
                 [
                 'message' => 'Cannot withdraw from frozen account',
                 'error'   => 'ACCOUNT_FROZEN',
-                ], 422
+                ],
+                422
             );
         }
 
@@ -215,7 +219,8 @@ class TransactionController extends Controller
                 'errors'  => [
                     'amount' => ['Insufficient balance'],
                 ],
-                ], 422
+                ],
+                422
             );
         }
 
@@ -238,7 +243,8 @@ class TransactionController extends Controller
                 [
                 'message' => 'Withdrawal failed',
                 'error'   => 'WITHDRAWAL_FAILED',
-                ], 422
+                ],
+                422
             );
         }
 
@@ -350,27 +356,27 @@ class TransactionController extends Controller
 
                 // Extract amount and asset based on event type
                 switch ($eventClass) {
-                case 'MoneyAdded':
-                case 'MoneySubtracted':
-                    $transaction['amount'] = $properties['money']['amount'] ?? 0;
-                    $transaction['asset_code'] = 'USD'; // Legacy events are USD
-                    break;
+                    case 'MoneyAdded':
+                    case 'MoneySubtracted':
+                        $transaction['amount'] = $properties['money']['amount'] ?? 0;
+                        $transaction['asset_code'] = 'USD'; // Legacy events are USD
+                        break;
 
-                case 'AssetBalanceAdded':
-                case 'AssetBalanceSubtracted':
-                    $transaction['amount'] = $properties['amount'] ?? 0;
-                    $transaction['asset_code'] = $properties['assetCode'] ?? 'USD';
-                    break;
+                    case 'AssetBalanceAdded':
+                    case 'AssetBalanceSubtracted':
+                        $transaction['amount'] = $properties['amount'] ?? 0;
+                        $transaction['asset_code'] = $properties['assetCode'] ?? 'USD';
+                        break;
 
-                case 'MoneyTransferred':
-                case 'AssetTransferred':
-                    $transaction['amount'] = $properties['money']['amount'] ?? $properties['fromAmount'] ?? 0;
-                    $transaction['asset_code'] = $properties['fromAsset'] ?? 'USD';
-                    $transaction['metadata'] = [
-                    'to_account'   => $properties['toAccount']['uuid'] ?? null,
-                    'from_account' => $properties['fromAccount']['uuid'] ?? null,
-                    ];
-                    break;
+                    case 'MoneyTransferred':
+                    case 'AssetTransferred':
+                        $transaction['amount'] = $properties['money']['amount'] ?? $properties['fromAmount'] ?? 0;
+                        $transaction['asset_code'] = $properties['fromAsset'] ?? 'USD';
+                        $transaction['metadata'] = [
+                        'to_account'   => $properties['toAccount']['uuid'] ?? null,
+                        'from_account' => $properties['fromAccount']['uuid'] ?? null,
+                        ];
+                        break;
                 }
 
                 return $transaction;

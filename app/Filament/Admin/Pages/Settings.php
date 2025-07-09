@@ -129,7 +129,8 @@ class Settings extends Page
                 ->send();
 
             Log::info(
-                'Platform settings updated', [
+                'Platform settings updated',
+                [
                 'user'           => auth()->user()->email ?? 'system',
                 'settings_count' => count($data),
                 ]
@@ -154,7 +155,8 @@ class Settings extends Page
                 ->send();
 
             Log::info(
-                'Platform settings reset to defaults', [
+                'Platform settings reset to defaults',
+                [
                 'user' => auth()->user()->email ?? 'system',
                 ]
             );
@@ -181,7 +183,8 @@ class Settings extends Page
 
         // In a real implementation, this would trigger a download
         Log::info(
-            'Settings exported', [
+            'Settings exported',
+            [
             'user'           => auth()->user()->email ?? 'system',
             'filename'       => $filename,
             'settings_count' => count($settings),

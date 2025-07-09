@@ -153,7 +153,8 @@ class SubProducts extends Page
             ->send();
 
         Log::info(
-            'Sub-product configuration updated', [
+            'Sub-product configuration updated',
+            [
             'user'    => $currentUser,
             'changes' => $data,
             ]
@@ -168,7 +169,8 @@ class SubProducts extends Page
                 ->icon('heroicon-o-eye')
                 ->modalContent(
                     fn () => view(
-                        'filament.modals.sub-product-status', [
+                        'filament.modals.sub-product-status',
+                        [
                         'status' => $this->subProductService->getApiStatus(),
                         ]
                     )

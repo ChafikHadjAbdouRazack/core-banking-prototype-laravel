@@ -84,7 +84,8 @@ class SantanderConnector extends BaseCustodianConnector
         $response = Http::asForm()
             ->withHeaders($this->getCommonHeaders())
             ->post(
-                self::AUTH_URL, [
+                self::AUTH_URL,
+                [
                 'grant_type'    => 'client_credentials',
                 'client_id'     => $this->apiKey,
                 'client_secret' => $this->apiSecret,
@@ -113,7 +114,8 @@ class SantanderConnector extends BaseCustodianConnector
         $this->logRequest($method, $endpoint, $data);
 
         $headers = array_merge(
-            $this->getCommonHeaders(), [
+            $this->getCommonHeaders(),
+            [
             'Authorization' => "Bearer {$token}",
             ]
         );
@@ -304,7 +306,8 @@ class SantanderConnector extends BaseCustodianConnector
         // Santander doesn't support direct payment cancellation in Open Banking
         // Payments can only be rejected during authorization
         Log::warning(
-            'Santander does not support payment cancellation', [
+            'Santander does not support payment cancellation',
+            [
             'transaction_id' => $transactionId,
             ]
         );
@@ -331,7 +334,8 @@ class SantanderConnector extends BaseCustodianConnector
             }
         } catch (\Exception $e) {
             Log::warning(
-                'Account validation failed', [
+                'Account validation failed',
+                [
                 'account_id' => $accountId,
                 'error'      => $e->getMessage(),
                 ]
@@ -344,7 +348,9 @@ class SantanderConnector extends BaseCustodianConnector
     public function getTransactionHistory(string $accountId, ?int $limit = 100, ?int $offset = 0): array
     {
         $response = $this->apiRequest(
-            'GET', "/aisp/accounts/{$accountId}/transactions", [
+            'GET',
+            "/aisp/accounts/{$accountId}/transactions",
+            [
             'fromBookingDateTime' => Carbon::now()->subDays(90)->toIso8601String(),
             'toBookingDateTime'   => Carbon::now()->toIso8601String(),
             ]

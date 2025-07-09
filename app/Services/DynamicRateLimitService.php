@@ -72,7 +72,8 @@ class DynamicRateLimitService
         // Log dynamic adjustment if significant
         if (abs($finalMultiplier - 1.0) > 0.2) {
             Log::info(
-                'Dynamic rate limit adjustment applied', [
+                'Dynamic rate limit adjustment applied',
+                [
                 'rate_limit_type' => $rateLimitType,
                 'user_id'         => $userId,
                 'original_limit'  => $baseConfig['limit'],
@@ -110,7 +111,9 @@ class DynamicRateLimitService
         $cacheKey = 'system_load:current';
 
         return Cache::remember(
-            $cacheKey, 30, function () {
+            $cacheKey,
+            30,
+            function () {
                 // Combine multiple load indicators
                 $cpuLoad = $this->getCpuLoad();
                 $memoryLoad = $this->getMemoryLoad();
@@ -218,7 +221,9 @@ class DynamicRateLimitService
         $cacheKey = "user_trust_level:{$userId}";
 
         return Cache::remember(
-            $cacheKey, 3600, function () use ($userId) {
+            $cacheKey,
+            3600,
+            function () use ($userId) {
                 $trustLevel = $this->calculateUserTrustLevel($userId);
 
                 return self::TRUST_MULTIPLIERS[$trustLevel] ?? self::TRUST_MULTIPLIERS['basic'];
@@ -265,7 +270,8 @@ class DynamicRateLimitService
             return 'new';
         } catch (\Exception $e) {
             Log::warning(
-                'Failed to calculate user trust level', [
+                'Failed to calculate user trust level',
+                [
                 'user_id' => $userId,
                 'error'   => $e->getMessage(),
                 ]
@@ -361,7 +367,8 @@ class DynamicRateLimitService
         Cache::put($key, $count + 1, 86400 * 30); // 30 days
 
         Log::warning(
-            'Rate limit violation recorded', [
+            'Rate limit violation recorded',
+            [
             'user_id'          => $userId,
             'violation_type'   => $violationType,
             'total_violations' => $count + 1,

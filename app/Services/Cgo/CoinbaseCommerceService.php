@@ -36,7 +36,8 @@ class CoinbaseCommerceService
             'Content-Type' => 'application/json',
             ]
         )->post(
-            $this->apiUrl . '/charges', [
+            $this->apiUrl . '/charges',
+            [
                 'name'         => 'CGO Investment - ' . ucfirst($investment->tier),
                 'description'  => 'Investment in FinAegis Continuous Growth Offering',
                 'pricing_type' => 'fixed_price',
@@ -57,7 +58,8 @@ class CoinbaseCommerceService
 
         if (! $response->successful()) {
             Log::error(
-                'Coinbase Commerce charge creation failed', [
+                'Coinbase Commerce charge creation failed',
+                [
                 'investment_id' => $investment->id,
                 'status'        => $response->status(),
                 'error'         => $response->json(),
@@ -118,36 +120,37 @@ class CoinbaseCommerceService
         $chargeData = $event['data'] ?? [];
 
         Log::info(
-            'Processing Coinbase Commerce webhook', [
+            'Processing Coinbase Commerce webhook',
+            [
             'event_type' => $eventType,
             'charge_id'  => $chargeData['id'] ?? null,
             ]
         );
 
         switch ($eventType) {
-        case 'charge:created':
-            $this->handleChargeCreated($chargeData);
-            break;
+            case 'charge:created':
+                $this->handleChargeCreated($chargeData);
+                break;
 
-        case 'charge:confirmed':
-            $this->handleChargeConfirmed($chargeData);
-            break;
+            case 'charge:confirmed':
+                $this->handleChargeConfirmed($chargeData);
+                break;
 
-        case 'charge:failed':
-            $this->handleChargeFailed($chargeData);
-            break;
+            case 'charge:failed':
+                $this->handleChargeFailed($chargeData);
+                break;
 
-        case 'charge:delayed':
-        case 'charge:pending':
-            $this->handleChargePending($chargeData);
-            break;
+            case 'charge:delayed':
+            case 'charge:pending':
+                $this->handleChargePending($chargeData);
+                break;
 
-        case 'charge:resolved':
-            $this->handleChargeResolved($chargeData);
-            break;
+            case 'charge:resolved':
+                $this->handleChargeResolved($chargeData);
+                break;
 
-        default:
-            Log::warning('Unhandled Coinbase Commerce event type', ['type' => $eventType]);
+            default:
+                Log::warning('Unhandled Coinbase Commerce event type', ['type' => $eventType]);
         }
     }
 
@@ -159,7 +162,8 @@ class CoinbaseCommerceService
         }
 
         Log::info(
-            'Coinbase charge created', [
+            'Coinbase charge created',
+            [
             'investment_id' => $investment->id,
             'charge_code'   => $chargeData['code'],
             ]
@@ -193,7 +197,8 @@ class CoinbaseCommerceService
         );
 
         Log::info(
-            'Coinbase charge confirmed', [
+            'Coinbase charge confirmed',
+            [
             'investment_id' => $investment->id,
             'amount_paid'   => $paidAmount,
             'crypto'        => $cryptoCurrency,
@@ -206,7 +211,8 @@ class CoinbaseCommerceService
             \Mail::to($investment->email)->send(new \App\Mail\CgoInvestmentReceived($investment));
         } catch (\Exception $e) {
             Log::error(
-                'Failed to send investment confirmation email', [
+                'Failed to send investment confirmation email',
+                [
                 'investment_id' => $investment->id,
                 'error'         => $e->getMessage(),
                 ]
@@ -230,7 +236,8 @@ class CoinbaseCommerceService
         );
 
         Log::warning(
-            'Coinbase charge failed', [
+            'Coinbase charge failed',
+            [
             'investment_id' => $investment->id,
             'charge_code'   => $chargeData['code'],
             ]
@@ -268,7 +275,8 @@ class CoinbaseCommerceService
         }
 
         Log::info(
-            'Coinbase charge pending', [
+            'Coinbase charge pending',
+            [
             'investment_id' => $investment->id,
             'charge_code'   => $chargeData['code'] ?? 'unknown',
             ]
@@ -291,7 +299,8 @@ class CoinbaseCommerceService
         );
 
         Log::info(
-            'Coinbase charge resolved', [
+            'Coinbase charge resolved',
+            [
             'investment_id' => $investment->id,
             'charge_code'   => $chargeData['code'],
             ]
@@ -319,7 +328,8 @@ class CoinbaseCommerceService
         }
 
         Log::warning(
-            'Coinbase webhook: Investment not found', [
+            'Coinbase webhook: Investment not found',
+            [
             'charge_id' => $chargeId,
             ]
         );

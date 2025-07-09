@@ -60,7 +60,8 @@ class RetryService
                 // Log successful retry if not first attempt
                 if ($attempt > 1) {
                     Log::info(
-                        'Operation succeeded after retry', [
+                        'Operation succeeded after retry',
+                        [
                         'context' => $context,
                         'attempt' => $attempt,
                         ]
@@ -85,7 +86,8 @@ class RetryService
                 $delayMs = $this->calculateDelay($attempt);
 
                 Log::warning(
-                    'Operation failed, retrying', [
+                    'Operation failed, retrying',
+                    [
                     'context'      => $context,
                     'attempt'      => $attempt,
                     'max_attempts' => $this->maxAttempts,

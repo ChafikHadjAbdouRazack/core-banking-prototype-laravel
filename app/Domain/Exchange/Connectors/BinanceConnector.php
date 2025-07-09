@@ -65,7 +65,9 @@ class BinanceConnector implements IExternalExchangeConnector
         $cacheKey = 'binance:exchange_info:' . md5($this->baseUrl);
 
         return Cache::remember(
-            $cacheKey, 3600, function () {
+            $cacheKey,
+            3600,
+            function () {
                 $response = Http::get($this->baseUrl . '/api/v3/exchangeInfo');
 
                 if (! $response->successful()) {
@@ -131,7 +133,8 @@ class BinanceConnector implements IExternalExchangeConnector
     {
         $symbol = $this->formatSymbol($baseCurrency, $quoteCurrency);
         $response = Http::get(
-            $this->baseUrl . '/api/v3/depth', [
+            $this->baseUrl . '/api/v3/depth',
+            [
             'symbol' => $symbol,
             'limit'  => min($depth, 100),
             ]
@@ -171,7 +174,8 @@ class BinanceConnector implements IExternalExchangeConnector
     {
         $symbol = $this->formatSymbol($baseCurrency, $quoteCurrency);
         $response = Http::get(
-            $this->baseUrl . '/api/v3/trades', [
+            $this->baseUrl . '/api/v3/trades',
+            [
             'symbol' => $symbol,
             'limit'  => min($limit, 1000),
             ]

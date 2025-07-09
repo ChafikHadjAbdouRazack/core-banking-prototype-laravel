@@ -35,7 +35,8 @@ class ReverseAssetTransferActivity extends Activity
 
         // Log the reversal for audit purposes
         logger()->info(
-            'Asset transfer reversed', [
+            'Asset transfer reversed',
+            [
             'transfer_id'  => $transferId,
             'from_account' => $fromAccountUuid->toString(),
             'to_account'   => $toAccountUuid->toString(),

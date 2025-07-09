@@ -58,7 +58,8 @@ class CgoAgreementController extends Controller
             );
         } catch (\Exception $e) {
             Log::error(
-                'Failed to generate agreement', [
+                'Failed to generate agreement',
+                [
                 'investment_uuid' => $investmentUuid,
                 'error'           => $e->getMessage(),
                 ]
@@ -68,7 +69,8 @@ class CgoAgreementController extends Controller
                 [
                 'success' => false,
                 'message' => 'Failed to generate agreement. Please try again later.',
-                ], 500
+                ],
+                500
             );
         }
     }
@@ -89,7 +91,9 @@ class CgoAgreementController extends Controller
         $filename = 'Investment_Agreement_' . $investment->uuid . '.pdf';
 
         return Storage::download(
-            $investment->agreement_path, $filename, [
+            $investment->agreement_path,
+            $filename,
+            [
             'Content-Type' => 'application/pdf',
             ]
         );
@@ -111,7 +115,8 @@ class CgoAgreementController extends Controller
                     [
                     'success' => false,
                     'message' => 'Certificate can only be generated for confirmed investments',
-                    ], 400
+                    ],
+                    400
                 );
             }
 
@@ -132,7 +137,8 @@ class CgoAgreementController extends Controller
             );
         } catch (\Exception $e) {
             Log::error(
-                'Failed to generate certificate', [
+                'Failed to generate certificate',
+                [
                 'investment_uuid' => $investmentUuid,
                 'error'           => $e->getMessage(),
                 ]
@@ -142,7 +148,8 @@ class CgoAgreementController extends Controller
                 [
                 'success' => false,
                 'message' => 'Failed to generate certificate. Please try again later.',
-                ], 500
+                ],
+                500
             );
         }
     }
@@ -163,7 +170,9 @@ class CgoAgreementController extends Controller
         $filename = 'Investment_Certificate_' . $investment->certificate_number . '.pdf';
 
         return Storage::download(
-            $investment->certificate_path, $filename, [
+            $investment->certificate_path,
+            $filename,
+            [
             'Content-Type' => 'application/pdf',
             ]
         );
@@ -186,7 +195,9 @@ class CgoAgreementController extends Controller
         }
 
         return Response::make(
-            Storage::get($investment->agreement_path), 200, [
+            Storage::get($investment->agreement_path),
+            200,
+            [
             'Content-Type'        => 'application/pdf',
             'Content-Disposition' => 'inline; filename="agreement_preview.pdf"',
             ]
@@ -214,7 +225,8 @@ class CgoAgreementController extends Controller
                 [
                 'success' => false,
                 'message' => 'Agreement must be generated first',
-                ], 400
+                ],
+                400
             );
         }
 
@@ -223,7 +235,8 @@ class CgoAgreementController extends Controller
             [
             'agreement_signed_at' => now(),
             'metadata'            => array_merge(
-                $investment->metadata ?? [], [
+                $investment->metadata ?? [],
+                [
                 'signature_data'    => $request->signature_data,
                 'signed_ip'         => $request->ip(),
                 'signed_user_agent' => $request->userAgent(),

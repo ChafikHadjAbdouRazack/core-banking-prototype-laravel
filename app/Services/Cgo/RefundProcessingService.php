@@ -67,7 +67,8 @@ class RefundProcessingService
         } catch (\Exception $e) {
             DB::rollback();
             Log::error(
-                'Refund processing failed', [
+                'Refund processing failed',
+                [
                 'investment_id' => $investment->id,
                 'error'         => $e->getMessage(),
                 ]
@@ -170,7 +171,8 @@ class RefundProcessingService
             ];
         } catch (\Exception $e) {
             Log::error(
-                'Stripe refund failed', [
+                'Stripe refund failed',
+                [
                 'investment_id' => $investment->id,
                 'error'         => $e->getMessage(),
                 ]
@@ -196,7 +198,8 @@ class RefundProcessingService
             'status'           => 'processing',
             'processing_notes' => 'Crypto refund requires manual processing. Finance team has been notified.',
             'metadata'         => array_merge(
-                $refund->metadata ?? [], [
+                $refund->metadata ?? [],
+                [
                 'requires_manual_processing' => true,
                 'original_crypto_address'    => $investment->crypto_address,
                 'original_tx_hash'           => $investment->crypto_tx_hash,
@@ -216,7 +219,8 @@ class RefundProcessingService
             'status'           => 'processing',
             'processing_notes' => 'Bank transfer refund requires manual processing. Finance team has been notified.',
             'metadata'         => array_merge(
-                $refund->metadata ?? [], [
+                $refund->metadata ?? [],
+                [
                 'requires_manual_processing' => true,
                 'original_reference'         => $investment->bank_transfer_reference,
                 'bank_details'               => $refund->bank_details ?? 'To be provided by customer',
@@ -254,7 +258,8 @@ class RefundProcessingService
             'processor_reference' => $data['reference'] ?? null,
             'processing_notes'    => $data['notes'] ?? null,
             'metadata'            => array_merge(
-                $refund->metadata ?? [], [
+                $refund->metadata ?? [],
+                [
                 'completed_by'      => auth()->id(),
                 'completion_method' => $data['method'] ?? 'manual',
                 ]
@@ -288,7 +293,8 @@ class RefundProcessingService
             'cancelled_at'        => now(),
             'cancellation_reason' => $reason,
             'metadata'            => array_merge(
-                $refund->metadata ?? [], [
+                $refund->metadata ?? [],
+                [
                 'cancelled_by' => auth()->id(),
                 ]
             ),

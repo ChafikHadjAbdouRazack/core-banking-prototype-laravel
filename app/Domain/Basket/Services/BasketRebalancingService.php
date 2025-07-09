@@ -150,7 +150,8 @@ class BasketRebalancingService
 
                 // Log the rebalancing
                 Log::info(
-                    "Basket {$basket->code} rebalanced", [
+                    "Basket {$basket->code} rebalanced",
+                    [
                     'adjustments' => $adjustments,
                     'timestamp'   => now()->toISOString(),
                     ]
@@ -271,7 +272,8 @@ class BasketRebalancingService
                 ];
 
                 Log::error(
-                    "Failed to rebalance basket {$basket->code}", [
+                    "Failed to rebalance basket {$basket->code}",
+                    [
                     'error' => $e->getMessage(),
                     'trace' => $e->getTraceAsString(),
                     ]

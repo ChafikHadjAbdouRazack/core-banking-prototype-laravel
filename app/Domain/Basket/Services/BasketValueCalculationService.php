@@ -61,7 +61,8 @@ class BasketValueCalculationService
                 $componentValues[$component->asset_code] = $componentData;
             } catch (\Exception $e) {
                 Log::error(
-                    'Error calculating component value', [
+                    'Error calculating component value',
+                    [
                     'basket'    => $basket->code,
                     'component' => $component->asset_code,
                     'error'     => $e->getMessage(),
@@ -87,7 +88,8 @@ class BasketValueCalculationService
                     'value'             => $totalValue,
                     'calculated_at'     => now(),
                     'component_values'  => array_merge(
-                        $componentValues, [
+                        $componentValues,
+                        [
                         '_metadata' => [
                         'calculation_errors' => $errors,
                         'total_components'   => count($componentValues),

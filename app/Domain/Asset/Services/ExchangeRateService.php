@@ -38,7 +38,9 @@ class ExchangeRateService
         $cacheKey = "exchange_rate:{$fromAsset}:{$toAsset}";
 
         return Cache::remember(
-            $cacheKey, self::CACHE_TTL * 60, function () use ($fromAsset, $toAsset) {
+            $cacheKey,
+            self::CACHE_TTL * 60,
+            function () use ($fromAsset, $toAsset) {
                 // Try to get the most recent valid rate
                 $rate = ExchangeRate::between($fromAsset, $toAsset)
                     ->valid()
@@ -108,7 +110,8 @@ class ExchangeRateService
 
             if (! $rateData) {
                 Log::warning(
-                    'Failed to fetch exchange rate', [
+                    'Failed to fetch exchange rate',
+                    [
                     'from' => $fromAsset,
                     'to'   => $toAsset,
                     ]
@@ -126,7 +129,8 @@ class ExchangeRateService
             );
         } catch (\Exception $e) {
             Log::error(
-                'Error fetching exchange rate', [
+                'Error fetching exchange rate',
+                [
                 'from'  => $fromAsset,
                 'to'    => $toAsset,
                 'error' => $e->getMessage(),
