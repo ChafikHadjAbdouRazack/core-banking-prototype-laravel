@@ -1,9 +1,7 @@
 <?php
 
 /**
- * AML Screening Reviewed Event
- *
- * @package App\Domain\Compliance\Events
+ * AML Screening Reviewed Event.
  */
 
 namespace App\Domain\Compliance\Events;
@@ -11,12 +9,12 @@ namespace App\Domain\Compliance\Events;
 use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 
 /**
- * Event fired when AML screening is reviewed
+ * Event fired when AML screening is reviewed.
  */
 class AmlScreeningReviewed extends ShouldBeStored
 {
     /**
-     * Create new AML screening reviewed event
+     * Create new AML screening reviewed event.
      *
      * @param string $reviewedBy
      * @param string $decision

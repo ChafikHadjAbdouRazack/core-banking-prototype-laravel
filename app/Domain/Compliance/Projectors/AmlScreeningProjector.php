@@ -15,7 +15,7 @@ use Spatie\EventSourcing\EventHandlers\Projectors\Projector;
 class AmlScreeningProjector extends Projector implements ShouldQueue
 {
     /**
-     * Handle when AML screening is started
+     * Handle when AML screening is started.
      *
      * @param AmlScreeningStarted $event
      * @return void
@@ -37,7 +37,7 @@ class AmlScreeningProjector extends Projector implements ShouldQueue
     }
 
     /**
-     * Handle when AML screening results are recorded
+     * Handle when AML screening results are recorded.
      *
      * @param AmlScreeningResultsRecorded $event
      * @return void
@@ -48,23 +48,23 @@ class AmlScreeningProjector extends Projector implements ShouldQueue
 
         if ($screening) {
             $screening->update([
-                'sanctions_results'        => $event->sanctionsResults,
-                'pep_results'              => $event->pepResults,
-                'adverse_media_results'    => $event->adverseMediaResults,
-                'other_results'            => $event->otherResults,
-                'total_matches'            => $event->totalMatches,
-                'overall_risk'             => $event->overallRisk,
-                'lists_checked'            => $event->listsChecked,
-                'api_response'             => $event->apiResponse,
-                'lists_updated_at'         => isset($event->listsChecked['updated_at']) 
-                    ? $event->listsChecked['updated_at'] 
+                'sanctions_results'     => $event->sanctionsResults,
+                'pep_results'           => $event->pepResults,
+                'adverse_media_results' => $event->adverseMediaResults,
+                'other_results'         => $event->otherResults,
+                'total_matches'         => $event->totalMatches,
+                'overall_risk'          => $event->overallRisk,
+                'lists_checked'         => $event->listsChecked,
+                'api_response'          => $event->apiResponse,
+                'lists_updated_at'      => isset($event->listsChecked['updated_at'])
+                    ? $event->listsChecked['updated_at']
                     : null,
             ]);
         }
     }
 
     /**
-     * Handle when AML screening match status is updated
+     * Handle when AML screening match status is updated.
      *
      * @param AmlScreeningMatchStatusUpdated $event
      * @return void
@@ -91,7 +91,7 @@ class AmlScreeningProjector extends Projector implements ShouldQueue
     }
 
     /**
-     * Handle when AML screening is completed
+     * Handle when AML screening is completed.
      *
      * @param AmlScreeningCompleted $event
      * @return void
@@ -110,7 +110,7 @@ class AmlScreeningProjector extends Projector implements ShouldQueue
     }
 
     /**
-     * Handle when AML screening is reviewed
+     * Handle when AML screening is reviewed.
      *
      * @param AmlScreeningReviewed $event
      * @return void
@@ -118,7 +118,7 @@ class AmlScreeningProjector extends Projector implements ShouldQueue
     public function onAmlScreeningReviewed(AmlScreeningReviewed $event): void
     {
         $screening = AmlScreening::find($event->aggregateRootUuid());
-        
+
         if ($screening) {
             $reviewer = User::where('id', $event->reviewedBy)
                 ->orWhere('uuid', $event->reviewedBy)
@@ -129,7 +129,7 @@ class AmlScreeningProjector extends Projector implements ShouldQueue
     }
 
     /**
-     * Confirm a match
+     * Confirm a match.
      *
      * @param AmlScreening $screening
      * @param string $matchId
@@ -150,7 +150,7 @@ class AmlScreeningProjector extends Projector implements ShouldQueue
     }
 
     /**
-     * Dismiss a match as false positive
+     * Dismiss a match as false positive.
      *
      * @param AmlScreening $screening
      * @param string $matchId
@@ -172,7 +172,7 @@ class AmlScreeningProjector extends Projector implements ShouldQueue
     }
 
     /**
-     * Mark as potential match
+     * Mark as potential match.
      *
      * @param AmlScreening $screening
      * @param string $matchId

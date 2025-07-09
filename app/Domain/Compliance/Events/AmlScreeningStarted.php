@@ -1,9 +1,7 @@
 <?php
 
 /**
- * AML Screening Started Event
- *
- * @package App\Domain\Compliance\Events
+ * AML Screening Started Event.
  */
 
 namespace App\Domain\Compliance\Events;
@@ -11,12 +9,12 @@ namespace App\Domain\Compliance\Events;
 use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 
 /**
- * Event fired when AML screening is started
+ * Event fired when AML screening is started.
  */
 class AmlScreeningStarted extends ShouldBeStored
 {
     /**
-     * Create new AML screening started event
+     * Create new AML screening started event.
      *
      * @param string $entityId
      * @param string $entityType

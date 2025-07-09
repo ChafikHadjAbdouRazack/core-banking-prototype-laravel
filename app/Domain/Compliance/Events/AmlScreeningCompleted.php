@@ -1,9 +1,7 @@
 <?php
 
 /**
- * AML Screening Completed Event
- *
- * @package App\Domain\Compliance\Events
+ * AML Screening Completed Event.
  */
 
 namespace App\Domain\Compliance\Events;
@@ -11,12 +9,12 @@ namespace App\Domain\Compliance\Events;
 use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 
 /**
- * Event fired when AML screening is completed
+ * Event fired when AML screening is completed.
  */
 class AmlScreeningCompleted extends ShouldBeStored
 {
     /**
-     * Create new AML screening completed event
+     * Create new AML screening completed event.
      *
      * @param string $finalStatus
      * @param float|null $processingTime

@@ -91,26 +91,26 @@ class AmlScreeningService
                     // Create a temporary screening object for immediate use
                     // Note: The actual database record will be created by a projector
                     $screening = new AmlScreening([
-                        'entity_id' => $entity->id,
-                        'entity_type' => get_class($entity),
-                        'screening_number' => $screeningNumber,
-                        'type' => AmlScreening::TYPE_COMPREHENSIVE,
-                        'status' => 'completed',
-                        'provider' => $this->provider,
-                        'search_parameters' => $searchParams,
-                        'sanctions_results' => $sanctionsResults,
-                        'pep_results' => $pepResults,
+                        'entity_id'             => $entity->id,
+                        'entity_type'           => get_class($entity),
+                        'screening_number'      => $screeningNumber,
+                        'type'                  => AmlScreening::TYPE_COMPREHENSIVE,
+                        'status'                => 'completed',
+                        'provider'              => $this->provider,
+                        'search_parameters'     => $searchParams,
+                        'sanctions_results'     => $sanctionsResults,
+                        'pep_results'           => $pepResults,
                         'adverse_media_results' => $adverseMediaResults,
-                        'other_results' => $otherResults,
-                        'total_matches' => $totalMatches,
-                        'overall_risk' => $overallRisk,
-                        'lists_checked' => $listsChecked,
-                        'started_at' => now(),
-                        'completed_at' => now(),
-                        'processing_time' => $processingTime,
-                        'aggregate_root_uuid' => $aggregateId,
+                        'other_results'         => $otherResults,
+                        'total_matches'         => $totalMatches,
+                        'overall_risk'          => $overallRisk,
+                        'lists_checked'         => $listsChecked,
+                        'started_at'            => now(),
+                        'completed_at'          => now(),
+                        'processing_time'       => $processingTime,
+                        'aggregate_root_uuid'   => $aggregateId,
                     ]);
-                    
+
                     // Set the ID to use the aggregate ID
                     $screening->id = $aggregateId;
 
@@ -133,7 +133,7 @@ class AmlScreeningService
 
                     Log::error('AML screening failed', [
                         'aggregate_id' => $aggregateId,
-                        'error' => $e->getMessage()
+                        'error'        => $e->getMessage(),
                     ]);
 
                     throw $e;
@@ -256,7 +256,6 @@ class AmlScreeningService
 
         return $results;
     }
-
 
     /**
      * Build search parameters from entity.
@@ -427,7 +426,7 @@ class AmlScreeningService
     {
         // Find the aggregate ID - it might be stored as the screening ID or in a separate field
         $aggregateId = $screening->aggregate_root_uuid ?? $screening->id;
-        
+
         try {
             // Use aggregate for event-sourced screenings
             $aggregate = AmlScreeningAggregate::retrieve($aggregateId);
@@ -442,9 +441,9 @@ class AmlScreeningService
             Log::warning('Failed to retrieve aggregate for screening review', [
                 'screening_id' => $screening->id,
                 'aggregate_id' => $aggregateId,
-                'error' => $e->getMessage()
+                'error'        => $e->getMessage(),
             ]);
-            
+
             if (method_exists($screening, 'addReview')) {
                 $screening->addReview($decision, $notes, $reviewer);
             }
@@ -526,7 +525,7 @@ class AmlScreeningService
         ?string $reason = null
     ): void {
         $aggregateId = $screening->aggregate_root_uuid ?? $screening->id;
-        
+
         try {
             $aggregate = AmlScreeningAggregate::retrieve($aggregateId);
             $aggregate->updateMatchStatus(
@@ -540,8 +539,8 @@ class AmlScreeningService
             Log::error('Failed to update match status through aggregate', [
                 'screening_id' => $screening->id,
                 'aggregate_id' => $aggregateId,
-                'match_id' => $matchId,
-                'error' => $e->getMessage()
+                'match_id'     => $matchId,
+                'error'        => $e->getMessage(),
             ]);
             throw new \RuntimeException('Cannot update match status: ' . $e->getMessage());
         }
@@ -609,20 +608,20 @@ class AmlScreeningService
                             $sanctionsResults = $this->performSanctionsCheck($searchParams);
                             $listsChecked = $sanctionsResults['lists_checked'] ?? [];
                             break;
-                            
+
                         case AmlScreening::TYPE_PEP:
                             $pepResults = $this->performPEPCheck($searchParams);
                             $listsChecked = ['PEP Database'];
                             break;
-                            
+
                         case AmlScreening::TYPE_ADVERSE_MEDIA:
                             $adverseMediaResults = $this->performAdverseMediaCheck($searchParams);
                             $listsChecked = ['Adverse Media Sources'];
                             break;
-                            
+
                         case AmlScreening::TYPE_COMPREHENSIVE:
                             return $this->performComprehensiveScreening($entity, $parameters);
-                            
+
                         default:
                             throw new \InvalidArgumentException("Invalid screening type: {$type}");
                     }
@@ -655,26 +654,26 @@ class AmlScreeningService
 
                     // Create a temporary screening object for immediate use
                     $screening = new AmlScreening([
-                        'entity_id' => $entity->id,
-                        'entity_type' => get_class($entity),
-                        'screening_number' => $screeningNumber,
-                        'type' => $type,
-                        'status' => 'completed',
-                        'provider' => $this->provider,
-                        'search_parameters' => $searchParams,
-                        'sanctions_results' => $sanctionsResults,
-                        'pep_results' => $pepResults,
+                        'entity_id'             => $entity->id,
+                        'entity_type'           => get_class($entity),
+                        'screening_number'      => $screeningNumber,
+                        'type'                  => $type,
+                        'status'                => 'completed',
+                        'provider'              => $this->provider,
+                        'search_parameters'     => $searchParams,
+                        'sanctions_results'     => $sanctionsResults,
+                        'pep_results'           => $pepResults,
                         'adverse_media_results' => $adverseMediaResults,
-                        'other_results' => $otherResults,
-                        'total_matches' => $totalMatches,
-                        'overall_risk' => $overallRisk,
-                        'lists_checked' => $listsChecked,
-                        'started_at' => now(),
-                        'completed_at' => now(),
-                        'processing_time' => $processingTime,
-                        'aggregate_root_uuid' => $aggregateId,
+                        'other_results'         => $otherResults,
+                        'total_matches'         => $totalMatches,
+                        'overall_risk'          => $overallRisk,
+                        'lists_checked'         => $listsChecked,
+                        'started_at'            => now(),
+                        'completed_at'          => now(),
+                        'processing_time'       => $processingTime,
+                        'aggregate_root_uuid'   => $aggregateId,
                     ]);
-                    
+
                     // Set the ID to use the aggregate ID
                     $screening->id = $aggregateId;
 
@@ -697,8 +696,8 @@ class AmlScreeningService
 
                     Log::error('AML screening failed', [
                         'aggregate_id' => $aggregateId,
-                        'type' => $type,
-                        'error' => $e->getMessage()
+                        'type'         => $type,
+                        'error'        => $e->getMessage(),
                     ]);
 
                     throw $e;

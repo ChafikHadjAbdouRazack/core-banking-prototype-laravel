@@ -1,27 +1,24 @@
 <?php
 
 /**
- * AML Screening Repository for managing AML screening events
- *
- * @package App\Domain\Compliance\Repositories
+ * AML Screening Repository for managing AML screening events.
  */
 
 namespace App\Domain\Compliance\Repositories;
 
 use App\Models\AmlScreeningEvent;
 use Illuminate\Support\Collection;
-use Spatie\EventSourcing\StoredEvents\Models\EloquentStoredEvent;
 use Spatie\EventSourcing\StoredEvents\Repositories\EloquentStoredEventRepository;
 
 /**
- * Repository for managing AML screening events using event sourcing
+ * Repository for managing AML screening events using event sourcing.
  */
 class AmlScreeningRepository extends EloquentStoredEventRepository
 {
     protected string $storedEventModel;
 
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {
@@ -31,7 +28,7 @@ class AmlScreeningRepository extends EloquentStoredEventRepository
     }
 
     /**
-     * Retrieve all screening events for a specific entity
+     * Retrieve all screening events for a specific entity.
      *
      * @param string $entityType The entity type (e.g., 'user', 'account', 'transaction')
      * @param string $entityId   The entity ID
@@ -48,7 +45,7 @@ class AmlScreeningRepository extends EloquentStoredEventRepository
     }
 
     /**
-     * Retrieve screening events by aggregate UUID
+     * Retrieve screening events by aggregate UUID.
      *
      * @param string $aggregateUuid The aggregate UUID
      *
@@ -63,7 +60,7 @@ class AmlScreeningRepository extends EloquentStoredEventRepository
     }
 
     /**
-     * Retrieve screening events by screening status
+     * Retrieve screening events by screening status.
      *
      * @param string $status The screening status
      *
@@ -78,7 +75,7 @@ class AmlScreeningRepository extends EloquentStoredEventRepository
     }
 
     /**
-     * Retrieve screening events that require review
+     * Retrieve screening events that require review.
      *
      * @return Collection
      */
@@ -92,7 +89,7 @@ class AmlScreeningRepository extends EloquentStoredEventRepository
     }
 
     /**
-     * Retrieve high-risk screening events
+     * Retrieve high-risk screening events.
      *
      * @return Collection
      */
@@ -105,7 +102,7 @@ class AmlScreeningRepository extends EloquentStoredEventRepository
     }
 
     /**
-     * Retrieve screening events by date range
+     * Retrieve screening events by date range.
      *
      * @param \DateTimeInterface $startDate The start date
      * @param \DateTimeInterface $endDate   The end date
@@ -123,7 +120,7 @@ class AmlScreeningRepository extends EloquentStoredEventRepository
     }
 
     /**
-     * Retrieve screening events by provider
+     * Retrieve screening events by provider.
      *
      * @param string $provider The screening provider
      *
@@ -138,7 +135,7 @@ class AmlScreeningRepository extends EloquentStoredEventRepository
     }
 
     /**
-     * Count screening events by entity
+     * Count screening events by entity.
      *
      * @param string $entityType The entity type
      * @param string $entityId   The entity ID
@@ -154,7 +151,7 @@ class AmlScreeningRepository extends EloquentStoredEventRepository
     }
 
     /**
-     * Check if entity has been screened within a time period
+     * Check if entity has been screened within a time period.
      *
      * @param string             $entityType The entity type
      * @param string             $entityId   The entity ID
