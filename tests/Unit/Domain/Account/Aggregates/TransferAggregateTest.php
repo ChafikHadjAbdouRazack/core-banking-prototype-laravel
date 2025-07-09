@@ -101,10 +101,10 @@ class TransferAggregateTest extends TestCase
     {
         $aggregate = new TransferAggregate();
         $money = new Money(1000);
-        
+
         // Use reflection to access protected methods
         $reflection = new \ReflectionClass($aggregate);
-        
+
         $generateMethod = $reflection->getMethod('generateHash');
         $generateMethod->setAccessible(true);
         $hash = $generateMethod->invoke($aggregate, $money);
@@ -115,7 +115,7 @@ class TransferAggregateTest extends TestCase
 
         // Try to use same hash again
         $this->expectException(\Exception::class);
-        
+
         $validateMethod = $reflection->getMethod('validateHash');
         $validateMethod->setAccessible(true);
         $validateMethod->invoke($aggregate, $hash, $money);

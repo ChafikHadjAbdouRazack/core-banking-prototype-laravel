@@ -45,7 +45,7 @@ class TransactionAggregateTest extends TestCase
         $aggregate->assertRecorded(MoneyAdded::class, function (MoneyAdded $event) use ($creditMoney) {
             return $event->money->getAmount() === $creditMoney->getAmount();
         });
-        
+
         $aggregate->assertRecorded(MoneySubtracted::class, function (MoneySubtracted $event) use ($debitMoney) {
             return $event->money->getAmount() === $debitMoney->getAmount();
         });
@@ -168,10 +168,10 @@ class TransactionAggregateTest extends TestCase
     {
         $aggregate = new TransactionAggregate();
         $money = new Money(1000);
-        
+
         // Use reflection to access protected methods
         $reflection = new \ReflectionClass($aggregate);
-        
+
         $generateMethod = $reflection->getMethod('generateHash');
         $generateMethod->setAccessible(true);
         $hash = $generateMethod->invoke($aggregate, $money);
@@ -182,7 +182,7 @@ class TransactionAggregateTest extends TestCase
 
         // Try to use same hash again
         $this->expectException(\Exception::class);
-        
+
         $validateMethod = $reflection->getMethod('validateHash');
         $validateMethod->setAccessible(true);
         $validateMethod->invoke($aggregate, $hash, $money);

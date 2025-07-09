@@ -34,7 +34,7 @@ class DebitAccountTest extends TestCase
 
         // Use reflection to set readonly properties
         $reflection = new \ReflectionClass($event);
-        
+
         $assetCodeProp = $reflection->getProperty('assetCode');
         $assetCodeProp->setAccessible(true);
         $assetCodeProp->setValue($event, $assetCode);
