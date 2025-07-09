@@ -365,4 +365,104 @@ class AmlScreeningAggregate extends AggregateRoot
     {
         return $this->totalMatches > 0 && ! $this->isReviewed();
     }
+
+    /**
+     * Get entity ID.
+     *
+     * @return string
+     */
+    public function getEntityId(): string
+    {
+        return $this->entityId;
+    }
+
+    /**
+     * Get entity type.
+     *
+     * @return string
+     */
+    public function getEntityType(): string
+    {
+        return $this->entityType;
+    }
+
+    /**
+     * Get screening number.
+     *
+     * @return string
+     */
+    public function getScreeningNumber(): string
+    {
+        return $this->screeningNumber;
+    }
+
+    /**
+     * Get screening type.
+     *
+     * @return string
+     */
+    public function getType(): string
+    {
+        return $this->type;
+    }
+
+    /**
+     * Get provider.
+     *
+     * @return string
+     */
+    public function getProvider(): string
+    {
+        return $this->provider;
+    }
+
+    /**
+     * Get provider reference.
+     *
+     * @return string|null
+     */
+    public function getProviderReference(): ?string
+    {
+        return $this->providerReference;
+    }
+
+    /**
+     * Get search parameters.
+     *
+     * @return array
+     */
+    public function getSearchParameters(): array
+    {
+        return $this->searchParameters;
+    }
+
+    /**
+     * Get results.
+     *
+     * @return array
+     */
+    public function getResults(): array
+    {
+        return $this->results;
+    }
+
+    /**
+     * Get review decision.
+     *
+     * @return string|null
+     */
+    public function getReviewDecision(): ?string
+    {
+        return $this->reviewDecision;
+    }
+
+    /**
+     * Get review notes.
+     *
+     * @return string|null
+     */
+    public function getReviewNotes(): ?string
+    {
+        return $this->reviewNotes;
+    }
 }
