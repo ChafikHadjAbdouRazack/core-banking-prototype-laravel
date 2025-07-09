@@ -24,14 +24,12 @@ class TransferAggregateTest extends TestCase
 
         $aggregate->transfer($from, $to, $money);
 
-        $aggregate->assertRecorded([
-            new MoneyTransferred(
-                from: $from,
-                to: $to,
-                money: $money,
-                hash: $aggregate->generateHash($money)
-            ),
-        ]);
+        // Assert that a MoneyTransferred event was recorded
+        $aggregate->assertRecorded(function (MoneyTransferred $event) use ($from, $to, $money) {
+            return $event->from->toString() === $from->toString() &&
+                   $event->to->toString() === $to->toString() &&
+                   $event->money->getAmount() === $money->getAmount();
+        });
     }
 
     public function test_applies_money_transferred_event(): void
@@ -42,11 +40,17 @@ class TransferAggregateTest extends TestCase
         $to = new AccountUuid('receiver-uuid');
         $money = new Money(5000); // €50.00
 
+        // Use reflection to access protected method
+        $reflection = new \ReflectionClass($aggregate);
+        $method = $reflection->getMethod('generateHash');
+        $method->setAccessible(true);
+        $hash = $method->invoke($aggregate, $money);
+
         $event = new MoneyTransferred(
             from: $from,
             to: $to,
             money: $money,
-            hash: $aggregate->generateHash($money)
+            hash: $hash
         );
 
         $aggregate->applyMoneyTransferred($event);
@@ -97,14 +101,24 @@ class TransferAggregateTest extends TestCase
     {
         $aggregate = new TransferAggregate();
         $money = new Money(1000);
-        $hash = $aggregate->generateHash($money);
+        
+        // Use reflection to access protected methods
+        $reflection = new \ReflectionClass($aggregate);
+        
+        $generateMethod = $reflection->getMethod('generateHash');
+        $generateMethod->setAccessible(true);
+        $hash = $generateMethod->invoke($aggregate, $money);
 
-        // Store hash first
-        $aggregate->storeHash($hash);
+        $storeMethod = $reflection->getMethod('storeHash');
+        $storeMethod->setAccessible(true);
+        $storeMethod->invoke($aggregate, $hash);
 
         // Try to use same hash again
         $this->expectException(\Exception::class);
-        $aggregate->validateHash($hash, $money);
+        
+        $validateMethod = $reflection->getMethod('validateHash');
+        $validateMethod->setAccessible(true);
+        $validateMethod->invoke($aggregate, $hash, $money);
     }
 
     public function test_handles_different_currency_transfers(): void

@@ -53,8 +53,10 @@ class GdprServiceTest extends TestCase
 
         $this->service->exportUserData($user);
 
-        $auditLog = AuditLog::where('user_uuid', $user->uuid)
-            ->where('action', 'gdpr.data_exported')
+        // Check if audit log was created (user_uuid will be null in tests)
+        $auditLog = AuditLog::where('action', 'gdpr.data_exported')
+            ->where('auditable_type', User::class)
+            ->where('auditable_id', $user->id)
             ->first();
 
         $this->assertNotNull($auditLog);
@@ -88,8 +90,10 @@ class GdprServiceTest extends TestCase
 
         $this->service->deleteUserData($user);
 
-        $auditLog = AuditLog::where('user_uuid', $user->uuid)
-            ->where('action', 'gdpr.deletion_requested')
+        // Check if audit log was created (user_uuid will be null in tests)
+        $auditLog = AuditLog::where('action', 'gdpr.deletion_requested')
+            ->where('auditable_type', User::class)
+            ->where('auditable_id', $user->id)
             ->first();
 
         $this->assertNotNull($auditLog);
@@ -211,8 +215,10 @@ class GdprServiceTest extends TestCase
 
         $this->service->deleteUserData($user);
 
-        $deletionCompleteLog = AuditLog::where('user_uuid', $user->uuid)
-            ->where('action', 'gdpr.deletion_completed')
+        // Check if audit log was created (user_uuid will be null in tests)
+        $deletionCompleteLog = AuditLog::where('action', 'gdpr.deletion_completed')
+            ->where('auditable_type', User::class)
+            ->where('auditable_id', $user->id)
             ->first();
 
         $this->assertNotNull($deletionCompleteLog);

@@ -28,20 +28,23 @@ class TransactionFactory extends Factory
             'withdrawal', 'transfer_out' => -fake()->numberBetween(100, 50000), // -$1 to -$500
         };
 
+        $accountUuid = Account::factory()->create()->uuid;
+        
         return [
-            'uuid'          => Str::uuid()->toString(),
-            'account_uuid'  => Account::factory(),
-            'amount'        => $amount,
-            'type'          => $type,
-            'reference'     => fake()->optional()->bothify('REF-####-????'),
-            'description'   => fake()->optional()->sentence(),
-            'balance_after' => fake()->numberBetween(0, 1000000), // $0 to $10,000
-            'metadata'      => fake()->optional()->randomElement([
-                null,
-                ['source'  => 'ATM'],
-                ['channel' => 'mobile'],
-                ['branch'  => fake()->city],
-            ]),
+            'aggregate_uuid'    => $accountUuid,
+            'aggregate_version' => fake()->numberBetween(1, 100),
+            'event_version'     => 1,
+            'event_class'       => 'App\\Domain\\Account\\Events\\MoneyAdded',
+            'event_properties'  => [
+                'amount'      => $amount,
+                'assetCode'   => 'USD',
+                'metadata'    => []
+            ],
+            'meta_data' => [
+                'type'        => $type,
+                'reference'   => fake()->optional()->bothify('REF-####-????'),
+                'description' => fake()->optional()->sentence(),
+            ],
         ];
     }
 

@@ -14,8 +14,11 @@ class SuspiciousActivityDetectedTest extends TestCase
     public function test_creates_event_with_transaction_and_alerts(): void
     {
         $transaction = Transaction::factory()->create([
-            'amount' => 100000,
-            'type'   => 'wire_transfer',
+            'event_properties' => [
+                'amount'    => 100000,
+                'assetCode' => 'USD',
+                'metadata'  => ['type' => 'wire_transfer']
+            ],
         ]);
 
         $alerts = [

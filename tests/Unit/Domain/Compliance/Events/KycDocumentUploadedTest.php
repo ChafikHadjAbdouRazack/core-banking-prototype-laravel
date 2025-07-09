@@ -29,10 +29,10 @@ class KycDocumentUploadedTest extends TestCase
     {
         $documentTypes = [
             'passport'         => ['number' => 'AB123456', 'country' => 'US'],
-            'driver_license'   => ['number' => 'DL789012', 'state' => 'CA'],
+            'drivers_license'  => ['number' => 'DL789012', 'state' => 'CA'],
             'national_id'      => ['number' => 'ID345678', 'issued_by' => 'Government'],
-            'proof_of_address' => ['type' => 'utility_bill', 'date' => '2024-01-01'],
-            'bank_statement'   => ['bank' => 'Test Bank', 'period' => '2024-01'],
+            'utility_bill'     => ['type' => 'electricity', 'date' => '2024-01-01'],
+            'selfie'           => ['timestamp' => '2024-01-01 12:00:00'],
         ];
 
         foreach ($documentTypes as $type => $metadata) {

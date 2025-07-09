@@ -36,6 +36,17 @@ class WebhookEventListenerTest extends TestCase
         app()->instance('testing.webhooks', true);
     }
 
+    private function setEventProperties($event, array $properties): void
+    {
+        $reflection = new \ReflectionClass($event);
+        
+        foreach ($properties as $name => $value) {
+            $property = $reflection->getProperty($name);
+            $property->setAccessible(true);
+            $property->setValue($event, $value);
+        }
+    }
+
     public function test_skips_webhook_in_testing_environment_when_not_explicitly_enabled(): void
     {
         // Remove the webhook testing flag
@@ -128,11 +139,14 @@ class WebhookEventListenerTest extends TestCase
 
         $money = Mockery::mock();
         $money->shouldReceive('getAmount')->andReturn('2500'); // $25.00
-        $event->money = $money;
 
         $hash = Mockery::mock();
         $hash->shouldReceive('getHash')->andReturn('hash123');
-        $event->hash = $hash;
+        
+        $this->setEventProperties($event, [
+            'money' => $money,
+            'hash' => $hash
+        ]);
 
         $this->webhookService->shouldReceive('dispatchTransactionEvent')
             ->once()
@@ -164,11 +178,14 @@ class WebhookEventListenerTest extends TestCase
 
         $money = Mockery::mock();
         $money->shouldReceive('getAmount')->andReturn('100');
-        $event->money = $money;
-
+        
         $hash = Mockery::mock();
         $hash->shouldReceive('getHash')->andReturn('hash456');
-        $event->hash = $hash;
+        
+        $this->setEventProperties($event, [
+            'money' => $money,
+            'hash' => $hash
+        ]);
 
         $this->webhookService->shouldReceive('dispatchTransactionEvent')->once();
 
@@ -195,11 +212,14 @@ class WebhookEventListenerTest extends TestCase
 
         $money = Mockery::mock();
         $money->shouldReceive('getAmount')->andReturn('1000');
-        $event->money = $money;
-
+        
         $hash = Mockery::mock();
         $hash->shouldReceive('getHash')->andReturn('hash789');
-        $event->hash = $hash;
+        
+        $this->setEventProperties($event, [
+            'money' => $money,
+            'hash' => $hash
+        ]);
 
         $this->webhookService->shouldReceive('dispatchTransactionEvent')
             ->once()
@@ -231,11 +251,14 @@ class WebhookEventListenerTest extends TestCase
 
         $money = Mockery::mock();
         $money->shouldReceive('getAmount')->andReturn('1000');
-        $event->money = $money;
-
+        
         $hash = Mockery::mock();
         $hash->shouldReceive('getHash')->andReturn('hash999');
-        $event->hash = $hash;
+        
+        $this->setEventProperties($event, [
+            'money' => $money,
+            'hash' => $hash
+        ]);
 
         $this->webhookService->shouldReceive('dispatchTransactionEvent')->once();
 
@@ -268,15 +291,18 @@ class WebhookEventListenerTest extends TestCase
 
         $toAccountUuid = Mockery::mock();
         $toAccountUuid->shouldReceive('toString')->andReturn($toUuid);
-        $event->toAccountUuid = $toAccountUuid;
 
         $money = Mockery::mock();
         $money->shouldReceive('getAmount')->andReturn('2000');
-        $event->money = $money;
 
         $hash = Mockery::mock();
         $hash->shouldReceive('getHash')->andReturn('transfer123');
-        $event->hash = $hash;
+        
+        $this->setEventProperties($event, [
+            'toAccountUuid' => $toAccountUuid,
+            'money' => $money,
+            'hash' => $hash
+        ]);
 
         $expectedData = [
             'from_account_uuid'  => $fromUuid,

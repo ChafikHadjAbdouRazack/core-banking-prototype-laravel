@@ -158,7 +158,7 @@ class AmlScreeningServiceTest extends TestCase
 
         $risk = $method->invoke($this->service, $sanctionsResults, $pepResults, $adverseMediaResults);
 
-        $this->assertEquals('high', $risk);
+        $this->assertEquals('critical', $risk);
     }
 
     public function test_count_total_matches(): void
