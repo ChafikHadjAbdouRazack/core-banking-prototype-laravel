@@ -19,7 +19,7 @@ class TransactionAggregateTest extends TestCase
     public function test_credits_money_to_account(): void
     {
         $aggregate = TransactionAggregate::fake();
-        $money = new Money('USD', 1000); // $10.00
+        $money = new Money(1000); // $10.00
 
         $aggregate->credit($money);
 
@@ -36,11 +36,11 @@ class TransactionAggregateTest extends TestCase
         $aggregate = TransactionAggregate::fake();
 
         // First add money
-        $creditMoney = new Money('USD', 5000); // $50.00
+        $creditMoney = new Money(5000); // $50.00
         $aggregate->credit($creditMoney);
 
         // Then debit
-        $debitMoney = new Money('USD', 2000); // $20.00
+        $debitMoney = new Money(2000); // $20.00
         $aggregate->debit($debitMoney);
 
         $aggregate->assertRecorded([
@@ -60,18 +60,18 @@ class TransactionAggregateTest extends TestCase
         $aggregate = TransactionAggregate::fake();
 
         // Add small amount
-        $aggregate->credit(new Money('USD', 100)); // $1.00
+        $aggregate->credit(new Money(100)); // $1.00
 
         $this->expectException(NotEnoughFunds::class);
 
         // Try to debit more
-        $aggregate->debit(new Money('USD', 200)); // $2.00
+        $aggregate->debit(new Money(200)); // $2.00
     }
 
     public function test_applies_money_added_event(): void
     {
         $aggregate = new TransactionAggregate();
-        $money = new Money('EUR', 2500); // €25.00
+        $money = new Money(2500); // €25.00
 
         $event = new MoneyAdded(
             money: $money,
@@ -87,7 +87,7 @@ class TransactionAggregateTest extends TestCase
     public function test_applies_money_subtracted_event(): void
     {
         $aggregate = new TransactionAggregate(balance: 5000); // Start with $50.00
-        $money = new Money('USD', 1500); // $15.00
+        $money = new Money(1500); // $15.00
 
         $event = new MoneySubtracted(
             money: $money,
@@ -103,7 +103,7 @@ class TransactionAggregateTest extends TestCase
     public function test_records_transaction_threshold_reached(): void
     {
         $aggregate = TransactionAggregate::fake();
-        $money = new Money('USD', 100);
+        $money = new Money(100);
 
         // Make COUNT_THRESHOLD transactions
         for ($i = 0; $i < TransactionAggregate::COUNT_THRESHOLD; $i++) {
@@ -119,7 +119,7 @@ class TransactionAggregateTest extends TestCase
     public function test_resets_count_after_threshold(): void
     {
         $aggregate = new TransactionAggregate();
-        $money = new Money('USD', 100);
+        $money = new Money(100);
 
         // Set count just below threshold
         $aggregate->count = TransactionAggregate::COUNT_THRESHOLD - 1;
@@ -143,7 +143,7 @@ class TransactionAggregateTest extends TestCase
         $aggregate->balance = 0;
 
         // Try to debit when at limit
-        $money = new Money('USD', 100);
+        $money = new Money(100);
 
         try {
             $aggregate->debit($money);
@@ -159,7 +159,7 @@ class TransactionAggregateTest extends TestCase
     public function test_validates_hash_for_duplicate_prevention(): void
     {
         $aggregate = new TransactionAggregate();
-        $money = new Money('USD', 1000);
+        $money = new Money(1000);
         $hash = $aggregate->generateHash($money);
 
         // Store hash first
@@ -174,8 +174,8 @@ class TransactionAggregateTest extends TestCase
     {
         $aggregate = TransactionAggregate::fake();
 
-        $usdMoney = new Money('USD', 1000);
-        $eurMoney = new Money('EUR', 2000);
+        $usdMoney = new Money(1000);
+        $eurMoney = new Money(2000);
 
         $aggregate->credit($usdMoney);
         $aggregate->credit($eurMoney);
@@ -190,18 +190,18 @@ class TransactionAggregateTest extends TestCase
 
         // Credit operations
         $aggregate->applyMoneyAdded(new MoneyAdded(
-            money: new Money('USD', 1000),
+            money: new Money(1000),
             hash: 'hash1'
         ));
 
         $aggregate->applyMoneyAdded(new MoneyAdded(
-            money: new Money('USD', 2000),
+            money: new Money(2000),
             hash: 'hash2'
         ));
 
         // Debit operation
         $aggregate->applyMoneySubtracted(new MoneySubtracted(
-            money: new Money('USD', 500),
+            money: new Money(500),
             hash: 'hash3'
         ));
 

@@ -27,7 +27,7 @@ class KycServiceTest extends TestCase
     public function test_submit_kyc_updates_user_status(): void
     {
         $user = User::factory()->create([
-            'kyc_status'       => null,
+            'kyc_status'       => 'not_started',
             'kyc_submitted_at' => null,
         ]);
 
@@ -37,7 +37,7 @@ class KycServiceTest extends TestCase
                 'file' => UploadedFile::fake()->image('passport.jpg', 1000, 1000),
             ],
             [
-                'type' => 'proof_of_address',
+                'type' => 'utility_bill',
                 'file' => UploadedFile::fake()->create('utility_bill.pdf', 500),
             ],
         ];
@@ -93,8 +93,10 @@ class KycServiceTest extends TestCase
 
         $this->service->submitKyc($user, $documents);
 
-        $auditLog = AuditLog::where('user_uuid', $user->uuid)
-            ->where('action', 'kyc.submitted')
+        // Check if audit log was created (user_uuid will be null in tests)
+        $auditLog = AuditLog::where('action', 'kyc.submitted')
+            ->where('auditable_type', User::class)
+            ->where('auditable_id', $user->id)
             ->first();
 
         $this->assertNotNull($auditLog);
@@ -123,8 +125,10 @@ class KycServiceTest extends TestCase
 
         $this->service->verifyKyc($user, 'admin-456', ['notes' => 'Verified']);
 
-        $auditLog = AuditLog::where('user_uuid', $user->uuid)
-            ->where('action', 'kyc.approved')
+        // Check if audit log was created (user_uuid will be null in tests)
+        $auditLog = AuditLog::where('action', 'kyc.approved')
+            ->where('auditable_type', User::class)
+            ->where('auditable_id', $user->id)
             ->first();
 
         $this->assertNotNull($auditLog);
@@ -195,9 +199,9 @@ class KycServiceTest extends TestCase
             'passport',
             'drivers_license',
             'national_id',
-            'proof_of_address',
-            'bank_statement',
-            'tax_document',
+            'utility_bill',
+            'selfie',
+            'residence_permit',
         ];
 
         foreach ($documentTypes as $type) {

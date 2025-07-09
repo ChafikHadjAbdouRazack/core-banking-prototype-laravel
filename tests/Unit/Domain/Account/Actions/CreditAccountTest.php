@@ -3,6 +3,7 @@
 namespace Tests\Unit\Domain\Account\Actions;
 
 use App\Domain\Account\Actions\CreditAccount;
+use App\Domain\Account\DataObjects\Hash;
 use App\Domain\Account\Events\AssetBalanceAdded;
 use App\Domain\Account\Repositories\AccountRepository;
 use App\Models\Account;
@@ -23,7 +24,7 @@ class CreditAccountTest extends TestCase
     {
         parent::setUp();
 
-        $this->accountRepository = Mockery::mock(AccountRepository::class);
+        $this->accountRepository = new AccountRepository(new Account());
         $this->action = new CreditAccount($this->accountRepository);
     }
 
@@ -42,16 +43,21 @@ class CreditAccountTest extends TestCase
             'balance'      => 1000, // $10.00
         ]);
 
-        // Mock repository
-        $this->accountRepository->shouldReceive('findByUuid')
-            ->with('account-123')
-            ->andReturn($account);
+        // Repository will find the account by UUID
 
-        // Create event
-        $event = Mockery::mock(AssetBalanceAdded::class);
+        // Create event mock with constructor bypass
+        $event = Mockery::mock(AssetBalanceAdded::class)->makePartial();
         $event->shouldReceive('aggregateRootUuid')->andReturn('account-123');
-        $event->shouldReceive('assetCode', 'getAssetCode')->andReturn('USD');
-        $event->shouldReceive('amount', 'getAmount')->andReturn(500); // $5.00
+        
+        // Use reflection to set readonly properties
+        $reflection = new \ReflectionClass($event);
+        $assetCodeProp = $reflection->getProperty('assetCode');
+        $assetCodeProp->setAccessible(true);
+        $assetCodeProp->setValue($event, 'USD');
+        
+        $amountProp = $reflection->getProperty('amount');
+        $amountProp->setAccessible(true);
+        $amountProp->setValue($event, 500); // $5.00
 
         // Execute
         $result = $this->action->__invoke($event);
@@ -74,16 +80,13 @@ class CreditAccountTest extends TestCase
             'name' => 'New Account',
         ]);
 
-        // Mock repository
-        $this->accountRepository->shouldReceive('findByUuid')
-            ->with('account-456')
-            ->andReturn($account);
+        // Repository will find the account by UUID
 
-        // Create event
+        // Create event with property access
         $event = Mockery::mock(AssetBalanceAdded::class);
         $event->shouldReceive('aggregateRootUuid')->andReturn('account-456');
-        $event->shouldReceive('assetCode', 'getAssetCode')->andReturn('EUR');
-        $event->shouldReceive('amount', 'getAmount')->andReturn(2500); // €25.00
+        $event->assetCode = 'EUR';
+        $event->amount = 2500; // €25.00
 
         // Execute
         $result = $this->action->__invoke($event);
@@ -107,24 +110,21 @@ class CreditAccountTest extends TestCase
             'name' => 'Multi Credit Account',
         ]);
 
-        // Mock repository
-        $this->accountRepository->shouldReceive('findByUuid')
-            ->with('account-789')
-            ->andReturn($account);
+        // Repository will find the account by UUID
 
         // First credit
         $event1 = Mockery::mock(AssetBalanceAdded::class);
         $event1->shouldReceive('aggregateRootUuid')->andReturn('account-789');
-        $event1->shouldReceive('assetCode', 'getAssetCode')->andReturn('BTC');
-        $event1->shouldReceive('amount', 'getAmount')->andReturn(100000); // 0.001 BTC
+        $event1->assetCode = 'BTC';
+        $event1->amount = 100000; // 0.001 BTC
 
         $this->action->__invoke($event1);
 
         // Second credit
         $event2 = Mockery::mock(AssetBalanceAdded::class);
         $event2->shouldReceive('aggregateRootUuid')->andReturn('account-789');
-        $event2->shouldReceive('assetCode', 'getAssetCode')->andReturn('BTC');
-        $event2->shouldReceive('amount', 'getAmount')->andReturn(50000); // 0.0005 BTC
+        $event2->assetCode = 'BTC';
+        $event2->amount = 50000; // 0.0005 BTC
 
         $this->action->__invoke($event2);
 
@@ -144,24 +144,21 @@ class CreditAccountTest extends TestCase
             'name' => 'Multi Asset Account',
         ]);
 
-        // Mock repository
-        $this->accountRepository->shouldReceive('findByUuid')
-            ->with('multi-asset-account')
-            ->andReturn($account);
+        // Repository will find the account by UUID
 
         // Credit USD
         $usdEvent = Mockery::mock(AssetBalanceAdded::class);
         $usdEvent->shouldReceive('aggregateRootUuid')->andReturn('multi-asset-account');
-        $usdEvent->shouldReceive('assetCode', 'getAssetCode')->andReturn('USD');
-        $usdEvent->shouldReceive('amount', 'getAmount')->andReturn(10000); // $100.00
+        $usdEvent->assetCode = 'USD';
+        $usdEvent->amount = 10000; // $100.00
 
         $this->action->__invoke($usdEvent);
 
         // Credit EUR
         $eurEvent = Mockery::mock(AssetBalanceAdded::class);
         $eurEvent->shouldReceive('aggregateRootUuid')->andReturn('multi-asset-account');
-        $eurEvent->shouldReceive('assetCode', 'getAssetCode')->andReturn('EUR');
-        $eurEvent->shouldReceive('amount', 'getAmount')->andReturn(5000); // €50.00
+        $eurEvent->assetCode = 'EUR';
+        $eurEvent->amount = 5000; // €50.00
 
         $this->action->__invoke($eurEvent);
 

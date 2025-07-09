@@ -23,7 +23,7 @@ class DebitAccountTest extends TestCase
     {
         parent::setUp();
 
-        $this->accountRepository = Mockery::mock(AccountRepository::class);
+        $this->accountRepository = new AccountRepository(new Account());
         $this->action = new DebitAccount($this->accountRepository);
     }
 
@@ -42,16 +42,13 @@ class DebitAccountTest extends TestCase
             'balance'      => 5000, // $50.00
         ]);
 
-        // Mock repository
-        $this->accountRepository->shouldReceive('findByUuid')
-            ->with('account-123')
-            ->andReturn($account);
+        // Repository will find the account by UUID
 
         // Create event
         $event = Mockery::mock(AssetBalanceSubtracted::class);
         $event->shouldReceive('aggregateRootUuid')->andReturn('account-123');
-        $event->shouldReceive('assetCode', 'getAssetCode')->andReturn('USD');
-        $event->shouldReceive('amount', 'getAmount')->andReturn(2000); // $20.00
+        $event->assetCode = 'USD';
+        $event->amount = 2000; // $20.00
 
         // Execute
         $result = $this->action->__invoke($event);
@@ -74,16 +71,13 @@ class DebitAccountTest extends TestCase
             'name' => 'No Balance Account',
         ]);
 
-        // Mock repository
-        $this->accountRepository->shouldReceive('findByUuid')
-            ->with('account-456')
-            ->andReturn($account);
+        // Repository will find the account by UUID
 
         // Create event
         $event = Mockery::mock(AssetBalanceSubtracted::class);
         $event->shouldReceive('aggregateRootUuid')->andReturn('account-456');
-        $event->shouldReceive('assetCode', 'getAssetCode')->andReturn('EUR');
-        $event->shouldReceive('amount', 'getAmount')->andReturn(1000);
+        $event->assetCode = 'EUR';
+        $event->amount = 1000;
 
         // Assert exception
         $this->expectException(\Exception::class);
@@ -108,16 +102,13 @@ class DebitAccountTest extends TestCase
             'balance'      => 1000, // $10.00
         ]);
 
-        // Mock repository
-        $this->accountRepository->shouldReceive('findByUuid')
-            ->with('account-789')
-            ->andReturn($account);
+        // Repository will find the account by UUID
 
         // Create event that would overdraw
         $event = Mockery::mock(AssetBalanceSubtracted::class);
         $event->shouldReceive('aggregateRootUuid')->andReturn('account-789');
-        $event->shouldReceive('assetCode', 'getAssetCode')->andReturn('USD');
-        $event->shouldReceive('amount', 'getAmount')->andReturn(2000); // $20.00
+        $event->assetCode = 'USD';
+        $event->amount = 2000; // $20.00
 
         // Assert exception
         $this->expectException(\Exception::class);
@@ -142,16 +133,13 @@ class DebitAccountTest extends TestCase
             'balance'      => 100000000, // 1 BTC
         ]);
 
-        // Mock repository
-        $this->accountRepository->shouldReceive('findByUuid')
-            ->with('exact-balance-account')
-            ->andReturn($account);
+        // Repository will find the account by UUID
 
         // Create event for exact balance
         $event = Mockery::mock(AssetBalanceSubtracted::class);
         $event->shouldReceive('aggregateRootUuid')->andReturn('exact-balance-account');
-        $event->shouldReceive('assetCode', 'getAssetCode')->andReturn('BTC');
-        $event->shouldReceive('amount', 'getAmount')->andReturn(100000000); // 1 BTC
+        $event->assetCode = 'BTC';
+        $event->amount = 100000000; // 1 BTC
 
         // Execute
         $result = $this->action->__invoke($event);
@@ -179,24 +167,21 @@ class DebitAccountTest extends TestCase
             'balance'      => 10000, // €100.00
         ]);
 
-        // Mock repository
-        $this->accountRepository->shouldReceive('findByUuid')
-            ->with('multi-debit-account')
-            ->andReturn($account);
+        // Repository will find the account by UUID
 
         // First debit
         $event1 = Mockery::mock(AssetBalanceSubtracted::class);
         $event1->shouldReceive('aggregateRootUuid')->andReturn('multi-debit-account');
-        $event1->shouldReceive('assetCode', 'getAssetCode')->andReturn('EUR');
-        $event1->shouldReceive('amount', 'getAmount')->andReturn(3000); // €30.00
+        $event1->assetCode = 'EUR';
+        $event1->amount = 3000; // €30.00
 
         $this->action->__invoke($event1);
 
         // Second debit
         $event2 = Mockery::mock(AssetBalanceSubtracted::class);
         $event2->shouldReceive('aggregateRootUuid')->andReturn('multi-debit-account');
-        $event2->shouldReceive('assetCode', 'getAssetCode')->andReturn('EUR');
-        $event2->shouldReceive('amount', 'getAmount')->andReturn(2000); // €20.00
+        $event2->assetCode = 'EUR';
+        $event2->amount = 2000; // €20.00
 
         $this->action->__invoke($event2);
 

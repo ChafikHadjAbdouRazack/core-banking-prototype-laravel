@@ -20,7 +20,7 @@ class TransferAggregateTest extends TestCase
 
         $from = new AccountUuid('from-account-uuid');
         $to = new AccountUuid('to-account-uuid');
-        $money = new Money('USD', 2500); // $25.00
+        $money = new Money(2500); // $25.00
 
         $aggregate->transfer($from, $to, $money);
 
@@ -40,7 +40,7 @@ class TransferAggregateTest extends TestCase
 
         $from = new AccountUuid('sender-uuid');
         $to = new AccountUuid('receiver-uuid');
-        $money = new Money('EUR', 5000); // €50.00
+        $money = new Money(5000); // €50.00
 
         $event = new MoneyTransferred(
             from: $from,
@@ -60,7 +60,7 @@ class TransferAggregateTest extends TestCase
 
         $from = new AccountUuid('from-uuid');
         $to = new AccountUuid('to-uuid');
-        $money = new Money('USD', 100);
+        $money = new Money(100);
 
         // Make COUNT_THRESHOLD transfers
         for ($i = 0; $i < TransferAggregate::COUNT_THRESHOLD; $i++) {
@@ -83,7 +83,7 @@ class TransferAggregateTest extends TestCase
         $event = new MoneyTransferred(
             from: new AccountUuid('from'),
             to: new AccountUuid('to'),
-            money: new Money('USD', 100),
+            money: new Money(100),
             hash: 'unique-hash'
         );
 
@@ -96,7 +96,7 @@ class TransferAggregateTest extends TestCase
     public function test_validates_hash_for_duplicate_prevention(): void
     {
         $aggregate = new TransferAggregate();
-        $money = new Money('USD', 1000);
+        $money = new Money(1000);
         $hash = $aggregate->generateHash($money);
 
         // Store hash first
@@ -115,13 +115,13 @@ class TransferAggregateTest extends TestCase
         $to = new AccountUuid('multi-currency-to');
 
         // Transfer USD
-        $aggregate->transfer($from, $to, new Money('USD', 1000));
+        $aggregate->transfer($from, $to, new Money(1000));
 
         // Transfer EUR
-        $aggregate->transfer($from, $to, new Money('EUR', 2000));
+        $aggregate->transfer($from, $to, new Money(2000));
 
         // Transfer BTC
-        $aggregate->transfer($from, $to, new Money('BTC', 10000000)); // 0.1 BTC
+        $aggregate->transfer($from, $to, new Money(10000000)); // 0.1 BTC
 
         // All transfers should be recorded
         $aggregate->assertRecordedCount(3);
@@ -139,7 +139,7 @@ class TransferAggregateTest extends TestCase
             $event = new MoneyTransferred(
                 from: $from,
                 to: $to,
-                money: new Money('USD', $i * 100),
+                money: new Money($i * 100),
                 hash: "hash-{$i}"
             );
             $aggregate->applyMoneyTransferred($event);
@@ -154,7 +154,7 @@ class TransferAggregateTest extends TestCase
 
         $from = new AccountUuid('large-from');
         $to = new AccountUuid('large-to');
-        $money = new Money('USD', 100000000); // $1,000,000.00
+        $money = new Money(100000000); // $1,000,000.00
 
         $aggregate->transfer($from, $to, $money);
 
@@ -181,7 +181,7 @@ class TransferAggregateTest extends TestCase
         $aggregate = TransferAggregate::fake();
 
         $account = new AccountUuid('self-transfer-account');
-        $money = new Money('USD', 500);
+        $money = new Money(500);
 
         // Transfer from account to itself (edge case)
         $aggregate->transfer($account, $account, $money);
