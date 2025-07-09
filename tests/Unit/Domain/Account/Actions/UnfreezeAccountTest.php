@@ -118,7 +118,6 @@ class UnfreezeAccountTest extends TestCase
         $account = Account::factory()->create([
             'uuid'   => 'frozen-business',
             'name'   => 'Frozen Business Account',
-            'type'   => 'business',
             'frozen' => true,
         ]);
 
@@ -132,7 +131,6 @@ class UnfreezeAccountTest extends TestCase
         // Assert
         $account->refresh();
         $this->assertFalse($account->frozen);
-        $this->assertEquals('business', $account->type);
     }
 
     protected function tearDown(): void

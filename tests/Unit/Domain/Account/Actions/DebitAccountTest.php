@@ -27,6 +27,25 @@ class DebitAccountTest extends TestCase
         $this->action = new DebitAccount($this->accountRepository);
     }
 
+    private function createAssetBalanceSubtractedMock(string $aggregateRootUuid, string $assetCode, int $amount)
+    {
+        $event = Mockery::mock(AssetBalanceSubtracted::class)->makePartial();
+        $event->shouldReceive('aggregateRootUuid')->andReturn($aggregateRootUuid);
+
+        // Use reflection to set readonly properties
+        $reflection = new \ReflectionClass($event);
+        
+        $assetCodeProp = $reflection->getProperty('assetCode');
+        $assetCodeProp->setAccessible(true);
+        $assetCodeProp->setValue($event, $assetCode);
+
+        $amountProp = $reflection->getProperty('amount');
+        $amountProp->setAccessible(true);
+        $amountProp->setValue($event, $amount);
+
+        return $event;
+    }
+
     public function test_debits_existing_balance(): void
     {
         // Create account
@@ -45,10 +64,7 @@ class DebitAccountTest extends TestCase
         // Repository will find the account by UUID
 
         // Create event
-        $event = Mockery::mock(AssetBalanceSubtracted::class);
-        $event->shouldReceive('aggregateRootUuid')->andReturn('account-123');
-        $event->assetCode = 'USD';
-        $event->amount = 2000; // $20.00
+        $event = $this->createAssetBalanceSubtractedMock('account-123', 'USD', 2000); // $20.00
 
         // Execute
         $result = $this->action->__invoke($event);
@@ -74,10 +90,7 @@ class DebitAccountTest extends TestCase
         // Repository will find the account by UUID
 
         // Create event
-        $event = Mockery::mock(AssetBalanceSubtracted::class);
-        $event->shouldReceive('aggregateRootUuid')->andReturn('account-456');
-        $event->assetCode = 'EUR';
-        $event->amount = 1000;
+        $event = $this->createAssetBalanceSubtractedMock('account-456', 'EUR', 1000);
 
         // Assert exception
         $this->expectException(\Exception::class);
@@ -105,10 +118,7 @@ class DebitAccountTest extends TestCase
         // Repository will find the account by UUID
 
         // Create event that would overdraw
-        $event = Mockery::mock(AssetBalanceSubtracted::class);
-        $event->shouldReceive('aggregateRootUuid')->andReturn('account-789');
-        $event->assetCode = 'USD';
-        $event->amount = 2000; // $20.00
+        $event = $this->createAssetBalanceSubtractedMock('account-789', 'USD', 2000); // $20.00
 
         // Assert exception
         $this->expectException(\Exception::class);
@@ -136,10 +146,7 @@ class DebitAccountTest extends TestCase
         // Repository will find the account by UUID
 
         // Create event for exact balance
-        $event = Mockery::mock(AssetBalanceSubtracted::class);
-        $event->shouldReceive('aggregateRootUuid')->andReturn('exact-balance-account');
-        $event->assetCode = 'BTC';
-        $event->amount = 100000000; // 1 BTC
+        $event = $this->createAssetBalanceSubtractedMock('exact-balance-account', 'BTC', 100000000); // 1 BTC
 
         // Execute
         $result = $this->action->__invoke($event);
@@ -170,18 +177,12 @@ class DebitAccountTest extends TestCase
         // Repository will find the account by UUID
 
         // First debit
-        $event1 = Mockery::mock(AssetBalanceSubtracted::class);
-        $event1->shouldReceive('aggregateRootUuid')->andReturn('multi-debit-account');
-        $event1->assetCode = 'EUR';
-        $event1->amount = 3000; // €30.00
+        $event1 = $this->createAssetBalanceSubtractedMock('multi-debit-account', 'EUR', 3000); // €30.00
 
         $this->action->__invoke($event1);
 
         // Second debit
-        $event2 = Mockery::mock(AssetBalanceSubtracted::class);
-        $event2->shouldReceive('aggregateRootUuid')->andReturn('multi-debit-account');
-        $event2->assetCode = 'EUR';
-        $event2->amount = 2000; // €20.00
+        $event2 = $this->createAssetBalanceSubtractedMock('multi-debit-account', 'EUR', 2000); // €20.00
 
         $this->action->__invoke($event2);
 

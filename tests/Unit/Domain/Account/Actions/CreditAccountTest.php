@@ -27,6 +27,25 @@ class CreditAccountTest extends TestCase
         $this->action = new CreditAccount($this->accountRepository);
     }
 
+    private function createAssetBalanceAddedMock(string $aggregateRootUuid, string $assetCode, int $amount)
+    {
+        $event = Mockery::mock(AssetBalanceAdded::class)->makePartial();
+        $event->shouldReceive('aggregateRootUuid')->andReturn($aggregateRootUuid);
+
+        // Use reflection to set readonly properties
+        $reflection = new \ReflectionClass($event);
+        
+        $assetCodeProp = $reflection->getProperty('assetCode');
+        $assetCodeProp->setAccessible(true);
+        $assetCodeProp->setValue($event, $assetCode);
+
+        $amountProp = $reflection->getProperty('amount');
+        $amountProp->setAccessible(true);
+        $amountProp->setValue($event, $amount);
+
+        return $event;
+    }
+
     public function test_credits_existing_balance(): void
     {
         // Create account
@@ -44,19 +63,8 @@ class CreditAccountTest extends TestCase
 
         // Repository will find the account by UUID
 
-        // Create event mock with constructor bypass
-        $event = Mockery::mock(AssetBalanceAdded::class)->makePartial();
-        $event->shouldReceive('aggregateRootUuid')->andReturn('account-123');
-
-        // Use reflection to set readonly properties
-        $reflection = new \ReflectionClass($event);
-        $assetCodeProp = $reflection->getProperty('assetCode');
-        $assetCodeProp->setAccessible(true);
-        $assetCodeProp->setValue($event, 'USD');
-
-        $amountProp = $reflection->getProperty('amount');
-        $amountProp->setAccessible(true);
-        $amountProp->setValue($event, 500); // $5.00
+        // Create event
+        $event = $this->createAssetBalanceAddedMock('account-123', 'USD', 500); // $5.00
 
         // Execute
         $result = $this->action->__invoke($event);
@@ -81,11 +89,8 @@ class CreditAccountTest extends TestCase
 
         // Repository will find the account by UUID
 
-        // Create event with property access
-        $event = Mockery::mock(AssetBalanceAdded::class);
-        $event->shouldReceive('aggregateRootUuid')->andReturn('account-456');
-        $event->assetCode = 'EUR';
-        $event->amount = 2500; // €25.00
+        // Create event
+        $event = $this->createAssetBalanceAddedMock('account-456', 'EUR', 2500); // €25.00
 
         // Execute
         $result = $this->action->__invoke($event);
@@ -112,18 +117,12 @@ class CreditAccountTest extends TestCase
         // Repository will find the account by UUID
 
         // First credit
-        $event1 = Mockery::mock(AssetBalanceAdded::class);
-        $event1->shouldReceive('aggregateRootUuid')->andReturn('account-789');
-        $event1->assetCode = 'BTC';
-        $event1->amount = 100000; // 0.001 BTC
+        $event1 = $this->createAssetBalanceAddedMock('account-789', 'BTC', 100000); // 0.001 BTC
 
         $this->action->__invoke($event1);
 
         // Second credit
-        $event2 = Mockery::mock(AssetBalanceAdded::class);
-        $event2->shouldReceive('aggregateRootUuid')->andReturn('account-789');
-        $event2->assetCode = 'BTC';
-        $event2->amount = 50000; // 0.0005 BTC
+        $event2 = $this->createAssetBalanceAddedMock('account-789', 'BTC', 50000); // 0.0005 BTC
 
         $this->action->__invoke($event2);
 
@@ -146,18 +145,12 @@ class CreditAccountTest extends TestCase
         // Repository will find the account by UUID
 
         // Credit USD
-        $usdEvent = Mockery::mock(AssetBalanceAdded::class);
-        $usdEvent->shouldReceive('aggregateRootUuid')->andReturn('multi-asset-account');
-        $usdEvent->assetCode = 'USD';
-        $usdEvent->amount = 10000; // $100.00
+        $usdEvent = $this->createAssetBalanceAddedMock('multi-asset-account', 'USD', 10000); // $100.00
 
         $this->action->__invoke($usdEvent);
 
         // Credit EUR
-        $eurEvent = Mockery::mock(AssetBalanceAdded::class);
-        $eurEvent->shouldReceive('aggregateRootUuid')->andReturn('multi-asset-account');
-        $eurEvent->assetCode = 'EUR';
-        $eurEvent->amount = 5000; // €50.00
+        $eurEvent = $this->createAssetBalanceAddedMock('multi-asset-account', 'EUR', 5000); // €50.00
 
         $this->action->__invoke($eurEvent);
 
