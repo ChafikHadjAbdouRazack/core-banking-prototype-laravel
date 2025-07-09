@@ -444,9 +444,7 @@ class AmlScreeningService
                 'error'        => $e->getMessage(),
             ]);
 
-            if (method_exists($screening, 'addReview')) {
-                $screening->addReview($decision, $notes, $reviewer);
-            }
+            $screening->addReview($decision, $notes, $reviewer);
         }
 
         // Update risk profile if applicable
