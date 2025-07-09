@@ -12,6 +12,7 @@ use Tests\TestCase;
 class HandleCustodianHealthChangeTest extends TestCase
 {
     private BankAlertingService $alertingService;
+
     private HandleCustodianHealthChange $listener;
 
     protected function setUp(): void
@@ -79,7 +80,7 @@ class HandleCustodianHealthChangeTest extends TestCase
             ->once()
             ->with('Failed to handle custodian health change', [
                 'custodian' => 'failed-custodian',
-                'error' => 'Alert service unavailable',
+                'error'     => 'Alert service unavailable',
             ]);
 
         $this->listener->failed($event, $exception);

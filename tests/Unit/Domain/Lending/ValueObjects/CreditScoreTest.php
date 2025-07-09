@@ -12,8 +12,8 @@ class CreditScoreTest extends TestCase
         $score = 720;
         $bureau = 'Experian';
         $report = [
-            'accounts' => 5,
-            'inquiries' => 2,
+            'accounts'      => 5,
+            'inquiries'     => 2,
             'delinquencies' => 0,
         ];
 
@@ -124,18 +124,18 @@ class CreditScoreTest extends TestCase
         $score = 725;
         $bureau = 'Experian';
         $report = [
-            'total_accounts' => 8,
-            'open_accounts' => 5,
+            'total_accounts'     => 8,
+            'open_accounts'      => 5,
             'credit_utilization' => 0.25,
-            'payment_history' => 'excellent',
+            'payment_history'    => 'excellent',
         ];
 
         $creditScore = new CreditScore($score, $bureau, $report);
         $array = $creditScore->toArray();
 
         $this->assertEquals([
-            'score' => 725,
-            'bureau' => 'Experian',
+            'score'         => 725,
+            'bureau'        => 'Experian',
             'credit_report' => $report,
         ], $array);
     }
@@ -154,15 +154,15 @@ class CreditScoreTest extends TestCase
     {
         $complexReport = [
             'accounts' => [
-                'credit_cards' => 3,
-                'auto_loans' => 1,
-                'mortgages' => 1,
+                'credit_cards'  => 3,
+                'auto_loans'    => 1,
+                'mortgages'     => 1,
                 'student_loans' => 2,
             ],
             'payment_history' => [
                 'on_time_payments' => 156,
-                'late_payments' => 2,
-                'missed_payments' => 0,
+                'late_payments'    => 2,
+                'missed_payments'  => 0,
             ],
             'credit_inquiries' => [
                 'hard_inquiries' => 3,

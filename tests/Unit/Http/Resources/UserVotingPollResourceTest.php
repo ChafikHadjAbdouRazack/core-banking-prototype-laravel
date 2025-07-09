@@ -7,23 +7,22 @@ use App\Http\Resources\UserVotingPollResource;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
 use Mockery;
 use Tests\TestCase;
 
 class UserVotingPollResourceTest extends TestCase
 {
     use RefreshDatabase;
-    
+
     protected $votingStrategy;
 
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->votingStrategy = Mockery::mock(AssetWeightedVotingStrategy::class);
         $this->app->instance(AssetWeightedVotingStrategy::class, $this->votingStrategy);
-        
+
         // Set the primary basket code to GCU for testing
         config(['baskets.primary_code' => 'GCU']);
     }
@@ -31,28 +30,29 @@ class UserVotingPollResourceTest extends TestCase
     private function createPoll(array $attributes = []): object
     {
         $defaults = [
-            'uuid' => 'poll-123',
-            'title' => 'Test Poll',
-            'description' => 'Test Description',
-            'type' => (object) ['value' => 'single_choice'],
-            'status' => (object) ['value' => 'active'],
-            'options' => ['Yes', 'No', 'Abstain'],
-            'start_date' => now()->subDay(),
-            'end_date' => now()->addDays(5),
+            'uuid'                   => 'poll-123',
+            'title'                  => 'Test Poll',
+            'description'            => 'Test Description',
+            'type'                   => (object) ['value' => 'single_choice'],
+            'status'                 => (object) ['value' => 'active'],
+            'options'                => ['Yes', 'No', 'Abstain'],
+            'start_date'             => now()->subDay(),
+            'end_date'               => now()->addDays(5),
             'required_participation' => 50.0,
-            'metadata' => [
-                'basket_code' => 'GCU',
+            'metadata'               => [
+                'basket_code'  => 'GCU',
                 'voting_month' => '2025-01',
-                'template' => 'standard',
+                'template'     => 'standard',
             ],
             'created_at' => now(),
             'updated_at' => now(),
         ];
 
         $data = array_merge($defaults, $attributes);
-        
-        return new class($data) {
+
+        return new class ($data) {
             private array $attributes;
+
             private array $relations = [];
 
             public function __construct(array $attributes)
@@ -65,12 +65,13 @@ class UserVotingPollResourceTest extends TestCase
                 if ($name === 'resource') {
                     return $this; // Return self as resource
                 }
+
                 return $this->attributes[$name] ?? null;
             }
 
             public function votes()
             {
-                return new class($this) {
+                return new class ($this) {
                     private $poll;
 
                     public function __construct($poll)
@@ -115,6 +116,7 @@ class UserVotingPollResourceTest extends TestCase
             public function setUserVote($vote)
             {
                 $this->relations['userVote'] = $vote;
+
                 return $this;
             }
 
@@ -126,6 +128,7 @@ class UserVotingPollResourceTest extends TestCase
             public function setTotalVotingPower($power)
             {
                 $this->relations['totalVotingPower'] = $power;
+
                 return $this;
             }
 
@@ -139,8 +142,8 @@ class UserVotingPollResourceTest extends TestCase
     private function createUser(): User
     {
         return User::factory()->create([
-            'uuid' => 'user-123',
-            'name' => 'Test User',
+            'uuid'  => 'user-123',
+            'name'  => 'Test User',
             'email' => 'test@example.com',
         ]);
     }
@@ -148,15 +151,15 @@ class UserVotingPollResourceTest extends TestCase
     private function createVote(array $attributes = []): object
     {
         $defaults = [
-            'poll_uuid' => 'poll-123',
-            'user_uuid' => 'user-123',
+            'poll_uuid'        => 'poll-123',
+            'user_uuid'        => 'user-123',
             'selected_options' => ['Yes'],
-            'voting_power' => 1000,
-            'created_at' => now(),
+            'voting_power'     => 1000,
+            'created_at'       => now(),
         ];
 
         $data = array_merge($defaults, $attributes);
-        
+
         return (object) $data;
     }
 
@@ -177,10 +180,10 @@ class UserVotingPollResourceTest extends TestCase
         $this->assertEquals(50.0, $array['required_participation']);
         $this->assertEquals(0.0, $array['current_participation']);
         $this->assertEquals([
-            'has_voted' => false,
+            'has_voted'    => false,
             'voting_power' => 0,
-            'can_vote' => false,
-            'vote' => null,
+            'can_vote'     => false,
+            'vote'         => null,
         ], $array['user_context']);
         // Check that metadata is processed correctly
         $this->assertArrayHasKey('is_gcu_poll', $array['metadata']);
@@ -211,10 +214,10 @@ class UserVotingPollResourceTest extends TestCase
         $array = $resource->toArray($request);
 
         $this->assertEquals([
-            'has_voted' => false,
+            'has_voted'    => false,
             'voting_power' => 1000,
-            'can_vote' => true,
-            'vote' => null,
+            'can_vote'     => true,
+            'vote'         => null,
         ], $array['user_context']);
     }
 
@@ -223,10 +226,10 @@ class UserVotingPollResourceTest extends TestCase
         $user = $this->createUser();
         $poll = $this->createPoll();
         $vote = $this->createVote([
-            'poll_uuid' => $poll->uuid,
-            'user_uuid' => $user->uuid,
+            'poll_uuid'        => $poll->uuid,
+            'user_uuid'        => $user->uuid,
             'selected_options' => ['Yes'],
-            'voting_power' => 1000,
+            'voting_power'     => 1000,
         ]);
 
         $poll->setUserVote($vote);
@@ -244,7 +247,7 @@ class UserVotingPollResourceTest extends TestCase
         $this->assertFalse($array['user_context']['can_vote']);
         $this->assertEquals([
             'selected_options' => ['Yes'],
-            'voted_at' => $vote->created_at->toISOString(),
+            'voted_at'         => $vote->created_at->toISOString(),
         ], $array['user_context']['vote']);
     }
 
@@ -309,7 +312,7 @@ class UserVotingPollResourceTest extends TestCase
     {
         $user = $this->createUser();
         $poll = $this->createPoll(['status' => (object) ['value' => 'pending']]);
-        
+
         $this->votingStrategy->shouldReceive('calculatePower')
             ->once()
             ->andReturn(1000);
@@ -329,7 +332,7 @@ class UserVotingPollResourceTest extends TestCase
             $this->createPoll(['uuid' => 'poll-2', 'title' => 'Poll 2']),
             $this->createPoll(['uuid' => 'poll-3', 'title' => 'Poll 3']),
         ];
-        
+
         $collection = UserVotingPollResource::collection($polls);
         $request = Request::create('/');
         $array = $collection->toArray($request);

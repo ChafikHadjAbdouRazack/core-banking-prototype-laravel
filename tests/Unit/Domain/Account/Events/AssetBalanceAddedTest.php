@@ -12,7 +12,7 @@ class AssetBalanceAddedTest extends TestCase
     public function test_creates_event_with_required_properties(): void
     {
         $hash = new Hash('test-hash-value');
-        
+
         $event = new AssetBalanceAdded(
             assetCode: 'USD',
             amount: 1500,
@@ -30,11 +30,11 @@ class AssetBalanceAddedTest extends TestCase
     {
         $hash = new Hash('test-hash-with-metadata');
         $metadata = [
-            'source' => 'bank_transfer',
+            'source'    => 'bank_transfer',
             'reference' => 'TX123456',
             'timestamp' => '2024-01-15T10:30:00Z',
         ];
-        
+
         $event = new AssetBalanceAdded(
             assetCode: 'EUR',
             amount: 2500,
@@ -82,14 +82,14 @@ class AssetBalanceAddedTest extends TestCase
     public function test_stores_different_asset_codes(): void
     {
         $assets = ['USD', 'EUR', 'GBP', 'JPY', 'CHF', 'BTC', 'ETH', 'USDT'];
-        
+
         foreach ($assets as $assetCode) {
             $event = new AssetBalanceAdded(
                 assetCode: $assetCode,
                 amount: 1000,
                 hash: new Hash("hash-{$assetCode}")
             );
-            
+
             $this->assertEquals($assetCode, $event->assetCode);
         }
     }

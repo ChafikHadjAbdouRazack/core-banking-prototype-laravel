@@ -16,13 +16,13 @@ class ApplicationApprovedTest extends TestCase
     {
         $application = FinancialInstitutionApplication::factory()->create([
             'institution_name' => 'Approved Bank',
-            'status' => 'approved',
+            'status'           => 'approved',
         ]);
 
         $partner = FinancialInstitutionPartner::factory()->create([
             'application_id' => $application->id,
-            'name' => 'Approved Bank',
-            'status' => 'active',
+            'name'           => 'Approved Bank',
+            'status'         => 'active',
         ]);
 
         $event = new ApplicationApproved($application, $partner);
@@ -37,11 +37,11 @@ class ApplicationApprovedTest extends TestCase
     {
         $application = FinancialInstitutionApplication::factory()->create();
         $partner = FinancialInstitutionPartner::factory()->create();
-        
+
         $event = new ApplicationApproved($application, $partner);
 
         $traits = class_uses($event);
-        
+
         $this->assertArrayHasKey('Illuminate\Foundation\Events\Dispatchable', $traits);
         $this->assertArrayHasKey('Illuminate\Broadcasting\InteractsWithSockets', $traits);
         $this->assertArrayHasKey('Illuminate\Queue\SerializesModels', $traits);
@@ -51,7 +51,7 @@ class ApplicationApprovedTest extends TestCase
     {
         $application = FinancialInstitutionApplication::factory()->create();
         $partner = FinancialInstitutionPartner::factory()->create();
-        
+
         $event = new ApplicationApproved($application, $partner);
 
         // Properties are readonly, attempting to modify should cause error
@@ -62,17 +62,17 @@ class ApplicationApprovedTest extends TestCase
     public function test_event_serializes_correctly(): void
     {
         $application = FinancialInstitutionApplication::factory()->create([
-            'institution_name' => 'Serialized Bank',
+            'institution_name'    => 'Serialized Bank',
             'registration_number' => 'SER123456',
         ]);
 
         $partner = FinancialInstitutionPartner::factory()->create([
             'application_id' => $application->id,
-            'partner_code' => 'PARTNER001',
+            'partner_code'   => 'PARTNER001',
         ]);
 
         $event = new ApplicationApproved($application, $partner);
-        
+
         // Serialize and unserialize
         $serialized = serialize($event);
         $unserialized = unserialize($serialized);
@@ -89,7 +89,7 @@ class ApplicationApprovedTest extends TestCase
         $partner = FinancialInstitutionPartner::factory()->create();
 
         $this->expectsEvents(ApplicationApproved::class);
-        
+
         event(new ApplicationApproved($application, $partner));
     }
 }

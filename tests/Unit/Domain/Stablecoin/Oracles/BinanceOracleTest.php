@@ -9,11 +9,11 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Tests\TestCase;
-use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 
 class BinanceOracleTest extends TestCase
 {
     use \Illuminate\Foundation\Testing\WithoutMiddleware;
+
     private BinanceOracle $oracle;
 
     protected function setUp(): void
@@ -58,7 +58,7 @@ class BinanceOracleTest extends TestCase
 
         foreach ($mappedPairs as $pair) {
             $priceData = $this->oracle->getPrice($pair['base'], $pair['quote']);
-            
+
             $this->assertEquals($pair['base'], $priceData->base);
             $this->assertEquals($pair['quote'], $priceData->quote);
             $this->assertEquals($pair['symbol'], $priceData->metadata['symbol']);
@@ -86,12 +86,12 @@ class BinanceOracleTest extends TestCase
     public function test_get_multiple_prices_returns_array_of_price_data(): void
     {
         $pairs = ['BTC/USDT', 'ETH/USDT', 'EUR/USD'];
-        
+
         $prices = $this->oracle->getMultiplePrices($pairs);
 
         $this->assertIsArray($prices);
         $this->assertCount(3, $prices);
-        
+
         foreach ($pairs as $pair) {
             $this->assertArrayHasKey($pair, $prices);
             $this->assertInstanceOf(PriceData::class, $prices[$pair]);
@@ -117,7 +117,7 @@ class BinanceOracleTest extends TestCase
         $this->assertCount(1, $prices);
         $this->assertArrayHasKey('BTC/USDT', $prices);
         $this->assertArrayNotHasKey('INVALID/PAIR', $prices);
-        
+
         // Only verify the warning log since getMultiplePrices catches the exception
         Log::shouldHaveReceived('warning')
             ->with(\Mockery::pattern('/Failed to get price for INVALID\/PAIR:/'));
@@ -135,7 +135,7 @@ class BinanceOracleTest extends TestCase
         $this->assertEquals($timestamp->toIso8601String(), $priceData->timestamp->toIso8601String());
         $this->assertNotNull($priceData->volume24h);
         $this->assertNull($priceData->changePercent24h);
-        
+
         // Check OHLC data in metadata
         $this->assertArrayHasKey('open', $priceData->metadata);
         $this->assertArrayHasKey('high', $priceData->metadata);
@@ -226,10 +226,10 @@ class BinanceOracleTest extends TestCase
     public function test_timestamp_is_recent(): void
     {
         $priceData = $this->oracle->getPrice('BTC', 'USDT');
-        
+
         $now = Carbon::now();
         $diff = $now->diffInSeconds($priceData->timestamp);
-        
+
         $this->assertLessThanOrEqual(5, $diff); // Within 5 seconds
     }
 

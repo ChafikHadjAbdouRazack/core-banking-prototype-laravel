@@ -32,22 +32,22 @@ class CreatePositionActivityTest extends TestCase
         $this->assertEquals(6, $method->getNumberOfParameters());
 
         $parameters = $method->getParameters();
-        
+
         $this->assertEquals('accountUuid', $parameters[0]->getName());
         $this->assertEquals(AccountUuid::class, $parameters[0]->getType()->getName());
-        
+
         $this->assertEquals('stablecoinCode', $parameters[1]->getName());
         $this->assertEquals('string', $parameters[1]->getType()->getName());
-        
+
         $this->assertEquals('collateralAssetCode', $parameters[2]->getName());
         $this->assertEquals('string', $parameters[2]->getType()->getName());
-        
+
         $this->assertEquals('collateralAmount', $parameters[3]->getName());
         $this->assertEquals('int', $parameters[3]->getType()->getName());
-        
+
         $this->assertEquals('mintAmount', $parameters[4]->getName());
         $this->assertEquals('int', $parameters[4]->getType()->getName());
-        
+
         $this->assertEquals('positionUuid', $parameters[5]->getName());
         $this->assertTrue($parameters[5]->isOptional());
         $this->assertTrue($parameters[5]->allowsNull());
@@ -67,19 +67,19 @@ class CreatePositionActivityTest extends TestCase
         // Collateral value: $3,000
         // Mint amount: $2,000
         // Expected ratio: 3000 / 2000 = 1.5 (150%)
-        
+
         $collateralValueInUSD = 3000000000; // $3,000 with 6 decimal places
         $mintAmount = 2000000000; // $2,000 with 6 decimal places
-        
+
         $expectedRatio = $collateralValueInUSD / $mintAmount;
-        
+
         $this->assertEquals(1.5, $expectedRatio);
     }
 
     public function test_activity_properties(): void
     {
         $reflection = new \ReflectionClass(CreatePositionActivity::class);
-        
+
         // Check for important properties inherited from Activity
         $this->assertTrue($reflection->hasProperty('tries'));
         $this->assertTrue($reflection->hasProperty('timeout'));

@@ -15,7 +15,7 @@ class FakerHelperTest extends TestCase
     public function test_faker_returns_generator_instance(): void
     {
         $faker = faker();
-        
+
         $this->assertInstanceOf(Generator::class, $faker);
     }
 
@@ -23,7 +23,7 @@ class FakerHelperTest extends TestCase
     {
         $faker1 = faker();
         $faker2 = faker();
-        
+
         // Each call creates a new instance
         $this->assertNotSame($faker1, $faker2);
     }
@@ -31,7 +31,7 @@ class FakerHelperTest extends TestCase
     public function test_faker_can_generate_data(): void
     {
         $faker = faker();
-        
+
         // Test basic faker functionality
         $this->assertIsString($faker->name());
         $this->assertIsString($faker->email());
@@ -43,19 +43,19 @@ class FakerHelperTest extends TestCase
     public function test_faker_helper_file_structure(): void
     {
         $helperFile = base_path('app/Helpers/faker.php');
-        
+
         $this->assertFileExists($helperFile);
-        
+
         $content = file_get_contents($helperFile);
-        
+
         // Check for proper imports
         $this->assertStringContainsString('use Faker\Factory;', $content);
         $this->assertStringContainsString('use Faker\Generator;', $content);
-        
+
         // Check function definition
         $this->assertStringContainsString('if (! function_exists(\'faker\'))', $content);
         $this->assertStringContainsString('function faker(): Generator', $content);
-        
+
         // Check implementation
         $this->assertStringContainsString('Factory::create()', $content);
     }
@@ -64,7 +64,7 @@ class FakerHelperTest extends TestCase
     {
         $reflection = new \ReflectionFunction('faker');
         $docComment = $reflection->getDocComment();
-        
+
         $this->assertNotFalse($docComment);
         $this->assertStringContainsString('A shorthand for faker factory', $docComment);
         $this->assertStringContainsString('@return Generator', $docComment);
@@ -73,7 +73,7 @@ class FakerHelperTest extends TestCase
     public function test_faker_function_return_type(): void
     {
         $reflection = new \ReflectionFunction('faker');
-        
+
         $this->assertTrue($reflection->hasReturnType());
         $returnType = $reflection->getReturnType();
         $this->assertEquals('Faker\Generator', $returnType->getName());
@@ -82,14 +82,14 @@ class FakerHelperTest extends TestCase
     public function test_faker_function_has_no_parameters(): void
     {
         $reflection = new \ReflectionFunction('faker');
-        
+
         $this->assertEquals(0, $reflection->getNumberOfParameters());
     }
 
     public function test_faker_generates_consistent_types(): void
     {
         $faker = faker();
-        
+
         // Test multiple calls return consistent types
         for ($i = 0; $i < 10; $i++) {
             $this->assertIsString($faker->word());
@@ -103,7 +103,7 @@ class FakerHelperTest extends TestCase
     public function test_faker_email_generates_valid_format(): void
     {
         $faker = faker();
-        
+
         for ($i = 0; $i < 10; $i++) {
             $email = $faker->email();
             $this->assertMatchesRegularExpression('/^.+@.+\..+$/', $email);
@@ -113,7 +113,7 @@ class FakerHelperTest extends TestCase
     public function test_faker_uuid_generates_valid_format(): void
     {
         $faker = faker();
-        
+
         $uuid = $faker->uuid();
         $this->assertMatchesRegularExpression(
             '/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i',
@@ -124,10 +124,10 @@ class FakerHelperTest extends TestCase
     public function test_faker_date_time_methods_work(): void
     {
         $faker = faker();
-        
+
         $dateTime = $faker->dateTime();
         $this->assertInstanceOf(\DateTime::class, $dateTime);
-        
+
         $dateTimeThisYear = $faker->dateTimeThisYear();
         $this->assertInstanceOf(\DateTime::class, $dateTimeThisYear);
         $this->assertEquals(date('Y'), $dateTimeThisYear->format('Y'));
@@ -136,17 +136,17 @@ class FakerHelperTest extends TestCase
     public function test_faker_random_element_works(): void
     {
         $faker = faker();
-        
+
         $elements = ['apple', 'banana', 'orange'];
         $randomElement = $faker->randomElement($elements);
-        
+
         $this->assertContains($randomElement, $elements);
     }
 
     public function test_faker_number_between_works(): void
     {
         $faker = faker();
-        
+
         for ($i = 0; $i < 20; $i++) {
             $number = $faker->numberBetween(10, 20);
             $this->assertGreaterThanOrEqual(10, $number);
@@ -157,16 +157,16 @@ class FakerHelperTest extends TestCase
     public function test_faker_generates_locale_specific_data(): void
     {
         $faker = faker();
-        
+
         // Test that faker can generate locale-specific data
         $name = $faker->name();
         $this->assertIsString($name);
         $this->assertNotEmpty($name);
-        
+
         $address = $faker->address();
         $this->assertIsString($address);
         $this->assertNotEmpty($address);
-        
+
         // Check that faker is working correctly
         $this->assertInstanceOf(Generator::class, $faker);
     }

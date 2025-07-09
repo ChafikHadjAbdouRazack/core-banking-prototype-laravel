@@ -14,45 +14,50 @@ class TransactionControllerTest extends TestCase
     use RefreshDatabase;
 
     protected User $user;
+
     protected User $otherUser;
+
     protected Account $account;
+
     protected Account $otherAccount;
+
     protected Asset $usdAsset;
+
     protected Asset $eurAsset;
 
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->user = User::factory()->create();
         $this->otherUser = User::factory()->create();
-        
+
         $this->account = Account::factory()->create([
             'user_uuid' => $this->user->uuid,
-            'balance' => 100000, // 1000.00 USD
-            'frozen' => false,
+            'balance'   => 100000, // 1000.00 USD
+            'frozen'    => false,
         ]);
-        
+
         $this->otherAccount = Account::factory()->create([
             'user_uuid' => $this->otherUser->uuid,
         ]);
-        
+
         // Create assets
         $this->usdAsset = Asset::firstOrCreate(
             ['code' => 'USD'],
             [
-                'name' => 'US Dollar',
-                'type' => 'fiat',
+                'name'      => 'US Dollar',
+                'type'      => 'fiat',
                 'precision' => 2,
                 'is_active' => true,
             ]
         );
-        
+
         $this->eurAsset = Asset::firstOrCreate(
             ['code' => 'EUR'],
             [
-                'name' => 'Euro',
-                'type' => 'fiat',
+                'name'      => 'Euro',
+                'type'      => 'fiat',
                 'precision' => 2,
                 'is_active' => true,
             ]
@@ -64,8 +69,8 @@ class TransactionControllerTest extends TestCase
         Sanctum::actingAs($this->user);
 
         $response = $this->postJson("/api/accounts/{$this->account->uuid}/deposit", [
-            'amount' => 250.50, // 250.50 USD
-            'asset_code' => 'USD',
+            'amount'      => 250.50, // 250.50 USD
+            'asset_code'  => 'USD',
             'description' => 'Cash deposit',
         ]);
 
@@ -80,8 +85,8 @@ class TransactionControllerTest extends TestCase
         Sanctum::actingAs($this->user);
 
         $response = $this->postJson("/api/accounts/{$this->account->uuid}/deposit", [
-            'amount' => 100.00, // 100.00 EUR
-            'asset_code' => 'EUR',
+            'amount'      => 100.00, // 100.00 EUR
+            'asset_code'  => 'EUR',
             'description' => 'EUR deposit',
         ]);
 
@@ -106,7 +111,7 @@ class TransactionControllerTest extends TestCase
         Sanctum::actingAs($this->user);
 
         $response = $this->postJson("/api/accounts/{$this->account->uuid}/deposit", [
-            'amount' => 0,
+            'amount'     => 0,
             'asset_code' => 'USD',
         ]);
 
@@ -119,7 +124,7 @@ class TransactionControllerTest extends TestCase
         Sanctum::actingAs($this->user);
 
         $response = $this->postJson("/api/accounts/{$this->account->uuid}/deposit", [
-            'amount' => 100,
+            'amount'     => 100,
             'asset_code' => 'INVALID',
         ]);
 
@@ -132,14 +137,14 @@ class TransactionControllerTest extends TestCase
         Sanctum::actingAs($this->user);
 
         $response = $this->postJson("/api/accounts/{$this->otherAccount->uuid}/deposit", [
-            'amount' => 100,
+            'amount'     => 100,
             'asset_code' => 'USD',
         ]);
 
         $response->assertStatus(403)
             ->assertJson([
                 'message' => 'Access denied to this account',
-                'error' => 'FORBIDDEN',
+                'error'   => 'FORBIDDEN',
             ]);
     }
 
@@ -149,18 +154,18 @@ class TransactionControllerTest extends TestCase
 
         $frozenAccount = Account::factory()->create([
             'user_uuid' => $this->user->uuid,
-            'frozen' => true,
+            'frozen'    => true,
         ]);
 
         $response = $this->postJson("/api/accounts/{$frozenAccount->uuid}/deposit", [
-            'amount' => 100,
+            'amount'     => 100,
             'asset_code' => 'USD',
         ]);
 
         $response->assertStatus(422)
             ->assertJson([
                 'message' => 'Cannot deposit to frozen account',
-                'error' => 'ACCOUNT_FROZEN',
+                'error'   => 'ACCOUNT_FROZEN',
             ]);
     }
 
@@ -169,7 +174,7 @@ class TransactionControllerTest extends TestCase
         Sanctum::actingAs($this->user);
 
         $response = $this->postJson('/api/accounts/non-existent-uuid/deposit', [
-            'amount' => 100,
+            'amount'     => 100,
             'asset_code' => 'USD',
         ]);
 
@@ -179,7 +184,7 @@ class TransactionControllerTest extends TestCase
     public function test_deposit_requires_authentication(): void
     {
         $response = $this->postJson("/api/accounts/{$this->account->uuid}/deposit", [
-            'amount' => 100,
+            'amount'     => 100,
             'asset_code' => 'USD',
         ]);
 
@@ -191,8 +196,8 @@ class TransactionControllerTest extends TestCase
         Sanctum::actingAs($this->user);
 
         $response = $this->postJson("/api/accounts/{$this->account->uuid}/withdraw", [
-            'amount' => 100.00, // 100.00 USD
-            'asset_code' => 'USD',
+            'amount'      => 100.00, // 100.00 USD
+            'asset_code'  => 'USD',
             'description' => 'ATM withdrawal',
         ]);
 
@@ -217,7 +222,7 @@ class TransactionControllerTest extends TestCase
         Sanctum::actingAs($this->user);
 
         $response = $this->postJson("/api/accounts/{$this->account->uuid}/withdraw", [
-            'amount' => 0,
+            'amount'     => 0,
             'asset_code' => 'USD',
         ]);
 
@@ -230,14 +235,14 @@ class TransactionControllerTest extends TestCase
         Sanctum::actingAs($this->user);
 
         $response = $this->postJson("/api/accounts/{$this->account->uuid}/withdraw", [
-            'amount' => 2000.00, // More than balance
+            'amount'     => 2000.00, // More than balance
             'asset_code' => 'USD',
         ]);
 
         $response->assertStatus(422)
             ->assertJson([
                 'message' => 'Insufficient balance',
-                'errors' => [
+                'errors'  => [
                     'amount' => ['Insufficient balance'],
                 ],
             ]);
@@ -248,14 +253,14 @@ class TransactionControllerTest extends TestCase
         Sanctum::actingAs($this->user);
 
         $response = $this->postJson("/api/accounts/{$this->otherAccount->uuid}/withdraw", [
-            'amount' => 100,
+            'amount'     => 100,
             'asset_code' => 'USD',
         ]);
 
         $response->assertStatus(403)
             ->assertJson([
                 'message' => 'Access denied to this account',
-                'error' => 'FORBIDDEN',
+                'error'   => 'FORBIDDEN',
             ]);
     }
 
@@ -265,19 +270,19 @@ class TransactionControllerTest extends TestCase
 
         $frozenAccount = Account::factory()->create([
             'user_uuid' => $this->user->uuid,
-            'balance' => 50000,
-            'frozen' => true,
+            'balance'   => 50000,
+            'frozen'    => true,
         ]);
 
         $response = $this->postJson("/api/accounts/{$frozenAccount->uuid}/withdraw", [
-            'amount' => 100,
+            'amount'     => 100,
             'asset_code' => 'USD',
         ]);
 
         $response->assertStatus(422)
             ->assertJson([
                 'message' => 'Cannot withdraw from frozen account',
-                'error' => 'ACCOUNT_FROZEN',
+                'error'   => 'ACCOUNT_FROZEN',
             ]);
     }
 
@@ -286,7 +291,7 @@ class TransactionControllerTest extends TestCase
         Sanctum::actingAs($this->user);
 
         $response = $this->postJson('/api/accounts/non-existent-uuid/withdraw', [
-            'amount' => 100,
+            'amount'     => 100,
             'asset_code' => 'USD',
         ]);
 
@@ -296,7 +301,7 @@ class TransactionControllerTest extends TestCase
     public function test_withdraw_requires_authentication(): void
     {
         $response = $this->postJson("/api/accounts/{$this->account->uuid}/withdraw", [
-            'amount' => 100,
+            'amount'     => 100,
             'asset_code' => 'USD',
         ]);
 
@@ -341,7 +346,7 @@ class TransactionControllerTest extends TestCase
         $response = $this->getJson("/api/accounts/{$this->account->uuid}/transactions?type=credit");
 
         $response->assertStatus(200);
-        
+
         $data = $response->json('data');
         foreach ($data as $transaction) {
             $this->assertEquals('credit', $transaction['type']);
@@ -355,7 +360,7 @@ class TransactionControllerTest extends TestCase
         $response = $this->getJson("/api/accounts/{$this->account->uuid}/transactions?asset_code=EUR");
 
         $response->assertStatus(200);
-        
+
         $data = $response->json('data');
         foreach ($data as $transaction) {
             $this->assertEquals('EUR', $transaction['asset_code']);
@@ -413,8 +418,8 @@ class TransactionControllerTest extends TestCase
         Sanctum::actingAs($this->user);
 
         $response = $this->postJson("/api/accounts/{$this->account->uuid}/deposit", [
-            'amount' => 100,
-            'asset_code' => 'USD',
+            'amount'      => 100,
+            'asset_code'  => 'USD',
             'description' => str_repeat('a', 256), // Too long
         ]);
 
@@ -427,8 +432,8 @@ class TransactionControllerTest extends TestCase
         Sanctum::actingAs($this->user);
 
         $response = $this->postJson("/api/accounts/{$this->account->uuid}/withdraw", [
-            'amount' => 50.00,
-            'asset_code' => 'USD',
+            'amount'      => 50.00,
+            'asset_code'  => 'USD',
             'description' => 'Monthly bill payment',
         ]);
 

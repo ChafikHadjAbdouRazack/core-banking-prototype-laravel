@@ -30,11 +30,11 @@ class ReserveWithdrawalDataTest extends TestCase
     public function test_creates_reserve_withdrawal_data_with_metadata(): void
     {
         $metadata = [
-            'approval_id' => 'appr-123',
+            'approval_id'   => 'appr-123',
             'authorized_by' => 'treasury',
-            'invoice_id' => 'INV-2024-001',
-            'notes' => 'Q1 2024 operating costs',
-            'timestamp' => '2024-01-15T10:00:00Z',
+            'invoice_id'    => 'INV-2024-001',
+            'notes'         => 'Q1 2024 operating costs',
+            'timestamp'     => '2024-01-15T10:00:00Z',
         ];
 
         $data = new ReserveWithdrawalData(
@@ -67,13 +67,13 @@ class ReserveWithdrawalDataTest extends TestCase
         $array = $data->toArray();
 
         $this->assertEquals([
-            'pool_id' => 'pool-001',
-            'asset' => 'USDT',
-            'amount' => '1000000000',
-            'custodian_id' => 'fireblocks-001',
+            'pool_id'             => 'pool-001',
+            'asset'               => 'USDT',
+            'amount'              => '1000000000',
+            'custodian_id'        => 'fireblocks-001',
             'destination_address' => '0x1234567890abcdef',
-            'reason' => 'liquidity_provision',
-            'metadata' => ['urgent' => true],
+            'reason'              => 'liquidity_provision',
+            'metadata'            => ['urgent' => true],
         ], $array);
     }
 
@@ -152,15 +152,15 @@ class ReserveWithdrawalDataTest extends TestCase
         $metadata = [
             'approval_workflow' => [
                 'required_approvals' => 3,
-                'current_approvals' => 2,
-                'approvers' => [
+                'current_approvals'  => 2,
+                'approvers'          => [
                     ['name' => 'Alice', 'approved_at' => '2024-01-01T10:00:00Z'],
                     ['name' => 'Bob', 'approved_at' => '2024-01-01T11:00:00Z'],
                 ],
                 'pending_approvers' => ['Charlie'],
             ],
             'threshold_amount' => '1000000000',
-            'risk_score' => 'medium',
+            'risk_score'       => 'medium',
         ];
 
         $data = new ReserveWithdrawalData(
@@ -207,15 +207,15 @@ class ReserveWithdrawalDataTest extends TestCase
     {
         $metadata = [
             'compliance' => [
-                'kyc_verified' => true,
-                'aml_check' => 'passed',
+                'kyc_verified'        => true,
+                'aml_check'           => 'passed',
                 'sanctions_screening' => 'clear',
-                'risk_rating' => 'low',
+                'risk_rating'         => 'low',
             ],
             'regulatory' => [
-                'jurisdiction' => 'US',
+                'jurisdiction'       => 'US',
                 'reporting_required' => true,
-                'form_8300_filed' => false,
+                'form_8300_filed'    => false,
             ],
         ];
 
@@ -247,7 +247,7 @@ class ReserveWithdrawalDataTest extends TestCase
 
         // All properties should be readonly
         $reflection = new \ReflectionClass($data);
-        
+
         foreach ($reflection->getProperties() as $property) {
             $this->assertTrue($property->isReadOnly());
         }
@@ -271,13 +271,13 @@ class ReserveWithdrawalDataTest extends TestCase
     public function test_metadata_preserves_order_and_types(): void
     {
         $metadata = [
-            'string' => 'value',
-            'number' => 123,
-            'float' => 45.67,
+            'string'  => 'value',
+            'number'  => 123,
+            'float'   => 45.67,
             'boolean' => true,
-            'null' => null,
-            'array' => [1, 2, 3],
-            'object' => ['key' => 'value'],
+            'null'    => null,
+            'array'   => [1, 2, 3],
+            'object'  => ['key' => 'value'],
         ];
 
         $data = new ReserveWithdrawalData(

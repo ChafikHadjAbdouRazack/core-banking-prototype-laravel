@@ -16,9 +16,9 @@ class FraudDetectedTest extends TestCase
     {
         $fraudScore = FraudScore::factory()->create([
             'entity_type' => Transaction::class,
-            'score' => 85,
-            'risk_level' => 'high',
-            'action' => 'block',
+            'score'       => 85,
+            'risk_level'  => 'high',
+            'action'      => 'block',
         ]);
 
         $event = new FraudDetected($fraudScore);
@@ -35,7 +35,7 @@ class FraudDetectedTest extends TestCase
         $event = new FraudDetected($fraudScore);
 
         $traits = class_uses($event);
-        
+
         $this->assertArrayHasKey('Illuminate\Foundation\Events\Dispatchable', $traits);
         $this->assertArrayHasKey('Illuminate\Broadcasting\InteractsWithSockets', $traits);
         $this->assertArrayHasKey('Illuminate\Queue\SerializesModels', $traits);
@@ -45,7 +45,7 @@ class FraudDetectedTest extends TestCase
     {
         $fraudScore = FraudScore::factory()->create([
             'entity_type' => Transaction::class,
-            'risk_level' => 'medium',
+            'risk_level'  => 'medium',
         ]);
 
         $event = new FraudDetected($fraudScore);
@@ -60,17 +60,17 @@ class FraudDetectedTest extends TestCase
     public function test_event_serializes_correctly(): void
     {
         $fraudScore = FraudScore::factory()->create([
-            'score' => 92,
-            'risk_level' => 'high',
-            'action' => 'block',
+            'score'            => 92,
+            'risk_level'       => 'high',
+            'action'           => 'block',
             'analysis_results' => [
                 'rule_engine' => ['score' => 50],
-                'behavioral' => ['score' => 42],
+                'behavioral'  => ['score' => 42],
             ],
         ]);
 
         $event = new FraudDetected($fraudScore);
-        
+
         // Serialize and unserialize
         $serialized = serialize($event);
         $unserialized = unserialize($serialized);
@@ -86,22 +86,22 @@ class FraudDetectedTest extends TestCase
         $fraudScore = FraudScore::factory()->create();
 
         $this->expectsEvents(FraudDetected::class);
-        
+
         event(new FraudDetected($fraudScore));
     }
 
     public function test_handles_different_entity_types(): void
     {
         $entityTypes = [
-            Transaction::class => 'Transaction',
-            \App\Models\User::class => 'User',
+            Transaction::class         => 'Transaction',
+            \App\Models\User::class    => 'User',
             \App\Models\Account::class => 'Account',
         ];
 
         foreach ($entityTypes as $entityClass => $expectedTag) {
             $fraudScore = FraudScore::factory()->create([
                 'entity_type' => $entityClass,
-                'entity_id' => 1,
+                'entity_id'   => 1,
             ]);
 
             $event = new FraudDetected($fraudScore);

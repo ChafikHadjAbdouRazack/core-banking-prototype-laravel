@@ -8,31 +8,31 @@ use App\Domain\Exchange\Projections\Order as OrderProjection;
 use App\Domain\Exchange\Projections\OrderBook as OrderBookProjection;
 use App\Domain\Exchange\Services\ExchangeService;
 use App\Domain\Exchange\Services\FeeCalculator;
-use App\Domain\Exchange\ValueObjects\OrderMatchingInput;
 use App\Domain\Exchange\Workflows\OrderMatchingWorkflow;
 use App\Models\Account;
 use App\Models\Asset;
 use Brick\Math\BigDecimal;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
+use Mockery;
 use Tests\TestCase;
 use Workflow\WorkflowStub;
-use Mockery;
 
 class ExchangeServiceTest extends TestCase
 {
     use RefreshDatabase;
 
     private ExchangeService $service;
+
     private FeeCalculator $feeCalculator;
 
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->service = new ExchangeService();
         $this->feeCalculator = Mockery::mock(FeeCalculator::class);
-        
+
         // Inject mocked fee calculator
         $reflection = new \ReflectionClass($this->service);
         $property = $reflection->getProperty('feeCalculator');
@@ -75,23 +75,23 @@ class ExchangeServiceTest extends TestCase
     public function test_place_order_validates_currencies_are_tradeable(): void
     {
         $account = Account::factory()->create();
-        
+
         Asset::create([
-            'code' => 'BTC',
-            'name' => 'Bitcoin',
-            'type' => 'crypto',
-            'is_active' => true,
+            'code'         => 'BTC',
+            'name'         => 'Bitcoin',
+            'type'         => 'crypto',
+            'is_active'    => true,
             'is_tradeable' => false,
-            'precision' => 8,
+            'precision'    => 8,
         ]);
-        
+
         Asset::create([
-            'code' => 'USDT',
-            'name' => 'Tether',
-            'type' => 'crypto',
-            'is_active' => true,
+            'code'         => 'USDT',
+            'name'         => 'Tether',
+            'type'         => 'crypto',
+            'is_active'    => true,
             'is_tradeable' => true,
-            'precision' => 2,
+            'precision'    => 2,
         ]);
 
         $this->expectException(\InvalidArgumentException::class);
@@ -186,7 +186,7 @@ class ExchangeServiceTest extends TestCase
         $orderAggregate = Mockery::mock(Order::class);
         $orderAggregate->shouldReceive('placeOrder')->once();
         $orderAggregate->shouldReceive('persist')->once();
-        
+
         Order::shouldReceive('retrieve')
             ->once()
             ->andReturn($orderAggregate);
@@ -195,7 +195,7 @@ class ExchangeServiceTest extends TestCase
         $orderBookAggregate = Mockery::mock(OrderBook::class);
         $orderBookAggregate->shouldReceive('createOrderBook')->once();
         $orderBookAggregate->shouldReceive('persist')->once();
-        
+
         OrderBook::shouldReceive('retrieve')
             ->once()
             ->andReturn($orderBookAggregate);
@@ -205,7 +205,7 @@ class ExchangeServiceTest extends TestCase
         $workflowMock = Mockery::mock(WorkflowStub::class);
         $workflowMock->shouldReceive('start')->once();
         $workflowMock->shouldReceive('id')->andReturn('workflow-123');
-        
+
         WorkflowStub::shouldReceive('make')
             ->with(OrderMatchingWorkflow::class)
             ->andReturn($workflowMock);
@@ -260,15 +260,15 @@ class ExchangeServiceTest extends TestCase
     public function test_cancel_order_validates_order_can_be_cancelled(): void
     {
         OrderProjection::create([
-            'order_id' => 'completed-order',
-            'account_id' => 'account-123',
-            'type' => 'buy',
-            'order_type' => 'market',
-            'base_currency' => 'BTC',
+            'order_id'       => 'completed-order',
+            'account_id'     => 'account-123',
+            'type'           => 'buy',
+            'order_type'     => 'market',
+            'base_currency'  => 'BTC',
             'quote_currency' => 'USDT',
-            'amount' => '0.1',
-            'filled_amount' => '0.1',
-            'status' => 'completed',
+            'amount'         => '0.1',
+            'filled_amount'  => '0.1',
+            'status'         => 'completed',
         ]);
 
         $this->expectException(\InvalidArgumentException::class);
@@ -280,16 +280,16 @@ class ExchangeServiceTest extends TestCase
     public function test_cancel_order_cancels_successfully(): void
     {
         OrderProjection::create([
-            'order_id' => 'active-order',
-            'account_id' => 'account-123',
-            'type' => 'buy',
-            'order_type' => 'limit',
-            'base_currency' => 'BTC',
+            'order_id'       => 'active-order',
+            'account_id'     => 'account-123',
+            'type'           => 'buy',
+            'order_type'     => 'limit',
+            'base_currency'  => 'BTC',
             'quote_currency' => 'USDT',
-            'amount' => '0.1',
-            'price' => '40000',
-            'filled_amount' => '0',
-            'status' => 'pending',
+            'amount'         => '0.1',
+            'price'          => '40000',
+            'filled_amount'  => '0',
+            'status'         => 'pending',
         ]);
 
         // Mock order aggregate
@@ -298,7 +298,7 @@ class ExchangeServiceTest extends TestCase
             ->once()
             ->with('User requested');
         $orderAggregate->shouldReceive('persist')->once();
-        
+
         Order::shouldReceive('retrieve')
             ->with('active-order')
             ->andReturn($orderAggregate);
@@ -309,7 +309,7 @@ class ExchangeServiceTest extends TestCase
             ->once()
             ->with('active-order', 'cancelled');
         $orderBookAggregate->shouldReceive('persist')->once();
-        
+
         OrderBook::shouldReceive('retrieve')
             ->once()
             ->andReturn($orderBookAggregate);
@@ -334,10 +334,10 @@ class ExchangeServiceTest extends TestCase
     public function test_get_order_book_returns_formatted_data(): void
     {
         OrderBookProjection::create([
-            'order_book_id' => 'btc-usdt-book',
-            'base_currency' => 'BTC',
+            'order_book_id'  => 'btc-usdt-book',
+            'base_currency'  => 'BTC',
             'quote_currency' => 'USDT',
-            'bids' => [
+            'bids'           => [
                 ['price' => '42000', 'amount' => '0.5', 'order_count' => 2],
                 ['price' => '41900', 'amount' => '1.0', 'order_count' => 3],
             ],
@@ -345,10 +345,10 @@ class ExchangeServiceTest extends TestCase
                 ['price' => '42100', 'amount' => '0.3', 'order_count' => 1],
                 ['price' => '42200', 'amount' => '0.7', 'order_count' => 2],
             ],
-            'last_price' => '42050',
-            'volume_24h' => '125.5',
-            'high_24h' => '43000',
-            'low_24h' => '41000',
+            'last_price'    => '42050',
+            'volume_24h'    => '125.5',
+            'high_24h'      => '43000',
+            'low_24h'       => '41000',
             'bid_liquidity' => '1.5',
             'ask_liquidity' => '1.0',
         ]);
@@ -371,21 +371,21 @@ class ExchangeServiceTest extends TestCase
     private function createTradeableAssets(): void
     {
         Asset::create([
-            'code' => 'BTC',
-            'name' => 'Bitcoin',
-            'type' => 'crypto',
-            'is_active' => true,
+            'code'         => 'BTC',
+            'name'         => 'Bitcoin',
+            'type'         => 'crypto',
+            'is_active'    => true,
             'is_tradeable' => true,
-            'precision' => 8,
+            'precision'    => 8,
         ]);
-        
+
         Asset::create([
-            'code' => 'USDT',
-            'name' => 'Tether',
-            'type' => 'crypto',
-            'is_active' => true,
+            'code'         => 'USDT',
+            'name'         => 'Tether',
+            'type'         => 'crypto',
+            'is_active'    => true,
             'is_tradeable' => true,
-            'precision' => 2,
+            'precision'    => 2,
         ]);
     }
 
@@ -401,14 +401,14 @@ class ExchangeServiceTest extends TestCase
         $orderAggregate = Mockery::mock(Order::class);
         $orderAggregate->shouldReceive('placeOrder')->once();
         $orderAggregate->shouldReceive('persist')->once();
-        
+
         Order::shouldReceive('retrieve')->andReturn($orderAggregate);
 
-        // Mock order book aggregate  
+        // Mock order book aggregate
         $orderBookAggregate = Mockery::mock(OrderBook::class);
         $orderBookAggregate->shouldReceive('createOrderBook')->once();
         $orderBookAggregate->shouldReceive('persist')->once();
-        
+
         OrderBook::shouldReceive('retrieve')->andReturn($orderBookAggregate);
 
         // Mock workflow
@@ -416,7 +416,7 @@ class ExchangeServiceTest extends TestCase
         $workflowMock = Mockery::mock(WorkflowStub::class);
         $workflowMock->shouldReceive('start')->once();
         $workflowMock->shouldReceive('id')->andReturn('workflow-123');
-        
+
         WorkflowStub::shouldReceive('make')
             ->with(OrderMatchingWorkflow::class)
             ->andReturn($workflowMock);

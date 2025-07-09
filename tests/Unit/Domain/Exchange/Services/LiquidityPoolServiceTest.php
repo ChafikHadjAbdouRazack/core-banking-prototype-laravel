@@ -11,21 +11,22 @@ use App\Domain\Exchange\ValueObjects\LiquidityAdditionInput;
 use App\Domain\Exchange\ValueObjects\LiquidityRemovalInput;
 use App\Domain\Exchange\Workflows\LiquidityManagementWorkflow;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Mockery;
 use Tests\TestCase;
 use Workflow\WorkflowStub;
-use Mockery;
 
 class LiquidityPoolServiceTest extends TestCase
 {
     use RefreshDatabase;
 
     private LiquidityPoolService $service;
+
     private ExchangeService $exchangeService;
 
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->exchangeService = Mockery::mock(ExchangeService::class);
         $this->service = new LiquidityPoolService($this->exchangeService);
     }
@@ -47,14 +48,14 @@ class LiquidityPoolServiceTest extends TestCase
     {
         // Create initial pool
         PoolProjection::create([
-            'pool_id' => 'existing-pool-id',
-            'base_currency' => 'BTC',
+            'pool_id'        => 'existing-pool-id',
+            'base_currency'  => 'BTC',
             'quote_currency' => 'USDT',
-            'base_reserve' => '0',
-            'quote_reserve' => '0',
-            'total_shares' => '0',
-            'fee_rate' => '0.003',
-            'is_active' => true,
+            'base_reserve'   => '0',
+            'quote_reserve'  => '0',
+            'total_shares'   => '0',
+            'fee_rate'       => '0.003',
+            'is_active'      => true,
         ]);
 
         $this->expectException(\DomainException::class);
@@ -73,8 +74,8 @@ class LiquidityPoolServiceTest extends TestCase
         );
 
         $expectedResult = [
-            'shares_minted' => '1414213',
-            'base_deposited' => '1000000',
+            'shares_minted'   => '1414213',
+            'base_deposited'  => '1000000',
             'quote_deposited' => '2000000',
         ];
 
@@ -95,8 +96,8 @@ class LiquidityPoolServiceTest extends TestCase
         );
 
         $expectedResult = [
-            'shares_burned' => '500000',
-            'base_withdrawn' => '250000',
+            'shares_burned'   => '500000',
+            'base_withdrawn'  => '250000',
             'quote_withdrawn' => '500000',
         ];
 
@@ -118,9 +119,9 @@ class LiquidityPoolServiceTest extends TestCase
 
         $swapDetails = [
             'outputCurrency' => 'USDT',
-            'outputAmount' => '2000000',
-            'feeAmount' => '3000',
-            'priceImpact' => '0.15',
+            'outputAmount'   => '2000000',
+            'feeAmount'      => '3000',
+            'priceImpact'    => '0.15',
         ];
 
         // Mock the aggregate to return swap details
@@ -155,14 +156,14 @@ class LiquidityPoolServiceTest extends TestCase
     public function test_get_pool_returns_pool_projection(): void
     {
         $pool = PoolProjection::create([
-            'pool_id' => 'test-pool-id',
-            'base_currency' => 'ETH',
+            'pool_id'        => 'test-pool-id',
+            'base_currency'  => 'ETH',
             'quote_currency' => 'USDT',
-            'base_reserve' => '1000000',
-            'quote_reserve' => '2000000',
-            'total_shares' => '1414213',
-            'fee_rate' => '0.003',
-            'is_active' => true,
+            'base_reserve'   => '1000000',
+            'quote_reserve'  => '2000000',
+            'total_shares'   => '1414213',
+            'fee_rate'       => '0.003',
+            'is_active'      => true,
         ]);
 
         $result = $this->service->getPool('test-pool-id');
@@ -183,14 +184,14 @@ class LiquidityPoolServiceTest extends TestCase
     public function test_get_pool_by_pair_returns_matching_pool(): void
     {
         PoolProjection::create([
-            'pool_id' => 'btc-usdt-pool',
-            'base_currency' => 'BTC',
+            'pool_id'        => 'btc-usdt-pool',
+            'base_currency'  => 'BTC',
             'quote_currency' => 'USDT',
-            'base_reserve' => '100',
-            'quote_reserve' => '4000000',
-            'total_shares' => '20000',
-            'fee_rate' => '0.003',
-            'is_active' => true,
+            'base_reserve'   => '100',
+            'quote_reserve'  => '4000000',
+            'total_shares'   => '20000',
+            'fee_rate'       => '0.003',
+            'is_active'      => true,
         ]);
 
         $result = $this->service->getPoolByPair('BTC', 'USDT');
@@ -204,43 +205,43 @@ class LiquidityPoolServiceTest extends TestCase
     {
         // Create active pools
         PoolProjection::create([
-            'pool_id' => 'active-pool-1',
-            'base_currency' => 'ETH',
+            'pool_id'        => 'active-pool-1',
+            'base_currency'  => 'ETH',
             'quote_currency' => 'USDT',
-            'base_reserve' => '1000',
-            'quote_reserve' => '2000',
-            'total_shares' => '1414',
-            'fee_rate' => '0.003',
-            'is_active' => true,
+            'base_reserve'   => '1000',
+            'quote_reserve'  => '2000',
+            'total_shares'   => '1414',
+            'fee_rate'       => '0.003',
+            'is_active'      => true,
         ]);
 
         PoolProjection::create([
-            'pool_id' => 'active-pool-2',
-            'base_currency' => 'BTC',
+            'pool_id'        => 'active-pool-2',
+            'base_currency'  => 'BTC',
             'quote_currency' => 'USDT',
-            'base_reserve' => '10',
-            'quote_reserve' => '400000',
-            'total_shares' => '2000',
-            'fee_rate' => '0.003',
-            'is_active' => true,
+            'base_reserve'   => '10',
+            'quote_reserve'  => '400000',
+            'total_shares'   => '2000',
+            'fee_rate'       => '0.003',
+            'is_active'      => true,
         ]);
 
         // Create inactive pool
         PoolProjection::create([
-            'pool_id' => 'inactive-pool',
-            'base_currency' => 'DOT',
+            'pool_id'        => 'inactive-pool',
+            'base_currency'  => 'DOT',
             'quote_currency' => 'USDT',
-            'base_reserve' => '0',
-            'quote_reserve' => '0',
-            'total_shares' => '0',
-            'fee_rate' => '0.003',
-            'is_active' => false,
+            'base_reserve'   => '0',
+            'quote_reserve'  => '0',
+            'total_shares'   => '0',
+            'fee_rate'       => '0.003',
+            'is_active'      => false,
         ]);
 
         $activePools = $this->service->getActivePools();
 
         $this->assertCount(2, $activePools);
-        $this->assertTrue($activePools->every(fn($pool) => $pool->is_active === true));
+        $this->assertTrue($activePools->every(fn ($pool) => $pool->is_active === true));
     }
 
     public function test_get_provider_positions_returns_positions_with_pools(): void
@@ -249,66 +250,66 @@ class LiquidityPoolServiceTest extends TestCase
 
         // Create pool
         $pool = PoolProjection::create([
-            'pool_id' => 'pool-abc',
-            'base_currency' => 'ETH',
+            'pool_id'        => 'pool-abc',
+            'base_currency'  => 'ETH',
             'quote_currency' => 'USDT',
-            'base_reserve' => '1000000',
-            'quote_reserve' => '2000000',
-            'total_shares' => '1414213',
-            'fee_rate' => '0.003',
-            'is_active' => true,
+            'base_reserve'   => '1000000',
+            'quote_reserve'  => '2000000',
+            'total_shares'   => '1414213',
+            'fee_rate'       => '0.003',
+            'is_active'      => true,
         ]);
 
         // Create provider positions
         LiquidityProvider::create([
-            'pool_id' => 'pool-abc',
-            'provider_id' => $providerId,
-            'shares' => '500000',
-            'base_deposited' => '353553',
+            'pool_id'         => 'pool-abc',
+            'provider_id'     => $providerId,
+            'shares'          => '500000',
+            'base_deposited'  => '353553',
             'quote_deposited' => '707107',
         ]);
 
         LiquidityProvider::create([
-            'pool_id' => 'pool-xyz',
-            'provider_id' => $providerId,
-            'shares' => '200000',
-            'base_deposited' => '100000',
+            'pool_id'         => 'pool-xyz',
+            'provider_id'     => $providerId,
+            'shares'          => '200000',
+            'base_deposited'  => '100000',
             'quote_deposited' => '200000',
         ]);
 
         $positions = $this->service->getProviderPositions($providerId);
 
         $this->assertCount(2, $positions);
-        $this->assertTrue($positions->every(fn($pos) => $pos->provider_id === $providerId));
+        $this->assertTrue($positions->every(fn ($pos) => $pos->provider_id === $providerId));
     }
 
     public function test_get_pool_metrics_calculates_correct_values(): void
     {
         // Create pool with activity
         $pool = PoolProjection::create([
-            'pool_id' => 'metrics-pool',
-            'base_currency' => 'ETH',
-            'quote_currency' => 'USDT',
-            'base_reserve' => '1000',
-            'quote_reserve' => '2000000',
-            'total_shares' => '44721',
-            'fee_rate' => '0.003',
-            'volume_24h' => '500000',
+            'pool_id'            => 'metrics-pool',
+            'base_currency'      => 'ETH',
+            'quote_currency'     => 'USDT',
+            'base_reserve'       => '1000',
+            'quote_reserve'      => '2000000',
+            'total_shares'       => '44721',
+            'fee_rate'           => '0.003',
+            'volume_24h'         => '500000',
             'fees_collected_24h' => '1500',
-            'is_active' => true,
+            'is_active'          => true,
         ]);
 
         // Create some providers
         LiquidityProvider::create([
-            'pool_id' => 'metrics-pool',
+            'pool_id'     => 'metrics-pool',
             'provider_id' => 'provider-1',
-            'shares' => '20000',
+            'shares'      => '20000',
         ]);
 
         LiquidityProvider::create([
-            'pool_id' => 'metrics-pool',
+            'pool_id'     => 'metrics-pool',
             'provider_id' => 'provider-2',
-            'shares' => '24721',
+            'shares'      => '24721',
         ]);
 
         $metrics = $this->service->getPoolMetrics('metrics-pool');
@@ -322,15 +323,15 @@ class LiquidityPoolServiceTest extends TestCase
         $this->assertEquals('500000', $metrics['volume_24h']);
         $this->assertEquals('1500', $metrics['fees_24h']);
         $this->assertEquals(2, $metrics['provider_count']);
-        
+
         // Verify calculated values
         $this->assertArrayHasKey('spot_price', $metrics);
         $this->assertArrayHasKey('tvl', $metrics);
         $this->assertArrayHasKey('apy', $metrics);
-        
+
         // Spot price should be quote/base = 2000000/1000 = 2000
         $this->assertEquals('2000', $metrics['spot_price']);
-        
+
         // TVL should be (base * spot_price) + quote = (1000 * 2000) + 2000000 = 4000000
         $this->assertEquals('4000000', $metrics['tvl']);
     }
@@ -341,10 +342,10 @@ class LiquidityPoolServiceTest extends TestCase
         $targetRatio = '1.5';
 
         $expectedResult = [
-            'rebalanced' => true,
-            'base_adjustment' => '-100000',
+            'rebalanced'       => true,
+            'base_adjustment'  => '-100000',
             'quote_adjustment' => '150000',
-            'new_ratio' => '1.5',
+            'new_ratio'        => '1.5',
         ];
 
         WorkflowStub::fake();
@@ -384,12 +385,12 @@ class LiquidityPoolServiceTest extends TestCase
 
         // Create provider with pending rewards
         $provider = LiquidityProvider::create([
-            'pool_id' => $poolId,
-            'provider_id' => $providerId,
-            'shares' => '100000',
+            'pool_id'         => $poolId,
+            'provider_id'     => $providerId,
+            'shares'          => '100000',
             'pending_rewards' => [
                 'USDT' => '1500',
-                'ETH' => '0.01',
+                'ETH'  => '0.01',
             ],
         ]);
 
@@ -421,9 +422,9 @@ class LiquidityPoolServiceTest extends TestCase
 
         // Create provider without pending rewards
         LiquidityProvider::create([
-            'pool_id' => $poolId,
-            'provider_id' => $providerId,
-            'shares' => '100000',
+            'pool_id'         => $poolId,
+            'provider_id'     => $providerId,
+            'shares'          => '100000',
             'pending_rewards' => [],
         ]);
 

@@ -15,10 +15,10 @@ class LoanApplicationSubmittedTest extends TestCase
         $termMonths = 36;
         $purpose = 'home_improvement';
         $borrowerInfo = [
-            'annual_income' => '75000',
+            'annual_income'     => '75000',
             'employment_status' => 'employed',
-            'credit_score' => 720,
-            'debt_to_income' => 0.35,
+            'credit_score'      => 720,
+            'debt_to_income'    => 0.35,
         ];
         $submittedAt = new \DateTimeImmutable('2024-01-15 10:30:00');
 
@@ -112,22 +112,22 @@ class LoanApplicationSubmittedTest extends TestCase
     {
         $complexBorrowerInfo = [
             'personal' => [
-                'first_name' => 'John',
-                'last_name' => 'Doe',
+                'first_name'    => 'John',
+                'last_name'     => 'Doe',
                 'date_of_birth' => '1985-06-15',
-                'ssn_last4' => '1234',
+                'ssn_last4'     => '1234',
             ],
             'employment' => [
-                'status' => 'employed',
-                'employer' => 'Tech Corp',
-                'position' => 'Senior Developer',
+                'status'         => 'employed',
+                'employer'       => 'Tech Corp',
+                'position'       => 'Senior Developer',
                 'years_employed' => 5,
                 'monthly_income' => 8333.33,
             ],
             'financial' => [
-                'credit_score' => 750,
-                'debt_to_income' => 0.28,
-                'existing_loans' => 2,
+                'credit_score'          => 750,
+                'debt_to_income'        => 0.28,
+                'existing_loans'        => 2,
                 'monthly_debt_payments' => 2500,
             ],
             'references' => [

@@ -23,16 +23,16 @@ class ObjectsHelperTest extends TestCase
     public function test_hydrate_function_signature(): void
     {
         $reflection = new \ReflectionFunction('hydrate');
-        
+
         $this->assertEquals(2, $reflection->getNumberOfParameters());
-        
+
         $parameters = $reflection->getParameters();
         $this->assertEquals('class', $parameters[0]->getName());
         $this->assertEquals('string', $parameters[0]->getType()->getName());
-        
+
         $this->assertEquals('properties', $parameters[1]->getName());
         $this->assertEquals('array', $parameters[1]->getType()->getName());
-        
+
         $this->assertEquals(DataObjectContract::class, $reflection->getReturnType()->getName());
     }
 
@@ -40,7 +40,7 @@ class ObjectsHelperTest extends TestCase
     {
         $reflection = new \ReflectionFunction('hydrate');
         $docComment = $reflection->getDocComment();
-        
+
         $this->assertNotFalse($docComment);
         $this->assertStringContainsString('Hydrate and return a specific Data Object class instance', $docComment);
         $this->assertStringContainsString('@template T of DataObjectContract', $docComment);
@@ -51,75 +51,75 @@ class ObjectsHelperTest extends TestCase
     public function test_account_function_signature(): void
     {
         $reflection = new \ReflectionFunction('__account');
-        
+
         $this->assertEquals(1, $reflection->getNumberOfParameters());
-        
+
         $parameter = $reflection->getParameters()[0];
         $this->assertEquals('account', $parameter->getName());
-        
+
         $type = $parameter->getType();
         $this->assertInstanceOf(\ReflectionUnionType::class, $type);
         $this->assertEquals('App\Domain\Account\DataObjects\Account|array', (string) $type);
-        
+
         $this->assertEquals(Account::class, $reflection->getReturnType()->getName());
     }
 
     public function test_money_function_signature(): void
     {
         $reflection = new \ReflectionFunction('__money');
-        
+
         $this->assertEquals(1, $reflection->getNumberOfParameters());
-        
+
         $parameter = $reflection->getParameters()[0];
         $this->assertEquals('amount', $parameter->getName());
-        
+
         $type = $parameter->getType();
         $this->assertInstanceOf(\ReflectionUnionType::class, $type);
         $this->assertEquals('App\Domain\Account\DataObjects\Money|int', (string) $type);
-        
+
         $this->assertEquals(Money::class, $reflection->getReturnType()->getName());
     }
 
     public function test_account_uuid_function_signature(): void
     {
         $reflection = new \ReflectionFunction('__account_uuid');
-        
+
         $this->assertEquals(1, $reflection->getNumberOfParameters());
-        
+
         $parameter = $reflection->getParameters()[0];
         $this->assertEquals('uuid', $parameter->getName());
-        
+
         $type = $parameter->getType();
         $this->assertInstanceOf(\ReflectionUnionType::class, $type);
-        $types = array_map(fn($t) => $t->getName(), $type->getTypes());
+        $types = array_map(fn ($t) => $t->getName(), $type->getTypes());
         $this->assertContains(Account::class, $types);
         $this->assertContains(AccountModel::class, $types);
         $this->assertContains(AccountUuid::class, $types);
         $this->assertContains('string', $types);
-        
+
         $this->assertEquals(AccountUuid::class, $reflection->getReturnType()->getName());
     }
 
     public function test_account_double_uuid_function_signature(): void
     {
         $reflection = new \ReflectionFunction('__account__uuid');
-        
+
         $this->assertEquals(1, $reflection->getNumberOfParameters());
-        
+
         $parameter = $reflection->getParameters()[0];
         $this->assertEquals('uuid', $parameter->getName());
-        
+
         $this->assertEquals('string', $reflection->getReturnType()->getName());
     }
 
     public function test_objects_helper_file_structure(): void
     {
         $helperFile = base_path('app/Helpers/objects.php');
-        
+
         $this->assertFileExists($helperFile);
-        
+
         $content = file_get_contents($helperFile);
-        
+
         // Check imports
         $this->assertStringContainsString('use App\Domain\Account\DataObjects\Account;', $content);
         $this->assertStringContainsString('use App\Domain\Account\DataObjects\AccountUuid;', $content);
@@ -133,7 +133,7 @@ class ObjectsHelperTest extends TestCase
     {
         $helperFile = base_path('app/Helpers/objects.php');
         $content = file_get_contents($helperFile);
-        
+
         // Check that hydrate function handles UnitEnum
         $this->assertStringContainsString('$value instanceof UnitEnum', $content);
         $this->assertStringContainsString('? $value->value : $value', $content);
@@ -143,7 +143,7 @@ class ObjectsHelperTest extends TestCase
     {
         $helperFile = base_path('app/Helpers/objects.php');
         $content = file_get_contents($helperFile);
-        
+
         // Check early return
         $this->assertStringContainsString('if ($account instanceof Account) {', $content);
         $this->assertStringContainsString('return $account;', $content);
@@ -153,7 +153,7 @@ class ObjectsHelperTest extends TestCase
     {
         $helperFile = base_path('app/Helpers/objects.php');
         $content = file_get_contents($helperFile);
-        
+
         // Check early return
         $this->assertStringContainsString('if ($amount instanceof Money) {', $content);
         $this->assertStringContainsString('return $amount;', $content);
@@ -163,7 +163,7 @@ class ObjectsHelperTest extends TestCase
     {
         $helperFile = base_path('app/Helpers/objects.php');
         $content = file_get_contents($helperFile);
-        
+
         // Check different type handling
         $this->assertStringContainsString('if ($uuid instanceof AccountUuid) {', $content);
         $this->assertStringContainsString('if ($uuid instanceof Account) {', $content);
@@ -176,7 +176,7 @@ class ObjectsHelperTest extends TestCase
     {
         $helperFile = base_path('app/Helpers/objects.php');
         $content = file_get_contents($helperFile);
-        
+
         // Check different return paths
         $this->assertStringContainsString('return $uuid->getUuid();', $content);
         $this->assertStringContainsString('return $uuid->uuid;', $content);
@@ -187,7 +187,7 @@ class ObjectsHelperTest extends TestCase
     {
         $helperFile = base_path('app/Helpers/objects.php');
         $content = file_get_contents($helperFile);
-        
+
         // Count hydrate calls (should be at least 3: in __account, __money, __account_uuid)
         $hydrateCount = substr_count($content, 'hydrate(');
         $this->assertGreaterThanOrEqual(3, $hydrateCount);
@@ -196,13 +196,13 @@ class ObjectsHelperTest extends TestCase
     public function test_functions_have_proper_type_hints(): void
     {
         $functions = ['__account', '__money', '__account_uuid', '__account__uuid'];
-        
+
         foreach ($functions as $function) {
             $reflection = new \ReflectionFunction($function);
-            
+
             // All should have return types
             $this->assertTrue($reflection->hasReturnType());
-            
+
             // All should have typed parameters
             $parameters = $reflection->getParameters();
             foreach ($parameters as $parameter) {
@@ -215,7 +215,7 @@ class ObjectsHelperTest extends TestCase
     {
         $helperFile = base_path('app/Helpers/objects.php');
         $content = file_get_contents($helperFile);
-        
+
         // Check that money is created with amount property
         $this->assertStringContainsString("'amount' => \$amount", $content);
     }
@@ -224,7 +224,7 @@ class ObjectsHelperTest extends TestCase
     {
         $helperFile = base_path('app/Helpers/objects.php');
         $content = file_get_contents($helperFile);
-        
+
         // Check that AccountUuid is created with uuid property
         $this->assertStringContainsString("'uuid' => \$uuid", $content);
     }

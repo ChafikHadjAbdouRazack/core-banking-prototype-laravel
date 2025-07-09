@@ -15,16 +15,17 @@ class VotingControllerTest extends TestCase
     use RefreshDatabase;
 
     protected User $user;
+
     protected Account $account;
 
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->user = User::factory()->create();
         $this->account = Account::factory()->create([
             'user_uuid' => $this->user->uuid,
-            'balance' => 100000000, // 1000 units for voting power
+            'balance'   => 100000000, // 1000 units for voting power
         ]);
     }
 
@@ -32,24 +33,24 @@ class VotingControllerTest extends TestCase
     {
         // Create test proposals
         GcuVotingProposal::factory()->create([
-            'title' => 'Q1 2025 GCU Rebalancing',
-            'status' => 'active',
+            'title'            => 'Q1 2025 GCU Rebalancing',
+            'status'           => 'active',
             'voting_starts_at' => now()->subDay(),
-            'voting_ends_at' => now()->addDays(6),
+            'voting_ends_at'   => now()->addDays(6),
         ]);
 
         GcuVotingProposal::factory()->create([
-            'title' => 'Add JPY to GCU Basket',
-            'status' => 'upcoming',
+            'title'            => 'Add JPY to GCU Basket',
+            'status'           => 'upcoming',
             'voting_starts_at' => now()->addDays(7),
-            'voting_ends_at' => now()->addDays(14),
+            'voting_ends_at'   => now()->addDays(14),
         ]);
 
         GcuVotingProposal::factory()->create([
-            'title' => 'Q4 2024 GCU Rebalancing',
-            'status' => 'completed',
+            'title'            => 'Q4 2024 GCU Rebalancing',
+            'status'           => 'completed',
             'voting_starts_at' => now()->subMonth(),
-            'voting_ends_at' => now()->subDays(20),
+            'voting_ends_at'   => now()->subDays(20),
         ]);
 
         $response = $this->getJson('/api/v2/gcu/voting/proposals');
@@ -94,8 +95,8 @@ class VotingControllerTest extends TestCase
     public function test_get_proposal_details(): void
     {
         $proposal = GcuVotingProposal::factory()->create([
-            'title' => 'Q1 2025 GCU Rebalancing',
-            'status' => 'active',
+            'title'            => 'Q1 2025 GCU Rebalancing',
+            'status'           => 'active',
             'proposed_weights' => [
                 'USD' => 0.38,
                 'EUR' => 0.37,
@@ -129,8 +130,8 @@ class VotingControllerTest extends TestCase
             ])
             ->assertJson([
                 'status' => 'success',
-                'data' => [
-                    'id' => $proposal->id,
+                'data'   => [
+                    'id'    => $proposal->id,
                     'title' => 'Q1 2025 GCU Rebalancing',
                 ],
             ]);
@@ -148,13 +149,13 @@ class VotingControllerTest extends TestCase
         Sanctum::actingAs($this->user);
 
         $proposal = GcuVotingProposal::factory()->create([
-            'status' => 'active',
+            'status'           => 'active',
             'voting_starts_at' => now()->subDay(),
-            'voting_ends_at' => now()->addDays(6),
+            'voting_ends_at'   => now()->addDays(6),
         ]);
 
         $response = $this->postJson("/api/v2/gcu/voting/proposals/{$proposal->id}/vote", [
-            'vote' => 'approve',
+            'vote'    => 'approve',
             'comment' => 'I support this rebalancing proposal',
         ]);
 
@@ -172,16 +173,16 @@ class VotingControllerTest extends TestCase
             ])
             ->assertJson([
                 'status' => 'success',
-                'data' => [
-                    'vote' => 'approve',
+                'data'   => [
+                    'vote'    => 'approve',
                     'message' => 'Vote cast successfully',
                 ],
             ]);
 
         $this->assertDatabaseHas('gcu_votes', [
             'proposal_id' => $proposal->id,
-            'user_uuid' => $this->user->uuid,
-            'vote' => 'approve',
+            'user_uuid'   => $this->user->uuid,
+            'vote'        => 'approve',
         ]);
     }
 
@@ -215,7 +216,7 @@ class VotingControllerTest extends TestCase
         Sanctum::actingAs($this->user);
 
         $proposal = GcuVotingProposal::factory()->create([
-            'status' => 'completed',
+            'status'         => 'completed',
             'voting_ends_at' => now()->subDay(),
         ]);
 
@@ -237,9 +238,9 @@ class VotingControllerTest extends TestCase
 
         // First vote
         GcuVote::create([
-            'proposal_id' => $proposal->id,
-            'user_uuid' => $this->user->uuid,
-            'vote' => 'approve',
+            'proposal_id'  => $proposal->id,
+            'user_uuid'    => $this->user->uuid,
+            'vote'         => 'approve',
             'voting_power' => 1000,
         ]);
 
@@ -263,19 +264,19 @@ class VotingControllerTest extends TestCase
         $proposal2 = GcuVotingProposal::factory()->create(['title' => 'Proposal 2']);
 
         GcuVote::create([
-            'proposal_id' => $proposal1->id,
-            'user_uuid' => $this->user->uuid,
-            'vote' => 'approve',
+            'proposal_id'  => $proposal1->id,
+            'user_uuid'    => $this->user->uuid,
+            'vote'         => 'approve',
             'voting_power' => 1000,
-            'created_at' => now()->subMonth(),
+            'created_at'   => now()->subMonth(),
         ]);
 
         GcuVote::create([
-            'proposal_id' => $proposal2->id,
-            'user_uuid' => $this->user->uuid,
-            'vote' => 'reject',
+            'proposal_id'  => $proposal2->id,
+            'user_uuid'    => $this->user->uuid,
+            'vote'         => 'reject',
             'voting_power' => 1500,
-            'created_at' => now()->subWeek(),
+            'created_at'   => now()->subWeek(),
         ]);
 
         $response = $this->getJson('/api/v2/gcu/voting/my-votes');

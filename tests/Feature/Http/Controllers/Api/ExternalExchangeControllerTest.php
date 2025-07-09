@@ -16,7 +16,7 @@ class ExternalExchangeControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->user = User::factory()->create();
     }
 

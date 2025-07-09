@@ -30,9 +30,9 @@ class PublicApiControllerTest extends TestCase
                 'support',
             ])
             ->assertJson([
-                'name' => 'FinAegis Public API',
+                'name'    => 'FinAegis Public API',
                 'version' => '2.0.0',
-                'status' => 'operational',
+                'status'  => 'operational',
             ]);
     }
 

@@ -28,7 +28,7 @@ class GdprServiceTest extends TestCase
     public function test_export_user_data_returns_complete_data_structure(): void
     {
         $user = User::factory()->create([
-            'name' => 'John Doe',
+            'name'  => 'John Doe',
             'email' => 'john@example.com',
         ]);
 
@@ -66,16 +66,16 @@ class GdprServiceTest extends TestCase
     public function test_delete_user_data_anonymizes_user(): void
     {
         $user = User::factory()->create([
-            'name' => 'Jane Doe',
+            'name'  => 'Jane Doe',
             'email' => 'jane@example.com',
         ]);
 
         $originalUuid = $user->uuid;
-        
+
         $this->service->deleteUserData($user);
 
         $user->refresh();
-        
+
         // Check user is anonymized
         $this->assertStringStartsWith('ANONYMIZED_', $user->name);
         $this->assertStringContainsString('@anonymized.local', $user->email);
@@ -100,7 +100,7 @@ class GdprServiceTest extends TestCase
     public function test_delete_user_data_with_document_deletion_option(): void
     {
         $user = User::factory()->create();
-        
+
         // Create KYC documents
         $documents = KycDocument::factory()->count(3)->create([
             'user_uuid' => $user->uuid,
@@ -135,7 +135,7 @@ class GdprServiceTest extends TestCase
     public function test_get_user_data_returns_sanitized_data(): void
     {
         $user = User::factory()->create([
-            'password' => bcrypt('secret'),
+            'password'       => bcrypt('secret'),
             'remember_token' => 'token123',
         ]);
 
@@ -148,7 +148,7 @@ class GdprServiceTest extends TestCase
         // Sensitive fields should not be included
         $this->assertArrayNotHasKey('password', $userData);
         $this->assertArrayNotHasKey('remember_token', $userData);
-        
+
         // Regular fields should be included
         $this->assertArrayHasKey('name', $userData);
         $this->assertArrayHasKey('email', $userData);
@@ -158,18 +158,18 @@ class GdprServiceTest extends TestCase
     {
         $user = User::factory()->create();
         $account = Account::factory()->create(['user_uuid' => $user->uuid]);
-        
+
         // Create various transaction types
         Transaction::factory()->create([
             'account_id' => $account->id,
-            'type' => 'deposit',
-            'amount' => 10000,
+            'type'       => 'deposit',
+            'amount'     => 10000,
         ]);
-        
+
         Transaction::factory()->create([
             'account_id' => $account->id,
-            'type' => 'withdrawal',
-            'amount' => 5000,
+            'type'       => 'withdrawal',
+            'amount'     => 5000,
         ]);
 
         $exportedData = $this->service->exportUserData($user);
@@ -182,11 +182,11 @@ class GdprServiceTest extends TestCase
     {
         $user = User::factory()->create();
         $account = Account::factory()->create(['user_uuid' => $user->uuid]);
-        
+
         $reflection = new \ReflectionClass($this->service);
         $method = $reflection->getMethod('anonymizeUser');
         $method->setAccessible(true);
-        
+
         $method->invoke($this->service, $user);
 
         // Account should still be linked to user

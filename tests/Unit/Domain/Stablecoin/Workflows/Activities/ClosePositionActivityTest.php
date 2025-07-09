@@ -31,10 +31,10 @@ class ClosePositionActivityTest extends TestCase
         $this->assertEquals(2, $method->getNumberOfParameters());
 
         $parameters = $method->getParameters();
-        
+
         $this->assertEquals('positionUuid', $parameters[0]->getName());
         $this->assertEquals('string', $parameters[0]->getType()->getName());
-        
+
         $this->assertEquals('reason', $parameters[1]->getName());
         $this->assertEquals('string', $parameters[1]->getType()->getName());
         $this->assertTrue($parameters[1]->isDefaultValueAvailable());
@@ -53,13 +53,13 @@ class ClosePositionActivityTest extends TestCase
     {
         // Test various close reasons
         $reasons = [
-            'user_closed' => 'Default reason when user closes position',
-            'liquidated' => 'Position liquidated due to low collateral',
-            'emergency_close' => 'Emergency closure',
-            'system_maintenance' => 'Closed for system maintenance',
-            'position_expired' => 'Position reached expiry',
+            'user_closed'             => 'Default reason when user closes position',
+            'liquidated'              => 'Position liquidated due to low collateral',
+            'emergency_close'         => 'Emergency closure',
+            'system_maintenance'      => 'Closed for system maintenance',
+            'position_expired'        => 'Position reached expiry',
             'insufficient_collateral' => 'Not enough collateral',
-            'admin_action' => 'Closed by administrator',
+            'admin_action'            => 'Closed by administrator',
         ];
 
         foreach ($reasons as $reason => $description) {
@@ -92,9 +92,9 @@ class ClosePositionActivityTest extends TestCase
         $reflection = new \ReflectionClass(ClosePositionActivity::class);
         $method = $reflection->getMethod('execute');
         $parameters = $method->getParameters();
-        
+
         $reasonParam = $parameters[1];
-        
+
         $this->assertTrue($reasonParam->isDefaultValueAvailable());
         $this->assertEquals('user_closed', $reasonParam->getDefaultValue());
     }
@@ -102,7 +102,7 @@ class ClosePositionActivityTest extends TestCase
     public function test_activity_properties(): void
     {
         $reflection = new \ReflectionClass(ClosePositionActivity::class);
-        
+
         // Check for important properties inherited from Activity
         $this->assertTrue($reflection->hasProperty('tries'));
         $this->assertTrue($reflection->hasProperty('timeout'));

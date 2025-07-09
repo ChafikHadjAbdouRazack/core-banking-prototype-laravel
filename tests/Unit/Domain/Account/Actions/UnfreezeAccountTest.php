@@ -6,8 +6,8 @@ use App\Domain\Account\Actions\UnfreezeAccount;
 use App\Domain\Account\Events\AccountUnfrozen;
 use App\Models\Account;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 use Mockery;
+use Tests\TestCase;
 
 class UnfreezeAccountTest extends TestCase
 {
@@ -25,8 +25,8 @@ class UnfreezeAccountTest extends TestCase
     {
         // Create frozen account
         $account = Account::factory()->create([
-            'uuid' => 'frozen-account-123',
-            'name' => 'Frozen Account',
+            'uuid'   => 'frozen-account-123',
+            'name'   => 'Frozen Account',
             'frozen' => true,
         ]);
 
@@ -46,8 +46,8 @@ class UnfreezeAccountTest extends TestCase
     {
         // Create active account
         $account = Account::factory()->create([
-            'uuid' => 'active-account',
-            'name' => 'Already Active Account',
+            'uuid'   => 'active-account',
+            'name'   => 'Already Active Account',
             'frozen' => false,
         ]);
 
@@ -80,20 +80,20 @@ class UnfreezeAccountTest extends TestCase
     {
         // Create frozen account with balances
         $account = Account::factory()->create([
-            'uuid' => 'frozen-with-balance',
-            'name' => 'Frozen Account with Balance',
+            'uuid'   => 'frozen-with-balance',
+            'name'   => 'Frozen Account with Balance',
             'frozen' => true,
         ]);
 
         // Create account balances
         $account->balances()->create([
             'asset_code' => 'USD',
-            'balance' => 25000,
+            'balance'    => 25000,
         ]);
-        
+
         $account->balances()->create([
             'asset_code' => 'BTC',
-            'balance' => 50000000, // 0.5 BTC
+            'balance'    => 50000000, // 0.5 BTC
         ]);
 
         // Create event
@@ -106,7 +106,7 @@ class UnfreezeAccountTest extends TestCase
         // Assert
         $account->refresh();
         $this->assertFalse($account->frozen);
-        
+
         // Verify balances are unchanged
         $this->assertEquals(25000, $account->balances()->where('asset_code', 'USD')->first()->balance);
         $this->assertEquals(50000000, $account->balances()->where('asset_code', 'BTC')->first()->balance);
@@ -116,9 +116,9 @@ class UnfreezeAccountTest extends TestCase
     {
         // Create frozen business account
         $account = Account::factory()->create([
-            'uuid' => 'frozen-business',
-            'name' => 'Frozen Business Account',
-            'type' => 'business',
+            'uuid'   => 'frozen-business',
+            'name'   => 'Frozen Business Account',
+            'type'   => 'business',
             'frozen' => true,
         ]);
 

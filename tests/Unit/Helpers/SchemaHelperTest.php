@@ -33,15 +33,15 @@ class SchemaHelperTest extends TestCase
     public function test_organization_returns_valid_json_ld(): void
     {
         $result = SchemaHelper::organization();
-        
+
         $this->assertIsString($result);
         $this->assertStringContainsString('<script type="application/ld+json">', $result);
         $this->assertStringContainsString('</script>', $result);
-        
+
         // Extract JSON from script tag
         $json = $this->extractJsonFromScript($result);
         $schema = json_decode($json, true);
-        
+
         $this->assertEquals('https://schema.org', $schema['@context']);
         $this->assertEquals('Organization', $schema['@type']);
         $this->assertEquals('FinAegis', $schema['name']);
@@ -58,10 +58,10 @@ class SchemaHelperTest extends TestCase
     public function test_website_returns_valid_json_ld(): void
     {
         $result = SchemaHelper::website();
-        
+
         $json = $this->extractJsonFromScript($result);
         $schema = json_decode($json, true);
-        
+
         $this->assertEquals('https://schema.org', $schema['@context']);
         $this->assertEquals('WebSite', $schema['@type']);
         $this->assertEquals('FinAegis', $schema['name']);
@@ -74,10 +74,10 @@ class SchemaHelperTest extends TestCase
     public function test_software_application_returns_valid_json_ld(): void
     {
         $result = SchemaHelper::softwareApplication();
-        
+
         $json = $this->extractJsonFromScript($result);
         $schema = json_decode($json, true);
-        
+
         $this->assertEquals('https://schema.org', $schema['@context']);
         $this->assertEquals('SoftwareApplication', $schema['@type']);
         $this->assertEquals('FinAegis Core Banking Platform', $schema['name']);
@@ -93,10 +93,10 @@ class SchemaHelperTest extends TestCase
     public function test_gcu_product_returns_valid_json_ld(): void
     {
         $result = SchemaHelper::gcuProduct();
-        
+
         $json = $this->extractJsonFromScript($result);
         $schema = json_decode($json, true);
-        
+
         $this->assertEquals('https://schema.org', $schema['@context']);
         $this->assertEquals('Product', $schema['@type']);
         $this->assertEquals('Global Currency Unit (GCU)', $schema['name']);
@@ -115,12 +115,12 @@ class SchemaHelperTest extends TestCase
             ['question' => 'What is FinAegis?', 'answer' => 'FinAegis is a core banking platform.'],
             ['question' => 'How does GCU work?', 'answer' => 'GCU is a democratically governed basket currency.'],
         ];
-        
+
         $result = SchemaHelper::faq($faqs);
-        
+
         $json = $this->extractJsonFromScript($result);
         $schema = json_decode($json, true);
-        
+
         $this->assertEquals('https://schema.org', $schema['@context']);
         $this->assertEquals('FAQPage', $schema['@type']);
         $this->assertArrayHasKey('mainEntity', $schema);
@@ -137,17 +137,17 @@ class SchemaHelperTest extends TestCase
             ['name' => 'Products', 'url' => 'https://finaegis.com/products'],
             ['name' => 'GCU', 'url' => 'https://finaegis.com/products/gcu'],
         ];
-        
+
         $result = SchemaHelper::breadcrumb($items);
-        
+
         $json = $this->extractJsonFromScript($result);
         $schema = json_decode($json, true);
-        
+
         $this->assertEquals('https://schema.org', $schema['@context']);
         $this->assertEquals('BreadcrumbList', $schema['@type']);
         $this->assertArrayHasKey('itemListElement', $schema);
         $this->assertCount(3, $schema['itemListElement']);
-        
+
         foreach ($schema['itemListElement'] as $index => $item) {
             $this->assertEquals('ListItem', $item['@type']);
             $this->assertEquals($index + 1, $item['position']);
@@ -161,12 +161,12 @@ class SchemaHelperTest extends TestCase
         $name = 'Core Banking API';
         $description = 'Enterprise-grade banking API solution';
         $category = 'Financial Services';
-        
+
         $result = SchemaHelper::service($name, $description, $category);
-        
+
         $json = $this->extractJsonFromScript($result);
         $schema = json_decode($json, true);
-        
+
         $this->assertEquals('https://schema.org', $schema['@context']);
         $this->assertEquals('Service', $schema['@type']);
         $this->assertEquals($name, $schema['name']);
@@ -180,19 +180,19 @@ class SchemaHelperTest extends TestCase
     public function test_article_returns_valid_json_ld(): void
     {
         $data = [
-            'title' => 'Understanding Core Banking',
-            'description' => 'A comprehensive guide to modern core banking systems',
-            'url' => 'https://finaegis.com/blog/understanding-core-banking',
+            'title'        => 'Understanding Core Banking',
+            'description'  => 'A comprehensive guide to modern core banking systems',
+            'url'          => 'https://finaegis.com/blog/understanding-core-banking',
             'published_at' => '2024-01-01T00:00:00Z',
-            'updated_at' => '2024-01-02T00:00:00Z',
-            'image' => 'https://finaegis.com/images/article.jpg',
+            'updated_at'   => '2024-01-02T00:00:00Z',
+            'image'        => 'https://finaegis.com/images/article.jpg',
         ];
-        
+
         $result = SchemaHelper::article($data);
-        
+
         $json = $this->extractJsonFromScript($result);
         $schema = json_decode($json, true);
-        
+
         $this->assertEquals('https://schema.org', $schema['@context']);
         $this->assertEquals('Article', $schema['@type']);
         $this->assertEquals($data['title'], $schema['headline']);
@@ -208,16 +208,16 @@ class SchemaHelperTest extends TestCase
     public function test_article_without_optional_fields(): void
     {
         $data = [
-            'title' => 'Test Article',
+            'title'       => 'Test Article',
             'description' => 'Test description',
-            'url' => 'https://finaegis.com/blog/test',
+            'url'         => 'https://finaegis.com/blog/test',
         ];
-        
+
         $result = SchemaHelper::article($data);
-        
+
         $json = $this->extractJsonFromScript($result);
         $schema = json_decode($json, true);
-        
+
         $this->assertArrayHasKey('datePublished', $schema);
         $this->assertArrayHasKey('dateModified', $schema);
         $this->assertArrayNotHasKey('image', $schema);
@@ -228,9 +228,9 @@ class SchemaHelperTest extends TestCase
         $faqs = [
             ['question' => 'What is €uro support?', 'answer' => 'We support €uro and other currencies'],
         ];
-        
+
         $result = SchemaHelper::faq($faqs);
-        
+
         // Check that Unicode characters are not escaped
         $this->assertStringContainsString('€uro', $result);
         $this->assertStringNotContainsString('\u20ac', $result);
@@ -239,7 +239,7 @@ class SchemaHelperTest extends TestCase
     public function test_json_encoding_preserves_slashes(): void
     {
         $result = SchemaHelper::organization();
-        
+
         // Check that slashes are not escaped
         $this->assertStringContainsString('https://schema.org', $result);
         $this->assertStringNotContainsString('https:\\/\\/schema.org', $result);
@@ -249,7 +249,7 @@ class SchemaHelperTest extends TestCase
     {
         $reflection = new \ReflectionClass(SchemaHelper::class);
         $this->assertTrue($reflection->hasMethod('generateScript'));
-        
+
         $method = $reflection->getMethod('generateScript');
         $this->assertTrue($method->isPrivate());
         $this->assertTrue($method->isStatic());
@@ -259,7 +259,7 @@ class SchemaHelperTest extends TestCase
     {
         $pattern = '/<script type="application\/ld\+json">\n(.*)\n<\/script>/s';
         preg_match($pattern, $script, $matches);
-        
+
         return $matches[1] ?? '';
     }
 }

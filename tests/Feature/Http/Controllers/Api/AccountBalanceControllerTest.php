@@ -15,57 +15,61 @@ class AccountBalanceControllerTest extends TestCase
     use RefreshDatabase;
 
     protected User $user;
+
     protected Account $account;
+
     protected Asset $usdAsset;
+
     protected Asset $eurAsset;
+
     protected Asset $btcAsset;
 
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->user = User::factory()->create();
         $this->account = Account::factory()->create([
             'user_uuid' => $this->user->uuid,
         ]);
-        
+
         // Create assets
         $this->usdAsset = Asset::firstOrCreate(
             ['code' => 'USD'],
             [
-                'name' => 'US Dollar',
-                'type' => 'fiat',
-                'precision' => 2,
-                'is_active' => true,
+                'name'         => 'US Dollar',
+                'type'         => 'fiat',
+                'precision'    => 2,
+                'is_active'    => true,
                 'is_tradeable' => true,
-                'symbol' => '$',
-                'metadata' => ['symbol' => '$'],
+                'symbol'       => '$',
+                'metadata'     => ['symbol' => '$'],
             ]
         );
-        
+
         $this->eurAsset = Asset::firstOrCreate(
             ['code' => 'EUR'],
             [
-                'name' => 'Euro',
-                'type' => 'fiat',
-                'precision' => 2,
-                'is_active' => true,
+                'name'         => 'Euro',
+                'type'         => 'fiat',
+                'precision'    => 2,
+                'is_active'    => true,
                 'is_tradeable' => true,
-                'symbol' => '€',
-                'metadata' => ['symbol' => '€'],
+                'symbol'       => '€',
+                'metadata'     => ['symbol' => '€'],
             ]
         );
-        
+
         $this->btcAsset = Asset::firstOrCreate(
             ['code' => 'BTC'],
             [
-                'name' => 'Bitcoin',
-                'type' => 'crypto',
-                'precision' => 8,
-                'is_active' => true,
+                'name'         => 'Bitcoin',
+                'type'         => 'crypto',
+                'precision'    => 8,
+                'is_active'    => true,
                 'is_tradeable' => true,
-                'symbol' => '₿',
-                'metadata' => ['symbol' => '₿'],
+                'symbol'       => '₿',
+                'metadata'     => ['symbol' => '₿'],
             ]
         );
     }
@@ -77,20 +81,20 @@ class AccountBalanceControllerTest extends TestCase
         // Create balances for the account
         AccountBalance::create([
             'account_uuid' => $this->account->uuid,
-            'asset_code' => 'USD',
-            'balance' => 50000, // $500.00
+            'asset_code'   => 'USD',
+            'balance'      => 50000, // $500.00
         ]);
 
         AccountBalance::create([
             'account_uuid' => $this->account->uuid,
-            'asset_code' => 'EUR',
-            'balance' => 30000, // €300.00
+            'asset_code'   => 'EUR',
+            'balance'      => 30000, // €300.00
         ]);
 
         AccountBalance::create([
             'account_uuid' => $this->account->uuid,
-            'asset_code' => 'BTC',
-            'balance' => 10000000, // 0.1 BTC
+            'asset_code'   => 'BTC',
+            'balance'      => 10000000, // 0.1 BTC
         ]);
 
         $response = $this->getJson("/api/accounts/{$this->account->uuid}/balances");
@@ -129,14 +133,14 @@ class AccountBalanceControllerTest extends TestCase
 
         AccountBalance::create([
             'account_uuid' => $this->account->uuid,
-            'asset_code' => 'USD',
-            'balance' => 50000,
+            'asset_code'   => 'USD',
+            'balance'      => 50000,
         ]);
 
         AccountBalance::create([
             'account_uuid' => $this->account->uuid,
-            'asset_code' => 'EUR',
-            'balance' => 30000,
+            'asset_code'   => 'EUR',
+            'balance'      => 30000,
         ]);
 
         $response = $this->getJson("/api/accounts/{$this->account->uuid}/balances?asset=USD");
@@ -152,29 +156,29 @@ class AccountBalanceControllerTest extends TestCase
 
         AccountBalance::create([
             'account_uuid' => $this->account->uuid,
-            'asset_code' => 'USD',
-            'balance' => 50000,
+            'asset_code'   => 'USD',
+            'balance'      => 50000,
         ]);
 
         AccountBalance::create([
             'account_uuid' => $this->account->uuid,
-            'asset_code' => 'EUR',
-            'balance' => 0,
+            'asset_code'   => 'EUR',
+            'balance'      => 0,
         ]);
 
         AccountBalance::create([
             'account_uuid' => $this->account->uuid,
-            'asset_code' => 'BTC',
-            'balance' => 10000000,
+            'asset_code'   => 'BTC',
+            'balance'      => 10000000,
         ]);
 
         $response = $this->getJson("/api/accounts/{$this->account->uuid}/balances?positive=true");
 
         $response->assertStatus(200)
             ->assertJsonCount(2, 'data.balances');
-        
+
         $balances = collect($response->json('data.balances'));
-        $this->assertTrue($balances->every(fn($balance) => $balance['balance'] > 0));
+        $this->assertTrue($balances->every(fn ($balance) => $balance['balance'] > 0));
     }
 
     public function test_show_returns_404_for_non_existent_account(): void
@@ -186,7 +190,7 @@ class AccountBalanceControllerTest extends TestCase
         $response->assertStatus(404)
             ->assertJson([
                 'message' => 'Account not found',
-                'error' => 'The specified account UUID was not found',
+                'error'   => 'The specified account UUID was not found',
             ]);
     }
 
@@ -196,24 +200,24 @@ class AccountBalanceControllerTest extends TestCase
 
         AccountBalance::create([
             'account_uuid' => $this->account->uuid,
-            'asset_code' => 'USD',
-            'balance' => 123456, // $1234.56
+            'asset_code'   => 'USD',
+            'balance'      => 123456, // $1234.56
         ]);
 
         AccountBalance::create([
             'account_uuid' => $this->account->uuid,
-            'asset_code' => 'BTC',
-            'balance' => 12345678, // 0.12345678 BTC
+            'asset_code'   => 'BTC',
+            'balance'      => 12345678, // 0.12345678 BTC
         ]);
 
         $response = $this->getJson("/api/accounts/{$this->account->uuid}/balances");
 
         $response->assertStatus(200);
-        
+
         $balances = collect($response->json('data.balances'));
         $usdBalance = $balances->firstWhere('asset_code', 'USD');
         $btcBalance = $balances->firstWhere('asset_code', 'BTC');
-        
+
         $this->assertEquals('1234.56 USD', $usdBalance['formatted']);
         $this->assertEquals('0.12345678 BTC', $btcBalance['formatted']);
     }
@@ -224,14 +228,14 @@ class AccountBalanceControllerTest extends TestCase
 
         AccountBalance::create([
             'account_uuid' => $this->account->uuid,
-            'asset_code' => 'USD',
-            'balance' => 100000, // $1000.00
+            'asset_code'   => 'USD',
+            'balance'      => 100000, // $1000.00
         ]);
 
         AccountBalance::create([
             'account_uuid' => $this->account->uuid,
-            'asset_code' => 'EUR',
-            'balance' => 50000, // €500.00 (not included in USD total for now)
+            'asset_code'   => 'EUR',
+            'balance'      => 50000, // €500.00 (not included in USD total for now)
         ]);
 
         $response = $this->getJson("/api/accounts/{$this->account->uuid}/balances");
@@ -253,23 +257,23 @@ class AccountBalanceControllerTest extends TestCase
 
         // Create multiple accounts with balances
         $account2 = Account::factory()->create();
-        
+
         AccountBalance::create([
             'account_uuid' => $this->account->uuid,
-            'asset_code' => 'USD',
-            'balance' => 50000,
+            'asset_code'   => 'USD',
+            'balance'      => 50000,
         ]);
 
         AccountBalance::create([
             'account_uuid' => $account2->uuid,
-            'asset_code' => 'USD',
-            'balance' => 75000,
+            'asset_code'   => 'USD',
+            'balance'      => 75000,
         ]);
 
         AccountBalance::create([
             'account_uuid' => $this->account->uuid,
-            'asset_code' => 'EUR',
-            'balance' => 30000,
+            'asset_code'   => 'EUR',
+            'balance'      => 30000,
         ]);
 
         $response = $this->getJson('/api/balances');
@@ -303,14 +307,14 @@ class AccountBalanceControllerTest extends TestCase
 
         AccountBalance::create([
             'account_uuid' => $this->account->uuid,
-            'asset_code' => 'USD',
-            'balance' => 50000,
+            'asset_code'   => 'USD',
+            'balance'      => 50000,
         ]);
 
         AccountBalance::create([
             'account_uuid' => $this->account->uuid,
-            'asset_code' => 'EUR',
-            'balance' => 30000,
+            'asset_code'   => 'EUR',
+            'balance'      => 30000,
         ]);
 
         $response = $this->getJson('/api/balances?asset=USD');
@@ -326,14 +330,14 @@ class AccountBalanceControllerTest extends TestCase
 
         AccountBalance::create([
             'account_uuid' => $this->account->uuid,
-            'asset_code' => 'USD',
-            'balance' => 50000,
+            'asset_code'   => 'USD',
+            'balance'      => 50000,
         ]);
 
         AccountBalance::create([
             'account_uuid' => $this->account->uuid,
-            'asset_code' => 'EUR',
-            'balance' => 10000,
+            'asset_code'   => 'EUR',
+            'balance'      => 10000,
         ]);
 
         $response = $this->getJson('/api/balances?min_balance=25000');
@@ -352,14 +356,14 @@ class AccountBalanceControllerTest extends TestCase
 
         AccountBalance::create([
             'account_uuid' => $this->account->uuid,
-            'asset_code' => 'USD',
-            'balance' => 50000,
+            'asset_code'   => 'USD',
+            'balance'      => 50000,
         ]);
 
         AccountBalance::create([
             'account_uuid' => $otherAccount->uuid,
-            'asset_code' => 'USD',
-            'balance' => 75000,
+            'asset_code'   => 'USD',
+            'balance'      => 75000,
         ]);
 
         $response = $this->getJson("/api/balances?user_uuid={$this->user->uuid}");
@@ -378,8 +382,8 @@ class AccountBalanceControllerTest extends TestCase
             $account = Account::factory()->create();
             AccountBalance::create([
                 'account_uuid' => $account->uuid,
-                'asset_code' => 'USD',
-                'balance' => $i * 10000,
+                'asset_code'   => 'USD',
+                'balance'      => $i * 10000,
             ]);
         }
 
@@ -399,26 +403,26 @@ class AccountBalanceControllerTest extends TestCase
 
         AccountBalance::create([
             'account_uuid' => $account1->uuid,
-            'asset_code' => 'USD',
-            'balance' => 25000,
+            'asset_code'   => 'USD',
+            'balance'      => 25000,
         ]);
 
         AccountBalance::create([
             'account_uuid' => $account2->uuid,
-            'asset_code' => 'USD',
-            'balance' => 100000,
+            'asset_code'   => 'USD',
+            'balance'      => 100000,
         ]);
 
         AccountBalance::create([
             'account_uuid' => $account3->uuid,
-            'asset_code' => 'USD',
-            'balance' => 50000,
+            'asset_code'   => 'USD',
+            'balance'      => 50000,
         ]);
 
         $response = $this->getJson('/api/balances');
 
         $response->assertStatus(200);
-        
+
         $balances = collect($response->json('data'))->pluck('balance');
         $this->assertEquals([100000, 50000, 25000], $balances->toArray());
     }
@@ -432,26 +436,26 @@ class AccountBalanceControllerTest extends TestCase
 
         AccountBalance::create([
             'account_uuid' => $account1->uuid,
-            'asset_code' => 'USD',
-            'balance' => 50000, // $500.00
+            'asset_code'   => 'USD',
+            'balance'      => 50000, // $500.00
         ]);
 
         AccountBalance::create([
             'account_uuid' => $account2->uuid,
-            'asset_code' => 'USD',
-            'balance' => 75000, // $750.00
+            'asset_code'   => 'USD',
+            'balance'      => 75000, // $750.00
         ]);
 
         AccountBalance::create([
             'account_uuid' => $account1->uuid,
-            'asset_code' => 'EUR',
-            'balance' => 30000, // €300.00
+            'asset_code'   => 'EUR',
+            'balance'      => 30000, // €300.00
         ]);
 
         $response = $this->getJson('/api/balances');
 
         $response->assertStatus(200);
-        
+
         $assetTotals = $response->json('meta.asset_totals');
         $this->assertEquals('1250.00', $assetTotals['USD']); // Total: $1250.00
         $this->assertEquals('300.00', $assetTotals['EUR']); // Total: €300.00
@@ -525,7 +529,7 @@ class AccountBalanceControllerTest extends TestCase
         $response = $this->getJson('/api/balances');
 
         $response->assertStatus(200);
-        
+
         // Just verify that the counts are present and positive
         $meta = $response->json('meta');
         $this->assertGreaterThanOrEqual(4, $meta['total_accounts']);

@@ -12,7 +12,6 @@ use App\Domain\Account\Events\MoneyTransferred;
 use App\Domain\Account\Listeners\WebhookEventListener;
 use App\Models\Account;
 use App\Services\WebhookService;
-use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Mockery;
 use Ramsey\Uuid\Uuid;
@@ -23,6 +22,7 @@ class WebhookEventListenerTest extends TestCase
     use RefreshDatabase;
 
     private WebhookService $webhookService;
+
     private WebhookEventListener $listener;
 
     protected function setUp(): void
@@ -53,10 +53,10 @@ class WebhookEventListenerTest extends TestCase
     {
         $accountUuid = Uuid::uuid4()->toString();
         $account = Account::factory()->create([
-            'uuid' => $accountUuid,
-            'name' => 'Test Account',
+            'uuid'      => $accountUuid,
+            'name'      => 'Test Account',
             'user_uuid' => 'user-123',
-            'balance' => 0,
+            'balance'   => 0,
         ]);
 
         $event = Mockery::mock(AccountCreated::class);
@@ -65,9 +65,9 @@ class WebhookEventListenerTest extends TestCase
         $this->webhookService->shouldReceive('dispatchAccountEvent')
             ->once()
             ->with('account.created', $accountUuid, [
-                'name' => 'Test Account',
+                'name'      => 'Test Account',
                 'user_uuid' => 'user-123',
-                'balance' => 0,
+                'balance'   => 0,
             ]);
 
         $this->listener->onAccountCreated($event);
@@ -119,17 +119,17 @@ class WebhookEventListenerTest extends TestCase
     {
         $accountUuid = Uuid::uuid4()->toString();
         $account = Account::factory()->create([
-            'uuid' => $accountUuid,
+            'uuid'    => $accountUuid,
             'balance' => 5000, // $50.00
         ]);
 
         $event = Mockery::mock(MoneyAdded::class);
         $event->shouldReceive('aggregateRootUuid')->andReturn($accountUuid);
-        
+
         $money = Mockery::mock();
         $money->shouldReceive('getAmount')->andReturn('2500'); // $25.00
         $event->money = $money;
-        
+
         $hash = Mockery::mock();
         $hash->shouldReceive('getHash')->andReturn('hash123');
         $event->hash = $hash;
@@ -137,12 +137,12 @@ class WebhookEventListenerTest extends TestCase
         $this->webhookService->shouldReceive('dispatchTransactionEvent')
             ->once()
             ->with('transaction.created', [
-                'account_uuid' => $accountUuid,
-                'type' => 'deposit',
-                'amount' => '2500',
-                'currency' => 'USD',
+                'account_uuid'  => $accountUuid,
+                'type'          => 'deposit',
+                'amount'        => '2500',
+                'currency'      => 'USD',
                 'balance_after' => 5000,
-                'hash' => 'hash123',
+                'hash'          => 'hash123',
             ]);
 
         $this->webhookService->shouldNotReceive('dispatchAccountEvent')
@@ -155,27 +155,27 @@ class WebhookEventListenerTest extends TestCase
     {
         $accountUuid = Uuid::uuid4()->toString();
         $account = Account::factory()->create([
-            'uuid' => $accountUuid,
+            'uuid'    => $accountUuid,
             'balance' => 500, // $5.00 - below threshold
         ]);
 
         $event = Mockery::mock(MoneyAdded::class);
         $event->shouldReceive('aggregateRootUuid')->andReturn($accountUuid);
-        
+
         $money = Mockery::mock();
         $money->shouldReceive('getAmount')->andReturn('100');
         $event->money = $money;
-        
+
         $hash = Mockery::mock();
         $hash->shouldReceive('getHash')->andReturn('hash456');
         $event->hash = $hash;
 
         $this->webhookService->shouldReceive('dispatchTransactionEvent')->once();
-        
+
         $this->webhookService->shouldReceive('dispatchAccountEvent')
             ->once()
             ->with('balance.low', $accountUuid, [
-                'balance' => 500,
+                'balance'   => 500,
                 'threshold' => 1000,
             ]);
 
@@ -186,17 +186,17 @@ class WebhookEventListenerTest extends TestCase
     {
         $accountUuid = Uuid::uuid4()->toString();
         $account = Account::factory()->create([
-            'uuid' => $accountUuid,
+            'uuid'    => $accountUuid,
             'balance' => 3000, // $30.00
         ]);
 
         $event = Mockery::mock(MoneySubtracted::class);
         $event->shouldReceive('aggregateRootUuid')->andReturn($accountUuid);
-        
+
         $money = Mockery::mock();
         $money->shouldReceive('getAmount')->andReturn('1000');
         $event->money = $money;
-        
+
         $hash = Mockery::mock();
         $hash->shouldReceive('getHash')->andReturn('hash789');
         $event->hash = $hash;
@@ -204,12 +204,12 @@ class WebhookEventListenerTest extends TestCase
         $this->webhookService->shouldReceive('dispatchTransactionEvent')
             ->once()
             ->with('transaction.created', [
-                'account_uuid' => $accountUuid,
-                'type' => 'withdrawal',
-                'amount' => '1000',
-                'currency' => 'USD',
+                'account_uuid'  => $accountUuid,
+                'type'          => 'withdrawal',
+                'amount'        => '1000',
+                'currency'      => 'USD',
                 'balance_after' => 3000,
-                'hash' => 'hash789',
+                'hash'          => 'hash789',
             ]);
 
         $this->webhookService->shouldNotReceive('dispatchAccountEvent')
@@ -222,23 +222,23 @@ class WebhookEventListenerTest extends TestCase
     {
         $accountUuid = Uuid::uuid4()->toString();
         $account = Account::factory()->create([
-            'uuid' => $accountUuid,
+            'uuid'    => $accountUuid,
             'balance' => -500, // Negative balance
         ]);
 
         $event = Mockery::mock(MoneySubtracted::class);
         $event->shouldReceive('aggregateRootUuid')->andReturn($accountUuid);
-        
+
         $money = Mockery::mock();
         $money->shouldReceive('getAmount')->andReturn('1000');
         $event->money = $money;
-        
+
         $hash = Mockery::mock();
         $hash->shouldReceive('getHash')->andReturn('hash999');
         $event->hash = $hash;
 
         $this->webhookService->shouldReceive('dispatchTransactionEvent')->once();
-        
+
         $this->webhookService->shouldReceive('dispatchAccountEvent')
             ->once()
             ->with('balance.negative', $accountUuid, [
@@ -252,40 +252,40 @@ class WebhookEventListenerTest extends TestCase
     {
         $fromUuid = Uuid::uuid4()->toString();
         $toUuid = Uuid::uuid4()->toString();
-        
+
         $fromAccount = Account::factory()->create([
-            'uuid' => $fromUuid,
+            'uuid'    => $fromUuid,
             'balance' => 5000,
         ]);
-        
+
         $toAccount = Account::factory()->create([
-            'uuid' => $toUuid,
+            'uuid'    => $toUuid,
             'balance' => 10000,
         ]);
 
         $event = Mockery::mock(MoneyTransferred::class);
         $event->shouldReceive('aggregateRootUuid')->andReturn($fromUuid);
-        
+
         $toAccountUuid = Mockery::mock();
         $toAccountUuid->shouldReceive('toString')->andReturn($toUuid);
         $event->toAccountUuid = $toAccountUuid;
-        
+
         $money = Mockery::mock();
         $money->shouldReceive('getAmount')->andReturn('2000');
         $event->money = $money;
-        
+
         $hash = Mockery::mock();
         $hash->shouldReceive('getHash')->andReturn('transfer123');
         $event->hash = $hash;
 
         $expectedData = [
-            'from_account_uuid' => $fromUuid,
-            'to_account_uuid' => $toUuid,
-            'amount' => '2000',
-            'currency' => 'USD',
+            'from_account_uuid'  => $fromUuid,
+            'to_account_uuid'    => $toUuid,
+            'amount'             => '2000',
+            'currency'           => 'USD',
             'from_balance_after' => 5000,
-            'to_balance_after' => 10000,
-            'hash' => 'transfer123',
+            'to_balance_after'   => 10000,
+            'hash'               => 'transfer123',
         ];
 
         $this->webhookService->shouldReceive('dispatchTransferEvent')

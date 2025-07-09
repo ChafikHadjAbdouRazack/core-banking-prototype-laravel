@@ -11,10 +11,10 @@ class KycDocumentUploadedTest extends TestCase
     {
         $userUuid = 'user-123-uuid';
         $document = [
-            'type' => 'passport',
-            'filename' => 'passport.jpg',
-            'size' => 1024000,
-            'mime_type' => 'image/jpeg',
+            'type'        => 'passport',
+            'filename'    => 'passport.jpg',
+            'size'        => 1024000,
+            'mime_type'   => 'image/jpeg',
             'uploaded_at' => '2024-01-15T10:30:00Z',
         ];
 
@@ -28,11 +28,11 @@ class KycDocumentUploadedTest extends TestCase
     public function test_handles_different_document_types(): void
     {
         $documentTypes = [
-            'passport' => ['number' => 'AB123456', 'country' => 'US'],
-            'driver_license' => ['number' => 'DL789012', 'state' => 'CA'],
-            'national_id' => ['number' => 'ID345678', 'issued_by' => 'Government'],
+            'passport'         => ['number' => 'AB123456', 'country' => 'US'],
+            'driver_license'   => ['number' => 'DL789012', 'state' => 'CA'],
+            'national_id'      => ['number' => 'ID345678', 'issued_by' => 'Government'],
             'proof_of_address' => ['type' => 'utility_bill', 'date' => '2024-01-01'],
-            'bank_statement' => ['bank' => 'Test Bank', 'period' => '2024-01'],
+            'bank_statement'   => ['bank' => 'Test Bank', 'period' => '2024-01'],
         ];
 
         foreach ($documentTypes as $type => $metadata) {
@@ -60,17 +60,17 @@ class KycDocumentUploadedTest extends TestCase
     public function test_handles_document_with_validation_results(): void
     {
         $document = [
-            'type' => 'passport',
-            'filename' => 'passport_scan.pdf',
+            'type'       => 'passport',
+            'filename'   => 'passport_scan.pdf',
             'validation' => [
-                'ocr_performed' => true,
+                'ocr_performed'  => true,
                 'data_extracted' => [
-                    'name' => 'John Doe',
+                    'name'            => 'John Doe',
                     'passport_number' => 'AB123456',
-                    'expiry_date' => '2025-12-31',
+                    'expiry_date'     => '2025-12-31',
                 ],
                 'verification_score' => 0.95,
-                'flags' => [],
+                'flags'              => [],
             ],
         ];
 
@@ -84,13 +84,13 @@ class KycDocumentUploadedTest extends TestCase
     public function test_handles_document_with_security_checks(): void
     {
         $document = [
-            'type' => 'driver_license',
+            'type'            => 'driver_license',
             'security_checks' => [
-                'tamper_detection' => 'passed',
+                'tamper_detection'   => 'passed',
                 'authenticity_check' => 'passed',
-                'expiry_check' => 'valid',
+                'expiry_check'       => 'valid',
                 'watermark_verified' => true,
-                'hologram_present' => true,
+                'hologram_present'   => true,
             ],
         ];
 
@@ -115,13 +115,13 @@ class KycDocumentUploadedTest extends TestCase
     public function test_handles_document_with_processing_metadata(): void
     {
         $document = [
-            'type' => 'bank_statement',
+            'type'       => 'bank_statement',
             'processing' => [
-                'upload_timestamp' => 1705320600,
+                'upload_timestamp'       => 1705320600,
                 'processing_duration_ms' => 2500,
-                'storage_location' => 's3://kyc-docs/user-123/bank_statement.pdf',
-                'encryption_applied' => true,
-                'hash' => 'sha256:abcdef123456...',
+                'storage_location'       => 's3://kyc-docs/user-123/bank_statement.pdf',
+                'encryption_applied'     => true,
+                'hash'                   => 'sha256:abcdef123456...',
             ],
         ];
 

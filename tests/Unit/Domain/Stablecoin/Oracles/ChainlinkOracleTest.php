@@ -17,10 +17,10 @@ class ChainlinkOracleTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         Config::set('stablecoin.oracles.chainlink.api_key', 'test-api-key');
         Config::set('stablecoin.oracles.chainlink.base_url', 'https://api.chain.link/v1');
-        
+
         $this->oracle = new ChainlinkOracle();
     }
 
@@ -58,7 +58,7 @@ class ChainlinkOracleTest extends TestCase
 
         foreach ($pairs as $pair) {
             $priceData = $this->oracle->getPrice($pair['base'], $pair['quote']);
-            
+
             $this->assertEquals($pair['base'], $priceData->base);
             $this->assertEquals($pair['quote'], $priceData->quote);
             $this->assertEquals($pair['feed'], $priceData->metadata['feed_address']);
@@ -76,7 +76,7 @@ class ChainlinkOracleTest extends TestCase
     public function test_get_multiple_prices_returns_array_of_price_data(): void
     {
         $pairs = ['BTC/USD', 'ETH/USD'];
-        
+
         $prices = $this->oracle->getMultiplePrices($pairs);
 
         $this->assertIsArray($prices);
@@ -94,7 +94,7 @@ class ChainlinkOracleTest extends TestCase
             ->with(\Mockery::pattern('/Failed to get price for XRP\/USD/'));
 
         $pairs = ['BTC/USD', 'XRP/USD', 'ETH/USD'];
-        
+
         $prices = $this->oracle->getMultiplePrices($pairs);
 
         $this->assertCount(2, $prices);
@@ -148,10 +148,10 @@ class ChainlinkOracleTest extends TestCase
     {
         // Test EUR/USD which is a supported pair
         $priceData = $this->oracle->getPrice('EUR', 'USD');
-        
+
         $this->assertEquals('EUR', $priceData->base);
         $this->assertEquals('USD', $priceData->quote);
-        
+
         // EUR/USD should be around 1.04 to 1.14 based on simulation
         $eurUsdPrice = (float) $priceData->price;
         $this->assertGreaterThanOrEqual(1.04, $eurUsdPrice);
@@ -161,17 +161,17 @@ class ChainlinkOracleTest extends TestCase
     public function test_price_data_has_recent_timestamp(): void
     {
         $priceData = $this->oracle->getPrice('ETH', 'USD');
-        
+
         $now = Carbon::now();
         $diff = $now->diffInSeconds($priceData->timestamp);
-        
+
         $this->assertLessThanOrEqual(5, $diff); // Within 5 seconds
     }
 
     public function test_metadata_contains_valid_round_id(): void
     {
         $priceData = $this->oracle->getPrice('BTC', 'USD');
-        
+
         $this->assertArrayHasKey('round_id', $priceData->metadata);
         $this->assertIsInt($priceData->metadata['round_id']);
         $this->assertGreaterThanOrEqual(1000000, $priceData->metadata['round_id']);
@@ -181,10 +181,10 @@ class ChainlinkOracleTest extends TestCase
     public function test_metadata_contains_valid_updated_at(): void
     {
         $priceData = $this->oracle->getPrice('ETH', 'USD');
-        
+
         $this->assertArrayHasKey('updated_at', $priceData->metadata);
         $this->assertIsInt($priceData->metadata['updated_at']);
-        
+
         // Updated at should be within last 5 minutes
         $now = time();
         $updatedAt = $priceData->metadata['updated_at'];

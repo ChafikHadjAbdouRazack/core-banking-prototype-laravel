@@ -22,7 +22,7 @@ class ComplianceAggregateTest extends TestCase
     {
         $aggregate = ComplianceAggregate::fake();
         $userUuid = 'user-123';
-        
+
         $documents = [
             ['type' => 'passport', 'filename' => 'passport.jpg'],
             ['type' => 'proof_of_address', 'filename' => 'utility.pdf'],
@@ -125,8 +125,8 @@ class ComplianceAggregateTest extends TestCase
         $aggregate = ComplianceAggregate::fake();
         $reportType = 'SAR';
         $data = [
-            'period' => '2024-Q1',
-            'total_transactions' => 15000,
+            'period'               => '2024-Q1',
+            'total_transactions'   => 15000,
             'flagged_transactions' => 23,
         ];
 
@@ -150,7 +150,7 @@ class ComplianceAggregateTest extends TestCase
         $reflection = new \ReflectionClass($aggregate);
         $statusProperty = $reflection->getProperty('kycStatus');
         $statusProperty->setAccessible(true);
-        
+
         $this->assertEquals('pending', $statusProperty->getValue($aggregate));
     }
 
@@ -164,11 +164,11 @@ class ComplianceAggregateTest extends TestCase
         $aggregate->applyKycVerificationCompleted($event);
 
         $reflection = new \ReflectionClass($aggregate);
-        
+
         $statusProperty = $reflection->getProperty('kycStatus');
         $statusProperty->setAccessible(true);
         $this->assertEquals('approved', $statusProperty->getValue($aggregate));
-        
+
         $levelProperty = $reflection->getProperty('kycLevel');
         $levelProperty->setAccessible(true);
         $this->assertEquals('full', $levelProperty->getValue($aggregate));
@@ -186,7 +186,7 @@ class ComplianceAggregateTest extends TestCase
         $reflection = new \ReflectionClass($aggregate);
         $statusProperty = $reflection->getProperty('kycStatus');
         $statusProperty->setAccessible(true);
-        
+
         $this->assertEquals('rejected', $statusProperty->getValue($aggregate));
     }
 
@@ -216,13 +216,13 @@ class ComplianceAggregateTest extends TestCase
 
         // Request export
         $aggregate->requestGdprExport($userUuid, ['format' => 'json']);
-        
+
         // Complete export
         $aggregate->completeGdprExport($userUuid, '/exports/data.json');
-        
+
         // Request deletion
         $aggregate->requestGdprDeletion($userUuid, 'User request');
-        
+
         // Complete deletion
         $aggregate->completeGdprDeletion($userUuid);
 

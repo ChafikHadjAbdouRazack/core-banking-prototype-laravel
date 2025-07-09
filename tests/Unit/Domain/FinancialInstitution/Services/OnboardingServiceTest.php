@@ -14,44 +14,47 @@ use App\Models\FinancialInstitutionApplication;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
-use Tests\TestCase;
 use Mockery;
+use Tests\TestCase;
 
 class OnboardingServiceTest extends TestCase
 {
     use RefreshDatabase;
 
     private OnboardingService $service;
+
     private DocumentVerificationService $documentService;
+
     private ComplianceCheckService $complianceService;
+
     private RiskAssessmentService $riskService;
 
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->documentService = Mockery::mock(DocumentVerificationService::class);
         $this->complianceService = Mockery::mock(ComplianceCheckService::class);
         $this->riskService = Mockery::mock(RiskAssessmentService::class);
-        
+
         $this->service = new OnboardingService(
             $this->documentService,
             $this->complianceService,
             $this->riskService
         );
-        
+
         Event::fake();
     }
 
     public function test_submit_application_creates_application(): void
     {
         $data = [
-            'institution_name' => 'Test Bank',
-            'institution_type' => 'bank',
+            'institution_name'    => 'Test Bank',
+            'institution_type'    => 'bank',
             'registration_number' => 'REG123456',
-            'country' => 'US',
-            'contact_email' => 'contact@testbank.com',
-            'contact_phone' => '+1234567890',
+            'country'             => 'US',
+            'contact_email'       => 'contact@testbank.com',
+            'contact_phone'       => '+1234567890',
         ];
 
         $application = $this->service->submitApplication($data);
@@ -67,11 +70,11 @@ class OnboardingServiceTest extends TestCase
     public function test_submit_application_dispatches_event(): void
     {
         $data = [
-            'institution_name' => 'Event Test Bank',
-            'institution_type' => 'fintech',
+            'institution_name'    => 'Event Test Bank',
+            'institution_type'    => 'fintech',
             'registration_number' => 'FT789012',
-            'country' => 'UK',
-            'contact_email' => 'info@eventbank.com',
+            'country'             => 'UK',
+            'contact_email'       => 'info@eventbank.com',
         ];
 
         $application = $this->service->submitApplication($data);
@@ -128,11 +131,11 @@ class OnboardingServiceTest extends TestCase
         $this->documentService->shouldReceive('allDocumentsVerified')
             ->with($application)
             ->andReturn(true);
-            
+
         $this->complianceService->shouldReceive('allChecksPassed')
             ->with($application)
             ->andReturn(true);
-            
+
         $this->riskService->shouldReceive('isAcceptableRisk')
             ->with($application)
             ->andReturn(true);
@@ -144,7 +147,7 @@ class OnboardingServiceTest extends TestCase
         $this->assertEquals('approved', $application->status);
         $this->assertEquals('approver-123', $application->approved_by);
         $this->assertNotNull($application->approved_at);
-        
+
         Event::assertDispatched(ApplicationApproved::class);
     }
 
@@ -209,14 +212,14 @@ class OnboardingServiceTest extends TestCase
         $this->assertEquals($reason, $application->rejection_reason);
         $this->assertEquals('rejector-123', $application->rejected_by);
         $this->assertNotNull($application->rejected_at);
-        
+
         Event::assertDispatched(ApplicationRejected::class);
     }
 
     public function test_activate_partner_creates_partner_entity(): void
     {
         $application = FinancialInstitutionApplication::factory()->create([
-            'status' => 'approved',
+            'status'           => 'approved',
             'institution_name' => 'Partner Bank',
         ]);
 
@@ -227,7 +230,7 @@ class OnboardingServiceTest extends TestCase
         $this->assertEquals('Partner Bank', $partner->name);
         $this->assertEquals('active', $partner->status);
         $this->assertTrue($partner->is_active);
-        
+
         Event::assertDispatched(\App\Domain\FinancialInstitution\Events\PartnerActivated::class);
     }
 
@@ -251,7 +254,7 @@ class OnboardingServiceTest extends TestCase
         $this->documentService->shouldReceive('getVerificationProgress')
             ->with($application)
             ->andReturn(['verified' => 3, 'total' => 5]);
-            
+
         $this->complianceService->shouldReceive('getCheckProgress')
             ->with($application)
             ->andReturn(['completed' => 2, 'total' => 4]);

@@ -263,6 +263,7 @@ class KeyManagementService implements KeyManagementServiceInterface
         }
 
         $key = $this->getUserEncryptionKey($userId);
+
         return openssl_encrypt($privateKey, 'AES-256-CBC', $key, 0, substr($key, 0, 16));
     }
 
@@ -277,6 +278,7 @@ class KeyManagementService implements KeyManagementServiceInterface
         }
 
         $key = $this->getUserEncryptionKey($userId);
+
         return openssl_decrypt($encryptedKey, 'AES-256-CBC', $key, 0, substr($key, 0, 16));
     }
 

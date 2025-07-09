@@ -20,14 +20,14 @@ class LoanApplicationTest extends TestCase
     public function test_submit_loan_application_successfully(): void
     {
         $aggregate = LoanApplication::fake();
-        
+
         $applicationId = 'loan-app-123';
         $borrowerId = 'borrower-456';
         $requestedAmount = '25000.00';
         $termMonths = 36;
         $purpose = 'debt_consolidation';
         $borrowerInfo = [
-            'annual_income' => '60000',
+            'annual_income'     => '60000',
             'employment_status' => 'employed',
         ];
 
@@ -49,7 +49,7 @@ class LoanApplicationTest extends TestCase
                 $purpose,
                 $borrowerInfo,
                 new \DateTimeImmutable()
-            )
+            ),
         ]);
     }
 
@@ -117,7 +117,7 @@ class LoanApplicationTest extends TestCase
     {
         $aggregate = LoanApplication::fake();
         $applicationId = 'app-credit-check';
-        
+
         // First submit the application
         $loanApp = LoanApplication::submit(
             $applicationId,
@@ -127,7 +127,7 @@ class LoanApplicationTest extends TestCase
             'business',
             []
         );
-        
+
         // Complete credit check
         $loanApp->completeCreditCheck(
             score: 750,
@@ -152,7 +152,7 @@ class LoanApplicationTest extends TestCase
     {
         $aggregate = LoanApplication::fake();
         $applicationId = 'app-risk-assessment';
-        
+
         $loanApp = LoanApplication::submit(
             $applicationId,
             'borrower-456',
@@ -161,7 +161,7 @@ class LoanApplicationTest extends TestCase
             'auto',
             []
         );
-        
+
         $loanApp->completeRiskAssessment(
             riskScore: 85,
             riskLevel: 'low',
@@ -185,7 +185,7 @@ class LoanApplicationTest extends TestCase
     {
         $aggregate = LoanApplication::fake();
         $applicationId = 'app-approval';
-        
+
         $loanApp = LoanApplication::submit(
             $applicationId,
             'borrower-789',
@@ -194,11 +194,11 @@ class LoanApplicationTest extends TestCase
             'home_improvement',
             []
         );
-        
+
         // Complete required checks first
         $loanApp->completeCreditCheck(720, 'Equifax', [], 'system');
         $loanApp->completeRiskAssessment(80, 'medium', [], 'system');
-        
+
         // Approve application
         $loanApp->approve(
             approvedAmount: '40000',
@@ -226,7 +226,7 @@ class LoanApplicationTest extends TestCase
     {
         $aggregate = LoanApplication::fake();
         $applicationId = 'app-rejection';
-        
+
         $loanApp = LoanApplication::submit(
             $applicationId,
             'borrower-321',
@@ -235,7 +235,7 @@ class LoanApplicationTest extends TestCase
             'business',
             []
         );
-        
+
         $loanApp->reject(
             reasons: ['credit_score_too_low', 'insufficient_income'],
             rejectedBy: 'auto-decisioning'
@@ -255,7 +255,7 @@ class LoanApplicationTest extends TestCase
     {
         $aggregate = LoanApplication::fake();
         $applicationId = 'app-withdrawal';
-        
+
         $loanApp = LoanApplication::submit(
             $applicationId,
             'borrower-654',
@@ -264,7 +264,7 @@ class LoanApplicationTest extends TestCase
             'personal',
             []
         );
-        
+
         $loanApp->withdraw('Changed my mind');
 
         $aggregate->assertRecorded(
@@ -303,7 +303,7 @@ class LoanApplicationTest extends TestCase
             'auto',
             []
         );
-        
+
         // Complete credit check but not risk assessment
         $loanApp->completeCreditCheck(700, 'TransUnion', [], 'system');
 
@@ -323,7 +323,7 @@ class LoanApplicationTest extends TestCase
             'business',
             []
         );
-        
+
         // Reject the application
         $loanApp->reject(['high_risk'], 'system');
 
@@ -337,7 +337,7 @@ class LoanApplicationTest extends TestCase
     public function test_apply_events_updates_state(): void
     {
         $loanApp = new LoanApplication();
-        
+
         // Apply submitted event
         $submittedEvent = new LoanApplicationSubmitted(
             'app-state-test',
@@ -348,16 +348,16 @@ class LoanApplicationTest extends TestCase
             [],
             new \DateTimeImmutable()
         );
-        
+
         $loanApp->applyLoanApplicationSubmitted($submittedEvent);
-        
+
         // Use reflection to check private properties
         $reflection = new \ReflectionClass($loanApp);
-        
+
         $statusProperty = $reflection->getProperty('status');
         $statusProperty->setAccessible(true);
         $this->assertEquals('pending', $statusProperty->getValue($loanApp));
-        
+
         $amountProperty = $reflection->getProperty('requestedAmount');
         $amountProperty->setAccessible(true);
         $this->assertEquals('35000', $amountProperty->getValue($loanApp));

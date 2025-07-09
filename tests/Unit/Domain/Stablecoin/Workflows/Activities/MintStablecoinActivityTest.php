@@ -36,16 +36,16 @@ class MintStablecoinActivityTest extends TestCase
         $this->assertEquals(4, $method->getNumberOfParameters());
 
         $parameters = $method->getParameters();
-        
+
         $this->assertEquals('accountUuid', $parameters[0]->getName());
         $this->assertEquals(AccountUuid::class, $parameters[0]->getType()->getName());
-        
+
         $this->assertEquals('positionUuid', $parameters[1]->getName());
         $this->assertEquals('string', $parameters[1]->getType()->getName());
-        
+
         $this->assertEquals('stablecoinCode', $parameters[2]->getName());
         $this->assertEquals('string', $parameters[2]->getType()->getName());
-        
+
         $this->assertEquals('amount', $parameters[3]->getName());
         $this->assertEquals('int', $parameters[3]->getType()->getName());
     }
@@ -62,8 +62,8 @@ class MintStablecoinActivityTest extends TestCase
     {
         // Create stablecoin with mint fee
         $stablecoin = Stablecoin::factory()->create([
-            'code' => 'USDS',
-            'mint_fee' => 0.002, // 0.2% mint fee
+            'code'         => 'USDS',
+            'mint_fee'     => 0.002, // 0.2% mint fee
             'total_supply' => 1000000000000, // 1 million USDS
         ]);
 
@@ -81,8 +81,8 @@ class MintStablecoinActivityTest extends TestCase
     public function test_zero_mint_fee_calculation(): void
     {
         $stablecoin = Stablecoin::factory()->create([
-            'code' => 'NOFEE',
-            'mint_fee' => 0.0,
+            'code'         => 'NOFEE',
+            'mint_fee'     => 0.0,
             'total_supply' => 100000000000,
         ]);
 
@@ -99,7 +99,7 @@ class MintStablecoinActivityTest extends TestCase
     public function test_activity_has_correct_properties(): void
     {
         $reflection = new \ReflectionClass(MintStablecoinActivity::class);
-        
+
         // Check for properties that should be inherited from Activity
         $this->assertTrue($reflection->hasProperty('tries'));
         $this->assertTrue($reflection->hasProperty('timeout'));

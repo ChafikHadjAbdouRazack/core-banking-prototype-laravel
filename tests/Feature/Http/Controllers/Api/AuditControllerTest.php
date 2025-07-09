@@ -16,7 +16,7 @@ class AuditControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->user = User::factory()->create();
     }
 
@@ -135,7 +135,7 @@ class AuditControllerTest extends TestCase
         Sanctum::actingAs($this->user);
 
         $response = $this->postJson('/api/audit/reports/generate', [
-            'type' => 'monthly',
+            'type'   => 'monthly',
             'period' => '2024-01',
         ]);
 
@@ -162,7 +162,7 @@ class AuditControllerTest extends TestCase
 
         $entityType = 'account';
         $entityId = 'acc-123';
-        
+
         $response = $this->getJson("/api/audit/trail/{$entityType}/{$entityId}");
 
         $response->assertStatus(200)
@@ -177,7 +177,7 @@ class AuditControllerTest extends TestCase
                 'data' => [],
                 'meta' => [
                     'entity_type' => $entityType,
-                    'entity_id' => $entityId,
+                    'entity_id'   => $entityId,
                 ],
             ]);
     }
@@ -194,7 +194,7 @@ class AuditControllerTest extends TestCase
         Sanctum::actingAs($this->user);
 
         $userId = 'user-456';
-        
+
         $response = $this->getJson("/api/audit/users/{$userId}/activity");
 
         $response->assertStatus(200)
@@ -250,7 +250,7 @@ class AuditControllerTest extends TestCase
         $response->assertStatus(200)
             ->assertJson([
                 'message' => 'Audit logs archived',
-                'data' => [],
+                'data'    => [],
             ]);
     }
 

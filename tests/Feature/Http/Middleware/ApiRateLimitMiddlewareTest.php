@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\Http\Middleware;
 
-use App\Http\Middleware\ApiRateLimitMiddleware;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Route;
@@ -15,23 +14,23 @@ class ApiRateLimitMiddlewareTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Clear rate limit cache
         Cache::flush();
-        
+
         // Set up test routes with different rate limit types
         Route::middleware(['api.rate_limit:auth'])->get('/test-auth', function () {
             return response()->json(['message' => 'success']);
         });
-        
+
         Route::middleware(['api.rate_limit:transaction'])->post('/test-transaction', function () {
             return response()->json(['message' => 'success']);
         });
-        
+
         Route::middleware(['api.rate_limit:query'])->get('/test-query', function () {
             return response()->json(['message' => 'success']);
         });
-        
+
         Route::middleware(['api.rate_limit:public'])->get('/test-public', function () {
             return response()->json(['message' => 'success']);
         });
@@ -66,12 +65,12 @@ class ApiRateLimitMiddlewareTest extends TestCase
     public function test_includes_rate_limit_headers(): void
     {
         $response = $this->getJson('/test-query');
-        
+
         $response->assertStatus(200)
             ->assertHeader('X-RateLimit-Limit', '100')
             ->assertHeader('X-RateLimit-Remaining')
             ->assertHeader('X-RateLimit-Reset');
-        
+
         // Check remaining decreases
         $remaining = $response->headers->get('X-RateLimit-Remaining');
         $this->assertEquals(99, $remaining);
@@ -139,11 +138,11 @@ class ApiRateLimitMiddlewareTest extends TestCase
         for ($i = 0; $i < 5; $i++) {
             $this->getJson('/test-auth')->assertStatus(200);
         }
-        
+
         $response = $this->getJson('/test-auth');
         $response->assertStatus(429);
         $retryAfter = $response->json('retry_after');
-        
+
         // Should be close to 300 seconds
         $this->assertGreaterThanOrEqual(295, $retryAfter);
         $this->assertLessThanOrEqual(300, $retryAfter);
@@ -164,15 +163,15 @@ class ApiRateLimitMiddlewareTest extends TestCase
     {
         // Make a request to auth endpoint
         $this->getJson('/test-auth')->assertStatus(200);
-        
+
         // Check cache key exists (implementation detail test)
         $ip = request()->ip();
         $authKey = "rate_limit:auth:{$ip}";
         $this->assertTrue(Cache::has($authKey));
-        
+
         // Make a request to query endpoint
         $this->getJson('/test-query')->assertStatus(200);
-        
+
         // Should have separate cache key
         $queryKey = "rate_limit:query:{$ip}";
         $this->assertTrue(Cache::has($queryKey));
@@ -186,7 +185,7 @@ class ApiRateLimitMiddlewareTest extends TestCase
         });
 
         $response = $this->getJson('/test-invalid');
-        
+
         // Should fall back to 'query' type (100 requests per minute)
         $response->assertStatus(200)
             ->assertHeader('X-RateLimit-Limit', '100');

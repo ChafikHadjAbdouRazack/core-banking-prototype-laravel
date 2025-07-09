@@ -3,9 +3,9 @@
 namespace Tests\Feature\Http\Controllers\Api;
 
 use App\Domain\Account\Services\BankAllocationService;
+use App\Models\Asset;
 use App\Models\User;
 use App\Models\UserBankPreference;
-use App\Models\Asset;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
@@ -15,26 +15,27 @@ class BankAllocationControllerTest extends TestCase
     use RefreshDatabase;
 
     protected User $user;
+
     protected BankAllocationService $bankAllocationService;
 
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->user = User::factory()->create();
         $this->bankAllocationService = $this->app->make(BankAllocationService::class);
-        
+
         // Create USD asset for distribution preview tests
         Asset::firstOrCreate(
             ['code' => 'USD'],
             [
-                'name' => 'US Dollar',
-                'type' => 'fiat',
-                'precision' => 2,
-                'is_active' => true,
+                'name'         => 'US Dollar',
+                'type'         => 'fiat',
+                'precision'    => 2,
+                'is_active'    => true,
                 'is_tradeable' => true,
-                'symbol' => '$',
-                'metadata' => ['symbol' => '$'],
+                'symbol'       => '$',
+                'metadata'     => ['symbol' => '$'],
             ]
         );
     }
@@ -67,7 +68,7 @@ class BankAllocationControllerTest extends TestCase
                     ],
                 ],
             ]);
-        
+
         // Check that default allocations were created
         $this->assertGreaterThan(0, $response->json('data.allocations'));
         $this->assertEquals(100, $response->json('data.summary.total_percentage'));
@@ -79,23 +80,23 @@ class BankAllocationControllerTest extends TestCase
 
         // Create bank preferences
         UserBankPreference::create([
-            'user_uuid' => $this->user->uuid,
-            'bank_code' => 'PAYSERA',
-            'bank_name' => UserBankPreference::AVAILABLE_BANKS['PAYSERA']['name'],
+            'user_uuid'             => $this->user->uuid,
+            'bank_code'             => 'PAYSERA',
+            'bank_name'             => UserBankPreference::AVAILABLE_BANKS['PAYSERA']['name'],
             'allocation_percentage' => 50,
-            'is_primary' => true,
-            'status' => 'active',
-            'metadata' => UserBankPreference::AVAILABLE_BANKS['PAYSERA'],
+            'is_primary'            => true,
+            'status'                => 'active',
+            'metadata'              => UserBankPreference::AVAILABLE_BANKS['PAYSERA'],
         ]);
 
         UserBankPreference::create([
-            'user_uuid' => $this->user->uuid,
-            'bank_code' => 'DEUTSCHE',
-            'bank_name' => UserBankPreference::AVAILABLE_BANKS['DEUTSCHE']['name'],
+            'user_uuid'             => $this->user->uuid,
+            'bank_code'             => 'DEUTSCHE',
+            'bank_name'             => UserBankPreference::AVAILABLE_BANKS['DEUTSCHE']['name'],
             'allocation_percentage' => 50,
-            'is_primary' => false,
-            'status' => 'active',
-            'metadata' => UserBankPreference::AVAILABLE_BANKS['DEUTSCHE'],
+            'is_primary'            => false,
+            'status'                => 'active',
+            'metadata'              => UserBankPreference::AVAILABLE_BANKS['DEUTSCHE'],
         ]);
 
         $response = $this->getJson('/api/bank-allocations');
@@ -123,20 +124,20 @@ class BankAllocationControllerTest extends TestCase
         $this->bankAllocationService->setupDefaultAllocations($this->user);
 
         $newAllocations = [
-            'PAYSERA' => 40,
-            'DEUTSCHE' => 30,
+            'PAYSERA'   => 40,
+            'DEUTSCHE'  => 30,
             'SANTANDER' => 30,
         ];
 
         $response = $this->putJson('/api/bank-allocations', [
-            'allocations' => $newAllocations,
+            'allocations'  => $newAllocations,
             'primary_bank' => 'PAYSERA',
         ]);
 
         $response->assertStatus(200)
             ->assertJsonPath('message', 'Bank allocations updated successfully')
             ->assertJsonCount(3, 'data.allocations');
-        
+
         // Verify allocations were updated
         $allocations = collect($response->json('data.allocations'));
         $payseraAllocation = $allocations->firstWhere('bank_code', 'PAYSERA');
@@ -181,7 +182,7 @@ class BankAllocationControllerTest extends TestCase
         $this->bankAllocationService->setupDefaultAllocations($this->user);
 
         $response = $this->postJson('/api/bank-allocations/banks', [
-            'bank_code' => 'REVOLUT',
+            'bank_code'  => 'REVOLUT',
             'percentage' => 15,
         ]);
 
@@ -198,7 +199,7 @@ class BankAllocationControllerTest extends TestCase
 
         // Test invalid bank code
         $response = $this->postJson('/api/bank-allocations/banks', [
-            'bank_code' => 'INVALID_BANK',
+            'bank_code'  => 'INVALID_BANK',
             'percentage' => 15,
         ]);
 
@@ -207,7 +208,7 @@ class BankAllocationControllerTest extends TestCase
 
         // Test invalid percentage
         $response = $this->postJson('/api/bank-allocations/banks', [
-            'bank_code' => 'REVOLUT',
+            'bank_code'  => 'REVOLUT',
             'percentage' => 0, // Too low
         ]);
 
@@ -221,23 +222,23 @@ class BankAllocationControllerTest extends TestCase
 
         // Create bank preferences
         UserBankPreference::create([
-            'user_uuid' => $this->user->uuid,
-            'bank_code' => 'PAYSERA',
-            'bank_name' => UserBankPreference::AVAILABLE_BANKS['PAYSERA']['name'],
+            'user_uuid'             => $this->user->uuid,
+            'bank_code'             => 'PAYSERA',
+            'bank_name'             => UserBankPreference::AVAILABLE_BANKS['PAYSERA']['name'],
             'allocation_percentage' => 50,
-            'is_primary' => true,
-            'status' => 'active',
-            'metadata' => UserBankPreference::AVAILABLE_BANKS['PAYSERA'],
+            'is_primary'            => true,
+            'status'                => 'active',
+            'metadata'              => UserBankPreference::AVAILABLE_BANKS['PAYSERA'],
         ]);
 
         UserBankPreference::create([
-            'user_uuid' => $this->user->uuid,
-            'bank_code' => 'REVOLUT',
-            'bank_name' => UserBankPreference::AVAILABLE_BANKS['REVOLUT']['name'],
+            'user_uuid'             => $this->user->uuid,
+            'bank_code'             => 'REVOLUT',
+            'bank_name'             => UserBankPreference::AVAILABLE_BANKS['REVOLUT']['name'],
             'allocation_percentage' => 50,
-            'is_primary' => false,
-            'status' => 'active',
-            'metadata' => UserBankPreference::AVAILABLE_BANKS['REVOLUT'],
+            'is_primary'            => false,
+            'status'                => 'active',
+            'metadata'              => UserBankPreference::AVAILABLE_BANKS['REVOLUT'],
         ]);
 
         $response = $this->deleteJson('/api/bank-allocations/banks/REVOLUT');
@@ -245,12 +246,12 @@ class BankAllocationControllerTest extends TestCase
         $response->assertStatus(200)
             ->assertJsonPath('message', 'Bank removed from allocation successfully')
             ->assertJsonPath('data.bank_code', 'REVOLUT');
-        
+
         // Verify bank was removed
         $this->assertDatabaseHas('user_bank_preferences', [
             'user_uuid' => $this->user->uuid,
             'bank_code' => 'REVOLUT',
-            'status' => 'inactive',
+            'status'    => 'inactive',
         ]);
     }
 
@@ -259,13 +260,13 @@ class BankAllocationControllerTest extends TestCase
         Sanctum::actingAs($this->user);
 
         UserBankPreference::create([
-            'user_uuid' => $this->user->uuid,
-            'bank_code' => 'PAYSERA',
-            'bank_name' => UserBankPreference::AVAILABLE_BANKS['PAYSERA']['name'],
+            'user_uuid'             => $this->user->uuid,
+            'bank_code'             => 'PAYSERA',
+            'bank_name'             => UserBankPreference::AVAILABLE_BANKS['PAYSERA']['name'],
             'allocation_percentage' => 100,
-            'is_primary' => true,
-            'status' => 'active',
-            'metadata' => UserBankPreference::AVAILABLE_BANKS['PAYSERA'],
+            'is_primary'            => true,
+            'status'                => 'active',
+            'metadata'              => UserBankPreference::AVAILABLE_BANKS['PAYSERA'],
         ]);
 
         $response = $this->deleteJson('/api/bank-allocations/banks/PAYSERA');
@@ -279,23 +280,23 @@ class BankAllocationControllerTest extends TestCase
 
         // Create bank preferences
         UserBankPreference::create([
-            'user_uuid' => $this->user->uuid,
-            'bank_code' => 'PAYSERA',
-            'bank_name' => UserBankPreference::AVAILABLE_BANKS['PAYSERA']['name'],
+            'user_uuid'             => $this->user->uuid,
+            'bank_code'             => 'PAYSERA',
+            'bank_name'             => UserBankPreference::AVAILABLE_BANKS['PAYSERA']['name'],
             'allocation_percentage' => 50,
-            'is_primary' => true,
-            'status' => 'active',
-            'metadata' => UserBankPreference::AVAILABLE_BANKS['PAYSERA'],
+            'is_primary'            => true,
+            'status'                => 'active',
+            'metadata'              => UserBankPreference::AVAILABLE_BANKS['PAYSERA'],
         ]);
 
         UserBankPreference::create([
-            'user_uuid' => $this->user->uuid,
-            'bank_code' => 'DEUTSCHE',
-            'bank_name' => UserBankPreference::AVAILABLE_BANKS['DEUTSCHE']['name'],
+            'user_uuid'             => $this->user->uuid,
+            'bank_code'             => 'DEUTSCHE',
+            'bank_name'             => UserBankPreference::AVAILABLE_BANKS['DEUTSCHE']['name'],
             'allocation_percentage' => 50,
-            'is_primary' => false,
-            'status' => 'active',
-            'metadata' => UserBankPreference::AVAILABLE_BANKS['DEUTSCHE'],
+            'is_primary'            => false,
+            'status'                => 'active',
+            'metadata'              => UserBankPreference::AVAILABLE_BANKS['DEUTSCHE'],
         ]);
 
         $response = $this->putJson('/api/bank-allocations/primary/DEUTSCHE');
@@ -304,11 +305,11 @@ class BankAllocationControllerTest extends TestCase
             ->assertJsonPath('message', 'Primary bank updated successfully')
             ->assertJsonPath('data.bank_code', 'DEUTSCHE')
             ->assertJsonPath('data.is_primary', true);
-        
+
         // Verify old primary is no longer primary
         $this->assertDatabaseHas('user_bank_preferences', [
-            'user_uuid' => $this->user->uuid,
-            'bank_code' => 'PAYSERA',
+            'user_uuid'  => $this->user->uuid,
+            'bank_code'  => 'PAYSERA',
             'is_primary' => false,
         ]);
     }
@@ -341,7 +342,7 @@ class BankAllocationControllerTest extends TestCase
                     ],
                 ],
             ]);
-        
+
         // Check that all available banks are returned
         $bankCount = count(UserBankPreference::AVAILABLE_BANKS);
         $this->assertCount($bankCount, $response->json('data'));
@@ -353,37 +354,37 @@ class BankAllocationControllerTest extends TestCase
 
         // Create bank preferences with specific allocations
         UserBankPreference::create([
-            'user_uuid' => $this->user->uuid,
-            'bank_code' => 'PAYSERA',
-            'bank_name' => UserBankPreference::AVAILABLE_BANKS['PAYSERA']['name'],
+            'user_uuid'             => $this->user->uuid,
+            'bank_code'             => 'PAYSERA',
+            'bank_name'             => UserBankPreference::AVAILABLE_BANKS['PAYSERA']['name'],
             'allocation_percentage' => 40,
-            'is_primary' => true,
-            'status' => 'active',
-            'metadata' => UserBankPreference::AVAILABLE_BANKS['PAYSERA'],
+            'is_primary'            => true,
+            'status'                => 'active',
+            'metadata'              => UserBankPreference::AVAILABLE_BANKS['PAYSERA'],
         ]);
 
         UserBankPreference::create([
-            'user_uuid' => $this->user->uuid,
-            'bank_code' => 'DEUTSCHE',
-            'bank_name' => UserBankPreference::AVAILABLE_BANKS['DEUTSCHE']['name'],
+            'user_uuid'             => $this->user->uuid,
+            'bank_code'             => 'DEUTSCHE',
+            'bank_name'             => UserBankPreference::AVAILABLE_BANKS['DEUTSCHE']['name'],
             'allocation_percentage' => 30,
-            'is_primary' => false,
-            'status' => 'active',
-            'metadata' => UserBankPreference::AVAILABLE_BANKS['DEUTSCHE'],
+            'is_primary'            => false,
+            'status'                => 'active',
+            'metadata'              => UserBankPreference::AVAILABLE_BANKS['DEUTSCHE'],
         ]);
 
         UserBankPreference::create([
-            'user_uuid' => $this->user->uuid,
-            'bank_code' => 'SANTANDER',
-            'bank_name' => UserBankPreference::AVAILABLE_BANKS['SANTANDER']['name'],
+            'user_uuid'             => $this->user->uuid,
+            'bank_code'             => 'SANTANDER',
+            'bank_name'             => UserBankPreference::AVAILABLE_BANKS['SANTANDER']['name'],
             'allocation_percentage' => 30,
-            'is_primary' => false,
-            'status' => 'active',
-            'metadata' => UserBankPreference::AVAILABLE_BANKS['SANTANDER'],
+            'is_primary'            => false,
+            'status'                => 'active',
+            'metadata'              => UserBankPreference::AVAILABLE_BANKS['SANTANDER'],
         ]);
 
         $response = $this->postJson('/api/bank-allocations/distribution-preview', [
-            'amount' => 1000.00,
+            'amount'     => 1000.00,
             'asset_code' => 'USD',
         ]);
 
@@ -412,13 +413,13 @@ class BankAllocationControllerTest extends TestCase
             ->assertJsonPath('data.asset_code', 'USD')
             ->assertJsonCount(3, 'data.distribution')
             ->assertJsonPath('data.summary.is_diversified', true);
-        
+
         // Verify distribution amounts
         $distribution = collect($response->json('data.distribution'));
         $payseraAmount = $distribution->firstWhere('bank_code', 'PAYSERA')['amount'];
         $deutscheAmount = $distribution->firstWhere('bank_code', 'DEUTSCHE')['amount'];
         $santanderAmount = $distribution->firstWhere('bank_code', 'SANTANDER')['amount'];
-        
+
         $this->assertEquals(400.00, $payseraAmount); // 40% of 1000
         $this->assertEquals(300.00, $deutscheAmount); // 30% of 1000
         $this->assertEquals(300.00, $santanderAmount); // 30% of 1000
@@ -430,7 +431,7 @@ class BankAllocationControllerTest extends TestCase
 
         // Test invalid amount
         $response = $this->postJson('/api/bank-allocations/distribution-preview', [
-            'amount' => 0,
+            'amount'     => 0,
             'asset_code' => 'USD',
         ]);
 
@@ -439,7 +440,7 @@ class BankAllocationControllerTest extends TestCase
 
         // Test invalid asset code
         $response = $this->postJson('/api/bank-allocations/distribution-preview', [
-            'amount' => 1000,
+            'amount'     => 1000,
             'asset_code' => 'INVALID',
         ]);
 

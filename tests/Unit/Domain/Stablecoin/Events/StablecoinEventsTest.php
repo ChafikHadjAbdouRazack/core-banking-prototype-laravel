@@ -2,13 +2,13 @@
 
 namespace Tests\Unit\Domain\Stablecoin\Events;
 
+use App\Domain\Stablecoin\Events\CollateralizationRatioUpdated;
 use App\Domain\Stablecoin\Events\CollateralLocked;
 use App\Domain\Stablecoin\Events\CollateralPositionClosed;
 use App\Domain\Stablecoin\Events\CollateralPositionCreated;
 use App\Domain\Stablecoin\Events\CollateralPositionLiquidated;
 use App\Domain\Stablecoin\Events\CollateralPositionUpdated;
 use App\Domain\Stablecoin\Events\CollateralReleased;
-use App\Domain\Stablecoin\Events\CollateralizationRatioUpdated;
 use App\Domain\Stablecoin\Events\CustodianAdded;
 use App\Domain\Stablecoin\Events\CustodianRemoved;
 use App\Domain\Stablecoin\Events\OracleDeviationDetected;
@@ -93,7 +93,7 @@ class StablecoinEventsTest extends TestCase
         $collateralRatio = 150.0;
         $status = 'active';
         $metadata = [
-            'initial_price' => '2000.00',
+            'initial_price'     => '2000.00',
             'liquidation_price' => '1333.33',
         ];
 
@@ -144,7 +144,7 @@ class StablecoinEventsTest extends TestCase
         $debtRepaid = 1500000000; // 1,500 USDS
         $liquidationPenalty = 75000000; // 75 USDS (5% penalty)
         $metadata = [
-            'trigger' => 'under_collateralized',
+            'trigger'              => 'under_collateralized',
             'price_at_liquidation' => '1400.00',
         ];
 
@@ -251,7 +251,7 @@ class StablecoinEventsTest extends TestCase
         $name = 'BitGo Trust';
         $type = 'qualified_custodian';
         $config = [
-            'api_key' => 'encrypted_key',
+            'api_key'     => 'encrypted_key',
             'webhook_url' => 'https://api.example.com/webhook',
         ];
 
@@ -285,8 +285,8 @@ class StablecoinEventsTest extends TestCase
         $quote = 'USD';
         $deviation = 5.2;
         $prices = [
-            'chainlink' => '2100.50',
-            'binance' => '2000.00',
+            'chainlink'    => '2100.50',
+            'binance'      => '2000.00',
             'internal_amm' => '1995.00',
         ];
         $aggregateUuid = 'agg-123';
@@ -342,8 +342,8 @@ class StablecoinEventsTest extends TestCase
         $title = 'Increase ETH Collateral Ratio';
         $description = 'Proposal to increase ETH collateral ratio from 150% to 175%';
         $parameters = [
-            'asset' => 'ETH',
-            'current_ratio' => 150,
+            'asset'          => 'ETH',
+            'current_ratio'  => 150,
             'proposed_ratio' => 175,
         ];
         $proposer = 'acc-proposer-456';
@@ -405,7 +405,7 @@ class StablecoinEventsTest extends TestCase
         $result = 'approved';
         $totalVotes = '2000000';
         $votesSummary = [
-            'for' => '1500000',
+            'for'     => '1500000',
             'against' => '500000',
             'abstain' => '0',
         ];
@@ -511,7 +511,7 @@ class StablecoinEventsTest extends TestCase
         $targetAllocations = [
             'USDC' => '40',
             'USDT' => '40',
-            'DAI' => '20',
+            'DAI'  => '20',
         ];
         $executedBy = 'rebalancer-bot';
         $swaps = [
@@ -521,7 +521,7 @@ class StablecoinEventsTest extends TestCase
         $previousAllocations = [
             'USDC' => '45',
             'USDT' => '45',
-            'DAI' => '10',
+            'DAI'  => '10',
         ];
 
         $event = new ReserveRebalanced(
@@ -650,10 +650,10 @@ class StablecoinEventsTest extends TestCase
             ],
             'array' => [1, 2, 3],
             'mixed' => [
-                'string' => 'test',
-                'number' => 456,
+                'string'  => 'test',
+                'number'  => 456,
                 'boolean' => true,
-                'null' => null,
+                'null'    => null,
             ],
         ];
 

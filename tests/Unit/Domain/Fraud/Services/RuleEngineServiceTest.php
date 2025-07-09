@@ -7,8 +7,8 @@ use App\Models\FraudRule;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
-use Tests\TestCase;
 use Mockery;
+use Tests\TestCase;
 
 class RuleEngineServiceTest extends TestCase
 {
@@ -27,7 +27,7 @@ class RuleEngineServiceTest extends TestCase
     {
         $context = [
             'transaction_amount' => 1000,
-            'user_id' => 'user-123',
+            'user_id'            => 'user-123',
         ];
 
         $results = $this->service->evaluate($context);
@@ -43,34 +43,34 @@ class RuleEngineServiceTest extends TestCase
     {
         // Create active rules
         $rule1 = FraudRule::factory()->create([
-            'code' => 'HIGH_AMOUNT',
-            'name' => 'High Transaction Amount',
-            'category' => 'transaction',
-            'severity' => 'high',
-            'base_score' => 30,
-            'is_active' => true,
+            'code'        => 'HIGH_AMOUNT',
+            'name'        => 'High Transaction Amount',
+            'category'    => 'transaction',
+            'severity'    => 'high',
+            'base_score'  => 30,
+            'is_active'   => true,
             'is_blocking' => false,
-            'conditions' => [
+            'conditions'  => [
                 'transaction_amount' => ['operator' => '>', 'value' => 10000],
             ],
         ]);
 
         $rule2 = FraudRule::factory()->create([
-            'code' => 'LOW_AMOUNT',
-            'name' => 'Low Transaction Amount',
-            'category' => 'transaction',
-            'severity' => 'low',
-            'base_score' => 10,
-            'is_active' => true,
+            'code'        => 'LOW_AMOUNT',
+            'name'        => 'Low Transaction Amount',
+            'category'    => 'transaction',
+            'severity'    => 'low',
+            'base_score'  => 10,
+            'is_active'   => true,
             'is_blocking' => false,
-            'conditions' => [
+            'conditions'  => [
                 'transaction_amount' => ['operator' => '<', 'value' => 100],
             ],
         ]);
 
         $context = [
             'transaction_amount' => 15000,
-            'user_id' => 'user-123',
+            'user_id'            => 'user-123',
         ];
 
         $results = $this->service->evaluate($context);
@@ -84,20 +84,20 @@ class RuleEngineServiceTest extends TestCase
     public function test_evaluate_identifies_blocking_rules(): void
     {
         $blockingRule = FraudRule::factory()->create([
-            'code' => 'BLACKLIST_MATCH',
-            'name' => 'Blacklist Match',
-            'category' => 'blacklist',
-            'severity' => 'critical',
-            'base_score' => 100,
-            'is_active' => true,
+            'code'        => 'BLACKLIST_MATCH',
+            'name'        => 'Blacklist Match',
+            'category'    => 'blacklist',
+            'severity'    => 'critical',
+            'base_score'  => 100,
+            'is_active'   => true,
             'is_blocking' => true,
-            'conditions' => [
+            'conditions'  => [
                 'user_blacklisted' => ['operator' => '==', 'value' => true],
             ],
         ]);
 
         $context = [
-            'user_blacklisted' => true,
+            'user_blacklisted'   => true,
             'transaction_amount' => 500,
         ];
 
@@ -112,21 +112,21 @@ class RuleEngineServiceTest extends TestCase
     {
         // Create multiple high-scoring rules
         FraudRule::factory()->create([
-            'code' => 'RULE1',
+            'code'       => 'RULE1',
             'base_score' => 50,
-            'is_active' => true,
+            'is_active'  => true,
             'conditions' => ['always_true' => true],
         ]);
 
         FraudRule::factory()->create([
-            'code' => 'RULE2',
+            'code'       => 'RULE2',
             'base_score' => 60,
-            'is_active' => true,
+            'is_active'  => true,
             'conditions' => ['always_true' => true],
         ]);
 
         $context = ['always_true' => true];
-        
+
         $results = $this->service->evaluate($context);
 
         $this->assertEquals(100, $results['total_score']); // Capped at 100
@@ -136,8 +136,8 @@ class RuleEngineServiceTest extends TestCase
     public function test_evaluate_handles_rule_evaluation_errors(): void
     {
         $faultyRule = FraudRule::factory()->create([
-            'code' => 'FAULTY_RULE',
-            'is_active' => true,
+            'code'       => 'FAULTY_RULE',
+            'is_active'  => true,
             'conditions' => ['invalid_condition' => 'will_cause_error'],
         ]);
 
@@ -146,7 +146,7 @@ class RuleEngineServiceTest extends TestCase
             ->with('Rule evaluation failed', Mockery::type('array'));
 
         $context = ['transaction_amount' => 1000];
-        
+
         $results = $this->service->evaluate($context);
 
         // Should continue evaluation despite error
@@ -156,23 +156,23 @@ class RuleEngineServiceTest extends TestCase
     public function test_evaluate_includes_rule_details(): void
     {
         $rule = FraudRule::factory()->create([
-            'code' => 'DETAILED_RULE',
-            'name' => 'Detailed Test Rule',
-            'category' => 'velocity',
-            'severity' => 'medium',
+            'code'       => 'DETAILED_RULE',
+            'name'       => 'Detailed Test Rule',
+            'category'   => 'velocity',
+            'severity'   => 'medium',
             'base_score' => 25,
-            'is_active' => true,
-            'actions' => ['review', 'notify'],
+            'is_active'  => true,
+            'actions'    => ['review', 'notify'],
             'conditions' => ['test_condition' => true],
         ]);
 
         $context = ['test_condition' => true];
-        
+
         $results = $this->service->evaluate($context);
 
         $this->assertArrayHasKey('DETAILED_RULE', $results['rule_details']);
         $details = $results['rule_details']['DETAILED_RULE'];
-        
+
         $this->assertEquals('Detailed Test Rule', $details['name']);
         $this->assertEquals('velocity', $details['category']);
         $this->assertEquals('medium', $details['severity']);
@@ -208,33 +208,33 @@ class RuleEngineServiceTest extends TestCase
     public function test_evaluate_orders_rules_by_severity_and_score(): void
     {
         FraudRule::factory()->create([
-            'code' => 'LOW_SEVERITY',
-            'severity' => 'low',
+            'code'       => 'LOW_SEVERITY',
+            'severity'   => 'low',
             'base_score' => 50,
-            'is_active' => true,
+            'is_active'  => true,
         ]);
 
         FraudRule::factory()->create([
-            'code' => 'HIGH_SEVERITY',
-            'severity' => 'high',
+            'code'       => 'HIGH_SEVERITY',
+            'severity'   => 'high',
             'base_score' => 30,
-            'is_active' => true,
+            'is_active'  => true,
         ]);
 
         FraudRule::factory()->create([
-            'code' => 'CRITICAL_SEVERITY',
-            'severity' => 'critical',
+            'code'       => 'CRITICAL_SEVERITY',
+            'severity'   => 'critical',
             'base_score' => 40,
-            'is_active' => true,
+            'is_active'  => true,
         ]);
 
         // Get rules directly to check ordering
         $reflection = new \ReflectionClass($this->service);
         $method = $reflection->getMethod('getActiveRules');
         $method->setAccessible(true);
-        
+
         $rules = $method->invoke($this->service);
-        
+
         // Should be ordered by severity (critical > high > low), then by score
         $this->assertEquals('CRITICAL_SEVERITY', $rules[0]->code);
         $this->assertEquals('HIGH_SEVERITY', $rules[1]->code);
@@ -244,21 +244,21 @@ class RuleEngineServiceTest extends TestCase
     public function test_evaluates_complex_conditions(): void
     {
         $rule = FraudRule::factory()->create([
-            'code' => 'COMPLEX_RULE',
+            'code'       => 'COMPLEX_RULE',
             'base_score' => 40,
-            'is_active' => true,
+            'is_active'  => true,
             'conditions' => [
                 'transaction_amount' => ['operator' => '>=', 'value' => 5000],
-                'user_country' => ['operator' => 'in', 'value' => ['US', 'CA', 'UK']],
-                'account_age_days' => ['operator' => '<', 'value' => 30],
+                'user_country'       => ['operator' => 'in', 'value' => ['US', 'CA', 'UK']],
+                'account_age_days'   => ['operator' => '<', 'value' => 30],
             ],
         ]);
 
         // Context that matches all conditions
         $matchingContext = [
             'transaction_amount' => 6000,
-            'user_country' => 'US',
-            'account_age_days' => 15,
+            'user_country'       => 'US',
+            'account_age_days'   => 15,
         ];
 
         $results = $this->service->evaluate($matchingContext);
@@ -267,8 +267,8 @@ class RuleEngineServiceTest extends TestCase
         // Context that doesn't match all conditions
         $nonMatchingContext = [
             'transaction_amount' => 6000,
-            'user_country' => 'FR', // Not in allowed countries
-            'account_age_days' => 15,
+            'user_country'       => 'FR', // Not in allowed countries
+            'account_age_days'   => 15,
         ];
 
         $results2 = $this->service->evaluate($nonMatchingContext);

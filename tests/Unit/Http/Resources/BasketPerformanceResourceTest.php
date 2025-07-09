@@ -3,7 +3,6 @@
 namespace Tests\Unit\Http\Resources;
 
 use App\Http\Resources\BasketPerformanceResource;
-use App\Http\Resources\ComponentPerformanceResource;
 use Illuminate\Http\Request;
 use Tests\TestCase;
 
@@ -12,30 +11,31 @@ class BasketPerformanceResourceTest extends TestCase
     private function createBasketPerformance(array $attributes = []): object
     {
         $defaults = [
-            'id' => 1,
+            'id'                => 1,
             'basket_asset_code' => 'GCU',
-            'period_type' => 'day',
-            'period_start' => now()->subDay(),
-            'period_end' => now(),
-            'start_value' => 100.0,
-            'end_value' => 105.0,
-            'high_value' => 107.0,
-            'low_value' => 99.0,
-            'average_value' => 103.0,
-            'return_value' => 5.0,
+            'period_type'       => 'day',
+            'period_start'      => now()->subDay(),
+            'period_end'        => now(),
+            'start_value'       => 100.0,
+            'end_value'         => 105.0,
+            'high_value'        => 107.0,
+            'low_value'         => 99.0,
+            'average_value'     => 103.0,
+            'return_value'      => 5.0,
             'return_percentage' => 5.0,
-            'volatility' => 12.0,
-            'sharpe_ratio' => 1.2,
-            'max_drawdown' => 2.0,
-            'value_count' => 24,
-            'created_at' => now(),
-            'updated_at' => now(),
+            'volatility'        => 12.0,
+            'sharpe_ratio'      => 1.2,
+            'max_drawdown'      => 2.0,
+            'value_count'       => 24,
+            'created_at'        => now(),
+            'updated_at'        => now(),
         ];
 
         $data = array_merge($defaults, $attributes);
-        
-        return new class($data) {
+
+        return new class ($data) {
             private array $attributes;
+
             private array $relations = [];
 
             public function __construct(array $attributes)
@@ -54,12 +54,14 @@ class BasketPerformanceResourceTest extends TestCase
                 if ($name === 'risk_rating') {
                     return $this->getRiskRatingAttribute();
                 }
+
                 return $this->attributes[$name] ?? null;
             }
 
             public function getFormattedReturnAttribute(): string
             {
                 $prefix = $this->return_percentage >= 0 ? '+' : '';
+
                 return $prefix . number_format($this->return_percentage, 2) . '%';
             }
 
@@ -102,19 +104,20 @@ class BasketPerformanceResourceTest extends TestCase
             {
                 return isset($this->relations[$relation]);
             }
-            
+
             public function whenLoaded($relationship, $value = null, $default = null)
             {
                 if ($this->relationLoaded($relationship)) {
                     return $value ?? $this->getRelation($relationship);
                 }
-                
+
                 return $default ?? new \Illuminate\Http\Resources\MissingValue();
             }
 
             public function setRelation($relation, $value)
             {
                 $this->relations[$relation] = $value;
+
                 return $this;
             }
 
@@ -134,18 +137,18 @@ class BasketPerformanceResourceTest extends TestCase
     {
         $basketPerformance = $this->createBasketPerformance([
             'basket_asset_code' => 'GCU',
-            'period_type' => 'day',
-            'start_value' => 100.123456,
-            'end_value' => 105.987654,
-            'high_value' => 107.555555,
-            'low_value' => 99.111111,
-            'average_value' => 103.333333,
-            'return_value' => 5.864198,
+            'period_type'       => 'day',
+            'start_value'       => 100.123456,
+            'end_value'         => 105.987654,
+            'high_value'        => 107.555555,
+            'low_value'         => 99.111111,
+            'average_value'     => 103.333333,
+            'return_value'      => 5.864198,
             'return_percentage' => 5.8642,
-            'volatility' => 12.3456,
-            'sharpe_ratio' => 1.2345,
-            'max_drawdown' => 2.3456,
-            'value_count' => 24,
+            'volatility'        => 12.3456,
+            'sharpe_ratio'      => 1.2345,
+            'max_drawdown'      => 2.3456,
+            'value_count'       => 24,
         ]);
 
         $resource = new BasketPerformanceResource($basketPerformance);
@@ -174,7 +177,7 @@ class BasketPerformanceResourceTest extends TestCase
     public function test_handles_null_risk_metrics(): void
     {
         $basketPerformance = $this->createBasketPerformance([
-            'volatility' => null,
+            'volatility'   => null,
             'sharpe_ratio' => null,
             'max_drawdown' => null,
         ]);
@@ -191,11 +194,11 @@ class BasketPerformanceResourceTest extends TestCase
     public function test_includes_components_when_loaded(): void
     {
         $basketPerformance = $this->createBasketPerformance();
-        
+
         // Create mock components with proper structure
         $components = collect([
             (object) ['id' => 1, 'asset_code' => 'BTC'],
-            (object) ['id' => 2, 'asset_code' => 'ETH'], 
+            (object) ['id' => 2, 'asset_code' => 'ETH'],
             (object) ['id' => 3, 'asset_code' => 'USDT'],
         ]);
 
@@ -224,7 +227,7 @@ class BasketPerformanceResourceTest extends TestCase
     public function test_includes_all_required_fields(): void
     {
         $basketPerformance = $this->createBasketPerformance();
-        
+
         $resource = new BasketPerformanceResource($basketPerformance);
         $request = Request::create('/');
         $array = $resource->toArray($request);
@@ -266,7 +269,7 @@ class BasketPerformanceResourceTest extends TestCase
             $this->createBasketPerformance(['id' => 2, 'basket_asset_code' => 'EUR', 'period_type' => 'week']),
             $this->createBasketPerformance(['id' => 3, 'basket_asset_code' => 'USD', 'period_type' => 'month']),
         ];
-        
+
         $collection = BasketPerformanceResource::collection($performances);
         $request = Request::create('/');
         $array = $collection->toArray($request);

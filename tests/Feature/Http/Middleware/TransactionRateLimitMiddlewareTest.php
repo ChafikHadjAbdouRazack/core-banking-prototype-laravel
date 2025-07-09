@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\Http\Middleware;
 
-use App\Http\Middleware\TransactionRateLimitMiddleware;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
@@ -19,23 +18,23 @@ class TransactionRateLimitMiddlewareTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->user = User::factory()->create();
-        
+
         // Clear rate limit cache
         Cache::flush();
-        
+
         // Set up test routes
         Route::middleware(['auth:sanctum', 'transaction.rate_limit:deposit'])
             ->post('/test-deposit', function () {
                 return response()->json(['message' => 'deposit successful']);
             });
-            
+
         Route::middleware(['auth:sanctum', 'transaction.rate_limit:withdraw'])
             ->post('/test-withdraw', function () {
                 return response()->json(['message' => 'withdraw successful']);
             });
-            
+
         Route::middleware(['auth:sanctum', 'transaction.rate_limit:transfer'])
             ->post('/test-transfer', function () {
                 return response()->json(['message' => 'transfer successful']);
@@ -83,7 +82,7 @@ class TransactionRateLimitMiddlewareTest extends TestCase
         // We'll simulate reaching the daily limit by manipulating the cache
         $userUuid = $this->user->uuid;
         $dailyKey = "transaction_limit:withdraw:daily:{$userUuid}";
-        
+
         // Set daily count to 19 (one below limit)
         Cache::put($dailyKey, 19, 86400);
 
@@ -204,12 +203,12 @@ class TransactionRateLimitMiddlewareTest extends TestCase
 
         // Should still count against rate limit even without amount
         $response->assertStatus(200);
-        
+
         // Check that it counted
         $response = $this->withHeaders([
             'Authorization' => 'Bearer ' . $this->user->currentAccessToken()->plainTextToken,
         ])->postJson('/test-deposit', []);
-        
+
         $response->assertHeader('X-RateLimit-Transaction-Remaining', '8'); // Started with 10, used 2
     }
 

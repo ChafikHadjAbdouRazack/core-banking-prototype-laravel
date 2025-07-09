@@ -12,7 +12,7 @@ class AssetBalanceSubtractedTest extends TestCase
     public function test_creates_event_with_required_properties(): void
     {
         $hash = new Hash('subtract-hash-value');
-        
+
         $event = new AssetBalanceSubtracted(
             assetCode: 'USD',
             amount: 2000,
@@ -30,11 +30,11 @@ class AssetBalanceSubtractedTest extends TestCase
     {
         $hash = new Hash('subtract-with-metadata');
         $metadata = [
-            'reason' => 'withdrawal',
+            'reason'      => 'withdrawal',
             'destination' => 'external_bank',
-            'fee' => 250,
+            'fee'         => 250,
         ];
-        
+
         $event = new AssetBalanceSubtracted(
             assetCode: 'EUR',
             amount: 5000,
@@ -84,19 +84,19 @@ class AssetBalanceSubtractedTest extends TestCase
     {
         $metadata = [
             'transaction_type' => 'payment',
-            'recipient' => [
-                'name' => 'John Doe',
+            'recipient'        => [
+                'name'    => 'John Doe',
                 'account' => '1234567890',
-                'bank' => 'Test Bank',
+                'bank'    => 'Test Bank',
             ],
             'fees' => [
                 'processing' => 100,
-                'network' => 50,
-                'total' => 150,
+                'network'    => 50,
+                'total'      => 150,
             ],
             'timestamp' => '2024-01-15T14:30:00Z',
         ];
-        
+
         $event = new AssetBalanceSubtracted(
             assetCode: 'USD',
             amount: 10000,
@@ -125,20 +125,20 @@ class AssetBalanceSubtractedTest extends TestCase
     public function test_supports_crypto_asset_codes(): void
     {
         $cryptoAssets = [
-            'BTC' => 100000000,    // 1 BTC
-            'ETH' => 1000000000000000000, // 1 ETH
+            'BTC'  => 100000000,    // 1 BTC
+            'ETH'  => 1000000000000000000, // 1 ETH
             'USDT' => 100000,      // 1000 USDT
-            'BNB' => 100000000,    // 1 BNB
-            'SOL' => 1000000000,   // 1 SOL
+            'BNB'  => 100000000,    // 1 BNB
+            'SOL'  => 1000000000,   // 1 SOL
         ];
-        
+
         foreach ($cryptoAssets as $assetCode => $amount) {
             $event = new AssetBalanceSubtracted(
                 assetCode: $assetCode,
                 amount: $amount,
                 hash: new Hash("crypto-hash-{$assetCode}")
             );
-            
+
             $this->assertEquals($assetCode, $event->getAssetCode());
             $this->assertEquals($amount, $event->getAmount());
         }

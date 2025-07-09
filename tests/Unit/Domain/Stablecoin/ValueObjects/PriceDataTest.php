@@ -11,7 +11,7 @@ class PriceDataTest extends TestCase
     public function test_creates_price_data_with_required_fields(): void
     {
         $timestamp = Carbon::now();
-        
+
         $priceData = new PriceData(
             base: 'BTC',
             quote: 'USD',
@@ -34,7 +34,7 @@ class PriceDataTest extends TestCase
     {
         $timestamp = Carbon::now();
         $metadata = ['feed_address' => '0xabc123', 'round_id' => 123456];
-        
+
         $priceData = new PriceData(
             base: 'ETH',
             quote: 'USDT',
@@ -59,7 +59,7 @@ class PriceDataTest extends TestCase
     public function test_to_array_converts_price_data_correctly(): void
     {
         $timestamp = Carbon::parse('2024-01-01 12:00:00');
-        
+
         $priceData = new PriceData(
             base: 'BTC',
             quote: 'EUR',
@@ -74,23 +74,23 @@ class PriceDataTest extends TestCase
         $array = $priceData->toArray();
 
         $this->assertEquals([
-            'base' => 'BTC',
-            'quote' => 'EUR',
-            'price' => '42000.00',
-            'source' => 'internal_amm',
-            'timestamp' => $timestamp->toIso8601String(),
-            'volume_24h' => '500000.00',
+            'base'               => 'BTC',
+            'quote'              => 'EUR',
+            'price'              => '42000.00',
+            'source'             => 'internal_amm',
+            'timestamp'          => $timestamp->toIso8601String(),
+            'volume_24h'         => '500000.00',
             'change_percent_24h' => '-1.25',
-            'metadata' => ['pool_id' => 'pool-123'],
+            'metadata'           => ['pool_id' => 'pool-123'],
         ], $array);
     }
 
     public function test_to_array_handles_null_optional_fields(): void
     {
         $timestamp = Carbon::now();
-        
+
         $priceData = new PriceData('GBP', 'USD', '1.27', 'chainlink', $timestamp);
-        
+
         $array = $priceData->toArray();
 
         $this->assertNull($array['volume_24h']);
@@ -101,12 +101,12 @@ class PriceDataTest extends TestCase
     public function test_is_stale_returns_true_for_old_prices(): void
     {
         $oldTimestamp = Carbon::now()->subMinutes(10);
-        
+
         $priceData = new PriceData('BTC', 'USD', '48000', 'chainlink', $oldTimestamp);
 
         // Default 5 minutes (300 seconds)
         $this->assertTrue($priceData->isStale());
-        
+
         // Custom 15 minutes (900 seconds)
         $this->assertFalse($priceData->isStale(900));
     }
@@ -114,11 +114,11 @@ class PriceDataTest extends TestCase
     public function test_is_stale_returns_false_for_fresh_prices(): void
     {
         $recentTimestamp = Carbon::now()->subSeconds(30);
-        
+
         $priceData = new PriceData('ETH', 'USD', '3200', 'binance', $recentTimestamp);
 
         $this->assertFalse($priceData->isStale());
-        
+
         // Even with 1 minute threshold
         $this->assertFalse($priceData->isStale(60));
     }
@@ -126,7 +126,7 @@ class PriceDataTest extends TestCase
     public function test_is_stale_edge_case_exactly_at_threshold(): void
     {
         $timestamp = Carbon::now()->subSeconds(300);
-        
+
         $priceData = new PriceData('SOL', 'USD', '150', 'binance', $timestamp);
 
         // Exactly at 5 minutes should be considered stale
@@ -177,12 +177,12 @@ class PriceDataTest extends TestCase
     public function test_handles_complex_metadata(): void
     {
         $metadata = [
-            'sources' => ['binance', 'kraken', 'coinbase'],
-            'weights' => [0.4, 0.3, 0.3],
-            'outliers' => ['ftx' => '0.01'],
+            'sources'     => ['binance', 'kraken', 'coinbase'],
+            'weights'     => [0.4, 0.3, 0.3],
+            'outliers'    => ['ftx' => '0.01'],
             'calculation' => [
-                'method' => 'weighted_average',
-                'samples' => 100,
+                'method'     => 'weighted_average',
+                'samples'    => 100,
                 'confidence' => 0.95,
             ],
         ];
@@ -204,7 +204,7 @@ class PriceDataTest extends TestCase
     public function test_different_sources_create_different_instances(): void
     {
         $timestamp = Carbon::now();
-        
+
         $chainlinkPrice = new PriceData('BTC', 'USD', '48000', 'chainlink', $timestamp);
         $binancePrice = new PriceData('BTC', 'USD', '48100', 'binance', $timestamp);
 
@@ -228,7 +228,7 @@ class PriceDataTest extends TestCase
         // Properties are readonly, so we can't modify them
         // This test verifies that the object is immutable
         $reflection = new \ReflectionClass($priceData);
-        
+
         foreach ($reflection->getProperties() as $property) {
             $this->assertTrue($property->isReadOnly());
         }

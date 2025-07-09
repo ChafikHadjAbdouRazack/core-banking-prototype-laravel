@@ -12,7 +12,6 @@ use Tests\TestCase;
 
 class CreateNewUserTest extends TestCase
 {
-
     private CreateNewUser $action;
 
     protected function shouldCreateDefaultAccountsInSetup(): bool
@@ -29,12 +28,12 @@ class CreateNewUserTest extends TestCase
     public function test_creates_new_private_user_successfully(): void
     {
         $input = [
-            'name' => 'John Doe',
-            'email' => 'john@example.com',
-            'password' => 'SecureP@ssw0rd#2024!',
+            'name'                  => 'John Doe',
+            'email'                 => 'john@example.com',
+            'password'              => 'SecureP@ssw0rd#2024!',
             'password_confirmation' => 'SecureP@ssw0rd#2024!',
-            'is_business_customer' => false,
-            'terms' => true,
+            'is_business_customer'  => false,
+            'terms'                 => true,
         ];
 
         $user = $this->action->create($input);
@@ -44,7 +43,7 @@ class CreateNewUserTest extends TestCase
         $this->assertEquals('john@example.com', $user->email);
         $this->assertTrue(Hash::check('SecureP@ssw0rd#2024!', $user->password));
         $this->assertTrue($user->hasRole('customer_private'));
-        
+
         // Check team was created
         $this->assertCount(1, $user->ownedTeams);
         $team = $user->ownedTeams->first();
@@ -55,12 +54,12 @@ class CreateNewUserTest extends TestCase
     public function test_creates_new_business_user_successfully(): void
     {
         $input = [
-            'name' => 'Business User',
-            'email' => 'business@example.com',
-            'password' => 'SecureP@ssw0rd#2024!',
+            'name'                  => 'Business User',
+            'email'                 => 'business@example.com',
+            'password'              => 'SecureP@ssw0rd#2024!',
             'password_confirmation' => 'SecureP@ssw0rd#2024!',
-            'is_business_customer' => true,
-            'terms' => true,
+            'is_business_customer'  => true,
+            'terms'                 => true,
         ];
 
         $user = $this->action->create($input);
@@ -69,7 +68,7 @@ class CreateNewUserTest extends TestCase
         $this->assertEquals('Business User', $user->name);
         $this->assertEquals('business@example.com', $user->email);
         $this->assertTrue($user->hasRole('customer_business'));
-        
+
         // Check business team configuration
         $team = $user->ownedTeams->first();
         $this->assertTrue($team->is_business_organization);
@@ -91,10 +90,10 @@ class CreateNewUserTest extends TestCase
         $this->expectException(ValidationException::class);
 
         $this->action->create([
-            'email' => 'test@example.com',
-            'password' => 'SecureP@ssw0rd#2024!',
+            'email'                 => 'test@example.com',
+            'password'              => 'SecureP@ssw0rd#2024!',
             'password_confirmation' => 'SecureP@ssw0rd#2024!',
-            'terms' => true,
+            'terms'                 => true,
         ]);
     }
 
@@ -103,10 +102,10 @@ class CreateNewUserTest extends TestCase
         $this->expectException(ValidationException::class);
 
         $this->action->create([
-            'name' => 'Test User',
-            'password' => 'SecureP@ssw0rd#2024!',
+            'name'                  => 'Test User',
+            'password'              => 'SecureP@ssw0rd#2024!',
             'password_confirmation' => 'SecureP@ssw0rd#2024!',
-            'terms' => true,
+            'terms'                 => true,
         ]);
     }
 
@@ -115,11 +114,11 @@ class CreateNewUserTest extends TestCase
         $this->expectException(ValidationException::class);
 
         $this->action->create([
-            'name' => 'Test User',
-            'email' => 'invalid-email',
-            'password' => 'SecureP@ssw0rd#2024!',
+            'name'                  => 'Test User',
+            'email'                 => 'invalid-email',
+            'password'              => 'SecureP@ssw0rd#2024!',
             'password_confirmation' => 'SecureP@ssw0rd#2024!',
-            'terms' => true,
+            'terms'                 => true,
         ]);
     }
 
@@ -130,11 +129,11 @@ class CreateNewUserTest extends TestCase
         $this->expectException(ValidationException::class);
 
         $this->action->create([
-            'name' => 'Test User',
-            'email' => 'existing@example.com',
-            'password' => 'SecureP@ssw0rd#2024!',
+            'name'                  => 'Test User',
+            'email'                 => 'existing@example.com',
+            'password'              => 'SecureP@ssw0rd#2024!',
             'password_confirmation' => 'SecureP@ssw0rd#2024!',
-            'terms' => true,
+            'terms'                 => true,
         ]);
     }
 
@@ -143,7 +142,7 @@ class CreateNewUserTest extends TestCase
         $this->expectException(ValidationException::class);
 
         $this->action->create([
-            'name' => 'Test User',
+            'name'  => 'Test User',
             'email' => 'test@example.com',
             'terms' => true,
         ]);
@@ -156,9 +155,9 @@ class CreateNewUserTest extends TestCase
         $this->expectException(ValidationException::class);
 
         $this->action->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-            'password' => 'SecureP@ssw0rd#2024!',
+            'name'                  => 'Test User',
+            'email'                 => 'test@example.com',
+            'password'              => 'SecureP@ssw0rd#2024!',
             'password_confirmation' => 'SecureP@ssw0rd#2024!',
         ]);
     }
@@ -168,11 +167,11 @@ class CreateNewUserTest extends TestCase
         Jetstream::termsAndPrivacyPolicy();
 
         $input = [
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-            'password' => 'SecureP@ssw0rd#2024!',
+            'name'                  => 'Test User',
+            'email'                 => 'test@example.com',
+            'password'              => 'SecureP@ssw0rd#2024!',
             'password_confirmation' => 'SecureP@ssw0rd#2024!',
-            'terms' => true,
+            'terms'                 => true,
         ];
 
         $user = $this->action->create($input);
@@ -184,11 +183,11 @@ class CreateNewUserTest extends TestCase
     public function test_handles_single_name_correctly(): void
     {
         $input = [
-            'name' => 'Madonna',
-            'email' => 'madonna@example.com',
-            'password' => 'SecureP@ssw0rd#2024!',
+            'name'                  => 'Madonna',
+            'email'                 => 'madonna@example.com',
+            'password'              => 'SecureP@ssw0rd#2024!',
             'password_confirmation' => 'SecureP@ssw0rd#2024!',
-            'terms' => true,
+            'terms'                 => true,
         ];
 
         $user = $this->action->create($input);
@@ -200,11 +199,11 @@ class CreateNewUserTest extends TestCase
     public function test_handles_multi_word_name_correctly(): void
     {
         $input = [
-            'name' => 'Mary Jane Watson Parker',
-            'email' => 'mj@example.com',
-            'password' => 'SecureP@ssw0rd#2024!',
+            'name'                  => 'Mary Jane Watson Parker',
+            'email'                 => 'mj@example.com',
+            'password'              => 'SecureP@ssw0rd#2024!',
             'password_confirmation' => 'SecureP@ssw0rd#2024!',
-            'terms' => true,
+            'terms'                 => true,
         ];
 
         $user = $this->action->create($input);
@@ -216,12 +215,12 @@ class CreateNewUserTest extends TestCase
     public function test_business_user_gets_owner_role_in_team(): void
     {
         $input = [
-            'name' => 'Business Owner',
-            'email' => 'owner@business.com',
-            'password' => 'SecureP@ssw0rd#2024!',
+            'name'                  => 'Business Owner',
+            'email'                 => 'owner@business.com',
+            'password'              => 'SecureP@ssw0rd#2024!',
             'password_confirmation' => 'SecureP@ssw0rd#2024!',
-            'is_business_customer' => true,
-            'terms' => true,
+            'is_business_customer'  => true,
+            'terms'                 => true,
         ];
 
         $user = $this->action->create($input);

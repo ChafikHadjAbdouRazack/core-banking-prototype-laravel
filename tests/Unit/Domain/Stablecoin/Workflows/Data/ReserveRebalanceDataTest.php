@@ -12,7 +12,7 @@ class ReserveRebalanceDataTest extends TestCase
         $targetAllocations = [
             'USDC' => '40',
             'USDT' => '40',
-            'DAI' => '20',
+            'DAI'  => '20',
         ];
 
         $data = new ReserveRebalanceData(
@@ -32,7 +32,7 @@ class ReserveRebalanceDataTest extends TestCase
         $targetAllocations = [
             'USDC' => '50',
             'USDT' => '30',
-            'DAI' => '15',
+            'DAI'  => '15',
             'FRAX' => '5',
         ];
 
@@ -54,7 +54,7 @@ class ReserveRebalanceDataTest extends TestCase
         $targetAllocations = [
             'USDC' => '33.33',
             'USDT' => '33.33',
-            'DAI' => '33.34',
+            'DAI'  => '33.34',
         ];
 
         $data = new ReserveRebalanceData(
@@ -67,10 +67,10 @@ class ReserveRebalanceDataTest extends TestCase
         $array = $data->toArray();
 
         $this->assertEquals([
-            'pool_id' => 'pool-balanced',
+            'pool_id'            => 'pool-balanced',
             'target_allocations' => $targetAllocations,
-            'executed_by' => 'auto-rebalancer',
-            'max_slippage' => 0.01,
+            'executed_by'        => 'auto-rebalancer',
+            'max_slippage'       => 0.01,
         ], $array);
     }
 
@@ -87,13 +87,13 @@ class ReserveRebalanceDataTest extends TestCase
             [
                 'USDC' => '25',
                 'USDT' => '25',
-                'DAI' => '25',
+                'DAI'  => '25',
                 'FRAX' => '25',
             ],
             [
                 'USDC' => '33.33',
                 'USDT' => '33.33',
-                'DAI' => '33.34', // Handles rounding
+                'DAI'  => '33.34', // Handles rounding
             ],
         ];
 
@@ -161,13 +161,13 @@ class ReserveRebalanceDataTest extends TestCase
         $targetAllocations = [
             'USDC' => '20',
             'USDT' => '20',
-            'DAI' => '15',
+            'DAI'  => '15',
             'FRAX' => '10',
             'TUSD' => '10',
             'BUSD' => '10',
             'GUSD' => '5',
             'HUSD' => '5',
-            'PAX' => '5',
+            'PAX'  => '5',
         ];
 
         $data = new ReserveRebalanceData(
@@ -186,7 +186,7 @@ class ReserveRebalanceDataTest extends TestCase
         $targetAllocations = [
             'USDC' => '33.333333',
             'USDT' => '33.333333',
-            'DAI' => '33.333334',
+            'DAI'  => '33.333334',
         ];
 
         $data = new ReserveRebalanceData(
@@ -205,7 +205,7 @@ class ReserveRebalanceDataTest extends TestCase
         $targetAllocations = [
             'USDC' => '60',
             'USDT' => '40',
-            'DAI' => '0', // Being phased out
+            'DAI'  => '0', // Being phased out
         ];
 
         $data = new ReserveRebalanceData(
@@ -227,7 +227,7 @@ class ReserveRebalanceDataTest extends TestCase
 
         // All properties should be readonly
         $reflection = new \ReflectionClass($data);
-        
+
         foreach ($reflection->getProperties() as $property) {
             $this->assertTrue($property->isReadOnly());
         }
@@ -238,7 +238,7 @@ class ReserveRebalanceDataTest extends TestCase
         $targetAllocations = [
             'USDT' => '30',
             'USDC' => '40',
-            'DAI' => '20',
+            'DAI'  => '20',
             'FRAX' => '10',
         ];
 
@@ -258,7 +258,7 @@ class ReserveRebalanceDataTest extends TestCase
         $targetAllocations = [
             'USDC' => '40.00',
             'USDT' => '35.50',
-            'DAI' => '24.50',
+            'DAI'  => '24.50',
         ];
 
         $data = new ReserveRebalanceData(

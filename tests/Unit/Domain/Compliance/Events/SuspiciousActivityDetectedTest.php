@@ -15,23 +15,23 @@ class SuspiciousActivityDetectedTest extends TestCase
     {
         $transaction = Transaction::factory()->create([
             'amount' => 100000,
-            'type' => 'wire_transfer',
+            'type'   => 'wire_transfer',
         ]);
 
         $alerts = [
             [
-                'type' => 'large_transaction',
-                'severity' => 'high',
-                'message' => 'Transaction amount exceeds threshold',
+                'type'      => 'large_transaction',
+                'severity'  => 'high',
+                'message'   => 'Transaction amount exceeds threshold',
                 'threshold' => 50000,
-                'actual' => 100000,
+                'actual'    => 100000,
             ],
             [
-                'type' => 'velocity_check',
+                'type'     => 'velocity_check',
                 'severity' => 'medium',
-                'message' => 'Multiple transactions in short period',
-                'count' => 5,
-                'period' => '1 hour',
+                'message'  => 'Multiple transactions in short period',
+                'count'    => 5,
+                'period'   => '1 hour',
             ],
         ];
 
@@ -48,7 +48,7 @@ class SuspiciousActivityDetectedTest extends TestCase
         $event = new SuspiciousActivityDetected($transaction, []);
 
         $traits = class_uses($event);
-        
+
         $this->assertArrayHasKey('Illuminate\Foundation\Events\Dispatchable', $traits);
         $this->assertArrayHasKey('Illuminate\Broadcasting\InteractsWithSockets', $traits);
         $this->assertArrayHasKey('Illuminate\Queue\SerializesModels', $traits);
@@ -58,7 +58,7 @@ class SuspiciousActivityDetectedTest extends TestCase
     {
         $transaction = Transaction::factory()->create();
         $alerts = [['type' => 'test']];
-        
+
         $event = new SuspiciousActivityDetected($transaction, $alerts);
 
         // Properties are readonly, attempting to modify should cause error
@@ -70,15 +70,15 @@ class SuspiciousActivityDetectedTest extends TestCase
     {
         $transaction = Transaction::factory()->create([
             'reference' => 'SUSP-123',
-            'amount' => 75000,
+            'amount'    => 75000,
         ]);
-        
+
         $alerts = [
             ['type' => 'pattern_match', 'pattern' => 'unusual_destination'],
         ];
 
         $event = new SuspiciousActivityDetected($transaction, $alerts);
-        
+
         // Serialize and unserialize
         $serialized = serialize($event);
         $unserialized = unserialize($serialized);
@@ -91,7 +91,7 @@ class SuspiciousActivityDetectedTest extends TestCase
     public function test_handles_empty_alerts_array(): void
     {
         $transaction = Transaction::factory()->create();
-        
+
         $event = new SuspiciousActivityDetected($transaction, []);
 
         $this->assertEmpty($event->alerts);
@@ -101,15 +101,15 @@ class SuspiciousActivityDetectedTest extends TestCase
     public function test_handles_complex_alert_structures(): void
     {
         $transaction = Transaction::factory()->create();
-        
+
         $complexAlerts = [
             [
-                'type' => 'ml_detection',
-                'model' => 'fraud_detector_v2',
+                'type'       => 'ml_detection',
+                'model'      => 'fraud_detector_v2',
                 'confidence' => 0.89,
-                'features' => [
-                    'amount_zscore' => 3.2,
-                    'time_since_last' => 120,
+                'features'   => [
+                    'amount_zscore'    => 3.2,
+                    'time_since_last'  => 120,
                     'destination_risk' => 'high',
                 ],
                 'metadata' => [
@@ -118,9 +118,9 @@ class SuspiciousActivityDetectedTest extends TestCase
                 ],
             ],
             [
-                'type' => 'rule_based',
+                'type'            => 'rule_based',
                 'rules_triggered' => ['R001', 'R045', 'R102'],
-                'combined_score' => 85,
+                'combined_score'  => 85,
                 'action_required' => 'manual_review',
             ],
         ];
@@ -138,7 +138,7 @@ class SuspiciousActivityDetectedTest extends TestCase
         $alerts = [['type' => 'test_alert']];
 
         $this->expectsEvents(SuspiciousActivityDetected::class);
-        
+
         event(new SuspiciousActivityDetected($transaction, $alerts));
     }
 }

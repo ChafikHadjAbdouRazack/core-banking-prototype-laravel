@@ -51,8 +51,8 @@ class VerifyTransactionHashes extends Command
         $accounts = $this->accountRepository->getAllByCursor();
 
         /**
- * @var \App\Models\Account $account
-*/
+         * @var \App\Models\Account $account
+         */
         foreach ($accounts as $account) {
             $aggregate = TransactionAggregate::retrieve($account->uuid);
 

@@ -31,7 +31,7 @@ class UpdatePositionActivityTest extends TestCase
         $this->assertEquals(1, $method->getNumberOfParameters());
 
         $parameters = $method->getParameters();
-        
+
         $this->assertEquals('positionUuid', $parameters[0]->getName());
         $this->assertEquals('string', $parameters[0]->getType()->getName());
     }
@@ -57,7 +57,7 @@ class UpdatePositionActivityTest extends TestCase
 
         foreach ($scenarios as $scenario) {
             [$collateralValue, $debt, $expectedRatio] = $scenario;
-            
+
             if ($debt > 0) {
                 $calculatedRatio = $collateralValue / $debt;
                 $this->assertEquals($expectedRatio, $calculatedRatio);
@@ -70,7 +70,7 @@ class UpdatePositionActivityTest extends TestCase
     public function test_activity_properties(): void
     {
         $reflection = new \ReflectionClass(UpdatePositionActivity::class);
-        
+
         // Check for important properties inherited from Activity
         $this->assertTrue($reflection->hasProperty('tries'));
         $this->assertTrue($reflection->hasProperty('timeout'));

@@ -118,12 +118,12 @@ class AmlScreeningService
         // In production, this would integrate with a PEP database provider
         // For now, simulate PEP checking
         $results = [
-            'is_pep'       => false,
-            'pep_type'     => null,
-            'position'     => null,
-            'country'      => null,
-            'since_date'   => null,
-            'matches'      => [],
+            'is_pep'        => false,
+            'pep_type'      => null,
+            'position'      => null,
+            'country'       => null,
+            'since_date'    => null,
+            'matches'       => [],
             'total_matches' => 0,
         ];
 

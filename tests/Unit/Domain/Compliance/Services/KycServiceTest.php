@@ -27,7 +27,7 @@ class KycServiceTest extends TestCase
     public function test_submit_kyc_updates_user_status(): void
     {
         $user = User::factory()->create([
-            'kyc_status' => null,
+            'kyc_status'       => null,
             'kyc_submitted_at' => null,
         ]);
 
@@ -69,11 +69,11 @@ class KycServiceTest extends TestCase
         // Check documents were created
         $storedDocs = KycDocument::where('user_uuid', $user->uuid)->get();
         $this->assertCount(2, $storedDocs);
-        
+
         // Check document types
         $this->assertTrue($storedDocs->contains('document_type', 'passport'));
         $this->assertTrue($storedDocs->contains('document_type', 'drivers_license'));
-        
+
         // Check files were stored
         foreach ($storedDocs as $doc) {
             Storage::disk('private')->assertExists($doc->file_path);
@@ -106,7 +106,7 @@ class KycServiceTest extends TestCase
     public function test_verify_kyc_approves_user(): void
     {
         $user = User::factory()->create([
-            'kyc_status' => 'pending',
+            'kyc_status'      => 'pending',
             'kyc_approved_at' => null,
         ]);
 
@@ -147,9 +147,9 @@ class KycServiceTest extends TestCase
     public function test_get_kyc_status_returns_user_status(): void
     {
         $user = User::factory()->create(['kyc_status' => 'approved']);
-        
+
         $status = $this->service->getKycStatus($user);
-        
+
         $this->assertEquals('approved', $status);
     }
 
@@ -167,7 +167,7 @@ class KycServiceTest extends TestCase
     public function test_store_document_creates_hash(): void
     {
         $user = User::factory()->create();
-        
+
         $file = UploadedFile::fake()->image('test.jpg');
         $document = [
             'type' => 'passport',
@@ -178,7 +178,7 @@ class KycServiceTest extends TestCase
         $reflection = new \ReflectionClass($this->service);
         $method = $reflection->getMethod('storeDocument');
         $method->setAccessible(true);
-        
+
         $kycDocument = $method->invoke($this->service, $user, $document);
 
         $this->assertNotNull($kycDocument->file_hash);
@@ -210,7 +210,7 @@ class KycServiceTest extends TestCase
         }
 
         $storedDocs = KycDocument::where('user_uuid', $user->uuid)->pluck('document_type');
-        
+
         foreach ($documentTypes as $type) {
             $this->assertContains($type, $storedDocs);
         }

@@ -13,9 +13,9 @@ class AggregatedPriceTest extends TestCase
         $timestamp = Carbon::now();
         $sources = [
             'chainlink' => '48000.00',
-            'binance' => '48100.00',
+            'binance'   => '48100.00',
         ];
-        
+
         $aggregatedPrice = new AggregatedPrice(
             base: 'BTC',
             quote: 'USD',
@@ -39,16 +39,16 @@ class AggregatedPriceTest extends TestCase
     {
         $timestamp = Carbon::now();
         $sources = [
-            'chainlink' => '3200.00',
-            'binance' => '3195.00',
+            'chainlink'    => '3200.00',
+            'binance'      => '3195.00',
             'internal_amm' => '3198.00',
         ];
         $metadata = [
-            'deviation' => '0.15%',
-            'outliers_removed' => 0,
+            'deviation'           => '0.15%',
+            'outliers_removed'    => 0,
             'calculation_time_ms' => 45,
         ];
-        
+
         $aggregatedPrice = new AggregatedPrice(
             base: 'ETH',
             quote: 'USDT',
@@ -74,7 +74,7 @@ class AggregatedPriceTest extends TestCase
     {
         $timestamp = Carbon::parse('2024-01-01 12:00:00');
         $sources = ['source1' => '100.00', 'source2' => '101.00'];
-        
+
         $aggregatedPrice = new AggregatedPrice(
             base: 'EUR',
             quote: 'USD',
@@ -89,14 +89,14 @@ class AggregatedPriceTest extends TestCase
         $array = $aggregatedPrice->toArray();
 
         $this->assertEquals([
-            'base' => 'EUR',
-            'quote' => 'USD',
-            'price' => '100.50',
-            'sources' => $sources,
+            'base'               => 'EUR',
+            'quote'              => 'USD',
+            'price'              => '100.50',
+            'sources'            => $sources,
             'aggregation_method' => 'mean',
-            'timestamp' => $timestamp->toIso8601String(),
-            'confidence' => 0.99,
-            'metadata' => ['samples' => 100],
+            'timestamp'          => $timestamp->toIso8601String(),
+            'confidence'         => 0.99,
+            'metadata'           => ['samples' => 100],
         ], $array);
     }
 
@@ -155,7 +155,7 @@ class AggregatedPriceTest extends TestCase
             aggregationMethod: 'single',
             timestamp: Carbon::now()
         );
-        
+
         $this->assertEquals(1, $singleSource->getSourceCount());
 
         $multipleSource = new AggregatedPrice(
@@ -163,10 +163,10 @@ class AggregatedPriceTest extends TestCase
             quote: 'USD',
             price: '3200',
             sources: [
-                'chainlink' => '3200',
-                'binance' => '3195',
+                'chainlink'    => '3200',
+                'binance'      => '3195',
                 'internal_amm' => '3198',
-                'kraken' => '3202',
+                'kraken'       => '3202',
             ],
             aggregationMethod: 'median',
             timestamp: Carbon::now()
@@ -192,7 +192,7 @@ class AggregatedPriceTest extends TestCase
     public function test_handles_various_aggregation_methods(): void
     {
         $methods = ['mean', 'median', 'weighted_average', 'vwap', 'twap', 'min', 'max'];
-        
+
         foreach ($methods as $method) {
             $aggregatedPrice = new AggregatedPrice(
                 base: 'BTC',
@@ -267,23 +267,23 @@ class AggregatedPriceTest extends TestCase
     {
         $metadata = [
             'weights' => [
-                'chainlink' => 0.5,
-                'binance' => 0.3,
+                'chainlink'    => 0.5,
+                'binance'      => 0.3,
                 'internal_amm' => 0.2,
             ],
             'deviations' => [
-                'chainlink' => 0.0,
-                'binance' => 0.002,
+                'chainlink'    => 0.0,
+                'binance'      => 0.002,
                 'internal_amm' => -0.001,
             ],
             'timestamps' => [
-                'chainlink' => Carbon::now()->subSeconds(5)->toIso8601String(),
-                'binance' => Carbon::now()->subSeconds(1)->toIso8601String(),
+                'chainlink'    => Carbon::now()->subSeconds(5)->toIso8601String(),
+                'binance'      => Carbon::now()->subSeconds(1)->toIso8601String(),
                 'internal_amm' => Carbon::now()->toIso8601String(),
             ],
             'quality_scores' => [
-                'freshness' => 0.98,
-                'consistency' => 0.95,
+                'freshness'    => 0.98,
+                'consistency'  => 0.95,
                 'availability' => 1.0,
             ],
         ];
@@ -317,7 +317,7 @@ class AggregatedPriceTest extends TestCase
 
         // Properties are readonly, so we can't modify them
         $reflection = new \ReflectionClass($aggregatedPrice);
-        
+
         foreach ($reflection->getProperties() as $property) {
             $this->assertTrue($property->isReadOnly());
         }

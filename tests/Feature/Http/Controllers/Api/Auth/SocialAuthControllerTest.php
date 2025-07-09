@@ -15,12 +15,12 @@ class SocialAuthControllerTest extends TestCase
     public function test_redirect_returns_oauth_url_for_valid_provider(): void
     {
         $expectedUrl = 'https://accounts.google.com/o/oauth2/auth?client_id=test&redirect_uri=test&scope=test&response_type=code';
-        
+
         $provider = \Mockery::mock('Laravel\Socialite\Two\GoogleProvider');
         $provider->shouldReceive('stateless')->once()->andReturnSelf();
         $provider->shouldReceive('redirect')->once()->andReturnSelf();
         $provider->shouldReceive('getTargetUrl')->once()->andReturn($expectedUrl);
-        
+
         Socialite::shouldReceive('driver')
             ->once()
             ->with('google')
@@ -37,15 +37,15 @@ class SocialAuthControllerTest extends TestCase
     public function test_redirect_supports_multiple_providers(): void
     {
         $providers = ['google', 'facebook', 'github'];
-        
+
         foreach ($providers as $provider) {
             $expectedUrl = "https://example.com/oauth/{$provider}";
-            
-            $providerMock = \Mockery::mock("Laravel\\Socialite\\Two\\" . ucfirst($provider) . "Provider");
+
+            $providerMock = \Mockery::mock('Laravel\\Socialite\\Two\\' . ucfirst($provider) . 'Provider');
             $providerMock->shouldReceive('stateless')->once()->andReturnSelf();
             $providerMock->shouldReceive('redirect')->once()->andReturnSelf();
             $providerMock->shouldReceive('getTargetUrl')->once()->andReturn($expectedUrl);
-            
+
             Socialite::shouldReceive('driver')
                 ->once()
                 ->with($provider)
@@ -92,11 +92,11 @@ class SocialAuthControllerTest extends TestCase
         $socialiteUser->shouldReceive('getName')->andReturn('John Doe');
         $socialiteUser->shouldReceive('getEmail')->andReturn('john@example.com');
         $socialiteUser->shouldReceive('getAvatar')->andReturn('https://example.com/avatar.jpg');
-        
+
         $provider = \Mockery::mock('Laravel\Socialite\Two\GoogleProvider');
         $provider->shouldReceive('stateless')->once()->andReturnSelf();
         $provider->shouldReceive('user')->once()->andReturn($socialiteUser);
-        
+
         Socialite::shouldReceive('driver')
             ->once()
             ->with('google')
@@ -122,22 +122,22 @@ class SocialAuthControllerTest extends TestCase
             ])
             ->assertJson([
                 'user' => [
-                    'name' => 'John Doe',
-                    'email' => 'john@example.com',
+                    'name'           => 'John Doe',
+                    'email'          => 'john@example.com',
                     'oauth_provider' => 'google',
-                    'oauth_id' => 'google-123',
-                    'avatar' => 'https://example.com/avatar.jpg',
+                    'oauth_id'       => 'google-123',
+                    'avatar'         => 'https://example.com/avatar.jpg',
                 ],
                 'message' => 'Authenticated successfully',
             ]);
-        
+
         // Verify user was created in database
         $this->assertDatabaseHas('users', [
-            'email' => 'john@example.com',
+            'email'          => 'john@example.com',
             'oauth_provider' => 'google',
-            'oauth_id' => 'google-123',
+            'oauth_id'       => 'google-123',
         ]);
-        
+
         // Verify email is auto-verified
         $user = User::where('email', 'john@example.com')->first();
         $this->assertNotNull($user->email_verified_at);
@@ -146,21 +146,21 @@ class SocialAuthControllerTest extends TestCase
     public function test_callback_authenticates_existing_user(): void
     {
         $existingUser = User::factory()->create([
-            'email' => 'existing@example.com',
+            'email'          => 'existing@example.com',
             'oauth_provider' => 'google',
-            'oauth_id' => 'google-123',
+            'oauth_id'       => 'google-123',
         ]);
-        
+
         $socialiteUser = \Mockery::mock(SocialiteUser::class);
         $socialiteUser->shouldReceive('getId')->andReturn('google-123');
         $socialiteUser->shouldReceive('getName')->andReturn('Existing User');
         $socialiteUser->shouldReceive('getEmail')->andReturn('existing@example.com');
         $socialiteUser->shouldReceive('getAvatar')->andReturn('https://example.com/avatar.jpg');
-        
+
         $provider = \Mockery::mock('Laravel\Socialite\Two\GoogleProvider');
         $provider->shouldReceive('stateless')->once()->andReturnSelf();
         $provider->shouldReceive('user')->once()->andReturn($socialiteUser);
-        
+
         Socialite::shouldReceive('driver')
             ->once()
             ->with('google')
@@ -173,12 +173,12 @@ class SocialAuthControllerTest extends TestCase
         $response->assertStatus(200)
             ->assertJson([
                 'user' => [
-                    'id' => $existingUser->id,
+                    'id'    => $existingUser->id,
                     'email' => 'existing@example.com',
                 ],
                 'message' => 'Authenticated successfully',
             ]);
-        
+
         // Verify no duplicate user was created
         $this->assertEquals(1, User::where('email', 'existing@example.com')->count());
     }
@@ -186,21 +186,21 @@ class SocialAuthControllerTest extends TestCase
     public function test_callback_links_oauth_to_existing_email_user(): void
     {
         $existingUser = User::factory()->create([
-            'email' => 'existing@example.com',
+            'email'          => 'existing@example.com',
             'oauth_provider' => null,
-            'oauth_id' => null,
+            'oauth_id'       => null,
         ]);
-        
+
         $socialiteUser = \Mockery::mock(SocialiteUser::class);
         $socialiteUser->shouldReceive('getId')->andReturn('google-456');
         $socialiteUser->shouldReceive('getName')->andReturn('Existing User');
         $socialiteUser->shouldReceive('getEmail')->andReturn('existing@example.com');
         $socialiteUser->shouldReceive('getAvatar')->andReturn('https://example.com/avatar.jpg');
-        
+
         $provider = \Mockery::mock('Laravel\Socialite\Two\GoogleProvider');
         $provider->shouldReceive('stateless')->once()->andReturnSelf();
         $provider->shouldReceive('user')->once()->andReturn($socialiteUser);
-        
+
         Socialite::shouldReceive('driver')
             ->once()
             ->with('google')
@@ -213,18 +213,18 @@ class SocialAuthControllerTest extends TestCase
         $response->assertStatus(200)
             ->assertJson([
                 'user' => [
-                    'id' => $existingUser->id,
-                    'email' => 'existing@example.com',
+                    'id'             => $existingUser->id,
+                    'email'          => 'existing@example.com',
                     'oauth_provider' => 'google',
-                    'oauth_id' => 'google-456',
+                    'oauth_id'       => 'google-456',
                 ],
             ]);
-        
+
         // Verify OAuth info was updated
         $this->assertDatabaseHas('users', [
-            'id' => $existingUser->id,
+            'id'             => $existingUser->id,
             'oauth_provider' => 'google',
-            'oauth_id' => 'google-456',
+            'oauth_id'       => 'google-456',
         ]);
     }
 
@@ -253,7 +253,7 @@ class SocialAuthControllerTest extends TestCase
         $provider = \Mockery::mock('Laravel\Socialite\Two\GoogleProvider');
         $provider->shouldReceive('stateless')->once()->andReturnSelf();
         $provider->shouldReceive('user')->once()->andThrow(new \Exception('OAuth failed'));
-        
+
         Socialite::shouldReceive('driver')
             ->once()
             ->with('google')
@@ -272,11 +272,11 @@ class SocialAuthControllerTest extends TestCase
     public function test_callback_includes_error_details_in_debug_mode(): void
     {
         config(['app.debug' => true]);
-        
+
         $provider = \Mockery::mock('Laravel\Socialite\Two\GoogleProvider');
         $provider->shouldReceive('stateless')->once()->andReturnSelf();
         $provider->shouldReceive('user')->once()->andThrow(new \Exception('Detailed error message'));
-        
+
         Socialite::shouldReceive('driver')
             ->once()
             ->with('google')
@@ -289,18 +289,18 @@ class SocialAuthControllerTest extends TestCase
         $response->assertStatus(400)
             ->assertJson([
                 'message' => 'Authentication failed',
-                'error' => 'Detailed error message',
+                'error'   => 'Detailed error message',
             ]);
     }
 
     public function test_callback_hides_error_details_in_production(): void
     {
         config(['app.debug' => false]);
-        
+
         $provider = \Mockery::mock('Laravel\Socialite\Two\GoogleProvider');
         $provider->shouldReceive('stateless')->once()->andReturnSelf();
         $provider->shouldReceive('user')->once()->andThrow(new \Exception('Sensitive error'));
-        
+
         Socialite::shouldReceive('driver')
             ->once()
             ->with('google')
@@ -313,7 +313,7 @@ class SocialAuthControllerTest extends TestCase
         $response->assertStatus(400)
             ->assertJson([
                 'message' => 'Authentication failed',
-                'error' => null,
+                'error'   => null,
             ]);
     }
 
@@ -324,11 +324,11 @@ class SocialAuthControllerTest extends TestCase
         $socialiteUser->shouldReceive('getName')->andReturn('John Doe');
         $socialiteUser->shouldReceive('getEmail')->andReturn('john@example.com');
         $socialiteUser->shouldReceive('getAvatar')->andReturn('https://example.com/avatar.jpg');
-        
+
         $provider = \Mockery::mock('Laravel\Socialite\Two\GoogleProvider');
         $provider->shouldReceive('stateless')->once()->andReturnSelf();
         $provider->shouldReceive('user')->once()->andReturn($socialiteUser);
-        
+
         Socialite::shouldReceive('driver')
             ->once()
             ->with('google')
@@ -339,15 +339,15 @@ class SocialAuthControllerTest extends TestCase
         ]);
 
         $response->assertStatus(200);
-        
+
         $token = $response->json('token');
         $this->assertNotEmpty($token);
-        
+
         // Verify token was created in database
         $user = User::where('email', 'john@example.com')->first();
         $this->assertDatabaseHas('personal_access_tokens', [
             'tokenable_id' => $user->id,
-            'name' => 'api-token',
+            'name'         => 'api-token',
         ]);
     }
 
@@ -358,11 +358,11 @@ class SocialAuthControllerTest extends TestCase
         $socialiteUser->shouldReceive('getName')->andReturn('John Doe');
         $socialiteUser->shouldReceive('getEmail')->andReturn('john@example.com');
         $socialiteUser->shouldReceive('getAvatar')->andReturn('https://example.com/avatar.jpg');
-        
+
         $provider = \Mockery::mock('Laravel\Socialite\Two\GoogleProvider');
         $provider->shouldReceive('stateless')->once()->andReturnSelf();
         $provider->shouldReceive('user')->once()->andReturn($socialiteUser);
-        
+
         Socialite::shouldReceive('driver')
             ->once()
             ->with('google')
@@ -373,9 +373,9 @@ class SocialAuthControllerTest extends TestCase
         ]);
 
         $response->assertStatus(200);
-        
+
         $user = User::where('email', 'john@example.com')->first();
-        
+
         // Password should be set (not null) and be a valid hash
         $this->assertNotNull($user->password);
         $this->assertTrue(strlen($user->password) > 50); // Bcrypt hashes are typically 60 chars

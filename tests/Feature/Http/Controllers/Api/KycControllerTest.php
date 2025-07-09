@@ -15,20 +15,21 @@ class KycControllerTest extends TestCase
     use RefreshDatabase;
 
     protected User $user;
+
     protected KycService $kycService;
 
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->user = User::factory()->create([
             'kyc_status' => 'not_started',
-            'kyc_level' => 'basic',
+            'kyc_level'  => 'basic',
         ]);
-        
+
         $this->kycService = \Mockery::mock(KycService::class);
         $this->app->instance(KycService::class, $this->kycService);
-        
+
         Storage::fake('private');
     }
 
@@ -49,8 +50,8 @@ class KycControllerTest extends TestCase
                 'documents',
             ])
             ->assertJson([
-                'status' => 'not_started',
-                'level' => 'basic',
+                'status'    => 'not_started',
+                'level'     => 'basic',
                 'needs_kyc' => true,
                 'documents' => [],
             ]);
@@ -66,20 +67,20 @@ class KycControllerTest extends TestCase
     public function test_requirements_returns_kyc_requirements_for_level(): void
     {
         Sanctum::actingAs($this->user);
-        
+
         $this->kycService->shouldReceive('getRequirements')
             ->with('enhanced')
             ->once()
             ->andReturn([
                 [
                     'document_type' => 'passport',
-                    'description' => 'Valid passport copy',
-                    'required' => true,
+                    'description'   => 'Valid passport copy',
+                    'required'      => true,
                 ],
                 [
                     'document_type' => 'utility_bill',
-                    'description' => 'Recent utility bill (within 3 months)',
-                    'required' => true,
+                    'description'   => 'Recent utility bill (within 3 months)',
+                    'required'      => true,
                 ],
             ]);
 
@@ -105,7 +106,7 @@ class KycControllerTest extends TestCase
     public function test_requirements_validates_level_parameter(): void
     {
         Sanctum::actingAs($this->user);
-        
+
         $response = $this->getJson('/api/compliance/kyc/requirements?level=invalid');
 
         $response->assertStatus(422)
@@ -115,7 +116,7 @@ class KycControllerTest extends TestCase
     public function test_requirements_requires_level_parameter(): void
     {
         Sanctum::actingAs($this->user);
-        
+
         $response = $this->getJson('/api/compliance/kyc/requirements');
 
         $response->assertStatus(422)
@@ -149,7 +150,7 @@ class KycControllerTest extends TestCase
         $response->assertStatus(200)
             ->assertJson([
                 'message' => 'KYC documents submitted successfully',
-                'status' => 'pending',
+                'status'  => 'pending',
             ]);
     }
 
@@ -158,7 +159,7 @@ class KycControllerTest extends TestCase
         $approvedUser = User::factory()->create([
             'kyc_status' => 'approved',
         ]);
-        
+
         Sanctum::actingAs($approvedUser);
 
         $file = UploadedFile::fake()->image('passport.jpg');
@@ -276,7 +277,7 @@ class KycControllerTest extends TestCase
 
         $response = $this->postJson('/api/compliance/kyc/documents', [
             'document' => $file,
-            'type' => 'passport',
+            'type'     => 'passport',
         ]);
 
         $response->assertStatus(200)
@@ -312,7 +313,7 @@ class KycControllerTest extends TestCase
 
         $response = $this->postJson('/api/compliance/kyc/documents', [
             'document' => $file,
-            'type' => 'invalid_type',
+            'type'     => 'invalid_type',
         ]);
 
         $response->assertStatus(422)
@@ -345,9 +346,9 @@ class KycControllerTest extends TestCase
     public function test_requirements_accepts_all_valid_levels(): void
     {
         Sanctum::actingAs($this->user);
-        
+
         $levels = ['basic', 'enhanced', 'full'];
-        
+
         foreach ($levels as $level) {
             $this->kycService->shouldReceive('getRequirements')
                 ->with($level)
@@ -358,7 +359,7 @@ class KycControllerTest extends TestCase
 
             $response->assertStatus(200)
                 ->assertJson([
-                    'level' => $level,
+                    'level'        => $level,
                     'requirements' => [],
                 ]);
         }

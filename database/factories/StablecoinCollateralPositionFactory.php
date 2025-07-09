@@ -26,20 +26,20 @@ class StablecoinCollateralPositionFactory extends Factory
     public function definition(): array
     {
         return [
-            'uuid' => $this->faker->unique()->uuid(),
-            'account_uuid' => 'acc-' . Str::random(10),
-            'stablecoin_code' => 'USDS',
-            'collateral_asset_code' => $this->faker->randomElement(['ETH', 'BTC', 'WBTC', 'USDC']),
-            'collateral_amount' => $this->faker->numberBetween(1000000, 1000000000000000000),
-            'debt_amount' => $this->faker->numberBetween(100000000, 10000000000),
-            'collateral_ratio' => $this->faker->randomFloat(4, 1.2, 3.0),
-            'liquidation_price' => $this->faker->randomFloat(8, 100, 50000),
-            'interest_accrued' => 0,
-            'status' => 'active',
-            'last_interaction_at' => now(),
-            'liquidated_at' => null,
+            'uuid'                     => $this->faker->unique()->uuid(),
+            'account_uuid'             => 'acc-' . Str::random(10),
+            'stablecoin_code'          => 'USDS',
+            'collateral_asset_code'    => $this->faker->randomElement(['ETH', 'BTC', 'WBTC', 'USDC']),
+            'collateral_amount'        => $this->faker->numberBetween(1000000, 1000000000000000000),
+            'debt_amount'              => $this->faker->numberBetween(100000000, 10000000000),
+            'collateral_ratio'         => $this->faker->randomFloat(4, 1.2, 3.0),
+            'liquidation_price'        => $this->faker->randomFloat(8, 100, 50000),
+            'interest_accrued'         => 0,
+            'status'                   => 'active',
+            'last_interaction_at'      => now(),
+            'liquidated_at'            => null,
             'auto_liquidation_enabled' => $this->faker->boolean(70),
-            'stop_loss_ratio' => $this->faker->optional(0.3)->randomFloat(4, 1.1, 1.5),
+            'stop_loss_ratio'          => $this->faker->optional(0.3)->randomFloat(4, 1.1, 1.5),
         ];
     }
 
@@ -49,7 +49,7 @@ class StablecoinCollateralPositionFactory extends Factory
     public function liquidated(): static
     {
         return $this->state(fn (array $attributes) => [
-            'status' => 'liquidated',
+            'status'        => 'liquidated',
             'liquidated_at' => now(),
         ]);
     }

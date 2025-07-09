@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\Http\Middleware;
 
-use App\Http\Middleware\EnsureSubProductEnabled;
 use App\Services\SubProductService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Route;
@@ -18,24 +17,24 @@ class EnsureSubProductEnabledTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Create mock SubProductService
         $this->subProductService = Mockery::mock(SubProductService::class);
         $this->app->instance(SubProductService::class, $this->subProductService);
-        
+
         // Set up test routes
         Route::middleware(['sub_product:stablecoins'])->get('/test-stablecoins', function () {
             return response()->json(['message' => 'stablecoins endpoint']);
         });
-        
+
         Route::middleware(['sub_product:exchange'])->get('/test-exchange', function () {
             return response()->json(['message' => 'exchange endpoint']);
         });
-        
+
         Route::middleware(['sub_product:lending:p2p'])->get('/test-lending-p2p', function () {
             return response()->json(['message' => 'p2p lending endpoint']);
         });
-        
+
         Route::middleware(['sub_product:lending:p2p|institutional'])->get('/test-lending-any', function () {
             return response()->json(['message' => 'any lending endpoint']);
         });
@@ -65,7 +64,7 @@ class EnsureSubProductEnabledTest extends TestCase
 
         $response->assertStatus(403)
             ->assertJson([
-                'error' => 'Feature not available',
+                'error'   => 'Feature not available',
                 'message' => 'The exchange sub-product is not enabled',
             ]);
     }
@@ -94,7 +93,7 @@ class EnsureSubProductEnabledTest extends TestCase
 
         $response->assertStatus(403)
             ->assertJson([
-                'error' => 'Feature not available',
+                'error'   => 'Feature not available',
                 'message' => 'The feature p2p is not enabled for sub-product lending',
             ]);
     }
@@ -105,7 +104,7 @@ class EnsureSubProductEnabledTest extends TestCase
             ->with('lending', 'p2p')
             ->once()
             ->andReturn(false);
-            
+
         $this->subProductService->shouldReceive('isFeatureEnabled')
             ->with('lending', 'institutional')
             ->once()
@@ -123,7 +122,7 @@ class EnsureSubProductEnabledTest extends TestCase
             ->with('lending', 'p2p')
             ->once()
             ->andReturn(false);
-            
+
         $this->subProductService->shouldReceive('isFeatureEnabled')
             ->with('lending', 'institutional')
             ->once()
@@ -133,7 +132,7 @@ class EnsureSubProductEnabledTest extends TestCase
 
         $response->assertStatus(403)
             ->assertJson([
-                'error' => 'Feature not available',
+                'error'   => 'Feature not available',
                 'message' => 'None of the required features [p2p, institutional] are enabled for sub-product lending',
             ]);
     }
@@ -148,7 +147,7 @@ class EnsureSubProductEnabledTest extends TestCase
 
         $response->assertStatus(500)
             ->assertJson([
-                'error' => 'Configuration error',
+                'error'   => 'Configuration error',
                 'message' => 'Sub-product parameter is required',
             ]);
     }
@@ -168,7 +167,7 @@ class EnsureSubProductEnabledTest extends TestCase
 
         $response->assertStatus(403)
             ->assertJson([
-                'error' => 'Feature not available',
+                'error'   => 'Feature not available',
                 'message' => 'The non_existent sub-product is not enabled',
             ]);
     }
@@ -197,7 +196,7 @@ class EnsureSubProductEnabledTest extends TestCase
             ->with('stablecoins')
             ->once()
             ->andReturn(true);
-            
+
         $this->subProductService->shouldReceive('isEnabled')
             ->with('exchange')
             ->once()
@@ -220,7 +219,7 @@ class EnsureSubProductEnabledTest extends TestCase
             ->with('stablecoins')
             ->once()
             ->andReturn(true);
-            
+
         $this->subProductService->shouldReceive('isEnabled')
             ->with('exchange')
             ->once()
@@ -230,7 +229,7 @@ class EnsureSubProductEnabledTest extends TestCase
 
         $response->assertStatus(403)
             ->assertJson([
-                'error' => 'Feature not available',
+                'error'   => 'Feature not available',
                 'message' => 'The exchange sub-product is not enabled',
             ]);
     }

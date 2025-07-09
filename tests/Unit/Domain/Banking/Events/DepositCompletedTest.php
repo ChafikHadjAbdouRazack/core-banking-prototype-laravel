@@ -14,7 +14,7 @@ class DepositCompletedTest extends TestCase
     public function test_creates_event_with_transaction(): void
     {
         $transaction = Transaction::factory()->create([
-            'type' => 'deposit',
+            'type'   => 'deposit',
             'amount' => 10000,
             'status' => 'completed',
         ]);
@@ -34,7 +34,7 @@ class DepositCompletedTest extends TestCase
 
         // Check that the event uses the required traits
         $traits = class_uses($event);
-        
+
         $this->assertArrayHasKey('Illuminate\Foundation\Events\Dispatchable', $traits);
         $this->assertArrayHasKey('Illuminate\Broadcasting\InteractsWithSockets', $traits);
         $this->assertArrayHasKey('Illuminate\Queue\SerializesModels', $traits);
@@ -44,12 +44,12 @@ class DepositCompletedTest extends TestCase
     {
         $transaction = Transaction::factory()->create([
             'reference' => 'DEP-123456',
-            'amount' => 25000,
-            'currency' => 'USD',
+            'amount'    => 25000,
+            'currency'  => 'USD',
         ]);
 
         $event = new DepositCompleted($transaction);
-        
+
         // Serialize and unserialize to test SerializesModels trait
         $serialized = serialize($event);
         $unserialized = unserialize($serialized);
@@ -63,20 +63,20 @@ class DepositCompletedTest extends TestCase
     public function test_event_can_be_dispatched(): void
     {
         $transaction = Transaction::factory()->create();
-        
+
         // Test that event can be dispatched (uses Dispatchable trait)
         $this->expectsEvents(DepositCompleted::class);
-        
+
         event(new DepositCompleted($transaction));
     }
 
     public function test_handles_transaction_with_metadata(): void
     {
         $transaction = Transaction::factory()->create([
-            'type' => 'deposit',
-            'amount' => 50000,
+            'type'     => 'deposit',
+            'amount'   => 50000,
             'metadata' => [
-                'source' => 'bank_transfer',
+                'source'         => 'bank_transfer',
                 'bank_reference' => 'BANK-REF-789',
                 'depositor_name' => 'John Doe',
             ],
@@ -92,15 +92,15 @@ class DepositCompletedTest extends TestCase
     public function test_handles_different_transaction_statuses(): void
     {
         $statuses = ['completed', 'processing', 'confirmed'];
-        
+
         foreach ($statuses as $status) {
             $transaction = Transaction::factory()->create([
-                'type' => 'deposit',
+                'type'   => 'deposit',
                 'status' => $status,
             ]);
 
             $event = new DepositCompleted($transaction);
-            
+
             $this->assertEquals($status, $event->transaction->status);
         }
     }
@@ -111,7 +111,7 @@ class DepositCompletedTest extends TestCase
             ->hasAccountFrom(1)
             ->hasAccountTo(1)
             ->create([
-                'type' => 'deposit',
+                'type'   => 'deposit',
                 'amount' => 100000,
             ]);
 
@@ -119,7 +119,7 @@ class DepositCompletedTest extends TestCase
 
         // Load relationships
         $event->transaction->load(['accountFrom', 'accountTo']);
-        
+
         $this->assertNotNull($event->transaction->accountFrom);
         $this->assertNotNull($event->transaction->accountTo);
     }

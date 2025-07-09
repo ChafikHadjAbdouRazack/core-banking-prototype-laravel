@@ -10,24 +10,26 @@ use App\Models\Transaction;
 use App\Models\TransactionMonitoringRule;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Log;
-use Tests\TestCase;
 use Mockery;
+use Tests\TestCase;
 
 class TransactionMonitoringServiceTest extends TestCase
 {
     use RefreshDatabase;
 
     private TransactionMonitoringService $service;
+
     private SuspiciousActivityReportService $sarService;
+
     private CustomerRiskService $riskService;
 
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->sarService = Mockery::mock(SuspiciousActivityReportService::class);
         $this->riskService = Mockery::mock(CustomerRiskService::class);
-        
+
         $this->service = new TransactionMonitoringService(
             $this->sarService,
             $this->riskService
@@ -38,13 +40,13 @@ class TransactionMonitoringServiceTest extends TestCase
     {
         $transaction = Transaction::factory()->create([
             'amount' => 1000,
-            'type' => 'transfer',
+            'type'   => 'transfer',
         ]);
 
         // Mock risk profile
         $riskProfile = new CustomerRiskProfile();
         $riskProfile->risk_level = 'low';
-        
+
         $this->mockGetCustomerRiskProfile($transaction, $riskProfile);
         $this->mockGetApplicableRules($transaction, $riskProfile, collect());
 
@@ -70,7 +72,7 @@ class TransactionMonitoringServiceTest extends TestCase
         $rule->shouldReceive('recordTrigger')->once();
         $rule->name = 'Large Transaction Rule';
         $rule->id = 1;
-        
+
         $this->mockGetCustomerRiskProfile($transaction, $riskProfile);
         $this->mockGetApplicableRules($transaction, $riskProfile, collect([$rule]));
         $this->mockEvaluateRule($rule, $transaction, $riskProfile, true);
@@ -96,7 +98,7 @@ class TransactionMonitoringServiceTest extends TestCase
         $rule->shouldReceive('recordTrigger')->once();
         $rule->name = 'High Risk Block Rule';
         $rule->id = 2;
-        
+
         $this->mockGetCustomerRiskProfile($transaction, $riskProfile);
         $this->mockGetApplicableRules($transaction, $riskProfile, collect([$rule]));
         $this->mockEvaluateRule($rule, $transaction, $riskProfile, true);
@@ -119,7 +121,7 @@ class TransactionMonitoringServiceTest extends TestCase
 
         $this->mockGetCustomerRiskProfile($transaction, $riskProfile);
         $this->mockGetApplicableRules($transaction, $riskProfile, collect([$rule1, $rule2, $rule3]));
-        
+
         // Only first two rules trigger
         $this->mockEvaluateRule($rule1, $transaction, $riskProfile, true);
         $this->mockEvaluateRule($rule2, $transaction, $riskProfile, true);
@@ -157,7 +159,7 @@ class TransactionMonitoringServiceTest extends TestCase
         $riskProfile = new CustomerRiskProfile();
 
         $rule = $this->createMockRule(1, 'Suspicious Pattern', [TransactionMonitoringRule::ACTION_REVIEW]);
-        
+
         $this->mockGetCustomerRiskProfile($transaction, $riskProfile);
         $this->mockGetApplicableRules($transaction, $riskProfile, collect([$rule]));
         $this->mockEvaluateRule($rule, $transaction, $riskProfile, true);
@@ -166,7 +168,7 @@ class TransactionMonitoringServiceTest extends TestCase
         $this->service = Mockery::mock(TransactionMonitoringService::class)
             ->makePartial()
             ->shouldAllowMockingProtectedMethods();
-            
+
         $this->service->shouldReceive('getCustomerRiskProfile')->andReturn($riskProfile);
         $this->service->shouldReceive('getApplicableRules')->andReturn(collect([$rule]));
         $this->service->shouldReceive('evaluateRule')->andReturn(true);
@@ -207,7 +209,7 @@ class TransactionMonitoringServiceTest extends TestCase
         $this->service = Mockery::mock(TransactionMonitoringService::class)
             ->makePartial()
             ->shouldAllowMockingProtectedMethods();
-            
+
         $this->service->shouldReceive('getCustomerRiskProfile')
             ->with($transaction)
             ->andReturn($riskProfile);
@@ -225,12 +227,12 @@ class TransactionMonitoringServiceTest extends TestCase
         $this->service->shouldReceive('evaluateRule')
             ->with($rule, $transaction, $riskProfile)
             ->andReturn($result);
-            
+
         if ($result) {
             $this->service->shouldReceive('createAlert')
                 ->with($rule, $transaction)
                 ->andReturn(['rule_id' => $rule->id, 'rule_name' => $rule->name]);
-                
+
             $this->service->shouldReceive('processActions')->once();
             $this->service->shouldReceive('updateBehavioralRisk')->once();
         }
@@ -243,7 +245,7 @@ class TransactionMonitoringServiceTest extends TestCase
         $rule->name = $name;
         $rule->shouldReceive('getActions')->andReturn($actions);
         $rule->shouldReceive('recordTrigger')->once();
-        
+
         return $rule;
     }
 

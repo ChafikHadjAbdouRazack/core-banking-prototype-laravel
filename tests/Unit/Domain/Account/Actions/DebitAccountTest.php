@@ -8,20 +8,21 @@ use App\Domain\Account\Repositories\AccountRepository;
 use App\Models\Account;
 use App\Models\AccountBalance;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 use Mockery;
+use Tests\TestCase;
 
 class DebitAccountTest extends TestCase
 {
     use RefreshDatabase;
 
     private DebitAccount $action;
+
     private AccountRepository $accountRepository;
 
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->accountRepository = Mockery::mock(AccountRepository::class);
         $this->action = new DebitAccount($this->accountRepository);
     }
@@ -37,8 +38,8 @@ class DebitAccountTest extends TestCase
         // Create existing balance
         AccountBalance::create([
             'account_uuid' => 'account-123',
-            'asset_code' => 'USD',
-            'balance' => 5000, // $50.00
+            'asset_code'   => 'USD',
+            'balance'      => 5000, // $50.00
         ]);
 
         // Mock repository
@@ -57,11 +58,11 @@ class DebitAccountTest extends TestCase
 
         // Assert
         $this->assertInstanceOf(Account::class, $result);
-        
+
         $updatedBalance = AccountBalance::where('account_uuid', 'account-123')
             ->where('asset_code', 'USD')
             ->first();
-        
+
         $this->assertEquals(3000, $updatedBalance->balance); // $30.00
     }
 
@@ -103,8 +104,8 @@ class DebitAccountTest extends TestCase
         // Create existing balance
         AccountBalance::create([
             'account_uuid' => 'account-789',
-            'asset_code' => 'USD',
-            'balance' => 1000, // $10.00
+            'asset_code'   => 'USD',
+            'balance'      => 1000, // $10.00
         ]);
 
         // Mock repository
@@ -137,8 +138,8 @@ class DebitAccountTest extends TestCase
         // Create existing balance
         AccountBalance::create([
             'account_uuid' => 'exact-balance-account',
-            'asset_code' => 'BTC',
-            'balance' => 100000000, // 1 BTC
+            'asset_code'   => 'BTC',
+            'balance'      => 100000000, // 1 BTC
         ]);
 
         // Mock repository
@@ -159,7 +160,7 @@ class DebitAccountTest extends TestCase
         $updatedBalance = AccountBalance::where('account_uuid', 'exact-balance-account')
             ->where('asset_code', 'BTC')
             ->first();
-        
+
         $this->assertEquals(0, $updatedBalance->balance);
     }
 
@@ -174,8 +175,8 @@ class DebitAccountTest extends TestCase
         // Create existing balance
         AccountBalance::create([
             'account_uuid' => 'multi-debit-account',
-            'asset_code' => 'EUR',
-            'balance' => 10000, // €100.00
+            'asset_code'   => 'EUR',
+            'balance'      => 10000, // €100.00
         ]);
 
         // Mock repository
@@ -203,7 +204,7 @@ class DebitAccountTest extends TestCase
         $balance = AccountBalance::where('account_uuid', 'multi-debit-account')
             ->where('asset_code', 'EUR')
             ->first();
-        
+
         $this->assertEquals(5000, $balance->balance); // €50.00 remaining
     }
 

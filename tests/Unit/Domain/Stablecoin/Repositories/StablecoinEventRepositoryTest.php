@@ -4,7 +4,6 @@ namespace Tests\Unit\Domain\Stablecoin\Repositories;
 
 use App\Domain\Stablecoin\Repositories\StablecoinEventRepository;
 use App\Models\StablecoinEvent;
-use Spatie\EventSourcing\AggregateRoots\Exceptions\InvalidEloquentStoredEventModel;
 use Spatie\EventSourcing\StoredEvents\Repositories\EloquentStoredEventRepository;
 use Tests\TestCase;
 
@@ -31,10 +30,10 @@ class StablecoinEventRepositoryTest extends TestCase
     {
         $reflection = new \ReflectionClass(StablecoinEventRepository::class);
         $constructor = $reflection->getConstructor();
-        
+
         $this->assertNotNull($constructor);
         $this->assertEquals(1, $constructor->getNumberOfParameters());
-        
+
         $parameter = $constructor->getParameters()[0];
         $this->assertEquals('storedEventModel', $parameter->getName());
         $this->assertEquals('string', $parameter->getType()->getName());
@@ -46,7 +45,7 @@ class StablecoinEventRepositoryTest extends TestCase
     {
         $reflection = new \ReflectionClass(StablecoinEventRepository::class);
         $property = $reflection->getProperty('storedEventModel');
-        
+
         $this->assertTrue($property->isProtected());
         $this->assertEquals('string', $property->getType()->getName());
     }
@@ -54,11 +53,11 @@ class StablecoinEventRepositoryTest extends TestCase
     public function test_uses_stablecoin_event_model(): void
     {
         $reflection = new \ReflectionClass(StablecoinEventRepository::class);
-        
+
         // Check that the class imports StablecoinEvent
         $fileName = $reflection->getFileName();
         $fileContent = file_get_contents($fileName);
-        
+
         $this->assertStringContainsString('use App\Models\StablecoinEvent;', $fileContent);
         $this->assertStringContainsString('= StablecoinEvent::class', $fileContent);
     }
@@ -68,12 +67,12 @@ class StablecoinEventRepositoryTest extends TestCase
         // Test that constructor validates the model extends EloquentStoredEvent
         $reflection = new \ReflectionClass(StablecoinEventRepository::class);
         $constructor = $reflection->getConstructor();
-        
+
         $fileName = $reflection->getFileName();
         $startLine = $constructor->getStartLine();
         $endLine = $constructor->getEndLine();
         $source = implode('', array_slice(file($fileName), $startLine - 1, $endLine - $startLine + 1));
-        
+
         $this->assertStringContainsString('instanceof EloquentStoredEvent', $source);
         $this->assertStringContainsString('throw new InvalidEloquentStoredEventModel', $source);
     }
@@ -82,12 +81,12 @@ class StablecoinEventRepositoryTest extends TestCase
     {
         $reflection = new \ReflectionClass(StablecoinEventRepository::class);
         $constructor = $reflection->getConstructor();
-        
+
         $fileName = $reflection->getFileName();
         $startLine = $constructor->getStartLine();
         $endLine = $constructor->getEndLine();
         $source = implode('', array_slice(file($fileName), $startLine - 1, $endLine - $startLine + 1));
-        
+
         // Check exception message format
         $this->assertStringContainsString('"The class {$this->storedEventModel} must extend EloquentStoredEvent"', $source);
     }
@@ -96,10 +95,10 @@ class StablecoinEventRepositoryTest extends TestCase
     {
         $reflection = new \ReflectionClass(StablecoinEventRepository::class);
         $constructor = $reflection->getConstructor();
-        
+
         $docComment = $constructor->getDocComment();
         $this->assertNotFalse($docComment);
-        
+
         // Check PHPDoc annotations
         $this->assertStringContainsString('@param string $storedEventModel', $docComment);
         $this->assertStringContainsString('@throws InvalidEloquentStoredEventModel', $docComment);
@@ -108,20 +107,20 @@ class StablecoinEventRepositoryTest extends TestCase
     public function test_imports_correct_exceptions(): void
     {
         $reflection = new \ReflectionClass(StablecoinEventRepository::class);
-        
+
         $fileName = $reflection->getFileName();
         $fileContent = file_get_contents($fileName);
-        
+
         $this->assertStringContainsString('use Spatie\EventSourcing\AggregateRoots\Exceptions\InvalidEloquentStoredEventModel;', $fileContent);
     }
 
     public function test_imports_correct_base_classes(): void
     {
         $reflection = new \ReflectionClass(StablecoinEventRepository::class);
-        
+
         $fileName = $reflection->getFileName();
         $fileContent = file_get_contents($fileName);
-        
+
         $this->assertStringContainsString('use Spatie\EventSourcing\StoredEvents\Models\EloquentStoredEvent;', $fileContent);
         $this->assertStringContainsString('use Spatie\EventSourcing\StoredEvents\Repositories\EloquentStoredEventRepository;', $fileContent);
     }
@@ -135,7 +134,7 @@ class StablecoinEventRepositoryTest extends TestCase
     public function test_class_structure(): void
     {
         $repository = new StablecoinEventRepository();
-        
+
         // Test that it inherits all necessary methods from parent
         $this->assertTrue(method_exists($repository, 'find'));
         $this->assertTrue(method_exists($repository, 'persist'));
@@ -146,7 +145,7 @@ class StablecoinEventRepositoryTest extends TestCase
     public function test_instantiation_with_default_model(): void
     {
         $repository = new StablecoinEventRepository();
-        
+
         // Repository should instantiate without errors when using default model
         $this->assertInstanceOf(StablecoinEventRepository::class, $repository);
     }
@@ -154,10 +153,10 @@ class StablecoinEventRepositoryTest extends TestCase
     public function test_uses_strict_types(): void
     {
         $reflection = new \ReflectionClass(StablecoinEventRepository::class);
-        
+
         $fileName = $reflection->getFileName();
         $fileContent = file_get_contents($fileName);
-        
+
         // Check for strict types declaration
         $this->assertStringContainsString('declare(strict_types=1);', $fileContent);
     }

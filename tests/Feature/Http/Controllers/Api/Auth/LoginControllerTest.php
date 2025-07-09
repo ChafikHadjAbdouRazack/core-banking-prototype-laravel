@@ -17,9 +17,9 @@ class LoginControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->user = User::factory()->create([
-            'email' => 'test@example.com',
+            'email'    => 'test@example.com',
             'password' => Hash::make('password'),
         ]);
     }
@@ -27,7 +27,7 @@ class LoginControllerTest extends TestCase
     public function test_login_with_valid_credentials(): void
     {
         $response = $this->postJson('/api/auth/login', [
-            'email' => 'test@example.com',
+            'email'    => 'test@example.com',
             'password' => 'password',
         ]);
 
@@ -58,24 +58,24 @@ class LoginControllerTest extends TestCase
     public function test_login_with_device_name(): void
     {
         $response = $this->postJson('/api/auth/login', [
-            'email' => 'test@example.com',
-            'password' => 'password',
+            'email'       => 'test@example.com',
+            'password'    => 'password',
             'device_name' => 'iPhone 14',
         ]);
 
         $response->assertStatus(200);
-        
+
         // Verify token was created with device name
         $this->assertDatabaseHas('personal_access_tokens', [
             'tokenable_id' => $this->user->id,
-            'name' => 'iPhone 14',
+            'name'         => 'iPhone 14',
         ]);
     }
 
     public function test_login_fails_with_invalid_email(): void
     {
         $response = $this->postJson('/api/auth/login', [
-            'email' => 'wrong@example.com',
+            'email'    => 'wrong@example.com',
             'password' => 'password',
         ]);
 
@@ -87,7 +87,7 @@ class LoginControllerTest extends TestCase
     public function test_login_fails_with_invalid_password(): void
     {
         $response = $this->postJson('/api/auth/login', [
-            'email' => 'test@example.com',
+            'email'    => 'test@example.com',
             'password' => 'wrongpassword',
         ]);
 
@@ -108,7 +108,7 @@ class LoginControllerTest extends TestCase
             ->assertJsonValidationErrors(['email', 'password']);
 
         $response = $this->postJson('/api/auth/login', [
-            'email' => 'not-an-email',
+            'email'    => 'not-an-email',
             'password' => 'password',
         ]);
 
@@ -121,17 +121,17 @@ class LoginControllerTest extends TestCase
         // Create some existing tokens
         $this->user->createToken('old-token-1');
         $this->user->createToken('old-token-2');
-        
+
         $this->assertEquals(2, $this->user->tokens()->count());
 
         $response = $this->postJson('/api/auth/login', [
-            'email' => 'test@example.com',
-            'password' => 'password',
+            'email'         => 'test@example.com',
+            'password'      => 'password',
             'revoke_tokens' => true,
         ]);
 
         $response->assertStatus(200);
-        
+
         // Should have only 1 token (the new one)
         $this->assertEquals(1, $this->user->fresh()->tokens()->count());
     }
@@ -139,28 +139,28 @@ class LoginControllerTest extends TestCase
     public function test_login_enforces_concurrent_session_limit(): void
     {
         config(['auth.max_concurrent_sessions' => 3]);
-        
+
         // Create 3 existing tokens
         $this->user->createToken('token-1');
         $this->user->createToken('token-2');
         $this->user->createToken('token-3');
-        
+
         $this->assertEquals(3, $this->user->tokens()->count());
 
         $response = $this->postJson('/api/auth/login', [
-            'email' => 'test@example.com',
+            'email'    => 'test@example.com',
             'password' => 'password',
         ]);
 
         $response->assertStatus(200);
-        
+
         // Should still have 3 tokens (oldest was deleted, new one created)
         $this->assertEquals(3, $this->user->fresh()->tokens()->count());
-        
+
         // Verify oldest token was deleted
         $this->assertDatabaseMissing('personal_access_tokens', [
             'tokenable_id' => $this->user->id,
-            'name' => 'token-1',
+            'name'         => 'token-1',
         ]);
     }
 
@@ -189,7 +189,7 @@ class LoginControllerTest extends TestCase
         $this->user->createToken('token-1');
         $this->user->createToken('token-2');
         $this->user->createToken('token-3');
-        
+
         $this->assertEquals(3, $this->user->tokens()->count());
 
         Sanctum::actingAs($this->user);
@@ -262,7 +262,7 @@ class LoginControllerTest extends TestCase
             ])
             ->assertJson([
                 'user' => [
-                    'id' => $this->user->id,
+                    'id'    => $this->user->id,
                     'email' => $this->user->email,
                 ],
             ]);
@@ -281,7 +281,7 @@ class LoginControllerTest extends TestCase
         $this->withSession(['key' => 'value']);
 
         $response = $this->postJson('/api/auth/login', [
-            'email' => 'test@example.com',
+            'email'    => 'test@example.com',
             'password' => 'password',
         ]);
 
@@ -295,7 +295,7 @@ class LoginControllerTest extends TestCase
         config(['sanctum.expiration' => 60]); // 60 minutes
 
         $response = $this->postJson('/api/auth/login', [
-            'email' => 'test@example.com',
+            'email'    => 'test@example.com',
             'password' => 'password',
         ]);
 
@@ -310,7 +310,7 @@ class LoginControllerTest extends TestCase
         config(['sanctum.expiration' => null]);
 
         $response = $this->postJson('/api/auth/login', [
-            'email' => 'test@example.com',
+            'email'    => 'test@example.com',
             'password' => 'password',
         ]);
 

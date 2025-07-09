@@ -16,21 +16,22 @@ class EmailVerificationControllerTest extends TestCase
     use RefreshDatabase;
 
     protected User $unverifiedUser;
+
     protected User $verifiedUser;
 
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Disable rate limiting for tests
         $this->withoutMiddleware(\Illuminate\Routing\Middleware\ThrottleRequests::class);
-        
+
         $this->unverifiedUser = User::factory()->unverified()->create([
             'email' => 'unverified@example.com',
         ]);
-        
+
         $this->verifiedUser = User::factory()->create([
-            'email' => 'verified@example.com',
+            'email'             => 'verified@example.com',
             'email_verified_at' => now(),
         ]);
     }
@@ -38,26 +39,26 @@ class EmailVerificationControllerTest extends TestCase
     public function test_verify_email_with_valid_link(): void
     {
         Event::fake();
-        
+
         $verificationUrl = URL::temporarySignedRoute(
             'api.verification.verify',
             Carbon::now()->addMinutes(60),
             [
-                'id' => $this->unverifiedUser->id,
+                'id'   => $this->unverifiedUser->id,
                 'hash' => sha1($this->unverifiedUser->email),
             ]
         );
-        
+
         $response = $this->getJson($verificationUrl);
 
         $response->assertStatus(200)
             ->assertJson([
                 'message' => 'Email verified successfully.',
             ]);
-        
+
         // Check that email was verified
         $this->assertNotNull($this->unverifiedUser->fresh()->email_verified_at);
-        
+
         // Check that Verified event was dispatched
         Event::assertDispatched(Verified::class, function ($event) {
             return $event->user->id === $this->unverifiedUser->id;
@@ -70,18 +71,18 @@ class EmailVerificationControllerTest extends TestCase
             'api.verification.verify',
             Carbon::now()->addMinutes(60),
             [
-                'id' => $this->unverifiedUser->id,
+                'id'   => $this->unverifiedUser->id,
                 'hash' => 'invalid-hash',
             ]
         );
-        
+
         $response = $this->getJson($verificationUrl);
 
         $response->assertStatus(403)
             ->assertJson([
                 'message' => 'Invalid verification link.',
             ]);
-        
+
         // Check that email was not verified
         $this->assertNull($this->unverifiedUser->fresh()->email_verified_at);
     }
@@ -92,18 +93,18 @@ class EmailVerificationControllerTest extends TestCase
             'api.verification.verify',
             Carbon::now()->subMinutes(1), // Expired
             [
-                'id' => $this->unverifiedUser->id,
+                'id'   => $this->unverifiedUser->id,
                 'hash' => sha1($this->unverifiedUser->email),
             ]
         );
-        
+
         $response = $this->getJson($verificationUrl);
 
         $response->assertStatus(403);
         // The exact message may vary based on middleware
         $this->assertContains($response->json('message'), [
             'Invalid or expired verification link.',
-            'Invalid signature.'
+            'Invalid signature.',
         ]);
     }
 
@@ -121,30 +122,30 @@ class EmailVerificationControllerTest extends TestCase
         // The exact message may vary based on middleware
         $this->assertContains($response->json('message'), [
             'Invalid or expired verification link.',
-            'Invalid signature.'
+            'Invalid signature.',
         ]);
     }
 
     public function test_verify_email_when_already_verified(): void
     {
         Event::fake();
-        
+
         $verificationUrl = URL::temporarySignedRoute(
             'api.verification.verify',
             Carbon::now()->addMinutes(60),
             [
-                'id' => $this->verifiedUser->id,
+                'id'   => $this->verifiedUser->id,
                 'hash' => sha1($this->verifiedUser->email),
             ]
         );
-        
+
         $response = $this->getJson($verificationUrl);
 
         $response->assertStatus(200)
             ->assertJson([
                 'message' => 'Email already verified.',
             ]);
-        
+
         // Check that Verified event was NOT dispatched
         Event::assertNotDispatched(Verified::class);
     }
@@ -152,16 +153,16 @@ class EmailVerificationControllerTest extends TestCase
     public function test_verify_email_with_nonexistent_user(): void
     {
         $nonExistentId = 999999;
-        
+
         $verificationUrl = URL::temporarySignedRoute(
             'api.verification.verify',
             Carbon::now()->addMinutes(60),
             [
-                'id' => $nonExistentId,
+                'id'   => $nonExistentId,
                 'hash' => sha1('some@email.com'),
             ]
         );
-        
+
         $response = $this->getJson($verificationUrl);
 
         $response->assertStatus(404);
@@ -170,7 +171,7 @@ class EmailVerificationControllerTest extends TestCase
     public function test_resend_verification_email_for_unverified_user(): void
     {
         Sanctum::actingAs($this->unverifiedUser);
-        
+
         $response = $this->postJson('/api/auth/resend-verification');
 
         $response->assertStatus(200)
@@ -182,7 +183,7 @@ class EmailVerificationControllerTest extends TestCase
     public function test_resend_verification_email_for_verified_user(): void
     {
         Sanctum::actingAs($this->verifiedUser);
-        
+
         $response = $this->postJson('/api/auth/resend-verification');
 
         $response->assertStatus(400)
@@ -201,28 +202,28 @@ class EmailVerificationControllerTest extends TestCase
     public function test_verify_email_updates_verified_at_timestamp(): void
     {
         Event::fake();
-        
+
         $this->assertNull($this->unverifiedUser->email_verified_at);
-        
+
         Carbon::setTestNow(Carbon::create(2023, 10, 15, 12, 0, 0));
-        
+
         $verificationUrl = URL::temporarySignedRoute(
             'api.verification.verify',
             Carbon::now()->addMinutes(60),
             [
-                'id' => $this->unverifiedUser->id,
+                'id'   => $this->unverifiedUser->id,
                 'hash' => sha1($this->unverifiedUser->email),
             ]
         );
-        
+
         $response = $this->getJson($verificationUrl);
 
         $response->assertStatus(200);
-        
+
         $user = $this->unverifiedUser->fresh();
         $this->assertNotNull($user->email_verified_at);
         $this->assertEquals('2023-10-15 12:00:00', $user->email_verified_at->format('Y-m-d H:i:s'));
-        
+
         Carbon::setTestNow();
     }
 
@@ -237,7 +238,7 @@ class EmailVerificationControllerTest extends TestCase
         ));
 
         $response->assertStatus(403);
-        
+
         // Missing expires
         $response = $this->getJson(sprintf(
             '/api/auth/verify-email/%d/%s?signature=%s',
@@ -252,15 +253,15 @@ class EmailVerificationControllerTest extends TestCase
     public function test_resend_verification_triggers_notification(): void
     {
         Sanctum::actingAs($this->unverifiedUser);
-        
+
         $mock = \Mockery::mock($this->unverifiedUser)->makePartial();
         $mock->shouldReceive('sendEmailVerificationNotification')->once();
-        
+
         $this->app->instance(User::class, $mock);
-        
+
         // Need to bind the mock user to the request
         $this->actingAs($mock, 'sanctum');
-        
+
         $response = $this->postJson('/api/auth/resend-verification');
 
         $response->assertStatus(200);

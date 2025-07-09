@@ -23,24 +23,24 @@ class CollateralLockedTest extends TestCase
     {
         $reflection = new \ReflectionClass(CollateralLocked::class);
         $constructor = $reflection->getConstructor();
-        
+
         $this->assertNotNull($constructor);
         $this->assertEquals(5, $constructor->getNumberOfParameters());
-        
+
         $parameters = $constructor->getParameters();
-        
+
         $this->assertEquals('position_uuid', $parameters[0]->getName());
         $this->assertEquals('string', $parameters[0]->getType()->getName());
-        
+
         $this->assertEquals('account_uuid', $parameters[1]->getName());
         $this->assertEquals('string', $parameters[1]->getType()->getName());
-        
+
         $this->assertEquals('collateral_asset_code', $parameters[2]->getName());
         $this->assertEquals('string', $parameters[2]->getType()->getName());
-        
+
         $this->assertEquals('amount', $parameters[3]->getName());
         $this->assertEquals('int', $parameters[3]->getType()->getName());
-        
+
         $this->assertEquals('metadata', $parameters[4]->getName());
         $this->assertEquals('array', $parameters[4]->getType()->getName());
         $this->assertTrue($parameters[4]->isDefaultValueAvailable());
@@ -50,15 +50,15 @@ class CollateralLockedTest extends TestCase
     public function test_event_properties_are_public_readonly(): void
     {
         $reflection = new \ReflectionClass(CollateralLocked::class);
-        
+
         $properties = [
             'position_uuid',
             'account_uuid',
             'collateral_asset_code',
             'amount',
-            'metadata'
+            'metadata',
         ];
-        
+
         foreach ($properties as $propertyName) {
             $property = $reflection->getProperty($propertyName);
             $this->assertTrue($property->isPublic());
@@ -72,14 +72,14 @@ class CollateralLockedTest extends TestCase
         $accountUuid = 'acc-456';
         $assetCode = 'ETH';
         $amount = 1000000;
-        
+
         $event = new CollateralLocked(
             position_uuid: $positionUuid,
             account_uuid: $accountUuid,
             collateral_asset_code: $assetCode,
             amount: $amount
         );
-        
+
         $this->assertEquals($positionUuid, $event->position_uuid);
         $this->assertEquals($accountUuid, $event->account_uuid);
         $this->assertEquals($assetCode, $event->collateral_asset_code);
@@ -95,10 +95,10 @@ class CollateralLockedTest extends TestCase
         $amount = 1000000;
         $metadata = [
             'transaction_hash' => '0x123abc',
-            'block_number' => 18500000,
-            'timestamp' => '2024-01-01T00:00:00Z'
+            'block_number'     => 18500000,
+            'timestamp'        => '2024-01-01T00:00:00Z',
         ];
-        
+
         $event = new CollateralLocked(
             position_uuid: $positionUuid,
             account_uuid: $accountUuid,
@@ -106,7 +106,7 @@ class CollateralLockedTest extends TestCase
             amount: $amount,
             metadata: $metadata
         );
-        
+
         $this->assertEquals($positionUuid, $event->position_uuid);
         $this->assertEquals($accountUuid, $event->account_uuid);
         $this->assertEquals($assetCode, $event->collateral_asset_code);
@@ -122,14 +122,14 @@ class CollateralLockedTest extends TestCase
             collateral_asset_code: 'ETH',
             amount: 1000000
         );
-        
+
         // Test that properties cannot be modified (readonly)
         $reflection = new \ReflectionClass($event);
         $property = $reflection->getProperty('position_uuid');
-        
+
         $this->expectException(\Error::class);
         $this->expectExceptionMessage('Cannot modify readonly property');
-        
+
         $property->setValue($event, 'new-pos-123');
     }
 
@@ -140,7 +140,7 @@ class CollateralLockedTest extends TestCase
         $assetCode = 'ETH';
         $amount = 1000000;
         $metadata = ['key' => 'value'];
-        
+
         $event = new CollateralLocked(
             position_uuid: $positionUuid,
             account_uuid: $accountUuid,
@@ -148,11 +148,11 @@ class CollateralLockedTest extends TestCase
             amount: $amount,
             metadata: $metadata
         );
-        
+
         // Test that event can be serialized (important for event sourcing)
         $serialized = serialize($event);
         $unserialized = unserialize($serialized);
-        
+
         $this->assertEquals($positionUuid, $unserialized->position_uuid);
         $this->assertEquals($accountUuid, $unserialized->account_uuid);
         $this->assertEquals($assetCode, $unserialized->collateral_asset_code);
@@ -168,7 +168,7 @@ class CollateralLockedTest extends TestCase
             collateral_asset_code: 'BTC',
             amount: PHP_INT_MAX
         );
-        
+
         $this->assertEquals(PHP_INT_MAX, $event->amount);
     }
 
@@ -177,15 +177,15 @@ class CollateralLockedTest extends TestCase
         $metadata = [
             'nested' => [
                 'data' => [
-                    'key' => 'value'
-                ]
+                    'key' => 'value',
+                ],
             ],
-            'array' => [1, 2, 3],
+            'array'   => [1, 2, 3],
             'boolean' => true,
-            'null' => null,
-            'number' => 123.45
+            'null'    => null,
+            'number'  => 123.45,
         ];
-        
+
         $event = new CollateralLocked(
             position_uuid: 'pos-123',
             account_uuid: 'acc-456',
@@ -193,7 +193,7 @@ class CollateralLockedTest extends TestCase
             amount: 100000,
             metadata: $metadata
         );
-        
+
         $this->assertEquals($metadata, $event->metadata);
     }
 
@@ -201,14 +201,14 @@ class CollateralLockedTest extends TestCase
     {
         $positionUuid = 'b1f5c2e8-1234-5678-9abc-def012345678';
         $accountUuid = 'a2e6d3f9-8765-4321-fedc-ba0987654321';
-        
+
         $event = new CollateralLocked(
             position_uuid: $positionUuid,
             account_uuid: $accountUuid,
             collateral_asset_code: 'ETH',
             amount: 500000
         );
-        
+
         $this->assertEquals($positionUuid, $event->position_uuid);
         $this->assertEquals($accountUuid, $event->account_uuid);
     }
@@ -216,7 +216,7 @@ class CollateralLockedTest extends TestCase
     public function test_event_stores_various_asset_codes(): void
     {
         $assetCodes = ['BTC', 'ETH', 'USDC', 'USDT', 'EUR', 'USD', 'CUSTOM-TOKEN'];
-        
+
         foreach ($assetCodes as $assetCode) {
             $event = new CollateralLocked(
                 position_uuid: 'pos-123',
@@ -224,7 +224,7 @@ class CollateralLockedTest extends TestCase
                 collateral_asset_code: $assetCode,
                 amount: 1000
             );
-            
+
             $this->assertEquals($assetCode, $event->collateral_asset_code);
         }
     }
@@ -237,7 +237,7 @@ class CollateralLockedTest extends TestCase
             collateral_asset_code: 'ETH',
             amount: 0
         );
-        
+
         $this->assertEquals(0, $event->amount);
     }
 
@@ -250,7 +250,7 @@ class CollateralLockedTest extends TestCase
             collateral_asset_code: 'ETH',
             amount: -1000
         );
-        
+
         $this->assertEquals(-1000, $event->amount);
     }
 }

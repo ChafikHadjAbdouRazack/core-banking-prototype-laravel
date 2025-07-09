@@ -14,6 +14,7 @@ use Tests\TestCase;
 class CreateAccountForNewUserTest extends TestCase
 {
     private AccountService $accountService;
+
     private CreateAccountForNewUser $listener;
 
     protected function setUp(): void
@@ -27,8 +28,8 @@ class CreateAccountForNewUserTest extends TestCase
     public function test_creates_account_for_new_user(): void
     {
         $user = new User([
-            'uuid' => 'user-123',
-            'name' => 'John Doe',
+            'uuid'  => 'user-123',
+            'name'  => 'John Doe',
             'email' => 'john@example.com',
         ]);
 
@@ -45,7 +46,7 @@ class CreateAccountForNewUserTest extends TestCase
         Log::shouldReceive('info')
             ->once()
             ->with('Created default account for new user', [
-                'user_uuid' => 'user-123',
+                'user_uuid'  => 'user-123',
                 'user_email' => 'john@example.com',
             ]);
 
@@ -55,8 +56,8 @@ class CreateAccountForNewUserTest extends TestCase
     public function test_logs_error_when_account_creation_fails(): void
     {
         $user = new User([
-            'uuid' => 'user-456',
-            'name' => 'Jane Doe',
+            'uuid'  => 'user-456',
+            'name'  => 'Jane Doe',
             'email' => 'jane@example.com',
         ]);
 
@@ -82,8 +83,8 @@ class CreateAccountForNewUserTest extends TestCase
     public function test_does_not_throw_exception_on_failure(): void
     {
         $user = new User([
-            'uuid' => 'user-789',
-            'name' => 'Error User',
+            'uuid'  => 'user-789',
+            'name'  => 'Error User',
             'email' => 'error@example.com',
         ]);
 

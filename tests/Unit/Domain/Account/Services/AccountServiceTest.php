@@ -11,31 +11,34 @@ use App\Domain\Account\Workflows\CreateAccountWorkflow;
 use App\Domain\Account\Workflows\DepositAccountWorkflow;
 use App\Domain\Account\Workflows\DestroyAccountWorkflow;
 use App\Domain\Account\Workflows\WithdrawAccountWorkflow;
+use Mockery;
 use Tests\TestCase;
 use Workflow\WorkflowStub;
-use Mockery;
 
 class AccountServiceTest extends TestCase
 {
     private AccountService $service;
+
     private LedgerAggregate $ledger;
+
     private TransactionAggregate $transaction;
+
     private TransferAggregate $transfer;
 
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->ledger = Mockery::mock(LedgerAggregate::class);
         $this->transaction = Mockery::mock(TransactionAggregate::class);
         $this->transfer = Mockery::mock(TransferAggregate::class);
-        
+
         $this->service = new AccountService(
             $this->ledger,
             $this->transaction,
             $this->transfer
         );
-        
+
         WorkflowStub::fake();
     }
 
@@ -53,7 +56,7 @@ class AccountServiceTest extends TestCase
             ->with(Mockery::on(function ($arg) use ($account) {
                 return $arg instanceof Account && $arg->name === $account->name;
             }));
-        
+
         WorkflowStub::shouldReceive('make')
             ->with(CreateAccountWorkflow::class)
             ->andReturn($workflowMock);
@@ -64,16 +67,16 @@ class AccountServiceTest extends TestCase
     public function test_create_account_with_array(): void
     {
         $accountData = [
-            'name' => 'Array Account',
-            'type' => 'business',
-            'metadata' => ['company' => 'Test Corp']
+            'name'     => 'Array Account',
+            'type'     => 'business',
+            'metadata' => ['company' => 'Test Corp'],
         ];
 
         $workflowMock = Mockery::mock(WorkflowStub::class);
         $workflowMock->shouldReceive('start')
             ->once()
             ->with(Mockery::type(Account::class));
-        
+
         WorkflowStub::shouldReceive('make')
             ->with(CreateAccountWorkflow::class)
             ->andReturn($workflowMock);
@@ -91,7 +94,7 @@ class AccountServiceTest extends TestCase
             ->with(Mockery::on(function ($arg) use ($uuid) {
                 return $arg->toString() === $uuid;
             }));
-        
+
         WorkflowStub::shouldReceive('make')
             ->with(DestroyAccountWorkflow::class)
             ->andReturn($workflowMock);
@@ -108,10 +111,10 @@ class AccountServiceTest extends TestCase
         $workflowMock->shouldReceive('start')
             ->once()
             ->with(
-                Mockery::on(fn($arg) => $arg->toString() === $uuid),
-                Mockery::on(fn($arg) => $arg->getAmount() === $amount)
+                Mockery::on(fn ($arg) => $arg->toString() === $uuid),
+                Mockery::on(fn ($arg) => $arg->getAmount() === $amount)
             );
-        
+
         WorkflowStub::shouldReceive('make')
             ->with(DepositAccountWorkflow::class)
             ->andReturn($workflowMock);
@@ -128,10 +131,10 @@ class AccountServiceTest extends TestCase
         $workflowMock->shouldReceive('start')
             ->once()
             ->with(
-                Mockery::on(fn($arg) => $arg->toString() === $uuid),
-                Mockery::on(fn($arg) => $arg->getAmount() === $amount)
+                Mockery::on(fn ($arg) => $arg->toString() === $uuid),
+                Mockery::on(fn ($arg) => $arg->getAmount() === $amount)
             );
-        
+
         WorkflowStub::shouldReceive('make')
             ->with(WithdrawAccountWorkflow::class)
             ->andReturn($workflowMock);
@@ -144,19 +147,19 @@ class AccountServiceTest extends TestCase
         $uuid = 'money-array-account';
         $moneyArray = [
             'currency' => 'EUR',
-            'amount' => 2500 // €25.00
+            'amount'   => 2500, // €25.00
         ];
 
         $workflowMock = Mockery::mock(WorkflowStub::class);
         $workflowMock->shouldReceive('start')
             ->once()
             ->with(
-                Mockery::on(fn($arg) => $arg->toString() === $uuid),
+                Mockery::on(fn ($arg) => $arg->toString() === $uuid),
                 Mockery::on(function ($money) {
                     return $money->getCurrency() === 'EUR' && $money->getAmount() === 2500;
                 })
             );
-        
+
         WorkflowStub::shouldReceive('make')
             ->with(DepositAccountWorkflow::class)
             ->andReturn($workflowMock);
@@ -167,26 +170,26 @@ class AccountServiceTest extends TestCase
     public function test_withdraw_with_different_amount_formats(): void
     {
         $uuid = 'multi-format-account';
-        
+
         // Test with integer
         $workflowMock = Mockery::mock(WorkflowStub::class);
         $workflowMock->shouldReceive('start')->once();
-        
+
         WorkflowStub::shouldReceive('make')
             ->with(WithdrawAccountWorkflow::class)
             ->andReturn($workflowMock);
 
         $this->service->withdraw($uuid, 1000);
-        
+
         // Test with money object format
         $moneyObject = [
             'currency' => 'GBP',
-            'amount' => 7500
+            'amount'   => 7500,
         ];
-        
+
         $workflowMock2 = Mockery::mock(WorkflowStub::class);
         $workflowMock2->shouldReceive('start')->once();
-        
+
         WorkflowStub::shouldReceive('make')
             ->with(WithdrawAccountWorkflow::class)
             ->andReturn($workflowMock2);
@@ -198,15 +201,15 @@ class AccountServiceTest extends TestCase
     {
         // Test that aggregates are properly stored
         $reflection = new \ReflectionClass($this->service);
-        
+
         $ledgerProperty = $reflection->getProperty('ledger');
         $ledgerProperty->setAccessible(true);
         $this->assertSame($this->ledger, $ledgerProperty->getValue($this->service));
-        
+
         $transactionProperty = $reflection->getProperty('transaction');
         $transactionProperty->setAccessible(true);
         $this->assertSame($this->transaction, $transactionProperty->getValue($this->service));
-        
+
         $transferProperty = $reflection->getProperty('transfer');
         $transferProperty->setAccessible(true);
         $this->assertSame($this->transfer, $transferProperty->getValue($this->service));

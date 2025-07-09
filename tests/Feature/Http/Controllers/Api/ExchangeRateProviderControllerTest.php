@@ -16,7 +16,7 @@ class ExchangeRateProviderControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->user = User::factory()->create();
     }
 
@@ -145,7 +145,7 @@ class ExchangeRateProviderControllerTest extends TestCase
     {
         $response = $this->postJson('/api/v1/exchange-providers/validate', [
             'from' => 'EUR',
-            'to' => 'USD',
+            'to'   => 'USD',
             'rate' => 1.08,
         ]);
 
@@ -159,7 +159,7 @@ class ExchangeRateProviderControllerTest extends TestCase
     {
         $response = $this->postJson('/api/v1/exchange-providers/validate', [
             'from' => 'EUR',
-            'to' => 'USD',
+            'to'   => 'USD',
             'rate' => 'invalid',
         ]);
 

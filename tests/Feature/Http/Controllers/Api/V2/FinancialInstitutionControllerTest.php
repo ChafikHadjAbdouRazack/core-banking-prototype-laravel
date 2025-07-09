@@ -19,7 +19,7 @@ class FinancialInstitutionControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->user = User::factory()->create();
         Storage::fake('applications');
     }
@@ -72,7 +72,7 @@ class FinancialInstitutionControllerTest extends TestCase
 
         $this->assertDatabaseHas('financial_institution_applications', [
             'institution_name' => $applicationData['institution_details']['institution_name'],
-            'status' => 'pending_review',
+            'status'           => 'pending_review',
         ]);
     }
 
@@ -105,7 +105,7 @@ class FinancialInstitutionControllerTest extends TestCase
 
         $application = FinancialInstitutionApplication::factory()->create([
             'user_uuid' => $this->user->uuid,
-            'status' => 'pending_review',
+            'status'    => 'pending_review',
         ]);
 
         $response = $this->getJson("/api/v2/financial-institutions/applications/{$application->uuid}");
@@ -126,7 +126,7 @@ class FinancialInstitutionControllerTest extends TestCase
             ->assertJson([
                 'data' => [
                     'application_id' => $application->uuid,
-                    'status' => 'pending_review',
+                    'status'         => 'pending_review',
                 ],
             ]);
     }
@@ -166,8 +166,8 @@ class FinancialInstitutionControllerTest extends TestCase
 
         $response = $this->postJson("/api/v2/financial-institutions/applications/{$application->uuid}/documents", [
             'document_type' => 'regulatory_license',
-            'document' => $file,
-            'description' => 'Banking license from regulatory authority',
+            'document'      => $file,
+            'description'   => 'Banking license from regulatory authority',
         ]);
 
         $response->assertStatus(201)
@@ -182,7 +182,7 @@ class FinancialInstitutionControllerTest extends TestCase
             ])
             ->assertJson([
                 'data' => [
-                    'type' => 'regulatory_license',
+                    'type'   => 'regulatory_license',
                     'status' => 'pending_verification',
                 ],
             ]);
@@ -202,7 +202,7 @@ class FinancialInstitutionControllerTest extends TestCase
 
         $response = $this->postJson("/api/v2/financial-institutions/applications/{$application->uuid}/documents", [
             'document_type' => 'regulatory_license',
-            'document' => $file,
+            'document'      => $file,
         ]);
 
         $response->assertStatus(422)
@@ -215,7 +215,7 @@ class FinancialInstitutionControllerTest extends TestCase
 
         $application = FinancialInstitutionApplication::factory()->create([
             'user_uuid' => $this->user->uuid,
-            'status' => 'pending_review',
+            'status'    => 'pending_review',
         ]);
 
         $response = $this->postJson("/api/v2/financial-institutions/applications/{$application->uuid}/withdraw", [
@@ -226,13 +226,13 @@ class FinancialInstitutionControllerTest extends TestCase
             ->assertJson([
                 'data' => [
                     'application_id' => $application->uuid,
-                    'status' => 'withdrawn',
-                    'message' => 'Application withdrawn successfully',
+                    'status'         => 'withdrawn',
+                    'message'        => 'Application withdrawn successfully',
                 ],
             ]);
 
         $this->assertDatabaseHas('financial_institution_applications', [
-            'uuid' => $application->uuid,
+            'uuid'   => $application->uuid,
             'status' => 'withdrawn',
         ]);
     }
@@ -243,7 +243,7 @@ class FinancialInstitutionControllerTest extends TestCase
 
         $application = FinancialInstitutionApplication::factory()->create([
             'user_uuid' => $this->user->uuid,
-            'status' => 'approved',
+            'status'    => 'approved',
         ]);
 
         $response = $this->postJson("/api/v2/financial-institutions/applications/{$application->uuid}/withdraw", [
@@ -260,44 +260,44 @@ class FinancialInstitutionControllerTest extends TestCase
     {
         return [
             'institution_details' => [
-                'institution_name' => 'Test Bank Ltd',
-                'legal_name' => 'Test Bank Limited',
-                'registration_number' => '12345678',
-                'tax_id' => 'TB123456',
-                'country' => 'GB',
-                'institution_type' => 'bank',
-                'assets_under_management' => 1000000000,
-                'years_in_operation' => 10,
-                'primary_regulator' => 'FCA',
+                'institution_name'          => 'Test Bank Ltd',
+                'legal_name'                => 'Test Bank Limited',
+                'registration_number'       => '12345678',
+                'tax_id'                    => 'TB123456',
+                'country'                   => 'GB',
+                'institution_type'          => 'bank',
+                'assets_under_management'   => 1000000000,
+                'years_in_operation'        => 10,
+                'primary_regulator'         => 'FCA',
                 'regulatory_license_number' => 'FCA123456',
             ],
             'contact_information' => [
-                'contact_name' => 'John Doe',
-                'contact_email' => 'john@testbank.com',
-                'contact_phone' => '+441234567890',
-                'contact_title' => 'Chief Compliance Officer',
-                'headquarters_address' => '123 Bank Street, London',
-                'headquarters_city' => 'London',
+                'contact_name'             => 'John Doe',
+                'contact_email'            => 'john@testbank.com',
+                'contact_phone'            => '+441234567890',
+                'contact_title'            => 'Chief Compliance Officer',
+                'headquarters_address'     => '123 Bank Street, London',
+                'headquarters_city'        => 'London',
                 'headquarters_postal_code' => 'EC1A 1AA',
-                'headquarters_country' => 'GB',
+                'headquarters_country'     => 'GB',
             ],
             'regulatory_compliance' => [
-                'has_banking_license' => true,
-                'license_jurisdictions' => ['GB', 'EU'],
-                'aml_program_in_place' => true,
+                'has_banking_license'       => true,
+                'license_jurisdictions'     => ['GB', 'EU'],
+                'aml_program_in_place'      => true,
                 'kyc_procedures_documented' => true,
                 'data_protection_compliant' => true,
-                'fatf_compliant' => true,
+                'fatf_compliant'            => true,
             ],
             'banking_relationships' => [
                 'primary_correspondent_bank' => 'HSBC',
-                'swift_code' => 'TESTGB2L',
-                'settlement_currencies' => ['EUR', 'USD', 'GBP'],
+                'swift_code'                 => 'TESTGB2L',
+                'settlement_currencies'      => ['EUR', 'USD', 'GBP'],
             ],
             'technical_capabilities' => [
                 'api_integration_experience' => true,
-                'supported_protocols' => ['REST', 'WebSocket'],
-                'security_certifications' => ['ISO27001', 'SOC2'],
+                'supported_protocols'        => ['REST', 'WebSocket'],
+                'security_certifications'    => ['ISO27001', 'SOC2'],
             ],
         ];
     }

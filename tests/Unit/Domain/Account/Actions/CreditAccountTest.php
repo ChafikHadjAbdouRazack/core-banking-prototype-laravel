@@ -8,20 +8,21 @@ use App\Domain\Account\Repositories\AccountRepository;
 use App\Models\Account;
 use App\Models\AccountBalance;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 use Mockery;
+use Tests\TestCase;
 
 class CreditAccountTest extends TestCase
 {
     use RefreshDatabase;
 
     private CreditAccount $action;
+
     private AccountRepository $accountRepository;
 
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->accountRepository = Mockery::mock(AccountRepository::class);
         $this->action = new CreditAccount($this->accountRepository);
     }
@@ -37,8 +38,8 @@ class CreditAccountTest extends TestCase
         // Create existing balance
         $balance = AccountBalance::create([
             'account_uuid' => 'account-123',
-            'asset_code' => 'USD',
-            'balance' => 1000, // $10.00
+            'asset_code'   => 'USD',
+            'balance'      => 1000, // $10.00
         ]);
 
         // Mock repository
@@ -57,11 +58,11 @@ class CreditAccountTest extends TestCase
 
         // Assert
         $this->assertInstanceOf(Account::class, $result);
-        
+
         $updatedBalance = AccountBalance::where('account_uuid', 'account-123')
             ->where('asset_code', 'USD')
             ->first();
-        
+
         $this->assertEquals(1500, $updatedBalance->balance); // $15.00
     }
 
@@ -89,11 +90,11 @@ class CreditAccountTest extends TestCase
 
         // Assert
         $this->assertInstanceOf(Account::class, $result);
-        
+
         $balance = AccountBalance::where('account_uuid', 'account-456')
             ->where('asset_code', 'EUR')
             ->first();
-        
+
         $this->assertNotNull($balance);
         $this->assertEquals(2500, $balance->balance); // €25.00
     }
@@ -131,7 +132,7 @@ class CreditAccountTest extends TestCase
         $balance = AccountBalance::where('account_uuid', 'account-789')
             ->where('asset_code', 'BTC')
             ->first();
-        
+
         $this->assertEquals(150000, $balance->balance); // 0.0015 BTC
     }
 
@@ -171,7 +172,7 @@ class CreditAccountTest extends TestCase
         $eurBalance = AccountBalance::where('account_uuid', 'multi-asset-account')
             ->where('asset_code', 'EUR')
             ->first();
-        
+
         $this->assertEquals(10000, $usdBalance->balance);
         $this->assertEquals(5000, $eurBalance->balance);
     }

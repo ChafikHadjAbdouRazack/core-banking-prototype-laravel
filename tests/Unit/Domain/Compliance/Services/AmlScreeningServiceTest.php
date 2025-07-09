@@ -32,7 +32,7 @@ class AmlScreeningServiceTest extends TestCase
         ]);
 
         $user = User::factory()->create([
-            'name' => 'John Doe',
+            'name'  => 'John Doe',
             'email' => 'john@example.com',
         ]);
 
@@ -64,8 +64,8 @@ class AmlScreeningServiceTest extends TestCase
     {
         Http::fake([
             'api.ofac.treasury.gov/*' => Http::response(['results' => []], 200),
-            'webgate.ec.europa.eu/*' => Http::response(['results' => []], 200),
-            'api.un.org/*' => Http::response(['results' => []], 200),
+            'webgate.ec.europa.eu/*'  => Http::response(['results' => []], 200),
+            'api.un.org/*'            => Http::response(['results' => []], 200),
         ]);
 
         $screening = AmlScreening::factory()->create([
@@ -99,7 +99,7 @@ class AmlScreeningServiceTest extends TestCase
             ->getMock();
 
         $matchResults = [
-            'matches' => [['name' => 'John Doe', 'score' => 0.95]],
+            'matches'       => [['name' => 'John Doe', 'score' => 0.95]],
             'lists_checked' => ['OFAC'],
             'total_matches' => 1,
         ];
@@ -219,8 +219,8 @@ class AmlScreeningServiceTest extends TestCase
         $user = User::factory()->create();
         $parameters = [
             'include_aliases' => true,
-            'fuzzy_matching' => true,
-            'threshold' => 0.8,
+            'fuzzy_matching'  => true,
+            'threshold'       => 0.8,
         ];
 
         $screening = $this->service->performComprehensiveScreening($user, $parameters);
@@ -236,14 +236,14 @@ class AmlScreeningServiceTest extends TestCase
         ]);
 
         $user = User::factory()->create();
-        
+
         // Track status changes
         $statusChanges = [];
-        
+
         AmlScreening::created(function ($screening) use (&$statusChanges) {
             $statusChanges[] = $screening->status;
         });
-        
+
         AmlScreening::updated(function ($screening) use (&$statusChanges) {
             $statusChanges[] = $screening->status;
         });

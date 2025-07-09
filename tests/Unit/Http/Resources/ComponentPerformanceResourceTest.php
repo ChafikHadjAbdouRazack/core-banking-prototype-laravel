@@ -11,24 +11,25 @@ class ComponentPerformanceResourceTest extends TestCase
     private function createComponentPerformance(array $attributes = []): object
     {
         $defaults = [
-            'id' => 1,
-            'basket_performance_id' => 1,
-            'asset_code' => 'BTC',
-            'start_weight' => 45.0,
-            'end_weight' => 48.0,
-            'average_weight' => 46.5,
-            'contribution_value' => 0.02,
+            'id'                      => 1,
+            'basket_performance_id'   => 1,
+            'asset_code'              => 'BTC',
+            'start_weight'            => 45.0,
+            'end_weight'              => 48.0,
+            'average_weight'          => 46.5,
+            'contribution_value'      => 0.02,
             'contribution_percentage' => 15.0,
-            'return_value' => 0.05,
-            'return_percentage' => 5.0,
-            'created_at' => now(),
-            'updated_at' => now(),
+            'return_value'            => 0.05,
+            'return_percentage'       => 5.0,
+            'created_at'              => now(),
+            'updated_at'              => now(),
         ];
 
         $data = array_merge($defaults, $attributes);
-        
-        return new class($data) {
+
+        return new class ($data) {
             private array $attributes;
+
             private array $relations = [];
 
             public function __construct(array $attributes)
@@ -50,18 +51,21 @@ class ComponentPerformanceResourceTest extends TestCase
                 if ($name === 'formatted_return') {
                     return $this->getFormattedReturnAttribute();
                 }
+
                 return $this->attributes[$name] ?? null;
             }
 
             public function getFormattedContributionAttribute(): string
             {
                 $prefix = $this->contribution_percentage >= 0 ? '+' : '';
+
                 return $prefix . number_format($this->contribution_percentage, 2) . '%';
             }
 
             public function getFormattedReturnAttribute(): string
             {
                 $prefix = $this->return_percentage >= 0 ? '+' : '';
+
                 return $prefix . number_format($this->return_percentage, 2) . '%';
             }
 
@@ -78,6 +82,7 @@ class ComponentPerformanceResourceTest extends TestCase
             public function setRelation($relation, $value)
             {
                 $this->relations[$relation] = $value;
+
                 return $this;
             }
 
@@ -91,16 +96,16 @@ class ComponentPerformanceResourceTest extends TestCase
     public function test_transforms_component_performance_to_array(): void
     {
         $asset = (object) ['code' => 'BTC', 'name' => 'Bitcoin'];
-        
+
         $componentPerformance = $this->createComponentPerformance([
-            'asset_code' => 'BTC',
-            'start_weight' => 45.5678,
-            'end_weight' => 48.1234,
-            'average_weight' => 46.8456,
-            'contribution_value' => 0.0234,
+            'asset_code'              => 'BTC',
+            'start_weight'            => 45.5678,
+            'end_weight'              => 48.1234,
+            'average_weight'          => 46.8456,
+            'contribution_value'      => 0.0234,
             'contribution_percentage' => 15.7689,
-            'return_value' => 0.0567,
-            'return_percentage' => 5.6789,
+            'return_value'            => 0.0567,
+            'return_percentage'       => 5.6789,
         ]);
 
         $componentPerformance->setRelation('asset', $asset);
@@ -131,7 +136,7 @@ class ComponentPerformanceResourceTest extends TestCase
     public function test_handles_missing_asset_relationship(): void
     {
         $componentPerformance = $this->createComponentPerformance([
-            'asset_code' => 'ETH',
+            'asset_code'              => 'ETH',
             'contribution_percentage' => 10.0,
         ]);
 
@@ -146,13 +151,13 @@ class ComponentPerformanceResourceTest extends TestCase
     public function test_rounds_numeric_values_correctly(): void
     {
         $componentPerformance = $this->createComponentPerformance([
-            'start_weight' => 33.3333333,
-            'end_weight' => 33.6666667,
-            'average_weight' => 33.5,
-            'contribution_value' => 0.123456789,
+            'start_weight'            => 33.3333333,
+            'end_weight'              => 33.6666667,
+            'average_weight'          => 33.5,
+            'contribution_value'      => 0.123456789,
             'contribution_percentage' => 12.3456789,
-            'return_value' => 0.0123456789,
-            'return_percentage' => 1.23456789,
+            'return_value'            => 0.0123456789,
+            'return_percentage'       => 1.23456789,
         ]);
 
         $resource = new ComponentPerformanceResource($componentPerformance);
@@ -200,7 +205,7 @@ class ComponentPerformanceResourceTest extends TestCase
     public function test_includes_all_required_fields(): void
     {
         $componentPerformance = $this->createComponentPerformance();
-        
+
         $resource = new ComponentPerformanceResource($componentPerformance);
         $request = Request::create('/');
         $array = $resource->toArray($request);
@@ -237,7 +242,7 @@ class ComponentPerformanceResourceTest extends TestCase
             $this->createComponentPerformance(['id' => 2, 'asset_code' => 'ETH']),
             $this->createComponentPerformance(['id' => 3, 'asset_code' => 'USDT']),
         ];
-        
+
         $collection = ComponentPerformanceResource::collection($components);
         $request = Request::create('/');
         $array = $collection->toArray($request);

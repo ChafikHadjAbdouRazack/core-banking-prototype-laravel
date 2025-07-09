@@ -11,7 +11,6 @@ use App\Domain\Stablecoin\Events\CollateralReleased;
 use App\Domain\Stablecoin\Events\StablecoinBurned;
 use App\Domain\Stablecoin\Events\StablecoinMinted;
 use App\Domain\Stablecoin\Projectors\StablecoinProjector;
-use App\Models\StablecoinCollateralPosition;
 use Spatie\EventSourcing\EventHandlers\Projectors\Projector;
 use Tests\TestCase;
 
@@ -57,9 +56,9 @@ class StablecoinProjectorTest extends TestCase
     {
         $reflection = new \ReflectionClass(StablecoinProjector::class);
         $method = $reflection->getMethod('onCollateralPositionCreated');
-        
+
         $this->assertEquals(1, $method->getNumberOfParameters());
-        
+
         $parameter = $method->getParameters()[0];
         $this->assertEquals('event', $parameter->getName());
         $this->assertEquals(CollateralPositionCreated::class, $parameter->getType()->getName());
@@ -69,9 +68,9 @@ class StablecoinProjectorTest extends TestCase
     {
         $reflection = new \ReflectionClass(StablecoinProjector::class);
         $method = $reflection->getMethod('onCollateralLocked');
-        
+
         $this->assertEquals(1, $method->getNumberOfParameters());
-        
+
         $parameter = $method->getParameters()[0];
         $this->assertEquals('event', $parameter->getName());
         $this->assertEquals(CollateralLocked::class, $parameter->getType()->getName());
@@ -81,9 +80,9 @@ class StablecoinProjectorTest extends TestCase
     {
         $reflection = new \ReflectionClass(StablecoinProjector::class);
         $method = $reflection->getMethod('onStablecoinMinted');
-        
+
         $this->assertEquals(1, $method->getNumberOfParameters());
-        
+
         $parameter = $method->getParameters()[0];
         $this->assertEquals('event', $parameter->getName());
         $this->assertEquals(StablecoinMinted::class, $parameter->getType()->getName());
@@ -93,9 +92,9 @@ class StablecoinProjectorTest extends TestCase
     {
         $reflection = new \ReflectionClass(StablecoinProjector::class);
         $method = $reflection->getMethod('onStablecoinBurned');
-        
+
         $this->assertEquals(1, $method->getNumberOfParameters());
-        
+
         $parameter = $method->getParameters()[0];
         $this->assertEquals('event', $parameter->getName());
         $this->assertEquals(StablecoinBurned::class, $parameter->getType()->getName());
@@ -105,9 +104,9 @@ class StablecoinProjectorTest extends TestCase
     {
         $reflection = new \ReflectionClass(StablecoinProjector::class);
         $method = $reflection->getMethod('onCollateralReleased');
-        
+
         $this->assertEquals(1, $method->getNumberOfParameters());
-        
+
         $parameter = $method->getParameters()[0];
         $this->assertEquals('event', $parameter->getName());
         $this->assertEquals(CollateralReleased::class, $parameter->getType()->getName());
@@ -117,9 +116,9 @@ class StablecoinProjectorTest extends TestCase
     {
         $reflection = new \ReflectionClass(StablecoinProjector::class);
         $method = $reflection->getMethod('onCollateralPositionUpdated');
-        
+
         $this->assertEquals(1, $method->getNumberOfParameters());
-        
+
         $parameter = $method->getParameters()[0];
         $this->assertEquals('event', $parameter->getName());
         $this->assertEquals(CollateralPositionUpdated::class, $parameter->getType()->getName());
@@ -129,9 +128,9 @@ class StablecoinProjectorTest extends TestCase
     {
         $reflection = new \ReflectionClass(StablecoinProjector::class);
         $method = $reflection->getMethod('onCollateralPositionClosed');
-        
+
         $this->assertEquals(1, $method->getNumberOfParameters());
-        
+
         $parameter = $method->getParameters()[0];
         $this->assertEquals('event', $parameter->getName());
         $this->assertEquals(CollateralPositionClosed::class, $parameter->getType()->getName());
@@ -141,9 +140,9 @@ class StablecoinProjectorTest extends TestCase
     {
         $reflection = new \ReflectionClass(StablecoinProjector::class);
         $method = $reflection->getMethod('onCollateralPositionLiquidated');
-        
+
         $this->assertEquals(1, $method->getNumberOfParameters());
-        
+
         $parameter = $method->getParameters()[0];
         $this->assertEquals('event', $parameter->getName());
         $this->assertEquals(CollateralPositionLiquidated::class, $parameter->getType()->getName());
@@ -152,11 +151,11 @@ class StablecoinProjectorTest extends TestCase
     public function test_projector_uses_model(): void
     {
         $reflection = new \ReflectionClass(StablecoinProjector::class);
-        
+
         // Check that the projector references the model
         $fileName = $reflection->getFileName();
         $fileContent = file_get_contents($fileName);
-        
+
         $this->assertStringContainsString('use App\Models\StablecoinCollateralPosition;', $fileContent);
         $this->assertStringContainsString('StablecoinCollateralPosition::', $fileContent);
     }
@@ -165,12 +164,12 @@ class StablecoinProjectorTest extends TestCase
     {
         $reflection = new \ReflectionClass(StablecoinProjector::class);
         $method = $reflection->getMethod('onCollateralPositionCreated');
-        
+
         $fileName = $reflection->getFileName();
         $startLine = $method->getStartLine();
         $endLine = $method->getEndLine();
         $source = implode('', array_slice(file($fileName), $startLine - 1, $endLine - $startLine + 1));
-        
+
         // Verify it calls create on the model
         $this->assertStringContainsString('StablecoinCollateralPosition::create', $source);
     }
@@ -178,58 +177,58 @@ class StablecoinProjectorTest extends TestCase
     public function test_projector_handles_increment_operations(): void
     {
         $reflection = new \ReflectionClass(StablecoinProjector::class);
-        
+
         // Check onCollateralLocked method
         $method = $reflection->getMethod('onCollateralLocked');
         $fileName = $reflection->getFileName();
         $startLine = $method->getStartLine();
         $endLine = $method->getEndLine();
         $source = implode('', array_slice(file($fileName), $startLine - 1, $endLine - $startLine + 1));
-        
+
         $this->assertStringContainsString('increment(\'collateral_amount\'', $source);
-        
+
         // Check onStablecoinMinted method
         $method = $reflection->getMethod('onStablecoinMinted');
         $startLine = $method->getStartLine();
         $endLine = $method->getEndLine();
         $source = implode('', array_slice(file($fileName), $startLine - 1, $endLine - $startLine + 1));
-        
+
         $this->assertStringContainsString('increment(\'debt_amount\'', $source);
     }
 
     public function test_projector_handles_decrement_operations(): void
     {
         $reflection = new \ReflectionClass(StablecoinProjector::class);
-        
+
         // Check onStablecoinBurned method
         $method = $reflection->getMethod('onStablecoinBurned');
         $fileName = $reflection->getFileName();
         $startLine = $method->getStartLine();
         $endLine = $method->getEndLine();
         $source = implode('', array_slice(file($fileName), $startLine - 1, $endLine - $startLine + 1));
-        
+
         $this->assertStringContainsString('decrement(\'debt_amount\'', $source);
-        
+
         // Check onCollateralReleased method
         $method = $reflection->getMethod('onCollateralReleased');
         $startLine = $method->getStartLine();
         $endLine = $method->getEndLine();
         $source = implode('', array_slice(file($fileName), $startLine - 1, $endLine - $startLine + 1));
-        
+
         $this->assertStringContainsString('decrement(\'collateral_amount\'', $source);
     }
 
     public function test_projector_handles_update_operations(): void
     {
         $reflection = new \ReflectionClass(StablecoinProjector::class);
-        
+
         // Check onCollateralPositionUpdated method
         $method = $reflection->getMethod('onCollateralPositionUpdated');
         $fileName = $reflection->getFileName();
         $startLine = $method->getStartLine();
         $endLine = $method->getEndLine();
         $source = implode('', array_slice(file($fileName), $startLine - 1, $endLine - $startLine + 1));
-        
+
         $this->assertStringContainsString('update([', $source);
         $this->assertStringContainsString('\'collateral_amount\'', $source);
         $this->assertStringContainsString('\'debt_amount\'', $source);
@@ -240,23 +239,23 @@ class StablecoinProjectorTest extends TestCase
     public function test_projector_handles_status_changes(): void
     {
         $reflection = new \ReflectionClass(StablecoinProjector::class);
-        
+
         // Check onCollateralPositionClosed method
         $method = $reflection->getMethod('onCollateralPositionClosed');
         $fileName = $reflection->getFileName();
         $startLine = $method->getStartLine();
         $endLine = $method->getEndLine();
         $source = implode('', array_slice(file($fileName), $startLine - 1, $endLine - $startLine + 1));
-        
+
         $this->assertStringContainsString('\'status\'    => \'closed\'', $source);
         $this->assertStringContainsString('\'closed_at\' => now()', $source);
-        
+
         // Check onCollateralPositionLiquidated method
         $method = $reflection->getMethod('onCollateralPositionLiquidated');
         $startLine = $method->getStartLine();
         $endLine = $method->getEndLine();
         $source = implode('', array_slice(file($fileName), $startLine - 1, $endLine - $startLine + 1));
-        
+
         $this->assertStringContainsString('\'status\'            => \'liquidated\'', $source);
         $this->assertStringContainsString('\'liquidated_at\'     => now()', $source);
         $this->assertStringContainsString('\'collateral_amount\' => 0', $source);
@@ -266,7 +265,7 @@ class StablecoinProjectorTest extends TestCase
     public function test_projector_finds_positions_by_uuid(): void
     {
         $reflection = new \ReflectionClass(StablecoinProjector::class);
-        
+
         $methodsToCheck = [
             'onCollateralLocked',
             'onStablecoinMinted',
@@ -276,15 +275,15 @@ class StablecoinProjectorTest extends TestCase
             'onCollateralPositionClosed',
             'onCollateralPositionLiquidated',
         ];
-        
+
         $fileName = $reflection->getFileName();
-        
+
         foreach ($methodsToCheck as $methodName) {
             $method = $reflection->getMethod($methodName);
             $startLine = $method->getStartLine();
             $endLine = $method->getEndLine();
             $source = implode('', array_slice(file($fileName), $startLine - 1, $endLine - $startLine + 1));
-            
+
             // Each method should find position by UUID
             $this->assertStringContainsString('where(\'uuid\', $event->position_uuid)', $source);
             $this->assertStringContainsString('firstOrFail()', $source);
@@ -295,12 +294,12 @@ class StablecoinProjectorTest extends TestCase
     {
         $reflection = new \ReflectionClass(StablecoinProjector::class);
         $method = $reflection->getMethod('onCollateralPositionCreated');
-        
+
         $fileName = $reflection->getFileName();
         $startLine = $method->getStartLine();
         $endLine = $method->getEndLine();
         $source = implode('', array_slice(file($fileName), $startLine - 1, $endLine - $startLine + 1));
-        
+
         // Verify field mappings in create method
         $expectedMappings = [
             '\'uuid\'                  => $event->position_uuid',
@@ -312,7 +311,7 @@ class StablecoinProjectorTest extends TestCase
             '\'collateral_ratio\'      => $event->collateral_ratio',
             '\'status\'                => $event->status',
         ];
-        
+
         foreach ($expectedMappings as $mapping) {
             $this->assertStringContainsString($mapping, $source);
         }

@@ -12,17 +12,17 @@ class RepaymentScheduleTest extends TestCase
         $payments = [
             [
                 'payment_number' => 1,
-                'due_date' => '2024-02-01',
-                'principal' => '833.33',
-                'interest' => '100.00',
-                'total' => '933.33',
+                'due_date'       => '2024-02-01',
+                'principal'      => '833.33',
+                'interest'       => '100.00',
+                'total'          => '933.33',
             ],
             [
                 'payment_number' => 2,
-                'due_date' => '2024-03-01',
-                'principal' => '833.33',
-                'interest' => '91.67',
-                'total' => '925.00',
+                'due_date'       => '2024-03-01',
+                'principal'      => '833.33',
+                'interest'       => '91.67',
+                'total'          => '925.00',
             ],
         ];
 
@@ -44,24 +44,24 @@ class RepaymentScheduleTest extends TestCase
         $payments = [
             [
                 'payment_number' => 1,
-                'due_date' => '2024-02-01',
-                'principal' => '833.33',
-                'interest' => '100.00',
-                'total' => '933.33',
+                'due_date'       => '2024-02-01',
+                'principal'      => '833.33',
+                'interest'       => '100.00',
+                'total'          => '933.33',
             ],
             [
                 'payment_number' => 2,
-                'due_date' => '2024-03-01',
-                'principal' => '833.33',
-                'interest' => '91.67',
-                'total' => '925.00',
+                'due_date'       => '2024-03-01',
+                'principal'      => '833.33',
+                'interest'       => '91.67',
+                'total'          => '925.00',
             ],
             [
                 'payment_number' => 3,
-                'due_date' => '2024-04-01',
-                'principal' => '833.34',
-                'interest' => '83.33',
-                'total' => '916.67',
+                'due_date'       => '2024-04-01',
+                'principal'      => '833.34',
+                'interest'       => '83.33',
+                'total'          => '916.67',
             ],
         ];
 
@@ -241,19 +241,19 @@ class RepaymentScheduleTest extends TestCase
     {
         $payments = [
             [
-                'payment_number' => 1,
-                'due_date' => '2024-02-01',
-                'principal' => '833.33',
-                'interest' => '100.00',
-                'total' => '933.33',
+                'payment_number'    => 1,
+                'due_date'          => '2024-02-01',
+                'principal'         => '833.33',
+                'interest'          => '100.00',
+                'total'             => '933.33',
                 'balance_remaining' => '9166.67',
             ],
             [
-                'payment_number' => 2,
-                'due_date' => '2024-03-01',
-                'principal' => '833.33',
-                'interest' => '91.67',
-                'total' => '925.00',
+                'payment_number'    => 2,
+                'due_date'          => '2024-03-01',
+                'principal'         => '833.33',
+                'interest'          => '91.67',
+                'total'             => '925.00',
                 'balance_remaining' => '8333.34',
             ],
         ];
@@ -267,17 +267,17 @@ class RepaymentScheduleTest extends TestCase
     {
         $payments = [
             [
-                'payment_number' => 1,
-                'due_date' => '2024-02-01',
-                'principal' => '833.33',
-                'interest' => '100.00',
-                'fees' => '25.00',
-                'insurance' => '15.00',
-                'total' => '973.33',
+                'payment_number'    => 1,
+                'due_date'          => '2024-02-01',
+                'principal'         => '833.33',
+                'interest'          => '100.00',
+                'fees'              => '25.00',
+                'insurance'         => '15.00',
+                'total'             => '973.33',
                 'balance_remaining' => '9166.67',
-                'status' => 'pending',
-                'metadata' => [
-                    'interest_rate' => 0.12,
+                'status'            => 'pending',
+                'metadata'          => [
+                    'interest_rate'  => 0.12,
                     'days_in_period' => 30,
                 ],
             ],
@@ -298,8 +298,8 @@ class RepaymentScheduleTest extends TestCase
         for ($i = 1; $i <= 360; $i++) { // 30-year mortgage
             $payments[] = [
                 'payment_number' => $i,
-                'principal' => '500.00',
-                'interest' => '1000.00',
+                'principal'      => '500.00',
+                'interest'       => '1000.00',
             ];
         }
 

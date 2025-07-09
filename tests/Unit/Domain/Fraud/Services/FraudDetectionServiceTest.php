@@ -17,30 +17,35 @@ use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
-use Tests\TestCase;
 use Mockery;
+use Tests\TestCase;
 
 class FraudDetectionServiceTest extends TestCase
 {
     use RefreshDatabase;
 
     private FraudDetectionService $service;
+
     private RuleEngineService $ruleEngine;
+
     private BehavioralAnalysisService $behavioralAnalysis;
+
     private DeviceFingerprintService $deviceService;
+
     private MachineLearningService $mlService;
+
     private FraudCaseService $caseService;
 
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->ruleEngine = Mockery::mock(RuleEngineService::class);
         $this->behavioralAnalysis = Mockery::mock(BehavioralAnalysisService::class);
         $this->deviceService = Mockery::mock(DeviceFingerprintService::class);
         $this->mlService = Mockery::mock(MachineLearningService::class);
         $this->caseService = Mockery::mock(FraudCaseService::class);
-        
+
         $this->service = new FraudDetectionService(
             $this->ruleEngine,
             $this->behavioralAnalysis,
@@ -48,7 +53,7 @@ class FraudDetectionServiceTest extends TestCase
             $this->mlService,
             $this->caseService
         );
-        
+
         Event::fake();
     }
 
@@ -58,7 +63,7 @@ class FraudDetectionServiceTest extends TestCase
         $account = Account::factory()->create(['user_uuid' => $user->uuid]);
         $transaction = Transaction::factory()->create([
             'account_id' => $account->id,
-            'amount' => 10000,
+            'amount'     => 10000,
         ]);
 
         // Mock service responses
@@ -83,7 +88,7 @@ class FraudDetectionServiceTest extends TestCase
         $this->assertLessThan(30, $fraudScore->score);
         $this->assertEquals('pass', $fraudScore->action);
         $this->assertEquals('low', $fraudScore->risk_level);
-        
+
         Event::assertNotDispatched(FraudDetected::class);
         Event::assertNotDispatched(TransactionBlocked::class);
     }
@@ -99,7 +104,7 @@ class FraudDetectionServiceTest extends TestCase
         $this->assertBetween(30, 70, $fraudScore->score);
         $this->assertEquals('challenge', $fraudScore->action);
         $this->assertEquals('medium', $fraudScore->risk_level);
-        
+
         Event::assertDispatched(ChallengeRequired::class);
         Event::assertNotDispatched(TransactionBlocked::class);
     }
@@ -115,7 +120,7 @@ class FraudDetectionServiceTest extends TestCase
         $this->assertGreaterThan(70, $fraudScore->score);
         $this->assertEquals('block', $fraudScore->action);
         $this->assertEquals('high', $fraudScore->risk_level);
-        
+
         Event::assertDispatched(FraudDetected::class);
         Event::assertDispatched(TransactionBlocked::class);
     }
@@ -141,8 +146,8 @@ class FraudDetectionServiceTest extends TestCase
         $transaction = $this->createTransaction();
         $deviceData = [
             'fingerprint' => 'device123',
-            'ip' => '192.168.1.1',
-            'user_agent' => 'Mozilla/5.0',
+            'ip'          => '192.168.1.1',
+            'user_agent'  => 'Mozilla/5.0',
         ];
 
         $this->mockServicesForLowRisk();
@@ -169,8 +174,8 @@ class FraudDetectionServiceTest extends TestCase
             ->with($user, $startDate, $endDate)
             ->andReturn([
                 'avg_transaction_amount' => 5000,
-                'transaction_count' => 25,
-                'unusual_patterns' => [],
+                'transaction_count'      => 25,
+                'unusual_patterns'       => [],
             ]);
 
         $analysis = $this->service->analyzeUserActivity($user, $startDate, $endDate);
@@ -184,10 +189,10 @@ class FraudDetectionServiceTest extends TestCase
     {
         $transaction = $this->createTransaction();
         $fraudScore = FraudScore::factory()->create([
-            'entity_id' => $transaction->id,
+            'entity_id'   => $transaction->id,
             'entity_type' => Transaction::class,
-            'score' => 25,
-            'action' => 'pass',
+            'score'       => 25,
+            'action'      => 'pass',
         ]);
 
         $this->mockServicesForMediumRisk();
@@ -216,11 +221,11 @@ class FraudDetectionServiceTest extends TestCase
     {
         $user = User::factory()->create();
         $account = Account::factory()->create(['user_uuid' => $user->uuid]);
-        
+
         return Transaction::factory()->create(array_merge([
             'account_id' => $account->id,
-            'amount' => 10000,
-            'type' => 'transfer',
+            'amount'     => 10000,
+            'type'       => 'transfer',
         ], $attributes));
     }
 
@@ -228,13 +233,13 @@ class FraudDetectionServiceTest extends TestCase
     {
         $this->ruleEngine->shouldReceive('evaluate')
             ->andReturn(['score' => 10, 'triggered_rules' => []]);
-            
+
         $this->behavioralAnalysis->shouldReceive('analyze')
             ->andReturn(['score' => 5, 'anomalies' => []]);
-            
+
         $this->deviceService->shouldReceive('analyzeDevice')
             ->andReturn(['risk_score' => 5, 'is_known' => true]);
-            
+
         $this->mlService->shouldReceive('isEnabled')->andReturn(false);
     }
 
@@ -242,13 +247,13 @@ class FraudDetectionServiceTest extends TestCase
     {
         $this->ruleEngine->shouldReceive('evaluate')
             ->andReturn(['score' => 25, 'triggered_rules' => ['unusual_amount']]);
-            
+
         $this->behavioralAnalysis->shouldReceive('analyze')
             ->andReturn(['score' => 20, 'anomalies' => ['time_pattern']]);
-            
+
         $this->deviceService->shouldReceive('analyzeDevice')
             ->andReturn(['risk_score' => 15, 'is_known' => false]);
-            
+
         $this->mlService->shouldReceive('isEnabled')->andReturn(false);
     }
 
@@ -256,15 +261,15 @@ class FraudDetectionServiceTest extends TestCase
     {
         $this->ruleEngine->shouldReceive('evaluate')
             ->andReturn(['score' => 50, 'triggered_rules' => ['blacklist_match', 'velocity_check']]);
-            
+
         $this->behavioralAnalysis->shouldReceive('analyze')
             ->andReturn(['score' => 40, 'anomalies' => ['location_jump', 'unusual_merchant']]);
-            
+
         $this->deviceService->shouldReceive('analyzeDevice')
             ->andReturn(['risk_score' => 30, 'is_known' => false, 'is_vpn' => true]);
-            
+
         $this->mlService->shouldReceive('isEnabled')->andReturn(false);
-        
+
         $this->caseService->shouldReceive('createCase')->once();
     }
 

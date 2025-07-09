@@ -25,7 +25,7 @@ class KycVerificationCompletedTest extends TestCase
 
         foreach ($levels as $level) {
             $event = new KycVerificationCompleted($userUuid, $level);
-            
+
             $this->assertEquals($level, $event->level);
             $this->assertEquals($userUuid, $event->userUuid);
         }

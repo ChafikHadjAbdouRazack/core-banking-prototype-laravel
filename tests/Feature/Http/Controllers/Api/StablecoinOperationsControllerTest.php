@@ -15,44 +15,47 @@ class StablecoinOperationsControllerTest extends TestCase
     use RefreshDatabase;
 
     protected User $user;
+
     protected Account $account;
+
     protected Stablecoin $stablecoin;
+
     protected Asset $asset;
 
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->user = User::factory()->create();
         $this->account = Account::factory()->create([
             'user_uuid' => $this->user->uuid,
-            'balance' => 1000000, // 10,000.00 in base units
+            'balance'   => 1000000, // 10,000.00 in base units
         ]);
-        
+
         // Create necessary models for the tests
         $this->asset = Asset::firstOrCreate(
             ['code' => 'EUR'],
             [
-                'name' => 'Euro',
-                'type' => 'fiat',
+                'name'      => 'Euro',
+                'type'      => 'fiat',
                 'precision' => 2,
                 'is_active' => true,
             ]
         );
-        
+
         $this->stablecoin = Stablecoin::firstOrCreate(
             ['code' => 'EURS'],
             [
-                'name' => 'Euro Stablecoin',
-                'symbol' => 'EURS',
-                'peg_asset_code' => 'EUR',
-                'target_price' => '1.0',
-                'stability_mechanism' => 'collateralized',
-                'collateral_ratio' => '1.5',
+                'name'                 => 'Euro Stablecoin',
+                'symbol'               => 'EURS',
+                'peg_asset_code'       => 'EUR',
+                'target_price'         => '1.0',
+                'stability_mechanism'  => 'collateralized',
+                'collateral_ratio'     => '1.5',
                 'min_collateral_ratio' => '1.2',
-                'liquidation_penalty' => '0.05',
-                'precision' => 6,
-                'is_active' => true,
+                'liquidation_penalty'  => '0.05',
+                'precision'            => 6,
+                'is_active'            => true,
             ]
         );
     }
@@ -62,11 +65,11 @@ class StablecoinOperationsControllerTest extends TestCase
         Sanctum::actingAs($this->user);
 
         $response = $this->postJson('/api/v2/stablecoin-operations/mint', [
-            'stablecoin_code' => 'EURS',
+            'stablecoin_code'       => 'EURS',
             'collateral_asset_code' => 'EUR',
-            'collateral_amount' => 150000, // 1,500.00
-            'mint_amount' => 100000, // 1,000.00
-            'account_uuid' => $this->account->uuid,
+            'collateral_amount'     => 150000, // 1,500.00
+            'mint_amount'           => 100000, // 1,000.00
+            'account_uuid'          => $this->account->uuid,
         ]);
 
         $response->assertStatus(200)
@@ -101,9 +104,9 @@ class StablecoinOperationsControllerTest extends TestCase
         Sanctum::actingAs($this->user);
 
         $response = $this->postJson('/api/v2/stablecoin-operations/burn', [
-            'account_uuid' => $this->account->uuid,
+            'account_uuid'    => $this->account->uuid,
             'stablecoin_code' => 'EURS',
-            'burn_amount' => 50000, // 500.00
+            'burn_amount'     => 50000, // 500.00
         ]);
 
         $response->assertStatus(200)
@@ -138,10 +141,10 @@ class StablecoinOperationsControllerTest extends TestCase
         Sanctum::actingAs($this->user);
 
         $response = $this->postJson('/api/v2/stablecoin-operations/add-collateral', [
-            'account_uuid' => $this->account->uuid,
-            'stablecoin_code' => 'EURS',
+            'account_uuid'          => $this->account->uuid,
+            'stablecoin_code'       => 'EURS',
             'collateral_asset_code' => 'EUR',
-            'collateral_amount' => 20000, // 200.00
+            'collateral_amount'     => 20000, // 200.00
         ]);
 
         $response->assertStatus(200)
