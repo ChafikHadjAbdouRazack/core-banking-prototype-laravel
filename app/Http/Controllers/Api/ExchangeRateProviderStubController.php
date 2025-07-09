@@ -38,7 +38,7 @@ class ExchangeRateProviderStubController extends Controller
     public function getRate(Request $request, $provider): JsonResponse
     {
         $request->merge(['provider' => $provider]);
-        $request->validate(
+        $validated = $request->validate(
             [
             'provider' => 'required|in:ecb,fixer,openexchange',
             'from' => 'required|in:EUR,USD,GBP,JPY,CHF',
@@ -51,8 +51,8 @@ class ExchangeRateProviderStubController extends Controller
             'status' => 'success',
             'data' => [
                 'provider' => $provider,
-                'from' => $request->from,
-                'to' => $request->to,
+                'from' => $validated['from'],
+                'to' => $validated['to'],
                 'rate' => 1.08,
                 'inverse_rate' => 0.926,
                 'timestamp' => now()->timestamp,
@@ -64,7 +64,7 @@ class ExchangeRateProviderStubController extends Controller
 
     public function compareRates(Request $request): JsonResponse
     {
-        $request->validate(
+        $validated = $request->validate(
             [
             'from' => 'required|in:EUR,USD,GBP,JPY,CHF',
             'to' => 'required|in:EUR,USD,GBP,JPY,CHF',
@@ -75,8 +75,8 @@ class ExchangeRateProviderStubController extends Controller
             [
             'status' => 'success',
             'data' => [
-                'from' => $request->from,
-                'to' => $request->to,
+                'from' => $validated['from'],
+                'to' => $validated['to'],
                 'providers' => [
                     [
                         'name' => 'ecb',
@@ -104,7 +104,7 @@ class ExchangeRateProviderStubController extends Controller
 
     public function getAggregatedRate(Request $request): JsonResponse
     {
-        $request->validate(
+        $validated = $request->validate(
             [
             'from' => 'required|in:EUR,USD,GBP,JPY,CHF',
             'to' => 'required|in:EUR,USD,GBP,JPY,CHF',
@@ -115,8 +115,8 @@ class ExchangeRateProviderStubController extends Controller
             [
             'status' => 'success',
             'data' => [
-                'from' => $request->from,
-                'to' => $request->to,
+                'from' => $validated['from'],
+                'to' => $validated['to'],
                 'rate' => 1.081,
                 'inverse_rate' => 0.925,
                 'method' => 'weighted_average',
@@ -130,7 +130,7 @@ class ExchangeRateProviderStubController extends Controller
 
     public function refresh(Request $request): JsonResponse
     {
-        $request->validate(
+        $validated = $request->validate(
             [
             'providers' => 'sometimes|array',
             'providers.*' => 'string|in:ecb,fixer,openexchange',
@@ -141,7 +141,7 @@ class ExchangeRateProviderStubController extends Controller
             [
             'status' => 'success',
             'data' => [
-                'refreshed_providers' => $request->providers ?? ['ecb', 'fixer'],
+                'refreshed_providers' => $validated['providers'] ?? ['ecb', 'fixer'],
                 'updated_rates_count' => 42,
                 'failed_providers' => [],
                 'timestamp' => now()->timestamp,
@@ -152,7 +152,7 @@ class ExchangeRateProviderStubController extends Controller
 
     public function historical(Request $request): JsonResponse
     {
-        $request->validate(
+        $validated = $request->validate(
             [
             'from' => 'required|in:EUR,USD,GBP,JPY,CHF',
             'to' => 'required|in:EUR,USD,GBP,JPY,CHF',
@@ -165,11 +165,11 @@ class ExchangeRateProviderStubController extends Controller
             [
             'status' => 'success',
             'data' => [
-                'from' => $request->from,
-                'to' => $request->to,
+                'from' => $validated['from'],
+                'to' => $validated['to'],
                 'period' => [
-                    'start' => $request->start_date,
-                    'end' => $request->end_date,
+                    'start' => $validated['start_date'],
+                    'end' => $validated['end_date'],
                 ],
                 'rates' => [
                     [
@@ -196,7 +196,7 @@ class ExchangeRateProviderStubController extends Controller
 
     public function validateRate(Request $request): JsonResponse
     {
-        $request->validate(
+        $validated = $request->validate(
             [
             'from' => 'required|in:EUR,USD,GBP,JPY,CHF',
             'to' => 'required|in:EUR,USD,GBP,JPY,CHF',
@@ -205,7 +205,7 @@ class ExchangeRateProviderStubController extends Controller
         );
 
         $marketRate = 1.08;
-        $deviation = abs($request->rate - $marketRate);
+        $deviation = abs($validated['rate'] - $marketRate);
         $deviationPercentage = ($deviation / $marketRate) * 100;
 
         return response()->json(

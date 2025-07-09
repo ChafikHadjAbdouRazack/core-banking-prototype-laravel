@@ -2047,21 +2047,9 @@ parameters:
 			path: app/Domain/Compliance/Services/GdprService.php
 
 		-
-			message: '#^Call to an undefined static method App\\Models\\AuditLog\:\:create\(\)\.$#'
+			message: '#^Call to an undefined static method App\\Models\\AuditLog\:\:where\(\)\.$#'
 			identifier: staticMethod.notFound
 			count: 1
-			path: app/Domain/Compliance/Services/GdprService.php
-
-		-
-			message: '#^Call to an undefined static method App\\Models\\AuditLog\:\:forUser\(\)\.$#'
-			identifier: staticMethod.notFound
-			count: 1
-			path: app/Domain/Compliance/Services/GdprService.php
-
-		-
-			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Http\\Request\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 2
 			path: app/Domain/Compliance/Services/GdprService.php
 
 		-
@@ -2071,21 +2059,9 @@ parameters:
 			path: app/Domain/Compliance/Services/IdentityVerificationService.php
 
 		-
-			message: '#^Call to an undefined static method App\\Models\\AuditLog\:\:create\(\)\.$#'
-			identifier: staticMethod.notFound
-			count: 1
-			path: app/Domain/Compliance/Services/KycService.php
-
-		-
 			message: '#^Call to an undefined static method App\\Models\\KycDocument\:\:create\(\)\.$#'
 			identifier: staticMethod.notFound
 			count: 1
-			path: app/Domain/Compliance/Services/KycService.php
-
-		-
-			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Http\\Request\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 2
 			path: app/Domain/Compliance/Services/KycService.php
 
 		-
@@ -4597,24 +4573,6 @@ parameters:
 			path: app/Domain/Payment/Services/PaymentService.php
 
 		-
-			message: '#^Call to an undefined method App\\Domain\\Payment\\DataObjects\\BankWithdrawal\:\:getBankAccountName\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Domain/Payment/Workflows/ProcessBankWithdrawalWorkflow.php
-
-		-
-			message: '#^Call to an undefined method App\\Domain\\Payment\\DataObjects\\BankWithdrawal\:\:getBankAccountNumber\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Domain/Payment/Workflows/ProcessBankWithdrawalWorkflow.php
-
-		-
-			message: '#^Call to an undefined method App\\Domain\\Payment\\DataObjects\\BankWithdrawal\:\:getBankRoutingNumber\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Domain/Payment/Workflows/ProcessBankWithdrawalWorkflow.php
-
-		-
 			message: '#^Call to an undefined method App\\Domain\\Payment\\Services\\TransferService\:\:recordTransfer\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -5521,12 +5479,6 @@ parameters:
 			path: app/Domain/Wallet/Connectors/EthereumConnector.php
 
 		-
-			message: '#^Call to static method hash\(\) on an unknown class kornrunner\\Keccak\.$#'
-			identifier: class.notFound
-			count: 1
-			path: app/Domain/Wallet/Connectors/EthereumConnector.php
-
-		-
 			message: '#^Parameter \#1 \$num of function dechex expects int, string given\.$#'
 			identifier: argument.type
 			count: 1
@@ -5705,54 +5657,6 @@ parameters:
 			identifier: class.notFound
 			count: 1
 			path: app/Domain/Wallet/Services/BlockchainWalletService.php
-
-		-
-			message: '#^Call to method fromEntropy\(\) on an unknown class BitWasp\\Bitcoin\\Key\\Factory\\HierarchicalKeyFactory\.$#'
-			identifier: class.notFound
-			count: 2
-			path: app/Domain/Wallet/Services/KeyManagementService.php
-
-		-
-			message: '#^Call to method getSeed\(\) on an unknown class BitWasp\\Bitcoin\\Mnemonic\\Bip39\\Bip39SeedGenerator\.$#'
-			identifier: class.notFound
-			count: 1
-			path: app/Domain/Wallet/Services/KeyManagementService.php
-
-		-
-			message: '#^Call to method keyFromPrivate\(\) on an unknown class Elliptic\\EC\.$#'
-			identifier: class.notFound
-			count: 1
-			path: app/Domain/Wallet/Services/KeyManagementService.php
-
-		-
-			message: '#^Call to static method bip39\(\) on an unknown class BitWasp\\Bitcoin\\Mnemonic\\MnemonicFactory\.$#'
-			identifier: class.notFound
-			count: 2
-			path: app/Domain/Wallet/Services/KeyManagementService.php
-
-		-
-			message: '#^Call to static method hash\(\) on an unknown class kornrunner\\Keccak\.$#'
-			identifier: class.notFound
-			count: 1
-			path: app/Domain/Wallet/Services/KeyManagementService.php
-
-		-
-			message: '#^Instantiated class BitWasp\\Bitcoin\\Key\\Factory\\HierarchicalKeyFactory not found\.$#'
-			identifier: class.notFound
-			count: 2
-			path: app/Domain/Wallet/Services/KeyManagementService.php
-
-		-
-			message: '#^Instantiated class BitWasp\\Bitcoin\\Mnemonic\\Bip39\\Bip39SeedGenerator not found\.$#'
-			identifier: class.notFound
-			count: 1
-			path: app/Domain/Wallet/Services/KeyManagementService.php
-
-		-
-			message: '#^Property App\\Domain\\Wallet\\Services\\KeyManagementService\:\:\$ec has unknown class Elliptic\\EC as its type\.$#'
-			identifier: class.notFound
-			count: 1
-			path: app/Domain/Wallet/Services/KeyManagementService.php
 
 		-
 			message: '#^Call to an undefined static method App\\Models\\Account\:\:where\(\)\.$#'
@@ -7707,12 +7611,6 @@ parameters:
 		-
 			message: '#^Access to an undefined property Illuminate\\Http\\Request\:\:\$status\.$#'
 			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/ExchangeController.php
-
-		-
-			message: '#^Method App\\Domain\\Exchange\\Services\\ExchangeService\:\:getMarketData\(\) invoked with 0 parameters, 2 required\.$#'
-			identifier: arguments.count
 			count: 1
 			path: app/Http/Controllers/Api/ExchangeController.php
 

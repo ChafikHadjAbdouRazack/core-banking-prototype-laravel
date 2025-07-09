@@ -16,17 +16,13 @@ class GdprService
      */
     public function exportUserData(User $user): array
     {
-        AuditLog::create(
-            [
-            'user_uuid'      => $user->uuid,
-            'action'         => 'gdpr.data_exported',
-            'auditable_type' => get_class($user),
-            'auditable_id'   => $user->uuid,
-            'metadata'       => ['requested_by' => $user->uuid],
-            'tags'           => 'gdpr,compliance,data-export',
-            'ip_address'     => request()?->ip(),
-            'user_agent'     => request()?->userAgent(),
-            ]
+        AuditLog::log(
+            'gdpr.data_exported',
+            $user,
+            null,
+            null,
+            ['requested_by' => $user->uuid],
+            'gdpr,compliance,data-export'
         );
 
         return [
@@ -47,17 +43,13 @@ class GdprService
         DB::transaction(
             function () use ($user, $options) {
                 // Log the deletion request
-                AuditLog::create(
-                    [
-                    'user_uuid'      => $user->uuid,
-                    'action'         => 'gdpr.deletion_requested',
-                    'auditable_type' => get_class($user),
-                    'auditable_id'   => $user->uuid,
-                    'metadata'       => ['options' => $options],
-                    'tags'           => 'gdpr,compliance,deletion',
-                    'ip_address'     => request()?->ip(),
-                    'user_agent'     => request()?->userAgent(),
-                    ]
+                AuditLog::log(
+                    'gdpr.deletion_requested',
+                    $user,
+                    null,
+                    null,
+                    ['options' => $options],
+                    'gdpr,compliance,deletion'
                 );
 
                 // Anonymize user data instead of hard delete
@@ -74,17 +66,13 @@ class GdprService
                 }
 
                 // Log the deletion completion
-                AuditLog::create(
-                    [
-                    'user_uuid'      => $user->uuid,
-                    'action'         => 'gdpr.deletion_completed',
-                    'auditable_type' => get_class($user),
-                    'auditable_id'   => $user->uuid,
-                    'metadata'       => ['options' => $options],
-                    'tags'           => 'gdpr,compliance,deletion',
-                    'ip_address'     => request()?->ip(),
-                    'user_agent'     => request()?->userAgent(),
-                    ]
+                AuditLog::log(
+                    'gdpr.deletion_completed',
+                    $user,
+                    null,
+                    null,
+                    ['options' => $options],
+                    'gdpr,compliance,deletion'
                 );
             }
         );
@@ -205,7 +193,7 @@ class GdprService
      */
     protected function getAuditData(User $user): array
     {
-        return AuditLog::forUser($user->uuid)
+        return AuditLog::where('user_uuid', $user->uuid)
             ->limit(1000)
             ->get()
             ->map(

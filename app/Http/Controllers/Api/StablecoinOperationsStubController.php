@@ -10,7 +10,7 @@ class StablecoinOperationsStubController extends Controller
 {
     public function mint(Request $request): JsonResponse
     {
-        $request->validate(
+        $validated = $request->validate(
             [
             'stablecoin_code' => 'required|string',
             'amount' => 'required|integer|min:1',
@@ -24,9 +24,9 @@ class StablecoinOperationsStubController extends Controller
             'status' => 'success',
             'data' => [
                 'transaction_id' => 'txn-' . uniqid(),
-                'stablecoin_code' => $request->stablecoin_code,
-                'amount_minted' => $request->amount,
-                'collateral_used' => $request->amount * 1.5,
+                'stablecoin_code' => $validated['stablecoin_code'],
+                'amount_minted' => $validated['amount'],
+                'collateral_used' => $validated['amount'] * 1.5,
                 'collateral_ratio' => 1.5,
                 'position_id' => 'pos-' . uniqid(),
             ],
@@ -36,7 +36,7 @@ class StablecoinOperationsStubController extends Controller
 
     public function burn(Request $request): JsonResponse
     {
-        $request->validate(
+        $validated = $request->validate(
             [
             'stablecoin_code' => 'required|string',
             'amount' => 'required|integer|min:1',
@@ -49,9 +49,9 @@ class StablecoinOperationsStubController extends Controller
             'status' => 'success',
             'data' => [
                 'transaction_id' => 'txn-' . uniqid(),
-                'stablecoin_code' => $request->stablecoin_code,
-                'amount_burned' => $request->amount,
-                'collateral_returned' => $request->amount * 1.5,
+                'stablecoin_code' => $validated['stablecoin_code'],
+                'amount_burned' => $validated['amount'],
+                'collateral_returned' => $validated['amount'] * 1.5,
                 'remaining_position' => 0,
             ],
             ]
@@ -60,7 +60,7 @@ class StablecoinOperationsStubController extends Controller
 
     public function addCollateral(Request $request): JsonResponse
     {
-        $request->validate(
+        $validated = $request->validate(
             [
             'position_uuid' => 'required|string',
             'amount' => 'required|integer|min:1',
@@ -73,10 +73,10 @@ class StablecoinOperationsStubController extends Controller
             'status' => 'success',
             'data' => [
                 'transaction_id' => 'txn-' . uniqid(),
-                'position_uuid' => $request->position_uuid,
-                'collateral_added' => $request->amount,
+                'position_uuid' => $validated['position_uuid'],
+                'collateral_added' => $validated['amount'],
                 'new_collateral_ratio' => 2.0,
-                'total_collateral' => $request->amount * 3,
+                'total_collateral' => $validated['amount'] * 3,
             ],
             ]
         );
@@ -174,7 +174,7 @@ class StablecoinOperationsStubController extends Controller
 
     public function simulateMassLiquidation(Request $request, $stablecoinCode): JsonResponse
     {
-        $request->validate(
+        $validated = $request->validate(
             [
             'price_drop_percentage' => 'required|numeric|min:0|max:100',
             ]
@@ -186,7 +186,7 @@ class StablecoinOperationsStubController extends Controller
             'data' => [
                 'stablecoin_code' => $stablecoinCode,
                 'simulation_parameters' => [
-                    'price_drop_percentage' => $request->price_drop_percentage,
+                    'price_drop_percentage' => $validated['price_drop_percentage'],
                 ],
                 'results' => [
                     'positions_at_risk' => 5,

@@ -33,18 +33,13 @@ class KycService
                 }
 
                 // Log the action
-                AuditLog::create(
-                    [
-                    'user_uuid'      => $user->uuid,
-                    'action'         => 'kyc.submitted',
-                    'auditable_type' => get_class($user),
-                    'auditable_id'   => $user->uuid,
-                    'new_values'     => ['documents' => count($documents)],
-                    'metadata'       => ['document_types' => array_column($documents, 'type')],
-                    'tags'           => 'kyc,compliance',
-                    'ip_address'     => request()?->ip(),
-                    'user_agent'     => request()?->userAgent(),
-                    ]
+                AuditLog::log(
+                    'kyc.submitted',
+                    $user,
+                    null,
+                    ['documents' => count($documents)],
+                    ['document_types' => array_column($documents, 'type')],
+                    'kyc,compliance'
                 );
             }
         );
@@ -105,19 +100,13 @@ class KycService
                     );
 
                 // Log the verification
-                AuditLog::create(
-                    [
-                    'user_uuid'      => $user->uuid,
-                    'action'         => 'kyc.approved',
-                    'auditable_type' => get_class($user),
-                    'auditable_id'   => $user->uuid,
-                    'old_values'     => ['kyc_status' => $oldStatus],
-                    'new_values'     => ['kyc_status' => 'approved', 'kyc_level' => $user->kyc_level],
-                    'metadata'       => ['verified_by' => $verifiedBy, 'options' => $options],
-                    'tags'           => 'kyc,compliance,verification',
-                    'ip_address'     => request()?->ip(),
-                    'user_agent'     => request()?->userAgent(),
-                    ]
+                AuditLog::log(
+                    'kyc.approved',
+                    $user,
+                    ['kyc_status' => $oldStatus],
+                    ['kyc_status' => 'approved', 'kyc_level' => $user->kyc_level],
+                    ['verified_by' => $verifiedBy, 'options' => $options],
+                    'kyc,compliance,verification'
                 );
             }
         );

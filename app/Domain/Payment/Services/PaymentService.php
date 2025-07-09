@@ -28,7 +28,7 @@ class PaymentService
 
         $workflow = WorkflowStub::make(ProcessStripeDepositWorkflow::class);
 
-        return $workflow->start($deposit) ?? 'workflow-' . uniqid();
+        return $workflow->start($deposit);
     }
 
     /**
@@ -52,10 +52,6 @@ class PaymentService
 
         $workflow = WorkflowStub::make(ProcessBankWithdrawalWorkflow::class);
 
-        return $workflow->start($withdrawal) ?? [
-            'transaction_id' => 'wtxn_' . uniqid(),
-            'transfer_id' => 'transfer_' . uniqid(),
-            'reference' => $data['reference'],
-        ];
+        return $workflow->start($withdrawal);
     }
 }
