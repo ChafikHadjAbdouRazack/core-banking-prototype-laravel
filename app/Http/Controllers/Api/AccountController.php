@@ -206,7 +206,7 @@ class AccountController extends Controller
         if (! $account) {
             abort(404, 'Account not found');
         }
-        
+
         // Check authorization - user must own the account
         if ($account->user_uuid !== $request->user()->uuid) {
             abort(403, 'Forbidden');
@@ -264,7 +264,7 @@ class AccountController extends Controller
     public function destroy(Request $request, string $uuid): JsonResponse
     {
         $account = Account::where('uuid', $uuid)->firstOrFail();
-        
+
         // Check authorization - user must own the account
         if ($account->user_uuid !== $request->user()->uuid) {
             abort(403, 'Forbidden');
@@ -349,7 +349,7 @@ class AccountController extends Controller
         );
 
         $account = Account::where('uuid', $uuid)->firstOrFail();
-        
+
         // Check authorization - user must own the account
         if ($account->user_uuid !== $request->user()->uuid) {
             abort(403, 'Forbidden');
@@ -428,7 +428,7 @@ class AccountController extends Controller
         );
 
         $account = Account::where('uuid', $uuid)->firstOrFail();
-        
+
         // Check authorization - user must own the account
         if ($account->user_uuid !== $request->user()->uuid) {
             abort(403, 'Forbidden');

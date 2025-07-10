@@ -87,7 +87,7 @@ class AuthorizationSecurityTest extends DomainTestCase
 
         // Try to delete (first set balance to 0 to ensure it's not the balance check failing)
         $this->user2Account->update(['balance' => 0]);
-        
+
         $response = $this->withToken($this->userToken)
             ->deleteJson("/api/accounts/{$this->user2Account->uuid}");
 
@@ -198,7 +198,7 @@ class AuthorizationSecurityTest extends DomainTestCase
         if ($response->status() !== 201) {
             $this->fail('Account creation failed: ' . json_encode($response->json()));
         }
-        
+
         $account = $response->json('data');
 
         // Should be assigned to authenticated user, not user2

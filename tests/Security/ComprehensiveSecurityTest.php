@@ -14,6 +14,7 @@ use Tests\TestCase;
 class ComprehensiveSecurityTest extends TestCase
 {
     use RefreshDatabase;
+
     /**
      * Test SQL injection prevention in various endpoints.
      */

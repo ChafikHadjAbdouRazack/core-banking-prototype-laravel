@@ -15,23 +15,22 @@ class TestEventSerializer implements EventSerializer
 
         foreach ($reflection->getProperties() as $property) {
             $property->setAccessible(true);
-            
+
             // Skip uninitialized properties
-            if (!$property->isInitialized($event)) {
+            if (! $property->isInitialized($event)) {
                 continue;
             }
-            
+
             $value = $property->getValue($event);
 
             // Handle Carbon instances
             if ($value instanceof Carbon) {
                 $properties[$property->getName()] = $value->toIso8601String();
-            } 
+            }
             // Handle DataObjects
             elseif (is_object($value) && method_exists($value, 'toArray')) {
                 $properties[$property->getName()] = $value->toArray();
-            } 
-            else {
+            } else {
                 $properties[$property->getName()] = $value;
             }
         }
@@ -60,7 +59,7 @@ class TestEventSerializer implements EventSerializer
                 $type = $reflection->getType();
                 if ($type && $type instanceof \ReflectionNamedType && ! $type->isBuiltin()) {
                     $typeName = $type->getName();
-                    
+
                     // Handle Carbon instances
                     if ($typeName === Carbon::class) {
                         $value = Carbon::parse($value);

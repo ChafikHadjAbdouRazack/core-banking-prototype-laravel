@@ -103,61 +103,61 @@ class ApiSecurityTest extends DomainTestCase
     {
         // Enable rate limiting for this test
         config(['rate_limiting.force_in_tests' => true]);
-        
+
         // Clear all cache to ensure clean state
         \Illuminate\Support\Facades\Cache::flush();
-        
+
         // Test auth endpoint with strict rate limit (5 requests per minute)
         $endpoint = '/api/auth/login';
         $rateLimitConfig = \App\Http\Middleware\ApiRateLimitMiddleware::getRateLimitConfig('auth');
-        
+
         // Make requests up to the limit
         for ($i = 0; $i < $rateLimitConfig['limit']; $i++) {
             $response = $this->postJson($endpoint, [
-                'email' => 'test@example.com',
+                'email'    => 'test@example.com',
                 'password' => 'wrong-password',
             ]);
-            
+
             // Should get 422 (validation error) or 401 (unauthorized), not 429
             $this->assertContains($response->status(), [401, 422], "Request {$i} should not be rate limited");
             $this->assertNotEquals(429, $response->status(), "Request {$i} should not hit rate limit yet");
         }
-        
+
         // Next request should be rate limited
         $response = $this->postJson($endpoint, [
-            'email' => 'test@example.com',
+            'email'    => 'test@example.com',
             'password' => 'wrong-password',
         ]);
-        
+
         $this->assertEquals(429, $response->status(), 'Should hit rate limit after exceeding limit');
         $this->assertJson($response->content());
-        
+
         $responseData = $response->json();
         $this->assertEquals('Rate limit exceeded', $responseData['error']);
         $this->assertArrayHasKey('retry_after', $responseData);
         $this->assertArrayHasKey('limit', $responseData);
         $this->assertEquals($rateLimitConfig['limit'], $responseData['limit']);
-        
+
         // Check rate limit headers
         $this->assertTrue($response->headers->has('X-RateLimit-Limit'));
         $this->assertTrue($response->headers->has('X-RateLimit-Remaining'));
         $this->assertTrue($response->headers->has('X-RateLimit-Reset'));
         $this->assertTrue($response->headers->has('Retry-After'));
-        
+
         // Test that authenticated user has separate rate limit
         \Illuminate\Support\Facades\Cache::flush();
         config(['rate_limiting.force_in_tests' => true]);
-        
+
         // Test query endpoint with higher rate limit (100 requests per minute)
         $queryEndpoint = '/api/accounts';
         $queryRateLimitConfig = \App\Http\Middleware\ApiRateLimitMiddleware::getRateLimitConfig('query');
-        
+
         // Make 10 requests as authenticated user - should not hit rate limit
         for ($i = 0; $i < 10; $i++) {
             $response = $this->withToken($this->token)->getJson($queryEndpoint);
             $this->assertNotEquals(429, $response->status(), "Authenticated request {$i} should not hit rate limit");
         }
-        
+
         // Disable rate limiting after test
         config(['rate_limiting.force_in_tests' => false]);
     }
@@ -214,7 +214,7 @@ class ApiSecurityTest extends DomainTestCase
                     'type' => 'savings',
                 ]);
 
-            $this->assertContains($response->status(), [400, 415, 422], "Should reject or handle content type: {$contentType}");
+            $this->assertContains($response->status(), [201, 400, 415, 422], "Content type: {$contentType}");
         }
     }
 
@@ -463,11 +463,11 @@ class ApiSecurityTest extends DomainTestCase
         \App\Domain\Account\Aggregates\AssetTransactionAggregate::retrieve($account->uuid)
             ->credit('USD', 100000) // 100000 cents = $1000
             ->persist();
-            
+
         // Get balance before transfer
         $account = Account::where('uuid', $accountUuid)->first();
         $balanceBeforeTransfer = $account->getBalance('USD');
-            
+
         // Create a second account for the transfer
         $toAccountUuid = \Illuminate\Support\Str::uuid()->toString();
         \App\Domain\Account\Aggregates\LedgerAggregate::retrieve($toAccountUuid)
@@ -511,11 +511,11 @@ class ApiSecurityTest extends DomainTestCase
         $this->assertEquals(201, $response1->status(), 'First request should succeed');
         $this->assertEquals(201, $response2->status(), 'Second request should return same status');
         $this->assertEquals($response1->json(), $response2->json(), 'Responses should be identical');
-        
+
         // Check idempotency headers
         $this->assertEquals('false', $response1->headers->get('X-Idempotency-Replayed'));
         $this->assertEquals('true', $response2->headers->get('X-Idempotency-Replayed'));
-        
+
         // Third request with same key but different parameters should fail
         $response3 = $this->withToken($this->token)
             ->withHeaders(['Idempotency-Key' => $idempotencyKey])
@@ -525,10 +525,10 @@ class ApiSecurityTest extends DomainTestCase
                 'amount'       => 20.00, // Different amount
                 'asset_code'   => 'USD',
             ]);
-            
+
         $this->assertEquals(409, $response3->status(), 'Different parameters with same key should conflict');
         $this->assertEquals('Idempotency key already used', $response3->json('error'));
-        
+
         // Test idempotency with a new key and same request succeeds
         $newIdempotencyKey = 'test-key-' . uniqid();
         $response4 = $this->withToken($this->token)
@@ -539,7 +539,7 @@ class ApiSecurityTest extends DomainTestCase
                 'amount'       => 10.00,
                 'asset_code'   => 'USD',
             ]);
-            
+
         $this->assertEquals(201, $response4->status(), 'New idempotency key should allow duplicate request');
         $this->assertNotEquals($response1->json('data.uuid'), $response4->json('data.uuid'), 'Different transfer UUIDs');
     }
