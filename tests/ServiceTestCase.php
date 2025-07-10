@@ -4,7 +4,7 @@ namespace Tests;
 
 /**
  * Base test case for service tests that need to avoid transaction conflicts.
- * 
+ *
  * This class prevents automatic account creation during setUp to avoid
  * nested transaction issues with event sourcing aggregates.
  */

@@ -4,7 +4,7 @@ namespace Tests;
 
 /**
  * Base test case for controller tests that need to avoid transaction conflicts.
- * 
+ *
  * Controller tests often create accounts and other models in setUp,
  * which can cause nested transaction issues with event sourcing.
  */
