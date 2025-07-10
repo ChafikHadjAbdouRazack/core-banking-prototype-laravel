@@ -6,16 +6,17 @@ namespace Tests\Feature\Api;
 
 use App\Domain\Asset\Models\Asset;
 use App\Models\Account;
+use App\Models\AccountBalance;
 use App\Models\Stablecoin;
 use App\Models\StablecoinCollateralPosition;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
 use PHPUnit\Framework\Attributes\Test;
-use Tests\TestCase;
+use Tests\DomainTestCase;
 use Workflow\WorkflowStub;
 
-class StablecoinOperationsIntegrationTest extends TestCase
+class StablecoinOperationsIntegrationTest extends DomainTestCase
 {
     use RefreshDatabase;
 
@@ -31,8 +32,21 @@ class StablecoinOperationsIntegrationTest extends TestCase
     {
         parent::setUp();
 
-        // Use fake workflows
-        WorkflowStub::fake();
+        // Don't use fake workflows - they have issues with data objects
+        // WorkflowStub::fake();
+
+        // Mock the workflow to avoid AccountUuid dependency injection issues
+        $this->app->bind(\App\Domain\Stablecoin\Workflows\MintStablecoinWorkflow::class, function () {
+            return new class () {
+                public function execute()
+                {
+                    yield true;
+                }
+            };
+        });
+
+        // Process projectors synchronously in tests
+        config(['event-sourcing.projectors.sync' => true]);
 
         // Enable stablecoins sub-product for tests
         config(['sub_products.stablecoins.enabled' => true]);
@@ -51,7 +65,12 @@ class StablecoinOperationsIntegrationTest extends TestCase
 
         // Create test data
         $this->user = User::factory()->create();
-        $this->account = Account::factory()->create(['user_uuid' => $this->user->uuid]);
+
+        // For now, use factory to create account to avoid TestEventSerializer issues
+        $this->account = Account::factory()->create([
+            'user_uuid' => $this->user->uuid,
+            'name'      => 'Test Account',
+        ]);
 
         // Create assets
         $this->collateralAsset = Asset::firstOrCreate(
@@ -91,8 +110,8 @@ class StablecoinOperationsIntegrationTest extends TestCase
             'burn_fee'             => 0.001, // 0.1%
         ]);
 
-        // Give the account some balance for collateral
-        \App\Models\AccountBalance::factory()->create([
+        // Create balance directly for now
+        AccountBalance::create([
             'account_uuid' => $this->account->uuid,
             'asset_code'   => 'USD',
             'balance'      => 1000000, // $10,000
@@ -165,6 +184,11 @@ class StablecoinOperationsIntegrationTest extends TestCase
             'collateral_amount'     => 150000,
             'mint_amount'           => 100000,
         ]);
+
+        // Debug if mint fails
+        if ($mintResponse->status() !== 200) {
+            dump('Mint failed with response:', $mintResponse->json());
+        }
 
         // Ensure mint was successful
         $mintResponse->assertOk();
@@ -257,10 +281,13 @@ class StablecoinOperationsIntegrationTest extends TestCase
     public function it_can_get_liquidation_opportunities()
     {
         // Create a position that's under-collateralized
-        $underCollateralizedAccount = Account::factory()->create();
+        $underCollateralizedAccount = Account::factory()->create([
+            'user_uuid' => User::factory()->create()->uuid,
+            'name'      => 'Under Collateralized Account',
+        ]);
 
         // Give the account some balance for collateral
-        \App\Models\AccountBalance::factory()->create([
+        AccountBalance::create([
             'account_uuid' => $underCollateralizedAccount->uuid,
             'asset_code'   => 'USD',
             'balance'      => 500000, // $5,000
@@ -321,7 +348,10 @@ class StablecoinOperationsIntegrationTest extends TestCase
     {
         // Don't authenticate (don't use actingAs)
         $unauthenticatedUser = User::factory()->create();
-        $unauthenticatedAccount = Account::factory()->create(['user_uuid' => $unauthenticatedUser->uuid]);
+        $unauthenticatedAccount = Account::factory()->create([
+            'user_uuid' => $unauthenticatedUser->uuid,
+            'name'      => 'Unauthenticated Account',
+        ]);
 
         $response = $this->postJson('/api/v2/stablecoin-operations/mint', [
             'account_uuid'          => $unauthenticatedAccount->uuid,

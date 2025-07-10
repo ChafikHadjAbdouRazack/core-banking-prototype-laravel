@@ -55,12 +55,12 @@ class StablecoinAuthenticationTest extends DomainTestCase
         );
 
         Stablecoin::factory()->create([
-            'code'                 => 'FUSD',
-            'name'                 => 'FinAegis USD',
-            'symbol'               => 'FUSD',
-            'peg_asset_code'       => 'USD',
-            'precision'            => 2,
-            'is_active'            => true,
+            'code'           => 'FUSD',
+            'name'           => 'FinAegis USD',
+            'symbol'         => 'FUSD',
+            'peg_asset_code' => 'USD',
+            'precision'      => 2,
+            'is_active'      => true,
         ]);
     }
 

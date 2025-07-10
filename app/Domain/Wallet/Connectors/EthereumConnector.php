@@ -353,10 +353,10 @@ class EthereumConnector implements BlockchainConnector
             hash: $hash,
             status: $status,
             metadata: [
-                'chain_id' => $this->chainId,
-                'confirmations' => $confirmations,
-                'block_number' => hexdec($receipt->blockNumber ?? '0'),
-                'gas_used' => hexdec($receipt->gasUsed ?? '0'),
+                'chain_id'            => $this->chainId,
+                'confirmations'       => $confirmations,
+                'block_number'        => hexdec($receipt->blockNumber ?? '0'),
+                'gas_used'            => hexdec($receipt->gasUsed ?? '0'),
                 'effective_gas_price' => $receipt->effectiveGasPrice ?? null,
             ]
         );
@@ -365,7 +365,7 @@ class EthereumConnector implements BlockchainConnector
     public function validateAddress(string $address): bool
     {
         // Ethereum address validation
-        if (!preg_match('/^0x[a-fA-F0-9]{40}$/', $address)) {
+        if (! preg_match('/^0x[a-fA-F0-9]{40}$/', $address)) {
             return false;
         }
 

@@ -222,9 +222,9 @@ class SimpleBitcoinConnector implements BlockchainConnector
             status: $status,
             metadata: [
                 'confirmations' => $data['confirmations'] ?? 0,
-                'block_height' => $data['block_height'] ?? null,
-                'fee' => $data['fees'] ?? 0,
-                'time' => $data['received'] ?? null,
+                'block_height'  => $data['block_height'] ?? null,
+                'fee'           => $data['fees'] ?? 0,
+                'time'          => $data['received'] ?? null,
             ]
         );
     }

@@ -18,8 +18,11 @@ class StablecoinOperationsSimpleTest extends DomainTestCase
     use RefreshDatabase;
 
     protected User $user;
+
     protected Account $account;
+
     protected Stablecoin $stablecoin;
+
     protected Asset $collateralAsset;
 
     protected function setUp(): void
@@ -45,14 +48,14 @@ class StablecoinOperationsSimpleTest extends DomainTestCase
         $this->user = User::factory()->create();
         $this->account = Account::factory()->create([
             'user_uuid' => $this->user->uuid,
-            'name' => 'Test Account',
+            'name'      => 'Test Account',
         ]);
 
         // Create balance directly
         AccountBalance::create([
             'account_uuid' => $this->account->uuid,
-            'asset_code' => 'USD',
-            'balance' => 1000000, // $10,000
+            'asset_code'   => 'USD',
+            'balance'      => 1000000, // $10,000
         ]);
 
         // Create assets
@@ -60,7 +63,7 @@ class StablecoinOperationsSimpleTest extends DomainTestCase
             ['code' => 'USD'],
             [
                 'name'      => 'US Dollar',
-                'type'      => 'fiat',  
+                'type'      => 'fiat',
                 'precision' => 2,
                 'is_active' => true,
             ]
@@ -120,32 +123,32 @@ class StablecoinOperationsSimpleTest extends DomainTestCase
         // Create a position that's under-collateralized
         $underCollateralizedAccount = Account::factory()->create([
             'user_uuid' => User::factory()->create()->uuid,
-            'name' => 'Under Collateralized Account',
+            'name'      => 'Under Collateralized Account',
         ]);
 
         // Give the account some balance for collateral
         AccountBalance::create([
             'account_uuid' => $underCollateralizedAccount->uuid,
-            'asset_code' => 'USD',
-            'balance' => 500000, // $5,000
+            'asset_code'   => 'USD',
+            'balance'      => 500000, // $5,000
         ]);
 
         // Create position manually to bypass collateral checks
         $position = StablecoinCollateralPosition::create([
-            'account_uuid'          => $underCollateralizedAccount->uuid,
-            'stablecoin_code'       => 'FUSD',
-            'collateral_asset_code' => 'USD',
-            'collateral_amount'     => 110000, // $1,100 collateral
-            'debt_amount'           => 100000, // $1,000 debt (only 110% ratio, below 120% liquidation threshold)
-            'collateral_ratio'      => 1.1000, // 110% ratio
-            'status'                => 'active',
+            'account_uuid'             => $underCollateralizedAccount->uuid,
+            'stablecoin_code'          => 'FUSD',
+            'collateral_asset_code'    => 'USD',
+            'collateral_amount'        => 110000, // $1,100 collateral
+            'debt_amount'              => 100000, // $1,000 debt (only 110% ratio, below 120% liquidation threshold)
+            'collateral_ratio'         => 1.1000, // 110% ratio
+            'status'                   => 'active',
             'auto_liquidation_enabled' => true, // Enable auto liquidation
         ]);
-        
+
         // Verify position was created
         $this->assertDatabaseHas('stablecoin_collateral_positions', [
-            'uuid' => $position->uuid,
-            'status' => 'active',
+            'uuid'                     => $position->uuid,
+            'status'                   => 'active',
             'auto_liquidation_enabled' => true,
         ]);
 
@@ -193,7 +196,7 @@ class StablecoinOperationsSimpleTest extends DomainTestCase
                 ],
             ],
         ]);
-        
+
         // The test position should be liquidatable based on the collateral ratio
         // but the service may have additional business logic that filters it out
         $this->assertTrue(true, 'Liquidation endpoint returns valid structure');

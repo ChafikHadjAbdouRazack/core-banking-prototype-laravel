@@ -541,9 +541,9 @@ class BlockchainWalletService implements WalletConnectorInterface
         $balance = $connector->getBalance($address);
 
         return [
-            'balance' => $balance->balance,
+            'balance'   => $balance->balance,
             'available' => $balance->balance,
-            'pending' => '0',
+            'pending'   => '0',
         ];
     }
 
@@ -582,7 +582,7 @@ class BlockchainWalletService implements WalletConnectorInterface
             ->where('chain', $blockchain)
             ->first();
 
-        if (!$addressInfo) {
+        if (! $addressInfo) {
             throw new WalletException('Address not found');
         }
 
@@ -613,9 +613,9 @@ class BlockchainWalletService implements WalletConnectorInterface
         $status = $connector->getTransactionStatus($transactionHash);
 
         return [
-            'status' => $status->status,
+            'status'        => $status->status,
             'confirmations' => $status->confirmations ?? 0,
-            'block' => $status->block ?? null,
+            'block'         => $status->block ?? null,
         ];
     }
 
@@ -648,6 +648,7 @@ class BlockchainWalletService implements WalletConnectorInterface
     public function validateAddress(string $blockchain, string $address): bool
     {
         $connector = $this->getConnector($blockchain);
+
         return $connector->validateAddress($address);
     }
 
@@ -685,6 +686,7 @@ class BlockchainWalletService implements WalletConnectorInterface
         ];
 
         $chainFees = $fees[$blockchain] ?? $fees['ethereum'];
+
         return $chainFees[$priority] ?? $chainFees['medium'];
     }
 
