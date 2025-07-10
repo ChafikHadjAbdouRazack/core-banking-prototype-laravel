@@ -45,14 +45,14 @@ class AccountServiceTest extends TestCase
     public function test_create_account_with_account_object(): void
     {
         $account = new Account([
-            'name' => 'Test Account'
+            'name' => 'Test Account',
         ]);
 
         WorkflowStub::shouldReceive('make')
             ->with(CreateAccountWorkflow::class)
             ->once()
             ->andReturnSelf();
-        
+
         WorkflowStub::shouldReceive('start')
             ->once()
             ->with(Mockery::on(function ($arg) use ($account) {
@@ -65,14 +65,14 @@ class AccountServiceTest extends TestCase
     public function test_create_account_with_array(): void
     {
         $accountData = [
-            'name' => 'Array Account'
+            'name' => 'Array Account',
         ];
 
         WorkflowStub::shouldReceive('make')
             ->with(CreateAccountWorkflow::class)
             ->once()
             ->andReturnSelf();
-        
+
         WorkflowStub::shouldReceive('start')
             ->once()
             ->with(Mockery::type(Account::class));
@@ -88,7 +88,7 @@ class AccountServiceTest extends TestCase
             ->with(DestroyAccountWorkflow::class)
             ->once()
             ->andReturnSelf();
-        
+
         WorkflowStub::shouldReceive('start')
             ->once()
             ->with(Mockery::on(function ($arg) use ($uuid) {
@@ -107,7 +107,7 @@ class AccountServiceTest extends TestCase
             ->with(DepositAccountWorkflow::class)
             ->once()
             ->andReturnSelf();
-        
+
         WorkflowStub::shouldReceive('start')
             ->once()
             ->with(
@@ -127,7 +127,7 @@ class AccountServiceTest extends TestCase
             ->with(WithdrawAccountWorkflow::class)
             ->once()
             ->andReturnSelf();
-        
+
         WorkflowStub::shouldReceive('start')
             ->once()
             ->with(
@@ -150,7 +150,7 @@ class AccountServiceTest extends TestCase
             ->with(DepositAccountWorkflow::class)
             ->once()
             ->andReturnSelf();
-        
+
         WorkflowStub::shouldReceive('start')
             ->once()
             ->with(
@@ -172,7 +172,7 @@ class AccountServiceTest extends TestCase
             ->with(WithdrawAccountWorkflow::class)
             ->once()
             ->andReturnSelf();
-        
+
         WorkflowStub::shouldReceive('start')->once();
 
         $this->service->withdraw($uuid, 1000);
@@ -187,7 +187,7 @@ class AccountServiceTest extends TestCase
             ->with(WithdrawAccountWorkflow::class)
             ->once()
             ->andReturnSelf();
-        
+
         WorkflowStub::shouldReceive('start')->once();
 
         $this->service->withdraw($uuid, $moneyObject);

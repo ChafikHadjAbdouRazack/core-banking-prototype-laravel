@@ -207,11 +207,11 @@ return [
         'loan_settled_early'                         => App\Domain\Lending\Events\LoanSettledEarly::class,
 
         // AML Screening events
-        'aml_screening_started'                => App\Domain\Compliance\Events\AmlScreeningStarted::class,
-        'aml_screening_results_recorded'       => App\Domain\Compliance\Events\AmlScreeningResultsRecorded::class,
-        'aml_screening_match_status_updated'   => App\Domain\Compliance\Events\AmlScreeningMatchStatusUpdated::class,
-        'aml_screening_completed'              => App\Domain\Compliance\Events\AmlScreeningCompleted::class,
-        'aml_screening_reviewed'               => App\Domain\Compliance\Events\AmlScreeningReviewed::class,
+        'aml_screening_started'              => App\Domain\Compliance\Events\AmlScreeningStarted::class,
+        'aml_screening_results_recorded'     => App\Domain\Compliance\Events\AmlScreeningResultsRecorded::class,
+        'aml_screening_match_status_updated' => App\Domain\Compliance\Events\AmlScreeningMatchStatusUpdated::class,
+        'aml_screening_completed'            => App\Domain\Compliance\Events\AmlScreeningCompleted::class,
+        'aml_screening_reviewed'             => App\Domain\Compliance\Events\AmlScreeningReviewed::class,
     ],
 
     /*

@@ -1,9 +1,7 @@
 <?php
 
 /**
- * Migration for creating the AML screening events table
- *
- * @package Database\Migrations
+ * Migration for creating the AML screening events table.
  */
 
 use Illuminate\Database\Migrations\Migration;
@@ -19,7 +17,8 @@ return new class () extends Migration {
     public function up(): void
     {
         Schema::create(
-            'aml_screening_events', function (Blueprint $table) {
+            'aml_screening_events',
+            function (Blueprint $table) {
                 $table->id();
                 $table->uuid('aggregate_uuid')->nullable();
                 $table->unsignedBigInteger('aggregate_version')->nullable();

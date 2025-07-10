@@ -3,7 +3,6 @@
 namespace Tests\Unit\Domain\Compliance\Services;
 
 use App\Domain\Compliance\Services\AmlScreeningService;
-use App\Models\AmlScreening;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
@@ -167,10 +166,10 @@ class AmlScreeningServiceTest extends TestCase
         $method->setAccessible(true);
 
         $screeningNumber = $method->invoke($this->service);
-        
+
         $this->assertStringStartsWith('AML-' . date('Y') . '-', $screeningNumber);
         $this->assertMatchesRegularExpression('/^AML-\d{4}-\d{5}$/', $screeningNumber);
-        
+
         // When no screenings exist, it should generate the first number
         $this->assertEquals('AML-' . date('Y') . '-00001', $screeningNumber);
     }
@@ -178,16 +177,16 @@ class AmlScreeningServiceTest extends TestCase
     public function test_build_search_parameters_for_user(): void
     {
         $user = User::factory()->make([
-            'name' => 'Test User',
+            'name'    => 'Test User',
             'country' => 'UK',
         ]);
-        
+
         $reflection = new \ReflectionClass($this->service);
         $method = $reflection->getMethod('buildSearchParameters');
         $method->setAccessible(true);
 
         $params = $method->invoke($this->service, $user);
-        
+
         $this->assertEquals('Test User', $params['name']);
         $this->assertEquals('UK', $params['country']);
     }
@@ -197,15 +196,15 @@ class AmlScreeningServiceTest extends TestCase
         $user = User::factory()->make(['name' => 'Test User']);
         $additionalParams = [
             'include_aliases' => true,
-            'fuzzy_matching' => true,
+            'fuzzy_matching'  => true,
         ];
-        
+
         $reflection = new \ReflectionClass($this->service);
         $method = $reflection->getMethod('buildSearchParameters');
         $method->setAccessible(true);
 
         $params = $method->invoke($this->service, $user, $additionalParams);
-        
+
         $this->assertEquals('Test User', $params['name']);
         $this->assertTrue($params['include_aliases']);
         $this->assertTrue($params['fuzzy_matching']);
@@ -218,7 +217,7 @@ class AmlScreeningServiceTest extends TestCase
         $method->setAccessible(true);
 
         $matches = $method->invoke($this->service, ['name' => 'John Smith']);
-        
+
         $this->assertIsArray($matches);
         $this->assertEmpty($matches);
     }
@@ -231,7 +230,7 @@ class AmlScreeningServiceTest extends TestCase
 
         // The service has test logic that matches on 'test' or 'sanctioned'
         $matches = $method->invoke($this->service, ['name' => 'Test Person']);
-        
+
         $this->assertIsArray($matches);
         $this->assertNotEmpty($matches);
         $this->assertEquals('Test Person', $matches[0]['name']);
@@ -245,7 +244,7 @@ class AmlScreeningServiceTest extends TestCase
         $method->setAccessible(true);
 
         $result = $method->invoke($this->service, 'John Smith', 'US');
-        
+
         $this->assertFalse($result);
     }
 
@@ -257,7 +256,7 @@ class AmlScreeningServiceTest extends TestCase
 
         // The service has test logic that matches on certain keywords
         $result = $method->invoke($this->service, 'Senator Smith', 'US');
-        
+
         $this->assertTrue($result);
     }
 
@@ -268,7 +267,7 @@ class AmlScreeningServiceTest extends TestCase
         $method->setAccessible(true);
 
         $results = $method->invoke($this->service, 'John Smith');
-        
+
         $this->assertIsArray($results);
         $this->assertEmpty($results);
     }
@@ -281,7 +280,7 @@ class AmlScreeningServiceTest extends TestCase
 
         // The service has test logic that matches on 'fraud' or 'scandal'
         $results = $method->invoke($this->service, 'Fraud Person');
-        
+
         $this->assertIsArray($results);
         $this->assertNotEmpty($results);
         $this->assertArrayHasKey('title', $results[0]);

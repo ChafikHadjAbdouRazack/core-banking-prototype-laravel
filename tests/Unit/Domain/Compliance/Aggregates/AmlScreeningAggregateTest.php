@@ -8,7 +8,6 @@ use App\Domain\Compliance\Events\AmlScreeningMatchStatusUpdated;
 use App\Domain\Compliance\Events\AmlScreeningResultsRecorded;
 use App\Domain\Compliance\Events\AmlScreeningReviewed;
 use App\Domain\Compliance\Events\AmlScreeningStarted;
-use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
 use Tests\TestCase;
 
 class AmlScreeningAggregateTest extends TestCase
@@ -50,7 +49,7 @@ class AmlScreeningAggregateTest extends TestCase
 
         $aggregate->recordResults(
             ['matches' => 0],
-            ['is_pep' => false],
+            ['is_pep'   => false],
             ['articles' => []],
             [],
             0,
@@ -62,7 +61,7 @@ class AmlScreeningAggregateTest extends TestCase
         $aggregate->assertRecorded([
             new AmlScreeningResultsRecorded(
                 ['matches' => 0],
-                ['is_pep' => false],
+                ['is_pep'   => false],
                 ['articles' => []],
                 [],
                 0,
@@ -195,7 +194,7 @@ class AmlScreeningAggregateTest extends TestCase
         // Record results
         $aggregate->recordResults(
             ['matches' => 2],
-            ['is_pep' => true],
+            ['is_pep'   => true],
             ['articles' => []],
             [],
             2,
@@ -214,9 +213,9 @@ class AmlScreeningAggregateTest extends TestCase
 
         // Persist and retrieve to test state
         $aggregate->persist();
-        
+
         $retrievedAggregate = AmlScreeningAggregate::retrieve($uuid);
-        
+
         $this->assertEquals('completed', $retrievedAggregate->getStatus());
         $this->assertEquals(2, $retrievedAggregate->getTotalMatches());
         $this->assertEquals(1, $retrievedAggregate->getConfirmedMatches());

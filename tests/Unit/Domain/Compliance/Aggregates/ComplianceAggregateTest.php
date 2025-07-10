@@ -32,8 +32,8 @@ class ComplianceAggregateTest extends TestCase
 
         // Should record one submission event
         $aggregate->assertRecorded(function ($event) use ($userUuid, $documents) {
-            return $event instanceof KycSubmissionReceived 
-                && $event->userUuid === $userUuid 
+            return $event instanceof KycSubmissionReceived
+                && $event->userUuid === $userUuid
                 && $event->documents === $documents;
         });
 
@@ -158,7 +158,7 @@ class ComplianceAggregateTest extends TestCase
         $documents = [['type' => 'passport']];
 
         $event = new KycSubmissionReceived($userUuid, $documents);
-        
+
         // Use reflection to call protected method
         $reflection = new \ReflectionClass($aggregate);
         $method = $reflection->getMethod('applyKycSubmissionReceived');
@@ -179,7 +179,7 @@ class ComplianceAggregateTest extends TestCase
         $level = 'full';
 
         $event = new KycVerificationCompleted($userUuid, $level);
-        
+
         // Use reflection to call protected method
         $reflection = new \ReflectionClass($aggregate);
         $method = $reflection->getMethod('applyKycVerificationCompleted');
@@ -202,7 +202,7 @@ class ComplianceAggregateTest extends TestCase
         $reason = 'Documents expired';
 
         $event = new KycVerificationRejected($userUuid, $reason);
-        
+
         // Use reflection to call protected method
         $reflection = new \ReflectionClass($aggregate);
         $method = $reflection->getMethod('applyKycVerificationRejected');

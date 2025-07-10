@@ -90,9 +90,9 @@ class WebhookEventListenerTest extends TestCase
         $accountUuid = 'account-456';
         $event = Mockery::mock(AccountFrozen::class);
         $event->shouldReceive('aggregateRootUuid')->andReturn($accountUuid);
-        
+
         $this->setEventProperties($event, [
-            'reason' => 'Suspicious activity detected'
+            'reason' => 'Suspicious activity detected',
         ]);
 
         $this->webhookService->shouldReceive('dispatchAccountEvent')
