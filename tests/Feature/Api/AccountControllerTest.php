@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Api;
 
+use App\Models\User;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\ControllerTestCase;
 

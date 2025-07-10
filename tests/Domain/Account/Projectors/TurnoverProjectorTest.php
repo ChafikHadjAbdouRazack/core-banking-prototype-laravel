@@ -2,6 +2,7 @@
 
 namespace Tests\Domain\Account\Projectors;
 
+use App\Domain\Account\Utils\ValidatesHash;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 

@@ -2,7 +2,11 @@
 
 namespace Tests\Security\Cryptography;
 
+use App\Domain\Account\ValueObjects\Hash;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\DB;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 

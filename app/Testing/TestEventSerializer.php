@@ -15,12 +15,23 @@ class TestEventSerializer implements EventSerializer
 
         foreach ($reflection->getProperties() as $property) {
             $property->setAccessible(true);
+            
+            // Skip uninitialized properties
+            if (!$property->isInitialized($event)) {
+                continue;
+            }
+            
             $value = $property->getValue($event);
 
             // Handle Carbon instances
             if ($value instanceof Carbon) {
                 $properties[$property->getName()] = $value->toIso8601String();
-            } else {
+            } 
+            // Handle DataObjects
+            elseif (is_object($value) && method_exists($value, 'toArray')) {
+                $properties[$property->getName()] = $value->toArray();
+            } 
+            else {
                 $properties[$property->getName()] = $value;
             }
         }
@@ -45,10 +56,26 @@ class TestEventSerializer implements EventSerializer
                 $reflection = new \ReflectionProperty($event, $property);
                 $reflection->setAccessible(true);
 
-                // Handle Carbon type hints
+                // Handle type hints
                 $type = $reflection->getType();
-                if ($type && $type instanceof \ReflectionNamedType && ! $type->isBuiltin() && $type->getName() === Carbon::class) {
-                    $value = Carbon::parse($value);
+                if ($type && $type instanceof \ReflectionNamedType && ! $type->isBuiltin()) {
+                    $typeName = $type->getName();
+                    
+                    // Handle Carbon instances
+                    if ($typeName === Carbon::class) {
+                        $value = Carbon::parse($value);
+                    }
+                    // Handle DataObject hydration
+                    elseif (is_array($value) && function_exists('hydrate')) {
+                        try {
+                            $value = hydrate($typeName, $value);
+                        } catch (\Exception $e) {
+                            // If hydration fails, try to create instance if it has fromArray method
+                            if (method_exists($typeName, 'fromArray')) {
+                                $value = $typeName::fromArray($value);
+                            }
+                        }
+                    }
                 }
 
                 $reflection->setValue($event, $value);

@@ -2,6 +2,9 @@
 
 namespace Tests\Domain\Account\Projectors;
 
+use App\Domain\Account\Aggregates\LedgerAggregate;
+use App\Domain\Account\Utils\ValidatesHash;
+use App\Models\Account;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 

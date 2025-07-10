@@ -110,7 +110,6 @@ class AccountController extends Controller
     {
         $validated = $request->validate(
             [
-            'user_uuid'       => 'required|uuid',
             'name'            => 'required|string|max:255',
             'initial_balance' => 'sometimes|integer|min:0',
             ]
@@ -120,10 +119,11 @@ class AccountController extends Controller
         $accountUuid = Str::uuid()->toString();
 
         // Create the Account data object with the UUID
+        // Always use the authenticated user's UUID, never from request
         $accountData = new \App\Domain\Account\DataObjects\Account(
             uuid: $accountUuid,
             name: $validated['name'],
-            userUuid: $validated['user_uuid']
+            userUuid: $request->user()->uuid
         );
 
         $workflow = WorkflowStub::make(CreateAccountWorkflow::class);
@@ -146,7 +146,7 @@ class AccountController extends Controller
             $account = Account::create(
                 [
                 'uuid'      => $accountUuid,
-                'user_uuid' => $validated['user_uuid'],
+                'user_uuid' => $request->user()->uuid,
                 'name'      => $validated['name'],
                 'balance'   => $validated['initial_balance'] ?? 0,
                 ]
@@ -198,13 +198,18 @@ class AccountController extends Controller
      *     )
      * )
      */
-    public function show(string $uuid): JsonResponse
+    public function show(Request $request, string $uuid): JsonResponse
     {
         // Try to get from cache first
         $account = $this->accountCache->get($uuid);
 
         if (! $account) {
             abort(404, 'Account not found');
+        }
+        
+        // Check authorization - user must own the account
+        if ($account->user_uuid !== $request->user()->uuid) {
+            abort(403, 'Forbidden');
         }
 
         return response()->json(
@@ -256,9 +261,14 @@ class AccountController extends Controller
      *     )
      * )
      */
-    public function destroy(string $uuid): JsonResponse
+    public function destroy(Request $request, string $uuid): JsonResponse
     {
         $account = Account::where('uuid', $uuid)->firstOrFail();
+        
+        // Check authorization - user must own the account
+        if ($account->user_uuid !== $request->user()->uuid) {
+            abort(403, 'Forbidden');
+        }
 
         if ($account->balance > 0) {
             return response()->json(
@@ -339,6 +349,11 @@ class AccountController extends Controller
         );
 
         $account = Account::where('uuid', $uuid)->firstOrFail();
+        
+        // Check authorization - user must own the account
+        if ($account->user_uuid !== $request->user()->uuid) {
+            abort(403, 'Forbidden');
+        }
 
         if ($account->frozen) {
             return response()->json(
@@ -413,6 +428,11 @@ class AccountController extends Controller
         );
 
         $account = Account::where('uuid', $uuid)->firstOrFail();
+        
+        // Check authorization - user must own the account
+        if ($account->user_uuid !== $request->user()->uuid) {
+            abort(403, 'Forbidden');
+        }
 
         if (! $account->frozen) {
             return response()->json(

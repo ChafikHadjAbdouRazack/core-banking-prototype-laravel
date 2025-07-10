@@ -27,6 +27,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'sub_product' => \App\Http\Middleware\EnsureSubProductEnabled::class,
             'auth.apikey' => \App\Http\Middleware\AuthenticateApiKey::class,
             'auth.api_or_sanctum' => \App\Http\Middleware\AuthenticateApiOrSanctum::class,
+            'idempotency' => \App\Http\Middleware\IdempotencyMiddleware::class,
         ]);
         
         // Apply middleware to API routes (no global throttling - use custom rate limiting)

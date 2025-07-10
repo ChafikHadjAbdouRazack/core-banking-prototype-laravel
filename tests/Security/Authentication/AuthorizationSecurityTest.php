@@ -57,17 +57,11 @@ class AuthorizationSecurityTest extends DomainTestCase
     #[Test]
     public function test_users_cannot_access_other_users_accounts()
     {
-        $this->markTestSkipped('Account authorization not implemented in API v1 - accounts are accessible by anyone');
-
-        // TODO: Implement proper authorization in AccountController
-        // The API currently doesn't check if the account belongs to the authenticated user
-        /*
         // User 1 trying to access User 2's account
         $response = $this->withToken($this->userToken)
             ->getJson("/api/accounts/{$this->user2Account->uuid}");
 
         $this->assertEquals(403, $response->status());
-        $response->assertJson(['message' => 'Forbidden']);
 
         // Verify cannot see in listing either
         $response = $this->withToken($this->userToken)
@@ -76,27 +70,24 @@ class AuthorizationSecurityTest extends DomainTestCase
         $accounts = $response->json('data');
         $accountUuids = array_column($accounts, 'uuid');
 
-        $this->assertContains($this->user1Account->uuid, $accountUuids);
-        $this->assertNotContains($this->user2Account->uuid, $accountUuids);
-        */
+        $this->assertContains((string) $this->user1Account->uuid, $accountUuids);
+        $this->assertNotContains((string) $this->user2Account->uuid, $accountUuids);
     }
 
     #[Test]
     public function test_users_cannot_modify_other_users_accounts()
     {
-        $this->markTestSkipped('Account authorization not implemented - API v1 has no update endpoint, delete has no auth check');
-
-        // TODO: Implement proper authorization checks in AccountController
-        /*
-        // Try to update another user's account
+        // Try to freeze another user's account
         $response = $this->withToken($this->userToken)
-            ->putJson("/api/accounts/{$this->user2Account->uuid}", [
-                'name' => 'Hacked Account',
+            ->postJson("/api/accounts/{$this->user2Account->uuid}/freeze", [
+                'reason' => 'Attempting to freeze',
             ]);
 
         $this->assertEquals(403, $response->status());
 
-        // Try to delete
+        // Try to delete (first set balance to 0 to ensure it's not the balance check failing)
+        $this->user2Account->update(['balance' => 0]);
+        
         $response = $this->withToken($this->userToken)
             ->deleteJson("/api/accounts/{$this->user2Account->uuid}");
 
@@ -107,30 +98,25 @@ class AuthorizationSecurityTest extends DomainTestCase
             'uuid' => $this->user2Account->uuid,
             'name' => $this->user2Account->name,
         ]);
-        */
     }
 
     #[Test]
     public function test_users_cannot_transfer_from_others_accounts()
     {
-        $this->markTestSkipped('Transfer authorization needs to be tested - endpoint may not validate from_account ownership');
-
-        // TODO: Verify TransferController checks account ownership
-        /*
         $response = $this->withToken($this->userToken)
             ->postJson('/api/transfers', [
                 'from_account' => $this->user2Account->uuid, // Not their account
                 'to_account'   => $this->user1Account->uuid,
-                'amount'       => 10000,
-                'currency'     => 'USD',
+                'amount'       => 100.00,
+                'asset_code'   => 'USD',
             ]);
 
         $this->assertEquals(403, $response->status());
+        $this->assertEquals('UNAUTHORIZED_TRANSFER', $response->json('error'));
 
         // Verify balances unchanged
         $this->assertEquals(30000, $this->user2Account->fresh()->balance);
         $this->assertEquals(50000, $this->user1Account->fresh()->balance);
-        */
     }
 
     #[Test]
@@ -196,11 +182,6 @@ class AuthorizationSecurityTest extends DomainTestCase
     #[Test]
     public function test_mass_assignment_protection()
     {
-        $this->markTestSkipped('Account creation accepts user_uuid from request - security vulnerability');
-
-        // TODO: Fix AccountController::store to only use authenticated user's UUID
-        // Currently allows creating accounts for other users
-        /*
         // Try to assign protected attributes
         $response = $this->withToken($this->userToken)
             ->postJson('/api/accounts', [
@@ -214,19 +195,20 @@ class AuthorizationSecurityTest extends DomainTestCase
                 'uuid'       => 'custom-uuid-12345',
             ]);
 
-        if ($response->status() === 201) {
-            $account = $response->json('data');
-
-            // Should be assigned to authenticated user, not user2
-            $this->assertEquals($this->user1->uuid, $account['user_uuid']);
-
-            // Balance should be 0, not 1000000
-            $this->assertEquals(0, $account['balance']);
-
-            // UUID should be auto-generated, not custom
-            $this->assertNotEquals('custom-uuid-12345', $account['uuid']);
+        if ($response->status() !== 201) {
+            $this->fail('Account creation failed: ' . json_encode($response->json()));
         }
-        */
+        
+        $account = $response->json('data');
+
+        // Should be assigned to authenticated user, not user2
+        $this->assertEquals($this->user1->uuid, $account['user_uuid']);
+
+        // Balance should be 0, not 1000000
+        $this->assertEquals(0, $account['balance']);
+
+        // UUID should be auto-generated, not custom
+        $this->assertNotEquals('custom-uuid-12345', $account['uuid']);
     }
 
     #[Test]

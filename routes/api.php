@@ -134,8 +134,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/accounts/{uuid}/deposit', [TransactionController::class, 'deposit'])->middleware('transaction.rate_limit:deposit');
     Route::post('/accounts/{uuid}/withdraw', [TransactionController::class, 'withdraw'])->middleware('transaction.rate_limit:withdraw');
 
-    // Transfer endpoints (transaction rate limiting)
-    Route::post('/transfers', [TransferController::class, 'store'])->middleware('transaction.rate_limit:transfer');
+    // Transfer endpoints (transaction rate limiting and idempotency)
+    Route::post('/transfers', [TransferController::class, 'store'])->middleware(['transaction.rate_limit:transfer', 'idempotency']);
     Route::middleware('api.rate_limit:query')->group(function () {
         Route::get('/transfers/{uuid}', [TransferController::class, 'show']);
         Route::get('/accounts/{uuid}/transfers', [TransferController::class, 'history']);

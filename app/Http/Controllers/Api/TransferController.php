@@ -92,6 +92,17 @@ class TransferController extends Controller
         $fromAccount = Account::where('uuid', $fromAccountUuid)->first();
         $toAccount = Account::where('uuid', $toAccountUuid)->first();
 
+        // Check authorization - user must own the from account
+        if ($fromAccount && $fromAccount->user_uuid !== $request->user()->uuid) {
+            return response()->json(
+                [
+                'message' => 'Unauthorized: You can only transfer from your own accounts',
+                'error'   => 'UNAUTHORIZED_TRANSFER',
+                ],
+                403
+            );
+        }
+
         if ($fromAccount && $fromAccount->frozen) {
             return response()->json(
                 [

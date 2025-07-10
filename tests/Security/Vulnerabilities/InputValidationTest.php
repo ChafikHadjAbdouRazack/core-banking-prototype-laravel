@@ -2,13 +2,19 @@
 
 namespace Tests\Security\Vulnerabilities;
 
+use App\Models\Account;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class InputValidationTest extends TestCase
 {
-    protected User $user;
+    use RefreshDatabase;
 
+    protected User $user;
+    protected Account $account;
     protected string $token;
 
     protected function setUp(): void
@@ -20,6 +26,11 @@ class InputValidationTest extends TestCase
 
         $this->user = User::factory()->create();
         $this->token = $this->user->createToken('test-token')->plainTextToken;
+        
+        // Create an account for testing
+        $this->account = Account::factory()->create([
+            'user_uuid' => $this->user->uuid,
+        ]);
     }
 
     #[Test]

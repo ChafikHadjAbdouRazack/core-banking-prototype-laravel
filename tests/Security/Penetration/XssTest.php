@@ -72,7 +72,7 @@ class XssTest extends DomainTestCase
             )
             ->persist();
 
-        $account = Account::find($accountUuid);
+        $account = Account::where('uuid', $accountUuid)->first();
 
         // Add balance using event sourcing
         \App\Domain\Account\Aggregates\LedgerAggregate::retrieve($account->uuid)
@@ -218,7 +218,7 @@ class XssTest extends DomainTestCase
             )
             ->persist();
 
-        $account = Account::find($accountUuid);
+        $account = Account::where('uuid', $accountUuid)->first();
 
         // Search with XSS payload in transactions
         $response = $this->withToken($this->token)

@@ -101,15 +101,65 @@ class ApiSecurityTest extends DomainTestCase
     #[Test]
     public function test_api_rate_limiting_per_user()
     {
-        // Skip this test for now - rate limiting middleware is not properly configured
-        // The middleware checks for rate_limiting.enabled config which defaults to true,
-        // but in testing it's disabled unless rate_limiting.force_in_tests is true
-        $this->markTestSkipped('Rate limiting is disabled in testing environment - needs proper test setup');
-
-        // TODO: Fix rate limiting test by:
-        // 1. Ensuring rate limiting middleware is properly registered
-        // 2. Creating a dedicated test endpoint that has rate limiting enabled
-        // 3. Or mocking the Cache facade to simulate rate limit hits
+        // Enable rate limiting for this test
+        config(['rate_limiting.force_in_tests' => true]);
+        
+        // Clear all cache to ensure clean state
+        \Illuminate\Support\Facades\Cache::flush();
+        
+        // Test auth endpoint with strict rate limit (5 requests per minute)
+        $endpoint = '/api/auth/login';
+        $rateLimitConfig = \App\Http\Middleware\ApiRateLimitMiddleware::getRateLimitConfig('auth');
+        
+        // Make requests up to the limit
+        for ($i = 0; $i < $rateLimitConfig['limit']; $i++) {
+            $response = $this->postJson($endpoint, [
+                'email' => 'test@example.com',
+                'password' => 'wrong-password',
+            ]);
+            
+            // Should get 422 (validation error) or 401 (unauthorized), not 429
+            $this->assertContains($response->status(), [401, 422], "Request {$i} should not be rate limited");
+            $this->assertNotEquals(429, $response->status(), "Request {$i} should not hit rate limit yet");
+        }
+        
+        // Next request should be rate limited
+        $response = $this->postJson($endpoint, [
+            'email' => 'test@example.com',
+            'password' => 'wrong-password',
+        ]);
+        
+        $this->assertEquals(429, $response->status(), 'Should hit rate limit after exceeding limit');
+        $this->assertJson($response->content());
+        
+        $responseData = $response->json();
+        $this->assertEquals('Rate limit exceeded', $responseData['error']);
+        $this->assertArrayHasKey('retry_after', $responseData);
+        $this->assertArrayHasKey('limit', $responseData);
+        $this->assertEquals($rateLimitConfig['limit'], $responseData['limit']);
+        
+        // Check rate limit headers
+        $this->assertTrue($response->headers->has('X-RateLimit-Limit'));
+        $this->assertTrue($response->headers->has('X-RateLimit-Remaining'));
+        $this->assertTrue($response->headers->has('X-RateLimit-Reset'));
+        $this->assertTrue($response->headers->has('Retry-After'));
+        
+        // Test that authenticated user has separate rate limit
+        \Illuminate\Support\Facades\Cache::flush();
+        config(['rate_limiting.force_in_tests' => true]);
+        
+        // Test query endpoint with higher rate limit (100 requests per minute)
+        $queryEndpoint = '/api/accounts';
+        $queryRateLimitConfig = \App\Http\Middleware\ApiRateLimitMiddleware::getRateLimitConfig('query');
+        
+        // Make 10 requests as authenticated user - should not hit rate limit
+        for ($i = 0; $i < 10; $i++) {
+            $response = $this->withToken($this->token)->getJson($queryEndpoint);
+            $this->assertNotEquals(429, $response->status(), "Authenticated request {$i} should not hit rate limit");
+        }
+        
+        // Disable rate limiting after test
+        config(['rate_limiting.force_in_tests' => false]);
     }
 
     #[Test]
@@ -242,7 +292,7 @@ class ApiSecurityTest extends DomainTestCase
             )
             ->persist();
 
-        $account = Account::find($accountUuid);
+        $account = Account::where('uuid', $accountUuid)->first();
 
         foreach ($overrideHeaders as $header => $value) {
             $response = $this->withToken($this->token)
@@ -393,9 +443,6 @@ class ApiSecurityTest extends DomainTestCase
     #[Test]
     public function test_api_transaction_idempotency()
     {
-        // Skip this test if transfers endpoint is not implemented
-        $this->markTestSkipped('Transfer endpoint idempotency not implemented yet');
-
         // Create account using the proper event sourcing method
         $accountUuid = \Illuminate\Support\Str::uuid()->toString();
         \App\Domain\Account\Aggregates\LedgerAggregate::retrieve($accountUuid)
@@ -410,11 +457,29 @@ class ApiSecurityTest extends DomainTestCase
             )
             ->persist();
 
-        $account = Account::find($accountUuid);
+        $account = Account::where('uuid', $accountUuid)->first();
 
-        // Add balance using event sourcing
-        \App\Domain\Account\Aggregates\LedgerAggregate::retrieve($account->uuid)
-            ->addBalance('USD', 100000)
+        // Add balance using event sourcing with AssetTransactionAggregate
+        \App\Domain\Account\Aggregates\AssetTransactionAggregate::retrieve($account->uuid)
+            ->credit('USD', 100000) // 100000 cents = $1000
+            ->persist();
+            
+        // Get balance before transfer
+        $account = Account::where('uuid', $accountUuid)->first();
+        $balanceBeforeTransfer = $account->getBalance('USD');
+            
+        // Create a second account for the transfer
+        $toAccountUuid = \Illuminate\Support\Str::uuid()->toString();
+        \App\Domain\Account\Aggregates\LedgerAggregate::retrieve($toAccountUuid)
+            ->createAccount(
+                hydrate(
+                    class: \App\Domain\Account\DataObjects\Account::class,
+                    properties: [
+                        'name'      => 'Destination Account',
+                        'user_uuid' => User::factory()->create()->uuid,
+                    ]
+                )
+            )
             ->persist();
 
         $idempotencyKey = 'test-key-' . uniqid();
@@ -424,30 +489,58 @@ class ApiSecurityTest extends DomainTestCase
             ->withHeaders(['Idempotency-Key' => $idempotencyKey])
             ->postJson('/api/transfers', [
                 'from_account' => $account->uuid,
-                'to_account'   => Account::factory()->create(['user_uuid' => User::factory()->create()->uuid])->uuid,
-                'amount'       => 1000,
-                'currency'     => 'USD',
+                'to_account'   => $toAccountUuid,
+                'amount'       => 10.00, // Amount in decimal, not cents
+                'asset_code'   => 'USD',
             ]);
 
-        // Second request with same key
+        // Second request with same key and parameters
         $response2 = $this->withToken($this->token)
             ->withHeaders(['Idempotency-Key' => $idempotencyKey])
             ->postJson('/api/transfers', [
                 'from_account' => $account->uuid,
-                'to_account'   => Account::factory()->create(['user_uuid' => User::factory()->create()->uuid])->uuid,
-                'amount'       => 1000,
-                'currency'     => 'USD',
+                'to_account'   => $toAccountUuid,
+                'amount'       => 10.00,
+                'asset_code'   => 'USD',
             ]);
 
         // Should return same response
-        if ($response1->status() === 201) {
-            $this->assertEquals($response1->json(), $response2->json());
-
-            // Balance should only be deducted once
-            $this->assertEquals(99000, $account->fresh()->balance);
-        } else {
-            // At least one assertion to avoid risky test
-            $this->assertNotNull($response1);
+        if ($response1->status() !== 201) {
+            $this->fail('First transfer request failed: ' . json_encode($response1->json()));
         }
+        $this->assertEquals(201, $response1->status(), 'First request should succeed');
+        $this->assertEquals(201, $response2->status(), 'Second request should return same status');
+        $this->assertEquals($response1->json(), $response2->json(), 'Responses should be identical');
+        
+        // Check idempotency headers
+        $this->assertEquals('false', $response1->headers->get('X-Idempotency-Replayed'));
+        $this->assertEquals('true', $response2->headers->get('X-Idempotency-Replayed'));
+        
+        // Third request with same key but different parameters should fail
+        $response3 = $this->withToken($this->token)
+            ->withHeaders(['Idempotency-Key' => $idempotencyKey])
+            ->postJson('/api/transfers', [
+                'from_account' => $account->uuid,
+                'to_account'   => $toAccountUuid,
+                'amount'       => 20.00, // Different amount
+                'asset_code'   => 'USD',
+            ]);
+            
+        $this->assertEquals(409, $response3->status(), 'Different parameters with same key should conflict');
+        $this->assertEquals('Idempotency key already used', $response3->json('error'));
+        
+        // Test idempotency with a new key and same request succeeds
+        $newIdempotencyKey = 'test-key-' . uniqid();
+        $response4 = $this->withToken($this->token)
+            ->withHeaders(['Idempotency-Key' => $newIdempotencyKey])
+            ->postJson('/api/transfers', [
+                'from_account' => $account->uuid,
+                'to_account'   => $toAccountUuid,
+                'amount'       => 10.00,
+                'asset_code'   => 'USD',
+            ]);
+            
+        $this->assertEquals(201, $response4->status(), 'New idempotency key should allow duplicate request');
+        $this->assertNotEquals($response1->json('data.uuid'), $response4->json('data.uuid'), 'Different transfer UUIDs');
     }
 }
