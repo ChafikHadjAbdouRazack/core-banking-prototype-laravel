@@ -308,4 +308,70 @@ class EthereumConnector implements BlockchainConnector
             return false;
         }
     }
+
+    public function getTransactionStatus(string $hash): TransactionResult
+    {
+        $receipt = null;
+
+        $this->web3->eth->getTransactionReceipt(
+            $hash,
+            function ($err, $result) use (&$receipt) {
+                if ($err !== null) {
+                    throw new \Exception('Failed to get transaction receipt: ' . $err->getMessage());
+                }
+                $receipt = $result;
+            }
+        );
+
+        if ($receipt === null) {
+            return new TransactionResult(
+                hash: $hash,
+                status: 'pending',
+                metadata: ['chain_id' => $this->chainId]
+            );
+        }
+
+        $status = ($receipt->status === '0x1') ? 'confirmed' : 'failed';
+        $confirmations = 0;
+
+        if ($receipt->blockNumber) {
+            $currentBlock = null;
+            $this->web3->eth->blockNumber(
+                function ($err, $result) use (&$currentBlock) {
+                    if ($err === null) {
+                        $currentBlock = hexdec($result);
+                    }
+                }
+            );
+
+            if ($currentBlock) {
+                $confirmations = $currentBlock - hexdec($receipt->blockNumber);
+            }
+        }
+
+        return new TransactionResult(
+            hash: $hash,
+            status: $status,
+            metadata: [
+                'chain_id' => $this->chainId,
+                'confirmations' => $confirmations,
+                'block_number' => hexdec($receipt->blockNumber ?? '0'),
+                'gas_used' => hexdec($receipt->gasUsed ?? '0'),
+                'effective_gas_price' => $receipt->effectiveGasPrice ?? null,
+            ]
+        );
+    }
+
+    public function validateAddress(string $address): bool
+    {
+        // Ethereum address validation
+        if (!preg_match('/^0x[a-fA-F0-9]{40}$/', $address)) {
+            return false;
+        }
+
+        // Check if it has correct checksum (EIP-55)
+        // For now, we'll accept both checksummed and non-checksummed addresses
+        // In production, you might want to validate checksum
+        return true;
+    }
 }

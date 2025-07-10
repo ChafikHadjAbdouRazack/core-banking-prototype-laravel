@@ -200,6 +200,68 @@ class SimpleBitcoinConnector implements BlockchainConnector
         }
     }
 
+    public function getTransactionStatus(string $hash): TransactionResult
+    {
+        $response = Http::get("{$this->apiUrl}/txs/{$hash}");
+
+        if (! $response->successful()) {
+            throw new \Exception('Failed to fetch transaction status');
+        }
+
+        $data = $response->json();
+
+        $status = 'pending';
+        if (($data['confirmations'] ?? 0) >= 6) {
+            $status = 'confirmed';
+        } elseif (($data['confirmations'] ?? 0) > 0) {
+            $status = 'confirming';
+        }
+
+        return new TransactionResult(
+            hash: $hash,
+            status: $status,
+            metadata: [
+                'confirmations' => $data['confirmations'] ?? 0,
+                'block_height' => $data['block_height'] ?? null,
+                'fee' => $data['fees'] ?? 0,
+                'time' => $data['received'] ?? null,
+            ]
+        );
+    }
+
+    public function validateAddress(string $address): bool
+    {
+        // Basic Bitcoin address validation
+        // Check if it's a valid P2PKH, P2SH, or Bech32 address
+
+        // P2PKH addresses start with 1 (mainnet) or m/n (testnet)
+        // P2SH addresses start with 3 (mainnet) or 2 (testnet)
+        // Bech32 addresses start with bc1 (mainnet) or tb1 (testnet)
+
+        $patterns = [
+            'mainnet' => [
+                '/^1[a-km-zA-HJ-NP-Z1-9]{25,34}$/', // P2PKH
+                '/^3[a-km-zA-HJ-NP-Z1-9]{25,34}$/', // P2SH
+                '/^bc1[a-z0-9]{39,59}$/', // Bech32
+            ],
+            'testnet' => [
+                '/^[mn][a-km-zA-HJ-NP-Z1-9]{25,34}$/', // P2PKH
+                '/^2[a-km-zA-HJ-NP-Z1-9]{25,34}$/', // P2SH
+                '/^tb1[a-z0-9]{39,59}$/', // Bech32
+            ],
+        ];
+
+        $networkPatterns = $patterns[$this->network] ?? $patterns['mainnet'];
+
+        foreach ($networkPatterns as $pattern) {
+            if (preg_match($pattern, $address)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private function getEstimatedFeeRate(float $priority = 0.5): int
     {
         // In production, fetch from API

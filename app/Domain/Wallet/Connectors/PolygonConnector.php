@@ -12,18 +12,14 @@ class PolygonConnector extends EthereumConnector
 
     public function __construct(array $config = [])
     {
-        parent::__construct($config);
+        $rpcUrl = $config['rpc_url'] ?? 'https://polygon-rpc.com';
+        $chainId = $config['chain_id'] ?? '137';
+
+        parent::__construct($rpcUrl, $chainId);
 
         // Override with Polygon-specific settings
-        $this->rpcUrl = $config['rpc_url'] ?? 'https://polygon-rpc.com';
-        $this->chainId = $config['chain_id'] ?? '137';
-
-        // Update Web3 provider for Polygon
-        $this->web3 = new \Web3\Web3(
-            new \Web3\Providers\HttpProvider(
-                new \Web3\RequestManagers\HttpRequestManager($this->rpcUrl)
-            )
-        );
+        $this->rpcUrl = $rpcUrl;
+        $this->chainId = $chainId;
     }
 
     public function generateAddress(string $publicKey): AddressData
@@ -46,18 +42,18 @@ class PolygonConnector extends EthereumConnector
         );
     }
 
-    public function prepareTransaction(string $from, string $to, string $amount): array
-    {
-        $transaction = parent::prepareTransaction($from, $to, $amount);
+    // public function prepareTransaction(string $from, string $to, string $amount): array
+    // {
+    //     $transaction = parent::prepareTransaction($from, $to, $amount);
 
-        // Update chain ID for Polygon
-        $transaction['chainId'] = $this->chainId;
+    //     // Update chain ID for Polygon
+    //     $transaction['chainId'] = $this->chainId;
 
-        // Polygon typically has lower gas prices
-        $transaction['gasPrice'] = $this->getPolygonGasPrice();
+    //     // Polygon typically has lower gas prices
+    //     $transaction['gasPrice'] = $this->getPolygonGasPrice();
 
-        return $transaction;
-    }
+    //     return $transaction;
+    // }
 
     private function getPolygonGasPrice(): string
     {
