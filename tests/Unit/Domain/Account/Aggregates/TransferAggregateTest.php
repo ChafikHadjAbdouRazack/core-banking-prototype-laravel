@@ -35,11 +35,13 @@ class TransferAggregateTest extends DomainTestCase
                 (string) $event->to === (string) $to &&
                 $event->money->getAmount() === $money->getAmount()) {
                 $eventRecorded = true;
+
                 return true;
             }
+
             return false;
         });
-        
+
         $this->assertTrue($eventRecorded, 'MoneyTransferred event should be recorded');
     }
 
@@ -54,13 +56,13 @@ class TransferAggregateTest extends DomainTestCase
 
         // Set count just below threshold to test
         $aggregate->count = 0;
-        
+
         // First set the currentHash to a known value
         $reflection = new \ReflectionClass($aggregate);
         $currentHashProperty = $reflection->getProperty('currentHash');
         $currentHashProperty->setAccessible(true);
         $currentHashProperty->setValue($aggregate, '');
-        
+
         // Then generate hash using the same state
         $method = $reflection->getMethod('generateHash');
         $method->setAccessible(true);
@@ -97,11 +99,13 @@ class TransferAggregateTest extends DomainTestCase
         $aggregate->assertRecorded(function ($event) use (&$thresholdEventRecorded) {
             if ($event instanceof TransferThresholdReached) {
                 $thresholdEventRecorded = true;
+
                 return true;
             }
+
             return false;
         });
-        
+
         $this->assertTrue($thresholdEventRecorded, 'TransferThresholdReached event should be recorded');
     }
 
@@ -114,13 +118,13 @@ class TransferAggregateTest extends DomainTestCase
         $aggregate->count = TransferAggregate::COUNT_THRESHOLD - 1;
 
         $money = new Money(100);
-        
+
         // First set the currentHash to a known value
         $reflection = new \ReflectionClass($aggregate);
         $currentHashProperty = $reflection->getProperty('currentHash');
         $currentHashProperty->setAccessible(true);
         $currentHashProperty->setValue($aggregate, '');
-        
+
         // Then generate hash using the same state
         $method = $reflection->getMethod('generateHash');
         $method->setAccessible(true);
@@ -192,9 +196,10 @@ class TransferAggregateTest extends DomainTestCase
             if ($event instanceof MoneyTransferred) {
                 $eventCount++;
             }
+
             return true;
         });
-        
+
         $this->assertEquals(3, $eventCount, 'Expected 3 MoneyTransferred events to be recorded');
     }
 
@@ -216,13 +221,13 @@ class TransferAggregateTest extends DomainTestCase
         // Apply multiple transfer events
         for ($i = 1; $i <= 5; $i++) {
             $money = new Money($i * 100);
-            
+
             // Set currentHash to empty before generating
             $currentHashProperty->setValue($aggregate, '');
-            
+
             // Generate hash for this transfer
             $hash = $generateMethod->invoke($aggregate, $money);
-            
+
             $event = new MoneyTransferred(
                 from: $from,
                 to: $to,
@@ -250,11 +255,13 @@ class TransferAggregateTest extends DomainTestCase
         $aggregate->assertRecorded(function ($event) use (&$eventRecorded) {
             if ($event instanceof MoneyTransferred && $event->money->getAmount() === 100000000) {
                 $eventRecorded = true;
+
                 return true;
             }
+
             return false;
         });
-        
+
         $this->assertTrue($eventRecorded, 'Large transfer event should be recorded');
     }
 
@@ -264,24 +271,24 @@ class TransferAggregateTest extends DomainTestCase
         // Create a real aggregate
         $uuid = (string) \Illuminate\Support\Str::uuid();
         $aggregate = TransferAggregate::retrieve($uuid);
-        
+
         // Make some transfers to build up count
         $from = new AccountUuid('snapshot-from');
         $to = new AccountUuid('snapshot-to');
-        
+
         for ($i = 0; $i < 5; $i++) {
             $aggregate->transfer($from, $to, new Money(100));
         }
-        
+
         // Persist the aggregate
         $aggregate->persist();
-        
+
         // Create a snapshot
         $aggregate->snapshot();
-        
+
         // Retrieve the aggregate again (will use snapshot)
         $newAggregate = TransferAggregate::retrieve($uuid);
-        
+
         // Verify the count was preserved through snapshot
         $this->assertEquals(5, $newAggregate->count);
     }
@@ -303,11 +310,13 @@ class TransferAggregateTest extends DomainTestCase
                 (string) $event->from === (string) $account &&
                 (string) $event->to === (string) $account) {
                 $eventRecorded = true;
+
                 return true;
             }
+
             return false;
         });
-        
+
         $this->assertTrue($eventRecorded, 'Self-transfer event should be recorded');
     }
 }

@@ -3,15 +3,13 @@
 namespace Tests\Unit\Domain\Account\Aggregates;
 
 use App\Domain\Account\Aggregates\TransactionAggregate;
-use App\Domain\Account\Events\AccountLimitHit;
+use App\Domain\Account\DataObjects\Money;
 use App\Domain\Account\Events\MoneyAdded;
 use App\Domain\Account\Events\MoneySubtracted;
 use App\Domain\Account\Events\TransactionThresholdReached;
 use App\Domain\Account\Exceptions\NotEnoughFunds;
-use App\Domain\Account\DataObjects\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
-use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 use Tests\DomainTestCase;
 
 class TransactionAggregateTest extends DomainTestCase
@@ -31,11 +29,13 @@ class TransactionAggregateTest extends DomainTestCase
         $aggregate->assertRecorded(function ($event) use ($money, &$eventRecorded) {
             if ($event instanceof MoneyAdded && $event->money->getAmount() === $money->getAmount()) {
                 $eventRecorded = true;
+
                 return true;
             }
+
             return false;
         });
-        
+
         $this->assertTrue($eventRecorded, 'MoneyAdded event should be recorded');
     }
 
@@ -56,23 +56,27 @@ class TransactionAggregateTest extends DomainTestCase
         // First check MoneyAdded event
         $moneyAddedRecorded = false;
         $moneySubtractedRecorded = false;
-        
+
         $aggregate->assertRecorded(function ($event) use ($creditMoney, &$moneyAddedRecorded) {
             if ($event instanceof MoneyAdded && $event->money->getAmount() === $creditMoney->getAmount()) {
                 $moneyAddedRecorded = true;
+
                 return true;
             }
+
             return false;
         });
-        
+
         $aggregate->assertRecorded(function ($event) use ($debitMoney, &$moneySubtractedRecorded) {
             if ($event instanceof MoneySubtracted && $event->money->getAmount() === $debitMoney->getAmount()) {
                 $moneySubtractedRecorded = true;
+
                 return true;
             }
+
             return false;
         });
-        
+
         $this->assertTrue($moneyAddedRecorded, 'MoneyAdded event was not recorded');
         $this->assertTrue($moneySubtractedRecorded, 'MoneySubtracted event was not recorded');
     }
@@ -163,11 +167,13 @@ class TransactionAggregateTest extends DomainTestCase
         $aggregate->assertRecorded(function ($event) use (&$thresholdEventRecorded) {
             if ($event instanceof TransactionThresholdReached) {
                 $thresholdEventRecorded = true;
+
                 return true;
             }
+
             return false;
         });
-        
+
         $this->assertTrue($thresholdEventRecorded, 'TransactionThresholdReached event should be recorded');
     }
 
@@ -212,10 +218,10 @@ class TransactionAggregateTest extends DomainTestCase
 
         // Assert that the exception is thrown
         $this->expectException(NotEnoughFunds::class);
-        
+
         // This will throw the exception
         $aggregate->debit($money);
-        
+
         // Note: We can't check recorded events after the exception is thrown
         // The test passes if the exception is thrown correctly
     }
@@ -267,9 +273,10 @@ class TransactionAggregateTest extends DomainTestCase
             if ($event instanceof MoneyAdded) {
                 $eventCount++;
             }
+
             return true;
         });
-        
+
         $this->assertEquals(2, $eventCount, 'Expected 2 MoneyAdded events to be recorded');
     }
 
@@ -324,7 +331,7 @@ class TransactionAggregateTest extends DomainTestCase
     {
         // Use a fake aggregate for testing snapshots
         $aggregate = TransactionAggregate::fake();
-        
+
         // Set some state
         $aggregate->balance = 10000;
         $aggregate->count = 500;
@@ -332,7 +339,7 @@ class TransactionAggregateTest extends DomainTestCase
         // Test that the state properties are accessible
         $this->assertEquals(10000, $aggregate->balance);
         $this->assertEquals(500, $aggregate->count);
-        
+
         // Note: Full snapshot testing would require a real database setup with proper accounts
         // For unit testing, we're verifying that the state properties work correctly
     }
