@@ -85,9 +85,9 @@ class BlockchainWalletController extends Controller
                 'uuid'            => Str::uuid()->toString(),
                 'user_uuid'       => Auth::user()->uuid,
                 'chain'           => $validated['chain'],
-                'address'         => $addressData['address'],
-                'public_key'      => $addressData['public_key'],
-                'derivation_path' => $addressData['derivation_path'],
+                'address'         => $addressData->address,
+                'public_key'      => $addressData->publicKey,
+                'derivation_path' => '',
                 'label'           => $validated['label'],
                 'is_active'       => true,
                 'metadata'        => [
@@ -117,7 +117,7 @@ class BlockchainWalletController extends Controller
             ->firstOrFail();
 
         // Get balance
-        $balance = $this->walletConnector->getBalance($address->address, $address->chain);
+        $balance = $this->walletConnector->getBalance($address->chain, $address->address);
 
         // Get transactions
         $transactions = $address->transactions()
@@ -143,7 +143,7 @@ class BlockchainWalletController extends Controller
             ->firstOrFail();
 
         // Get current balance
-        $balance = $this->walletConnector->getBalance($address->address, $address->chain);
+        $balance = $this->walletConnector->getBalance($address->chain, $address->address);
 
         // Get network fees
         $networkFees = $this->getNetworkFees($address->chain);
@@ -175,12 +175,12 @@ class BlockchainWalletController extends Controller
 
         try {
             // Validate recipient address
-            if (! $this->walletConnector->validateAddress($validated['recipient_address'], $address->chain)) {
+            if (! $this->walletConnector->validateAddress($address->chain, $validated['recipient_address'])) {
                 return back()->withErrors(['recipient_address' => 'Invalid recipient address']);
             }
 
             // Check balance
-            $balance = $this->walletConnector->getBalance($address->address, $address->chain);
+            $balance = $this->walletConnector->getBalance($address->chain, $address->address);
             $networkFees = $this->getNetworkFees($address->chain);
             $fee = $networkFees[$validated['fee_level']]['amount'];
 
@@ -189,11 +189,11 @@ class BlockchainWalletController extends Controller
             }
 
             // Create and send transaction
-            $txHash = $this->walletConnector->sendTransaction(
+            $transaction = $this->walletConnector->sendTransaction(
+                $address->chain,
                 $address->address,
                 $validated['recipient_address'],
                 $validated['amount'],
-                $address->chain,
                 [
                     'fee'  => $fee,
                     'memo' => $validated['memo'],
@@ -205,7 +205,7 @@ class BlockchainWalletController extends Controller
                 [
                 'uuid'         => Str::uuid()->toString(),
                 'address_uuid' => $address->uuid,
-                'tx_hash'      => $txHash,
+                'tx_hash'      => $transaction->hash,
                 'type'         => 'send',
                 'amount'       => $validated['amount'],
                 'fee'          => $fee,
@@ -222,7 +222,7 @@ class BlockchainWalletController extends Controller
 
             return redirect()
                 ->route('wallet.blockchain.show', $address->uuid)
-                ->with('success', 'Transaction sent successfully. Transaction hash: ' . $txHash);
+                ->with('success', 'Transaction sent successfully. Transaction hash: ' . $transaction->hash);
         } catch (\Exception $e) {
             return back()
                 ->withInput()
@@ -246,8 +246,8 @@ class BlockchainWalletController extends Controller
 
         // Get transaction status from blockchain
         $blockchainData = $this->walletConnector->getTransactionStatus(
-            $transaction->tx_hash,
-            $transaction->chain
+            $transaction->chain,
+            $transaction->tx_hash
         );
 
         // Get supported chains
@@ -297,7 +297,7 @@ class BlockchainWalletController extends Controller
 
         foreach ($addresses as $address) {
             try {
-                $balance = $this->walletConnector->getBalance($address->address, $address->chain);
+                $balance = $this->walletConnector->getBalance($address->chain, $address->address);
                 $balances[$address->uuid] = $balance;
             } catch (\Exception $e) {
                 $balances[$address->uuid] = [

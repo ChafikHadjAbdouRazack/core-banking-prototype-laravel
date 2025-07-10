@@ -5439,7 +5439,7 @@ parameters:
 		-
 			message: '#^Access to property \$eth on an unknown class Web3\\Web3\.$#'
 			identifier: class.notFound
-			count: 9
+			count: 11
 			path: app/Domain/Wallet/Connectors/EthereumConnector.php
 
 		-

@@ -55,7 +55,7 @@ class PolygonConnector extends EthereumConnector
     //     return $transaction;
     // }
 
-    private function getPolygonGasPrice(): string
+    protected function getPolygonGasPrice(): string
     {
         try {
             $gasPrice = null;
