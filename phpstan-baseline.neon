@@ -115,12 +115,6 @@ parameters:
 			path: app/Console/Commands/DemoDepositCommand.php
 
 		-
-			message: '#^Call to an undefined static method App\\Models\\User\:\:where\(\)\.$#'
-			identifier: staticMethod.notFound
-			count: 1
-			path: app/Console/Commands/DemoDepositCommand.php
-
-		-
 			message: '#^Call to an undefined static method App\\Models\\SystemHealthCheck\:\:create\(\)\.$#'
 			identifier: staticMethod.notFound
 			count: 2
@@ -1621,18 +1615,6 @@ parameters:
 			path: app/Domain/Cgo/Workflows/ProcessRefundWorkflow.php
 
 		-
-			message: '#^Call to an undefined static method App\\Models\\User\:\:where\(\)\.$#'
-			identifier: staticMethod.notFound
-			count: 1
-			path: app/Domain/Compliance/Activities/KycSubmissionActivity.php
-
-		-
-			message: '#^Call to an undefined static method App\\Models\\User\:\:where\(\)\.$#'
-			identifier: staticMethod.notFound
-			count: 1
-			path: app/Domain/Compliance/Activities/KycVerificationActivity.php
-
-		-
 			message: '#^Property App\\Domain\\Compliance\\Aggregates\\ComplianceAggregate\:\:\$gdprConsents is never read, only written\.$#'
 			identifier: property.onlyWritten
 			count: 1
@@ -1725,12 +1707,6 @@ parameters:
 		-
 			message: '#^Access to an undefined property App\\Models\\User\:\:\$date_of_birth\.$#'
 			identifier: property.notFound
-			count: 1
-			path: app/Domain/Compliance/Services/AmlScreeningService.php
-
-		-
-			message: '#^Call to an undefined static method App\\Models\\AmlScreening\:\:create\(\)\.$#'
-			identifier: staticMethod.notFound
 			count: 1
 			path: app/Domain/Compliance/Services/AmlScreeningService.php
 
@@ -2092,12 +2068,6 @@ parameters:
 			message: '#^Call to an undefined static method App\\Models\\User\:\:select\(\)\.$#'
 			identifier: staticMethod.notFound
 			count: 2
-			path: app/Domain/Compliance/Services/RegulatoryReportingService.php
-
-		-
-			message: '#^Call to an undefined static method App\\Models\\User\:\:where\(\)\.$#'
-			identifier: staticMethod.notFound
-			count: 13
 			path: app/Domain/Compliance/Services/RegulatoryReportingService.php
 
 		-
@@ -4156,12 +4126,6 @@ parameters:
 			message: '#^Call to an undefined static method App\\Domain\\Governance\\Models\\Poll\:\:where\(\)\.$#'
 			identifier: staticMethod.notFound
 			count: 4
-			path: app/Domain/Governance/Services/Cache/PollCacheService.php
-
-		-
-			message: '#^Call to an undefined static method App\\Models\\User\:\:where\(\)\.$#'
-			identifier: staticMethod.notFound
-			count: 1
 			path: app/Domain/Governance/Services/Cache/PollCacheService.php
 
 		-
@@ -7039,12 +7003,6 @@ parameters:
 			path: app/Http/Controllers/Api/Auth/LoginController.php
 
 		-
-			message: '#^Call to an undefined static method App\\Models\\User\:\:where\(\)\.$#'
-			identifier: staticMethod.notFound
-			count: 1
-			path: app/Http/Controllers/Api/Auth/LoginController.php
-
-		-
 			message: '#^Access to an undefined property Illuminate\\Http\\Request\:\:\$password_confirmation\.$#'
 			identifier: property.notFound
 			count: 1
@@ -7060,12 +7018,6 @@ parameters:
 			message: '#^Call to an undefined method Laravel\\Socialite\\Contracts\\Provider\:\:stateless\(\)\.$#'
 			identifier: method.notFound
 			count: 2
-			path: app/Http/Controllers/Api/Auth/SocialAuthController.php
-
-		-
-			message: '#^Call to an undefined static method App\\Models\\User\:\:where\(\)\.$#'
-			identifier: staticMethod.notFound
-			count: 1
 			path: app/Http/Controllers/Api/Auth/SocialAuthController.php
 
 		-
@@ -7991,12 +7943,6 @@ parameters:
 			identifier: staticMethod.notFound
 			count: 2
 			path: app/Http/Controllers/Api/UserVotingController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\AmlScreening\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V2/ComplianceController.php
 
 		-
 			message: '#^Access to an undefined property App\\Models\\AmlScreening\:\:\$screening_number\.$#'
@@ -10699,18 +10645,6 @@ parameters:
 			path: app/Models/AmlScreening.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\AmlScreening\:\:\$confirmed_matches\.$#'
-			identifier: property.notFound
-			count: 5
-			path: app/Models/AmlScreening.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\AmlScreening\:\:\$false_positives\.$#'
-			identifier: property.notFound
-			count: 3
-			path: app/Models/AmlScreening.php
-
-		-
 			message: '#^Access to an undefined property App\\Models\\AmlScreening\:\:\$overall_risk\.$#'
 			identifier: property.notFound
 			count: 2
@@ -10755,12 +10689,6 @@ parameters:
 		-
 			message: '#^Access to an undefined property App\\Models\\AmlScreening\:\:\$type\.$#'
 			identifier: property.notFound
-			count: 1
-			path: app/Models/AmlScreening.php
-
-		-
-			message: '#^Call to an undefined static method App\\Models\\AmlScreening\:\:whereYear\(\)\.$#'
-			identifier: staticMethod.notFound
 			count: 1
 			path: app/Models/AmlScreening.php
 
