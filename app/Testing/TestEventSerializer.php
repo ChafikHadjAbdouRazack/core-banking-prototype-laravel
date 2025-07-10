@@ -26,9 +26,8 @@ class TestEventSerializer implements EventSerializer
             // Handle Carbon instances
             if ($value instanceof Carbon) {
                 $properties[$property->getName()] = $value->toIso8601String();
-            }
-            // Handle DataObjects
-            elseif (is_object($value) && method_exists($value, 'toArray')) {
+            } elseif (is_object($value) && method_exists($value, 'toArray')) {
+                // Handle DataObjects
                 $properties[$property->getName()] = $value->toArray();
             } else {
                 $properties[$property->getName()] = $value;
@@ -63,9 +62,8 @@ class TestEventSerializer implements EventSerializer
                     // Handle Carbon instances
                     if ($typeName === Carbon::class) {
                         $value = Carbon::parse($value);
-                    }
-                    // Handle DataObject hydration
-                    elseif (is_array($value) && function_exists('hydrate')) {
+                    } elseif (is_array($value) && function_exists('hydrate')) {
+                        // Handle DataObject hydration
                         try {
                             $value = hydrate($typeName, $value);
                         } catch (\Exception $e) {
