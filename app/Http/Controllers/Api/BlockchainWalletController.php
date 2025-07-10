@@ -160,14 +160,13 @@ class BlockchainWalletController extends Controller
         );
 
         $address = $this->walletService->generateAddress(
-            walletId: $walletId,
-            chain: $validated['chain'],
-            label: $validated['label'] ?? null
+            $validated['chain'],
+            $walletId
         );
 
         $addressData = DB::table('wallet_addresses')
             ->where('wallet_id', $walletId)
-            ->where('address', $address['address'])
+            ->where('address', $address->address)
             ->first();
 
         return new WalletAddressResource($addressData);

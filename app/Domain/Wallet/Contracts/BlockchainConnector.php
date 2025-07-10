@@ -65,4 +65,14 @@ interface BlockchainConnector
      * Check if the connector is healthy.
      */
     public function isHealthy(): bool;
+
+    /**
+     * Get transaction status.
+     */
+    public function getTransactionStatus(string $hash): TransactionResult;
+
+    /**
+     * Validate address format.
+     */
+    public function validateAddress(string $address): bool;
 }

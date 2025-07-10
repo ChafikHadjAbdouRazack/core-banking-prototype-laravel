@@ -418,8 +418,8 @@ Route::prefix('v2')->group(function () {
         Route::post('/{code}/reactivate', [StablecoinController::class, 'reactivate']);
     });
 
-    // Stablecoin operations endpoints (requires stablecoins sub-product to be enabled)
-    Route::prefix('stablecoin-operations')->middleware('sub_product:stablecoins')->group(function () {
+    // Stablecoin operations endpoints (requires authentication and stablecoins sub-product to be enabled)
+    Route::middleware(['auth:sanctum', 'sub_product:stablecoins'])->prefix('stablecoin-operations')->group(function () {
         Route::post('/mint', [StablecoinOperationsController::class, 'mint']);
         Route::post('/burn', [StablecoinOperationsController::class, 'burn']);
         Route::post('/add-collateral', [StablecoinOperationsController::class, 'addCollateral']);

@@ -5,13 +5,18 @@ namespace App\Domain\Wallet\Services;
 use App\Domain\Wallet\Aggregates\BlockchainWallet;
 use App\Domain\Wallet\Connectors\EthereumConnector;
 use App\Domain\Wallet\Contracts\BlockchainConnector;
+use App\Domain\Wallet\Contracts\WalletConnectorInterface;
 use App\Domain\Wallet\Exceptions\WalletException;
+use App\Domain\Wallet\ValueObjects\BlockchainTransaction;
+use App\Domain\Wallet\ValueObjects\SignedTransaction;
 use App\Domain\Wallet\ValueObjects\TransactionData;
+use App\Domain\Wallet\ValueObjects\TransactionResult;
+use App\Domain\Wallet\ValueObjects\WalletAddress;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
-class BlockchainWalletService
+class BlockchainWalletService implements WalletConnectorInterface
 {
     protected KeyManagementService $keyManager;
 
@@ -124,14 +129,14 @@ class BlockchainWalletService
         $chains = ['ethereum', 'polygon', 'bsc'];
 
         foreach ($chains as $chain) {
-            $this->generateAddress($wallet->getWalletId(), $chain);
+            $this->generateAddressForWallet($wallet->getWalletId(), $chain);
         }
     }
 
     /**
      * Generate new address for a chain.
      */
-    public function generateAddress(string $walletId, string $chain, ?string $label = null): array
+    public function generateAddressForWallet(string $walletId, string $chain, ?string $label = null): array
     {
         $wallet = BlockchainWallet::retrieve($walletId);
 
@@ -177,7 +182,7 @@ class BlockchainWalletService
     /**
      * Get wallet balance across all chains.
      */
-    public function getBalance(string $walletId): array
+    public function getWalletBalance(string $walletId): array
     {
         $wallet = BlockchainWallet::retrieve($walletId);
         $balances = [];
@@ -204,7 +209,7 @@ class BlockchainWalletService
     /**
      * Send transaction.
      */
-    public function sendTransaction(
+    public function sendWalletTransaction(
         string $walletId,
         string $chain,
         string $to,
@@ -500,5 +505,196 @@ class BlockchainWalletService
         $divisor = bcpow('10', (string) $decimal);
 
         return rtrim(rtrim(bcdiv($balance, $divisor, $decimal), '0'), '.');
+    }
+
+    /**
+     * Generate a new wallet address (interface implementation).
+     *
+     * @param  string $blockchain
+     * @param  string $accountId
+     * @return WalletAddress
+     */
+    public function generateAddress(string $blockchain, string $accountId): WalletAddress
+    {
+        // Find wallet for the account
+        $wallet = BlockchainWallet::retrieve($accountId);
+
+        $addressData = $this->generateAddressForWallet($wallet->getWalletId(), $blockchain);
+
+        return new WalletAddress(
+            address: $addressData['address'],
+            blockchain: $blockchain,
+            label: $addressData['label'] ?? null
+        );
+    }
+
+    /**
+     * Get wallet balance from blockchain (interface implementation).
+     *
+     * @param  string $blockchain
+     * @param  string $address
+     * @return array
+     */
+    public function getBalance(string $blockchain, string $address): array
+    {
+        $connector = $this->getConnector($blockchain);
+        $balance = $connector->getBalance($address);
+
+        return [
+            'balance' => $balance->balance,
+            'available' => $balance->balance,
+            'pending' => '0',
+        ];
+    }
+
+    /**
+     * Send transaction to blockchain (interface implementation).
+     *
+     * @param  string $blockchain
+     * @param  string $fromAddress
+     * @param  string $toAddress
+     * @param  string $amount
+     * @param  array  $options
+     * @return BlockchainTransaction
+     */
+    public function sendTransaction(
+        string $blockchain,
+        string $fromAddress,
+        string $toAddress,
+        string $amount,
+        array $options = []
+    ): BlockchainTransaction {
+        $connector = $this->getConnector($blockchain);
+
+        $transaction = new TransactionData(
+            from: $fromAddress,
+            to: $toAddress,
+            value: $amount,
+            chain: $blockchain
+        );
+
+        // Estimate gas
+        $gasEstimate = $connector->estimateGas($transaction);
+
+        // Find wallet for the address
+        $addressInfo = DB::table('blockchain_addresses')
+            ->where('address', $fromAddress)
+            ->where('chain', $blockchain)
+            ->first();
+
+        if (!$addressInfo) {
+            throw new WalletException('Address not found');
+        }
+
+        // Sign and broadcast (simplified)
+        $signedTx = $this->signWithHSM($transaction);
+        $result = $connector->broadcastTransaction($signedTx);
+
+        return new BlockchainTransaction(
+            hash: $result->hash,
+            from: $fromAddress,
+            to: $toAddress,
+            value: $amount,
+            blockchain: $blockchain,
+            status: $result->status
+        );
+    }
+
+    /**
+     * Get transaction status (interface implementation).
+     *
+     * @param  string $blockchain
+     * @param  string $transactionHash
+     * @return array
+     */
+    public function getTransactionStatus(string $blockchain, string $transactionHash): array
+    {
+        $connector = $this->getConnector($blockchain);
+        $status = $connector->getTransactionStatus($transactionHash);
+
+        return [
+            'status' => $status->status,
+            'confirmations' => $status->confirmations ?? 0,
+            'block' => $status->block ?? null,
+        ];
+    }
+
+    /**
+     * Monitor incoming transactions (interface implementation).
+     *
+     * @param  string $blockchain
+     * @param  string $address
+     * @param  int    $fromBlock
+     * @return array
+     */
+    public function monitorIncomingTransactions(
+        string $blockchain,
+        string $address,
+        int $fromBlock = 0
+    ): array {
+        $connector = $this->getConnector($blockchain);
+
+        // This would typically use websocket or polling
+        return [];
+    }
+
+    /**
+     * Validate address format (interface implementation).
+     *
+     * @param  string $blockchain
+     * @param  string $address
+     * @return bool
+     */
+    public function validateAddress(string $blockchain, string $address): bool
+    {
+        $connector = $this->getConnector($blockchain);
+        return $connector->validateAddress($address);
+    }
+
+    /**
+     * Get network fee estimate (interface implementation).
+     *
+     * @param  string $blockchain
+     * @param  string $priority
+     * @return array
+     */
+    public function estimateNetworkFee(string $blockchain, string $priority = 'medium'): array
+    {
+        // Mock network fees - in production, fetch from blockchain
+        $fees = [
+            'ethereum' => [
+                'slow'   => ['time' => '10 min', 'amount' => 0.001],
+                'medium' => ['time' => '3 min', 'amount' => 0.002],
+                'fast'   => ['time' => '30 sec', 'amount' => 0.003],
+            ],
+            'bitcoin' => [
+                'slow'   => ['time' => '60 min', 'amount' => 0.00001],
+                'medium' => ['time' => '30 min', 'amount' => 0.00002],
+                'fast'   => ['time' => '10 min', 'amount' => 0.00005],
+            ],
+            'polygon' => [
+                'slow'   => ['time' => '30 sec', 'amount' => 0.001],
+                'medium' => ['time' => '15 sec', 'amount' => 0.002],
+                'fast'   => ['time' => '5 sec', 'amount' => 0.005],
+            ],
+            'bsc' => [
+                'slow'   => ['time' => '15 sec', 'amount' => 0.0001],
+                'medium' => ['time' => '6 sec', 'amount' => 0.0002],
+                'fast'   => ['time' => '3 sec', 'amount' => 0.0005],
+            ],
+        ];
+
+        $chainFees = $fees[$blockchain] ?? $fees['ethereum'];
+        return $chainFees[$priority] ?? $chainFees['medium'];
+    }
+
+    /**
+     * Get supported blockchains (interface implementation).
+     *
+     * @return array
+     */
+    public function getSupportedBlockchains(): array
+    {
+        return array_keys($this->connectors);
     }
 }
