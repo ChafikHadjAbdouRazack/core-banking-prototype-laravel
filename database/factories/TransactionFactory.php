@@ -45,7 +45,6 @@ class TransactionFactory extends Factory
                 'description' => fake()->optional()->sentence(),
             ],
             'created_at' => now(),
-            'updated_at' => now(),
         ];
     }
 
@@ -55,8 +54,12 @@ class TransactionFactory extends Factory
     public function deposit(): static
     {
         return $this->state(fn (array $attributes) => [
-            'type'   => 'deposit',
-            'amount' => fake()->numberBetween(100, 100000),
+            'meta_data' => array_merge($attributes['meta_data'] ?? [], [
+                'type' => 'deposit',
+            ]),
+            'event_properties' => array_merge($attributes['event_properties'] ?? [], [
+                'amount' => fake()->numberBetween(100, 100000),
+            ]),
         ]);
     }
 
@@ -66,8 +69,12 @@ class TransactionFactory extends Factory
     public function withdrawal(): static
     {
         return $this->state(fn (array $attributes) => [
-            'type'   => 'withdrawal',
-            'amount' => -fake()->numberBetween(100, 50000),
+            'meta_data' => array_merge($attributes['meta_data'] ?? [], [
+                'type' => 'withdrawal',
+            ]),
+            'event_properties' => array_merge($attributes['event_properties'] ?? [], [
+                'amount' => -fake()->numberBetween(100, 50000),
+            ]),
         ]);
     }
 
@@ -77,8 +84,12 @@ class TransactionFactory extends Factory
     public function transferIn(): static
     {
         return $this->state(fn (array $attributes) => [
-            'type'   => 'transfer_in',
-            'amount' => fake()->numberBetween(100, 100000),
+            'meta_data' => array_merge($attributes['meta_data'] ?? [], [
+                'type' => 'transfer_in',
+            ]),
+            'event_properties' => array_merge($attributes['event_properties'] ?? [], [
+                'amount' => fake()->numberBetween(100, 100000),
+            ]),
         ]);
     }
 
@@ -88,8 +99,12 @@ class TransactionFactory extends Factory
     public function transferOut(): static
     {
         return $this->state(fn (array $attributes) => [
-            'type'   => 'transfer_out',
-            'amount' => -fake()->numberBetween(100, 50000),
+            'meta_data' => array_merge($attributes['meta_data'] ?? [], [
+                'type' => 'transfer_out',
+            ]),
+            'event_properties' => array_merge($attributes['event_properties'] ?? [], [
+                'amount' => -fake()->numberBetween(100, 50000),
+            ]),
         ]);
     }
 
@@ -99,7 +114,7 @@ class TransactionFactory extends Factory
     public function forAccount(Account $account): static
     {
         return $this->state(fn (array $attributes) => [
-            'account_uuid' => $account->uuid,
+            'aggregate_uuid' => $account->uuid,
         ]);
     }
 }

@@ -2,11 +2,12 @@
 
 namespace Tests\Unit\Domain\Lending\ValueObjects;
 
-use App\Domain\Lending\ValueObjects\RepaymentSchedule;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class RepaymentScheduleTest extends TestCase
 {
+    #[Test]
     public function test_creates_valid_repayment_schedule(): void
     {
         $payments = [
@@ -31,6 +32,7 @@ class RepaymentScheduleTest extends TestCase
         $this->assertEquals($payments, $schedule->getPayments());
     }
 
+    #[Test]
     public function test_throws_exception_for_empty_payments(): void
     {
         $this->expectException(\InvalidArgumentException::class);
@@ -39,6 +41,7 @@ class RepaymentScheduleTest extends TestCase
         new RepaymentSchedule([]);
     }
 
+    #[Test]
     public function test_get_payment_returns_correct_payment(): void
     {
         $payments = [
@@ -73,6 +76,7 @@ class RepaymentScheduleTest extends TestCase
         $this->assertEquals('833.33', $payment2['principal']);
     }
 
+    #[Test]
     public function test_get_payment_throws_exception_for_invalid_payment_number(): void
     {
         $payments = [
@@ -88,6 +92,7 @@ class RepaymentScheduleTest extends TestCase
         $schedule->getPayment(3);
     }
 
+    #[Test]
     public function test_get_payment_throws_exception_for_zero_payment_number(): void
     {
         $payments = [
@@ -102,6 +107,7 @@ class RepaymentScheduleTest extends TestCase
         $schedule->getPayment(0);
     }
 
+    #[Test]
     public function test_get_total_payments_returns_correct_count(): void
     {
         $payments = [
@@ -115,6 +121,7 @@ class RepaymentScheduleTest extends TestCase
         $this->assertEquals(3, $schedule->getTotalPayments());
     }
 
+    #[Test]
     public function test_get_total_payments_with_single_payment(): void
     {
         $payments = [
@@ -126,6 +133,7 @@ class RepaymentScheduleTest extends TestCase
         $this->assertEquals(1, $schedule->getTotalPayments());
     }
 
+    #[Test]
     public function test_get_total_principal_calculates_correctly(): void
     {
         $payments = [
@@ -139,6 +147,7 @@ class RepaymentScheduleTest extends TestCase
         $this->assertEquals('1000.00', $schedule->getTotalPrincipal());
     }
 
+    #[Test]
     public function test_get_total_principal_with_decimal_precision(): void
     {
         $payments = [
@@ -152,6 +161,7 @@ class RepaymentScheduleTest extends TestCase
         $this->assertEquals('703.68', $schedule->getTotalPrincipal());
     }
 
+    #[Test]
     public function test_get_total_interest_calculates_correctly(): void
     {
         $payments = [
@@ -165,6 +175,7 @@ class RepaymentScheduleTest extends TestCase
         $this->assertEquals('275.00', $schedule->getTotalInterest());
     }
 
+    #[Test]
     public function test_get_total_interest_with_zero_interest(): void
     {
         $payments = [
@@ -177,6 +188,7 @@ class RepaymentScheduleTest extends TestCase
         $this->assertEquals('0.00', $schedule->getTotalInterest());
     }
 
+    #[Test]
     public function test_get_next_due_payment_returns_first_payment_when_no_after_specified(): void
     {
         $payments = [
@@ -192,6 +204,7 @@ class RepaymentScheduleTest extends TestCase
         $this->assertEquals(1, $nextPayment['payment_number']);
     }
 
+    #[Test]
     public function test_get_next_due_payment_returns_payment_after_specified_number(): void
     {
         $payments = [
@@ -207,6 +220,7 @@ class RepaymentScheduleTest extends TestCase
         $this->assertEquals(2, $nextPayment['payment_number']);
     }
 
+    #[Test]
     public function test_get_next_due_payment_returns_null_when_no_more_payments(): void
     {
         $payments = [
@@ -220,6 +234,7 @@ class RepaymentScheduleTest extends TestCase
         $this->assertNull($nextPayment);
     }
 
+    #[Test]
     public function test_get_next_due_payment_with_non_sequential_payment_numbers(): void
     {
         $payments = [
@@ -237,6 +252,7 @@ class RepaymentScheduleTest extends TestCase
         $this->assertEquals(7, $nextPayment['payment_number']);
     }
 
+    #[Test]
     public function test_to_array_returns_payments(): void
     {
         $payments = [
@@ -263,6 +279,7 @@ class RepaymentScheduleTest extends TestCase
         $this->assertEquals($payments, $schedule->toArray());
     }
 
+    #[Test]
     public function test_handles_complex_payment_structure(): void
     {
         $payments = [
@@ -292,6 +309,7 @@ class RepaymentScheduleTest extends TestCase
         $this->assertEquals(0.12, $payment['metadata']['interest_rate']);
     }
 
+    #[Test]
     public function test_handles_large_payment_schedules(): void
     {
         $payments = [];
@@ -310,6 +328,7 @@ class RepaymentScheduleTest extends TestCase
         $this->assertEquals('360000.00', $schedule->getTotalInterest());
     }
 
+    #[Test]
     public function test_total_calculations_handle_string_numeric_values(): void
     {
         $payments = [

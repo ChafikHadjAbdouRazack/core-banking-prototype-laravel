@@ -2,12 +2,12 @@
 
 namespace Tests\Unit\Domain\Stablecoin\ValueObjects;
 
-use App\Domain\Stablecoin\ValueObjects\AggregatedPrice;
-use Carbon\Carbon;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\DomainTestCase;
 
-class AggregatedPriceTest extends TestCase
+class AggregatedPriceTest extends DomainTestCase
 {
+    #[Test]
     public function test_creates_aggregated_price_with_required_fields(): void
     {
         $timestamp = Carbon::now();
@@ -35,6 +35,7 @@ class AggregatedPriceTest extends TestCase
         $this->assertEquals([], $aggregatedPrice->metadata);
     }
 
+    #[Test]
     public function test_creates_aggregated_price_with_all_fields(): void
     {
         $timestamp = Carbon::now();
@@ -70,6 +71,7 @@ class AggregatedPriceTest extends TestCase
         $this->assertEquals($metadata, $aggregatedPrice->metadata);
     }
 
+    #[Test]
     public function test_to_array_converts_aggregated_price_correctly(): void
     {
         $timestamp = Carbon::parse('2024-01-01 12:00:00');
@@ -100,6 +102,7 @@ class AggregatedPriceTest extends TestCase
         ], $array);
     }
 
+    #[Test]
     public function test_is_high_confidence_returns_true_for_high_confidence(): void
     {
         $aggregatedPrice = new AggregatedPrice(
@@ -115,6 +118,7 @@ class AggregatedPriceTest extends TestCase
         $this->assertTrue($aggregatedPrice->isHighConfidence());
     }
 
+    #[Test]
     public function test_is_high_confidence_returns_true_at_threshold(): void
     {
         $aggregatedPrice = new AggregatedPrice(
@@ -130,6 +134,7 @@ class AggregatedPriceTest extends TestCase
         $this->assertTrue($aggregatedPrice->isHighConfidence());
     }
 
+    #[Test]
     public function test_is_high_confidence_returns_false_for_low_confidence(): void
     {
         $aggregatedPrice = new AggregatedPrice(
@@ -145,6 +150,7 @@ class AggregatedPriceTest extends TestCase
         $this->assertFalse($aggregatedPrice->isHighConfidence());
     }
 
+    #[Test]
     public function test_get_source_count_returns_correct_count(): void
     {
         $singleSource = new AggregatedPrice(
@@ -175,6 +181,7 @@ class AggregatedPriceTest extends TestCase
         $this->assertEquals(4, $multipleSource->getSourceCount());
     }
 
+    #[Test]
     public function test_get_source_count_returns_zero_for_empty_sources(): void
     {
         $aggregatedPrice = new AggregatedPrice(
@@ -189,6 +196,7 @@ class AggregatedPriceTest extends TestCase
         $this->assertEquals(0, $aggregatedPrice->getSourceCount());
     }
 
+    #[Test]
     public function test_handles_various_aggregation_methods(): void
     {
         $methods = ['mean', 'median', 'weighted_average', 'vwap', 'twap', 'min', 'max'];
@@ -207,6 +215,7 @@ class AggregatedPriceTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_handles_zero_confidence(): void
     {
         $aggregatedPrice = new AggregatedPrice(
@@ -223,6 +232,7 @@ class AggregatedPriceTest extends TestCase
         $this->assertFalse($aggregatedPrice->isHighConfidence());
     }
 
+    #[Test]
     public function test_handles_maximum_confidence(): void
     {
         $aggregatedPrice = new AggregatedPrice(
@@ -239,6 +249,7 @@ class AggregatedPriceTest extends TestCase
         $this->assertTrue($aggregatedPrice->isHighConfidence());
     }
 
+    #[Test]
     public function test_sources_with_different_prices(): void
     {
         $sources = [
@@ -263,6 +274,7 @@ class AggregatedPriceTest extends TestCase
         $this->assertEquals('47500.00', $aggregatedPrice->sources['oracle3']);
     }
 
+    #[Test]
     public function test_metadata_can_contain_complex_structures(): void
     {
         $metadata = [
@@ -304,6 +316,7 @@ class AggregatedPriceTest extends TestCase
         $this->assertEquals(0.98, $aggregatedPrice->metadata['quality_scores']['freshness']);
     }
 
+    #[Test]
     public function test_immutability_of_properties(): void
     {
         $aggregatedPrice = new AggregatedPrice(

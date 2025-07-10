@@ -2,12 +2,7 @@
 
 namespace Tests\Unit\Domain\Stablecoin\Oracles;
 
-use App\Domain\Stablecoin\Contracts\OracleConnector;
-use App\Domain\Stablecoin\Oracles\BinanceOracle;
-use App\Domain\Stablecoin\ValueObjects\PriceData;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class BinanceOracleTest extends TestCase
@@ -22,11 +17,13 @@ class BinanceOracleTest extends TestCase
         $this->oracle = new BinanceOracle();
     }
 
+    #[Test]
     public function test_implements_oracle_connector_interface(): void
     {
         $this->assertInstanceOf(OracleConnector::class, $this->oracle);
     }
 
+    #[Test]
     public function test_get_price_returns_valid_price_data(): void
     {
         $priceData = $this->oracle->getPrice('BTC', 'USDT');
@@ -45,6 +42,7 @@ class BinanceOracleTest extends TestCase
         $this->assertArrayHasKey('count', $priceData->metadata);
     }
 
+    #[Test]
     public function test_get_price_with_mapped_symbols(): void
     {
         $mappedPairs = [
@@ -65,6 +63,7 @@ class BinanceOracleTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_get_price_constructs_symbol_for_unmapped_pairs(): void
     {
         $priceData = $this->oracle->getPrice('ADA', 'USDT');
@@ -74,6 +73,7 @@ class BinanceOracleTest extends TestCase
         $this->assertEquals('ADAUSDT', $priceData->metadata['symbol']);
     }
 
+    #[Test]
     public function test_get_price_converts_usd_to_usdt(): void
     {
         $priceData = $this->oracle->getPrice('SOL', 'USD');
@@ -83,6 +83,7 @@ class BinanceOracleTest extends TestCase
         $this->assertEquals('SOLUSDT', $priceData->metadata['symbol']);
     }
 
+    #[Test]
     public function test_get_multiple_prices_returns_array_of_price_data(): void
     {
         $pairs = ['BTC/USDT', 'ETH/USDT', 'EUR/USD'];
@@ -98,6 +99,7 @@ class BinanceOracleTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_get_multiple_prices_handles_errors_gracefully(): void
     {
         // Use spy instead of mock for Log to avoid expectation issues
@@ -123,6 +125,7 @@ class BinanceOracleTest extends TestCase
             ->with(\Mockery::pattern('/Failed to get price for INVALID\/PAIR:/'));
     }
 
+    #[Test]
     public function test_get_historical_price_returns_valid_data(): void
     {
         $timestamp = Carbon::now()->subHour();
@@ -145,6 +148,7 @@ class BinanceOracleTest extends TestCase
         $this->assertIsString($priceData->metadata['low']);
     }
 
+    #[Test]
     public function test_historical_price_high_is_greater_than_or_equal_to_open_and_close(): void
     {
         $timestamp = Carbon::now()->subDay();
@@ -161,6 +165,7 @@ class BinanceOracleTest extends TestCase
         $this->assertLessThanOrEqual($close, $low);
     }
 
+    #[Test]
     public function test_is_healthy_returns_true_when_api_responds(): void
     {
         Http::fake([
@@ -170,6 +175,7 @@ class BinanceOracleTest extends TestCase
         $this->assertTrue($this->oracle->isHealthy());
     }
 
+    #[Test]
     public function test_is_healthy_returns_false_when_api_fails(): void
     {
         Http::fake([
@@ -179,6 +185,7 @@ class BinanceOracleTest extends TestCase
         $this->assertFalse($this->oracle->isHealthy());
     }
 
+    #[Test]
     public function test_is_healthy_returns_false_on_timeout(): void
     {
         Http::fake(function () {
@@ -188,16 +195,19 @@ class BinanceOracleTest extends TestCase
         $this->assertFalse($this->oracle->isHealthy());
     }
 
+    #[Test]
     public function test_get_source_name_returns_binance(): void
     {
         $this->assertEquals('binance', $this->oracle->getSourceName());
     }
 
+    #[Test]
     public function test_get_priority_returns_2(): void
     {
         $this->assertEquals(2, $this->oracle->getPriority());
     }
 
+    #[Test]
     public function test_price_data_includes_volume_and_change_percent(): void
     {
         $priceData = $this->oracle->getPrice('BTC', 'USDT');
@@ -211,6 +221,7 @@ class BinanceOracleTest extends TestCase
         $this->assertLessThanOrEqual(100, (float) $priceData->changePercent24h);
     }
 
+    #[Test]
     public function test_metadata_includes_quote_volume_and_count(): void
     {
         $priceData = $this->oracle->getPrice('ETH', 'USDT');
@@ -223,6 +234,7 @@ class BinanceOracleTest extends TestCase
         $this->assertGreaterThan(0, $priceData->metadata['count']);
     }
 
+    #[Test]
     public function test_timestamp_is_recent(): void
     {
         $priceData = $this->oracle->getPrice('BTC', 'USDT');
@@ -233,6 +245,7 @@ class BinanceOracleTest extends TestCase
         $this->assertLessThanOrEqual(5, $diff); // Within 5 seconds
     }
 
+    #[Test]
     public function test_simulated_prices_are_within_expected_ranges(): void
     {
         // Run multiple times to test randomness

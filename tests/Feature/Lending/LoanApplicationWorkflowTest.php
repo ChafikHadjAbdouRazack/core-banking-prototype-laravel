@@ -2,18 +2,11 @@
 
 namespace Tests\Feature\Lending;
 
-use App\Domain\Lending\Services\CreditScoringService;
-use App\Domain\Lending\Services\RiskAssessmentService;
-use App\Models\Loan;
-use App\Models\LoanApplication;
-use App\Models\User;
-use App\Services\Lending\DefaultRiskAssessmentService;
-use App\Services\Lending\LoanApplicationService;
-use App\Services\Lending\MockCreditScoringService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\DomainTestCase;
 
-class LoanApplicationWorkflowTest extends TestCase
+class LoanApplicationWorkflowTest extends DomainTestCase
 {
     use RefreshDatabase;
 
@@ -26,6 +19,7 @@ class LoanApplicationWorkflowTest extends TestCase
         $this->app->bind(RiskAssessmentService::class, DefaultRiskAssessmentService::class);
     }
 
+    #[Test]
     public function test_successful_loan_application_workflow()
     {
         $user = User::factory()->create([
@@ -86,6 +80,7 @@ class LoanApplicationWorkflowTest extends TestCase
         $this->assertNotNull($loan->repayment_schedule);
     }
 
+    #[Test]
     public function test_loan_application_rejected_for_low_credit_score()
     {
         $user = User::factory()->create([
@@ -137,6 +132,7 @@ class LoanApplicationWorkflowTest extends TestCase
         $this->assertNotNull($application->rejection_reasons);
     }
 
+    #[Test]
     public function test_loan_application_rejected_for_failed_kyc()
     {
         $user = User::factory()->create([
@@ -169,6 +165,7 @@ class LoanApplicationWorkflowTest extends TestCase
         $this->assertEquals('rejected', $application->status);
     }
 
+    #[Test]
     public function test_loan_application_with_reduced_amount_for_high_risk()
     {
         $user = User::factory()->create([

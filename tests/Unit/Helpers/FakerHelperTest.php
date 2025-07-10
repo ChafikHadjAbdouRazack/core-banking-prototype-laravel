@@ -2,16 +2,18 @@
 
 namespace Tests\Unit\Helpers;
 
-use Faker\Generator;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class FakerHelperTest extends TestCase
 {
+    #[Test]
     public function test_faker_function_exists(): void
     {
         $this->assertTrue(function_exists('faker'));
     }
 
+    #[Test]
     public function test_faker_returns_generator_instance(): void
     {
         $faker = faker();
@@ -19,6 +21,7 @@ class FakerHelperTest extends TestCase
         $this->assertInstanceOf(Generator::class, $faker);
     }
 
+    #[Test]
     public function test_faker_returns_new_instance_each_time(): void
     {
         $faker1 = faker();
@@ -28,6 +31,7 @@ class FakerHelperTest extends TestCase
         $this->assertNotSame($faker1, $faker2);
     }
 
+    #[Test]
     public function test_faker_can_generate_data(): void
     {
         $faker = faker();
@@ -40,6 +44,7 @@ class FakerHelperTest extends TestCase
         $this->assertIsBool($faker->boolean());
     }
 
+    #[Test]
     public function test_faker_helper_file_structure(): void
     {
         $helperFile = base_path('app/Helpers/faker.php');
@@ -60,6 +65,7 @@ class FakerHelperTest extends TestCase
         $this->assertStringContainsString('Factory::create()', $content);
     }
 
+    #[Test]
     public function test_faker_has_proper_documentation(): void
     {
         $reflection = new \ReflectionFunction('faker');
@@ -70,6 +76,7 @@ class FakerHelperTest extends TestCase
         $this->assertStringContainsString('@return Generator', $docComment);
     }
 
+    #[Test]
     public function test_faker_function_return_type(): void
     {
         $reflection = new \ReflectionFunction('faker');
@@ -79,6 +86,7 @@ class FakerHelperTest extends TestCase
         $this->assertEquals('Faker\Generator', $returnType->getName());
     }
 
+    #[Test]
     public function test_faker_function_has_no_parameters(): void
     {
         $reflection = new \ReflectionFunction('faker');
@@ -86,6 +94,7 @@ class FakerHelperTest extends TestCase
         $this->assertEquals(0, $reflection->getNumberOfParameters());
     }
 
+    #[Test]
     public function test_faker_generates_consistent_types(): void
     {
         $faker = faker();
@@ -100,6 +109,7 @@ class FakerHelperTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_faker_email_generates_valid_format(): void
     {
         $faker = faker();
@@ -110,6 +120,7 @@ class FakerHelperTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_faker_uuid_generates_valid_format(): void
     {
         $faker = faker();
@@ -121,6 +132,7 @@ class FakerHelperTest extends TestCase
         );
     }
 
+    #[Test]
     public function test_faker_date_time_methods_work(): void
     {
         $faker = faker();
@@ -133,6 +145,7 @@ class FakerHelperTest extends TestCase
         $this->assertEquals(date('Y'), $dateTimeThisYear->format('Y'));
     }
 
+    #[Test]
     public function test_faker_random_element_works(): void
     {
         $faker = faker();
@@ -143,6 +156,7 @@ class FakerHelperTest extends TestCase
         $this->assertContains($randomElement, $elements);
     }
 
+    #[Test]
     public function test_faker_number_between_works(): void
     {
         $faker = faker();
@@ -154,6 +168,7 @@ class FakerHelperTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_faker_generates_locale_specific_data(): void
     {
         $faker = faker();

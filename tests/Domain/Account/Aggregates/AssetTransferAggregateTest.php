@@ -9,9 +9,9 @@ use App\Domain\Account\Events\TransferThresholdReached;
 use Illuminate\Support\Str;
 use PHPUnit\Framework\Attributes\Test;
 use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
-use Tests\TestCase;
+use Tests\DomainTestCase;
 
-class AssetTransferAggregateTest extends TestCase
+class AssetTransferAggregateTest extends DomainTestCase
 {
     protected string $transferUuid;
 

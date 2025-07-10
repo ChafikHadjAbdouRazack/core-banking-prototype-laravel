@@ -11,10 +11,11 @@ use App\Models\Stablecoin;
 use App\Models\StablecoinCollateralPosition;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\DomainTestCase;
 use Workflow\WorkflowStub;
 
-class StablecoinIssuanceIntegrationTest extends TestCase
+class StablecoinIssuanceIntegrationTest extends DomainTestCase
 {
     use RefreshDatabase;
 
@@ -102,7 +103,7 @@ class StablecoinIssuanceIntegrationTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_mint_stablecoins_with_usd_collateral()
     {
         $collateralAmount = 150000; // $1,500
@@ -140,7 +141,7 @@ class StablecoinIssuanceIntegrationTest extends TestCase
         $this->assertEquals($collateralAmount, $this->stablecoin->total_collateral_value);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_mint_with_different_collateral_asset()
     {
         // Mock EUR to USD exchange rate
@@ -171,7 +172,7 @@ class StablecoinIssuanceIntegrationTest extends TestCase
         $this->assertEquals(165000, $this->stablecoin->total_collateral_value); // €1,500 * 1.1 = $1,650
     }
 
-    /** @test */
+    #[Test]
     public function it_can_burn_stablecoins_and_release_collateral()
     {
         // First mint some stablecoins
@@ -220,7 +221,7 @@ class StablecoinIssuanceIntegrationTest extends TestCase
         $this->assertEquals(75000, $this->stablecoin->total_collateral_value);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_burn_entire_position()
     {
         // Create position
@@ -263,7 +264,7 @@ class StablecoinIssuanceIntegrationTest extends TestCase
         $this->assertEquals(0, $this->stablecoin->total_collateral_value);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_add_collateral_to_existing_position()
     {
         // Create position
@@ -308,7 +309,7 @@ class StablecoinIssuanceIntegrationTest extends TestCase
         $this->assertEquals(200000, $this->stablecoin->total_collateral_value);
     }
 
-    /** @test */
+    #[Test]
     public function it_updates_existing_position_when_minting_again()
     {
         // Create existing position
@@ -351,7 +352,7 @@ class StablecoinIssuanceIntegrationTest extends TestCase
         $this->assertEquals(225000, $this->stablecoin->total_collateral_value);
     }
 
-    /** @test */
+    #[Test]
     public function it_prevents_minting_when_disabled()
     {
         $this->stablecoin->update(['minting_enabled' => false]);
@@ -368,7 +369,7 @@ class StablecoinIssuanceIntegrationTest extends TestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function it_prevents_minting_when_max_supply_reached()
     {
         $this->stablecoin->update(['total_supply' => 10000000]);
@@ -385,7 +386,7 @@ class StablecoinIssuanceIntegrationTest extends TestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_collateral_sufficiency()
     {
         $this->expectException(\RuntimeException::class);
@@ -400,7 +401,7 @@ class StablecoinIssuanceIntegrationTest extends TestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_account_balance()
     {
         // Create account with no balance
@@ -418,7 +419,7 @@ class StablecoinIssuanceIntegrationTest extends TestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function it_prevents_burning_when_disabled()
     {
         $this->stablecoin->update(['burning_enabled' => false]);
@@ -439,7 +440,7 @@ class StablecoinIssuanceIntegrationTest extends TestCase
         $this->service->burn($this->account, 'FUSD', 50000);
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_burn_amount()
     {
         $position = StablecoinCollateralPosition::create([
@@ -458,7 +459,7 @@ class StablecoinIssuanceIntegrationTest extends TestCase
         $this->service->burn($this->account, 'FUSD', 150000); // Try to burn more than debt
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_collateral_asset_match()
     {
         $position = StablecoinCollateralPosition::create([

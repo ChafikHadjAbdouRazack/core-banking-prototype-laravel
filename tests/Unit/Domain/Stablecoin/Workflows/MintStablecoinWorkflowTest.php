@@ -2,27 +2,31 @@
 
 namespace Tests\Unit\Domain\Stablecoin\Workflows;
 
-use App\Domain\Stablecoin\Workflows\MintStablecoinWorkflow;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\DomainTestCase;
 
-class MintStablecoinWorkflowTest extends TestCase
+class MintStablecoinWorkflowTest extends DomainTestCase
 {
+    #[Test]
     public function test_class_exists(): void
     {
         $this->assertTrue(class_exists(MintStablecoinWorkflow::class));
     }
 
+    #[Test]
     public function test_extends_workflow_class(): void
     {
         $reflection = new \ReflectionClass(MintStablecoinWorkflow::class);
         $this->assertEquals('Workflow\Workflow', $reflection->getParentClass()->getName());
     }
 
+    #[Test]
     public function test_has_execute_method(): void
     {
         $this->assertTrue(method_exists(MintStablecoinWorkflow::class, 'execute'));
     }
 
+    #[Test]
     public function test_execute_method_signature(): void
     {
         $reflection = new \ReflectionClass(MintStablecoinWorkflow::class);
@@ -52,6 +56,7 @@ class MintStablecoinWorkflowTest extends TestCase
         $this->assertTrue($parameters[5]->allowsNull());
     }
 
+    #[Test]
     public function test_execute_method_returns_generator(): void
     {
         $reflection = new \ReflectionClass(MintStablecoinWorkflow::class);
@@ -60,6 +65,7 @@ class MintStablecoinWorkflowTest extends TestCase
         $this->assertEquals('Generator', $method->getReturnType()->getName());
     }
 
+    #[Test]
     public function test_workflow_uses_compensation_pattern(): void
     {
         $reflection = new \ReflectionClass(MintStablecoinWorkflow::class);
@@ -69,6 +75,7 @@ class MintStablecoinWorkflowTest extends TestCase
         $this->assertTrue(method_exists(MintStablecoinWorkflow::class, 'compensate'));
     }
 
+    #[Test]
     public function test_workflow_activities_order(): void
     {
         // Test that the workflow uses the correct activities in the right order
@@ -93,6 +100,7 @@ class MintStablecoinWorkflowTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_workflow_compensation_activities(): void
     {
         // Test that the workflow has proper compensation activities
@@ -116,6 +124,7 @@ class MintStablecoinWorkflowTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_workflow_handles_exceptions(): void
     {
         $reflection = new \ReflectionClass(MintStablecoinWorkflow::class);

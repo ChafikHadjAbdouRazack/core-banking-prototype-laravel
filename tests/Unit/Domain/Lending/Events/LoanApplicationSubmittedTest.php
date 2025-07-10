@@ -2,11 +2,12 @@
 
 namespace Tests\Unit\Domain\Lending\Events;
 
-use App\Domain\Lending\Events\LoanApplicationSubmitted;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\DomainTestCase;
 
-class LoanApplicationSubmittedTest extends TestCase
+class LoanApplicationSubmittedTest extends DomainTestCase
 {
+    #[Test]
     public function test_creates_event_with_all_properties(): void
     {
         $applicationId = 'app-123-uuid';
@@ -41,6 +42,7 @@ class LoanApplicationSubmittedTest extends TestCase
         $this->assertSame($submittedAt, $event->submittedAt);
     }
 
+    #[Test]
     public function test_event_extends_should_be_stored(): void
     {
         $event = new LoanApplicationSubmitted(
@@ -56,6 +58,7 @@ class LoanApplicationSubmittedTest extends TestCase
         $this->assertInstanceOf(\Spatie\EventSourcing\StoredEvents\ShouldBeStored::class, $event);
     }
 
+    #[Test]
     public function test_handles_different_loan_purposes(): void
     {
         $purposes = [
@@ -83,6 +86,7 @@ class LoanApplicationSubmittedTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_handles_various_loan_amounts_and_terms(): void
     {
         $testCases = [
@@ -108,6 +112,7 @@ class LoanApplicationSubmittedTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_borrower_info_can_contain_complex_data(): void
     {
         $complexBorrowerInfo = [
@@ -152,6 +157,7 @@ class LoanApplicationSubmittedTest extends TestCase
         $this->assertCount(2, $event->borrowerInfo['references']);
     }
 
+    #[Test]
     public function test_submitted_at_preserves_timezone(): void
     {
         $timezone = new \DateTimeZone('America/New_York');
@@ -171,6 +177,7 @@ class LoanApplicationSubmittedTest extends TestCase
         $this->assertEquals('2024-01-15 15:30:00', $event->submittedAt->format('Y-m-d H:i:s'));
     }
 
+    #[Test]
     public function test_event_properties_are_public(): void
     {
         $event = new LoanApplicationSubmitted(

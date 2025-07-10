@@ -4,12 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Domain\Custodian\Services;
 
-use App\Domain\Custodian\Exceptions\MaxRetriesExceededException;
-use App\Domain\Custodian\Services\RetryService;
-use Illuminate\Support\Facades\Log;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ServiceTestCase;
 
-class RetryServiceTest extends TestCase
+class RetryServiceTest extends ServiceTestCase
 {
     private RetryService $retryService;
 
@@ -26,6 +24,7 @@ class RetryServiceTest extends TestCase
         );
     }
 
+    #[Test]
     public function test_successful_operation_executes_once(): void
     {
         $attempts = 0;
@@ -42,6 +41,7 @@ class RetryServiceTest extends TestCase
         $this->assertEquals(1, $attempts);
     }
 
+    #[Test]
     public function test_retries_on_retryable_exception(): void
     {
         $attempts = 0;
@@ -63,6 +63,7 @@ class RetryServiceTest extends TestCase
         $this->assertEquals(3, $attempts);
     }
 
+    #[Test]
     public function test_throws_after_max_attempts(): void
     {
         $attempts = 0;
@@ -81,6 +82,7 @@ class RetryServiceTest extends TestCase
         $this->assertEquals(3, $attempts); // Max attempts
     }
 
+    #[Test]
     public function test_does_not_retry_non_retryable_exceptions(): void
     {
         $attempts = 0;
@@ -98,6 +100,7 @@ class RetryServiceTest extends TestCase
         $this->assertEquals(1, $attempts); // No retries
     }
 
+    #[Test]
     public function test_exponential_backoff_delays(): void
     {
         $attempts = 0;
@@ -130,6 +133,7 @@ class RetryServiceTest extends TestCase
         $this->assertLessThan(250, $delays[1]);
     }
 
+    #[Test]
     public function test_respects_max_delay(): void
     {
         // Create service with low max delay
@@ -169,6 +173,7 @@ class RetryServiceTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_jitter_adds_randomness(): void
     {
         // Create service with jitter enabled
@@ -214,6 +219,7 @@ class RetryServiceTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_logs_retry_attempts(): void
     {
         Log::shouldReceive('warning')
@@ -233,6 +239,7 @@ class RetryServiceTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_single_attempt_service(): void
     {
         $service = new RetryService(maxAttempts: 1);

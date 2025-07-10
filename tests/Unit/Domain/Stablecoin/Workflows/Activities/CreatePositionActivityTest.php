@@ -2,28 +2,31 @@
 
 namespace Tests\Unit\Domain\Stablecoin\Workflows\Activities;
 
-use App\Domain\Account\DataObjects\AccountUuid;
-use App\Domain\Stablecoin\Workflows\Activities\CreatePositionActivity;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\DomainTestCase;
 
-class CreatePositionActivityTest extends TestCase
+class CreatePositionActivityTest extends DomainTestCase
 {
+    #[Test]
     public function test_class_exists(): void
     {
         $this->assertTrue(class_exists(CreatePositionActivity::class));
     }
 
+    #[Test]
     public function test_extends_workflow_activity(): void
     {
         $reflection = new \ReflectionClass(CreatePositionActivity::class);
         $this->assertEquals('Workflow\Activity', $reflection->getParentClass()->getName());
     }
 
+    #[Test]
     public function test_has_execute_method(): void
     {
         $this->assertTrue(method_exists(CreatePositionActivity::class, 'execute'));
     }
 
+    #[Test]
     public function test_execute_method_has_correct_signature(): void
     {
         $reflection = new \ReflectionClass(CreatePositionActivity::class);
@@ -53,6 +56,7 @@ class CreatePositionActivityTest extends TestCase
         $this->assertTrue($parameters[5]->allowsNull());
     }
 
+    #[Test]
     public function test_execute_method_returns_array(): void
     {
         $reflection = new \ReflectionClass(CreatePositionActivity::class);
@@ -61,6 +65,7 @@ class CreatePositionActivityTest extends TestCase
         $this->assertEquals('array', $method->getReturnType()->getName());
     }
 
+    #[Test]
     public function test_collateral_ratio_calculation(): void
     {
         // Test collateral ratio calculation
@@ -76,6 +81,7 @@ class CreatePositionActivityTest extends TestCase
         $this->assertEquals(1.5, $expectedRatio);
     }
 
+    #[Test]
     public function test_activity_properties(): void
     {
         $reflection = new \ReflectionClass(CreatePositionActivity::class);

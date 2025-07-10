@@ -2,14 +2,11 @@
 
 namespace Tests\Unit\Domain\Exchange\LiquidityPool;
 
-use App\Domain\Exchange\Contracts\PriceAggregatorInterface;
-use App\Domain\Exchange\LiquidityPool\Services\AutomatedMarketMakerService;
-use App\Domain\Exchange\Projections\LiquidityPool;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Mockery;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ServiceTestCase;
 
-class AutomatedMarketMakerServiceTest extends TestCase
+class AutomatedMarketMakerServiceTest extends ServiceTestCase
 {
     use RefreshDatabase;
 
@@ -25,6 +22,7 @@ class AutomatedMarketMakerServiceTest extends TestCase
         $this->service = new AutomatedMarketMakerService($this->priceAggregator);
     }
 
+    #[Test]
     public function test_generates_market_making_orders_for_pool()
     {
         // Create a test pool
@@ -70,6 +68,7 @@ class AutomatedMarketMakerServiceTest extends TestCase
         $this->assertCount(5, $sellOrders);
     }
 
+    #[Test]
     public function test_adjusts_spread_based_on_market_conditions()
     {
         // Create a volatile pool
@@ -102,6 +101,7 @@ class AutomatedMarketMakerServiceTest extends TestCase
         $this->assertLessThanOrEqual($poolPrice * 0.99, (float) $firstBuyOrder['price']);
     }
 
+    #[Test]
     public function test_calculates_order_sizes_based_on_reserves()
     {
         $pool = LiquidityPool::create([
@@ -129,6 +129,7 @@ class AutomatedMarketMakerServiceTest extends TestCase
         $this->assertEquals(20, (float) $firstSellOrder['quantity']);
     }
 
+    #[Test]
     public function test_adjusts_market_making_parameters()
     {
         $pool = LiquidityPool::create([

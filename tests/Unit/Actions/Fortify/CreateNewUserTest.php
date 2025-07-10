@@ -2,12 +2,7 @@
 
 namespace Tests\Unit\Actions\Fortify;
 
-use App\Actions\Fortify\CreateNewUser;
-use App\Models\Team;
-use App\Models\User;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\ValidationException;
-use Laravel\Jetstream\Jetstream;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class CreateNewUserTest extends TestCase
@@ -25,6 +20,7 @@ class CreateNewUserTest extends TestCase
         $this->action = new CreateNewUser();
     }
 
+    #[Test]
     public function test_creates_new_private_user_successfully(): void
     {
         $input = [
@@ -51,6 +47,7 @@ class CreateNewUserTest extends TestCase
         $this->assertTrue($team->personal_team);
     }
 
+    #[Test]
     public function test_creates_new_business_user_successfully(): void
     {
         $input = [
@@ -78,6 +75,7 @@ class CreateNewUserTest extends TestCase
         $this->assertContains('risk_manager', $team->allowed_roles);
     }
 
+    #[Test]
     public function test_validates_required_fields(): void
     {
         $this->expectException(ValidationException::class);
@@ -85,6 +83,7 @@ class CreateNewUserTest extends TestCase
         $this->action->create([]);
     }
 
+    #[Test]
     public function test_validates_name_is_required(): void
     {
         $this->expectException(ValidationException::class);
@@ -97,6 +96,7 @@ class CreateNewUserTest extends TestCase
         ]);
     }
 
+    #[Test]
     public function test_validates_email_is_required(): void
     {
         $this->expectException(ValidationException::class);
@@ -109,6 +109,7 @@ class CreateNewUserTest extends TestCase
         ]);
     }
 
+    #[Test]
     public function test_validates_email_format(): void
     {
         $this->expectException(ValidationException::class);
@@ -122,6 +123,7 @@ class CreateNewUserTest extends TestCase
         ]);
     }
 
+    #[Test]
     public function test_validates_email_is_unique(): void
     {
         User::factory()->create(['email' => 'existing@example.com']);
@@ -137,6 +139,7 @@ class CreateNewUserTest extends TestCase
         ]);
     }
 
+    #[Test]
     public function test_validates_password_is_required(): void
     {
         $this->expectException(ValidationException::class);
@@ -148,6 +151,7 @@ class CreateNewUserTest extends TestCase
         ]);
     }
 
+    #[Test]
     public function test_validates_terms_acceptance_when_feature_enabled(): void
     {
         // Terms and privacy policy feature is enabled in config/jetstream.php
@@ -162,6 +166,7 @@ class CreateNewUserTest extends TestCase
         ]);
     }
 
+    #[Test]
     public function test_creates_user_with_terms_accepted(): void
     {
         // Terms and privacy policy feature is enabled in config/jetstream.php
@@ -179,6 +184,7 @@ class CreateNewUserTest extends TestCase
         $this->assertEquals('Test User', $user->name);
     }
 
+    #[Test]
     public function test_handles_single_name_correctly(): void
     {
         $input = [
@@ -195,6 +201,7 @@ class CreateNewUserTest extends TestCase
         $this->assertEquals("Madonna's Team", $team->name);
     }
 
+    #[Test]
     public function test_handles_multi_word_name_correctly(): void
     {
         $input = [
@@ -211,6 +218,7 @@ class CreateNewUserTest extends TestCase
         $this->assertEquals("Mary's Team", $team->name);
     }
 
+    #[Test]
     public function test_business_user_gets_owner_role_in_team(): void
     {
         $input = [

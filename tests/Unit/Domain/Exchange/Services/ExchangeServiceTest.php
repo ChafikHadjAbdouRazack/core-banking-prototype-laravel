@@ -4,21 +4,20 @@ namespace Tests\Unit\Domain\Exchange\Services;
 
 use App\Domain\Exchange\Aggregates\Order;
 use App\Domain\Exchange\Aggregates\OrderBook;
-use App\Domain\Exchange\Projections\Order as OrderProjection;
-use App\Domain\Exchange\Projections\OrderBook as OrderBookProjection;
+use App\Domain\Exchange\Projections\OrderBookProjection;
+use App\Domain\Exchange\Projections\OrderProjection;
 use App\Domain\Exchange\Services\ExchangeService;
 use App\Domain\Exchange\Services\FeeCalculator;
-use App\Domain\Exchange\Workflows\OrderMatchingWorkflow;
 use App\Models\Account;
 use App\Models\Asset;
-use Brick\Math\BigDecimal;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
 use Mockery;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ServiceTestCase;
 use Workflow\WorkflowStub;
 
-class ExchangeServiceTest extends TestCase
+class ExchangeServiceTest extends ServiceTestCase
 {
     use RefreshDatabase;
 
@@ -40,6 +39,7 @@ class ExchangeServiceTest extends TestCase
         $property->setValue($this->service, $this->feeCalculator);
     }
 
+    #[Test]
     public function test_place_order_validates_account_exists(): void
     {
         $this->expectException(\InvalidArgumentException::class);
@@ -55,6 +55,7 @@ class ExchangeServiceTest extends TestCase
         );
     }
 
+    #[Test]
     public function test_place_order_validates_currencies_exist(): void
     {
         $account = Account::factory()->create();
@@ -72,6 +73,7 @@ class ExchangeServiceTest extends TestCase
         );
     }
 
+    #[Test]
     public function test_place_order_validates_currencies_are_tradeable(): void
     {
         $account = Account::factory()->create();
@@ -107,6 +109,7 @@ class ExchangeServiceTest extends TestCase
         );
     }
 
+    #[Test]
     public function test_place_order_requires_price_for_limit_orders(): void
     {
         $account = Account::factory()->create();
@@ -126,6 +129,7 @@ class ExchangeServiceTest extends TestCase
         );
     }
 
+    #[Test]
     public function test_place_order_requires_stop_price_for_stop_orders(): void
     {
         $account = Account::factory()->create();
@@ -145,6 +149,7 @@ class ExchangeServiceTest extends TestCase
         );
     }
 
+    #[Test]
     public function test_place_order_validates_minimum_amount(): void
     {
         $account = Account::factory()->create();
@@ -167,6 +172,7 @@ class ExchangeServiceTest extends TestCase
         );
     }
 
+    #[Test]
     public function test_place_order_creates_market_order_successfully(): void
     {
         $account = Account::factory()->create();
@@ -182,33 +188,13 @@ class ExchangeServiceTest extends TestCase
         $request->shouldReceive('userAgent')->andReturn('Test Browser');
         $this->app->instance('request', $request);
 
-        // Mock order aggregate
-        $orderAggregate = Mockery::mock(Order::class);
-        $orderAggregate->shouldReceive('placeOrder')->once();
-        $orderAggregate->shouldReceive('persist')->once();
-
-        Order::shouldReceive('retrieve')
-            ->once()
-            ->andReturn($orderAggregate);
-
-        // Mock order book aggregate
-        $orderBookAggregate = Mockery::mock(OrderBook::class);
-        $orderBookAggregate->shouldReceive('createOrderBook')->once();
-        $orderBookAggregate->shouldReceive('persist')->once();
-
-        OrderBook::shouldReceive('retrieve')
-            ->once()
-            ->andReturn($orderBookAggregate);
+        // Use fake aggregates for event sourcing
+        $orderId = \Str::uuid()->toString();
+        $orderAggregate = Order::fake($orderId);
+        $orderBookAggregate = OrderBook::fake('btc-usdt-book');
 
         // Mock workflow
         WorkflowStub::fake();
-        $workflowMock = Mockery::mock(WorkflowStub::class);
-        $workflowMock->shouldReceive('start')->once();
-        $workflowMock->shouldReceive('id')->andReturn('workflow-123');
-
-        WorkflowStub::shouldReceive('make')
-            ->with(OrderMatchingWorkflow::class)
-            ->andReturn($workflowMock);
 
         $result = $this->service->placeOrder(
             accountId: $account->id,
@@ -225,6 +211,7 @@ class ExchangeServiceTest extends TestCase
         $this->assertEquals('workflow-123', $result['workflow_id']);
     }
 
+    #[Test]
     public function test_place_order_creates_limit_order_with_price(): void
     {
         $account = Account::factory()->create();
@@ -249,6 +236,7 @@ class ExchangeServiceTest extends TestCase
         $this->assertTrue($result['success']);
     }
 
+    #[Test]
     public function test_cancel_order_validates_order_exists(): void
     {
         $this->expectException(\InvalidArgumentException::class);
@@ -257,6 +245,7 @@ class ExchangeServiceTest extends TestCase
         $this->service->cancelOrder('non-existent-order');
     }
 
+    #[Test]
     public function test_cancel_order_validates_order_can_be_cancelled(): void
     {
         OrderProjection::create([
@@ -277,6 +266,7 @@ class ExchangeServiceTest extends TestCase
         $this->service->cancelOrder('completed-order');
     }
 
+    #[Test]
     public function test_cancel_order_cancels_successfully(): void
     {
         OrderProjection::create([
@@ -292,27 +282,9 @@ class ExchangeServiceTest extends TestCase
             'status'         => 'pending',
         ]);
 
-        // Mock order aggregate
-        $orderAggregate = Mockery::mock(Order::class);
-        $orderAggregate->shouldReceive('cancelOrder')
-            ->once()
-            ->with('User requested');
-        $orderAggregate->shouldReceive('persist')->once();
-
-        Order::shouldReceive('retrieve')
-            ->with('active-order')
-            ->andReturn($orderAggregate);
-
-        // Mock order book aggregate
-        $orderBookAggregate = Mockery::mock(OrderBook::class);
-        $orderBookAggregate->shouldReceive('removeOrder')
-            ->once()
-            ->with('active-order', 'cancelled');
-        $orderBookAggregate->shouldReceive('persist')->once();
-
-        OrderBook::shouldReceive('retrieve')
-            ->once()
-            ->andReturn($orderBookAggregate);
+        // Use fake aggregates for event sourcing
+        $orderAggregate = Order::fake('active-order');
+        $orderBookAggregate = OrderBook::fake('btc-usdt-book');
 
         $result = $this->service->cancelOrder('active-order');
 
@@ -320,6 +292,7 @@ class ExchangeServiceTest extends TestCase
         $this->assertEquals('Order cancelled successfully', $result['message']);
     }
 
+    #[Test]
     public function test_get_order_book_returns_empty_for_non_existent_pair(): void
     {
         $result = $this->service->getOrderBook('BTC', 'ETH');
@@ -331,6 +304,7 @@ class ExchangeServiceTest extends TestCase
         $this->assertNull($result['mid_price']);
     }
 
+    #[Test]
     public function test_get_order_book_returns_formatted_data(): void
     {
         OrderBookProjection::create([
@@ -370,23 +344,27 @@ class ExchangeServiceTest extends TestCase
     // Helper methods
     private function createTradeableAssets(): void
     {
-        Asset::create([
-            'code'         => 'BTC',
-            'name'         => 'Bitcoin',
-            'type'         => 'crypto',
-            'is_active'    => true,
-            'is_tradeable' => true,
-            'precision'    => 8,
-        ]);
+        Asset::firstOrCreate(
+            ['code' => 'BTC'],
+            [
+                'name'         => 'Bitcoin',
+                'type'         => 'crypto',
+                'is_active'    => true,
+                'is_tradeable' => true,
+                'precision'    => 8,
+            ]
+        );
 
-        Asset::create([
-            'code'         => 'USDT',
-            'name'         => 'Tether',
-            'type'         => 'crypto',
-            'is_active'    => true,
-            'is_tradeable' => true,
-            'precision'    => 2,
-        ]);
+        Asset::firstOrCreate(
+            ['code' => 'USDT'],
+            [
+                'name'         => 'Tether',
+                'type'         => 'crypto',
+                'is_active'    => true,
+                'is_tradeable' => true,
+                'precision'    => 2,
+            ]
+        );
     }
 
     private function mockOrderCreation(): void
@@ -397,29 +375,13 @@ class ExchangeServiceTest extends TestCase
         $request->shouldReceive('userAgent')->andReturn('Test Browser');
         $this->app->instance('request', $request);
 
-        // Mock order aggregate
-        $orderAggregate = Mockery::mock(Order::class);
-        $orderAggregate->shouldReceive('placeOrder')->once();
-        $orderAggregate->shouldReceive('persist')->once();
-
-        Order::shouldReceive('retrieve')->andReturn($orderAggregate);
-
-        // Mock order book aggregate
-        $orderBookAggregate = Mockery::mock(OrderBook::class);
-        $orderBookAggregate->shouldReceive('createOrderBook')->once();
-        $orderBookAggregate->shouldReceive('persist')->once();
-
-        OrderBook::shouldReceive('retrieve')->andReturn($orderBookAggregate);
+        // Use fake aggregates for event sourcing
+        $orderId = \Str::uuid()->toString();
+        Order::fake($orderId);
+        OrderBook::fake('btc-usdt-book');
 
         // Mock workflow
         WorkflowStub::fake();
-        $workflowMock = Mockery::mock(WorkflowStub::class);
-        $workflowMock->shouldReceive('start')->once();
-        $workflowMock->shouldReceive('id')->andReturn('workflow-123');
-
-        WorkflowStub::shouldReceive('make')
-            ->with(OrderMatchingWorkflow::class)
-            ->andReturn($workflowMock);
     }
 
     protected function tearDown(): void

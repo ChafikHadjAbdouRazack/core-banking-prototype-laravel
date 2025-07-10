@@ -2,11 +2,12 @@
 
 namespace Tests\Unit\Domain\Compliance\Events;
 
-use App\Domain\Compliance\Events\KycDocumentUploaded;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\DomainTestCase;
 
-class KycDocumentUploadedTest extends TestCase
+class KycDocumentUploadedTest extends DomainTestCase
 {
+    #[Test]
     public function test_creates_event_with_user_uuid_and_document(): void
     {
         $userUuid = 'user-123-uuid';
@@ -25,6 +26,7 @@ class KycDocumentUploadedTest extends TestCase
         $this->assertEquals('passport', $event->document['type']);
     }
 
+    #[Test]
     public function test_handles_different_document_types(): void
     {
         $documentTypes = [
@@ -50,6 +52,7 @@ class KycDocumentUploadedTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_event_extends_should_be_stored(): void
     {
         $event = new KycDocumentUploaded('user-uuid', ['type' => 'test']);
@@ -57,6 +60,7 @@ class KycDocumentUploadedTest extends TestCase
         $this->assertInstanceOf(\Spatie\EventSourcing\StoredEvents\ShouldBeStored::class, $event);
     }
 
+    #[Test]
     public function test_handles_document_with_validation_results(): void
     {
         $document = [
@@ -81,6 +85,7 @@ class KycDocumentUploadedTest extends TestCase
         $this->assertEquals('John Doe', $event->document['validation']['data_extracted']['name']);
     }
 
+    #[Test]
     public function test_handles_document_with_security_checks(): void
     {
         $document = [
@@ -100,6 +105,7 @@ class KycDocumentUploadedTest extends TestCase
         $this->assertTrue($event->document['security_checks']['watermark_verified']);
     }
 
+    #[Test]
     public function test_handles_minimal_document_data(): void
     {
         $minimalDocument = [
@@ -112,6 +118,7 @@ class KycDocumentUploadedTest extends TestCase
         $this->assertCount(1, $event->document);
     }
 
+    #[Test]
     public function test_handles_document_with_processing_metadata(): void
     {
         $document = [

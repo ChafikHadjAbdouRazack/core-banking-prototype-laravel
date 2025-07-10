@@ -2,15 +2,11 @@
 
 namespace Tests\Feature\Http\Controllers\Api\V2;
 
-use App\Models\FinancialInstitutionApplication;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
-use Laravel\Sanctum\Sanctum;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ControllerTestCase;
 
-class FinancialInstitutionControllerTest extends TestCase
+class FinancialInstitutionControllerTest extends ControllerTestCase
 {
     use RefreshDatabase;
 
@@ -24,6 +20,7 @@ class FinancialInstitutionControllerTest extends TestCase
         Storage::fake('applications');
     }
 
+    #[Test]
     public function test_get_application_form_returns_structure(): void
     {
         $response = $this->getJson('/api/v2/financial-institutions/application-form');
@@ -47,6 +44,7 @@ class FinancialInstitutionControllerTest extends TestCase
             ->assertJsonPath('data.institution_types.credit_union', 'Credit Union');
     }
 
+    #[Test]
     public function test_submit_application_successfully(): void
     {
         Sanctum::actingAs($this->user);
@@ -76,6 +74,7 @@ class FinancialInstitutionControllerTest extends TestCase
         ]);
     }
 
+    #[Test]
     public function test_submit_application_requires_authentication(): void
     {
         $applicationData = $this->getValidApplicationData();
@@ -85,6 +84,7 @@ class FinancialInstitutionControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_submit_application_validates_required_fields(): void
     {
         Sanctum::actingAs($this->user);
@@ -99,6 +99,7 @@ class FinancialInstitutionControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_get_application_status(): void
     {
         Sanctum::actingAs($this->user);
@@ -131,6 +132,7 @@ class FinancialInstitutionControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_get_application_status_requires_authentication(): void
     {
         $application = FinancialInstitutionApplication::factory()->create();
@@ -140,6 +142,7 @@ class FinancialInstitutionControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_get_application_status_prevents_unauthorized_access(): void
     {
         Sanctum::actingAs($this->user);
@@ -154,6 +157,7 @@ class FinancialInstitutionControllerTest extends TestCase
         $response->assertStatus(403);
     }
 
+    #[Test]
     public function test_upload_document_successfully(): void
     {
         Sanctum::actingAs($this->user);
@@ -190,6 +194,7 @@ class FinancialInstitutionControllerTest extends TestCase
         Storage::disk('applications')->assertExists($application->uuid);
     }
 
+    #[Test]
     public function test_upload_document_validates_file_type(): void
     {
         Sanctum::actingAs($this->user);
@@ -209,6 +214,7 @@ class FinancialInstitutionControllerTest extends TestCase
             ->assertJsonValidationErrors(['document']);
     }
 
+    #[Test]
     public function test_withdraw_application(): void
     {
         Sanctum::actingAs($this->user);
@@ -237,6 +243,7 @@ class FinancialInstitutionControllerTest extends TestCase
         ]);
     }
 
+    #[Test]
     public function test_withdraw_application_prevents_if_already_approved(): void
     {
         Sanctum::actingAs($this->user);

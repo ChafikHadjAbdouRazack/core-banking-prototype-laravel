@@ -2,16 +2,15 @@
 
 namespace Tests\Unit\Domain\Fraud\Events;
 
-use App\Domain\Fraud\Events\FraudDetected;
-use App\Models\FraudScore;
-use App\Models\Transaction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\DomainTestCase;
 
-class FraudDetectedTest extends TestCase
+class FraudDetectedTest extends DomainTestCase
 {
     use RefreshDatabase;
 
+    #[Test]
     public function test_creates_event_with_fraud_score(): void
     {
         $fraudScore = FraudScore::factory()->create([
@@ -29,6 +28,7 @@ class FraudDetectedTest extends TestCase
         $this->assertEquals('block', $event->fraudScore->action);
     }
 
+    #[Test]
     public function test_event_uses_required_traits(): void
     {
         $fraudScore = FraudScore::factory()->create();
@@ -41,6 +41,7 @@ class FraudDetectedTest extends TestCase
         $this->assertArrayHasKey('Illuminate\Queue\SerializesModels', $traits);
     }
 
+    #[Test]
     public function test_tags_method_returns_correct_tags(): void
     {
         $fraudScore = FraudScore::factory()->create([
@@ -57,6 +58,7 @@ class FraudDetectedTest extends TestCase
         $this->assertContains('entity_type:Transaction', $tags);
     }
 
+    #[Test]
     public function test_event_serializes_correctly(): void
     {
         $fraudScore = FraudScore::factory()->create([
@@ -81,6 +83,7 @@ class FraudDetectedTest extends TestCase
         $this->assertIsArray($unserialized->fraudScore->analysis_results);
     }
 
+    #[Test]
     public function test_can_be_dispatched_as_event(): void
     {
         $fraudScore = FraudScore::factory()->create();
@@ -90,6 +93,7 @@ class FraudDetectedTest extends TestCase
         event(new FraudDetected($fraudScore));
     }
 
+    #[Test]
     public function test_handles_different_entity_types(): void
     {
         $entityTypes = [
@@ -111,6 +115,7 @@ class FraudDetectedTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_handles_different_risk_levels(): void
     {
         $riskLevels = ['low', 'medium', 'high', 'critical'];

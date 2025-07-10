@@ -4,14 +4,12 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Models;
 
-use App\Domain\Asset\Models\Asset;
-use App\Models\Account;
-use App\Models\AccountBalance;
-use App\Models\User;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class AccountTest extends TestCase
 {
+    #[Test]
     public function test_account_factory_creates_account()
     {
         $user = User::factory()->create();
@@ -23,6 +21,7 @@ class AccountTest extends TestCase
         ]);
     }
 
+    #[Test]
     public function test_account_has_uuid()
     {
         $account = Account::factory()->create();
@@ -31,6 +30,7 @@ class AccountTest extends TestCase
         $this->assertIsString((string) $account->uuid);
     }
 
+    #[Test]
     public function test_account_belongs_to_user()
     {
         $user = User::factory()->create();
@@ -40,6 +40,7 @@ class AccountTest extends TestCase
         $this->assertInstanceOf(User::class, $account->user);
     }
 
+    #[Test]
     public function test_account_has_balances_relationship()
     {
         $account = Account::factory()->create();
@@ -53,6 +54,7 @@ class AccountTest extends TestCase
         $this->assertTrue($account->balances->contains($balance));
     }
 
+    #[Test]
     public function test_account_fillable_attributes()
     {
         $account = new Account();
@@ -71,6 +73,7 @@ class AccountTest extends TestCase
         $this->assertEquals('Test Account', $testAccount->name);
     }
 
+    #[Test]
     public function test_account_default_balance_is_zero()
     {
         $account = Account::factory()->create();
@@ -78,6 +81,7 @@ class AccountTest extends TestCase
         $this->assertEquals(0, $account->balance);
     }
 
+    #[Test]
     public function test_account_can_be_frozen()
     {
         $account = Account::factory()->create(['frozen' => true]);
@@ -85,6 +89,7 @@ class AccountTest extends TestCase
         $this->assertTrue($account->frozen);
     }
 
+    #[Test]
     public function test_account_default_not_frozen()
     {
         $account = Account::factory()->create();

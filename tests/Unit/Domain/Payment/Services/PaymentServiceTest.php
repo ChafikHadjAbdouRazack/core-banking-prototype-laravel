@@ -2,11 +2,11 @@
 
 namespace Tests\Unit\Domain\Payment\Services;
 
-use App\Domain\Payment\Services\PaymentService;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ServiceTestCase;
 use Workflow\WorkflowStub;
 
-class PaymentServiceTest extends TestCase
+class PaymentServiceTest extends ServiceTestCase
 {
     private PaymentService $service;
 
@@ -17,6 +17,7 @@ class PaymentServiceTest extends TestCase
         $this->service = new PaymentService();
     }
 
+    #[Test]
     public function test_process_stripe_deposit_with_all_data(): void
     {
         $data = [
@@ -39,6 +40,7 @@ class PaymentServiceTest extends TestCase
         $this->assertStringStartsWith('workflow-', $result);
     }
 
+    #[Test]
     public function test_process_stripe_deposit_without_metadata(): void
     {
         $data = [
@@ -57,6 +59,7 @@ class PaymentServiceTest extends TestCase
         $this->assertStringStartsWith('workflow-', $result);
     }
 
+    #[Test]
     public function test_process_bank_withdrawal_with_all_data(): void
     {
         $data = [
@@ -87,6 +90,7 @@ class PaymentServiceTest extends TestCase
         $this->assertStringStartsWith('transfer_', $result['transfer_id']);
     }
 
+    #[Test]
     public function test_process_bank_withdrawal_with_optional_fields_null(): void
     {
         $data = [
@@ -107,6 +111,7 @@ class PaymentServiceTest extends TestCase
         $this->assertArrayHasKey('reference', $result);
     }
 
+    #[Test]
     public function test_process_stripe_deposit_with_large_amount(): void
     {
         $data = [
@@ -125,6 +130,7 @@ class PaymentServiceTest extends TestCase
         $this->assertStringStartsWith('workflow-', $result);
     }
 
+    #[Test]
     public function test_process_bank_withdrawal_with_different_currencies(): void
     {
         $currencies = ['USD', 'EUR', 'GBP', 'JPY', 'CHF'];
@@ -147,6 +153,7 @@ class PaymentServiceTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_process_stripe_deposit_with_different_payment_method_types(): void
     {
         $paymentTypes = ['card', 'bank_transfer', 'sepa_debit', 'ach_credit_transfer', 'ideal'];
@@ -169,6 +176,7 @@ class PaymentServiceTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_process_bank_withdrawal_with_complex_metadata(): void
     {
         $data = [
@@ -197,6 +205,7 @@ class PaymentServiceTest extends TestCase
         $this->assertArrayHasKey('reference', $result);
     }
 
+    #[Test]
     public function test_process_stripe_deposit_with_zero_amount(): void
     {
         $data = [
@@ -215,6 +224,7 @@ class PaymentServiceTest extends TestCase
         $this->assertStringStartsWith('workflow-', $result);
     }
 
+    #[Test]
     public function test_process_bank_withdrawal_with_minimal_data(): void
     {
         $data = [

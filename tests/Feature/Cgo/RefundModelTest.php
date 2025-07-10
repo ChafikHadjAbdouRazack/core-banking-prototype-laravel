@@ -2,11 +2,8 @@
 
 namespace Tests\Feature\Cgo;
 
-use App\Models\CgoInvestment;
-use App\Models\CgoPricingRound;
-use App\Models\CgoRefund;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class RefundModelTest extends TestCase
@@ -55,6 +52,7 @@ class RefundModelTest extends TestCase
         ]);
     }
 
+    #[Test]
     public function test_refund_model_relationships()
     {
         $refund = CgoRefund::create([
@@ -78,6 +76,7 @@ class RefundModelTest extends TestCase
         $this->assertEquals($this->user->id, $refund->initiator->id);
     }
 
+    #[Test]
     public function test_refund_status_methods()
     {
         $refund = CgoRefund::create([
@@ -111,6 +110,7 @@ class RefundModelTest extends TestCase
         $this->assertFalse($refund->canBeCancelled());
     }
 
+    #[Test]
     public function test_investment_refund_methods()
     {
         $this->assertTrue($this->investment->canBeRefunded());
@@ -150,6 +150,7 @@ class RefundModelTest extends TestCase
         $this->assertTrue($this->investment->hasActiveRefund());
     }
 
+    #[Test]
     public function test_investment_cannot_be_refunded_if_not_confirmed()
     {
         $pendingInvestment = CgoInvestment::create([
@@ -170,6 +171,7 @@ class RefundModelTest extends TestCase
         $this->assertFalse($pendingInvestment->canBeRefunded());
     }
 
+    #[Test]
     public function test_investment_cannot_be_refunded_after_90_days()
     {
         $oldInvestment = CgoInvestment::create([
@@ -192,6 +194,7 @@ class RefundModelTest extends TestCase
         $this->assertFalse($oldInvestment->canBeRefunded());
     }
 
+    #[Test]
     public function test_refund_formatted_amount()
     {
         $refund = CgoRefund::create([
@@ -208,6 +211,7 @@ class RefundModelTest extends TestCase
         $this->assertEquals('$123.45', $refund->formatted_amount);
     }
 
+    #[Test]
     public function test_refund_status_color()
     {
         $refund = CgoRefund::create([

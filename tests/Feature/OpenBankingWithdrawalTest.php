@@ -12,9 +12,9 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Session;
 use Mockery;
 use PHPUnit\Framework\Attributes\Test;
-use Tests\TestCase;
+use Tests\DomainTestCase;
 
-class OpenBankingWithdrawalTest extends TestCase
+class OpenBankingWithdrawalTest extends DomainTestCase
 {
     use RefreshDatabase;
 

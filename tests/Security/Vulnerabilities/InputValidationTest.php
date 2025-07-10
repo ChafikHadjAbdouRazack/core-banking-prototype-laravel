@@ -2,9 +2,6 @@
 
 namespace Tests\Security\Vulnerabilities;
 
-use App\Models\Account;
-use App\Models\User;
-use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 

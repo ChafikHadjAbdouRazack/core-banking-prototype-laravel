@@ -9,9 +9,9 @@ use App\Domain\Wallet\Services\KeyManagementService;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
-use Tests\TestCase;
+use Tests\DomainTestCase;
 
-class BlockchainWalletTest extends TestCase
+class BlockchainWalletTest extends DomainTestCase
 {
     use RefreshDatabase;
 

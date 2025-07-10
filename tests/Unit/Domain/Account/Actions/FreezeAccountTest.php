@@ -7,9 +7,10 @@ use App\Domain\Account\Events\AccountFrozen;
 use App\Models\Account;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Mockery;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\DomainTestCase;
 
-class FreezeAccountTest extends TestCase
+class FreezeAccountTest extends DomainTestCase
 {
     use RefreshDatabase;
 
@@ -21,6 +22,7 @@ class FreezeAccountTest extends TestCase
         $this->action = new FreezeAccount();
     }
 
+    #[Test]
     public function test_freezes_account_successfully(): void
     {
         // Create account
@@ -42,6 +44,7 @@ class FreezeAccountTest extends TestCase
         $this->assertTrue($account->frozen);
     }
 
+    #[Test]
     public function test_freezes_already_frozen_account(): void
     {
         // Create already frozen account
@@ -63,6 +66,7 @@ class FreezeAccountTest extends TestCase
         $this->assertTrue($account->frozen);
     }
 
+    #[Test]
     public function test_throws_exception_if_account_not_found(): void
     {
         // Create event for non-existent account
@@ -76,6 +80,7 @@ class FreezeAccountTest extends TestCase
         $this->action->__invoke($event);
     }
 
+    #[Test]
     public function test_freezes_account_with_balances(): void
     {
         // Create account with balances

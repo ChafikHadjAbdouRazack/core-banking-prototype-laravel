@@ -4,13 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Api;
 
-use App\Models\Account;
-use App\Models\Turnover;
-use App\Models\User;
-use Laravel\Sanctum\Sanctum;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ControllerTestCase;
 
-class BalanceControllerTest extends TestCase
+class BalanceControllerTest extends ControllerTestCase
 {
     protected User $user;
 
@@ -26,6 +23,7 @@ class BalanceControllerTest extends TestCase
         ]);
     }
 
+    #[Test]
     public function test_can_get_account_balance()
     {
         Sanctum::actingAs($this->user);
@@ -51,6 +49,7 @@ class BalanceControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_balance_includes_turnover_when_available()
     {
         Sanctum::actingAs($this->user);
@@ -84,6 +83,7 @@ class BalanceControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_balance_shows_null_turnover_when_not_available()
     {
         Sanctum::actingAs($this->user);
@@ -98,6 +98,7 @@ class BalanceControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_shows_frozen_status_correctly()
     {
         Sanctum::actingAs($this->user);
@@ -116,6 +117,7 @@ class BalanceControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_returns_404_for_nonexistent_account()
     {
         Sanctum::actingAs($this->user);
@@ -125,6 +127,7 @@ class BalanceControllerTest extends TestCase
         $response->assertStatus(404);
     }
 
+    #[Test]
     public function test_requires_authentication()
     {
         $response = $this->getJson("/api/accounts/{$this->account->uuid}/balance");
@@ -132,6 +135,7 @@ class BalanceControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_can_get_balance_summary()
     {
         Sanctum::actingAs($this->user);
@@ -161,6 +165,7 @@ class BalanceControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_balance_summary_calculates_correctly()
     {
         Sanctum::actingAs($this->user);
@@ -193,6 +198,7 @@ class BalanceControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_balance_summary_returns_404_for_nonexistent_account()
     {
         Sanctum::actingAs($this->user);
@@ -202,6 +208,7 @@ class BalanceControllerTest extends TestCase
         $response->assertStatus(404);
     }
 
+    #[Test]
     public function test_balance_summary_requires_authentication()
     {
         $response = $this->getJson("/api/accounts/{$this->account->uuid}/balance/summary");

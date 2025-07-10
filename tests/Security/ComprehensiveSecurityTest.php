@@ -2,12 +2,7 @@
 
 namespace Tests\Security;
 
-use App\Models\Account;
-use App\Models\User;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
-use PHPUnit\Framework\Attributes\Group;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 #[Group('security')]
 #[Group('memory-intensive')]
@@ -16,6 +11,7 @@ class ComprehensiveSecurityTest extends TestCase
     /**
      * Test SQL injection prevention in various endpoints.
      */
+    #[Test]
     public function test_sql_injection_prevention()
     {
         $user = User::factory()->create();
@@ -60,6 +56,7 @@ class ComprehensiveSecurityTest extends TestCase
     /**
      * Test XSS prevention in API responses.
      */
+    #[Test]
     public function test_xss_prevention()
     {
         $user = User::factory()->create();
@@ -101,6 +98,7 @@ class ComprehensiveSecurityTest extends TestCase
     /**
      * Test authentication security.
      */
+    #[Test]
     public function test_authentication_security()
     {
         // Enable rate limiting for tests
@@ -149,6 +147,7 @@ class ComprehensiveSecurityTest extends TestCase
     /**
      * Test CSRF protection.
      */
+    #[Test]
     public function test_csrf_protection()
     {
         $user = User::factory()->create();
@@ -174,6 +173,7 @@ class ComprehensiveSecurityTest extends TestCase
     /**
      * Test API rate limiting.
      */
+    #[Test]
     public function test_api_rate_limiting()
     {
         // Enable rate limiting for tests
@@ -202,6 +202,7 @@ class ComprehensiveSecurityTest extends TestCase
     /**
      * Test secure headers.
      */
+    #[Test]
     public function test_security_headers()
     {
         $response = $this->get('/');
@@ -221,6 +222,7 @@ class ComprehensiveSecurityTest extends TestCase
     /**
      * Test input validation.
      */
+    #[Test]
     public function test_input_validation()
     {
         $user = User::factory()->create();
@@ -249,6 +251,7 @@ class ComprehensiveSecurityTest extends TestCase
     /**
      * Test secure password requirements.
      */
+    #[Test]
     public function test_password_security()
     {
         $weakPasswords = [
@@ -285,6 +288,7 @@ class ComprehensiveSecurityTest extends TestCase
     /**
      * Test file upload security.
      */
+    #[Test]
     public function test_file_upload_security()
     {
         $user = User::factory()->create();
@@ -325,6 +329,7 @@ class ComprehensiveSecurityTest extends TestCase
     /**
      * Test session security.
      */
+    #[Test]
     public function test_session_security()
     {
         $user = User::factory()->create();
@@ -372,6 +377,7 @@ class ComprehensiveSecurityTest extends TestCase
     /**
      * Test API versioning security.
      */
+    #[Test]
     public function test_api_versioning_security()
     {
         $user = User::factory()->create();

@@ -2,12 +2,12 @@
 
 namespace Tests\Unit\Http\Resources;
 
-use App\Http\Resources\WalletAddressResource;
-use Illuminate\Http\Request;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class WalletAddressResourceTest extends TestCase
 {
+    #[Test]
     public function test_transforms_wallet_address_to_array(): void
     {
         $walletAddress = (object) [
@@ -37,6 +37,7 @@ class WalletAddressResourceTest extends TestCase
         ], $array);
     }
 
+    #[Test]
     public function test_handles_null_optional_fields(): void
     {
         $walletAddress = (object) [
@@ -58,6 +59,7 @@ class WalletAddressResourceTest extends TestCase
         $this->assertNull($array['derivation_path']);
     }
 
+    #[Test]
     public function test_handles_inactive_wallet(): void
     {
         $walletAddress = (object) [
@@ -78,6 +80,7 @@ class WalletAddressResourceTest extends TestCase
         $this->assertFalse($array['is_active']);
     }
 
+    #[Test]
     public function test_includes_all_required_fields(): void
     {
         $walletAddress = (object) [
@@ -111,6 +114,7 @@ class WalletAddressResourceTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_resource_collection(): void
     {
         $walletAddresses = [

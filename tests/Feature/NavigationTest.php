@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class NavigationTest extends TestCase
@@ -18,7 +19,7 @@ class NavigationTest extends TestCase
         $this->user = User::factory()->withPersonalTeam()->create();
     }
 
-    /** @test */
+    #[Test]
     public function all_navigation_links_are_accessible_for_authenticated_users()
     {
         $response = $this->actingAs($this->user)->get('/dashboard');
@@ -52,7 +53,7 @@ class NavigationTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function public_pages_are_accessible_without_authentication()
     {
         $publicPages = [
@@ -83,7 +84,7 @@ class NavigationTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function wallet_sub_pages_are_accessible()
     {
         $walletPages = [
@@ -109,21 +110,21 @@ class NavigationTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function admin_panel_redirects_to_login_for_regular_users()
     {
         $response = $this->actingAs($this->user)->get('/admin');
         $response->assertStatus(403); // Forbidden for non-admin users
     }
 
-    /** @test */
+    #[Test]
     public function api_documentation_is_accessible()
     {
         $response = $this->get('/api/documentation');
         $response->assertStatus(200);
     }
 
-    /** @test */
+    #[Test]
     public function gcu_voting_pages_render_correctly()
     {
         // Test main voting page
@@ -138,7 +139,7 @@ class NavigationTest extends TestCase
         $response->assertViewHas('gcuBalance');
     }
 
-    /** @test */
+    #[Test]
     public function fraud_alerts_page_is_accessible()
     {
         $response = $this->actingAs($this->user)->get('/fraud/alerts');
@@ -146,7 +147,7 @@ class NavigationTest extends TestCase
         $response->assertSee('Fraud Alerts');
     }
 
-    /** @test */
+    #[Test]
     public function protected_routes_redirect_to_login_when_not_authenticated()
     {
         $protectedRoutes = [
@@ -166,7 +167,7 @@ class NavigationTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function user_dropdown_menu_links_work()
     {
         $response = $this->actingAs($this->user)->get('/dashboard');

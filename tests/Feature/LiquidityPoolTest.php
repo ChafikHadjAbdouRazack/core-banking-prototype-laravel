@@ -12,9 +12,9 @@ use App\Models\Asset;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
-use Tests\TestCase;
+use Tests\DomainTestCase;
 
-class LiquidityPoolTest extends TestCase
+class LiquidityPoolTest extends DomainTestCase
 {
     use RefreshDatabase;
 

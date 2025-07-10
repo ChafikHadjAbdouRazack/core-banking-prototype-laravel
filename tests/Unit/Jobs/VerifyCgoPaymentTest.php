@@ -7,20 +7,18 @@ use App\Models\CgoInvestment;
 use App\Models\User;
 use App\Services\Cgo\PaymentVerificationService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Queue;
 use Mockery;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\DomainTestCase;
 
-class VerifyCgoPaymentTest extends TestCase
+class VerifyCgoPaymentTest extends DomainTestCase
 {
     use RefreshDatabase;
 
     protected PaymentVerificationService $verificationService;
 
     protected CgoInvestment $investment;
-
-    protected User $user;
 
     protected function setUp(): void
     {
@@ -39,6 +37,7 @@ class VerifyCgoPaymentTest extends TestCase
         ]);
     }
 
+    #[Test]
     public function test_skips_already_confirmed_investment(): void
     {
         $this->investment->update(['status' => 'confirmed']);
@@ -56,6 +55,7 @@ class VerifyCgoPaymentTest extends TestCase
         $job->handle($this->verificationService);
     }
 
+    #[Test]
     public function test_marks_expired_payment_as_cancelled(): void
     {
         $this->verificationService->shouldReceive('isPaymentExpired')
@@ -79,6 +79,7 @@ class VerifyCgoPaymentTest extends TestCase
         $this->assertNotNull($this->investment->cancelled_at);
     }
 
+    #[Test]
     public function test_successfully_verifies_payment(): void
     {
         $this->verificationService->shouldReceive('isPaymentExpired')
@@ -98,6 +99,7 @@ class VerifyCgoPaymentTest extends TestCase
         Queue::assertNotPushed(VerifyCgoPayment::class);
     }
 
+    #[Test]
     public function test_retries_with_exponential_backoff_on_first_failure(): void
     {
         $this->verificationService->shouldReceive('isPaymentExpired')
@@ -124,6 +126,7 @@ class VerifyCgoPaymentTest extends TestCase
         });
     }
 
+    #[Test]
     public function test_retries_with_longer_delay_on_second_failure(): void
     {
         $this->verificationService->shouldReceive('isPaymentExpired')
@@ -150,6 +153,7 @@ class VerifyCgoPaymentTest extends TestCase
         });
     }
 
+    #[Test]
     public function test_logs_warning_after_max_attempts(): void
     {
         $this->verificationService->shouldReceive('isPaymentExpired')
@@ -174,6 +178,7 @@ class VerifyCgoPaymentTest extends TestCase
         Queue::assertNotPushed(VerifyCgoPayment::class);
     }
 
+    #[Test]
     public function test_failed_method_updates_investment_status(): void
     {
         $exception = new \Exception('Payment gateway error');
@@ -190,6 +195,7 @@ class VerifyCgoPaymentTest extends TestCase
         $this->assertStringContainsString('Manual review required', $this->investment->notes);
     }
 
+    #[Test]
     public function test_backoff_returns_correct_delays(): void
     {
         $job = new VerifyCgoPayment($this->investment);
@@ -198,6 +204,7 @@ class VerifyCgoPaymentTest extends TestCase
         $this->assertEquals([60, 300, 900], $backoff);
     }
 
+    #[Test]
     public function test_job_has_correct_properties(): void
     {
         $job = new VerifyCgoPayment($this->investment);
@@ -207,6 +214,7 @@ class VerifyCgoPaymentTest extends TestCase
         $this->assertEquals(120, $job->timeout);
     }
 
+    #[Test]
     public function test_job_is_queueable(): void
     {
         $job = new VerifyCgoPayment($this->investment);
@@ -214,6 +222,7 @@ class VerifyCgoPaymentTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Contracts\Queue\ShouldQueue::class, $job);
     }
 
+    #[Test]
     public function test_constructs_with_custom_attempt_number(): void
     {
         $job = new VerifyCgoPayment($this->investment, 2);

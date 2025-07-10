@@ -2,19 +2,11 @@
 
 namespace Tests\Unit\Domain\Cgo;
 
-use App\Domain\Cgo\Aggregates\RefundAggregate;
-use App\Domain\Cgo\Events\RefundApproved;
-use App\Domain\Cgo\Events\RefundCancelled;
-use App\Domain\Cgo\Events\RefundCompleted;
-use App\Domain\Cgo\Events\RefundFailed;
-use App\Domain\Cgo\Events\RefundProcessed;
-use App\Domain\Cgo\Events\RefundRejected;
-use App\Domain\Cgo\Events\RefundRequested;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Str;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\DomainTestCase;
 
-class RefundAggregateTest extends TestCase
+class RefundAggregateTest extends DomainTestCase
 {
     use RefreshDatabase;
 
@@ -33,6 +25,7 @@ class RefundAggregateTest extends TestCase
         $this->userId = Str::uuid()->toString();
     }
 
+    #[Test]
     public function test_can_request_refund()
     {
         RefundAggregate::fake()
@@ -64,6 +57,7 @@ class RefundAggregateTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_can_approve_pending_refund()
     {
         RefundAggregate::fake()
@@ -95,6 +89,7 @@ class RefundAggregateTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_cannot_approve_non_pending_refund()
     {
         $this->expectException(\DomainException::class);
@@ -126,6 +121,7 @@ class RefundAggregateTest extends TestCase
             });
     }
 
+    #[Test]
     public function test_can_reject_pending_refund()
     {
         RefundAggregate::fake()
@@ -157,6 +153,7 @@ class RefundAggregateTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_can_process_approved_refund()
     {
         RefundAggregate::fake()
@@ -197,6 +194,7 @@ class RefundAggregateTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_can_complete_processing_refund()
     {
         RefundAggregate::fake()
@@ -238,6 +236,7 @@ class RefundAggregateTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_can_fail_refund()
     {
         RefundAggregate::fake()
@@ -274,6 +273,7 @@ class RefundAggregateTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_can_cancel_refund()
     {
         RefundAggregate::fake()
@@ -307,6 +307,7 @@ class RefundAggregateTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_cannot_cancel_completed_refund()
     {
         $this->expectException(\DomainException::class);

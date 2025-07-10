@@ -7,9 +7,10 @@ use App\Domain\Account\Events\AccountUnfrozen;
 use App\Models\Account;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Mockery;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\DomainTestCase;
 
-class UnfreezeAccountTest extends TestCase
+class UnfreezeAccountTest extends DomainTestCase
 {
     use RefreshDatabase;
 
@@ -21,6 +22,7 @@ class UnfreezeAccountTest extends TestCase
         $this->action = new UnfreezeAccount();
     }
 
+    #[Test]
     public function test_unfreezes_frozen_account_successfully(): void
     {
         // Create frozen account
@@ -42,6 +44,7 @@ class UnfreezeAccountTest extends TestCase
         $this->assertFalse($account->frozen);
     }
 
+    #[Test]
     public function test_unfreezes_already_unfrozen_account(): void
     {
         // Create active account
@@ -63,6 +66,7 @@ class UnfreezeAccountTest extends TestCase
         $this->assertFalse($account->frozen);
     }
 
+    #[Test]
     public function test_throws_exception_if_account_not_found(): void
     {
         // Create event for non-existent account
@@ -76,6 +80,7 @@ class UnfreezeAccountTest extends TestCase
         $this->action->__invoke($event);
     }
 
+    #[Test]
     public function test_unfreezes_account_preserving_balances(): void
     {
         // Create frozen account with balances
@@ -112,6 +117,7 @@ class UnfreezeAccountTest extends TestCase
         $this->assertEquals(50000000, $account->balances()->where('asset_code', 'BTC')->first()->balance);
     }
 
+    #[Test]
     public function test_unfreezes_business_account(): void
     {
         // Create frozen business account

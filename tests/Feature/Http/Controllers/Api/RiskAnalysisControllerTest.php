@@ -2,12 +2,11 @@
 
 namespace Tests\Feature\Http\Controllers\Api;
 
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Laravel\Sanctum\Sanctum;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ControllerTestCase;
 
-class RiskAnalysisControllerTest extends TestCase
+class RiskAnalysisControllerTest extends ControllerTestCase
 {
     use RefreshDatabase;
 
@@ -20,6 +19,7 @@ class RiskAnalysisControllerTest extends TestCase
         $this->user = User::factory()->create();
     }
 
+    #[Test]
     public function test_get_user_risk_profile_returns_risk_data(): void
     {
         Sanctum::actingAs($this->user);
@@ -44,6 +44,7 @@ class RiskAnalysisControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_get_user_risk_profile_requires_authentication(): void
     {
         $response = $this->getJson('/api/risk/users/user-123/profile');
@@ -51,6 +52,7 @@ class RiskAnalysisControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_analyze_transaction_returns_risk_analysis(): void
     {
         Sanctum::actingAs($this->user);
@@ -75,6 +77,7 @@ class RiskAnalysisControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_analyze_transaction_requires_authentication(): void
     {
         $response = $this->getJson('/api/risk/transactions/txn-456/analyze');
@@ -82,6 +85,7 @@ class RiskAnalysisControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_calculate_risk_score_with_basic_data(): void
     {
         Sanctum::actingAs($this->user);
@@ -108,6 +112,7 @@ class RiskAnalysisControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_calculate_risk_score_with_full_data(): void
     {
         Sanctum::actingAs($this->user);
@@ -136,6 +141,7 @@ class RiskAnalysisControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_calculate_risk_score_requires_authentication(): void
     {
         $response = $this->postJson('/api/risk/calculate', [
@@ -145,6 +151,7 @@ class RiskAnalysisControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_get_risk_factors_returns_list(): void
     {
         Sanctum::actingAs($this->user);
@@ -160,6 +167,7 @@ class RiskAnalysisControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_get_risk_factors_requires_authentication(): void
     {
         $response = $this->getJson('/api/risk/factors');
@@ -167,6 +175,7 @@ class RiskAnalysisControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_get_risk_models_returns_available_models(): void
     {
         Sanctum::actingAs($this->user);
@@ -182,6 +191,7 @@ class RiskAnalysisControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_get_risk_models_requires_authentication(): void
     {
         $response = $this->getJson('/api/risk/models');
@@ -189,6 +199,7 @@ class RiskAnalysisControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_get_risk_history_returns_user_history(): void
     {
         Sanctum::actingAs($this->user);
@@ -211,6 +222,7 @@ class RiskAnalysisControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_get_risk_history_with_filters(): void
     {
         Sanctum::actingAs($this->user);
@@ -226,6 +238,7 @@ class RiskAnalysisControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_get_risk_history_requires_authentication(): void
     {
         $response = $this->getJson('/api/risk/users/user-789/history');
@@ -233,6 +246,7 @@ class RiskAnalysisControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_store_device_fingerprint_saves_device_data(): void
     {
         Sanctum::actingAs($this->user);
@@ -257,6 +271,7 @@ class RiskAnalysisControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_store_device_fingerprint_with_minimal_data(): void
     {
         Sanctum::actingAs($this->user);
@@ -272,6 +287,7 @@ class RiskAnalysisControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_store_device_fingerprint_requires_authentication(): void
     {
         $response = $this->postJson('/api/risk/device-fingerprint', [
@@ -281,6 +297,7 @@ class RiskAnalysisControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_get_device_history_returns_user_devices(): void
     {
         Sanctum::actingAs($this->user);
@@ -303,6 +320,7 @@ class RiskAnalysisControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_get_device_history_requires_authentication(): void
     {
         $response = $this->getJson('/api/risk/users/user-999/devices');
@@ -310,6 +328,7 @@ class RiskAnalysisControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_calculate_risk_score_with_high_risk_indicators(): void
     {
         Sanctum::actingAs($this->user);
@@ -337,6 +356,7 @@ class RiskAnalysisControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_analyze_transaction_with_context(): void
     {
         Sanctum::actingAs($this->user);
@@ -358,6 +378,7 @@ class RiskAnalysisControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_get_risk_history_with_pagination(): void
     {
         Sanctum::actingAs($this->user);
@@ -374,6 +395,7 @@ class RiskAnalysisControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_get_device_history_with_suspicious_filter(): void
     {
         Sanctum::actingAs($this->user);
@@ -390,6 +412,7 @@ class RiskAnalysisControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_calculate_risk_score_for_merchant_transaction(): void
     {
         Sanctum::actingAs($this->user);

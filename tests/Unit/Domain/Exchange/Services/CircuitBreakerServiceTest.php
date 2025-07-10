@@ -2,12 +2,10 @@
 
 namespace Tests\Unit\Domain\Exchange\Services;
 
-use App\Domain\Exchange\Services\CircuitBreakerService;
-use Illuminate\Support\Facades\Cache;
-use RuntimeException;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ServiceTestCase;
 
-class CircuitBreakerServiceTest extends TestCase
+class CircuitBreakerServiceTest extends ServiceTestCase
 {
     private CircuitBreakerService $circuitBreaker;
 
@@ -18,6 +16,7 @@ class CircuitBreakerServiceTest extends TestCase
         Cache::flush(); // Clear any existing circuit breaker state
     }
 
+    #[Test]
     public function test_successful_call_returns_result(): void
     {
         $result = $this->circuitBreaker->call('test_service', function () {
@@ -27,6 +26,7 @@ class CircuitBreakerServiceTest extends TestCase
         $this->assertEquals('success', $result);
     }
 
+    #[Test]
     public function test_circuit_opens_after_failure_threshold(): void
     {
         // Cause 5 failures to open the circuit
@@ -49,6 +49,7 @@ class CircuitBreakerServiceTest extends TestCase
         });
     }
 
+    #[Test]
     public function test_circuit_transitions_to_half_open(): void
     {
         // Open the circuit
@@ -83,6 +84,7 @@ class CircuitBreakerServiceTest extends TestCase
         $this->assertEquals('recovery', $result);
     }
 
+    #[Test]
     public function test_circuit_closes_after_success_threshold_in_half_open(): void
     {
         // Clear all circuit breaker state
@@ -106,6 +108,7 @@ class CircuitBreakerServiceTest extends TestCase
         $this->assertEquals('closed', $state);
     }
 
+    #[Test]
     public function test_circuit_reopens_on_failure_in_half_open(): void
     {
         // Set circuit to half-open
@@ -125,6 +128,7 @@ class CircuitBreakerServiceTest extends TestCase
         $this->assertEquals('open', $state);
     }
 
+    #[Test]
     public function test_half_open_limits_requests(): void
     {
         // Set circuit to half-open

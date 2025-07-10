@@ -2,32 +2,34 @@
 
 namespace Tests\Unit\Domain\Stablecoin\Workflows\Activities;
 
-use App\Domain\Account\DataObjects\AccountUuid;
-use App\Domain\Stablecoin\Workflows\Activities\MintStablecoinActivity;
-use App\Models\Stablecoin;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\DomainTestCase;
 
-class MintStablecoinActivityTest extends TestCase
+class MintStablecoinActivityTest extends DomainTestCase
 {
     use RefreshDatabase;
 
+    #[Test]
     public function test_class_exists(): void
     {
         $this->assertTrue(class_exists(MintStablecoinActivity::class));
     }
 
+    #[Test]
     public function test_extends_workflow_activity(): void
     {
         $reflection = new \ReflectionClass(MintStablecoinActivity::class);
         $this->assertEquals('Workflow\Activity', $reflection->getParentClass()->getName());
     }
 
+    #[Test]
     public function test_has_execute_method(): void
     {
         $this->assertTrue(method_exists(MintStablecoinActivity::class, 'execute'));
     }
 
+    #[Test]
     public function test_execute_method_has_correct_signature(): void
     {
         $reflection = new \ReflectionClass(MintStablecoinActivity::class);
@@ -50,6 +52,7 @@ class MintStablecoinActivityTest extends TestCase
         $this->assertEquals('int', $parameters[3]->getType()->getName());
     }
 
+    #[Test]
     public function test_execute_method_returns_bool(): void
     {
         $reflection = new \ReflectionClass(MintStablecoinActivity::class);
@@ -58,6 +61,7 @@ class MintStablecoinActivityTest extends TestCase
         $this->assertEquals('bool', $method->getReturnType()->getName());
     }
 
+    #[Test]
     public function test_calculates_mint_fee_correctly(): void
     {
         // Create stablecoin with mint fee
@@ -78,6 +82,7 @@ class MintStablecoinActivityTest extends TestCase
         $this->assertEquals(9980000000, $expectedNetMint);
     }
 
+    #[Test]
     public function test_zero_mint_fee_calculation(): void
     {
         $stablecoin = Stablecoin::factory()->create([
@@ -96,6 +101,7 @@ class MintStablecoinActivityTest extends TestCase
         $this->assertEquals(5000000000, $expectedNetMint);
     }
 
+    #[Test]
     public function test_activity_has_correct_properties(): void
     {
         $reflection = new \ReflectionClass(MintStablecoinActivity::class);

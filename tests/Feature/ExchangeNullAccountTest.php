@@ -2,15 +2,15 @@
 
 namespace Tests\Feature;
 
-use App\Models\Asset;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\DomainTestCase;
 
-class ExchangeNullAccountTest extends TestCase
+class ExchangeNullAccountTest extends DomainTestCase
 {
     use RefreshDatabase;
 
+    #[Test]
     public function test_exchange_page_handles_user_without_account()
     {
         // Create a user without an account
@@ -62,6 +62,7 @@ class ExchangeNullAccountTest extends TestCase
         $this->assertTrue($userOrders->isEmpty());
     }
 
+    #[Test]
     public function test_exchange_page_with_authenticated_user_with_account()
     {
         // Create a user with an account

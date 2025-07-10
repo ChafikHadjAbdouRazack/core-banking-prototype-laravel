@@ -2,13 +2,11 @@
 
 namespace Tests\Feature\Http\Controllers\Api;
 
-use App\Models\Account;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Laravel\Sanctum\Sanctum;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ControllerTestCase;
 
-class AccountControllerTest extends TestCase
+class AccountControllerTest extends ControllerTestCase
 {
     use RefreshDatabase;
 
@@ -24,6 +22,7 @@ class AccountControllerTest extends TestCase
         $this->otherUser = User::factory()->create();
     }
 
+    #[Test]
     public function test_index_returns_user_accounts(): void
     {
         Sanctum::actingAs($this->user);
@@ -75,6 +74,7 @@ class AccountControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_index_returns_empty_array_when_no_accounts(): void
     {
         Sanctum::actingAs($this->user);
@@ -85,6 +85,7 @@ class AccountControllerTest extends TestCase
             ->assertJson(['data' => []]);
     }
 
+    #[Test]
     public function test_index_requires_authentication(): void
     {
         $response = $this->getJson('/api/accounts');
@@ -92,6 +93,7 @@ class AccountControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_store_creates_account_with_initial_balance(): void
     {
         Sanctum::actingAs($this->user);
@@ -131,6 +133,7 @@ class AccountControllerTest extends TestCase
         ]);
     }
 
+    #[Test]
     public function test_store_creates_account_without_initial_balance(): void
     {
         Sanctum::actingAs($this->user);
@@ -151,6 +154,7 @@ class AccountControllerTest extends TestCase
         ]);
     }
 
+    #[Test]
     public function test_store_validates_required_fields(): void
     {
         Sanctum::actingAs($this->user);
@@ -161,6 +165,7 @@ class AccountControllerTest extends TestCase
             ->assertJsonValidationErrors(['user_uuid', 'name']);
     }
 
+    #[Test]
     public function test_store_validates_input_formats(): void
     {
         Sanctum::actingAs($this->user);
@@ -175,6 +180,7 @@ class AccountControllerTest extends TestCase
             ->assertJsonValidationErrors(['user_uuid', 'name', 'initial_balance']);
     }
 
+    #[Test]
     public function test_store_requires_authentication(): void
     {
         $response = $this->postJson('/api/accounts', [
@@ -185,6 +191,7 @@ class AccountControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_show_returns_account_details(): void
     {
         Sanctum::actingAs($this->user);
@@ -221,6 +228,7 @@ class AccountControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_show_returns_404_for_non_existent_account(): void
     {
         Sanctum::actingAs($this->user);
@@ -230,6 +238,7 @@ class AccountControllerTest extends TestCase
         $response->assertStatus(404);
     }
 
+    #[Test]
     public function test_show_requires_authentication(): void
     {
         $account = Account::factory()->create();
@@ -239,6 +248,7 @@ class AccountControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_destroy_deletes_account_with_zero_balance(): void
     {
         Sanctum::actingAs($this->user);
@@ -257,6 +267,7 @@ class AccountControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_destroy_prevents_deletion_with_positive_balance(): void
     {
         Sanctum::actingAs($this->user);
@@ -280,6 +291,7 @@ class AccountControllerTest extends TestCase
         ]);
     }
 
+    #[Test]
     public function test_destroy_prevents_deletion_of_frozen_account(): void
     {
         Sanctum::actingAs($this->user);
@@ -303,6 +315,7 @@ class AccountControllerTest extends TestCase
         ]);
     }
 
+    #[Test]
     public function test_destroy_returns_404_for_non_existent_account(): void
     {
         Sanctum::actingAs($this->user);
@@ -312,6 +325,7 @@ class AccountControllerTest extends TestCase
         $response->assertStatus(404);
     }
 
+    #[Test]
     public function test_destroy_requires_authentication(): void
     {
         $account = Account::factory()->create(['balance' => 0]);
@@ -321,6 +335,7 @@ class AccountControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_freeze_freezes_unfrozen_account(): void
     {
         Sanctum::actingAs($this->user);
@@ -341,6 +356,7 @@ class AccountControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_freeze_prevents_freezing_already_frozen_account(): void
     {
         Sanctum::actingAs($this->user);
@@ -361,6 +377,7 @@ class AccountControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_freeze_requires_reason(): void
     {
         Sanctum::actingAs($this->user);
@@ -376,6 +393,7 @@ class AccountControllerTest extends TestCase
             ->assertJsonValidationErrors(['reason']);
     }
 
+    #[Test]
     public function test_freeze_validates_input_length(): void
     {
         Sanctum::actingAs($this->user);
@@ -391,6 +409,7 @@ class AccountControllerTest extends TestCase
             ->assertJsonValidationErrors(['reason', 'authorized_by']);
     }
 
+    #[Test]
     public function test_freeze_returns_404_for_non_existent_account(): void
     {
         Sanctum::actingAs($this->user);
@@ -402,6 +421,7 @@ class AccountControllerTest extends TestCase
         $response->assertStatus(404);
     }
 
+    #[Test]
     public function test_freeze_requires_authentication(): void
     {
         $account = Account::factory()->create();
@@ -413,6 +433,7 @@ class AccountControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_unfreeze_unfreezes_frozen_account(): void
     {
         Sanctum::actingAs($this->user);
@@ -433,6 +454,7 @@ class AccountControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_unfreeze_prevents_unfreezing_not_frozen_account(): void
     {
         Sanctum::actingAs($this->user);
@@ -453,6 +475,7 @@ class AccountControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_unfreeze_requires_reason(): void
     {
         Sanctum::actingAs($this->user);
@@ -468,6 +491,7 @@ class AccountControllerTest extends TestCase
             ->assertJsonValidationErrors(['reason']);
     }
 
+    #[Test]
     public function test_unfreeze_returns_404_for_non_existent_account(): void
     {
         Sanctum::actingAs($this->user);
@@ -479,6 +503,7 @@ class AccountControllerTest extends TestCase
         $response->assertStatus(404);
     }
 
+    #[Test]
     public function test_unfreeze_requires_authentication(): void
     {
         $account = Account::factory()->create(['frozen' => true]);
@@ -490,6 +515,7 @@ class AccountControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_index_orders_accounts_by_created_at_desc(): void
     {
         Sanctum::actingAs($this->user);

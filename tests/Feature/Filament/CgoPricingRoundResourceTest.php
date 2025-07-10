@@ -2,11 +2,8 @@
 
 namespace Tests\Feature\Filament;
 
-use App\Filament\Resources\CgoPricingRoundResource;
-use App\Models\CgoPricingRound;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Livewire\Livewire;
-use Tests\FilamentTestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 class CgoPricingRoundResourceTest extends FilamentTestCase
 {
@@ -19,6 +16,7 @@ class CgoPricingRoundResourceTest extends FilamentTestCase
         // Additional setup if needed
     }
 
+    #[Test]
     public function test_can_list_pricing_rounds()
     {
         $rounds = CgoPricingRound::factory()->count(3)->create();
@@ -27,6 +25,7 @@ class CgoPricingRoundResourceTest extends FilamentTestCase
             ->assertCanSeeTableRecords($rounds);
     }
 
+    #[Test]
     public function test_can_create_pricing_round()
     {
         $roundData = [
@@ -52,6 +51,7 @@ class CgoPricingRoundResourceTest extends FilamentTestCase
         ]);
     }
 
+    #[Test]
     public function test_creating_active_round_deactivates_others()
     {
         $existingRound = CgoPricingRound::factory()->create([
@@ -80,6 +80,7 @@ class CgoPricingRoundResourceTest extends FilamentTestCase
         ]);
     }
 
+    #[Test]
     public function test_can_edit_pricing_round()
     {
         $round = CgoPricingRound::factory()->create([
@@ -104,6 +105,7 @@ class CgoPricingRoundResourceTest extends FilamentTestCase
         ]);
     }
 
+    #[Test]
     public function test_can_activate_round()
     {
         $inactiveRound = CgoPricingRound::factory()->create(['is_active' => false]);
@@ -119,6 +121,7 @@ class CgoPricingRoundResourceTest extends FilamentTestCase
         $this->assertFalse($activeRound->is_active);
     }
 
+    #[Test]
     public function test_can_close_active_round()
     {
         $activeRound = CgoPricingRound::factory()->create([
@@ -135,6 +138,7 @@ class CgoPricingRoundResourceTest extends FilamentTestCase
         $this->assertNotNull($activeRound->ended_at);
     }
 
+    #[Test]
     public function test_can_filter_by_active_status()
     {
         CgoPricingRound::factory()->create(['is_active' => true]);
@@ -147,6 +151,7 @@ class CgoPricingRoundResourceTest extends FilamentTestCase
             ->assertCanNotSeeTableRecords(CgoPricingRound::where('is_active', false)->get());
     }
 
+    #[Test]
     public function test_round_number_must_be_unique()
     {
         CgoPricingRound::factory()->create(['round_number' => 1]);

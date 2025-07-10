@@ -5,10 +5,12 @@ namespace Tests\Unit\Domain\Account\Events;
 use App\Domain\Account\DataObjects\Hash;
 use App\Domain\Account\Events\AssetBalanceSubtracted;
 use App\Values\EventQueues;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\DomainTestCase;
 
-class AssetBalanceSubtractedTest extends TestCase
+class AssetBalanceSubtractedTest extends DomainTestCase
 {
+    #[Test]
     public function test_creates_event_with_required_properties(): void
     {
         $hash = Hash::fromData('subtract-hash-value');
@@ -26,6 +28,7 @@ class AssetBalanceSubtractedTest extends TestCase
         $this->assertEquals(EventQueues::TRANSACTIONS->value, $event->queue);
     }
 
+    #[Test]
     public function test_creates_event_with_metadata(): void
     {
         $hash = Hash::fromData('subtract-with-metadata');
@@ -46,6 +49,7 @@ class AssetBalanceSubtractedTest extends TestCase
         $this->assertEquals('withdrawal', $event->metadata['reason']);
     }
 
+    #[Test]
     public function test_get_amount_returns_correct_value(): void
     {
         $event = new AssetBalanceSubtracted(
@@ -57,6 +61,7 @@ class AssetBalanceSubtractedTest extends TestCase
         $this->assertEquals(75000, $event->getAmount());
     }
 
+    #[Test]
     public function test_get_asset_code_returns_correct_value(): void
     {
         $event = new AssetBalanceSubtracted(
@@ -68,6 +73,7 @@ class AssetBalanceSubtractedTest extends TestCase
         $this->assertEquals('JPY', $event->getAssetCode());
     }
 
+    #[Test]
     public function test_handles_large_amount_subtraction(): void
     {
         $event = new AssetBalanceSubtracted(
@@ -80,6 +86,7 @@ class AssetBalanceSubtractedTest extends TestCase
         $this->assertEquals(500000000, $event->getAmount());
     }
 
+    #[Test]
     public function test_metadata_can_contain_complex_data(): void
     {
         $metadata = [
@@ -109,6 +116,7 @@ class AssetBalanceSubtractedTest extends TestCase
         $this->assertEquals(150, $event->metadata['fees']['total']);
     }
 
+    #[Test]
     public function test_event_properties_are_readonly(): void
     {
         $event = new AssetBalanceSubtracted(
@@ -118,10 +126,12 @@ class AssetBalanceSubtractedTest extends TestCase
         );
 
         // Attempting to modify readonly property should cause error
-        $this->expectError();
+        $this->expectException(\Error::class);
+        $this->expectExceptionMessageMatches('/Cannot modify readonly property/');
         $event->amount = 4000;
     }
 
+    #[Test]
     public function test_supports_crypto_asset_codes(): void
     {
         $cryptoAssets = [

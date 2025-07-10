@@ -11,9 +11,10 @@ use App\Domain\Basket\Services\BasketRebalancingService;
 use App\Models\BasketAsset;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ServiceTestCase;
 
-class BasketRebalancingServiceTest extends TestCase
+class BasketRebalancingServiceTest extends ServiceTestCase
 {
     use RefreshDatabase;
 
@@ -93,7 +94,7 @@ class BasketRebalancingServiceTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_cannot_rebalance_fixed_basket()
     {
         $this->expectException(\Exception::class);
@@ -102,7 +103,7 @@ class BasketRebalancingServiceTest extends TestCase
         $this->service->rebalance($this->fixedBasket);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_check_if_rebalancing_is_needed()
     {
         // Dynamic basket with daily frequency and no last_rebalanced_at should need rebalancing
@@ -116,7 +117,7 @@ class BasketRebalancingServiceTest extends TestCase
         $this->assertFalse($needs); // Should not need rebalancing yet
     }
 
-    /** @test */
+    #[Test]
     public function it_can_simulate_rebalancing()
     {
         $result = $this->service->simulateRebalancing($this->dynamicBasket);
@@ -150,7 +151,7 @@ class BasketRebalancingServiceTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function it_can_perform_actual_rebalancing()
     {
         Event::fake();
@@ -188,7 +189,7 @@ class BasketRebalancingServiceTest extends TestCase
         Event::assertDispatched(BasketRebalanced::class);
     }
 
-    /** @test */
+    #[Test]
     public function it_normalizes_weights_after_rebalancing()
     {
         // Create basket where clamping would break 100% total
@@ -225,7 +226,7 @@ class BasketRebalancingServiceTest extends TestCase
         $this->assertEquals(100.0, round($totalWeight, 2));
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_inactive_components()
     {
         // Deactivate EUR component
@@ -241,7 +242,7 @@ class BasketRebalancingServiceTest extends TestCase
         $this->assertNotContains('EUR', $adjustedCodes);
     }
 
-    /** @test */
+    #[Test]
     public function it_calculates_market_values_for_rebalancing()
     {
         // Set up a scenario where market values drive rebalancing
@@ -280,7 +281,7 @@ class BasketRebalancingServiceTest extends TestCase
         // The service should consider market values when rebalancing
     }
 
-    /** @test */
+    #[Test]
     public function it_records_rebalancing_event_with_correct_data()
     {
         Event::fake();
@@ -294,7 +295,7 @@ class BasketRebalancingServiceTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_does_not_rebalance_if_within_tolerance()
     {
         // Adjust weights to be just within range

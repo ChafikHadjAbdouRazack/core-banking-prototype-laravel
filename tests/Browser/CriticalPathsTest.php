@@ -2,15 +2,14 @@
 
 namespace Tests\Browser;
 
-use App\Models\User;
-use Laravel\Dusk\Browser;
-use Tests\DuskTestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 class CriticalPathsTest extends DuskTestCase
 {
     /**
      * Test all public pages are accessible.
      */
+    #[Test]
     public function test_public_pages_are_accessible(): void
     {
         $this->browse(function (Browser $browser) {
@@ -45,6 +44,7 @@ class CriticalPathsTest extends DuskTestCase
     /**
      * Test registration process.
      */
+    #[Test]
     public function test_user_can_register(): void
     {
         $this->browse(function (Browser $browser) {
@@ -64,6 +64,7 @@ class CriticalPathsTest extends DuskTestCase
     /**
      * Test login process.
      */
+    #[Test]
     public function test_user_can_login(): void
     {
         $user = User::factory()->create();
@@ -82,6 +83,7 @@ class CriticalPathsTest extends DuskTestCase
     /**
      * Test authenticated navigation menu.
      */
+    #[Test]
     public function test_authenticated_navigation_menu(): void
     {
         $user = User::factory()->create();
@@ -112,6 +114,7 @@ class CriticalPathsTest extends DuskTestCase
     /**
      * Test wallet operations.
      */
+    #[Test]
     public function test_wallet_operations(): void
     {
         $user = User::factory()->create();
@@ -151,6 +154,7 @@ class CriticalPathsTest extends DuskTestCase
     /**
      * Test quick actions from dashboard.
      */
+    #[Test]
     public function test_dashboard_quick_actions(): void
     {
         $user = User::factory()->create();
@@ -180,6 +184,7 @@ class CriticalPathsTest extends DuskTestCase
     /**
      * Test responsive navigation menu.
      */
+    #[Test]
     public function test_responsive_navigation_menu(): void
     {
         $user = User::factory()->create();
@@ -201,6 +206,7 @@ class CriticalPathsTest extends DuskTestCase
     /**
      * Test critical API endpoints are accessible.
      */
+    #[Test]
     public function test_critical_api_endpoints(): void
     {
         $user = User::factory()->create();
@@ -226,6 +232,7 @@ class CriticalPathsTest extends DuskTestCase
     /**
      * Test error pages are properly shown.
      */
+    #[Test]
     public function test_error_pages(): void
     {
         $this->browse(function (Browser $browser) {

@@ -2,17 +2,11 @@
 
 namespace Tests\Feature\Http\Controllers\Api\V2;
 
-use App\Models\Account;
-use App\Models\AccountBalance;
-use App\Models\Asset;
-use App\Models\BasketAsset;
-use App\Models\BasketValue;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Laravel\Sanctum\Sanctum;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ControllerTestCase;
 
-class GCUTradingControllerTest extends TestCase
+class GCUTradingControllerTest extends ControllerTestCase
 {
     use RefreshDatabase;
 
@@ -93,6 +87,7 @@ class GCUTradingControllerTest extends TestCase
         ]);
     }
 
+    #[Test]
     public function test_buy_gcu_successfully(): void
     {
         Sanctum::actingAs($this->user);
@@ -118,6 +113,7 @@ class GCUTradingControllerTest extends TestCase
             ->assertJsonPath('data.spent_currency', 'EUR');
     }
 
+    #[Test]
     public function test_buy_gcu_requires_authentication(): void
     {
         $response = $this->postJson('/api/v2/gcu/buy', [
@@ -128,6 +124,7 @@ class GCUTradingControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_buy_gcu_validates_input(): void
     {
         Sanctum::actingAs($this->user);
@@ -138,6 +135,7 @@ class GCUTradingControllerTest extends TestCase
             ->assertJsonValidationErrors(['amount', 'currency']);
     }
 
+    #[Test]
     public function test_buy_gcu_validates_minimum_amount(): void
     {
         Sanctum::actingAs($this->user);
@@ -151,6 +149,7 @@ class GCUTradingControllerTest extends TestCase
             ->assertJsonValidationErrors(['amount']);
     }
 
+    #[Test]
     public function test_buy_gcu_fails_with_insufficient_balance(): void
     {
         Sanctum::actingAs($this->user);
@@ -167,6 +166,7 @@ class GCUTradingControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_sell_gcu_successfully(): void
     {
         Sanctum::actingAs($this->user);
@@ -201,6 +201,7 @@ class GCUTradingControllerTest extends TestCase
             ->assertJsonPath('data.received_currency', 'EUR');
     }
 
+    #[Test]
     public function test_sell_gcu_requires_authentication(): void
     {
         $response = $this->postJson('/api/v2/gcu/sell', [
@@ -211,6 +212,7 @@ class GCUTradingControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_sell_gcu_validates_input(): void
     {
         Sanctum::actingAs($this->user);
@@ -221,6 +223,7 @@ class GCUTradingControllerTest extends TestCase
             ->assertJsonValidationErrors(['amount', 'currency']);
     }
 
+    #[Test]
     public function test_sell_gcu_fails_with_insufficient_gcu_balance(): void
     {
         Sanctum::actingAs($this->user);
@@ -237,6 +240,7 @@ class GCUTradingControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_get_gcu_quote_returns_pricing(): void
     {
         $response = $this->getJson('/api/v2/gcu/quote?amount=100&currency=EUR&type=buy');
@@ -259,6 +263,7 @@ class GCUTradingControllerTest extends TestCase
             ->assertJsonPath('data.source_currency', 'EUR');
     }
 
+    #[Test]
     public function test_get_gcu_quote_validates_parameters(): void
     {
         $response = $this->getJson('/api/v2/gcu/quote?amount=invalid&currency=EUR&type=buy');
@@ -267,6 +272,7 @@ class GCUTradingControllerTest extends TestCase
             ->assertJsonValidationErrors(['amount']);
     }
 
+    #[Test]
     public function test_get_trading_limits_returns_user_limits(): void
     {
         Sanctum::actingAs($this->user);
@@ -292,6 +298,7 @@ class GCUTradingControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_get_trading_limits_requires_authentication(): void
     {
         $response = $this->getJson('/api/v2/gcu/limits');
@@ -299,6 +306,7 @@ class GCUTradingControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_get_trading_history_returns_transactions(): void
     {
         Sanctum::actingAs($this->user);
@@ -328,6 +336,7 @@ class GCUTradingControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_get_trading_history_requires_authentication(): void
     {
         $response = $this->getJson('/api/v2/gcu/history');

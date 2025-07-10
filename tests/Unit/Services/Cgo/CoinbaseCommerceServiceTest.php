@@ -2,13 +2,10 @@
 
 namespace Tests\Unit\Services\Cgo;
 
-use App\Models\CgoInvestment;
-use App\Services\Cgo\CoinbaseCommerceService;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ServiceTestCase;
 
-class CoinbaseCommerceServiceTest extends TestCase
+class CoinbaseCommerceServiceTest extends ServiceTestCase
 {
     private CoinbaseCommerceService $service;
 
@@ -26,6 +23,7 @@ class CoinbaseCommerceServiceTest extends TestCase
         $this->service = new CoinbaseCommerceService();
     }
 
+    #[Test]
     public function test_create_charge_sends_correct_request()
     {
         Http::fake([
@@ -74,6 +72,7 @@ class CoinbaseCommerceServiceTest extends TestCase
         $this->assertEquals('https://commerce.coinbase.com/charges/TEST123', $charge['hosted_url']);
     }
 
+    #[Test]
     public function test_create_charge_throws_exception_on_api_error()
     {
         $investment = CgoInvestment::factory()->create();
@@ -92,6 +91,7 @@ class CoinbaseCommerceServiceTest extends TestCase
         $this->service->createCharge($investment);
     }
 
+    #[Test]
     public function test_verify_webhook_signature_with_valid_signature()
     {
         $payload = '{"event":{"type":"charge:confirmed"}}';
@@ -102,6 +102,7 @@ class CoinbaseCommerceServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
+    #[Test]
     public function test_verify_webhook_signature_with_invalid_signature()
     {
         $payload = '{"event":{"type":"charge:confirmed"}}';
@@ -111,6 +112,7 @@ class CoinbaseCommerceServiceTest extends TestCase
         $this->assertFalse($result);
     }
 
+    #[Test]
     public function test_process_webhook_event_handles_charge_confirmed()
     {
         $investment = CgoInvestment::factory()->create([
@@ -151,6 +153,7 @@ class CoinbaseCommerceServiceTest extends TestCase
         $this->assertNotNull($investment->payment_completed_at);
     }
 
+    #[Test]
     public function test_process_webhook_event_handles_charge_failed()
     {
         $investment = CgoInvestment::factory()->create([
@@ -175,6 +178,7 @@ class CoinbaseCommerceServiceTest extends TestCase
         $this->assertEquals('Payment expired or cancelled', $investment->payment_failure_reason);
     }
 
+    #[Test]
     public function test_process_webhook_event_logs_warning_for_unknown_charge()
     {
         Log::shouldReceive('info')
@@ -195,6 +199,7 @@ class CoinbaseCommerceServiceTest extends TestCase
         $this->service->processWebhookEvent($event);
     }
 
+    #[Test]
     public function test_process_webhook_event_handles_charge_pending()
     {
         $investment = CgoInvestment::factory()->create([

@@ -10,9 +10,9 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Inertia\Testing\AssertableInertia as Assert;
 use PHPUnit\Framework\Attributes\Test;
-use Tests\TestCase;
+use Tests\DomainTestCase;
 
-class TransactionStatusTrackingTest extends TestCase
+class TransactionStatusTrackingTest extends DomainTestCase
 {
     use RefreshDatabase;
 

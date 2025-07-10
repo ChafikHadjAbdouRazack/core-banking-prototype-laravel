@@ -2,31 +2,32 @@
 
 namespace Tests\Unit\Domain\Stablecoin\Repositories;
 
-use App\Domain\Stablecoin\Repositories\StablecoinSnapshotRepository;
-use App\Domain\Stablecoin\Snapshots\StablecoinSnapshot;
-use Spatie\EventSourcing\AggregateRoots\Exceptions\InvalidEloquentStoredEventModel;
-use Spatie\EventSourcing\Snapshots\EloquentSnapshotRepository;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\DomainTestCase;
 
-class StablecoinSnapshotRepositoryTest extends TestCase
+class StablecoinSnapshotRepositoryTest extends DomainTestCase
 {
+    #[Test]
     public function test_class_exists(): void
     {
         $this->assertTrue(class_exists(StablecoinSnapshotRepository::class));
     }
 
+    #[Test]
     public function test_extends_eloquent_snapshot_repository(): void
     {
         $repository = new StablecoinSnapshotRepository();
         $this->assertInstanceOf(EloquentSnapshotRepository::class, $repository);
     }
 
+    #[Test]
     public function test_is_final_class(): void
     {
         $reflection = new \ReflectionClass(StablecoinSnapshotRepository::class);
         $this->assertTrue($reflection->isFinal());
     }
 
+    #[Test]
     public function test_constructor_has_correct_signature(): void
     {
         $reflection = new \ReflectionClass(StablecoinSnapshotRepository::class);
@@ -42,6 +43,7 @@ class StablecoinSnapshotRepositoryTest extends TestCase
         $this->assertEquals(StablecoinSnapshot::class, $parameter->getDefaultValue());
     }
 
+    #[Test]
     public function test_constructor_property_is_protected(): void
     {
         $reflection = new \ReflectionClass(StablecoinSnapshotRepository::class);
@@ -51,6 +53,7 @@ class StablecoinSnapshotRepositoryTest extends TestCase
         $this->assertEquals('string', $property->getType()->getName());
     }
 
+    #[Test]
     public function test_uses_stablecoin_snapshot_model(): void
     {
         $reflection = new \ReflectionClass(StablecoinSnapshotRepository::class);
@@ -63,6 +66,7 @@ class StablecoinSnapshotRepositoryTest extends TestCase
         $this->assertStringContainsString('= StablecoinSnapshot::class', $fileContent);
     }
 
+    #[Test]
     public function test_constructor_validates_model(): void
     {
         // Test that constructor validates the model extends EloquentSnapshot
@@ -78,6 +82,7 @@ class StablecoinSnapshotRepositoryTest extends TestCase
         $this->assertStringContainsString('throw new InvalidEloquentStoredEventModel', $source);
     }
 
+    #[Test]
     public function test_exception_message_format(): void
     {
         $reflection = new \ReflectionClass(StablecoinSnapshotRepository::class);
@@ -92,6 +97,7 @@ class StablecoinSnapshotRepositoryTest extends TestCase
         $this->assertStringContainsString('"The class {$this->snapshotModel} must extend EloquentSnapshot"', $source);
     }
 
+    #[Test]
     public function test_has_phpdoc_annotations(): void
     {
         $reflection = new \ReflectionClass(StablecoinSnapshotRepository::class);
@@ -105,6 +111,7 @@ class StablecoinSnapshotRepositoryTest extends TestCase
         $this->assertStringContainsString('@throws InvalidEloquentStoredEventModel', $docComment);
     }
 
+    #[Test]
     public function test_imports_correct_exceptions(): void
     {
         $reflection = new \ReflectionClass(StablecoinSnapshotRepository::class);
@@ -115,6 +122,7 @@ class StablecoinSnapshotRepositoryTest extends TestCase
         $this->assertStringContainsString('use Spatie\EventSourcing\AggregateRoots\Exceptions\InvalidEloquentStoredEventModel;', $fileContent);
     }
 
+    #[Test]
     public function test_imports_correct_base_classes(): void
     {
         $reflection = new \ReflectionClass(StablecoinSnapshotRepository::class);
@@ -126,12 +134,14 @@ class StablecoinSnapshotRepositoryTest extends TestCase
         $this->assertStringContainsString('use Spatie\EventSourcing\Snapshots\EloquentSnapshotRepository;', $fileContent);
     }
 
+    #[Test]
     public function test_namespace_is_correct(): void
     {
         $reflection = new \ReflectionClass(StablecoinSnapshotRepository::class);
         $this->assertEquals('App\Domain\Stablecoin\Repositories', $reflection->getNamespaceName());
     }
 
+    #[Test]
     public function test_class_structure(): void
     {
         $repository = new StablecoinSnapshotRepository();
@@ -141,6 +151,7 @@ class StablecoinSnapshotRepositoryTest extends TestCase
         $this->assertTrue(method_exists($repository, 'retrieve'));
     }
 
+    #[Test]
     public function test_instantiation_with_default_model(): void
     {
         $repository = new StablecoinSnapshotRepository();
@@ -149,6 +160,7 @@ class StablecoinSnapshotRepositoryTest extends TestCase
         $this->assertInstanceOf(StablecoinSnapshotRepository::class, $repository);
     }
 
+    #[Test]
     public function test_uses_strict_types(): void
     {
         $reflection = new \ReflectionClass(StablecoinSnapshotRepository::class);
@@ -160,6 +172,7 @@ class StablecoinSnapshotRepositoryTest extends TestCase
         $this->assertStringContainsString('declare(strict_types=1);', $fileContent);
     }
 
+    #[Test]
     public function test_property_names_differ_from_event_repository(): void
     {
         // Test that this uses 'snapshotModel' not 'storedEventModel'
@@ -169,6 +182,7 @@ class StablecoinSnapshotRepositoryTest extends TestCase
         $this->assertFalse($reflection->hasProperty('storedEventModel'));
     }
 
+    #[Test]
     public function test_exception_reuses_same_exception_class(): void
     {
         // Note: Both repositories reuse InvalidEloquentStoredEventModel exception

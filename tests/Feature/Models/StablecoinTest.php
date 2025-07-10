@@ -8,6 +8,7 @@ use App\Domain\Asset\Models\Asset;
 use App\Models\Account;
 use App\Models\Stablecoin;
 use App\Models\StablecoinCollateralPosition;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class StablecoinTest extends TestCase
@@ -28,7 +29,7 @@ class StablecoinTest extends TestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function it_can_create_a_stablecoin()
     {
         $stablecoin = Stablecoin::create([
@@ -60,7 +61,7 @@ class StablecoinTest extends TestCase
         $this->assertTrue($stablecoin->is_active);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_check_if_minting_is_allowed()
     {
         $stablecoin = Stablecoin::create([
@@ -95,7 +96,7 @@ class StablecoinTest extends TestCase
         $this->assertFalse($stablecoin->canMint());
     }
 
-    /** @test */
+    #[Test]
     public function it_can_check_if_burning_is_allowed()
     {
         $stablecoin = Stablecoin::create([
@@ -130,7 +131,7 @@ class StablecoinTest extends TestCase
         $this->assertFalse($stablecoin->canBurn());
     }
 
-    /** @test */
+    #[Test]
     public function it_can_check_if_max_supply_is_reached()
     {
         $stablecoin = Stablecoin::create([
@@ -164,7 +165,7 @@ class StablecoinTest extends TestCase
         $this->assertFalse($stablecoin->hasReachedMaxSupply());
     }
 
-    /** @test */
+    #[Test]
     public function it_can_calculate_global_collateralization_ratio()
     {
         $stablecoin = Stablecoin::create([
@@ -195,7 +196,7 @@ class StablecoinTest extends TestCase
         $this->assertEquals(0, $stablecoin->calculateGlobalCollateralizationRatio());
     }
 
-    /** @test */
+    #[Test]
     public function it_can_check_if_adequately_collateralized()
     {
         $stablecoin = Stablecoin::create([
@@ -226,7 +227,7 @@ class StablecoinTest extends TestCase
         $this->assertFalse($stablecoin->isAdequatelyCollateralized());
     }
 
-    /** @test */
+    #[Test]
     public function it_has_proper_scopes()
     {
         Stablecoin::create([
@@ -278,7 +279,7 @@ class StablecoinTest extends TestCase
         $this->assertEquals(1, Stablecoin::burningEnabled()->count());
     }
 
-    /** @test */
+    #[Test]
     public function it_belongs_to_peg_asset()
     {
         $stablecoin = Stablecoin::create([
@@ -308,7 +309,7 @@ class StablecoinTest extends TestCase
         $this->assertEquals('USD', $pegAsset->code);
     }
 
-    /** @test */
+    #[Test]
     public function it_has_active_positions_relationship()
     {
         $stablecoin = Stablecoin::create([
@@ -361,7 +362,7 @@ class StablecoinTest extends TestCase
         $this->assertCount(1, $activePositions);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_scope_by_mechanism()
     {
         Stablecoin::create([
@@ -419,7 +420,7 @@ class StablecoinTest extends TestCase
         $this->assertEquals('AUSD', $algorithmic->first()->code);
     }
 
-    /** @test */
+    #[Test]
     public function it_casts_decimal_attributes_correctly()
     {
         $stablecoin = Stablecoin::create([

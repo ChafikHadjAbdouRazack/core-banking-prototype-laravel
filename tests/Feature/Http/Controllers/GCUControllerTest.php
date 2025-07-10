@@ -5,9 +5,10 @@ namespace Tests\Feature\Http\Controllers;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ControllerTestCase;
 
-class GCUControllerTest extends TestCase
+class GCUControllerTest extends ControllerTestCase
 {
     use RefreshDatabase;
 
@@ -19,7 +20,7 @@ class GCUControllerTest extends TestCase
         Cache::flush();
     }
 
-    /** @test */
+    #[Test]
     public function it_displays_the_gcu_page()
     {
         // Mock the HTTP response
@@ -54,7 +55,7 @@ class GCUControllerTest extends TestCase
         $this->assertCount(5, $compositionData['composition']);
     }
 
-    /** @test */
+    #[Test]
     public function it_caches_composition_data()
     {
         // First request should call the API
@@ -82,7 +83,7 @@ class GCUControllerTest extends TestCase
         $response->assertStatus(200);
     }
 
-    /** @test */
+    #[Test]
     public function it_falls_back_to_config_when_api_fails()
     {
         // Mock API failure
@@ -100,7 +101,7 @@ class GCUControllerTest extends TestCase
         $this->assertEquals(1.0, $compositionData['performance']['value']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_api_timeout_gracefully()
     {
         // Mock API timeout
@@ -121,7 +122,7 @@ class GCUControllerTest extends TestCase
         $this->assertArrayHasKey('performance', $compositionData);
     }
 
-    /** @test */
+    #[Test]
     public function it_includes_correct_data_structure()
     {
         Http::fake([

@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Api;
 
-use App\Models\User;
-use Laravel\Sanctum\Sanctum;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class AuthTest extends TestCase
 {
+    #[Test]
     public function test_user_endpoint_returns_authenticated_user()
     {
         $user = User::factory()->create([
@@ -29,6 +29,7 @@ class AuthTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_user_endpoint_requires_authentication()
     {
         $response = $this->getJson('/api/user');
@@ -36,6 +37,7 @@ class AuthTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_user_endpoint_structure()
     {
         $user = User::factory()->create();

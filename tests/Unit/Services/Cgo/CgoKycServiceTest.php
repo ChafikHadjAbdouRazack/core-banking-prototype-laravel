@@ -2,18 +2,11 @@
 
 namespace Tests\Unit\Services\Cgo;
 
-use App\Domain\Compliance\Services\CustomerRiskService;
-use App\Domain\Compliance\Services\EnhancedKycService;
-use App\Domain\Compliance\Services\KycService;
-use App\Models\CgoInvestment;
-use App\Models\KycVerification;
-use App\Models\User;
-use App\Services\Cgo\CgoKycService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Mockery;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ServiceTestCase;
 
-class CgoKycServiceTest extends TestCase
+class CgoKycServiceTest extends ServiceTestCase
 {
     use RefreshDatabase;
 
@@ -52,6 +45,7 @@ class CgoKycServiceTest extends TestCase
         );
     }
 
+    #[Test]
     public function test_check_kyc_requirements_for_basic_level()
     {
         $user = User::factory()->create([
@@ -76,6 +70,7 @@ class CgoKycServiceTest extends TestCase
         $this->assertEquals(['national_id', 'selfie'], $result['required_documents']);
     }
 
+    #[Test]
     public function test_check_kyc_requirements_for_enhanced_level()
     {
         $user = User::factory()->create([
@@ -99,6 +94,7 @@ class CgoKycServiceTest extends TestCase
         $this->assertFalse($result['is_sufficient']);
     }
 
+    #[Test]
     public function test_check_kyc_requirements_for_full_level()
     {
         $user = User::factory()->create([
@@ -122,6 +118,7 @@ class CgoKycServiceTest extends TestCase
         $this->assertFalse($result['is_sufficient']);
     }
 
+    #[Test]
     public function test_verify_investor_blocks_insufficient_kyc()
     {
         $user = User::factory()->create([
@@ -146,6 +143,7 @@ class CgoKycServiceTest extends TestCase
         $this->assertStringContainsString('requires enhanced KYC verification', $investment->notes);
     }
 
+    #[Test]
     public function test_verify_investor_performs_aml_checks_for_high_value()
     {
         $user = User::factory()->create([
@@ -177,6 +175,7 @@ class CgoKycServiceTest extends TestCase
         $this->assertEquals(25.5, $investment->risk_assessment);
     }
 
+    #[Test]
     public function test_verify_investor_flags_pep_status()
     {
         $user = User::factory()->create([
@@ -202,6 +201,7 @@ class CgoKycServiceTest extends TestCase
         $this->assertStringContainsString('pep_status', $investment->notes);
     }
 
+    #[Test]
     public function test_verify_investor_flags_sanctioned_country()
     {
         $user = User::factory()->create([
@@ -230,6 +230,7 @@ class CgoKycServiceTest extends TestCase
         $this->assertStringContainsString('sanctions_hit', $investment->notes);
     }
 
+    #[Test]
     public function test_check_transaction_patterns_flags_rapid_investments()
     {
         $user = User::factory()->create();
@@ -254,6 +255,7 @@ class CgoKycServiceTest extends TestCase
         $this->assertEquals('rapid_successive_investments', $result['reason']);
     }
 
+    #[Test]
     public function test_determine_risk_level()
     {
         $user = User::factory()->create([
@@ -274,6 +276,7 @@ class CgoKycServiceTest extends TestCase
         $this->assertEquals('medium', $result); // High amount + new user = 2 factors = medium risk
     }
 
+    #[Test]
     public function test_create_verification_request()
     {
         $user = User::factory()->create();

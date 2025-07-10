@@ -2,14 +2,8 @@
 
 namespace Tests\Feature\Basket;
 
-use App\Domain\Basket\Services\BasketPerformanceService;
-use App\Models\BasketAsset;
-use App\Models\BasketPerformance;
-use App\Models\BasketValue;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Laravel\Sanctum\Sanctum;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class BasketPerformanceTest extends TestCase
@@ -68,6 +62,7 @@ class BasketPerformanceTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_can_calculate_performance_for_basket()
     {
         // Create historical values
@@ -117,6 +112,7 @@ class BasketPerformanceTest extends TestCase
         $this->assertEquals(8, $performance->value_count);
     }
 
+    #[Test]
     public function test_can_calculate_all_periods()
     {
         // Create values for different time periods
@@ -150,6 +146,7 @@ class BasketPerformanceTest extends TestCase
         $this->assertContains('week', $periodTypes);
     }
 
+    #[Test]
     public function test_can_get_performance_summary()
     {
         // Create some performance records
@@ -185,6 +182,7 @@ class BasketPerformanceTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_api_can_get_basket_performance()
     {
         Sanctum::actingAs($this->user);
@@ -232,6 +230,7 @@ class BasketPerformanceTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_api_can_get_performance_history()
     {
         Sanctum::actingAs($this->user);
@@ -263,6 +262,7 @@ class BasketPerformanceTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_api_can_calculate_performance()
     {
         Sanctum::actingAs($this->user);
@@ -301,6 +301,7 @@ class BasketPerformanceTest extends TestCase
         ]);
     }
 
+    #[Test]
     public function test_can_get_top_and_worst_performers()
     {
         // Create performance with components
@@ -355,6 +356,7 @@ class BasketPerformanceTest extends TestCase
         $this->assertEquals(-1.2, $worstPerformers->first()->contribution_percentage);
     }
 
+    #[Test]
     public function test_calculates_volatility_correctly()
     {
         // Create values with known volatility
@@ -391,6 +393,7 @@ class BasketPerformanceTest extends TestCase
         $this->assertLessThan(4.0, $performance->volatility); // Increased tolerance for calculation differences
     }
 
+    #[Test]
     public function test_performance_command()
     {
         // Create values

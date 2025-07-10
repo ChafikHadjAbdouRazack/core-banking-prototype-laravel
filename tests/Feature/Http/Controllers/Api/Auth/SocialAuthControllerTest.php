@@ -2,16 +2,15 @@
 
 namespace Tests\Feature\Http\Controllers\Api\Auth;
 
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Laravel\Socialite\Contracts\User as SocialiteUser;
-use Laravel\Socialite\Facades\Socialite;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ControllerTestCase;
 
-class SocialAuthControllerTest extends TestCase
+class SocialAuthControllerTest extends ControllerTestCase
 {
     use RefreshDatabase;
 
+    #[Test]
     public function test_redirect_returns_oauth_url_for_valid_provider(): void
     {
         $expectedUrl = 'https://accounts.google.com/o/oauth2/auth?client_id=test&redirect_uri=test&scope=test&response_type=code';
@@ -34,6 +33,7 @@ class SocialAuthControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_redirect_supports_multiple_providers(): void
     {
         $providers = ['google', 'facebook', 'github'];
@@ -60,6 +60,7 @@ class SocialAuthControllerTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_redirect_fails_for_invalid_provider(): void
     {
         $response = $this->getJson('/api/auth/social/invalid-provider');
@@ -70,6 +71,7 @@ class SocialAuthControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_redirect_handles_unconfigured_provider(): void
     {
         Socialite::shouldReceive('driver')
@@ -85,6 +87,7 @@ class SocialAuthControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_callback_creates_new_user_from_oauth(): void
     {
         $socialiteUser = \Mockery::mock(SocialiteUser::class);
@@ -143,6 +146,7 @@ class SocialAuthControllerTest extends TestCase
         $this->assertNotNull($user->email_verified_at);
     }
 
+    #[Test]
     public function test_callback_authenticates_existing_user(): void
     {
         $existingUser = User::factory()->create([
@@ -183,6 +187,7 @@ class SocialAuthControllerTest extends TestCase
         $this->assertEquals(1, User::where('email', 'existing@example.com')->count());
     }
 
+    #[Test]
     public function test_callback_links_oauth_to_existing_email_user(): void
     {
         $existingUser = User::factory()->create([
@@ -228,6 +233,7 @@ class SocialAuthControllerTest extends TestCase
         ]);
     }
 
+    #[Test]
     public function test_callback_requires_code_parameter(): void
     {
         $response = $this->postJson('/api/auth/social/google/callback', []);
@@ -236,6 +242,7 @@ class SocialAuthControllerTest extends TestCase
             ->assertJsonValidationErrors(['code']);
     }
 
+    #[Test]
     public function test_callback_fails_for_invalid_provider(): void
     {
         $response = $this->postJson('/api/auth/social/invalid-provider/callback', [
@@ -248,6 +255,7 @@ class SocialAuthControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_callback_handles_oauth_failure(): void
     {
         $provider = \Mockery::mock('Laravel\Socialite\Two\GoogleProvider');
@@ -269,6 +277,7 @@ class SocialAuthControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_callback_includes_error_details_in_debug_mode(): void
     {
         config(['app.debug' => true]);
@@ -293,6 +302,7 @@ class SocialAuthControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_callback_hides_error_details_in_production(): void
     {
         config(['app.debug' => false]);
@@ -317,6 +327,7 @@ class SocialAuthControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_callback_generates_api_token(): void
     {
         $socialiteUser = \Mockery::mock(SocialiteUser::class);
@@ -351,6 +362,7 @@ class SocialAuthControllerTest extends TestCase
         ]);
     }
 
+    #[Test]
     public function test_new_oauth_users_have_random_password(): void
     {
         $socialiteUser = \Mockery::mock(SocialiteUser::class);

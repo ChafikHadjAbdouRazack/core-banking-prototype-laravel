@@ -2,13 +2,11 @@
 
 namespace Tests\Feature\Http\Controllers;
 
-use App\Models\Account;
-use App\Models\BatchJob;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ControllerTestCase;
 
-class BatchProcessingControllerTest extends TestCase
+class BatchProcessingControllerTest extends ControllerTestCase
 {
     use RefreshDatabase;
 
@@ -27,6 +25,7 @@ class BatchProcessingControllerTest extends TestCase
         ]);
     }
 
+    #[Test]
     public function test_authenticated_user_can_access_batch_processing_index()
     {
         $response = $this->actingAs($this->user)
@@ -37,6 +36,7 @@ class BatchProcessingControllerTest extends TestCase
             ->assertViewHas(['batchJobs', 'statistics']);
     }
 
+    #[Test]
     public function test_authenticated_user_can_access_create_form()
     {
         $response = $this->actingAs($this->user)
@@ -47,6 +47,7 @@ class BatchProcessingControllerTest extends TestCase
             ->assertViewHas(['accounts', 'templates']);
     }
 
+    #[Test]
     public function test_authenticated_user_can_view_batch_job()
     {
         $batchJob = BatchJob::factory()->create([
@@ -61,6 +62,7 @@ class BatchProcessingControllerTest extends TestCase
             ->assertViewHas(['batchJob', 'items']);
     }
 
+    #[Test]
     public function test_user_cannot_view_other_users_batch_job()
     {
         $otherUser = User::factory()->create();
@@ -74,6 +76,7 @@ class BatchProcessingControllerTest extends TestCase
         $response->assertStatus(404);
     }
 
+    #[Test]
     public function test_batch_creation_validation_fails_with_invalid_data()
     {
         $response = $this->actingAs($this->user)
@@ -86,6 +89,7 @@ class BatchProcessingControllerTest extends TestCase
         $response->assertSessionHasErrors(['name', 'type', 'items']);
     }
 
+    #[Test]
     public function test_can_cancel_pending_batch_job()
     {
         $batchJob = BatchJob::factory()->create([
@@ -100,6 +104,7 @@ class BatchProcessingControllerTest extends TestCase
             ->assertSessionHas('success');
     }
 
+    #[Test]
     public function test_cannot_cancel_completed_batch_job()
     {
         $batchJob = BatchJob::factory()->create([
@@ -114,6 +119,7 @@ class BatchProcessingControllerTest extends TestCase
             ->assertSessionHasErrors();
     }
 
+    #[Test]
     public function test_unauthenticated_user_cannot_access_batch_processing()
     {
         $response = $this->get(route('batch-processing.index'));

@@ -2,14 +2,11 @@
 
 namespace Tests\Feature\Http\Controllers\Api;
 
-use App\Domain\Custodian\Services\BankAlertingService;
-use App\Domain\Custodian\Services\CustodianHealthMonitor;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Laravel\Sanctum\Sanctum;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ControllerTestCase;
 
-class BankAlertingControllerTest extends TestCase
+class BankAlertingControllerTest extends ControllerTestCase
 {
     use RefreshDatabase;
 
@@ -40,6 +37,7 @@ class BankAlertingControllerTest extends TestCase
         $this->app->instance(CustodianHealthMonitor::class, $this->mockHealthMonitor);
     }
 
+    #[Test]
     public function test_trigger_health_check_performs_system_wide_check(): void
     {
         Sanctum::actingAs($this->adminUser);
@@ -95,8 +93,7 @@ class BankAlertingControllerTest extends TestCase
             ]);
     }
 
-    // Note: Admin role check is skipped in tests as the admin middleware doesn't exist in test environment
-
+    // Note: Admin role check is skipped in tests as the admin middleware doesn't exist in test environment    #[Test]
     public function test_trigger_health_check_requires_authentication(): void
     {
         $response = $this->postJson('/api/bank-health/check');
@@ -104,6 +101,7 @@ class BankAlertingControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_trigger_health_check_handles_errors(): void
     {
         Sanctum::actingAs($this->adminUser);
@@ -121,6 +119,7 @@ class BankAlertingControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_get_health_status_returns_current_status(): void
     {
         Sanctum::actingAs($this->adminUser);
@@ -166,6 +165,7 @@ class BankAlertingControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_get_custodian_health_returns_specific_health(): void
     {
         Sanctum::actingAs($this->adminUser);
@@ -199,6 +199,7 @@ class BankAlertingControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_get_custodian_health_returns_404_for_unknown_custodian(): void
     {
         Sanctum::actingAs($this->adminUser);
@@ -217,6 +218,7 @@ class BankAlertingControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_get_alert_history_with_default_days(): void
     {
         Sanctum::actingAs($this->adminUser);
@@ -251,6 +253,7 @@ class BankAlertingControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_get_alert_history_with_custom_days(): void
     {
         Sanctum::actingAs($this->adminUser);
@@ -272,6 +275,7 @@ class BankAlertingControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_get_alert_history_validates_days_parameter(): void
     {
         Sanctum::actingAs($this->adminUser);
@@ -282,6 +286,7 @@ class BankAlertingControllerTest extends TestCase
             ->assertJsonValidationErrors(['days']);
     }
 
+    #[Test]
     public function test_get_alerting_statistics_with_default_period(): void
     {
         Sanctum::actingAs($this->adminUser);
@@ -308,6 +313,7 @@ class BankAlertingControllerTest extends TestCase
             ->assertJsonPath('data.statistics.period', 'day');
     }
 
+    #[Test]
     public function test_get_alerting_statistics_with_custom_period(): void
     {
         Sanctum::actingAs($this->adminUser);
@@ -318,6 +324,7 @@ class BankAlertingControllerTest extends TestCase
             ->assertJsonPath('data.statistics.period', 'week');
     }
 
+    #[Test]
     public function test_configure_alerts_updates_configuration(): void
     {
         Sanctum::actingAs($this->adminUser);
@@ -348,6 +355,7 @@ class BankAlertingControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_configure_alerts_validates_input(): void
     {
         Sanctum::actingAs($this->adminUser);
@@ -361,6 +369,7 @@ class BankAlertingControllerTest extends TestCase
             ->assertJsonValidationErrors(['cooldown_minutes', 'notification_channels.1']);
     }
 
+    #[Test]
     public function test_get_alert_configuration_returns_current_config(): void
     {
         Sanctum::actingAs($this->adminUser);
@@ -382,6 +391,7 @@ class BankAlertingControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_test_alert_sends_test_notification(): void
     {
         Sanctum::actingAs($this->adminUser);
@@ -404,6 +414,7 @@ class BankAlertingControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_test_alert_requires_severity(): void
     {
         Sanctum::actingAs($this->adminUser);
@@ -414,6 +425,7 @@ class BankAlertingControllerTest extends TestCase
             ->assertJsonValidationErrors(['severity']);
     }
 
+    #[Test]
     public function test_test_alert_validates_severity_values(): void
     {
         Sanctum::actingAs($this->adminUser);
@@ -426,6 +438,7 @@ class BankAlertingControllerTest extends TestCase
             ->assertJsonValidationErrors(['severity']);
     }
 
+    #[Test]
     public function test_acknowledge_alert_marks_as_resolved(): void
     {
         Sanctum::actingAs($this->adminUser);
@@ -451,6 +464,7 @@ class BankAlertingControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_acknowledge_alert_without_notes(): void
     {
         Sanctum::actingAs($this->adminUser);
@@ -467,6 +481,7 @@ class BankAlertingControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_acknowledge_alert_validates_notes_length(): void
     {
         Sanctum::actingAs($this->adminUser);
@@ -479,6 +494,7 @@ class BankAlertingControllerTest extends TestCase
             ->assertJsonValidationErrors(['resolution_notes']);
     }
 
+    #[Test]
     public function test_all_endpoints_require_authentication(): void
     {
         $endpoints = [

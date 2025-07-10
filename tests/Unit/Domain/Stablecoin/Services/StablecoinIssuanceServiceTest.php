@@ -2,16 +2,10 @@
 
 namespace Tests\Unit\Domain\Stablecoin\Services;
 
-use App\Domain\Asset\Services\ExchangeRateService;
-use App\Domain\Stablecoin\Contracts\StablecoinIssuanceServiceInterface;
-use App\Domain\Stablecoin\Services\CollateralService;
-use App\Domain\Stablecoin\Services\StablecoinIssuanceService;
-use App\Domain\Wallet\Services\WalletService;
-use App\Models\Account;
-use App\Models\StablecoinCollateralPosition;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ServiceTestCase;
 
-class StablecoinIssuanceServiceTest extends TestCase
+class StablecoinIssuanceServiceTest extends ServiceTestCase
 {
     private StablecoinIssuanceService $service;
 
@@ -35,16 +29,19 @@ class StablecoinIssuanceServiceTest extends TestCase
         );
     }
 
+    #[Test]
     public function test_class_exists(): void
     {
         $this->assertTrue(class_exists(StablecoinIssuanceService::class));
     }
 
+    #[Test]
     public function test_implements_interface(): void
     {
         $this->assertInstanceOf(StablecoinIssuanceServiceInterface::class, $this->service);
     }
 
+    #[Test]
     public function test_constructor_injects_dependencies(): void
     {
         $reflection = new \ReflectionClass(StablecoinIssuanceService::class);
@@ -65,11 +62,13 @@ class StablecoinIssuanceServiceTest extends TestCase
         $this->assertEquals(WalletService::class, $parameters[2]->getType()->getName());
     }
 
+    #[Test]
     public function test_has_mint_method(): void
     {
         $this->assertTrue(method_exists($this->service, 'mint'));
     }
 
+    #[Test]
     public function test_mint_method_signature(): void
     {
         $reflection = new \ReflectionMethod(StablecoinIssuanceService::class, 'mint');
@@ -97,6 +96,7 @@ class StablecoinIssuanceServiceTest extends TestCase
         $this->assertEquals(StablecoinCollateralPosition::class, $reflection->getReturnType()->getName());
     }
 
+    #[Test]
     public function test_service_properties_are_private_readonly(): void
     {
         $reflection = new \ReflectionClass(StablecoinIssuanceService::class);
@@ -114,6 +114,7 @@ class StablecoinIssuanceServiceTest extends TestCase
         $this->assertTrue($walletProperty->isReadOnly());
     }
 
+    #[Test]
     public function test_service_imports(): void
     {
         $reflection = new \ReflectionClass(StablecoinIssuanceService::class);
@@ -135,6 +136,7 @@ class StablecoinIssuanceServiceTest extends TestCase
         $this->assertStringContainsString('use Workflow\WorkflowStub;', $fileContent);
     }
 
+    #[Test]
     public function test_mint_validates_stablecoin(): void
     {
         $reflection = new \ReflectionClass(StablecoinIssuanceService::class);
@@ -157,6 +159,7 @@ class StablecoinIssuanceServiceTest extends TestCase
         $this->assertStringContainsString('Maximum supply reached', $source);
     }
 
+    #[Test]
     public function test_has_additional_methods(): void
     {
         // Check if service likely has other methods beyond mint
@@ -174,6 +177,7 @@ class StablecoinIssuanceServiceTest extends TestCase
         $this->assertStringContainsString('BurnStablecoinWorkflow', $fileContent);
     }
 
+    #[Test]
     public function test_uses_workflow_pattern(): void
     {
         $reflection = new \ReflectionClass(StablecoinIssuanceService::class);
@@ -190,6 +194,7 @@ class StablecoinIssuanceServiceTest extends TestCase
         $this->assertStringContainsString('AddCollateralWorkflow', $fileContent);
     }
 
+    #[Test]
     public function test_uses_strict_types(): void
     {
         $reflection = new \ReflectionClass(StablecoinIssuanceService::class);
@@ -201,12 +206,14 @@ class StablecoinIssuanceServiceTest extends TestCase
         $this->assertStringContainsString('declare(strict_types=1);', $fileContent);
     }
 
+    #[Test]
     public function test_namespace_is_correct(): void
     {
         $reflection = new \ReflectionClass(StablecoinIssuanceService::class);
         $this->assertEquals('App\Domain\Stablecoin\Services', $reflection->getNamespaceName());
     }
 
+    #[Test]
     public function test_mint_validates_collateral_sufficiency(): void
     {
         $reflection = new \ReflectionClass(StablecoinIssuanceService::class);
@@ -221,6 +228,7 @@ class StablecoinIssuanceServiceTest extends TestCase
         $this->assertStringContainsString('// Validate collateral sufficiency', $source);
     }
 
+    #[Test]
     public function test_method_parameters_use_type_hints(): void
     {
         $reflection = new \ReflectionMethod(StablecoinIssuanceService::class, 'mint');
@@ -232,6 +240,7 @@ class StablecoinIssuanceServiceTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_service_likely_has_burn_method(): void
     {
         // Based on imports, service should have burn functionality
@@ -244,6 +253,7 @@ class StablecoinIssuanceServiceTest extends TestCase
         $this->assertStringContainsString('use App\Domain\Stablecoin\Workflows\BurnStablecoinWorkflow;', $fileContent);
     }
 
+    #[Test]
     public function test_service_likely_has_add_collateral_method(): void
     {
         // Based on imports, service should have add collateral functionality

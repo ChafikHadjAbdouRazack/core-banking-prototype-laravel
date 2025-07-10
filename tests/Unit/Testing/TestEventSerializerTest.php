@@ -2,9 +2,8 @@
 
 namespace Tests\Unit\Testing;
 
-use App\Testing\TestEventSerializer;
-use Carbon\Carbon;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\DomainTestCase;
 
 // Test event classes for testing
 class SimpleTestEvent
@@ -35,7 +34,7 @@ class EventWithPrivateProperties
     }
 }
 
-class TestEventSerializerTest extends TestCase
+class TestEventSerializerTest extends DomainTestCase
 {
     private TestEventSerializer $serializer;
 
@@ -45,6 +44,7 @@ class TestEventSerializerTest extends TestCase
         $this->serializer = new TestEventSerializer();
     }
 
+    #[Test]
     public function test_serialize_simple_event(): void
     {
         $event = new SimpleTestEvent();
@@ -60,6 +60,7 @@ class TestEventSerializerTest extends TestCase
         $this->assertEquals(42, $serialized['data']['value']);
     }
 
+    #[Test]
     public function test_serialize_event_with_carbon_dates(): void
     {
         $event = new EventWithCarbonDate();
@@ -75,6 +76,7 @@ class TestEventSerializerTest extends TestCase
         $this->assertEquals('2024-01-16T15:45:30.000000Z', $serialized['data']['updatedAt']);
     }
 
+    #[Test]
     public function test_serialize_event_with_null_carbon_date(): void
     {
         $event = new EventWithCarbonDate();
@@ -88,6 +90,7 @@ class TestEventSerializerTest extends TestCase
         $this->assertNull($serialized['data']['updatedAt']);
     }
 
+    #[Test]
     public function test_serialize_ignores_private_properties(): void
     {
         $event = new EventWithPrivateProperties();
@@ -105,6 +108,7 @@ class TestEventSerializerTest extends TestCase
         $this->assertArrayNotHasKey('privateData', $serialized['data']);
     }
 
+    #[Test]
     public function test_deserialize_simple_event(): void
     {
         $serialized = [
@@ -122,6 +126,7 @@ class TestEventSerializerTest extends TestCase
         $this->assertEquals(99, $event->value);
     }
 
+    #[Test]
     public function test_deserialize_event_with_carbon_dates(): void
     {
         $serialized = [
@@ -143,6 +148,7 @@ class TestEventSerializerTest extends TestCase
         $this->assertEquals('2024-02-21 09:15:00', $event->updatedAt->format('Y-m-d H:i:s'));
     }
 
+    #[Test]
     public function test_deserialize_handles_missing_properties(): void
     {
         $serialized = [
@@ -160,6 +166,7 @@ class TestEventSerializerTest extends TestCase
         // Value property should remain uninitialized (or default)
     }
 
+    #[Test]
     public function test_deserialize_preserves_null_values(): void
     {
         $serialized = [
@@ -179,6 +186,7 @@ class TestEventSerializerTest extends TestCase
         $this->assertNull($event->updatedAt);
     }
 
+    #[Test]
     public function test_from_array_creates_event_from_data(): void
     {
         $data = [
@@ -193,6 +201,7 @@ class TestEventSerializerTest extends TestCase
         $this->assertEquals(123, $event->value);
     }
 
+    #[Test]
     public function test_from_array_handles_carbon_type_hints(): void
     {
         $data = [
@@ -209,6 +218,7 @@ class TestEventSerializerTest extends TestCase
         $this->assertInstanceOf(Carbon::class, $event->updatedAt);
     }
 
+    #[Test]
     public function test_from_array_handles_non_typed_properties(): void
     {
         // Create a test class with non-typed property
@@ -226,6 +236,7 @@ class TestEventSerializerTest extends TestCase
         $this->assertEquals('string value', $event->typedProperty);
     }
 
+    #[Test]
     public function test_serialize_deserialize_roundtrip(): void
     {
         // Create original event
@@ -251,6 +262,7 @@ class TestEventSerializerTest extends TestCase
         );
     }
 
+    #[Test]
     public function test_handles_reflection_union_types(): void
     {
         // PHP 8+ union types

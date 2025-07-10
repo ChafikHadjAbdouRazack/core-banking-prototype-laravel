@@ -2,10 +2,12 @@
 
 namespace Tests\Feature;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class SchemaMarkupTest extends TestCase
 {
+    #[Test]
     public function test_homepage_has_organization_and_website_schema()
     {
         $response = $this->get('/');
@@ -17,6 +19,7 @@ class SchemaMarkupTest extends TestCase
         $response->assertSee('"name": "FinAegis"', false);
     }
 
+    #[Test]
     public function test_gcu_page_has_product_and_breadcrumb_schema()
     {
         $response = $this->get('/gcu');
@@ -28,6 +31,7 @@ class SchemaMarkupTest extends TestCase
         $response->assertSee('"@type": "BreadcrumbList"', false);
     }
 
+    #[Test]
     public function test_platform_page_has_software_schema()
     {
         $response = $this->get('/platform');
@@ -38,6 +42,7 @@ class SchemaMarkupTest extends TestCase
         $response->assertSee('"name": "FinAegis Core Banking Platform"', false);
     }
 
+    #[Test]
     public function test_about_page_has_organization_schema()
     {
         $response = $this->get('/about');
@@ -47,6 +52,7 @@ class SchemaMarkupTest extends TestCase
         $response->assertSee('"@type": "Organization"', false);
     }
 
+    #[Test]
     public function test_pricing_page_has_software_schema()
     {
         $response = $this->get('/pricing');
@@ -56,6 +62,7 @@ class SchemaMarkupTest extends TestCase
         $response->assertSee('"@type": "SoftwareApplication"', false);
     }
 
+    #[Test]
     public function test_security_page_has_service_schema()
     {
         $response = $this->get('/security');
@@ -66,6 +73,7 @@ class SchemaMarkupTest extends TestCase
         $response->assertSee('"name": "FinAegis Security Services"', false);
     }
 
+    #[Test]
     public function test_faq_page_has_faqpage_schema()
     {
         $response = $this->get('/support/faq');
@@ -77,6 +85,7 @@ class SchemaMarkupTest extends TestCase
         $response->assertSee('"@type": "Answer"', false);
     }
 
+    #[Test]
     public function test_breadcrumb_schema_has_correct_structure()
     {
         $response = $this->get('/gcu');
@@ -91,6 +100,7 @@ class SchemaMarkupTest extends TestCase
         $this->assertStringContainsString('"position": 2', $content);
     }
 
+    #[Test]
     public function test_schema_json_is_valid()
     {
         $response = $this->get('/');

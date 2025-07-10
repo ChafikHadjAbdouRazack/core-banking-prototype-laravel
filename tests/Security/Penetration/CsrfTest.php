@@ -9,9 +9,9 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Session;
 use Laravel\Sanctum\Sanctum;
 use PHPUnit\Framework\Attributes\Test;
-use Tests\TestCase;
+use Tests\DomainTestCase;
 
-class CsrfTest extends TestCase
+class CsrfTest extends DomainTestCase
 {
     use RefreshDatabase;
 
@@ -27,10 +27,26 @@ class CsrfTest extends TestCase
 
         $this->user = User::factory()->create();
         $this->token = $this->user->createToken('test-token')->plainTextToken;
-        $this->account = Account::factory()->create([
-            'user_uuid' => $this->user->uuid,
-            'balance'   => 100000,
-        ]);
+        // Create account using the proper event sourcing method
+        $accountUuid = \Illuminate\Support\Str::uuid()->toString();
+        \App\Domain\Account\Aggregates\LedgerAggregate::retrieve($accountUuid)
+            ->createAccount(
+                hydrate(
+                    class: \App\Domain\Account\DataObjects\Account::class,
+                    properties: [
+                        'name'      => 'Test Account',
+                        'user_uuid' => $this->user->uuid,
+                    ]
+                )
+            )
+            ->persist();
+
+        $this->account = Account::find($accountUuid);
+
+        // Add balance using event sourcing
+        \App\Domain\Account\Aggregates\LedgerAggregate::retrieve($this->account->uuid)
+            ->addBalance('USD', 100000)
+            ->persist();
     }
 
     #[Test]
@@ -139,7 +155,7 @@ class CsrfTest extends TestCase
             $response = $this->withHeaders($headers)
                 ->postJson('/api/v2/transfers', [
                     'from_account' => $this->account->uuid,
-                    'to_account'   => Account::factory()->create()->uuid,
+                    'to_account'   => Account::factory()->create(['user_uuid' => User::factory()->create()->uuid])->uuid,
                     'amount'       => 50000, // Large amount
                     'currency'     => 'USD',
                 ]);
@@ -247,7 +263,20 @@ class CsrfTest extends TestCase
         $responses = [];
 
         // Create destination account once to avoid hitting model creation limits
-        $destinationAccount = Account::factory()->create(['user_uuid' => $this->user->uuid]);
+        $destinationAccountUuid = \Illuminate\Support\Str::uuid()->toString();
+        \App\Domain\Account\Aggregates\LedgerAggregate::retrieve($destinationAccountUuid)
+            ->createAccount(
+                hydrate(
+                    class: \App\Domain\Account\DataObjects\Account::class,
+                    properties: [
+                        'name'      => 'Destination Account',
+                        'user_uuid' => $this->user->uuid,
+                    ]
+                )
+            )
+            ->persist();
+
+        $destinationAccount = Account::find($destinationAccountUuid);
 
         for ($i = 0; $i < 20; $i++) { // Only need 20 attempts to exceed 15 limit
             $response = $this->postJson('/api/v2/transfers', [

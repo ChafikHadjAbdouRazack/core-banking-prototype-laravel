@@ -6,9 +6,9 @@ use App\Models\Account;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
-use Tests\TestCase;
+use Tests\DomainTestCase;
 
-class AuthorizationSecurityTest extends TestCase
+class AuthorizationSecurityTest extends DomainTestCase
 {
     use RefreshDatabase;
 

@@ -10,6 +10,7 @@ use App\Models\BasketValue;
 use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Laravel\Dusk\Browser;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\DuskTestCase;
 
 class GCUTradingTest extends DuskTestCase
@@ -70,7 +71,7 @@ class GCUTradingTest extends DuskTestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function user_can_access_gcu_trading_page()
     {
         $this->browse(function (Browser $browser) {
@@ -85,7 +86,7 @@ class GCUTradingTest extends DuskTestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function user_can_get_buy_quote()
     {
         $this->browse(function (Browser $browser) {
@@ -99,7 +100,7 @@ class GCUTradingTest extends DuskTestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function user_can_buy_gcu()
     {
         $this->browse(function (Browser $browser) {
@@ -115,7 +116,7 @@ class GCUTradingTest extends DuskTestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function user_can_get_sell_quote()
     {
         $this->browse(function (Browser $browser) {
@@ -131,7 +132,7 @@ class GCUTradingTest extends DuskTestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function user_can_sell_gcu()
     {
         $this->browse(function (Browser $browser) {
@@ -149,7 +150,7 @@ class GCUTradingTest extends DuskTestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function user_sees_error_for_insufficient_balance()
     {
         $this->browse(function (Browser $browser) {
@@ -163,7 +164,7 @@ class GCUTradingTest extends DuskTestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function user_can_switch_currencies()
     {
         $this->browse(function (Browser $browser) {
@@ -176,7 +177,7 @@ class GCUTradingTest extends DuskTestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function user_sees_trading_limits_progress()
     {
         $this->browse(function (Browser $browser) {
@@ -190,7 +191,7 @@ class GCUTradingTest extends DuskTestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function buy_button_is_disabled_below_minimum()
     {
         $this->browse(function (Browser $browser) {
@@ -201,7 +202,7 @@ class GCUTradingTest extends DuskTestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function sell_button_is_disabled_below_minimum()
     {
         $this->browse(function (Browser $browser) {
@@ -214,7 +215,7 @@ class GCUTradingTest extends DuskTestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function navigation_link_is_visible()
     {
         $this->browse(function (Browser $browser) {

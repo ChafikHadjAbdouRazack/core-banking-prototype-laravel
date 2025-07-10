@@ -14,9 +14,10 @@ use App\Models\Stablecoin;
 use App\Models\StablecoinCollateralPosition;
 use Illuminate\Support\Facades\Event;
 use Mockery;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ServiceTestCase;
 
-class StabilityMechanismServiceTest extends TestCase
+class StabilityMechanismServiceTest extends ServiceTestCase
 {
     protected StabilityMechanismService $service;
 
@@ -148,7 +149,7 @@ class StabilityMechanismServiceTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_check_peg_deviation_above_target()
     {
         // Mock current price above peg
@@ -168,7 +169,7 @@ class StabilityMechanismServiceTest extends TestCase
         $this->assertFalse($deviation['within_threshold']);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_check_peg_deviation_below_target()
     {
         // Mock current price below peg
@@ -188,7 +189,7 @@ class StabilityMechanismServiceTest extends TestCase
         $this->assertFalse($deviation['within_threshold']);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_apply_collateralized_stability_mechanism()
     {
         $account = Account::factory()->create();
@@ -223,7 +224,7 @@ class StabilityMechanismServiceTest extends TestCase
         $this->assertGreaterThan(0.005, $this->collateralizedStablecoin->mint_fee);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_apply_algorithmic_stability_mechanism()
     {
         // Price below peg - should incentivize burning
@@ -245,7 +246,7 @@ class StabilityMechanismServiceTest extends TestCase
         $this->assertGreaterThan(0.02, $this->algorithmicStablecoin->algo_burn_penalty); // Increased incentive
     }
 
-    /** @test */
+    #[Test]
     public function it_can_apply_hybrid_stability_mechanism()
     {
         $account = Account::factory()->create();
@@ -279,7 +280,7 @@ class StabilityMechanismServiceTest extends TestCase
         $this->assertLessThan(0.01, $this->hybridStablecoin->algo_mint_reward);
     }
 
-    /** @test */
+    #[Test]
     public function it_calculates_fee_adjustments_based_on_deviation()
     {
         // Test various deviations
@@ -312,7 +313,7 @@ class StabilityMechanismServiceTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function it_can_monitor_all_stablecoin_pegs()
     {
         $this->exchangeRateService
@@ -353,7 +354,7 @@ class StabilityMechanismServiceTest extends TestCase
         $this->assertEquals('healthy', $husdStatus['status']);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_execute_emergency_actions()
     {
         // Extreme price deviation
@@ -378,7 +379,7 @@ class StabilityMechanismServiceTest extends TestCase
         $this->assertEquals(0.1, $this->collateralizedStablecoin->mint_fee); // Max fee
     }
 
-    /** @test */
+    #[Test]
     public function it_can_calculate_supply_incentives()
     {
         // Price below peg - need to reduce supply
@@ -408,7 +409,7 @@ class StabilityMechanismServiceTest extends TestCase
         $this->assertEquals(0, $incentives['burn_penalty']);
     }
 
-    /** @test */
+    #[Test]
     public function it_respects_fee_bounds()
     {
         // Extreme deviation should still respect max fees
@@ -424,7 +425,7 @@ class StabilityMechanismServiceTest extends TestCase
         $this->assertGreaterThanOrEqual(0, $adjustment['new_burn_fee']); // Min 0%
     }
 
-    /** @test */
+    #[Test]
     public function it_can_get_stability_recommendations()
     {
         // Under-collateralized situation
@@ -446,7 +447,7 @@ class StabilityMechanismServiceTest extends TestCase
         $this->assertContains('increase_burn_incentives', array_column($recommendations, 'action'));
     }
 
-    /** @test */
+    #[Test]
     public function it_tracks_stability_mechanism_history()
     {
         $this->exchangeRateService

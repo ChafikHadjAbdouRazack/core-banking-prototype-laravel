@@ -9,9 +9,10 @@ use App\Models\Account;
 use App\Models\AccountBalance;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Mockery;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\DomainTestCase;
 
-class DebitAccountTest extends TestCase
+class DebitAccountTest extends DomainTestCase
 {
     use RefreshDatabase;
 
@@ -46,6 +47,7 @@ class DebitAccountTest extends TestCase
         return $event;
     }
 
+    #[Test]
     public function test_debits_existing_balance(): void
     {
         // Create account
@@ -79,6 +81,7 @@ class DebitAccountTest extends TestCase
         $this->assertEquals(3000, $updatedBalance->balance); // $30.00
     }
 
+    #[Test]
     public function test_throws_exception_if_balance_not_found(): void
     {
         // Create account
@@ -100,6 +103,7 @@ class DebitAccountTest extends TestCase
         $this->action->__invoke($event);
     }
 
+    #[Test]
     public function test_throws_exception_if_insufficient_balance(): void
     {
         // Create account
@@ -128,6 +132,7 @@ class DebitAccountTest extends TestCase
         $this->action->__invoke($event);
     }
 
+    #[Test]
     public function test_handles_exact_balance_debit(): void
     {
         // Create account
@@ -159,6 +164,7 @@ class DebitAccountTest extends TestCase
         $this->assertEquals(0, $updatedBalance->balance);
     }
 
+    #[Test]
     public function test_handles_multiple_debits(): void
     {
         // Create account

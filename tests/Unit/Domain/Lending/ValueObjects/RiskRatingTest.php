@@ -2,11 +2,12 @@
 
 namespace Tests\Unit\Domain\Lending\ValueObjects;
 
-use App\Domain\Lending\ValueObjects\RiskRating;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class RiskRatingTest extends TestCase
 {
+    #[Test]
     public function test_creates_valid_risk_rating(): void
     {
         $rating = 'B';
@@ -24,6 +25,7 @@ class RiskRatingTest extends TestCase
         $this->assertEquals($riskFactors, $riskRating->riskFactors);
     }
 
+    #[Test]
     public function test_throws_exception_for_invalid_rating(): void
     {
         $this->expectException(\InvalidArgumentException::class);
@@ -32,6 +34,7 @@ class RiskRatingTest extends TestCase
         new RiskRating('G', 0.1, []);
     }
 
+    #[Test]
     public function test_throws_exception_for_invalid_rating_lowercase(): void
     {
         $this->expectException(\InvalidArgumentException::class);
@@ -40,6 +43,7 @@ class RiskRatingTest extends TestCase
         new RiskRating('a', 0.1, []);
     }
 
+    #[Test]
     public function test_throws_exception_for_numeric_rating(): void
     {
         $this->expectException(\InvalidArgumentException::class);
@@ -48,6 +52,7 @@ class RiskRatingTest extends TestCase
         new RiskRating('1', 0.1, []);
     }
 
+    #[Test]
     public function test_throws_exception_for_empty_rating(): void
     {
         $this->expectException(\InvalidArgumentException::class);
@@ -56,6 +61,7 @@ class RiskRatingTest extends TestCase
         new RiskRating('', 0.1, []);
     }
 
+    #[Test]
     public function test_throws_exception_for_negative_default_probability(): void
     {
         $this->expectException(\InvalidArgumentException::class);
@@ -64,6 +70,7 @@ class RiskRatingTest extends TestCase
         new RiskRating('A', -0.1, []);
     }
 
+    #[Test]
     public function test_throws_exception_for_default_probability_above_one(): void
     {
         $this->expectException(\InvalidArgumentException::class);
@@ -72,6 +79,7 @@ class RiskRatingTest extends TestCase
         new RiskRating('A', 1.1, []);
     }
 
+    #[Test]
     public function test_accepts_boundary_default_probability_values(): void
     {
         $minProbability = new RiskRating('A', 0, []);
@@ -81,6 +89,7 @@ class RiskRatingTest extends TestCase
         $this->assertEquals(1, $maxProbability->defaultProbability);
     }
 
+    #[Test]
     public function test_accepts_all_valid_ratings(): void
     {
         $validRatings = ['A', 'B', 'C', 'D', 'E', 'F'];
@@ -91,6 +100,7 @@ class RiskRatingTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_is_low_risk_returns_true_for_a_and_b_ratings(): void
     {
         $ratingA = new RiskRating('A', 0.01, []);
@@ -100,6 +110,7 @@ class RiskRatingTest extends TestCase
         $this->assertTrue($ratingB->isLowRisk());
     }
 
+    #[Test]
     public function test_is_low_risk_returns_false_for_other_ratings(): void
     {
         $ratings = ['C', 'D', 'E', 'F'];
@@ -110,6 +121,7 @@ class RiskRatingTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_is_medium_risk_returns_true_for_c_and_d_ratings(): void
     {
         $ratingC = new RiskRating('C', 0.05, []);
@@ -119,6 +131,7 @@ class RiskRatingTest extends TestCase
         $this->assertTrue($ratingD->isMediumRisk());
     }
 
+    #[Test]
     public function test_is_medium_risk_returns_false_for_other_ratings(): void
     {
         $ratings = ['A', 'B', 'E', 'F'];
@@ -129,6 +142,7 @@ class RiskRatingTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_is_high_risk_returns_true_for_e_and_f_ratings(): void
     {
         $ratingE = new RiskRating('E', 0.20, []);
@@ -138,6 +152,7 @@ class RiskRatingTest extends TestCase
         $this->assertTrue($ratingF->isHighRisk());
     }
 
+    #[Test]
     public function test_is_high_risk_returns_false_for_other_ratings(): void
     {
         $ratings = ['A', 'B', 'C', 'D'];
@@ -148,6 +163,7 @@ class RiskRatingTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_get_interest_rate_multiplier_returns_correct_values(): void
     {
         $expectedMultipliers = [
@@ -169,6 +185,7 @@ class RiskRatingTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_to_array_returns_correct_structure(): void
     {
         $rating = 'C';
@@ -190,6 +207,7 @@ class RiskRatingTest extends TestCase
         ], $array);
     }
 
+    #[Test]
     public function test_handles_empty_risk_factors(): void
     {
         $riskRating = new RiskRating('A', 0.01, []);
@@ -198,6 +216,7 @@ class RiskRatingTest extends TestCase
         $this->assertEquals([], $riskRating->toArray()['risk_factors']);
     }
 
+    #[Test]
     public function test_handles_complex_risk_factors(): void
     {
         $complexRiskFactors = [
@@ -230,6 +249,7 @@ class RiskRatingTest extends TestCase
         $this->assertEquals(1.25, $riskRating->riskFactors['financial_metrics']['debt_service_coverage_ratio']);
     }
 
+    #[Test]
     public function test_properties_are_readonly(): void
     {
         $riskRating = new RiskRating('C', 0.05, ['factor' => 'value']);
@@ -239,6 +259,7 @@ class RiskRatingTest extends TestCase
         $riskRating->rating = 'D';
     }
 
+    #[Test]
     public function test_risk_rating_categorization_aligns_with_default_probability(): void
     {
         // Test that risk ratings align with typical default probability ranges
@@ -269,6 +290,7 @@ class RiskRatingTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_interest_rate_multiplier_increases_with_risk(): void
     {
         $ratings = ['A', 'B', 'C', 'D', 'E', 'F'];

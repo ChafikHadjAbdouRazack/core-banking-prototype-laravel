@@ -2,15 +2,11 @@
 
 namespace Tests\Feature\Http\Controllers\Api;
 
-use App\Models\Account;
-use App\Models\AccountBalance;
-use App\Models\Asset;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Laravel\Sanctum\Sanctum;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ControllerTestCase;
 
-class AccountBalanceControllerTest extends TestCase
+class AccountBalanceControllerTest extends ControllerTestCase
 {
     use RefreshDatabase;
 
@@ -74,6 +70,7 @@ class AccountBalanceControllerTest extends TestCase
         );
     }
 
+    #[Test]
     public function test_show_returns_all_account_balances(): void
     {
         Sanctum::actingAs($this->user);
@@ -127,6 +124,7 @@ class AccountBalanceControllerTest extends TestCase
             ->assertJsonCount(3, 'data.balances');
     }
 
+    #[Test]
     public function test_show_filters_by_asset_code(): void
     {
         Sanctum::actingAs($this->user);
@@ -150,6 +148,7 @@ class AccountBalanceControllerTest extends TestCase
             ->assertJsonPath('data.balances.0.asset_code', 'USD');
     }
 
+    #[Test]
     public function test_show_filters_positive_balances_only(): void
     {
         Sanctum::actingAs($this->user);
@@ -181,6 +180,7 @@ class AccountBalanceControllerTest extends TestCase
         $this->assertTrue($balances->every(fn ($balance) => $balance['balance'] > 0));
     }
 
+    #[Test]
     public function test_show_returns_404_for_non_existent_account(): void
     {
         Sanctum::actingAs($this->user);
@@ -194,6 +194,7 @@ class AccountBalanceControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_show_formats_balances_correctly(): void
     {
         Sanctum::actingAs($this->user);
@@ -222,6 +223,7 @@ class AccountBalanceControllerTest extends TestCase
         $this->assertEquals('0.12345678 BTC', $btcBalance['formatted']);
     }
 
+    #[Test]
     public function test_show_calculates_usd_equivalent(): void
     {
         Sanctum::actingAs($this->user);
@@ -244,6 +246,7 @@ class AccountBalanceControllerTest extends TestCase
             ->assertJsonPath('data.summary.total_usd_equivalent', '1,000.00');
     }
 
+    #[Test]
     public function test_show_requires_authentication(): void
     {
         $response = $this->getJson("/api/accounts/{$this->account->uuid}/balances");
@@ -251,6 +254,7 @@ class AccountBalanceControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_index_returns_all_balances(): void
     {
         Sanctum::actingAs($this->user);
@@ -301,6 +305,7 @@ class AccountBalanceControllerTest extends TestCase
             ->assertJsonCount(3, 'data');
     }
 
+    #[Test]
     public function test_index_filters_by_asset(): void
     {
         Sanctum::actingAs($this->user);
@@ -324,6 +329,7 @@ class AccountBalanceControllerTest extends TestCase
             ->assertJsonPath('data.0.asset_code', 'USD');
     }
 
+    #[Test]
     public function test_index_filters_by_minimum_balance(): void
     {
         Sanctum::actingAs($this->user);
@@ -347,6 +353,7 @@ class AccountBalanceControllerTest extends TestCase
             ->assertJsonPath('data.0.balance', 50000);
     }
 
+    #[Test]
     public function test_index_filters_by_user_uuid(): void
     {
         Sanctum::actingAs($this->user);
@@ -373,6 +380,7 @@ class AccountBalanceControllerTest extends TestCase
             ->assertJsonPath('data.0.account.user_uuid', (string) $this->user->uuid);
     }
 
+    #[Test]
     public function test_index_respects_limit_parameter(): void
     {
         Sanctum::actingAs($this->user);
@@ -393,6 +401,7 @@ class AccountBalanceControllerTest extends TestCase
             ->assertJsonCount(3, 'data');
     }
 
+    #[Test]
     public function test_index_orders_by_balance_descending(): void
     {
         Sanctum::actingAs($this->user);
@@ -427,6 +436,7 @@ class AccountBalanceControllerTest extends TestCase
         $this->assertEquals([100000, 50000, 25000], $balances->toArray());
     }
 
+    #[Test]
     public function test_index_calculates_asset_totals(): void
     {
         Sanctum::actingAs($this->user);
@@ -461,6 +471,7 @@ class AccountBalanceControllerTest extends TestCase
         $this->assertEquals('300.00', $assetTotals['EUR']); // Total: €300.00
     }
 
+    #[Test]
     public function test_index_validates_input_parameters(): void
     {
         Sanctum::actingAs($this->user);
@@ -486,6 +497,7 @@ class AccountBalanceControllerTest extends TestCase
             ->assertJsonValidationErrors(['limit']);
     }
 
+    #[Test]
     public function test_index_requires_authentication(): void
     {
         $response = $this->getJson('/api/balances');
@@ -493,6 +505,7 @@ class AccountBalanceControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_show_handles_account_with_no_balances(): void
     {
         Sanctum::actingAs($this->user);
@@ -510,6 +523,7 @@ class AccountBalanceControllerTest extends TestCase
             ->assertJsonPath('data.summary.total_usd_equivalent', '0.00');
     }
 
+    #[Test]
     public function test_index_includes_metadata_counts(): void
     {
         Sanctum::actingAs($this->user);

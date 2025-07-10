@@ -6,6 +6,7 @@ use App\Models\CgoInvestment;
 use App\Models\CgoPricingRound;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class CgoInvestmentTest extends TestCase
@@ -28,7 +29,7 @@ class CgoInvestmentTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function unauthenticated_users_can_view_cgo_page()
     {
         $response = $this->get('/cgo');
@@ -38,7 +39,7 @@ class CgoInvestmentTest extends TestCase
         $response->assertSee('Real Investment Opportunity');
     }
 
-    /** @test */
+    #[Test]
     public function authenticated_users_see_invest_now_button()
     {
         $response = $this->actingAs($this->user)->get('/cgo');
@@ -48,7 +49,7 @@ class CgoInvestmentTest extends TestCase
         $response->assertSee(route('cgo.invest'));
     }
 
-    /** @test */
+    #[Test]
     public function unauthenticated_users_see_notify_form()
     {
         $response = $this->get('/cgo');
@@ -58,7 +59,7 @@ class CgoInvestmentTest extends TestCase
         $response->assertSee('Notify Me');
     }
 
-    /** @test */
+    #[Test]
     public function users_can_submit_notification_request()
     {
         $response = $this->post('/cgo/notify', [
@@ -73,7 +74,7 @@ class CgoInvestmentTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function authenticated_users_can_access_invest_page()
     {
         $response = $this->actingAs($this->user)->get('/cgo/invest');
@@ -83,7 +84,7 @@ class CgoInvestmentTest extends TestCase
         $response->assertSee('Make Your Investment');
     }
 
-    /** @test */
+    #[Test]
     public function invest_page_shows_current_round_info()
     {
         $response = $this->actingAs($this->user)->get('/cgo/invest');
@@ -94,7 +95,7 @@ class CgoInvestmentTest extends TestCase
         $response->assertSee(number_format($this->activePricingRound->remaining_shares, 0));
     }
 
-    /** @test */
+    #[Test]
     public function users_can_make_crypto_investment()
     {
         $response = $this->actingAs($this->user)->post('/cgo/invest', [
@@ -117,7 +118,7 @@ class CgoInvestmentTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function users_can_make_bank_transfer_investment()
     {
         $response = $this->actingAs($this->user)->post('/cgo/invest', [
@@ -139,7 +140,7 @@ class CgoInvestmentTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function investment_tier_is_calculated_correctly()
     {
         // Bronze tier
@@ -176,7 +177,7 @@ class CgoInvestmentTest extends TestCase
         $this->assertEquals('gold', $investment->tier);
     }
 
-    /** @test */
+    #[Test]
     public function users_cannot_exceed_one_percent_ownership_per_round()
     {
         // Create an existing investment that brings user to 0.9% ownership
@@ -200,7 +201,7 @@ class CgoInvestmentTest extends TestCase
         $response->assertSessionHasErrors(['amount' => 'This investment would exceed the 1% maximum ownership limit per round.']);
     }
 
-    /** @test */
+    #[Test]
     public function investment_cannot_exceed_available_shares()
     {
         $this->activePricingRound->update([
@@ -219,7 +220,7 @@ class CgoInvestmentTest extends TestCase
         $response->assertSessionHasErrors(['amount' => 'Not enough shares available in this round.']);
     }
 
-    /** @test */
+    #[Test]
     public function minimum_investment_amount_is_enforced()
     {
         $response = $this->actingAs($this->user)->post('/cgo/invest', [
@@ -232,7 +233,7 @@ class CgoInvestmentTest extends TestCase
         $response->assertSessionHasErrors(['amount']);
     }
 
-    /** @test */
+    #[Test]
     public function terms_must_be_accepted()
     {
         $response = $this->actingAs($this->user)->post('/cgo/invest', [
@@ -245,7 +246,7 @@ class CgoInvestmentTest extends TestCase
         $response->assertSessionHasErrors(['terms']);
     }
 
-    /** @test */
+    #[Test]
     public function crypto_currency_required_for_crypto_payment()
     {
         $response = $this->actingAs($this->user)->post('/cgo/invest', [
@@ -258,7 +259,7 @@ class CgoInvestmentTest extends TestCase
         $response->assertSessionHasErrors(['crypto_currency']);
     }
 
-    /** @test */
+    #[Test]
     public function users_can_view_their_investment_history()
     {
         $investments = CgoInvestment::factory()->count(3)->create([
@@ -277,7 +278,7 @@ class CgoInvestmentTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function no_active_round_shows_appropriate_message()
     {
         $this->activePricingRound->update(['is_active' => false]);

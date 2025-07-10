@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Domain\Compliance\Activities;
 
-use App\Domain\Compliance\Activities\KycSubmissionActivity;
-use App\Domain\Compliance\Services\KycService;
-use Mockery;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class KycSubmissionActivityTest extends TestCase
 {
+    #[Test]
     public function test_activity_extends_workflow_activity()
     {
         $kycService = Mockery::mock(KycService::class);
@@ -19,6 +18,7 @@ class KycSubmissionActivityTest extends TestCase
         $this->assertInstanceOf(\Workflow\Activity::class, $activity);
     }
 
+    #[Test]
     public function test_execute_method_validates_required_parameters()
     {
         $kycService = Mockery::mock(KycService::class);
@@ -30,6 +30,7 @@ class KycSubmissionActivityTest extends TestCase
         $activity->execute([]);
     }
 
+    #[Test]
     public function test_execute_method_validates_missing_user_uuid()
     {
         $kycService = Mockery::mock(KycService::class);
@@ -42,6 +43,7 @@ class KycSubmissionActivityTest extends TestCase
         ]);
     }
 
+    #[Test]
     public function test_execute_method_validates_empty_documents()
     {
         $kycService = Mockery::mock(KycService::class);
@@ -55,6 +57,7 @@ class KycSubmissionActivityTest extends TestCase
         ]);
     }
 
+    #[Test]
     public function test_execute_method_has_correct_signature()
     {
         $kycService = Mockery::mock(KycService::class);

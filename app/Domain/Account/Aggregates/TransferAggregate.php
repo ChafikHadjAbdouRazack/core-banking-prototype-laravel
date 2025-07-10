@@ -90,4 +90,27 @@ class TransferAggregate extends AggregateRoot
 
         return $this;
     }
+
+    /**
+     * Get the aggregate state for snapshots.
+     *
+     * @return array
+     */
+    protected function getState(): array
+    {
+        return [
+            'count' => $this->count,
+        ];
+    }
+
+    /**
+     * Restore the aggregate state from snapshot.
+     *
+     * @param array $state
+     * @return void
+     */
+    protected function useState(array $state): void
+    {
+        $this->count = $state['count'] ?? 0;
+    }
 }

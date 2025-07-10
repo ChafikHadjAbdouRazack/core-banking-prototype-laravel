@@ -2,11 +2,12 @@
 
 namespace Tests\Unit\Domain\Stablecoin\Workflows\Data;
 
-use App\Domain\Stablecoin\Workflows\Data\ReserveRebalanceData;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\DomainTestCase;
 
-class ReserveRebalanceDataTest extends TestCase
+class ReserveRebalanceDataTest extends DomainTestCase
 {
+    #[Test]
     public function test_creates_reserve_rebalance_data_with_default_slippage(): void
     {
         $targetAllocations = [
@@ -27,6 +28,7 @@ class ReserveRebalanceDataTest extends TestCase
         $this->assertEquals(0.02, $data->maxSlippage); // Default 2%
     }
 
+    #[Test]
     public function test_creates_reserve_rebalance_data_with_custom_slippage(): void
     {
         $targetAllocations = [
@@ -49,6 +51,7 @@ class ReserveRebalanceDataTest extends TestCase
         $this->assertEquals(0.005, $data->maxSlippage);
     }
 
+    #[Test]
     public function test_to_array_converts_data_correctly(): void
     {
         $targetAllocations = [
@@ -74,6 +77,7 @@ class ReserveRebalanceDataTest extends TestCase
         ], $array);
     }
 
+    #[Test]
     public function test_validates_allocations_sum_to_100(): void
     {
         $validAllocations = [
@@ -109,6 +113,7 @@ class ReserveRebalanceDataTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_handles_various_executor_types(): void
     {
         $executors = [
@@ -131,6 +136,7 @@ class ReserveRebalanceDataTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_handles_different_slippage_values(): void
     {
         $slippageValues = [
@@ -156,6 +162,7 @@ class ReserveRebalanceDataTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_handles_many_asset_allocations(): void
     {
         $targetAllocations = [
@@ -181,6 +188,7 @@ class ReserveRebalanceDataTest extends TestCase
         $this->assertEquals('5', $data->targetAllocations['PAX']);
     }
 
+    #[Test]
     public function test_handles_decimal_precision_in_allocations(): void
     {
         $targetAllocations = [
@@ -199,6 +207,7 @@ class ReserveRebalanceDataTest extends TestCase
         $this->assertEquals('33.333334', $data->targetAllocations['DAI']);
     }
 
+    #[Test]
     public function test_handles_zero_allocations(): void
     {
         // Sometimes assets might be completely removed
@@ -217,6 +226,7 @@ class ReserveRebalanceDataTest extends TestCase
         $this->assertEquals('0', $data->targetAllocations['DAI']);
     }
 
+    #[Test]
     public function test_immutability_of_properties(): void
     {
         $data = new ReserveRebalanceData(
@@ -233,6 +243,7 @@ class ReserveRebalanceDataTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_preserves_allocation_order(): void
     {
         $targetAllocations = [
@@ -253,6 +264,7 @@ class ReserveRebalanceDataTest extends TestCase
         $this->assertEquals(['USDT', 'USDC', 'DAI', 'FRAX'], $keys);
     }
 
+    #[Test]
     public function test_handles_string_numeric_allocations(): void
     {
         $targetAllocations = [

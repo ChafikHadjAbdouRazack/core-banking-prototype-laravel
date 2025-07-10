@@ -2,13 +2,14 @@
 
 namespace Tests\Feature;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class SubproductPagesTest extends TestCase
 {
-    /**
-     * Test that all subproduct pages load without errors.
-     */
+/**
+ * Test that all subproduct pages load without errors.
+ */    #[Test]
     public function test_all_subproduct_pages_load_successfully(): void
     {
         $subproducts = [
@@ -48,9 +49,9 @@ class SubproductPagesTest extends TestCase
         }
     }
 
-    /**
-     * Test that exchange page has correct links.
-     */
+/**
+ * Test that exchange page has correct links.
+ */    #[Test]
     public function test_exchange_page_has_correct_links(): void
     {
         $response = $this->get('/subproducts/exchange');
@@ -62,9 +63,9 @@ class SubproductPagesTest extends TestCase
         $response->assertSee('/gcu'); // Link to GCU page
     }
 
-    /**
-     * Test that lending page has correct links.
-     */
+/**
+ * Test that lending page has correct links.
+ */    #[Test]
     public function test_lending_page_has_correct_links(): void
     {
         $response = $this->get('/subproducts/lending');
@@ -75,9 +76,9 @@ class SubproductPagesTest extends TestCase
         $response->assertSee('/gcu'); // Link to GCU page
     }
 
-    /**
-     * Test that stablecoins page has correct links.
-     */
+/**
+ * Test that stablecoins page has correct links.
+ */    #[Test]
     public function test_stablecoins_page_has_correct_links(): void
     {
         $response = $this->get('/subproducts/stablecoins');
@@ -89,9 +90,9 @@ class SubproductPagesTest extends TestCase
         $response->assertSee('/gcu'); // Link to GCU page
     }
 
-    /**
-     * Test that treasury page doesn't have broken links.
-     */
+/**
+ * Test that treasury page doesn't have broken links.
+ */    #[Test]
     public function test_treasury_page_has_no_broken_links(): void
     {
         $response = $this->get('/subproducts/treasury');
@@ -104,9 +105,9 @@ class SubproductPagesTest extends TestCase
         $response->assertDontSee('/treasury'); // No treasury route
     }
 
-    /**
-     * Test that all subproduct pages are linked from homepage.
-     */
+/**
+ * Test that all subproduct pages are linked from homepage.
+ */    #[Test]
     public function test_homepage_links_to_all_subproducts(): void
     {
         $response = $this->get('/');

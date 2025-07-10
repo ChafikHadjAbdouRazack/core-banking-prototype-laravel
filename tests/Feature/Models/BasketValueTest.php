@@ -6,6 +6,7 @@ namespace Tests\Feature\Models;
 
 use App\Models\BasketAsset;
 use App\Models\BasketValue;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class BasketValueTest extends TestCase
@@ -25,7 +26,7 @@ class BasketValueTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_create_a_basket_value()
     {
         $value = BasketValue::create([
@@ -43,7 +44,7 @@ class BasketValueTest extends TestCase
         $this->assertIsArray($value->component_values);
     }
 
-    /** @test */
+    #[Test]
     public function it_belongs_to_basket()
     {
         $value = BasketValue::create([
@@ -56,7 +57,7 @@ class BasketValueTest extends TestCase
         $this->assertEquals('TEST_BSK', $value->basket->code);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_check_if_fresh()
     {
         $freshValue = BasketValue::create([
@@ -78,7 +79,7 @@ class BasketValueTest extends TestCase
         $this->assertTrue($oldValue->isFresh(15));
     }
 
-    /** @test */
+    #[Test]
     public function it_can_get_component_value()
     {
         $value = BasketValue::create([
@@ -96,7 +97,7 @@ class BasketValueTest extends TestCase
         $this->assertNull($value->getComponentValue('GBP'));
     }
 
-    /** @test */
+    #[Test]
     public function it_can_get_actual_weight()
     {
         $value = BasketValue::create([
@@ -114,7 +115,7 @@ class BasketValueTest extends TestCase
         $this->assertNull($value->getActualWeight('GBP'));
     }
 
-    /** @test */
+    #[Test]
     public function it_can_calculate_performance()
     {
         $previousValue = BasketValue::create([
@@ -137,7 +138,7 @@ class BasketValueTest extends TestCase
         $this->assertEqualsWithDelta(10.0, $performance['percentage_change'], 0.0000001);
     }
 
-    /** @test */
+    #[Test]
     public function it_has_between_dates_scope()
     {
         BasketValue::create([
@@ -168,7 +169,7 @@ class BasketValueTest extends TestCase
         $this->assertEquals(1.2, $values->last()->value);
     }
 
-    /** @test */
+    #[Test]
     public function it_casts_attributes_correctly()
     {
         $value = BasketValue::create([

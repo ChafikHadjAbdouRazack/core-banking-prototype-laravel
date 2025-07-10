@@ -2,15 +2,11 @@
 
 namespace Tests\Unit\Domain\Fraud\Services;
 
-use App\Domain\Fraud\Services\RuleEngineService;
-use App\Models\FraudRule;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Log;
-use Mockery;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ServiceTestCase;
 
-class RuleEngineServiceTest extends TestCase
+class RuleEngineServiceTest extends ServiceTestCase
 {
     use RefreshDatabase;
 
@@ -23,6 +19,7 @@ class RuleEngineServiceTest extends TestCase
         Cache::flush();
     }
 
+    #[Test]
     public function test_evaluate_returns_empty_results_when_no_rules_active(): void
     {
         $context = [
@@ -39,6 +36,7 @@ class RuleEngineServiceTest extends TestCase
         $this->assertEmpty($results['rule_details']);
     }
 
+    #[Test]
     public function test_evaluate_triggers_matching_rules(): void
     {
         // Create active rules
@@ -81,6 +79,7 @@ class RuleEngineServiceTest extends TestCase
         $this->assertEquals(30, $results['rule_scores']['HIGH_AMOUNT']);
     }
 
+    #[Test]
     public function test_evaluate_identifies_blocking_rules(): void
     {
         $blockingRule = FraudRule::factory()->create([
@@ -108,6 +107,7 @@ class RuleEngineServiceTest extends TestCase
         $this->assertContains('BLACKLIST_MATCH', $results['blocking_rules']);
     }
 
+    #[Test]
     public function test_evaluate_caps_total_score_at_100(): void
     {
         // Create multiple high-scoring rules
@@ -133,6 +133,7 @@ class RuleEngineServiceTest extends TestCase
         $this->assertCount(2, $results['triggered_rules']);
     }
 
+    #[Test]
     public function test_evaluate_handles_rule_evaluation_errors(): void
     {
         $faultyRule = FraudRule::factory()->create([
@@ -153,6 +154,7 @@ class RuleEngineServiceTest extends TestCase
         $this->assertNotContains('FAULTY_RULE', $results['triggered_rules']);
     }
 
+    #[Test]
     public function test_evaluate_includes_rule_details(): void
     {
         $rule = FraudRule::factory()->create([
@@ -180,6 +182,7 @@ class RuleEngineServiceTest extends TestCase
         $this->assertEquals(['review', 'notify'], $details['actions']);
     }
 
+    #[Test]
     public function test_evaluate_caches_active_rules(): void
     {
         // Create rules
@@ -205,6 +208,7 @@ class RuleEngineServiceTest extends TestCase
         $this->assertNotNull($results3);
     }
 
+    #[Test]
     public function test_evaluate_orders_rules_by_severity_and_score(): void
     {
         FraudRule::factory()->create([
@@ -241,6 +245,7 @@ class RuleEngineServiceTest extends TestCase
         $this->assertEquals('LOW_SEVERITY', $rules[2]->code);
     }
 
+    #[Test]
     public function test_evaluates_complex_conditions(): void
     {
         $rule = FraudRule::factory()->create([

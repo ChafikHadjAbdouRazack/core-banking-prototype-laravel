@@ -11,9 +11,10 @@ use App\Http\Controllers\Api\StablecoinController;
 use App\Models\Stablecoin;
 use Illuminate\Http\Request;
 use Mockery;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ControllerTestCase;
 
-class StablecoinControllerTest extends TestCase
+class StablecoinControllerTest extends ControllerTestCase
 {
     protected StablecoinController $controller;
 
@@ -47,7 +48,7 @@ class StablecoinControllerTest extends TestCase
         parent::tearDown();
     }
 
-    /** @test */
+    #[Test]
     public function it_can_list_stablecoins()
     {
         Stablecoin::create([
@@ -103,7 +104,7 @@ class StablecoinControllerTest extends TestCase
         $this->assertCount(2, $data['data']);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_filter_by_stability_mechanism()
     {
         Stablecoin::create([
@@ -162,7 +163,7 @@ class StablecoinControllerTest extends TestCase
         $this->assertEquals('FUSD_FILTER', $data['data'][0]['code']);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_show_stablecoin_details()
     {
         $stablecoin = Stablecoin::create([
@@ -198,7 +199,7 @@ class StablecoinControllerTest extends TestCase
         $this->assertEquals('FUSD', $data['data']['code']);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_check_system_health()
     {
         $systemHealth = [
@@ -227,7 +228,7 @@ class StablecoinControllerTest extends TestCase
         $this->assertEquals('healthy', $data['data']['overall_status']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_stablecoin_not_found()
     {
         $request = Request::create('/api/v2/stablecoins/NONEXISTENT', 'GET');
@@ -239,7 +240,7 @@ class StablecoinControllerTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function it_can_filter_active_stablecoins()
     {
         Stablecoin::create([

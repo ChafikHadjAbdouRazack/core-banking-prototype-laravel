@@ -7,9 +7,10 @@ use App\Models\Webhook;
 use App\Models\WebhookDelivery;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ControllerTestCase;
 
-class WebhookControllerTest extends TestCase
+class WebhookControllerTest extends ControllerTestCase
 {
     use RefreshDatabase;
 
@@ -24,7 +25,7 @@ class WebhookControllerTest extends TestCase
         $this->user = User::factory()->create();
     }
 
-    /** @test */
+    #[Test]
     public function it_lists_webhooks()
     {
         Sanctum::actingAs($this->user);
@@ -50,7 +51,7 @@ class WebhookControllerTest extends TestCase
         $response->assertJsonCount(3, 'data');
     }
 
-    /** @test */
+    #[Test]
     public function it_creates_a_webhook()
     {
         Sanctum::actingAs($this->user);
@@ -86,7 +87,7 @@ class WebhookControllerTest extends TestCase
         $this->assertStringStartsWith('whsec_', $response->json('data.secret'));
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_webhook_creation()
     {
         Sanctum::actingAs($this->user);
@@ -121,7 +122,7 @@ class WebhookControllerTest extends TestCase
         $response->assertJsonValidationErrors(['events']);
     }
 
-    /** @test */
+    #[Test]
     public function it_shows_webhook_details()
     {
         Sanctum::actingAs($this->user);
@@ -170,7 +171,7 @@ class WebhookControllerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_updates_a_webhook()
     {
         Sanctum::actingAs($this->user);
@@ -205,7 +206,7 @@ class WebhookControllerTest extends TestCase
         $this->assertFalse($webhook->is_active);
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_webhook_updates()
     {
         Sanctum::actingAs($this->user);
@@ -227,7 +228,7 @@ class WebhookControllerTest extends TestCase
         $response->assertJsonValidationErrors(['events.0']);
     }
 
-    /** @test */
+    #[Test]
     public function it_deletes_a_webhook()
     {
         Sanctum::actingAs($this->user);
@@ -240,7 +241,7 @@ class WebhookControllerTest extends TestCase
         $this->assertDatabaseMissing('webhooks', ['uuid' => $webhook->uuid]);
     }
 
-    /** @test */
+    #[Test]
     public function it_lists_webhook_deliveries()
     {
         Sanctum::actingAs($this->user);
@@ -286,7 +287,7 @@ class WebhookControllerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_filters_webhook_deliveries_by_status()
     {
         Sanctum::actingAs($this->user);
@@ -316,7 +317,7 @@ class WebhookControllerTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function it_lists_available_webhook_events()
     {
         // This endpoint doesn't require authentication
@@ -344,7 +345,7 @@ class WebhookControllerTest extends TestCase
         $this->assertContains('rate.updated', $data['exchange_rate']);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_404_for_non_existent_webhook()
     {
         Sanctum::actingAs($this->user);
@@ -361,7 +362,7 @@ class WebhookControllerTest extends TestCase
         $response->assertStatus(404);
     }
 
-    /** @test */
+    #[Test]
     public function it_requires_authentication()
     {
         $response = $this->getJson("{$this->apiPrefix}/webhooks");

@@ -12,9 +12,9 @@ use App\Domain\Account\Exceptions\NotEnoughFunds;
 use Illuminate\Support\Str;
 use PHPUnit\Framework\Attributes\Test;
 use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
-use Tests\TestCase;
+use Tests\DomainTestCase;
 
-class AssetTransactionAggregateTest extends TestCase
+class AssetTransactionAggregateTest extends DomainTestCase
 {
     protected string $accountUuid;
 

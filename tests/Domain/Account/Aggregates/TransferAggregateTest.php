@@ -10,9 +10,9 @@ use App\Domain\Account\Events\MoneyTransferred;
 use App\Domain\Account\Exceptions\InvalidHashException;
 use App\Domain\Account\Utils\ValidatesHash;
 use PHPUnit\Framework\Attributes\Test;
-use Tests\TestCase;
+use Tests\DomainTestCase;
 
-class TransferAggregateTest extends TestCase
+class TransferAggregateTest extends DomainTestCase
 {
     use ValidatesHash;
 

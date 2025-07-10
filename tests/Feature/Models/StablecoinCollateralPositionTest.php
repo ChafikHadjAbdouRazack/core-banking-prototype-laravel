@@ -8,6 +8,7 @@ use App\Domain\Asset\Models\Asset;
 use App\Models\Account;
 use App\Models\Stablecoin;
 use App\Models\StablecoinCollateralPosition;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class StablecoinCollateralPositionTest extends TestCase
@@ -60,7 +61,7 @@ class StablecoinCollateralPositionTest extends TestCase
         $this->account = Account::factory()->create();
     }
 
-    /** @test */
+    #[Test]
     public function it_can_create_a_collateral_position()
     {
         $position = StablecoinCollateralPosition::create([
@@ -82,7 +83,7 @@ class StablecoinCollateralPositionTest extends TestCase
         $this->assertTrue($position->auto_liquidation_enabled);
     }
 
-    /** @test */
+    #[Test]
     public function it_has_relationships()
     {
         $position = StablecoinCollateralPosition::create([
@@ -100,7 +101,7 @@ class StablecoinCollateralPositionTest extends TestCase
         $this->assertInstanceOf(Asset::class, $position->collateralAsset);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_check_if_active()
     {
         $position = StablecoinCollateralPosition::create([
@@ -119,7 +120,7 @@ class StablecoinCollateralPositionTest extends TestCase
         $this->assertFalse($position->isActive());
     }
 
-    /** @test */
+    #[Test]
     public function it_can_check_if_at_risk_of_liquidation()
     {
         $position = StablecoinCollateralPosition::create([
@@ -138,7 +139,7 @@ class StablecoinCollateralPositionTest extends TestCase
         $this->assertTrue($position->isAtRiskOfLiquidation());
     }
 
-    /** @test */
+    #[Test]
     public function it_can_check_if_should_auto_liquidate()
     {
         $position = StablecoinCollateralPosition::create([
@@ -167,7 +168,7 @@ class StablecoinCollateralPositionTest extends TestCase
         $this->assertTrue($position->shouldAutoLiquidate());
     }
 
-    /** @test */
+    #[Test]
     public function it_can_calculate_max_mint_amount()
     {
         $position = StablecoinCollateralPosition::create([
@@ -184,7 +185,7 @@ class StablecoinCollateralPositionTest extends TestCase
         $this->assertEquals(50000, $maxMint); // (150000 / 1.5) - 50000
     }
 
-    /** @test */
+    #[Test]
     public function it_can_calculate_liquidation_price()
     {
         $position = StablecoinCollateralPosition::create([
@@ -204,7 +205,7 @@ class StablecoinCollateralPositionTest extends TestCase
         $this->assertEquals(0, $position->calculateLiquidationPrice());
     }
 
-    /** @test */
+    #[Test]
     public function it_can_update_collateral_ratio()
     {
         $position = StablecoinCollateralPosition::create([
@@ -225,7 +226,7 @@ class StablecoinCollateralPositionTest extends TestCase
         $this->assertEquals(0, $position->collateral_ratio);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_mark_as_liquidated()
     {
         $position = StablecoinCollateralPosition::create([
@@ -246,7 +247,7 @@ class StablecoinCollateralPositionTest extends TestCase
         $this->assertNotNull($position->liquidated_at);
     }
 
-    /** @test */
+    #[Test]
     public function it_has_scopes()
     {
         $account1 = Account::factory()->create();

@@ -2,13 +2,11 @@
 
 namespace Tests\Feature\Http\Controllers\Api\BIAN;
 
-use App\Models\Account;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Laravel\Sanctum\Sanctum;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ControllerTestCase;
 
-class PaymentInitiationControllerTest extends TestCase
+class PaymentInitiationControllerTest extends ControllerTestCase
 {
     use RefreshDatabase;
 
@@ -38,6 +36,7 @@ class PaymentInitiationControllerTest extends TestCase
         ]);
     }
 
+    #[Test]
     public function test_initiate_payment_with_sufficient_funds(): void
     {
         Sanctum::actingAs($this->user);
@@ -93,6 +92,7 @@ class PaymentInitiationControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_initiate_instant_payment(): void
     {
         Sanctum::actingAs($this->user);
@@ -109,6 +109,7 @@ class PaymentInitiationControllerTest extends TestCase
             ->assertJsonPath('paymentInitiationTransaction.paymentDetails.paymentType', 'instant');
     }
 
+    #[Test]
     public function test_initiate_scheduled_payment(): void
     {
         Sanctum::actingAs($this->user);
@@ -128,6 +129,7 @@ class PaymentInitiationControllerTest extends TestCase
             ->assertJsonPath('paymentInitiationTransaction.paymentSchedule.valueDate', $futureDate);
     }
 
+    #[Test]
     public function test_initiate_payment_with_insufficient_funds(): void
     {
         Sanctum::actingAs($this->user);
@@ -150,6 +152,7 @@ class PaymentInitiationControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_initiate_requires_authentication(): void
     {
         $response = $this->postJson('/api/bian/payment-initiation/initiate', [
@@ -162,6 +165,7 @@ class PaymentInitiationControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_initiate_validates_input(): void
     {
         Sanctum::actingAs($this->user);
@@ -186,6 +190,7 @@ class PaymentInitiationControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_initiate_prevents_self_transfer(): void
     {
         Sanctum::actingAs($this->user);
@@ -201,6 +206,7 @@ class PaymentInitiationControllerTest extends TestCase
             ->assertJsonValidationErrors(['payeeReference']);
     }
 
+    #[Test]
     public function test_update_payment_status(): void
     {
         Sanctum::actingAs($this->user);
@@ -228,6 +234,7 @@ class PaymentInitiationControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_update_validates_input(): void
     {
         Sanctum::actingAs($this->user);
@@ -243,6 +250,7 @@ class PaymentInitiationControllerTest extends TestCase
             ->assertJsonValidationErrors(['paymentStatus', 'statusReason']);
     }
 
+    #[Test]
     public function test_retrieve_payment_not_found(): void
     {
         Sanctum::actingAs($this->user);
@@ -254,6 +262,7 @@ class PaymentInitiationControllerTest extends TestCase
         $response->assertStatus(404);
     }
 
+    #[Test]
     public function test_execute_payment(): void
     {
         Sanctum::actingAs($this->user);
@@ -279,6 +288,7 @@ class PaymentInitiationControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_execute_payment_with_retry(): void
     {
         Sanctum::actingAs($this->user);
@@ -294,6 +304,7 @@ class PaymentInitiationControllerTest extends TestCase
             ->assertJsonPath('paymentExecutionRecord.executionStatus', 'completed');
     }
 
+    #[Test]
     public function test_execute_validates_input(): void
     {
         Sanctum::actingAs($this->user);
@@ -308,6 +319,7 @@ class PaymentInitiationControllerTest extends TestCase
             ->assertJsonValidationErrors(['executionMode']);
     }
 
+    #[Test]
     public function test_request_payment_status(): void
     {
         Sanctum::actingAs($this->user);
@@ -335,6 +347,7 @@ class PaymentInitiationControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_retrieve_payment_history_empty(): void
     {
         Sanctum::actingAs($this->user);
@@ -364,6 +377,7 @@ class PaymentInitiationControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_retrieve_payment_history_with_filters(): void
     {
         Sanctum::actingAs($this->user);
@@ -379,6 +393,7 @@ class PaymentInitiationControllerTest extends TestCase
             ->assertJsonPath('paymentHistoryRecord.historyPeriod.toDate', '2024-12-31');
     }
 
+    #[Test]
     public function test_retrieve_payment_history_validates_dates(): void
     {
         Sanctum::actingAs($this->user);
@@ -393,6 +408,7 @@ class PaymentInitiationControllerTest extends TestCase
             ->assertJsonValidationErrors(['toDate', 'paymentDirection']);
     }
 
+    #[Test]
     public function test_retrieve_payment_history_for_non_existent_account(): void
     {
         Sanctum::actingAs($this->user);
@@ -404,6 +420,7 @@ class PaymentInitiationControllerTest extends TestCase
         $response->assertStatus(404);
     }
 
+    #[Test]
     public function test_all_endpoints_require_authentication(): void
     {
         $crReferenceId = fake()->uuid();
@@ -423,6 +440,7 @@ class PaymentInitiationControllerTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_initiate_payment_with_minimum_required_fields(): void
     {
         Sanctum::actingAs($this->user);
@@ -440,6 +458,7 @@ class PaymentInitiationControllerTest extends TestCase
             ->assertJsonPath('paymentInitiationTransaction.paymentDetails.paymentPurpose', null);
     }
 
+    #[Test]
     public function test_initiate_external_payment(): void
     {
         Sanctum::actingAs($this->user);

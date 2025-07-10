@@ -2,17 +2,11 @@
 
 namespace Tests\Feature\Lending;
 
-use App\Domain\Lending\Aggregates\Loan;
-use App\Domain\Lending\Events\LoanCompleted;
-use App\Domain\Lending\Events\LoanCreated;
-use App\Domain\Lending\Events\LoanDisbursed;
-use App\Domain\Lending\Events\LoanFunded;
-use App\Domain\Lending\Events\LoanRepaymentMade;
-use App\Domain\Lending\ValueObjects\RepaymentSchedule;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\DomainTestCase;
 
-class LoanAggregateTest extends TestCase
+class LoanAggregateTest extends DomainTestCase
 {
     use RefreshDatabase;
 
@@ -21,6 +15,7 @@ class LoanAggregateTest extends TestCase
         parent::setUp();
     }
 
+    #[Test]
     public function test_loan_creation_from_application()
     {
         $loanId = 'loan_' . uniqid();
@@ -67,6 +62,7 @@ class LoanAggregateTest extends TestCase
         $this->assertGreaterThan('0', $schedule->getTotalInterest());
     }
 
+    #[Test]
     public function test_loan_funding_and_disbursement()
     {
         $loanId = 'loan_' . uniqid();
@@ -101,6 +97,7 @@ class LoanAggregateTest extends TestCase
         $this->assertEquals($fundedAmount, $disbursementEvent->amount);
     }
 
+    #[Test]
     public function test_loan_repayment_recording()
     {
         $loanId = 'loan_' . uniqid();
@@ -144,6 +141,7 @@ class LoanAggregateTest extends TestCase
         $this->assertEquals($firstPayment['interest'], $repaymentEvent->interestAmount);
     }
 
+    #[Test]
     public function test_loan_completion_after_all_payments()
     {
         $loanId = 'loan_' . uniqid();
@@ -188,6 +186,7 @@ class LoanAggregateTest extends TestCase
         $this->assertEquals('0.00', $lastEvent->totalInterestPaid); // 0% interest
     }
 
+    #[Test]
     public function test_loan_early_settlement()
     {
         $loanId = 'loan_' . uniqid();

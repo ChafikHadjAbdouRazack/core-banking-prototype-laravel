@@ -7,9 +7,9 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\RateLimiter;
 use PHPUnit\Framework\Attributes\Test;
-use Tests\TestCase;
+use Tests\DomainTestCase;
 
-class ApiSecurityTest extends TestCase
+class ApiSecurityTest extends DomainTestCase
 {
     use RefreshDatabase;
 
@@ -228,7 +228,21 @@ class ApiSecurityTest extends TestCase
             'X-HTTP-Method'          => 'DELETE',
         ];
 
-        $account = Account::factory()->create(['user_uuid' => $this->user->uuid]);
+        // Create account using the proper event sourcing method
+        $accountUuid = \Illuminate\Support\Str::uuid()->toString();
+        \App\Domain\Account\Aggregates\LedgerAggregate::retrieve($accountUuid)
+            ->createAccount(
+                hydrate(
+                    class: \App\Domain\Account\DataObjects\Account::class,
+                    properties: [
+                        'name'      => 'Test Account',
+                        'user_uuid' => $this->user->uuid,
+                    ]
+                )
+            )
+            ->persist();
+
+        $account = Account::find($accountUuid);
 
         foreach ($overrideHeaders as $header => $value) {
             $response = $this->withToken($this->token)
@@ -243,8 +257,21 @@ class ApiSecurityTest extends TestCase
     #[Test]
     public function test_api_pagination_limits()
     {
-        // Create many accounts
-        Account::factory()->count(100)->create(['user_uuid' => $this->user->uuid]);
+        // Create many accounts using event sourcing
+        for ($i = 0; $i < 100; $i++) {
+            $accountUuid = \Illuminate\Support\Str::uuid()->toString();
+            \App\Domain\Account\Aggregates\LedgerAggregate::retrieve($accountUuid)
+                ->createAccount(
+                    hydrate(
+                        class: \App\Domain\Account\DataObjects\Account::class,
+                        properties: [
+                            'name'      => "Test Account $i",
+                            'user_uuid' => $this->user->uuid,
+                        ]
+                    )
+                )
+                ->persist();
+        }
 
         // Try to request excessive items per page
         $response = $this->withToken($this->token)
@@ -369,10 +396,26 @@ class ApiSecurityTest extends TestCase
         // Skip this test if transfers endpoint is not implemented
         $this->markTestSkipped('Transfer endpoint idempotency not implemented yet');
 
-        $account = Account::factory()->create([
-            'user_uuid' => $this->user->uuid,
-            'balance'   => 100000,
-        ]);
+        // Create account using the proper event sourcing method
+        $accountUuid = \Illuminate\Support\Str::uuid()->toString();
+        \App\Domain\Account\Aggregates\LedgerAggregate::retrieve($accountUuid)
+            ->createAccount(
+                hydrate(
+                    class: \App\Domain\Account\DataObjects\Account::class,
+                    properties: [
+                        'name'      => 'Test Account',
+                        'user_uuid' => $this->user->uuid,
+                    ]
+                )
+            )
+            ->persist();
+
+        $account = Account::find($accountUuid);
+
+        // Add balance using event sourcing
+        \App\Domain\Account\Aggregates\LedgerAggregate::retrieve($account->uuid)
+            ->addBalance('USD', 100000)
+            ->persist();
 
         $idempotencyKey = 'test-key-' . uniqid();
 
@@ -381,7 +424,7 @@ class ApiSecurityTest extends TestCase
             ->withHeaders(['Idempotency-Key' => $idempotencyKey])
             ->postJson('/api/transfers', [
                 'from_account' => $account->uuid,
-                'to_account'   => Account::factory()->create()->uuid,
+                'to_account'   => Account::factory()->create(['user_uuid' => User::factory()->create()->uuid])->uuid,
                 'amount'       => 1000,
                 'currency'     => 'USD',
             ]);
@@ -391,7 +434,7 @@ class ApiSecurityTest extends TestCase
             ->withHeaders(['Idempotency-Key' => $idempotencyKey])
             ->postJson('/api/transfers', [
                 'from_account' => $account->uuid,
-                'to_account'   => Account::factory()->create()->uuid,
+                'to_account'   => Account::factory()->create(['user_uuid' => User::factory()->create()->uuid])->uuid,
                 'amount'       => 1000,
                 'currency'     => 'USD',
             ]);

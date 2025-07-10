@@ -2,23 +2,11 @@
 
 namespace Tests\Feature\Exchange;
 
-use App\Domain\Account\Aggregates\Account;
-use App\Domain\Account\DataTransferObjects\AccountData;
-use App\Domain\Account\Enums\AccountStatus;
-use App\Domain\Account\Enums\AccountType;
-use App\Domain\Exchange\Aggregates\Order;
-use App\Domain\Exchange\Aggregates\OrderBook;
-use App\Domain\Exchange\DataTransferObjects\OrderData;
-use App\Domain\Exchange\Enums\OrderSide;
-use App\Domain\Exchange\Enums\OrderStatus;
-use App\Domain\Exchange\Enums\OrderType;
-use App\Domain\Exchange\ValueObjects\OrderMatchingInput;
-use App\Domain\Exchange\Workflows\OrderMatchingWorkflow;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Str;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\DomainTestCase;
 
-class ExchangeWorkflowTest extends TestCase
+class ExchangeWorkflowTest extends DomainTestCase
 {
     use RefreshDatabase;
 
@@ -65,6 +53,7 @@ class ExchangeWorkflowTest extends TestCase
             ->persist();
     }
 
+    #[Test]
     public function test_can_match_buy_and_sell_orders(): void
     {
         // Create sell order
@@ -132,6 +121,7 @@ class ExchangeWorkflowTest extends TestCase
         $this->assertEquals('9.00', $sellerAccount->getBalance('BTC')); // 10 - 1
     }
 
+    #[Test]
     public function test_insufficient_balance_fails_order(): void
     {
         // Create buy order with insufficient balance
@@ -164,6 +154,7 @@ class ExchangeWorkflowTest extends TestCase
         $this->assertStringContainsString('Insufficient balance', $finalResult->message);
     }
 
+    #[Test]
     public function test_partial_order_fill(): void
     {
         // Create large sell order

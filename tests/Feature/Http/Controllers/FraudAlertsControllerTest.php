@@ -6,11 +6,12 @@ use App\Models\Account;
 use App\Models\FraudCase;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\Test;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
-use Tests\TestCase;
+use Tests\ControllerTestCase;
 
-class FraudAlertsControllerTest extends TestCase
+class FraudAlertsControllerTest extends ControllerTestCase
 {
     use RefreshDatabase;
 
@@ -74,7 +75,7 @@ class FraudAlertsControllerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function customer_can_view_own_fraud_alerts()
     {
         $response = $this->actingAs($this->customer)
@@ -89,7 +90,7 @@ class FraudAlertsControllerTest extends TestCase
         $this->assertEquals($this->customerFraudCase->id, $fraudCases->first()->id);
     }
 
-    /** @test */
+    #[Test]
     public function customer_cannot_view_others_fraud_alerts()
     {
         $response = $this->actingAs($this->customer)
@@ -99,7 +100,7 @@ class FraudAlertsControllerTest extends TestCase
         $this->assertFalse($fraudCases->contains('id', $this->otherFraudCase->id));
     }
 
-    /** @test */
+    #[Test]
     public function staff_can_view_all_fraud_alerts()
     {
         $response = $this->actingAs($this->staffUser)
@@ -110,7 +111,7 @@ class FraudAlertsControllerTest extends TestCase
         $this->assertGreaterThanOrEqual(2, $fraudCases->total());
     }
 
-    /** @test */
+    #[Test]
     public function it_filters_fraud_cases_by_status()
     {
         FraudCase::factory()->create(['status' => 'investigating']);
@@ -125,7 +126,7 @@ class FraudAlertsControllerTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function it_filters_fraud_cases_by_type()
     {
         $response = $this->actingAs($this->staffUser)
@@ -137,7 +138,7 @@ class FraudAlertsControllerTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function it_filters_by_risk_score()
     {
         FraudCase::factory()->create(['risk_score' => 20]);
@@ -152,7 +153,7 @@ class FraudAlertsControllerTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function it_searches_fraud_cases()
     {
         $searchableCase = FraudCase::factory()->create([
@@ -167,7 +168,7 @@ class FraudAlertsControllerTest extends TestCase
         $this->assertTrue($fraudCases->contains('id', $searchableCase->id));
     }
 
-    /** @test */
+    #[Test]
     public function it_shows_statistics()
     {
         FraudCase::factory()->count(5)->create(['status' => 'pending']);
@@ -184,7 +185,7 @@ class FraudAlertsControllerTest extends TestCase
         $this->assertArrayHasKey('confirmed_cases', $stats);
     }
 
-    /** @test */
+    #[Test]
     public function customer_can_view_own_fraud_case_details()
     {
         $response = $this->actingAs($this->customer)
@@ -195,7 +196,7 @@ class FraudAlertsControllerTest extends TestCase
         $response->assertViewHas('fraudCase', $this->customerFraudCase);
     }
 
-    /** @test */
+    #[Test]
     public function customer_cannot_view_others_fraud_case_details()
     {
         $response = $this->actingAs($this->customer)
@@ -204,7 +205,7 @@ class FraudAlertsControllerTest extends TestCase
         $response->assertStatus(403);
     }
 
-    /** @test */
+    #[Test]
     public function staff_can_update_fraud_case_status()
     {
         $response = $this->actingAs($this->staffUser)
@@ -222,7 +223,7 @@ class FraudAlertsControllerTest extends TestCase
         $this->assertEquals($this->staffUser->id, $this->customerFraudCase->investigated_by);
     }
 
-    /** @test */
+    #[Test]
     public function customer_cannot_update_fraud_case_status()
     {
         $response = $this->actingAs($this->customer)
@@ -233,7 +234,7 @@ class FraudAlertsControllerTest extends TestCase
         $response->assertStatus(403);
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_status_update()
     {
         $response = $this->actingAs($this->staffUser)
@@ -244,7 +245,7 @@ class FraudAlertsControllerTest extends TestCase
         $response->assertSessionHasErrors(['status']);
     }
 
-    /** @test */
+    #[Test]
     public function staff_can_export_fraud_cases()
     {
         $response = $this->actingAs($this->staffUser)
@@ -260,7 +261,7 @@ class FraudAlertsControllerTest extends TestCase
         $this->assertStringContainsString('Status', $content);
     }
 
-    /** @test */
+    #[Test]
     public function customer_cannot_export_fraud_cases()
     {
         $response = $this->actingAs($this->customer)
@@ -269,7 +270,7 @@ class FraudAlertsControllerTest extends TestCase
         $response->assertStatus(403);
     }
 
-    /** @test */
+    #[Test]
     public function it_includes_trend_data()
     {
         // Create fraud cases over multiple days
@@ -296,7 +297,7 @@ class FraudAlertsControllerTest extends TestCase
         $this->assertArrayHasKey('count', $trendData[0]);
     }
 
-    /** @test */
+    #[Test]
     public function it_includes_risk_distribution()
     {
         FraudCase::factory()->create(['risk_score' => 10]); // low

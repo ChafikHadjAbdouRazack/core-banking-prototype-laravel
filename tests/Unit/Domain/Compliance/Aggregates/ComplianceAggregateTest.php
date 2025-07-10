@@ -2,22 +2,15 @@
 
 namespace Tests\Unit\Domain\Compliance\Aggregates;
 
-use App\Domain\Compliance\Aggregates\ComplianceAggregate;
-use App\Domain\Compliance\Events\GdprDataDeleted;
-use App\Domain\Compliance\Events\GdprDataExported;
-use App\Domain\Compliance\Events\GdprRequestReceived;
-use App\Domain\Compliance\Events\KycDocumentUploaded;
-use App\Domain\Compliance\Events\KycSubmissionReceived;
-use App\Domain\Compliance\Events\KycVerificationCompleted;
-use App\Domain\Compliance\Events\KycVerificationRejected;
-use App\Domain\Compliance\Events\RegulatoryReportGenerated;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\DomainTestCase;
 
-class ComplianceAggregateTest extends TestCase
+class ComplianceAggregateTest extends DomainTestCase
 {
     use RefreshDatabase;
 
+    #[Test]
     public function test_submit_kyc_records_submission_and_document_events(): void
     {
         $aggregate = ComplianceAggregate::fake();
@@ -47,6 +40,7 @@ class ComplianceAggregateTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_approve_kyc_records_verification_completed(): void
     {
         $aggregate = ComplianceAggregate::fake();
@@ -62,6 +56,7 @@ class ComplianceAggregateTest extends TestCase
         });
     }
 
+    #[Test]
     public function test_reject_kyc_records_verification_rejected(): void
     {
         $aggregate = ComplianceAggregate::fake();
@@ -77,6 +72,7 @@ class ComplianceAggregateTest extends TestCase
         });
     }
 
+    #[Test]
     public function test_request_gdpr_export_records_request_event(): void
     {
         $aggregate = ComplianceAggregate::fake();
@@ -90,6 +86,7 @@ class ComplianceAggregateTest extends TestCase
         ]);
     }
 
+    #[Test]
     public function test_complete_gdpr_export_records_export_event(): void
     {
         $aggregate = ComplianceAggregate::fake();
@@ -103,6 +100,7 @@ class ComplianceAggregateTest extends TestCase
         ]);
     }
 
+    #[Test]
     public function test_request_gdpr_deletion_records_request_event(): void
     {
         $aggregate = ComplianceAggregate::fake();
@@ -114,11 +112,12 @@ class ComplianceAggregateTest extends TestCase
         $aggregate->assertRecorded(function ($event) use ($userUuid, $reason) {
             return $event instanceof GdprRequestReceived
                 && $event->userUuid === $userUuid
-                && $event->type === 'deletion'
+                && $event->requestType === 'deletion'
                 && $event->options === ['reason' => $reason];
         });
     }
 
+    #[Test]
     public function test_complete_gdpr_deletion_records_deletion_event(): void
     {
         $aggregate = ComplianceAggregate::fake();
@@ -132,6 +131,7 @@ class ComplianceAggregateTest extends TestCase
         });
     }
 
+    #[Test]
     public function test_generate_regulatory_report_records_report_event(): void
     {
         $aggregate = ComplianceAggregate::fake();
@@ -151,6 +151,7 @@ class ComplianceAggregateTest extends TestCase
         });
     }
 
+    #[Test]
     public function test_applies_kyc_submission_received_event(): void
     {
         $aggregate = new ComplianceAggregate();
@@ -172,6 +173,7 @@ class ComplianceAggregateTest extends TestCase
         $this->assertEquals('pending', $statusProperty->getValue($aggregate));
     }
 
+    #[Test]
     public function test_applies_kyc_verification_completed_event(): void
     {
         $aggregate = new ComplianceAggregate();
@@ -195,6 +197,7 @@ class ComplianceAggregateTest extends TestCase
         $this->assertEquals('full', $levelProperty->getValue($aggregate));
     }
 
+    #[Test]
     public function test_applies_kyc_verification_rejected_event(): void
     {
         $aggregate = new ComplianceAggregate();
@@ -214,6 +217,7 @@ class ComplianceAggregateTest extends TestCase
         $this->assertEquals('rejected', $statusProperty->getValue($aggregate));
     }
 
+    #[Test]
     public function test_full_kyc_workflow(): void
     {
         $aggregate = ComplianceAggregate::fake();
@@ -232,9 +236,10 @@ class ComplianceAggregateTest extends TestCase
         // Verify events were recorded
         $aggregate->assertRecorded(KycSubmissionReceived::class);
         $aggregate->assertRecorded(KycDocumentUploaded::class);
-        $aggregate->assertRecorded(KycVerificationApproved::class);
+        $aggregate->assertRecorded(KycVerificationCompleted::class);
     }
 
+    #[Test]
     public function test_full_gdpr_workflow(): void
     {
         $aggregate = ComplianceAggregate::fake();
@@ -253,9 +258,11 @@ class ComplianceAggregateTest extends TestCase
         $aggregate->completeGdprDeletion($userUuid);
 
         // Verify events were recorded
-        $aggregate->assertRecorded(DataExportRequested::class);
-        $aggregate->assertRecorded(DataExportCompleted::class);
-        $aggregate->assertRecorded(DataDeletionRequested::class);
-        $aggregate->assertRecorded(DataDeletionCompleted::class);
+        $aggregate->assertRecordedCount(4);
+
+        // Check specific event types were recorded
+        $aggregate->assertRecorded(GdprRequestReceived::class);
+        $aggregate->assertRecorded(GdprDataExported::class);
+        $aggregate->assertRecorded(GdprDataDeleted::class);
     }
 }

@@ -14,9 +14,9 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
 use PHPUnit\Framework\Attributes\Test;
-use Tests\TestCase;
+use Tests\DomainTestCase;
 
-class BasketApiTest extends TestCase
+class BasketApiTest extends DomainTestCase
 {
     use RefreshDatabase;
 

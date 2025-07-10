@@ -2,16 +2,11 @@
 
 namespace Tests\Feature\Http\Controllers\Api\Auth;
 
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Laravel\Fortify\Actions\DisableTwoFactorAuthentication;
-use Laravel\Fortify\Actions\EnableTwoFactorAuthentication;
-use Laravel\Fortify\Contracts\TwoFactorAuthenticationProvider;
-use Laravel\Fortify\RecoveryCode;
-use Laravel\Sanctum\Sanctum;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ControllerTestCase;
 
-class TwoFactorAuthControllerTest extends TestCase
+class TwoFactorAuthControllerTest extends ControllerTestCase
 {
     use RefreshDatabase;
 
@@ -41,6 +36,7 @@ class TwoFactorAuthControllerTest extends TestCase
         ]);
     }
 
+    #[Test]
     public function test_enable_two_factor_authentication(): void
     {
         Sanctum::actingAs($this->user);
@@ -77,6 +73,7 @@ class TwoFactorAuthControllerTest extends TestCase
         $this->assertCount(8, $response->json('recovery_codes'));
     }
 
+    #[Test]
     public function test_enable_two_factor_requires_authentication(): void
     {
         $response = $this->postJson('/api/auth/2fa/enable');
@@ -84,6 +81,7 @@ class TwoFactorAuthControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_confirm_two_factor_with_valid_code(): void
     {
         $this->user->forceFill([
@@ -112,6 +110,7 @@ class TwoFactorAuthControllerTest extends TestCase
         $this->assertNotNull($this->user->fresh()->two_factor_confirmed_at);
     }
 
+    #[Test]
     public function test_confirm_two_factor_with_invalid_code(): void
     {
         $this->user->forceFill([
@@ -138,6 +137,7 @@ class TwoFactorAuthControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_confirm_two_factor_requires_secret(): void
     {
         Sanctum::actingAs($this->user);
@@ -152,6 +152,7 @@ class TwoFactorAuthControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_confirm_two_factor_validates_code(): void
     {
         Sanctum::actingAs($this->user);
@@ -162,6 +163,7 @@ class TwoFactorAuthControllerTest extends TestCase
             ->assertJsonValidationErrors(['code']);
     }
 
+    #[Test]
     public function test_disable_two_factor_with_valid_password(): void
     {
         Sanctum::actingAs($this->userWith2FA);
@@ -190,6 +192,7 @@ class TwoFactorAuthControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_disable_two_factor_with_invalid_password(): void
     {
         Sanctum::actingAs($this->userWith2FA);
@@ -202,6 +205,7 @@ class TwoFactorAuthControllerTest extends TestCase
             ->assertJsonValidationErrors(['password']);
     }
 
+    #[Test]
     public function test_disable_two_factor_requires_password(): void
     {
         Sanctum::actingAs($this->userWith2FA);
@@ -212,6 +216,7 @@ class TwoFactorAuthControllerTest extends TestCase
             ->assertJsonValidationErrors(['password']);
     }
 
+    #[Test]
     public function test_verify_two_factor_with_valid_code(): void
     {
         Sanctum::actingAs($this->userWith2FA);
@@ -240,6 +245,7 @@ class TwoFactorAuthControllerTest extends TestCase
         $this->assertNotEmpty($response->json('token'));
     }
 
+    #[Test]
     public function test_verify_two_factor_with_invalid_code(): void
     {
         Sanctum::actingAs($this->userWith2FA);
@@ -262,6 +268,7 @@ class TwoFactorAuthControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_verify_two_factor_with_valid_recovery_code(): void
     {
         Sanctum::actingAs($this->userWith2FA);
@@ -281,6 +288,7 @@ class TwoFactorAuthControllerTest extends TestCase
         $this->assertCount(8, $updatedCodes); // Still has 8 codes
     }
 
+    #[Test]
     public function test_verify_two_factor_with_invalid_recovery_code(): void
     {
         Sanctum::actingAs($this->userWith2FA);
@@ -295,6 +303,7 @@ class TwoFactorAuthControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_verify_two_factor_requires_code_or_recovery_code(): void
     {
         Sanctum::actingAs($this->userWith2FA);
@@ -305,6 +314,7 @@ class TwoFactorAuthControllerTest extends TestCase
             ->assertJsonValidationErrors(['code', 'recovery_code']);
     }
 
+    #[Test]
     public function test_verify_two_factor_prefers_recovery_code_when_both_provided(): void
     {
         Sanctum::actingAs($this->userWith2FA);
@@ -321,6 +331,7 @@ class TwoFactorAuthControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_regenerate_recovery_codes(): void
     {
         Sanctum::actingAs($this->userWith2FA);
@@ -350,6 +361,7 @@ class TwoFactorAuthControllerTest extends TestCase
         $this->assertEquals($newCodes, $savedCodes);
     }
 
+    #[Test]
     public function test_regenerate_recovery_codes_requires_authentication(): void
     {
         $response = $this->postJson('/api/auth/2fa/recovery-codes');
@@ -357,6 +369,7 @@ class TwoFactorAuthControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_enable_generates_qr_code(): void
     {
         Sanctum::actingAs($this->user);
@@ -386,6 +399,7 @@ class TwoFactorAuthControllerTest extends TestCase
         );
     }
 
+    #[Test]
     public function test_verify_generates_new_api_token(): void
     {
         Sanctum::actingAs($this->userWith2FA);

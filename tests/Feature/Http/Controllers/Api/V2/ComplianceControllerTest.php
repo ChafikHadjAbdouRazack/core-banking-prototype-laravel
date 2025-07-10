@@ -13,9 +13,10 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\Sanctum;
 use Mockery;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ControllerTestCase;
 
-class ComplianceControllerTest extends TestCase
+class ComplianceControllerTest extends ControllerTestCase
 {
     use RefreshDatabase;
 
@@ -53,7 +54,7 @@ class ComplianceControllerTest extends TestCase
         parent::tearDown();
     }
 
-    /** @test */
+    #[Test]
     public function it_gets_kyc_status()
     {
         Sanctum::actingAs($this->user);
@@ -94,7 +95,7 @@ class ComplianceControllerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_unverified_status_for_new_users()
     {
         Sanctum::actingAs($this->user);
@@ -116,7 +117,7 @@ class ComplianceControllerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_starts_kyc_verification()
     {
         Sanctum::actingAs($this->user);
@@ -166,7 +167,7 @@ class ComplianceControllerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_kyc_verification_data()
     {
         Sanctum::actingAs($this->user);
@@ -199,7 +200,7 @@ class ComplianceControllerTest extends TestCase
         $response->assertJsonValidationErrors(['personal_info.date_of_birth']);
     }
 
-    /** @test */
+    #[Test]
     public function it_uploads_kyc_document()
     {
         Sanctum::actingAs($this->user);
@@ -243,7 +244,7 @@ class ComplianceControllerTest extends TestCase
         Storage::disk('local')->assertExists('kyc-documents/' . $this->user->uuid);
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_document_upload()
     {
         Sanctum::actingAs($this->user);
@@ -284,7 +285,7 @@ class ComplianceControllerTest extends TestCase
         $response->assertJsonValidationErrors(['document']);
     }
 
-    /** @test */
+    #[Test]
     public function it_uploads_selfie_for_biometric_verification()
     {
         Sanctum::actingAs($this->user);
@@ -326,7 +327,7 @@ class ComplianceControllerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_gets_aml_screening_status()
     {
         Sanctum::actingAs($this->user);
@@ -374,7 +375,7 @@ class ComplianceControllerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_requests_manual_aml_screening()
     {
         Sanctum::actingAs($this->user);
@@ -404,7 +405,7 @@ class ComplianceControllerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_gets_risk_profile()
     {
         Sanctum::actingAs($this->user);
@@ -450,7 +451,7 @@ class ComplianceControllerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_checks_transaction_eligibility()
     {
         Sanctum::actingAs($this->user);
@@ -494,7 +495,7 @@ class ComplianceControllerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_blocks_high_risk_transactions()
     {
         Sanctum::actingAs($this->user);
@@ -534,7 +535,7 @@ class ComplianceControllerTest extends TestCase
         $response->assertJsonCount(2, 'data.restrictions');
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_transaction_check_request()
     {
         Sanctum::actingAs($this->user);
@@ -563,7 +564,7 @@ class ComplianceControllerTest extends TestCase
         $response->assertJsonValidationErrors(['amount']);
     }
 
-    /** @test */
+    #[Test]
     public function it_requires_authentication()
     {
         $response = $this->getJson("{$this->apiPrefix}/compliance/kyc/status");
@@ -576,7 +577,7 @@ class ComplianceControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_kyc_verification_expiry()
     {
         Sanctum::actingAs($this->user);

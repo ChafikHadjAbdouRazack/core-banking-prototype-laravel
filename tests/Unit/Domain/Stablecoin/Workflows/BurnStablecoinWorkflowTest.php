@@ -2,27 +2,31 @@
 
 namespace Tests\Unit\Domain\Stablecoin\Workflows;
 
-use App\Domain\Stablecoin\Workflows\BurnStablecoinWorkflow;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\DomainTestCase;
 
-class BurnStablecoinWorkflowTest extends TestCase
+class BurnStablecoinWorkflowTest extends DomainTestCase
 {
+    #[Test]
     public function test_class_exists(): void
     {
         $this->assertTrue(class_exists(BurnStablecoinWorkflow::class));
     }
 
+    #[Test]
     public function test_extends_workflow_class(): void
     {
         $reflection = new \ReflectionClass(BurnStablecoinWorkflow::class);
         $this->assertEquals('Workflow\Workflow', $reflection->getParentClass()->getName());
     }
 
+    #[Test]
     public function test_has_execute_method(): void
     {
         $this->assertTrue(method_exists(BurnStablecoinWorkflow::class, 'execute'));
     }
 
+    #[Test]
     public function test_execute_method_signature(): void
     {
         $reflection = new \ReflectionClass(BurnStablecoinWorkflow::class);
@@ -53,6 +57,7 @@ class BurnStablecoinWorkflowTest extends TestCase
         $this->assertFalse($parameters[5]->getDefaultValue());
     }
 
+    #[Test]
     public function test_execute_method_returns_generator(): void
     {
         $reflection = new \ReflectionClass(BurnStablecoinWorkflow::class);
@@ -61,6 +66,7 @@ class BurnStablecoinWorkflowTest extends TestCase
         $this->assertEquals('Generator', $method->getReturnType()->getName());
     }
 
+    #[Test]
     public function test_workflow_uses_compensation_pattern(): void
     {
         $reflection = new \ReflectionClass(BurnStablecoinWorkflow::class);
@@ -70,6 +76,7 @@ class BurnStablecoinWorkflowTest extends TestCase
         $this->assertTrue(method_exists(BurnStablecoinWorkflow::class, 'compensate'));
     }
 
+    #[Test]
     public function test_workflow_activities_sequence(): void
     {
         // Test that the workflow uses the correct activities
@@ -95,6 +102,7 @@ class BurnStablecoinWorkflowTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_workflow_compensation_activities(): void
     {
         // Test that the workflow has proper compensation activities
@@ -117,6 +125,7 @@ class BurnStablecoinWorkflowTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_workflow_handles_exceptions(): void
     {
         $reflection = new \ReflectionClass(BurnStablecoinWorkflow::class);
@@ -133,6 +142,7 @@ class BurnStablecoinWorkflowTest extends TestCase
         $this->assertStringContainsString('compensate()', $source);
     }
 
+    #[Test]
     public function test_workflow_conditional_logic(): void
     {
         $reflection = new \ReflectionClass(BurnStablecoinWorkflow::class);

@@ -2,17 +2,10 @@
 
 namespace Tests\Unit\Services\Cgo;
 
-use App\Mail\CgoInvestmentConfirmed;
-use App\Models\CgoInvestment;
-use App\Models\CgoPricingRound;
-use App\Services\Cgo\CoinbaseCommerceService;
-use App\Services\Cgo\PaymentVerificationService;
-use App\Services\Cgo\StripePaymentService;
-use Illuminate\Support\Facades\Mail;
-use Mockery;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ServiceTestCase;
 
-class PaymentVerificationServiceTest extends TestCase
+class PaymentVerificationServiceTest extends ServiceTestCase
 {
     private PaymentVerificationService $service;
 
@@ -35,6 +28,7 @@ class PaymentVerificationServiceTest extends TestCase
         );
     }
 
+    #[Test]
     public function test_verify_payment_returns_true_for_confirmed_investment()
     {
         $investment = CgoInvestment::factory()->confirmed()->create();
@@ -45,6 +39,7 @@ class PaymentVerificationServiceTest extends TestCase
         Mail::assertNothingSent();
     }
 
+    #[Test]
     public function test_verify_stripe_payment_success()
     {
         $round = CgoPricingRound::factory()->create();
@@ -74,6 +69,7 @@ class PaymentVerificationServiceTest extends TestCase
         });
     }
 
+    #[Test]
     public function test_verify_coinbase_payment_with_charge_id()
     {
         $investment = CgoInvestment::factory()->withCoinbasePayment()->create([
@@ -99,6 +95,7 @@ class PaymentVerificationServiceTest extends TestCase
         $this->assertEquals('confirmed', $investment->status);
     }
 
+    #[Test]
     public function test_verify_manual_crypto_payment_with_tx_hash()
     {
         $investment = CgoInvestment::factory()->create([
@@ -117,6 +114,7 @@ class PaymentVerificationServiceTest extends TestCase
         $this->assertEquals('confirmed', $investment->status);
     }
 
+    #[Test]
     public function test_verify_bank_transfer_requires_manual_confirmation()
     {
         $investment = CgoInvestment::factory()->create([
@@ -138,6 +136,7 @@ class PaymentVerificationServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
+    #[Test]
     public function test_is_payment_expired()
     {
         // Card payment - expires after 1 hour
@@ -169,6 +168,7 @@ class PaymentVerificationServiceTest extends TestCase
         $this->assertFalse($this->service->isPaymentExpired($recentInvestment));
     }
 
+    #[Test]
     public function test_handle_expired_payments()
     {
         // Create expired investments
@@ -204,6 +204,7 @@ class PaymentVerificationServiceTest extends TestCase
         $this->assertEquals('pending', $notExpired->status);
     }
 
+    #[Test]
     public function test_mark_payment_failed()
     {
         $investment = CgoInvestment::factory()->create([
@@ -219,6 +220,7 @@ class PaymentVerificationServiceTest extends TestCase
         $this->assertEquals('Insufficient funds', $investment->payment_failure_reason);
     }
 
+    #[Test]
     public function test_verify_pending_payments_batch()
     {
         $round = CgoPricingRound::factory()->create();
@@ -260,6 +262,7 @@ class PaymentVerificationServiceTest extends TestCase
         $this->assertEquals('pending', $oldPending->status);
     }
 
+    #[Test]
     public function test_certificate_number_generation()
     {
         $investment = CgoInvestment::factory()->create([

@@ -2,13 +2,7 @@
 
 namespace Tests\Unit\Domain\Exchange\LiquidityPool\Reactors;
 
-use App\Domain\Exchange\Events\LiquidityAdded;
-use App\Domain\Exchange\Events\LiquidityPoolRebalanced;
-use App\Domain\Exchange\Events\LiquidityRemoved;
-use App\Domain\Exchange\Events\LiquidityRewardsDistributed;
-use App\Domain\Exchange\LiquidityPool\Reactors\SnapshotLiquidityPoolReactor;
-use Illuminate\Support\Str;
-use Mockery;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class SnapshotLiquidityPoolReactorTest extends TestCase
@@ -24,6 +18,7 @@ class SnapshotLiquidityPoolReactorTest extends TestCase
         $this->poolId = Str::uuid()->toString();
     }
 
+    #[Test]
     public function test_takes_snapshot_on_large_liquidity_addition(): void
     {
         $event = new LiquidityAdded(
@@ -47,6 +42,7 @@ class SnapshotLiquidityPoolReactorTest extends TestCase
         $reactor->onLiquidityAdded($event);
     }
 
+    #[Test]
     public function test_takes_snapshot_on_large_liquidity_removal(): void
     {
         $event = new LiquidityRemoved(
@@ -70,6 +66,7 @@ class SnapshotLiquidityPoolReactorTest extends TestCase
         $reactor->onLiquidityRemoved($event);
     }
 
+    #[Test]
     public function test_takes_snapshot_after_multiple_rebalances(): void
     {
         // Create a partial mock of the reactor to spy on takeSnapshot
@@ -93,6 +90,7 @@ class SnapshotLiquidityPoolReactorTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_takes_snapshot_on_large_reward_distribution(): void
     {
         $event = new LiquidityRewardsDistributed(
@@ -112,6 +110,7 @@ class SnapshotLiquidityPoolReactorTest extends TestCase
         $reactor->onLiquidityRewardsDistributed($event);
     }
 
+    #[Test]
     public function test_does_not_snapshot_on_small_liquidity_addition(): void
     {
         $event = new LiquidityAdded(

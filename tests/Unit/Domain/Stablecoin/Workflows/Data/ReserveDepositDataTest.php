@@ -2,11 +2,12 @@
 
 namespace Tests\Unit\Domain\Stablecoin\Workflows\Data;
 
-use App\Domain\Stablecoin\Workflows\Data\ReserveDepositData;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\DomainTestCase;
 
-class ReserveDepositDataTest extends TestCase
+class ReserveDepositDataTest extends DomainTestCase
 {
+    #[Test]
     public function test_creates_reserve_deposit_data_with_required_fields(): void
     {
         $data = new ReserveDepositData(
@@ -27,6 +28,7 @@ class ReserveDepositDataTest extends TestCase
         $this->assertEquals([], $data->metadata);
     }
 
+    #[Test]
     public function test_creates_reserve_deposit_data_with_metadata(): void
     {
         $metadata = [
@@ -51,6 +53,7 @@ class ReserveDepositDataTest extends TestCase
         $this->assertEquals('batch-789', $data->metadata['batch_id']);
     }
 
+    #[Test]
     public function test_to_array_converts_data_correctly(): void
     {
         $data = new ReserveDepositData(
@@ -76,6 +79,7 @@ class ReserveDepositDataTest extends TestCase
         ], $array);
     }
 
+    #[Test]
     public function test_handles_different_asset_types(): void
     {
         $assets = ['USDC', 'USDT', 'DAI', 'FRAX', 'TUSD', 'BUSD'];
@@ -94,6 +98,7 @@ class ReserveDepositDataTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_handles_large_amounts(): void
     {
         $largeAmount = '1000000000000000000000000'; // 1 million tokens with 18 decimals
@@ -111,6 +116,7 @@ class ReserveDepositDataTest extends TestCase
         $this->assertEquals($largeAmount, $data->expectedAmount);
     }
 
+    #[Test]
     public function test_handles_amount_discrepancy(): void
     {
         // Sometimes expected amount differs from actual amount (fees, slippage)
@@ -128,6 +134,7 @@ class ReserveDepositDataTest extends TestCase
         $this->assertEquals('1000000000', $data->expectedAmount);
     }
 
+    #[Test]
     public function test_metadata_can_be_empty_array(): void
     {
         $data = new ReserveDepositData(
@@ -144,6 +151,7 @@ class ReserveDepositDataTest extends TestCase
         $this->assertEmpty($data->metadata);
     }
 
+    #[Test]
     public function test_metadata_handles_nested_structures(): void
     {
         $metadata = [
@@ -178,6 +186,7 @@ class ReserveDepositDataTest extends TestCase
         $this->assertContains('automated', $data->metadata['tags']);
     }
 
+    #[Test]
     public function test_immutability_of_properties(): void
     {
         $data = new ReserveDepositData(
@@ -197,6 +206,7 @@ class ReserveDepositDataTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_handles_various_transaction_hash_formats(): void
     {
         $hashes = [
@@ -222,6 +232,7 @@ class ReserveDepositDataTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_custodian_id_variations(): void
     {
         $custodianIds = [

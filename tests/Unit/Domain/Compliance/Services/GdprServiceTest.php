@@ -2,17 +2,11 @@
 
 namespace Tests\Unit\Domain\Compliance\Services;
 
-use App\Domain\Compliance\Services\GdprService;
-use App\Models\Account;
-use App\Models\AuditLog;
-use App\Models\KycDocument;
-use App\Models\Transaction;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Storage;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ServiceTestCase;
 
-class GdprServiceTest extends TestCase
+class GdprServiceTest extends ServiceTestCase
 {
     use RefreshDatabase;
 
@@ -25,6 +19,7 @@ class GdprServiceTest extends TestCase
         Storage::fake('private');
     }
 
+    #[Test]
     public function test_export_user_data_returns_complete_data_structure(): void
     {
         $user = User::factory()->create([
@@ -47,6 +42,7 @@ class GdprServiceTest extends TestCase
         $this->assertArrayHasKey('consents', $exportedData);
     }
 
+    #[Test]
     public function test_export_user_data_creates_audit_log(): void
     {
         $user = User::factory()->create();
@@ -65,6 +61,7 @@ class GdprServiceTest extends TestCase
         $this->assertStringContainsString('data-export', $auditLog->tags);
     }
 
+    #[Test]
     public function test_delete_user_data_anonymizes_user(): void
     {
         $user = User::factory()->create([
@@ -84,6 +81,7 @@ class GdprServiceTest extends TestCase
         $this->assertEquals($originalUuid, $user->uuid); // UUID should remain for data integrity
     }
 
+    #[Test]
     public function test_delete_user_data_creates_deletion_audit_log(): void
     {
         $user = User::factory()->create();
@@ -101,6 +99,7 @@ class GdprServiceTest extends TestCase
         $this->assertStringContainsString('deletion', $auditLog->tags);
     }
 
+    #[Test]
     public function test_delete_user_data_with_document_deletion_option(): void
     {
         $user = User::factory()->create();
@@ -125,6 +124,7 @@ class GdprServiceTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_delete_user_data_without_document_deletion(): void
     {
         $user = User::factory()->create();
@@ -136,6 +136,7 @@ class GdprServiceTest extends TestCase
         $this->assertDatabaseHas('kyc_documents', ['id' => $document->id]);
     }
 
+    #[Test]
     public function test_get_user_data_returns_sanitized_data(): void
     {
         $user = User::factory()->create([
@@ -158,6 +159,7 @@ class GdprServiceTest extends TestCase
         $this->assertArrayHasKey('email', $userData);
     }
 
+    #[Test]
     public function test_export_includes_transaction_history(): void
     {
         $user = User::factory()->create();
@@ -182,6 +184,7 @@ class GdprServiceTest extends TestCase
         $this->assertCount(2, $exportedData['transactions']);
     }
 
+    #[Test]
     public function test_anonymize_user_preserves_data_relationships(): void
     {
         $user = User::factory()->create();
@@ -197,6 +200,7 @@ class GdprServiceTest extends TestCase
         $this->assertEquals($user->uuid, $account->fresh()->user_uuid);
     }
 
+    #[Test]
     public function test_export_handles_user_with_no_data(): void
     {
         $user = User::factory()->create();
@@ -209,6 +213,7 @@ class GdprServiceTest extends TestCase
         $this->assertEmpty($exportedData['kyc_documents']);
     }
 
+    #[Test]
     public function test_delete_creates_final_audit_log_after_deletion(): void
     {
         $user = User::factory()->create();

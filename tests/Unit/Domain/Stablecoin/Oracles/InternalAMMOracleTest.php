@@ -2,14 +2,8 @@
 
 namespace Tests\Unit\Domain\Stablecoin\Oracles;
 
-use App\Domain\Exchange\Projections\LiquidityPool;
-use App\Domain\Stablecoin\Contracts\OracleConnector;
-use App\Domain\Stablecoin\Oracles\InternalAMMOracle;
-use App\Domain\Stablecoin\ValueObjects\PriceData;
-use Brick\Math\BigDecimal;
-use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Log;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class InternalAMMOracleTest extends TestCase
@@ -24,11 +18,13 @@ class InternalAMMOracleTest extends TestCase
         $this->oracle = new InternalAMMOracle();
     }
 
+    #[Test]
     public function test_implements_oracle_connector_interface(): void
     {
         $this->assertInstanceOf(OracleConnector::class, $this->oracle);
     }
 
+    #[Test]
     public function test_get_price_returns_valid_price_data_from_pool(): void
     {
         // Create a liquidity pool
@@ -63,6 +59,7 @@ class InternalAMMOracleTest extends TestCase
         $this->assertEquals(3200000000, (float) $priceData->metadata['k_value']); // 1000 * 3,200,000
     }
 
+    #[Test]
     public function test_get_price_with_inverted_pair(): void
     {
         // Create pool with USDT/ETH (inverted from what we request)
@@ -84,6 +81,7 @@ class InternalAMMOracleTest extends TestCase
         $this->assertEquals('3200.00000000', $priceData->price); // Correctly inverted
     }
 
+    #[Test]
     public function test_get_price_throws_exception_when_no_pool_found(): void
     {
         $this->expectException(\RuntimeException::class);
@@ -92,6 +90,7 @@ class InternalAMMOracleTest extends TestCase
         $this->oracle->getPrice('BTC', 'USDT');
     }
 
+    #[Test]
     public function test_get_multiple_prices_returns_array_of_price_data(): void
     {
         // Create multiple pools
@@ -126,6 +125,7 @@ class InternalAMMOracleTest extends TestCase
         $this->assertEquals('3200.00000000', $prices['ETH/USDT']->price);
     }
 
+    #[Test]
     public function test_get_multiple_prices_handles_missing_pools_gracefully(): void
     {
         Log::shouldReceive('error')
@@ -154,6 +154,7 @@ class InternalAMMOracleTest extends TestCase
         $this->assertArrayNotHasKey('XRP/USDT', $prices);
     }
 
+    #[Test]
     public function test_get_historical_price_throws_exception(): void
     {
         $this->expectException(\RuntimeException::class);
@@ -162,6 +163,7 @@ class InternalAMMOracleTest extends TestCase
         $this->oracle->getHistoricalPrice('ETH', 'USDT', Carbon::now()->subDay());
     }
 
+    #[Test]
     public function test_is_healthy_returns_true_when_active_pools_exist(): void
     {
         LiquidityPool::create([
@@ -177,6 +179,7 @@ class InternalAMMOracleTest extends TestCase
         $this->assertTrue($this->oracle->isHealthy());
     }
 
+    #[Test]
     public function test_is_healthy_returns_false_when_no_active_pools(): void
     {
         // Create only inactive pool
@@ -193,21 +196,25 @@ class InternalAMMOracleTest extends TestCase
         $this->assertFalse($this->oracle->isHealthy());
     }
 
+    #[Test]
     public function test_is_healthy_returns_false_when_no_pools_exist(): void
     {
         $this->assertFalse($this->oracle->isHealthy());
     }
 
+    #[Test]
     public function test_get_source_name_returns_internal_amm(): void
     {
         $this->assertEquals('internal_amm', $this->oracle->getSourceName());
     }
 
+    #[Test]
     public function test_get_priority_returns_3(): void
     {
         $this->assertEquals(3, $this->oracle->getPriority());
     }
 
+    #[Test]
     public function test_calculate_price_with_different_pool_reserves(): void
     {
         $testCases = [
@@ -237,6 +244,7 @@ class InternalAMMOracleTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_price_calculation_maintains_precision(): void
     {
         LiquidityPool::create([
@@ -258,6 +266,7 @@ class InternalAMMOracleTest extends TestCase
         $this->assertLessThan(48001, (float) $priceData->price);
     }
 
+    #[Test]
     public function test_k_value_calculation_is_correct(): void
     {
         LiquidityPool::create([

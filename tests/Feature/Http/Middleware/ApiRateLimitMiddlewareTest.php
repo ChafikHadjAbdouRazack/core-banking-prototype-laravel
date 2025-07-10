@@ -3,8 +3,7 @@
 namespace Tests\Feature\Http\Middleware;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Route;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class ApiRateLimitMiddlewareTest extends TestCase
@@ -36,6 +35,7 @@ class ApiRateLimitMiddlewareTest extends TestCase
         });
     }
 
+    #[Test]
     public function test_allows_requests_under_rate_limit(): void
     {
         // Auth endpoint allows 5 requests per minute
@@ -46,6 +46,7 @@ class ApiRateLimitMiddlewareTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_blocks_requests_over_rate_limit(): void
     {
         // Auth endpoint allows 5 requests per minute
@@ -62,6 +63,7 @@ class ApiRateLimitMiddlewareTest extends TestCase
             ->assertJsonHasPath('retry_after');
     }
 
+    #[Test]
     public function test_includes_rate_limit_headers(): void
     {
         $response = $this->getJson('/test-query');
@@ -76,6 +78,7 @@ class ApiRateLimitMiddlewareTest extends TestCase
         $this->assertEquals(99, $remaining);
     }
 
+    #[Test]
     public function test_different_endpoints_have_separate_limits(): void
     {
         // Use up auth limit (5 requests)
@@ -90,6 +93,7 @@ class ApiRateLimitMiddlewareTest extends TestCase
             ->assertHeader('X-RateLimit-Remaining', '99');
     }
 
+    #[Test]
     public function test_transaction_endpoint_rate_limit(): void
     {
         // Transaction endpoint allows 30 requests per minute
@@ -103,6 +107,7 @@ class ApiRateLimitMiddlewareTest extends TestCase
         $response->assertStatus(429);
     }
 
+    #[Test]
     public function test_public_endpoint_rate_limit(): void
     {
         // Public endpoint allows 60 requests per minute
@@ -116,6 +121,7 @@ class ApiRateLimitMiddlewareTest extends TestCase
         $response->assertStatus(429);
     }
 
+    #[Test]
     public function test_rate_limit_resets_after_window(): void
     {
         // Use up the limit
@@ -132,6 +138,7 @@ class ApiRateLimitMiddlewareTest extends TestCase
         $response->assertStatus(200);
     }
 
+    #[Test]
     public function test_blocked_duration_varies_by_endpoint_type(): void
     {
         // Auth endpoint has 5-minute (300 second) block duration
@@ -148,6 +155,7 @@ class ApiRateLimitMiddlewareTest extends TestCase
         $this->assertLessThanOrEqual(300, $retryAfter);
     }
 
+    #[Test]
     public function test_ipv6_addresses_are_handled_correctly(): void
     {
         // Simulate request from IPv6 address
@@ -159,6 +167,7 @@ class ApiRateLimitMiddlewareTest extends TestCase
             ->assertHeader('X-RateLimit-Limit', '60');
     }
 
+    #[Test]
     public function test_rate_limit_key_includes_endpoint_type(): void
     {
         // Make a request to auth endpoint
@@ -177,6 +186,7 @@ class ApiRateLimitMiddlewareTest extends TestCase
         $this->assertTrue(Cache::has($queryKey));
     }
 
+    #[Test]
     public function test_invalid_rate_limit_type_uses_default(): void
     {
         // Create route with invalid rate limit type

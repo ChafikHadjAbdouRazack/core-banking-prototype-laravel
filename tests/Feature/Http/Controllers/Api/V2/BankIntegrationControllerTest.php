@@ -9,9 +9,10 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
 use Mockery;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ControllerTestCase;
 
-class BankIntegrationControllerTest extends TestCase
+class BankIntegrationControllerTest extends ControllerTestCase
 {
     use RefreshDatabase;
 
@@ -38,7 +39,7 @@ class BankIntegrationControllerTest extends TestCase
         parent::tearDown();
     }
 
-    /** @test */
+    #[Test]
     public function it_lists_available_banks()
     {
         Sanctum::actingAs($this->user);
@@ -128,7 +129,7 @@ class BankIntegrationControllerTest extends TestCase
         $response->assertJsonFragment(['name' => 'HSBC']);
     }
 
-    /** @test */
+    #[Test]
     public function it_gets_user_bank_connections()
     {
         Sanctum::actingAs($this->user);
@@ -184,7 +185,7 @@ class BankIntegrationControllerTest extends TestCase
         $response->assertJsonCount(2, 'data');
     }
 
-    /** @test */
+    #[Test]
     public function it_connects_to_a_bank()
     {
         Sanctum::actingAs($this->user);
@@ -220,7 +221,7 @@ class BankIntegrationControllerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_bank_connection_request()
     {
         Sanctum::actingAs($this->user);
@@ -239,7 +240,7 @@ class BankIntegrationControllerTest extends TestCase
         $response->assertJsonValidationErrors(['consent_duration_days']);
     }
 
-    /** @test */
+    #[Test]
     public function it_disconnects_from_a_bank()
     {
         Sanctum::actingAs($this->user);
@@ -258,7 +259,7 @@ class BankIntegrationControllerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_gets_bank_accounts()
     {
         Sanctum::actingAs($this->user);
@@ -315,7 +316,7 @@ class BankIntegrationControllerTest extends TestCase
         $response->assertJsonCount(2, 'data');
     }
 
-    /** @test */
+    #[Test]
     public function it_syncs_bank_accounts()
     {
         Sanctum::actingAs($this->user);
@@ -344,7 +345,7 @@ class BankIntegrationControllerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_gets_aggregated_balance()
     {
         Sanctum::actingAs($this->user);
@@ -379,7 +380,7 @@ class BankIntegrationControllerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_initiates_bank_transfer()
     {
         Sanctum::actingAs($this->user);
@@ -419,7 +420,7 @@ class BankIntegrationControllerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_transfer_request()
     {
         Sanctum::actingAs($this->user);
@@ -447,7 +448,7 @@ class BankIntegrationControllerTest extends TestCase
         $response->assertJsonValidationErrors(['amount']);
     }
 
-    /** @test */
+    #[Test]
     public function it_checks_bank_connector_health()
     {
         Sanctum::actingAs($this->user);
@@ -476,7 +477,7 @@ class BankIntegrationControllerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_gets_recommended_banks()
     {
         Sanctum::actingAs($this->user);
@@ -524,7 +525,7 @@ class BankIntegrationControllerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_requires_authentication()
     {
         $response = $this->getJson("{$this->apiPrefix}/banks/available");
@@ -537,7 +538,7 @@ class BankIntegrationControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_bank_service_failures()
     {
         Sanctum::actingAs($this->user);

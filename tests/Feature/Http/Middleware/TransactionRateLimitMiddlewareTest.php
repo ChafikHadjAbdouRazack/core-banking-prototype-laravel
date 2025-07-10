@@ -2,11 +2,8 @@
 
 namespace Tests\Feature\Http\Middleware;
 
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Route;
-use Laravel\Sanctum\Sanctum;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class TransactionRateLimitMiddlewareTest extends TestCase
@@ -41,6 +38,7 @@ class TransactionRateLimitMiddlewareTest extends TestCase
             });
     }
 
+    #[Test]
     public function test_allows_transactions_under_hourly_limit(): void
     {
         Sanctum::actingAs($this->user);
@@ -53,6 +51,7 @@ class TransactionRateLimitMiddlewareTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_blocks_transactions_over_hourly_limit(): void
     {
         Sanctum::actingAs($this->user);
@@ -74,6 +73,7 @@ class TransactionRateLimitMiddlewareTest extends TestCase
             ->assertJsonPath('limit_type', 'hourly_count');
     }
 
+    #[Test]
     public function test_enforces_daily_limit(): void
     {
         Sanctum::actingAs($this->user);
@@ -96,6 +96,7 @@ class TransactionRateLimitMiddlewareTest extends TestCase
             ->assertJsonPath('limit_type', 'daily_count');
     }
 
+    #[Test]
     public function test_enforces_amount_limit(): void
     {
         Sanctum::actingAs($this->user);
@@ -116,6 +117,7 @@ class TransactionRateLimitMiddlewareTest extends TestCase
             ->assertJsonPath('limit_details.limit', 100000);
     }
 
+    #[Test]
     public function test_tracks_cumulative_amounts(): void
     {
         Sanctum::actingAs($this->user);
@@ -133,6 +135,7 @@ class TransactionRateLimitMiddlewareTest extends TestCase
             ->assertJsonPath('limit_type', 'hourly_amount');
     }
 
+    #[Test]
     public function test_different_transaction_types_have_separate_limits(): void
     {
         Sanctum::actingAs($this->user);
@@ -149,6 +152,7 @@ class TransactionRateLimitMiddlewareTest extends TestCase
             ->assertJson(['message' => 'withdraw successful']);
     }
 
+    #[Test]
     public function test_includes_rate_limit_headers(): void
     {
         Sanctum::actingAs($this->user);
@@ -161,6 +165,7 @@ class TransactionRateLimitMiddlewareTest extends TestCase
             ->assertHeader('X-RateLimit-Transaction-Reset');
     }
 
+    #[Test]
     public function test_progressive_delay_increases_retry_time(): void
     {
         Sanctum::actingAs($this->user);
@@ -188,6 +193,7 @@ class TransactionRateLimitMiddlewareTest extends TestCase
         $this->assertGreaterThan($retryAfter1, $retryAfter2);
     }
 
+    #[Test]
     public function test_requires_authentication(): void
     {
         // Not authenticated
@@ -195,6 +201,7 @@ class TransactionRateLimitMiddlewareTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_handles_missing_amount_parameter(): void
     {
         Sanctum::actingAs($this->user);
@@ -212,6 +219,7 @@ class TransactionRateLimitMiddlewareTest extends TestCase
         $response->assertHeader('X-RateLimit-Transaction-Remaining', '8'); // Started with 10, used 2
     }
 
+    #[Test]
     public function test_rate_limits_reset_after_window(): void
     {
         Sanctum::actingAs($this->user);
@@ -231,6 +239,7 @@ class TransactionRateLimitMiddlewareTest extends TestCase
             ->assertJson(['message' => 'withdraw successful']);
     }
 
+    #[Test]
     public function test_suspicious_activity_triggers_alert(): void
     {
         Sanctum::actingAs($this->user);

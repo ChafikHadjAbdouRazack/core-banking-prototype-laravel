@@ -2,15 +2,12 @@
 
 namespace Tests\Unit\Helpers;
 
-use App\Domain\Account\DataObjects\Account;
-use App\Domain\Account\DataObjects\AccountUuid;
-use App\Domain\Account\DataObjects\Money;
-use App\Models\Account as AccountModel;
-use JustSteveKing\DataObjects\Contracts\DataObjectContract;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class ObjectsHelperTest extends TestCase
 {
+    #[Test]
     public function test_helper_functions_exist(): void
     {
         $this->assertTrue(function_exists('hydrate'));
@@ -20,6 +17,7 @@ class ObjectsHelperTest extends TestCase
         $this->assertTrue(function_exists('__account__uuid'));
     }
 
+    #[Test]
     public function test_hydrate_function_signature(): void
     {
         $reflection = new \ReflectionFunction('hydrate');
@@ -36,6 +34,7 @@ class ObjectsHelperTest extends TestCase
         $this->assertEquals(DataObjectContract::class, $reflection->getReturnType()->getName());
     }
 
+    #[Test]
     public function test_hydrate_has_proper_documentation(): void
     {
         $reflection = new \ReflectionFunction('hydrate');
@@ -48,6 +47,7 @@ class ObjectsHelperTest extends TestCase
         $this->assertStringContainsString('@return T', $docComment);
     }
 
+    #[Test]
     public function test_account_function_signature(): void
     {
         $reflection = new \ReflectionFunction('__account');
@@ -64,6 +64,7 @@ class ObjectsHelperTest extends TestCase
         $this->assertEquals(Account::class, $reflection->getReturnType()->getName());
     }
 
+    #[Test]
     public function test_money_function_signature(): void
     {
         $reflection = new \ReflectionFunction('__money');
@@ -80,6 +81,7 @@ class ObjectsHelperTest extends TestCase
         $this->assertEquals(Money::class, $reflection->getReturnType()->getName());
     }
 
+    #[Test]
     public function test_account_uuid_function_signature(): void
     {
         $reflection = new \ReflectionFunction('__account_uuid');
@@ -100,6 +102,7 @@ class ObjectsHelperTest extends TestCase
         $this->assertEquals(AccountUuid::class, $reflection->getReturnType()->getName());
     }
 
+    #[Test]
     public function test_account_double_uuid_function_signature(): void
     {
         $reflection = new \ReflectionFunction('__account__uuid');
@@ -112,6 +115,7 @@ class ObjectsHelperTest extends TestCase
         $this->assertEquals('string', $reflection->getReturnType()->getName());
     }
 
+    #[Test]
     public function test_objects_helper_file_structure(): void
     {
         $helperFile = base_path('app/Helpers/objects.php');
@@ -129,6 +133,7 @@ class ObjectsHelperTest extends TestCase
         $this->assertStringContainsString('use JustSteveKing\DataObjects\Facades\Hydrator;', $content);
     }
 
+    #[Test]
     public function test_hydrate_handles_unit_enums(): void
     {
         $helperFile = base_path('app/Helpers/objects.php');
@@ -139,6 +144,7 @@ class ObjectsHelperTest extends TestCase
         $this->assertStringContainsString('? $value->value : $value', $content);
     }
 
+    #[Test]
     public function test_account_function_returns_same_if_already_account(): void
     {
         $helperFile = base_path('app/Helpers/objects.php');
@@ -149,6 +155,7 @@ class ObjectsHelperTest extends TestCase
         $this->assertStringContainsString('return $account;', $content);
     }
 
+    #[Test]
     public function test_money_function_returns_same_if_already_money(): void
     {
         $helperFile = base_path('app/Helpers/objects.php');
@@ -159,6 +166,7 @@ class ObjectsHelperTest extends TestCase
         $this->assertStringContainsString('return $amount;', $content);
     }
 
+    #[Test]
     public function test_account_uuid_handles_different_types(): void
     {
         $helperFile = base_path('app/Helpers/objects.php');
@@ -172,6 +180,7 @@ class ObjectsHelperTest extends TestCase
         $this->assertStringContainsString('$uuid = $uuid->uuid;', $content);
     }
 
+    #[Test]
     public function test_account_double_uuid_returns_string(): void
     {
         $helperFile = base_path('app/Helpers/objects.php');
@@ -183,6 +192,7 @@ class ObjectsHelperTest extends TestCase
         $this->assertStringContainsString('return $uuid;', $content);
     }
 
+    #[Test]
     public function test_all_functions_use_hydrate(): void
     {
         $helperFile = base_path('app/Helpers/objects.php');
@@ -193,6 +203,7 @@ class ObjectsHelperTest extends TestCase
         $this->assertGreaterThanOrEqual(3, $hydrateCount);
     }
 
+    #[Test]
     public function test_functions_have_proper_type_hints(): void
     {
         $functions = ['__account', '__money', '__account_uuid', '__account__uuid'];
@@ -211,6 +222,7 @@ class ObjectsHelperTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_money_function_creates_with_amount_property(): void
     {
         $helperFile = base_path('app/Helpers/objects.php');
@@ -220,6 +232,7 @@ class ObjectsHelperTest extends TestCase
         $this->assertStringContainsString("'amount' => \$amount", $content);
     }
 
+    #[Test]
     public function test_account_uuid_function_creates_with_uuid_property(): void
     {
         $helperFile = base_path('app/Helpers/objects.php');

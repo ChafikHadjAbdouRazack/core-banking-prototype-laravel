@@ -2,11 +2,12 @@
 
 namespace Tests\Unit\Domain\Stablecoin\Workflows\Data;
 
-use App\Domain\Stablecoin\Workflows\Data\ReserveWithdrawalData;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\DomainTestCase;
 
-class ReserveWithdrawalDataTest extends TestCase
+class ReserveWithdrawalDataTest extends DomainTestCase
 {
+    #[Test]
     public function test_creates_reserve_withdrawal_data_with_required_fields(): void
     {
         $data = new ReserveWithdrawalData(
@@ -27,6 +28,7 @@ class ReserveWithdrawalDataTest extends TestCase
         $this->assertEquals([], $data->metadata);
     }
 
+    #[Test]
     public function test_creates_reserve_withdrawal_data_with_metadata(): void
     {
         $metadata = [
@@ -52,6 +54,7 @@ class ReserveWithdrawalDataTest extends TestCase
         $this->assertEquals('treasury', $data->metadata['authorized_by']);
     }
 
+    #[Test]
     public function test_to_array_converts_data_correctly(): void
     {
         $data = new ReserveWithdrawalData(
@@ -77,6 +80,7 @@ class ReserveWithdrawalDataTest extends TestCase
         ], $array);
     }
 
+    #[Test]
     public function test_handles_various_withdrawal_reasons(): void
     {
         $reasons = [
@@ -106,6 +110,7 @@ class ReserveWithdrawalDataTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_handles_different_destination_address_formats(): void
     {
         $addresses = [
@@ -131,6 +136,7 @@ class ReserveWithdrawalDataTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_handles_large_withdrawal_amounts(): void
     {
         $largeAmount = '1000000000000000000000'; // 1000 tokens with 18 decimals
@@ -147,6 +153,7 @@ class ReserveWithdrawalDataTest extends TestCase
         $this->assertEquals($largeAmount, $data->amount);
     }
 
+    #[Test]
     public function test_metadata_handles_approval_workflow(): void
     {
         $metadata = [
@@ -178,6 +185,7 @@ class ReserveWithdrawalDataTest extends TestCase
         $this->assertCount(2, $data->metadata['approval_workflow']['approvers']);
     }
 
+    #[Test]
     public function test_handles_different_custodian_types(): void
     {
         $custodians = [
@@ -203,6 +211,7 @@ class ReserveWithdrawalDataTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_metadata_can_include_compliance_info(): void
     {
         $metadata = [
@@ -234,6 +243,7 @@ class ReserveWithdrawalDataTest extends TestCase
         $this->assertEquals('US', $data->metadata['regulatory']['jurisdiction']);
     }
 
+    #[Test]
     public function test_immutability_of_properties(): void
     {
         $data = new ReserveWithdrawalData(
@@ -253,6 +263,7 @@ class ReserveWithdrawalDataTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_handles_zero_amount_withdrawal(): void
     {
         // Edge case: zero withdrawal (might be used for testing)
@@ -268,6 +279,7 @@ class ReserveWithdrawalDataTest extends TestCase
         $this->assertEquals('0', $data->amount);
     }
 
+    #[Test]
     public function test_metadata_preserves_order_and_types(): void
     {
         $metadata = [

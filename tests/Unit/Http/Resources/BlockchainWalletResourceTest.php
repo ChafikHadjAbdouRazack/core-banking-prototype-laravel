@@ -2,12 +2,12 @@
 
 namespace Tests\Unit\Http\Resources;
 
-use App\Http\Resources\BlockchainWalletResource;
-use Illuminate\Http\Request;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class BlockchainWalletResourceTest extends TestCase
 {
+    #[Test]
     public function test_transforms_wallet_to_array(): void
     {
         $wallet = (object) [
@@ -51,6 +51,7 @@ class BlockchainWalletResourceTest extends TestCase
         ], $array);
     }
 
+    #[Test]
     public function test_handles_frozen_wallet(): void
     {
         $wallet = (object) [
@@ -75,6 +76,7 @@ class BlockchainWalletResourceTest extends TestCase
         $this->assertEquals('2025-01-15T10:00:00Z', $array['frozen_at']);
     }
 
+    #[Test]
     public function test_handles_wallet_without_backup(): void
     {
         $wallet = (object) [
@@ -97,6 +99,7 @@ class BlockchainWalletResourceTest extends TestCase
         $this->assertNull($array['last_backup_at']);
     }
 
+    #[Test]
     public function test_handles_null_metadata(): void
     {
         $wallet = (object) [
@@ -121,6 +124,7 @@ class BlockchainWalletResourceTest extends TestCase
         $this->assertNull($array['frozen_at']);
     }
 
+    #[Test]
     public function test_handles_invalid_json(): void
     {
         $wallet = (object) [
@@ -142,6 +146,7 @@ class BlockchainWalletResourceTest extends TestCase
         $this->assertFalse($array['has_backup']);
     }
 
+    #[Test]
     public function test_includes_all_required_fields(): void
     {
         $wallet = (object) [
@@ -176,6 +181,7 @@ class BlockchainWalletResourceTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_resource_collection(): void
     {
         $wallets = [

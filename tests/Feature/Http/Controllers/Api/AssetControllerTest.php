@@ -2,14 +2,11 @@
 
 namespace Tests\Feature\Http\Controllers\Api;
 
-use App\Domain\Asset\Models\Asset;
-use App\Models\AccountBalance;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Laravel\Sanctum\Sanctum;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ControllerTestCase;
 
-class AssetControllerTest extends TestCase
+class AssetControllerTest extends ControllerTestCase
 {
     use RefreshDatabase;
 
@@ -25,6 +22,7 @@ class AssetControllerTest extends TestCase
         $this->user = User::factory()->create();
     }
 
+    #[Test]
     public function test_index_returns_active_assets_by_default(): void
     {
         Sanctum::actingAs($this->user);
@@ -94,6 +92,7 @@ class AssetControllerTest extends TestCase
             ->assertJsonPath('meta.types.fiat', 3);
     }
 
+    #[Test]
     public function test_index_includes_inactive_assets_when_requested(): void
     {
         Sanctum::actingAs($this->user);
@@ -108,6 +107,7 @@ class AssetControllerTest extends TestCase
             ->assertJsonCount(3, 'data');
     }
 
+    #[Test]
     public function test_index_filters_by_asset_type(): void
     {
         Sanctum::actingAs($this->user);
@@ -123,6 +123,7 @@ class AssetControllerTest extends TestCase
             ->assertJsonPath('data.0.code', 'BTC');
     }
 
+    #[Test]
     public function test_index_searches_by_code_and_name(): void
     {
         Sanctum::actingAs($this->user);
@@ -165,6 +166,7 @@ class AssetControllerTest extends TestCase
             ->assertJsonPath('data.1.code', 'USDC');
     }
 
+    #[Test]
     public function test_index_combines_filters(): void
     {
         Sanctum::actingAs($this->user);
@@ -206,6 +208,7 @@ class AssetControllerTest extends TestCase
             ->assertJsonPath('data.0.code', 'USDT');
     }
 
+    #[Test]
     public function test_index_orders_assets_by_code(): void
     {
         Sanctum::actingAs($this->user);
@@ -224,6 +227,7 @@ class AssetControllerTest extends TestCase
         $this->assertEquals('ZAR', $data[2]['code']);
     }
 
+    #[Test]
     public function test_index_returns_empty_array_when_no_assets(): void
     {
         Sanctum::actingAs($this->user);
@@ -245,6 +249,7 @@ class AssetControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_index_does_not_require_authentication(): void
     {
         $response = $this->getJson('/api/v1/assets');
@@ -252,6 +257,7 @@ class AssetControllerTest extends TestCase
         $response->assertStatus(200);
     }
 
+    #[Test]
     public function test_show_returns_asset_details(): void
     {
         Sanctum::actingAs($this->user);
@@ -306,6 +312,7 @@ class AssetControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_show_includes_statistics(): void
     {
         Sanctum::actingAs($this->user);
@@ -337,6 +344,7 @@ class AssetControllerTest extends TestCase
             ->assertJsonPath('statistics.total_balance', '300.00');
     }
 
+    #[Test]
     public function test_show_handles_case_insensitive_codes(): void
     {
         Sanctum::actingAs($this->user);
@@ -357,6 +365,7 @@ class AssetControllerTest extends TestCase
             ->assertJsonPath('code', 'USD');
     }
 
+    #[Test]
     public function test_show_returns_404_for_non_existent_asset(): void
     {
         Sanctum::actingAs($this->user);
@@ -370,6 +379,7 @@ class AssetControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_show_excludes_inactive_assets_by_default(): void
     {
         Sanctum::actingAs($this->user);
@@ -389,6 +399,7 @@ class AssetControllerTest extends TestCase
         $response->assertStatus(404);
     }
 
+    #[Test]
     public function test_show_includes_inactive_assets_when_requested(): void
     {
         Sanctum::actingAs($this->user);
@@ -409,6 +420,7 @@ class AssetControllerTest extends TestCase
             ->assertJsonPath('is_active', false);
     }
 
+    #[Test]
     public function test_show_does_not_require_authentication(): void
     {
         Asset::firstOrCreate(['code' => 'USD'], ['name' => 'US Dollar', 'type' => 'fiat', 'precision' => 2, 'is_active' => true]);
@@ -418,6 +430,7 @@ class AssetControllerTest extends TestCase
         $response->assertStatus(200);
     }
 
+    #[Test]
     public function test_index_handles_multiple_asset_types_correctly(): void
     {
         Sanctum::actingAs($this->user);
@@ -442,6 +455,7 @@ class AssetControllerTest extends TestCase
             ->assertJsonPath('meta.types.commodity', 1);
     }
 
+    #[Test]
     public function test_show_formats_balance_with_asset_precision(): void
     {
         Sanctum::actingAs($this->user);
@@ -469,6 +483,7 @@ class AssetControllerTest extends TestCase
             ->assertJsonPath('statistics.total_balance', '0.12345678');
     }
 
+    #[Test]
     public function test_index_search_is_case_insensitive(): void
     {
         Sanctum::actingAs($this->user);

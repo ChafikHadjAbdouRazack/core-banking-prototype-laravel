@@ -2,28 +2,31 @@
 
 namespace Tests\Unit\Domain\Stablecoin\Workflows\Activities;
 
-use App\Domain\Account\DataObjects\AccountUuid;
-use App\Domain\Stablecoin\Workflows\Activities\ReleaseCollateralActivity;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\DomainTestCase;
 
-class ReleaseCollateralActivityTest extends TestCase
+class ReleaseCollateralActivityTest extends DomainTestCase
 {
+    #[Test]
     public function test_class_exists(): void
     {
         $this->assertTrue(class_exists(ReleaseCollateralActivity::class));
     }
 
+    #[Test]
     public function test_extends_workflow_activity(): void
     {
         $reflection = new \ReflectionClass(ReleaseCollateralActivity::class);
         $this->assertEquals('Workflow\Activity', $reflection->getParentClass()->getName());
     }
 
+    #[Test]
     public function test_has_execute_method(): void
     {
         $this->assertTrue(method_exists(ReleaseCollateralActivity::class, 'execute'));
     }
 
+    #[Test]
     public function test_execute_method_has_correct_signature(): void
     {
         $reflection = new \ReflectionClass(ReleaseCollateralActivity::class);
@@ -47,6 +50,7 @@ class ReleaseCollateralActivityTest extends TestCase
         $this->assertEquals('int', $parameters[3]->getType()->getName());
     }
 
+    #[Test]
     public function test_execute_method_returns_bool(): void
     {
         $reflection = new \ReflectionClass(ReleaseCollateralActivity::class);
@@ -55,6 +59,7 @@ class ReleaseCollateralActivityTest extends TestCase
         $this->assertEquals('bool', $method->getReturnType()->getName());
     }
 
+    #[Test]
     public function test_release_amount_scenarios(): void
     {
         // Test various release amount scenarios
@@ -73,6 +78,7 @@ class ReleaseCollateralActivityTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_multiple_asset_types(): void
     {
         // Test support for multiple asset types
@@ -96,6 +102,7 @@ class ReleaseCollateralActivityTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_activity_properties(): void
     {
         $reflection = new \ReflectionClass(ReleaseCollateralActivity::class);

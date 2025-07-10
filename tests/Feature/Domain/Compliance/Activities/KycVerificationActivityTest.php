@@ -4,14 +4,12 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Domain\Compliance\Activities;
 
-use App\Domain\Compliance\Activities\KycVerificationActivity;
-use App\Domain\Compliance\Services\KycService;
-use App\Models\User;
-use Mockery;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class KycVerificationActivityTest extends TestCase
 {
+    #[Test]
     public function test_activity_extends_workflow_activity()
     {
         $kycService = Mockery::mock(KycService::class);
@@ -20,6 +18,7 @@ class KycVerificationActivityTest extends TestCase
         $this->assertInstanceOf(\Workflow\Activity::class, $activity);
     }
 
+    #[Test]
     public function test_execute_method_validates_required_parameters()
     {
         $kycService = Mockery::mock(KycService::class);
@@ -31,6 +30,7 @@ class KycVerificationActivityTest extends TestCase
         $activity->execute([]);
     }
 
+    #[Test]
     public function test_execute_method_validates_invalid_action()
     {
         $kycService = Mockery::mock(KycService::class);
@@ -46,6 +46,7 @@ class KycVerificationActivityTest extends TestCase
         ]);
     }
 
+    #[Test]
     public function test_execute_method_validates_missing_reason_for_reject()
     {
         $this->expectException(\InvalidArgumentException::class);
@@ -64,6 +65,7 @@ class KycVerificationActivityTest extends TestCase
         ]);
     }
 
+    #[Test]
     public function test_execute_method_has_correct_signature()
     {
         $kycService = Mockery::mock(KycService::class);

@@ -9,9 +9,9 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Pennant\Feature;
 use Mockery;
 use PHPUnit\Framework\Attributes\Test;
-use Tests\TestCase;
+use Tests\ServiceTestCase;
 
-class SubProductServiceTest extends TestCase
+class SubProductServiceTest extends ServiceTestCase
 {
     use RefreshDatabase;
     use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;

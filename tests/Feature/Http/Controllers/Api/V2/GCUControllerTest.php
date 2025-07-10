@@ -2,16 +2,11 @@
 
 namespace Tests\Feature\Http\Controllers\Api\V2;
 
-use App\Models\Asset;
-use App\Models\BasketAsset;
-use App\Models\BasketComponent;
-use App\Models\BasketValue;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Laravel\Sanctum\Sanctum;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ControllerTestCase;
 
-class GCUControllerTest extends TestCase
+class GCUControllerTest extends ControllerTestCase
 {
     use RefreshDatabase;
 
@@ -90,6 +85,7 @@ class GCUControllerTest extends TestCase
         ]);
     }
 
+    #[Test]
     public function test_get_gcu_info_returns_current_data(): void
     {
         $response = $this->getJson('/api/v2/gcu');
@@ -127,6 +123,7 @@ class GCUControllerTest extends TestCase
             ->assertJsonCount(3, 'data.composition');
     }
 
+    #[Test]
     public function test_get_value_history_returns_historical_data(): void
     {
         // Create historical values
@@ -176,6 +173,7 @@ class GCUControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_get_value_history_validates_period(): void
     {
         $response = $this->getJson('/api/v2/gcu/value-history?period=invalid');
@@ -184,6 +182,7 @@ class GCUControllerTest extends TestCase
             ->assertJsonValidationErrors(['period']);
     }
 
+    #[Test]
     public function test_get_composition_details_returns_detailed_breakdown(): void
     {
         $response = $this->getJson('/api/v2/gcu/composition');
@@ -225,6 +224,7 @@ class GCUControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_project_rebalance_returns_simulation(): void
     {
         Sanctum::actingAs($this->user);
@@ -255,6 +255,7 @@ class GCUControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_project_rebalance_requires_authentication(): void
     {
         $response = $this->postJson('/api/v2/gcu/project-rebalance');
@@ -262,6 +263,7 @@ class GCUControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_project_rebalance_validates_weights(): void
     {
         Sanctum::actingAs($this->user);
@@ -278,6 +280,7 @@ class GCUControllerTest extends TestCase
             ->assertJsonValidationErrors(['target_weights']);
     }
 
+    #[Test]
     public function test_get_governance_info_returns_voting_data(): void
     {
         // Create a poll related to GCU

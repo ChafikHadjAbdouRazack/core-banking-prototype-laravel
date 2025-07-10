@@ -2,11 +2,12 @@
 
 namespace Tests\Unit\Domain\Lending\ValueObjects;
 
-use App\Domain\Lending\ValueObjects\CreditScore;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class CreditScoreTest extends TestCase
 {
+    #[Test]
     public function test_creates_valid_credit_score(): void
     {
         $score = 720;
@@ -24,6 +25,7 @@ class CreditScoreTest extends TestCase
         $this->assertEquals($report, $creditScore->creditReport);
     }
 
+    #[Test]
     public function test_throws_exception_for_score_below_minimum(): void
     {
         $this->expectException(\InvalidArgumentException::class);
@@ -32,6 +34,7 @@ class CreditScoreTest extends TestCase
         new CreditScore(299, 'Equifax', []);
     }
 
+    #[Test]
     public function test_throws_exception_for_score_above_maximum(): void
     {
         $this->expectException(\InvalidArgumentException::class);
@@ -40,6 +43,7 @@ class CreditScoreTest extends TestCase
         new CreditScore(851, 'TransUnion', []);
     }
 
+    #[Test]
     public function test_accepts_boundary_values(): void
     {
         $minScore = new CreditScore(300, 'Bureau', []);
@@ -49,6 +53,7 @@ class CreditScoreTest extends TestCase
         $this->assertEquals(850, $maxScore->score);
     }
 
+    #[Test]
     public function test_is_excellent_returns_true_for_scores_800_and_above(): void
     {
         $excellentScores = [800, 825, 850];
@@ -59,6 +64,7 @@ class CreditScoreTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_is_excellent_returns_false_for_scores_below_800(): void
     {
         $nonExcellentScores = [799, 750, 700, 600, 500];
@@ -69,6 +75,7 @@ class CreditScoreTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_is_good_returns_true_for_scores_700_to_799(): void
     {
         $goodScores = [700, 750, 799];
@@ -79,6 +86,7 @@ class CreditScoreTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_is_good_returns_false_for_scores_outside_range(): void
     {
         $notGoodScores = [699, 800, 850, 600, 500];
@@ -89,6 +97,7 @@ class CreditScoreTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_is_fair_returns_true_for_scores_600_to_699(): void
     {
         $fairScores = [600, 650, 699];
@@ -99,6 +108,7 @@ class CreditScoreTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_is_poor_returns_true_for_scores_below_600(): void
     {
         $poorScores = [300, 400, 500, 599];
@@ -109,6 +119,7 @@ class CreditScoreTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_is_poor_returns_false_for_scores_600_and_above(): void
     {
         $notPoorScores = [600, 700, 800];
@@ -119,6 +130,7 @@ class CreditScoreTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_to_array_returns_correct_structure(): void
     {
         $score = 725;
@@ -140,6 +152,7 @@ class CreditScoreTest extends TestCase
         ], $array);
     }
 
+    #[Test]
     public function test_handles_different_bureau_names(): void
     {
         $bureaus = ['Experian', 'Equifax', 'TransUnion', 'Custom Bureau'];
@@ -150,6 +163,7 @@ class CreditScoreTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_handles_complex_credit_report_data(): void
     {
         $complexReport = [
@@ -179,6 +193,7 @@ class CreditScoreTest extends TestCase
         $this->assertEquals(3, $creditScore->creditReport['accounts']['credit_cards']);
     }
 
+    #[Test]
     public function test_properties_are_readonly(): void
     {
         $creditScore = new CreditScore(700, 'Bureau', []);

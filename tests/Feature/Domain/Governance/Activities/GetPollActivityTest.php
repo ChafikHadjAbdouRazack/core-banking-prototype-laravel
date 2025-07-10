@@ -4,17 +4,19 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Domain\Governance\Activities;
 
-use App\Domain\Governance\Activities\GetPollActivity;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class GetPollActivityTest extends TestCase
 {
+    #[Test]
     public function test_activity_extends_workflow_activity()
     {
         $reflection = new \ReflectionClass(GetPollActivity::class);
         $this->assertTrue($reflection->isSubclassOf(\Workflow\Activity::class));
     }
 
+    #[Test]
     public function test_execute_method_has_correct_signature()
     {
         $reflection = new \ReflectionClass(GetPollActivity::class);
@@ -29,6 +31,7 @@ class GetPollActivityTest extends TestCase
         $this->assertEquals('string', $parameters[0]->getType()->getName());
     }
 
+    #[Test]
     public function test_execute_method_returns_nullable_poll()
     {
         $reflection = new \ReflectionClass(GetPollActivity::class);

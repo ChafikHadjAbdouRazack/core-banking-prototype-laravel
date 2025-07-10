@@ -2,13 +2,11 @@
 
 namespace Tests\Unit\Domain\Exchange\LiquidityPool;
 
-use App\Domain\Exchange\LiquidityPool\Services\LiquidityIncentivesService;
-use App\Domain\Exchange\Projections\LiquidityPool;
-use App\Domain\Exchange\Projections\LiquidityProvider;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ServiceTestCase;
 
-class LiquidityIncentivesServiceTest extends TestCase
+class LiquidityIncentivesServiceTest extends ServiceTestCase
 {
     use RefreshDatabase;
 
@@ -20,6 +18,7 @@ class LiquidityIncentivesServiceTest extends TestCase
         $this->service = new LiquidityIncentivesService();
     }
 
+    #[Test]
     public function test_calculates_pool_rewards_based_on_tvl()
     {
         // Create a pool with known TVL
@@ -45,6 +44,7 @@ class LiquidityIncentivesServiceTest extends TestCase
         $this->assertGreaterThan(0, (float) $rewards['total_rewards']);
     }
 
+    #[Test]
     public function test_applies_performance_multipliers()
     {
         // High volume pool
@@ -85,6 +85,7 @@ class LiquidityIncentivesServiceTest extends TestCase
         );
     }
 
+    #[Test]
     public function test_calculates_provider_rewards_proportionally()
     {
         $pool = LiquidityPool::create([
@@ -127,6 +128,7 @@ class LiquidityIncentivesServiceTest extends TestCase
         $this->assertEquals(0.4, round((float) $provider2Reward['share_ratio'], 1));
     }
 
+    #[Test]
     public function test_applies_early_provider_bonus()
     {
         $pool = LiquidityPool::create([
@@ -173,6 +175,7 @@ class LiquidityIncentivesServiceTest extends TestCase
         );
     }
 
+    #[Test]
     public function test_calculates_provider_apy()
     {
         $pool = LiquidityPool::create([

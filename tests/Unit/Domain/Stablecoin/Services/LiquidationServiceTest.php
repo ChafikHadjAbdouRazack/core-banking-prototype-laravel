@@ -2,17 +2,10 @@
 
 namespace Tests\Unit\Domain\Stablecoin\Services;
 
-use App\Domain\Asset\Services\ExchangeRateService;
-use App\Domain\Stablecoin\Contracts\LiquidationServiceInterface;
-use App\Domain\Stablecoin\Services\CollateralService;
-use App\Domain\Stablecoin\Services\LiquidationService;
-use App\Domain\Wallet\Services\WalletService;
-use App\Models\Account;
-use App\Models\StablecoinCollateralPosition;
-use App\Traits\HandlesNestedTransactions;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ServiceTestCase;
 
-class LiquidationServiceTest extends TestCase
+class LiquidationServiceTest extends ServiceTestCase
 {
     private LiquidationService $service;
 
@@ -36,16 +29,19 @@ class LiquidationServiceTest extends TestCase
         );
     }
 
+    #[Test]
     public function test_class_exists(): void
     {
         $this->assertTrue(class_exists(LiquidationService::class));
     }
 
+    #[Test]
     public function test_implements_interface(): void
     {
         $this->assertInstanceOf(LiquidationServiceInterface::class, $this->service);
     }
 
+    #[Test]
     public function test_uses_handles_nested_transactions_trait(): void
     {
         $reflection = new \ReflectionClass(LiquidationService::class);
@@ -54,6 +50,7 @@ class LiquidationServiceTest extends TestCase
         $this->assertContains(HandlesNestedTransactions::class, $traits);
     }
 
+    #[Test]
     public function test_constructor_injects_dependencies(): void
     {
         $reflection = new \ReflectionClass(LiquidationService::class);
@@ -74,11 +71,13 @@ class LiquidationServiceTest extends TestCase
         $this->assertEquals(WalletService::class, $parameters[2]->getType()->getName());
     }
 
+    #[Test]
     public function test_has_liquidate_position_method(): void
     {
         $this->assertTrue(method_exists($this->service, 'liquidatePosition'));
     }
 
+    #[Test]
     public function test_liquidate_position_method_signature(): void
     {
         $reflection = new \ReflectionMethod(LiquidationService::class, 'liquidatePosition');
@@ -101,6 +100,7 @@ class LiquidationServiceTest extends TestCase
         $this->assertEquals('array', $reflection->getReturnType()->getName());
     }
 
+    #[Test]
     public function test_service_imports_required_models(): void
     {
         $reflection = new \ReflectionClass(LiquidationService::class);
@@ -115,6 +115,7 @@ class LiquidationServiceTest extends TestCase
         $this->assertStringContainsString('use Illuminate\Support\Facades\Log;', $fileContent);
     }
 
+    #[Test]
     public function test_liquidate_position_validates_eligibility(): void
     {
         $reflection = new \ReflectionClass(LiquidationService::class);
@@ -131,6 +132,7 @@ class LiquidationServiceTest extends TestCase
         $this->assertStringContainsString('Position is not eligible for liquidation', $source);
     }
 
+    #[Test]
     public function test_liquidate_position_uses_callback_pattern(): void
     {
         $reflection = new \ReflectionClass(LiquidationService::class);
@@ -145,6 +147,7 @@ class LiquidationServiceTest extends TestCase
         $this->assertStringContainsString('$callback = function () use ($position, $liquidator)', $source);
     }
 
+    #[Test]
     public function test_liquidate_position_calculates_amounts(): void
     {
         $reflection = new \ReflectionClass(LiquidationService::class);
@@ -164,6 +167,7 @@ class LiquidationServiceTest extends TestCase
         $this->assertStringContainsString('$returnedCollateral =', $source);
     }
 
+    #[Test]
     public function test_liquidate_position_handles_liquidation_penalty(): void
     {
         $reflection = new \ReflectionClass(LiquidationService::class);
@@ -182,6 +186,7 @@ class LiquidationServiceTest extends TestCase
         $this->assertStringContainsString('50% of penalty goes to liquidator', $source);
     }
 
+    #[Test]
     public function test_service_uses_dependency_injection(): void
     {
         $reflection = new \ReflectionClass(LiquidationService::class);
@@ -204,6 +209,7 @@ class LiquidationServiceTest extends TestCase
         $this->assertTrue($walletProperty->isReadOnly());
     }
 
+    #[Test]
     public function test_service_uses_account_data_objects(): void
     {
         $reflection = new \ReflectionClass(LiquidationService::class);
@@ -215,6 +221,7 @@ class LiquidationServiceTest extends TestCase
         $this->assertStringContainsString('use App\Domain\Account\DataObjects\AccountUuid;', $fileContent);
     }
 
+    #[Test]
     public function test_has_additional_methods(): void
     {
         // Check if there are other methods beyond liquidatePosition
@@ -228,6 +235,7 @@ class LiquidationServiceTest extends TestCase
         $this->assertContains('__construct', $methodNames);
     }
 
+    #[Test]
     public function test_uses_strict_types(): void
     {
         $reflection = new \ReflectionClass(LiquidationService::class);
@@ -239,6 +247,7 @@ class LiquidationServiceTest extends TestCase
         $this->assertStringContainsString('declare(strict_types=1);', $fileContent);
     }
 
+    #[Test]
     public function test_namespace_is_correct(): void
     {
         $reflection = new \ReflectionClass(LiquidationService::class);

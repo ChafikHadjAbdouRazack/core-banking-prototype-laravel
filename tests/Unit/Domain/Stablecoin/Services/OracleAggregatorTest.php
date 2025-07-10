@@ -2,10 +2,7 @@
 
 namespace Tests\Unit\Domain\Stablecoin\Services;
 
-use App\Domain\Stablecoin\Contracts\OracleConnector;
-use App\Domain\Stablecoin\Services\OracleAggregator;
-use App\Domain\Stablecoin\ValueObjects\AggregatedPrice;
-use Illuminate\Support\Collection;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class OracleAggregatorTest extends TestCase
@@ -18,11 +15,13 @@ class OracleAggregatorTest extends TestCase
         $this->aggregator = new OracleAggregator();
     }
 
+    #[Test]
     public function test_class_exists(): void
     {
         $this->assertTrue(class_exists(OracleAggregator::class));
     }
 
+    #[Test]
     public function test_constructor_initializes_oracles_collection(): void
     {
         $reflection = new \ReflectionClass(OracleAggregator::class);
@@ -32,6 +31,7 @@ class OracleAggregatorTest extends TestCase
         $this->assertEquals(0, $constructor->getNumberOfParameters());
     }
 
+    #[Test]
     public function test_has_private_properties(): void
     {
         $reflection = new \ReflectionClass(OracleAggregator::class);
@@ -53,6 +53,7 @@ class OracleAggregatorTest extends TestCase
         $this->assertEquals('float', $maxDeviationProperty->getType()->getName());
     }
 
+    #[Test]
     public function test_default_property_values(): void
     {
         $reflection = new \ReflectionClass(OracleAggregator::class);
@@ -66,11 +67,13 @@ class OracleAggregatorTest extends TestCase
         $this->assertEquals(0.02, $maxDeviationProperty->getValue($this->aggregator));
     }
 
+    #[Test]
     public function test_has_register_oracle_method(): void
     {
         $this->assertTrue(method_exists($this->aggregator, 'registerOracle'));
     }
 
+    #[Test]
     public function test_register_oracle_method_signature(): void
     {
         $reflection = new \ReflectionMethod(OracleAggregator::class, 'registerOracle');
@@ -85,11 +88,13 @@ class OracleAggregatorTest extends TestCase
         $this->assertEquals('self', $reflection->getReturnType()->getName());
     }
 
+    #[Test]
     public function test_has_get_aggregated_price_method(): void
     {
         $this->assertTrue(method_exists($this->aggregator, 'getAggregatedPrice'));
     }
 
+    #[Test]
     public function test_get_aggregated_price_method_signature(): void
     {
         $reflection = new \ReflectionMethod(OracleAggregator::class, 'getAggregatedPrice');
@@ -108,6 +113,7 @@ class OracleAggregatorTest extends TestCase
         $this->assertEquals(AggregatedPrice::class, $reflection->getReturnType()->getName());
     }
 
+    #[Test]
     public function test_service_imports(): void
     {
         $reflection = new \ReflectionClass(OracleAggregator::class);
@@ -124,6 +130,7 @@ class OracleAggregatorTest extends TestCase
         $this->assertStringContainsString('use Illuminate\Support\Facades\Log;', $fileContent);
     }
 
+    #[Test]
     public function test_register_oracle_sorts_by_priority(): void
     {
         $reflection = new \ReflectionClass(OracleAggregator::class);
@@ -144,6 +151,7 @@ class OracleAggregatorTest extends TestCase
         $this->assertStringContainsString('return $this;', $source);
     }
 
+    #[Test]
     public function test_get_aggregated_price_uses_caching(): void
     {
         $reflection = new \ReflectionClass(OracleAggregator::class);
@@ -160,6 +168,7 @@ class OracleAggregatorTest extends TestCase
         $this->assertStringContainsString('60,', $source); // Cache duration
     }
 
+    #[Test]
     public function test_get_aggregated_price_validates_minimum_oracles(): void
     {
         $reflection = new \ReflectionClass(OracleAggregator::class);
@@ -176,6 +185,7 @@ class OracleAggregatorTest extends TestCase
         $this->assertStringContainsString('Insufficient oracle responses', $source);
     }
 
+    #[Test]
     public function test_has_collect_prices_method(): void
     {
         $reflection = new \ReflectionClass(OracleAggregator::class);
@@ -190,12 +200,14 @@ class OracleAggregatorTest extends TestCase
         $this->assertStringContainsString('$this->collectPrices($base, $quote)', $source);
     }
 
+    #[Test]
     public function test_namespace_is_correct(): void
     {
         $reflection = new \ReflectionClass(OracleAggregator::class);
         $this->assertEquals('App\Domain\Stablecoin\Services', $reflection->getNamespaceName());
     }
 
+    #[Test]
     public function test_constructor_initializes_empty_collection(): void
     {
         $reflection = new \ReflectionClass(OracleAggregator::class);
@@ -210,6 +222,7 @@ class OracleAggregatorTest extends TestCase
         $this->assertStringContainsString('$this->oracles = collect();', $source);
     }
 
+    #[Test]
     public function test_fluent_interface(): void
     {
         // Test that registerOracle returns self
@@ -220,6 +233,7 @@ class OracleAggregatorTest extends TestCase
         $this->assertSame($this->aggregator, $result);
     }
 
+    #[Test]
     public function test_max_deviation_comment(): void
     {
         $reflection = new \ReflectionClass(OracleAggregator::class);

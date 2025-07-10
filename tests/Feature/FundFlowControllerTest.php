@@ -2,14 +2,11 @@
 
 namespace Tests\Feature;
 
-use App\Domain\Transaction\Models\Transaction;
-use App\Models\Account;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Inertia\Testing\AssertableInertia as Assert;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ControllerTestCase;
 
-class FundFlowControllerTest extends TestCase
+class FundFlowControllerTest extends ControllerTestCase
 {
     use RefreshDatabase;
 
@@ -28,6 +25,7 @@ class FundFlowControllerTest extends TestCase
         ]);
     }
 
+    #[Test]
     public function test_user_can_view_fund_flow_visualization()
     {
         $this->actingAs($this->user);
@@ -47,6 +45,7 @@ class FundFlowControllerTest extends TestCase
         );
     }
 
+    #[Test]
     public function test_user_can_filter_fund_flow_by_period()
     {
         $this->actingAs($this->user);
@@ -60,6 +59,7 @@ class FundFlowControllerTest extends TestCase
         );
     }
 
+    #[Test]
     public function test_user_can_filter_fund_flow_by_account()
     {
         $this->actingAs($this->user);
@@ -73,6 +73,7 @@ class FundFlowControllerTest extends TestCase
         );
     }
 
+    #[Test]
     public function test_user_can_filter_fund_flow_by_type()
     {
         $this->actingAs($this->user);
@@ -86,6 +87,7 @@ class FundFlowControllerTest extends TestCase
         );
     }
 
+    #[Test]
     public function test_user_can_view_account_fund_flow_details()
     {
         $this->actingAs($this->user);
@@ -104,6 +106,7 @@ class FundFlowControllerTest extends TestCase
         );
     }
 
+    #[Test]
     public function test_user_cannot_view_other_users_account_flow()
     {
         $otherUser = User::factory()->create();
@@ -118,6 +121,7 @@ class FundFlowControllerTest extends TestCase
         $response->assertStatus(404);
     }
 
+    #[Test]
     public function test_user_can_export_fund_flow_data()
     {
         $this->actingAs($this->user);
@@ -132,6 +136,7 @@ class FundFlowControllerTest extends TestCase
         ]);
     }
 
+    #[Test]
     public function test_fund_flow_statistics_calculate_correctly()
     {
         $this->actingAs($this->user);
@@ -166,6 +171,7 @@ class FundFlowControllerTest extends TestCase
         );
     }
 
+    #[Test]
     public function test_fund_flow_respects_date_range_filter()
     {
         $this->actingAs($this->user);
@@ -198,6 +204,7 @@ class FundFlowControllerTest extends TestCase
         );
     }
 
+    #[Test]
     public function test_fund_flow_network_data_includes_accounts_and_external_entities()
     {
         $this->actingAs($this->user);
@@ -218,6 +225,7 @@ class FundFlowControllerTest extends TestCase
         );
     }
 
+    #[Test]
     public function test_fund_flow_chart_data_aggregates_by_day()
     {
         $this->actingAs($this->user);
@@ -251,6 +259,7 @@ class FundFlowControllerTest extends TestCase
         );
     }
 
+    #[Test]
     public function test_unauthorized_user_cannot_access_fund_flow()
     {
         $response = $this->get('/fund-flow');

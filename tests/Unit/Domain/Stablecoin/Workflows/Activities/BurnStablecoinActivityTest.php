@@ -2,32 +2,34 @@
 
 namespace Tests\Unit\Domain\Stablecoin\Workflows\Activities;
 
-use App\Domain\Account\DataObjects\AccountUuid;
-use App\Domain\Stablecoin\Workflows\Activities\BurnStablecoinActivity;
-use App\Models\Stablecoin;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\DomainTestCase;
 
-class BurnStablecoinActivityTest extends TestCase
+class BurnStablecoinActivityTest extends DomainTestCase
 {
     use RefreshDatabase;
 
+    #[Test]
     public function test_class_exists(): void
     {
         $this->assertTrue(class_exists(BurnStablecoinActivity::class));
     }
 
+    #[Test]
     public function test_extends_workflow_activity(): void
     {
         $reflection = new \ReflectionClass(BurnStablecoinActivity::class);
         $this->assertEquals('Workflow\Activity', $reflection->getParentClass()->getName());
     }
 
+    #[Test]
     public function test_has_execute_method(): void
     {
         $this->assertTrue(method_exists(BurnStablecoinActivity::class, 'execute'));
     }
 
+    #[Test]
     public function test_execute_method_has_correct_signature(): void
     {
         $reflection = new \ReflectionClass(BurnStablecoinActivity::class);
@@ -50,6 +52,7 @@ class BurnStablecoinActivityTest extends TestCase
         $this->assertEquals('int', $parameters[3]->getType()->getName());
     }
 
+    #[Test]
     public function test_execute_method_returns_bool(): void
     {
         $reflection = new \ReflectionClass(BurnStablecoinActivity::class);
@@ -58,6 +61,7 @@ class BurnStablecoinActivityTest extends TestCase
         $this->assertEquals('bool', $method->getReturnType()->getName());
     }
 
+    #[Test]
     public function test_calculates_burn_fee_correctly(): void
     {
         // Create stablecoin with burn fee
@@ -81,6 +85,7 @@ class BurnStablecoinActivityTest extends TestCase
         $this->assertEquals(10050000000, $expectedTotalBurn);
     }
 
+    #[Test]
     public function test_activity_properties(): void
     {
         $reflection = new \ReflectionClass(BurnStablecoinActivity::class);

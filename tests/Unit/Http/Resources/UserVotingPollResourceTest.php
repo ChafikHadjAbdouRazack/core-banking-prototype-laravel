@@ -2,12 +2,8 @@
 
 namespace Tests\Unit\Http\Resources;
 
-use App\Domain\Governance\Strategies\AssetWeightedVotingStrategy;
-use App\Http\Resources\UserVotingPollResource;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Http\Request;
-use Mockery;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class UserVotingPollResourceTest extends TestCase
@@ -163,6 +159,7 @@ class UserVotingPollResourceTest extends TestCase
         return (object) $data;
     }
 
+    #[Test]
     public function test_transforms_poll_without_user_context(): void
     {
         $poll = $this->createPoll();
@@ -196,6 +193,7 @@ class UserVotingPollResourceTest extends TestCase
         $this->assertIsArray($array['time_remaining']);
     }
 
+    #[Test]
     public function test_transforms_poll_with_authenticated_user(): void
     {
         $user = $this->createUser();
@@ -221,6 +219,7 @@ class UserVotingPollResourceTest extends TestCase
         ], $array['user_context']);
     }
 
+    #[Test]
     public function test_shows_user_vote_when_exists(): void
     {
         $user = $this->createUser();
@@ -251,6 +250,7 @@ class UserVotingPollResourceTest extends TestCase
         ], $array['user_context']['vote']);
     }
 
+    #[Test]
     public function test_closed_poll_shows_results_visible(): void
     {
         $poll = $this->createPoll(['status' => (object) ['value' => 'closed']]);
@@ -263,6 +263,7 @@ class UserVotingPollResourceTest extends TestCase
         $this->assertNull($array['time_remaining']);
     }
 
+    #[Test]
     public function test_calculates_participation_correctly(): void
     {
         $poll = $this->createPoll();
@@ -278,6 +279,7 @@ class UserVotingPollResourceTest extends TestCase
         $this->assertEquals(1.5, $array['current_participation']);
     }
 
+    #[Test]
     public function test_handles_non_gcu_poll(): void
     {
         $poll = $this->createPoll([
@@ -291,6 +293,7 @@ class UserVotingPollResourceTest extends TestCase
         $this->assertFalse($array['metadata']['is_gcu_poll']);
     }
 
+    #[Test]
     public function test_user_cannot_vote_when_no_voting_power(): void
     {
         $user = $this->createUser();
@@ -308,6 +311,7 @@ class UserVotingPollResourceTest extends TestCase
         $this->assertFalse($array['user_context']['can_vote']);
     }
 
+    #[Test]
     public function test_user_cannot_vote_on_inactive_poll(): void
     {
         $user = $this->createUser();
@@ -325,6 +329,7 @@ class UserVotingPollResourceTest extends TestCase
         $this->assertFalse($array['user_context']['can_vote']);
     }
 
+    #[Test]
     public function test_resource_collection(): void
     {
         $polls = [

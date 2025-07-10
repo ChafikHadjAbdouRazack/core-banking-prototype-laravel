@@ -2,16 +2,11 @@
 
 namespace Tests\Unit\Services\Cgo;
 
-use App\Models\CgoInvestment;
-use App\Models\CgoPricingRound;
-use App\Models\User;
-use App\Services\Cgo\InvestmentAgreementService;
-use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Storage;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ServiceTestCase;
 
-class InvestmentAgreementServiceTest extends TestCase
+class InvestmentAgreementServiceTest extends ServiceTestCase
 {
     use RefreshDatabase;
 
@@ -25,6 +20,7 @@ class InvestmentAgreementServiceTest extends TestCase
         $this->service = new InvestmentAgreementService();
     }
 
+    #[Test]
     public function test_generate_agreement_creates_pdf_and_updates_investment()
     {
         // Create test data
@@ -63,6 +59,7 @@ class InvestmentAgreementServiceTest extends TestCase
         $this->assertNotNull($investment->agreement_generated_at);
     }
 
+    #[Test]
     public function test_generate_certificate_requires_confirmed_investment()
     {
         $investment = CgoInvestment::factory()->create([
@@ -75,6 +72,7 @@ class InvestmentAgreementServiceTest extends TestCase
         $this->service->generateCertificate($investment);
     }
 
+    #[Test]
     public function test_generate_certificate_creates_pdf_with_certificate_number()
     {
         // Create test data
@@ -116,6 +114,7 @@ class InvestmentAgreementServiceTest extends TestCase
         $this->assertStringStartsWith('CGO-', $investment->certificate_number);
     }
 
+    #[Test]
     public function test_prepare_agreement_data_includes_all_required_fields()
     {
         $user = User::factory()->create([
@@ -169,6 +168,7 @@ class InvestmentAgreementServiceTest extends TestCase
         $this->assertNotEmpty($data['risks']);
     }
 
+    #[Test]
     public function test_get_investment_terms_returns_tier_specific_terms()
     {
         $method = new \ReflectionMethod($this->service, 'getInvestmentTerms');
@@ -194,6 +194,7 @@ class InvestmentAgreementServiceTest extends TestCase
         $this->assertArrayHasKey('board_observer', $goldTerms);
     }
 
+    #[Test]
     public function test_generate_filename_creates_unique_filename()
     {
         $investment = CgoInvestment::factory()->create([

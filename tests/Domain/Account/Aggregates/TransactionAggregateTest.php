@@ -12,9 +12,9 @@ use App\Domain\Account\Exceptions\InvalidHashException;
 use App\Domain\Account\Exceptions\NotEnoughFunds;
 use App\Domain\Account\Utils\ValidatesHash;
 use PHPUnit\Framework\Attributes\Test;
-use Tests\TestCase;
+use Tests\DomainTestCase;
 
-class TransactionAggregateTest extends TestCase
+class TransactionAggregateTest extends DomainTestCase
 {
     use ValidatesHash;
 

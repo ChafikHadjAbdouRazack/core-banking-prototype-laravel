@@ -7,6 +7,7 @@ namespace Tests\Feature\Models;
 use App\Domain\Asset\Models\Asset;
 use App\Models\BasketAsset;
 use App\Models\BasketComponent;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class BasketComponentTest extends TestCase
@@ -47,7 +48,7 @@ class BasketComponentTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_create_a_basket_component()
     {
         $component = $this->basket->components()->create([
@@ -65,7 +66,7 @@ class BasketComponentTest extends TestCase
         $this->assertTrue($component->is_active);
     }
 
-    /** @test */
+    #[Test]
     public function it_belongs_to_basket()
     {
         $component = $this->basket->components()->create([
@@ -77,7 +78,7 @@ class BasketComponentTest extends TestCase
         $this->assertEquals('TEST_BSK', $component->basket->code);
     }
 
-    /** @test */
+    #[Test]
     public function it_belongs_to_asset()
     {
         $component = $this->basket->components()->create([
@@ -89,7 +90,7 @@ class BasketComponentTest extends TestCase
         $this->assertEquals('USD', $component->asset->code);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_check_if_within_bounds()
     {
         $component = $this->basket->components()->create([
@@ -106,7 +107,7 @@ class BasketComponentTest extends TestCase
         $this->assertFalse($component->isWithinBounds(71.0));
     }
 
-    /** @test */
+    #[Test]
     public function it_has_active_scope()
     {
         $this->basket->components()->create([
@@ -127,7 +128,7 @@ class BasketComponentTest extends TestCase
         $this->assertEquals('USD', $activeComponents->first()->asset_code);
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_component_configuration()
     {
         $component = $this->basket->components()->create([
@@ -153,7 +154,7 @@ class BasketComponentTest extends TestCase
         $this->assertContains('Minimum weight cannot be greater than maximum weight', $errors);
     }
 
-    /** @test */
+    #[Test]
     public function it_casts_attributes_correctly()
     {
         $component = $this->basket->components()->create([

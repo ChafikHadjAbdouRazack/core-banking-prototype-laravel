@@ -2,12 +2,10 @@
 
 namespace Tests\Unit\Domain\Wallet\Services;
 
-use App\Domain\Wallet\Exceptions\KeyManagementException;
-use App\Domain\Wallet\Services\KeyManagementService;
-use Illuminate\Support\Facades\Crypt;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ServiceTestCase;
 
-class KeyManagementServiceTest extends TestCase
+class KeyManagementServiceTest extends ServiceTestCase
 {
     private KeyManagementService $service;
 
@@ -17,6 +15,7 @@ class KeyManagementServiceTest extends TestCase
         $this->service = new KeyManagementService();
     }
 
+    #[Test]
     public function test_generate_master_key_creates_valid_key(): void
     {
         $key = $this->service->generateMasterKey();
@@ -29,6 +28,7 @@ class KeyManagementServiceTest extends TestCase
         $this->assertEquals(42, strlen($key['address'])); // Ethereum address length
     }
 
+    #[Test]
     public function test_generate_mnemonic_creates_12_words_by_default(): void
     {
         $mnemonic = $this->service->generateMnemonic();
@@ -38,6 +38,7 @@ class KeyManagementServiceTest extends TestCase
         $this->assertIsString($mnemonic);
     }
 
+    #[Test]
     public function test_generate_mnemonic_creates_24_words_when_specified(): void
     {
         $mnemonic = $this->service->generateMnemonic(24);
@@ -46,6 +47,7 @@ class KeyManagementServiceTest extends TestCase
         $this->assertCount(24, $words);
     }
 
+    #[Test]
     public function test_generate_mnemonic_throws_exception_for_invalid_word_count(): void
     {
         $this->expectException(KeyManagementException::class);
@@ -54,6 +56,7 @@ class KeyManagementServiceTest extends TestCase
         $this->service->generateMnemonic(15);
     }
 
+    #[Test]
     public function test_derive_from_mnemonic_generates_valid_keys(): void
     {
         $mnemonic = $this->service->generateMnemonic();
@@ -67,6 +70,7 @@ class KeyManagementServiceTest extends TestCase
         $this->assertEquals($mnemonic, $keys['mnemonic']);
     }
 
+    #[Test]
     public function test_encrypt_private_key_returns_encrypted_string(): void
     {
         $privateKey = 'test_private_key_12345';
@@ -80,6 +84,7 @@ class KeyManagementServiceTest extends TestCase
         $this->assertEquals($privateKey, $decrypted);
     }
 
+    #[Test]
     public function test_decrypt_private_key_returns_original_key(): void
     {
         $privateKey = 'test_private_key_12345';
@@ -90,6 +95,7 @@ class KeyManagementServiceTest extends TestCase
         $this->assertEquals($privateKey, $decrypted);
     }
 
+    #[Test]
     public function test_decrypt_private_key_throws_exception_on_invalid_data(): void
     {
         $this->expectException(KeyManagementException::class);
@@ -98,6 +104,7 @@ class KeyManagementServiceTest extends TestCase
         $this->service->decryptPrivateKey('invalid_encrypted_data');
     }
 
+    #[Test]
     public function test_validate_mnemonic_accepts_12_words(): void
     {
         $mnemonic = implode(' ', array_fill(0, 12, 'word'));
@@ -107,6 +114,7 @@ class KeyManagementServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
+    #[Test]
     public function test_validate_mnemonic_accepts_24_words(): void
     {
         $mnemonic = implode(' ', array_fill(0, 24, 'word'));
@@ -116,6 +124,7 @@ class KeyManagementServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
+    #[Test]
     public function test_validate_mnemonic_rejects_invalid_word_count(): void
     {
         $mnemonic = implode(' ', array_fill(0, 15, 'word'));
@@ -125,6 +134,7 @@ class KeyManagementServiceTest extends TestCase
         $this->assertFalse($result);
     }
 
+    #[Test]
     public function test_generate_backup_creates_valid_backup_structure(): void
     {
         $walletId = 'wallet_123';
@@ -142,6 +152,7 @@ class KeyManagementServiceTest extends TestCase
         $this->assertStringStartsWith('backup_', $backup['backup_id']);
     }
 
+    #[Test]
     public function test_generate_backup_works_without_custom_data(): void
     {
         $walletId = 'wallet_123';
@@ -157,6 +168,7 @@ class KeyManagementServiceTest extends TestCase
         $this->assertEmpty($data['data']);
     }
 
+    #[Test]
     public function test_restore_from_backup_restores_wallet_data(): void
     {
         $walletId = 'wallet_123';
@@ -179,6 +191,7 @@ class KeyManagementServiceTest extends TestCase
         $this->assertEquals($customData, $restored['data']);
     }
 
+    #[Test]
     public function test_restore_from_backup_validates_checksum(): void
     {
         $backup = [
@@ -195,6 +208,7 @@ class KeyManagementServiceTest extends TestCase
         $this->service->restoreFromBackup($backup);
     }
 
+    #[Test]
     public function test_derive_child_key_generates_different_keys(): void
     {
         $parentKey = $this->service->generateMasterKey();
@@ -207,6 +221,7 @@ class KeyManagementServiceTest extends TestCase
         $this->assertNotEquals($child1['address'], $child2['address']);
     }
 
+    #[Test]
     public function test_derive_child_key_is_deterministic(): void
     {
         $parentKey = $this->service->generateMasterKey();
@@ -220,6 +235,7 @@ class KeyManagementServiceTest extends TestCase
         $this->assertEquals($child1['address'], $child2['address']);
     }
 
+    #[Test]
     public function test_sign_message_creates_valid_signature(): void
     {
         $keys = $this->service->generateMasterKey();
@@ -233,6 +249,7 @@ class KeyManagementServiceTest extends TestCase
         $this->assertGreaterThan(100, strlen($signature));
     }
 
+    #[Test]
     public function test_verify_signature_validates_correct_signature(): void
     {
         $keys = $this->service->generateMasterKey();
@@ -244,6 +261,7 @@ class KeyManagementServiceTest extends TestCase
         $this->assertTrue($isValid);
     }
 
+    #[Test]
     public function test_verify_signature_rejects_invalid_signature(): void
     {
         $keys = $this->service->generateMasterKey();
@@ -255,6 +273,7 @@ class KeyManagementServiceTest extends TestCase
         $this->assertFalse($isValid);
     }
 
+    #[Test]
     public function test_verify_signature_rejects_wrong_message(): void
     {
         $keys = $this->service->generateMasterKey();
@@ -266,6 +285,7 @@ class KeyManagementServiceTest extends TestCase
         $this->assertFalse($isValid);
     }
 
+    #[Test]
     public function test_generate_deterministic_key_creates_consistent_keys(): void
     {
         $seed = 'test_seed_12345';
@@ -278,6 +298,7 @@ class KeyManagementServiceTest extends TestCase
         $this->assertEquals($key1['address'], $key2['address']);
     }
 
+    #[Test]
     public function test_generate_deterministic_key_creates_different_keys_for_different_seeds(): void
     {
         $key1 = $this->service->generateDeterministicKey('seed1');

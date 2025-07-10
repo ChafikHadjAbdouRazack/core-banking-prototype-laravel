@@ -2,16 +2,11 @@
 
 namespace Tests\Feature\Http\Controllers\Api\Auth;
 
-use App\Models\User;
-use Illuminate\Auth\Events\Verified;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Facades\URL;
-use Laravel\Sanctum\Sanctum;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ControllerTestCase;
 
-class EmailVerificationControllerTest extends TestCase
+class EmailVerificationControllerTest extends ControllerTestCase
 {
     use RefreshDatabase;
 
@@ -36,6 +31,7 @@ class EmailVerificationControllerTest extends TestCase
         ]);
     }
 
+    #[Test]
     public function test_verify_email_with_valid_link(): void
     {
         Event::fake();
@@ -65,6 +61,7 @@ class EmailVerificationControllerTest extends TestCase
         });
     }
 
+    #[Test]
     public function test_verify_email_with_invalid_hash(): void
     {
         $verificationUrl = URL::temporarySignedRoute(
@@ -87,6 +84,7 @@ class EmailVerificationControllerTest extends TestCase
         $this->assertNull($this->unverifiedUser->fresh()->email_verified_at);
     }
 
+    #[Test]
     public function test_verify_email_with_expired_link(): void
     {
         $verificationUrl = URL::temporarySignedRoute(
@@ -108,6 +106,7 @@ class EmailVerificationControllerTest extends TestCase
         ]);
     }
 
+    #[Test]
     public function test_verify_email_with_invalid_signature(): void
     {
         $response = $this->getJson(sprintf(
@@ -126,6 +125,7 @@ class EmailVerificationControllerTest extends TestCase
         ]);
     }
 
+    #[Test]
     public function test_verify_email_when_already_verified(): void
     {
         Event::fake();
@@ -150,6 +150,7 @@ class EmailVerificationControllerTest extends TestCase
         Event::assertNotDispatched(Verified::class);
     }
 
+    #[Test]
     public function test_verify_email_with_nonexistent_user(): void
     {
         $nonExistentId = 999999;
@@ -168,6 +169,7 @@ class EmailVerificationControllerTest extends TestCase
         $response->assertStatus(404);
     }
 
+    #[Test]
     public function test_resend_verification_email_for_unverified_user(): void
     {
         Sanctum::actingAs($this->unverifiedUser);
@@ -180,6 +182,7 @@ class EmailVerificationControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_resend_verification_email_for_verified_user(): void
     {
         Sanctum::actingAs($this->verifiedUser);
@@ -192,6 +195,7 @@ class EmailVerificationControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_resend_verification_requires_authentication(): void
     {
         $response = $this->postJson('/api/auth/resend-verification');
@@ -199,6 +203,7 @@ class EmailVerificationControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_verify_email_updates_verified_at_timestamp(): void
     {
         Event::fake();
@@ -227,6 +232,7 @@ class EmailVerificationControllerTest extends TestCase
         Carbon::setTestNow();
     }
 
+    #[Test]
     public function test_verify_email_requires_all_query_parameters(): void
     {
         // Missing signature
@@ -250,6 +256,7 @@ class EmailVerificationControllerTest extends TestCase
         $response->assertStatus(403);
     }
 
+    #[Test]
     public function test_resend_verification_triggers_notification(): void
     {
         Sanctum::actingAs($this->unverifiedUser);

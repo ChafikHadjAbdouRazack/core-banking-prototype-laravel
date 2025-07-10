@@ -2,11 +2,12 @@
 
 namespace Tests\Unit\Domain\Compliance\Events;
 
-use App\Domain\Compliance\Events\KycVerificationCompleted;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\DomainTestCase;
 
-class KycVerificationCompletedTest extends TestCase
+class KycVerificationCompletedTest extends DomainTestCase
 {
+    #[Test]
     public function test_creates_event_with_user_uuid_and_level(): void
     {
         $userUuid = 'user-123-uuid';
@@ -18,6 +19,7 @@ class KycVerificationCompletedTest extends TestCase
         $this->assertEquals($level, $event->level);
     }
 
+    #[Test]
     public function test_handles_different_verification_levels(): void
     {
         $levels = ['basic', 'enhanced', 'full', 'simplified'];
@@ -31,6 +33,7 @@ class KycVerificationCompletedTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_event_extends_should_be_stored(): void
     {
         $event = new KycVerificationCompleted('user-456', 'enhanced');
@@ -38,6 +41,7 @@ class KycVerificationCompletedTest extends TestCase
         $this->assertInstanceOf(\Spatie\EventSourcing\StoredEvents\ShouldBeStored::class, $event);
     }
 
+    #[Test]
     public function test_event_properties_are_public(): void
     {
         $event = new KycVerificationCompleted('user-789', 'full');

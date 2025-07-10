@@ -2,10 +2,8 @@
 
 namespace Tests\Feature\Http\Middleware;
 
-use App\Models\ApiKey;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Route;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class AuthenticateApiKeyTest extends TestCase
@@ -48,6 +46,7 @@ class AuthenticateApiKeyTest extends TestCase
         });
     }
 
+    #[Test]
     public function test_allows_valid_api_key(): void
     {
         $response = $this->withHeaders([
@@ -58,6 +57,7 @@ class AuthenticateApiKeyTest extends TestCase
             ->assertJson(['message' => 'success']);
     }
 
+    #[Test]
     public function test_rejects_missing_api_key(): void
     {
         $response = $this->getJson('/test-api');
@@ -69,6 +69,7 @@ class AuthenticateApiKeyTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_rejects_invalid_api_key(): void
     {
         $response = $this->withHeaders([
@@ -82,6 +83,7 @@ class AuthenticateApiKeyTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_rejects_expired_api_key(): void
     {
         $expiredKey = ApiKey::create([
@@ -105,6 +107,7 @@ class AuthenticateApiKeyTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_rejects_inactive_api_key(): void
     {
         $inactiveKey = ApiKey::create([
@@ -128,6 +131,7 @@ class AuthenticateApiKeyTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_enforces_ip_restrictions(): void
     {
         $restrictedKey = ApiKey::create([
@@ -153,6 +157,7 @@ class AuthenticateApiKeyTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_allows_whitelisted_ip(): void
     {
         $restrictedKey = ApiKey::create([
@@ -174,6 +179,7 @@ class AuthenticateApiKeyTest extends TestCase
             ->assertJson(['message' => 'success']);
     }
 
+    #[Test]
     public function test_enforces_permission_requirements(): void
     {
         // API key only has 'read' permission, trying to access 'write' endpoint
@@ -198,6 +204,7 @@ class AuthenticateApiKeyTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_allows_sufficient_permissions(): void
     {
         $response = $this->withHeaders([
@@ -208,6 +215,7 @@ class AuthenticateApiKeyTest extends TestCase
             ->assertJson(['message' => 'success']);
     }
 
+    #[Test]
     public function test_logs_api_key_usage(): void
     {
         $this->withHeaders([
@@ -222,6 +230,7 @@ class AuthenticateApiKeyTest extends TestCase
         ]);
     }
 
+    #[Test]
     public function test_logs_failed_attempts(): void
     {
         $this->withHeaders([
@@ -236,6 +245,7 @@ class AuthenticateApiKeyTest extends TestCase
         ]);
     }
 
+    #[Test]
     public function test_includes_user_in_request(): void
     {
         Route::middleware(['auth.api_key'])->get('/test-user', function () {
@@ -258,6 +268,7 @@ class AuthenticateApiKeyTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_rejects_malformed_authorization_header(): void
     {
         $response = $this->withHeaders([

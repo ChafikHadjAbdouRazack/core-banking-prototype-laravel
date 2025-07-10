@@ -2,28 +2,17 @@
 
 namespace Tests\Performance;
 
+use PHPUnit\Framework\Attributes\Test;
 /**
  * Performance Load Tests.
  *
  * Note: These thresholds are calibrated for CI environments.
- * Production performance monitoring should use stricter thresholds.
- *
- * CI Environment factors that affect performance:
- * - No connection pooling or persistent connections
- * - Cold starts without warm application cache
- * - Security features and middleware overhead
- * - Limited resources in GitHub Actions runners
+ * Production performance monitoring should use real-time APM tools.
  */
 
-use App\Models\Account;
-use App\Models\Asset;
-use App\Models\User;
-use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
-use Tests\TestCase;
+use Tests\DomainTestCase;
 
-class LoadTest extends TestCase
+class LoadTest extends DomainTestCase
 {
     protected function setUp(): void
     {
@@ -44,6 +33,7 @@ class LoadTest extends TestCase
     /**
      * Test account creation performance.
      */
+    #[Test]
     public function test_account_creation_performance()
     {
         $user = User::factory()->create();
@@ -77,6 +67,7 @@ class LoadTest extends TestCase
     /**
      * Test concurrent transfers performance.
      */
+    #[Test]
     public function test_concurrent_transfers_performance()
     {
         $users = User::factory()->count(10)->create();
@@ -129,6 +120,7 @@ class LoadTest extends TestCase
     /**
      * Test exchange rate lookup performance.
      */
+    #[Test]
     public function test_exchange_rate_performance()
     {
         $assets = ['USD', 'EUR', 'GBP', 'CHF', 'JPY'];
@@ -163,6 +155,7 @@ class LoadTest extends TestCase
     /**
      * Test webhook delivery performance.
      */
+    #[Test]
     public function test_webhook_delivery_performance()
     {
         $user = User::factory()->create();
@@ -203,6 +196,7 @@ class LoadTest extends TestCase
     /**
      * Test database query performance.
      */
+    #[Test]
     public function test_database_query_performance()
     {
         // Create test data
@@ -243,6 +237,7 @@ class LoadTest extends TestCase
     /**
      * Test cache performance.
      */
+    #[Test]
     public function test_cache_performance()
     {
         $iterations = 1000;
@@ -292,6 +287,7 @@ class LoadTest extends TestCase
     /**
      * Run all performance tests and generate report.
      */
+    #[Test]
     public function test_complete_performance_suite()
     {
         echo "\n\n=== FinAegis Load Testing Report ===\n";

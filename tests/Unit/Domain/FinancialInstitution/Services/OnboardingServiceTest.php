@@ -2,22 +2,11 @@
 
 namespace Tests\Unit\Domain\FinancialInstitution\Services;
 
-use App\Domain\FinancialInstitution\Events\ApplicationApproved;
-use App\Domain\FinancialInstitution\Events\ApplicationRejected;
-use App\Domain\FinancialInstitution\Events\ApplicationSubmitted;
-use App\Domain\FinancialInstitution\Exceptions\OnboardingException;
-use App\Domain\FinancialInstitution\Services\ComplianceCheckService;
-use App\Domain\FinancialInstitution\Services\DocumentVerificationService;
-use App\Domain\FinancialInstitution\Services\OnboardingService;
-use App\Domain\FinancialInstitution\Services\RiskAssessmentService;
-use App\Models\FinancialInstitutionApplication;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Facades\Log;
-use Mockery;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ServiceTestCase;
 
-class OnboardingServiceTest extends TestCase
+class OnboardingServiceTest extends ServiceTestCase
 {
     use RefreshDatabase;
 
@@ -46,6 +35,7 @@ class OnboardingServiceTest extends TestCase
         Event::fake();
     }
 
+    #[Test]
     public function test_submit_application_creates_application(): void
     {
         $data = [
@@ -67,6 +57,7 @@ class OnboardingServiceTest extends TestCase
         $this->assertNotNull($application->risk_score);
     }
 
+    #[Test]
     public function test_submit_application_dispatches_event(): void
     {
         $data = [
@@ -84,6 +75,7 @@ class OnboardingServiceTest extends TestCase
         });
     }
 
+    #[Test]
     public function test_submit_application_handles_exceptions(): void
     {
         // Force an exception by passing invalid data
@@ -95,6 +87,7 @@ class OnboardingServiceTest extends TestCase
         $this->service->submitApplication([]);
     }
 
+    #[Test]
     public function test_start_review_validates_reviewable_state(): void
     {
         $application = FinancialInstitutionApplication::factory()->create([
@@ -107,6 +100,7 @@ class OnboardingServiceTest extends TestCase
         $this->service->startReview($application, 'reviewer-123');
     }
 
+    #[Test]
     public function test_start_review_updates_application(): void
     {
         $application = FinancialInstitutionApplication::factory()->create([
@@ -121,6 +115,7 @@ class OnboardingServiceTest extends TestCase
         $this->assertNotNull($application->review_started_at);
     }
 
+    #[Test]
     public function test_approve_application_with_all_checks_passed(): void
     {
         $application = FinancialInstitutionApplication::factory()->create([
@@ -151,6 +146,7 @@ class OnboardingServiceTest extends TestCase
         Event::assertDispatched(ApplicationApproved::class);
     }
 
+    #[Test]
     public function test_approve_application_fails_without_document_verification(): void
     {
         $application = FinancialInstitutionApplication::factory()->create([
@@ -166,6 +162,7 @@ class OnboardingServiceTest extends TestCase
         $this->service->approveApplication($application, 'approver-123', 'Notes');
     }
 
+    #[Test]
     public function test_approve_application_fails_without_compliance_checks(): void
     {
         $application = FinancialInstitutionApplication::factory()->create([
@@ -181,6 +178,7 @@ class OnboardingServiceTest extends TestCase
         $this->service->approveApplication($application, 'approver-123', 'Notes');
     }
 
+    #[Test]
     public function test_approve_application_fails_with_high_risk(): void
     {
         $application = FinancialInstitutionApplication::factory()->create([
@@ -197,6 +195,7 @@ class OnboardingServiceTest extends TestCase
         $this->service->approveApplication($application, 'approver-123', 'Notes');
     }
 
+    #[Test]
     public function test_reject_application(): void
     {
         $application = FinancialInstitutionApplication::factory()->create([
@@ -216,6 +215,7 @@ class OnboardingServiceTest extends TestCase
         Event::assertDispatched(ApplicationRejected::class);
     }
 
+    #[Test]
     public function test_activate_partner_creates_partner_entity(): void
     {
         $application = FinancialInstitutionApplication::factory()->create([
@@ -234,6 +234,7 @@ class OnboardingServiceTest extends TestCase
         Event::assertDispatched(\App\Domain\FinancialInstitution\Events\PartnerActivated::class);
     }
 
+    #[Test]
     public function test_activate_partner_requires_approved_application(): void
     {
         $application = FinancialInstitutionApplication::factory()->create([
@@ -246,6 +247,7 @@ class OnboardingServiceTest extends TestCase
         $this->service->activatePartner($application);
     }
 
+    #[Test]
     public function test_get_application_progress(): void
     {
         $application = FinancialInstitutionApplication::factory()->create();

@@ -2,15 +2,15 @@
 
 namespace Tests\Unit\Domain\Compliance\Events;
 
-use App\Domain\Compliance\Events\SuspiciousActivityDetected;
-use App\Models\Transaction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\DomainTestCase;
 
-class SuspiciousActivityDetectedTest extends TestCase
+class SuspiciousActivityDetectedTest extends DomainTestCase
 {
     use RefreshDatabase;
 
+    #[Test]
     public function test_creates_event_with_transaction_and_alerts(): void
     {
         $transaction = Transaction::factory()->create([
@@ -45,6 +45,7 @@ class SuspiciousActivityDetectedTest extends TestCase
         $this->assertCount(2, $event->alerts);
     }
 
+    #[Test]
     public function test_event_uses_required_traits(): void
     {
         $transaction = Transaction::factory()->create();
@@ -57,6 +58,7 @@ class SuspiciousActivityDetectedTest extends TestCase
         $this->assertArrayHasKey('Illuminate\Queue\SerializesModels', $traits);
     }
 
+    #[Test]
     public function test_event_properties_are_readonly(): void
     {
         $transaction = Transaction::factory()->create();
@@ -65,10 +67,12 @@ class SuspiciousActivityDetectedTest extends TestCase
         $event = new SuspiciousActivityDetected($transaction, $alerts);
 
         // Properties are readonly, attempting to modify should cause error
-        $this->expectError();
+        $this->expectException(\Error::class);
+        $this->expectExceptionMessageMatches('/Cannot modify readonly property/');
         $event->transaction = Transaction::factory()->create();
     }
 
+    #[Test]
     public function test_event_serializes_correctly(): void
     {
         $transaction = Transaction::factory()->create();
@@ -88,6 +92,7 @@ class SuspiciousActivityDetectedTest extends TestCase
         $this->assertEquals($alerts, $unserialized->alerts);
     }
 
+    #[Test]
     public function test_handles_empty_alerts_array(): void
     {
         $transaction = Transaction::factory()->create();
@@ -98,6 +103,7 @@ class SuspiciousActivityDetectedTest extends TestCase
         $this->assertIsArray($event->alerts);
     }
 
+    #[Test]
     public function test_handles_complex_alert_structures(): void
     {
         $transaction = Transaction::factory()->create();
@@ -132,6 +138,7 @@ class SuspiciousActivityDetectedTest extends TestCase
         $this->assertCount(3, $event->alerts[1]['rules_triggered']);
     }
 
+    #[Test]
     public function test_can_be_dispatched_as_event(): void
     {
         $transaction = Transaction::factory()->create();

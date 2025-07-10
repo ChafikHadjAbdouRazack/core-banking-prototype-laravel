@@ -2,14 +2,15 @@
 
 namespace Tests\Feature\Api\Auth;
 
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ControllerTestCase;
 
-class RegisterControllerTest extends TestCase
+class RegisterControllerTest extends ControllerTestCase
 {
     use RefreshDatabase;
 
+    #[Test]
     public function test_user_can_register_via_api(): void
     {
         $response = $this->postJson('/api/auth/register', [
@@ -43,6 +44,7 @@ class RegisterControllerTest extends TestCase
         $this->assertTrue($user->hasRole('customer_private'));
     }
 
+    #[Test]
     public function test_business_user_can_register_via_api(): void
     {
         $response = $this->postJson('/api/auth/register', [
@@ -59,6 +61,7 @@ class RegisterControllerTest extends TestCase
         $this->assertTrue($user->hasRole('customer_business'));
     }
 
+    #[Test]
     public function test_registration_validates_input(): void
     {
         $response = $this->postJson('/api/auth/register', [
@@ -72,6 +75,7 @@ class RegisterControllerTest extends TestCase
             ->assertJsonValidationErrors(['name', 'email', 'password']);
     }
 
+    #[Test]
     public function test_registration_prevents_duplicate_emails(): void
     {
         User::factory()->create(['email' => 'existing@example.com']);
@@ -87,6 +91,7 @@ class RegisterControllerTest extends TestCase
             ->assertJsonValidationErrors(['email']);
     }
 
+    #[Test]
     public function test_registered_user_receives_access_token(): void
     {
         $response = $this->postJson('/api/auth/register', [

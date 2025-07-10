@@ -2,9 +2,8 @@
 
 namespace Tests\Feature;
 
-use App\Models\Team;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class AuthenticatedRoutesTest extends TestCase
@@ -32,9 +31,9 @@ class AuthenticatedRoutesTest extends TestCase
         $this->user->save();
     }
 
-    /**
-     * Test that all routes used in views actually exist.
-     */
+/**
+ * Test that all routes used in views actually exist.
+ */    #[Test]
     public function test_all_routes_in_views_exist(): void
     {
         // Routes that should exist for authenticated users
@@ -70,9 +69,9 @@ class AuthenticatedRoutesTest extends TestCase
         }
     }
 
-    /**
-     * Test that authenticated pages don't show route errors.
-     */
+/**
+ * Test that authenticated pages don't show route errors.
+ */    #[Test]
     public function test_authenticated_pages_without_route_errors(): void
     {
         // Pages that should load without route errors
@@ -96,9 +95,9 @@ class AuthenticatedRoutesTest extends TestCase
         }
     }
 
-    /**
-     * Test navigation menu renders without errors.
-     */
+/**
+ * Test navigation menu renders without errors.
+ */    #[Test]
     public function test_navigation_menu_renders_without_errors(): void
     {
         // Test rendering the navigation menu view directly
@@ -109,9 +108,9 @@ class AuthenticatedRoutesTest extends TestCase
         $this->assertNotNull($view);
     }
 
-    /**
-     * Test that all main authenticated routes are accessible.
-     */
+/**
+ * Test that all main authenticated routes are accessible.
+ */    #[Test]
     public function test_main_authenticated_routes_accessible(): void
     {
         $routes = [

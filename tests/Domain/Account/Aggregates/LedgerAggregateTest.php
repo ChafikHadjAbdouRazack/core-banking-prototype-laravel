@@ -7,9 +7,9 @@ use App\Domain\Account\DataObjects\Account;
 use App\Domain\Account\Events\AccountCreated;
 use App\Domain\Account\Events\AccountDeleted;
 use PHPUnit\Framework\Attributes\Test;
-use Tests\TestCase;
+use Tests\DomainTestCase;
 
-class LedgerAggregateTest extends TestCase
+class LedgerAggregateTest extends DomainTestCase
 {
     private const string ACCOUNT_UUID = 'account-uuid';
 

@@ -2,15 +2,11 @@
 
 namespace Tests\Feature\Http\Controllers\Api;
 
-use App\Domain\Account\Services\BankAllocationService;
-use App\Models\Asset;
-use App\Models\User;
-use App\Models\UserBankPreference;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Laravel\Sanctum\Sanctum;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ControllerTestCase;
 
-class BankAllocationControllerTest extends TestCase
+class BankAllocationControllerTest extends ControllerTestCase
 {
     use RefreshDatabase;
 
@@ -40,6 +36,7 @@ class BankAllocationControllerTest extends TestCase
         );
     }
 
+    #[Test]
     public function test_index_returns_default_allocations_when_none_exist(): void
     {
         Sanctum::actingAs($this->user);
@@ -74,6 +71,7 @@ class BankAllocationControllerTest extends TestCase
         $this->assertEquals(100, $response->json('data.summary.total_percentage'));
     }
 
+    #[Test]
     public function test_index_returns_existing_allocations(): void
     {
         Sanctum::actingAs($this->user);
@@ -109,6 +107,7 @@ class BankAllocationControllerTest extends TestCase
             ->assertJsonPath('data.summary.is_diversified', false); // Less than 3 banks
     }
 
+    #[Test]
     public function test_index_requires_authentication(): void
     {
         $response = $this->getJson('/api/bank-allocations');
@@ -116,6 +115,7 @@ class BankAllocationControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_update_allocations_successfully(): void
     {
         Sanctum::actingAs($this->user);
@@ -145,6 +145,7 @@ class BankAllocationControllerTest extends TestCase
         $this->assertTrue($payseraAllocation['is_primary']);
     }
 
+    #[Test]
     public function test_update_allocations_validates_percentages(): void
     {
         Sanctum::actingAs($this->user);
@@ -159,6 +160,7 @@ class BankAllocationControllerTest extends TestCase
             ->assertJsonValidationErrors(['allocations.PAYSERA']);
     }
 
+    #[Test]
     public function test_update_allocations_validates_bank_codes(): void
     {
         Sanctum::actingAs($this->user);
@@ -174,6 +176,7 @@ class BankAllocationControllerTest extends TestCase
             ->assertJsonValidationErrors(['primary_bank']);
     }
 
+    #[Test]
     public function test_add_bank_successfully(): void
     {
         Sanctum::actingAs($this->user);
@@ -193,6 +196,7 @@ class BankAllocationControllerTest extends TestCase
             ->assertJsonPath('data.status', 'active');
     }
 
+    #[Test]
     public function test_add_bank_validates_input(): void
     {
         Sanctum::actingAs($this->user);
@@ -216,6 +220,7 @@ class BankAllocationControllerTest extends TestCase
             ->assertJsonValidationErrors(['percentage']);
     }
 
+    #[Test]
     public function test_remove_bank_successfully(): void
     {
         Sanctum::actingAs($this->user);
@@ -255,6 +260,7 @@ class BankAllocationControllerTest extends TestCase
         ]);
     }
 
+    #[Test]
     public function test_cannot_remove_primary_bank(): void
     {
         Sanctum::actingAs($this->user);
@@ -274,6 +280,7 @@ class BankAllocationControllerTest extends TestCase
         $response->assertStatus(422);
     }
 
+    #[Test]
     public function test_set_primary_bank_successfully(): void
     {
         Sanctum::actingAs($this->user);
@@ -314,6 +321,7 @@ class BankAllocationControllerTest extends TestCase
         ]);
     }
 
+    #[Test]
     public function test_cannot_set_non_existent_bank_as_primary(): void
     {
         Sanctum::actingAs($this->user);
@@ -323,6 +331,7 @@ class BankAllocationControllerTest extends TestCase
         $response->assertStatus(422);
     }
 
+    #[Test]
     public function test_get_available_banks_returns_all_banks(): void
     {
         Sanctum::actingAs($this->user);
@@ -348,6 +357,7 @@ class BankAllocationControllerTest extends TestCase
         $this->assertCount($bankCount, $response->json('data'));
     }
 
+    #[Test]
     public function test_preview_distribution_calculates_correctly(): void
     {
         Sanctum::actingAs($this->user);
@@ -425,6 +435,7 @@ class BankAllocationControllerTest extends TestCase
         $this->assertEquals(300.00, $santanderAmount); // 30% of 1000
     }
 
+    #[Test]
     public function test_preview_distribution_validates_input(): void
     {
         Sanctum::actingAs($this->user);
@@ -448,6 +459,7 @@ class BankAllocationControllerTest extends TestCase
             ->assertJsonValidationErrors(['asset_code']);
     }
 
+    #[Test]
     public function test_all_endpoints_require_authentication(): void
     {
         $endpoints = [

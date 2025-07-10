@@ -2,15 +2,11 @@
 
 namespace Tests\Feature;
 
-use App\Models\CgoInvestment;
-use App\Models\User;
-use App\Services\Cgo\InvestmentAgreementService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Storage;
-use Mockery;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ControllerTestCase;
 
-class CgoAgreementControllerTest extends TestCase
+class CgoAgreementControllerTest extends ControllerTestCase
 {
     use RefreshDatabase;
 
@@ -20,6 +16,7 @@ class CgoAgreementControllerTest extends TestCase
         Storage::fake('local');
     }
 
+    #[Test]
     public function test_generate_agreement_requires_authentication()
     {
         $investment = CgoInvestment::factory()->create();
@@ -29,6 +26,7 @@ class CgoAgreementControllerTest extends TestCase
         $response->assertUnauthorized();
     }
 
+    #[Test]
     public function test_generate_agreement_creates_new_agreement()
     {
         $user = User::factory()->create();
@@ -57,6 +55,7 @@ class CgoAgreementControllerTest extends TestCase
             ->assertJsonStructure(['download_url']);
     }
 
+    #[Test]
     public function test_generate_agreement_returns_existing_if_already_generated()
     {
         $user = User::factory()->create();
@@ -80,6 +79,7 @@ class CgoAgreementControllerTest extends TestCase
             ->assertJsonStructure(['download_url']);
     }
 
+    #[Test]
     public function test_download_agreement_requires_ownership()
     {
         $user = User::factory()->create();
@@ -96,6 +96,7 @@ class CgoAgreementControllerTest extends TestCase
         $response->assertNotFound();
     }
 
+    #[Test]
     public function test_download_agreement_returns_pdf()
     {
         $user = User::factory()->create();
@@ -115,6 +116,7 @@ class CgoAgreementControllerTest extends TestCase
             ->assertHeader('content-disposition', 'attachment; filename=Investment_Agreement_' . $investment->uuid . '.pdf');
     }
 
+    #[Test]
     public function test_generate_certificate_requires_confirmed_investment()
     {
         $user = User::factory()->create();
@@ -133,6 +135,7 @@ class CgoAgreementControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_generate_certificate_creates_certificate()
     {
         $user = User::factory()->create();
@@ -161,6 +164,7 @@ class CgoAgreementControllerTest extends TestCase
             ->assertJsonStructure(['download_url']);
     }
 
+    #[Test]
     public function test_mark_as_signed_requires_agreement_to_exist()
     {
         $user = User::factory()->create();
@@ -180,6 +184,7 @@ class CgoAgreementControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_mark_as_signed_updates_investment()
     {
         $user = User::factory()->create();
@@ -204,6 +209,7 @@ class CgoAgreementControllerTest extends TestCase
         $this->assertEquals('base64_encoded_signature', $investment->metadata['signature_data']);
     }
 
+    #[Test]
     public function test_preview_agreement_requires_admin_role()
     {
         $user = User::factory()->create();
@@ -219,6 +225,7 @@ class CgoAgreementControllerTest extends TestCase
         $response->assertForbidden();
     }
 
+    #[Test]
     public function test_preview_agreement_shows_pdf_inline()
     {
         $admin = User::factory()->create();

@@ -2,15 +2,11 @@
 
 namespace Tests\Feature\Http\Controllers\Api\Auth;
 
-use App\Models\User;
-use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Password;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ControllerTestCase;
 
-class PasswordResetControllerTest extends TestCase
+class PasswordResetControllerTest extends ControllerTestCase
 {
     use RefreshDatabase;
 
@@ -26,6 +22,7 @@ class PasswordResetControllerTest extends TestCase
         ]);
     }
 
+    #[Test]
     public function test_forgot_password_sends_reset_link(): void
     {
         Password::shouldReceive('sendResetLink')
@@ -43,6 +40,7 @@ class PasswordResetControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_forgot_password_fails_for_invalid_email(): void
     {
         Password::shouldReceive('sendResetLink')
@@ -63,6 +61,7 @@ class PasswordResetControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_forgot_password_validates_email_format(): void
     {
         $response = $this->postJson('/api/auth/forgot-password', [
@@ -73,6 +72,7 @@ class PasswordResetControllerTest extends TestCase
             ->assertJsonValidationErrors(['email']);
     }
 
+    #[Test]
     public function test_forgot_password_requires_email(): void
     {
         $response = $this->postJson('/api/auth/forgot-password', []);
@@ -81,6 +81,7 @@ class PasswordResetControllerTest extends TestCase
             ->assertJsonValidationErrors(['email']);
     }
 
+    #[Test]
     public function test_reset_password_with_valid_token(): void
     {
         Event::fake();
@@ -128,6 +129,7 @@ class PasswordResetControllerTest extends TestCase
         });
     }
 
+    #[Test]
     public function test_reset_password_with_invalid_token(): void
     {
         Password::shouldReceive('reset')
@@ -150,6 +152,7 @@ class PasswordResetControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_reset_password_with_expired_token(): void
     {
         Password::shouldReceive('reset')
@@ -172,6 +175,7 @@ class PasswordResetControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_reset_password_validation_errors(): void
     {
         // Missing all fields
@@ -214,6 +218,7 @@ class PasswordResetControllerTest extends TestCase
             ->assertJsonValidationErrors(['password']);
     }
 
+    #[Test]
     public function test_reset_password_for_invalid_user(): void
     {
         Password::shouldReceive('reset')
@@ -236,6 +241,7 @@ class PasswordResetControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_forgot_password_throttling(): void
     {
         Password::shouldReceive('sendResetLink')
@@ -255,6 +261,7 @@ class PasswordResetControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_reset_password_changes_user_password(): void
     {
         Event::fake();
@@ -285,6 +292,7 @@ class PasswordResetControllerTest extends TestCase
         $this->assertFalse(Hash::check('oldpassword', $this->user->fresh()->password));
     }
 
+    #[Test]
     public function test_forgot_password_returns_success_even_for_nonexistent_email(): void
     {
         // This is a security feature - we don't want to reveal if an email exists
@@ -302,6 +310,7 @@ class PasswordResetControllerTest extends TestCase
             ->assertJsonValidationErrors(['email']);
     }
 
+    #[Test]
     public function test_reset_password_generates_new_remember_token(): void
     {
         Event::fake();

@@ -9,9 +9,10 @@ use App\Models\Account;
 use App\Models\AccountBalance;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Mockery;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\DomainTestCase;
 
-class CreditAccountTest extends TestCase
+class CreditAccountTest extends DomainTestCase
 {
     use RefreshDatabase;
 
@@ -46,6 +47,7 @@ class CreditAccountTest extends TestCase
         return $event;
     }
 
+    #[Test]
     public function test_credits_existing_balance(): void
     {
         // Create account
@@ -79,6 +81,7 @@ class CreditAccountTest extends TestCase
         $this->assertEquals(1500, $updatedBalance->balance); // $15.00
     }
 
+    #[Test]
     public function test_creates_new_balance_if_not_exists(): void
     {
         // Create account
@@ -106,6 +109,7 @@ class CreditAccountTest extends TestCase
         $this->assertEquals(2500, $balance->balance); // €25.00
     }
 
+    #[Test]
     public function test_handles_multiple_credits_to_same_account(): void
     {
         // Create account
@@ -134,6 +138,7 @@ class CreditAccountTest extends TestCase
         $this->assertEquals(150000, $balance->balance); // 0.0015 BTC
     }
 
+    #[Test]
     public function test_handles_different_asset_codes(): void
     {
         // Create account

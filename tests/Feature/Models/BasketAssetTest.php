@@ -8,6 +8,7 @@ use App\Domain\Asset\Models\Asset;
 use App\Models\BasketAsset;
 use App\Models\BasketComponent;
 use App\Models\BasketValue;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class BasketAssetTest extends TestCase
@@ -38,7 +39,7 @@ class BasketAssetTest extends TestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function it_can_create_a_basket_asset()
     {
         $basket = BasketAsset::create([
@@ -56,7 +57,7 @@ class BasketAssetTest extends TestCase
         $this->assertTrue($basket->is_active);
     }
 
-    /** @test */
+    #[Test]
     public function it_has_components_relationship()
     {
         $basket = BasketAsset::create([
@@ -76,7 +77,7 @@ class BasketAssetTest extends TestCase
         $this->assertInstanceOf(BasketComponent::class, $basket->components->first());
     }
 
-    /** @test */
+    #[Test]
     public function it_has_values_relationship()
     {
         $basket = BasketAsset::create([
@@ -98,7 +99,7 @@ class BasketAssetTest extends TestCase
         $this->assertInstanceOf(BasketValue::class, $basket->values->first());
     }
 
-    /** @test */
+    #[Test]
     public function it_can_check_if_needs_rebalancing()
     {
         $basket = BasketAsset::create([
@@ -116,7 +117,7 @@ class BasketAssetTest extends TestCase
         $this->assertFalse($basket->needsRebalancing());
     }
 
-    /** @test */
+    #[Test]
     public function it_can_convert_to_asset()
     {
         $basket = BasketAsset::create([
@@ -136,7 +137,7 @@ class BasketAssetTest extends TestCase
         $this->assertTrue($asset->is_basket);
     }
 
-    /** @test */
+    #[Test]
     public function it_has_active_scope()
     {
         BasketAsset::create([
@@ -161,7 +162,7 @@ class BasketAssetTest extends TestCase
         $this->assertEquals('ACTIVE', $activeBaskets->first()->code);
     }
 
-    /** @test */
+    #[Test]
     public function it_has_needs_rebalancing_scope()
     {
         BasketAsset::create([
@@ -187,7 +188,7 @@ class BasketAssetTest extends TestCase
         $this->assertEquals('NEEDS_REB', $needsRebalancing->first()->code);
     }
 
-    /** @test */
+    #[Test]
     public function it_casts_attributes_correctly()
     {
         $basket = BasketAsset::create([

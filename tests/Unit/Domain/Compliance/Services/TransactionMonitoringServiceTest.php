@@ -2,18 +2,11 @@
 
 namespace Tests\Unit\Domain\Compliance\Services;
 
-use App\Domain\Compliance\Services\CustomerRiskService;
-use App\Domain\Compliance\Services\SuspiciousActivityReportService;
-use App\Domain\Compliance\Services\TransactionMonitoringService;
-use App\Models\CustomerRiskProfile;
-use App\Models\Transaction;
-use App\Models\TransactionMonitoringRule;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Log;
-use Mockery;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ServiceTestCase;
 
-class TransactionMonitoringServiceTest extends TestCase
+class TransactionMonitoringServiceTest extends ServiceTestCase
 {
     use RefreshDatabase;
 
@@ -36,6 +29,7 @@ class TransactionMonitoringServiceTest extends TestCase
         );
     }
 
+    #[Test]
     public function test_monitor_transaction_passes_when_no_alerts(): void
     {
         $transaction = Transaction::factory()->create([
@@ -57,6 +51,7 @@ class TransactionMonitoringServiceTest extends TestCase
         $this->assertEmpty($result['actions']);
     }
 
+    #[Test]
     public function test_monitor_transaction_creates_alerts_for_triggered_rules(): void
     {
         $transaction = Transaction::factory()->create([
@@ -84,6 +79,7 @@ class TransactionMonitoringServiceTest extends TestCase
         $this->assertContains(TransactionMonitoringRule::ACTION_REVIEW, $result['actions']);
     }
 
+    #[Test]
     public function test_monitor_transaction_blocks_when_block_action_triggered(): void
     {
         $transaction = Transaction::factory()->create([
@@ -110,6 +106,7 @@ class TransactionMonitoringServiceTest extends TestCase
         $this->assertContains(TransactionMonitoringRule::ACTION_BLOCK, $result['actions']);
     }
 
+    #[Test]
     public function test_monitor_transaction_handles_multiple_rules(): void
     {
         $transaction = Transaction::factory()->create();
@@ -134,6 +131,7 @@ class TransactionMonitoringServiceTest extends TestCase
         $this->assertContains(TransactionMonitoringRule::ACTION_REPORT, $result['actions']);
     }
 
+    #[Test]
     public function test_monitor_transaction_handles_exceptions_gracefully(): void
     {
         $transaction = Transaction::factory()->create();
@@ -153,6 +151,7 @@ class TransactionMonitoringServiceTest extends TestCase
         $this->assertContains(TransactionMonitoringRule::ACTION_REVIEW, $result['actions']);
     }
 
+    #[Test]
     public function test_monitor_transaction_updates_behavioral_risk_when_alerts_exist(): void
     {
         $transaction = Transaction::factory()->create();
@@ -181,6 +180,7 @@ class TransactionMonitoringServiceTest extends TestCase
         $this->assertNotEmpty($result['alerts']);
     }
 
+    #[Test]
     public function test_monitor_transaction_deduplicates_actions(): void
     {
         $transaction = Transaction::factory()->create();

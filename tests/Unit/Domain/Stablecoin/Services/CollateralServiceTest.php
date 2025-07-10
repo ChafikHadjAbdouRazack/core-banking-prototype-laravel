@@ -2,14 +2,10 @@
 
 namespace Tests\Unit\Domain\Stablecoin\Services;
 
-use App\Domain\Asset\Services\ExchangeRateService;
-use App\Domain\Stablecoin\Contracts\CollateralServiceInterface;
-use App\Domain\Stablecoin\Services\CollateralService;
-use App\Models\StablecoinCollateralPosition;
-use Illuminate\Support\Collection;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ServiceTestCase;
 
-class CollateralServiceTest extends TestCase
+class CollateralServiceTest extends ServiceTestCase
 {
     private CollateralService $service;
 
@@ -22,16 +18,19 @@ class CollateralServiceTest extends TestCase
         $this->service = new CollateralService($this->exchangeRateService);
     }
 
+    #[Test]
     public function test_class_exists(): void
     {
         $this->assertTrue(class_exists(CollateralService::class));
     }
 
+    #[Test]
     public function test_implements_interface(): void
     {
         $this->assertInstanceOf(CollateralServiceInterface::class, $this->service);
     }
 
+    #[Test]
     public function test_constructor_injects_dependencies(): void
     {
         $reflection = new \ReflectionClass(CollateralService::class);
@@ -45,6 +44,7 @@ class CollateralServiceTest extends TestCase
         $this->assertEquals(ExchangeRateService::class, $parameter->getType()->getName());
     }
 
+    #[Test]
     public function test_has_required_methods(): void
     {
         $expectedMethods = [
@@ -65,6 +65,7 @@ class CollateralServiceTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_convert_to_peg_asset_method_signature(): void
     {
         $reflection = new \ReflectionMethod(CollateralService::class, 'convertToPegAsset');
@@ -85,6 +86,7 @@ class CollateralServiceTest extends TestCase
         $this->assertEquals('int', $reflection->getReturnType()->getName());
     }
 
+    #[Test]
     public function test_calculate_total_collateral_value_method_signature(): void
     {
         $reflection = new \ReflectionMethod(CollateralService::class, 'calculateTotalCollateralValue');
@@ -99,6 +101,7 @@ class CollateralServiceTest extends TestCase
         $this->assertEquals('int', $reflection->getReturnType()->getName());
     }
 
+    #[Test]
     public function test_get_positions_at_risk_method_signature(): void
     {
         $reflection = new \ReflectionMethod(CollateralService::class, 'getPositionsAtRisk');
@@ -115,6 +118,7 @@ class CollateralServiceTest extends TestCase
         $this->assertEquals(Collection::class, $reflection->getReturnType()->getName());
     }
 
+    #[Test]
     public function test_get_positions_for_liquidation_method_signature(): void
     {
         $reflection = new \ReflectionMethod(CollateralService::class, 'getPositionsForLiquidation');
@@ -124,6 +128,7 @@ class CollateralServiceTest extends TestCase
         $this->assertEquals(Collection::class, $reflection->getReturnType()->getName());
     }
 
+    #[Test]
     public function test_update_position_collateral_ratio_method_signature(): void
     {
         $reflection = new \ReflectionMethod(CollateralService::class, 'updatePositionCollateralRatio');
@@ -138,6 +143,7 @@ class CollateralServiceTest extends TestCase
         $this->assertEquals('void', $reflection->getReturnType()->getName());
     }
 
+    #[Test]
     public function test_calculate_position_health_score_method_signature(): void
     {
         $reflection = new \ReflectionMethod(CollateralService::class, 'calculatePositionHealthScore');
@@ -152,6 +158,7 @@ class CollateralServiceTest extends TestCase
         $this->assertEquals('float', $reflection->getReturnType()->getName());
     }
 
+    #[Test]
     public function test_get_collateral_distribution_method_signature(): void
     {
         $reflection = new \ReflectionMethod(CollateralService::class, 'getCollateralDistribution');
@@ -166,6 +173,7 @@ class CollateralServiceTest extends TestCase
         $this->assertEquals('array', $reflection->getReturnType()->getName());
     }
 
+    #[Test]
     public function test_get_system_collateralization_metrics_method_signature(): void
     {
         $reflection = new \ReflectionMethod(CollateralService::class, 'getSystemCollateralizationMetrics');
@@ -175,6 +183,7 @@ class CollateralServiceTest extends TestCase
         $this->assertEquals('array', $reflection->getReturnType()->getName());
     }
 
+    #[Test]
     public function test_calculate_liquidation_priority_method_signature(): void
     {
         $reflection = new \ReflectionMethod(CollateralService::class, 'calculateLiquidationPriority');
@@ -189,6 +198,7 @@ class CollateralServiceTest extends TestCase
         $this->assertEquals('float', $reflection->getReturnType()->getName());
     }
 
+    #[Test]
     public function test_get_position_recommendations_method_signature(): void
     {
         $reflection = new \ReflectionMethod(CollateralService::class, 'getPositionRecommendations');
@@ -203,6 +213,7 @@ class CollateralServiceTest extends TestCase
         $this->assertEquals('array', $reflection->getReturnType()->getName());
     }
 
+    #[Test]
     public function test_has_private_calculate_suggested_collateral_amount_method(): void
     {
         $reflection = new \ReflectionClass(CollateralService::class);
@@ -212,6 +223,7 @@ class CollateralServiceTest extends TestCase
         $this->assertTrue($method->isPrivate());
     }
 
+    #[Test]
     public function test_service_uses_models(): void
     {
         $reflection = new \ReflectionClass(CollateralService::class);
@@ -225,6 +237,7 @@ class CollateralServiceTest extends TestCase
         $this->assertStringContainsString('use Illuminate\Support\Collection;', $fileContent);
     }
 
+    #[Test]
     public function test_service_handles_exchange_rates(): void
     {
         $reflection = new \ReflectionClass(CollateralService::class);
@@ -245,6 +258,7 @@ class CollateralServiceTest extends TestCase
         $this->assertStringContainsString('throw new \RuntimeException', $source);
     }
 
+    #[Test]
     public function test_service_handles_position_filtering(): void
     {
         $reflection = new \ReflectionClass(CollateralService::class);
@@ -262,6 +276,7 @@ class CollateralServiceTest extends TestCase
         $this->assertStringContainsString('updatePositionCollateralRatio', $source);
     }
 
+    #[Test]
     public function test_service_calculates_health_metrics(): void
     {
         $reflection = new \ReflectionClass(CollateralService::class);
@@ -281,6 +296,7 @@ class CollateralServiceTest extends TestCase
         $this->assertStringContainsString('min(1.0, max(0.0,', $source);
     }
 
+    #[Test]
     public function test_service_provides_recommendations(): void
     {
         $reflection = new \ReflectionClass(CollateralService::class);
@@ -305,6 +321,7 @@ class CollateralServiceTest extends TestCase
         $this->assertStringContainsString("'action'          => 'mint_more'", $source);
     }
 
+    #[Test]
     public function test_service_handles_system_metrics(): void
     {
         $reflection = new \ReflectionClass(CollateralService::class);
@@ -327,6 +344,7 @@ class CollateralServiceTest extends TestCase
         $this->assertStringContainsString("'collateral_distribution'", $source);
     }
 
+    #[Test]
     public function test_liquidation_priority_calculation(): void
     {
         $reflection = new \ReflectionClass(CollateralService::class);

@@ -9,9 +9,9 @@ use App\Services\Email\SubscriberEmailService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
 use PHPUnit\Framework\Attributes\Test;
-use Tests\TestCase;
+use Tests\DomainTestCase;
 
-class SubscriberTest extends TestCase
+class SubscriberTest extends DomainTestCase
 {
     use RefreshDatabase;
 

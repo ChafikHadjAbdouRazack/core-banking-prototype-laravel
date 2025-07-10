@@ -3,12 +3,14 @@
 namespace Tests\Feature\Http\Controllers\Api\V2;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ControllerTestCase;
 
-class PublicApiControllerTest extends TestCase
+class PublicApiControllerTest extends ControllerTestCase
 {
     use RefreshDatabase;
 
+    #[Test]
     public function test_get_api_info_returns_information(): void
     {
         $response = $this->getJson('/api/v2');
@@ -36,6 +38,7 @@ class PublicApiControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_get_health_status_returns_system_status(): void
     {
         $response = $this->getJson('/api/v2/health');
@@ -57,6 +60,7 @@ class PublicApiControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_get_rate_limits_returns_limit_information(): void
     {
         $response = $this->getJson('/api/v2/rate-limits');
@@ -91,6 +95,7 @@ class PublicApiControllerTest extends TestCase
             ->assertJsonPath('limits.authenticated.requests_per_minute', 300);
     }
 
+    #[Test]
     public function test_get_supported_currencies_returns_list(): void
     {
         $response = $this->getJson('/api/v2/currencies');
@@ -116,6 +121,7 @@ class PublicApiControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_get_supported_countries_returns_list(): void
     {
         $response = $this->getJson('/api/v2/countries');
@@ -142,6 +148,7 @@ class PublicApiControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_get_api_changelog_returns_version_history(): void
     {
         $response = $this->getJson('/api/v2/changelog');
@@ -165,6 +172,7 @@ class PublicApiControllerTest extends TestCase
             ->assertJsonPath('current_version', '2.0.0');
     }
 
+    #[Test]
     public function test_get_error_codes_returns_error_reference(): void
     {
         $response = $this->getJson('/api/v2/errors');
@@ -190,6 +198,7 @@ class PublicApiControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_get_webhooks_info_returns_webhook_details(): void
     {
         $response = $this->getJson('/api/v2/webhooks/info');
@@ -220,6 +229,7 @@ class PublicApiControllerTest extends TestCase
             ->assertJsonPath('security.signature_algorithm', 'HMAC-SHA256');
     }
 
+    #[Test]
     public function test_options_request_returns_cors_headers(): void
     {
         $response = $this->options('/api/v2');

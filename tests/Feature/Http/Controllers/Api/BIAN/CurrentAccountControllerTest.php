@@ -2,13 +2,11 @@
 
 namespace Tests\Feature\Http\Controllers\Api\BIAN;
 
-use App\Models\Account;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Laravel\Sanctum\Sanctum;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ControllerTestCase;
 
-class CurrentAccountControllerTest extends TestCase
+class CurrentAccountControllerTest extends ControllerTestCase
 {
     use RefreshDatabase;
 
@@ -21,6 +19,7 @@ class CurrentAccountControllerTest extends TestCase
         $this->user = User::factory()->create();
     }
 
+    #[Test]
     public function test_initiate_creates_new_account(): void
     {
         Sanctum::actingAs($this->user);
@@ -74,6 +73,7 @@ class CurrentAccountControllerTest extends TestCase
         ]);
     }
 
+    #[Test]
     public function test_initiate_without_initial_deposit(): void
     {
         Sanctum::actingAs($this->user);
@@ -95,6 +95,7 @@ class CurrentAccountControllerTest extends TestCase
         ]);
     }
 
+    #[Test]
     public function test_initiate_requires_authentication(): void
     {
         $response = $this->postJson('/api/bian/current-account/initiate', [
@@ -106,6 +107,7 @@ class CurrentAccountControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_initiate_validates_input(): void
     {
         Sanctum::actingAs($this->user);
@@ -122,6 +124,7 @@ class CurrentAccountControllerTest extends TestCase
             ->assertJsonValidationErrors(['customerReference', 'accountName', 'accountType', 'initialDeposit', 'currency']);
     }
 
+    #[Test]
     public function test_retrieve_returns_account_details(): void
     {
         Sanctum::actingAs($this->user);
@@ -170,6 +173,7 @@ class CurrentAccountControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_retrieve_returns_404_for_non_existent_account(): void
     {
         Sanctum::actingAs($this->user);
@@ -179,6 +183,7 @@ class CurrentAccountControllerTest extends TestCase
         $response->assertStatus(404);
     }
 
+    #[Test]
     public function test_retrieve_requires_authentication(): void
     {
         $account = Account::factory()->create();
@@ -188,6 +193,7 @@ class CurrentAccountControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_update_modifies_account_name(): void
     {
         Sanctum::actingAs($this->user);
@@ -220,6 +226,7 @@ class CurrentAccountControllerTest extends TestCase
         ]);
     }
 
+    #[Test]
     public function test_update_validates_input(): void
     {
         Sanctum::actingAs($this->user);
@@ -235,6 +242,7 @@ class CurrentAccountControllerTest extends TestCase
             ->assertJsonValidationErrors(['accountName', 'accountStatus']);
     }
 
+    #[Test]
     public function test_control_freezes_account(): void
     {
         Sanctum::actingAs($this->user);
@@ -264,6 +272,7 @@ class CurrentAccountControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_control_unfreezes_account(): void
     {
         Sanctum::actingAs($this->user);
@@ -281,6 +290,7 @@ class CurrentAccountControllerTest extends TestCase
             ->assertJsonPath('currentAccountFulfillmentControlRecord.controlStatus', 'active');
     }
 
+    #[Test]
     public function test_control_validates_input(): void
     {
         Sanctum::actingAs($this->user);
@@ -296,6 +306,7 @@ class CurrentAccountControllerTest extends TestCase
             ->assertJsonValidationErrors(['controlAction', 'controlReason']);
     }
 
+    #[Test]
     public function test_execute_payment_with_sufficient_funds(): void
     {
         Sanctum::actingAs($this->user);
@@ -335,6 +346,7 @@ class CurrentAccountControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_execute_payment_with_insufficient_funds(): void
     {
         Sanctum::actingAs($this->user);
@@ -361,6 +373,7 @@ class CurrentAccountControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_execute_payment_validates_input(): void
     {
         Sanctum::actingAs($this->user);
@@ -377,6 +390,7 @@ class CurrentAccountControllerTest extends TestCase
             ->assertJsonValidationErrors(['paymentAmount', 'paymentType', 'paymentDescription']);
     }
 
+    #[Test]
     public function test_execute_deposit(): void
     {
         Sanctum::actingAs($this->user);
@@ -416,6 +430,7 @@ class CurrentAccountControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_execute_deposit_validates_input(): void
     {
         Sanctum::actingAs($this->user);
@@ -431,6 +446,7 @@ class CurrentAccountControllerTest extends TestCase
             ->assertJsonValidationErrors(['depositAmount', 'depositType']);
     }
 
+    #[Test]
     public function test_retrieve_account_balance(): void
     {
         Sanctum::actingAs($this->user);
@@ -463,6 +479,7 @@ class CurrentAccountControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_retrieve_transaction_report(): void
     {
         Sanctum::actingAs($this->user);
@@ -495,6 +512,7 @@ class CurrentAccountControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_retrieve_transaction_report_with_filters(): void
     {
         Sanctum::actingAs($this->user);
@@ -514,6 +532,7 @@ class CurrentAccountControllerTest extends TestCase
             ->assertJsonPath('transactionReportRecord.reportPeriod.toDate', '2024-01-31');
     }
 
+    #[Test]
     public function test_retrieve_transaction_report_validates_dates(): void
     {
         Sanctum::actingAs($this->user);
@@ -530,6 +549,7 @@ class CurrentAccountControllerTest extends TestCase
             ->assertJsonValidationErrors(['toDate', 'transactionType']);
     }
 
+    #[Test]
     public function test_all_endpoints_require_authentication(): void
     {
         $account = Account::factory()->create();

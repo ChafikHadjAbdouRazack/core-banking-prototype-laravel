@@ -2,16 +2,11 @@
 
 namespace Tests\Unit\Domain\Compliance\Services;
 
-use App\Domain\Compliance\Services\KycService;
-use App\Models\AuditLog;
-use App\Models\KycDocument;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ServiceTestCase;
 
-class KycServiceTest extends TestCase
+class KycServiceTest extends ServiceTestCase
 {
     use RefreshDatabase;
 
@@ -24,6 +19,7 @@ class KycServiceTest extends TestCase
         Storage::fake('private');
     }
 
+    #[Test]
     public function test_submit_kyc_updates_user_status(): void
     {
         $user = User::factory()->create([
@@ -49,6 +45,7 @@ class KycServiceTest extends TestCase
         $this->assertNotNull($user->kyc_submitted_at);
     }
 
+    #[Test]
     public function test_submit_kyc_stores_documents(): void
     {
         $user = User::factory()->create();
@@ -80,6 +77,7 @@ class KycServiceTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_submit_kyc_creates_audit_log(): void
     {
         $user = User::factory()->create();
@@ -105,6 +103,7 @@ class KycServiceTest extends TestCase
         $this->assertEquals('kyc,compliance', $auditLog->tags);
     }
 
+    #[Test]
     public function test_verify_kyc_approves_user(): void
     {
         $user = User::factory()->create([
@@ -119,6 +118,7 @@ class KycServiceTest extends TestCase
         $this->assertNotNull($user->kyc_approved_at);
     }
 
+    #[Test]
     public function test_verify_kyc_creates_audit_log(): void
     {
         $user = User::factory()->create(['kyc_status' => 'pending']);
@@ -137,6 +137,7 @@ class KycServiceTest extends TestCase
         $this->assertEquals('admin-456', $auditLog->metadata['verified_by']);
     }
 
+    #[Test]
     public function test_reject_kyc_updates_status(): void
     {
         $user = User::factory()->create(['kyc_status' => 'pending']);
@@ -148,6 +149,7 @@ class KycServiceTest extends TestCase
         $this->assertNotNull($user->kyc_rejected_at);
     }
 
+    #[Test]
     public function test_get_kyc_status_returns_user_status(): void
     {
         $user = User::factory()->create(['kyc_status' => 'approved']);
@@ -157,6 +159,7 @@ class KycServiceTest extends TestCase
         $this->assertEquals('approved', $status);
     }
 
+    #[Test]
     public function test_is_kyc_approved_returns_correct_boolean(): void
     {
         $approvedUser = User::factory()->create(['kyc_status' => 'approved']);
@@ -168,6 +171,7 @@ class KycServiceTest extends TestCase
         $this->assertFalse($this->service->isKycApproved($rejectedUser));
     }
 
+    #[Test]
     public function test_store_document_creates_hash(): void
     {
         $user = User::factory()->create();
@@ -191,6 +195,7 @@ class KycServiceTest extends TestCase
         $this->assertEquals('test.jpg', $kycDocument->metadata['original_name']);
     }
 
+    #[Test]
     public function test_handle_document_with_different_types(): void
     {
         $user = User::factory()->create();

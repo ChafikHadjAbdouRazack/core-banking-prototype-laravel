@@ -2,13 +2,11 @@
 
 namespace Tests\Unit\Domain\Compliance\Services;
 
-use App\Domain\Compliance\Services\AmlScreeningService;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Http;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ServiceTestCase;
 
-class AmlScreeningServiceTest extends TestCase
+class AmlScreeningServiceTest extends ServiceTestCase
 {
     use RefreshDatabase;
 
@@ -20,6 +18,7 @@ class AmlScreeningServiceTest extends TestCase
         $this->service = new AmlScreeningService();
     }
 
+    #[Test]
     public function test_perform_sanctions_screening_checks_multiple_lists(): void
     {
         Http::fake([
@@ -39,6 +38,7 @@ class AmlScreeningServiceTest extends TestCase
         $this->assertContains('UN', $results['lists_checked']);
     }
 
+    #[Test]
     public function test_perform_pep_screening(): void
     {
         Http::fake([
@@ -54,6 +54,7 @@ class AmlScreeningServiceTest extends TestCase
         $this->assertFalse($results['is_pep']);
     }
 
+    #[Test]
     public function test_perform_adverse_media_screening(): void
     {
         Http::fake([
@@ -69,6 +70,7 @@ class AmlScreeningServiceTest extends TestCase
         $this->assertFalse($results['has_adverse_media']);
     }
 
+    #[Test]
     public function test_calculate_overall_risk_with_no_matches(): void
     {
         $sanctionsResults = ['total_matches' => 0];
@@ -84,6 +86,7 @@ class AmlScreeningServiceTest extends TestCase
         $this->assertEquals('low', $risk);
     }
 
+    #[Test]
     public function test_calculate_overall_risk_with_sanctions_match(): void
     {
         $sanctionsResults = ['total_matches' => 1];
@@ -99,6 +102,7 @@ class AmlScreeningServiceTest extends TestCase
         $this->assertEquals('critical', $risk);
     }
 
+    #[Test]
     public function test_calculate_overall_risk_with_pep_match(): void
     {
         $sanctionsResults = ['total_matches' => 0];
@@ -114,6 +118,7 @@ class AmlScreeningServiceTest extends TestCase
         $this->assertEquals('high', $risk);
     }
 
+    #[Test]
     public function test_calculate_overall_risk_with_adverse_media(): void
     {
         $sanctionsResults = ['total_matches' => 0];
@@ -129,6 +134,7 @@ class AmlScreeningServiceTest extends TestCase
         $this->assertEquals('medium', $risk);
     }
 
+    #[Test]
     public function test_calculate_overall_risk_with_serious_adverse_media(): void
     {
         $sanctionsResults = ['total_matches' => 0];
@@ -144,6 +150,7 @@ class AmlScreeningServiceTest extends TestCase
         $this->assertEquals('high', $risk);
     }
 
+    #[Test]
     public function test_count_total_matches(): void
     {
         $sanctionsResults = ['total_matches' => 2];
@@ -159,6 +166,7 @@ class AmlScreeningServiceTest extends TestCase
         $this->assertEquals(6, $total);
     }
 
+    #[Test]
     public function test_generate_unique_screening_number(): void
     {
         $reflection = new \ReflectionClass($this->service);
@@ -174,6 +182,7 @@ class AmlScreeningServiceTest extends TestCase
         $this->assertEquals('AML-' . date('Y') . '-00001', $screeningNumber);
     }
 
+    #[Test]
     public function test_build_search_parameters_for_user(): void
     {
         $user = User::factory()->make([
@@ -191,6 +200,7 @@ class AmlScreeningServiceTest extends TestCase
         $this->assertEquals('UK', $params['country']);
     }
 
+    #[Test]
     public function test_build_search_parameters_with_additional_params(): void
     {
         $user = User::factory()->make(['name' => 'Test User']);
@@ -210,6 +220,7 @@ class AmlScreeningServiceTest extends TestCase
         $this->assertTrue($params['fuzzy_matching']);
     }
 
+    #[Test]
     public function test_check_ofac_list_with_no_matches(): void
     {
         $reflection = new \ReflectionClass($this->service);
@@ -222,6 +233,7 @@ class AmlScreeningServiceTest extends TestCase
         $this->assertEmpty($matches);
     }
 
+    #[Test]
     public function test_check_ofac_list_with_test_match(): void
     {
         $reflection = new \ReflectionClass($this->service);
@@ -237,6 +249,7 @@ class AmlScreeningServiceTest extends TestCase
         $this->assertArrayHasKey('match_score', $matches[0]);
     }
 
+    #[Test]
     public function test_check_pep_database_negative(): void
     {
         $reflection = new \ReflectionClass($this->service);
@@ -248,6 +261,7 @@ class AmlScreeningServiceTest extends TestCase
         $this->assertFalse($result);
     }
 
+    #[Test]
     public function test_check_pep_database_positive(): void
     {
         $reflection = new \ReflectionClass($this->service);
@@ -260,6 +274,7 @@ class AmlScreeningServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
+    #[Test]
     public function test_search_adverse_media_no_results(): void
     {
         $reflection = new \ReflectionClass($this->service);
@@ -272,6 +287,7 @@ class AmlScreeningServiceTest extends TestCase
         $this->assertEmpty($results);
     }
 
+    #[Test]
     public function test_search_adverse_media_with_results(): void
     {
         $reflection = new \ReflectionClass($this->service);

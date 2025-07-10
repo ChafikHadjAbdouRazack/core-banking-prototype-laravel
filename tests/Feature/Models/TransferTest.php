@@ -7,6 +7,7 @@ namespace Tests\Feature\Models;
 use App\Models\Account;
 use App\Models\Transfer;
 use Illuminate\Support\Carbon;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class TransferTest extends TestCase
@@ -23,7 +24,7 @@ class TransferTest extends TestCase
         $this->toAccount = Account::factory()->create();
     }
 
-    /** @test */
+    #[Test]
     public function it_can_create_a_transfer_event()
     {
         // Transfer is an event store model, so we create it as an event
@@ -50,7 +51,7 @@ class TransferTest extends TestCase
         $this->assertEquals('App\\Domain\\Account\\Events\\MoneyTransferred', $transfer->event_class);
     }
 
-    /** @test */
+    #[Test]
     public function it_stores_account_relationships_in_event_properties()
     {
         $transfer = Transfer::create([
@@ -73,7 +74,7 @@ class TransferTest extends TestCase
         $this->assertEquals($this->toAccount->uuid, $properties['to_account_uuid']);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_retrieve_event_properties()
     {
         $eventProperties = [
@@ -98,7 +99,7 @@ class TransferTest extends TestCase
         $this->assertEquals($eventProperties, $decoded);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_query_by_event_class()
     {
         // Create different types of events
@@ -140,7 +141,7 @@ class TransferTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_can_query_by_aggregate_uuid()
     {
         $aggregateUuid = 'transfer-aggregate-' . uniqid();
@@ -185,7 +186,7 @@ class TransferTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_stores_metadata_correctly()
     {
         $metadata = [
@@ -219,7 +220,7 @@ class TransferTest extends TestCase
         $this->assertEquals('App\\Domain\\Account\\Events\\MoneyTransferred', $transfer->event_class);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_event_versioning()
     {
         $aggregateUuid = 'versioned-transfer-' . uniqid();
@@ -261,7 +262,7 @@ class TransferTest extends TestCase
         $this->assertEquals(2, $v3->event_version);
     }
 
-    /** @test */
+    #[Test]
     public function it_maintains_unique_constraint_on_aggregate_version()
     {
         $aggregateUuid = 'unique-test-' . uniqid();
@@ -291,7 +292,7 @@ class TransferTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_stores_events_in_chronological_order()
     {
         $aggregateUuid = 'chronological-' . uniqid();

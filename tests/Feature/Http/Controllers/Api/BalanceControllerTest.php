@@ -2,17 +2,11 @@
 
 namespace Tests\Feature\Http\Controllers\Api;
 
-use App\Domain\Account\Services\Cache\AccountCacheService;
-use App\Domain\Account\Services\Cache\TurnoverCacheService;
-use App\Models\Account;
-use App\Models\Turnover;
-use App\Models\User;
-use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Laravel\Sanctum\Sanctum;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ControllerTestCase;
 
-class BalanceControllerTest extends TestCase
+class BalanceControllerTest extends ControllerTestCase
 {
     use RefreshDatabase;
 
@@ -39,6 +33,7 @@ class BalanceControllerTest extends TestCase
         $this->turnoverCache = $this->app->make(TurnoverCacheService::class);
     }
 
+    #[Test]
     public function test_show_returns_account_balance(): void
     {
         Sanctum::actingAs($this->user);
@@ -64,6 +59,7 @@ class BalanceControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_show_returns_turnover_data_when_exists(): void
     {
         Sanctum::actingAs($this->user);
@@ -97,6 +93,7 @@ class BalanceControllerTest extends TestCase
             ->assertJsonPath('data.turnover.credit', 15000);
     }
 
+    #[Test]
     public function test_show_returns_null_turnover_when_none_exists(): void
     {
         Sanctum::actingAs($this->user);
@@ -107,6 +104,7 @@ class BalanceControllerTest extends TestCase
             ->assertJsonPath('data.turnover', null);
     }
 
+    #[Test]
     public function test_show_uses_cached_balance_when_available(): void
     {
         Sanctum::actingAs($this->user);
@@ -120,6 +118,7 @@ class BalanceControllerTest extends TestCase
             ->assertJsonPath('data.balance', 75000);
     }
 
+    #[Test]
     public function test_show_returns_404_for_non_existent_account(): void
     {
         Sanctum::actingAs($this->user);
@@ -129,6 +128,7 @@ class BalanceControllerTest extends TestCase
         $response->assertStatus(404);
     }
 
+    #[Test]
     public function test_show_handles_frozen_accounts(): void
     {
         Sanctum::actingAs($this->user);
@@ -146,6 +146,7 @@ class BalanceControllerTest extends TestCase
             ->assertJsonPath('data.balance', 25000);
     }
 
+    #[Test]
     public function test_show_requires_authentication(): void
     {
         $response = $this->getJson("/api/accounts/{$this->account->uuid}/balance");
@@ -153,6 +154,7 @@ class BalanceControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_summary_returns_detailed_balance_statistics(): void
     {
         Sanctum::actingAs($this->user);
@@ -195,6 +197,7 @@ class BalanceControllerTest extends TestCase
             ->assertJsonPath('data.current_balance', 50000);
     }
 
+    #[Test]
     public function test_summary_calculates_statistics_correctly(): void
     {
         Sanctum::actingAs($this->user);
@@ -244,6 +247,7 @@ class BalanceControllerTest extends TestCase
             ->assertJsonPath('data.statistics.months_analyzed', 2);
     }
 
+    #[Test]
     public function test_summary_handles_no_turnover_data(): void
     {
         Sanctum::actingAs($this->user);
@@ -257,6 +261,7 @@ class BalanceControllerTest extends TestCase
             ->assertJsonCount(0, 'data.monthly_turnovers');
     }
 
+    #[Test]
     public function test_summary_returns_404_for_non_existent_account(): void
     {
         Sanctum::actingAs($this->user);
@@ -266,6 +271,7 @@ class BalanceControllerTest extends TestCase
         $response->assertStatus(404);
     }
 
+    #[Test]
     public function test_summary_requires_authentication(): void
     {
         $response = $this->getJson("/api/accounts/{$this->account->uuid}/balance/summary");
@@ -273,6 +279,7 @@ class BalanceControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_summary_formats_monthly_turnover_data(): void
     {
         Sanctum::actingAs($this->user);
@@ -304,6 +311,7 @@ class BalanceControllerTest extends TestCase
         $this->assertMatchesRegularExpression('/^\d{4}-\d{2}$/', $turnovers[0]['month']);
     }
 
+    #[Test]
     public function test_show_returns_balance_with_zero_balance(): void
     {
         Sanctum::actingAs($this->user);
@@ -321,6 +329,7 @@ class BalanceControllerTest extends TestCase
             ->assertJsonPath('data.frozen', false);
     }
 
+    #[Test]
     public function test_summary_handles_large_turnover_volumes(): void
     {
         Sanctum::actingAs($this->user);
@@ -346,6 +355,7 @@ class BalanceControllerTest extends TestCase
             ->assertJsonPath('data.statistics.months_analyzed', 12);
     }
 
+    #[Test]
     public function test_show_uses_account_balance_when_cache_unavailable(): void
     {
         Sanctum::actingAs($this->user);

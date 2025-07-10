@@ -2,17 +2,11 @@
 
 namespace Tests\Feature\Cgo;
 
-use App\Domain\Cgo\Actions\RequestRefundAction;
-use App\Models\CgoInvestment;
-use App\Models\CgoPricingRound;
-use App\Models\CgoRefund;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Queue;
-use Temporal\Client\WorkflowClient;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\DomainTestCase;
 
-class RefundProcessingTest extends TestCase
+class RefundProcessingTest extends DomainTestCase
 {
     use RefreshDatabase;
 
@@ -60,6 +54,7 @@ class RefundProcessingTest extends TestCase
         ]);
     }
 
+    #[Test]
     public function test_can_request_refund_for_eligible_investment()
     {
         // Mock the WorkflowClient
@@ -96,6 +91,7 @@ class RefundProcessingTest extends TestCase
         $this->assertEquals('initiated', $result['status']);
     }
 
+    #[Test]
     public function test_cannot_request_refund_for_ineligible_investment()
     {
         // Make investment ineligible
@@ -120,6 +116,7 @@ class RefundProcessingTest extends TestCase
         );
     }
 
+    #[Test]
     public function test_cannot_request_refund_when_one_already_exists()
     {
         // Create an existing refund
@@ -150,6 +147,7 @@ class RefundProcessingTest extends TestCase
         );
     }
 
+    #[Test]
     public function test_auto_approves_small_refunds()
     {
         // Create a small investment
@@ -202,6 +200,7 @@ class RefundProcessingTest extends TestCase
         $this->assertTrue($result['auto_approved']);
     }
 
+    #[Test]
     public function test_auto_approves_within_grace_period()
     {
         // Update investment to be within grace period
@@ -241,6 +240,7 @@ class RefundProcessingTest extends TestCase
         $this->assertTrue($result['auto_approved']);
     }
 
+    #[Test]
     public function test_refund_model_relationships()
     {
         $refund = CgoRefund::create([
@@ -264,6 +264,7 @@ class RefundProcessingTest extends TestCase
         $this->assertEquals($this->user->id, $refund->initiator->id);
     }
 
+    #[Test]
     public function test_refund_status_methods()
     {
         $refund = CgoRefund::create([
@@ -297,6 +298,7 @@ class RefundProcessingTest extends TestCase
         $this->assertFalse($refund->canBeCancelled());
     }
 
+    #[Test]
     public function test_investment_refund_methods()
     {
         $this->assertTrue($this->investment->canBeRefunded());

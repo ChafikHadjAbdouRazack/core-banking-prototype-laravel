@@ -4,17 +4,19 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Domain\Wallet\Workflows;
 
-use App\Domain\Wallet\Workflows\WalletConvertWorkflow;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\DomainTestCase;
 
-class WalletConvertWorkflowTest extends TestCase
+class WalletConvertWorkflowTest extends DomainTestCase
 {
+    #[Test]
     public function test_workflow_extends_base_workflow()
     {
         $reflection = new \ReflectionClass(WalletConvertWorkflow::class);
         $this->assertTrue($reflection->isSubclassOf(\Workflow\Workflow::class));
     }
 
+    #[Test]
     public function test_execute_method_has_correct_signature()
     {
         $reflection = new \ReflectionClass(WalletConvertWorkflow::class);
@@ -31,6 +33,7 @@ class WalletConvertWorkflowTest extends TestCase
         $this->assertEquals('amount', $parameters[3]->getName());
     }
 
+    #[Test]
     public function test_workflow_has_compensation_pattern()
     {
         $reflection = new \ReflectionClass(WalletConvertWorkflow::class);

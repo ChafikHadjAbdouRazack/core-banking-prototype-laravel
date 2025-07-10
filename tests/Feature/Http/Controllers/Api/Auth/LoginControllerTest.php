@@ -2,13 +2,11 @@
 
 namespace Tests\Feature\Http\Controllers\Api\Auth;
 
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Hash;
-use Laravel\Sanctum\Sanctum;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ControllerTestCase;
 
-class LoginControllerTest extends TestCase
+class LoginControllerTest extends ControllerTestCase
 {
     use RefreshDatabase;
 
@@ -24,6 +22,7 @@ class LoginControllerTest extends TestCase
         ]);
     }
 
+    #[Test]
     public function test_login_with_valid_credentials(): void
     {
         $response = $this->postJson('/api/auth/login', [
@@ -55,6 +54,7 @@ class LoginControllerTest extends TestCase
         $this->assertEquals($response->json('access_token'), $response->json('token'));
     }
 
+    #[Test]
     public function test_login_with_device_name(): void
     {
         $response = $this->postJson('/api/auth/login', [
@@ -72,6 +72,7 @@ class LoginControllerTest extends TestCase
         ]);
     }
 
+    #[Test]
     public function test_login_fails_with_invalid_email(): void
     {
         $response = $this->postJson('/api/auth/login', [
@@ -84,6 +85,7 @@ class LoginControllerTest extends TestCase
             ->assertJsonPath('errors.email.0', 'The provided credentials are incorrect.');
     }
 
+    #[Test]
     public function test_login_fails_with_invalid_password(): void
     {
         $response = $this->postJson('/api/auth/login', [
@@ -100,6 +102,7 @@ class LoginControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_login_validation_errors(): void
     {
         $response = $this->postJson('/api/auth/login', []);
@@ -116,6 +119,7 @@ class LoginControllerTest extends TestCase
             ->assertJsonValidationErrors(['email']);
     }
 
+    #[Test]
     public function test_login_with_revoke_tokens_option(): void
     {
         // Create some existing tokens
@@ -136,6 +140,7 @@ class LoginControllerTest extends TestCase
         $this->assertEquals(1, $this->user->fresh()->tokens()->count());
     }
 
+    #[Test]
     public function test_login_enforces_concurrent_session_limit(): void
     {
         config(['auth.max_concurrent_sessions' => 3]);
@@ -164,6 +169,7 @@ class LoginControllerTest extends TestCase
         ]);
     }
 
+    #[Test]
     public function test_logout_revokes_current_token(): void
     {
         Sanctum::actingAs($this->user);
@@ -176,6 +182,7 @@ class LoginControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_logout_requires_authentication(): void
     {
         $response = $this->postJson('/api/auth/logout');
@@ -183,6 +190,7 @@ class LoginControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_logout_all_revokes_all_tokens(): void
     {
         // Create multiple tokens
@@ -204,6 +212,7 @@ class LoginControllerTest extends TestCase
         $this->assertEquals(0, $this->user->fresh()->tokens()->count());
     }
 
+    #[Test]
     public function test_logout_all_requires_authentication(): void
     {
         $response = $this->postJson('/api/auth/logout-all');
@@ -211,6 +220,7 @@ class LoginControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_refresh_token_creates_new_token(): void
     {
         $token = $this->user->createToken('test-token');
@@ -236,6 +246,7 @@ class LoginControllerTest extends TestCase
         $this->assertEquals(1, $this->user->fresh()->tokens()->count());
     }
 
+    #[Test]
     public function test_refresh_token_requires_authentication(): void
     {
         $response = $this->postJson('/api/auth/refresh');
@@ -243,6 +254,7 @@ class LoginControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_get_authenticated_user(): void
     {
         Sanctum::actingAs($this->user);
@@ -268,6 +280,7 @@ class LoginControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_get_user_requires_authentication(): void
     {
         $response = $this->getJson('/api/auth/user');
@@ -275,6 +288,7 @@ class LoginControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_login_with_session_regeneration(): void
     {
         // Enable session for this test
@@ -290,6 +304,7 @@ class LoginControllerTest extends TestCase
         // as it's primarily for stateless authentication
     }
 
+    #[Test]
     public function test_token_expiration_is_included_when_configured(): void
     {
         config(['sanctum.expiration' => 60]); // 60 minutes
@@ -305,6 +320,7 @@ class LoginControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_token_expiration_is_null_when_not_configured(): void
     {
         config(['sanctum.expiration' => null]);

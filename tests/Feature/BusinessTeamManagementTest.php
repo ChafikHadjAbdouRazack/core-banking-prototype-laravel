@@ -8,9 +8,9 @@ use App\Models\Team;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
-use Tests\TestCase;
+use Tests\DomainTestCase;
 
-class BusinessTeamManagementTest extends TestCase
+class BusinessTeamManagementTest extends DomainTestCase
 {
     use RefreshDatabase;
 

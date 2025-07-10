@@ -2,12 +2,11 @@
 
 namespace Tests\Feature\Http\Controllers;
 
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Spatie\Permission\Models\Role;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ControllerTestCase;
 
-class CustodianIntegrationControllerTest extends TestCase
+class CustodianIntegrationControllerTest extends ControllerTestCase
 {
     use RefreshDatabase;
 
@@ -31,6 +30,7 @@ class CustodianIntegrationControllerTest extends TestCase
         $this->regularUser = User::factory()->create();
     }
 
+    #[Test]
     public function test_unauthorized_user_cannot_access_custodian_integration()
     {
         $response = $this->actingAs($this->regularUser)
@@ -39,6 +39,7 @@ class CustodianIntegrationControllerTest extends TestCase
         $response->assertStatus(403);
     }
 
+    #[Test]
     public function test_authorized_user_can_access_custodian_integration_index()
     {
         $response = $this->actingAs($this->adminUser)
@@ -49,6 +50,7 @@ class CustodianIntegrationControllerTest extends TestCase
             ->assertViewHas(['custodians', 'statistics', 'recentActivities']);
     }
 
+    #[Test]
     public function test_authorized_user_can_view_custodian_details()
     {
         $response = $this->actingAs($this->adminUser)
@@ -59,6 +61,7 @@ class CustodianIntegrationControllerTest extends TestCase
             ->assertViewHas(['custodian', 'accountBalances', 'transactionHistory', 'systemStatus']);
     }
 
+    #[Test]
     public function test_returns_404_for_invalid_custodian()
     {
         $response = $this->actingAs($this->adminUser)
@@ -67,6 +70,7 @@ class CustodianIntegrationControllerTest extends TestCase
         $response->assertStatus(404);
     }
 
+    #[Test]
     public function test_can_test_custodian_connection()
     {
         $response = $this->actingAs($this->adminUser)
@@ -76,6 +80,7 @@ class CustodianIntegrationControllerTest extends TestCase
             ->assertJson(['status' => 'success']);
     }
 
+    #[Test]
     public function test_can_synchronize_custodian_data()
     {
         $response = $this->actingAs($this->adminUser)

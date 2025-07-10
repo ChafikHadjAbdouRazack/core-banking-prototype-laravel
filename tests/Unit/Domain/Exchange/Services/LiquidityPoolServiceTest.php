@@ -2,20 +2,12 @@
 
 namespace Tests\Unit\Domain\Exchange\Services;
 
-use App\Domain\Exchange\Aggregates\LiquidityPool;
-use App\Domain\Exchange\Projections\LiquidityPool as PoolProjection;
-use App\Domain\Exchange\Projections\LiquidityProvider;
-use App\Domain\Exchange\Services\ExchangeService;
-use App\Domain\Exchange\Services\LiquidityPoolService;
-use App\Domain\Exchange\ValueObjects\LiquidityAdditionInput;
-use App\Domain\Exchange\ValueObjects\LiquidityRemovalInput;
-use App\Domain\Exchange\Workflows\LiquidityManagementWorkflow;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Mockery;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ServiceTestCase;
 use Workflow\WorkflowStub;
 
-class LiquidityPoolServiceTest extends TestCase
+class LiquidityPoolServiceTest extends ServiceTestCase
 {
     use RefreshDatabase;
 
@@ -31,6 +23,7 @@ class LiquidityPoolServiceTest extends TestCase
         $this->service = new LiquidityPoolService($this->exchangeService);
     }
 
+    #[Test]
     public function test_create_pool_creates_new_liquidity_pool(): void
     {
         $baseCurrency = 'ETH';
@@ -44,6 +37,7 @@ class LiquidityPoolServiceTest extends TestCase
         $this->assertMatchesRegularExpression('/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i', $poolId);
     }
 
+    #[Test]
     public function test_create_pool_throws_exception_if_pool_exists(): void
     {
         // Create initial pool
@@ -64,6 +58,7 @@ class LiquidityPoolServiceTest extends TestCase
         $this->service->createPool('BTC', 'USDT');
     }
 
+    #[Test]
     public function test_add_liquidity_delegates_to_workflow(): void
     {
         $input = new LiquidityAdditionInput(
@@ -87,6 +82,7 @@ class LiquidityPoolServiceTest extends TestCase
         $this->assertEquals($expectedResult, $result);
     }
 
+    #[Test]
     public function test_remove_liquidity_delegates_to_workflow(): void
     {
         $input = new LiquidityRemovalInput(
@@ -109,6 +105,7 @@ class LiquidityPoolServiceTest extends TestCase
         $this->assertEquals($expectedResult, $result);
     }
 
+    #[Test]
     public function test_swap_executes_pool_swap(): void
     {
         $poolId = 'pool-123';
@@ -153,6 +150,7 @@ class LiquidityPoolServiceTest extends TestCase
         $this->assertEquals($swapDetails, $result);
     }
 
+    #[Test]
     public function test_get_pool_returns_pool_projection(): void
     {
         $pool = PoolProjection::create([
@@ -174,6 +172,7 @@ class LiquidityPoolServiceTest extends TestCase
         $this->assertEquals('USDT', $result->quote_currency);
     }
 
+    #[Test]
     public function test_get_pool_returns_null_for_non_existent_pool(): void
     {
         $result = $this->service->getPool('non-existent-id');
@@ -181,6 +180,7 @@ class LiquidityPoolServiceTest extends TestCase
         $this->assertNull($result);
     }
 
+    #[Test]
     public function test_get_pool_by_pair_returns_matching_pool(): void
     {
         PoolProjection::create([
@@ -201,6 +201,7 @@ class LiquidityPoolServiceTest extends TestCase
         $this->assertEquals('USDT', $result->quote_currency);
     }
 
+    #[Test]
     public function test_get_active_pools_returns_only_active_pools(): void
     {
         // Create active pools
@@ -244,6 +245,7 @@ class LiquidityPoolServiceTest extends TestCase
         $this->assertTrue($activePools->every(fn ($pool) => $pool->is_active === true));
     }
 
+    #[Test]
     public function test_get_provider_positions_returns_positions_with_pools(): void
     {
         $providerId = 'provider-123';
@@ -283,6 +285,7 @@ class LiquidityPoolServiceTest extends TestCase
         $this->assertTrue($positions->every(fn ($pos) => $pos->provider_id === $providerId));
     }
 
+    #[Test]
     public function test_get_pool_metrics_calculates_correct_values(): void
     {
         // Create pool with activity
@@ -336,6 +339,7 @@ class LiquidityPoolServiceTest extends TestCase
         $this->assertEquals('4000000', $metrics['tvl']);
     }
 
+    #[Test]
     public function test_rebalance_pool_delegates_to_workflow(): void
     {
         $poolId = 'pool-123';
@@ -356,6 +360,7 @@ class LiquidityPoolServiceTest extends TestCase
         $this->assertEquals($expectedResult, $result);
     }
 
+    #[Test]
     public function test_distribute_rewards_calls_aggregate(): void
     {
         $poolId = 'pool-123';
@@ -378,6 +383,7 @@ class LiquidityPoolServiceTest extends TestCase
         $this->service->distributeRewards($poolId, $rewardAmount, $rewardCurrency, $metadata);
     }
 
+    #[Test]
     public function test_claim_rewards_processes_pending_rewards(): void
     {
         $poolId = 'pool-123';
@@ -415,6 +421,7 @@ class LiquidityPoolServiceTest extends TestCase
         $this->assertEquals(['USDT' => '1500', 'ETH' => '0.01'], $result);
     }
 
+    #[Test]
     public function test_claim_rewards_throws_exception_when_no_rewards(): void
     {
         $poolId = 'pool-123';

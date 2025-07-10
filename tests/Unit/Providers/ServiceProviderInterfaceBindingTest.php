@@ -2,26 +2,7 @@
 
 namespace Tests\Unit\Providers;
 
-use App\Domain\Exchange\Contracts\ExchangeServiceInterface;
-use App\Domain\Exchange\Contracts\ExternalLiquidityServiceInterface;
-use App\Domain\Exchange\Contracts\FeeCalculatorInterface;
-use App\Domain\Exchange\Contracts\LiquidityPoolServiceInterface;
-use App\Domain\Exchange\Services\ExchangeService;
-use App\Domain\Exchange\Services\ExternalLiquidityService;
-use App\Domain\Exchange\Services\FeeCalculator;
-use App\Domain\Exchange\Services\LiquidityPoolService;
-use App\Domain\Stablecoin\Contracts\CollateralServiceInterface;
-use App\Domain\Stablecoin\Contracts\LiquidationServiceInterface;
-use App\Domain\Stablecoin\Contracts\StabilityMechanismServiceInterface;
-use App\Domain\Stablecoin\Contracts\StablecoinIssuanceServiceInterface;
-use App\Domain\Stablecoin\Services\CollateralService;
-use App\Domain\Stablecoin\Services\LiquidationService;
-use App\Domain\Stablecoin\Services\StabilityMechanismService;
-use App\Domain\Stablecoin\Services\StablecoinIssuanceService;
-use App\Domain\Wallet\Contracts\WalletConnectorInterface;
-use App\Domain\Wallet\Contracts\WalletServiceInterface;
-use App\Domain\Wallet\Services\BlockchainWalletService;
-use App\Domain\Wallet\Services\WalletService;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class ServiceProviderInterfaceBindingTest extends TestCase
@@ -29,6 +10,7 @@ class ServiceProviderInterfaceBindingTest extends TestCase
     /**
      * Test Exchange service interfaces are properly bound.
      */
+    #[Test]
     public function test_exchange_service_interfaces_are_bound()
     {
         // Exchange Service
@@ -51,6 +33,7 @@ class ServiceProviderInterfaceBindingTest extends TestCase
     /**
      * Test Stablecoin service interfaces are properly bound.
      */
+    #[Test]
     public function test_stablecoin_service_interfaces_are_bound()
     {
         // Collateral Service
@@ -73,6 +56,7 @@ class ServiceProviderInterfaceBindingTest extends TestCase
     /**
      * Test Wallet service interfaces are properly bound.
      */
+    #[Test]
     public function test_wallet_service_interfaces_are_bound()
     {
         // Wallet Service
@@ -87,6 +71,7 @@ class ServiceProviderInterfaceBindingTest extends TestCase
     /**
      * Test services are singletons.
      */
+    #[Test]
     public function test_services_are_registered_as_singletons()
     {
         // Exchange services
@@ -108,6 +93,7 @@ class ServiceProviderInterfaceBindingTest extends TestCase
     /**
      * Test concrete classes are still resolvable for backward compatibility.
      */
+    #[Test]
     public function test_concrete_classes_are_resolvable()
     {
         // Exchange services

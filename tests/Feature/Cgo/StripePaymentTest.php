@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Services\Cgo\StripePaymentService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Mockery;
+use PHPUnit\Framework\Attributes\Test;
 use Stripe\Checkout\Session;
 use Tests\TestCase;
 
@@ -27,7 +28,7 @@ class StripePaymentTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_creates_stripe_checkout_session_for_investment()
     {
         $user = User::factory()->create();
@@ -64,7 +65,7 @@ class StripePaymentTest extends TestCase
         $this->assertEquals('checkout_created', $investment->payment_status);
     }
 
-    /** @test */
+    #[Test]
     public function it_verifies_completed_payment()
     {
         $user = User::factory()->create();
@@ -97,7 +98,7 @@ class StripePaymentTest extends TestCase
         $this->assertNotNull($investment->payment_completed_at);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_checkout_completed_webhook()
     {
         $user = User::factory()->create();
@@ -127,7 +128,7 @@ class StripePaymentTest extends TestCase
         $this->assertNotNull($investment->payment_completed_at);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_payment_failed_webhook()
     {
         $user = User::factory()->create();
@@ -161,7 +162,7 @@ class StripePaymentTest extends TestCase
         $this->assertNotNull($investment->payment_failed_at);
     }
 
-    /** @test */
+    #[Test]
     public function user_can_invest_with_card_payment()
     {
         $user = User::factory()->create();
@@ -199,7 +200,7 @@ class StripePaymentTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_requires_stripe_configuration()
     {
         config(['cashier.secret' => null]);

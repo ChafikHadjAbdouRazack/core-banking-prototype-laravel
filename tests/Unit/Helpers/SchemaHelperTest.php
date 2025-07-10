@@ -2,16 +2,18 @@
 
 namespace Tests\Unit\Helpers;
 
-use App\Helpers\SchemaHelper;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class SchemaHelperTest extends TestCase
 {
+    #[Test]
     public function test_class_exists(): void
     {
         $this->assertTrue(class_exists(SchemaHelper::class));
     }
 
+    #[Test]
     public function test_has_static_methods(): void
     {
         $expectedMethods = [
@@ -30,6 +32,7 @@ class SchemaHelperTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_organization_returns_valid_json_ld(): void
     {
         $result = SchemaHelper::organization();
@@ -55,6 +58,7 @@ class SchemaHelperTest extends TestCase
         $this->assertContains('Core Banking', $schema['knowsAbout']);
     }
 
+    #[Test]
     public function test_website_returns_valid_json_ld(): void
     {
         $result = SchemaHelper::website();
@@ -71,6 +75,7 @@ class SchemaHelperTest extends TestCase
         $this->assertStringContainsString('{search_term_string}', $schema['potentialAction']['target']['urlTemplate']);
     }
 
+    #[Test]
     public function test_software_application_returns_valid_json_ld(): void
     {
         $result = SchemaHelper::softwareApplication();
@@ -90,6 +95,7 @@ class SchemaHelperTest extends TestCase
         $this->assertEquals('0', $schema['offers'][0]['price']);
     }
 
+    #[Test]
     public function test_gcu_product_returns_valid_json_ld(): void
     {
         $result = SchemaHelper::gcuProduct();
@@ -109,6 +115,7 @@ class SchemaHelperTest extends TestCase
         $this->assertEquals('4.8', $schema['aggregateRating']['ratingValue']);
     }
 
+    #[Test]
     public function test_faq_returns_valid_json_ld(): void
     {
         $faqs = [
@@ -130,6 +137,7 @@ class SchemaHelperTest extends TestCase
         $this->assertEquals($faqs[0]['answer'], $schema['mainEntity'][0]['acceptedAnswer']['text']);
     }
 
+    #[Test]
     public function test_breadcrumb_returns_valid_json_ld(): void
     {
         $items = [
@@ -156,6 +164,7 @@ class SchemaHelperTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_service_returns_valid_json_ld(): void
     {
         $name = 'Core Banking API';
@@ -177,6 +186,7 @@ class SchemaHelperTest extends TestCase
         $this->assertEquals('FinAegis', $schema['provider']['name']);
     }
 
+    #[Test]
     public function test_article_returns_valid_json_ld(): void
     {
         $data = [
@@ -205,6 +215,7 @@ class SchemaHelperTest extends TestCase
         $this->assertEquals('FinAegis', $schema['author']['name']);
     }
 
+    #[Test]
     public function test_article_without_optional_fields(): void
     {
         $data = [
@@ -223,6 +234,7 @@ class SchemaHelperTest extends TestCase
         $this->assertArrayNotHasKey('image', $schema);
     }
 
+    #[Test]
     public function test_json_encoding_preserves_unicode(): void
     {
         $faqs = [
@@ -236,6 +248,7 @@ class SchemaHelperTest extends TestCase
         $this->assertStringNotContainsString('\u20ac', $result);
     }
 
+    #[Test]
     public function test_json_encoding_preserves_slashes(): void
     {
         $result = SchemaHelper::organization();
@@ -245,6 +258,7 @@ class SchemaHelperTest extends TestCase
         $this->assertStringNotContainsString('https:\\/\\/schema.org', $result);
     }
 
+    #[Test]
     public function test_generate_script_method_exists(): void
     {
         $reflection = new \ReflectionClass(SchemaHelper::class);

@@ -9,9 +9,10 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
 use Mockery;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ControllerTestCase;
 
-class ExchangeRateControllerTest extends TestCase
+class ExchangeRateControllerTest extends ControllerTestCase
 {
     use RefreshDatabase;
 
@@ -35,7 +36,7 @@ class ExchangeRateControllerTest extends TestCase
         $this->gbp = Asset::factory()->create(['code' => 'GBP', 'precision' => 2]);
     }
 
-    /** @test */
+    #[Test]
     public function it_gets_exchange_rate_between_two_assets()
     {
         Sanctum::actingAs($this->user);
@@ -82,7 +83,7 @@ class ExchangeRateControllerTest extends TestCase
         $response->assertJsonPath('data.inverse_rate', $inverseRate);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_case_insensitive_asset_codes()
     {
         Sanctum::actingAs($this->user);
@@ -101,7 +102,7 @@ class ExchangeRateControllerTest extends TestCase
         $response->assertStatus(200);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_404_when_exchange_rate_not_found()
     {
         Sanctum::actingAs($this->user);
@@ -115,7 +116,7 @@ class ExchangeRateControllerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_converts_amount_between_assets()
     {
         Sanctum::actingAs($this->user);
@@ -157,7 +158,7 @@ class ExchangeRateControllerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_conversion_amount()
     {
         Sanctum::actingAs($this->user);
@@ -182,7 +183,7 @@ class ExchangeRateControllerTest extends TestCase
         $response->assertStatus(422);
     }
 
-    /** @test */
+    #[Test]
     public function it_lists_all_exchange_rates()
     {
         Sanctum::actingAs($this->user);
@@ -212,7 +213,7 @@ class ExchangeRateControllerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_filters_exchange_rates_by_active_status()
     {
         Sanctum::actingAs($this->user);
@@ -230,7 +231,7 @@ class ExchangeRateControllerTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function it_filters_exchange_rates_by_asset()
     {
         Sanctum::actingAs($this->user);
@@ -260,7 +261,7 @@ class ExchangeRateControllerTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function it_gets_exchange_rate_history()
     {
         Sanctum::actingAs($this->user);
@@ -296,7 +297,7 @@ class ExchangeRateControllerTest extends TestCase
         $response->assertJsonCount(4, 'data');
     }
 
-    /** @test */
+    #[Test]
     public function it_requires_authentication()
     {
         $response = $this->getJson('/api/exchange-rates/USD/EUR');
@@ -309,7 +310,7 @@ class ExchangeRateControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_stale_exchange_rates()
     {
         Sanctum::actingAs($this->user);
@@ -332,7 +333,7 @@ class ExchangeRateControllerTest extends TestCase
         $this->assertGreaterThan(60, $response->json('data.age_minutes'));
     }
 
-    /** @test */
+    #[Test]
     public function it_calculates_cross_rates()
     {
         Sanctum::actingAs($this->user);

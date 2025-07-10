@@ -2,15 +2,11 @@
 
 namespace Tests\Feature\Http\Controllers\Api\V2;
 
-use App\Models\Account;
-use App\Models\GcuVote;
-use App\Models\GcuVotingProposal;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Laravel\Sanctum\Sanctum;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ControllerTestCase;
 
-class VotingControllerTest extends TestCase
+class VotingControllerTest extends ControllerTestCase
 {
     use RefreshDatabase;
 
@@ -29,6 +25,7 @@ class VotingControllerTest extends TestCase
         ]);
     }
 
+    #[Test]
     public function test_get_proposals_returns_list(): void
     {
         // Create test proposals
@@ -77,6 +74,7 @@ class VotingControllerTest extends TestCase
             ->assertJsonCount(3, 'data');
     }
 
+    #[Test]
     public function test_get_proposals_filters_by_status(): void
     {
         GcuVotingProposal::factory()->create(['status' => 'active']);
@@ -92,6 +90,7 @@ class VotingControllerTest extends TestCase
             ->assertJsonPath('data.1.status', 'active');
     }
 
+    #[Test]
     public function test_get_proposal_details(): void
     {
         $proposal = GcuVotingProposal::factory()->create([
@@ -137,6 +136,7 @@ class VotingControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_get_proposal_details_returns_404_for_invalid_id(): void
     {
         $response = $this->getJson('/api/v2/gcu/voting/proposals/999999');
@@ -144,6 +144,7 @@ class VotingControllerTest extends TestCase
         $response->assertStatus(404);
     }
 
+    #[Test]
     public function test_cast_vote_successfully(): void
     {
         Sanctum::actingAs($this->user);
@@ -186,6 +187,7 @@ class VotingControllerTest extends TestCase
         ]);
     }
 
+    #[Test]
     public function test_cast_vote_requires_authentication(): void
     {
         $proposal = GcuVotingProposal::factory()->create(['status' => 'active']);
@@ -197,6 +199,7 @@ class VotingControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_cast_vote_validates_vote_option(): void
     {
         Sanctum::actingAs($this->user);
@@ -211,6 +214,7 @@ class VotingControllerTest extends TestCase
             ->assertJsonValidationErrors(['vote']);
     }
 
+    #[Test]
     public function test_cast_vote_prevents_voting_on_inactive_proposal(): void
     {
         Sanctum::actingAs($this->user);
@@ -230,6 +234,7 @@ class VotingControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_cast_vote_prevents_duplicate_voting(): void
     {
         Sanctum::actingAs($this->user);
@@ -255,6 +260,7 @@ class VotingControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_get_voting_history(): void
     {
         Sanctum::actingAs($this->user);
@@ -304,6 +310,7 @@ class VotingControllerTest extends TestCase
             ->assertJsonCount(2, 'data');
     }
 
+    #[Test]
     public function test_get_voting_history_requires_authentication(): void
     {
         $response = $this->getJson('/api/v2/gcu/voting/my-votes');
@@ -311,6 +318,7 @@ class VotingControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_get_voting_power(): void
     {
         Sanctum::actingAs($this->user);
@@ -336,6 +344,7 @@ class VotingControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_get_voting_power_requires_authentication(): void
     {
         $response = $this->getJson('/api/v2/gcu/voting/my-voting-power');

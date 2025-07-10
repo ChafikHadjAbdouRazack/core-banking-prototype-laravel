@@ -2,13 +2,14 @@
 
 namespace Tests\Feature;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class SeoMetaTagsTest extends TestCase
 {
-    /**
-     * Test that all public pages have proper SEO meta tags.
-     */
+/**
+ * Test that all public pages have proper SEO meta tags.
+ */    #[Test]
     public function test_public_pages_have_seo_meta_tags(): void
     {
         $pages = [
@@ -78,9 +79,9 @@ class SeoMetaTagsTest extends TestCase
         }
     }
 
-    /**
-     * Test that pages have Twitter Card meta tags.
-     */
+/**
+ * Test that pages have Twitter Card meta tags.
+ */    #[Test]
     public function test_pages_have_twitter_card_tags(): void
     {
         $pages = ['/', '/about', '/platform', '/gcu', '/pricing', '/security'];
@@ -98,9 +99,9 @@ class SeoMetaTagsTest extends TestCase
         }
     }
 
-    /**
-     * Test that pages have canonical URLs.
-     */
+/**
+ * Test that pages have canonical URLs.
+ */    #[Test]
     public function test_pages_have_canonical_urls(): void
     {
         $pages = ['/', '/about', '/platform', '/gcu', '/pricing', '/security'];
@@ -116,9 +117,9 @@ class SeoMetaTagsTest extends TestCase
         }
     }
 
-    /**
-     * Test that pages have proper robots meta tag.
-     */
+/**
+ * Test that pages have proper robots meta tag.
+ */    #[Test]
     public function test_pages_have_robots_meta_tag(): void
     {
         $pages = ['/', '/about', '/platform', '/gcu', '/pricing', '/security'];
@@ -133,9 +134,9 @@ class SeoMetaTagsTest extends TestCase
         }
     }
 
-    /**
-     * Test that SEO partial handles missing parameters gracefully.
-     */
+/**
+ * Test that SEO partial handles missing parameters gracefully.
+ */    #[Test]
     public function test_seo_partial_handles_missing_parameters(): void
     {
         // Test sub-products page which should use defaults for some values
@@ -149,9 +150,9 @@ class SeoMetaTagsTest extends TestCase
         $response->assertSee('<meta property="og:title"', false);
     }
 
-    /**
-     * Test that meta descriptions have appropriate length.
-     */
+/**
+ * Test that meta descriptions have appropriate length.
+ */    #[Test]
     public function test_meta_descriptions_have_appropriate_length(): void
     {
         $pages = [

@@ -12,9 +12,10 @@ use App\Models\Account;
 use App\Models\Stablecoin;
 use App\Models\StablecoinCollateralPosition;
 use Mockery;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ServiceTestCase;
 
-class CollateralServiceTest extends TestCase
+class CollateralServiceTest extends ServiceTestCase
 {
     protected CollateralService $service;
 
@@ -55,7 +56,7 @@ class CollateralServiceTest extends TestCase
         parent::tearDown();
     }
 
-    /** @test */
+    #[Test]
     public function it_can_convert_to_peg_asset()
     {
         // Test same asset conversion
@@ -83,7 +84,7 @@ class CollateralServiceTest extends TestCase
         $this->assertEquals(110000, $result);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_calculate_total_collateral_value()
     {
         $stablecoin = Stablecoin::create([
@@ -152,7 +153,7 @@ class CollateralServiceTest extends TestCase
         $this->assertEquals(155000, $totalValue); // 100000 + (50000 * 1.1)
     }
 
-    /** @test */
+    #[Test]
     public function it_can_calculate_position_health_score()
     {
         $stablecoin = Stablecoin::create([
@@ -205,7 +206,7 @@ class CollateralServiceTest extends TestCase
         $this->assertEquals(0.0, $healthScore);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_calculate_liquidation_priority()
     {
         $stablecoin = Stablecoin::create([
@@ -255,7 +256,7 @@ class CollateralServiceTest extends TestCase
         $this->assertGreaterThan($priority, $priority2);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_get_position_recommendations()
     {
         $stablecoin = Stablecoin::create([
@@ -324,7 +325,7 @@ class CollateralServiceTest extends TestCase
         $this->assertEquals('high', $recommendations[0]['urgency']);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_get_collateral_distribution()
     {
         $stablecoin = Stablecoin::create([

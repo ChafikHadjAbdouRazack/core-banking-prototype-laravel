@@ -2,12 +2,12 @@
 
 namespace Tests\Unit\Domain\Stablecoin\ValueObjects;
 
-use App\Domain\Stablecoin\ValueObjects\PriceData;
-use Carbon\Carbon;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class PriceDataTest extends TestCase
 {
+    #[Test]
     public function test_creates_price_data_with_required_fields(): void
     {
         $timestamp = Carbon::now();
@@ -30,6 +30,7 @@ class PriceDataTest extends TestCase
         $this->assertEquals([], $priceData->metadata);
     }
 
+    #[Test]
     public function test_creates_price_data_with_all_fields(): void
     {
         $timestamp = Carbon::now();
@@ -56,6 +57,7 @@ class PriceDataTest extends TestCase
         $this->assertEquals($metadata, $priceData->metadata);
     }
 
+    #[Test]
     public function test_to_array_converts_price_data_correctly(): void
     {
         $timestamp = Carbon::parse('2024-01-01 12:00:00');
@@ -85,6 +87,7 @@ class PriceDataTest extends TestCase
         ], $array);
     }
 
+    #[Test]
     public function test_to_array_handles_null_optional_fields(): void
     {
         $timestamp = Carbon::now();
@@ -98,6 +101,7 @@ class PriceDataTest extends TestCase
         $this->assertEquals([], $array['metadata']);
     }
 
+    #[Test]
     public function test_is_stale_returns_true_for_old_prices(): void
     {
         $oldTimestamp = Carbon::now()->subMinutes(10);
@@ -111,6 +115,7 @@ class PriceDataTest extends TestCase
         $this->assertFalse($priceData->isStale(900));
     }
 
+    #[Test]
     public function test_is_stale_returns_false_for_fresh_prices(): void
     {
         $recentTimestamp = Carbon::now()->subSeconds(30);
@@ -123,6 +128,7 @@ class PriceDataTest extends TestCase
         $this->assertFalse($priceData->isStale(60));
     }
 
+    #[Test]
     public function test_is_stale_edge_case_exactly_at_threshold(): void
     {
         $timestamp = Carbon::now()->subSeconds(300);
@@ -133,6 +139,7 @@ class PriceDataTest extends TestCase
         $this->assertTrue($priceData->isStale(300));
     }
 
+    #[Test]
     public function test_handles_negative_change_percent(): void
     {
         $priceData = new PriceData(
@@ -148,6 +155,7 @@ class PriceDataTest extends TestCase
         $this->assertEquals('-99.99', $priceData->changePercent24h);
     }
 
+    #[Test]
     public function test_handles_zero_price(): void
     {
         $priceData = new PriceData(
@@ -161,6 +169,7 @@ class PriceDataTest extends TestCase
         $this->assertEquals('0.00000000', $priceData->price);
     }
 
+    #[Test]
     public function test_handles_very_large_prices(): void
     {
         $priceData = new PriceData(
@@ -174,6 +183,7 @@ class PriceDataTest extends TestCase
         $this->assertEquals('100000000.00000000', $priceData->price);
     }
 
+    #[Test]
     public function test_handles_complex_metadata(): void
     {
         $metadata = [
@@ -201,6 +211,7 @@ class PriceDataTest extends TestCase
         $this->assertEquals(0.95, $priceData->metadata['calculation']['confidence']);
     }
 
+    #[Test]
     public function test_different_sources_create_different_instances(): void
     {
         $timestamp = Carbon::now();
@@ -215,6 +226,7 @@ class PriceDataTest extends TestCase
         $this->assertEquals('48100', $binancePrice->price);
     }
 
+    #[Test]
     public function test_immutability_of_properties(): void
     {
         $priceData = new PriceData(

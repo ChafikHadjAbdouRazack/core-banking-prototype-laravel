@@ -2,27 +2,31 @@
 
 namespace Tests\Unit\Domain\Stablecoin\Workflows;
 
-use App\Domain\Stablecoin\Workflows\AddCollateralWorkflow;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\DomainTestCase;
 
-class AddCollateralWorkflowTest extends TestCase
+class AddCollateralWorkflowTest extends DomainTestCase
 {
+    #[Test]
     public function test_class_exists(): void
     {
         $this->assertTrue(class_exists(AddCollateralWorkflow::class));
     }
 
+    #[Test]
     public function test_extends_workflow_class(): void
     {
         $reflection = new \ReflectionClass(AddCollateralWorkflow::class);
         $this->assertEquals('Workflow\Workflow', $reflection->getParentClass()->getName());
     }
 
+    #[Test]
     public function test_has_execute_method(): void
     {
         $this->assertTrue(method_exists(AddCollateralWorkflow::class, 'execute'));
     }
 
+    #[Test]
     public function test_execute_method_signature(): void
     {
         $reflection = new \ReflectionClass(AddCollateralWorkflow::class);
@@ -45,6 +49,7 @@ class AddCollateralWorkflowTest extends TestCase
         $this->assertEquals('int', $parameters[3]->getType()->getName());
     }
 
+    #[Test]
     public function test_execute_method_returns_generator(): void
     {
         $reflection = new \ReflectionClass(AddCollateralWorkflow::class);
@@ -53,6 +58,7 @@ class AddCollateralWorkflowTest extends TestCase
         $this->assertEquals('Generator', $method->getReturnType()->getName());
     }
 
+    #[Test]
     public function test_workflow_uses_compensation_pattern(): void
     {
         $reflection = new \ReflectionClass(AddCollateralWorkflow::class);
@@ -62,6 +68,7 @@ class AddCollateralWorkflowTest extends TestCase
         $this->assertTrue(method_exists(AddCollateralWorkflow::class, 'compensate'));
     }
 
+    #[Test]
     public function test_workflow_activities_sequence(): void
     {
         // Test that the workflow uses the correct activities in the right order
@@ -85,6 +92,7 @@ class AddCollateralWorkflowTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_workflow_compensation_activity(): void
     {
         // Test that the workflow has proper compensation activity
@@ -103,6 +111,7 @@ class AddCollateralWorkflowTest extends TestCase
         $this->assertStringContainsString('addCompensation', $source);
     }
 
+    #[Test]
     public function test_workflow_handles_exceptions(): void
     {
         $reflection = new \ReflectionClass(AddCollateralWorkflow::class);
@@ -119,6 +128,7 @@ class AddCollateralWorkflowTest extends TestCase
         $this->assertStringContainsString('compensate()', $source);
     }
 
+    #[Test]
     public function test_workflow_returns_boolean(): void
     {
         $reflection = new \ReflectionClass(AddCollateralWorkflow::class);
@@ -133,6 +143,7 @@ class AddCollateralWorkflowTest extends TestCase
         $this->assertStringContainsString('return true;', $source);
     }
 
+    #[Test]
     public function test_workflow_simple_structure(): void
     {
         // AddCollateralWorkflow should be simpler than Mint/Burn workflows

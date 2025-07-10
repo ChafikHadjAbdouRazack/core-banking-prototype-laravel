@@ -2,10 +2,8 @@
 
 namespace Tests\Feature;
 
-use App\Models\Setting;
-use App\Services\SettingsService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 class SettingsTest extends TestCase
 {
@@ -21,6 +19,7 @@ class SettingsTest extends TestCase
         $this->settingsService->initializeSettings();
     }
 
+    #[Test]
     public function test_settings_can_be_initialized(): void
     {
         $this->assertDatabaseCount('settings', 26); // Count all default settings
@@ -31,6 +30,7 @@ class SettingsTest extends TestCase
         $this->assertEquals('platform', $setting->group);
     }
 
+    #[Test]
     public function test_setting_can_be_retrieved(): void
     {
         $value = Setting::get('platform_name');
@@ -40,6 +40,7 @@ class SettingsTest extends TestCase
         $this->assertEquals('default', $defaultValue);
     }
 
+    #[Test]
     public function test_setting_can_be_updated(): void
     {
         $updated = $this->settingsService->updateSetting('platform_name', 'New Platform Name');
@@ -49,6 +50,7 @@ class SettingsTest extends TestCase
         $this->assertEquals('New Platform Name', $value);
     }
 
+    #[Test]
     public function test_setting_validation_works(): void
     {
         $validation = $this->settingsService->validateSetting('transaction_fee_percentage', 5.5);
@@ -59,6 +61,7 @@ class SettingsTest extends TestCase
         $this->assertContains('The value field must not be greater than 10.', $validation['errors']);
     }
 
+    #[Test]
     public function test_settings_are_cached(): void
     {
         $value1 = Setting::get('platform_name');
@@ -76,6 +79,7 @@ class SettingsTest extends TestCase
         $this->assertEquals('Direct Update', $value3);
     }
 
+    #[Test]
     public function test_settings_can_be_retrieved_by_group(): void
     {
         $platformSettings = Setting::getGroup('platform');
@@ -85,6 +89,7 @@ class SettingsTest extends TestCase
         $this->assertArrayHasKey('session_timeout', $platformSettings);
     }
 
+    #[Test]
     public function test_public_settings_api_endpoint(): void
     {
         // Mark some settings as public
@@ -99,6 +104,7 @@ class SettingsTest extends TestCase
             ->assertJsonFragment(['transaction_fee_percentage' => 0.01]);
     }
 
+    #[Test]
     public function test_settings_by_group_api_endpoint(): void
     {
         // Mark platform settings as public
@@ -111,6 +117,7 @@ class SettingsTest extends TestCase
             ->assertJsonFragment(['platform_name' => 'FinAegis']);
     }
 
+    #[Test]
     public function test_encrypted_settings_are_protected(): void
     {
         Setting::set('api_key', 'secret-key-123', [
@@ -132,6 +139,7 @@ class SettingsTest extends TestCase
         $this->assertEquals('secret-key-123', $value);
     }
 
+    #[Test]
     public function test_settings_export_excludes_encrypted(): void
     {
         Setting::set('api_key', 'secret-key-123', [
@@ -148,6 +156,7 @@ class SettingsTest extends TestCase
         $this->assertArrayHasKey('platform_name', $exported);
     }
 
+    #[Test]
     public function test_settings_import_validates_each_setting(): void
     {
         $settings = [
@@ -166,6 +175,7 @@ class SettingsTest extends TestCase
         $this->assertEquals(2.5, Setting::get('transaction_fee_percentage'));
     }
 
+    #[Test]
     public function test_boolean_settings_are_cast_correctly(): void
     {
         Setting::set('maintenance_mode', true, [

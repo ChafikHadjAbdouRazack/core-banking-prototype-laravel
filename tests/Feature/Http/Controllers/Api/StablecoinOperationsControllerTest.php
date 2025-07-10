@@ -2,15 +2,11 @@
 
 namespace Tests\Feature\Http\Controllers\Api;
 
-use App\Models\Account;
-use App\Models\Asset;
-use App\Models\Stablecoin;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Laravel\Sanctum\Sanctum;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ControllerTestCase;
 
-class StablecoinOperationsControllerTest extends TestCase
+class StablecoinOperationsControllerTest extends ControllerTestCase
 {
     use RefreshDatabase;
 
@@ -60,6 +56,7 @@ class StablecoinOperationsControllerTest extends TestCase
         );
     }
 
+    #[Test]
     public function test_mint_stablecoins_successfully(): void
     {
         Sanctum::actingAs($this->user);
@@ -82,6 +79,7 @@ class StablecoinOperationsControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_mint_requires_authentication(): void
     {
         $response = $this->postJson('/api/v2/stablecoin-operations/mint');
@@ -89,6 +87,7 @@ class StablecoinOperationsControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_mint_validates_input(): void
     {
         Sanctum::actingAs($this->user);
@@ -99,6 +98,7 @@ class StablecoinOperationsControllerTest extends TestCase
             ->assertJsonValidationErrors(['stablecoin_code', 'collateral_asset_code', 'collateral_amount', 'mint_amount', 'account_uuid']);
     }
 
+    #[Test]
     public function test_burn_stablecoins_successfully(): void
     {
         Sanctum::actingAs($this->user);
@@ -119,6 +119,7 @@ class StablecoinOperationsControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_burn_requires_authentication(): void
     {
         $response = $this->postJson('/api/v2/stablecoin-operations/burn');
@@ -126,6 +127,7 @@ class StablecoinOperationsControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_burn_validates_input(): void
     {
         Sanctum::actingAs($this->user);
@@ -136,6 +138,7 @@ class StablecoinOperationsControllerTest extends TestCase
             ->assertJsonValidationErrors(['account_uuid', 'stablecoin_code', 'burn_amount']);
     }
 
+    #[Test]
     public function test_add_collateral_successfully(): void
     {
         Sanctum::actingAs($this->user);
@@ -157,6 +160,7 @@ class StablecoinOperationsControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_add_collateral_requires_authentication(): void
     {
         $response = $this->postJson('/api/v2/stablecoin-operations/add-collateral');
@@ -164,6 +168,7 @@ class StablecoinOperationsControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_get_account_positions_returns_empty_list(): void
     {
         Sanctum::actingAs($this->user);
@@ -176,6 +181,7 @@ class StablecoinOperationsControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_get_account_positions_requires_authentication(): void
     {
         $response = $this->getJson('/api/v2/stablecoin-operations/accounts/' . $this->account->uuid . '/positions');
@@ -183,6 +189,7 @@ class StablecoinOperationsControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_get_positions_at_risk_returns_empty_list(): void
     {
         Sanctum::actingAs($this->user);
@@ -195,6 +202,7 @@ class StablecoinOperationsControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_get_positions_at_risk_requires_authentication(): void
     {
         $response = $this->getJson('/api/v2/stablecoin-operations/positions/at-risk');
@@ -202,6 +210,7 @@ class StablecoinOperationsControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_get_position_details_returns_404_for_non_existent(): void
     {
         Sanctum::actingAs($this->user);
@@ -211,6 +220,7 @@ class StablecoinOperationsControllerTest extends TestCase
         $response->assertStatus(404);
     }
 
+    #[Test]
     public function test_get_position_details_requires_authentication(): void
     {
         $response = $this->getJson('/api/v2/stablecoin-operations/positions/pos-123');
@@ -218,6 +228,7 @@ class StablecoinOperationsControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_get_liquidation_opportunities_returns_empty_list(): void
     {
         Sanctum::actingAs($this->user);
@@ -230,6 +241,7 @@ class StablecoinOperationsControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_get_liquidation_opportunities_requires_authentication(): void
     {
         $response = $this->getJson('/api/v2/stablecoin-operations/liquidation/opportunities');
@@ -237,6 +249,7 @@ class StablecoinOperationsControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_execute_auto_liquidation_returns_success(): void
     {
         Sanctum::actingAs($this->user);
@@ -250,6 +263,7 @@ class StablecoinOperationsControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_execute_auto_liquidation_requires_authentication(): void
     {
         $response = $this->postJson('/api/v2/stablecoin-operations/liquidation/execute');
@@ -257,6 +271,7 @@ class StablecoinOperationsControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_liquidate_position_returns_404(): void
     {
         Sanctum::actingAs($this->user);
@@ -266,6 +281,7 @@ class StablecoinOperationsControllerTest extends TestCase
         $response->assertStatus(404);
     }
 
+    #[Test]
     public function test_liquidate_position_requires_authentication(): void
     {
         $response = $this->postJson('/api/v2/stablecoin-operations/liquidation/positions/pos-123');
@@ -273,6 +289,7 @@ class StablecoinOperationsControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_calculate_liquidation_reward_returns_404(): void
     {
         Sanctum::actingAs($this->user);
@@ -282,6 +299,7 @@ class StablecoinOperationsControllerTest extends TestCase
         $response->assertStatus(404);
     }
 
+    #[Test]
     public function test_calculate_liquidation_reward_requires_authentication(): void
     {
         $response = $this->getJson('/api/v2/stablecoin-operations/liquidation/positions/pos-123/reward');
@@ -289,6 +307,7 @@ class StablecoinOperationsControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_simulate_mass_liquidation_returns_results(): void
     {
         Sanctum::actingAs($this->user);
@@ -303,6 +322,7 @@ class StablecoinOperationsControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_simulate_mass_liquidation_requires_authentication(): void
     {
         $response = $this->postJson('/api/v2/stablecoin-operations/simulation/EURS/mass-liquidation');
@@ -310,6 +330,7 @@ class StablecoinOperationsControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_simulate_mass_liquidation_validates_input(): void
     {
         Sanctum::actingAs($this->user);

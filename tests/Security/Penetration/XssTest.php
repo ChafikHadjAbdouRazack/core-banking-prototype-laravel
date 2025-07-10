@@ -7,9 +7,9 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
-use Tests\TestCase;
+use Tests\DomainTestCase;
 
-class XssTest extends TestCase
+class XssTest extends DomainTestCase
 {
     use RefreshDatabase;
 
@@ -58,16 +58,32 @@ class XssTest extends TestCase
     #[DataProvider('xssPayloads')]
     public function test_transaction_description_is_protected_against_xss($payload)
     {
-        $account = Account::factory()->create([
-            'user_uuid' => $this->user->uuid,
-            'balance'   => 100000,
-        ]);
+        // Create account using the proper event sourcing method
+        $accountUuid = \Illuminate\Support\Str::uuid()->toString();
+        \App\Domain\Account\Aggregates\LedgerAggregate::retrieve($accountUuid)
+            ->createAccount(
+                hydrate(
+                    class: \App\Domain\Account\DataObjects\Account::class,
+                    properties: [
+                        'name'      => 'Test Account',
+                        'user_uuid' => $this->user->uuid,
+                    ]
+                )
+            )
+            ->persist();
+
+        $account = Account::find($accountUuid);
+
+        // Add balance using event sourcing
+        \App\Domain\Account\Aggregates\LedgerAggregate::retrieve($account->uuid)
+            ->addBalance('USD', 100000)
+            ->persist();
 
         // Attempt XSS in transaction description
         $response = $this->withToken($this->token)
             ->postJson('/api/v2/transfers', [
                 'from_account' => $account->uuid,
-                'to_account'   => Account::factory()->create()->uuid,
+                'to_account'   => Account::factory()->create(['user_uuid' => User::factory()->create()->uuid])->uuid,
                 'amount'       => 100,
                 'currency'     => 'USD',
                 'description'  => $payload,
@@ -188,10 +204,21 @@ class XssTest extends TestCase
     public function test_search_parameters_are_protected_against_xss($payload)
     {
         // Create test data
-        $account = Account::factory()->create([
-            'user_uuid' => $this->user->uuid,
-            'name'      => 'Test Account',
-        ]);
+        // Create account using the proper event sourcing method
+        $accountUuid = \Illuminate\Support\Str::uuid()->toString();
+        \App\Domain\Account\Aggregates\LedgerAggregate::retrieve($accountUuid)
+            ->createAccount(
+                hydrate(
+                    class: \App\Domain\Account\DataObjects\Account::class,
+                    properties: [
+                        'name'      => 'Test Account',
+                        'user_uuid' => $this->user->uuid,
+                    ]
+                )
+            )
+            ->persist();
+
+        $account = Account::find($accountUuid);
 
         // Search with XSS payload in transactions
         $response = $this->withToken($this->token)

@@ -2,12 +2,11 @@
 
 namespace Tests\Feature;
 
-use App\Models\Team;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\DomainTestCase;
 
-class DepositPagesTest extends TestCase
+class DepositPagesTest extends DomainTestCase
 {
     use RefreshDatabase;
 
@@ -20,6 +19,7 @@ class DepositPagesTest extends TestCase
         $this->actingAs($this->user);
     }
 
+    #[Test]
     public function test_deposit_page_loads_without_errors()
     {
         $response = $this->get('/wallet/deposit');
@@ -35,6 +35,7 @@ class DepositPagesTest extends TestCase
         $response->assertDontSee('refresh the page');
     }
 
+    #[Test]
     public function test_crypto_deposit_page_loads_without_errors()
     {
         $response = $this->get('/wallet/deposit/crypto');
@@ -50,6 +51,7 @@ class DepositPagesTest extends TestCase
         $response->assertDontSee('Undefined variable: slot');
     }
 
+    #[Test]
     public function test_bank_deposit_page_loads()
     {
         $response = $this->get('/wallet/deposit/bank');
@@ -58,6 +60,7 @@ class DepositPagesTest extends TestCase
         $response->assertSee('Bank Transfer');
     }
 
+    #[Test]
     public function test_paysera_deposit_page_loads()
     {
         $response = $this->get('/wallet/deposit/paysera');
@@ -66,6 +69,7 @@ class DepositPagesTest extends TestCase
         $response->assertSee('Paysera');
     }
 
+    #[Test]
     public function test_openbanking_deposit_page_loads()
     {
         $response = $this->get('/wallet/deposit/openbanking');
@@ -74,6 +78,7 @@ class DepositPagesTest extends TestCase
         $response->assertSee('Open Banking');
     }
 
+    #[Test]
     public function test_manual_deposit_page_loads()
     {
         $response = $this->get('/wallet/deposit/manual');
@@ -81,6 +86,7 @@ class DepositPagesTest extends TestCase
         $response->assertStatus(200);
     }
 
+    #[Test]
     public function test_deposit_page_with_account_shows_deposit_options()
     {
         // Create an account for the user
@@ -100,6 +106,7 @@ class DepositPagesTest extends TestCase
         $response->assertSee('Deposit with Card');
     }
 
+    #[Test]
     public function test_account_creation_modal_exists_on_deposit_page()
     {
         $response = $this->get('/wallet/deposit');

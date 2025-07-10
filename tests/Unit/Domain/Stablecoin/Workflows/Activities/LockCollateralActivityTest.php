@@ -2,28 +2,31 @@
 
 namespace Tests\Unit\Domain\Stablecoin\Workflows\Activities;
 
-use App\Domain\Account\DataObjects\AccountUuid;
-use App\Domain\Stablecoin\Workflows\Activities\LockCollateralActivity;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\DomainTestCase;
 
-class LockCollateralActivityTest extends TestCase
+class LockCollateralActivityTest extends DomainTestCase
 {
+    #[Test]
     public function test_class_exists(): void
     {
         $this->assertTrue(class_exists(LockCollateralActivity::class));
     }
 
+    #[Test]
     public function test_extends_workflow_activity(): void
     {
         $reflection = new \ReflectionClass(LockCollateralActivity::class);
         $this->assertEquals('Workflow\Activity', $reflection->getParentClass()->getName());
     }
 
+    #[Test]
     public function test_has_execute_method(): void
     {
         $this->assertTrue(method_exists(LockCollateralActivity::class, 'execute'));
     }
 
+    #[Test]
     public function test_execute_method_has_correct_signature(): void
     {
         $reflection = new \ReflectionClass(LockCollateralActivity::class);
@@ -46,6 +49,7 @@ class LockCollateralActivityTest extends TestCase
         $this->assertEquals('int', $parameters[3]->getType()->getName());
     }
 
+    #[Test]
     public function test_execute_method_returns_bool(): void
     {
         $reflection = new \ReflectionClass(LockCollateralActivity::class);
@@ -54,6 +58,7 @@ class LockCollateralActivityTest extends TestCase
         $this->assertEquals('bool', $method->getReturnType()->getName());
     }
 
+    #[Test]
     public function test_supported_collateral_types(): void
     {
         // Test that various collateral types are supported
@@ -65,6 +70,7 @@ class LockCollateralActivityTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_amount_ranges(): void
     {
         // Test various amount ranges
@@ -82,6 +88,7 @@ class LockCollateralActivityTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_activity_properties(): void
     {
         $reflection = new \ReflectionClass(LockCollateralActivity::class);

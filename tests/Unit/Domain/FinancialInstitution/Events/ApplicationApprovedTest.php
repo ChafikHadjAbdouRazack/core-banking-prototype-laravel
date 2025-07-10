@@ -2,16 +2,15 @@
 
 namespace Tests\Unit\Domain\FinancialInstitution\Events;
 
-use App\Domain\FinancialInstitution\Events\ApplicationApproved;
-use App\Models\FinancialInstitutionApplication;
-use App\Models\FinancialInstitutionPartner;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\DomainTestCase;
 
-class ApplicationApprovedTest extends TestCase
+class ApplicationApprovedTest extends DomainTestCase
 {
     use RefreshDatabase;
 
+    #[Test]
     public function test_creates_event_with_application_and_partner(): void
     {
         $application = FinancialInstitutionApplication::factory()->create([
@@ -33,6 +32,7 @@ class ApplicationApprovedTest extends TestCase
         $this->assertEquals('active', $event->partner->status);
     }
 
+    #[Test]
     public function test_event_uses_required_traits(): void
     {
         $application = FinancialInstitutionApplication::factory()->create();
@@ -47,6 +47,7 @@ class ApplicationApprovedTest extends TestCase
         $this->assertArrayHasKey('Illuminate\Queue\SerializesModels', $traits);
     }
 
+    #[Test]
     public function test_event_properties_are_readonly(): void
     {
         $application = FinancialInstitutionApplication::factory()->create();
@@ -55,10 +56,12 @@ class ApplicationApprovedTest extends TestCase
         $event = new ApplicationApproved($application, $partner);
 
         // Properties are readonly, attempting to modify should cause error
-        $this->expectError();
+        $this->expectException(\Error::class);
+        $this->expectExceptionMessageMatches('/Cannot modify readonly property/');
         $event->application = FinancialInstitutionApplication::factory()->create();
     }
 
+    #[Test]
     public function test_event_serializes_correctly(): void
     {
         $application = FinancialInstitutionApplication::factory()->create([
@@ -83,6 +86,7 @@ class ApplicationApprovedTest extends TestCase
         $this->assertEquals('PARTNER001', $unserialized->partner->partner_code);
     }
 
+    #[Test]
     public function test_can_be_dispatched_as_event(): void
     {
         $application = FinancialInstitutionApplication::factory()->create();

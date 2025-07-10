@@ -8,12 +8,13 @@ use App\Domain\Compliance\Events\AmlScreeningMatchStatusUpdated;
 use App\Domain\Compliance\Events\AmlScreeningResultsRecorded;
 use App\Domain\Compliance\Events\AmlScreeningReviewed;
 use App\Domain\Compliance\Events\AmlScreeningStarted;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\DomainTestCase;
 
-class AmlScreeningAggregateTest extends TestCase
+class AmlScreeningAggregateTest extends DomainTestCase
 {
-    /** @test */
-    public function it_can_start_screening()
+    #[Test]
+    public function canStartScreening()
     {
         $uuid = 'test-uuid';
         $aggregate = AmlScreeningAggregate::fake($uuid);
@@ -41,8 +42,8 @@ class AmlScreeningAggregateTest extends TestCase
         ]);
     }
 
-    /** @test */
-    public function it_can_record_screening_results()
+    #[Test]
+    public function canRecordScreeningResults()
     {
         $uuid = 'test-uuid';
         $aggregate = AmlScreeningAggregate::fake($uuid);
@@ -72,8 +73,8 @@ class AmlScreeningAggregateTest extends TestCase
         ]);
     }
 
-    /** @test */
-    public function it_can_update_match_status()
+    #[Test]
+    public function canUpdateMatchStatus()
     {
         $uuid = 'test-uuid';
         $aggregate = AmlScreeningAggregate::fake($uuid);
@@ -95,8 +96,8 @@ class AmlScreeningAggregateTest extends TestCase
         ]);
     }
 
-    /** @test */
-    public function it_throws_exception_for_invalid_match_action()
+    #[Test]
+    public function throwsExceptionForInvalidMatchAction()
     {
         $uuid = 'test-uuid';
         $aggregate = AmlScreeningAggregate::fake($uuid);
@@ -112,8 +113,8 @@ class AmlScreeningAggregateTest extends TestCase
         );
     }
 
-    /** @test */
-    public function it_can_complete_screening()
+    #[Test]
+    public function canCompleteScreening()
     {
         $uuid = 'test-uuid';
         $aggregate = AmlScreeningAggregate::fake($uuid);
@@ -125,8 +126,8 @@ class AmlScreeningAggregateTest extends TestCase
         ]);
     }
 
-    /** @test */
-    public function it_throws_exception_for_invalid_completion_status()
+    #[Test]
+    public function throwsExceptionForInvalidCompletionStatus()
     {
         $uuid = 'test-uuid';
         $aggregate = AmlScreeningAggregate::fake($uuid);
@@ -137,8 +138,8 @@ class AmlScreeningAggregateTest extends TestCase
         $aggregate->completeScreening('invalid-status', null);
     }
 
-    /** @test */
-    public function it_can_review_screening()
+    #[Test]
+    public function canReviewScreening()
     {
         $uuid = 'test-uuid';
         $aggregate = AmlScreeningAggregate::fake($uuid);
@@ -158,8 +159,8 @@ class AmlScreeningAggregateTest extends TestCase
         ]);
     }
 
-    /** @test */
-    public function it_throws_exception_for_invalid_review_decision()
+    #[Test]
+    public function throwsExceptionForInvalidReviewDecision()
     {
         $uuid = 'test-uuid';
         $aggregate = AmlScreeningAggregate::fake($uuid);
@@ -174,8 +175,8 @@ class AmlScreeningAggregateTest extends TestCase
         );
     }
 
-    /** @test */
-    public function it_tracks_state_correctly()
+    #[Test]
+    public function tracksStateCorrectly()
     {
         $uuid = 'test-uuid';
         $aggregate = AmlScreeningAggregate::retrieve($uuid);

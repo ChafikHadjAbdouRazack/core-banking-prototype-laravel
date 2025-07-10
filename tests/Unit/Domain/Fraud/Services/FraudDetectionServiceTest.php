@@ -2,25 +2,11 @@
 
 namespace Tests\Unit\Domain\Fraud\Services;
 
-use App\Domain\Fraud\Events\ChallengeRequired;
-use App\Domain\Fraud\Events\FraudDetected;
-use App\Domain\Fraud\Events\TransactionBlocked;
-use App\Domain\Fraud\Services\BehavioralAnalysisService;
-use App\Domain\Fraud\Services\DeviceFingerprintService;
-use App\Domain\Fraud\Services\FraudCaseService;
-use App\Domain\Fraud\Services\FraudDetectionService;
-use App\Domain\Fraud\Services\MachineLearningService;
-use App\Domain\Fraud\Services\RuleEngineService;
-use App\Models\Account;
-use App\Models\FraudScore;
-use App\Models\Transaction;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Event;
-use Mockery;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ServiceTestCase;
 
-class FraudDetectionServiceTest extends TestCase
+class FraudDetectionServiceTest extends ServiceTestCase
 {
     use RefreshDatabase;
 
@@ -57,6 +43,7 @@ class FraudDetectionServiceTest extends TestCase
         Event::fake();
     }
 
+    #[Test]
     public function test_analyze_transaction_creates_fraud_score(): void
     {
         $user = User::factory()->create();
@@ -77,6 +64,7 @@ class FraudDetectionServiceTest extends TestCase
         $this->assertEquals(FraudScore::SCORE_TYPE_REAL_TIME, $fraudScore->score_type);
     }
 
+    #[Test]
     public function test_analyze_transaction_with_low_risk_passes(): void
     {
         $transaction = $this->createTransaction();
@@ -93,6 +81,7 @@ class FraudDetectionServiceTest extends TestCase
         Event::assertNotDispatched(TransactionBlocked::class);
     }
 
+    #[Test]
     public function test_analyze_transaction_with_medium_risk_requires_challenge(): void
     {
         $transaction = $this->createTransaction();
@@ -109,6 +98,7 @@ class FraudDetectionServiceTest extends TestCase
         Event::assertNotDispatched(TransactionBlocked::class);
     }
 
+    #[Test]
     public function test_analyze_transaction_with_high_risk_blocks_transaction(): void
     {
         $transaction = $this->createTransaction();
@@ -125,6 +115,7 @@ class FraudDetectionServiceTest extends TestCase
         Event::assertDispatched(TransactionBlocked::class);
     }
 
+    #[Test]
     public function test_analyze_transaction_with_ml_enabled(): void
     {
         $transaction = $this->createTransaction();
@@ -141,6 +132,7 @@ class FraudDetectionServiceTest extends TestCase
         $this->assertEquals(0.15, $fraudScore->analysis_results['ml_prediction']['score']);
     }
 
+    #[Test]
     public function test_analyze_transaction_handles_device_data(): void
     {
         $transaction = $this->createTransaction();
@@ -163,6 +155,7 @@ class FraudDetectionServiceTest extends TestCase
         $this->assertTrue($fraudScore->analysis_results['device_analysis']['is_known']);
     }
 
+    #[Test]
     public function test_analyze_user_activity_for_historical_analysis(): void
     {
         $user = User::factory()->create();
@@ -185,6 +178,7 @@ class FraudDetectionServiceTest extends TestCase
         $this->assertArrayHasKey('recommendations', $analysis);
     }
 
+    #[Test]
     public function test_recalculate_score_updates_existing_score(): void
     {
         $transaction = $this->createTransaction();
@@ -204,6 +198,7 @@ class FraudDetectionServiceTest extends TestCase
         $this->assertArrayHasKey('recalculation_reason', $updatedScore->metadata);
     }
 
+    #[Test]
     public function test_get_fraud_indicators_returns_risk_factors(): void
     {
         $transaction = $this->createTransaction(['amount' => 50000]);

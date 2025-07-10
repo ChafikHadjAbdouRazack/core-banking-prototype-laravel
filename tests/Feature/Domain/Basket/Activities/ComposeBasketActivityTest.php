@@ -4,14 +4,12 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Domain\Basket\Activities;
 
-use App\Domain\Account\DataObjects\AccountUuid;
-use App\Domain\Basket\Activities\ComposeBasketActivity;
-use App\Domain\Basket\Activities\ComposeBasketBusinessActivity;
-use Mockery;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class ComposeBasketActivityTest extends TestCase
 {
+    #[Test]
     public function test_activity_extends_workflow_activity()
     {
         $basketService = Mockery::mock(ComposeBasketBusinessActivity::class);
@@ -20,6 +18,7 @@ class ComposeBasketActivityTest extends TestCase
         $this->assertInstanceOf(\Workflow\Activity::class, $activity);
     }
 
+    #[Test]
     public function test_execute_method_calls_business_activity()
     {
         $basketService = Mockery::mock(ComposeBasketBusinessActivity::class);
@@ -40,6 +39,7 @@ class ComposeBasketActivityTest extends TestCase
         $this->assertEquals($expectedResult, $result);
     }
 
+    #[Test]
     public function test_execute_method_has_correct_signature()
     {
         $basketService = Mockery::mock(ComposeBasketBusinessActivity::class);
@@ -64,6 +64,7 @@ class ComposeBasketActivityTest extends TestCase
         $this->assertEquals('int', $parameters[2]->getType()->getName());
     }
 
+    #[Test]
     public function test_execute_method_returns_business_activity_result()
     {
         $basketService = Mockery::mock(ComposeBasketBusinessActivity::class);

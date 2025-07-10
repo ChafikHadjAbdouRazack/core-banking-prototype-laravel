@@ -14,9 +14,10 @@ use App\Models\BasketValue;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
 use Mockery;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ServiceTestCase;
 
-class BasketRebalancingServiceTest extends TestCase
+class BasketRebalancingServiceTest extends ServiceTestCase
 {
     private BasketRebalancingService $service;
 
@@ -38,7 +39,7 @@ class BasketRebalancingServiceTest extends TestCase
         parent::tearDown();
     }
 
-    /** @test */
+    #[Test]
     public function it_checks_if_basket_needs_rebalancing()
     {
         $basket = BasketAsset::factory()->create([
@@ -54,7 +55,7 @@ class BasketRebalancingServiceTest extends TestCase
         $this->assertFalse($this->service->needsRebalancing($basket));
     }
 
-    /** @test */
+    #[Test]
     public function it_throws_exception_for_fixed_basket_rebalancing()
     {
         $basket = BasketAsset::factory()->create([
@@ -68,7 +69,7 @@ class BasketRebalancingServiceTest extends TestCase
         $this->service->rebalance($basket);
     }
 
-    /** @test */
+    #[Test]
     public function it_rebalances_basket_with_components_outside_bounds()
     {
         // Use existing assets
@@ -151,7 +152,7 @@ class BasketRebalancingServiceTest extends TestCase
         $this->assertNotNull($basket->fresh()->last_rebalanced_at);
     }
 
-    /** @test */
+    #[Test]
     public function it_skips_rebalancing_when_no_adjustments_needed()
     {
         // Create basket with components within bounds
@@ -199,7 +200,7 @@ class BasketRebalancingServiceTest extends TestCase
         $this->assertEmpty($result['adjustments']);
     }
 
-    /** @test */
+    #[Test]
     public function it_throws_exception_for_zero_value_basket()
     {
         $basket = BasketAsset::factory()->create([
@@ -226,7 +227,7 @@ class BasketRebalancingServiceTest extends TestCase
         $this->service->rebalance($basket);
     }
 
-    /** @test */
+    #[Test]
     public function it_normalizes_weights_after_rebalancing()
     {
         // Create basket with 3 components
@@ -285,7 +286,7 @@ class BasketRebalancingServiceTest extends TestCase
         $this->assertEqualsWithDelta(100.0, $totalWeight, 0.01);
     }
 
-    /** @test */
+    #[Test]
     public function it_rebalances_if_needed()
     {
         $basket = BasketAsset::factory()->create([
@@ -326,7 +327,7 @@ class BasketRebalancingServiceTest extends TestCase
         $this->assertEquals('completed', $result['status']);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_null_when_rebalancing_not_needed()
     {
         $basket = BasketAsset::factory()->create([
@@ -341,7 +342,7 @@ class BasketRebalancingServiceTest extends TestCase
         $this->assertNull($result);
     }
 
-    /** @test */
+    #[Test]
     public function it_rebalances_all_baskets_that_need_it()
     {
         // Create baskets
@@ -401,7 +402,7 @@ class BasketRebalancingServiceTest extends TestCase
         $this->assertCount(0, $results['failed']);
     }
 
-    /** @test */
+    #[Test]
     public function it_simulates_rebalancing_without_executing()
     {
         $basket = BasketAsset::factory()->create([
@@ -445,7 +446,7 @@ class BasketRebalancingServiceTest extends TestCase
         $this->assertEquals(80.0, $component->weight);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_rebalancing_failures_gracefully()
     {
         $basket = BasketAsset::factory()->create([
@@ -477,7 +478,7 @@ class BasketRebalancingServiceTest extends TestCase
         $this->assertEquals('Calculation error', $results['failed'][0]['error']);
     }
 
-    /** @test */
+    #[Test]
     public function it_gets_rebalancing_history_placeholder()
     {
         $basket = BasketAsset::factory()->create([
@@ -492,7 +493,7 @@ class BasketRebalancingServiceTest extends TestCase
         $this->assertStringContainsString('event store integration', $history['message']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_components_without_bounds()
     {
         $basket = BasketAsset::factory()->create([
@@ -536,7 +537,7 @@ class BasketRebalancingServiceTest extends TestCase
         $this->assertEquals(0, $result['adjustments_count']);
     }
 
-    /** @test */
+    #[Test]
     public function it_normalizes_weights_with_constraints()
     {
         $basket = BasketAsset::factory()->create([

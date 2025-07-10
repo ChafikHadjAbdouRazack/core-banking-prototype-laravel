@@ -12,9 +12,9 @@ use App\Domain\Stablecoin\Services\OracleAggregator;
 use App\Models\Asset;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+use Tests\DomainTestCase;
 
-class StablecoinFrameworkTest extends TestCase
+class StablecoinFrameworkTest extends DomainTestCase
 {
     use RefreshDatabase;
 

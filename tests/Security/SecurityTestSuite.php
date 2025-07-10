@@ -7,10 +7,9 @@ use Tests\TestCase;
 
 class SecurityTestSuite extends TestCase
 {
-    /**
-     * Run all security tests and generate a security report.
-     */
-    #[Test]
+/**
+ * Run all security tests and generate a security report.
+ */    #[Test]
     public function test_complete_security_suite()
     {
         $this->markTestIncomplete('This is a meta-test for running the complete security suite');

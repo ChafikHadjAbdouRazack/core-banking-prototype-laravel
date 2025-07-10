@@ -2,13 +2,7 @@
 
 namespace Tests\Unit\Listeners;
 
-use App\Domain\Account\DataObjects\Account;
-use App\Domain\Account\Services\AccountService;
-use App\Listeners\CreateAccountForNewUser;
-use App\Models\User;
-use Illuminate\Auth\Events\Registered;
-use Illuminate\Support\Facades\Log;
-use Mockery;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class CreateAccountForNewUserTest extends TestCase
@@ -25,6 +19,7 @@ class CreateAccountForNewUserTest extends TestCase
         $this->listener = new CreateAccountForNewUser($this->accountService);
     }
 
+    #[Test]
     public function test_creates_account_for_new_user(): void
     {
         $user = new User([
@@ -53,6 +48,7 @@ class CreateAccountForNewUserTest extends TestCase
         $this->listener->handle($event);
     }
 
+    #[Test]
     public function test_logs_error_when_account_creation_fails(): void
     {
         $user = new User([
@@ -80,6 +76,7 @@ class CreateAccountForNewUserTest extends TestCase
         $this->listener->handle($event);
     }
 
+    #[Test]
     public function test_does_not_throw_exception_on_failure(): void
     {
         $user = new User([

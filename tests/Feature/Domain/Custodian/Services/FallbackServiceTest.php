@@ -4,18 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Domain\Custodian\Services;
 
-use App\Domain\Account\DataObjects\Money;
-use App\Domain\Custodian\Services\CustodianRegistry;
-use App\Domain\Custodian\Services\FallbackService;
-use App\Domain\Custodian\ValueObjects\AccountInfo;
-use App\Domain\Custodian\ValueObjects\TransactionReceipt;
-use App\Models\CustodianAccount;
-use App\Models\CustodianTransfer;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Str;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ServiceTestCase;
 
-class FallbackServiceTest extends TestCase
+class FallbackServiceTest extends ServiceTestCase
 {
     private FallbackService $fallbackService;
 
@@ -29,6 +21,7 @@ class FallbackServiceTest extends TestCase
         $this->fallbackService = new FallbackService();
     }
 
+    #[Test]
     public function test_get_fallback_balance_from_cache(): void
     {
         // Arrange
@@ -50,6 +43,7 @@ class FallbackServiceTest extends TestCase
         $this->assertEquals($expectedBalance, $balance->getAmount());
     }
 
+    #[Test]
     public function test_get_fallback_balance_from_database(): void
     {
         // Arrange
@@ -81,6 +75,7 @@ class FallbackServiceTest extends TestCase
         $this->assertEquals($expectedBalance, $balance->getAmount());
     }
 
+    #[Test]
     public function test_get_fallback_balance_returns_null_when_no_data(): void
     {
         // Act
@@ -90,6 +85,7 @@ class FallbackServiceTest extends TestCase
         $this->assertNull($balance);
     }
 
+    #[Test]
     public function test_cache_balance_stores_in_cache_and_database(): void
     {
         // Arrange
@@ -130,6 +126,7 @@ class FallbackServiceTest extends TestCase
         $this->assertNotNull($custodianAccount->last_synced_at);
     }
 
+    #[Test]
     public function test_get_fallback_account_info_from_cache(): void
     {
         // Arrange
@@ -160,6 +157,7 @@ class FallbackServiceTest extends TestCase
         $this->assertEquals(['EUR' => 10000, 'USD' => 5000], $retrieved->balances);
     }
 
+    #[Test]
     public function test_cache_account_info(): void
     {
         // Arrange
@@ -188,6 +186,7 @@ class FallbackServiceTest extends TestCase
         $this->assertEquals('Test Account', $cached->name);
     }
 
+    #[Test]
     public function test_get_fallback_transfer_status_from_database(): void
     {
         // Arrange
@@ -237,6 +236,7 @@ class FallbackServiceTest extends TestCase
         $this->assertEquals(50000, $status->amount);
     }
 
+    #[Test]
     public function test_queue_transfer_for_retry(): void
     {
         // Arrange
@@ -350,6 +350,7 @@ class FallbackServiceTest extends TestCase
         $this->assertEquals(75000, $transfer->amount);
     }
 
+    #[Test]
     public function test_get_alternative_custodian_with_available_alternative(): void
     {
         // Mock the registry
@@ -375,6 +376,7 @@ class FallbackServiceTest extends TestCase
         $this->assertEquals('deutsche_bank', $alternative);
     }
 
+    #[Test]
     public function test_get_alternative_custodian_with_no_available_alternatives(): void
     {
         // Mock the registry
@@ -404,6 +406,7 @@ class FallbackServiceTest extends TestCase
         $this->assertNull($alternative);
     }
 
+    #[Test]
     public function test_cache_ttl_values(): void
     {
         // Verify that cache TTL constants are properly set

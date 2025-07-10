@@ -2,8 +2,8 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class CryptoDepositTest extends TestCase
@@ -19,6 +19,7 @@ class CryptoDepositTest extends TestCase
         $this->actingAs($this->user);
     }
 
+    #[Test]
     public function test_crypto_deposit_page_loads_successfully()
     {
         $response = $this->get('/wallet/deposit/crypto');
@@ -37,6 +38,7 @@ class CryptoDepositTest extends TestCase
         $response->assertSee('Network: TRC-20');
     }
 
+    #[Test]
     public function test_crypto_deposit_page_includes_qr_code_functionality()
     {
         $response = $this->get('/wallet/deposit/crypto');
@@ -54,6 +56,7 @@ class CryptoDepositTest extends TestCase
         $response->assertDontSee('QR Code Placeholder');
     }
 
+    #[Test]
     public function test_crypto_deposit_page_has_copy_functionality()
     {
         $response = $this->get('/wallet/deposit/crypto');
@@ -70,6 +73,7 @@ class CryptoDepositTest extends TestCase
         $response->assertSee('showCopyFeedback', false);
     }
 
+    #[Test]
     public function test_crypto_deposit_page_has_correct_addresses()
     {
         $response = $this->get('/wallet/deposit/crypto');
@@ -86,6 +90,7 @@ class CryptoDepositTest extends TestCase
         $response->assertSee('TN3W4H6rK2UM6GnKms9iFGQfVY73Gmwm7T', false);
     }
 
+    #[Test]
     public function test_crypto_deposit_page_shows_important_notices()
     {
         $response = $this->get('/wallet/deposit/crypto');
@@ -100,6 +105,7 @@ class CryptoDepositTest extends TestCase
         $response->assertSee('Processing time: 10-60 minutes');
     }
 
+    #[Test]
     public function test_crypto_deposit_page_has_back_button()
     {
         $response = $this->get('/wallet/deposit/crypto');

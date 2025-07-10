@@ -2,10 +2,8 @@
 
 namespace Tests\Feature;
 
-use App\Models\CgoInvestment;
-use App\Models\User;
-use App\Services\Cgo\PaymentVerificationService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class CgoPaymentVerificationTest extends TestCase
@@ -24,6 +22,7 @@ class CgoPaymentVerificationTest extends TestCase
         $this->verificationService = $this->mock(PaymentVerificationService::class);
     }
 
+    #[Test]
     public function test_user_can_view_pending_payments()
     {
         $pendingInvestment = CgoInvestment::factory()->create([
@@ -44,6 +43,7 @@ class CgoPaymentVerificationTest extends TestCase
             ->assertDontSee($completedInvestment->uuid);
     }
 
+    #[Test]
     public function test_user_cannot_view_other_users_payments()
     {
         $otherUser = User::factory()->create();
@@ -59,6 +59,7 @@ class CgoPaymentVerificationTest extends TestCase
             ->assertDontSee($otherInvestment->uuid);
     }
 
+    #[Test]
     public function test_user_can_check_payment_status()
     {
         $investment = CgoInvestment::factory()->create([
@@ -84,6 +85,7 @@ class CgoPaymentVerificationTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_user_cannot_check_other_users_payment_status()
     {
         $otherUser = User::factory()->create();
@@ -98,6 +100,7 @@ class CgoPaymentVerificationTest extends TestCase
         $response->assertForbidden();
     }
 
+    #[Test]
     public function test_user_can_get_payment_timeline()
     {
         $investment = CgoInvestment::factory()->create([
@@ -117,6 +120,7 @@ class CgoPaymentVerificationTest extends TestCase
             ->assertJsonCount(4); // Created, method selected, pending, KYC
     }
 
+    #[Test]
     public function test_admin_can_access_payment_verification_dashboard()
     {
         $admin = User::factory()->create();
@@ -126,6 +130,7 @@ class CgoPaymentVerificationTest extends TestCase
         $this->markTestIncomplete('Filament page testing requires additional setup');
     }
 
+    #[Test]
     public function test_payment_verification_stats_widget_displays_correct_data()
     {
         CgoInvestment::factory()->count(5)->create([
@@ -149,6 +154,7 @@ class CgoPaymentVerificationTest extends TestCase
         $this->assertEquals('2', $stats[2]->getValue()); // 2 urgent
     }
 
+    #[Test]
     public function test_manual_payment_verification_updates_investment()
     {
         $investment = CgoInvestment::factory()->create([

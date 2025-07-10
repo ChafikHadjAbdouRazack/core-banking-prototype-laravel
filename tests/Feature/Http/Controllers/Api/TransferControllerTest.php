@@ -2,14 +2,11 @@
 
 namespace Tests\Feature\Http\Controllers\Api;
 
-use App\Domain\Asset\Models\Asset;
-use App\Models\Account;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Laravel\Sanctum\Sanctum;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ControllerTestCase;
 
-class TransferControllerTest extends TestCase
+class TransferControllerTest extends ControllerTestCase
 {
     use RefreshDatabase;
 
@@ -66,6 +63,7 @@ class TransferControllerTest extends TestCase
         );
     }
 
+    #[Test]
     public function test_store_creates_transfer_with_valid_data(): void
     {
         Sanctum::actingAs($this->user);
@@ -105,6 +103,7 @@ class TransferControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_store_supports_legacy_field_names(): void
     {
         Sanctum::actingAs($this->user);
@@ -121,6 +120,7 @@ class TransferControllerTest extends TestCase
             ->assertJsonPath('data.to_account', (string) $this->toAccount->uuid);
     }
 
+    #[Test]
     public function test_store_validates_required_fields(): void
     {
         Sanctum::actingAs($this->user);
@@ -131,6 +131,7 @@ class TransferControllerTest extends TestCase
             ->assertJsonValidationErrors(['amount', 'asset_code']);
     }
 
+    #[Test]
     public function test_store_requires_both_account_uuids(): void
     {
         Sanctum::actingAs($this->user);
@@ -150,6 +151,7 @@ class TransferControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_store_validates_minimum_amount(): void
     {
         Sanctum::actingAs($this->user);
@@ -165,6 +167,7 @@ class TransferControllerTest extends TestCase
             ->assertJsonValidationErrors(['amount']);
     }
 
+    #[Test]
     public function test_store_prevents_self_transfer(): void
     {
         Sanctum::actingAs($this->user);
@@ -180,6 +183,7 @@ class TransferControllerTest extends TestCase
             ->assertJsonValidationErrors(['to_account_uuid']);
     }
 
+    #[Test]
     public function test_store_validates_asset_exists(): void
     {
         Sanctum::actingAs($this->user);
@@ -195,6 +199,7 @@ class TransferControllerTest extends TestCase
             ->assertJsonValidationErrors(['asset_code']);
     }
 
+    #[Test]
     public function test_store_prevents_transfer_from_frozen_account(): void
     {
         Sanctum::actingAs($this->user);
@@ -219,6 +224,7 @@ class TransferControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_store_prevents_transfer_to_frozen_account(): void
     {
         Sanctum::actingAs($this->user);
@@ -242,6 +248,7 @@ class TransferControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_store_prevents_insufficient_funds(): void
     {
         Sanctum::actingAs($this->user);
@@ -264,6 +271,7 @@ class TransferControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_store_validates_account_exists(): void
     {
         Sanctum::actingAs($this->user);
@@ -279,6 +287,7 @@ class TransferControllerTest extends TestCase
             ->assertJsonValidationErrors(['from_account_uuid']);
     }
 
+    #[Test]
     public function test_store_requires_authentication(): void
     {
         $response = $this->postJson('/api/transfers', [
@@ -291,6 +300,7 @@ class TransferControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_show_returns_404_for_non_existent_transfer(): void
     {
         Sanctum::actingAs($this->user);
@@ -300,6 +310,7 @@ class TransferControllerTest extends TestCase
         $response->assertStatus(404);
     }
 
+    #[Test]
     public function test_show_requires_authentication(): void
     {
         $response = $this->getJson('/api/transfers/some-uuid');
@@ -307,6 +318,7 @@ class TransferControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_history_returns_transfer_list(): void
     {
         Sanctum::actingAs($this->user);
@@ -334,6 +346,7 @@ class TransferControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_history_returns_404_for_non_existent_account(): void
     {
         Sanctum::actingAs($this->user);
@@ -343,6 +356,7 @@ class TransferControllerTest extends TestCase
         $response->assertStatus(404);
     }
 
+    #[Test]
     public function test_history_requires_authentication(): void
     {
         $response = $this->getJson("/api/accounts/{$this->fromAccount->uuid}/transfers");
@@ -350,6 +364,7 @@ class TransferControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_store_with_reference_field(): void
     {
         Sanctum::actingAs($this->user);
@@ -366,6 +381,7 @@ class TransferControllerTest extends TestCase
             ->assertJsonPath('data.reference', 'INV-2024-001');
     }
 
+    #[Test]
     public function test_store_validates_field_lengths(): void
     {
         Sanctum::actingAs($this->user);
@@ -383,6 +399,7 @@ class TransferControllerTest extends TestCase
             ->assertJsonValidationErrors(['reference', 'description']);
     }
 
+    #[Test]
     public function test_store_with_eur_transfer(): void
     {
         Sanctum::actingAs($this->user);

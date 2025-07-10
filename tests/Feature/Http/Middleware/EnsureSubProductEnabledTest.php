@@ -2,10 +2,8 @@
 
 namespace Tests\Feature\Http\Middleware;
 
-use App\Services\SubProductService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Route;
-use Mockery;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class EnsureSubProductEnabledTest extends TestCase
@@ -40,6 +38,7 @@ class EnsureSubProductEnabledTest extends TestCase
         });
     }
 
+    #[Test]
     public function test_allows_access_when_sub_product_is_enabled(): void
     {
         $this->subProductService->shouldReceive('isEnabled')
@@ -53,6 +52,7 @@ class EnsureSubProductEnabledTest extends TestCase
             ->assertJson(['message' => 'stablecoins endpoint']);
     }
 
+    #[Test]
     public function test_denies_access_when_sub_product_is_disabled(): void
     {
         $this->subProductService->shouldReceive('isEnabled')
@@ -69,6 +69,7 @@ class EnsureSubProductEnabledTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_checks_specific_feature_within_sub_product(): void
     {
         $this->subProductService->shouldReceive('isFeatureEnabled')
@@ -82,6 +83,7 @@ class EnsureSubProductEnabledTest extends TestCase
             ->assertJson(['message' => 'p2p lending endpoint']);
     }
 
+    #[Test]
     public function test_denies_access_when_specific_feature_is_disabled(): void
     {
         $this->subProductService->shouldReceive('isFeatureEnabled')
@@ -98,6 +100,7 @@ class EnsureSubProductEnabledTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_allows_access_when_any_of_multiple_features_is_enabled(): void
     {
         $this->subProductService->shouldReceive('isFeatureEnabled')
@@ -116,6 +119,7 @@ class EnsureSubProductEnabledTest extends TestCase
             ->assertJson(['message' => 'any lending endpoint']);
     }
 
+    #[Test]
     public function test_denies_access_when_none_of_multiple_features_is_enabled(): void
     {
         $this->subProductService->shouldReceive('isFeatureEnabled')
@@ -137,6 +141,7 @@ class EnsureSubProductEnabledTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_handles_empty_parameter_gracefully(): void
     {
         Route::middleware(['sub_product:'])->get('/test-empty', function () {
@@ -152,6 +157,7 @@ class EnsureSubProductEnabledTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_sub_product_not_found_returns_403(): void
     {
         $this->subProductService->shouldReceive('isEnabled')
@@ -172,6 +178,7 @@ class EnsureSubProductEnabledTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_includes_sub_product_info_in_response_headers(): void
     {
         $this->subProductService->shouldReceive('isEnabled')
@@ -185,6 +192,7 @@ class EnsureSubProductEnabledTest extends TestCase
             ->assertHeader('X-SubProduct-Required', 'stablecoins');
     }
 
+    #[Test]
     public function test_multiple_sub_product_middleware_can_be_stacked(): void
     {
         Route::middleware(['sub_product:stablecoins', 'sub_product:exchange'])
@@ -208,6 +216,7 @@ class EnsureSubProductEnabledTest extends TestCase
             ->assertJson(['message' => 'multiple sub-products']);
     }
 
+    #[Test]
     public function test_stacked_middleware_fails_if_any_sub_product_disabled(): void
     {
         Route::middleware(['sub_product:stablecoins', 'sub_product:exchange'])

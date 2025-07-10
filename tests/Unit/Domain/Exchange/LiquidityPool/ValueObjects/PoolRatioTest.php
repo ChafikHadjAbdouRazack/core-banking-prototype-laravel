@@ -2,13 +2,12 @@
 
 namespace Tests\Unit\Domain\Exchange\LiquidityPool\ValueObjects;
 
-use App\Domain\Exchange\LiquidityPool\ValueObjects\PoolRatio;
-use Brick\Math\BigDecimal;
-use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 class PoolRatioTest extends TestCase
 {
+    #[Test]
     public function test_can_create_pool_ratio(): void
     {
         $ratio = new PoolRatio('100', '2000');
@@ -20,6 +19,7 @@ class PoolRatioTest extends TestCase
         $this->assertEquals('200000', $ratio->getK()->__toString());
     }
 
+    #[Test]
     public function test_throws_exception_for_negative_reserves(): void
     {
         $this->expectException(InvalidArgumentException::class);
@@ -28,6 +28,7 @@ class PoolRatioTest extends TestCase
         new PoolRatio('-100', '2000');
     }
 
+    #[Test]
     public function test_throws_exception_for_zero_reserves(): void
     {
         $this->expectException(InvalidArgumentException::class);
@@ -36,6 +37,7 @@ class PoolRatioTest extends TestCase
         new PoolRatio('100', '0');
     }
 
+    #[Test]
     public function test_calculate_deviation(): void
     {
         $currentRatio = new PoolRatio('100', '2000'); // 0.05
@@ -48,6 +50,7 @@ class PoolRatioTest extends TestCase
         $this->assertLessThan('0.06', $deviation->__toString());
     }
 
+    #[Test]
     public function test_is_deviation_within_tolerance(): void
     {
         $currentRatio = new PoolRatio('100', '2000');
@@ -58,6 +61,7 @@ class PoolRatioTest extends TestCase
         $this->assertFalse($currentRatio->isDeviationWithinTolerance($largeDeviationRatio, '0.05'));
     }
 
+    #[Test]
     public function test_calculate_price_impact_base_input(): void
     {
         $ratio = new PoolRatio('100', '2000'); // Price = 20
@@ -70,6 +74,7 @@ class PoolRatioTest extends TestCase
         $this->assertLessThan('15', $priceImpact->__toString()); // Less than 15%
     }
 
+    #[Test]
     public function test_calculate_price_impact_quote_input(): void
     {
         $ratio = new PoolRatio('100', '2000'); // Price = 20
@@ -82,6 +87,7 @@ class PoolRatioTest extends TestCase
         $this->assertLessThan('15', $priceImpact->__toString()); // Less than 15%
     }
 
+    #[Test]
     public function test_to_array(): void
     {
         $ratio = new PoolRatio('100', '2000');

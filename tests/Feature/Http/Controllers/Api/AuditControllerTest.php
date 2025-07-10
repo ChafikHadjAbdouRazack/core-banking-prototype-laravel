@@ -2,12 +2,11 @@
 
 namespace Tests\Feature\Http\Controllers\Api;
 
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Laravel\Sanctum\Sanctum;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ControllerTestCase;
 
-class AuditControllerTest extends TestCase
+class AuditControllerTest extends ControllerTestCase
 {
     use RefreshDatabase;
 
@@ -20,6 +19,7 @@ class AuditControllerTest extends TestCase
         $this->user = User::factory()->create();
     }
 
+    #[Test]
     public function test_get_audit_logs_returns_empty_data(): void
     {
         Sanctum::actingAs($this->user);
@@ -37,6 +37,7 @@ class AuditControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_get_audit_logs_requires_authentication(): void
     {
         $response = $this->getJson('/api/audit/logs');
@@ -44,6 +45,7 @@ class AuditControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_export_audit_logs_returns_export_info(): void
     {
         Sanctum::actingAs($this->user);
@@ -60,6 +62,7 @@ class AuditControllerTest extends TestCase
             ->assertJsonPath('data.status', 'processing');
     }
 
+    #[Test]
     public function test_export_audit_logs_requires_authentication(): void
     {
         $response = $this->getJson('/api/audit/logs/export');
@@ -67,6 +70,7 @@ class AuditControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_get_audit_events_returns_empty_data(): void
     {
         Sanctum::actingAs($this->user);
@@ -79,6 +83,7 @@ class AuditControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_get_audit_events_requires_authentication(): void
     {
         $response = $this->getJson('/api/audit/events');
@@ -86,6 +91,7 @@ class AuditControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_get_event_details_returns_event_id(): void
     {
         Sanctum::actingAs($this->user);
@@ -99,6 +105,7 @@ class AuditControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_get_event_details_requires_authentication(): void
     {
         $response = $this->getJson('/api/audit/events/event-123');
@@ -106,6 +113,7 @@ class AuditControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_get_audit_reports_returns_empty_data(): void
     {
         Sanctum::actingAs($this->user);
@@ -123,6 +131,7 @@ class AuditControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_get_audit_reports_requires_authentication(): void
     {
         $response = $this->getJson('/api/audit/reports');
@@ -130,6 +139,7 @@ class AuditControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_generate_audit_report_creates_report(): void
     {
         Sanctum::actingAs($this->user);
@@ -147,6 +157,7 @@ class AuditControllerTest extends TestCase
             ->assertJsonPath('message', 'Audit report generation initiated');
     }
 
+    #[Test]
     public function test_generate_audit_report_requires_authentication(): void
     {
         $response = $this->postJson('/api/audit/reports/generate', [
@@ -156,6 +167,7 @@ class AuditControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_get_entity_audit_trail_returns_data(): void
     {
         Sanctum::actingAs($this->user);
@@ -182,6 +194,7 @@ class AuditControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_get_entity_audit_trail_requires_authentication(): void
     {
         $response = $this->getJson('/api/audit/trail/account/acc-123');
@@ -189,6 +202,7 @@ class AuditControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_get_user_activity_returns_data(): void
     {
         Sanctum::actingAs($this->user);
@@ -208,6 +222,7 @@ class AuditControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_get_user_activity_requires_authentication(): void
     {
         $response = $this->getJson('/api/audit/users/user-456/activity');
@@ -215,6 +230,7 @@ class AuditControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_search_audit_logs_returns_empty_results(): void
     {
         Sanctum::actingAs($this->user);
@@ -232,6 +248,7 @@ class AuditControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_search_audit_logs_requires_authentication(): void
     {
         $response = $this->getJson('/api/audit/search?query=test');
@@ -239,6 +256,7 @@ class AuditControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_archive_audit_logs_returns_success(): void
     {
         Sanctum::actingAs($this->user);
@@ -254,6 +272,7 @@ class AuditControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_archive_audit_logs_requires_authentication(): void
     {
         $response = $this->postJson('/api/audit/archive', [

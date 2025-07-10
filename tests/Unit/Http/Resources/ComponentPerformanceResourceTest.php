@@ -2,8 +2,7 @@
 
 namespace Tests\Unit\Http\Resources;
 
-use App\Http\Resources\ComponentPerformanceResource;
-use Illuminate\Http\Request;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class ComponentPerformanceResourceTest extends TestCase
@@ -93,6 +92,7 @@ class ComponentPerformanceResourceTest extends TestCase
         };
     }
 
+    #[Test]
     public function test_transforms_component_performance_to_array(): void
     {
         $asset = (object) ['code' => 'BTC', 'name' => 'Bitcoin'];
@@ -133,6 +133,7 @@ class ComponentPerformanceResourceTest extends TestCase
         $this->assertTrue($array['is_positive_contributor']);
     }
 
+    #[Test]
     public function test_handles_missing_asset_relationship(): void
     {
         $componentPerformance = $this->createComponentPerformance([
@@ -148,6 +149,7 @@ class ComponentPerformanceResourceTest extends TestCase
         $this->assertEquals('ETH', $array['asset_name']);
     }
 
+    #[Test]
     public function test_rounds_numeric_values_correctly(): void
     {
         $componentPerformance = $this->createComponentPerformance([
@@ -174,6 +176,7 @@ class ComponentPerformanceResourceTest extends TestCase
         $this->assertEquals(1.23, $array['return_percentage']);
     }
 
+    #[Test]
     public function test_identifies_negative_contributor(): void
     {
         $componentPerformance = $this->createComponentPerformance([
@@ -188,6 +191,7 @@ class ComponentPerformanceResourceTest extends TestCase
         $this->assertEquals('-5.50%', $array['formatted_contribution']);
     }
 
+    #[Test]
     public function test_identifies_zero_contribution(): void
     {
         $componentPerformance = $this->createComponentPerformance([
@@ -202,6 +206,7 @@ class ComponentPerformanceResourceTest extends TestCase
         $this->assertEquals('+0.00%', $array['formatted_contribution']);
     }
 
+    #[Test]
     public function test_includes_all_required_fields(): void
     {
         $componentPerformance = $this->createComponentPerformance();
@@ -235,6 +240,7 @@ class ComponentPerformanceResourceTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_resource_collection(): void
     {
         $components = [

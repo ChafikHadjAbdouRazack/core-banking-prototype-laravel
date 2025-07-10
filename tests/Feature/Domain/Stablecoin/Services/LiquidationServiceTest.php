@@ -11,9 +11,10 @@ use App\Domain\Wallet\Services\WalletService;
 use App\Models\StablecoinCollateralPosition;
 use Illuminate\Support\Facades\DB;
 use Mockery;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ServiceTestCase;
 
-class LiquidationServiceTest extends TestCase
+class LiquidationServiceTest extends ServiceTestCase
 {
     use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 
@@ -51,7 +52,7 @@ class LiquidationServiceTest extends TestCase
         parent::tearDown();
     }
 
-    /** @test */
+    #[Test]
     public function it_can_calculate_liquidation_reward()
     {
         $stablecoin = new \stdClass();
@@ -76,7 +77,7 @@ class LiquidationServiceTest extends TestCase
         $this->assertEquals(11000, $reward['penalty']); // 10% penalty on 110,000 collateral
     }
 
-    /** @test */
+    #[Test]
     public function it_prevents_liquidation_of_healthy_positions()
     {
         $position = Mockery::mock(StablecoinCollateralPosition::class);
@@ -88,7 +89,7 @@ class LiquidationServiceTest extends TestCase
         $this->service->liquidatePosition($position);
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_liquidation_eligibility()
     {
         $position = Mockery::mock(StablecoinCollateralPosition::class);
@@ -100,7 +101,7 @@ class LiquidationServiceTest extends TestCase
         $this->service->liquidatePosition($position);
     }
 
-    /** @test */
+    #[Test]
     public function it_calculates_liquidation_rewards_correctly()
     {
         $stablecoin = new \stdClass();

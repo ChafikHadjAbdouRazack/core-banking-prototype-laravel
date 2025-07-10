@@ -2,21 +2,15 @@
 
 namespace Tests\Unit\Domain\Lending\Aggregates;
 
-use App\Domain\Lending\Aggregates\LoanApplication;
-use App\Domain\Lending\Events\LoanApplicationApproved;
-use App\Domain\Lending\Events\LoanApplicationCreditCheckCompleted;
-use App\Domain\Lending\Events\LoanApplicationRejected;
-use App\Domain\Lending\Events\LoanApplicationRiskAssessmentCompleted;
-use App\Domain\Lending\Events\LoanApplicationSubmitted;
-use App\Domain\Lending\Events\LoanApplicationWithdrawn;
-use App\Domain\Lending\Exceptions\LoanApplicationException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\DomainTestCase;
 
-class LoanApplicationTest extends TestCase
+class LoanApplicationTest extends DomainTestCase
 {
     use RefreshDatabase;
 
+    #[Test]
     public function test_submit_loan_application_successfully(): void
     {
         $aggregate = LoanApplication::fake();
@@ -53,6 +47,7 @@ class LoanApplicationTest extends TestCase
         ]);
     }
 
+    #[Test]
     public function test_submit_fails_with_zero_amount(): void
     {
         $this->expectException(LoanApplicationException::class);
@@ -68,6 +63,7 @@ class LoanApplicationTest extends TestCase
         );
     }
 
+    #[Test]
     public function test_submit_fails_with_negative_amount(): void
     {
         $this->expectException(LoanApplicationException::class);
@@ -83,6 +79,7 @@ class LoanApplicationTest extends TestCase
         );
     }
 
+    #[Test]
     public function test_submit_fails_with_invalid_term_too_short(): void
     {
         $this->expectException(LoanApplicationException::class);
@@ -98,6 +95,7 @@ class LoanApplicationTest extends TestCase
         );
     }
 
+    #[Test]
     public function test_submit_fails_with_invalid_term_too_long(): void
     {
         $this->expectException(LoanApplicationException::class);
@@ -113,6 +111,7 @@ class LoanApplicationTest extends TestCase
         );
     }
 
+    #[Test]
     public function test_complete_credit_check(): void
     {
         $aggregate = LoanApplication::fake();
@@ -148,6 +147,7 @@ class LoanApplicationTest extends TestCase
         );
     }
 
+    #[Test]
     public function test_complete_risk_assessment(): void
     {
         $aggregate = LoanApplication::fake();
@@ -181,6 +181,7 @@ class LoanApplicationTest extends TestCase
         );
     }
 
+    #[Test]
     public function test_approve_application(): void
     {
         $aggregate = LoanApplication::fake();
@@ -222,6 +223,7 @@ class LoanApplicationTest extends TestCase
         );
     }
 
+    #[Test]
     public function test_reject_application(): void
     {
         $aggregate = LoanApplication::fake();
@@ -251,6 +253,7 @@ class LoanApplicationTest extends TestCase
         );
     }
 
+    #[Test]
     public function test_withdraw_application(): void
     {
         $aggregate = LoanApplication::fake();
@@ -276,6 +279,7 @@ class LoanApplicationTest extends TestCase
         );
     }
 
+    #[Test]
     public function test_cannot_approve_without_credit_check(): void
     {
         $loanApp = LoanApplication::submit(
@@ -293,6 +297,7 @@ class LoanApplicationTest extends TestCase
         $loanApp->approve('15000', 8.0, '1328.25', 'officer-123');
     }
 
+    #[Test]
     public function test_cannot_approve_without_risk_assessment(): void
     {
         $loanApp = LoanApplication::submit(
@@ -313,6 +318,7 @@ class LoanApplicationTest extends TestCase
         $loanApp->approve('25000', 9.0, '1142.22', 'officer-456');
     }
 
+    #[Test]
     public function test_cannot_process_already_decided_application(): void
     {
         $loanApp = LoanApplication::submit(
@@ -334,6 +340,7 @@ class LoanApplicationTest extends TestCase
         $loanApp->completeCreditCheck(800, 'Experian', [], 'system');
     }
 
+    #[Test]
     public function test_apply_events_updates_state(): void
     {
         $loanApp = new LoanApplication();

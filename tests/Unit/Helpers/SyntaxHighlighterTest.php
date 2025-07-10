@@ -2,23 +2,25 @@
 
 namespace Tests\Unit\Helpers;
 
-use App\Helpers\SyntaxHighlighter;
-use Highlight\Highlighter;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class SyntaxHighlighterTest extends TestCase
 {
+    #[Test]
     public function test_class_exists(): void
     {
         $this->assertTrue(class_exists(SyntaxHighlighter::class));
     }
 
+    #[Test]
     public function test_has_static_methods(): void
     {
         $this->assertTrue(method_exists(SyntaxHighlighter::class, 'highlight'));
         $this->assertTrue(method_exists(SyntaxHighlighter::class, 'getLanguageClass'));
     }
 
+    #[Test]
     public function test_has_protected_static_highlighter_property(): void
     {
         $reflection = new \ReflectionClass(SyntaxHighlighter::class);
@@ -29,6 +31,7 @@ class SyntaxHighlighterTest extends TestCase
         $this->assertTrue($property->isStatic());
     }
 
+    #[Test]
     public function test_highlight_method_signature(): void
     {
         $reflection = new \ReflectionMethod(SyntaxHighlighter::class, 'highlight');
@@ -47,6 +50,7 @@ class SyntaxHighlighterTest extends TestCase
         $this->assertEquals('auto', $parameters[1]->getDefaultValue());
     }
 
+    #[Test]
     public function test_get_language_class_method_signature(): void
     {
         $reflection = new \ReflectionMethod(SyntaxHighlighter::class, 'getLanguageClass');
@@ -59,6 +63,7 @@ class SyntaxHighlighterTest extends TestCase
         $this->assertEquals('language', $parameter->getName());
     }
 
+    #[Test]
     public function test_highlight_initializes_highlighter_once(): void
     {
         $reflection = new \ReflectionClass(SyntaxHighlighter::class);
@@ -81,6 +86,7 @@ class SyntaxHighlighterTest extends TestCase
         $this->assertSame($firstInstance, $secondInstance);
     }
 
+    #[Test]
     public function test_highlight_with_specific_language(): void
     {
         $code = '<?php echo "Hello World"; ?>';
@@ -91,6 +97,7 @@ class SyntaxHighlighterTest extends TestCase
         $this->assertStringContainsString('Hello World', $result);
     }
 
+    #[Test]
     public function test_highlight_with_auto_detection(): void
     {
         $code = 'function test() { return "Hello"; }';
@@ -100,6 +107,7 @@ class SyntaxHighlighterTest extends TestCase
         $this->assertStringContainsString('Hello', $result);
     }
 
+    #[Test]
     public function test_highlight_handles_exceptions(): void
     {
         $reflection = new \ReflectionClass(SyntaxHighlighter::class);
@@ -116,6 +124,7 @@ class SyntaxHighlighterTest extends TestCase
         $this->assertStringContainsString('htmlspecialchars($code)', $source);
     }
 
+    #[Test]
     public function test_highlight_escapes_html_on_error(): void
     {
         // Test with potentially problematic code
@@ -130,6 +139,7 @@ class SyntaxHighlighterTest extends TestCase
         $this->assertStringNotContainsString('<script>', $result);
     }
 
+    #[Test]
     public function test_get_language_class_returns_correct_classes(): void
     {
         $mappings = [
@@ -153,6 +163,7 @@ class SyntaxHighlighterTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_get_language_class_handles_case_insensitive(): void
     {
         $this->assertEquals('language-javascript', SyntaxHighlighter::getLanguageClass('JavaScript'));
@@ -160,6 +171,7 @@ class SyntaxHighlighterTest extends TestCase
         $this->assertEquals('language-php', SyntaxHighlighter::getLanguageClass('PhP'));
     }
 
+    #[Test]
     public function test_get_language_class_returns_default_for_unknown(): void
     {
         $this->assertEquals('language-plaintext', SyntaxHighlighter::getLanguageClass('unknown'));
@@ -168,6 +180,7 @@ class SyntaxHighlighterTest extends TestCase
         $this->assertEquals('language-plaintext', SyntaxHighlighter::getLanguageClass(''));
     }
 
+    #[Test]
     public function test_highlight_uses_highlighter_library(): void
     {
         $reflection = new \ReflectionClass(SyntaxHighlighter::class);
@@ -185,6 +198,7 @@ class SyntaxHighlighterTest extends TestCase
         $this->assertStringContainsString('->value', $fileContent);
     }
 
+    #[Test]
     public function test_language_map_is_comprehensive(): void
     {
         $reflection = new \ReflectionClass(SyntaxHighlighter::class);

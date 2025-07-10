@@ -6,10 +6,10 @@ use App\Domain\Account\DataObjects\Account;
 use App\Domain\Account\Workflows\CreateAccountActivity;
 use App\Domain\Account\Workflows\CreateAccountWorkflow;
 use PHPUnit\Framework\Attributes\Test;
-use Tests\TestCase;
+use Tests\DomainTestCase;
 use Workflow\WorkflowStub;
 
-class CreateAccountWorkflowTest extends TestCase
+class CreateAccountWorkflowTest extends DomainTestCase
 {
     private const string ACCOUNT_UUID = 'account-uuid';
 

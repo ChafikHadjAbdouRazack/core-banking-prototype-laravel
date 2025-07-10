@@ -2,14 +2,15 @@
 
 namespace Tests\Feature\Http\Controllers\Api\Auth;
 
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ControllerTestCase;
 
-class RegisterControllerTest extends TestCase
+class RegisterControllerTest extends ControllerTestCase
 {
     use RefreshDatabase;
 
+    #[Test]
     public function test_register_with_valid_data(): void
     {
         $response = $this->postJson('/api/auth/register', [
@@ -57,6 +58,7 @@ class RegisterControllerTest extends TestCase
         ]);
     }
 
+    #[Test]
     public function test_register_as_business_customer(): void
     {
         $response = $this->postJson('/api/auth/register', [
@@ -74,6 +76,7 @@ class RegisterControllerTest extends TestCase
         $this->assertTrue($user->hasRole('customer_business'));
     }
 
+    #[Test]
     public function test_register_fails_with_missing_required_fields(): void
     {
         $response = $this->postJson('/api/auth/register', []);
@@ -82,6 +85,7 @@ class RegisterControllerTest extends TestCase
             ->assertJsonValidationErrors(['name', 'email', 'password']);
     }
 
+    #[Test]
     public function test_register_fails_with_invalid_email(): void
     {
         $response = $this->postJson('/api/auth/register', [
@@ -95,6 +99,7 @@ class RegisterControllerTest extends TestCase
             ->assertJsonValidationErrors(['email']);
     }
 
+    #[Test]
     public function test_register_fails_with_duplicate_email(): void
     {
         User::factory()->create(['email' => 'existing@example.com']);
@@ -115,6 +120,7 @@ class RegisterControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_register_fails_with_short_password(): void
     {
         $response = $this->postJson('/api/auth/register', [
@@ -128,6 +134,7 @@ class RegisterControllerTest extends TestCase
             ->assertJsonValidationErrors(['password']);
     }
 
+    #[Test]
     public function test_register_fails_with_mismatched_password_confirmation(): void
     {
         $response = $this->postJson('/api/auth/register', [
@@ -141,6 +148,7 @@ class RegisterControllerTest extends TestCase
             ->assertJsonValidationErrors(['password']);
     }
 
+    #[Test]
     public function test_register_fails_with_name_too_long(): void
     {
         $response = $this->postJson('/api/auth/register', [
@@ -154,6 +162,7 @@ class RegisterControllerTest extends TestCase
             ->assertJsonValidationErrors(['name']);
     }
 
+    #[Test]
     public function test_register_fails_with_email_too_long(): void
     {
         $response = $this->postJson('/api/auth/register', [
@@ -167,6 +176,7 @@ class RegisterControllerTest extends TestCase
             ->assertJsonValidationErrors(['email']);
     }
 
+    #[Test]
     public function test_register_defaults_to_regular_customer(): void
     {
         $response = $this->postJson('/api/auth/register', [
@@ -184,6 +194,7 @@ class RegisterControllerTest extends TestCase
         $this->assertTrue($user->hasRole('customer_private'));
     }
 
+    #[Test]
     public function test_register_validates_boolean_for_business_customer(): void
     {
         $response = $this->postJson('/api/auth/register', [
@@ -198,6 +209,7 @@ class RegisterControllerTest extends TestCase
             ->assertJsonValidationErrors(['is_business_customer']);
     }
 
+    #[Test]
     public function test_register_returns_unverified_email_status(): void
     {
         $response = $this->postJson('/api/auth/register', [
@@ -211,6 +223,7 @@ class RegisterControllerTest extends TestCase
             ->assertJsonPath('user.email_verified_at', null);
     }
 
+    #[Test]
     public function test_register_creates_account_record(): void
     {
         $response = $this->postJson('/api/auth/register', [
@@ -231,6 +244,7 @@ class RegisterControllerTest extends TestCase
         ]);
     }
 
+    #[Test]
     public function test_register_uses_create_new_user_action(): void
     {
         // This test verifies that the controller uses the Fortify CreateNewUser action

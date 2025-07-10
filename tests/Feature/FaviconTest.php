@@ -2,13 +2,14 @@
 
 namespace Tests\Feature;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class FaviconTest extends TestCase
 {
-    /**
-     * Test that favicon files exist in public directory.
-     */
+/**
+ * Test that favicon files exist in public directory.
+ */    #[Test]
     public function test_favicon_files_exist(): void
     {
         $faviconFiles = [
@@ -29,9 +30,9 @@ class FaviconTest extends TestCase
         }
     }
 
-    /**
-     * Test that manifest.json contains correct data.
-     */
+/**
+ * Test that manifest.json contains correct data.
+ */    #[Test]
     public function test_manifest_json_has_correct_structure(): void
     {
         $manifestPath = public_path('manifest.json');
@@ -53,9 +54,9 @@ class FaviconTest extends TestCase
         $this->assertNotEmpty($manifest['icons']);
     }
 
-    /**
-     * Test that pages include favicon meta tags.
-     */
+/**
+ * Test that pages include favicon meta tags.
+ */    #[Test]
     public function test_pages_include_favicon_meta_tags(): void
     {
         // Test guest page (login)

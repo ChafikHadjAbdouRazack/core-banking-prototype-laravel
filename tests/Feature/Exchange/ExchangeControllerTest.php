@@ -2,17 +2,11 @@
 
 namespace Tests\Feature\Exchange;
 
-use App\Domain\Account\Aggregates\Account;
-use App\Domain\Account\DataTransferObjects\AccountData;
-use App\Domain\Account\Enums\AccountStatus;
-use App\Domain\Account\Enums\AccountType;
-use App\Domain\Exchange\Aggregates\OrderBook;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Str;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ControllerTestCase;
 
-class ExchangeControllerTest extends TestCase
+class ExchangeControllerTest extends ControllerTestCase
 {
     use RefreshDatabase;
 
@@ -49,6 +43,7 @@ class ExchangeControllerTest extends TestCase
             ->persist();
     }
 
+    #[Test]
     public function test_can_access_exchange_index(): void
     {
         $response = $this->actingAs($this->user)
@@ -58,6 +53,7 @@ class ExchangeControllerTest extends TestCase
         $response->assertViewIs('exchange.index');
     }
 
+    #[Test]
     public function test_can_view_orders(): void
     {
         $response = $this->actingAs($this->user)
@@ -67,6 +63,7 @@ class ExchangeControllerTest extends TestCase
         $response->assertViewIs('exchange.orders');
     }
 
+    #[Test]
     public function test_can_view_trades(): void
     {
         $response = $this->actingAs($this->user)
@@ -76,6 +73,7 @@ class ExchangeControllerTest extends TestCase
         $response->assertViewIs('exchange.trades');
     }
 
+    #[Test]
     public function test_can_place_buy_order(): void
     {
         $response = $this->actingAs($this->user)
@@ -103,6 +101,7 @@ class ExchangeControllerTest extends TestCase
         ]);
     }
 
+    #[Test]
     public function test_can_place_sell_order(): void
     {
         $response = $this->actingAs($this->user)
@@ -130,6 +129,7 @@ class ExchangeControllerTest extends TestCase
         ]);
     }
 
+    #[Test]
     public function test_cannot_place_order_with_insufficient_balance(): void
     {
         $response = $this->actingAs($this->user)
@@ -146,6 +146,7 @@ class ExchangeControllerTest extends TestCase
         $response->assertSessionHasErrors();
     }
 
+    #[Test]
     public function test_can_cancel_order(): void
     {
         // First place an order
@@ -180,6 +181,7 @@ class ExchangeControllerTest extends TestCase
         ]);
     }
 
+    #[Test]
     public function test_guest_cannot_access_exchange(): void
     {
         $response = $this->get(route('exchange.index'));
@@ -192,6 +194,7 @@ class ExchangeControllerTest extends TestCase
         $response->assertRedirect(route('login'));
     }
 
+    #[Test]
     public function test_can_export_trades(): void
     {
         $response = $this->actingAs($this->user)

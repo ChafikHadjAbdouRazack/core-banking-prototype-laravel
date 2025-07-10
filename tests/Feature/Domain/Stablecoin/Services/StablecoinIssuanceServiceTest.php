@@ -18,10 +18,11 @@ use App\Models\StablecoinCollateralPosition;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
 use Mockery;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ServiceTestCase;
 use Workflow\WorkflowStub;
 
-class StablecoinIssuanceServiceTest extends TestCase
+class StablecoinIssuanceServiceTest extends ServiceTestCase
 {
     use RefreshDatabase;
 
@@ -109,14 +110,14 @@ class StablecoinIssuanceServiceTest extends TestCase
         parent::tearDown();
     }
 
-    /** @test */
+    #[Test]
     public function it_can_mint_stablecoins_with_usd_collateral()
     {
         // This test has been moved to integration tests
         $this->markTestSkipped('Moved to StablecoinIssuanceIntegrationTest');
     }
 
-    /** @test */
+    #[Test]
     public function it_can_mint_with_different_collateral_asset()
     {
         // This test has been moved to integration tests
@@ -181,7 +182,7 @@ class StablecoinIssuanceServiceTest extends TestCase
         $this->assertEquals($eurValueInUsd, $this->stablecoin->total_collateral_value);
     }
 
-    /** @test */
+    #[Test]
     public function it_prevents_minting_when_disabled()
     {
         $this->stablecoin->update(['minting_enabled' => false]);
@@ -198,7 +199,7 @@ class StablecoinIssuanceServiceTest extends TestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function it_prevents_minting_when_max_supply_reached()
     {
         $this->stablecoin->update(['total_supply' => 10000000]);
@@ -215,7 +216,7 @@ class StablecoinIssuanceServiceTest extends TestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_collateral_sufficiency()
     {
         // Mock insufficient collateral value
@@ -237,7 +238,7 @@ class StablecoinIssuanceServiceTest extends TestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_account_balance()
     {
         // Mock insufficient balance
@@ -267,7 +268,7 @@ class StablecoinIssuanceServiceTest extends TestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function it_can_burn_stablecoins_and_release_collateral()
     {
         // This test has been moved to integration tests
@@ -330,7 +331,7 @@ class StablecoinIssuanceServiceTest extends TestCase
         $this->assertEquals('active', $result->status);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_burn_entire_position()
     {
         // This test has been moved to integration tests
@@ -384,7 +385,7 @@ class StablecoinIssuanceServiceTest extends TestCase
         $this->assertEquals('closed', $result->status);
     }
 
-    /** @test */
+    #[Test]
     public function it_prevents_burning_when_disabled()
     {
         $this->stablecoin->update(['burning_enabled' => false]);
@@ -406,7 +407,7 @@ class StablecoinIssuanceServiceTest extends TestCase
         $this->service->burn($this->account, 'FUSD', 50000);
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_burn_amount()
     {
         $position = StablecoinCollateralPosition::create([
@@ -426,7 +427,7 @@ class StablecoinIssuanceServiceTest extends TestCase
         $this->service->burn($this->account, 'FUSD', 150000); // Try to burn more than debt
     }
 
-    /** @test */
+    #[Test]
     public function it_prevents_burn_creating_undercollateralized_position()
     {
         $position = StablecoinCollateralPosition::create([
@@ -457,7 +458,7 @@ class StablecoinIssuanceServiceTest extends TestCase
         $this->service->burn($accountMock, 'FUSD', 10000, 140000); // Try to release too much collateral
     }
 
-    /** @test */
+    #[Test]
     public function it_can_add_collateral_to_existing_position()
     {
         // This test has been moved to integration tests
@@ -517,7 +518,7 @@ class StablecoinIssuanceServiceTest extends TestCase
         $this->assertEquals(100000, $result->debt_amount); // Debt unchanged
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_collateral_asset_match()
     {
         $position = StablecoinCollateralPosition::create([
@@ -537,7 +538,7 @@ class StablecoinIssuanceServiceTest extends TestCase
         $this->service->addCollateral($this->account, 'FUSD', 'EUR', 50000);
     }
 
-    /** @test */
+    #[Test]
     public function it_updates_existing_position_when_minting_again()
     {
         // This test has been moved to integration tests

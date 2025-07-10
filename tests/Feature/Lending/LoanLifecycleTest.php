@@ -2,17 +2,11 @@
 
 namespace Tests\Feature\Lending;
 
-use App\Domain\Lending\Models\Loan;
-use App\Domain\Lending\Models\LoanApplication;
-use App\Domain\Lending\Services\CreditScoringService;
-use App\Domain\Lending\Services\InterestCalculationService;
-use App\Domain\Lending\Services\LoanService;
-use App\Models\User;
-use Brick\Math\BigDecimal;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\DomainTestCase;
 
-class LoanLifecycleTest extends TestCase
+class LoanLifecycleTest extends DomainTestCase
 {
     use RefreshDatabase;
 
@@ -31,6 +25,7 @@ class LoanLifecycleTest extends TestCase
         $this->interestService = app(InterestCalculationService::class);
     }
 
+    #[Test]
     public function test_complete_loan_lifecycle_from_application_to_repayment()
     {
         // Create borrower and lender
@@ -122,6 +117,7 @@ class LoanLifecycleTest extends TestCase
         $this->assertGreaterThan(500, (float) $totalInterest); // Should earn ~$276.64 in interest
     }
 
+    #[Test]
     public function test_loan_default_and_recovery_process()
     {
         $borrower = User::factory()->create();
@@ -164,6 +160,7 @@ class LoanLifecycleTest extends TestCase
         $this->assertGreaterThan(0, (float) $writeOff->amount_written_off);
     }
 
+    #[Test]
     public function test_early_loan_repayment_with_penalty()
     {
         $borrower = User::factory()->create();
@@ -198,6 +195,7 @@ class LoanLifecycleTest extends TestCase
         $this->assertEquals('0', $loan->outstanding_balance);
     }
 
+    #[Test]
     public function test_loan_refinancing()
     {
         $borrower = User::factory()->create();

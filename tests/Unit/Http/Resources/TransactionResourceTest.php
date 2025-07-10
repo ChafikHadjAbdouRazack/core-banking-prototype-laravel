@@ -2,12 +2,12 @@
 
 namespace Tests\Unit\Http\Resources;
 
-use App\Http\Resources\TransactionResource;
-use Illuminate\Http\Request;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class TransactionResourceTest extends TestCase
 {
+    #[Test]
     public function test_transforms_transaction_to_array(): void
     {
         $transaction = (object) [
@@ -53,6 +53,7 @@ class TransactionResourceTest extends TestCase
         ], $array);
     }
 
+    #[Test]
     public function test_handles_null_metadata(): void
     {
         $transaction = (object) [
@@ -82,6 +83,7 @@ class TransactionResourceTest extends TestCase
         $this->assertEmpty($array['metadata']);
     }
 
+    #[Test]
     public function test_handles_invalid_json_metadata(): void
     {
         $transaction = (object) [
@@ -111,6 +113,7 @@ class TransactionResourceTest extends TestCase
         $this->assertEmpty($array['metadata']);
     }
 
+    #[Test]
     public function test_includes_all_required_fields(): void
     {
         $transaction = (object) [
@@ -160,6 +163,7 @@ class TransactionResourceTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_resource_collection(): void
     {
         $transactions = [

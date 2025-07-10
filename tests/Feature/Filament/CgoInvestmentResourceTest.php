@@ -2,13 +2,8 @@
 
 namespace Tests\Feature\Filament;
 
-use App\Filament\Resources\CgoInvestmentResource;
-use App\Models\CgoInvestment;
-use App\Models\CgoPricingRound;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Queue;
-use Livewire\Livewire;
-use Tests\FilamentTestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 class CgoInvestmentResourceTest extends FilamentTestCase
 {
@@ -21,6 +16,7 @@ class CgoInvestmentResourceTest extends FilamentTestCase
         // Additional setup if needed
     }
 
+    #[Test]
     public function test_can_list_cgo_investments()
     {
         $investments = CgoInvestment::factory()->count(5)->create();
@@ -29,6 +25,7 @@ class CgoInvestmentResourceTest extends FilamentTestCase
             ->assertCanSeeTableRecords($investments);
     }
 
+    #[Test]
     public function test_can_view_cgo_investment()
     {
         $investment = CgoInvestment::factory()->create();
@@ -45,6 +42,7 @@ class CgoInvestmentResourceTest extends FilamentTestCase
             ]);
     }
 
+    #[Test]
     public function test_can_edit_cgo_investment()
     {
         $investment = CgoInvestment::factory()->create([
@@ -69,6 +67,7 @@ class CgoInvestmentResourceTest extends FilamentTestCase
         ]);
     }
 
+    #[Test]
     public function test_can_filter_investments_by_status()
     {
         CgoInvestment::factory()->create(['status' => 'pending']);
@@ -82,6 +81,7 @@ class CgoInvestmentResourceTest extends FilamentTestCase
             ->assertCanNotSeeTableRecords(CgoInvestment::where('status', '!=', 'pending')->get());
     }
 
+    #[Test]
     public function test_can_filter_investments_by_payment_method()
     {
         CgoInvestment::factory()->create(['payment_method' => 'stripe']);
@@ -95,6 +95,7 @@ class CgoInvestmentResourceTest extends FilamentTestCase
             ->assertCanNotSeeTableRecords(CgoInvestment::where('payment_method', '!=', 'crypto')->get());
     }
 
+    #[Test]
     public function test_can_filter_investments_by_tier()
     {
         CgoInvestment::factory()->create(['tier' => 'bronze']);
@@ -108,6 +109,7 @@ class CgoInvestmentResourceTest extends FilamentTestCase
             ->assertCanNotSeeTableRecords(CgoInvestment::where('tier', '!=', 'gold')->get());
     }
 
+    #[Test]
     public function test_verify_payment_action_dispatches_job()
     {
         Queue::fake();
@@ -125,6 +127,7 @@ class CgoInvestmentResourceTest extends FilamentTestCase
         });
     }
 
+    #[Test]
     public function test_navigation_badge_shows_pending_count()
     {
         CgoInvestment::factory()->count(3)->create(['status' => 'pending']);
@@ -134,6 +137,7 @@ class CgoInvestmentResourceTest extends FilamentTestCase
         $this->assertEquals('warning', CgoInvestmentResource::getNavigationBadgeColor());
     }
 
+    #[Test]
     public function test_stats_widget_shows_correct_values()
     {
         $round = CgoPricingRound::factory()->create([

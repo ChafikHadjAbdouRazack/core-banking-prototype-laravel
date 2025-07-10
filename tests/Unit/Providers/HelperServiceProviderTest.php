@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Providers;
 
-use App\Providers\HelperServiceProvider;
-use Illuminate\Support\ServiceProvider;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\UnitTestCase;
 
 class HelperServiceProviderTest extends UnitTestCase
 {
+    #[Test]
     public function test_provider_is_service_provider()
     {
         $provider = new HelperServiceProvider(app());
@@ -17,6 +17,7 @@ class HelperServiceProviderTest extends UnitTestCase
         $this->assertInstanceOf(ServiceProvider::class, $provider);
     }
 
+    #[Test]
     public function test_provider_registers_services()
     {
         $provider = new HelperServiceProvider(app());
@@ -31,6 +32,7 @@ class HelperServiceProviderTest extends UnitTestCase
         $this->assertTrue(true);
     }
 
+    #[Test]
     public function test_provider_boots_successfully()
     {
         $provider = new HelperServiceProvider(app());

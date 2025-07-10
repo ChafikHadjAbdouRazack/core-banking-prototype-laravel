@@ -2,11 +2,7 @@
 
 namespace Tests\Unit\Listeners;
 
-use App\Domain\Custodian\Events\CustodianHealthChanged;
-use App\Domain\Custodian\Services\BankAlertingService;
-use App\Listeners\HandleCustodianHealthChange;
-use Illuminate\Support\Facades\Log;
-use Mockery;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class HandleCustodianHealthChangeTest extends TestCase
@@ -23,6 +19,7 @@ class HandleCustodianHealthChangeTest extends TestCase
         $this->listener = new HandleCustodianHealthChange($this->alertingService);
     }
 
+    #[Test]
     public function test_handles_custodian_health_change_event(): void
     {
         $event = new CustodianHealthChanged(
@@ -39,6 +36,7 @@ class HandleCustodianHealthChangeTest extends TestCase
         $this->listener->handle($event);
     }
 
+    #[Test]
     public function test_handles_different_health_states(): void
     {
         $healthStates = [
@@ -65,6 +63,7 @@ class HandleCustodianHealthChangeTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_failed_method_logs_error(): void
     {
         $event = new CustodianHealthChanged(
@@ -86,6 +85,7 @@ class HandleCustodianHealthChangeTest extends TestCase
         $this->listener->failed($event, $exception);
     }
 
+    #[Test]
     public function test_is_queued_listener(): void
     {
         $this->assertArrayHasKey(
@@ -94,6 +94,7 @@ class HandleCustodianHealthChangeTest extends TestCase
         );
     }
 
+    #[Test]
     public function test_uses_queue_interactions(): void
     {
         $this->assertArrayHasKey(

@@ -2,23 +2,25 @@
 
 namespace Tests\Unit\Domain\Stablecoin\Events;
 
-use App\Domain\Stablecoin\Events\CollateralLocked;
-use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\DomainTestCase;
 
-class CollateralLockedTest extends TestCase
+class CollateralLockedTest extends DomainTestCase
 {
+    #[Test]
     public function test_class_exists(): void
     {
         $this->assertTrue(class_exists(CollateralLocked::class));
     }
 
+    #[Test]
     public function test_extends_should_be_stored(): void
     {
         $reflection = new \ReflectionClass(CollateralLocked::class);
         $this->assertTrue($reflection->isSubclassOf(ShouldBeStored::class));
     }
 
+    #[Test]
     public function test_event_has_constructor_properties(): void
     {
         $reflection = new \ReflectionClass(CollateralLocked::class);
@@ -47,6 +49,7 @@ class CollateralLockedTest extends TestCase
         $this->assertEquals([], $parameters[4]->getDefaultValue());
     }
 
+    #[Test]
     public function test_event_properties_are_public_readonly(): void
     {
         $reflection = new \ReflectionClass(CollateralLocked::class);
@@ -66,6 +69,7 @@ class CollateralLockedTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_event_creation_with_minimal_data(): void
     {
         $positionUuid = 'pos-123';
@@ -87,6 +91,7 @@ class CollateralLockedTest extends TestCase
         $this->assertEquals([], $event->metadata);
     }
 
+    #[Test]
     public function test_event_creation_with_metadata(): void
     {
         $positionUuid = 'pos-123';
@@ -114,6 +119,7 @@ class CollateralLockedTest extends TestCase
         $this->assertEquals($metadata, $event->metadata);
     }
 
+    #[Test]
     public function test_event_is_immutable(): void
     {
         $event = new CollateralLocked(
@@ -133,6 +139,7 @@ class CollateralLockedTest extends TestCase
         $property->setValue($event, 'new-pos-123');
     }
 
+    #[Test]
     public function test_event_serialization(): void
     {
         $positionUuid = 'pos-123';
@@ -160,6 +167,7 @@ class CollateralLockedTest extends TestCase
         $this->assertEquals($metadata, $unserialized->metadata);
     }
 
+    #[Test]
     public function test_event_with_large_amount(): void
     {
         $event = new CollateralLocked(
@@ -172,6 +180,7 @@ class CollateralLockedTest extends TestCase
         $this->assertEquals(PHP_INT_MAX, $event->amount);
     }
 
+    #[Test]
     public function test_event_with_complex_metadata(): void
     {
         $metadata = [
@@ -197,6 +206,7 @@ class CollateralLockedTest extends TestCase
         $this->assertEquals($metadata, $event->metadata);
     }
 
+    #[Test]
     public function test_event_stores_uuid_formats(): void
     {
         $positionUuid = 'b1f5c2e8-1234-5678-9abc-def012345678';
@@ -213,6 +223,7 @@ class CollateralLockedTest extends TestCase
         $this->assertEquals($accountUuid, $event->account_uuid);
     }
 
+    #[Test]
     public function test_event_stores_various_asset_codes(): void
     {
         $assetCodes = ['BTC', 'ETH', 'USDC', 'USDT', 'EUR', 'USD', 'CUSTOM-TOKEN'];
@@ -229,6 +240,7 @@ class CollateralLockedTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_event_with_zero_amount(): void
     {
         $event = new CollateralLocked(
@@ -241,6 +253,7 @@ class CollateralLockedTest extends TestCase
         $this->assertEquals(0, $event->amount);
     }
 
+    #[Test]
     public function test_event_with_negative_amount(): void
     {
         // Event allows negative amounts (might be used for reversals)

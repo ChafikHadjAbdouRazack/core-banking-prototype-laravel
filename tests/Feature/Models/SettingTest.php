@@ -7,6 +7,7 @@ namespace Tests\Feature\Models;
 use App\Models\Setting;
 use Illuminate\Support\Facades\Crypt;
 use Mockery;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 class SettingTest extends TestCase
@@ -32,7 +33,7 @@ class SettingTest extends TestCase
         parent::tearDown();
     }
 
-    /** @test */
+    #[Test]
     public function it_has_correct_fillable_attributes()
     {
         $setting = new Setting();
@@ -45,7 +46,7 @@ class SettingTest extends TestCase
         $this->assertContains('description', $fillable);
     }
 
-    /** @test */
+    #[Test]
     public function it_has_correct_casts()
     {
         $setting = new Setting();
@@ -54,7 +55,7 @@ class SettingTest extends TestCase
         $this->assertEquals('boolean', $casts['is_encrypted']);
     }
 
-    /** @test */
+    #[Test]
     public function it_encrypts_value_when_setting_encrypted()
     {
         $setting = new Setting();
@@ -67,7 +68,7 @@ class SettingTest extends TestCase
         $this->assertEquals('encrypted:secret', $setting->getAttributes()['value']);
     }
 
-    /** @test */
+    #[Test]
     public function it_does_not_encrypt_value_when_not_encrypted()
     {
         $setting = new Setting();
@@ -80,7 +81,7 @@ class SettingTest extends TestCase
         $this->assertEquals('plain', $setting->getAttributes()['value']);
     }
 
-    /** @test */
+    #[Test]
     public function it_decrypts_value_when_getting_encrypted()
     {
         $setting = new Setting();
@@ -90,7 +91,7 @@ class SettingTest extends TestCase
         $this->assertEquals('secret', $setting->value);
     }
 
-    /** @test */
+    #[Test]
     public function it_does_not_decrypt_value_when_not_encrypted()
     {
         $setting = new Setting();
@@ -100,7 +101,7 @@ class SettingTest extends TestCase
         $this->assertEquals('plain', $setting->value);
     }
 
-    /** @test */
+    #[Test]
     public function it_casts_value_based_on_type()
     {
         $setting = new Setting();
@@ -140,7 +141,7 @@ class SettingTest extends TestCase
         $this->assertEquals('test', $setting->getValueAttribute());
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_invalid_json()
     {
         $setting = new Setting();
@@ -151,7 +152,7 @@ class SettingTest extends TestCase
         $this->assertEquals('invalid json', $setting->getValueAttribute());
     }
 
-    /** @test */
+    #[Test]
     public function it_serializes_value_based_on_type_when_setting()
     {
         $setting = new Setting();
@@ -180,7 +181,7 @@ class SettingTest extends TestCase
         $this->assertEquals('42', $setting->getAttributes()['value']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_null_values()
     {
         $setting = new Setting();
@@ -191,7 +192,7 @@ class SettingTest extends TestCase
         $this->assertNull($setting->getValueAttribute());
     }
 
-    /** @test */
+    #[Test]
     public function it_does_not_save_old_value_to_database()
     {
         $setting = new Setting();
@@ -201,7 +202,7 @@ class SettingTest extends TestCase
         $this->assertArrayNotHasKey('oldValue', $attributes);
     }
 
-    /** @test */
+    #[Test]
     public function it_tracks_old_value_in_memory()
     {
         $setting = new Setting();

@@ -8,11 +8,11 @@ use App\Domain\Account\Workflows\CreateAccountActivity;
 use App\Domain\Account\Workflows\CreateAccountWorkflow;
 use Mockery;
 use PHPUnit\Framework\Attributes\Test;
-use Tests\TestCase;
+use Tests\DomainTestCase;
 use Workflow\Models\StoredWorkflow;
 use Workflow\WorkflowStub;
 
-class CreateAccountActivityTest extends TestCase
+class CreateAccountActivityTest extends DomainTestCase
 {
     private const string ACCOUNT_UUID = 'account-uuid';
 

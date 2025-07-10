@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace Tests\Feature\Models;
 
 use App\Models\CustodianWebhook;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class CustodianWebhookTest extends TestCase
 {
-    /** @test */
+    #[Test]
     public function it_can_create_a_custodian_webhook()
     {
         $webhook = CustodianWebhook::create([
@@ -29,7 +30,7 @@ class CustodianWebhookTest extends TestCase
         $this->assertEquals('pending', $webhook->status);
     }
 
-    /** @test */
+    #[Test]
     public function it_has_pending_scope()
     {
         CustodianWebhook::create([
@@ -54,7 +55,7 @@ class CustodianWebhookTest extends TestCase
         $this->assertEquals('pending', $pending->first()->status);
     }
 
-    /** @test */
+    #[Test]
     public function it_has_failed_scope()
     {
         CustodianWebhook::create([
@@ -79,7 +80,7 @@ class CustodianWebhookTest extends TestCase
         $this->assertEquals('failed', $failed->first()->status);
     }
 
-    /** @test */
+    #[Test]
     public function it_has_by_custodian_scope()
     {
         CustodianWebhook::create([
@@ -104,7 +105,7 @@ class CustodianWebhookTest extends TestCase
         $this->assertEquals('paysera', $payseraWebhooks->first()->custodian_name);
     }
 
-    /** @test */
+    #[Test]
     public function it_casts_attributes_correctly()
     {
         $webhook = CustodianWebhook::create([
@@ -128,7 +129,7 @@ class CustodianWebhookTest extends TestCase
         $this->assertEquals('data', $fresh->payload['test']);
     }
 
-    /** @test */
+    #[Test]
     public function it_uses_uuid_as_primary_key()
     {
         $webhook = CustodianWebhook::create([
@@ -147,7 +148,7 @@ class CustodianWebhookTest extends TestCase
         $this->assertEquals('id', $webhook->getKeyName());
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_null_event_id()
     {
         $webhook = CustodianWebhook::create([

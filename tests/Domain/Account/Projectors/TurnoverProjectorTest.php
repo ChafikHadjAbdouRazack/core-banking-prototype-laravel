@@ -2,12 +2,6 @@
 
 namespace Tests\Domain\Account\Projectors;
 
-use App\Domain\Account\Aggregates\TransactionAggregate;
-use App\Domain\Account\DataObjects\Money;
-use App\Domain\Account\Repositories\TurnoverRepository;
-use App\Domain\Account\Utils\ValidatesHash;
-use App\Models\Turnover;
-use Illuminate\Support\Carbon;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 

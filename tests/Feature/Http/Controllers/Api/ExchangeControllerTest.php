@@ -2,16 +2,11 @@
 
 namespace Tests\Feature\Http\Controllers\Api;
 
-use App\Domain\Exchange\Projections\Order;
-use App\Domain\Exchange\Projections\Trade;
-use App\Domain\Exchange\Services\ExchangeService;
-use App\Models\Account;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Laravel\Sanctum\Sanctum;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ControllerTestCase;
 
-class ExchangeControllerTest extends TestCase
+class ExchangeControllerTest extends ControllerTestCase
 {
     use RefreshDatabase;
 
@@ -38,6 +33,7 @@ class ExchangeControllerTest extends TestCase
         $this->app->instance(ExchangeService::class, $this->exchangeService);
     }
 
+    #[Test]
     public function test_place_order_with_valid_market_order(): void
     {
         Sanctum::actingAs($this->user);
@@ -77,6 +73,7 @@ class ExchangeControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_place_order_with_valid_limit_order(): void
     {
         Sanctum::actingAs($this->user);
@@ -116,6 +113,7 @@ class ExchangeControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_place_order_with_stop_price(): void
     {
         Sanctum::actingAs($this->user);
@@ -149,6 +147,7 @@ class ExchangeControllerTest extends TestCase
             ->assertJsonPath('success', true);
     }
 
+    #[Test]
     public function test_place_order_validates_required_fields(): void
     {
         Sanctum::actingAs($this->user);
@@ -159,6 +158,7 @@ class ExchangeControllerTest extends TestCase
             ->assertJsonValidationErrors(['type', 'order_type', 'base_currency', 'quote_currency', 'amount']);
     }
 
+    #[Test]
     public function test_place_order_validates_limit_order_requires_price(): void
     {
         Sanctum::actingAs($this->user);
@@ -176,6 +176,7 @@ class ExchangeControllerTest extends TestCase
             ->assertJsonValidationErrors(['price']);
     }
 
+    #[Test]
     public function test_place_order_validates_currency_format(): void
     {
         Sanctum::actingAs($this->user);
@@ -192,6 +193,7 @@ class ExchangeControllerTest extends TestCase
             ->assertJsonValidationErrors(['base_currency', 'quote_currency']);
     }
 
+    #[Test]
     public function test_place_order_fails_without_account(): void
     {
         // Create user without account
@@ -213,6 +215,7 @@ class ExchangeControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_place_order_handles_service_exception(): void
     {
         Sanctum::actingAs($this->user);
@@ -236,6 +239,7 @@ class ExchangeControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_place_order_requires_authentication(): void
     {
         $response = $this->postJson('/api/exchange/orders', [
@@ -249,6 +253,7 @@ class ExchangeControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_cancel_order_successfully(): void
     {
         Sanctum::actingAs($this->user);
@@ -284,6 +289,7 @@ class ExchangeControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_cancel_order_returns_404_for_non_existent_order(): void
     {
         Sanctum::actingAs($this->user);
@@ -297,6 +303,7 @@ class ExchangeControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_cancel_order_prevents_cancelling_other_users_orders(): void
     {
         Sanctum::actingAs($this->user);
@@ -324,6 +331,7 @@ class ExchangeControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_cancel_order_requires_authentication(): void
     {
         $response = $this->deleteJson('/api/exchange/orders/order-123');
@@ -331,6 +339,7 @@ class ExchangeControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_get_orders_returns_user_orders(): void
     {
         Sanctum::actingAs($this->user);
@@ -386,6 +395,7 @@ class ExchangeControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_get_orders_filters_by_status(): void
     {
         Sanctum::actingAs($this->user);
@@ -425,6 +435,7 @@ class ExchangeControllerTest extends TestCase
         $this->assertEquals('open', $data[0]['status']);
     }
 
+    #[Test]
     public function test_get_orders_filters_by_trading_pair(): void
     {
         Sanctum::actingAs($this->user);
@@ -464,6 +475,7 @@ class ExchangeControllerTest extends TestCase
         $this->assertEquals('BTC', $data[0]['base_currency']);
     }
 
+    #[Test]
     public function test_get_orders_requires_authentication(): void
     {
         $response = $this->getJson('/api/exchange/orders');
@@ -471,6 +483,7 @@ class ExchangeControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_get_trades_returns_user_trades(): void
     {
         Sanctum::actingAs($this->user);
@@ -516,6 +529,7 @@ class ExchangeControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_get_trades_filters_by_trading_pair(): void
     {
         Sanctum::actingAs($this->user);
@@ -561,6 +575,7 @@ class ExchangeControllerTest extends TestCase
         $this->assertEquals('BTC', $data[0]['base_currency']);
     }
 
+    #[Test]
     public function test_get_trades_requires_authentication(): void
     {
         $response = $this->getJson('/api/exchange/trades');
@@ -568,6 +583,7 @@ class ExchangeControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_get_order_book_returns_order_book_data(): void
     {
         $this->exchangeService->shouldReceive('getOrderBook')
@@ -601,6 +617,7 @@ class ExchangeControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_get_order_book_with_custom_depth(): void
     {
         $this->exchangeService->shouldReceive('getOrderBook')
@@ -613,6 +630,7 @@ class ExchangeControllerTest extends TestCase
         $response->assertStatus(200);
     }
 
+    #[Test]
     public function test_get_order_book_limits_max_depth(): void
     {
         $this->exchangeService->shouldReceive('getOrderBook')
@@ -625,6 +643,7 @@ class ExchangeControllerTest extends TestCase
         $response->assertStatus(200);
     }
 
+    #[Test]
     public function test_get_order_book_does_not_require_authentication(): void
     {
         $this->exchangeService->shouldReceive('getOrderBook')
@@ -636,6 +655,7 @@ class ExchangeControllerTest extends TestCase
         $response->assertStatus(200);
     }
 
+    #[Test]
     public function test_get_markets_returns_market_data(): void
     {
         // Mock for BTC/EUR
@@ -687,6 +707,7 @@ class ExchangeControllerTest extends TestCase
             ->assertJsonCount(2, 'data');
     }
 
+    #[Test]
     public function test_get_markets_does_not_require_authentication(): void
     {
         // Mock for BTC/EUR

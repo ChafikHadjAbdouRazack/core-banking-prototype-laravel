@@ -2,12 +2,11 @@
 
 namespace Tests\Feature\Http\Controllers\Api;
 
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Laravel\Sanctum\Sanctum;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ControllerTestCase;
 
-class FraudDetectionControllerTest extends TestCase
+class FraudDetectionControllerTest extends ControllerTestCase
 {
     use RefreshDatabase;
 
@@ -20,6 +19,7 @@ class FraudDetectionControllerTest extends TestCase
         $this->user = User::factory()->create();
     }
 
+    #[Test]
     public function test_dashboard_returns_fraud_detection_data(): void
     {
         Sanctum::actingAs($this->user);
@@ -37,6 +37,7 @@ class FraudDetectionControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_dashboard_requires_authentication(): void
     {
         $response = $this->getJson('/api/fraud/dashboard');
@@ -44,6 +45,7 @@ class FraudDetectionControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_get_alerts_returns_paginated_list(): void
     {
         Sanctum::actingAs($this->user);
@@ -65,6 +67,7 @@ class FraudDetectionControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_get_alerts_requires_authentication(): void
     {
         $response = $this->getJson('/api/fraud/alerts');
@@ -72,6 +75,7 @@ class FraudDetectionControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_get_alert_details_returns_specific_alert(): void
     {
         Sanctum::actingAs($this->user);
@@ -92,6 +96,7 @@ class FraudDetectionControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_get_alert_details_requires_authentication(): void
     {
         $response = $this->getJson('/api/fraud/alerts/alert-123');
@@ -99,6 +104,7 @@ class FraudDetectionControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_acknowledge_alert_updates_alert_status(): void
     {
         Sanctum::actingAs($this->user);
@@ -115,6 +121,7 @@ class FraudDetectionControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_acknowledge_alert_requires_authentication(): void
     {
         $response = $this->postJson('/api/fraud/alerts/alert-123/acknowledge');
@@ -122,6 +129,7 @@ class FraudDetectionControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_investigate_alert_starts_investigation(): void
     {
         Sanctum::actingAs($this->user);
@@ -138,6 +146,7 @@ class FraudDetectionControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_investigate_alert_requires_authentication(): void
     {
         $response = $this->postJson('/api/fraud/alerts/alert-123/investigate');
@@ -145,6 +154,7 @@ class FraudDetectionControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_get_statistics_returns_fraud_metrics(): void
     {
         Sanctum::actingAs($this->user);
@@ -160,6 +170,7 @@ class FraudDetectionControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_get_statistics_requires_authentication(): void
     {
         $response = $this->getJson('/api/fraud/statistics');
@@ -167,6 +178,7 @@ class FraudDetectionControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_get_patterns_returns_fraud_patterns(): void
     {
         Sanctum::actingAs($this->user);
@@ -182,6 +194,7 @@ class FraudDetectionControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_get_patterns_requires_authentication(): void
     {
         $response = $this->getJson('/api/fraud/patterns');
@@ -189,6 +202,7 @@ class FraudDetectionControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_get_cases_returns_paginated_list(): void
     {
         Sanctum::actingAs($this->user);
@@ -210,6 +224,7 @@ class FraudDetectionControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_get_cases_requires_authentication(): void
     {
         $response = $this->getJson('/api/fraud/cases');
@@ -217,6 +232,7 @@ class FraudDetectionControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_get_case_details_returns_specific_case(): void
     {
         Sanctum::actingAs($this->user);
@@ -237,6 +253,7 @@ class FraudDetectionControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_get_case_details_requires_authentication(): void
     {
         $response = $this->getJson('/api/fraud/cases/case-456');
@@ -244,6 +261,7 @@ class FraudDetectionControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_update_case_modifies_case_data(): void
     {
         Sanctum::actingAs($this->user);
@@ -263,6 +281,7 @@ class FraudDetectionControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_update_case_requires_authentication(): void
     {
         $response = $this->putJson('/api/fraud/cases/case-456', [
@@ -272,6 +291,7 @@ class FraudDetectionControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_dashboard_with_filters(): void
     {
         Sanctum::actingAs($this->user);
@@ -285,6 +305,7 @@ class FraudDetectionControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_alerts_with_pagination(): void
     {
         Sanctum::actingAs($this->user);
@@ -300,6 +321,7 @@ class FraudDetectionControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_cases_with_status_filter(): void
     {
         Sanctum::actingAs($this->user);
@@ -315,6 +337,7 @@ class FraudDetectionControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_statistics_with_date_range(): void
     {
         Sanctum::actingAs($this->user);
@@ -327,6 +350,7 @@ class FraudDetectionControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_patterns_with_type_filter(): void
     {
         Sanctum::actingAs($this->user);
@@ -339,6 +363,7 @@ class FraudDetectionControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_acknowledge_alert_with_notes(): void
     {
         Sanctum::actingAs($this->user);
@@ -358,6 +383,7 @@ class FraudDetectionControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_investigate_alert_with_assignment(): void
     {
         Sanctum::actingAs($this->user);
@@ -378,6 +404,7 @@ class FraudDetectionControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_update_case_with_full_details(): void
     {
         Sanctum::actingAs($this->user);

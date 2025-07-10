@@ -2,12 +2,11 @@
 
 namespace Tests\Feature\Api\Auth;
 
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Laravel\Sanctum\Sanctum;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ControllerTestCase;
 
-class LoginControllerTest extends TestCase
+class LoginControllerTest extends ControllerTestCase
 {
     use RefreshDatabase;
 
@@ -23,6 +22,7 @@ class LoginControllerTest extends TestCase
         ]);
     }
 
+    #[Test]
     public function test_user_can_login_with_valid_credentials(): void
     {
         $response = $this->postJson('/api/auth/login', [
@@ -46,6 +46,7 @@ class LoginControllerTest extends TestCase
         $this->assertNotEmpty($response->json('access_token'));
     }
 
+    #[Test]
     public function test_user_cannot_login_with_invalid_credentials(): void
     {
         $response = $this->postJson('/api/auth/login', [
@@ -57,6 +58,7 @@ class LoginControllerTest extends TestCase
             ->assertJsonValidationErrors(['email']);
     }
 
+    #[Test]
     public function test_login_validates_required_fields(): void
     {
         $response = $this->postJson('/api/auth/login', []);
@@ -65,6 +67,7 @@ class LoginControllerTest extends TestCase
             ->assertJsonValidationErrors(['email', 'password']);
     }
 
+    #[Test]
     public function test_user_can_logout(): void
     {
         Sanctum::actingAs($this->user);
@@ -75,6 +78,7 @@ class LoginControllerTest extends TestCase
             ->assertJson(['message' => 'Successfully logged out']);
     }
 
+    #[Test]
     public function test_user_can_logout_from_all_devices(): void
     {
         // Create multiple tokens
@@ -94,6 +98,7 @@ class LoginControllerTest extends TestCase
         $this->assertEquals(0, $this->user->tokens()->count());
     }
 
+    #[Test]
     public function test_user_can_refresh_token(): void
     {
         // Create a token first
@@ -118,6 +123,7 @@ class LoginControllerTest extends TestCase
         $authResponse->assertOk();
     }
 
+    #[Test]
     public function test_user_can_get_profile(): void
     {
         Sanctum::actingAs($this->user);
@@ -128,6 +134,7 @@ class LoginControllerTest extends TestCase
             ->assertJsonPath('user.email', 'test@example.com');
     }
 
+    #[Test]
     public function test_unauthenticated_user_cannot_access_protected_routes(): void
     {
         $response = $this->postJson('/api/auth/logout');

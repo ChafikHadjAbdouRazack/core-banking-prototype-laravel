@@ -2,11 +2,11 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\DomainTestCase;
 
-class DashboardPagesTest extends TestCase
+class DashboardPagesTest extends DomainTestCase
 {
     use RefreshDatabase;
 
@@ -52,9 +52,9 @@ class DashboardPagesTest extends TestCase
         ]);
     }
 
-    /**
-     * Test that dashboard loads without route errors.
-     */
+/**
+ * Test that dashboard loads without route errors.
+ */    #[Test]
     public function test_dashboard_loads_without_route_errors(): void
     {
         $response = $this->actingAs($this->user)->get('/dashboard');
@@ -65,9 +65,9 @@ class DashboardPagesTest extends TestCase
         $response->assertDontSee('Exception');
     }
 
-    /**
-     * Test that all navigation menu links work.
-     */
+/**
+ * Test that all navigation menu links work.
+ */    #[Test]
     public function test_navigation_menu_links_work(): void
     {
         $pages = [
@@ -95,9 +95,9 @@ class DashboardPagesTest extends TestCase
         }
     }
 
-    /**
-     * Test profile and account management pages.
-     */
+/**
+ * Test profile and account management pages.
+ */    #[Test]
     public function test_profile_pages_work(): void
     {
         $response = $this->actingAs($this->user)->get('/user/profile');
@@ -107,9 +107,9 @@ class DashboardPagesTest extends TestCase
         $response->assertDontSee('not defined');
     }
 
-    /**
-     * Test compliance pages for authorized users.
-     */
+/**
+ * Test compliance pages for authorized users.
+ */    #[Test]
     public function test_compliance_pages_for_authorized_users(): void
     {
         // Give user compliance permissions
@@ -138,9 +138,9 @@ class DashboardPagesTest extends TestCase
         }
     }
 
-    /**
-     * Test wallet sub-pages.
-     */
+/**
+ * Test wallet sub-pages.
+ */    #[Test]
     public function test_wallet_subpages_work(): void
     {
         $pages = [
@@ -166,9 +166,9 @@ class DashboardPagesTest extends TestCase
         }
     }
 
-    /**
-     * Test that unauthenticated users are redirected.
-     */
+/**
+ * Test that unauthenticated users are redirected.
+ */    #[Test]
     public function test_unauthenticated_users_are_redirected(): void
     {
         $response = $this->get('/dashboard');
@@ -176,9 +176,9 @@ class DashboardPagesTest extends TestCase
         $response->assertRedirect('/login');
     }
 
-    /**
-     * Test exchange sub-pages.
-     */
+/**
+ * Test exchange sub-pages.
+ */    #[Test]
     public function test_exchange_subpages_work(): void
     {
         $pages = [
@@ -201,9 +201,9 @@ class DashboardPagesTest extends TestCase
         }
     }
 
-    /**
-     * Test lending sub-pages.
-     */
+/**
+ * Test lending sub-pages.
+ */    #[Test]
     public function test_lending_subpages_work(): void
     {
         $pages = [
@@ -224,9 +224,9 @@ class DashboardPagesTest extends TestCase
         }
     }
 
-    /**
-     * Test team management pages.
-     */
+/**
+ * Test team management pages.
+ */    #[Test]
     public function test_team_pages_work(): void
     {
         // Create a team for the user

@@ -4,12 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Domain\Custodian\Services;
 
-use App\Domain\Custodian\Exceptions\CircuitOpenException;
-use App\Domain\Custodian\Services\CircuitBreakerService;
-use Illuminate\Support\Facades\Cache;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ServiceTestCase;
 
-class CircuitBreakerServiceTest extends TestCase
+class CircuitBreakerServiceTest extends ServiceTestCase
 {
     private CircuitBreakerService $circuitBreaker;
 
@@ -29,6 +27,7 @@ class CircuitBreakerServiceTest extends TestCase
         );
     }
 
+    #[Test]
     public function test_circuit_starts_closed(): void
     {
         $state = $this->circuitBreaker->getState('test-service');
@@ -36,6 +35,7 @@ class CircuitBreakerServiceTest extends TestCase
         $this->assertEquals('closed', $state);
     }
 
+    #[Test]
     public function test_successful_operations_keep_circuit_closed(): void
     {
         for ($i = 0; $i < 5; $i++) {
@@ -47,6 +47,7 @@ class CircuitBreakerServiceTest extends TestCase
         $this->assertEquals('closed', $state);
     }
 
+    #[Test]
     public function test_circuit_opens_after_consecutive_failures(): void
     {
         // Cause 3 consecutive failures
@@ -68,6 +69,7 @@ class CircuitBreakerServiceTest extends TestCase
         $this->circuitBreaker->execute('test-service', fn () => 'should not execute');
     }
 
+    #[Test]
     public function test_circuit_opens_on_failure_rate(): void
     {
         // Create a pattern that exceeds 50% failure rate
@@ -94,6 +96,7 @@ class CircuitBreakerServiceTest extends TestCase
         $this->assertEquals('open', $state);
     }
 
+    #[Test]
     public function test_fallback_is_used_when_circuit_is_open(): void
     {
         // Open the circuit
@@ -117,6 +120,7 @@ class CircuitBreakerServiceTest extends TestCase
         $this->assertEquals('fallback result', $result);
     }
 
+    #[Test]
     public function test_circuit_transitions_to_half_open_after_timeout(): void
     {
         // Open the circuit
@@ -144,6 +148,7 @@ class CircuitBreakerServiceTest extends TestCase
         $this->assertEquals(1, $metrics['consecutive_successes']);
     }
 
+    #[Test]
     public function test_circuit_closes_after_success_threshold_in_half_open(): void
     {
         // Open the circuit
@@ -169,6 +174,7 @@ class CircuitBreakerServiceTest extends TestCase
         $this->assertEquals('closed', $state);
     }
 
+    #[Test]
     public function test_metrics_are_tracked_correctly(): void
     {
         // Mix of successes and failures
@@ -203,6 +209,7 @@ class CircuitBreakerServiceTest extends TestCase
         $this->assertEquals(40.0, $metrics['failure_rate']); // 2/5 = 40%
     }
 
+    #[Test]
     public function test_reset_clears_circuit_state(): void
     {
         // Open the circuit
@@ -229,6 +236,7 @@ class CircuitBreakerServiceTest extends TestCase
         $this->assertEquals(0, $metrics['failure_count']);
     }
 
+    #[Test]
     public function test_different_services_have_independent_circuits(): void
     {
         // Open circuit for service1

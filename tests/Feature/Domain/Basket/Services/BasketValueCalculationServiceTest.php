@@ -13,9 +13,10 @@ use App\Models\BasketComponent;
 use App\Models\BasketValue;
 use Illuminate\Support\Facades\Cache;
 use Mockery;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ServiceTestCase;
 
-class BasketValueCalculationServiceTest extends TestCase
+class BasketValueCalculationServiceTest extends ServiceTestCase
 {
     private BasketValueCalculationService $service;
 
@@ -35,7 +36,7 @@ class BasketValueCalculationServiceTest extends TestCase
         parent::tearDown();
     }
 
-    /** @test */
+    #[Test]
     public function it_calculates_basket_value_with_single_component()
     {
         // Create assets
@@ -82,7 +83,7 @@ class BasketValueCalculationServiceTest extends TestCase
         $this->assertEquals(1.2, $value->component_values['EUR']['weighted_value']);
     }
 
-    /** @test */
+    #[Test]
     public function it_calculates_basket_value_with_multiple_components()
     {
         // Create assets
@@ -154,7 +155,7 @@ class BasketValueCalculationServiceTest extends TestCase
         $this->assertEqualsWithDelta(0.60, $value->component_values['GBP']['weighted_value'], 0.001);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_usd_component_without_exchange_rate()
     {
         // Create assets
@@ -181,7 +182,7 @@ class BasketValueCalculationServiceTest extends TestCase
         $this->assertEquals(1.0, $value->component_values['USD']['value']);
     }
 
-    /** @test */
+    #[Test]
     public function it_creates_empty_value_for_basket_without_components()
     {
         // Create basket without components
@@ -198,7 +199,7 @@ class BasketValueCalculationServiceTest extends TestCase
         $this->assertContains('No active components', $value->component_values['_metadata']['calculation_errors']);
     }
 
-    /** @test */
+    #[Test]
     public function it_ignores_inactive_components()
     {
         // Create assets
@@ -236,7 +237,7 @@ class BasketValueCalculationServiceTest extends TestCase
         $this->assertArrayNotHasKey('EUR', $value->component_values);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_missing_exchange_rate_gracefully()
     {
         // Create assets
@@ -296,7 +297,7 @@ class BasketValueCalculationServiceTest extends TestCase
         $this->assertNotEmpty($value->component_values['_metadata']['calculation_errors']);
     }
 
-    /** @test */
+    #[Test]
     public function it_uses_cache_when_enabled()
     {
         // Create assets
@@ -329,7 +330,7 @@ class BasketValueCalculationServiceTest extends TestCase
         $this->assertEquals($value1->id, $value2->id);
     }
 
-    /** @test */
+    #[Test]
     public function it_calculates_all_basket_values()
     {
         // Create assets
@@ -400,7 +401,7 @@ class BasketValueCalculationServiceTest extends TestCase
         $this->assertEquals(1.2, $basket2Result['value']);
     }
 
-    /** @test */
+    #[Test]
     public function it_gets_historical_values()
     {
         // Create basket
@@ -441,7 +442,7 @@ class BasketValueCalculationServiceTest extends TestCase
         $this->assertEquals(1.2, $values[1]['value']);
     }
 
-    /** @test */
+    #[Test]
     public function it_calculates_performance_metrics()
     {
         // Create basket
@@ -477,7 +478,7 @@ class BasketValueCalculationServiceTest extends TestCase
         $this->assertEquals(30, $performance['days']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_insufficient_data_for_performance()
     {
         // Create basket
@@ -500,7 +501,7 @@ class BasketValueCalculationServiceTest extends TestCase
         $this->assertArrayHasKey('error', $performance);
     }
 
-    /** @test */
+    #[Test]
     public function it_invalidates_cache()
     {
         // Create basket
@@ -523,7 +524,7 @@ class BasketValueCalculationServiceTest extends TestCase
         $this->assertNull(Cache::get($cacheKey));
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_component_without_asset_gracefully()
     {
         // Create basket
@@ -557,7 +558,7 @@ class BasketValueCalculationServiceTest extends TestCase
         $this->assertStringContainsString('MISSING', $value->component_values['_metadata']['calculation_errors'][0]['asset']);
     }
 
-    /** @test */
+    #[Test]
     public function it_creates_basket_asset_if_not_exists()
     {
         // Create basket without corresponding asset

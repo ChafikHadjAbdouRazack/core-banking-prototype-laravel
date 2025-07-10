@@ -2,12 +2,7 @@
 
 namespace Tests\Unit\Domain\Stablecoin\Oracles;
 
-use App\Domain\Stablecoin\Contracts\OracleConnector;
-use App\Domain\Stablecoin\Oracles\ChainlinkOracle;
-use App\Domain\Stablecoin\ValueObjects\PriceData;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Log;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class ChainlinkOracleTest extends TestCase
@@ -24,11 +19,13 @@ class ChainlinkOracleTest extends TestCase
         $this->oracle = new ChainlinkOracle();
     }
 
+    #[Test]
     public function test_implements_oracle_connector_interface(): void
     {
         $this->assertInstanceOf(OracleConnector::class, $this->oracle);
     }
 
+    #[Test]
     public function test_get_price_returns_valid_price_data(): void
     {
         $priceData = $this->oracle->getPrice('BTC', 'USD');
@@ -47,6 +44,7 @@ class ChainlinkOracleTest extends TestCase
         $this->assertArrayHasKey('updated_at', $priceData->metadata);
     }
 
+    #[Test]
     public function test_get_price_for_supported_pairs(): void
     {
         $pairs = [
@@ -65,6 +63,7 @@ class ChainlinkOracleTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_get_price_throws_exception_for_unsupported_pair(): void
     {
         $this->expectException(\InvalidArgumentException::class);
@@ -73,6 +72,7 @@ class ChainlinkOracleTest extends TestCase
         $this->oracle->getPrice('XRP', 'USD');
     }
 
+    #[Test]
     public function test_get_multiple_prices_returns_array_of_price_data(): void
     {
         $pairs = ['BTC/USD', 'ETH/USD'];
@@ -87,6 +87,7 @@ class ChainlinkOracleTest extends TestCase
         $this->assertInstanceOf(PriceData::class, $prices['ETH/USD']);
     }
 
+    #[Test]
     public function test_get_multiple_prices_skips_unsupported_pairs(): void
     {
         Log::shouldReceive('warning')
@@ -103,6 +104,7 @@ class ChainlinkOracleTest extends TestCase
         $this->assertArrayNotHasKey('XRP/USD', $prices);
     }
 
+    #[Test]
     public function test_get_historical_price_throws_exception(): void
     {
         $this->expectException(\RuntimeException::class);
@@ -111,6 +113,7 @@ class ChainlinkOracleTest extends TestCase
         $this->oracle->getHistoricalPrice('BTC', 'USD', Carbon::now()->subDay());
     }
 
+    #[Test]
     public function test_is_healthy_returns_true_when_can_fetch_price(): void
     {
         $isHealthy = $this->oracle->isHealthy();
@@ -118,16 +121,19 @@ class ChainlinkOracleTest extends TestCase
         $this->assertTrue($isHealthy);
     }
 
+    #[Test]
     public function test_get_source_name_returns_chainlink(): void
     {
         $this->assertEquals('chainlink', $this->oracle->getSourceName());
     }
 
+    #[Test]
     public function test_get_priority_returns_1(): void
     {
         $this->assertEquals(1, $this->oracle->getPriority());
     }
 
+    #[Test]
     public function test_simulated_prices_are_within_expected_ranges(): void
     {
         // Run multiple times to test randomness
@@ -144,6 +150,7 @@ class ChainlinkOracleTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_non_usd_quote_conversion(): void
     {
         // Test EUR/USD which is a supported pair
@@ -158,6 +165,7 @@ class ChainlinkOracleTest extends TestCase
         $this->assertLessThanOrEqual(1.14, $eurUsdPrice);
     }
 
+    #[Test]
     public function test_price_data_has_recent_timestamp(): void
     {
         $priceData = $this->oracle->getPrice('ETH', 'USD');
@@ -168,6 +176,7 @@ class ChainlinkOracleTest extends TestCase
         $this->assertLessThanOrEqual(5, $diff); // Within 5 seconds
     }
 
+    #[Test]
     public function test_metadata_contains_valid_round_id(): void
     {
         $priceData = $this->oracle->getPrice('BTC', 'USD');
@@ -178,6 +187,7 @@ class ChainlinkOracleTest extends TestCase
         $this->assertLessThanOrEqual(9999999, $priceData->metadata['round_id']);
     }
 
+    #[Test]
     public function test_metadata_contains_valid_updated_at(): void
     {
         $priceData = $this->oracle->getPrice('ETH', 'USD');

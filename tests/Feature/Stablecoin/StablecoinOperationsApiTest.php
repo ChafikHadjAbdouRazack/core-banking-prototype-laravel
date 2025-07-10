@@ -13,10 +13,10 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
 use PHPUnit\Framework\Attributes\Test;
-use Tests\TestCase;
+use Tests\DomainTestCase;
 use Tests\Traits\CreatesStablecoins;
 
-class StablecoinOperationsApiTest extends TestCase
+class StablecoinOperationsApiTest extends DomainTestCase
 {
     use RefreshDatabase;
     use CreatesStablecoins;

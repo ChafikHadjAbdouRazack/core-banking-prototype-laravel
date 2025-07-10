@@ -2,8 +2,7 @@
 
 namespace Tests\Unit\Http\Resources;
 
-use App\Http\Resources\BasketPerformanceResource;
-use Illuminate\Http\Request;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class BasketPerformanceResourceTest extends TestCase
@@ -133,6 +132,7 @@ class BasketPerformanceResourceTest extends TestCase
         };
     }
 
+    #[Test]
     public function test_transforms_basket_performance_to_array(): void
     {
         $basketPerformance = $this->createBasketPerformance([
@@ -174,6 +174,7 @@ class BasketPerformanceResourceTest extends TestCase
         $this->assertEquals(24, $array['value_count']);
     }
 
+    #[Test]
     public function test_handles_null_risk_metrics(): void
     {
         $basketPerformance = $this->createBasketPerformance([
@@ -191,6 +192,7 @@ class BasketPerformanceResourceTest extends TestCase
         $this->assertNull($array['max_drawdown']);
     }
 
+    #[Test]
     public function test_includes_components_when_loaded(): void
     {
         $basketPerformance = $this->createBasketPerformance();
@@ -212,6 +214,7 @@ class BasketPerformanceResourceTest extends TestCase
         $this->assertCount(3, $array['components']);
     }
 
+    #[Test]
     public function test_excludes_components_when_not_loaded(): void
     {
         $basketPerformance = $this->createBasketPerformance();
@@ -224,6 +227,7 @@ class BasketPerformanceResourceTest extends TestCase
         $this->assertEmpty($array['components']);
     }
 
+    #[Test]
     public function test_includes_all_required_fields(): void
     {
         $basketPerformance = $this->createBasketPerformance();
@@ -262,6 +266,7 @@ class BasketPerformanceResourceTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_resource_collection(): void
     {
         $performances = [

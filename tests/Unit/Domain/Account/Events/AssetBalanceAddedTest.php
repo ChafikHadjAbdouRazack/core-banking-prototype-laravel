@@ -5,10 +5,12 @@ namespace Tests\Unit\Domain\Account\Events;
 use App\Domain\Account\DataObjects\Hash;
 use App\Domain\Account\Events\AssetBalanceAdded;
 use App\Values\EventQueues;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\DomainTestCase;
 
-class AssetBalanceAddedTest extends TestCase
+class AssetBalanceAddedTest extends DomainTestCase
 {
+    #[Test]
     public function test_creates_event_with_required_properties(): void
     {
         $hash = Hash::fromData('test-hash-value');
@@ -26,6 +28,7 @@ class AssetBalanceAddedTest extends TestCase
         $this->assertEquals(EventQueues::TRANSACTIONS->value, $event->queue);
     }
 
+    #[Test]
     public function test_creates_event_with_metadata(): void
     {
         $hash = Hash::fromData('test-hash-with-metadata');
@@ -45,6 +48,7 @@ class AssetBalanceAddedTest extends TestCase
         $this->assertEquals($metadata, $event->metadata);
     }
 
+    #[Test]
     public function test_get_amount_returns_correct_value(): void
     {
         $event = new AssetBalanceAdded(
@@ -56,6 +60,7 @@ class AssetBalanceAddedTest extends TestCase
         $this->assertEquals(100000000, $event->getAmount());
     }
 
+    #[Test]
     public function test_get_asset_code_returns_correct_value(): void
     {
         $event = new AssetBalanceAdded(
@@ -67,6 +72,7 @@ class AssetBalanceAddedTest extends TestCase
         $this->assertEquals('ETH', $event->getAssetCode());
     }
 
+    #[Test]
     public function test_handles_zero_amount(): void
     {
         $event = new AssetBalanceAdded(
@@ -79,6 +85,7 @@ class AssetBalanceAddedTest extends TestCase
         $this->assertEquals(0, $event->getAmount());
     }
 
+    #[Test]
     public function test_stores_different_asset_codes(): void
     {
         $assets = ['USD', 'EUR', 'GBP', 'JPY', 'CHF', 'BTC', 'ETH', 'USDT'];
@@ -94,6 +101,7 @@ class AssetBalanceAddedTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_event_is_immutable(): void
     {
         $event = new AssetBalanceAdded(
@@ -103,7 +111,8 @@ class AssetBalanceAddedTest extends TestCase
         );
 
         // Properties are readonly, so we can't modify them
-        $this->expectError();
+        $this->expectException(\Error::class);
+        $this->expectExceptionMessageMatches('/Cannot modify readonly property/');
         $event->assetCode = 'EUR';
     }
 }

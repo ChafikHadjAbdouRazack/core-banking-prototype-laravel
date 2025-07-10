@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Values;
 
-use App\Values\EventQueues;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\UnitTestCase;
 
 class EventQueuesTest extends UnitTestCase
 {
+    #[Test]
     public function test_enum_has_correct_values()
     {
         $this->assertEquals('events', EventQueues::EVENTS->value);
@@ -18,6 +19,7 @@ class EventQueuesTest extends UnitTestCase
         $this->assertEquals('liquidity_pools', EventQueues::LIQUIDITY_POOLS->value);
     }
 
+    #[Test]
     public function test_default_returns_events()
     {
         $default = EventQueues::default();
@@ -26,6 +28,7 @@ class EventQueuesTest extends UnitTestCase
         $this->assertEquals('events', $default->value);
     }
 
+    #[Test]
     public function test_all_enum_cases_exist()
     {
         $cases = EventQueues::cases();
@@ -38,6 +41,7 @@ class EventQueuesTest extends UnitTestCase
         $this->assertContains(EventQueues::LIQUIDITY_POOLS, $cases);
     }
 
+    #[Test]
     public function test_enum_from_value()
     {
         $events = EventQueues::from('events');
@@ -53,6 +57,7 @@ class EventQueuesTest extends UnitTestCase
         $this->assertEquals(EventQueues::LIQUIDITY_POOLS, $liquidityPools);
     }
 
+    #[Test]
     public function test_enum_try_from_valid()
     {
         $events = EventQueues::tryFrom('events');
@@ -68,6 +73,7 @@ class EventQueuesTest extends UnitTestCase
         $this->assertEquals(EventQueues::LIQUIDITY_POOLS, $liquidityPools);
     }
 
+    #[Test]
     public function test_enum_try_from_invalid()
     {
         $invalid = EventQueues::tryFrom('invalid');
@@ -75,6 +81,7 @@ class EventQueuesTest extends UnitTestCase
         $this->assertNull($invalid);
     }
 
+    #[Test]
     public function test_queue_values_are_lowercase()
     {
         $cases = EventQueues::cases();

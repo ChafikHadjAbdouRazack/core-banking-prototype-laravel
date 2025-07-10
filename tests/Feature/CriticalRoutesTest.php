@@ -2,14 +2,14 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class CriticalRoutesTest extends TestCase
 {
-    /**
-     * Test all public routes are accessible and don't throw route errors.
-     */
+/**
+ * Test all public routes are accessible and don't throw route errors.
+ */    #[Test]
     public function test_public_routes_are_accessible(): void
     {
         $publicRoutes = [
@@ -39,9 +39,9 @@ class CriticalRoutesTest extends TestCase
         }
     }
 
-    /**
-     * Test authenticated routes don't throw route errors.
-     */
+/**
+ * Test authenticated routes don't throw route errors.
+ */    #[Test]
     public function test_authenticated_routes_dont_throw_errors(): void
     {
         $user = User::factory()->withPersonalTeam()->create();
@@ -88,9 +88,9 @@ class CriticalRoutesTest extends TestCase
         }
     }
 
-    /**
-     * Test all named routes exist.
-     */
+/**
+ * Test all named routes exist.
+ */    #[Test]
     public function test_all_named_routes_exist(): void
     {
         $namedRoutes = [
@@ -129,9 +129,9 @@ class CriticalRoutesTest extends TestCase
         }
     }
 
-    /**
-     * Test API routes are accessible with authentication.
-     */
+/**
+ * Test API routes are accessible with authentication.
+ */    #[Test]
     public function test_api_routes_require_authentication(): void
     {
         // Test that API routes exist and don't throw route errors

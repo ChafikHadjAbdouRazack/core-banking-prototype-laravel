@@ -2,33 +2,12 @@
 
 namespace Tests\Unit\Domain\Stablecoin\Events;
 
-use App\Domain\Stablecoin\Events\CollateralizationRatioUpdated;
-use App\Domain\Stablecoin\Events\CollateralLocked;
-use App\Domain\Stablecoin\Events\CollateralPositionClosed;
-use App\Domain\Stablecoin\Events\CollateralPositionCreated;
-use App\Domain\Stablecoin\Events\CollateralPositionLiquidated;
-use App\Domain\Stablecoin\Events\CollateralPositionUpdated;
-use App\Domain\Stablecoin\Events\CollateralReleased;
-use App\Domain\Stablecoin\Events\CustodianAdded;
-use App\Domain\Stablecoin\Events\CustodianRemoved;
-use App\Domain\Stablecoin\Events\OracleDeviationDetected;
-use App\Domain\Stablecoin\Events\ProposalCancelled;
-use App\Domain\Stablecoin\Events\ProposalCreated;
-use App\Domain\Stablecoin\Events\ProposalExecuted;
-use App\Domain\Stablecoin\Events\ProposalFinalized;
-use App\Domain\Stablecoin\Events\ProposalVoteCast;
-use App\Domain\Stablecoin\Events\ReserveDeposited;
-use App\Domain\Stablecoin\Events\ReservePoolCreated;
-use App\Domain\Stablecoin\Events\ReserveRebalanced;
-use App\Domain\Stablecoin\Events\ReserveWithdrawn;
-use App\Domain\Stablecoin\Events\StablecoinBurned;
-use App\Domain\Stablecoin\Events\StablecoinMinted;
-use Carbon\Carbon;
-use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\DomainTestCase;
 
-class StablecoinEventsTest extends TestCase
+class StablecoinEventsTest extends DomainTestCase
 {
+    #[Test]
     public function test_collateral_locked_event_creates_with_valid_data(): void
     {
         $positionUuid = 'pos-123';
@@ -53,6 +32,7 @@ class StablecoinEventsTest extends TestCase
         $this->assertEquals($metadata, $event->metadata);
     }
 
+    #[Test]
     public function test_collateral_locked_event_creates_without_metadata(): void
     {
         $event = new CollateralLocked('pos-123', 'acc-456', 'ETH', 2000000000000000000);
@@ -60,6 +40,7 @@ class StablecoinEventsTest extends TestCase
         $this->assertEquals([], $event->metadata);
     }
 
+    #[Test]
     public function test_collateral_position_closed_event(): void
     {
         $positionUuid = 'pos-789';
@@ -74,6 +55,7 @@ class StablecoinEventsTest extends TestCase
         $this->assertEquals($metadata, $event->metadata);
     }
 
+    #[Test]
     public function test_collateral_position_closed_uses_default_reason(): void
     {
         $event = new CollateralPositionClosed('pos-123');
@@ -82,6 +64,7 @@ class StablecoinEventsTest extends TestCase
         $this->assertEquals([], $event->metadata);
     }
 
+    #[Test]
     public function test_collateral_position_created_event_with_all_parameters(): void
     {
         $positionUuid = 'pos-new-123';
@@ -121,6 +104,7 @@ class StablecoinEventsTest extends TestCase
         $this->assertEquals($metadata, $event->metadata);
     }
 
+    #[Test]
     public function test_collateral_position_created_uses_default_status(): void
     {
         $event = new CollateralPositionCreated(
@@ -136,6 +120,7 @@ class StablecoinEventsTest extends TestCase
         $this->assertEquals('active', $event->status);
     }
 
+    #[Test]
     public function test_collateral_position_liquidated_event(): void
     {
         $positionUuid = 'pos-liq-123';
@@ -166,6 +151,7 @@ class StablecoinEventsTest extends TestCase
         $this->assertEquals($metadata, $event->metadata);
     }
 
+    #[Test]
     public function test_collateral_position_updated_event(): void
     {
         $positionUuid = 'pos-upd-123';
@@ -193,6 +179,7 @@ class StablecoinEventsTest extends TestCase
         $this->assertEquals($metadata, $event->metadata);
     }
 
+    #[Test]
     public function test_collateral_released_event(): void
     {
         $positionUuid = 'pos-rel-123';
@@ -217,6 +204,7 @@ class StablecoinEventsTest extends TestCase
         $this->assertEquals($metadata, $event->metadata);
     }
 
+    #[Test]
     public function test_collateralization_ratio_updated_event(): void
     {
         $poolId = 'pool-123';
@@ -244,6 +232,7 @@ class StablecoinEventsTest extends TestCase
         $this->assertEquals($approvedBy, $event->approvedBy);
     }
 
+    #[Test]
     public function test_custodian_added_event(): void
     {
         $poolId = 'pool-123';
@@ -265,6 +254,7 @@ class StablecoinEventsTest extends TestCase
         $this->assertEquals($config, $event->config);
     }
 
+    #[Test]
     public function test_custodian_removed_event(): void
     {
         $poolId = 'pool-123';
@@ -279,6 +269,7 @@ class StablecoinEventsTest extends TestCase
         $this->assertEquals($reason, $event->reason);
     }
 
+    #[Test]
     public function test_oracle_deviation_detected_event(): void
     {
         $base = 'ETH';
@@ -307,6 +298,7 @@ class StablecoinEventsTest extends TestCase
         $this->assertEquals($aggregateUuid, $event->aggregateUuid);
     }
 
+    #[Test]
     public function test_oracle_deviation_detected_with_null_aggregate_uuid(): void
     {
         $event = new OracleDeviationDetected('BTC', 'USD', 3.5, ['price1' => '48000']);
@@ -314,6 +306,7 @@ class StablecoinEventsTest extends TestCase
         $this->assertNull($event->aggregateUuid);
     }
 
+    #[Test]
     public function test_proposal_cancelled_event(): void
     {
         $proposalId = 'prop-can-123';
@@ -335,6 +328,7 @@ class StablecoinEventsTest extends TestCase
         $this->assertEquals($timestamp, $event->timestamp);
     }
 
+    #[Test]
     public function test_proposal_created_event(): void
     {
         $proposalId = 'prop-new-123';
@@ -378,6 +372,7 @@ class StablecoinEventsTest extends TestCase
         $this->assertEquals($approvalThreshold, $event->approvalThreshold);
     }
 
+    #[Test]
     public function test_proposal_executed_event(): void
     {
         $proposalId = 'prop-exec-123';
@@ -399,6 +394,7 @@ class StablecoinEventsTest extends TestCase
         $this->assertEquals($timestamp, $event->timestamp);
     }
 
+    #[Test]
     public function test_proposal_finalized_event(): void
     {
         $proposalId = 'prop-fin-123';
@@ -430,6 +426,7 @@ class StablecoinEventsTest extends TestCase
         $this->assertEquals($approvalRate, $event->approvalRate);
     }
 
+    #[Test]
     public function test_proposal_vote_cast_event(): void
     {
         $proposalId = 'prop-vote-123';
@@ -457,6 +454,7 @@ class StablecoinEventsTest extends TestCase
         $this->assertEquals($timestamp, $event->timestamp);
     }
 
+    #[Test]
     public function test_reserve_deposited_event(): void
     {
         $poolId = 'pool-123';
@@ -484,6 +482,7 @@ class StablecoinEventsTest extends TestCase
         $this->assertEquals($metadata, $event->metadata);
     }
 
+    #[Test]
     public function test_reserve_pool_created_event(): void
     {
         $poolId = 'pool-new-123';
@@ -505,6 +504,7 @@ class StablecoinEventsTest extends TestCase
         $this->assertEquals($minimumCollateralizationRatio, $event->minimumCollateralizationRatio);
     }
 
+    #[Test]
     public function test_reserve_rebalanced_event(): void
     {
         $poolId = 'pool-reb-123';
@@ -540,6 +540,7 @@ class StablecoinEventsTest extends TestCase
         $this->assertEquals($previousAllocations, $event->previousAllocations);
     }
 
+    #[Test]
     public function test_reserve_withdrawn_event(): void
     {
         $poolId = 'pool-with-123';
@@ -570,6 +571,7 @@ class StablecoinEventsTest extends TestCase
         $this->assertEquals($metadata, $event->metadata);
     }
 
+    #[Test]
     public function test_stablecoin_burned_event(): void
     {
         $positionUuid = 'pos-burn-123';
@@ -594,6 +596,7 @@ class StablecoinEventsTest extends TestCase
         $this->assertEquals($metadata, $event->metadata);
     }
 
+    #[Test]
     public function test_stablecoin_minted_event(): void
     {
         $positionUuid = 'pos-mint-123';
@@ -618,6 +621,7 @@ class StablecoinEventsTest extends TestCase
         $this->assertEquals($metadata, $event->metadata);
     }
 
+    #[Test]
     public function test_events_with_empty_metadata_default_to_empty_array(): void
     {
         $events = [
@@ -640,6 +644,7 @@ class StablecoinEventsTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_events_handle_complex_metadata_structures(): void
     {
         $complexMetadata = [

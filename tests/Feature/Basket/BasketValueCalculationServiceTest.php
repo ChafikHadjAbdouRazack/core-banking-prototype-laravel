@@ -11,9 +11,10 @@ use App\Models\BasketAsset;
 use App\Models\BasketValue;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ServiceTestCase;
 
-class BasketValueCalculationServiceTest extends TestCase
+class BasketValueCalculationServiceTest extends ServiceTestCase
 {
     use RefreshDatabase;
 
@@ -78,7 +79,7 @@ class BasketValueCalculationServiceTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_calculate_basket_value()
     {
         // Ensure all components are active and clear all caches
@@ -121,7 +122,7 @@ class BasketValueCalculationServiceTest extends TestCase
         $this->assertEqualsWithDelta($totalValue, $value->value, 0.0001);
     }
 
-    /** @test */
+    #[Test]
     public function it_stores_component_values_in_basket_value()
     {
         // Ensure all components are active (might have been deactivated by previous tests)
@@ -151,7 +152,7 @@ class BasketValueCalculationServiceTest extends TestCase
         $this->assertEquals(0.4, $componentValues['USD']['weighted_value']);
     }
 
-    /** @test */
+    #[Test]
     public function it_caches_basket_value()
     {
         // Clear cache first
@@ -168,7 +169,7 @@ class BasketValueCalculationServiceTest extends TestCase
         $this->assertEquals($value1->calculated_at->toDateTimeString(), $value2->calculated_at->toDateTimeString());
     }
 
-    /** @test */
+    #[Test]
     public function it_can_bypass_cache()
     {
         // Ensure consistent test data - delete any rates that might interfere
@@ -194,7 +195,7 @@ class BasketValueCalculationServiceTest extends TestCase
         $this->assertNotEquals($value1->calculated_at->toDateTimeString(), $value2->calculated_at->toDateTimeString());
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_missing_exchange_rates()
     {
         // Create basket with asset that has no exchange rate
@@ -223,7 +224,7 @@ class BasketValueCalculationServiceTest extends TestCase
         $this->assertIsArray($value->component_values['_metadata']);
     }
 
-    /** @test */
+    #[Test]
     public function it_only_calculates_for_active_components()
     {
         // Clear all caches to ensure test isolation
@@ -278,7 +279,7 @@ class BasketValueCalculationServiceTest extends TestCase
         $this->assertArrayNotHasKey('GBP', $componentValues);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_get_historical_values()
     {
         // Create some historical values
@@ -315,7 +316,7 @@ class BasketValueCalculationServiceTest extends TestCase
         $this->assertEquals(1.10, $history[2]['value']);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_calculate_performance()
     {
         // Create historical values
@@ -351,7 +352,7 @@ class BasketValueCalculationServiceTest extends TestCase
         $this->assertEquals(10.0, $performance['percentage_change']);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_no_historical_data_for_performance()
     {
         $performance = $this->service->calculatePerformance(
@@ -366,7 +367,7 @@ class BasketValueCalculationServiceTest extends TestCase
         $this->assertEquals(0, $performance['percentage_change']);
     }
 
-    /** @test */
+    #[Test]
     public function it_uses_identity_rate_for_same_currency()
     {
         // Create basket with only USD components

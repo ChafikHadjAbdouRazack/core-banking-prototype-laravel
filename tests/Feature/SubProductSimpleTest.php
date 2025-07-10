@@ -2,14 +2,15 @@
 
 namespace Tests\Feature;
 
-use App\Services\SubProductService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class SubProductSimpleTest extends TestCase
 {
     use RefreshDatabase;
 
+    #[Test]
     public function test_sub_product_configuration_exists(): void
     {
         $config = config('sub_products');
@@ -21,6 +22,7 @@ class SubProductSimpleTest extends TestCase
         $this->assertArrayHasKey('treasury', $config);
     }
 
+    #[Test]
     public function test_sub_product_service_exists(): void
     {
         $service = app(SubProductService::class);
@@ -28,6 +30,7 @@ class SubProductSimpleTest extends TestCase
         $this->assertInstanceOf(SubProductService::class, $service);
     }
 
+    #[Test]
     public function test_sub_product_api_endpoints_exist(): void
     {
         // Test public endpoints
@@ -38,6 +41,7 @@ class SubProductSimpleTest extends TestCase
         $this->assertContains($response->status(), [200, 404, 500]); // Should not be 405 Method Not Allowed
     }
 
+    #[Test]
     public function test_sub_product_middleware_is_registered(): void
     {
         $aliases = app()->make('router')->getMiddleware();

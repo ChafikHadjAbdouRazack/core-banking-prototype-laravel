@@ -2,15 +2,11 @@
 
 namespace Tests\Feature\Http\Controllers\Api;
 
-use App\Domain\Compliance\Services\KycService;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
-use Laravel\Sanctum\Sanctum;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ControllerTestCase;
 
-class KycControllerTest extends TestCase
+class KycControllerTest extends ControllerTestCase
 {
     use RefreshDatabase;
 
@@ -33,6 +29,7 @@ class KycControllerTest extends TestCase
         Storage::fake('private');
     }
 
+    #[Test]
     public function test_status_returns_user_kyc_status(): void
     {
         Sanctum::actingAs($this->user);
@@ -57,6 +54,7 @@ class KycControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_status_requires_authentication(): void
     {
         $response = $this->getJson('/api/compliance/kyc/status');
@@ -64,6 +62,7 @@ class KycControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_requirements_returns_kyc_requirements_for_level(): void
     {
         Sanctum::actingAs($this->user);
@@ -103,6 +102,7 @@ class KycControllerTest extends TestCase
             ->assertJsonCount(2, 'requirements');
     }
 
+    #[Test]
     public function test_requirements_validates_level_parameter(): void
     {
         Sanctum::actingAs($this->user);
@@ -113,6 +113,7 @@ class KycControllerTest extends TestCase
             ->assertJsonValidationErrors(['level']);
     }
 
+    #[Test]
     public function test_requirements_requires_level_parameter(): void
     {
         Sanctum::actingAs($this->user);
@@ -123,6 +124,7 @@ class KycControllerTest extends TestCase
             ->assertJsonValidationErrors(['level']);
     }
 
+    #[Test]
     public function test_submit_documents_successfully(): void
     {
         Sanctum::actingAs($this->user);
@@ -154,6 +156,7 @@ class KycControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_submit_prevents_resubmission_when_already_approved(): void
     {
         $approvedUser = User::factory()->create([
@@ -179,6 +182,7 @@ class KycControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_submit_validates_document_type(): void
     {
         Sanctum::actingAs($this->user);
@@ -198,6 +202,7 @@ class KycControllerTest extends TestCase
             ->assertJsonValidationErrors(['documents.0.type']);
     }
 
+    #[Test]
     public function test_submit_validates_file_format(): void
     {
         Sanctum::actingAs($this->user);
@@ -217,6 +222,7 @@ class KycControllerTest extends TestCase
             ->assertJsonValidationErrors(['documents.0.file']);
     }
 
+    #[Test]
     public function test_submit_validates_file_size(): void
     {
         Sanctum::actingAs($this->user);
@@ -237,6 +243,7 @@ class KycControllerTest extends TestCase
             ->assertJsonValidationErrors(['documents.0.file']);
     }
 
+    #[Test]
     public function test_submit_requires_authentication(): void
     {
         $response = $this->postJson('/api/compliance/kyc/submit', []);
@@ -244,6 +251,7 @@ class KycControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_submit_handles_service_exception(): void
     {
         Sanctum::actingAs($this->user);
@@ -269,6 +277,7 @@ class KycControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_upload_single_document_successfully(): void
     {
         Sanctum::actingAs($this->user);
@@ -293,6 +302,7 @@ class KycControllerTest extends TestCase
         Storage::disk('private')->assertExists('kyc/' . $this->user->uuid . '/' . $file->hashName());
     }
 
+    #[Test]
     public function test_upload_validates_document_file(): void
     {
         Sanctum::actingAs($this->user);
@@ -305,6 +315,7 @@ class KycControllerTest extends TestCase
             ->assertJsonValidationErrors(['document']);
     }
 
+    #[Test]
     public function test_upload_validates_document_type(): void
     {
         Sanctum::actingAs($this->user);
@@ -320,6 +331,7 @@ class KycControllerTest extends TestCase
             ->assertJsonValidationErrors(['type']);
     }
 
+    #[Test]
     public function test_upload_requires_authentication(): void
     {
         $response = $this->postJson('/api/compliance/kyc/documents', []);
@@ -327,6 +339,7 @@ class KycControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_download_document_requires_authentication(): void
     {
         $response = $this->getJson('/api/compliance/kyc/documents/123/download');
@@ -334,6 +347,7 @@ class KycControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_download_document_returns_404_for_non_existent_document(): void
     {
         Sanctum::actingAs($this->user);
@@ -343,6 +357,7 @@ class KycControllerTest extends TestCase
         $response->assertStatus(404);
     }
 
+    #[Test]
     public function test_requirements_accepts_all_valid_levels(): void
     {
         Sanctum::actingAs($this->user);

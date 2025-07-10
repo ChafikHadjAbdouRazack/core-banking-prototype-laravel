@@ -2,13 +2,11 @@
 
 namespace Tests\Feature\Http\Controllers;
 
-use App\Models\Account;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Spatie\Permission\Models\Role;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ControllerTestCase;
 
-class StablecoinOperationsControllerTest extends TestCase
+class StablecoinOperationsControllerTest extends ControllerTestCase
 {
     use RefreshDatabase;
 
@@ -39,6 +37,7 @@ class StablecoinOperationsControllerTest extends TestCase
         ]);
     }
 
+    #[Test]
     public function test_unauthorized_user_cannot_access_stablecoin_operations()
     {
         $response = $this->actingAs($this->regularUser)
@@ -47,6 +46,7 @@ class StablecoinOperationsControllerTest extends TestCase
         $response->assertStatus(403);
     }
 
+    #[Test]
     public function test_authorized_user_can_access_stablecoin_operations_index()
     {
         $response = $this->actingAs($this->adminUser)
@@ -57,6 +57,7 @@ class StablecoinOperationsControllerTest extends TestCase
             ->assertViewHas(['stablecoins', 'statistics', 'recentOperations', 'collateral', 'pendingRequests']);
     }
 
+    #[Test]
     public function test_authorized_user_can_access_mint_form()
     {
         $response = $this->actingAs($this->adminUser)
@@ -67,6 +68,7 @@ class StablecoinOperationsControllerTest extends TestCase
             ->assertViewHas(['stablecoin', 'stablecoinInfo', 'collateralAssets', 'operatorAccounts']);
     }
 
+    #[Test]
     public function test_authorized_user_can_access_burn_form()
     {
         $response = $this->actingAs($this->adminUser)
@@ -77,6 +79,7 @@ class StablecoinOperationsControllerTest extends TestCase
             ->assertViewHas(['stablecoin', 'stablecoinInfo', 'operatorAccounts']);
     }
 
+    #[Test]
     public function test_authorized_user_can_access_history()
     {
         $response = $this->actingAs($this->adminUser)
@@ -87,6 +90,7 @@ class StablecoinOperationsControllerTest extends TestCase
             ->assertViewHas(['operations', 'summary', 'filters']);
     }
 
+    #[Test]
     public function test_mint_validation_fails_with_invalid_data()
     {
         $response = $this->actingAs($this->adminUser)
@@ -98,6 +102,7 @@ class StablecoinOperationsControllerTest extends TestCase
         $response->assertSessionHasErrors(['stablecoin', 'amount']);
     }
 
+    #[Test]
     public function test_burn_validation_fails_with_invalid_data()
     {
         $response = $this->actingAs($this->adminUser)

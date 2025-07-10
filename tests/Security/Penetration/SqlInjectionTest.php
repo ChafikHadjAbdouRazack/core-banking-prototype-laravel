@@ -8,9 +8,9 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
-use Tests\TestCase;
+use Tests\DomainTestCase;
 
-class SqlInjectionTest extends TestCase
+class SqlInjectionTest extends DomainTestCase
 {
     use RefreshDatabase;
 
@@ -30,11 +30,21 @@ class SqlInjectionTest extends TestCase
     #[DataProvider('sqlInjectionPayloads')]
     public function test_account_search_is_protected_against_sql_injection($payload)
     {
-        // Create test account
-        $account = Account::factory()->create([
-            'user_uuid' => $this->user->uuid,
-            'name'      => 'Test Account',
-        ]);
+        // Create test account using the proper event sourcing method
+        $accountUuid = \Illuminate\Support\Str::uuid()->toString();
+        \App\Domain\Account\Aggregates\LedgerAggregate::retrieve($accountUuid)
+            ->createAccount(
+                hydrate(
+                    class: \App\Domain\Account\DataObjects\Account::class,
+                    properties: [
+                        'name'      => 'Test Account',
+                        'user_uuid' => $this->user->uuid,
+                    ]
+                )
+            )
+            ->persist();
+
+        $account = Account::find($accountUuid);
 
         // Attempt SQL injection via transactions history with search parameter
         $response = $this->withToken($this->token)
@@ -68,9 +78,21 @@ class SqlInjectionTest extends TestCase
     #[DataProvider('sqlInjectionPayloads')]
     public function test_transaction_filters_are_protected_against_sql_injection($payload)
     {
-        $account = Account::factory()->create([
-            'user_uuid' => $this->user->uuid,
-        ]);
+        // Create account using the proper event sourcing method
+        $accountUuid = \Illuminate\Support\Str::uuid()->toString();
+        \App\Domain\Account\Aggregates\LedgerAggregate::retrieve($accountUuid)
+            ->createAccount(
+                hydrate(
+                    class: \App\Domain\Account\DataObjects\Account::class,
+                    properties: [
+                        'name'      => 'Test Account',
+                        'user_uuid' => $this->user->uuid,
+                    ]
+                )
+            )
+            ->persist();
+
+        $account = Account::find($accountUuid);
 
         // Test various filter parameters
         $endpoints = [
@@ -141,9 +163,21 @@ class SqlInjectionTest extends TestCase
         $maliciousId = "1' OR '1'='1";
 
         // Create a test account
-        $account = Account::factory()->create([
-            'user_uuid' => $this->user->uuid,
-        ]);
+        // Create account using the proper event sourcing method
+        $accountUuid = \Illuminate\Support\Str::uuid()->toString();
+        \App\Domain\Account\Aggregates\LedgerAggregate::retrieve($accountUuid)
+            ->createAccount(
+                hydrate(
+                    class: \App\Domain\Account\DataObjects\Account::class,
+                    properties: [
+                        'name'      => 'Test Account',
+                        'user_uuid' => $this->user->uuid,
+                    ]
+                )
+            )
+            ->persist();
+
+        $account = Account::find($accountUuid);
 
         // Attempt to query with malicious ID
         $response = $this->withToken($this->token)

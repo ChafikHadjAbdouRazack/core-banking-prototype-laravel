@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Values;
 
-use App\Values\DefaultAccountNames;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\UnitTestCase;
 
 class DefaultAccountNamesTest extends UnitTestCase
 {
+    #[Test]
     public function test_enum_has_correct_values()
     {
         $this->assertEquals('Main', DefaultAccountNames::MAIN->value);
@@ -16,6 +17,7 @@ class DefaultAccountNamesTest extends UnitTestCase
         $this->assertEquals('Loan', DefaultAccountNames::LOAN->value);
     }
 
+    #[Test]
     public function test_default_returns_main()
     {
         $default = DefaultAccountNames::default();
@@ -24,6 +26,7 @@ class DefaultAccountNamesTest extends UnitTestCase
         $this->assertEquals('Main', $default->value);
     }
 
+    #[Test]
     public function test_label_returns_translation()
     {
         $mainLabel = DefaultAccountNames::MAIN->label();
@@ -41,6 +44,7 @@ class DefaultAccountNamesTest extends UnitTestCase
         $this->assertNotEmpty($loanLabel);
     }
 
+    #[Test]
     public function test_all_enum_cases_exist()
     {
         $cases = DefaultAccountNames::cases();
@@ -51,6 +55,7 @@ class DefaultAccountNamesTest extends UnitTestCase
         $this->assertContains(DefaultAccountNames::LOAN, $cases);
     }
 
+    #[Test]
     public function test_enum_from_value()
     {
         $main = DefaultAccountNames::from('Main');
@@ -62,6 +67,7 @@ class DefaultAccountNamesTest extends UnitTestCase
         $this->assertEquals(DefaultAccountNames::LOAN, $loan);
     }
 
+    #[Test]
     public function test_enum_try_from_valid()
     {
         $main = DefaultAccountNames::tryFrom('Main');
@@ -73,6 +79,7 @@ class DefaultAccountNamesTest extends UnitTestCase
         $this->assertEquals(DefaultAccountNames::LOAN, $loan);
     }
 
+    #[Test]
     public function test_enum_try_from_invalid()
     {
         $invalid = DefaultAccountNames::tryFrom('Invalid');

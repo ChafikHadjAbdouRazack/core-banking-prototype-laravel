@@ -9,9 +9,9 @@ use App\Services\SettingsService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use PHPUnit\Framework\Attributes\Test;
-use Tests\TestCase;
+use Tests\ServiceTestCase;
 
-class SettingsServiceTest extends TestCase
+class SettingsServiceTest extends ServiceTestCase
 {
     use RefreshDatabase;
 

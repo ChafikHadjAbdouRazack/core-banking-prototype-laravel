@@ -2,18 +2,11 @@
 
 namespace Tests\Feature\Lending;
 
-use App\Domain\Account\Aggregates\Account;
-use App\Domain\Account\DataTransferObjects\AccountData;
-use App\Domain\Account\Enums\AccountStatus;
-use App\Domain\Account\Enums\AccountType;
-use App\Domain\Lending\Enums\EmploymentStatus;
-use App\Domain\Lending\Enums\LoanPurpose;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Str;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ControllerTestCase;
 
-class LendingControllerTest extends TestCase
+class LendingControllerTest extends ControllerTestCase
 {
     use RefreshDatabase;
 
@@ -42,6 +35,7 @@ class LendingControllerTest extends TestCase
         )->deposit('50000.00', 'USD', 'Initial deposit')->persist();
     }
 
+    #[Test]
     public function test_can_access_lending_dashboard(): void
     {
         $response = $this->actingAs($this->user)
@@ -51,6 +45,7 @@ class LendingControllerTest extends TestCase
         $response->assertViewIs('lending.index');
     }
 
+    #[Test]
     public function test_can_access_loan_application_form(): void
     {
         $response = $this->actingAs($this->user)
@@ -60,6 +55,7 @@ class LendingControllerTest extends TestCase
         $response->assertViewIs('lending.apply');
     }
 
+    #[Test]
     public function test_can_submit_loan_application(): void
     {
         $response = $this->actingAs($this->user)
@@ -86,6 +82,7 @@ class LendingControllerTest extends TestCase
         ]);
     }
 
+    #[Test]
     public function test_cannot_submit_invalid_loan_application(): void
     {
         $response = $this->actingAs($this->user)
@@ -101,6 +98,7 @@ class LendingControllerTest extends TestCase
         $response->assertSessionHasErrors(['amount', 'term_months', 'purpose', 'employment_status']);
     }
 
+    #[Test]
     public function test_guest_cannot_access_lending(): void
     {
         $response = $this->get(route('lending.index'));
@@ -110,6 +108,7 @@ class LendingControllerTest extends TestCase
         $response->assertRedirect(route('login'));
     }
 
+    #[Test]
     public function test_can_view_loan_details(): void
     {
         // Create a test loan
@@ -134,6 +133,7 @@ class LendingControllerTest extends TestCase
         $response->assertViewHas('loan');
     }
 
+    #[Test]
     public function test_can_access_repayment_form(): void
     {
         // Create a test loan
@@ -157,6 +157,7 @@ class LendingControllerTest extends TestCase
         $response->assertViewIs('lending.repay');
     }
 
+    #[Test]
     public function test_subproduct_page_has_correct_route(): void
     {
         $response = $this->get('/subproducts/lending');

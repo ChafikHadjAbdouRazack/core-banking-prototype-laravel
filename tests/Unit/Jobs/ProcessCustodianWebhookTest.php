@@ -4,12 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Jobs;
 
-use App\Domain\Custodian\Services\WebhookProcessorService;
-use App\Jobs\ProcessCustodianWebhook;
-use App\Models\CustodianWebhook;
-use Exception;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Log;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class ProcessCustodianWebhookTest extends TestCase
@@ -31,6 +27,7 @@ class ProcessCustodianWebhookTest extends TestCase
         $this->processorService = $this->mock(WebhookProcessorService::class);
     }
 
+    #[Test]
     public function test_job_processes_pending_webhook_successfully()
     {
         $this->processorService
@@ -48,6 +45,7 @@ class ProcessCustodianWebhookTest extends TestCase
         $this->assertEquals('processed', $this->webhook->status);
     }
 
+    #[Test]
     public function test_job_processes_failed_webhook()
     {
         $this->webhook->update(['status' => 'failed']);
@@ -67,6 +65,7 @@ class ProcessCustodianWebhookTest extends TestCase
         $this->assertEquals('processed', $this->webhook->status);
     }
 
+    #[Test]
     public function test_job_skips_already_processed_webhook()
     {
         $this->webhook->update(['status' => 'processed']);
@@ -88,6 +87,7 @@ class ProcessCustodianWebhookTest extends TestCase
         $this->assertEquals('processed', $this->webhook->status);
     }
 
+    #[Test]
     public function test_job_skips_processing_webhook()
     {
         $this->webhook->update(['status' => 'processing']);
@@ -109,6 +109,7 @@ class ProcessCustodianWebhookTest extends TestCase
         $this->assertEquals('processing', $this->webhook->status);
     }
 
+    #[Test]
     public function test_job_handles_nonexistent_webhook()
     {
         $nonExistentUuid = 'non-existent-uuid';
@@ -124,6 +125,7 @@ class ProcessCustodianWebhookTest extends TestCase
         $job->handle($this->processorService);
     }
 
+    #[Test]
     public function test_job_handles_processing_exception()
     {
         $exception = new Exception('Processing failed');
@@ -157,6 +159,7 @@ class ProcessCustodianWebhookTest extends TestCase
         $this->assertEquals('Processing failed', $this->webhook->error_message);
     }
 
+    #[Test]
     public function test_job_logs_successful_processing()
     {
         $this->webhook->update([
@@ -184,6 +187,7 @@ class ProcessCustodianWebhookTest extends TestCase
         $job->handle($this->processorService);
     }
 
+    #[Test]
     public function test_job_handles_failure_callback()
     {
         $exception = new Exception('Job failed permanently');
@@ -199,6 +203,7 @@ class ProcessCustodianWebhookTest extends TestCase
         $job->failed($exception);
     }
 
+    #[Test]
     public function test_job_configuration()
     {
         $job = new ProcessCustodianWebhook($this->webhook->uuid);
@@ -208,6 +213,7 @@ class ProcessCustodianWebhookTest extends TestCase
         $this->assertEquals('webhooks', $job->queue);
     }
 
+    #[Test]
     public function test_job_sets_webhook_to_processing_state()
     {
         $this->processorService
@@ -225,6 +231,7 @@ class ProcessCustodianWebhookTest extends TestCase
         $job->handle($this->processorService);
     }
 
+    #[Test]
     public function test_job_serializable_properties()
     {
         $job = new ProcessCustodianWebhook($this->webhook->uuid);

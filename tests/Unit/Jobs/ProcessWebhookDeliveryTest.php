@@ -4,19 +4,11 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Jobs;
 
-use App\Jobs\ProcessWebhookDelivery;
-use App\Models\Webhook;
-use App\Models\WebhookDelivery;
-use App\Services\WebhookService;
-use Exception;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Http\Client\RequestException;
-use Illuminate\Http\Client\Response;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\DomainTestCase;
 
-class ProcessWebhookDeliveryTest extends TestCase
+class ProcessWebhookDeliveryTest extends DomainTestCase
 {
     use RefreshDatabase;
 
@@ -50,6 +42,7 @@ class ProcessWebhookDeliveryTest extends TestCase
         $this->webhookService = $this->mock(WebhookService::class);
     }
 
+    #[Test]
     public function test_job_delivers_webhook_successfully()
     {
         $expectedPayload = json_encode(['test' => 'data']);
@@ -87,6 +80,7 @@ class ProcessWebhookDeliveryTest extends TestCase
         $this->assertNotNull($this->delivery->delivered_at);
     }
 
+    #[Test]
     public function test_job_delivers_webhook_without_secret()
     {
         $this->webhook->update(['secret' => null]);
@@ -110,6 +104,7 @@ class ProcessWebhookDeliveryTest extends TestCase
         $this->assertEquals('delivered', $this->delivery->status);
     }
 
+    #[Test]
     public function test_job_skips_inactive_webhook()
     {
         $this->webhook->update(['is_active' => false]);
@@ -132,6 +127,7 @@ class ProcessWebhookDeliveryTest extends TestCase
         $this->assertEquals('pending', $this->delivery->status);
     }
 
+    #[Test]
     public function test_job_handles_http_error_response()
     {
         $this->webhookService
@@ -158,6 +154,7 @@ class ProcessWebhookDeliveryTest extends TestCase
         $this->assertEquals(400, $this->delivery->response_status);
     }
 
+    #[Test]
     public function test_job_handles_network_timeout()
     {
         $this->webhookService
@@ -182,6 +179,7 @@ class ProcessWebhookDeliveryTest extends TestCase
         $this->assertEquals('failed', $this->delivery->status);
     }
 
+    #[Test]
     public function test_job_logs_successful_delivery()
     {
         $this->webhookService
@@ -209,6 +207,7 @@ class ProcessWebhookDeliveryTest extends TestCase
         $job->handle($this->webhookService);
     }
 
+    #[Test]
     public function test_job_marks_webhook_as_triggered()
     {
         $this->webhookService
@@ -226,6 +225,7 @@ class ProcessWebhookDeliveryTest extends TestCase
         $this->assertNotNull($this->webhook->last_triggered_at);
     }
 
+    #[Test]
     public function test_job_measures_response_duration()
     {
         $this->webhookService
@@ -244,6 +244,7 @@ class ProcessWebhookDeliveryTest extends TestCase
         $this->assertGreaterThan(0, $this->delivery->duration_ms);
     }
 
+    #[Test]
     public function test_job_respects_webhook_timeout()
     {
         $this->webhook->update(['timeout_seconds' => 5]);
@@ -266,6 +267,7 @@ class ProcessWebhookDeliveryTest extends TestCase
         });
     }
 
+    #[Test]
     public function test_job_handles_failure_callback()
     {
         $exception = new Exception('Job failed permanently');
@@ -281,6 +283,7 @@ class ProcessWebhookDeliveryTest extends TestCase
         $job->failed($exception);
     }
 
+    #[Test]
     public function test_job_retry_configuration()
     {
         $job = new ProcessWebhookDelivery($this->delivery);
@@ -295,6 +298,7 @@ class ProcessWebhookDeliveryTest extends TestCase
         $this->assertEquals([60, 300, 900], $backoff);
     }
 
+    #[Test]
     public function test_job_handles_webhook_with_custom_headers()
     {
         $this->webhook->update([
@@ -323,6 +327,7 @@ class ProcessWebhookDeliveryTest extends TestCase
         });
     }
 
+    #[Test]
     public function test_job_serialization()
     {
         $job = new ProcessWebhookDelivery($this->delivery);

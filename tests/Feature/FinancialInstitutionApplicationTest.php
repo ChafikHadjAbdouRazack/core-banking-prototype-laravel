@@ -3,13 +3,14 @@
 namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class FinancialInstitutionApplicationTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
+    #[Test]
     public function it_can_display_the_application_page()
     {
         $response = $this->get('/financial-institutions/apply');
@@ -23,7 +24,7 @@ class FinancialInstitutionApplicationTest extends TestCase
         $response->assertSee('Insurance Requirements');
     }
 
-    /** @test */
+    #[Test]
     public function it_can_submit_a_valid_application()
     {
         $response = $this->post('/financial-institutions/submit', [
@@ -43,7 +44,7 @@ class FinancialInstitutionApplicationTest extends TestCase
         $response->assertSessionHas('success', 'Thank you for your application. We will review it and contact you soon.');
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_required_fields()
     {
         $response = $this->post('/financial-institutions/submit', []);
@@ -61,7 +62,7 @@ class FinancialInstitutionApplicationTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_email_format()
     {
         $response = $this->post('/financial-institutions/submit', [
@@ -79,7 +80,7 @@ class FinancialInstitutionApplicationTest extends TestCase
         $response->assertSessionHasErrors(['contact_email']);
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_minimum_text_length()
     {
         $response = $this->post('/financial-institutions/submit', [
@@ -102,7 +103,7 @@ class FinancialInstitutionApplicationTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_requires_terms_acceptance()
     {
         $response = $this->post('/financial-institutions/submit', [

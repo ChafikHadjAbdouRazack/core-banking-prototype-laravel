@@ -2,14 +2,11 @@
 
 namespace Tests\Feature\Http\Controllers\Api;
 
-use App\Domain\Asset\Models\Asset;
-use App\Models\Account;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Laravel\Sanctum\Sanctum;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ControllerTestCase;
 
-class TransactionControllerTest extends TestCase
+class TransactionControllerTest extends ControllerTestCase
 {
     use RefreshDatabase;
 
@@ -64,6 +61,7 @@ class TransactionControllerTest extends TestCase
         );
     }
 
+    #[Test]
     public function test_deposit_usd_to_account(): void
     {
         Sanctum::actingAs($this->user);
@@ -80,6 +78,7 @@ class TransactionControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_deposit_eur_to_account(): void
     {
         Sanctum::actingAs($this->user);
@@ -96,6 +95,7 @@ class TransactionControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_deposit_validates_required_fields(): void
     {
         Sanctum::actingAs($this->user);
@@ -106,6 +106,7 @@ class TransactionControllerTest extends TestCase
             ->assertJsonValidationErrors(['amount', 'asset_code']);
     }
 
+    #[Test]
     public function test_deposit_validates_minimum_amount(): void
     {
         Sanctum::actingAs($this->user);
@@ -119,6 +120,7 @@ class TransactionControllerTest extends TestCase
             ->assertJsonValidationErrors(['amount']);
     }
 
+    #[Test]
     public function test_deposit_validates_asset_exists(): void
     {
         Sanctum::actingAs($this->user);
@@ -132,6 +134,7 @@ class TransactionControllerTest extends TestCase
             ->assertJsonValidationErrors(['asset_code']);
     }
 
+    #[Test]
     public function test_deposit_prevents_access_to_other_users_account(): void
     {
         Sanctum::actingAs($this->user);
@@ -148,6 +151,7 @@ class TransactionControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_deposit_prevents_deposit_to_frozen_account(): void
     {
         Sanctum::actingAs($this->user);
@@ -169,6 +173,7 @@ class TransactionControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_deposit_returns_404_for_non_existent_account(): void
     {
         Sanctum::actingAs($this->user);
@@ -181,6 +186,7 @@ class TransactionControllerTest extends TestCase
         $response->assertStatus(404);
     }
 
+    #[Test]
     public function test_deposit_requires_authentication(): void
     {
         $response = $this->postJson("/api/accounts/{$this->account->uuid}/deposit", [
@@ -191,6 +197,7 @@ class TransactionControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_withdraw_usd_from_account(): void
     {
         Sanctum::actingAs($this->user);
@@ -207,6 +214,7 @@ class TransactionControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_withdraw_validates_required_fields(): void
     {
         Sanctum::actingAs($this->user);
@@ -217,6 +225,7 @@ class TransactionControllerTest extends TestCase
             ->assertJsonValidationErrors(['amount', 'asset_code']);
     }
 
+    #[Test]
     public function test_withdraw_validates_minimum_amount(): void
     {
         Sanctum::actingAs($this->user);
@@ -230,6 +239,7 @@ class TransactionControllerTest extends TestCase
             ->assertJsonValidationErrors(['amount']);
     }
 
+    #[Test]
     public function test_withdraw_prevents_insufficient_balance(): void
     {
         Sanctum::actingAs($this->user);
@@ -248,6 +258,7 @@ class TransactionControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_withdraw_prevents_access_to_other_users_account(): void
     {
         Sanctum::actingAs($this->user);
@@ -264,6 +275,7 @@ class TransactionControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_withdraw_prevents_withdrawal_from_frozen_account(): void
     {
         Sanctum::actingAs($this->user);
@@ -286,6 +298,7 @@ class TransactionControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_withdraw_returns_404_for_non_existent_account(): void
     {
         Sanctum::actingAs($this->user);
@@ -298,6 +311,7 @@ class TransactionControllerTest extends TestCase
         $response->assertStatus(404);
     }
 
+    #[Test]
     public function test_withdraw_requires_authentication(): void
     {
         $response = $this->postJson("/api/accounts/{$this->account->uuid}/withdraw", [
@@ -308,6 +322,7 @@ class TransactionControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_history_returns_transaction_list(): void
     {
         Sanctum::actingAs($this->user);
@@ -339,6 +354,7 @@ class TransactionControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_history_filters_by_transaction_type(): void
     {
         Sanctum::actingAs($this->user);
@@ -353,6 +369,7 @@ class TransactionControllerTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_history_filters_by_asset_code(): void
     {
         Sanctum::actingAs($this->user);
@@ -367,6 +384,7 @@ class TransactionControllerTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_history_paginates_results(): void
     {
         Sanctum::actingAs($this->user);
@@ -377,6 +395,7 @@ class TransactionControllerTest extends TestCase
             ->assertJsonPath('meta.per_page', 10);
     }
 
+    #[Test]
     public function test_history_validates_per_page_limits(): void
     {
         Sanctum::actingAs($this->user);
@@ -387,6 +406,7 @@ class TransactionControllerTest extends TestCase
             ->assertJsonValidationErrors(['per_page']);
     }
 
+    #[Test]
     public function test_history_validates_type_parameter(): void
     {
         Sanctum::actingAs($this->user);
@@ -397,6 +417,7 @@ class TransactionControllerTest extends TestCase
             ->assertJsonValidationErrors(['type']);
     }
 
+    #[Test]
     public function test_history_returns_404_for_non_existent_account(): void
     {
         Sanctum::actingAs($this->user);
@@ -406,6 +427,7 @@ class TransactionControllerTest extends TestCase
         $response->assertStatus(404);
     }
 
+    #[Test]
     public function test_history_requires_authentication(): void
     {
         $response = $this->getJson("/api/accounts/{$this->account->uuid}/transactions");
@@ -413,6 +435,7 @@ class TransactionControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_deposit_with_long_description(): void
     {
         Sanctum::actingAs($this->user);
@@ -427,6 +450,7 @@ class TransactionControllerTest extends TestCase
             ->assertJsonValidationErrors(['description']);
     }
 
+    #[Test]
     public function test_withdraw_with_valid_description(): void
     {
         Sanctum::actingAs($this->user);

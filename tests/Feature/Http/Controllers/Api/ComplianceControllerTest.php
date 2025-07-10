@@ -2,12 +2,11 @@
 
 namespace Tests\Feature\Http\Controllers\Api;
 
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Laravel\Sanctum\Sanctum;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ControllerTestCase;
 
-class ComplianceControllerTest extends TestCase
+class ComplianceControllerTest extends ControllerTestCase
 {
     use RefreshDatabase;
 
@@ -20,6 +19,7 @@ class ComplianceControllerTest extends TestCase
         $this->user = User::factory()->create();
     }
 
+    #[Test]
     public function test_dashboard_returns_compliance_metrics(): void
     {
         Sanctum::actingAs($this->user);
@@ -43,6 +43,7 @@ class ComplianceControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_dashboard_requires_authentication(): void
     {
         $response = $this->getJson('/api/compliance/dashboard');
@@ -50,6 +51,7 @@ class ComplianceControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_get_violations_returns_empty_list(): void
     {
         Sanctum::actingAs($this->user);
@@ -63,6 +65,7 @@ class ComplianceControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_get_violations_requires_authentication(): void
     {
         $response = $this->getJson('/api/compliance/violations');
@@ -70,6 +73,7 @@ class ComplianceControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_get_violation_details_returns_null(): void
     {
         Sanctum::actingAs($this->user);
@@ -83,6 +87,7 @@ class ComplianceControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_get_violation_details_requires_authentication(): void
     {
         $response = $this->getJson('/api/compliance/violations/123');
@@ -90,6 +95,7 @@ class ComplianceControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_resolve_violation_returns_success(): void
     {
         Sanctum::actingAs($this->user);
@@ -103,6 +109,7 @@ class ComplianceControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_resolve_violation_requires_authentication(): void
     {
         $response = $this->postJson('/api/compliance/violations/123/resolve');
@@ -110,6 +117,7 @@ class ComplianceControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_get_compliance_rules_returns_empty_list(): void
     {
         Sanctum::actingAs($this->user);
@@ -123,6 +131,7 @@ class ComplianceControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_get_compliance_rules_requires_authentication(): void
     {
         $response = $this->getJson('/api/compliance/rules');
@@ -130,6 +139,7 @@ class ComplianceControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_get_rules_by_jurisdiction_returns_empty_list(): void
     {
         Sanctum::actingAs($this->user);
@@ -143,6 +153,7 @@ class ComplianceControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_get_rules_by_jurisdiction_requires_authentication(): void
     {
         $response = $this->getJson('/api/compliance/rules/EU');
@@ -150,6 +161,7 @@ class ComplianceControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_get_compliance_checks_returns_empty_list(): void
     {
         Sanctum::actingAs($this->user);
@@ -163,6 +175,7 @@ class ComplianceControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_get_compliance_checks_requires_authentication(): void
     {
         $response = $this->getJson('/api/compliance/checks');
@@ -170,6 +183,7 @@ class ComplianceControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_run_compliance_check_returns_success(): void
     {
         Sanctum::actingAs($this->user);
@@ -186,6 +200,7 @@ class ComplianceControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_run_compliance_check_requires_authentication(): void
     {
         $response = $this->postJson('/api/compliance/checks/run');
@@ -193,6 +208,7 @@ class ComplianceControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_get_certifications_returns_empty_list(): void
     {
         Sanctum::actingAs($this->user);
@@ -206,6 +222,7 @@ class ComplianceControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_get_certifications_requires_authentication(): void
     {
         $response = $this->getJson('/api/compliance/certifications');
@@ -213,6 +230,7 @@ class ComplianceControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_renew_certification_returns_success(): void
     {
         Sanctum::actingAs($this->user);
@@ -228,6 +246,7 @@ class ComplianceControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_renew_certification_requires_authentication(): void
     {
         $response = $this->postJson('/api/compliance/certifications/renew');
@@ -235,6 +254,7 @@ class ComplianceControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_get_policies_returns_empty_list(): void
     {
         Sanctum::actingAs($this->user);
@@ -248,6 +268,7 @@ class ComplianceControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_get_policies_requires_authentication(): void
     {
         $response = $this->getJson('/api/compliance/policies');
@@ -255,6 +276,7 @@ class ComplianceControllerTest extends TestCase
         $response->assertStatus(401);
     }
 
+    #[Test]
     public function test_update_policy_returns_success(): void
     {
         Sanctum::actingAs($this->user);
@@ -271,6 +293,7 @@ class ComplianceControllerTest extends TestCase
             ]);
     }
 
+    #[Test]
     public function test_update_policy_requires_authentication(): void
     {
         $response = $this->putJson('/api/compliance/policies/123');

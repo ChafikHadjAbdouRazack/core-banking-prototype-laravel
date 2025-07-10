@@ -2,27 +2,31 @@
 
 namespace Tests\Unit\Domain\Stablecoin\Workflows\Activities;
 
-use App\Domain\Stablecoin\Workflows\Activities\ClosePositionActivity;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\DomainTestCase;
 
-class ClosePositionActivityTest extends TestCase
+class ClosePositionActivityTest extends DomainTestCase
 {
+    #[Test]
     public function test_class_exists(): void
     {
         $this->assertTrue(class_exists(ClosePositionActivity::class));
     }
 
+    #[Test]
     public function test_extends_workflow_activity(): void
     {
         $reflection = new \ReflectionClass(ClosePositionActivity::class);
         $this->assertEquals('Workflow\Activity', $reflection->getParentClass()->getName());
     }
 
+    #[Test]
     public function test_has_execute_method(): void
     {
         $this->assertTrue(method_exists(ClosePositionActivity::class, 'execute'));
     }
 
+    #[Test]
     public function test_execute_method_has_correct_signature(): void
     {
         $reflection = new \ReflectionClass(ClosePositionActivity::class);
@@ -41,6 +45,7 @@ class ClosePositionActivityTest extends TestCase
         $this->assertEquals('user_closed', $parameters[1]->getDefaultValue());
     }
 
+    #[Test]
     public function test_execute_method_returns_bool(): void
     {
         $reflection = new \ReflectionClass(ClosePositionActivity::class);
@@ -49,6 +54,7 @@ class ClosePositionActivityTest extends TestCase
         $this->assertEquals('bool', $method->getReturnType()->getName());
     }
 
+    #[Test]
     public function test_various_close_reasons(): void
     {
         // Test various close reasons
@@ -69,6 +75,7 @@ class ClosePositionActivityTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_uuid_format_variations(): void
     {
         // Test various UUID format variations
@@ -87,6 +94,7 @@ class ClosePositionActivityTest extends TestCase
         }
     }
 
+    #[Test]
     public function test_default_reason_value(): void
     {
         $reflection = new \ReflectionClass(ClosePositionActivity::class);
@@ -99,6 +107,7 @@ class ClosePositionActivityTest extends TestCase
         $this->assertEquals('user_closed', $reasonParam->getDefaultValue());
     }
 
+    #[Test]
     public function test_activity_properties(): void
     {
         $reflection = new \ReflectionClass(ClosePositionActivity::class);
