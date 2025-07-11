@@ -170,9 +170,9 @@ class AccountController extends Controller
         if (empty($sanitizedName)) {
             return response()->json([
                 'message' => 'The name field contains invalid characters.',
-                'errors' => [
-                    'name' => ['The name field contains only invalid characters.']
-                ]
+                'errors'  => [
+                    'name' => ['The name field contains only invalid characters.'],
+                ],
             ], 422);
         }
 
