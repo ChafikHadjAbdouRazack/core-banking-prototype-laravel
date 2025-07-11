@@ -5,6 +5,7 @@ namespace Tests\Feature\Http\Controllers\Api;
 use App\Models\Account;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Laravel\Sanctum\Sanctum;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\ControllerTestCase;
 
@@ -101,7 +102,6 @@ class AccountControllerTest extends ControllerTestCase
         Sanctum::actingAs($this->user);
 
         $response = $this->postJson('/api/accounts', [
-            'user_uuid'       => $this->user->uuid,
             'name'            => 'New Account',
             'initial_balance' => 25000, // 250.00
         ]);
@@ -141,8 +141,7 @@ class AccountControllerTest extends ControllerTestCase
         Sanctum::actingAs($this->user);
 
         $response = $this->postJson('/api/accounts', [
-            'user_uuid' => $this->user->uuid,
-            'name'      => 'Zero Balance Account',
+            'name' => 'Zero Balance Account',
         ]);
 
         $response->assertStatus(201)
@@ -164,7 +163,7 @@ class AccountControllerTest extends ControllerTestCase
         $response = $this->postJson('/api/accounts', []);
 
         $response->assertStatus(422)
-            ->assertJsonValidationErrors(['user_uuid', 'name']);
+            ->assertJsonValidationErrors(['name']);
     }
 
     #[Test]
@@ -173,21 +172,19 @@ class AccountControllerTest extends ControllerTestCase
         Sanctum::actingAs($this->user);
 
         $response = $this->postJson('/api/accounts', [
-            'user_uuid'       => 'invalid-uuid',
             'name'            => str_repeat('a', 256), // Too long
             'initial_balance' => -100, // Negative
         ]);
 
         $response->assertStatus(422)
-            ->assertJsonValidationErrors(['user_uuid', 'name', 'initial_balance']);
+            ->assertJsonValidationErrors(['name', 'initial_balance']);
     }
 
     #[Test]
     public function test_store_requires_authentication(): void
     {
         $response = $this->postJson('/api/accounts', [
-            'user_uuid' => $this->user->uuid,
-            'name'      => 'Test Account',
+            'name' => 'Test Account',
         ]);
 
         $response->assertStatus(401);
@@ -248,6 +245,20 @@ class AccountControllerTest extends ControllerTestCase
         $response = $this->getJson("/api/accounts/{$account->uuid}");
 
         $response->assertStatus(401);
+    }
+
+    #[Test]
+    public function test_show_prevents_access_to_other_users_accounts(): void
+    {
+        Sanctum::actingAs($this->user);
+
+        $otherAccount = Account::factory()->create([
+            'user_uuid' => $this->otherUser->uuid,
+        ]);
+
+        $response = $this->getJson("/api/accounts/{$otherAccount->uuid}");
+
+        $response->assertStatus(403);
     }
 
     #[Test]
@@ -335,6 +346,21 @@ class AccountControllerTest extends ControllerTestCase
         $response = $this->deleteJson("/api/accounts/{$account->uuid}");
 
         $response->assertStatus(401);
+    }
+
+    #[Test]
+    public function test_destroy_prevents_deleting_other_users_accounts(): void
+    {
+        Sanctum::actingAs($this->user);
+
+        $otherAccount = Account::factory()->create([
+            'user_uuid' => $this->otherUser->uuid,
+            'balance'   => 0,
+        ]);
+
+        $response = $this->deleteJson("/api/accounts/{$otherAccount->uuid}");
+
+        $response->assertStatus(403);
     }
 
     #[Test]
@@ -436,6 +462,23 @@ class AccountControllerTest extends ControllerTestCase
     }
 
     #[Test]
+    public function test_freeze_prevents_freezing_other_users_accounts(): void
+    {
+        Sanctum::actingAs($this->user);
+
+        $otherAccount = Account::factory()->create([
+            'user_uuid' => $this->otherUser->uuid,
+            'frozen'    => false,
+        ]);
+
+        $response = $this->postJson("/api/accounts/{$otherAccount->uuid}/freeze", [
+            'reason' => 'Test reason',
+        ]);
+
+        $response->assertStatus(403);
+    }
+
+    #[Test]
     public function test_unfreeze_unfreezes_frozen_account(): void
     {
         Sanctum::actingAs($this->user);
@@ -515,6 +558,23 @@ class AccountControllerTest extends ControllerTestCase
         ]);
 
         $response->assertStatus(401);
+    }
+
+    #[Test]
+    public function test_unfreeze_prevents_unfreezing_other_users_accounts(): void
+    {
+        Sanctum::actingAs($this->user);
+
+        $otherAccount = Account::factory()->create([
+            'user_uuid' => $this->otherUser->uuid,
+            'frozen'    => true,
+        ]);
+
+        $response = $this->postJson("/api/accounts/{$otherAccount->uuid}/unfreeze", [
+            'reason' => 'Test reason',
+        ]);
+
+        $response->assertStatus(403);
     }
 
     #[Test]

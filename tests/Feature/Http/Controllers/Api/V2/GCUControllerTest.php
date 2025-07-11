@@ -6,6 +6,7 @@ use App\Models\Asset;
 use App\Models\BasketAsset;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Laravel\Sanctum\Sanctum;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\ControllerTestCase;
 

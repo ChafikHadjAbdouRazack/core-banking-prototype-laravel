@@ -6,6 +6,7 @@ namespace Tests\Feature\Api;
 
 use App\Models\Account;
 use App\Models\User;
+use Laravel\Sanctum\Sanctum;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\ControllerTestCase;
 
