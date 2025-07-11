@@ -14,31 +14,31 @@ Route::get('/', function () {
 // WebSocket endpoint with origin validation
 Route::get('/ws', function (Request $request) {
     $origin = $request->header('Origin');
-    
+
     // Get allowed origins from CORS config and app URL
     $allowedOrigins = config('cors.allowed_origins', []);
-    
+
     // Also allow the application's own URL
     $appUrl = config('app.url');
     if ($appUrl && !in_array($appUrl, $allowedOrigins)) {
         $allowedOrigins[] = $appUrl;
     }
-    
+
     // In testing environment, also allow the test URL
     if (app()->environment('testing')) {
         $allowedOrigins[] = 'http://localhost';
     }
-    
+
     // Check if this is a WebSocket upgrade request
     if ($request->header('Upgrade') !== 'websocket') {
         return response('Not a WebSocket request', 400);
     }
-    
+
     // Validate origin
     if (!$origin || !in_array($origin, $allowedOrigins)) {
         return response('Forbidden', 403);
     }
-    
+
     // In a real implementation, this would upgrade to WebSocket protocol
     // For testing purposes, we return 426 to indicate upgrade required
     return response('Upgrade Required', 426)
