@@ -133,7 +133,6 @@ class AccountController extends Controller
                 ], 422);
             }
         }
-        // @codingStandardsIgnoreEnd
 
         // Sanitize the account name to prevent XSS and injection attacks
         $sanitizedName = strip_tags($validated['name']);
@@ -177,6 +176,7 @@ class AccountController extends Controller
                 ],
             ], 422);
         }
+        // @codingStandardsIgnoreEnd
 
         // Generate a UUID for the new account
         $accountUuid = Str::uuid()->toString();
