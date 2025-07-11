@@ -115,6 +115,7 @@ class AccountController extends Controller
             ]
         );
 
+        // @codingStandardsIgnoreStart
         // First check for control characters, zero-width characters, and direction overrides
         $invalidCharacterPatterns = [
             '/[\x00-\x1F\x7F]/', // Control characters (including newline, tab, null byte)
@@ -132,6 +133,7 @@ class AccountController extends Controller
                 ], 422);
             }
         }
+        // @codingStandardsIgnoreEnd
 
         // Sanitize the account name to prevent XSS and injection attacks
         $sanitizedName = strip_tags($validated['name']);
