@@ -15,6 +15,10 @@ return Application::configure(basePath: dirname(__DIR__))
             Route::middleware('api')
                 ->prefix('api')
                 ->group(base_path('routes/api-bian.php'));
+            
+            Route::middleware('api')
+                ->prefix('api/v2')
+                ->group(base_path('routes/api-v2.php'));
         },
     )
     ->withMiddleware(function (Middleware $middleware) {
@@ -29,6 +33,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'auth.api_or_sanctum' => \App\Http\Middleware\AuthenticateApiOrSanctum::class,
             'idempotency' => \App\Http\Middleware\IdempotencyMiddleware::class,
         ]);
+        
+        // Prepend CORS middleware to handle it before other middleware
+        $middleware->prepend(\Illuminate\Http\Middleware\HandleCors::class);
         
         // Apply middleware to API routes (no global throttling - use custom rate limiting)
         $middleware->group('api', [

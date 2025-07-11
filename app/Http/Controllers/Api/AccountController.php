@@ -118,7 +118,7 @@ class AccountController extends Controller
         // Sanitize the account name to prevent XSS and injection attacks
         $sanitizedName = strip_tags($validated['name']);
         $sanitizedName = htmlspecialchars($sanitizedName, ENT_QUOTES, 'UTF-8');
-        
+
         // Remove potential SQL injection patterns
         $dangerousPatterns = [
             '/SELECT.*FROM/i',
@@ -140,14 +140,14 @@ class AccountController extends Controller
             '/vbscript:/i', // VBScript protocol
             '/on\w+\s*=/i', // Event handlers
         ];
-        
+
         foreach ($dangerousPatterns as $pattern) {
             $sanitizedName = preg_replace($pattern, '', $sanitizedName);
         }
-        
+
         // Trim the result
         $sanitizedName = trim($sanitizedName);
-        
+
         // Ensure the name is not empty after sanitization
         if (empty($sanitizedName)) {
             return response()->json([

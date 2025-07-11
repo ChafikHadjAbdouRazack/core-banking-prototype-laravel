@@ -33,6 +33,7 @@ Route::prefix('auth')->middleware('api.rate_limit:auth')->group(function () {
         Route::post('/logout-all', [App\Http\Controllers\Api\Auth\LoginController::class, 'logoutAll']);
         Route::post('/refresh', [App\Http\Controllers\Api\Auth\LoginController::class, 'refresh']);
         Route::get('/user', [App\Http\Controllers\Api\Auth\LoginController::class, 'user']);
+        Route::post('/change-password', [App\Http\Controllers\Api\Auth\PasswordController::class, 'changePassword']);
     });
 });
 
@@ -89,6 +90,20 @@ Route::prefix('baskets')->group(function () {
 
 // Authenticated endpoints (supports both Sanctum and API Key authentication)
 Route::middleware(['auth.api_or_sanctum:read'])->group(function () {
+    // User profile endpoint
+    Route::get('/profile', function (\Illuminate\Http\Request $request) {
+        $user = $request->user();
+        return response()->json([
+            'data' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'uuid' => $user->uuid,
+                'created_at' => $user->created_at,
+                'updated_at' => $user->updated_at,
+            ],
+        ]);
+    });
     // Webhook management
     Route::prefix('webhooks')->group(function () {
         Route::get('/', [WebhookController::class, 'index']);
