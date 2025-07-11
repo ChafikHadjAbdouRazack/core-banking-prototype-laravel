@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Exchange;
 
+use App\Models\Account;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\DomainTestCase;

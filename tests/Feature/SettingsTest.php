@@ -2,8 +2,10 @@
 
 namespace Tests\Feature;
 
+use App\Services\SettingsService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
+use Tests\TestCase;
 
 class SettingsTest extends TestCase
 {

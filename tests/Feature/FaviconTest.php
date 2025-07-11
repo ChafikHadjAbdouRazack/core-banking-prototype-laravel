@@ -2,6 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\Models\Account;
+use App\Models\Team;
+use App\Models\User;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
@@ -68,10 +71,10 @@ class FaviconTest extends TestCase
         $response->assertSee('theme-color');
 
         // Test authenticated page with proper setup
-        $user = \App\Models\User::factory()->create();
+        $user = User::factory()->create();
 
         // Create a team for the user (required by Jetstream)
-        $team = \App\Models\Team::factory()->create([
+        $team = Team::factory()->create([
             'user_id'       => $user->id,
             'personal_team' => true,
         ]);
@@ -80,7 +83,7 @@ class FaviconTest extends TestCase
         $user->save();
 
         // Create an account for the user
-        \App\Models\Account::factory()->create([
+        Account::factory()->create([
             'user_uuid' => $user->uuid,
             'name'      => $user->name . "'s Account",
         ]);

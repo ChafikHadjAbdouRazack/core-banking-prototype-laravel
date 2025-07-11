@@ -4,6 +4,7 @@ namespace Tests\Feature\Filament;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
+use Tests\FilamentTestCase;
 
 class CgoPricingRoundResourceTest extends FilamentTestCase
 {

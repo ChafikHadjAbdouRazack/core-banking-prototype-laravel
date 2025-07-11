@@ -2,6 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\Models\Account;
+use App\Models\Team;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\DomainTestCase;
@@ -20,7 +23,7 @@ class DashboardPagesTest extends DomainTestCase
         ]);
 
         // Create a team for the user
-        $team = \App\Models\Team::factory()->create([
+        $team = Team::factory()->create([
             'user_id'       => $this->user->id,
             'personal_team' => true,
         ]);
@@ -29,7 +32,7 @@ class DashboardPagesTest extends DomainTestCase
         $this->user->save();
 
         // Create an account for the user
-        \App\Models\Account::factory()->create([
+        Account::factory()->create([
             'user_uuid' => $this->user->uuid,
             'name'      => $this->user->name . "'s Account",
         ]);
@@ -230,7 +233,7 @@ class DashboardPagesTest extends DomainTestCase
     public function test_team_pages_work(): void
     {
         // Create a team for the user
-        $team = \App\Models\Team::factory()->create([
+        $team = Team::factory()->create([
             'user_id'       => $this->user->id,
             'personal_team' => true,
         ]);

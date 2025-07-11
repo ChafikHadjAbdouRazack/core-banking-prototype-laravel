@@ -2,7 +2,11 @@
 
 namespace Tests\Feature\Basket;
 
+use App\Models\Basket\BasketAsset;
+use App\Models\User;
+use App\Services\Basket\BasketPerformanceService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\WithFaker;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 

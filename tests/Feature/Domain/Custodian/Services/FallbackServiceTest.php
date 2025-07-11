@@ -4,6 +4,16 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Domain\Custodian\Services;
 
+use App\Domain\Custodian\Models\CustodianAccount;
+use App\Domain\Custodian\Models\CustodianTransfer;
+use App\Domain\Custodian\Services\CustodianRegistry;
+use App\Domain\Custodian\Services\FallbackService;
+use App\Domain\Custodian\ValueObjects\AccountInfo;
+use App\Domain\Custodian\ValueObjects\Money;
+use App\Domain\Custodian\ValueObjects\TransactionReceipt;
+use App\Models\Account;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\ServiceTestCase;
 
@@ -53,7 +63,7 @@ class FallbackServiceTest extends ServiceTestCase
         $expectedBalance = 20000; // €200.00
 
         // Create a test account first
-        $account = \App\Models\Account::factory()->create();
+        $account = Account::factory()->create();
 
         CustodianAccount::create([
             'uuid'                 => Str::uuid()->toString(),
@@ -95,7 +105,7 @@ class FallbackServiceTest extends ServiceTestCase
         $balance = new Money(30000); // €300.00
 
         // Create a test account first
-        $account = \App\Models\Account::factory()->create();
+        $account = Account::factory()->create();
 
         // Create custodian account
         CustodianAccount::create([
@@ -194,8 +204,8 @@ class FallbackServiceTest extends ServiceTestCase
         $transferId = 'TRF123';
 
         // Create test accounts and custodian accounts
-        $fromAccount = \App\Models\Account::factory()->create();
-        $toAccount = \App\Models\Account::factory()->create();
+        $fromAccount = Account::factory()->create();
+        $toAccount = Account::factory()->create();
 
         $fromCustodianAccount = CustodianAccount::create([
             'id'                   => 1,
@@ -254,8 +264,8 @@ class FallbackServiceTest extends ServiceTestCase
         );
 
         // Create accounts
-        $fromAccountModel = \App\Models\Account::factory()->create();
-        $toAccountModel = \App\Models\Account::factory()->create();
+        $fromAccountModel = Account::factory()->create();
+        $toAccountModel = Account::factory()->create();
 
         // Create custodian accounts
         $fromCustodianAccount = CustodianAccount::create([

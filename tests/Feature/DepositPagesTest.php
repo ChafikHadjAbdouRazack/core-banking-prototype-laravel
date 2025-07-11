@@ -2,6 +2,8 @@
 
 namespace Tests\Feature;
 
+use App\Models\Account;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\DomainTestCase;
@@ -90,7 +92,7 @@ class DepositPagesTest extends DomainTestCase
     public function test_deposit_page_with_account_shows_deposit_options()
     {
         // Create an account for the user
-        $account = \App\Models\Account::factory()->create([
+        $account = Account::factory()->create([
             'user_uuid' => $this->user->uuid,
             'name'      => 'Test Account',
         ]);

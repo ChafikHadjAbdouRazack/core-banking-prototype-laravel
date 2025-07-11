@@ -2,7 +2,12 @@
 
 namespace Tests\Feature\Http\Controllers\Api;
 
+use App\Domain\Asset\Models\Asset;
+use App\Models\Account;
+use App\Models\AccountBalance;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Laravel\Sanctum\Sanctum;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\ControllerTestCase;
 
@@ -329,7 +334,7 @@ class AssetControllerTest extends ControllerTestCase
 
         // Create accounts and account balances for the asset
         for ($i = 0; $i < 3; $i++) {
-            $account = \App\Models\Account::factory()->create();
+            $account = Account::factory()->create();
             AccountBalance::factory()->create([
                 'account_uuid' => $account->uuid,
                 'asset_code'   => 'USD',
@@ -470,7 +475,7 @@ class AssetControllerTest extends ControllerTestCase
             ]
         );
 
-        $account = \App\Models\Account::factory()->create();
+        $account = Account::factory()->create();
         AccountBalance::factory()->create([
             'account_uuid' => $account->uuid,
             'asset_code'   => 'BTC',

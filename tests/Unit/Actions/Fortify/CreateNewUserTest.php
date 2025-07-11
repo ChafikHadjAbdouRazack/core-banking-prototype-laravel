@@ -2,6 +2,10 @@
 
 namespace Tests\Unit\Actions\Fortify;
 
+use App\Actions\Fortify\CreateNewUser;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 

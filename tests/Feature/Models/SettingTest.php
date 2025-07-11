@@ -8,7 +8,7 @@ use App\Models\Setting;
 use Illuminate\Support\Facades\Crypt;
 use Mockery;
 use PHPUnit\Framework\Attributes\Test;
-use PHPUnit\Framework\TestCase;
+use Tests\TestCase;
 
 class SettingTest extends TestCase
 {

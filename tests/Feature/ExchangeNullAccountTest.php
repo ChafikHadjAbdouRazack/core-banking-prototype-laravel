@@ -2,6 +2,10 @@
 
 namespace Tests\Feature;
 
+use App\Domain\Asset\Models\Asset;
+use App\Models\Account;
+use App\Models\Team;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\DomainTestCase;
@@ -19,7 +23,7 @@ class ExchangeNullAccountTest extends DomainTestCase
         ]);
 
         // Create a team for the user (required by Jetstream)
-        $team = \App\Models\Team::factory()->create([
+        $team = Team::factory()->create([
             'user_id'       => $user->id,
             'personal_team' => true,
         ]);
@@ -71,7 +75,7 @@ class ExchangeNullAccountTest extends DomainTestCase
         ]);
 
         // Create a team
-        $team = \App\Models\Team::factory()->create([
+        $team = Team::factory()->create([
             'user_id'       => $user->id,
             'personal_team' => true,
         ]);
@@ -80,7 +84,7 @@ class ExchangeNullAccountTest extends DomainTestCase
         $user->save();
 
         // Create an account for the user
-        $account = \App\Models\Account::factory()->create([
+        $account = Account::factory()->create([
             'user_uuid' => $user->uuid,
             'name'      => $user->name . "'s Account",
         ]);

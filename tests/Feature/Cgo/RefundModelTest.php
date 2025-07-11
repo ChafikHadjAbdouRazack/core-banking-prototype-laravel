@@ -2,6 +2,9 @@
 
 namespace Tests\Feature\Cgo;
 
+use App\Models\Cgo\CgoInvestment;
+use App\Models\Cgo\CgoPricingRound;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
