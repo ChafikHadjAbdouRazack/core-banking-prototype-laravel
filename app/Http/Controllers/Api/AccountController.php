@@ -126,9 +126,9 @@ class AccountController extends Controller
             if (preg_match($pattern, $validated['name'])) {
                 return response()->json([
                     'message' => 'The name field contains invalid characters.',
-                    'errors' => [
-                        'name' => ['The name field contains invalid control or special characters.']
-                    ]
+                    'errors'  => [
+                        'name' => ['The name field contains invalid control or special characters.'],
+                    ],
                 ], 422);
             }
         }
