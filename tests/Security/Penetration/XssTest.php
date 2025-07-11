@@ -81,7 +81,7 @@ class XssTest extends DomainTestCase
             ->credit(
                 AccountUuid::fromString($account->uuid),
                 'USD',
-                Money::of(100000),
+                __money(100000),
                 'Initial balance for testing'
             )
             ->persist();
@@ -93,16 +93,20 @@ class XssTest extends DomainTestCase
                 'to_account'   => Account::factory()->create(['user_uuid' => User::factory()->create()->uuid])->uuid,
                 'amount'       => 100,
                 'currency'     => 'USD',
+                'asset_code'   => 'USD',
                 'description'  => $payload,
             ]);
 
-        if ($response->status() === 201) {
-            $transfer = $response->json('data');
-
-            // Verify description is sanitized
-            $this->assertStringNotContainsString('<script>', $transfer['description'] ?? '');
-            $this->assertStringNotContainsString('javascript:', $transfer['description'] ?? '');
+        // For debugging - let's see what response we're getting
+        if ($response->status() !== 201) {
+            $this->fail('Expected 201 response, got ' . $response->status() . ': ' . $response->content());
         }
+
+        $transfer = $response->json('data');
+
+        // Verify description is sanitized
+        $this->assertStringNotContainsString('<script>', $transfer['description'] ?? '');
+        $this->assertStringNotContainsString('javascript:', $transfer['description'] ?? '');
     }
 
     #[Test]

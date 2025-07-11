@@ -121,7 +121,7 @@ class AccountController extends Controller
             '/[\x{200B}-\x{200D}\x{FEFF}]/u', // Zero-width characters and BOM
             '/[\x{202A}-\x{202E}]/u', // Direction override characters
         ];
-        
+
         foreach ($invalidCharacterPatterns as $pattern) {
             if (preg_match($pattern, $validated['name'])) {
                 return response()->json([
