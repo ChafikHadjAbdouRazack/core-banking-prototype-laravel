@@ -76,7 +76,10 @@ class LoadTest extends DomainTestCase
         // Create accounts with balance
         foreach ($users as $user) {
             $account = Account::factory()->forUser($user)->create();
-            $account->addBalance('USD', 1000000); // $10,000
+            // Add balance using event sourcing
+            \App\Domain\Asset\Aggregates\AssetTransactionAggregate::retrieve($account->uuid . ':USD')
+                ->credit($account->uuid, 'USD', 1000000, 'Initial balance for load test') // $10,000
+                ->persist();
             $accounts[] = $account;
         }
 

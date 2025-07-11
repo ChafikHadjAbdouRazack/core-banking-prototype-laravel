@@ -75,8 +75,8 @@ class XssTest extends DomainTestCase
         $account = Account::where('uuid', $accountUuid)->first();
 
         // Add balance using event sourcing
-        \App\Domain\Account\Aggregates\LedgerAggregate::retrieve($account->uuid)
-            ->addBalance('USD', 100000)
+        \App\Domain\Asset\Aggregates\AssetTransactionAggregate::retrieve($account->uuid . ':USD')
+            ->credit($account->uuid, 'USD', 100000, 'Initial balance for testing')
             ->persist();
 
         // Attempt XSS in transaction description

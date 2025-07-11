@@ -75,9 +75,14 @@ class StablecoinIssuanceIntegrationTest extends DomainTestCase
         $user = User::factory()->create();
         $this->account = Account::factory()->create(['user_uuid' => $user->uuid]);
 
-        // Give account some balance
-        $this->account->addBalance('USD', 500000); // $5,000
-        $this->account->addBalance('EUR', 500000); // €5,000
+        // Give account some balance using event sourcing
+        \App\Domain\Asset\Aggregates\AssetTransactionAggregate::retrieve($this->account->uuid . ':USD')
+            ->credit($this->account->uuid, 'USD', 500000, 'Initial USD balance') // $5,000
+            ->persist();
+        
+        \App\Domain\Asset\Aggregates\AssetTransactionAggregate::retrieve($this->account->uuid . ':EUR')
+            ->credit($this->account->uuid, 'EUR', 500000, 'Initial EUR balance') // €5,000
+            ->persist();
 
         // Create stablecoin
         $this->stablecoin = Stablecoin::create([
