@@ -15,6 +15,7 @@ use App\Domain\Account\Workflows\FreezeAccountWorkflow;
 use App\Domain\Account\Workflows\UnfreezeAccountWorkflow;
 use App\Http\Controllers\Controller;
 use App\Models\Account;
+use App\Rules\NoControlCharacters;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -110,47 +111,10 @@ class AccountController extends Controller
     {
         $validated = $request->validate(
             [
-            'name'            => 'required|string|max:255',
+            'name'            => ['required', 'string', 'max:255', new NoControlCharacters()],
             'initial_balance' => 'sometimes|integer|min:0',
             ]
         );
-
-        // Log for debugging in CI
-        if (app()->environment('testing') && strpos($validated['name'], "\n") !== false) {
-            \Log::error('AccountController: Newline detected in name', [
-                'name' => $validated['name'],
-                'hex' => bin2hex($validated['name']),
-            ]);
-        }
-
-        // @codingStandardsIgnoreStart
-        // First check for control characters, zero-width characters, and direction overrides
-        // Check for newline explicitly first
-        if (strpos($validated['name'], "\n") !== false || strpos($validated['name'], "\r") !== false) {
-            return response()->json([
-                'message' => 'The name field contains invalid characters.',
-                'errors'  => [
-                    'name' => ['The name field contains invalid control or special characters.'],
-                ],
-            ], 422);
-        }
-        
-        $invalidCharacterPatterns = [
-            '/[\x00-\x1F\x7F]/', // Control characters (including newline, tab, null byte)
-            '/[\x{200B}-\x{200D}\x{FEFF}]/u', // Zero-width characters and BOM
-            '/[\x{202A}-\x{202E}]/u', // Direction override characters
-        ];
-
-        foreach ($invalidCharacterPatterns as $pattern) {
-            if (preg_match($pattern, $validated['name'])) {
-                return response()->json([
-                    'message' => 'The name field contains invalid characters.',
-                    'errors'  => [
-                        'name' => ['The name field contains invalid control or special characters.'],
-                    ],
-                ], 422);
-            }
-        }
 
         // Sanitize the account name to prevent XSS and injection attacks
         $sanitizedName = strip_tags($validated['name']);
@@ -194,7 +158,6 @@ class AccountController extends Controller
                 ],
             ], 422);
         }
-        // @codingStandardsIgnoreEnd
 
         // Generate a UUID for the new account
         $accountUuid = Str::uuid()->toString();
