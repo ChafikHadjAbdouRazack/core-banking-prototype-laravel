@@ -3,7 +3,6 @@
 namespace Tests\Security\Penetration;
 
 use App\Domain\Account\DataObjects\AccountUuid;
-use App\Domain\Account\DataObjects\Money;
 use App\Models\Account;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;

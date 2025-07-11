@@ -243,7 +243,7 @@ class CsrfTest extends DomainTestCase
 
         // Create a fresh user and token for this test
         $user = User::factory()->create([
-            'password' => bcrypt('password')
+            'password' => bcrypt('password'),
         ]);
 
         // Create initial token
@@ -372,6 +372,7 @@ class CsrfTest extends DomainTestCase
         // Skip test if no WebSocket endpoint exists
         if ($testResponse->status() === 404) {
             $this->markTestSkipped('WebSocket endpoint not implemented');
+
             return;
         }
 

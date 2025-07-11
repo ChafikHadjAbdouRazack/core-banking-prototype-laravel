@@ -53,13 +53,13 @@ class PasswordController extends Controller
     {
         $validated = $request->validate([
             'current_password' => ['required', 'string'],
-            'new_password' => ['required', 'string', 'confirmed', Password::defaults()],
+            'new_password'     => ['required', 'string', 'confirmed', Password::defaults()],
         ]);
 
         $user = $request->user();
 
         // Verify current password
-        if (!Hash::check($validated['current_password'], $user->password)) {
+        if (! Hash::check($validated['current_password'], $user->password)) {
             throw ValidationException::withMessages([
                 'current_password' => ['The provided password is incorrect.'],
             ]);
@@ -77,7 +77,7 @@ class PasswordController extends Controller
         $newToken = $user->createToken($request->header('User-Agent', 'Unknown Device'))->plainTextToken;
 
         return response()->json([
-            'message' => 'Password changed successfully',
+            'message'   => 'Password changed successfully',
             'new_token' => $newToken,
         ], 200);
     }

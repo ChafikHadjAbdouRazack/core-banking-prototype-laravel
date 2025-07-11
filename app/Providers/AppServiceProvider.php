@@ -35,8 +35,9 @@ class AppServiceProvider extends ServiceProvider
             config(['app.debug' => config('demo.debug', false)]);
             config(['app.debug_blacklist' => config('demo.debug_blacklist')]);
 
-            // Force HTTPS in demo environment
-            if (request()->getHost() !== 'localhost' && request()->getHost() !== '127.0.0.1') {
+            // Force HTTPS in demo environment (but not for local development)
+            $localHosts = explode(',', config('app.local_hostnames', 'localhost,127.0.0.1'));
+            if (! in_array(request()->getHost(), $localHosts)) {
                 \URL::forceScheme('https');
             }
 

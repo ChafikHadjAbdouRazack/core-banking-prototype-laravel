@@ -20,7 +20,7 @@ Route::get('/ws', function (Request $request) {
 
     // Also allow the application's own URL
     $appUrl = config('app.url');
-    if ($appUrl && !in_array($appUrl, $allowedOrigins)) {
+    if ($appUrl && ! in_array($appUrl, $allowedOrigins)) {
         $allowedOrigins[] = $appUrl;
     }
 
@@ -35,7 +35,7 @@ Route::get('/ws', function (Request $request) {
     }
 
     // Validate origin
-    if (!$origin || !in_array($origin, $allowedOrigins)) {
+    if (! $origin || ! in_array($origin, $allowedOrigins)) {
         return response('Forbidden', 403);
     }
 
