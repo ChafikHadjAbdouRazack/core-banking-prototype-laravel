@@ -115,6 +115,24 @@ class AccountController extends Controller
             ]
         );
 
+        // First check for control characters, zero-width characters, and direction overrides
+        $invalidCharacterPatterns = [
+            '/[\x00-\x1F\x7F]/', // Control characters (including newline, tab, null byte)
+            '/[\x{200B}-\x{200D}\x{FEFF}]/u', // Zero-width characters and BOM
+            '/[\x{202A}-\x{202E}]/u', // Direction override characters
+        ];
+        
+        foreach ($invalidCharacterPatterns as $pattern) {
+            if (preg_match($pattern, $validated['name'])) {
+                return response()->json([
+                    'message' => 'The name field contains invalid characters.',
+                    'errors' => [
+                        'name' => ['The name field contains invalid control or special characters.']
+                    ]
+                ], 422);
+            }
+        }
+
         // Sanitize the account name to prevent XSS and injection attacks
         $sanitizedName = strip_tags($validated['name']);
         $sanitizedName = htmlspecialchars($sanitizedName, ENT_QUOTES, 'UTF-8');

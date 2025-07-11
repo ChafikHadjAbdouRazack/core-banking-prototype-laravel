@@ -357,7 +357,25 @@ class CsrfTest extends DomainTestCase
     #[Test]
     public function test_origin_validation_for_websocket_connections()
     {
-        // If WebSockets are used, test origin validation
+        // Get allowed origin from config or app URL
+        $allowedOrigin = config('cors.allowed_origins.0', config('app.url', 'http://localhost'));
+        
+        // First check if WebSocket endpoint exists
+        $testResponse = $this->withHeaders([
+            'Origin'                => $allowedOrigin,
+            'Upgrade'               => 'websocket',
+            'Connection'            => 'Upgrade',
+            'Sec-WebSocket-Key'     => base64_encode(random_bytes(16)),
+            'Sec-WebSocket-Version' => '13',
+        ])->get('/ws');
+        
+        // Skip test if no WebSocket endpoint exists
+        if ($testResponse->status() === 404) {
+            $this->markTestSkipped('WebSocket endpoint not implemented');
+            return;
+        }
+        
+        // Test malicious origins
         $maliciousOrigins = [
             'https://evil.com',
             'http://localhost:9999',
@@ -375,11 +393,22 @@ class CsrfTest extends DomainTestCase
                 'Sec-WebSocket-Version' => '13',
             ])->get('/ws');
 
-            // Should reject unauthorized origins
-            if ($response->status() === 101) { // WebSocket upgrade successful
-                $this->fail("WebSocket should not accept origin: {$origin}");
-            }
+            // Should reject unauthorized origins (403 Forbidden)
+            $this->assertContains($response->status(), [403, 426], "WebSocket should reject origin: {$origin}");
+            $this->assertNotEquals(101, $response->status(), "WebSocket should not accept origin: {$origin}");
         }
+        
+        // Test allowed origin
+        $allowedResponse = $this->withHeaders([
+            'Origin'                => $allowedOrigin,
+            'Upgrade'               => 'websocket',
+            'Connection'            => 'Upgrade',
+            'Sec-WebSocket-Key'     => base64_encode(random_bytes(16)),
+            'Sec-WebSocket-Version' => '13',
+        ])->get('/ws');
+        
+        // Should accept allowed origin (either 101 for real WebSocket or 426 for our test implementation)
+        $this->assertContains($allowedResponse->status(), [101, 426], 'WebSocket should handle allowed origins');
     }
 
     #[Test]
