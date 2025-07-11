@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+
 use Tests\UnitTestCase;
 
 uses(UnitTestCase::class);

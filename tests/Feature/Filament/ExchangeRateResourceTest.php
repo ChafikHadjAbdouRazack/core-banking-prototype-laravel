@@ -151,5 +151,4 @@ describe('Exchange Rate Model Tests', function () {
         expect($expiredRate->isExpired())->toBeTrue();
         expect($validRate->isExpired())->toBeFalse();
     });
-
 });

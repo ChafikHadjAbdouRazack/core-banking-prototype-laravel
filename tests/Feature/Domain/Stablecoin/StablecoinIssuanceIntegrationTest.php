@@ -79,7 +79,7 @@ class StablecoinIssuanceIntegrationTest extends DomainTestCase
         \App\Domain\Asset\Aggregates\AssetTransactionAggregate::retrieve($this->account->uuid . ':USD')
             ->credit($this->account->uuid, 'USD', 500000, 'Initial USD balance') // $5,000
             ->persist();
-        
+
         \App\Domain\Asset\Aggregates\AssetTransactionAggregate::retrieve($this->account->uuid . ':EUR')
             ->credit($this->account->uuid, 'EUR', 500000, 'Initial EUR balance') // €5,000
             ->persist();

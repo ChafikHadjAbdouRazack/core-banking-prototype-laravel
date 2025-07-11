@@ -333,9 +333,11 @@ class InputValidationTest extends TestCase
                 ]);
 
             // Dangerous files should be rejected
-            if (preg_match('/\.(php|sh|exe|jsp|js|html)$/i', $filename) ||
+            if (
+                preg_match('/\.(php|sh|exe|jsp|js|html)$/i', $filename) ||
                 str_contains($filename, '..') ||
-                str_contains($filename, "\x00")) {
+                str_contains($filename, "\x00")
+            ) {
                 $this->assertContains($response->status(), [422, 404, 405]);
             }
         }

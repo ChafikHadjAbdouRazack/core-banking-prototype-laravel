@@ -1,8 +1,5 @@
 <?php
 
-namespace Tests\Performance;
-
-use PHPUnit\Framework\Attributes\Test;
 /**
  * Performance Load Tests.
  *
@@ -10,6 +7,9 @@ use PHPUnit\Framework\Attributes\Test;
  * Production performance monitoring should use real-time APM tools.
  */
 
+namespace Tests\Performance;
+
+use PHPUnit\Framework\Attributes\Test;
 use Tests\DomainTestCase;
 
 class LoadTest extends DomainTestCase

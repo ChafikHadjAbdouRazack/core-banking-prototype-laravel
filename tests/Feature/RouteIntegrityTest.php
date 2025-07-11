@@ -17,11 +17,13 @@ class RouteIntegrityTest extends TestCase
 
         foreach ($routes as $route) {
             // Skip vendor routes
-            if (str_contains($route->uri(), 'telescope') ||
+            if (
+                str_contains($route->uri(), 'telescope') ||
                 str_contains($route->uri(), 'horizon') ||
                 str_contains($route->uri(), 'pulse') ||
                 str_contains($route->uri(), '_ignition') ||
-                str_contains($route->uri(), 'sanctum')) {
+                str_contains($route->uri(), 'sanctum')
+            ) {
                 continue;
             }
 
@@ -97,9 +99,11 @@ class RouteIntegrityTest extends TestCase
 
                     // Special cases that are ok
                     $exceptions = ['monitoring.transactions.index', 'api'];
-                    if (! in_array($routeName, $exceptions) &&
+                    if (
+                        ! in_array($routeName, $exceptions) &&
                         ! str_starts_with($routeName, 'api.') &&
-                        ! str_starts_with($routeName, 'filament.')) {
+                        ! str_starts_with($routeName, 'filament.')
+                    ) {
                         $this->assertStringEndsWith(
                             $prefix,
                             $uri,

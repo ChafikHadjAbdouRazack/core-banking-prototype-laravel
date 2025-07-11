@@ -127,5 +127,4 @@ describe('Account Export Tests', function () {
         expect($message)->toContain('90 rows exported');
         expect($message)->toContain('10 rows failed');
     });
-
 });

@@ -88,7 +88,6 @@ class TransactionAggregateTest extends DomainTestCase
                                             $transactions->debit(
                                                 $this->money(1)
                                             );
-
                                         },
                                         NotEnoughFunds::class
                                     );
@@ -98,7 +97,6 @@ class TransactionAggregateTest extends DomainTestCase
                                 new AccountLimitHit(),
                             ])
                             ->assertNotRecorded(MoneySubtracted::class);
-
     }
 
     #[Test]

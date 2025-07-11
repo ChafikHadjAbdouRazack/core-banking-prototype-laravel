@@ -1,8 +1,8 @@
 # FinAegis Core Banking Platform
 
-[![Tests](https://github.com/finaegis/core-banking-prototype-laravel/actions/workflows/test.yml/badge.svg)](https://github.com/finaegis/core-banking-prototype-laravel/actions/workflows/test.yml)
+[![CI Pipeline](https://github.com/finaegis/core-banking-prototype-laravel/actions/workflows/ci-pipeline.yml/badge.svg)](https://github.com/finaegis/core-banking-prototype-laravel/actions/workflows/ci-pipeline.yml)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![PHP Version](https://img.shields.io/badge/php-%3E%3D8.3-8892BF.svg)](https://php.net/)
+[![PHP Version](https://img.shields.io/badge/php-%3E%3D8.4-8892BF.svg)](https://php.net/)
 [![Laravel Version](https://img.shields.io/badge/Laravel-12.x-FF2D20.svg)](https://laravel.com/)
 
 **Enterprise-Grade Core Banking Platform with Event Sourcing & Multi-Asset Support**
@@ -67,7 +67,7 @@ FinAegis provides the technical foundation for diverse financial products:
 
 ### Prerequisites
 
-- PHP 8.3+
+- PHP 8.4+
 - Laravel 12
 - MySQL 8.0+ or PostgreSQL 13+
 - Redis 6.0+

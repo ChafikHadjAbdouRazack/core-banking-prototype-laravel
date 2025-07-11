@@ -115,6 +115,11 @@ class AuthenticateApiOrSanctum
                     );
                 }
 
+                // Set the authenticated user on the request
+                $request->setUserResolver(function () {
+                    return auth('sanctum')->user();
+                });
+
                 return $next($request);
             }
         );

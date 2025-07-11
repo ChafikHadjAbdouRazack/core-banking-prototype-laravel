@@ -88,5 +88,4 @@ describe('Asset Model', function () {
         $asset = new Asset();
         expect(method_exists($asset, 'scopeOfType'))->toBeTrue();
     });
-
 });

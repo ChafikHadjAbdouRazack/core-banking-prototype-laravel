@@ -16,8 +16,8 @@ class SnapshotTransactionsReactorTest extends TestCase
     private const string ACCOUNT_NAME = 'fake-account';
 
     #[Test]
-    public function fires_transaction_threshold_reached_event_when_transactions_threshold_is_met(
-    ): void {
+    public function fires_transaction_threshold_reached_event_when_transactions_threshold_is_met(): void
+    {
         TransactionAggregate::fake(self::ACCOUNT_UUID)
                             ->when(
                                 function (

@@ -30,10 +30,12 @@ class TransferAggregateTest extends DomainTestCase
         // Assert that a MoneyTransferred event was recorded
         $eventRecorded = false;
         $aggregate->assertRecorded(function ($event) use ($from, $to, $money, &$eventRecorded) {
-            if ($event instanceof MoneyTransferred &&
+            if (
+                $event instanceof MoneyTransferred &&
                 (string) $event->from === (string) $from &&
                 (string) $event->to === (string) $to &&
-                $event->money->getAmount() === $money->getAmount()) {
+                $event->money->getAmount() === $money->getAmount()
+            ) {
                 $eventRecorded = true;
 
                 return true;
@@ -306,9 +308,11 @@ class TransferAggregateTest extends DomainTestCase
 
         $eventRecorded = false;
         $aggregate->assertRecorded(function ($event) use ($account, &$eventRecorded) {
-            if ($event instanceof MoneyTransferred &&
+            if (
+                $event instanceof MoneyTransferred &&
                 (string) $event->from === (string) $account &&
-                (string) $event->to === (string) $account) {
+                (string) $event->to === (string) $account
+            ) {
                 $eventRecorded = true;
 
                 return true;

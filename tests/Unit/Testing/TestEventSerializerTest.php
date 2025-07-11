@@ -2,37 +2,13 @@
 
 namespace Tests\Unit\Testing;
 
+use App\Testing\TestEventSerializer;
+use Carbon\Carbon;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\DomainTestCase;
-
-// Test event classes for testing
-class SimpleTestEvent
-{
-    public string $name;
-
-    public int $value;
-}
-
-class EventWithCarbonDate
-{
-    public string $title;
-
-    public Carbon $createdAt;
-
-    public ?Carbon $updatedAt;
-}
-
-class EventWithPrivateProperties
-{
-    private string $privateData;
-
-    public string $publicData;
-
-    public function getPrivateData(): string
-    {
-        return $this->privateData;
-    }
-}
+use Tests\Unit\Testing\Support\EventWithCarbonDate;
+use Tests\Unit\Testing\Support\EventWithPrivateProperties;
+use Tests\Unit\Testing\Support\SimpleTestEvent;
 
 class TestEventSerializerTest extends DomainTestCase
 {
