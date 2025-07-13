@@ -2,12 +2,12 @@
 
 namespace Tests\Unit\Domain\Compliance\Services;
 
+use App\Domain\Compliance\Services\GdprService;
 use App\Models\Account;
 use App\Models\AuditLog;
 use App\Models\KycDocument;
 use App\Models\Transaction;
 use App\Models\User;
-use App\Domain\Compliance\Services\GdprService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Storage;
 use PHPUnit\Framework\Attributes\Test;
