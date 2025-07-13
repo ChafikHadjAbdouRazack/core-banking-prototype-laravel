@@ -7,7 +7,7 @@ use App\Domain\Custodian\Exceptions\CustodianNotFoundException;
 use App\Domain\Custodian\Services\CustodianRegistry;
 
 beforeEach(function () {
-    $this->registry = new CustodianRegistry();
+    $this->registry = new CustodianRegistry;
     $this->mockConnector = new MockBankConnector(['name' => 'Mock Bank']);
 });
 

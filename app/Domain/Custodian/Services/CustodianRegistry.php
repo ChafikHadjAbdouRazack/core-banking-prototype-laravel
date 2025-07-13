@@ -145,7 +145,7 @@ class CustodianRegistry
         $list = [];
         foreach ($this->custodians as $name => $connector) {
             $list[] = [
-                'id'   => $name,
+                'id' => $name,
                 'name' => ucfirst(str_replace('_', ' ', $name)),
             ];
         }

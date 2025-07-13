@@ -30,7 +30,7 @@ class ComprehensiveSecurityTest extends TestCase
         // Create a test account for search tests
         Account::factory()->create([
             'user_uuid' => $user->uuid,
-            'name'      => 'Test Account',
+            'name' => 'Test Account',
         ]);
 
         $injectionPayloads = [
@@ -79,7 +79,7 @@ class ComprehensiveSecurityTest extends TestCase
 
         foreach ($xssPayloads as $payload) {
             $account = Account::factory()->create([
-                'name'      => $payload,
+                'name' => $payload,
                 'user_uuid' => $user->uuid,
             ]);
 
@@ -121,7 +121,7 @@ class ComprehensiveSecurityTest extends TestCase
         // Test brute force protection
         for ($i = 0; $i < 6; $i++) {
             $response = $this->postJson('/api/login', [
-                'email'    => $user->email,
+                'email' => $user->email,
                 'password' => 'WrongPassword',
             ]);
 
@@ -135,14 +135,14 @@ class ComprehensiveSecurityTest extends TestCase
         // Test timing attack prevention
         $validTime = $this->timeRequest(function () use ($user) {
             return $this->postJson('/api/login', [
-                'email'    => $user->email,
+                'email' => $user->email,
                 'password' => 'SecurePassword123!',
             ]);
         });
 
         $invalidTime = $this->timeRequest(function () {
             return $this->postJson('/api/login', [
-                'email'    => 'nonexistent@example.com',
+                'email' => 'nonexistent@example.com',
                 'password' => 'WrongPassword',
             ]);
         });
@@ -171,7 +171,7 @@ class ComprehensiveSecurityTest extends TestCase
         $this->actingAs($user);
         $response = $this->post('/web/accounts', [
             '_token' => csrf_token(),
-            'name'   => 'Test Account',
+            'name' => 'Test Account',
         ]);
 
         $response->assertSuccessful();
@@ -247,8 +247,8 @@ class ComprehensiveSecurityTest extends TestCase
         // Test invalid data types
         $response = $this->postJson('/api/transfers', [
             'from_account_uuid' => ['array', 'not', 'string'],
-            'to_account_uuid'   => true, // Boolean instead of string
-            'amount'            => 'not a number',
+            'to_account_uuid' => true, // Boolean instead of string
+            'amount' => 'not a number',
         ]);
 
         $response->assertStatus(422);
@@ -271,9 +271,9 @@ class ComprehensiveSecurityTest extends TestCase
 
         foreach ($weakPasswords as $password) {
             $response = $this->postJson('/api/register', [
-                'name'                  => 'Test User',
-                'email'                 => Str::random() . '@example.com',
-                'password'              => $password,
+                'name' => 'Test User',
+                'email' => Str::random().'@example.com',
+                'password' => $password,
                 'password_confirmation' => $password,
             ]);
 
@@ -283,9 +283,9 @@ class ComprehensiveSecurityTest extends TestCase
 
         // Test strong password
         $response = $this->postJson('/api/register', [
-            'name'                  => 'Test User',
-            'email'                 => Str::random() . '@example.com',
-            'password'              => 'TestP@ssw0rd2024$Complex!UniqueString',
+            'name' => 'Test User',
+            'email' => Str::random().'@example.com',
+            'password' => 'TestP@ssw0rd2024$Complex!UniqueString',
             'password_confirmation' => 'TestP@ssw0rd2024$Complex!UniqueString',
         ]);
 
@@ -327,7 +327,7 @@ class ComprehensiveSecurityTest extends TestCase
 
         $response = $this->postJson('/api/kyc/documents', [
             'document' => \Illuminate\Http\UploadedFile::fake()->image('passport.jpg', 800, 600),
-            'type'     => 'passport',
+            'type' => 'passport',
         ]);
 
         $response->assertSuccessful();
@@ -343,7 +343,7 @@ class ComprehensiveSecurityTest extends TestCase
 
         // Login and get session
         $response = $this->postJson('/api/login', [
-            'email'    => $user->email,
+            'email' => $user->email,
             'password' => 'password',
         ]);
 
@@ -364,7 +364,7 @@ class ComprehensiveSecurityTest extends TestCase
         $tokens = [];
         for ($i = 0; $i < 6; $i++) {
             $response = $this->postJson('/api/login', [
-                'email'    => $user->email,
+                'email' => $user->email,
                 'password' => 'password',
             ]);
 

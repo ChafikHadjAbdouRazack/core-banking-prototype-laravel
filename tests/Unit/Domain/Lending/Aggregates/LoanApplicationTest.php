@@ -2,6 +2,13 @@
 
 namespace Tests\Unit\Domain\Lending\Aggregates;
 
+use App\Domain\Lending\Aggregates\LoanApplication;
+use App\Domain\Lending\Events\LoanApplicationApproved;
+use App\Domain\Lending\Events\LoanApplicationCreditCheckCompleted;
+use App\Domain\Lending\Events\LoanApplicationRejected;
+use App\Domain\Lending\Events\LoanApplicationRiskAssessmentCompleted;
+use App\Domain\Lending\Events\LoanApplicationSubmitted;
+use App\Domain\Lending\Events\LoanApplicationWithdrawn;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\DomainTestCase;

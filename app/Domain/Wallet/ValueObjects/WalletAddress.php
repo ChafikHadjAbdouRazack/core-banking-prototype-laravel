@@ -10,15 +10,14 @@ final class WalletAddress
         public readonly string $address,
         public readonly string $blockchain,
         public readonly ?string $label = null
-    ) {
-    }
+    ) {}
 
     public function toArray(): array
     {
         return [
-            'address'    => $this->address,
+            'address' => $this->address,
             'blockchain' => $this->blockchain,
-            'label'      => $this->label,
+            'label' => $this->label,
         ];
     }
 }

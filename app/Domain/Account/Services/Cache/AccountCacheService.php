@@ -53,7 +53,7 @@ class AccountCacheService
     {
         $uuid = (string) $uuid;
         Cache::forget($this->getCacheKey($uuid));
-        Cache::forget($this->getCacheKey($uuid) . ':balance');
+        Cache::forget($this->getCacheKey($uuid).':balance');
     }
 
     /**
@@ -72,7 +72,7 @@ class AccountCacheService
     public function getBalance(string $uuid): ?int
     {
         $uuid = (string) $uuid;
-        $key = $this->getCacheKey($uuid) . ':balance';
+        $key = $this->getCacheKey($uuid).':balance';
 
         $balance = Cache::remember(
             $key,
@@ -101,7 +101,7 @@ class AccountCacheService
     public function updateBalance(string $uuid, int $balance): void
     {
         $uuid = (string) $uuid;
-        $key = $this->getCacheKey($uuid) . ':balance';
+        $key = $this->getCacheKey($uuid).':balance';
         Cache::put($key, $balance, 300);
 
         // Only invalidate the main account cache, not the balance
@@ -113,6 +113,6 @@ class AccountCacheService
      */
     private function getCacheKey(string $uuid): string
     {
-        return self::CACHE_PREFIX . $uuid;
+        return self::CACHE_PREFIX.$uuid;
     }
 }

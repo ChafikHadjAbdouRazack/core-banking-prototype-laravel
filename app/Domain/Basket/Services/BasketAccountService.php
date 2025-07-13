@@ -21,8 +21,7 @@ class BasketAccountService
     public function __construct(
         private readonly BasketValueCalculationService $valueCalculationService,
         private readonly WalletService $walletService
-    ) {
-    }
+    ) {}
 
     /**
      * Add basket asset balance to an account.
@@ -55,7 +54,7 @@ class BasketAccountService
             new AssetBalanceAdded(
                 assetCode: $basketCode,
                 amount: $amount,
-                hash: new Hash(hash('sha3-512', "basket_deposit:{$account->uuid}:{$basketCode}:{$amount}:" . now()->timestamp)),
+                hash: new Hash(hash('sha3-512', "basket_deposit:{$account->uuid}:{$basketCode}:{$amount}:".now()->timestamp)),
                 metadata: ['type' => 'basket_deposit', 'account_uuid' => (string) $account->uuid]
             )
         );
@@ -85,7 +84,7 @@ class BasketAccountService
             new AssetBalanceSubtracted(
                 assetCode: $basketCode,
                 amount: $amount,
-                hash: new Hash(hash('sha3-512', "basket_withdraw:{$account->uuid}:{$basketCode}:{$amount}:" . now()->timestamp)),
+                hash: new Hash(hash('sha3-512', "basket_withdraw:{$account->uuid}:{$basketCode}:{$amount}:".now()->timestamp)),
                 metadata: ['type' => 'basket_withdrawal', 'account_uuid' => (string) $account->uuid]
             )
         );
@@ -130,7 +129,7 @@ class BasketAccountService
         }
 
         return DB::transaction(
-            function () use ($account, $basket, $basketCode, $amount, $basketBalance) {
+            function () use ($account, $basket, $basketCode, $amount) {
                 // Calculate component amounts based on weights
                 $componentAmounts = $this->calculateComponentAmounts($basket, $amount);
 
@@ -159,15 +158,15 @@ class BasketAccountService
                 Log::info(
                     "Decomposed {$amount} of basket {$basketCode} for account {$account->uuid}",
                     [
-                    'components' => $componentAmounts,
+                        'components' => $componentAmounts,
                     ]
                 );
 
                 return [
-                'basket_code'   => $basketCode,
-                'basket_amount' => $amount,
-                'components'    => $componentAmounts,
-                'decomposed_at' => now()->toISOString(),
+                    'basket_code' => $basketCode,
+                    'basket_amount' => $amount,
+                    'components' => $componentAmounts,
+                    'decomposed_at' => now()->toISOString(),
                 ];
             }
         );
@@ -211,7 +210,7 @@ class BasketAccountService
                         ->first();
 
                     if (! $balance || $balance->balance < $requiredAmount) {
-                        throw new \Exception("Insufficient {$assetCode} balance. Required: {$requiredAmount}, Available: " . ($balance ? $balance->balance : 0));
+                        throw new \Exception("Insufficient {$assetCode} balance. Required: {$requiredAmount}, Available: ".($balance ? $balance->balance : 0));
                     }
                 }
 
@@ -229,15 +228,15 @@ class BasketAccountService
                 Log::info(
                     "Composed {$amount} of basket {$basketCode} for account {$account->uuid}",
                     [
-                    'components_used' => $requiredAmounts,
+                        'components_used' => $requiredAmounts,
                     ]
                 );
 
                 return [
-                'basket_code'     => $basketCode,
-                'basket_amount'   => $amount,
-                'components_used' => $requiredAmounts,
-                'composed_at'     => now()->toISOString(),
+                    'basket_code' => $basketCode,
+                    'basket_amount' => $amount,
+                    'components_used' => $requiredAmounts,
+                    'composed_at' => now()->toISOString(),
                 ];
             }
         );
@@ -288,11 +287,11 @@ class BasketAccountService
             $holdingValue = $basketValue->value * $balance->balance;
 
             $holdings[] = [
-                'basket_code'     => $balance->asset_code,
-                'basket_name'     => $basket->name,
-                'balance'         => $balance->balance,
-                'unit_value'      => $basketValue->value,
-                'total_value'     => $holdingValue,
+                'basket_code' => $balance->asset_code,
+                'basket_name' => $basket->name,
+                'balance' => $balance->balance,
+                'unit_value' => $basketValue->value,
+                'total_value' => $holdingValue,
                 'last_calculated' => $basketValue->calculated_at->toISOString(),
             ];
 
@@ -300,11 +299,11 @@ class BasketAccountService
         }
 
         return [
-            'account_uuid'    => (string) $account->uuid,
+            'account_uuid' => (string) $account->uuid,
             'basket_holdings' => $holdings,
-            'total_value'     => $totalValue,
-            'currency'        => 'USD',
-            'calculated_at'   => now()->toISOString(),
+            'total_value' => $totalValue,
+            'currency' => 'USD',
+            'calculated_at' => now()->toISOString(),
         ];
     }
 

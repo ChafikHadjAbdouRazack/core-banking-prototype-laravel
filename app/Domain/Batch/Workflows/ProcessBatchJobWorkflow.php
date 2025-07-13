@@ -10,10 +10,6 @@ use Workflow\Workflow;
 
 class ProcessBatchJobWorkflow extends Workflow
 {
-    /**
-     * @param  string $batchJobUuid
-     * @return \Generator
-     */
     public function execute(string $batchJobUuid): \Generator
     {
         try {
@@ -38,7 +34,7 @@ class ProcessBatchJobWorkflow extends Workflow
                     // Continue processing other items even if one fails
                     $results[$index] = [
                         'status' => 'failed',
-                        'error'  => $e->getMessage(),
+                        'error' => $e->getMessage(),
                     ];
                 }
             }

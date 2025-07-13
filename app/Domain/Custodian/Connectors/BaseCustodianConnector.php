@@ -44,12 +44,12 @@ abstract class BaseCustodianConnector implements ICustodianConnector
     protected function getHeaders(): array
     {
         $headers = [
-            'Accept'       => 'application/json',
+            'Accept' => 'application/json',
             'Content-Type' => 'application/json',
         ];
 
         if (isset($this->config['api_key'])) {
-            $headers['Authorization'] = 'Bearer ' . $this->config['api_key'];
+            $headers['Authorization'] = 'Bearer '.$this->config['api_key'];
         }
 
         return array_merge($headers, $this->config['headers'] ?? []);
@@ -82,8 +82,8 @@ abstract class BaseCustodianConnector implements ICustodianConnector
             Log::error(
                 "Custodian {$this->getName()} health check failed",
                 [
-                'error'                 => $e->getMessage(),
-                'circuit_breaker_state' => $this->circuitBreaker->getState("{$this->getName()}.GET:{$this->getHealthCheckEndpoint()}"),
+                    'error' => $e->getMessage(),
+                    'circuit_breaker_state' => $this->circuitBreaker->getState("{$this->getName()}.GET:{$this->getHealthCheckEndpoint()}"),
                 ]
             );
 
@@ -97,9 +97,9 @@ abstract class BaseCustodianConnector implements ICustodianConnector
             Log::debug(
                 "Custodian {$this->getName()} request",
                 [
-                'method'   => $method,
-                'endpoint' => $endpoint,
-                'data'     => $data,
+                    'method' => $method,
+                    'endpoint' => $endpoint,
+                    'data' => $data,
                 ]
             );
         }
@@ -111,10 +111,10 @@ abstract class BaseCustodianConnector implements ICustodianConnector
             Log::debug(
                 "Custodian {$this->getName()} response",
                 [
-                'method'   => $method,
-                'endpoint' => $endpoint,
-                'status'   => $response->status(),
-                'body'     => $response->json(),
+                    'method' => $method,
+                    'endpoint' => $endpoint,
+                    'status' => $response->status(),
+                    'body' => $response->json(),
                 ]
             );
         }
@@ -184,11 +184,11 @@ abstract class BaseCustodianConnector implements ICustodianConnector
                 $this->logRequest($method, $endpoint, $data);
 
                 $response = match (strtoupper($method)) {
-                    'GET'    => $this->client->get($endpoint, $data),
-                    'POST'   => $this->client->post($endpoint, $data),
-                    'PUT'    => $this->client->put($endpoint, $data),
+                    'GET' => $this->client->get($endpoint, $data),
+                    'POST' => $this->client->post($endpoint, $data),
+                    'PUT' => $this->client->put($endpoint, $data),
                     'DELETE' => $this->client->delete($endpoint),
-                    default  => throw new \InvalidArgumentException("Unsupported HTTP method: {$method}"),
+                    default => throw new \InvalidArgumentException("Unsupported HTTP method: {$method}"),
                 };
 
                 $this->logResponse($method, $endpoint, $response);

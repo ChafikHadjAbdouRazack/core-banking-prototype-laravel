@@ -27,7 +27,7 @@ class ExchangeControllerTest extends ControllerTestCase
         $this->user = User::factory()->create();
         $this->account = Account::factory()->create([
             'user_uuid' => $this->user->uuid,
-            'balance'   => 100000, // 1000.00
+            'balance' => 100000, // 1000.00
         ]);
 
         // The account is automatically associated through the user_uuid foreign key
@@ -56,24 +56,24 @@ class ExchangeControllerTest extends ControllerTestCase
                 \Mockery::any()
             )
             ->andReturn([
-                'success'  => true,
+                'success' => true,
                 'order_id' => 'order-123',
-                'message'  => 'Order placed successfully',
+                'message' => 'Order placed successfully',
             ]);
 
         $response = $this->postJson('/api/exchange/orders', [
-            'type'           => 'buy',
-            'order_type'     => 'market',
-            'base_currency'  => 'BTC',
+            'type' => 'buy',
+            'order_type' => 'market',
+            'base_currency' => 'BTC',
             'quote_currency' => 'EUR',
-            'amount'         => 0.01,
+            'amount' => 0.01,
         ]);
 
         $response->assertStatus(200)
             ->assertJson([
-                'success'  => true,
+                'success' => true,
                 'order_id' => 'order-123',
-                'message'  => 'Order placed successfully',
+                'message' => 'Order placed successfully',
             ]);
     }
 
@@ -96,23 +96,23 @@ class ExchangeControllerTest extends ControllerTestCase
                 \Mockery::any()
             )
             ->andReturn([
-                'success'  => true,
+                'success' => true,
                 'order_id' => 'order-456',
-                'message'  => 'Limit order placed successfully',
+                'message' => 'Limit order placed successfully',
             ]);
 
         $response = $this->postJson('/api/exchange/orders', [
-            'type'           => 'sell',
-            'order_type'     => 'limit',
-            'base_currency'  => 'BTC',
+            'type' => 'sell',
+            'order_type' => 'limit',
+            'base_currency' => 'BTC',
             'quote_currency' => 'EUR',
-            'amount'         => 0.5,
-            'price'          => 50000,
+            'amount' => 0.5,
+            'price' => 50000,
         ]);
 
         $response->assertStatus(200)
             ->assertJson([
-                'success'  => true,
+                'success' => true,
                 'order_id' => 'order-456',
             ]);
     }
@@ -138,13 +138,13 @@ class ExchangeControllerTest extends ControllerTestCase
             ->andReturn(['success' => true, 'order_id' => 'order-789']);
 
         $response = $this->postJson('/api/exchange/orders', [
-            'type'           => 'sell',
-            'order_type'     => 'limit',
-            'base_currency'  => 'BTC',
+            'type' => 'sell',
+            'order_type' => 'limit',
+            'base_currency' => 'BTC',
             'quote_currency' => 'EUR',
-            'amount'         => 0.1,
-            'price'          => 50000,
-            'stop_price'     => 49000,
+            'amount' => 0.1,
+            'price' => 50000,
+            'stop_price' => 49000,
         ]);
 
         $response->assertStatus(200)
@@ -168,11 +168,11 @@ class ExchangeControllerTest extends ControllerTestCase
         Sanctum::actingAs($this->user);
 
         $response = $this->postJson('/api/exchange/orders', [
-            'type'           => 'buy',
-            'order_type'     => 'limit',
-            'base_currency'  => 'BTC',
+            'type' => 'buy',
+            'order_type' => 'limit',
+            'base_currency' => 'BTC',
             'quote_currency' => 'EUR',
-            'amount'         => 0.1,
+            'amount' => 0.1,
             // Missing price for limit order
         ]);
 
@@ -186,11 +186,11 @@ class ExchangeControllerTest extends ControllerTestCase
         Sanctum::actingAs($this->user);
 
         $response = $this->postJson('/api/exchange/orders', [
-            'type'           => 'buy',
-            'order_type'     => 'market',
-            'base_currency'  => 'BITCOIN', // Too long
+            'type' => 'buy',
+            'order_type' => 'market',
+            'base_currency' => 'BITCOIN', // Too long
             'quote_currency' => 'EU', // Too short
-            'amount'         => 0.1,
+            'amount' => 0.1,
         ]);
 
         $response->assertStatus(422)
@@ -205,17 +205,17 @@ class ExchangeControllerTest extends ControllerTestCase
         Sanctum::actingAs($userWithoutAccount);
 
         $response = $this->postJson('/api/exchange/orders', [
-            'type'           => 'buy',
-            'order_type'     => 'market',
-            'base_currency'  => 'BTC',
+            'type' => 'buy',
+            'order_type' => 'market',
+            'base_currency' => 'BTC',
             'quote_currency' => 'EUR',
-            'amount'         => 0.1,
+            'amount' => 0.1,
         ]);
 
         $response->assertStatus(400)
             ->assertJson([
                 'success' => false,
-                'error'   => 'Account not found. Please complete your account setup.',
+                'error' => 'Account not found. Please complete your account setup.',
             ]);
     }
 
@@ -229,17 +229,17 @@ class ExchangeControllerTest extends ControllerTestCase
             ->andThrow(new \Exception('Insufficient balance'));
 
         $response = $this->postJson('/api/exchange/orders', [
-            'type'           => 'buy',
-            'order_type'     => 'market',
-            'base_currency'  => 'BTC',
+            'type' => 'buy',
+            'order_type' => 'market',
+            'base_currency' => 'BTC',
             'quote_currency' => 'EUR',
-            'amount'         => 100,
+            'amount' => 100,
         ]);
 
         $response->assertStatus(400)
             ->assertJson([
                 'success' => false,
-                'error'   => 'Insufficient balance',
+                'error' => 'Insufficient balance',
             ]);
     }
 
@@ -247,11 +247,11 @@ class ExchangeControllerTest extends ControllerTestCase
     public function test_place_order_requires_authentication(): void
     {
         $response = $this->postJson('/api/exchange/orders', [
-            'type'           => 'buy',
-            'order_type'     => 'market',
-            'base_currency'  => 'BTC',
+            'type' => 'buy',
+            'order_type' => 'market',
+            'base_currency' => 'BTC',
             'quote_currency' => 'EUR',
-            'amount'         => 0.1,
+            'amount' => 0.1,
         ]);
 
         $response->assertStatus(401);
@@ -264,16 +264,16 @@ class ExchangeControllerTest extends ControllerTestCase
 
         // Create an order for the user
         $order = Order::create([
-            'order_id'       => 'order-123',
-            'account_id'     => $this->account->id,
-            'type'           => 'buy',
-            'order_type'     => 'limit',
-            'status'         => 'open',
-            'base_currency'  => 'BTC',
+            'order_id' => 'order-123',
+            'account_id' => $this->account->id,
+            'type' => 'buy',
+            'order_type' => 'limit',
+            'status' => 'open',
+            'base_currency' => 'BTC',
             'quote_currency' => 'EUR',
-            'amount'         => 0.1,
-            'filled_amount'  => 0,
-            'price'          => 50000,
+            'amount' => 0.1,
+            'filled_amount' => 0,
+            'price' => 50000,
         ]);
 
         $this->exchangeService->shouldReceive('cancelOrder')
@@ -303,7 +303,7 @@ class ExchangeControllerTest extends ControllerTestCase
         $response->assertStatus(404)
             ->assertJson([
                 'success' => false,
-                'error'   => 'Order not found',
+                'error' => 'Order not found',
             ]);
     }
 
@@ -315,15 +315,15 @@ class ExchangeControllerTest extends ControllerTestCase
         // Create an order for another user
         $otherAccount = Account::factory()->create();
         Order::create([
-            'order_id'       => 'other-user-order',
-            'account_id'     => $otherAccount->id,
-            'type'           => 'buy',
-            'order_type'     => 'market',
-            'status'         => 'open',
-            'base_currency'  => 'BTC',
+            'order_id' => 'other-user-order',
+            'account_id' => $otherAccount->id,
+            'type' => 'buy',
+            'order_type' => 'market',
+            'status' => 'open',
+            'base_currency' => 'BTC',
             'quote_currency' => 'EUR',
-            'amount'         => 0.1,
-            'filled_amount'  => 0,
+            'amount' => 0.1,
+            'filled_amount' => 0,
         ]);
 
         $response = $this->deleteJson('/api/exchange/orders/other-user-order');
@@ -331,7 +331,7 @@ class ExchangeControllerTest extends ControllerTestCase
         $response->assertStatus(404)
             ->assertJson([
                 'success' => false,
-                'error'   => 'Order not found',
+                'error' => 'Order not found',
             ]);
     }
 
@@ -350,29 +350,29 @@ class ExchangeControllerTest extends ControllerTestCase
 
         // Create some orders
         Order::create([
-            'order_id'       => 'order-1',
-            'account_id'     => $this->account->id,
-            'type'           => 'buy',
-            'order_type'     => 'market',
-            'status'         => 'filled',
-            'base_currency'  => 'BTC',
+            'order_id' => 'order-1',
+            'account_id' => $this->account->id,
+            'type' => 'buy',
+            'order_type' => 'market',
+            'status' => 'filled',
+            'base_currency' => 'BTC',
             'quote_currency' => 'EUR',
-            'amount'         => 0.1,
-            'filled_amount'  => 0.1,
-            'price'          => null,
+            'amount' => 0.1,
+            'filled_amount' => 0.1,
+            'price' => null,
         ]);
 
         Order::create([
-            'order_id'       => 'order-2',
-            'account_id'     => $this->account->id,
-            'type'           => 'sell',
-            'order_type'     => 'limit',
-            'status'         => 'open',
-            'base_currency'  => 'BTC',
+            'order_id' => 'order-2',
+            'account_id' => $this->account->id,
+            'type' => 'sell',
+            'order_type' => 'limit',
+            'status' => 'open',
+            'base_currency' => 'BTC',
             'quote_currency' => 'EUR',
-            'amount'         => 0.5,
-            'filled_amount'  => 0,
-            'price'          => 55000,
+            'amount' => 0.5,
+            'filled_amount' => 0,
+            'price' => 55000,
         ]);
 
         $response = $this->getJson('/api/exchange/orders');
@@ -406,28 +406,28 @@ class ExchangeControllerTest extends ControllerTestCase
 
         // Create orders with different statuses
         Order::create([
-            'order_id'       => 'open-order',
-            'account_id'     => $this->account->id,
-            'type'           => 'buy',
-            'order_type'     => 'limit',
-            'status'         => 'open',
-            'base_currency'  => 'BTC',
+            'order_id' => 'open-order',
+            'account_id' => $this->account->id,
+            'type' => 'buy',
+            'order_type' => 'limit',
+            'status' => 'open',
+            'base_currency' => 'BTC',
             'quote_currency' => 'EUR',
-            'amount'         => 0.1,
-            'filled_amount'  => 0,
-            'price'          => 50000,
+            'amount' => 0.1,
+            'filled_amount' => 0,
+            'price' => 50000,
         ]);
 
         Order::create([
-            'order_id'       => 'filled-order',
-            'account_id'     => $this->account->id,
-            'type'           => 'sell',
-            'order_type'     => 'market',
-            'status'         => 'filled',
-            'base_currency'  => 'BTC',
+            'order_id' => 'filled-order',
+            'account_id' => $this->account->id,
+            'type' => 'sell',
+            'order_type' => 'market',
+            'status' => 'filled',
+            'base_currency' => 'BTC',
             'quote_currency' => 'EUR',
-            'amount'         => 0.2,
-            'filled_amount'  => 0.2,
+            'amount' => 0.2,
+            'filled_amount' => 0.2,
         ]);
 
         $response = $this->getJson('/api/exchange/orders?status=open');
@@ -445,29 +445,29 @@ class ExchangeControllerTest extends ControllerTestCase
         Sanctum::actingAs($this->user);
 
         Order::create([
-            'order_id'       => 'btc-eur-order',
-            'account_id'     => $this->account->id,
-            'type'           => 'buy',
-            'order_type'     => 'limit',
-            'status'         => 'open',
-            'base_currency'  => 'BTC',
+            'order_id' => 'btc-eur-order',
+            'account_id' => $this->account->id,
+            'type' => 'buy',
+            'order_type' => 'limit',
+            'status' => 'open',
+            'base_currency' => 'BTC',
             'quote_currency' => 'EUR',
-            'amount'         => 0.1,
-            'filled_amount'  => 0,
-            'price'          => 50000,
+            'amount' => 0.1,
+            'filled_amount' => 0,
+            'price' => 50000,
         ]);
 
         Order::create([
-            'order_id'       => 'eth-eur-order',
-            'account_id'     => $this->account->id,
-            'type'           => 'buy',
-            'order_type'     => 'limit',
-            'status'         => 'open',
-            'base_currency'  => 'ETH',
+            'order_id' => 'eth-eur-order',
+            'account_id' => $this->account->id,
+            'type' => 'buy',
+            'order_type' => 'limit',
+            'status' => 'open',
+            'base_currency' => 'ETH',
             'quote_currency' => 'EUR',
-            'amount'         => 1,
-            'filled_amount'  => 0,
-            'price'          => 3000,
+            'amount' => 1,
+            'filled_amount' => 0,
+            'price' => 3000,
         ]);
 
         $response = $this->getJson('/api/exchange/orders?base_currency=BTC&quote_currency=EUR');
@@ -494,19 +494,19 @@ class ExchangeControllerTest extends ControllerTestCase
 
         // Create some trades
         Trade::create([
-            'trade_id'          => 'trade-1',
-            'buy_order_id'      => 'order-1',
-            'sell_order_id'     => 'order-2',
-            'buyer_account_id'  => $this->account->id,
+            'trade_id' => 'trade-1',
+            'buy_order_id' => 'order-1',
+            'sell_order_id' => 'order-2',
+            'buyer_account_id' => $this->account->id,
             'seller_account_id' => 999, // Different account
-            'base_currency'     => 'BTC',
-            'quote_currency'    => 'EUR',
-            'amount'            => 0.1,
-            'price'             => 50000,
-            'value'             => 5000,
-            'maker_fee'         => 10,
-            'taker_fee'         => 15,
-            'maker_side'        => 'buy',
+            'base_currency' => 'BTC',
+            'quote_currency' => 'EUR',
+            'amount' => 0.1,
+            'price' => 50000,
+            'value' => 5000,
+            'maker_fee' => 10,
+            'taker_fee' => 15,
+            'maker_side' => 'buy',
         ]);
 
         $response = $this->getJson('/api/exchange/trades');
@@ -539,35 +539,35 @@ class ExchangeControllerTest extends ControllerTestCase
         Sanctum::actingAs($this->user);
 
         Trade::create([
-            'trade_id'          => 'btc-trade',
-            'buy_order_id'      => 'order-1',
-            'sell_order_id'     => 'order-2',
-            'buyer_account_id'  => $this->account->id,
+            'trade_id' => 'btc-trade',
+            'buy_order_id' => 'order-1',
+            'sell_order_id' => 'order-2',
+            'buyer_account_id' => $this->account->id,
             'seller_account_id' => 999,
-            'base_currency'     => 'BTC',
-            'quote_currency'    => 'EUR',
-            'amount'            => 0.1,
-            'price'             => 50000,
-            'value'             => 5000,
-            'maker_fee'         => 10,
-            'taker_fee'         => 15,
-            'maker_side'        => 'buy',
+            'base_currency' => 'BTC',
+            'quote_currency' => 'EUR',
+            'amount' => 0.1,
+            'price' => 50000,
+            'value' => 5000,
+            'maker_fee' => 10,
+            'taker_fee' => 15,
+            'maker_side' => 'buy',
         ]);
 
         Trade::create([
-            'trade_id'          => 'eth-trade',
-            'buy_order_id'      => 'order-3',
-            'sell_order_id'     => 'order-4',
-            'buyer_account_id'  => $this->account->id,
+            'trade_id' => 'eth-trade',
+            'buy_order_id' => 'order-3',
+            'sell_order_id' => 'order-4',
+            'buyer_account_id' => $this->account->id,
             'seller_account_id' => 999,
-            'base_currency'     => 'ETH',
-            'quote_currency'    => 'EUR',
-            'amount'            => 1,
-            'price'             => 3000,
-            'value'             => 3000,
-            'maker_fee'         => 6,
-            'taker_fee'         => 9,
-            'maker_side'        => 'sell',
+            'base_currency' => 'ETH',
+            'quote_currency' => 'EUR',
+            'amount' => 1,
+            'price' => 3000,
+            'value' => 3000,
+            'maker_fee' => 6,
+            'taker_fee' => 9,
+            'maker_side' => 'sell',
         ]);
 
         $response = $this->getJson('/api/exchange/trades?base_currency=BTC&quote_currency=EUR');
@@ -602,7 +602,7 @@ class ExchangeControllerTest extends ControllerTestCase
                     ['price' => 50100, 'amount' => 0.3],
                     ['price' => 50200, 'amount' => 0.8],
                 ],
-                'spread'    => 200,
+                'spread' => 200,
                 'mid_price' => 50000,
             ]);
 
@@ -667,12 +667,12 @@ class ExchangeControllerTest extends ControllerTestCase
             ->once()
             ->with('BTC', 'EUR')
             ->andReturn([
-                'pair'                  => 'BTC/EUR',
-                'last_price'            => 50000,
-                'volume_24h'            => 1250.5,
+                'pair' => 'BTC/EUR',
+                'last_price' => 50000,
+                'volume_24h' => 1250.5,
                 'change_24h_percentage' => 2.5,
-                'high_24h'              => 51000,
-                'low_24h'               => 49000,
+                'high_24h' => 51000,
+                'low_24h' => 49000,
             ]);
 
         // Mock for ETH/EUR
@@ -680,12 +680,12 @@ class ExchangeControllerTest extends ControllerTestCase
             ->once()
             ->with('ETH', 'EUR')
             ->andReturn([
-                'pair'                  => 'ETH/EUR',
-                'last_price'            => 3000,
-                'volume_24h'            => 5000,
+                'pair' => 'ETH/EUR',
+                'last_price' => 3000,
+                'volume_24h' => 5000,
                 'change_24h_percentage' => -1.2,
-                'high_24h'              => 3100,
-                'low_24h'               => 2950,
+                'high_24h' => 3100,
+                'low_24h' => 2950,
             ]);
 
         $response = $this->getJson('/api/exchange/markets');

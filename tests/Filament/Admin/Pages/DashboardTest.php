@@ -35,7 +35,7 @@ it('has getColumns method', function () {
 });
 
 it('getWidgets returns array of widget classes', function () {
-    $dashboard = new Dashboard();
+    $dashboard = new Dashboard;
     $widgets = $dashboard->getWidgets();
 
     expect($widgets)->toBeArray();
@@ -44,7 +44,7 @@ it('getWidgets returns array of widget classes', function () {
 });
 
 it('getColumns returns responsive column configuration', function () {
-    $dashboard = new Dashboard();
+    $dashboard = new Dashboard;
     $columns = $dashboard->getColumns();
 
     expect($columns)->toBeArray();

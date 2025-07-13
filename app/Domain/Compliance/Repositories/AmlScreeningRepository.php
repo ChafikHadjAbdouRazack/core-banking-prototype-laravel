@@ -30,10 +30,8 @@ class AmlScreeningRepository extends EloquentStoredEventRepository
     /**
      * Retrieve all screening events for a specific entity.
      *
-     * @param string $entityType The entity type (e.g., 'user', 'account', 'transaction')
-     * @param string $entityId   The entity ID
-     *
-     * @return Collection
+     * @param  string  $entityType  The entity type (e.g., 'user', 'account', 'transaction')
+     * @param  string  $entityId  The entity ID
      */
     public function getByEntity(string $entityType, string $entityId): Collection
     {
@@ -47,9 +45,7 @@ class AmlScreeningRepository extends EloquentStoredEventRepository
     /**
      * Retrieve screening events by aggregate UUID.
      *
-     * @param string $aggregateUuid The aggregate UUID
-     *
-     * @return Collection
+     * @param  string  $aggregateUuid  The aggregate UUID
      */
     public function getByAggregateUuid(string $aggregateUuid): Collection
     {
@@ -62,9 +58,7 @@ class AmlScreeningRepository extends EloquentStoredEventRepository
     /**
      * Retrieve screening events by screening status.
      *
-     * @param string $status The screening status
-     *
-     * @return Collection
+     * @param  string  $status  The screening status
      */
     public function getByStatus(string $status): Collection
     {
@@ -76,8 +70,6 @@ class AmlScreeningRepository extends EloquentStoredEventRepository
 
     /**
      * Retrieve screening events that require review.
-     *
-     * @return Collection
      */
     public function getPendingReview(): Collection
     {
@@ -90,8 +82,6 @@ class AmlScreeningRepository extends EloquentStoredEventRepository
 
     /**
      * Retrieve high-risk screening events.
-     *
-     * @return Collection
      */
     public function getHighRiskScreenings(): Collection
     {
@@ -104,10 +94,8 @@ class AmlScreeningRepository extends EloquentStoredEventRepository
     /**
      * Retrieve screening events by date range.
      *
-     * @param \DateTimeInterface $startDate The start date
-     * @param \DateTimeInterface $endDate   The end date
-     *
-     * @return Collection
+     * @param  \DateTimeInterface  $startDate  The start date
+     * @param  \DateTimeInterface  $endDate  The end date
      */
     public function getByDateRange(
         \DateTimeInterface $startDate,
@@ -122,9 +110,7 @@ class AmlScreeningRepository extends EloquentStoredEventRepository
     /**
      * Retrieve screening events by provider.
      *
-     * @param string $provider The screening provider
-     *
-     * @return Collection
+     * @param  string  $provider  The screening provider
      */
     public function getByProvider(string $provider): Collection
     {
@@ -137,10 +123,8 @@ class AmlScreeningRepository extends EloquentStoredEventRepository
     /**
      * Count screening events by entity.
      *
-     * @param string $entityType The entity type
-     * @param string $entityId   The entity ID
-     *
-     * @return int
+     * @param  string  $entityType  The entity type
+     * @param  string  $entityId  The entity ID
      */
     public function countByEntity(string $entityType, string $entityId): int
     {
@@ -153,11 +137,9 @@ class AmlScreeningRepository extends EloquentStoredEventRepository
     /**
      * Check if entity has been screened within a time period.
      *
-     * @param string             $entityType The entity type
-     * @param string             $entityId   The entity ID
-     * @param \DateTimeInterface $since      The date to check from
-     *
-     * @return bool
+     * @param  string  $entityType  The entity type
+     * @param  string  $entityId  The entity ID
+     * @param  \DateTimeInterface  $since  The date to check from
      */
     public function hasRecentScreening(
         string $entityType,

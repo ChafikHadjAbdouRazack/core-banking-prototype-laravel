@@ -59,9 +59,9 @@ class LoadTest extends DomainTestCase
         $this->assertLessThan(0.5, $avgTime, "Average account creation time ({$avgTime}s) exceeds 500ms threshold");
 
         echo "\nAccount Creation Performance:";
-        echo "\n- Total time: " . round($totalTime, 3) . 's';
-        echo "\n- Average time per account: " . round($avgTime * 1000, 2) . 'ms';
-        echo "\n- Accounts per second: " . round($iterations / $totalTime, 2);
+        echo "\n- Total time: ".round($totalTime, 3).'s';
+        echo "\n- Average time per account: ".round($avgTime * 1000, 2).'ms';
+        echo "\n- Accounts per second: ".round($iterations / $totalTime, 2);
     }
 
     /**
@@ -77,7 +77,7 @@ class LoadTest extends DomainTestCase
         foreach ($users as $user) {
             $account = Account::factory()->forUser($user)->create();
             // Add balance using event sourcing
-            \App\Domain\Asset\Aggregates\AssetTransactionAggregate::retrieve($account->uuid . ':USD')
+            \App\Domain\Asset\Aggregates\AssetTransactionAggregate::retrieve($account->uuid.':USD')
                 ->credit($account->uuid, 'USD', 1000000, 'Initial balance for load test') // $10,000
                 ->persist();
             $accounts[] = $account;
@@ -99,9 +99,9 @@ class LoadTest extends DomainTestCase
 
             $response = $this->postJson('/api/transfers', [
                 'from_account_uuid' => $fromAccount->uuid,
-                'to_account_uuid'   => $toAccount->uuid,
-                'amount'            => 1000, // $10
-                'reference'         => "Load test transfer $i",
+                'to_account_uuid' => $toAccount->uuid,
+                'amount' => 1000, // $10
+                'reference' => "Load test transfer $i",
             ]);
 
             $response->assertStatus(201);
@@ -115,9 +115,9 @@ class LoadTest extends DomainTestCase
         $this->assertLessThan(1.0, $avgTime, "Average transfer time ({$avgTime}s) exceeds 1000ms threshold");
 
         echo "\nTransfer Performance:";
-        echo "\n- Total time: " . round($totalTime, 3) . 's';
-        echo "\n- Average time per transfer: " . round($avgTime * 1000, 2) . 'ms';
-        echo "\n- Transfers per second: " . round($iterations / $totalTime, 2);
+        echo "\n- Total time: ".round($totalTime, 3).'s';
+        echo "\n- Average time per transfer: ".round($avgTime * 1000, 2).'ms';
+        echo "\n- Transfers per second: ".round($iterations / $totalTime, 2);
     }
 
     /**
@@ -150,9 +150,9 @@ class LoadTest extends DomainTestCase
         $this->assertLessThan(0.2, $avgTime, "Average exchange rate lookup time ({$avgTime}s) exceeds 200ms threshold");
 
         echo "\nExchange Rate Performance:";
-        echo "\n- Total time: " . round($totalTime, 3) . 's';
-        echo "\n- Average lookup time: " . round($avgTime * 1000, 2) . 'ms';
-        echo "\n- Lookups per second: " . round($iterations / $totalTime, 2);
+        echo "\n- Total time: ".round($totalTime, 3).'s';
+        echo "\n- Average lookup time: ".round($avgTime * 1000, 2).'ms';
+        echo "\n- Lookups per second: ".round($iterations / $totalTime, 2);
     }
 
     /**
@@ -166,8 +166,8 @@ class LoadTest extends DomainTestCase
 
         // Create a webhook
         $response = $this->postJson('/api/v2/webhooks', [
-            'url'         => 'https://httpbin.org/post',
-            'events'      => ['account.created', 'transaction.completed'],
+            'url' => 'https://httpbin.org/post',
+            'events' => ['account.created', 'transaction.completed'],
             'description' => 'Performance test webhook',
         ]);
 
@@ -191,9 +191,9 @@ class LoadTest extends DomainTestCase
         $this->assertLessThan(0.2, $avgTime, "Average webhook list time ({$avgTime}s) exceeds 200ms threshold");
 
         echo "\nWebhook Performance:";
-        echo "\n- Total time: " . round($totalTime, 3) . 's';
-        echo "\n- Average list time: " . round($avgTime * 1000, 2) . 'ms';
-        echo "\n- Requests per second: " . round($iterations / $totalTime, 2);
+        echo "\n- Total time: ".round($totalTime, 3).'s';
+        echo "\n- Average list time: ".round($avgTime * 1000, 2).'ms';
+        echo "\n- Requests per second: ".round($iterations / $totalTime, 2);
     }
 
     /**
@@ -232,9 +232,9 @@ class LoadTest extends DomainTestCase
         $this->assertLessThan(0.5, $avgTime, "Average query time ({$avgTime}s) exceeds 500ms threshold");
 
         echo "\nDatabase Query Performance:";
-        echo "\n- Total time: " . round($totalTime, 3) . 's';
-        echo "\n- Average query time: " . round($avgTime * 1000, 2) . 'ms';
-        echo "\n- Queries per second: " . round($iterations / $totalTime, 2);
+        echo "\n- Total time: ".round($totalTime, 3).'s';
+        echo "\n- Average query time: ".round($avgTime * 1000, 2).'ms';
+        echo "\n- Queries per second: ".round($iterations / $totalTime, 2);
     }
 
     /**
@@ -245,7 +245,7 @@ class LoadTest extends DomainTestCase
     {
         $iterations = 1000;
         $data = [
-            'account'  => Account::factory()->make()->toArray(),
+            'account' => Account::factory()->make()->toArray(),
             'balances' => [
                 'USD' => 100000,
                 'EUR' => 50000,
@@ -253,7 +253,7 @@ class LoadTest extends DomainTestCase
             ],
             'metadata' => [
                 'last_updated' => now()->toIso8601String(),
-                'version'      => '1.0',
+                'version' => '1.0',
             ],
         ];
 
@@ -281,10 +281,10 @@ class LoadTest extends DomainTestCase
         $this->assertLessThan(0.005, $avgReadTime, "Average cache read time ({$avgReadTime}s) exceeds 5ms threshold");
 
         echo "\nCache Performance:";
-        echo "\n- Write: " . round($avgWriteTime * 1000000, 2) . 'μs per operation';
-        echo "\n- Read: " . round($avgReadTime * 1000000, 2) . 'μs per operation';
-        echo "\n- Writes per second: " . round($iterations / $writeTime, 2);
-        echo "\n- Reads per second: " . round($iterations / $readTime, 2);
+        echo "\n- Write: ".round($avgWriteTime * 1000000, 2).'μs per operation';
+        echo "\n- Read: ".round($avgReadTime * 1000000, 2).'μs per operation';
+        echo "\n- Writes per second: ".round($iterations / $writeTime, 2);
+        echo "\n- Reads per second: ".round($iterations / $readTime, 2);
     }
 
     /**
@@ -294,10 +294,10 @@ class LoadTest extends DomainTestCase
     public function test_complete_performance_suite()
     {
         echo "\n\n=== FinAegis Load Testing Report ===\n";
-        echo 'Date: ' . now()->toDateTimeString() . "\n";
-        echo 'Environment: ' . app()->environment() . "\n";
-        echo 'Database: ' . config('database.default') . "\n";
-        echo 'Cache: ' . config('cache.default') . "\n";
+        echo 'Date: '.now()->toDateTimeString()."\n";
+        echo 'Environment: '.app()->environment()."\n";
+        echo 'Database: '.config('database.default')."\n";
+        echo 'Cache: '.config('cache.default')."\n";
 
         $this->test_account_creation_performance();
         $this->test_concurrent_transfers_performance();

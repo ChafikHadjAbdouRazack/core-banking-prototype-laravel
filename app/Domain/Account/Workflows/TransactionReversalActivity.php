@@ -9,16 +9,6 @@ use Workflow\Activity;
 
 class TransactionReversalActivity extends Activity
 {
-    /**
-     * @param AccountUuid          $accountUuid
-     * @param Money                $originalAmount
-     * @param string               $transactionType
-     * @param string               $reversalReason
-     * @param string|null          $authorizedBy
-     * @param TransactionAggregate $transaction
-     *
-     * @return array
-     */
     public function execute(
         AccountUuid $accountUuid,
         Money $originalAmount,
@@ -46,23 +36,15 @@ class TransactionReversalActivity extends Activity
         $this->logReversal($accountUuid, $originalAmount, $transactionType, $reversalReason, $authorizedBy);
 
         return [
-            'account_uuid'    => $accountUuid->getUuid(),
+            'account_uuid' => $accountUuid->getUuid(),
             'reversed_amount' => $originalAmount->getAmount(),
-            'original_type'   => $transactionType,
+            'original_type' => $transactionType,
             'reversal_reason' => $reversalReason,
-            'authorized_by'   => $authorizedBy,
-            'reversed_at'     => now()->toISOString(),
+            'authorized_by' => $authorizedBy,
+            'reversed_at' => now()->toISOString(),
         ];
     }
 
-    /**
-     * @param  AccountUuid $accountUuid
-     * @param  Money       $amount
-     * @param  string      $transactionType
-     * @param  string      $reason
-     * @param  string|null $authorizedBy
-     * @return void
-     */
     private function logReversal(
         AccountUuid $accountUuid,
         Money $amount,
@@ -73,12 +55,12 @@ class TransactionReversalActivity extends Activity
         logger()->info(
             'Transaction reversed',
             [
-            'account_uuid'  => $accountUuid->getUuid(),
-            'amount'        => $amount->getAmount(),
-            'original_type' => $transactionType,
-            'reason'        => $reason,
-            'authorized_by' => $authorizedBy,
-            'timestamp'     => now()->toISOString(),
+                'account_uuid' => $accountUuid->getUuid(),
+                'amount' => $amount->getAmount(),
+                'original_type' => $transactionType,
+                'reason' => $reason,
+                'authorized_by' => $authorizedBy,
+                'timestamp' => now()->toISOString(),
             ]
         );
     }

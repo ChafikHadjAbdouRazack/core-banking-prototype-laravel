@@ -21,8 +21,8 @@ class PublishWithdrawalRequestedActivity extends Activity
                 metadata: array_merge(
                     $withdrawal->getMetadata(),
                     [
-                    'bank_name'   => $withdrawal->getBankName(),
-                    'transfer_id' => $transferId,
+                        'bank_name' => $withdrawal->getBankName(),
+                        'transfer_id' => $transferId,
                     ]
                 )
             )

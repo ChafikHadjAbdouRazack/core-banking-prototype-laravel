@@ -13,6 +13,5 @@ class WalletAddressGenerated extends ShouldBeStored
         public readonly string $publicKey,
         public readonly string $derivationPath,
         public readonly ?string $label
-    ) {
-    }
+    ) {}
 }

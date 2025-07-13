@@ -11,6 +11,5 @@ class LoanApplicationWithdrawn extends ShouldBeStored
         public string $reason,
         public string $withdrawnBy,
         public \DateTimeImmutable $withdrawnAt
-    ) {
-    }
+    ) {}
 }

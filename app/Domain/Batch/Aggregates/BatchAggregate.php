@@ -23,7 +23,6 @@ class BatchAggregate extends AggregateRoot
     protected array $items = [];
 
     /**
-     * @return BatchRepository
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
     protected function getStoredEventRepository(): BatchRepository
@@ -32,7 +31,6 @@ class BatchAggregate extends AggregateRoot
     }
 
     /**
-     * @return BatchSnapshotRepository
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
     protected function getSnapshotRepository(): BatchSnapshotRepository
@@ -41,7 +39,6 @@ class BatchAggregate extends AggregateRoot
     }
 
     /**
-     * @param  BatchJob $batchJob
      * @return $this
      */
     public function createBatchJob(BatchJob $batchJob): static
@@ -70,10 +67,6 @@ class BatchAggregate extends AggregateRoot
     }
 
     /**
-     * @param  int         $itemIndex
-     * @param  string      $status
-     * @param  array       $result
-     * @param  string|null $errorMessage
      * @return $this
      */
     public function processBatchItem(int $itemIndex, string $status, array $result = [], ?string $errorMessage = null): static
@@ -118,7 +111,6 @@ class BatchAggregate extends AggregateRoot
     }
 
     /**
-     * @param  string $reason
      * @return $this
      */
     public function cancelBatchJob(string $reason): static

@@ -1,28 +1,28 @@
 <?php
 
+use App\Domain\Payment\Models\PaymentDeposit;
 use App\Domain\Payment\Workflow\Activities\CompleteDepositActivity;
-use App\Models\PaymentDeposit;
 use Illuminate\Support\Str;
 
 it('can complete a deposit through activity', function () {
     $depositUuid = Str::uuid()->toString();
-    $transactionId = 'txn_' . uniqid();
+    $transactionId = 'txn_'.uniqid();
 
     // Create a deposit event first
     PaymentDeposit::create([
-        'aggregate_uuid'    => $depositUuid,
+        'aggregate_uuid' => $depositUuid,
         'aggregate_version' => 1,
-        'event_version'     => 1,
-        'event_class'       => 'deposit_initiated',
-        'event_properties'  => json_encode([
-            'accountUuid'       => Str::uuid()->toString(),
-            'amount'            => 10000,
-            'currency'          => 'USD',
-            'reference'         => 'TEST-123',
+        'event_version' => 1,
+        'event_class' => 'deposit_initiated',
+        'event_properties' => json_encode([
+            'accountUuid' => Str::uuid()->toString(),
+            'amount' => 10000,
+            'currency' => 'USD',
+            'reference' => 'TEST-123',
             'externalReference' => 'pi_test_123',
-            'paymentMethod'     => 'card',
+            'paymentMethod' => 'card',
             'paymentMethodType' => 'visa',
-            'metadata'          => [],
+            'metadata' => [],
         ]),
         'meta_data' => json_encode([
             'aggregate_uuid' => $depositUuid,
@@ -31,12 +31,13 @@ it('can complete a deposit through activity', function () {
     ]);
 
     $input = [
-        'deposit_uuid'   => $depositUuid,
+        'deposit_uuid' => $depositUuid,
         'transaction_id' => $transactionId,
     ];
 
     // Create a mock activity to test the logic
-    $activity = new class () extends CompleteDepositActivity {
+    $activity = new class extends CompleteDepositActivity
+    {
         public function __construct()
         {
             // Override constructor to avoid workflow dependencies
@@ -62,14 +63,15 @@ it('can complete a deposit through activity', function () {
 
 it('returns completed status for non-existent deposit', function () {
     $depositUuid = Str::uuid()->toString();
-    $transactionId = 'txn_' . uniqid();
+    $transactionId = 'txn_'.uniqid();
 
     $input = [
-        'deposit_uuid'   => $depositUuid,
+        'deposit_uuid' => $depositUuid,
         'transaction_id' => $transactionId,
     ];
 
-    $activity = new class () extends CompleteDepositActivity {
+    $activity = new class extends CompleteDepositActivity
+    {
         public function __construct()
         {
             // Override constructor

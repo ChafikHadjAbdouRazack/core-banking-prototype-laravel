@@ -1,7 +1,6 @@
 <?php
 
 use App\Domain\Payment\DataObjects\StripeDeposit;
-use App\Domain\Payment\Workflows\ProcessStripeDepositWorkflow;
 use App\Models\Account;
 use App\Models\PaymentTransaction;
 use Illuminate\Support\Str;
@@ -11,54 +10,61 @@ beforeEach(function () {
     PaymentTransaction::truncate();
 });
 
-it('processes a successful stripe deposit', function () {
+it('validates stripe deposit data structure', function () {
     $accountUuid = Str::uuid()->toString();
-    $account = Account::factory()->create(['uuid' => $accountUuid, 'name' => 'Test Account']);
 
     $deposit = new StripeDeposit(
         accountUuid: $accountUuid,
         amount: 10000, // $100.00
         currency: 'USD',
-        reference: 'TEST-' . uniqid(),
-        externalReference: 'pi_test_' . uniqid(),
+        reference: 'TEST-'.uniqid(),
+        externalReference: 'pi_test_'.uniqid(),
         paymentMethod: 'card',
         paymentMethodType: 'visa',
         metadata: ['test' => true]
     );
 
-    // Mock the activities
-    $workflow = Mockery::mock(ProcessStripeDepositWorkflow::class);
-    $workflow->shouldReceive('execute')
-        ->with($deposit)
-        ->andReturn('txn_123456');
-
-    $result = $workflow->execute($deposit);
-
-    expect($result)->toBe('txn_123456');
+    // Test that the deposit data object is properly constructed
+    expect($deposit->getAccountUuid())->toBe($accountUuid);
+    expect($deposit->getAmount())->toBe(10000);
+    expect($deposit->getCurrency())->toBe('USD');
+    expect($deposit->getPaymentMethod())->toBe('card');
+    expect($deposit->getPaymentMethodType())->toBe('visa');
+    expect($deposit->getMetadata())->toBe(['test' => true]);
+    expect($deposit->getReference())->toStartWith('TEST-');
+    expect($deposit->getExternalReference())->toStartWith('pi_test_');
 });
 
-it('handles failed deposit appropriately', function () {
+it('creates deposit with different payment methods', function () {
     $accountUuid = Str::uuid()->toString();
 
-    $deposit = new StripeDeposit(
+    // Test card deposit
+    $cardDeposit = new StripeDeposit(
         accountUuid: $accountUuid,
         amount: 10000,
         currency: 'USD',
-        reference: 'TEST-' . uniqid(),
-        externalReference: 'pi_test_' . uniqid(),
+        reference: 'TEST-'.uniqid(),
+        externalReference: 'pi_test_'.uniqid(),
         paymentMethod: 'card',
         paymentMethodType: 'visa',
-        metadata: ['test' => true]
+        metadata: []
     );
+    expect($cardDeposit->getPaymentMethod())->toBe('card');
+    expect($cardDeposit->getPaymentMethodType())->toBe('visa');
 
-    // Mock a workflow that fails
-    $workflow = Mockery::mock(ProcessStripeDepositWorkflow::class);
-    $workflow->shouldReceive('execute')
-        ->with($deposit)
-        ->andThrow(new Exception('Card declined'));
-
-    expect(fn () => $workflow->execute($deposit))
-        ->toThrow(Exception::class, 'Card declined');
+    // Test bank transfer deposit
+    $bankDeposit = new StripeDeposit(
+        accountUuid: $accountUuid,
+        amount: 50000,
+        currency: 'USD',
+        reference: 'TEST-'.uniqid(),
+        externalReference: 'ach_test_'.uniqid(),
+        paymentMethod: 'bank_transfer',
+        paymentMethodType: 'ach',
+        metadata: []
+    );
+    expect($bankDeposit->getPaymentMethod())->toBe('bank_transfer');
+    expect($bankDeposit->getPaymentMethodType())->toBe('ach');
 });
 
 it('creates proper transaction flow', function () {
@@ -69,8 +75,8 @@ it('creates proper transaction flow', function () {
         accountUuid: $accountUuid,
         amount: 10000,
         currency: 'USD',
-        reference: 'TEST-' . uniqid(),
-        externalReference: 'pi_test_' . uniqid(),
+        reference: 'TEST-'.uniqid(),
+        externalReference: 'pi_test_'.uniqid(),
         paymentMethod: 'card',
         paymentMethodType: 'visa',
         metadata: []
@@ -78,21 +84,21 @@ it('creates proper transaction flow', function () {
 
     // Simulate the workflow execution
     $depositUuid = Str::uuid()->toString();
-    $transactionId = 'txn_' . uniqid();
+    $transactionId = 'txn_'.uniqid();
 
     // Step 1: Initiate deposit
     PaymentTransaction::create([
-        'aggregate_uuid'      => $depositUuid,
-        'account_uuid'        => $accountUuid,
-        'type'                => 'deposit',
-        'status'              => 'pending',
-        'amount'              => 10000,
-        'currency'            => 'USD',
-        'reference'           => $deposit->getReference(),
-        'external_reference'  => $deposit->getExternalReference(),
-        'payment_method'      => 'card',
+        'aggregate_uuid' => $depositUuid,
+        'account_uuid' => $accountUuid,
+        'type' => 'deposit',
+        'status' => 'pending',
+        'amount' => 10000,
+        'currency' => 'USD',
+        'reference' => $deposit->getReference(),
+        'external_reference' => $deposit->getExternalReference(),
+        'payment_method' => 'card',
         'payment_method_type' => 'visa',
-        'initiated_at'        => now(),
+        'initiated_at' => now(),
     ]);
 
     // Step 2: Credit account (in real flow this happens via event sourcing)
@@ -101,9 +107,9 @@ it('creates proper transaction flow', function () {
     // Step 3: Complete deposit
     PaymentTransaction::where('aggregate_uuid', $depositUuid)
         ->update([
-            'status'         => 'completed',
+            'status' => 'completed',
             'transaction_id' => $transactionId,
-            'completed_at'   => now(),
+            'completed_at' => now(),
         ]);
 
     // Verify results

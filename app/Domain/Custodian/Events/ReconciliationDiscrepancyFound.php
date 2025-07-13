@@ -14,6 +14,5 @@ class ReconciliationDiscrepancyFound
 
     public function __construct(
         public readonly array $discrepancy
-    ) {
-    }
+    ) {}
 }

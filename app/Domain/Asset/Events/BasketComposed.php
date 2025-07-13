@@ -12,6 +12,5 @@ class BasketComposed extends ShouldBeStored
         public int $amount,
         public array $exchangeRates,
         public array $components
-    ) {
-    }
+    ) {}
 }

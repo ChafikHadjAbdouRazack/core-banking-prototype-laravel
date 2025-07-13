@@ -32,9 +32,9 @@ class TransactionBlocked
         return [
             'fraud',
             'transaction_blocked',
-            'transaction:' . $this->transaction->id,
-            'fraud_score:' . $this->fraudScore->id,
-            'risk_level:' . $this->fraudScore->risk_level,
+            'transaction:'.$this->transaction->id,
+            'fraud_score:'.$this->fraudScore->id,
+            'risk_level:'.$this->fraudScore->risk_level,
         ];
     }
 }

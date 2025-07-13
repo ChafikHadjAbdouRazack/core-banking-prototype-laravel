@@ -30,17 +30,17 @@ class MockBankConnector extends BaseCustodianConnector
         // Initialize with some mock accounts
         $this->mockAccounts = [
             'mock-account-1' => [
-                'id'         => 'mock-account-1',
-                'name'       => 'Mock Business Account',
-                'status'     => 'active',
-                'type'       => 'business',
+                'id' => 'mock-account-1',
+                'name' => 'Mock Business Account',
+                'status' => 'active',
+                'type' => 'business',
                 'created_at' => Carbon::now()->subMonths(6),
             ],
             'mock-account-2' => [
-                'id'         => 'mock-account-2',
-                'name'       => 'Mock Personal Account',
-                'status'     => 'active',
-                'type'       => 'personal',
+                'id' => 'mock-account-2',
+                'name' => 'Mock Personal Account',
+                'status' => 'active',
+                'type' => 'personal',
                 'created_at' => Carbon::now()->subMonths(3),
             ],
         ];
@@ -99,7 +99,7 @@ class MockBankConnector extends BaseCustodianConnector
             type: $account['type'],
             createdAt: $account['created_at'],
             metadata: [
-                'mock'      => true,
+                'mock' => true,
                 'connector' => 'MockBankConnector',
             ]
         );
@@ -113,7 +113,7 @@ class MockBankConnector extends BaseCustodianConnector
         usleep(100000); // 0.1 seconds
 
         // Create mock transaction
-        $transactionId = 'mock-tx-' . Str::uuid()->toString();
+        $transactionId = 'mock-tx-'.Str::uuid()->toString();
 
         // Check if source account has sufficient balance
         $sourceBalance = $this->mockBalances[$request->fromAccount][$request->assetCode] ?? 0;
@@ -131,7 +131,7 @@ class MockBankConnector extends BaseCustodianConnector
                 completedAt: Carbon::now(),
                 metadata: [
                     'error' => 'Insufficient balance',
-                    'mock'  => true,
+                    'mock' => true,
                 ]
             );
         } else {
@@ -160,7 +160,7 @@ class MockBankConnector extends BaseCustodianConnector
                 createdAt: Carbon::now(),
                 completedAt: Carbon::now(),
                 metadata: [
-                    'mock'        => true,
+                    'mock' => true,
                     'description' => $request->description,
                 ]
             );
@@ -230,8 +230,8 @@ class MockBankConnector extends BaseCustodianConnector
             'GET',
             "/accounts/{$accountId}/transactions",
             [
-            'limit'  => $limit,
-            'offset' => $offset,
+                'limit' => $limit,
+                'offset' => $offset,
             ]
         );
 

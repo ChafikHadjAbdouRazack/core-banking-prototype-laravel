@@ -15,6 +15,5 @@ class KycVerificationStarted
 
     public function __construct(
         public readonly KycVerification $verification
-    ) {
-    }
+    ) {}
 }

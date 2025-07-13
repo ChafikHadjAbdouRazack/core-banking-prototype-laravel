@@ -9,12 +9,6 @@ use Workflow\Workflow;
 
 class WithdrawAccountWorkflow extends Workflow
 {
-    /**
-     * @param AccountUuid $uuid
-     * @param Money       $money
-     *
-     * @return \Generator
-     */
     public function execute(AccountUuid $uuid, Money $money): \Generator
     {
         return yield ActivityStub::make(

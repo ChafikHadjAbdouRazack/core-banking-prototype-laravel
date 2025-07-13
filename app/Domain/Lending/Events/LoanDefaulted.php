@@ -11,6 +11,5 @@ class LoanDefaulted extends ShouldBeStored
         public string $reason,
         public string $outstandingBalance,
         public \DateTimeImmutable $defaultedAt
-    ) {
-    }
+    ) {}
 }

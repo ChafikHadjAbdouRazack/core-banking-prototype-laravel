@@ -16,31 +16,25 @@ class AmlScreeningProjector extends Projector implements ShouldQueue
 {
     /**
      * Handle when AML screening is started.
-     *
-     * @param AmlScreeningStarted $event
-     * @return void
      */
     public function onAmlScreeningStarted(AmlScreeningStarted $event): void
     {
         AmlScreening::create([
-            'id'                 => $event->aggregateRootUuid(),
-            'entity_id'          => $event->entityId,
-            'entity_type'        => $event->entityType,
-            'screening_number'   => $event->screeningNumber,
-            'type'               => $event->type,
-            'status'             => AmlScreening::STATUS_IN_PROGRESS,
-            'provider'           => $event->provider,
+            'id' => $event->aggregateRootUuid(),
+            'entity_id' => $event->entityId,
+            'entity_type' => $event->entityType,
+            'screening_number' => $event->screeningNumber,
+            'type' => $event->type,
+            'status' => AmlScreening::STATUS_IN_PROGRESS,
+            'provider' => $event->provider,
             'provider_reference' => $event->providerReference,
-            'search_parameters'  => $event->searchParameters,
-            'started_at'         => now(),
+            'search_parameters' => $event->searchParameters,
+            'started_at' => now(),
         ]);
     }
 
     /**
      * Handle when AML screening results are recorded.
-     *
-     * @param AmlScreeningResultsRecorded $event
-     * @return void
      */
     public function onAmlScreeningResultsRecorded(AmlScreeningResultsRecorded $event): void
     {
@@ -48,15 +42,15 @@ class AmlScreeningProjector extends Projector implements ShouldQueue
 
         if ($screening) {
             $screening->update([
-                'sanctions_results'     => $event->sanctionsResults,
-                'pep_results'           => $event->pepResults,
+                'sanctions_results' => $event->sanctionsResults,
+                'pep_results' => $event->pepResults,
                 'adverse_media_results' => $event->adverseMediaResults,
-                'other_results'         => $event->otherResults,
-                'total_matches'         => $event->totalMatches,
-                'overall_risk'          => $event->overallRisk,
-                'lists_checked'         => $event->listsChecked,
-                'api_response'          => $event->apiResponse,
-                'lists_updated_at'      => isset($event->listsChecked['updated_at'])
+                'other_results' => $event->otherResults,
+                'total_matches' => $event->totalMatches,
+                'overall_risk' => $event->overallRisk,
+                'lists_checked' => $event->listsChecked,
+                'api_response' => $event->apiResponse,
+                'lists_updated_at' => isset($event->listsChecked['updated_at'])
                     ? $event->listsChecked['updated_at']
                     : null,
             ]);
@@ -65,9 +59,6 @@ class AmlScreeningProjector extends Projector implements ShouldQueue
 
     /**
      * Handle when AML screening match status is updated.
-     *
-     * @param AmlScreeningMatchStatusUpdated $event
-     * @return void
      */
     public function onAmlScreeningMatchStatusUpdated(AmlScreeningMatchStatusUpdated $event): void
     {
@@ -92,9 +83,6 @@ class AmlScreeningProjector extends Projector implements ShouldQueue
 
     /**
      * Handle when AML screening is completed.
-     *
-     * @param AmlScreeningCompleted $event
-     * @return void
      */
     public function onAmlScreeningCompleted(AmlScreeningCompleted $event): void
     {
@@ -102,8 +90,8 @@ class AmlScreeningProjector extends Projector implements ShouldQueue
 
         if ($screening) {
             $screening->update([
-                'status'          => $event->finalStatus,
-                'completed_at'    => now(),
+                'status' => $event->finalStatus,
+                'completed_at' => now(),
                 'processing_time' => $event->processingTime,
             ]);
         }
@@ -111,9 +99,6 @@ class AmlScreeningProjector extends Projector implements ShouldQueue
 
     /**
      * Handle when AML screening is reviewed.
-     *
-     * @param AmlScreeningReviewed $event
-     * @return void
      */
     public function onAmlScreeningReviewed(AmlScreeningReviewed $event): void
     {
@@ -130,11 +115,6 @@ class AmlScreeningProjector extends Projector implements ShouldQueue
 
     /**
      * Confirm a match.
-     *
-     * @param AmlScreening $screening
-     * @param string $matchId
-     * @param array $details
-     * @return void
      */
     private function confirmMatch(AmlScreening $screening, string $matchId, array $details): void
     {
@@ -145,39 +125,29 @@ class AmlScreeningProjector extends Projector implements ShouldQueue
 
         $screening->update([
             'confirmed_matches_detail' => $confirmed,
-            'confirmed_matches'        => ($screening->confirmed_matches ?? 0) + 1,
+            'confirmed_matches' => ($screening->confirmed_matches ?? 0) + 1,
         ]);
     }
 
     /**
      * Dismiss a match as false positive.
-     *
-     * @param AmlScreening $screening
-     * @param string $matchId
-     * @param string $reason
-     * @return void
      */
     private function dismissMatch(AmlScreening $screening, string $matchId, string $reason): void
     {
         $dismissed = $screening->dismissed_matches_detail ?? [];
         $dismissed[$matchId] = [
             'dismissed_at' => now()->toIso8601String(),
-            'reason'       => $reason,
+            'reason' => $reason,
         ];
 
         $screening->update([
             'dismissed_matches_detail' => $dismissed,
-            'false_positives'          => ($screening->false_positives ?? 0) + 1,
+            'false_positives' => ($screening->false_positives ?? 0) + 1,
         ]);
     }
 
     /**
      * Mark as potential match.
-     *
-     * @param AmlScreening $screening
-     * @param string $matchId
-     * @param array $details
-     * @return void
      */
     private function markAsPotentialMatch(AmlScreening $screening, string $matchId, array $details): void
     {

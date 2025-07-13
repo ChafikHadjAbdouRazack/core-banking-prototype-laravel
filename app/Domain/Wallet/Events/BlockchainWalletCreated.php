@@ -12,6 +12,5 @@ class BlockchainWalletCreated extends ShouldBeStored
         public readonly string $type,
         public readonly ?string $masterPublicKey,
         public readonly array $settings
-    ) {
-    }
+    ) {}
 }

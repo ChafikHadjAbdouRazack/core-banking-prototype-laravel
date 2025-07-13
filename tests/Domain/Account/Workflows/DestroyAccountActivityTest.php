@@ -12,12 +12,12 @@ it('can handle destroy account activity', function () {
 
     $ledgerAggregate = Mockery::mock(LedgerAggregate::class);
     $ledgerAggregate->shouldReceive('retrieve')
-                    ->with($uuid->getUuid())
-                    ->andReturnSelf();
+        ->with($uuid->getUuid())
+        ->andReturnSelf();
     $ledgerAggregate->shouldReceive('deleteAccount')
-                    ->andReturnSelf();
+        ->andReturnSelf();
     $ledgerAggregate->shouldReceive('persist')
-                    ->andReturnSelf();
+        ->andReturnSelf();
 
     $workflow = WorkflowStub::make(DestroyAccountWorkflow::class);
     $storedWorkflow = StoredWorkflow::findOrFail($workflow->id());

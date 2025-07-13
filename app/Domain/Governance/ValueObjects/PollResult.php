@@ -14,8 +14,7 @@ final readonly class PollResult
         public float $participationRate,
         public ?string $winningOption = null,
         public ?array $metadata = []
-    ) {
-    }
+    ) {}
 
     public static function calculate(
         string $pollUuid,
@@ -30,8 +29,8 @@ final readonly class PollResult
         $optionResults = [];
         foreach ($options as $option) {
             $optionResults[$option['id']] = [
-                'votes'      => 0,
-                'power'      => 0,
+                'votes' => 0,
+                'power' => 0,
                 'percentage' => 0.0,
             ];
         }
@@ -81,13 +80,13 @@ final readonly class PollResult
     public function toArray(): array
     {
         return [
-            'poll_uuid'          => $this->pollUuid,
-            'total_votes'        => $this->totalVotes,
+            'poll_uuid' => $this->pollUuid,
+            'total_votes' => $this->totalVotes,
             'total_voting_power' => $this->totalVotingPower,
-            'option_results'     => $this->optionResults,
+            'option_results' => $this->optionResults,
             'participation_rate' => $this->participationRate,
-            'winning_option'     => $this->winningOption,
-            'metadata'           => $this->metadata,
+            'winning_option' => $this->winningOption,
+            'metadata' => $this->metadata,
         ];
     }
 

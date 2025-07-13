@@ -22,7 +22,7 @@ class KycControllerTest extends ControllerTestCase
 
         $this->user = User::factory()->create([
             'kyc_status' => 'not_started',
-            'kyc_level'  => 'basic',
+            'kyc_level' => 'basic',
         ]);
 
         $this->kycService = \Mockery::mock(KycService::class);
@@ -49,8 +49,8 @@ class KycControllerTest extends ControllerTestCase
                 'documents',
             ])
             ->assertJson([
-                'status'    => 'not_started',
-                'level'     => 'basic',
+                'status' => 'not_started',
+                'level' => 'basic',
                 'needs_kyc' => true,
                 'documents' => [],
             ]);
@@ -75,13 +75,13 @@ class KycControllerTest extends ControllerTestCase
             ->andReturn([
                 [
                     'document_type' => 'passport',
-                    'description'   => 'Valid passport copy',
-                    'required'      => true,
+                    'description' => 'Valid passport copy',
+                    'required' => true,
                 ],
                 [
                     'document_type' => 'utility_bill',
-                    'description'   => 'Recent utility bill (within 3 months)',
-                    'required'      => true,
+                    'description' => 'Recent utility bill (within 3 months)',
+                    'required' => true,
                 ],
             ]);
 
@@ -154,7 +154,7 @@ class KycControllerTest extends ControllerTestCase
         $response->assertStatus(200)
             ->assertJson([
                 'message' => 'KYC documents submitted successfully',
-                'status'  => 'pending',
+                'status' => 'pending',
             ]);
     }
 
@@ -288,7 +288,7 @@ class KycControllerTest extends ControllerTestCase
 
         $response = $this->postJson('/api/compliance/kyc/documents', [
             'document' => $file,
-            'type'     => 'passport',
+            'type' => 'passport',
         ]);
 
         $response->assertStatus(200)
@@ -301,7 +301,7 @@ class KycControllerTest extends ControllerTestCase
             ]);
 
         // Verify file was stored
-        Storage::disk('private')->assertExists('kyc/' . $this->user->uuid . '/' . $file->hashName());
+        Storage::disk('private')->assertExists('kyc/'.$this->user->uuid.'/'.$file->hashName());
     }
 
     #[Test]
@@ -326,7 +326,7 @@ class KycControllerTest extends ControllerTestCase
 
         $response = $this->postJson('/api/compliance/kyc/documents', [
             'document' => $file,
-            'type'     => 'invalid_type',
+            'type' => 'invalid_type',
         ]);
 
         $response->assertStatus(422)
@@ -376,7 +376,7 @@ class KycControllerTest extends ControllerTestCase
 
             $response->assertStatus(200)
                 ->assertJson([
-                    'level'        => $level,
+                    'level' => $level,
                     'requirements' => [],
                 ]);
         }

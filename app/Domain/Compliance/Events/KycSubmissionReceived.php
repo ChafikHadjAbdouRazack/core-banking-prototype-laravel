@@ -9,6 +9,5 @@ class KycSubmissionReceived extends ShouldBeStored
     public function __construct(
         public string $userUuid,
         public array $documents
-    ) {
-    }
+    ) {}
 }

@@ -52,12 +52,12 @@ class GCUControllerTest extends ControllerTestCase
         $this->gcu = BasketAsset::firstOrCreate(
             ['code' => 'GCU'],
             [
-                'name'                => 'Global Currency Unit',
-                'description'         => 'A basket of global currencies',
-                'type'                => 'weighted',
+                'name' => 'Global Currency Unit',
+                'description' => 'A basket of global currencies',
+                'type' => 'weighted',
                 'rebalance_frequency' => 'quarterly',
-                'is_active'           => true,
-                'last_rebalanced_at'  => now()->subMonth(),
+                'is_active' => true,
+                'last_rebalanced_at' => now()->subMonth(),
             ]
         );
 
@@ -77,10 +77,10 @@ class GCUControllerTest extends ControllerTestCase
 
         // Create a basket value record
         BasketValue::create([
-            'basket_code'        => 'GCU',
-            'value'              => 1.0975,
+            'basket_code' => 'GCU',
+            'value' => 1.0975,
             'reference_currency' => 'USD',
-            'component_values'   => [
+            'component_values' => [
                 'USD' => ['value' => 1.0, 'weighted_value' => 0.40],
                 'EUR' => ['value' => 1.08, 'weighted_value' => 0.378],
                 'GBP' => ['value' => 1.27, 'weighted_value' => 0.3175],
@@ -117,10 +117,10 @@ class GCUControllerTest extends ControllerTestCase
             ])
             ->assertJson([
                 'data' => [
-                    'code'           => 'GCU',
-                    'name'           => 'Global Currency Unit',
-                    'symbol'         => 'Ǥ',
-                    'current_value'  => 1.0975,
+                    'code' => 'GCU',
+                    'name' => 'Global Currency Unit',
+                    'symbol' => 'Ǥ',
+                    'current_value' => 1.0975,
                     'value_currency' => 'USD',
                 ],
             ])
@@ -133,11 +133,11 @@ class GCUControllerTest extends ControllerTestCase
         // Create historical values
         for ($i = 30; $i >= 0; $i--) {
             BasketValue::create([
-                'basket_code'        => 'GCU',
-                'value'              => 1.09 + ($i * 0.001),
+                'basket_code' => 'GCU',
+                'value' => 1.09 + ($i * 0.001),
                 'reference_currency' => 'USD',
-                'component_values'   => [],
-                'calculated_at'      => now()->subDays($i),
+                'component_values' => [],
+                'calculated_at' => now()->subDays($i),
             ]);
         }
 
@@ -171,8 +171,8 @@ class GCUControllerTest extends ControllerTestCase
             ->assertJson([
                 'data' => [
                     'basket_code' => 'GCU',
-                    'period'      => '30d',
-                    'currency'    => 'USD',
+                    'period' => '30d',
+                    'currency' => 'USD',
                 ],
             ]);
     }
@@ -222,7 +222,7 @@ class GCUControllerTest extends ControllerTestCase
             ])
             ->assertJson([
                 'data' => [
-                    'basket_code'      => 'GCU',
+                    'basket_code' => 'GCU',
                     'total_components' => 3,
                 ],
             ]);
@@ -289,15 +289,15 @@ class GCUControllerTest extends ControllerTestCase
     {
         // Create a poll related to GCU
         Poll::create([
-            'uuid'        => '550e8400-e29b-41d4-a716-446655440000',
-            'type'        => 'basket_rebalance',
-            'title'       => 'Q1 2025 GCU Rebalance',
+            'uuid' => '550e8400-e29b-41d4-a716-446655440000',
+            'type' => 'basket_rebalance',
+            'title' => 'Q1 2025 GCU Rebalance',
             'description' => 'Vote on the proposed rebalancing of GCU',
-            'metadata'    => ['basket_code' => 'GCU'],
-            'options'     => ['approve', 'reject'],
-            'status'      => 'active',
-            'starts_at'   => now()->subDay(),
-            'ends_at'     => now()->addDays(6),
+            'metadata' => ['basket_code' => 'GCU'],
+            'options' => ['approve', 'reject'],
+            'status' => 'active',
+            'starts_at' => now()->subDay(),
+            'ends_at' => now()->addDays(6),
         ]);
 
         $response = $this->getJson('/api/v2/gcu/governance');

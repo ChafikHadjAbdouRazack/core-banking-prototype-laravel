@@ -18,8 +18,8 @@ class DebitAssetBalance extends AccountAction
         // Find existing asset balance
         $balance = AccountBalance::where(
             [
-            'account_uuid' => $account->uuid,
-            'asset_code'   => $event->assetCode,
+                'account_uuid' => $account->uuid,
+                'asset_code' => $event->assetCode,
             ]
         )->first();
 

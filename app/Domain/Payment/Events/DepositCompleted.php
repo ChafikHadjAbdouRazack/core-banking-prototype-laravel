@@ -13,6 +13,5 @@ class DepositCompleted extends ShouldBeStored
     public function __construct(
         public string $transactionId,
         public Carbon $completedAt
-    ) {
-    }
+    ) {}
 }

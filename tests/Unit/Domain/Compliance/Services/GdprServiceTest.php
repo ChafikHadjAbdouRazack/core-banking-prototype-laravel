@@ -36,7 +36,13 @@ class GdprServiceTest extends ServiceTestCase
 
         // Create related data
         $account = Account::factory()->create(['user_uuid' => $user->uuid]);
-        Transaction::factory()->count(3)->create(['account_id' => $account->id]);
+        Transaction::factory()->count(3)->forAccount($account)->create([
+            'event_properties' => [
+                'amount' => 10000,
+                'assetCode' => 'USD',
+                'metadata' => [],
+            ],
+        ]);
         KycDocument::factory()->count(2)->create(['user_uuid' => $user->uuid]);
 
         $exportedData = $this->service->exportUserData($user);
@@ -173,16 +179,26 @@ class GdprServiceTest extends ServiceTestCase
         $account = Account::factory()->create(['user_uuid' => $user->uuid]);
 
         // Create various transaction types
-        Transaction::factory()->create([
-            'account_id' => $account->id,
-            'type'       => 'deposit',
-            'amount'     => 10000,
+        Transaction::factory()->forAccount($account)->create([
+            'meta_data' => [
+                'type' => 'deposit',
+            ],
+            'event_properties' => [
+                'amount' => 10000,
+                'assetCode' => 'USD',
+                'metadata' => [],
+            ],
         ]);
 
-        Transaction::factory()->create([
-            'account_id' => $account->id,
-            'type'       => 'withdrawal',
-            'amount'     => 5000,
+        Transaction::factory()->forAccount($account)->create([
+            'meta_data' => [
+                'type' => 'withdrawal',
+            ],
+            'event_properties' => [
+                'amount' => 5000,
+                'assetCode' => 'USD',
+                'metadata' => [],
+            ],
         ]);
 
         $exportedData = $this->service->exportUserData($user);

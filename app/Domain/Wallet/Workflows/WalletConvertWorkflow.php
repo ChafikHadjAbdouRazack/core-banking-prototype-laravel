@@ -12,12 +12,6 @@ class WalletConvertWorkflow extends Workflow
     /**
      * Execute wallet currency conversion within the same account
      * Uses AssetTransferAggregate for proper cross-asset operations.
-     *
-     * @param  AccountUuid $accountUuid
-     * @param  string      $fromAssetCode
-     * @param  string      $toAssetCode
-     * @param  int         $amount
-     * @return \Generator
      */
     public function execute(
         AccountUuid $accountUuid,

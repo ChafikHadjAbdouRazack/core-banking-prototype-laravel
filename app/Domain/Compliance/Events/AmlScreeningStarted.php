@@ -15,14 +15,6 @@ class AmlScreeningStarted extends ShouldBeStored
 {
     /**
      * Create new AML screening started event.
-     *
-     * @param string $entityId
-     * @param string $entityType
-     * @param string $screeningNumber
-     * @param string $type
-     * @param string $provider
-     * @param array $searchParameters
-     * @param string|null $providerReference
      */
     public function __construct(
         public string $entityId,
@@ -32,6 +24,5 @@ class AmlScreeningStarted extends ShouldBeStored
         public string $provider,
         public array $searchParameters,
         public ?string $providerReference = null
-    ) {
-    }
+    ) {}
 }

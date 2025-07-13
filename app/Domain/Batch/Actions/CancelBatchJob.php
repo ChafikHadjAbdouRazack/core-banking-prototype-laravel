@@ -8,10 +8,6 @@ use App\Models\BatchJob;
 
 class CancelBatchJob
 {
-    /**
-     * @param  BatchJobCancelled $event
-     * @return void
-     */
     public function __invoke(BatchJobCancelled $event): void
     {
         $batchJob = BatchJob::where('uuid', $event->aggregateRootUuid())->first();
@@ -23,14 +19,14 @@ class CancelBatchJob
         // Update batch job status
         $batchJob->update(
             [
-            'status'       => 'cancelled',
-            'completed_at' => $event->cancelledAt,
-            'metadata'     => array_merge(
-                $batchJob->metadata ?? [],
-                [
-                'cancellation_reason' => $event->reason,
-                ]
-            ),
+                'status' => 'cancelled',
+                'completed_at' => $event->cancelledAt,
+                'metadata' => array_merge(
+                    $batchJob->metadata ?? [],
+                    [
+                        'cancellation_reason' => $event->reason,
+                    ]
+                ),
             ]
         );
 

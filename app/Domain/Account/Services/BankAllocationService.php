@@ -24,12 +24,12 @@ class BankAllocationService
                 foreach ($defaultAllocations as $allocation) {
                     $preference = $user->bankPreferences()->create(
                         [
-                        'bank_code'             => $allocation['bank_code'],
-                        'bank_name'             => $allocation['bank_name'],
-                        'allocation_percentage' => $allocation['allocation_percentage'],
-                        'is_primary'            => $allocation['is_primary'],
-                        'status'                => $allocation['status'],
-                        'metadata'              => $allocation['metadata'] ?? [],
+                            'bank_code' => $allocation['bank_code'],
+                            'bank_name' => $allocation['bank_name'],
+                            'allocation_percentage' => $allocation['allocation_percentage'],
+                            'is_primary' => $allocation['is_primary'],
+                            'status' => $allocation['status'],
+                            'metadata' => $allocation['metadata'] ?? [],
                         ]
                     );
                     $preferences->push($preference);
@@ -43,9 +43,8 @@ class BankAllocationService
     /**
      * Update user's bank allocations.
      *
-     * @param  User  $user
-     * @param  array $allocations Array of ['bank_code' => percentage]
-     * @return Collection
+     * @param  array  $allocations  Array of ['bank_code' => percentage]
+     *
      * @throws \Exception
      */
     public function updateAllocations(User $user, array $allocations): Collection
@@ -83,12 +82,12 @@ class BankAllocationService
                     $bankInfo = UserBankPreference::AVAILABLE_BANKS[$bankCode];
                     $preference = $user->bankPreferences()->create(
                         [
-                        'bank_code'             => $bankCode,
-                        'bank_name'             => $bankInfo['name'],
-                        'allocation_percentage' => $percentage,
-                        'is_primary'            => $isFirst,
-                        'status'                => 'active',
-                        'metadata'              => $bankInfo,
+                            'bank_code' => $bankCode,
+                            'bank_name' => $bankInfo['name'],
+                            'allocation_percentage' => $percentage,
+                            'is_primary' => $isFirst,
+                            'status' => 'active',
+                            'metadata' => $bankInfo,
                         ]
                     );
 
@@ -133,12 +132,12 @@ class BankAllocationService
 
         return $user->bankPreferences()->create(
             [
-            'bank_code'             => $bankCode,
-            'bank_name'             => $bankInfo['name'],
-            'allocation_percentage' => $percentage,
-            'is_primary'            => false,
-            'status'                => 'active',
-            'metadata'              => $bankInfo,
+                'bank_code' => $bankCode,
+                'bank_name' => $bankInfo['name'],
+                'allocation_percentage' => $percentage,
+                'is_primary' => false,
+                'status' => 'active',
+                'metadata' => $bankInfo,
             ]
         );
     }
@@ -212,20 +211,20 @@ class BankAllocationService
             $isDiversified = UserBankPreference::isDiversified($user->uuid);
 
             return [
-                'distribution'             => $distribution,
-                'total_amount'             => $amountInCents,
+                'distribution' => $distribution,
+                'total_amount' => $amountInCents,
                 'total_insurance_coverage' => $totalInsurance,
-                'is_diversified'           => $isDiversified,
-                'bank_count'               => count($distribution),
+                'is_diversified' => $isDiversified,
+                'bank_count' => count($distribution),
             ];
         } catch (\Exception $e) {
             return [
-                'error'                    => $e->getMessage(),
-                'distribution'             => [],
-                'total_amount'             => $amountInCents,
+                'error' => $e->getMessage(),
+                'distribution' => [],
+                'total_amount' => $amountInCents,
                 'total_insurance_coverage' => 0,
-                'is_diversified'           => false,
-                'bank_count'               => 0,
+                'is_diversified' => false,
+                'bank_count' => 0,
             ];
         }
     }

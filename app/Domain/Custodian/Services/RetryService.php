@@ -28,19 +28,20 @@ class RetryService
         private readonly int $maxDelayMs = self::DEFAULT_MAX_DELAY_MS,
         private readonly float $multiplier = self::DEFAULT_MULTIPLIER,
         private readonly bool $jitter = self::DEFAULT_JITTER
-    ) {
-    }
+    ) {}
 
     /**
      * Execute operation with exponential backoff retry.
      *
      * @template T
-     * @param    callable(): T                   $operation           The operation to execute
-     * @param    array<class-string<\Throwable>> $retryableExceptions Exceptions that trigger retry
-     * @param    string                          $context             Context for logging
-     * @return   T
-     * @throws   MaxRetriesExceededException When all retry attempts are exhausted
-     * @throws   \Throwable When a non-retryable exception occurs
+     *
+     * @param  callable(): T  $operation  The operation to execute
+     * @param  array<class-string<\Throwable>>  $retryableExceptions  Exceptions that trigger retry
+     * @param  string  $context  Context for logging
+     * @return T
+     *
+     * @throws MaxRetriesExceededException When all retry attempts are exhausted
+     * @throws \Throwable When a non-retryable exception occurs
      */
     public function execute(
         callable $operation,
@@ -62,8 +63,8 @@ class RetryService
                     Log::info(
                         'Operation succeeded after retry',
                         [
-                        'context' => $context,
-                        'attempt' => $attempt,
+                            'context' => $context,
+                            'attempt' => $attempt,
                         ]
                     );
                 }
@@ -88,11 +89,11 @@ class RetryService
                 Log::warning(
                     'Operation failed, retrying',
                     [
-                    'context'      => $context,
-                    'attempt'      => $attempt,
-                    'max_attempts' => $this->maxAttempts,
-                    'delay_ms'     => $delayMs,
-                    'exception'    => $exception->getMessage(),
+                        'context' => $context,
+                        'attempt' => $attempt,
+                        'max_attempts' => $this->maxAttempts,
+                        'delay_ms' => $delayMs,
+                        'exception' => $exception->getMessage(),
                     ]
                 );
 
@@ -113,7 +114,8 @@ class RetryService
      * Execute operation with custom retry configuration.
      *
      * @template T
-     * @param    callable(): T $operation
+     *
+     * @param  callable(): T  $operation
      * @param    array{
      *     maxAttempts?: int,
      *     initialDelayMs?: int,
@@ -123,7 +125,7 @@ class RetryService
      *     retryableExceptions?: array<class-string<\Throwable>>,
      *     context?: string
      * } $config
-     * @return   T
+     * @return T
      */
     public function executeWithConfig(callable $operation, array $config = []): mixed
     {

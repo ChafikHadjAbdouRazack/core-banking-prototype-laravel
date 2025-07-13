@@ -9,13 +9,6 @@ use Workflow\Activity;
 
 class BalanceInquiryActivity extends Activity
 {
-    /**
-     * @param AccountUuid          $uuid
-     * @param string|null          $requestedBy
-     * @param TransactionAggregate $transaction
-     *
-     * @return array
-     */
     public function execute(
         AccountUuid $uuid,
         ?string $requestedBy,
@@ -30,28 +23,23 @@ class BalanceInquiryActivity extends Activity
 
         return [
             'account_uuid' => $uuid->getUuid(),
-            'balance'      => $aggregate->balance,
+            'balance' => $aggregate->balance,
             'account_name' => $account?->name,
-            'status'       => $account?->status ?? 'unknown',
-            'inquired_at'  => now()->toISOString(),
-            'inquired_by'  => $requestedBy,
+            'status' => $account?->status ?? 'unknown',
+            'inquired_at' => now()->toISOString(),
+            'inquired_by' => $requestedBy,
         ];
     }
 
-    /**
-     * @param  AccountUuid $uuid
-     * @param  string|null $requestedBy
-     * @return void
-     */
     private function logInquiry(AccountUuid $uuid, ?string $requestedBy): void
     {
         // Log to audit trail (could be a separate event or database log)
         logger()->info(
             'Balance inquiry',
             [
-            'account_uuid' => $uuid->getUuid(),
-            'requested_by' => $requestedBy,
-            'timestamp'    => now()->toISOString(),
+                'account_uuid' => $uuid->getUuid(),
+                'requested_by' => $requestedBy,
+                'timestamp' => now()->toISOString(),
             ]
         );
     }

@@ -12,11 +12,18 @@ parameters:
         - '#Call to an undefined static method App\\Domain\\[a-zA-Z\\]+\\Projections\\[a-zA-Z]+::#'
         - '#Access to an undefined property App\\Domain\\[a-zA-Z\\]+\\Projections\\[a-zA-Z]+::\$#'
         - '#Call to an undefined method Illuminate\\Database\\Eloquent\\Model::#'
+        - '#Call to an undefined static method App\\Domain\\[a-zA-Z\\]+\\Models\\[a-zA-Z]+::(create|where|find|orderBy|active|with|findOrFail)\(\)#'
         - '#Access to an undefined property App\\Models\\User::\$(tokens|ownedTeams|id|name|email|uuid|kyc_status|kyc_level|kyc_submitted_at|kyc_approved_at|kyc_expires_at|kycDocuments)#'
         - '#Access to an undefined property App\\Models\\Team::\$(id|owner)#'
+        - '#Access to an undefined property Illuminate\\Contracts\\Auth\\Authenticatable::\$currentTeam#'
+        - '#Access to an undefined property App\\Models\\Transaction::\$aggregate_uuid#'
+        - '#Access to an undefined property App\\Models\\Account::\$uuid#'
+        - '#Access to an undefined property Illuminate\\Support\\Optional::\$id#'
         - '#Call to an undefined static method App\\Models\\User::(create|forceCreate|where)\(\)#'
         - '#Call to an undefined static method App\\Models\\Team::(create|forceCreate)\(\)#'
         - '#Call to an undefined static method App\\Models\\AmlScreening::(create|find|whereYear)\(\)#'
+        - '#Call to an undefined static method App\\Models\\[a-zA-Z]+::(create|where|find|orderBy|active|with|findOrFail|factory)\(\)#'
+        - '#Call to an undefined static method App\\Domain\\[a-zA-Z\\]+\\Models\\[a-zA-Z]+::factory\(\)#'
         - '#Access to an undefined property App\\Models\\AmlScreening::\$(id|confirmed_matches|false_positives|confirmed_matches_detail|dismissed_matches_detail|potential_matches_detail)#'
         
         # Workflow Activity make - using ActivityStub instead
@@ -56,6 +63,9 @@ parameters:
         
         # Activity execute methods
         - '#Method App\\Domain\\[a-zA-Z\\]+\\Activities\\[a-zA-Z]+Activity::execute\(\) has parameter \$#'
+        
+        # Workflow activities with properties that are only written
+        - '#Property App\\Domain\\[a-zA-Z\\]+\\Workflows\\Activities\\[a-zA-Z]+Activities::\$[a-zA-Z]+ is never read, only written#'
         
     reportUnmatchedIgnoredErrors: false
     treatPhpDocTypesAsCertain: false

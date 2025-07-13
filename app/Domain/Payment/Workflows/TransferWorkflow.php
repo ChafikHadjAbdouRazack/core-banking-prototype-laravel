@@ -12,11 +12,6 @@ use Workflow\Workflow;
 class TransferWorkflow extends Workflow
 {
     /**
-     * @param AccountUuid $from
-     * @param AccountUuid $to
-     * @param Money       $money
-     *
-     * @return \Generator
      * @throws \Throwable
      */
     public function execute(AccountUuid $from, AccountUuid $to, Money $money): \Generator

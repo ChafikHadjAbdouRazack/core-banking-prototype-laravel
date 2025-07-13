@@ -16,6 +16,5 @@ class ApplicationRejected
     public function __construct(
         public readonly FinancialInstitutionApplication $application,
         public readonly string $reason
-    ) {
-    }
+    ) {}
 }

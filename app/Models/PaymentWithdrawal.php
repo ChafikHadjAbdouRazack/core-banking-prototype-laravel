@@ -2,9 +2,13 @@
 
 namespace App\Models;
 
-use Spatie\EventSourcing\StoredEvents\Models\EloquentStoredEvent;
+use App\Domain\Payment\Models\PaymentWithdrawal as BasePaymentWithdrawal;
 
-class PaymentWithdrawal extends EloquentStoredEvent
+/**
+ * @deprecated Use App\Domain\Payment\Models\PaymentWithdrawal instead
+ */
+class PaymentWithdrawal extends BasePaymentWithdrawal
 {
-    public $table = 'payment_withdrawals';
+    // This is a facade/proxy class for backward compatibility
+    // All functionality is inherited from the domain model
 }

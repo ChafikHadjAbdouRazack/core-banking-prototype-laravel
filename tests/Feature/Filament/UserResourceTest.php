@@ -29,10 +29,10 @@ it('can render user creation page', function () {
 
 it('can create user', function () {
     $userData = [
-        'uuid'                  => fake()->uuid(),
-        'name'                  => 'John Doe',
-        'email'                 => 'john@example.com',
-        'password'              => 'password123',
+        'uuid' => fake()->uuid(),
+        'name' => 'John Doe',
+        'email' => 'john@example.com',
+        'password' => 'password123',
         'password_confirmation' => 'password123',
     ];
 
@@ -42,7 +42,7 @@ it('can create user', function () {
         ->assertHasNoFormErrors();
 
     $this->assertDatabaseHas('users', [
-        'name'  => 'John Doe',
+        'name' => 'John Doe',
         'email' => 'john@example.com',
     ]);
 });
@@ -50,8 +50,8 @@ it('can create user', function () {
 it('validates required fields when creating user', function () {
     livewire(UserResource\Pages\CreateUser::class)
         ->fillForm([
-            'name'     => '',
-            'email'    => '',
+            'name' => '',
+            'email' => '',
             'password' => '',
         ])
         ->call('create')
@@ -63,10 +63,10 @@ it('validates unique email when creating user', function () {
 
     livewire(UserResource\Pages\CreateUser::class)
         ->fillForm([
-            'uuid'                  => fake()->uuid(),
-            'name'                  => 'John Doe',
-            'email'                 => $existingUser->email,
-            'password'              => 'password123',
+            'uuid' => fake()->uuid(),
+            'name' => 'John Doe',
+            'email' => $existingUser->email,
+            'password' => 'password123',
             'password_confirmation' => 'password123',
         ])
         ->call('create')
@@ -85,7 +85,7 @@ it('can retrieve user data for editing', function () {
 
     livewire(UserResource\Pages\EditUser::class, ['record' => $user->getRouteKey()])
         ->assertFormSet([
-            'name'  => $user->name,
+            'name' => $user->name,
             'email' => $user->email,
         ]);
 });
@@ -94,7 +94,7 @@ it('can update user', function () {
     $user = User::factory()->create();
 
     $newData = [
-        'name'  => 'Updated Name',
+        'name' => 'Updated Name',
         'email' => 'updated@example.com',
     ];
 
@@ -199,14 +199,14 @@ it('displays formatted registration date', function () {
 it('can edit user and see related data', function () {
     $user = User::factory()->create();
     $account = $user->accounts()->create([
-        'uuid'    => fake()->uuid(),
-        'name'    => 'Test Account',
+        'uuid' => fake()->uuid(),
+        'name' => 'Test Account',
         'balance' => 50000,
     ]);
 
     livewire(UserResource\Pages\EditUser::class, ['record' => $user->getRouteKey()])
         ->assertFormSet([
-            'name'  => $user->name,
+            'name' => $user->name,
             'email' => $user->email,
         ]);
 });

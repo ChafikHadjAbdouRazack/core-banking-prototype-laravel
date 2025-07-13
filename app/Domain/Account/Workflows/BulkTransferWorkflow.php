@@ -13,10 +13,8 @@ class BulkTransferWorkflow extends Workflow
     /**
      * Execute bulk transfers with compensation handling.
      *
-     * @param AccountUuid $from
-     * @param array       $transfers - array of ['to' => AccountUuid, 'amount' => Money]
+     * @param  array  $transfers  - array of ['to' => AccountUuid, 'amount' => Money]
      *
-     * @return \Generator
      * @throws \Throwable
      */
     public function execute(AccountUuid $from, array $transfers): \Generator

@@ -18,14 +18,14 @@ class BlockchainWalletProjector extends Projector
     {
         DB::table('blockchain_wallets')->insert(
             [
-            'wallet_id'  => $event->walletId,
-            'user_id'    => $event->userId,
-            'type'       => $event->type,
-            'status'     => 'active',
-            'settings'   => json_encode($event->settings),
-            'metadata'   => json_encode(['master_public_key' => $event->masterPublicKey]),
-            'created_at' => now(),
-            'updated_at' => now(),
+                'wallet_id' => $event->walletId,
+                'user_id' => $event->userId,
+                'type' => $event->type,
+                'status' => 'active',
+                'settings' => json_encode($event->settings),
+                'metadata' => json_encode(['master_public_key' => $event->masterPublicKey]),
+                'created_at' => now(),
+                'updated_at' => now(),
             ]
         );
     }
@@ -34,15 +34,15 @@ class BlockchainWalletProjector extends Projector
     {
         DB::table('wallet_addresses')->insert(
             [
-            'wallet_id'       => $event->walletId,
-            'chain'           => $event->chain,
-            'address'         => $event->address,
-            'public_key'      => $event->publicKey,
-            'derivation_path' => $event->derivationPath,
-            'label'           => $event->label,
-            'is_active'       => true,
-            'created_at'      => now(),
-            'updated_at'      => now(),
+                'wallet_id' => $event->walletId,
+                'chain' => $event->chain,
+                'address' => $event->address,
+                'public_key' => $event->publicKey,
+                'derivation_path' => $event->derivationPath,
+                'label' => $event->label,
+                'is_active' => true,
+                'created_at' => now(),
+                'updated_at' => now(),
             ]
         );
     }
@@ -53,8 +53,8 @@ class BlockchainWalletProjector extends Projector
             ->where('wallet_id', $event->walletId)
             ->update(
                 [
-                'settings'   => json_encode($event->newSettings),
-                'updated_at' => now(),
+                    'settings' => json_encode($event->newSettings),
+                    'updated_at' => now(),
                 ]
             );
     }
@@ -74,9 +74,9 @@ class BlockchainWalletProjector extends Projector
             ->where('wallet_id', $event->walletId)
             ->update(
                 [
-                'status'     => 'frozen',
-                'metadata'   => json_encode($metadata),
-                'updated_at' => now(),
+                    'status' => 'frozen',
+                    'metadata' => json_encode($metadata),
+                    'updated_at' => now(),
                 ]
             );
     }
@@ -96,9 +96,9 @@ class BlockchainWalletProjector extends Projector
             ->where('wallet_id', $event->walletId)
             ->update(
                 [
-                'status'     => 'active',
-                'metadata'   => json_encode($metadata),
-                'updated_at' => now(),
+                    'status' => 'active',
+                    'metadata' => json_encode($metadata),
+                    'updated_at' => now(),
                 ]
             );
     }
@@ -111,8 +111,8 @@ class BlockchainWalletProjector extends Projector
             ->where('chain', $event->chain)
             ->update(
                 [
-                'public_key' => $event->newPublicKey,
-                'updated_at' => now(),
+                    'public_key' => $event->newPublicKey,
+                    'updated_at' => now(),
                 ]
             );
 
@@ -123,7 +123,7 @@ class BlockchainWalletProjector extends Projector
 
         $metadata = json_decode($wallet->metadata, true) ?? [];
         $metadata['last_key_rotation'] = [
-            'chain'      => $event->chain,
+            'chain' => $event->chain,
             'rotated_by' => $event->rotatedBy,
             'rotated_at' => $event->rotatedAt->toDateTimeString(),
         ];
@@ -132,8 +132,8 @@ class BlockchainWalletProjector extends Projector
             ->where('wallet_id', $event->walletId)
             ->update(
                 [
-                'metadata'   => json_encode($metadata),
-                'updated_at' => now(),
+                    'metadata' => json_encode($metadata),
+                    'updated_at' => now(),
                 ]
             );
     }
@@ -142,14 +142,14 @@ class BlockchainWalletProjector extends Projector
     {
         DB::table('wallet_backups')->insert(
             [
-            'wallet_id'      => $event->walletId,
-            'backup_id'      => $event->backupId,
-            'backup_method'  => $event->backupMethod,
-            'encrypted_data' => $event->encryptedData,
-            'checksum'       => hash('sha256', $event->encryptedData),
-            'created_by'     => $event->createdBy,
-            'created_at'     => $event->createdAt,
-            'updated_at'     => $event->createdAt,
+                'wallet_id' => $event->walletId,
+                'backup_id' => $event->backupId,
+                'backup_method' => $event->backupMethod,
+                'encrypted_data' => $event->encryptedData,
+                'checksum' => hash('sha256', $event->encryptedData),
+                'created_by' => $event->createdBy,
+                'created_at' => $event->createdAt,
+                'updated_at' => $event->createdAt,
             ]
         );
 
@@ -160,8 +160,8 @@ class BlockchainWalletProjector extends Projector
 
         $metadata = json_decode($wallet->metadata, true) ?? [];
         $metadata['last_backup'] = [
-            'backup_id'  => $event->backupId,
-            'method'     => $event->backupMethod,
+            'backup_id' => $event->backupId,
+            'method' => $event->backupMethod,
             'created_by' => $event->createdBy,
             'created_at' => $event->createdAt->toDateTimeString(),
         ];
@@ -170,8 +170,8 @@ class BlockchainWalletProjector extends Projector
             ->where('wallet_id', $event->walletId)
             ->update(
                 [
-                'metadata'   => json_encode($metadata),
-                'updated_at' => now(),
+                    'metadata' => json_encode($metadata),
+                    'updated_at' => now(),
                 ]
             );
     }

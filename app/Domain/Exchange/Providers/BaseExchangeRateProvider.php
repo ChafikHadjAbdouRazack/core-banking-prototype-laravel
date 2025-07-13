@@ -42,7 +42,7 @@ abstract class BaseExchangeRateProvider implements IExchangeRateProvider
     protected function getHeaders(): array
     {
         $headers = [
-            'Accept'       => 'application/json',
+            'Accept' => 'application/json',
             'Content-Type' => 'application/json',
         ];
 
@@ -64,7 +64,7 @@ abstract class BaseExchangeRateProvider implements IExchangeRateProvider
             Log::error(
                 "Exchange rate provider {$this->getName()} health check failed",
                 [
-                'error' => $e->getMessage(),
+                    'error' => $e->getMessage(),
                 ]
             );
 
@@ -136,9 +136,9 @@ abstract class BaseExchangeRateProvider implements IExchangeRateProvider
             Log::debug(
                 "Exchange rate provider {$this->getName()} request",
                 [
-                'method'   => $method,
-                'endpoint' => $endpoint,
-                'data'     => $data,
+                    'method' => $method,
+                    'endpoint' => $endpoint,
+                    'data' => $data,
                 ]
             );
         }
@@ -153,10 +153,10 @@ abstract class BaseExchangeRateProvider implements IExchangeRateProvider
             Log::debug(
                 "Exchange rate provider {$this->getName()} response",
                 [
-                'method'   => $method,
-                'endpoint' => $endpoint,
-                'status'   => $response->status(),
-                'body'     => $response->json(),
+                    'method' => $method,
+                    'endpoint' => $endpoint,
+                    'status' => $response->status(),
+                    'body' => $response->json(),
                 ]
             );
         }
@@ -181,7 +181,7 @@ abstract class BaseExchangeRateProvider implements IExchangeRateProvider
             $status,
             null,
             [
-            'response' => $body,
+                'response' => $body,
             ]
         );
     }

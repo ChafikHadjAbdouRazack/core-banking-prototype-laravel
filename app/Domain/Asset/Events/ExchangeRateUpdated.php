@@ -15,8 +15,7 @@ class ExchangeRateUpdated extends ShouldBeStored
         public readonly float $newRate,
         public readonly string $source,
         public readonly ?array $metadata = null
-    ) {
-    }
+    ) {}
 
     /**
      * Get the rate change percentage.

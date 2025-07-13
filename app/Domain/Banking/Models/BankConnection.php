@@ -20,8 +20,7 @@ class BankConnection
         public readonly Carbon $createdAt,
         public readonly Carbon $updatedAt,
         public readonly array $metadata = [],
-    ) {
-    }
+    ) {}
 
     /**
      * Check if connection is active.
@@ -90,17 +89,17 @@ class BankConnection
     public function toArray(): array
     {
         return [
-            'id'           => $this->id,
-            'user_id'      => $this->userId,
-            'bank_code'    => $this->bankCode,
-            'status'       => $this->status,
-            'credentials'  => $this->credentials,
-            'permissions'  => $this->permissions,
+            'id' => $this->id,
+            'user_id' => $this->userId,
+            'bank_code' => $this->bankCode,
+            'status' => $this->status,
+            'credentials' => $this->credentials,
+            'permissions' => $this->permissions,
             'last_sync_at' => $this->lastSyncAt?->toIso8601String(),
-            'expires_at'   => $this->expiresAt?->toIso8601String(),
-            'created_at'   => $this->createdAt->toIso8601String(),
-            'updated_at'   => $this->updatedAt->toIso8601String(),
-            'metadata'     => $this->metadata,
+            'expires_at' => $this->expiresAt?->toIso8601String(),
+            'created_at' => $this->createdAt->toIso8601String(),
+            'updated_at' => $this->updatedAt->toIso8601String(),
+            'metadata' => $this->metadata,
         ];
     }
 

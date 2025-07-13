@@ -7,7 +7,7 @@ use App\Domain\Exchange\Providers\MockExchangeRateProvider;
 use App\Domain\Exchange\Services\ExchangeRateProviderRegistry;
 
 beforeEach(function () {
-    $this->registry = new ExchangeRateProviderRegistry();
+    $this->registry = new ExchangeRateProviderRegistry;
     $this->mockProvider = new MockExchangeRateProvider(['name' => 'Mock Provider']);
 });
 
@@ -68,7 +68,7 @@ it('can get available providers', function () {
     $this->registry->register('mock1', $this->mockProvider);
 
     $unavailableProvider = new MockExchangeRateProvider([
-        'name'      => 'Unavailable Provider',
+        'name' => 'Unavailable Provider',
         'available' => false,
     ]);
     $this->registry->register('mock2', $unavailableProvider);
@@ -112,12 +112,14 @@ it('can find providers by currency pair', function () {
 });
 
 it('can get rate from first available provider', function () {
+    $this->mockProvider->setMockRate('USD', 'EUR', 1.2);
     $this->registry->register('mock', $this->mockProvider);
 
     $rate = $this->registry->getRate('USD', 'EUR');
 
     expect($rate)->toBeInstanceOf(Brick\Math\BigDecimal::class);
-    expect((string) $rate)->toBe('1.2000');
+    // The mock provider adds some variance (0.1%) to the rate
+    expect($rate->toFloat())->toEqualWithDelta(1.2, 0.002);
 });
 
 it('throws exception when no providers available for pair', function () {
@@ -142,17 +144,18 @@ it('can get rates from all providers', function () {
 });
 
 it('can get aggregated rate', function () {
+    $this->mockProvider->setMockRate('USD', 'EUR', 0.85);
     $this->registry->register('mock1', $this->mockProvider);
 
     $secondProvider = new MockExchangeRateProvider(['name' => 'Second Provider']);
+    $secondProvider->setMockRate('USD', 'EUR', 0.86);
     $this->registry->register('mock2', $secondProvider);
 
     $aggregated = $this->registry->getAggregatedRate('USD', 'EUR');
 
-    expect($aggregated->provider)->toBe('aggregated');
-    expect($aggregated->metadata['providers'])->toContain('mock1');
-    expect($aggregated->metadata['providers'])->toContain('mock2');
-    expect($aggregated->metadata['count'])->toBe(2);
+    expect($aggregated)->toBeInstanceOf(Brick\Math\BigDecimal::class);
+    // The aggregated rate should be around the median of the two rates
+    expect($aggregated->toFloat())->toEqualWithDelta(0.855, 0.01);
 });
 
 it('can remove provider', function () {

@@ -15,8 +15,7 @@ class BasketValueCalculationService
 {
     public function __construct(
         private readonly ExchangeRateService $exchangeRateService
-    ) {
-    }
+    ) {}
 
     /**
      * Calculate the current value of a basket based on its components.
@@ -63,9 +62,9 @@ class BasketValueCalculationService
                 Log::error(
                     'Error calculating component value',
                     [
-                    'basket'    => $basket->code,
-                    'component' => $component->asset_code,
-                    'error'     => $e->getMessage(),
+                        'basket' => $basket->code,
+                        'component' => $component->asset_code,
+                        'error' => $e->getMessage(),
                     ]
                 );
 
@@ -84,19 +83,19 @@ class BasketValueCalculationService
 
                 $basketValue = BasketValue::create(
                     [
-                    'basket_asset_code' => $basket->code,
-                    'value'             => $totalValue,
-                    'calculated_at'     => now(),
-                    'component_values'  => array_merge(
-                        $componentValues,
-                        [
-                        '_metadata' => [
-                        'calculation_errors' => $errors,
-                        'total_components'   => count($componentValues),
-                        'base_currency'      => 'USD',
-                        ],
-                        ]
-                    ),
+                        'basket_asset_code' => $basket->code,
+                        'value' => $totalValue,
+                        'calculated_at' => now(),
+                        'component_values' => array_merge(
+                            $componentValues,
+                            [
+                                '_metadata' => [
+                                    'calculation_errors' => $errors,
+                                    'total_components' => count($componentValues),
+                                    'base_currency' => 'USD',
+                                ],
+                            ]
+                        ),
                     ]
                 );
 
@@ -123,12 +122,12 @@ class BasketValueCalculationService
         $weightedValue = $assetValueInUsd * ($component->weight / 100);
 
         return [
-            'asset_code'     => $component->asset_code,
-            'asset_name'     => $asset->name,
-            'value'          => $assetValueInUsd,
-            'weight'         => $component->weight,
+            'asset_code' => $component->asset_code,
+            'asset_name' => $asset->name,
+            'value' => $assetValueInUsd,
+            'weight' => $component->weight,
             'weighted_value' => $weightedValue,
-            'currency'       => 'USD',
+            'currency' => 'USD',
         ];
     }
 
@@ -157,16 +156,16 @@ class BasketValueCalculationService
     {
         return BasketValue::create(
             [
-            'basket_asset_code' => $basket->code,
-            'value'             => 0.0,
-            'calculated_at'     => now(),
-            'component_values'  => [
-                '_metadata' => [
-                    'calculation_errors' => ['No active components'],
-                    'total_components'   => 0,
-                    'base_currency'      => 'USD',
+                'basket_asset_code' => $basket->code,
+                'value' => 0.0,
+                'calculated_at' => now(),
+                'component_values' => [
+                    '_metadata' => [
+                        'calculation_errors' => ['No active components'],
+                        'total_components' => 0,
+                        'base_currency' => 'USD',
+                    ],
                 ],
-            ],
             ]
         );
     }
@@ -179,21 +178,21 @@ class BasketValueCalculationService
         $baskets = BasketAsset::active()->get();
         $results = [
             'successful' => [],
-            'failed'     => [],
+            'failed' => [],
         ];
 
         foreach ($baskets as $basket) {
             try {
                 $value = $this->calculateValue($basket, false); // Don't use cache
                 $results['successful'][] = [
-                    'basket'        => $basket->code,
-                    'value'         => $value->value,
+                    'basket' => $basket->code,
+                    'value' => $value->value,
                     'calculated_at' => $value->calculated_at,
                 ];
             } catch (\Exception $e) {
                 $results['failed'][] = [
                     'basket' => $basket->code,
-                    'error'  => $e->getMessage(),
+                    'error' => $e->getMessage(),
                 ];
             }
         }
@@ -216,9 +215,9 @@ class BasketValueCalculationService
             ->map(
                 function ($value) {
                     return [
-                    'value'         => $value->value,
-                    'calculated_at' => $value->calculated_at->toISOString(),
-                    'components'    => $value->component_values,
+                        'value' => $value->value,
+                        'calculated_at' => $value->calculated_at->toISOString(),
+                        'components' => $value->component_values,
                     ];
                 }
             )
@@ -245,11 +244,11 @@ class BasketValueCalculationService
 
         if (! $startValue || ! $endValue) {
             return [
-                'start_value'       => null,
-                'end_value'         => null,
-                'absolute_change'   => 0,
+                'start_value' => null,
+                'end_value' => null,
+                'absolute_change' => 0,
                 'percentage_change' => 0,
-                'error'             => 'Insufficient data for performance calculation',
+                'error' => 'Insufficient data for performance calculation',
             ];
         }
 
@@ -259,13 +258,13 @@ class BasketValueCalculationService
             : 0;
 
         return [
-            'start_date'        => $startValue->calculated_at->toISOString(),
-            'end_date'          => $endValue->calculated_at->toISOString(),
-            'start_value'       => $startValue->value,
-            'end_value'         => $endValue->value,
-            'absolute_change'   => $change,
+            'start_date' => $startValue->calculated_at->toISOString(),
+            'end_date' => $endValue->calculated_at->toISOString(),
+            'start_value' => $startValue->value,
+            'end_value' => $endValue->value,
+            'absolute_change' => $change,
             'percentage_change' => round($percentageChange, 2),
-            'days'              => $startValue->calculated_at->diffInDays($endValue->calculated_at),
+            'days' => $startValue->calculated_at->diffInDays($endValue->calculated_at),
         ];
     }
 

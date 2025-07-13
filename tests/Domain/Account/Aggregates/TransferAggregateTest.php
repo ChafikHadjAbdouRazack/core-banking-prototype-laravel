@@ -28,25 +28,25 @@ class TransferAggregateTest extends DomainTestCase
     public function can_transfer_money(): void
     {
         TransferAggregate::fake(self::TRANSFER_UUID)
-                            ->when(
-                                function (
-                                    TransferAggregate $transfers
-                                ): void {
-                                    $transfers->transfer(
-                                        from: $this->account_uuid(self::ACCOUNT_FROM_UUID),
-                                        to: $this->account_uuid(self::ACCOUNT_TO_UUID),
-                                        money: $this->money(10)
-                                    );
-                                }
-                            )
-                            ->assertRecorded([
-                                new MoneyTransferred(
-                                    from: $this->account_uuid(self::ACCOUNT_FROM_UUID),
-                                    to: $this->account_uuid(self::ACCOUNT_TO_UUID),
-                                    money: $money = $this->money(10),
-                                    hash: $this->generateHash($money)
-                                ),
-                            ]);
+            ->when(
+                function (
+                    TransferAggregate $transfers
+                ): void {
+                    $transfers->transfer(
+                        from: $this->account_uuid(self::ACCOUNT_FROM_UUID),
+                        to: $this->account_uuid(self::ACCOUNT_TO_UUID),
+                        money: $this->money(10)
+                    );
+                }
+            )
+            ->assertRecorded([
+                new MoneyTransferred(
+                    from: $this->account_uuid(self::ACCOUNT_FROM_UUID),
+                    to: $this->account_uuid(self::ACCOUNT_TO_UUID),
+                    money: $money = $this->money(10),
+                    hash: $this->generateHash($money)
+                ),
+            ]);
     }
 
     #[Test]
@@ -57,35 +57,35 @@ class TransferAggregateTest extends DomainTestCase
         $this->resetHash($validHash->getHash());
 
         TransferAggregate::fake(self::TRANSFER_UUID)
-                            ->given([
+            ->given([
+                new MoneyTransferred(
+                    from: $this->account_uuid(self::ACCOUNT_FROM_UUID),
+                    to: $this->account_uuid(self::ACCOUNT_TO_UUID),
+                    money: $initialMoney,
+                    hash: $validHash
+                ),
+            ])
+            ->when(
+                function (
+                    TransferAggregate $transfers
+                ): void {
+                    $this->assertExceptionThrown(
+                        function () use ($transfers) {
+                            $transfers->applyMoneyTransferred(
                                 new MoneyTransferred(
                                     from: $this->account_uuid(self::ACCOUNT_FROM_UUID),
                                     to: $this->account_uuid(self::ACCOUNT_TO_UUID),
-                                    money: $initialMoney,
-                                    hash: $validHash
-                                ),
-                            ])
-                            ->when(
-                                function (
-                                    TransferAggregate $transfers
-                                ): void {
-                                    $this->assertExceptionThrown(
-                                        function () use ($transfers) {
-                                            $transfers->applyMoneyTransferred(
-                                                new MoneyTransferred(
-                                                    from: $this->account_uuid(self::ACCOUNT_FROM_UUID),
-                                                    to: $this->account_uuid(self::ACCOUNT_TO_UUID),
-                                                    money: $this->money(10),
-                                                    hash: $this->hash(
-                                                        'invalid-hash'
-                                                    ),
-                                                )
-                                            );
-                                        },
-                                        InvalidHashException::class
-                                    );
-                                }
+                                    money: $this->money(10),
+                                    hash: $this->hash(
+                                        'invalid-hash'
+                                    ),
+                                )
                             );
+                        },
+                        InvalidHashException::class
+                    );
+                }
+            );
     }
 
     #[Test]
@@ -96,62 +96,47 @@ class TransferAggregateTest extends DomainTestCase
         $this->resetHash($validHash->getHash());
 
         TransferAggregate::fake(self::TRANSFER_UUID)
-                            ->given([
+            ->given([
+                new MoneyTransferred(
+                    from: $this->account_uuid(self::ACCOUNT_FROM_UUID),
+                    to: $this->account_uuid(self::ACCOUNT_TO_UUID),
+                    money: $initialMoney,
+                    hash: $validHash
+                ),
+            ])
+            ->when(
+                function (
+                    TransferAggregate $transfers
+                ): void {
+                    $this->assertExceptionThrown(
+                        function () use ($transfers) {
+                            $transfers->recordThat(
                                 new MoneyTransferred(
                                     from: $this->account_uuid(self::ACCOUNT_FROM_UUID),
                                     to: $this->account_uuid(self::ACCOUNT_TO_UUID),
-                                    money: $initialMoney,
-                                    hash: $validHash
-                                ),
-                            ])
-                            ->when(
-                                function (
-                                    TransferAggregate $transfers
-                                ): void {
-                                    $this->assertExceptionThrown(
-                                        function () use ($transfers) {
-                                            $transfers->recordThat(
-                                                new MoneyTransferred(
-                                                    from: $this->account_uuid(self::ACCOUNT_FROM_UUID),
-                                                    to: $this->account_uuid(self::ACCOUNT_TO_UUID),
-                                                    money: $this->money(10),
-                                                    hash: $this->hash(
-                                                        'invalid-hash'
-                                                    ),
-                                                )
-                                            );
-                                        },
-                                        InvalidHashException::class
-                                    );
-                                }
+                                    money: $this->money(10),
+                                    hash: $this->hash(
+                                        'invalid-hash'
+                                    ),
+                                )
                             );
+                        },
+                        InvalidHashException::class
+                    );
+                }
+            );
     }
 
-    /**
-     * @param int $amount
-     *
-     * @return Money
-     */
     private function money(int $amount): Money
     {
         return hydrate(Money::class, ['amount' => $amount]);
     }
 
-    /**
-     * @param string $uuid
-     *
-     * @return AccountUuid
-     */
     private function account_uuid(string $uuid): AccountUuid
     {
         return hydrate(AccountUuid::class, ['uuid' => $uuid]);
     }
 
-    /**
-     * @param string|null $hash
-     *
-     * @return Hash
-     */
     private function hash(?string $hash = ''): Hash
     {
         return hydrate(

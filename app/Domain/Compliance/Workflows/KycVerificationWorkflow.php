@@ -22,10 +22,10 @@ class KycVerificationWorkflow extends Workflow
                     fn () => ActivityStub::make(
                         'App\Domain\Compliance\Activities\KycVerificationActivity',
                         [
-                        'user_uuid'   => $input['user_uuid'],
-                        'action'      => 'reject',
-                        'verified_by' => 'system',
-                        'reason'      => 'Compensation rollback due to workflow failure',
+                            'user_uuid' => $input['user_uuid'],
+                            'action' => 'reject',
+                            'verified_by' => 'system',
+                            'reason' => 'Compensation rollback due to workflow failure',
                         ]
                     )
                 );
@@ -36,8 +36,8 @@ class KycVerificationWorkflow extends Workflow
                     fn () => ActivityStub::make(
                         'App\Domain\Compliance\Activities\KycSubmissionActivity',
                         [
-                        'user_uuid' => $input['user_uuid'],
-                        'documents' => [], // Empty documents for status reset
+                            'user_uuid' => $input['user_uuid'],
+                            'documents' => [], // Empty documents for status reset
                         ]
                     )
                 );

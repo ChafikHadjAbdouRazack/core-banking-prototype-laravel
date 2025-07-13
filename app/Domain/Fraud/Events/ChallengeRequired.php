@@ -32,9 +32,9 @@ class ChallengeRequired
         return [
             'fraud',
             'challenge_required',
-            'transaction:' . $this->transaction->id,
-            'fraud_score:' . $this->fraudScore->id,
-            'risk_level:' . $this->fraudScore->risk_level,
+            'transaction:'.$this->transaction->id,
+            'fraud_score:'.$this->fraudScore->id,
+            'risk_level:'.$this->fraudScore->risk_level,
         ];
     }
 }

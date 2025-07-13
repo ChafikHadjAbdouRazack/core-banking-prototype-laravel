@@ -29,9 +29,9 @@ class FraudCaseResolved
             'fraud',
             'fraud_case',
             'case_resolved',
-            'case:' . $this->fraudCase->case_number,
-            'outcome:' . $this->fraudCase->outcome,
-            'resolution:' . $this->fraudCase->resolution,
+            'case:'.$this->fraudCase->case_number,
+            'outcome:'.$this->fraudCase->outcome,
+            'resolution:'.$this->fraudCase->resolution,
         ];
     }
 }

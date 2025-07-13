@@ -97,7 +97,7 @@ class Loan extends AggregateRoot
                 termMonths: $termMonths,
                 repaymentSchedule: $schedule,
                 terms: $terms,
-                createdAt: new \DateTimeImmutable()
+                createdAt: new \DateTimeImmutable
             )
         );
 
@@ -119,7 +119,7 @@ class Loan extends AggregateRoot
                 loanId: $this->loanId,
                 investorIds: $investorIds,
                 fundedAmount: $fundedAmount,
-                fundedAt: new \DateTimeImmutable()
+                fundedAt: new \DateTimeImmutable
             )
         );
 
@@ -136,7 +136,7 @@ class Loan extends AggregateRoot
             new LoanDisbursed(
                 loanId: $this->loanId,
                 amount: $amount,
-                disbursedAt: new \DateTimeImmutable()
+                disbursedAt: new \DateTimeImmutable
             )
         );
 
@@ -171,7 +171,7 @@ class Loan extends AggregateRoot
                 principalAmount: $principalAmount,
                 interestAmount: $interestAmount,
                 remainingBalance: $remainingBalance,
-                paidAt: new \DateTimeImmutable()
+                paidAt: new \DateTimeImmutable
             )
         );
 
@@ -182,7 +182,7 @@ class Loan extends AggregateRoot
                     loanId: $this->loanId,
                     totalPrincipalPaid: $this->principal,
                     totalInterestPaid: bcadd($this->totalInterestPaid, $interestAmount, 2),
-                    completedAt: new \DateTimeImmutable()
+                    completedAt: new \DateTimeImmutable
                 )
             );
         }
@@ -200,7 +200,7 @@ class Loan extends AggregateRoot
             new LoanPaymentMissed(
                 loanId: $this->loanId,
                 paymentNumber: $paymentNumber,
-                missedAt: new \DateTimeImmutable()
+                missedAt: new \DateTimeImmutable
             )
         );
 
@@ -218,7 +218,7 @@ class Loan extends AggregateRoot
                 loanId: $this->loanId,
                 reason: $reason,
                 outstandingBalance: $this->outstandingBalance,
-                defaultedAt: new \DateTimeImmutable()
+                defaultedAt: new \DateTimeImmutable
             )
         );
 
@@ -241,7 +241,7 @@ class Loan extends AggregateRoot
                 settlementAmount: $settlementAmount,
                 outstandingBalance: $this->outstandingBalance,
                 settledBy: $settledBy,
-                settledAt: new \DateTimeImmutable()
+                settledAt: new \DateTimeImmutable
             )
         );
 
@@ -341,11 +341,11 @@ class Loan extends AggregateRoot
             $remainingBalance = $remainingBalance->minus($principalPayment);
 
             $payments[] = [
-                'payment_number'    => $i,
-                'due_date'          => now()->addMonths($i)->format('Y-m-d'),
-                'principal'         => $principalPayment->__toString(),
-                'interest'          => $interestPayment->__toString(),
-                'total'             => $monthlyPayment->__toString(),
+                'payment_number' => $i,
+                'due_date' => now()->addMonths($i)->format('Y-m-d'),
+                'principal' => $principalPayment->__toString(),
+                'interest' => $interestPayment->__toString(),
+                'total' => $monthlyPayment->__toString(),
                 'remaining_balance' => $remainingBalance->__toString(),
             ];
         }

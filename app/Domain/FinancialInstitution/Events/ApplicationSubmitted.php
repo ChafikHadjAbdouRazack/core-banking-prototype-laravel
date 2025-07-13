@@ -15,6 +15,5 @@ class ApplicationSubmitted
 
     public function __construct(
         public readonly FinancialInstitutionApplication $application
-    ) {
-    }
+    ) {}
 }

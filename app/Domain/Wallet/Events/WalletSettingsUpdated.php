@@ -10,6 +10,5 @@ class WalletSettingsUpdated extends ShouldBeStored
         public readonly string $walletId,
         public readonly array $oldSettings,
         public readonly array $newSettings
-    ) {
-    }
+    ) {}
 }

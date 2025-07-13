@@ -11,13 +11,6 @@ class WalletTransferWorkflow extends Workflow
     /**
      * Execute wallet transfer between accounts for a specific asset
      * Uses compensation pattern for rollback safety.
-     *
-     * @param  AccountUuid $fromAccountUuid
-     * @param  AccountUuid $toAccountUuid
-     * @param  string      $assetCode
-     * @param  int         $amount
-     * @param  string|null $reference
-     * @return \Generator
      */
     public function execute(
         AccountUuid $fromAccountUuid,

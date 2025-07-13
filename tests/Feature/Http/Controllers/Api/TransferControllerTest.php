@@ -35,22 +35,22 @@ class TransferControllerTest extends ControllerTestCase
 
         $this->fromAccount = Account::factory()->create([
             'user_uuid' => $this->user->uuid,
-            'balance'   => 100000, // 1000.00 USD
-            'frozen'    => false,
+            'balance' => 100000, // 1000.00 USD
+            'frozen' => false,
         ]);
 
         $this->toAccount = Account::factory()->create([
             'user_uuid' => $this->otherUser->uuid,
-            'balance'   => 50000, // 500.00 USD
-            'frozen'    => false,
+            'balance' => 50000, // 500.00 USD
+            'frozen' => false,
         ]);
 
         // Create assets
         $this->usdAsset = Asset::firstOrCreate(
             ['code' => 'USD'],
             [
-                'name'      => 'US Dollar',
-                'type'      => 'fiat',
+                'name' => 'US Dollar',
+                'type' => 'fiat',
                 'precision' => 2,
                 'is_active' => true,
             ]
@@ -59,8 +59,8 @@ class TransferControllerTest extends ControllerTestCase
         $this->eurAsset = Asset::firstOrCreate(
             ['code' => 'EUR'],
             [
-                'name'      => 'Euro',
-                'type'      => 'fiat',
+                'name' => 'Euro',
+                'type' => 'fiat',
                 'precision' => 2,
                 'is_active' => true,
             ]
@@ -74,10 +74,10 @@ class TransferControllerTest extends ControllerTestCase
 
         $response = $this->postJson('/api/transfers', [
             'from_account_uuid' => $this->fromAccount->uuid,
-            'to_account_uuid'   => $this->toAccount->uuid,
-            'amount'            => 100.00, // 100.00 USD
-            'asset_code'        => 'USD',
-            'description'       => 'Payment for services',
+            'to_account_uuid' => $this->toAccount->uuid,
+            'amount' => 100.00, // 100.00 USD
+            'asset_code' => 'USD',
+            'description' => 'Payment for services',
         ]);
 
         $response->assertStatus(201)
@@ -96,12 +96,12 @@ class TransferControllerTest extends ControllerTestCase
             ])
             ->assertJson([
                 'data' => [
-                    'status'       => 'pending',
+                    'status' => 'pending',
                     'from_account' => $this->fromAccount->uuid,
-                    'to_account'   => $this->toAccount->uuid,
-                    'amount'       => 100.00,
-                    'asset_code'   => 'USD',
-                    'reference'    => 'Payment for services',
+                    'to_account' => $this->toAccount->uuid,
+                    'amount' => 100.00,
+                    'asset_code' => 'USD',
+                    'reference' => 'Payment for services',
                 ],
                 'message' => 'Transfer initiated successfully',
             ]);
@@ -114,9 +114,9 @@ class TransferControllerTest extends ControllerTestCase
 
         $response = $this->postJson('/api/transfers', [
             'from_account' => $this->fromAccount->uuid,
-            'to_account'   => $this->toAccount->uuid,
-            'amount'       => 50.00,
-            'asset_code'   => 'USD',
+            'to_account' => $this->toAccount->uuid,
+            'amount' => 50.00,
+            'asset_code' => 'USD',
         ]);
 
         $response->assertStatus(201)
@@ -142,14 +142,14 @@ class TransferControllerTest extends ControllerTestCase
 
         $response = $this->postJson('/api/transfers', [
             'from_account_uuid' => $this->fromAccount->uuid,
-            'amount'            => 100,
-            'asset_code'        => 'USD',
+            'amount' => 100,
+            'asset_code' => 'USD',
         ]);
 
         $response->assertStatus(422)
             ->assertJson([
                 'message' => 'Both from and to account UUIDs are required',
-                'errors'  => [
+                'errors' => [
                     'to_account_uuid' => ['The to account uuid field is required.'],
                 ],
             ]);
@@ -162,9 +162,9 @@ class TransferControllerTest extends ControllerTestCase
 
         $response = $this->postJson('/api/transfers', [
             'from_account_uuid' => $this->fromAccount->uuid,
-            'to_account_uuid'   => $this->toAccount->uuid,
-            'amount'            => 0,
-            'asset_code'        => 'USD',
+            'to_account_uuid' => $this->toAccount->uuid,
+            'amount' => 0,
+            'asset_code' => 'USD',
         ]);
 
         $response->assertStatus(422)
@@ -178,9 +178,9 @@ class TransferControllerTest extends ControllerTestCase
 
         $response = $this->postJson('/api/transfers', [
             'from_account_uuid' => $this->fromAccount->uuid,
-            'to_account_uuid'   => $this->fromAccount->uuid, // Same account
-            'amount'            => 100,
-            'asset_code'        => 'USD',
+            'to_account_uuid' => $this->fromAccount->uuid, // Same account
+            'amount' => 100,
+            'asset_code' => 'USD',
         ]);
 
         $response->assertStatus(422)
@@ -194,9 +194,9 @@ class TransferControllerTest extends ControllerTestCase
 
         $response = $this->postJson('/api/transfers', [
             'from_account_uuid' => $this->fromAccount->uuid,
-            'to_account_uuid'   => $this->toAccount->uuid,
-            'amount'            => 100,
-            'asset_code'        => 'INVALID',
+            'to_account_uuid' => $this->toAccount->uuid,
+            'amount' => 100,
+            'asset_code' => 'INVALID',
         ]);
 
         $response->assertStatus(422)
@@ -210,21 +210,21 @@ class TransferControllerTest extends ControllerTestCase
 
         $frozenAccount = Account::factory()->create([
             'user_uuid' => $this->user->uuid,
-            'balance'   => 50000,
-            'frozen'    => true,
+            'balance' => 50000,
+            'frozen' => true,
         ]);
 
         $response = $this->postJson('/api/transfers', [
             'from_account_uuid' => $frozenAccount->uuid,
-            'to_account_uuid'   => $this->toAccount->uuid,
-            'amount'            => 100,
-            'asset_code'        => 'USD',
+            'to_account_uuid' => $this->toAccount->uuid,
+            'amount' => 100,
+            'asset_code' => 'USD',
         ]);
 
         $response->assertStatus(422)
             ->assertJson([
                 'message' => 'Cannot transfer from frozen account',
-                'error'   => 'SOURCE_ACCOUNT_FROZEN',
+                'error' => 'SOURCE_ACCOUNT_FROZEN',
             ]);
     }
 
@@ -235,20 +235,20 @@ class TransferControllerTest extends ControllerTestCase
 
         $frozenAccount = Account::factory()->create([
             'user_uuid' => $this->otherUser->uuid,
-            'frozen'    => true,
+            'frozen' => true,
         ]);
 
         $response = $this->postJson('/api/transfers', [
             'from_account_uuid' => $this->fromAccount->uuid,
-            'to_account_uuid'   => $frozenAccount->uuid,
-            'amount'            => 100,
-            'asset_code'        => 'USD',
+            'to_account_uuid' => $frozenAccount->uuid,
+            'amount' => 100,
+            'asset_code' => 'USD',
         ]);
 
         $response->assertStatus(422)
             ->assertJson([
                 'message' => 'Cannot transfer to frozen account',
-                'error'   => 'DESTINATION_ACCOUNT_FROZEN',
+                'error' => 'DESTINATION_ACCOUNT_FROZEN',
             ]);
     }
 
@@ -259,15 +259,15 @@ class TransferControllerTest extends ControllerTestCase
 
         $response = $this->postJson('/api/transfers', [
             'from_account_uuid' => $this->fromAccount->uuid,
-            'to_account_uuid'   => $this->toAccount->uuid,
-            'amount'            => 2000.00, // More than balance
-            'asset_code'        => 'USD',
+            'to_account_uuid' => $this->toAccount->uuid,
+            'amount' => 2000.00, // More than balance
+            'asset_code' => 'USD',
         ]);
 
         $response->assertStatus(422)
             ->assertJson([
                 'message' => 'Insufficient funds',
-                'error'   => 'INSUFFICIENT_FUNDS',
+                'error' => 'INSUFFICIENT_FUNDS',
             ])
             ->assertJsonStructure([
                 'current_balance',
@@ -282,9 +282,9 @@ class TransferControllerTest extends ControllerTestCase
 
         $response = $this->postJson('/api/transfers', [
             'from_account_uuid' => 'non-existent-uuid',
-            'to_account_uuid'   => $this->toAccount->uuid,
-            'amount'            => 100,
-            'asset_code'        => 'USD',
+            'to_account_uuid' => $this->toAccount->uuid,
+            'amount' => 100,
+            'asset_code' => 'USD',
         ]);
 
         $response->assertStatus(422)
@@ -296,9 +296,9 @@ class TransferControllerTest extends ControllerTestCase
     {
         $response = $this->postJson('/api/transfers', [
             'from_account_uuid' => $this->fromAccount->uuid,
-            'to_account_uuid'   => $this->toAccount->uuid,
-            'amount'            => 100,
-            'asset_code'        => 'USD',
+            'to_account_uuid' => $this->toAccount->uuid,
+            'amount' => 100,
+            'asset_code' => 'USD',
         ]);
 
         $response->assertStatus(401);
@@ -375,10 +375,10 @@ class TransferControllerTest extends ControllerTestCase
 
         $response = $this->postJson('/api/transfers', [
             'from_account_uuid' => $this->fromAccount->uuid,
-            'to_account_uuid'   => $this->toAccount->uuid,
-            'amount'            => 75.50,
-            'asset_code'        => 'USD',
-            'reference'         => 'INV-2024-001',
+            'to_account_uuid' => $this->toAccount->uuid,
+            'amount' => 75.50,
+            'asset_code' => 'USD',
+            'reference' => 'INV-2024-001',
         ]);
 
         $response->assertStatus(201)
@@ -392,11 +392,11 @@ class TransferControllerTest extends ControllerTestCase
 
         $response = $this->postJson('/api/transfers', [
             'from_account_uuid' => $this->fromAccount->uuid,
-            'to_account_uuid'   => $this->toAccount->uuid,
-            'amount'            => 100,
-            'asset_code'        => 'USD',
-            'reference'         => str_repeat('a', 256), // Too long
-            'description'       => str_repeat('b', 256), // Too long
+            'to_account_uuid' => $this->toAccount->uuid,
+            'amount' => 100,
+            'asset_code' => 'USD',
+            'reference' => str_repeat('a', 256), // Too long
+            'description' => str_repeat('b', 256), // Too long
         ]);
 
         $response->assertStatus(422)
@@ -411,24 +411,24 @@ class TransferControllerTest extends ControllerTestCase
         // Create an account with EUR balance
         $eurAccount = Account::factory()->create([
             'user_uuid' => $this->user->uuid,
-            'balance'   => 0, // Default USD balance
-            'frozen'    => false,
+            'balance' => 0, // Default USD balance
+            'frozen' => false,
         ]);
 
         // Create EUR balance using AccountBalance model
         \App\Models\AccountBalance::create([
             'account_uuid' => $eurAccount->uuid,
-            'asset_id'     => $this->eurAsset->id,
-            'asset_code'   => 'EUR',
-            'balance'      => 50000, // 500.00 EUR
+            'asset_id' => $this->eurAsset->id,
+            'asset_code' => 'EUR',
+            'balance' => 50000, // 500.00 EUR
         ]);
 
         $response = $this->postJson('/api/transfers', [
             'from_account_uuid' => $eurAccount->uuid,
-            'to_account_uuid'   => $this->toAccount->uuid,
-            'amount'            => 200.00, // 200.00 EUR
-            'asset_code'        => 'EUR',
-            'description'       => 'EUR transfer',
+            'to_account_uuid' => $this->toAccount->uuid,
+            'amount' => 200.00, // 200.00 EUR
+            'asset_code' => 'EUR',
+            'description' => 'EUR transfer',
         ]);
 
         $response->assertStatus(201)

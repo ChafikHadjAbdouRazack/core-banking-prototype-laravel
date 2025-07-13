@@ -18,20 +18,15 @@ class ReverseBatchOperationActivity extends Activity
 {
     /**
      * Reverse a batch operation based on its type and result.
-     *
-     * @param  string $operation
-     * @param  string $batchId
-     * @param  array  $operationResult
-     * @return void
      */
     public function execute(string $operation, string $batchId, array $operationResult): void
     {
         logger()->info(
             'Reversing batch operation',
             [
-            'batch_id'        => $batchId,
-            'operation'       => $operation,
-            'original_result' => $operationResult,
+                'batch_id' => $batchId,
+                'operation' => $operation,
+                'original_result' => $operationResult,
             ]
         );
 
@@ -65,8 +60,8 @@ class ReverseBatchOperationActivity extends Activity
                     logger()->warning(
                         'No reversal logic for operation',
                         [
-                        'operation' => $operation,
-                        'batch_id'  => $batchId,
+                            'operation' => $operation,
+                            'batch_id' => $batchId,
                         ]
                     );
             }
@@ -74,17 +69,17 @@ class ReverseBatchOperationActivity extends Activity
             logger()->info(
                 'Successfully reversed batch operation',
                 [
-                'batch_id'  => $batchId,
-                'operation' => $operation,
+                    'batch_id' => $batchId,
+                    'operation' => $operation,
                 ]
             );
         } catch (\Throwable $th) {
             logger()->error(
                 'Failed to reverse batch operation',
                 [
-                'batch_id'  => $batchId,
-                'operation' => $operation,
-                'error'     => $th->getMessage(),
+                    'batch_id' => $batchId,
+                    'operation' => $operation,
+                    'error' => $th->getMessage(),
                 ]
             );
             throw $th;
@@ -116,8 +111,8 @@ class ReverseBatchOperationActivity extends Activity
                 logger()->warning(
                     'Cannot fully revert updated turnover',
                     [
-                    'account_uuid' => $turnoverData['account_uuid'],
-                    'date'         => $date,
+                        'account_uuid' => $turnoverData['account_uuid'],
+                        'date' => $date,
                     ]
                 );
             }
@@ -159,14 +154,14 @@ class ReverseBatchOperationActivity extends Activity
 
                     // Reverse the balance update
                     Account::where('uuid', $interestTx['account_uuid'])
-                    ->decrement('balance', $interestTx['amount']);
+                        ->decrement('balance', $interestTx['amount']);
 
                     logger()->info(
                         'Reversed interest transaction',
                         [
-                        'transaction_uuid' => $interestTx['transaction_uuid'],
-                        'account_uuid'     => $interestTx['account_uuid'],
-                        'amount'           => $interestTx['amount'],
+                            'transaction_uuid' => $interestTx['transaction_uuid'],
+                            'account_uuid' => $interestTx['account_uuid'],
+                            'amount' => $interestTx['amount'],
                         ]
                     );
                 }
@@ -206,8 +201,8 @@ class ReverseBatchOperationActivity extends Activity
         logger()->info(
             'Unarchived transactions',
             [
-            'count'    => $count,
-            'expected' => count($result['result']['archived_uuids']),
+                'count' => $count,
+                'expected' => count($result['result']['archived_uuids']),
             ]
         );
     }

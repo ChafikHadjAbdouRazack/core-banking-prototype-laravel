@@ -7,8 +7,5 @@ use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 
 class AccountLimitHit extends ShouldBeStored
 {
-    /**
-     * @var string
-     */
     public string $queue = EventQueues::TRANSACTIONS->value;
 }

@@ -54,14 +54,13 @@ class AmlScreeningAggregate extends AggregateRoot
     /**
      * Start a new AML screening.
      *
-     * @param string $entityId Entity identifier
-     * @param string $entityType Entity type (user, company, etc.)
-     * @param string $screeningNumber Unique screening number
-     * @param string $type Screening type (sanctions, pep, etc.)
-     * @param string $provider Screening provider name
-     * @param array $searchParameters Search parameters
-     * @param string|null $providerReference Provider's reference ID
-     * @return self
+     * @param  string  $entityId  Entity identifier
+     * @param  string  $entityType  Entity type (user, company, etc.)
+     * @param  string  $screeningNumber  Unique screening number
+     * @param  string  $type  Screening type (sanctions, pep, etc.)
+     * @param  string  $provider  Screening provider name
+     * @param  array  $searchParameters  Search parameters
+     * @param  string|null  $providerReference  Provider's reference ID
      */
     public function startScreening(
         string $entityId,
@@ -90,15 +89,14 @@ class AmlScreeningAggregate extends AggregateRoot
     /**
      * Record screening results from provider.
      *
-     * @param array $sanctionsResults Sanctions screening results
-     * @param array $pepResults PEP screening results
-     * @param array $adverseMediaResults Adverse media results
-     * @param array $otherResults Other screening results
-     * @param int $totalMatches Total number of matches
-     * @param string $overallRisk Overall risk level
-     * @param array $listsChecked Lists checked during screening
-     * @param array|null $apiResponse Raw API response
-     * @return self
+     * @param  array  $sanctionsResults  Sanctions screening results
+     * @param  array  $pepResults  PEP screening results
+     * @param  array  $adverseMediaResults  Adverse media results
+     * @param  array  $otherResults  Other screening results
+     * @param  int  $totalMatches  Total number of matches
+     * @param  string  $overallRisk  Overall risk level
+     * @param  array  $listsChecked  Lists checked during screening
+     * @param  array|null  $apiResponse  Raw API response
      */
     public function recordResults(
         array $sanctionsResults,
@@ -129,11 +127,11 @@ class AmlScreeningAggregate extends AggregateRoot
     /**
      * Update match status (confirm, dismiss, or investigate).
      *
-     * @param string $matchId Match identifier
-     * @param string $action Action to take (confirm, dismiss, investigate)
-     * @param array $details Additional details about the action
-     * @param string|null $reason Reason for the action
-     * @return self
+     * @param  string  $matchId  Match identifier
+     * @param  string  $action  Action to take (confirm, dismiss, investigate)
+     * @param  array  $details  Additional details about the action
+     * @param  string|null  $reason  Reason for the action
+     *
      * @throws \InvalidArgumentException
      */
     public function updateMatchStatus(
@@ -163,9 +161,9 @@ class AmlScreeningAggregate extends AggregateRoot
     /**
      * Complete the screening.
      *
-     * @param string $finalStatus Final status (completed or failed)
-     * @param float|null $processingTime Processing time in seconds
-     * @return self
+     * @param  string  $finalStatus  Final status (completed or failed)
+     * @param  float|null  $processingTime  Processing time in seconds
+     *
      * @throws \InvalidArgumentException
      */
     public function completeScreening(
@@ -191,10 +189,10 @@ class AmlScreeningAggregate extends AggregateRoot
     /**
      * Review screening results.
      *
-     * @param string $reviewedBy Reviewer identifier
-     * @param string $decision Review decision (clear, escalate, block)
-     * @param string $notes Review notes
-     * @return self
+     * @param  string  $reviewedBy  Reviewer identifier
+     * @param  string  $decision  Review decision (clear, escalate, block)
+     * @param  string  $notes  Review notes
+     *
      * @throws \InvalidArgumentException
      */
     public function reviewScreening(
@@ -221,9 +219,6 @@ class AmlScreeningAggregate extends AggregateRoot
 
     /**
      * Apply event handlers.
-     *
-     * @param AmlScreeningStarted $event
-     * @return void
      */
     protected function applyAmlScreeningStarted(AmlScreeningStarted $event): void
     {
@@ -239,18 +234,15 @@ class AmlScreeningAggregate extends AggregateRoot
 
     /**
      * Apply AML screening results recorded event.
-     *
-     * @param AmlScreeningResultsRecorded $event
-     * @return void
      */
     protected function applyAmlScreeningResultsRecorded(
         AmlScreeningResultsRecorded $event
     ): void {
         $this->results = [
-            'sanctions'     => $event->sanctionsResults,
-            'pep'           => $event->pepResults,
+            'sanctions' => $event->sanctionsResults,
+            'pep' => $event->pepResults,
             'adverse_media' => $event->adverseMediaResults,
-            'other'         => $event->otherResults,
+            'other' => $event->otherResults,
         ];
         $this->totalMatches = $event->totalMatches;
         $this->overallRisk = $event->overallRisk;
@@ -258,9 +250,6 @@ class AmlScreeningAggregate extends AggregateRoot
 
     /**
      * Apply AML screening match status updated event.
-     *
-     * @param AmlScreeningMatchStatusUpdated $event
-     * @return void
      */
     protected function applyAmlScreeningMatchStatusUpdated(
         AmlScreeningMatchStatusUpdated $event
@@ -274,9 +263,6 @@ class AmlScreeningAggregate extends AggregateRoot
 
     /**
      * Apply AML screening completed event.
-     *
-     * @param AmlScreeningCompleted $event
-     * @return void
      */
     protected function applyAmlScreeningCompleted(AmlScreeningCompleted $event): void
     {
@@ -285,9 +271,6 @@ class AmlScreeningAggregate extends AggregateRoot
 
     /**
      * Apply AML screening reviewed event.
-     *
-     * @param AmlScreeningReviewed $event
-     * @return void
      */
     protected function applyAmlScreeningReviewed(AmlScreeningReviewed $event): void
     {
@@ -298,8 +281,6 @@ class AmlScreeningAggregate extends AggregateRoot
 
     /**
      * Getters for aggregate state.
-     *
-     * @return string
      */
     public function getStatus(): string
     {
@@ -308,8 +289,6 @@ class AmlScreeningAggregate extends AggregateRoot
 
     /**
      * Get total matches count.
-     *
-     * @return int
      */
     public function getTotalMatches(): int
     {
@@ -318,8 +297,6 @@ class AmlScreeningAggregate extends AggregateRoot
 
     /**
      * Get confirmed matches count.
-     *
-     * @return int
      */
     public function getConfirmedMatches(): int
     {
@@ -328,8 +305,6 @@ class AmlScreeningAggregate extends AggregateRoot
 
     /**
      * Get false positives count.
-     *
-     * @return int
      */
     public function getFalsePositives(): int
     {
@@ -338,8 +313,6 @@ class AmlScreeningAggregate extends AggregateRoot
 
     /**
      * Get overall risk level.
-     *
-     * @return string|null
      */
     public function getOverallRisk(): ?string
     {
@@ -348,8 +321,6 @@ class AmlScreeningAggregate extends AggregateRoot
 
     /**
      * Check if screening has been reviewed.
-     *
-     * @return bool
      */
     public function isReviewed(): bool
     {
@@ -358,8 +329,6 @@ class AmlScreeningAggregate extends AggregateRoot
 
     /**
      * Check if screening requires review.
-     *
-     * @return bool
      */
     public function requiresReview(): bool
     {
@@ -368,8 +337,6 @@ class AmlScreeningAggregate extends AggregateRoot
 
     /**
      * Get entity ID.
-     *
-     * @return string
      */
     public function getEntityId(): string
     {
@@ -378,8 +345,6 @@ class AmlScreeningAggregate extends AggregateRoot
 
     /**
      * Get entity type.
-     *
-     * @return string
      */
     public function getEntityType(): string
     {
@@ -388,8 +353,6 @@ class AmlScreeningAggregate extends AggregateRoot
 
     /**
      * Get screening number.
-     *
-     * @return string
      */
     public function getScreeningNumber(): string
     {
@@ -398,8 +361,6 @@ class AmlScreeningAggregate extends AggregateRoot
 
     /**
      * Get screening type.
-     *
-     * @return string
      */
     public function getType(): string
     {
@@ -408,8 +369,6 @@ class AmlScreeningAggregate extends AggregateRoot
 
     /**
      * Get provider.
-     *
-     * @return string
      */
     public function getProvider(): string
     {
@@ -418,8 +377,6 @@ class AmlScreeningAggregate extends AggregateRoot
 
     /**
      * Get provider reference.
-     *
-     * @return string|null
      */
     public function getProviderReference(): ?string
     {
@@ -428,8 +385,6 @@ class AmlScreeningAggregate extends AggregateRoot
 
     /**
      * Get search parameters.
-     *
-     * @return array
      */
     public function getSearchParameters(): array
     {
@@ -438,8 +393,6 @@ class AmlScreeningAggregate extends AggregateRoot
 
     /**
      * Get results.
-     *
-     * @return array
      */
     public function getResults(): array
     {
@@ -448,8 +401,6 @@ class AmlScreeningAggregate extends AggregateRoot
 
     /**
      * Get review decision.
-     *
-     * @return string|null
      */
     public function getReviewDecision(): ?string
     {
@@ -458,8 +409,6 @@ class AmlScreeningAggregate extends AggregateRoot
 
     /**
      * Get review notes.
-     *
-     * @return string|null
      */
     public function getReviewNotes(): ?string
     {

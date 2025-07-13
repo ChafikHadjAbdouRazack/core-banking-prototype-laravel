@@ -14,8 +14,7 @@ class BasketRebalancingService
 {
     public function __construct(
         private readonly BasketValueCalculationService $valueCalculationService
-    ) {
-    }
+    ) {}
 
     /**
      * Check if a basket needs rebalancing.
@@ -63,11 +62,11 @@ class BasketRebalancingService
             Log::info("Basket {$basket->code} does not need rebalancing");
 
             return [
-                'status'            => 'completed',
-                'basket'            => $basket->code,
-                'adjustments'       => [],
+                'status' => 'completed',
+                'basket' => $basket->code,
+                'adjustments' => [],
                 'adjustments_count' => 0,
-                'checked_at'        => now()->toISOString(),
+                'checked_at' => now()->toISOString(),
             ];
         }
 
@@ -101,11 +100,11 @@ class BasketRebalancingService
 
             if ($needsAdjustment) {
                 $adjustments[] = [
-                    'asset'          => $component->asset_code,
+                    'asset' => $component->asset_code,
                     'current_weight' => round($currentComponentWeight, 2),
-                    'target_weight'  => round($adjustmentTarget, 2),
-                    'adjustment'     => round($adjustmentTarget - $currentComponentWeight, 2),
-                    'action'         => $adjustmentTarget > $currentComponentWeight ? 'increase' : 'decrease',
+                    'target_weight' => round($adjustmentTarget, 2),
+                    'adjustment' => round($adjustmentTarget - $currentComponentWeight, 2),
+                    'action' => $adjustmentTarget > $currentComponentWeight ? 'increase' : 'decrease',
                 ];
             }
         }
@@ -152,17 +151,17 @@ class BasketRebalancingService
                 Log::info(
                     "Basket {$basket->code} rebalanced",
                     [
-                    'adjustments' => $adjustments,
-                    'timestamp'   => now()->toISOString(),
+                        'adjustments' => $adjustments,
+                        'timestamp' => now()->toISOString(),
                     ]
                 );
 
                 return [
-                'status'            => 'completed',
-                'basket'            => $basket->code,
-                'adjustments'       => $adjustments,
-                'adjustments_count' => count($adjustments),
-                'rebalanced_at'     => now()->toISOString(),
+                    'status' => 'completed',
+                    'basket' => $basket->code,
+                    'adjustments' => $adjustments,
+                    'adjustments_count' => count($adjustments),
+                    'rebalanced_at' => now()->toISOString(),
                 ];
             }
         );
@@ -205,7 +204,7 @@ class BasketRebalancingService
             if ($capacity > 0.01) { // Small threshold to avoid floating point issues
                 $adjustableComponents[] = [
                     'component' => $component,
-                    'capacity'  => $capacity,
+                    'capacity' => $capacity,
                 ];
                 $availableCapacity += $capacity;
             }
@@ -253,7 +252,7 @@ class BasketRebalancingService
         $results = [
             'rebalanced' => [],
             'no_changes' => [],
-            'failed'     => [],
+            'failed' => [],
         ];
 
         foreach ($baskets as $basket) {
@@ -268,14 +267,14 @@ class BasketRebalancingService
             } catch (\Exception $e) {
                 $results['failed'][] = [
                     'basket' => $basket->code,
-                    'error'  => $e->getMessage(),
+                    'error' => $e->getMessage(),
                 ];
 
                 Log::error(
                     "Failed to rebalance basket {$basket->code}",
                     [
-                    'error' => $e->getMessage(),
-                    'trace' => $e->getTraceAsString(),
+                        'error' => $e->getMessage(),
+                        'trace' => $e->getTraceAsString(),
                     ]
                 );
             }
@@ -297,14 +296,14 @@ class BasketRebalancingService
         $adjustments = $this->calculateAdjustments($basket, $currentValue);
 
         return [
-            'status'            => 'simulated',
-            'basket'            => $basket->code,
-            'current_value'     => $currentValue->value,
-            'adjustments'       => $adjustments,
+            'status' => 'simulated',
+            'basket' => $basket->code,
+            'current_value' => $currentValue->value,
+            'adjustments' => $adjustments,
             'adjustments_count' => count($adjustments),
             'needs_rebalancing' => ! empty($adjustments),
-            'simulated'         => true,
-            'simulated_at'      => now()->toISOString(),
+            'simulated' => true,
+            'simulated_at' => now()->toISOString(),
         ];
     }
 
@@ -316,7 +315,7 @@ class BasketRebalancingService
         // This would query the event store for BasketRebalanced events
         // For now, return a placeholder
         return [
-            'basket'  => $basket->code,
+            'basket' => $basket->code,
             'history' => [],
             'message' => 'Rebalancing history will be available after event store integration',
         ];

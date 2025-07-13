@@ -8,11 +8,6 @@ use Workflow\Workflow;
 
 class DestroyAccountWorkflow extends Workflow
 {
-    /**
-     * @param AccountUuid $uuid
-     *
-     * @return \Generator
-     */
     public function execute(AccountUuid $uuid): \Generator
     {
         return yield ActivityStub::make(

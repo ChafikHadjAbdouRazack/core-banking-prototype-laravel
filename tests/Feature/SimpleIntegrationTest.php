@@ -53,14 +53,14 @@ it('can test enum methods', function () {
 it('can test basic workflow instantiation', function () {
     // Just test that workflow classes can be instantiated without errors
     expect(function () {
-        $workflow = new App\Domain\Account\Workflows\CreateAccountWorkflow();
+        $workflow = new App\Domain\Account\Workflows\CreateAccountWorkflow;
         expect($workflow)->toBeInstanceOf(App\Domain\Account\Workflows\CreateAccountWorkflow::class);
     })->not->toThrow(Exception::class);
 });
 
 it('can test basic activity instantiation', function () {
     expect(function () {
-        $activity = new App\Domain\Account\Workflows\CreateAccountActivity();
+        $activity = new App\Domain\Account\Workflows\CreateAccountActivity;
         expect($activity)->toBeInstanceOf(App\Domain\Account\Workflows\CreateAccountActivity::class);
     })->not->toThrow(Exception::class);
 });
@@ -74,8 +74,8 @@ it('can test services cache methods', function () {
 });
 
 it('can access view components', function () {
-    $appLayout = new App\View\Components\AppLayout();
-    $guestLayout = new App\View\Components\GuestLayout();
+    $appLayout = new App\View\Components\AppLayout;
+    $guestLayout = new App\View\Components\GuestLayout;
 
     expect($appLayout)->toBeInstanceOf(App\View\Components\AppLayout::class);
     expect($guestLayout)->toBeInstanceOf(App\View\Components\GuestLayout::class);

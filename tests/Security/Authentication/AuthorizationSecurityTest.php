@@ -45,12 +45,12 @@ class AuthorizationSecurityTest extends DomainTestCase
         // Create accounts
         $this->user1Account = Account::factory()->create([
             'user_uuid' => $this->user1->uuid,
-            'balance'   => 50000,
+            'balance' => 50000,
         ]);
 
         $this->user2Account = Account::factory()->create([
             'user_uuid' => $this->user2->uuid,
-            'balance'   => 30000,
+            'balance' => 30000,
         ]);
     }
 
@@ -106,9 +106,9 @@ class AuthorizationSecurityTest extends DomainTestCase
         $response = $this->withToken($this->userToken)
             ->postJson('/api/transfers', [
                 'from_account' => $this->user2Account->uuid, // Not their account
-                'to_account'   => $this->user1Account->uuid,
-                'amount'       => 100.00,
-                'asset_code'   => 'USD',
+                'to_account' => $this->user1Account->uuid,
+                'amount' => 100.00,
+                'asset_code' => 'USD',
             ]);
 
         $this->assertEquals(403, $response->status());
@@ -185,18 +185,18 @@ class AuthorizationSecurityTest extends DomainTestCase
         // Try to assign protected attributes
         $response = $this->withToken($this->userToken)
             ->postJson('/api/accounts', [
-                'name'       => 'New Account',
-                'type'       => 'savings',
-                'user_uuid'  => $this->user2->uuid, // Try to assign to another user
-                'balance'    => 1000000, // Try to set initial balance
-                'is_active'  => true,
-                'is_frozen'  => false,
+                'name' => 'New Account',
+                'type' => 'savings',
+                'user_uuid' => $this->user2->uuid, // Try to assign to another user
+                'balance' => 1000000, // Try to set initial balance
+                'is_active' => true,
+                'is_frozen' => false,
                 'created_at' => '2020-01-01',
-                'uuid'       => 'custom-uuid-12345',
+                'uuid' => 'custom-uuid-12345',
             ]);
 
         if ($response->status() !== 201) {
-            $this->fail('Account creation failed: ' . json_encode($response->json()));
+            $this->fail('Account creation failed: '.json_encode($response->json()));
         }
 
         $account = $response->json('data');
@@ -216,8 +216,8 @@ class AuthorizationSecurityTest extends DomainTestCase
     {
         // Try modified token
         $tamperedTokens = [
-            $this->userToken . 'extra',
-            substr($this->userToken, 0, -5) . 'aaaaa',
+            $this->userToken.'extra',
+            substr($this->userToken, 0, -5).'aaaaa',
             'invalid-token-format',
             '12345',
         ];
@@ -338,10 +338,10 @@ class AuthorizationSecurityTest extends DomainTestCase
     public function test_path_traversal_in_authorization()
     {
         $pathTraversalAttempts = [
-            '../' . $this->user2Account->uuid,
-            '../../' . $this->user2Account->uuid,
-            $this->user1Account->uuid . '/../' . $this->user2Account->uuid,
-            './../accounts/' . $this->user2Account->uuid,
+            '../'.$this->user2Account->uuid,
+            '../../'.$this->user2Account->uuid,
+            $this->user1Account->uuid.'/../'.$this->user2Account->uuid,
+            './../accounts/'.$this->user2Account->uuid,
         ];
 
         foreach ($pathTraversalAttempts as $attempt) {

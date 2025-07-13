@@ -12,22 +12,12 @@ class MoneyTransferred extends ShouldBeStored implements HasHash, HasMoney
 {
     use HashValidatorProvider;
 
-    /**
-     * @var string
-     */
     public string $queue = EventQueues::TRANSFERS->value;
 
-    /**
-     * @param AccountUuid $from
-     * @param AccountUuid $to
-     * @param Money       $money
-     * @param Hash        $hash
-     */
     public function __construct(
         public readonly AccountUuid $from,
         public readonly AccountUuid $to,
         public readonly Money $money,
         public readonly Hash $hash,
-    ) {
-    }
+    ) {}
 }

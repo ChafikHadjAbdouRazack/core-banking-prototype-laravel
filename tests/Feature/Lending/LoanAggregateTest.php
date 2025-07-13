@@ -18,16 +18,16 @@ class LoanAggregateTest extends DomainTestCase
     #[Test]
     public function test_loan_creation_from_application()
     {
-        $loanId = 'loan_' . uniqid();
-        $applicationId = 'app_' . uniqid();
-        $borrowerId = 'user_' . uniqid();
+        $loanId = 'loan_'.uniqid();
+        $applicationId = 'app_'.uniqid();
+        $borrowerId = 'user_'.uniqid();
         $principal = '10000.00';
         $interestRate = 10.0;
         $termMonths = 12;
         $terms = [
             'repaymentFrequency' => 'monthly',
-            'lateFeePercentage'  => 5.0,
-            'gracePeriodDays'    => 5,
+            'lateFeePercentage' => 5.0,
+            'gracePeriodDays' => 5,
         ];
 
         $loan = Loan::createFromApplication(
@@ -65,14 +65,14 @@ class LoanAggregateTest extends DomainTestCase
     #[Test]
     public function test_loan_funding_and_disbursement()
     {
-        $loanId = 'loan_' . uniqid();
+        $loanId = 'loan_'.uniqid();
         $investorIds = ['investor1', 'investor2', 'investor3'];
         $fundedAmount = '10000.00';
 
         $loan = Loan::createFromApplication(
             $loanId,
-            'app_' . uniqid(),
-            'borrower_' . uniqid(),
+            'app_'.uniqid(),
+            'borrower_'.uniqid(),
             $fundedAmount,
             10.0,
             12,
@@ -100,15 +100,15 @@ class LoanAggregateTest extends DomainTestCase
     #[Test]
     public function test_loan_repayment_recording()
     {
-        $loanId = 'loan_' . uniqid();
+        $loanId = 'loan_'.uniqid();
         $principal = '1000.00';
         $interestRate = 12.0; // 12% APR = 1% monthly
         $termMonths = 3;
 
         $loan = Loan::createFromApplication(
             $loanId,
-            'app_' . uniqid(),
-            'borrower_' . uniqid(),
+            'app_'.uniqid(),
+            'borrower_'.uniqid(),
             $principal,
             $interestRate,
             $termMonths,
@@ -128,7 +128,7 @@ class LoanAggregateTest extends DomainTestCase
             $firstPayment['total'],
             $firstPayment['principal'],
             $firstPayment['interest'],
-            'payer_' . uniqid()
+            'payer_'.uniqid()
         );
 
         $events = $loan->getRecordedEvents();
@@ -144,15 +144,15 @@ class LoanAggregateTest extends DomainTestCase
     #[Test]
     public function test_loan_completion_after_all_payments()
     {
-        $loanId = 'loan_' . uniqid();
+        $loanId = 'loan_'.uniqid();
         $principal = '1000.00';
         $interestRate = 0.0; // 0% interest for simplicity
         $termMonths = 2;
 
         $loan = Loan::createFromApplication(
             $loanId,
-            'app_' . uniqid(),
-            'borrower_' . uniqid(),
+            'app_'.uniqid(),
+            'borrower_'.uniqid(),
             $principal,
             $interestRate,
             $termMonths,
@@ -173,7 +173,7 @@ class LoanAggregateTest extends DomainTestCase
                 $payment['total'],
                 $payment['principal'],
                 $payment['interest'],
-                'payer_' . uniqid()
+                'payer_'.uniqid()
             );
         }
 
@@ -189,15 +189,15 @@ class LoanAggregateTest extends DomainTestCase
     #[Test]
     public function test_loan_early_settlement()
     {
-        $loanId = 'loan_' . uniqid();
+        $loanId = 'loan_'.uniqid();
         $principal = '10000.00';
         $interestRate = 12.0;
         $termMonths = 12;
 
         $loan = Loan::createFromApplication(
             $loanId,
-            'app_' . uniqid(),
-            'borrower_' . uniqid(),
+            'app_'.uniqid(),
+            'borrower_'.uniqid(),
             $principal,
             $interestRate,
             $termMonths,
@@ -216,7 +216,7 @@ class LoanAggregateTest extends DomainTestCase
                 $payment['total'],
                 $payment['principal'],
                 $payment['interest'],
-                'payer_' . uniqid()
+                'payer_'.uniqid()
             );
         }
 
@@ -228,7 +228,7 @@ class LoanAggregateTest extends DomainTestCase
         }
         $remainingBalance = bcsub($principal, $totalPrincipalPaid, 2);
 
-        $loan->settleEarly($remainingBalance, 'borrower_' . uniqid());
+        $loan->settleEarly($remainingBalance, 'borrower_'.uniqid());
 
         $events = $loan->getRecordedEvents();
         $settlementEvent = end($events);

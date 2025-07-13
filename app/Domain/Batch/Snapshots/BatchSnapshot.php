@@ -6,6 +6,4 @@ namespace App\Domain\Batch\Snapshots;
 
 use Spatie\EventSourcing\Snapshots\EloquentSnapshot;
 
-class BatchSnapshot extends EloquentSnapshot
-{
-}
+class BatchSnapshot extends EloquentSnapshot {}

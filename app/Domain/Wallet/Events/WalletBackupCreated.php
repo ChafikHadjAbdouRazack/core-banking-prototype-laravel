@@ -14,6 +14,5 @@ class WalletBackupCreated extends ShouldBeStored
         public readonly string $encryptedData,
         public readonly string $createdBy,
         public readonly Carbon $createdAt
-    ) {
-    }
+    ) {}
 }

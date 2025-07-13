@@ -14,11 +14,6 @@ trait ValidatesHash
 
     public string $currentHash = '';
 
-    /**
-     * @param Money|null $money
-     *
-     * @return Hash
-     */
     protected function generateHash(?Money $money = null): Hash
     {
         return hydrate(
@@ -26,40 +21,24 @@ trait ValidatesHash
             [
                 'hash' => hash(
                     self::HASH_ALGORITHM,
-                    $this->currentHash . ($money ? $money->getAmount() : 0)
+                    $this->currentHash.($money ? $money->getAmount() : 0)
                 ),
             ]
         );
     }
 
-    /**
-     * @param Hash       $hash
-     * @param Money|null $money
-     *
-     * @return void
-     */
     protected function validateHash(Hash $hash, ?Money $money = null): void
     {
         if (! $this->generateHash(money: $money)->equals($hash)) {
-            throw new InvalidHashException();
+            throw new InvalidHashException;
         }
     }
 
-    /**
-     * @param Hash $hash
-     *
-     * @return void
-     */
     protected function storeHash(Hash $hash): void
     {
         $this->currentHash = $hash->getHash();
     }
 
-    /**
-     * @param string|null $hash
-     *
-     * @return void
-     */
     protected function resetHash(?string $hash = null): void
     {
         $this->currentHash = $hash ?? '';
@@ -67,8 +46,6 @@ trait ValidatesHash
 
     /**
      * Get the expected length of the hash.
-     *
-     * @return int
      */
     public static function getHashLength(): int
     {

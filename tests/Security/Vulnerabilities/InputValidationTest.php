@@ -41,9 +41,9 @@ class InputValidationTest extends TestCase
     {
         $response = $this->withToken($this->token)
             ->postJson('/api/v2/accounts', [
-                'name'        => $field === 'name' ? $input : 'Valid Name',
-                'type'        => $field === 'type' ? $input : 'savings',
-                'currency'    => $field === 'currency' ? $input : 'USD',
+                'name' => $field === 'name' ? $input : 'Valid Name',
+                'type' => $field === 'type' ? $input : 'savings',
+                'currency' => $field === 'currency' ? $input : 'USD',
                 'description' => $field === 'description' ? $input : 'Valid description',
             ]);
 
@@ -69,9 +69,9 @@ class InputValidationTest extends TestCase
         $response = $this->withToken($this->token)
             ->postJson('/api/v2/transactions', [
                 'from_account' => $field === 'from_account' ? $input : $this->account->uuid ?? 'valid-uuid',
-                'to_account'   => $field === 'to_account' ? $input : 'valid-uuid',
-                'amount'       => $field === 'amount' ? $input : 1000,
-                'currency'     => 'USD',
+                'to_account' => $field === 'to_account' ? $input : 'valid-uuid',
+                'amount' => $field === 'amount' ? $input : 1000,
+                'currency' => 'USD',
             ]);
 
         if ($shouldBeValid) {
@@ -86,28 +86,28 @@ class InputValidationTest extends TestCase
     {
         $emails = [
             // Valid emails
-            'user@example.com'        => true,
-            'user+tag@example.com'    => true,
+            'user@example.com' => true,
+            'user+tag@example.com' => true,
             'user.name@example.co.uk' => true,
             // Invalid emails
-            'user@'        => false,
+            'user@' => false,
             '@example.com' => false,
-            'user@.com'    => false,
+            'user@.com' => false,
             'user@example' => false,
             // Injection attempts
             'user@example.com<script>alert(1)</script>' => false,
-            "user@example.com' OR '1'='1"               => false,
-            'user@example.com;DELETE FROM users;'       => false,
-            'user@[127.0.0.1]'                          => false,
-            'user@localhost'                            => false,
-            'user@internal.service'                     => false,
+            "user@example.com' OR '1'='1" => false,
+            'user@example.com;DELETE FROM users;' => false,
+            'user@[127.0.0.1]' => false,
+            'user@localhost' => false,
+            'user@internal.service' => false,
         ];
 
         foreach ($emails as $email => $shouldBeValid) {
             $response = $this->postJson('/api/v2/auth/register', [
-                'name'                  => 'Test User',
-                'email'                 => $email,
-                'password'              => 'password123',
+                'name' => 'Test User',
+                'email' => $email,
+                'password' => 'password123',
                 'password_confirmation' => 'password123',
             ]);
 
@@ -123,7 +123,7 @@ class InputValidationTest extends TestCase
     public function test_json_payload_size_limits()
     {
         // Create a large payload
-        $largeArray = array_fill(0, 10000, 'A' . str_repeat('B', 1000));
+        $largeArray = array_fill(0, 10000, 'A'.str_repeat('B', 1000));
 
         $response = $this->withToken($this->token)
             ->postJson('/api/v2/accounts/bulk', [
@@ -147,7 +147,7 @@ class InputValidationTest extends TestCase
 
         $response = $this->withToken($this->token)
             ->postJson('/api/v2/accounts', [
-                'name'     => 'Test Account',
+                'name' => 'Test Account',
                 'metadata' => $data,
             ]);
 
@@ -160,16 +160,16 @@ class InputValidationTest extends TestCase
     {
         $amounts = [
             // Valid amounts
-            1       => true,
-            1000    => true,
+            1 => true,
+            1000 => true,
             1000000 => true,
             // PHP_INT_MAX
             PHP_INT_MAX => false,
             // String representations
-            '9999999999999999999999'  => false,
+            '9999999999999999999999' => false,
             '-9999999999999999999999' => false,
             // Scientific notation
-            '1e100'   => false,
+            '1e100' => false,
             '1.23e45' => false,
             // Hex/Oct
             '0xFFFFFFFF' => false,
@@ -178,8 +178,8 @@ class InputValidationTest extends TestCase
 
         foreach ($amounts as $amount => $shouldBeValid) {
             $response = $this->withToken($this->token)
-                ->postJson('/api/v2/accounts/' . ($this->account->uuid ?? 'test-uuid') . '/deposit', [
-                    'amount'   => $amount,
+                ->postJson('/api/v2/accounts/'.($this->account->uuid ?? 'test-uuid').'/deposit', [
+                    'amount' => $amount,
                     'currency' => 'USD',
                 ]);
 
@@ -199,15 +199,15 @@ class InputValidationTest extends TestCase
             '550e8400-e29b-41d4-a716-446655440000' => true,
             '6ba7b810-9dad-11d1-80b4-00c04fd430c8' => true,
             // Invalid UUIDs
-            'not-a-uuid'                                 => false,
-            '550e8400-e29b-41d4-a716'                    => false,
+            'not-a-uuid' => false,
+            '550e8400-e29b-41d4-a716' => false,
             '550e8400-e29b-41d4-a716-446655440000-extra' => false,
-            'GGGGGGGG-e29b-41d4-a716-446655440000'       => false,
+            'GGGGGGGG-e29b-41d4-a716-446655440000' => false,
             // Injection attempts
             "550e8400-e29b-41d4-a716-446655440000' OR '1'='1" => false,
-            '550e8400-e29b-41d4-a716-446655440000<script>'    => false,
+            '550e8400-e29b-41d4-a716-446655440000<script>' => false,
             // Path traversal
-            '../../../etc/passwd'           => false,
+            '../../../etc/passwd' => false,
             '..\\..\\..\\windows\\system32' => false,
         ];
 
@@ -239,22 +239,22 @@ class InputValidationTest extends TestCase
     {
         $dates = [
             // Valid dates
-            '2025-06-21'                => true,
-            '2025-06-21T10:30:00Z'      => true,
+            '2025-06-21' => true,
+            '2025-06-21T10:30:00Z' => true,
             '2025-06-21T10:30:00+00:00' => true,
             // Invalid dates
-            '2025-13-01'    => false, // Invalid month
-            '2025-06-32'    => false, // Invalid day
-            '2025-02-30'    => false, // Feb 30th
-            '21-06-2025'    => false, // Wrong format
-            '21/06/2025'    => false, // Wrong separator
+            '2025-13-01' => false, // Invalid month
+            '2025-06-32' => false, // Invalid day
+            '2025-02-30' => false, // Feb 30th
+            '21-06-2025' => false, // Wrong format
+            '21/06/2025' => false, // Wrong separator
             'June 21, 2025' => false, // Text format
-            'yesterday'     => false,
-            'now'           => false,
+            'yesterday' => false,
+            'now' => false,
             // Injection attempts
             '2025-06-21; DROP TABLE transactions;' => false,
-            "2025-06-21' OR '1'='1"                => false,
-            '2025-06-21<script>alert(1)</script>'  => false,
+            "2025-06-21' OR '1'='1" => false,
+            '2025-06-21<script>alert(1)</script>' => false,
         ];
 
         foreach ($dates as $date => $shouldBeValid) {
@@ -275,12 +275,12 @@ class InputValidationTest extends TestCase
         $arrays = [
             // Valid arrays
             'valid currencies' => [['USD', 'EUR', 'GBP'], true],
-            'empty array'      => [[], true],
-            'single item'      => [['single'], true],
+            'empty array' => [[], true],
+            'single item' => [['single'], true],
             // Invalid arrays
             'string not array' => ['not-an-array', false],
             'number not array' => [123, false],
-            'null not array'   => [null, false],
+            'null not array' => [null, false],
             // Injection in array
             'sql injection' => [["USD' OR '1'='1", 'EUR'], false],
             'xss injection' => [['<script>alert(1)</script>'], false],
@@ -306,29 +306,29 @@ class InputValidationTest extends TestCase
     {
         $files = [
             // Safe files
-            'document.pdf'     => 'application/pdf',
-            'image.jpg'        => 'image/jpeg',
+            'document.pdf' => 'application/pdf',
+            'image.jpg' => 'image/jpeg',
             'spreadsheet.xlsx' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
             // Dangerous files
-            'script.php'     => 'application/x-php',
-            'shell.sh'       => 'application/x-sh',
+            'script.php' => 'application/x-php',
+            'shell.sh' => 'application/x-sh',
             'executable.exe' => 'application/x-executable',
-            'webpage.html'   => 'text/html',
-            'script.js'      => 'application/javascript',
+            'webpage.html' => 'text/html',
+            'script.js' => 'application/javascript',
             // Double extensions
             'document.pdf.php' => 'application/x-php',
-            'image.jpg.exe'    => 'application/x-executable',
+            'image.jpg.exe' => 'application/x-executable',
             // Null byte
             "document.pdf\x00.php" => 'application/x-php',
             // Path traversal
-            '../../../etc/passwd'                => 'text/plain',
+            '../../../etc/passwd' => 'text/plain',
             '..\\..\\windows\\system32\\cmd.exe' => 'application/x-executable',
         ];
 
         foreach ($files as $filename => $mimeType) {
             $response = $this->withToken($this->token)
                 ->postJson('/api/v2/documents/upload', [
-                    'filename'  => $filename,
+                    'filename' => $filename,
                     'mime_type' => $mimeType,
                 ]);
 
@@ -348,21 +348,21 @@ class InputValidationTest extends TestCase
     {
         $inputs = [
             // Unicode
-            '你好世界'      => true, // Chinese
+            '你好世界' => true, // Chinese
             'مرحبا بالعالم' => true, // Arabic
-            '🔒💰🏦'        => true, // Emojis
+            '🔒💰🏦' => true, // Emojis
             // Special characters
-            'Account & Co.'     => true,
-            'Price: $100'       => true,
+            'Account & Co.' => true,
+            'Price: $100' => true,
             "O'Brien's Account" => true,
             // Control characters
-            "Line1\nLine2"   => false,
+            "Line1\nLine2" => false,
             "Tab\tSeparated" => false,
-            "Null\x00Byte"   => false,
-            "Bell\x07Sound"  => false,
+            "Null\x00Byte" => false,
+            "Bell\x07Sound" => false,
             // Zero-width characters
             "Invisible\u{200B}Space" => false,
-            "Hidden\u{FEFF}BOM"      => false,
+            "Hidden\u{FEFF}BOM" => false,
             // Direction override
             "Normal\u{202E}Reversed" => false,
         ];
@@ -370,8 +370,8 @@ class InputValidationTest extends TestCase
         foreach ($inputs as $input => $shouldBeValid) {
             $response = $this->withToken($this->token)
                 ->postJson('/api/v2/accounts', [
-                    'name'     => $input,
-                    'type'     => 'savings',
+                    'name' => $input,
+                    'type' => 'savings',
                     'currency' => 'USD',
                 ]);
 
@@ -379,13 +379,13 @@ class InputValidationTest extends TestCase
                 $this->assertContains(
                     $response->status(),
                     [201, 422],
-                    "Expected 201 or 422 for valid input '$input', got {$response->status()}. Response: " . $response->content()
+                    "Expected 201 or 422 for valid input '$input', got {$response->status()}. Response: ".$response->content()
                 );
             } else {
                 $this->assertContains(
                     $response->status(),
                     [422, 500],
-                    "Expected 422 or 500 for invalid input '$input', got {$response->status()}. Response: " . $response->content()
+                    "Expected 422 or 500 for invalid input '$input', got {$response->status()}. Response: ".$response->content()
                 );
             }
         }
@@ -396,8 +396,8 @@ class InputValidationTest extends TestCase
     {
         $headers = [
             'X-Custom-Header' => "value\r\nX-Injected: true",
-            'Authorization'   => "Bearer token\r\nX-Evil: true",
-            'Content-Type'    => "application/json\r\nX-Attack: true",
+            'Authorization' => "Bearer token\r\nX-Evil: true",
+            'Content-Type' => "application/json\r\nX-Attack: true",
         ];
 
         foreach ($headers as $header => $value) {
@@ -414,23 +414,23 @@ class InputValidationTest extends TestCase
     {
         $booleans = [
             // Valid booleans
-            true    => true,
-            false   => true,
-            1       => true,
-            0       => true,
-            '1'     => true,
-            '0'     => true,
-            'true'  => true,
+            true => true,
+            false => true,
+            1 => true,
+            0 => true,
+            '1' => true,
+            '0' => true,
+            'true' => true,
             'false' => true,
             // Invalid booleans
-            'yes'   => false,
-            'no'    => false,
-            'on'    => false,
-            'off'   => false,
-            2       => false,
-            -1      => false,
+            'yes' => false,
+            'no' => false,
+            'on' => false,
+            'off' => false,
+            2 => false,
+            -1 => false,
             'maybe' => false,
-            null    => false,
+            null => false,
         ];
 
         foreach ($booleans as $value => $shouldBeValid) {
@@ -455,19 +455,19 @@ class InputValidationTest extends TestCase
         return [
             'SQL injection basic' => ["' OR '1'='1", 'name'],
             'SQL injection union' => ["' UNION SELECT * FROM users--", 'name'],
-            'XSS script tag'      => ['<script>alert("XSS")</script>', 'name'],
-            'XSS img tag'         => ['<img src=x onerror=alert("XSS")>', 'description'],
-            'PHP code injection'  => ['<?php system("ls"); ?>', 'description'],
-            'Command injection'   => ['`rm -rf /`', 'name'],
-            'XXE injection'       => ['<!DOCTYPE foo [<!ENTITY xxe SYSTEM "file:///etc/passwd">]>', 'description'],
-            'Path traversal'      => ['../../../etc/passwd', 'name'],
+            'XSS script tag' => ['<script>alert("XSS")</script>', 'name'],
+            'XSS img tag' => ['<img src=x onerror=alert("XSS")>', 'description'],
+            'PHP code injection' => ['<?php system("ls"); ?>', 'description'],
+            'Command injection' => ['`rm -rf /`', 'name'],
+            'XXE injection' => ['<!DOCTYPE foo [<!ENTITY xxe SYSTEM "file:///etc/passwd">]>', 'description'],
+            'Path traversal' => ['../../../etc/passwd', 'name'],
             'Null byte injection' => ["file.txt\x00.php", 'name'],
-            'LDAP injection'      => ['*)(uid=*))(&(uid=*', 'name'],
-            'XML injection'       => ['<![CDATA[<script>alert("XSS")</script>]]>', 'description'],
-            'CSV injection'       => ['=1+1+cmd|"/c calc"!A1', 'name'],
-            'Header injection'    => ["value\r\nX-Injected: true", 'name'],
-            'Template injection'  => ['{{7*7}}', 'name'],
-            'JSON injection'      => ['{"$ne": null}', 'name'],
+            'LDAP injection' => ['*)(uid=*))(&(uid=*', 'name'],
+            'XML injection' => ['<![CDATA[<script>alert("XSS")</script>]]>', 'description'],
+            'CSV injection' => ['=1+1+cmd|"/c calc"!A1', 'name'],
+            'Header injection' => ["value\r\nX-Injected: true", 'name'],
+            'Template injection' => ['{{7*7}}', 'name'],
+            'JSON injection' => ['{"$ne": null}', 'name'],
         ];
     }
 
@@ -477,18 +477,18 @@ class InputValidationTest extends TestCase
     public static function numericInputs(): array
     {
         return [
-            'Valid integer'        => [1000, 'amount', true],
+            'Valid integer' => [1000, 'amount', true],
             'Valid string integer' => ['1000', 'amount', true],
-            'Negative amount'      => [-1000, 'amount', false],
-            'Zero amount'          => [0, 'amount', false],
-            'Float amount'         => [100.50, 'amount', false],
-            'String with spaces'   => [' 1000 ', 'amount', false],
-            'Non-numeric string'   => ['abc', 'amount', false],
+            'Negative amount' => [-1000, 'amount', false],
+            'Zero amount' => [0, 'amount', false],
+            'Float amount' => [100.50, 'amount', false],
+            'String with spaces' => [' 1000 ', 'amount', false],
+            'Non-numeric string' => ['abc', 'amount', false],
             'Exponential notation' => ['1e10', 'amount', false],
-            'Hexadecimal'          => ['0xFF', 'amount', false],
-            'Binary'               => ['0b1111', 'amount', false],
-            'Infinity'             => [INF, 'amount', false],
-            'NaN'                  => [NAN, 'amount', false],
+            'Hexadecimal' => ['0xFF', 'amount', false],
+            'Binary' => ['0b1111', 'amount', false],
+            'Infinity' => [INF, 'amount', false],
+            'NaN' => [NAN, 'amount', false],
         ];
     }
 }

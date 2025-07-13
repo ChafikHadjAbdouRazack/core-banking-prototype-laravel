@@ -27,9 +27,9 @@ class FraudDetected
     {
         return [
             'fraud',
-            'fraud_score:' . $this->fraudScore->id,
-            'risk_level:' . $this->fraudScore->risk_level,
-            'entity_type:' . class_basename($this->fraudScore->entity_type),
+            'fraud_score:'.$this->fraudScore->id,
+            'risk_level:'.$this->fraudScore->risk_level,
+            'entity_type:'.class_basename($this->fraudScore->entity_type),
         ];
     }
 }

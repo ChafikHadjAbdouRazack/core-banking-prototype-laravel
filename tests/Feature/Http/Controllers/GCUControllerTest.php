@@ -34,9 +34,9 @@ class GCUControllerTest extends ControllerTestCase
                     ['currency' => 'CNY', 'weight' => 5.00, 'flag' => '🇨🇳'],
                 ],
                 'performance' => [
-                    'value'      => 1.0234,
+                    'value' => 1.0234,
                     'change_24h' => 0.15,
-                    'change_7d'  => 0.89,
+                    'change_7d' => 0.89,
                     'change_30d' => 2.34,
                 ],
                 'last_updated' => now()->toIso8601String(),
@@ -61,8 +61,8 @@ class GCUControllerTest extends ControllerTestCase
         // First request should call the API
         Http::fake([
             '*/api/v2/gcu/composition' => Http::response([
-                'composition'  => config('platform.gcu.composition'),
-                'performance'  => ['value' => 1.0, 'change_24h' => 0],
+                'composition' => config('platform.gcu.composition'),
+                'performance' => ['value' => 1.0, 'change_24h' => 0],
                 'last_updated' => now()->toIso8601String(),
             ], 200),
         ]);
@@ -131,9 +131,9 @@ class GCUControllerTest extends ControllerTestCase
                     ['currency' => 'USD', 'weight' => 40.00, 'flag' => '🇺🇸'],
                 ],
                 'performance' => [
-                    'value'      => 1.0234,
+                    'value' => 1.0234,
                     'change_24h' => 0.15,
-                    'change_7d'  => 0.89,
+                    'change_7d' => 0.89,
                     'change_30d' => 2.34,
                 ],
                 'last_updated' => '2024-01-15T10:30:00Z',

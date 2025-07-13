@@ -63,7 +63,7 @@ class ComplianceControllerTest extends ControllerTestCase
         $response->assertStatus(200)
             ->assertJson([
                 'status' => 'success',
-                'data'   => [],
+                'data' => [],
             ]);
     }
 
@@ -85,7 +85,7 @@ class ComplianceControllerTest extends ControllerTestCase
         $response->assertStatus(200)
             ->assertJson([
                 'status' => 'success',
-                'data'   => null,
+                'data' => null,
             ]);
     }
 
@@ -106,7 +106,7 @@ class ComplianceControllerTest extends ControllerTestCase
 
         $response->assertStatus(200)
             ->assertJson([
-                'status'  => 'success',
+                'status' => 'success',
                 'message' => 'Violation resolved successfully',
             ]);
     }
@@ -129,7 +129,7 @@ class ComplianceControllerTest extends ControllerTestCase
         $response->assertStatus(200)
             ->assertJson([
                 'status' => 'success',
-                'data'   => [],
+                'data' => [],
             ]);
     }
 
@@ -151,7 +151,7 @@ class ComplianceControllerTest extends ControllerTestCase
         $response->assertStatus(200)
             ->assertJson([
                 'status' => 'success',
-                'data'   => [],
+                'data' => [],
             ]);
     }
 
@@ -173,7 +173,7 @@ class ComplianceControllerTest extends ControllerTestCase
         $response->assertStatus(200)
             ->assertJson([
                 'status' => 'success',
-                'data'   => [],
+                'data' => [],
             ]);
     }
 
@@ -192,12 +192,12 @@ class ComplianceControllerTest extends ControllerTestCase
 
         $response = $this->postJson('/api/compliance/checks/run', [
             'check_type' => 'aml',
-            'scope'      => 'all_accounts',
+            'scope' => 'all_accounts',
         ]);
 
         $response->assertStatus(200)
             ->assertJson([
-                'status'  => 'success',
+                'status' => 'success',
                 'message' => 'Compliance check initiated',
             ]);
     }
@@ -220,7 +220,7 @@ class ComplianceControllerTest extends ControllerTestCase
         $response->assertStatus(200)
             ->assertJson([
                 'status' => 'success',
-                'data'   => [],
+                'data' => [],
             ]);
     }
 
@@ -243,7 +243,7 @@ class ComplianceControllerTest extends ControllerTestCase
 
         $response->assertStatus(200)
             ->assertJson([
-                'status'  => 'success',
+                'status' => 'success',
                 'message' => 'Certification renewal initiated',
             ]);
     }
@@ -266,7 +266,7 @@ class ComplianceControllerTest extends ControllerTestCase
         $response->assertStatus(200)
             ->assertJson([
                 'status' => 'success',
-                'data'   => [],
+                'data' => [],
             ]);
     }
 
@@ -284,13 +284,13 @@ class ComplianceControllerTest extends ControllerTestCase
         Sanctum::actingAs($this->user);
 
         $response = $this->putJson('/api/compliance/policies/123', [
-            'name'    => 'Updated Policy',
+            'name' => 'Updated Policy',
             'content' => 'Updated policy content',
         ]);
 
         $response->assertStatus(200)
             ->assertJson([
-                'status'  => 'success',
+                'status' => 'success',
                 'message' => 'Policy updated successfully',
             ]);
     }

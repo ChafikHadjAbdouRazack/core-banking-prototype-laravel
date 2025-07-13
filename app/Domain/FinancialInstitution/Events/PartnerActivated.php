@@ -15,6 +15,5 @@ class PartnerActivated
 
     public function __construct(
         public readonly FinancialInstitutionPartner $partner
-    ) {
-    }
+    ) {}
 }

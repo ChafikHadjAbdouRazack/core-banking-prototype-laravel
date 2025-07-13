@@ -13,10 +13,6 @@ class CreateBatchSummaryActivity extends Activity
 {
     /**
      * Create a summary of all completed batch operations.
-     *
-     * @param  array  $completedOperations
-     * @param  string $batchId
-     * @return array
      */
     public function execute(array $completedOperations, string $batchId): array
     {
@@ -45,8 +41,8 @@ class CreateBatchSummaryActivity extends Activity
             // Build operation details
             $operationDetails[] = [
                 'operation' => $operation['operation'],
-                'status'    => $operation['result']['status'],
-                'result'    => $operation['result']['result'] ?? null,
+                'status' => $operation['result']['status'],
+                'result' => $operation['result']['result'] ?? null,
             ];
         }
 
@@ -59,14 +55,14 @@ class CreateBatchSummaryActivity extends Activity
         }
 
         $summary = [
-            'batch_id'              => $batchId,
-            'total_operations'      => count($completedOperations),
+            'batch_id' => $batchId,
+            'total_operations' => count($completedOperations),
             'successful_operations' => $successfulOperations,
-            'failed_operations'     => $failedOperations,
-            'start_time'            => $startTime,
-            'end_time'              => $endTime,
-            'duration_seconds'      => $duration,
-            'results'               => $operationDetails,
+            'failed_operations' => $failedOperations,
+            'start_time' => $startTime,
+            'end_time' => $endTime,
+            'duration_seconds' => $duration,
+            'results' => $operationDetails,
         ];
 
         logger()->info('Batch processing summary created', $summary);

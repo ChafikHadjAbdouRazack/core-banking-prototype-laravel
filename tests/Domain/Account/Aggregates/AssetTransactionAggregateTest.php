@@ -120,7 +120,7 @@ class AssetTransactionAggregateTest extends DomainTestCase
                 new AssetBalanceAdded(
                     assetCode: 'USD',
                     amount: 1000,
-                    hash: new Hash(hash('sha3-512', 'USD:1000:' . time()))
+                    hash: new Hash(hash('sha3-512', 'USD:1000:'.time()))
                 ),
             ])
             ->when(function (AssetTransactionAggregate $aggregate): void {
@@ -128,7 +128,7 @@ class AssetTransactionAggregateTest extends DomainTestCase
                 $aggregate->debit('USD', 2000);
             })
             ->assertApplied([
-                new AccountLimitHit(),
+                new AccountLimitHit,
             ])
             ->assertNotRecorded(AssetBalanceSubtracted::class);
     }

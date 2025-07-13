@@ -20,8 +20,8 @@ class PublishDepositCompletedActivity extends Activity
                 metadata: array_merge(
                     $deposit->getMetadata(),
                     [
-                    'payment_method'      => $deposit->getPaymentMethod(),
-                    'payment_method_type' => $deposit->getPaymentMethodType(),
+                        'payment_method' => $deposit->getPaymentMethod(),
+                        'payment_method_type' => $deposit->getPaymentMethodType(),
                     ]
                 )
             )

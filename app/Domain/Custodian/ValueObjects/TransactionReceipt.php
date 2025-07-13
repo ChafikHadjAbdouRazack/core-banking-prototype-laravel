@@ -21,8 +21,7 @@ final class TransactionReceipt
         public readonly ?Carbon $completedAt = null,
         public readonly ?array $metadata = [],
         public readonly ?string $failureReason = null
-    ) {
-    }
+    ) {}
 
     public function isCompleted(): bool
     {
@@ -42,17 +41,17 @@ final class TransactionReceipt
     public function toArray(): array
     {
         return [
-            'id'             => $this->id,
-            'status'         => $this->status,
-            'from_account'   => $this->fromAccount,
-            'to_account'     => $this->toAccount,
-            'asset_code'     => $this->assetCode,
-            'amount'         => $this->amount,
-            'fee'            => $this->fee,
-            'reference'      => $this->reference,
-            'created_at'     => $this->createdAt?->toISOString(),
-            'completed_at'   => $this->completedAt?->toISOString(),
-            'metadata'       => $this->metadata,
+            'id' => $this->id,
+            'status' => $this->status,
+            'from_account' => $this->fromAccount,
+            'to_account' => $this->toAccount,
+            'asset_code' => $this->assetCode,
+            'amount' => $this->amount,
+            'fee' => $this->fee,
+            'reference' => $this->reference,
+            'created_at' => $this->createdAt?->toISOString(),
+            'completed_at' => $this->completedAt?->toISOString(),
+            'metadata' => $this->metadata,
             'failure_reason' => $this->failureReason,
         ];
     }

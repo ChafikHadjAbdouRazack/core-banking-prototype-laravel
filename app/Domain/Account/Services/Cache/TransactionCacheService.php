@@ -58,7 +58,7 @@ class TransactionCacheService
     public function get(string $uuid): ?Transaction
     {
         return Cache::remember(
-            self::CACHE_PREFIX . 'uuid:' . $uuid,
+            self::CACHE_PREFIX.'uuid:'.$uuid,
             self::CACHE_TTL,
             fn () => Transaction::where('uuid', $uuid)->first()
         );
@@ -78,11 +78,11 @@ class TransactionCacheService
                     ->get();
 
                 return [
-                    'date'              => $date,
-                    'total_deposits'    => $transactions->where('type', 'deposit')->sum('amount'),
+                    'date' => $date,
+                    'total_deposits' => $transactions->where('type', 'deposit')->sum('amount'),
                     'total_withdrawals' => $transactions->where('type', 'withdrawal')->sum('amount'),
                     'transaction_count' => $transactions->count(),
-                    'net_change'        => $transactions->where('type', 'deposit')->sum('amount') -
+                    'net_change' => $transactions->where('type', 'deposit')->sum('amount') -
                                    $transactions->where('type', 'withdrawal')->sum('amount'),
                 ];
             }
@@ -116,7 +116,7 @@ class TransactionCacheService
     {
         // Cache the individual transaction
         Cache::put(
-            self::CACHE_PREFIX . 'uuid:' . $transaction->uuid,
+            self::CACHE_PREFIX.'uuid:'.$transaction->uuid,
             $transaction,
             self::CACHE_TTL
         );
@@ -130,6 +130,6 @@ class TransactionCacheService
      */
     private function getCacheKey(string $accountUuid, string $type): string
     {
-        return self::CACHE_PREFIX . 'account:' . $accountUuid . ':' . $type;
+        return self::CACHE_PREFIX.'account:'.$accountUuid.':'.$type;
     }
 }

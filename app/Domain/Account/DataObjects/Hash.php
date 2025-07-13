@@ -9,9 +9,6 @@ use JustSteveKing\DataObjects\Contracts\DataObjectContract;
 
 final readonly class Hash extends DataObject implements DataObjectContract
 {
-    /**
-     * @param string $hash
-     */
     public function __construct(
         private string $hash
     ) {
@@ -22,9 +19,6 @@ final readonly class Hash extends DataObject implements DataObjectContract
         }
     }
 
-    /**
-     * @return string
-     */
     public function getHash(): string
     {
         return $this->hash;
@@ -32,9 +26,6 @@ final readonly class Hash extends DataObject implements DataObjectContract
 
     /**
      * Create hash from data using SHA3-512.
-     *
-     * @param  string $data
-     * @return self
      */
     public static function fromData(string $data): self
     {
@@ -43,8 +34,6 @@ final readonly class Hash extends DataObject implements DataObjectContract
 
     /**
      * Get string representation of the hash.
-     *
-     * @return string
      */
     public function toString(): string
     {
@@ -53,10 +42,6 @@ final readonly class Hash extends DataObject implements DataObjectContract
 
     /**
      * Validate the hash format.
-     *
-     * @param string $hash
-     *
-     * @return bool
      */
     private function isValidHash(string $hash): bool
     {
@@ -64,19 +49,11 @@ final readonly class Hash extends DataObject implements DataObjectContract
         return ctype_xdigit($hash) && strlen($hash) === 128; // SHA3-512 length
     }
 
-    /**
-     * @param Hash $hash
-     *
-     * @return bool
-     */
     public function equals(self $hash): bool
     {
         return hash_equals($this->hash, $hash->getHash());
     }
 
-    /**
-     * @return array
-     */
     public function toArray(): array
     {
         return [

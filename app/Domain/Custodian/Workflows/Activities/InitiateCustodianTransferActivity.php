@@ -29,10 +29,10 @@ class InitiateCustodianTransferActivity extends Activity
             toAccount: $toAccount,
             assetCode: $assetCode,
             amount: $amount,
-            reference: $reference ?? 'CORE-' . time(),
+            reference: $reference ?? 'CORE-'.time(),
             description: "Core Banking {$type} transfer",
             metadata: [
-                'type'         => $type,
+                'type' => $type,
                 'initiated_at' => now()->toISOString(),
             ]
         );
@@ -41,7 +41,7 @@ class InitiateCustodianTransferActivity extends Activity
         $receipt = $custodian->initiateTransfer($request);
 
         if ($receipt->isFailed()) {
-            throw new \Exception('Custodian transfer failed: ' . ($receipt->metadata['error'] ?? 'Unknown error'));
+            throw new \Exception('Custodian transfer failed: '.($receipt->metadata['error'] ?? 'Unknown error'));
         }
 
         return $receipt->id;

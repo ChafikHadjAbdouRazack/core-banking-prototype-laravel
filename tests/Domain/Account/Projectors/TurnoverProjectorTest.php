@@ -86,21 +86,11 @@ class TurnoverProjectorTest extends TestCase
         Carbon::setTestNow();
     }
 
-    /**
-     * @param Carbon $date
-     *
-     * @return Turnover|null
-     */
     private function getTurnoverForDate(Carbon $date): ?Turnover
     {
         return app(TurnoverRepository::class)->findByAccountAndDate($this->account, $date);
     }
 
-    /**
-     * @param array $transactions
-     *
-     * @return void
-     */
     private function performTransactions(array $transactions): void
     {
         $aggregate = TransactionAggregate::retrieve($this->account->uuid);
@@ -110,11 +100,6 @@ class TurnoverProjectorTest extends TestCase
         $aggregate->persist();
     }
 
-    /**
-     * @param int $amount
-     *
-     * @return Money
-     */
     private function money(int $amount): Money
     {
         return hydrate(Money::class, ['amount' => $amount]);

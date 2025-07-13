@@ -15,6 +15,5 @@ class SARSubmitted
 
     public function __construct(
         public readonly SuspiciousActivityReport $sar
-    ) {
-    }
+    ) {}
 }

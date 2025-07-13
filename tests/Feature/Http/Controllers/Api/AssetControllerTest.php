@@ -36,33 +36,33 @@ class AssetControllerTest extends ControllerTestCase
         $usd = Asset::firstOrCreate(
             ['code' => 'USD'],
             [
-                'name'      => 'US Dollar',
-                'type'      => 'fiat',
+                'name' => 'US Dollar',
+                'type' => 'fiat',
                 'precision' => 2,
                 'is_active' => true,
-                'metadata'  => ['symbol' => '$'],
+                'metadata' => ['symbol' => '$'],
             ]
         );
 
         $eur = Asset::firstOrCreate(
             ['code' => 'EUR'],
             [
-                'name'      => 'Euro',
-                'type'      => 'fiat',
+                'name' => 'Euro',
+                'type' => 'fiat',
                 'precision' => 2,
                 'is_active' => true,
-                'metadata'  => ['symbol' => '€'],
+                'metadata' => ['symbol' => '€'],
             ]
         );
 
         $gbp = Asset::firstOrCreate(
             ['code' => 'GBP'],
             [
-                'name'      => 'British Pound',
-                'type'      => 'fiat',
+                'name' => 'British Pound',
+                'type' => 'fiat',
                 'precision' => 2,
                 'is_active' => false, // Inactive
-                'metadata'  => ['symbol' => '£'],
+                'metadata' => ['symbol' => '£'],
             ]
         );
 
@@ -136,8 +136,8 @@ class AssetControllerTest extends ControllerTestCase
         Asset::firstOrCreate(
             ['code' => 'USD'],
             [
-                'name'      => 'US Dollar',
-                'type'      => 'fiat',
+                'name' => 'US Dollar',
+                'type' => 'fiat',
                 'precision' => 2,
                 'is_active' => true,
             ]
@@ -146,8 +146,8 @@ class AssetControllerTest extends ControllerTestCase
         Asset::firstOrCreate(
             ['code' => 'USDC'],
             [
-                'name'      => 'USD Coin',
-                'type'      => 'crypto',
+                'name' => 'USD Coin',
+                'type' => 'crypto',
                 'precision' => 6,
                 'is_active' => true,
             ]
@@ -156,8 +156,8 @@ class AssetControllerTest extends ControllerTestCase
         Asset::firstOrCreate(
             ['code' => 'EUR'],
             [
-                'name'      => 'Euro',
-                'type'      => 'fiat',
+                'name' => 'Euro',
+                'type' => 'fiat',
                 'precision' => 2,
                 'is_active' => true,
             ]
@@ -179,8 +179,8 @@ class AssetControllerTest extends ControllerTestCase
         Asset::firstOrCreate(
             ['code' => 'USD'],
             [
-                'name'      => 'US Dollar',
-                'type'      => 'fiat',
+                'name' => 'US Dollar',
+                'type' => 'fiat',
                 'precision' => 2,
                 'is_active' => true,
             ]
@@ -189,8 +189,8 @@ class AssetControllerTest extends ControllerTestCase
         Asset::firstOrCreate(
             ['code' => 'USDT'],
             [
-                'name'      => 'USD Tether',
-                'type'      => 'crypto',
+                'name' => 'USD Tether',
+                'type' => 'crypto',
                 'precision' => 6,
                 'is_active' => true,
             ]
@@ -199,8 +199,8 @@ class AssetControllerTest extends ControllerTestCase
         Asset::firstOrCreate(
             ['code' => 'BTC'],
             [
-                'name'      => 'Bitcoin',
-                'type'      => 'crypto',
+                'name' => 'Bitcoin',
+                'type' => 'crypto',
                 'precision' => 8,
                 'is_active' => true,
             ]
@@ -243,11 +243,11 @@ class AssetControllerTest extends ControllerTestCase
             ->assertJson([
                 'data' => [],
                 'meta' => [
-                    'total'  => 0,
+                    'total' => 0,
                     'active' => 0,
-                    'types'  => [
-                        'fiat'      => 0,
-                        'crypto'    => 0,
+                    'types' => [
+                        'fiat' => 0,
+                        'crypto' => 0,
                         'commodity' => 0,
                     ],
                 ],
@@ -270,13 +270,13 @@ class AssetControllerTest extends ControllerTestCase
         $asset = Asset::firstOrCreate(
             ['code' => 'USD'],
             [
-                'name'      => 'US Dollar',
-                'type'      => 'fiat',
+                'name' => 'US Dollar',
+                'type' => 'fiat',
                 'precision' => 2,
                 'is_active' => true,
-                'metadata'  => [
-                    'symbol'    => '$',
-                    'category'  => 'currency',
+                'metadata' => [
+                    'symbol' => '$',
+                    'category' => 'currency',
                     'regulated' => true,
                 ],
             ]
@@ -325,8 +325,8 @@ class AssetControllerTest extends ControllerTestCase
         $asset = Asset::firstOrCreate(
             ['code' => 'USD'],
             [
-                'name'      => 'US Dollar',
-                'type'      => 'fiat',
+                'name' => 'US Dollar',
+                'type' => 'fiat',
                 'precision' => 2,
                 'is_active' => true,
             ]
@@ -337,8 +337,8 @@ class AssetControllerTest extends ControllerTestCase
             $account = Account::factory()->create();
             AccountBalance::factory()->create([
                 'account_uuid' => $account->uuid,
-                'asset_code'   => 'USD',
-                'balance'      => 10000, // 100.00 USD each
+                'asset_code' => 'USD',
+                'balance' => 10000, // 100.00 USD each
             ]);
         }
 
@@ -357,8 +357,8 @@ class AssetControllerTest extends ControllerTestCase
         Asset::firstOrCreate(
             ['code' => 'USD'],
             [
-                'name'      => 'US Dollar',
-                'type'      => 'fiat',
+                'name' => 'US Dollar',
+                'type' => 'fiat',
                 'precision' => 2,
                 'is_active' => true,
             ]
@@ -380,7 +380,7 @@ class AssetControllerTest extends ControllerTestCase
         $response->assertStatus(404)
             ->assertJson([
                 'message' => 'Asset not found',
-                'error'   => 'The specified asset code was not found',
+                'error' => 'The specified asset code was not found',
             ]);
     }
 
@@ -392,8 +392,8 @@ class AssetControllerTest extends ControllerTestCase
         Asset::firstOrCreate(
             ['code' => 'USD'],
             [
-                'name'      => 'US Dollar',
-                'type'      => 'fiat',
+                'name' => 'US Dollar',
+                'type' => 'fiat',
                 'precision' => 2,
                 'is_active' => false,
             ]
@@ -411,9 +411,9 @@ class AssetControllerTest extends ControllerTestCase
 
         // Force create a new inactive asset
         $asset = Asset::create([
-            'code'      => 'INACTIVE_TEST',
-            'name'      => 'Inactive Test Asset',
-            'type'      => 'fiat',
+            'code' => 'INACTIVE_TEST',
+            'name' => 'Inactive Test Asset',
+            'type' => 'fiat',
             'precision' => 2,
             'is_active' => false,
         ]);
@@ -468,8 +468,8 @@ class AssetControllerTest extends ControllerTestCase
         $asset = Asset::firstOrCreate(
             ['code' => 'BTC'],
             [
-                'name'      => 'Bitcoin',
-                'type'      => 'crypto',
+                'name' => 'Bitcoin',
+                'type' => 'crypto',
                 'precision' => 8,
                 'is_active' => true,
             ]
@@ -478,8 +478,8 @@ class AssetControllerTest extends ControllerTestCase
         $account = Account::factory()->create();
         AccountBalance::factory()->create([
             'account_uuid' => $account->uuid,
-            'asset_code'   => 'BTC',
-            'balance'      => 12345678, // 0.12345678 BTC
+            'asset_code' => 'BTC',
+            'balance' => 12345678, // 0.12345678 BTC
         ]);
 
         $response = $this->getJson('/api/v1/assets/BTC');
@@ -496,8 +496,8 @@ class AssetControllerTest extends ControllerTestCase
         Asset::firstOrCreate(
             ['code' => 'USD'],
             [
-                'name'      => 'US Dollar',
-                'type'      => 'fiat',
+                'name' => 'US Dollar',
+                'type' => 'fiat',
                 'precision' => 2,
                 'is_active' => true,
             ]

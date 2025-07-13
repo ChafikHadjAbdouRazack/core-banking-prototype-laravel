@@ -10,6 +10,5 @@ class LoanPaymentMissed extends ShouldBeStored
         public string $loanId,
         public int $paymentNumber,
         public \DateTimeImmutable $missedAt
-    ) {
-    }
+    ) {}
 }

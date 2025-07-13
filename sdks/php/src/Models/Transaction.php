@@ -11,7 +11,7 @@ class Transaction extends BaseModel
     {
         return $this->uuid;
     }
-    
+
     /**
      * Get transaction type.
      */
@@ -19,7 +19,7 @@ class Transaction extends BaseModel
     {
         return $this->type;
     }
-    
+
     /**
      * Get transaction amount.
      */
@@ -27,7 +27,7 @@ class Transaction extends BaseModel
     {
         return $this->amount;
     }
-    
+
     /**
      * Get asset code.
      */
@@ -35,7 +35,7 @@ class Transaction extends BaseModel
     {
         return $this->asset_code;
     }
-    
+
     /**
      * Get transaction status.
      */
@@ -43,7 +43,7 @@ class Transaction extends BaseModel
     {
         return $this->status;
     }
-    
+
     /**
      * Get reference.
      */
@@ -51,7 +51,7 @@ class Transaction extends BaseModel
     {
         return $this->reference;
     }
-    
+
     /**
      * Check if transaction is completed.
      */
@@ -59,7 +59,7 @@ class Transaction extends BaseModel
     {
         return $this->status === 'completed';
     }
-    
+
     /**
      * Check if transaction is pending.
      */
@@ -67,7 +67,7 @@ class Transaction extends BaseModel
     {
         return $this->status === 'pending';
     }
-    
+
     /**
      * Check if transaction is failed.
      */

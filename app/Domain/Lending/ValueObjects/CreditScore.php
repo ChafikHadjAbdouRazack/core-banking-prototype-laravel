@@ -37,8 +37,8 @@ class CreditScore
     public function toArray(): array
     {
         return [
-            'score'         => $this->score,
-            'bureau'        => $this->bureau,
+            'score' => $this->score,
+            'bureau' => $this->bureau,
             'credit_report' => $this->creditReport,
         ];
     }

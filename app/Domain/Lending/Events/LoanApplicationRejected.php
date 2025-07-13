@@ -11,6 +11,5 @@ class LoanApplicationRejected extends ShouldBeStored
         public array $reasons,
         public string $rejectedBy,
         public \DateTimeImmutable $rejectedAt
-    ) {
-    }
+    ) {}
 }

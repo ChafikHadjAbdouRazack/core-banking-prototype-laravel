@@ -16,16 +16,10 @@ class ComposeBasketBusinessActivity extends Activity
 {
     public function __construct(
         private WalletService $walletService
-    ) {
-    }
+    ) {}
 
     /**
      * Execute basket composition using proper Service → Workflow → Activity → Aggregate pattern.
-     *
-     * @param  AccountUuid $accountUuid
-     * @param  string      $basketCode
-     * @param  int         $amount
-     * @return array
      */
     public function execute(AccountUuid $accountUuid, string $basketCode, int $amount): array
     {
@@ -49,15 +43,15 @@ class ComposeBasketBusinessActivity extends Activity
                 Log::info(
                     "Composed {$amount} of basket {$basketCode} for account {$account->uuid}",
                     [
-                    'components_used' => $requiredAmounts,
+                        'components_used' => $requiredAmounts,
                     ]
                 );
 
                 return [
-                'basket_code'     => $basketCode,
-                'basket_amount'   => $amount,
-                'components_used' => $requiredAmounts,
-                'composed_at'     => now()->toISOString(),
+                    'basket_code' => $basketCode,
+                    'basket_amount' => $amount,
+                    'components_used' => $requiredAmounts,
+                    'composed_at' => now()->toISOString(),
                 ];
             }
         );

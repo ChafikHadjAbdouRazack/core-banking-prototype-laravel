@@ -17,6 +17,5 @@ class ApplicationApproved
     public function __construct(
         public readonly FinancialInstitutionApplication $application,
         public readonly FinancialInstitutionPartner $partner
-    ) {
-    }
+    ) {}
 }

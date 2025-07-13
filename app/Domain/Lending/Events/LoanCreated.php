@@ -17,6 +17,5 @@ class LoanCreated extends ShouldBeStored
         public RepaymentSchedule $repaymentSchedule,
         public array $terms,
         public \DateTimeImmutable $createdAt
-    ) {
-    }
+    ) {}
 }

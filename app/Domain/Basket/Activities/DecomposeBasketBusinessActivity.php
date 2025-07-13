@@ -17,16 +17,10 @@ class DecomposeBasketBusinessActivity extends Activity
 {
     public function __construct(
         private WalletService $walletService
-    ) {
-    }
+    ) {}
 
     /**
      * Execute basket decomposition using proper Service → Workflow → Activity → Aggregate pattern.
-     *
-     * @param  AccountUuid $accountUuid
-     * @param  string      $basketCode
-     * @param  int         $amount
-     * @return array
      */
     public function execute(AccountUuid $accountUuid, string $basketCode, int $amount): array
     {
@@ -61,15 +55,15 @@ class DecomposeBasketBusinessActivity extends Activity
                 Log::info(
                     "Decomposed {$amount} of basket {$basketCode} for account {$account->uuid}",
                     [
-                    'components' => $componentAmounts,
+                        'components' => $componentAmounts,
                     ]
                 );
 
                 return [
-                'basket_code'   => $basketCode,
-                'basket_amount' => $amount,
-                'components'    => $componentAmounts,
-                'decomposed_at' => now()->toISOString(),
+                    'basket_code' => $basketCode,
+                    'basket_amount' => $amount,
+                    'components' => $componentAmounts,
+                    'decomposed_at' => now()->toISOString(),
                 ];
             }
         );

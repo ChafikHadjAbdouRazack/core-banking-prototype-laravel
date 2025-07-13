@@ -6,18 +6,18 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- * @property      string $pool_id
- * @property      string $account_id
- * @property      string $base_currency
- * @property      string $quote_currency
- * @property      string $base_reserve
- * @property      string $quote_reserve
- * @property      string $total_shares
- * @property      string $fee_rate
- * @property      bool $is_active
- * @property      string $volume_24h
- * @property      string $fees_collected_24h
- * @property      array<string, mixed> $metadata
+ * @property string $pool_id
+ * @property string $account_id
+ * @property string $base_currency
+ * @property string $quote_currency
+ * @property string $base_reserve
+ * @property string $quote_reserve
+ * @property string $total_shares
+ * @property string $fee_rate
+ * @property bool $is_active
+ * @property string $volume_24h
+ * @property string $fees_collected_24h
+ * @property array<string, mixed> $metadata
  * @property-read string $spot_price
  * @property-read string $total_value_locked
  *
@@ -48,7 +48,7 @@ class LiquidityPool extends Model
 
     protected $casts = [
         'is_active' => 'boolean',
-        'metadata'  => 'array',
+        'metadata' => 'array',
     ];
 
     public function providers(): HasMany

@@ -12,7 +12,7 @@ it('has update method', function () {
 });
 
 it('can be instantiated', function () {
-    expect(new UpdateUserPassword())->toBeInstanceOf(UpdateUserPassword::class);
+    expect(new UpdateUserPassword)->toBeInstanceOf(UpdateUserPassword::class);
 });
 
 it('has correct method signature', function () {

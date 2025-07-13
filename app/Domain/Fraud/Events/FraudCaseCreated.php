@@ -29,8 +29,8 @@ class FraudCaseCreated
             'fraud',
             'fraud_case',
             'case_created',
-            'case:' . $this->fraudCase->case_number,
-            'priority:' . $this->fraudCase->priority,
+            'case:'.$this->fraudCase->case_number,
+            'priority:'.$this->fraudCase->priority,
         ];
     }
 }

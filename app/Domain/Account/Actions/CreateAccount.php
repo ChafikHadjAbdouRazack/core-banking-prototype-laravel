@@ -7,11 +7,6 @@ use App\Models\Account;
 
 class CreateAccount extends AccountAction
 {
-    /**
-     * @param AccountCreated $event
-     *
-     * @return Account
-     */
     public function __invoke(AccountCreated $event): Account
     {
         return $this->accountRepository->create(

@@ -10,15 +10,6 @@ use Workflow\Activity;
 
 class ConvertAssetActivity extends Activity
 {
-    /**
-     * @param AccountUuid            $accountUuid
-     * @param string                 $fromAssetCode
-     * @param string                 $toAssetCode
-     * @param int                    $amount
-     * @param AssetTransferAggregate $assetTransfer
-     *
-     * @return array
-     */
     public function execute(
         AccountUuid $accountUuid,
         string $fromAssetCode,
@@ -54,13 +45,13 @@ class ConvertAssetActivity extends Activity
             ->persist();
 
         return [
-            'success'          => true,
-            'transfer_id'      => $transferId,
-            'from_asset'       => $fromAssetCode,
-            'to_asset'         => $toAssetCode,
-            'original_amount'  => $amount,
+            'success' => true,
+            'transfer_id' => $transferId,
+            'from_asset' => $fromAssetCode,
+            'to_asset' => $toAssetCode,
+            'original_amount' => $amount,
             'converted_amount' => $convertedAmount,
-            'exchange_rate'    => $exchangeRate,
+            'exchange_rate' => $exchangeRate,
         ];
     }
 }

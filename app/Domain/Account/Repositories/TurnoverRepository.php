@@ -11,14 +11,10 @@ final class TurnoverRepository
 {
     public function __construct(
         protected Turnover $turnover
-    ) {
-    }
+    ) {}
 
     /**
-     * @param string            $accountUuid
-     * @param DateTimeInterface $date
-     *
-     * @return Turnover|null
+     * @param  string  $accountUuid
      */
     public function findByAccountAndDate(
         Account $account,
@@ -30,13 +26,6 @@ final class TurnoverRepository
             ->first();
     }
 
-    /**
-     * @param DateTimeInterface $date
-     * @param string            $accountUuid
-     * @param int               $amount
-     *
-     * @return Turnover
-     */
     public function incrementForDateById(
         DateTimeInterface $date,
         string $accountUuid,
@@ -47,14 +36,14 @@ final class TurnoverRepository
                 // Use updateOrCreate with lock for atomic operation
                 $turnover = $this->turnover->lockForUpdate()->updateOrCreate(
                     [
-                    'date'         => $date->toDateString(),
-                    'account_uuid' => $accountUuid,
+                        'date' => $date->toDateString(),
+                        'account_uuid' => $accountUuid,
                     ],
                     [
-                    'count'  => 0,
-                    'amount' => 0,
-                    'debit'  => 0,
-                    'credit' => 0,
+                        'count' => 0,
+                        'amount' => 0,
+                        'debit' => 0,
+                        'credit' => 0,
                     ]
                 );
 
@@ -63,12 +52,6 @@ final class TurnoverRepository
         );
     }
 
-    /**
-     * @param Turnover $turnover
-     * @param int      $amount
-     *
-     * @return Turnover
-     */
     protected function updateTurnover(Turnover $turnover, int $amount): Turnover
     {
         $turnover->count += 1;

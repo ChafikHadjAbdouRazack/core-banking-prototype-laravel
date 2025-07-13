@@ -15,6 +15,12 @@ class LedgerAggregateTest extends DomainTestCase
 
     private const string ACCOUNT_NAME = 'fake-account';
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->createDefaultAccounts();
+    }
+
     #[Test]
     public function can_create(): void
     {
@@ -45,19 +51,16 @@ class LedgerAggregateTest extends DomainTestCase
                 $ledger->deleteAccount();
             })
             ->assertRecorded([
-                new AccountDeleted(),
+                new AccountDeleted,
             ]);
     }
 
-    /**
-     * @return Account
-     */
     protected function fakeAccount(): Account
     {
         return hydrate(
             Account::class,
             [
-                'name'      => self::ACCOUNT_NAME,
+                'name' => self::ACCOUNT_NAME,
                 'user_uuid' => $this->business_user->uuid,
             ]
         );

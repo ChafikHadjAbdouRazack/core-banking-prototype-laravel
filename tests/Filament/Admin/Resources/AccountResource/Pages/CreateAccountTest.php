@@ -17,5 +17,5 @@ it('has correct resource', function () {
 });
 
 it('can be instantiated', function () {
-    expect(new CreateAccount())->toBeInstanceOf(CreateAccount::class);
+    expect(new CreateAccount)->toBeInstanceOf(CreateAccount::class);
 });

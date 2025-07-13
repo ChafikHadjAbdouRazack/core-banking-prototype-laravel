@@ -14,20 +14,14 @@ use Workflow\WorkflowStub;
 
 class AccountService
 {
-    /**
-     * @param LedgerAggregate      $ledger
-     * @param TransactionAggregate $transaction
-     * @param TransferAggregate    $transfer
-     */
     public function __construct(
         protected LedgerAggregate $ledger,
         protected TransactionAggregate $transaction,
         protected TransferAggregate $transfer
-    ) {
-    }
+    ) {}
 
     /**
-     * @param mixed $account
+     * @param  mixed  $account
      */
     public function create(Account|array $account): void
     {
@@ -35,35 +29,18 @@ class AccountService
         $workflow->start(__account($account));
     }
 
-    /**
-     * @param mixed $uuid
-     *
-     * @return void
-     */
     public function destroy(mixed $uuid): void
     {
         $workflow = WorkflowStub::make(DestroyAccountWorkflow::class);
         $workflow->start(__account_uuid($uuid));
     }
 
-    /**
-     * @param mixed $uuid
-     * @param mixed $amount
-     *
-     * @return void
-     */
     public function deposit(mixed $uuid, mixed $amount): void
     {
         $workflow = WorkflowStub::make(DepositAccountWorkflow::class);
         $workflow->start(__account_uuid($uuid), __money($amount));
     }
 
-    /**
-     * @param mixed $uuid
-     * @param mixed $amount
-     *
-     * @return void
-     */
     public function withdraw(mixed $uuid, mixed $amount): void
     {
         $workflow = WorkflowStub::make(WithdrawAccountWorkflow::class);

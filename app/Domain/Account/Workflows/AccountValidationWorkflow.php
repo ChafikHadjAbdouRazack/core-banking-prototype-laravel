@@ -10,12 +10,6 @@ class AccountValidationWorkflow extends Workflow
 {
     /**
      * Validate account for compliance/KYC requirements.
-     *
-     * @param AccountUuid $uuid
-     * @param array       $validationChecks
-     * @param string|null $validatedBy
-     *
-     * @return \Generator
      */
     public function execute(
         AccountUuid $uuid,

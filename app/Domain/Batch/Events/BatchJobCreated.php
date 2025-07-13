@@ -8,16 +8,9 @@ use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 
 class BatchJobCreated extends ShouldBeStored
 {
-    /**
-     * @var string
-     */
     public string $queue = EventQueues::TRANSACTIONS->value;
 
-    /**
-     * @param BatchJob $batchJob
-     */
     public function __construct(
         public readonly BatchJob $batchJob
-    ) {
-    }
+    ) {}
 }

@@ -8,11 +8,6 @@ use Workflow\Workflow;
 
 class CreateAccountWorkflow extends Workflow
 {
-    /**
-     * @param Account $account
-     *
-     * @return \Generator
-     */
     public function execute(Account $account): \Generator
     {
         try {

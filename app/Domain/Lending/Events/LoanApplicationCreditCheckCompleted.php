@@ -13,6 +13,5 @@ class LoanApplicationCreditCheckCompleted extends ShouldBeStored
         public array $report,
         public string $checkedBy,
         public \DateTimeImmutable $checkedAt
-    ) {
-    }
+    ) {}
 }

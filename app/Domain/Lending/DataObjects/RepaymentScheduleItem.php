@@ -14,19 +14,18 @@ class RepaymentScheduleItem
         public readonly string $totalAmount,
         public readonly string $remainingBalance,
         public readonly string $status = 'pending'
-    ) {
-    }
+    ) {}
 
     public function toArray(): array
     {
         return [
             'installment_number' => $this->installmentNumber,
-            'due_date'           => $this->dueDate->toDateString(),
-            'principal_amount'   => $this->principalAmount,
-            'interest_amount'    => $this->interestAmount,
-            'total_amount'       => $this->totalAmount,
-            'remaining_balance'  => $this->remainingBalance,
-            'status'             => $this->status,
+            'due_date' => $this->dueDate->toDateString(),
+            'principal_amount' => $this->principalAmount,
+            'interest_amount' => $this->interestAmount,
+            'total_amount' => $this->totalAmount,
+            'remaining_balance' => $this->remainingBalance,
+            'status' => $this->status,
         ];
     }
 

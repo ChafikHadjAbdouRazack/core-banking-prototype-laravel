@@ -8,10 +8,6 @@ use App\Models\BatchJobItem;
 
 class UpdateBatchItem
 {
-    /**
-     * @param  BatchItemProcessed $event
-     * @return void
-     */
     public function __invoke(BatchItemProcessed $event): void
     {
         $batchJob = BatchJob::where('uuid', $event->aggregateRootUuid())->first();
@@ -25,10 +21,10 @@ class UpdateBatchItem
             ->where('sequence', $event->itemIndex + 1)
             ->update(
                 [
-                'status'        => $event->status,
-                'result'        => $event->result,
-                'error_message' => $event->errorMessage,
-                'processed_at'  => now(),
+                    'status' => $event->status,
+                    'result' => $event->result,
+                    'error_message' => $event->errorMessage,
+                    'processed_at' => now(),
                 ]
             );
 

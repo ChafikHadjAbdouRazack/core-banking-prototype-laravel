@@ -20,9 +20,9 @@ class BehavioralAnalysisService
         // If profile not established, return neutral score
         if (! $profile->isEstablished()) {
             return [
-                'risk_score'     => 30, // Slightly elevated for new users
+                'risk_score' => 30, // Slightly elevated for new users
                 'is_established' => false,
-                'risk_factors'   => ['new_user_profile'],
+                'risk_factors' => ['new_user_profile'],
             ];
         }
 
@@ -81,11 +81,11 @@ class BehavioralAnalysisService
         // Calculate behavioral deviation score
         $deviationScore = $profile->calculateBehaviorScore(
             [
-            'hour'        => $transaction->created_at->hour,
-            'amount'      => $transaction->amount,
-            'country'     => $context['ip_country'] ?? null,
-            'device_id'   => $context['device_data']['fingerprint_id'] ?? null,
-            'daily_count' => $context['daily_transaction_count'] ?? 0,
+                'hour' => $transaction->created_at->hour,
+                'amount' => $transaction->amount,
+                'country' => $context['ip_country'] ?? null,
+                'device_id' => $context['device_data']['fingerprint_id'] ?? null,
+                'daily_count' => $context['daily_transaction_count'] ?? 0,
             ]
         );
 
@@ -93,18 +93,18 @@ class BehavioralAnalysisService
         $finalScore = min(100, ($riskScore + $deviationScore) / 2);
 
         return [
-            'risk_score'         => $finalScore,
-            'deviation_score'    => $deviationScore,
-            'risk_factors'       => $riskFactors,
-            'is_established'     => true,
+            'risk_score' => $finalScore,
+            'deviation_score' => $deviationScore,
+            'risk_factors' => $riskFactors,
+            'is_established' => true,
             'profile_confidence' => $this->calculateProfileConfidence($profile),
-            'analysis_details'   => [
-                'timing'    => $timingAnalysis,
-                'amount'    => $amountAnalysis,
-                'location'  => $locationAnalysis,
-                'device'    => $deviceAnalysis,
-                'patterns'  => $patternAnalysis,
-                'velocity'  => $velocityAnalysis,
+            'analysis_details' => [
+                'timing' => $timingAnalysis,
+                'amount' => $amountAnalysis,
+                'location' => $locationAnalysis,
+                'device' => $deviceAnalysis,
+                'patterns' => $patternAnalysis,
+                'velocity' => $velocityAnalysis,
                 'recipient' => $recipientAnalysis,
             ],
         ];
@@ -119,8 +119,8 @@ class BehavioralAnalysisService
             ['user_id' => $user->id],
             [
                 'typical_transaction_times' => array_fill(0, 24, 0),
-                'typical_transaction_days'  => array_fill(0, 7, 0),
-                'profile_established_at'    => now(),
+                'typical_transaction_days' => array_fill(0, 7, 0),
+                'profile_established_at' => now(),
             ]
         );
     }
@@ -156,11 +156,11 @@ class BehavioralAnalysisService
         }
 
         return [
-            'is_unusual'        => $isUnusualTime || $isUnusualDay,
-            'unusual_time'      => $isUnusualTime,
-            'unusual_day'       => $isUnusualDay,
-            'hour'              => $hour,
-            'day_of_week'       => $dayOfWeek,
+            'is_unusual' => $isUnusualTime || $isUnusualDay,
+            'unusual_time' => $isUnusualTime,
+            'unusual_day' => $isUnusualDay,
+            'hour' => $hour,
+            'day_of_week' => $dayOfWeek,
             'risk_contribution' => $riskContribution,
         ];
     }
@@ -193,10 +193,10 @@ class BehavioralAnalysisService
         }
 
         return [
-            'is_unusual'     => $isUnusual,
-            'amount'         => $amount,
+            'is_unusual' => $isUnusual,
+            'amount' => $amount,
             'average_amount' => $profile->avg_transaction_amount,
-            'deviation'      => $profile->avg_transaction_amount > 0 ?
+            'deviation' => $profile->avg_transaction_amount > 0 ?
                 round(($amount / $profile->avg_transaction_amount - 1) * 100, 2) : null,
             'risk_contribution' => $riskContribution,
         ];
@@ -212,7 +212,7 @@ class BehavioralAnalysisService
 
         if (! $country) {
             return [
-                'is_unusual'        => false,
+                'is_unusual' => false,
                 'risk_contribution' => 0,
             ];
         }
@@ -238,10 +238,10 @@ class BehavioralAnalysisService
         $profile->updateLocationHistory($country, $city, $context['ip_address'] ?? null);
 
         return [
-            'is_unusual'        => $isUnusual,
-            'country'           => $country,
-            'city'              => $city,
-            'primary_country'   => $profile->primary_country,
+            'is_unusual' => $isUnusual,
+            'country' => $country,
+            'city' => $city,
+            'primary_country' => $profile->primary_country,
             'risk_contribution' => $riskContribution,
         ];
     }
@@ -255,8 +255,8 @@ class BehavioralAnalysisService
 
         if (! $deviceId) {
             return [
-                'is_unusual'        => true,
-                'reason'            => 'no_device_fingerprint',
+                'is_unusual' => true,
+                'reason' => 'no_device_fingerprint',
                 'risk_contribution' => 20,
             ];
         }
@@ -275,10 +275,10 @@ class BehavioralAnalysisService
         }
 
         return [
-            'is_unusual'        => $isUnusual,
-            'device_id'         => substr($deviceId, 0, 8) . '...',
-            'is_trusted'        => in_array($deviceId, $profile->trusted_devices ?? []),
-            'device_count'      => $profile->device_count,
+            'is_unusual' => $isUnusual,
+            'device_id' => substr($deviceId, 0, 8).'...',
+            'is_trusted' => in_array($deviceId, $profile->trusted_devices ?? []),
+            'device_count' => $profile->device_count,
             'risk_contribution' => $riskContribution,
         ];
     }
@@ -320,8 +320,8 @@ class BehavioralAnalysisService
 
         return [
             'has_suspicious_patterns' => ! empty($patterns),
-            'patterns'                => $patterns,
-            'risk_contribution'       => $riskContribution,
+            'patterns' => $patterns,
+            'risk_contribution' => $riskContribution,
         ];
     }
 
@@ -362,10 +362,10 @@ class BehavioralAnalysisService
         }
 
         return [
-            'exceeds_normal'    => $exceedsNormal,
-            'reasons'           => $reasons,
-            'daily_count'       => $dailyCount,
-            'avg_daily_count'   => $profile->avg_daily_transaction_count,
+            'exceeds_normal' => $exceedsNormal,
+            'reasons' => $reasons,
+            'daily_count' => $dailyCount,
+            'avg_daily_count' => $profile->avg_daily_transaction_count,
             'risk_contribution' => $riskContribution,
         ];
     }
@@ -380,7 +380,7 @@ class BehavioralAnalysisService
 
         if (! $recipientId && ! $merchantId) {
             return [
-                'is_unusual'        => false,
+                'is_unusual' => false,
                 'risk_contribution' => 0,
             ];
         }
@@ -403,9 +403,9 @@ class BehavioralAnalysisService
         }
 
         return [
-            'is_unusual'        => $isUnusual,
-            'is_new_recipient'  => $recipientId && ! in_array($recipientId, $frequentRecipients),
-            'is_new_merchant'   => $merchantId && ! in_array($merchantId, $frequentMerchants),
+            'is_unusual' => $isUnusual,
+            'is_new_recipient' => $recipientId && ! in_array($recipientId, $frequentRecipients),
+            'is_new_merchant' => $merchantId && ! in_array($merchantId, $frequentMerchants),
             'risk_contribution' => $riskContribution,
         ];
     }
@@ -434,7 +434,7 @@ class BehavioralAnalysisService
                 if ($fraudScore->isHighRisk()) {
                     $profile->update(
                         [
-                        'last_suspicious_activity' => now(),
+                            'last_suspicious_activity' => now(),
                         ]
                     );
                     $profile->increment('suspicious_activities_count');
@@ -458,10 +458,10 @@ class BehavioralAnalysisService
                 $query->where('user_id', $profile->user_id);
             }
         )
-        ->where('created_at', '>=', now()->subDays(90))
-        ->orderBy('created_at', 'desc')
-        ->limit(100)
-        ->get();
+            ->where('created_at', '>=', now()->subDays(90))
+            ->orderBy('created_at', 'desc')
+            ->limit(100)
+            ->get();
 
         $profile->updateTransactionStats($recentTransactions->toArray());
 
@@ -481,8 +481,8 @@ class BehavioralAnalysisService
                 $query->where('user_id', $profile->user_id);
             }
         )
-        ->whereDate('created_at', today())
-        ->count();
+            ->whereDate('created_at', today())
+            ->count();
 
         if ($todayCount > $profile->max_daily_transactions) {
             $profile->update(['max_daily_transactions' => $todayCount]);
@@ -498,8 +498,8 @@ class BehavioralAnalysisService
 
         $profile->update(
             [
-            'days_since_first_transaction' => $daysSinceFirst,
-            'is_established'               => $daysSinceFirst >= 30 && $profile->total_transaction_count >= 10,
+                'days_since_first_transaction' => $daysSinceFirst,
+                'is_established' => $daysSinceFirst >= 30 && $profile->total_transaction_count >= 10,
             ]
         );
 

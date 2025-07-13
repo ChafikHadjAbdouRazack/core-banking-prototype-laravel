@@ -20,10 +20,6 @@ class SingleBatchOperationActivity extends Activity
 {
     /**
      * Execute a single batch operation.
-     *
-     * @param  string $operation
-     * @param  string $batchId
-     * @return array
      */
     public function execute(string $operation, string $batchId): array
     {
@@ -32,9 +28,9 @@ class SingleBatchOperationActivity extends Activity
         logger()->info(
             'Starting single batch operation',
             [
-            'batch_id'   => $batchId,
-            'operation'  => $operation,
-            'start_time' => $startTime->toISOString(),
+                'batch_id' => $batchId,
+                'operation' => $operation,
+                'start_time' => $startTime->toISOString(),
             ]
         );
 
@@ -46,27 +42,27 @@ class SingleBatchOperationActivity extends Activity
             logger()->info(
                 'Batch operation completed',
                 [
-                'batch_id'         => $batchId,
-                'operation'        => $operation,
-                'duration_seconds' => $endTime->diffInSeconds($startTime),
-                'result'           => $result,
+                    'batch_id' => $batchId,
+                    'operation' => $operation,
+                    'duration_seconds' => $endTime->diffInSeconds($startTime),
+                    'result' => $result,
                 ]
             );
 
             return [
-                'operation'  => $operation,
-                'status'     => 'success',
-                'result'     => $result,
+                'operation' => $operation,
+                'status' => 'success',
+                'result' => $result,
                 'start_time' => $startTime->toISOString(),
-                'end_time'   => $endTime->toISOString(),
+                'end_time' => $endTime->toISOString(),
             ];
         } catch (\Throwable $th) {
             logger()->error(
                 'Batch operation failed',
                 [
-                'batch_id'  => $batchId,
-                'operation' => $operation,
-                'error'     => $th->getMessage(),
+                    'batch_id' => $batchId,
+                    'operation' => $operation,
+                    'error' => $th->getMessage(),
                 ]
             );
 
@@ -74,11 +70,6 @@ class SingleBatchOperationActivity extends Activity
         }
     }
 
-    /**
-     * @param  string $operation
-     * @param  string $batchId
-     * @return array
-     */
     private function performOperation(string $operation, string $batchId): array
     {
         switch ($operation) {
@@ -101,8 +92,6 @@ class SingleBatchOperationActivity extends Activity
 
     /**
      * Calculate daily turnover for all accounts.
-     *
-     * @return array
      */
     private function calculateDailyTurnover(): array
     {
@@ -110,7 +99,7 @@ class SingleBatchOperationActivity extends Activity
 
         // Store the date we're processing for potential reversal
         $processedData = [
-            'date'      => $today->toDateString(),
+            'date' => $today->toDateString(),
             'turnovers' => [],
         ];
 
@@ -132,13 +121,13 @@ class SingleBatchOperationActivity extends Activity
             $turnover = Turnover::updateOrCreate(
                 [
                     'account_uuid' => $account->uuid,
-                    'date'         => $today->toDateString(),
+                    'date' => $today->toDateString(),
                 ],
                 [
                     'credit' => $dailyCredit,
-                    'debit'  => abs($dailyDebit),
+                    'debit' => abs($dailyDebit),
                     'amount' => $dailyCredit - abs($dailyDebit),
-                    'count'  => Transaction::where('account_uuid', $account->uuid)
+                    'count' => Transaction::where('account_uuid', $account->uuid)
                         ->whereDate('created_at', $today)
                         ->count(),
                 ]
@@ -147,24 +136,22 @@ class SingleBatchOperationActivity extends Activity
             // Track what we created/updated for potential reversal
             $processedData['turnovers'][] = [
                 'account_uuid' => $account->uuid,
-                'was_created'  => $turnover->wasRecentlyCreated,
+                'was_created' => $turnover->wasRecentlyCreated,
             ];
 
             $processed++;
         }
 
         return [
-            'operation'          => 'calculate_daily_turnover',
+            'operation' => 'calculate_daily_turnover',
             'accounts_processed' => $processed,
-            'date'               => $today->toDateString(),
-            'processed_data'     => $processedData,
+            'date' => $today->toDateString(),
+            'processed_data' => $processedData,
         ];
     }
 
     /**
      * Generate account statements.
-     *
-     * @return array
      */
     private function generateAccountStatements(): array
     {
@@ -188,31 +175,31 @@ class SingleBatchOperationActivity extends Activity
             }
 
             $statementData = [
-                'account_uuid'     => $account->uuid,
-                'account_name'     => $account->name,
+                'account_uuid' => $account->uuid,
+                'account_name' => $account->name,
                 'statement_period' => [
                     'from' => $startOfMonth->toDateString(),
-                    'to'   => $endOfMonth->toDateString(),
+                    'to' => $endOfMonth->toDateString(),
                 ],
-                'opening_balance'   => $account->balance - $transactions->sum('amount'),
-                'closing_balance'   => $account->balance,
-                'total_credits'     => $transactions->where('amount', '>', 0)->sum('amount'),
-                'total_debits'      => $transactions->where('amount', '<', 0)->sum('amount'),
+                'opening_balance' => $account->balance - $transactions->sum('amount'),
+                'closing_balance' => $account->balance,
+                'total_credits' => $transactions->where('amount', '>', 0)->sum('amount'),
+                'total_debits' => $transactions->where('amount', '<', 0)->sum('amount'),
                 'transaction_count' => $transactions->count(),
-                'transactions'      => $transactions->map(
+                'transactions' => $transactions->map(
                     function ($transaction) {
                         return [
-                        'date'        => $transaction->created_at->toDateString(),
-                        'description' => $transaction->reference ?? 'Transaction',
-                        'amount'      => $transaction->amount,
-                        'balance'     => $transaction->balance_after ?? 0,
+                            'date' => $transaction->created_at->toDateString(),
+                            'description' => $transaction->reference ?? 'Transaction',
+                            'amount' => $transaction->amount,
+                            'balance' => $transaction->balance_after ?? 0,
                         ];
                     }
                 )->toArray(),
             ];
 
             // Store as JSON for auditing
-            $filename = "statements/{$account->uuid}/" . $startOfMonth->format('Y-m') . '.json';
+            $filename = "statements/{$account->uuid}/".$startOfMonth->format('Y-m').'.json';
             Storage::disk('local')->put($filename, json_encode($statementData, JSON_PRETTY_PRINT));
 
             $generatedFiles[] = $filename;
@@ -220,18 +207,16 @@ class SingleBatchOperationActivity extends Activity
         }
 
         return [
-            'operation'            => 'generate_account_statements',
+            'operation' => 'generate_account_statements',
             'statements_generated' => $statementsGenerated,
-            'period'               => $startOfMonth->format('M Y'),
-            'storage_path'         => 'storage/app/statements/',
-            'generated_files'      => $generatedFiles,
+            'period' => $startOfMonth->format('M Y'),
+            'storage_path' => 'storage/app/statements/',
+            'generated_files' => $generatedFiles,
         ];
     }
 
     /**
      * Process interest calculations.
-     *
-     * @return array
      */
     private function processInterestCalculations(): array
     {
@@ -259,15 +244,15 @@ class SingleBatchOperationActivity extends Activity
                 // Create interest transaction
                 DB::table('transactions')->insert(
                     [
-                    'uuid'          => $transactionId,
-                    'account_uuid'  => $account->uuid,
-                    'amount'        => $interestAmount,
-                    'type'          => 'credit',
-                    'reference'     => 'Daily Interest Payment',
-                    'description'   => "Interest earned at {$interestRate}% APR",
-                    'balance_after' => $account->balance + $interestAmount,
-                    'created_at'    => now(),
-                    'updated_at'    => now(),
+                        'uuid' => $transactionId,
+                        'account_uuid' => $account->uuid,
+                        'amount' => $interestAmount,
+                        'type' => 'credit',
+                        'reference' => 'Daily Interest Payment',
+                        'description' => "Interest earned at {$interestRate}% APR",
+                        'balance_after' => $account->balance + $interestAmount,
+                        'created_at' => now(),
+                        'updated_at' => now(),
                     ]
                 );
 
@@ -277,8 +262,8 @@ class SingleBatchOperationActivity extends Activity
                 // Track for potential reversal
                 $interestTransactions[] = [
                     'transaction_uuid' => $transactionId,
-                    'account_uuid'     => $account->uuid,
-                    'amount'           => $interestAmount,
+                    'account_uuid' => $account->uuid,
+                    'amount' => $interestAmount,
                 ];
 
                 $totalInterestPaid += $interestAmount;
@@ -287,19 +272,17 @@ class SingleBatchOperationActivity extends Activity
         }
 
         return [
-            'operation'             => 'process_interest_calculations',
-            'accounts_processed'    => $accountsProcessed,
-            'total_interest_paid'   => $totalInterestPaid,
-            'interest_rate'         => $interestRate,
-            'eligible_accounts'     => $savingsAccounts->count(),
+            'operation' => 'process_interest_calculations',
+            'accounts_processed' => $accountsProcessed,
+            'total_interest_paid' => $totalInterestPaid,
+            'interest_rate' => $interestRate,
+            'eligible_accounts' => $savingsAccounts->count(),
             'interest_transactions' => $interestTransactions,
         ];
     }
 
     /**
      * Perform compliance checks.
-     *
-     * @return array
      */
     private function performComplianceChecks(): array
     {
@@ -315,11 +298,11 @@ class SingleBatchOperationActivity extends Activity
         $complianceFlags['large_transactions'] = $largeTransactions->map(
             function ($transaction) {
                 return [
-                'transaction_uuid' => $transaction->uuid,
-                'account_uuid'     => $transaction->account_uuid,
-                'amount'           => $transaction->amount,
-                'user_email'       => $transaction->account->user->email ?? 'Unknown',
-                'flag_reason'      => 'Transaction exceeds $10,000 threshold',
+                    'transaction_uuid' => $transaction->uuid,
+                    'account_uuid' => $transaction->account_uuid,
+                    'amount' => $transaction->amount,
+                    'user_email' => $transaction->account->user->email ?? 'Unknown',
+                    'flag_reason' => 'Transaction exceeds $10,000 threshold',
                 ];
             }
         )->toArray();
@@ -340,10 +323,10 @@ class SingleBatchOperationActivity extends Activity
         $complianceFlags['rapid_transactions'] = collect($rapidTransactions)->map(
             function ($item) {
                 return [
-                'account_uuid'      => $item->account_uuid,
-                'transaction_count' => $item->transaction_count,
-                'user_uuid'         => $item->user_uuid,
-                'flag_reason'       => 'More than 10 transactions in one day',
+                    'account_uuid' => $item->account_uuid,
+                    'transaction_count' => $item->transaction_count,
+                    'user_uuid' => $item->user_uuid,
+                    'flag_reason' => 'More than 10 transactions in one day',
                 ];
             }
         )->toArray();
@@ -356,10 +339,10 @@ class SingleBatchOperationActivity extends Activity
         $complianceFlags['high_balance_accounts'] = $highBalanceAccounts->map(
             function ($account) {
                 return [
-                'account_uuid' => $account->uuid,
-                'balance'      => $account->balance,
-                'user_email'   => $account->user->email ?? 'Unknown',
-                'flag_reason'  => 'Account balance exceeds $1,000,000',
+                    'account_uuid' => $account->uuid,
+                    'balance' => $account->balance,
+                    'user_email' => $account->user->email ?? 'Unknown',
+                    'flag_reason' => 'Account balance exceeds $1,000,000',
                 ];
             }
         )->toArray();
@@ -368,14 +351,14 @@ class SingleBatchOperationActivity extends Activity
         $roundTransactions = Transaction::whereIn(
             'amount',
             [
-            1000000, 900000, 800000, 700000, 600000, 500000, // $10k, $9k, etc.
+                1000000, 900000, 800000, 700000, 600000, 500000, // $10k, $9k, etc.
             ]
         )
             ->whereDate('created_at', $today)
             ->count();
 
         $complianceFlags['round_transactions'] = [
-            'count'       => $roundTransactions,
+            'count' => $roundTransactions,
             'flag_reason' => 'Round-number transactions may indicate structuring',
         ];
 
@@ -386,9 +369,9 @@ class SingleBatchOperationActivity extends Activity
 
         // Store compliance report
         $reportData = [
-            'date'         => $today->toDateString(),
-            'total_flags'  => $totalFlags,
-            'flags'        => $complianceFlags,
+            'date' => $today->toDateString(),
+            'total_flags' => $totalFlags,
+            'flags' => $complianceFlags,
             'generated_at' => now()->toISOString(),
         ];
 
@@ -399,20 +382,18 @@ class SingleBatchOperationActivity extends Activity
         );
 
         return [
-            'operation'             => 'perform_compliance_checks',
-            'total_flags'           => $totalFlags,
-            'large_transactions'    => count($complianceFlags['large_transactions']),
-            'rapid_transactions'    => count($complianceFlags['rapid_transactions']),
+            'operation' => 'perform_compliance_checks',
+            'total_flags' => $totalFlags,
+            'large_transactions' => count($complianceFlags['large_transactions']),
+            'rapid_transactions' => count($complianceFlags['rapid_transactions']),
             'high_balance_accounts' => count($complianceFlags['high_balance_accounts']),
-            'round_transactions'    => $roundTransactions,
-            'report_file'           => $reportFilename,
+            'round_transactions' => $roundTransactions,
+            'report_file' => $reportFilename,
         ];
     }
 
     /**
      * Archive old transactions.
-     *
-     * @return array
      */
     private function archiveOldTransactions(): array
     {
@@ -434,17 +415,15 @@ class SingleBatchOperationActivity extends Activity
             ->update(['archived' => true]);
 
         return [
-            'operation'             => 'archive_old_transactions',
+            'operation' => 'archive_old_transactions',
             'transactions_archived' => $archivedCount,
-            'cutoff_date'           => $cutoffDate->toDateString(),
-            'archived_uuids'        => $transactionsToArchive,
+            'cutoff_date' => $cutoffDate->toDateString(),
+            'archived_uuids' => $transactionsToArchive,
         ];
     }
 
     /**
      * Generate regulatory reports.
-     *
-     * @return array
      */
     private function generateRegulatoryReports(): array
     {
@@ -455,10 +434,10 @@ class SingleBatchOperationActivity extends Activity
         // Daily Transaction Summary Report
         $dailyStats = [
             'total_transactions' => Transaction::whereDate('created_at', $today)->count(),
-            'total_volume'       => Transaction::whereDate('created_at', $today)->sum('amount'),
-            'total_credits'      => Transaction::whereDate('created_at', $today)->where('amount', '>', 0)->sum('amount'),
-            'total_debits'       => abs(Transaction::whereDate('created_at', $today)->where('amount', '<', 0)->sum('amount')),
-            'unique_accounts'    => Transaction::whereDate('created_at', $today)->distinct('account_uuid')->count(),
+            'total_volume' => Transaction::whereDate('created_at', $today)->sum('amount'),
+            'total_credits' => Transaction::whereDate('created_at', $today)->where('amount', '>', 0)->sum('amount'),
+            'total_debits' => abs(Transaction::whereDate('created_at', $today)->where('amount', '<', 0)->sum('amount')),
+            'unique_accounts' => Transaction::whereDate('created_at', $today)->distinct('account_uuid')->count(),
         ];
 
         $dailyReportFile = "regulatory/daily_transaction_summary_{$today->format('Y-m-d')}.json";
@@ -477,13 +456,13 @@ class SingleBatchOperationActivity extends Activity
             ->map(
                 function ($transaction) {
                     return [
-                    'transaction_uuid' => $transaction->uuid,
-                    'account_uuid'     => $transaction->account_uuid,
-                    'amount'           => $transaction->amount / 100, // Convert to dollars
-                    'transaction_date' => $transaction->created_at->toDateString(),
-                    'customer_name'    => $transaction->account->user->name ?? 'Unknown',
-                    'customer_email'   => $transaction->account->user->email ?? 'Unknown',
-                    'transaction_type' => $transaction->amount > 0 ? 'Credit' : 'Debit',
+                        'transaction_uuid' => $transaction->uuid,
+                        'account_uuid' => $transaction->account_uuid,
+                        'amount' => $transaction->amount / 100, // Convert to dollars
+                        'transaction_date' => $transaction->created_at->toDateString(),
+                        'customer_name' => $transaction->account->user->name ?? 'Unknown',
+                        'customer_email' => $transaction->account->user->email ?? 'Unknown',
+                        'transaction_type' => $transaction->amount > 0 ? 'Credit' : 'Debit',
                     ];
                 }
             );
@@ -516,11 +495,11 @@ class SingleBatchOperationActivity extends Activity
 
         foreach ($structuringCandidates as $candidate) {
             $suspiciousActivities[] = [
-                'account_uuid'      => $candidate->account_uuid,
-                'activity_type'     => 'Potential Structuring',
-                'description'       => 'Multiple transactions just under $10k threshold',
+                'account_uuid' => $candidate->account_uuid,
+                'activity_type' => 'Potential Structuring',
+                'description' => 'Multiple transactions just under $10k threshold',
                 'transaction_count' => $candidate->transaction_count,
-                'total_amount'      => $candidate->total_amount / 100,
+                'total_amount' => $candidate->total_amount / 100,
             ];
         }
 
@@ -537,13 +516,13 @@ class SingleBatchOperationActivity extends Activity
         // Monthly Summary (if it's end of month)
         if ($today->isLastOfMonth()) {
             $monthlyStats = [
-                'month'                    => $today->format('Y-m'),
-                'total_accounts'           => Account::count(),
-                'active_accounts'          => Account::where('frozen', false)->count(),
-                'total_transactions'       => Transaction::whereMonth('created_at', $today)->count(),
-                'total_volume'             => Transaction::whereMonth('created_at', $today)->sum('amount') / 100,
+                'month' => $today->format('Y-m'),
+                'total_accounts' => Account::count(),
+                'active_accounts' => Account::where('frozen', false)->count(),
+                'total_transactions' => Transaction::whereMonth('created_at', $today)->count(),
+                'total_volume' => Transaction::whereMonth('created_at', $today)->sum('amount') / 100,
                 'average_transaction_size' => Transaction::whereMonth('created_at', $today)->avg('amount') / 100,
-                'largest_transaction'      => Transaction::whereMonth('created_at', $today)->max('amount') / 100,
+                'largest_transaction' => Transaction::whereMonth('created_at', $today)->max('amount') / 100,
             ];
 
             $monthlyFile = "regulatory/monthly_summary_{$today->format('Y-m')}.json";
@@ -556,12 +535,12 @@ class SingleBatchOperationActivity extends Activity
         }
 
         return [
-            'operation'                   => 'generate_regulatory_reports',
-            'reports_generated'           => $reportsGenerated,
-            'daily_transaction_count'     => $dailyStats['total_transactions'],
-            'large_transactions_count'    => $largeTransactions->count(),
+            'operation' => 'generate_regulatory_reports',
+            'reports_generated' => $reportsGenerated,
+            'daily_transaction_count' => $dailyStats['total_transactions'],
+            'large_transactions_count' => $largeTransactions->count(),
             'suspicious_activities_count' => count($suspiciousActivities),
-            'generated_files'             => $generatedFiles,
+            'generated_files' => $generatedFiles,
         ];
     }
 }

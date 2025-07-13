@@ -19,7 +19,7 @@ class CreditAssetBalance extends AccountAction
         $balance = AccountBalance::firstOrCreate(
             [
                 'account_uuid' => $account->uuid,
-                'asset_code'   => $event->assetCode,
+                'asset_code' => $event->assetCode,
             ],
             [
                 'balance' => 0,

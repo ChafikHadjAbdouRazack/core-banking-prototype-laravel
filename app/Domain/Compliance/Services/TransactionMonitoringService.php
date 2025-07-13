@@ -59,16 +59,16 @@ class TransactionMonitoringService
             }
 
             return [
-                'passed'  => empty($alerts) || ! in_array(TransactionMonitoringRule::ACTION_BLOCK, $actions),
-                'alerts'  => $alerts,
+                'passed' => empty($alerts) || ! in_array(TransactionMonitoringRule::ACTION_BLOCK, $actions),
+                'alerts' => $alerts,
                 'actions' => array_unique($actions),
             ];
         } catch (\Exception $e) {
             Log::error(
                 'Transaction monitoring failed',
                 [
-                'transaction_id' => $transaction->id,
-                'error'          => $e->getMessage(),
+                    'transaction_id' => $transaction->id,
+                    'error' => $e->getMessage(),
                 ]
             );
 
@@ -76,7 +76,7 @@ class TransactionMonitoringService
             return [
                 'passed' => true,
                 'alerts' => [[
-                    'type'    => 'system_error',
+                    'type' => 'system_error',
                     'message' => 'Monitoring system error - flagged for manual review',
                 ]],
                 'actions' => [TransactionMonitoringRule::ACTION_REVIEW],
@@ -131,7 +131,7 @@ class TransactionMonitoringService
             $riskLevel = $riskProfile->risk_rating;
 
             $query->where(
-                function ($q) use ($customerType, $riskLevel) {
+                function ($q) use ($customerType) {
                     $q->whereNull('applies_to_customer_types')
                         ->orWhereJsonContains('applies_to_customer_types', $customerType);
                 }
@@ -194,10 +194,10 @@ class TransactionMonitoringService
 
         // Parse time window
         $startTime = match ($timeWindow) {
-            '1h'    => now()->subHour(),
-            '24h'   => now()->subDay(),
-            '7d'    => now()->subWeek(),
-            '30d'   => now()->subMonth(),
+            '1h' => now()->subHour(),
+            '24h' => now()->subDay(),
+            '7d' => now()->subWeek(),
+            '30d' => now()->subMonth(),
             default => now()->subDay(),
         };
 
@@ -388,15 +388,15 @@ class TransactionMonitoringService
     protected function createAlert(TransactionMonitoringRule $rule, Transaction $transaction): array
     {
         return [
-            'rule_id'        => $rule->id,
-            'rule_code'      => $rule->rule_code,
-            'rule_name'      => $rule->name,
-            'category'       => $rule->category,
-            'risk_level'     => $rule->risk_level,
+            'rule_id' => $rule->id,
+            'rule_code' => $rule->rule_code,
+            'rule_name' => $rule->name,
+            'category' => $rule->category,
+            'risk_level' => $rule->risk_level,
             'transaction_id' => $transaction->id,
-            'amount'         => $transaction->amount,
-            'timestamp'      => now()->toIso8601String(),
-            'description'    => $this->generateAlertDescription($rule, $transaction),
+            'amount' => $transaction->amount,
+            'timestamp' => now()->toIso8601String(),
+            'description' => $this->generateAlertDescription($rule, $transaction),
         ];
     }
 
@@ -409,12 +409,12 @@ class TransactionMonitoringService
         $currency = $transaction->currency;
 
         return match ($rule->category) {
-            TransactionMonitoringRule::CATEGORY_VELOCITY  => "High velocity detected: Multiple transactions totaling {$currency} {$amount}",
-            TransactionMonitoringRule::CATEGORY_PATTERN   => "Suspicious pattern detected: {$rule->name}",
+            TransactionMonitoringRule::CATEGORY_VELOCITY => "High velocity detected: Multiple transactions totaling {$currency} {$amount}",
+            TransactionMonitoringRule::CATEGORY_PATTERN => "Suspicious pattern detected: {$rule->name}",
             TransactionMonitoringRule::CATEGORY_THRESHOLD => "Threshold exceeded: Transaction of {$currency} {$amount}",
             TransactionMonitoringRule::CATEGORY_GEOGRAPHY => 'High-risk geography: Transaction involving restricted country',
-            TransactionMonitoringRule::CATEGORY_BEHAVIOR  => 'Behavioral anomaly: Deviation from established pattern',
-            default                                       => "Alert: {$rule->name}",
+            TransactionMonitoringRule::CATEGORY_BEHAVIOR => 'Behavioral anomaly: Deviation from established pattern',
+            default => "Alert: {$rule->name}",
         };
     }
 
@@ -451,15 +451,15 @@ class TransactionMonitoringService
     {
         $transaction->update(
             [
-            'status'   => 'blocked',
-            'metadata' => array_merge(
-                $transaction->metadata ?? [],
-                [
-                'blocked_at'   => now()->toIso8601String(),
-                'block_reason' => 'AML monitoring alert',
-                'alerts'       => $alerts,
-                ]
-            ),
+                'status' => 'blocked',
+                'metadata' => array_merge(
+                    $transaction->metadata ?? [],
+                    [
+                        'blocked_at' => now()->toIso8601String(),
+                        'block_reason' => 'AML monitoring alert',
+                        'alerts' => $alerts,
+                    ]
+                ),
             ]
         );
 
@@ -481,14 +481,14 @@ class TransactionMonitoringService
     {
         $transaction->update(
             [
-            'metadata' => array_merge(
-                $transaction->metadata ?? [],
-                [
-                'requires_review'     => true,
-                'review_requested_at' => now()->toIso8601String(),
-                'review_alerts'       => $alerts,
-                ]
-            ),
+                'metadata' => array_merge(
+                    $transaction->metadata ?? [],
+                    [
+                        'requires_review' => true,
+                        'review_requested_at' => now()->toIso8601String(),
+                        'review_alerts' => $alerts,
+                    ]
+                ),
             ]
         );
     }
@@ -531,9 +531,9 @@ class TransactionMonitoringService
 
         $riskProfile->update(
             [
-            'behavioral_risk'             => $behavioralRisk,
-            'suspicious_activities_count' => $riskProfile->suspicious_activities_count + 1,
-            'last_suspicious_activity_at' => now(),
+                'behavioral_risk' => $behavioralRisk,
+                'suspicious_activities_count' => $riskProfile->suspicious_activities_count + 1,
+                'last_suspicious_activity_at' => now(),
             ]
         );
 
@@ -557,8 +557,8 @@ class TransactionMonitoringService
             // Check for smurfing (multiple small transactions)
             if ($this->detectSmurfing($accountTransactions)) {
                 $patterns[] = [
-                    'type'         => 'smurfing',
-                    'account_id'   => $accountId,
+                    'type' => 'smurfing',
+                    'account_id' => $accountId,
                     'transactions' => $accountTransactions->pluck('id')->toArray(),
                 ];
             }
@@ -566,8 +566,8 @@ class TransactionMonitoringService
             // Check for layering
             if ($this->detectLayering($accountTransactions)) {
                 $patterns[] = [
-                    'type'         => 'layering',
-                    'account_id'   => $accountId,
+                    'type' => 'layering',
+                    'account_id' => $accountId,
                     'transactions' => $accountTransactions->pluck('id')->toArray(),
                 ];
             }
@@ -641,10 +641,10 @@ class TransactionMonitoringService
     protected function parseTimeWindow(string $window): \Carbon\Carbon
     {
         return match ($window) {
-            '1h'    => now()->subHour(),
-            '24h'   => now()->subDay(),
-            '7d'    => now()->subWeek(),
-            '30d'   => now()->subMonth(),
+            '1h' => now()->subHour(),
+            '24h' => now()->subDay(),
+            '7d' => now()->subWeek(),
+            '30d' => now()->subMonth(),
             default => now()->subDay(),
         };
     }
@@ -657,11 +657,11 @@ class TransactionMonitoringService
         $type = $condition['type'] ?? null;
 
         return match ($type) {
-            'unusual_amount'      => $this->isUnusualAmount($transaction, $behavioralRisk),
-            'unusual_time'        => $this->isUnusualTime($transaction, $behavioralRisk),
-            'unusual_frequency'   => $this->isUnusualFrequency($transaction, $behavioralRisk),
+            'unusual_amount' => $this->isUnusualAmount($transaction, $behavioralRisk),
+            'unusual_time' => $this->isUnusualTime($transaction, $behavioralRisk),
+            'unusual_frequency' => $this->isUnusualFrequency($transaction, $behavioralRisk),
             'unusual_destination' => $this->isUnusualDestination($transaction, $behavioralRisk),
-            default               => false,
+            default => false,
         };
     }
 

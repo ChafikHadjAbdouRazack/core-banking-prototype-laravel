@@ -5,9 +5,11 @@ namespace Tests\Unit\Domain\Compliance\Services;
 use App\Domain\Compliance\Services\CustomerRiskService;
 use App\Domain\Compliance\Services\SuspiciousActivityReportService;
 use App\Domain\Compliance\Services\TransactionMonitoringService;
+use App\Models\Account;
 use App\Models\CustomerRiskProfile;
 use App\Models\Transaction;
 use App\Models\TransactionMonitoringRule;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Log;
 use Mockery;
@@ -37,10 +39,30 @@ class TransactionMonitoringServiceTest extends ServiceTestCase
         );
     }
 
+    private function createTransaction(array $attributes = []): Transaction
+    {
+        $user = User::factory()->create();
+        $account = Account::factory()->create(['user_uuid' => $user->uuid]);
+
+        $eventProperties = [
+            'amount' => $attributes['amount'] ?? 10000,
+            'assetCode' => 'USD',
+            'metadata' => [],
+        ];
+
+        // Remove amount from attributes to avoid conflict
+        unset($attributes['amount']);
+
+        return Transaction::factory()->forAccount($account)->create(array_merge([
+            'event_properties' => $eventProperties,
+            'type' => $attributes['type'] ?? 'transfer',
+        ], $attributes));
+    }
+
     #[Test]
     public function test_monitor_transaction_passes_when_no_alerts(): void
     {
-        $transaction = Transaction::factory()->create([
+        $transaction = $this->createTransaction([
             'amount' => 1000,
             'type'   => 'transfer',
         ]);
@@ -62,7 +84,7 @@ class TransactionMonitoringServiceTest extends ServiceTestCase
     #[Test]
     public function test_monitor_transaction_creates_alerts_for_triggered_rules(): void
     {
-        $transaction = Transaction::factory()->create([
+        $transaction = $this->createTransaction([
             'amount' => 100000, // Large amount
         ]);
 
@@ -90,7 +112,7 @@ class TransactionMonitoringServiceTest extends ServiceTestCase
     #[Test]
     public function test_monitor_transaction_blocks_when_block_action_triggered(): void
     {
-        $transaction = Transaction::factory()->create([
+        $transaction = $this->createTransaction([
             'amount' => 500000,
         ]);
 
@@ -117,7 +139,7 @@ class TransactionMonitoringServiceTest extends ServiceTestCase
     #[Test]
     public function test_monitor_transaction_handles_multiple_rules(): void
     {
-        $transaction = Transaction::factory()->create();
+        $transaction = $this->createTransaction();
         $riskProfile = new CustomerRiskProfile();
 
         $rule1 = $this->createMockRule(1, 'Rule 1', [TransactionMonitoringRule::ACTION_REVIEW]);
@@ -142,7 +164,7 @@ class TransactionMonitoringServiceTest extends ServiceTestCase
     #[Test]
     public function test_monitor_transaction_handles_exceptions_gracefully(): void
     {
-        $transaction = Transaction::factory()->create();
+        $transaction = $this->createTransaction();
 
         // Mock exception during risk profile fetch
         $this->service = Mockery::mock(TransactionMonitoringService::class)->makePartial();
@@ -162,7 +184,7 @@ class TransactionMonitoringServiceTest extends ServiceTestCase
     #[Test]
     public function test_monitor_transaction_updates_behavioral_risk_when_alerts_exist(): void
     {
-        $transaction = Transaction::factory()->create();
+        $transaction = $this->createTransaction();
         $riskProfile = new CustomerRiskProfile();
 
         $rule = $this->createMockRule(1, 'Suspicious Pattern', [TransactionMonitoringRule::ACTION_REVIEW]);
@@ -191,7 +213,7 @@ class TransactionMonitoringServiceTest extends ServiceTestCase
     #[Test]
     public function test_monitor_transaction_deduplicates_actions(): void
     {
-        $transaction = Transaction::factory()->create();
+        $transaction = $this->createTransaction();
         $riskProfile = new CustomerRiskProfile();
 
         // Multiple rules with same actions

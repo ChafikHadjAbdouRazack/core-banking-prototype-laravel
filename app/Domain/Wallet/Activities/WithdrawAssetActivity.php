@@ -8,14 +8,6 @@ use Workflow\Activity;
 
 class WithdrawAssetActivity extends Activity
 {
-    /**
-     * @param AccountUuid               $accountUuid
-     * @param string                    $assetCode
-     * @param int                       $amount
-     * @param AssetTransactionAggregate $assetTransaction
-     *
-     * @return bool
-     */
     public function execute(
         AccountUuid $accountUuid,
         string $assetCode,

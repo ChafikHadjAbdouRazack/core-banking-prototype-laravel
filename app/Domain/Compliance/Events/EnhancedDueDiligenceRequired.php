@@ -15,6 +15,5 @@ class EnhancedDueDiligenceRequired
 
     public function __construct(
         public readonly CustomerRiskProfile $profile
-    ) {
-    }
+    ) {}
 }

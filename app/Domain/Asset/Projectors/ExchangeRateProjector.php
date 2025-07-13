@@ -27,22 +27,22 @@ class ExchangeRateProjector extends Projector
             // Create new rate record
             $newRate = ExchangeRate::create(
                 [
-                'from_asset_code' => $event->fromAssetCode,
-                'to_asset_code'   => $event->toAssetCode,
-                'rate'            => $event->newRate,
-                'source'          => $event->source,
-                'valid_at'        => now(),
-                'expires_at'      => now()->addHours(1), // Default 1 hour expiry
-                'is_active'       => true,
-                'metadata'        => array_merge(
-                    $event->metadata ?? [],
-                    [
-                    'previous_rate'         => $event->oldRate,
-                    'change_percentage'     => $event->getChangePercentage(),
-                    'is_increase'           => $event->isIncrease(),
-                    'is_significant_change' => $event->isSignificantChange(),
-                    ]
-                ),
+                    'from_asset_code' => $event->fromAssetCode,
+                    'to_asset_code' => $event->toAssetCode,
+                    'rate' => $event->newRate,
+                    'source' => $event->source,
+                    'valid_at' => now(),
+                    'expires_at' => now()->addHours(1), // Default 1 hour expiry
+                    'is_active' => true,
+                    'metadata' => array_merge(
+                        $event->metadata ?? [],
+                        [
+                            'previous_rate' => $event->oldRate,
+                            'change_percentage' => $event->getChangePercentage(),
+                            'is_increase' => $event->isIncrease(),
+                            'is_significant_change' => $event->isSignificantChange(),
+                        ]
+                    ),
                 ]
             );
 
@@ -59,24 +59,24 @@ class ExchangeRateProjector extends Projector
                 Log::warning(
                     'Significant exchange rate change detected',
                     [
-                    'from_asset'        => $event->fromAssetCode,
-                    'to_asset'          => $event->toAssetCode,
-                    'old_rate'          => $event->oldRate,
-                    'new_rate'          => $event->newRate,
-                    'change_percentage' => $event->getChangePercentage(),
-                    'source'            => $event->source,
+                        'from_asset' => $event->fromAssetCode,
+                        'to_asset' => $event->toAssetCode,
+                        'old_rate' => $event->oldRate,
+                        'new_rate' => $event->newRate,
+                        'change_percentage' => $event->getChangePercentage(),
+                        'source' => $event->source,
                     ]
                 );
             } else {
                 Log::info(
                     'Exchange rate updated',
                     [
-                    'from_asset'        => $event->fromAssetCode,
-                    'to_asset'          => $event->toAssetCode,
-                    'old_rate'          => $event->oldRate,
-                    'new_rate'          => $event->newRate,
-                    'change_percentage' => $event->getChangePercentage(),
-                    'source'            => $event->source,
+                        'from_asset' => $event->fromAssetCode,
+                        'to_asset' => $event->toAssetCode,
+                        'old_rate' => $event->oldRate,
+                        'new_rate' => $event->newRate,
+                        'change_percentage' => $event->getChangePercentage(),
+                        'source' => $event->source,
                     ]
                 );
             }
@@ -84,12 +84,12 @@ class ExchangeRateProjector extends Projector
             Log::error(
                 'Error processing exchange rate update',
                 [
-                'from_asset' => $event->fromAssetCode,
-                'to_asset'   => $event->toAssetCode,
-                'old_rate'   => $event->oldRate,
-                'new_rate'   => $event->newRate,
-                'source'     => $event->source,
-                'error'      => $e->getMessage(),
+                    'from_asset' => $event->fromAssetCode,
+                    'to_asset' => $event->toAssetCode,
+                    'old_rate' => $event->oldRate,
+                    'new_rate' => $event->newRate,
+                    'source' => $event->source,
+                    'error' => $e->getMessage(),
                 ]
             );
 

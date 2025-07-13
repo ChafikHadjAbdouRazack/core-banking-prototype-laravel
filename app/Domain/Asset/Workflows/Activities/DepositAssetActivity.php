@@ -31,8 +31,8 @@ class DepositAssetActivity extends Activity
                 money: $money,
                 description: $description ?: "Asset deposit: {$assetCode}",
                 metadata: [
-                    'workflow'  => 'AssetDepositWorkflow',
-                    'activity'  => 'DepositAssetActivity',
+                    'workflow' => 'AssetDepositWorkflow',
+                    'activity' => 'DepositAssetActivity',
                     'timestamp' => now()->toISOString(),
                 ]
             )

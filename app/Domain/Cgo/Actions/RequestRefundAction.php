@@ -4,7 +4,7 @@ namespace App\Domain\Cgo\Actions;
 
 use App\Domain\Cgo\DataObjects\RefundRequest;
 use App\Domain\Cgo\Workflows\ProcessRefundWorkflow;
-use App\Models\CgoInvestment;
+use App\Domain\Cgo\Models\CgoInvestment;
 use App\Models\User;
 use Temporal\Client\WorkflowClient;
 use Temporal\Client\WorkflowOptions;

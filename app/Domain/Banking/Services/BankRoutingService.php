@@ -143,10 +143,10 @@ class BankRoutingService
         // This would be calculated based on actual fee structures
         // For now, return a mock score
         $baseFees = [
-            'PAYSERA'   => ['SEPA' => 1, 'SWIFT' => 15, 'INTERNAL' => 0],
-            'REVOLUT'   => ['SEPA' => 0, 'SWIFT' => 5, 'INTERNAL' => 0],
-            'WISE'      => ['SEPA' => 0.5, 'SWIFT' => 4, 'INTERNAL' => 0],
-            'DEUTSCHE'  => ['SEPA' => 5, 'SWIFT' => 25, 'INTERNAL' => 0],
+            'PAYSERA' => ['SEPA' => 1, 'SWIFT' => 15, 'INTERNAL' => 0],
+            'REVOLUT' => ['SEPA' => 0, 'SWIFT' => 5, 'INTERNAL' => 0],
+            'WISE' => ['SEPA' => 0.5, 'SWIFT' => 4, 'INTERNAL' => 0],
+            'DEUTSCHE' => ['SEPA' => 5, 'SWIFT' => 25, 'INTERNAL' => 0],
             'SANTANDER' => ['SEPA' => 3, 'SWIFT' => 20, 'INTERNAL' => 0],
         ];
 
@@ -231,9 +231,9 @@ class BankRoutingService
             if ($score > 0) {
                 $recommendations[] = [
                     'bank_code' => $bankCode,
-                    'score'     => $score,
-                    'reasons'   => $reasons,
-                    'health'    => $health,
+                    'score' => $score,
+                    'reasons' => $reasons,
+                    'health' => $health,
                 ];
             }
         }
@@ -251,11 +251,11 @@ class BankRoutingService
     {
         $featureMap = [
             'instant_transfers' => 'supports_instant_transfers',
-            'multi_currency'    => 'supports_multi_currency',
-            'virtual_accounts'  => 'supports_virtual_accounts',
-            'bulk_transfers'    => 'supports_bulk_transfers',
-            'webhooks'          => 'supports_webhooks',
-            'cards'             => 'supports_card_issuance',
+            'multi_currency' => 'supports_multi_currency',
+            'virtual_accounts' => 'supports_virtual_accounts',
+            'bulk_transfers' => 'supports_bulk_transfers',
+            'webhooks' => 'supports_webhooks',
+            'cards' => 'supports_card_issuance',
         ];
 
         $capabilityKey = $featureMap[$feature] ?? null;

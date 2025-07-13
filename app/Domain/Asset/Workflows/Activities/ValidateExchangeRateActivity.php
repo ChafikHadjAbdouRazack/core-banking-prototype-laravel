@@ -12,8 +12,7 @@ class ValidateExchangeRateActivity extends Activity
 {
     public function __construct(
         private ExchangeRateService $exchangeRateService
-    ) {
-    }
+    ) {}
 
     /**
      * Execute validate exchange rate activity.
@@ -44,11 +43,11 @@ class ValidateExchangeRateActivity extends Activity
         }
 
         return [
-            'exchange_rate'    => (float) $rate->rate,
-            'to_amount'        => $toAmount,
+            'exchange_rate' => (float) $rate->rate,
+            'to_amount' => $toAmount,
             'rate_age_minutes' => $rate->getAgeInMinutes(),
-            'rate_source'      => $rate->source,
-            'rate_metadata'    => $rate->metadata,
+            'rate_source' => $rate->source,
+            'rate_metadata' => $rate->metadata,
         ];
     }
 }

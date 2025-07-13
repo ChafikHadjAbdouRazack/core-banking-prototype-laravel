@@ -17,16 +17,11 @@ class TransferAggregate extends AggregateRoot
 
     public const int    COUNT_THRESHOLD = 1000;
 
-    /**
-     * @param int $count
-     */
     public function __construct(
         public int $count = 0,
-    ) {
-    }
+    ) {}
 
     /**
-     * @return TransferRepository
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
     protected function getStoredEventRepository(): TransferRepository
@@ -47,10 +42,6 @@ class TransferAggregate extends AggregateRoot
     }
 
     /**
-     * @param AccountUuid $from
-     * @param AccountUuid $to
-     * @param Money       $money
-     *
      * @return $this
      */
     public function transfer(AccountUuid $from, AccountUuid $to, Money $money): static
@@ -68,8 +59,6 @@ class TransferAggregate extends AggregateRoot
     }
 
     /**
-     * @param MoneyTransferred $event
-     *
      * @return TransferAggregate
      */
     public function applyMoneyTransferred(MoneyTransferred $event): static
@@ -81,7 +70,7 @@ class TransferAggregate extends AggregateRoot
 
         if (++$this->count >= self::COUNT_THRESHOLD) {
             $this->recordThat(
-                domainEvent: new TransferThresholdReached()
+                domainEvent: new TransferThresholdReached
             );
             $this->count = 0;
         }
@@ -93,8 +82,6 @@ class TransferAggregate extends AggregateRoot
 
     /**
      * Get the aggregate state for snapshots.
-     *
-     * @return array
      */
     protected function getState(): array
     {
@@ -105,9 +92,6 @@ class TransferAggregate extends AggregateRoot
 
     /**
      * Restore the aggregate state from snapshot.
-     *
-     * @param array $state
-     * @return void
      */
     protected function useState(array $state): void
     {

@@ -63,7 +63,7 @@ abstract class BaseBankConnector implements IBankConnector
                     Log::warning(
                         "Bank availability check failed for {$this->bankCode}",
                         [
-                        'error' => $e->getMessage(),
+                            'error' => $e->getMessage(),
                         ]
                     );
 
@@ -87,7 +87,7 @@ abstract class BaseBankConnector implements IBankConnector
         }
 
         // Move first 4 characters to end
-        $rearranged = substr($iban, 4) . substr($iban, 0, 4);
+        $rearranged = substr($iban, 4).substr($iban, 0, 4);
 
         // Replace letters with numbers (A=10, B=11, etc.)
         $numericIban = '';
@@ -126,15 +126,15 @@ abstract class BaseBankConnector implements IBankConnector
             Log::error(
                 'Bank API request failed',
                 [
-                'bank'     => $this->bankCode,
-                'method'   => $method,
-                'url'      => $url,
-                'status'   => $response->status(),
-                'response' => $response->body(),
+                    'bank' => $this->bankCode,
+                    'method' => $method,
+                    'url' => $url,
+                    'status' => $response->status(),
+                    'response' => $response->body(),
                 ]
             );
 
-            throw new \Exception('Bank API request failed: ' . $response->body());
+            throw new \Exception('Bank API request failed: '.$response->body());
         }
 
         return $response->json();
@@ -145,7 +145,7 @@ abstract class BaseBankConnector implements IBankConnector
      */
     protected function ensureAuthenticated(): void
     {
-        if ($this->accessToken && $this->tokenExpiry && $this->tokenExpiry > new \DateTime()) {
+        if ($this->accessToken && $this->tokenExpiry && $this->tokenExpiry > new \DateTime) {
             return;
         }
 
@@ -161,10 +161,10 @@ abstract class BaseBankConnector implements IBankConnector
             Log::debug(
                 'Bank API Request',
                 [
-                'bank'   => $this->bankCode,
-                'method' => $method,
-                'url'    => $url,
-                'data'   => $data,
+                    'bank' => $this->bankCode,
+                    'method' => $method,
+                    'url' => $url,
+                    'data' => $data,
                 ]
             );
         }
@@ -179,10 +179,10 @@ abstract class BaseBankConnector implements IBankConnector
             Log::debug(
                 'Bank API Response',
                 [
-                'bank'     => $this->bankCode,
-                'method'   => $method,
-                'url'      => $url,
-                'response' => $response,
+                    'bank' => $this->bankCode,
+                    'method' => $method,
+                    'url' => $url,
+                    'response' => $response,
                 ]
             );
         }

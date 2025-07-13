@@ -26,21 +26,21 @@ class TransactionAggregateTest extends DomainTestCase
     public function can_add_money(): void
     {
         TransactionAggregate::fake(self::ACCOUNT_UUID)
-                            ->when(
-                                function (
-                                    TransactionAggregate $transactions
-                                ): void {
-                                    $transactions->credit(
-                                        money: $this->money(10)
-                                    );
-                                }
-                            )
-                            ->assertRecorded([
-                                new MoneyAdded(
-                                    money: $money = $this->money(10),
-                                    hash: $this->generateHash($money)
-                                ),
-                            ]);
+            ->when(
+                function (
+                    TransactionAggregate $transactions
+                ): void {
+                    $transactions->credit(
+                        money: $this->money(10)
+                    );
+                }
+            )
+            ->assertRecorded([
+                new MoneyAdded(
+                    money: $money = $this->money(10),
+                    hash: $this->generateHash($money)
+                ),
+            ]);
     }
 
     #[Test]
@@ -51,52 +51,52 @@ class TransactionAggregateTest extends DomainTestCase
         $this->resetHash($added_hash->getHash());
 
         TransactionAggregate::fake(self::ACCOUNT_UUID)
-                            ->given([
-                                new MoneyAdded(
-                                    $added_money,
-                                    $added_hash
-                                ),
-                            ])
-                            ->when(
-                                function (
-                                    TransactionAggregate $transactions
-                                ): void {
-                                    $transactions->debit(
-                                        $this->money(10)
-                                    );
-                                }
-                            )
-                            ->assertRecorded([
-                                new MoneySubtracted(
-                                    $subtracted_money = $this->money(10),
-                                    $this->generateHash($subtracted_money)
-                                ),
-                            ])
-                            ->assertNotRecorded(AccountLimitHit::class);
+            ->given([
+                new MoneyAdded(
+                    $added_money,
+                    $added_hash
+                ),
+            ])
+            ->when(
+                function (
+                    TransactionAggregate $transactions
+                ): void {
+                    $transactions->debit(
+                        $this->money(10)
+                    );
+                }
+            )
+            ->assertRecorded([
+                new MoneySubtracted(
+                    $subtracted_money = $this->money(10),
+                    $this->generateHash($subtracted_money)
+                ),
+            ])
+            ->assertNotRecorded(AccountLimitHit::class);
     }
 
     #[Test]
     public function cannot_subtract_money_when_money_below_account_limit(): void
     {
         TransactionAggregate::fake(self::ACCOUNT_UUID)
-                            ->when(
-                                function (
-                                    TransactionAggregate $transactions
-                                ): void {
-                                    $this->assertExceptionThrown(
-                                        function () use ($transactions) {
-                                            $transactions->debit(
-                                                $this->money(1)
-                                            );
-                                        },
-                                        NotEnoughFunds::class
-                                    );
-                                }
-                            )
-                            ->assertApplied([
-                                new AccountLimitHit(),
-                            ])
-                            ->assertNotRecorded(MoneySubtracted::class);
+            ->when(
+                function (
+                    TransactionAggregate $transactions
+                ): void {
+                    $this->assertExceptionThrown(
+                        function () use ($transactions) {
+                            $transactions->debit(
+                                $this->money(1)
+                            );
+                        },
+                        NotEnoughFunds::class
+                    );
+                }
+            )
+            ->assertApplied([
+                new AccountLimitHit,
+            ])
+            ->assertNotRecorded(MoneySubtracted::class);
     }
 
     #[Test]
@@ -107,31 +107,31 @@ class TransactionAggregateTest extends DomainTestCase
         $this->resetHash($validHash->getHash());
 
         TransactionAggregate::fake(self::ACCOUNT_UUID)
-                            ->given([
+            ->given([
+                new MoneyAdded(
+                    money: $initialMoney,
+                    hash: $validHash
+                ),
+            ])
+            ->when(
+                function (
+                    TransactionAggregate $transactions
+                ): void {
+                    $this->assertExceptionThrown(
+                        function () use ($transactions) {
+                            $transactions->applyMoneyAdded(
                                 new MoneyAdded(
-                                    money: $initialMoney,
-                                    hash: $validHash
-                                ),
-                            ])
-                            ->when(
-                                function (
-                                    TransactionAggregate $transactions
-                                ): void {
-                                    $this->assertExceptionThrown(
-                                        function () use ($transactions) {
-                                            $transactions->applyMoneyAdded(
-                                                new MoneyAdded(
-                                                    money: $this->money(10),
-                                                    hash: $this->hash(
-                                                        'invalid-hash'
-                                                    ),
-                                                )
-                                            );
-                                        },
-                                        InvalidHashException::class
-                                    );
-                                }
+                                    money: $this->money(10),
+                                    hash: $this->hash(
+                                        'invalid-hash'
+                                    ),
+                                )
                             );
+                        },
+                        InvalidHashException::class
+                    );
+                }
+            );
     }
 
     #[Test]
@@ -142,48 +142,38 @@ class TransactionAggregateTest extends DomainTestCase
         $this->resetHash($validHash->getHash());
 
         TransactionAggregate::fake(self::ACCOUNT_UUID)
-                            ->given([
+            ->given([
+                new MoneyAdded(
+                    money: $initialMoney,
+                    hash: $validHash
+                ),
+            ])
+            ->when(
+                function (
+                    TransactionAggregate $transactions
+                ): void {
+                    $this->assertExceptionThrown(
+                        function () use ($transactions) {
+                            $transactions->recordThat(
                                 new MoneyAdded(
-                                    money: $initialMoney,
-                                    hash: $validHash
-                                ),
-                            ])
-                            ->when(
-                                function (
-                                    TransactionAggregate $transactions
-                                ): void {
-                                    $this->assertExceptionThrown(
-                                        function () use ($transactions) {
-                                            $transactions->recordThat(
-                                                new MoneyAdded(
-                                                    money: $this->money(10),
-                                                    hash: $this->hash(
-                                                        'invalid-hash'
-                                                    ),
-                                                )
-                                            );
-                                        },
-                                        InvalidHashException::class
-                                    );
-                                }
+                                    money: $this->money(10),
+                                    hash: $this->hash(
+                                        'invalid-hash'
+                                    ),
+                                )
                             );
+                        },
+                        InvalidHashException::class
+                    );
+                }
+            );
     }
 
-    /**
-     * @param int $amount
-     *
-     * @return Money
-     */
     private function money(int $amount): Money
     {
         return hydrate(Money::class, ['amount' => $amount]);
     }
 
-    /**
-     * @param string|null $hash
-     *
-     * @return Hash
-     */
     private function hash(?string $hash = ''): Hash
     {
         return hydrate(

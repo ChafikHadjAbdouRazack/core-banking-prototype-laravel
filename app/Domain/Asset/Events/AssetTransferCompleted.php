@@ -21,8 +21,7 @@ class AssetTransferCompleted extends ShouldBeStored
         public readonly Hash $hash,
         public readonly ?string $transferId = null,
         public readonly ?array $metadata = null
-    ) {
-    }
+    ) {}
 
     /**
      * Check if this is a same-asset transfer.

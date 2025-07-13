@@ -27,12 +27,12 @@ class GCUTradingTest extends DuskTestCase
 
         // Create user and account
         $this->user = User::factory()->create([
-            'email'    => 'trader@example.com',
+            'email' => 'trader@example.com',
             'password' => bcrypt('password'),
         ]);
 
         $this->account = Account::factory()->create([
-            'user_id'    => $this->user->id,
+            'user_id' => $this->user->id,
             'is_primary' => true,
         ]);
 
@@ -51,23 +51,23 @@ class GCUTradingTest extends DuskTestCase
 
         // Create GCU value
         BasketValue::create([
-            'basket_code'      => 'GCU',
-            'value'            => 1.0975,
+            'basket_code' => 'GCU',
+            'value' => 1.0975,
             'component_values' => [],
-            'calculated_at'    => now(),
+            'calculated_at' => now(),
         ]);
 
         // Give user some balances
         AccountBalance::create([
             'account_uuid' => $this->account->uuid,
-            'asset_code'   => 'EUR',
-            'balance'      => 10000.00,
+            'asset_code' => 'EUR',
+            'balance' => 10000.00,
         ]);
 
         AccountBalance::create([
             'account_uuid' => $this->account->uuid,
-            'asset_code'   => 'GCU',
-            'balance'      => 500.00,
+            'asset_code' => 'GCU',
+            'balance' => 500.00,
         ]);
     }
 

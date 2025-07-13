@@ -7,10 +7,6 @@ use App\Models\Account;
 
 class UnfreezeAccount
 {
-    /**
-     * @param  AccountUnfrozen $event
-     * @return void
-     */
     public function __invoke(AccountUnfrozen $event): void
     {
         $account = Account::query()
@@ -19,7 +15,7 @@ class UnfreezeAccount
 
         $account->update(
             [
-            'frozen' => false,
+                'frozen' => false,
             ]
         );
     }

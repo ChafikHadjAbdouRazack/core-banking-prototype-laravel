@@ -21,18 +21,12 @@ class TransactionAggregate extends AggregateRoot
 
     public const int    COUNT_THRESHOLD = 1000;
 
-    /**
-     * @param int $balance
-     * @param int $count
-     */
     public function __construct(
         public int $balance = 0,
         public int $count = 0,
-    ) {
-    }
+    ) {}
 
     /**
-     * @return TransactionRepository
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
     protected function getStoredEventRepository(): TransactionRepository
@@ -53,8 +47,6 @@ class TransactionAggregate extends AggregateRoot
     }
 
     /**
-     * @param Money $money
-     *
      * @return $this
      */
     public function credit(Money $money): static
@@ -70,8 +62,6 @@ class TransactionAggregate extends AggregateRoot
     }
 
     /**
-     * @param MoneyAdded $event
-     *
      * @return TransactionAggregate
      */
     public function applyMoneyAdded(MoneyAdded $event): static
@@ -85,7 +75,7 @@ class TransactionAggregate extends AggregateRoot
 
         if (++$this->count >= self::COUNT_THRESHOLD) {
             $this->recordThat(
-                domainEvent: new TransactionThresholdReached()
+                domainEvent: new TransactionThresholdReached
             );
             $this->count = 0;
         }
@@ -96,20 +86,18 @@ class TransactionAggregate extends AggregateRoot
     }
 
     /**
-     * @param Money $money
-     *
      * @return TransactionAggregate
      */
     public function debit(Money $money): static
     {
         if (! $this->hasSufficientFundsToSubtractAmount($money)) {
             $this->recordThat(
-                new AccountLimitHit()
+                new AccountLimitHit
             );
 
             $this->persist();
 
-            throw new NotEnoughFunds();
+            throw new NotEnoughFunds;
         }
 
         $this->recordThat(
@@ -123,8 +111,6 @@ class TransactionAggregate extends AggregateRoot
     }
 
     /**
-     * @param MoneySubtracted $event
-     *
      * @return TransactionAggregate
      */
     public function applyMoneySubtracted(MoneySubtracted $event): static
@@ -138,7 +124,7 @@ class TransactionAggregate extends AggregateRoot
 
         if (++$this->count >= self::COUNT_THRESHOLD) {
             $this->recordThat(
-                domainEvent: new TransactionThresholdReached()
+                domainEvent: new TransactionThresholdReached
             );
             $this->count = 0;
         }
@@ -148,11 +134,6 @@ class TransactionAggregate extends AggregateRoot
         return $this;
     }
 
-    /**
-     * @param Money $money
-     *
-     * @return bool
-     */
     protected function hasSufficientFundsToSubtractAmount(Money $money): bool
     {
         return $this->balance - $money->getAmount() >= self::ACCOUNT_LIMIT;

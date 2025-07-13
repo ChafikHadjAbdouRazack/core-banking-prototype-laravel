@@ -13,12 +13,12 @@ beforeEach(function () {
     Storage::fake('private');
     $this->gdprService = app(GdprService::class);
     $this->user = User::factory()->create([
-        'name'                       => 'Test User',
-        'email'                      => 'test@example.com',
+        'name' => 'Test User',
+        'email' => 'test@example.com',
         'privacy_policy_accepted_at' => now()->subMonth(),
-        'terms_accepted_at'          => now()->subMonth(),
-        'marketing_consent_at'       => now()->subMonth(),
-        'data_retention_consent'     => true,
+        'terms_accepted_at' => now()->subMonth(),
+        'marketing_consent_at' => now()->subMonth(),
+        'data_retention_consent' => true,
     ]);
 });
 
@@ -56,10 +56,10 @@ test('can export user data', function () {
 
 test('can update consent preferences', function () {
     $this->gdprService->updateConsent($this->user, [
-        'marketing'      => false,
+        'marketing' => false,
         'data_retention' => false,
         'privacy_policy' => true,
-        'terms'          => true,
+        'terms' => true,
     ]);
 
     $this->user->refresh();
@@ -104,12 +104,12 @@ test('can anonymize user data', function () {
     // Create KYC document
     $kycDoc = KycDocument::factory()->create([
         'user_uuid' => $this->user->uuid,
-        'file_path' => 'kyc/' . $this->user->uuid . '/document.pdf',
+        'file_path' => 'kyc/'.$this->user->uuid.'/document.pdf',
     ]);
     Storage::disk('private')->put($kycDoc->file_path, 'fake content');
 
     $this->gdprService->deleteUserData($this->user, [
-        'delete_documents'       => true,
+        'delete_documents' => true,
         'anonymize_transactions' => true,
     ]);
 
@@ -117,7 +117,7 @@ test('can anonymize user data', function () {
 
     // Check user is anonymized
     expect($this->user->name)->toStartWith('Deleted User');
-    expect($this->user->email)->toBe('deleted-' . $originalUuid . '@anonymous.local');
+    expect($this->user->email)->toBe('deleted-'.$originalUuid.'@anonymous.local');
     expect($this->user->kyc_data)->toBeNull();
 
     // Check KYC documents deleted
@@ -135,9 +135,9 @@ test('can anonymize user data', function () {
 test('consent tracking works correctly', function () {
     $user = User::factory()->create([
         'privacy_policy_accepted_at' => null,
-        'terms_accepted_at'          => null,
-        'marketing_consent_at'       => null,
-        'data_retention_consent'     => false,
+        'terms_accepted_at' => null,
+        'marketing_consent_at' => null,
+        'data_retention_consent' => false,
     ]);
 
     // Initially no consents
@@ -149,8 +149,8 @@ test('consent tracking works correctly', function () {
     // Update consents
     $this->gdprService->updateConsent($user, [
         'privacy_policy' => true,
-        'terms'          => true,
-        'marketing'      => true,
+        'terms' => true,
+        'marketing' => true,
         'data_retention' => true,
     ]);
 

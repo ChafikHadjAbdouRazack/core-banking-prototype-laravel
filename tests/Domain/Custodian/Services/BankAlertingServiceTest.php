@@ -38,10 +38,10 @@ it('sends critical alert when bank becomes unhealthy', function () {
     $this->healthMonitor->shouldReceive('getCustodianHealth')
         ->with('paysera')
         ->andReturn([
-            'custodian'            => 'paysera',
-            'status'               => 'unhealthy',
+            'custodian' => 'paysera',
+            'status' => 'unhealthy',
             'overall_failure_rate' => 75.5,
-            'recommendations'      => ['Consider switching to alternative custodian'],
+            'recommendations' => ['Consider switching to alternative custodian'],
         ]);
 
     // Handle the event
@@ -69,10 +69,10 @@ it('sends warning alert when bank becomes degraded', function () {
     $this->healthMonitor->shouldReceive('getCustodianHealth')
         ->with('deutsche_bank')
         ->andReturn([
-            'custodian'            => 'deutsche_bank',
-            'status'               => 'degraded',
+            'custodian' => 'deutsche_bank',
+            'status' => 'degraded',
             'overall_failure_rate' => 35.0,
-            'recommendations'      => ['Monitor closely for further degradation'],
+            'recommendations' => ['Monitor closely for further degradation'],
         ]);
 
     $this->alertingService->handleHealthChange($event);
@@ -116,8 +116,8 @@ it('respects alert cooldown period', function () {
     $this->healthMonitor->shouldReceive('getCustodianHealth')
         ->with('paysera')
         ->andReturn([
-            'custodian'            => 'paysera',
-            'status'               => 'unhealthy',
+            'custodian' => 'paysera',
+            'status' => 'unhealthy',
             'overall_failure_rate' => 80.0,
         ]);
 
@@ -138,15 +138,15 @@ it('performs system-wide health check and alerts on multiple failures', function
     $this->healthMonitor->shouldReceive('getAllCustodiansHealth')
         ->andReturn([
             'paysera' => [
-                'status'               => 'unhealthy',
+                'status' => 'unhealthy',
                 'overall_failure_rate' => 85.0,
             ],
             'deutsche_bank' => [
-                'status'               => 'degraded',
+                'status' => 'degraded',
                 'overall_failure_rate' => 45.0,
             ],
             'santander' => [
-                'status'               => 'healthy',
+                'status' => 'healthy',
                 'overall_failure_rate' => 5.0,
             ],
         ]);

@@ -10,9 +10,9 @@ use Carbon\Carbon;
 beforeEach(function () {
     // Set GCU configuration
     config([
-        'baskets.primary'        => 'GCU',
-        'baskets.primary_code'   => 'GCU',
-        'baskets.primary_name'   => 'Global Currency Unit',
+        'baskets.primary' => 'GCU',
+        'baskets.primary_code' => 'GCU',
+        'baskets.primary_name' => 'Global Currency Unit',
         'baskets.primary_symbol' => 'Ǥ',
     ]);
 

@@ -28,10 +28,10 @@ class Order extends Model
     ];
 
     protected $casts = [
-        'trades'       => 'array',
-        'metadata'     => 'array',
+        'trades' => 'array',
+        'metadata' => 'array',
         'cancelled_at' => 'datetime',
-        'filled_at'    => 'datetime',
+        'filled_at' => 'datetime',
     ];
 
     public function account(): BelongsTo

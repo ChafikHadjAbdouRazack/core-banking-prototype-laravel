@@ -7,8 +7,5 @@ use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 
 class AccountDeleted extends ShouldBeStored
 {
-    /**
-     * @var string
-     */
     public string $queue = EventQueues::LEDGER->value;
 }

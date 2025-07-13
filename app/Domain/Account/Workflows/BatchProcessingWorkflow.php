@@ -10,10 +10,7 @@ class BatchProcessingWorkflow extends Workflow
     /**
      * Execute end-of-day batch processing operations with compensation.
      *
-     * @param array       $operations - array of batch operations to perform
-     * @param string|null $batchId
-     *
-     * @return \Generator
+     * @param  array  $operations  - array of batch operations to perform
      */
     public function execute(array $operations, ?string $batchId = null): \Generator
     {
@@ -31,7 +28,7 @@ class BatchProcessingWorkflow extends Workflow
 
                 $completedOperations[] = [
                     'operation' => $operation,
-                    'result'    => $result,
+                    'result' => $result,
                 ];
 
                 // Add compensation for this specific operation
@@ -61,10 +58,10 @@ class BatchProcessingWorkflow extends Workflow
             logger()->error(
                 'Batch processing failed - compensations executed',
                 [
-                'batch_id'             => $batchId,
-                'operations'           => $operations,
-                'completed_operations' => $completedOperations,
-                'error'                => $th->getMessage(),
+                    'batch_id' => $batchId,
+                    'operations' => $operations,
+                    'completed_operations' => $completedOperations,
+                    'error' => $th->getMessage(),
                 ]
             );
 

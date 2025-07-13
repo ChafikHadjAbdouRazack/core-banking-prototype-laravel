@@ -2,7 +2,11 @@
 
 namespace Tests\Unit\Domain\Fraud\Events;
 
+use App\Domain\Fraud\Events\FraudDetected;
+use App\Models\FraudScore;
+use App\Models\Transaction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Event;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\DomainTestCase;
 
@@ -15,17 +19,17 @@ class FraudDetectedTest extends DomainTestCase
     {
         $fraudScore = FraudScore::factory()->create([
             'entity_type' => Transaction::class,
-            'score'       => 85,
+            'total_score' => 85,
             'risk_level'  => 'high',
-            'action'      => 'block',
+            'decision'    => 'block',
         ]);
 
         $event = new FraudDetected($fraudScore);
 
         $this->assertSame($fraudScore->id, $event->fraudScore->id);
-        $this->assertEquals(85, $event->fraudScore->score);
+        $this->assertEquals(85, $event->fraudScore->total_score);
         $this->assertEquals('high', $event->fraudScore->risk_level);
-        $this->assertEquals('block', $event->fraudScore->action);
+        $this->assertEquals('block', $event->fraudScore->decision);
     }
 
     #[Test]
@@ -62,10 +66,10 @@ class FraudDetectedTest extends DomainTestCase
     public function test_event_serializes_correctly(): void
     {
         $fraudScore = FraudScore::factory()->create([
-            'score'            => 92,
+            'total_score'      => 92,
             'risk_level'       => 'high',
-            'action'           => 'block',
-            'analysis_results' => [
+            'decision'         => 'block',
+            'score_breakdown'  => [
                 'rule_engine' => ['score' => 50],
                 'behavioral'  => ['score' => 42],
             ],
@@ -78,9 +82,9 @@ class FraudDetectedTest extends DomainTestCase
         $unserialized = unserialize($serialized);
 
         $this->assertEquals($fraudScore->id, $unserialized->fraudScore->id);
-        $this->assertEquals(92, $unserialized->fraudScore->score);
+        $this->assertEquals(92, $unserialized->fraudScore->total_score);
         $this->assertEquals('high', $unserialized->fraudScore->risk_level);
-        $this->assertIsArray($unserialized->fraudScore->analysis_results);
+        $this->assertIsArray($unserialized->fraudScore->score_breakdown);
     }
 
     #[Test]
@@ -88,9 +92,11 @@ class FraudDetectedTest extends DomainTestCase
     {
         $fraudScore = FraudScore::factory()->create();
 
-        $this->expectsEvents(FraudDetected::class);
+        Event::fake();
 
         event(new FraudDetected($fraudScore));
+
+        Event::assertDispatched(FraudDetected::class);
     }
 
     #[Test]

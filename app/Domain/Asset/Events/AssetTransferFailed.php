@@ -21,8 +21,7 @@ class AssetTransferFailed extends ShouldBeStored
         public readonly Hash $hash,
         public readonly ?string $transferId = null,
         public readonly ?array $metadata = null
-    ) {
-    }
+    ) {}
 
     /**
      * Get the failure reason.

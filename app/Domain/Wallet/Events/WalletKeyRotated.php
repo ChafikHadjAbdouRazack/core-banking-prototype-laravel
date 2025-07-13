@@ -14,6 +14,5 @@ class WalletKeyRotated extends ShouldBeStored
         public readonly string $newPublicKey,
         public readonly string $rotatedBy,
         public readonly Carbon $rotatedAt
-    ) {
-    }
+    ) {}
 }

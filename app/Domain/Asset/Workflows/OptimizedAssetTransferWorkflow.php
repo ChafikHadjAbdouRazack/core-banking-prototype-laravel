@@ -22,12 +22,12 @@ class OptimizedAssetTransferWorkflow extends Workflow
     /**
      * Execute optimized asset transfer between accounts.
      *
-     * @param  AccountUuid $fromAccountUuid Source account UUID
-     * @param  AccountUuid $toAccountUuid   Destination account UUID
-     * @param  string      $fromAssetCode   Source asset code
-     * @param  string      $toAssetCode     Destination asset code
-     * @param  Money       $fromAmount      Amount to transfer
-     * @param  string|null $description     Transfer description
+     * @param  AccountUuid  $fromAccountUuid  Source account UUID
+     * @param  AccountUuid  $toAccountUuid  Destination account UUID
+     * @param  string  $fromAssetCode  Source asset code
+     * @param  string  $toAssetCode  Destination asset code
+     * @param  Money  $fromAmount  Amount to transfer
+     * @param  string|null  $description  Transfer description
      * @return array Transfer result with performance metrics
      */
     public function execute(
@@ -44,8 +44,8 @@ class OptimizedAssetTransferWorkflow extends Workflow
         $optimizationService = app(TransferOptimizationService::class);
         $optimizationService->warmUpCaches(
             [
-            (string) $fromAccountUuid,
-            (string) $toAccountUuid,
+                (string) $fromAccountUuid,
+                (string) $toAccountUuid,
             ]
         );
 
@@ -93,10 +93,10 @@ class OptimizedAssetTransferWorkflow extends Workflow
             $executionTime = microtime(true) - $startTime;
 
             return [
-                'success'           => true,
-                'transfer_id'       => $transferId,
+                'success' => true,
+                'transfer_id' => $transferId,
                 'execution_time_ms' => round($executionTime * 1000, 2),
-                'optimized'         => true,
+                'optimized' => true,
             ];
         } catch (\Throwable $exception) {
             // Compensate on failure
@@ -106,10 +106,10 @@ class OptimizedAssetTransferWorkflow extends Workflow
             $executionTime = microtime(true) - $startTime;
 
             return [
-                'success'           => false,
-                'error'             => $exception->getMessage(),
+                'success' => false,
+                'error' => $exception->getMessage(),
                 'execution_time_ms' => round($executionTime * 1000, 2),
-                'optimized'         => true,
+                'optimized' => true,
             ];
         }
     }

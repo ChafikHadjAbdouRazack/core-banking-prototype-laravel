@@ -10,6 +10,5 @@ class LoanDisbursed extends ShouldBeStored
         public string $loanId,
         public string $amount,
         public \DateTimeImmutable $disbursedAt
-    ) {
-    }
+    ) {}
 }

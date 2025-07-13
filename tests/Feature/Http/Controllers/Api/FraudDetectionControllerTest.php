@@ -35,7 +35,7 @@ class FraudDetectionControllerTest extends ControllerTestCase
             ])
             ->assertJson([
                 'message' => 'Fraud detection dashboard endpoint',
-                'data'    => [],
+                'data' => [],
             ]);
     }
 
@@ -117,7 +117,7 @@ class FraudDetectionControllerTest extends ControllerTestCase
         $response->assertStatus(200)
             ->assertJson([
                 'message' => 'Alert acknowledged',
-                'data'    => [
+                'data' => [
                     'id' => $alertId,
                 ],
             ]);
@@ -142,7 +142,7 @@ class FraudDetectionControllerTest extends ControllerTestCase
         $response->assertStatus(200)
             ->assertJson([
                 'message' => 'Alert investigation started',
-                'data'    => [
+                'data' => [
                     'id' => $alertId,
                 ],
             ]);
@@ -270,14 +270,14 @@ class FraudDetectionControllerTest extends ControllerTestCase
 
         $caseId = 'case-456';
         $response = $this->putJson("/api/fraud/cases/{$caseId}", [
-            'status'     => 'closed',
+            'status' => 'closed',
             'resolution' => 'false_positive',
         ]);
 
         $response->assertStatus(200)
             ->assertJson([
                 'message' => 'Case updated',
-                'data'    => [
+                'data' => [
                     'id' => $caseId,
                 ],
             ]);
@@ -303,7 +303,7 @@ class FraudDetectionControllerTest extends ControllerTestCase
         $response->assertStatus(200)
             ->assertJson([
                 'message' => 'Fraud detection dashboard endpoint',
-                'data'    => [],
+                'data' => [],
             ]);
     }
 
@@ -372,14 +372,14 @@ class FraudDetectionControllerTest extends ControllerTestCase
 
         $alertId = 'alert-789';
         $response = $this->postJson("/api/fraud/alerts/{$alertId}/acknowledge", [
-            'notes'           => 'Reviewed and confirmed as false positive',
+            'notes' => 'Reviewed and confirmed as false positive',
             'acknowledged_by' => $this->user->id,
         ]);
 
         $response->assertStatus(200)
             ->assertJson([
                 'message' => 'Alert acknowledged',
-                'data'    => [
+                'data' => [
                     'id' => $alertId,
                 ],
             ]);
@@ -392,15 +392,15 @@ class FraudDetectionControllerTest extends ControllerTestCase
 
         $alertId = 'alert-999';
         $response = $this->postJson("/api/fraud/alerts/{$alertId}/investigate", [
-            'assigned_to'   => $this->user->id,
-            'priority'      => 'high',
+            'assigned_to' => $this->user->id,
+            'priority' => 'high',
             'initial_notes' => 'Suspicious pattern detected',
         ]);
 
         $response->assertStatus(200)
             ->assertJson([
                 'message' => 'Alert investigation started',
-                'data'    => [
+                'data' => [
                     'id' => $alertId,
                 ],
             ]);
@@ -413,12 +413,12 @@ class FraudDetectionControllerTest extends ControllerTestCase
 
         $caseId = 'case-111';
         $response = $this->putJson("/api/fraud/cases/{$caseId}", [
-            'status'        => 'resolved',
-            'resolution'    => 'fraud_confirmed',
+            'status' => 'resolved',
+            'resolution' => 'fraud_confirmed',
             'actions_taken' => [
-                'account_frozen'       => true,
+                'account_frozen' => true,
                 'authorities_notified' => true,
-                'funds_recovered'      => 5000.00,
+                'funds_recovered' => 5000.00,
             ],
             'final_notes' => 'Fraudulent activity confirmed and resolved',
         ]);
@@ -426,7 +426,7 @@ class FraudDetectionControllerTest extends ControllerTestCase
         $response->assertStatus(200)
             ->assertJson([
                 'message' => 'Case updated',
-                'data'    => [
+                'data' => [
                     'id' => $caseId,
                 ],
             ]);

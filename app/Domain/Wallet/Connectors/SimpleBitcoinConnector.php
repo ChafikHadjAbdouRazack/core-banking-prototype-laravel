@@ -22,7 +22,7 @@ class SimpleBitcoinConnector implements BlockchainConnector
     public function __construct(array $config = [])
     {
         $this->network = $config['network'] ?? 'mainnet';
-        $this->apiUrl = $config['api_url'] ?? 'https://api.blockcypher.com/v1/btc/' . $this->network;
+        $this->apiUrl = $config['api_url'] ?? 'https://api.blockcypher.com/v1/btc/'.$this->network;
         $this->apiKey = $config['api_key'] ?? null;
     }
 
@@ -35,7 +35,7 @@ class SimpleBitcoinConnector implements BlockchainConnector
 
         // Add network byte (0x00 for mainnet, 0x6f for testnet)
         $networkByte = $this->network === 'mainnet' ? '00' : '6f';
-        $hash = $networkByte . $hash;
+        $hash = $networkByte.$hash;
 
         // Add checksum
         $checksum = substr(hash('sha256', hash('sha256', hex2bin($hash), true)), 0, 8);
@@ -49,7 +49,7 @@ class SimpleBitcoinConnector implements BlockchainConnector
             publicKey: $publicKey,
             chain: 'bitcoin',
             metadata: [
-                'type'    => 'P2PKH',
+                'type' => 'P2PKH',
                 'network' => $this->network,
             ]
         );
@@ -72,7 +72,7 @@ class SimpleBitcoinConnector implements BlockchainConnector
             chain: 'bitcoin',
             metadata: [
                 'unconfirmed_balance' => (string) ($data['unconfirmed_balance'] ?? 0),
-                'final_balance'       => (string) ($data['final_balance'] ?? 0),
+                'final_balance' => (string) ($data['final_balance'] ?? 0),
             ]
         );
     }
@@ -98,7 +98,7 @@ class SimpleBitcoinConnector implements BlockchainConnector
             estimatedCost: $fee,
             chain: 'bitcoin',
             metadata: [
-                'fee_rate'       => $feeRate,
+                'fee_rate' => $feeRate,
                 'estimated_size' => $txSize,
             ]
         );
@@ -109,12 +109,12 @@ class SimpleBitcoinConnector implements BlockchainConnector
         $response = Http::post(
             "{$this->apiUrl}/txs/push",
             [
-            'tx' => $transaction->rawTransaction,
+                'tx' => $transaction->rawTransaction,
             ]
         );
 
         if (! $response->successful()) {
-            throw new \Exception('Failed to broadcast transaction: ' . $response->body());
+            throw new \Exception('Failed to broadcast transaction: '.$response->body());
         }
 
         $data = $response->json();
@@ -123,7 +123,7 @@ class SimpleBitcoinConnector implements BlockchainConnector
             hash: $data['tx']['hash'],
             status: 'pending',
             metadata: [
-                'network'      => $this->network,
+                'network' => $this->network,
                 'submitted_at' => now()->toIso8601String(),
             ]
         );
@@ -158,7 +158,7 @@ class SimpleBitcoinConnector implements BlockchainConnector
             status: $status,
             metadata: [
                 'confirmations' => $data['confirmations'] ?? 0,
-                'fee'           => $data['fees'] ?? 0,
+                'fee' => $data['fees'] ?? 0,
             ]
         );
     }
@@ -167,9 +167,9 @@ class SimpleBitcoinConnector implements BlockchainConnector
     {
         // Return fee estimates in satoshis per byte
         return [
-            'slow'     => $this->getEstimatedFeeRate(0.9),
+            'slow' => $this->getEstimatedFeeRate(0.9),
             'standard' => $this->getEstimatedFeeRate(0.5),
-            'fast'     => $this->getEstimatedFeeRate(0.1),
+            'fast' => $this->getEstimatedFeeRate(0.1),
         ];
     }
 
@@ -222,9 +222,9 @@ class SimpleBitcoinConnector implements BlockchainConnector
             status: $status,
             metadata: [
                 'confirmations' => $data['confirmations'] ?? 0,
-                'block_height'  => $data['block_height'] ?? null,
-                'fee'           => $data['fees'] ?? 0,
-                'time'          => $data['received'] ?? null,
+                'block_height' => $data['block_height'] ?? null,
+                'fee' => $data['fees'] ?? 0,
+                'time' => $data['received'] ?? null,
             ]
         );
     }
@@ -288,7 +288,7 @@ class SimpleBitcoinConnector implements BlockchainConnector
         while (gmp_cmp($num, 0) > 0) {
             $remainder = gmp_mod($num, $base);
             $num = gmp_div($num, $base);
-            $encoded = $alphabet[gmp_intval($remainder)] . $encoded;
+            $encoded = $alphabet[gmp_intval($remainder)].$encoded;
         }
 
         // Add leading 1s for each leading zero byte
@@ -296,7 +296,7 @@ class SimpleBitcoinConnector implements BlockchainConnector
             if ($data[$i] !== "\x00") {
                 break;
             }
-            $encoded = '1' . $encoded;
+            $encoded = '1'.$encoded;
         }
 
         return $encoded;

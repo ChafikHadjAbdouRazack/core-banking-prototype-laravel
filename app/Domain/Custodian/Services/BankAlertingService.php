@@ -34,8 +34,7 @@ class BankAlertingService
 
     public function __construct(
         private readonly CustodianHealthMonitor $healthMonitor
-    ) {
-    }
+    ) {}
 
     /**
      * Handle custodian health change event.
@@ -70,11 +69,11 @@ class BankAlertingService
         Log::warning(
             'Bank health alert sent',
             [
-            'custodian'        => $event->custodian,
-            'previous_status'  => $event->previousStatus,
-            'new_status'       => $event->newStatus,
-            'severity'         => $severity,
-            'recipients_count' => $recipients->count(),
+                'custodian' => $event->custodian,
+                'previous_status' => $event->previousStatus,
+                'new_status' => $event->newStatus,
+                'severity' => $severity,
+                'recipients_count' => $recipients->count(),
             ]
         );
     }
@@ -201,9 +200,9 @@ class BankAlertingService
         Log::alert(
             'System-wide bank health alert',
             [
-            'severity' => $severity,
-            'message'  => $message,
-            'issues'   => $issues,
+                'severity' => $severity,
+                'message' => $message,
+                'issues' => $issues,
             ]
         );
 
@@ -219,18 +218,18 @@ class BankAlertingService
         // In production, this would query from database
         // For now, return sample data
         return [
-            'custodian'   => $custodian,
+            'custodian' => $custodian,
             'period_days' => $days,
-            'alerts'      => [
+            'alerts' => [
                 [
                     'timestamp' => now()->subDays(2),
-                    'severity'  => 'warning',
-                    'message'   => 'Status changed from healthy to degraded',
+                    'severity' => 'warning',
+                    'message' => 'Status changed from healthy to degraded',
                 ],
                 [
                     'timestamp' => now()->subDays(1),
-                    'severity'  => 'info',
-                    'message'   => 'Status changed from degraded to healthy',
+                    'severity' => 'info',
+                    'message' => 'Status changed from degraded to healthy',
                 ],
             ],
         ];

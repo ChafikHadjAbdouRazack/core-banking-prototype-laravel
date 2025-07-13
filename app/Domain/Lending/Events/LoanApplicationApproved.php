@@ -13,6 +13,5 @@ class LoanApplicationApproved extends ShouldBeStored
         public array $terms,
         public string $approvedBy,
         public \DateTimeImmutable $approvedAt
-    ) {
-    }
+    ) {}
 }

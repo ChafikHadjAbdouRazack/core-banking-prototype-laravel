@@ -10,24 +10,14 @@ class AssetBalanceSubtracted extends ShouldBeStored implements HasHash
 {
     use HashValidatorProvider;
 
-    /**
-     * @var string
-     */
     public string $queue = EventQueues::TRANSACTIONS->value;
 
-    /**
-     * @param string     $assetCode
-     * @param int        $amount
-     * @param Hash       $hash
-     * @param array|null $metadata
-     */
     public function __construct(
         public readonly string $assetCode,
         public readonly int $amount,
         public readonly Hash $hash,
         public readonly ?array $metadata = []
-    ) {
-    }
+    ) {}
 
     /**
      * Get the amount for this event.

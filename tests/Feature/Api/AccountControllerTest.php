@@ -91,21 +91,29 @@ class AccountControllerTest extends ControllerTestCase
         $response = $this->postJson('/api/accounts', []);
 
         $response->assertStatus(422)
-            ->assertJsonValidationErrors(['user_uuid', 'name']);
+            ->assertJsonValidationErrors(['name']);
     }
 
     #[Test]
-    public function test_validates_uuid_format()
+    public function test_validates_name_field()
     {
         Sanctum::actingAs($this->user);
 
+        // Test empty name
         $response = $this->postJson('/api/accounts', [
-            'user_uuid' => 'invalid-uuid',
-            'name'      => 'Test Account',
+            'name' => '',
         ]);
 
         $response->assertStatus(422)
-            ->assertJsonValidationErrors(['user_uuid']);
+            ->assertJsonValidationErrors(['name']);
+
+        // Test name too long
+        $response = $this->postJson('/api/accounts', [
+            'name' => str_repeat('a', 256),
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['name']);
     }
 
     #[Test]

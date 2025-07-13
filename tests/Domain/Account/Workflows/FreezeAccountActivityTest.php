@@ -14,13 +14,13 @@ it('can handle freeze account activity', function () {
 
     $ledgerAggregate = Mockery::mock(LedgerAggregate::class);
     $ledgerAggregate->shouldReceive('retrieve')
-                    ->with($uuid->getUuid())
-                    ->andReturnSelf();
+        ->with($uuid->getUuid())
+        ->andReturnSelf();
     $ledgerAggregate->shouldReceive('freezeAccount')
-                    ->with($reason, $authorizedBy)
-                    ->andReturnSelf();
+        ->with($reason, $authorizedBy)
+        ->andReturnSelf();
     $ledgerAggregate->shouldReceive('persist')
-                    ->andReturnSelf();
+        ->andReturnSelf();
 
     $workflow = WorkflowStub::make(FreezeAccountWorkflow::class);
     $storedWorkflow = StoredWorkflow::findOrFail($workflow->id());
@@ -46,13 +46,13 @@ it('can handle freeze account activity without authorized by', function () {
 
     $ledgerAggregate = Mockery::mock(LedgerAggregate::class);
     $ledgerAggregate->shouldReceive('retrieve')
-                    ->with($uuid->getUuid())
-                    ->andReturnSelf();
+        ->with($uuid->getUuid())
+        ->andReturnSelf();
     $ledgerAggregate->shouldReceive('freezeAccount')
-                    ->with($reason, null)
-                    ->andReturnSelf();
+        ->with($reason, null)
+        ->andReturnSelf();
     $ledgerAggregate->shouldReceive('persist')
-                    ->andReturnSelf();
+        ->andReturnSelf();
 
     $workflow = WorkflowStub::make(FreezeAccountWorkflow::class);
     $storedWorkflow = StoredWorkflow::findOrFail($workflow->id());

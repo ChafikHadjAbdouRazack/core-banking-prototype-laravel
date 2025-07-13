@@ -2,6 +2,10 @@
 
 namespace Tests\Unit\Domain\Compliance\Events;
 
+use App\Domain\Compliance\Events\SuspiciousActivityDetected;
+use App\Models\Account;
+use App\Models\Transaction;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\DomainTestCase;
@@ -10,15 +14,27 @@ class SuspiciousActivityDetectedTest extends DomainTestCase
 {
     use RefreshDatabase;
 
+    private function createTransaction(array $eventProperties = []): Transaction
+    {
+        $user = User::factory()->create();
+        $account = Account::factory()->create(['user_uuid' => $user->uuid]);
+
+        return Transaction::factory()->forAccount($account)->create([
+            'event_properties' => array_merge([
+                'amount' => 10000,
+                'assetCode' => 'USD',
+                'metadata' => [],
+            ], $eventProperties),
+        ]);
+    }
+
     #[Test]
     public function test_creates_event_with_transaction_and_alerts(): void
     {
-        $transaction = Transaction::factory()->create([
-            'event_properties' => [
-                'amount'    => 100000,
-                'assetCode' => 'USD',
-                'metadata'  => ['type' => 'wire_transfer'],
-            ],
+        $transaction = $this->createTransaction([
+            'amount'    => 100000,
+            'assetCode' => 'USD',
+            'metadata'  => ['type' => 'wire_transfer'],
         ]);
 
         $alerts = [
@@ -48,7 +64,7 @@ class SuspiciousActivityDetectedTest extends DomainTestCase
     #[Test]
     public function test_event_uses_required_traits(): void
     {
-        $transaction = Transaction::factory()->create();
+        $transaction = $this->createTransaction();
         $event = new SuspiciousActivityDetected($transaction, []);
 
         $traits = class_uses($event);
@@ -61,7 +77,7 @@ class SuspiciousActivityDetectedTest extends DomainTestCase
     #[Test]
     public function test_event_properties_are_readonly(): void
     {
-        $transaction = Transaction::factory()->create();
+        $transaction = $this->createTransaction();
         $alerts = [['type' => 'test']];
 
         $event = new SuspiciousActivityDetected($transaction, $alerts);
@@ -69,13 +85,13 @@ class SuspiciousActivityDetectedTest extends DomainTestCase
         // Properties are readonly, attempting to modify should cause error
         $this->expectException(\Error::class);
         $this->expectExceptionMessageMatches('/Cannot modify readonly property/');
-        $event->transaction = Transaction::factory()->create();
+        $event->transaction = $this->createTransaction();
     }
 
     #[Test]
     public function test_event_serializes_correctly(): void
     {
-        $transaction = Transaction::factory()->create();
+        $transaction = $this->createTransaction();
 
         $alerts = [
             ['type' => 'pattern_match', 'pattern' => 'unusual_destination'],
@@ -95,7 +111,7 @@ class SuspiciousActivityDetectedTest extends DomainTestCase
     #[Test]
     public function test_handles_empty_alerts_array(): void
     {
-        $transaction = Transaction::factory()->create();
+        $transaction = $this->createTransaction();
 
         $event = new SuspiciousActivityDetected($transaction, []);
 
@@ -106,7 +122,7 @@ class SuspiciousActivityDetectedTest extends DomainTestCase
     #[Test]
     public function test_handles_complex_alert_structures(): void
     {
-        $transaction = Transaction::factory()->create();
+        $transaction = $this->createTransaction();
 
         $complexAlerts = [
             [
@@ -141,7 +157,7 @@ class SuspiciousActivityDetectedTest extends DomainTestCase
     #[Test]
     public function test_can_be_dispatched_as_event(): void
     {
-        $transaction = Transaction::factory()->create();
+        $transaction = $this->createTransaction();
         $alerts = [['type' => 'test_alert']];
 
         $this->expectsEvents(SuspiciousActivityDetected::class);

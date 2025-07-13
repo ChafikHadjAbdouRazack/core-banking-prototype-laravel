@@ -63,7 +63,7 @@ class BankConnectorAdapter implements IBankConnector
             supportedTransferTypes: ['INTERNAL', 'SEPA', 'SWIFT'],
             features: ['multi_currency', 'instant_transfers', 'api_access'],
             limits: [
-                'SEPA'  => ['EUR' => ['min' => 100, 'max' => 10000000, 'daily' => 50000000]],
+                'SEPA' => ['EUR' => ['min' => 100, 'max' => 10000000, 'daily' => 50000000]],
                 'SWIFT' => ['USD' => ['min' => 100, 'max' => 100000000, 'daily' => 500000000]],
             ],
             fees: [
@@ -292,8 +292,8 @@ class BankConnectorAdapter implements IBankConnector
             currency: 'EUR', // Would need to determine from account
             transactions: $transactions,
             summary: [
-                'total_debits'       => $transactions->filter(fn ($tx) => $tx->isDebit())->count(),
-                'total_credits'      => $transactions->filter(fn ($tx) => $tx->isCredit())->count(),
+                'total_debits' => $transactions->filter(fn ($tx) => $tx->isDebit())->count(),
+                'total_credits' => $transactions->filter(fn ($tx) => $tx->isCredit())->count(),
                 'total_transactions' => $transactions->count(),
             ],
             fileUrl: null,
@@ -317,10 +317,10 @@ class BankConnectorAdapter implements IBankConnector
     {
         // Return default limits based on transfer type
         return match ($transferType) {
-            'SEPA'     => ['min' => 100, 'max' => 10000000, 'daily' => 50000000],
-            'SWIFT'    => ['min' => 100, 'max' => 100000000, 'daily' => 500000000],
+            'SEPA' => ['min' => 100, 'max' => 10000000, 'daily' => 50000000],
+            'SWIFT' => ['min' => 100, 'max' => 100000000, 'daily' => 500000000],
             'INTERNAL' => ['min' => 1, 'max' => PHP_INT_MAX, 'daily' => PHP_INT_MAX],
-            default    => ['min' => 100, 'max' => 1000000, 'daily' => 5000000],
+            default => ['min' => 100, 'max' => 1000000, 'daily' => 5000000],
         };
     }
 

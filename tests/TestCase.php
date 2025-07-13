@@ -35,9 +35,6 @@ abstract class TestCase extends BaseTestCase
         \Mockery::close();
     }
 
-    /**
-     * @return void
-     */
     protected function setUp(): void
     {
         parent::setUp();
@@ -113,34 +110,26 @@ abstract class TestCase extends BaseTestCase
         }
     }
 
-    /**
-     * @param User $user
-     *
-     * @return Account
-     */
     protected function createAccount(User $user): Account
     {
         $uuid = Str::uuid();
 
         app(LedgerAggregate::class)->retrieve($uuid)
-                                     ->createAccount(
-                                         hydrate(
-                                             class: \App\Domain\Account\DataObjects\Account::class,
-                                             properties: [
-                                                 'name' => DefaultAccountNames::default(
-                                                 ),
-                                                 'user_uuid' => $user->uuid,
-                                             ]
-                                         )
-                                     )
-                                     ->persist();
+            ->createAccount(
+                hydrate(
+                    class: \App\Domain\Account\DataObjects\Account::class,
+                    properties: [
+                        'name' => DefaultAccountNames::default(
+                        ),
+                        'user_uuid' => $user->uuid,
+                    ]
+                )
+            )
+            ->persist();
 
         return app(AccountRepository::class)->findByUuid($uuid);
     }
 
-    /**
-     * @return void
-     */
     protected function createRoles(): void
     {
         // Check if roles already exist in the database
@@ -161,8 +150,6 @@ abstract class TestCase extends BaseTestCase
 
     /**
      * Set up parallel testing isolation for Redis and cache.
-     *
-     * @return void
      */
     protected function setUpParallelTesting(): void
     {
@@ -171,14 +158,14 @@ abstract class TestCase extends BaseTestCase
         if ($token) {
             // Prefix Redis connections for isolation
             config([
-                'database.redis.options.prefix' => 'test_' . $token . ':',
-                'cache.prefix'                  => 'test_' . $token,
-                'horizon.prefix'                => 'test_' . $token . '_horizon:',
+                'database.redis.options.prefix' => 'test_'.$token.':',
+                'cache.prefix' => 'test_'.$token,
+                'horizon.prefix' => 'test_'.$token.'_horizon:',
             ]);
 
             // Ensure event sourcing uses isolated storage
             config([
-                'event-sourcing.storage_prefix' => 'test_' . $token,
+                'event-sourcing.storage_prefix' => 'test_'.$token,
             ]);
         }
     }

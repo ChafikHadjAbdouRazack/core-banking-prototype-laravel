@@ -17,8 +17,7 @@ class BankBalance
         public readonly float $reserved,
         public readonly Carbon $asOf,
         public readonly array $metadata = [],
-    ) {
-    }
+    ) {}
 
     /**
      * Get total balance (current + pending).
@@ -64,13 +63,13 @@ class BankBalance
     {
         return [
             'account_id' => $this->accountId,
-            'currency'   => $this->currency,
-            'available'  => $this->available,
-            'current'    => $this->current,
-            'pending'    => $this->pending,
-            'reserved'   => $this->reserved,
-            'as_of'      => $this->asOf->toIso8601String(),
-            'metadata'   => $this->metadata,
+            'currency' => $this->currency,
+            'available' => $this->available,
+            'current' => $this->current,
+            'pending' => $this->pending,
+            'reserved' => $this->reserved,
+            'as_of' => $this->asOf->toIso8601String(),
+            'metadata' => $this->metadata,
         ];
     }
 

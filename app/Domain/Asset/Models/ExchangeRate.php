@@ -49,11 +49,11 @@ class ExchangeRate extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'rate'       => 'decimal:10',
-        'valid_at'   => 'datetime',
+        'rate' => 'decimal:10',
+        'valid_at' => 'datetime',
         'expires_at' => 'datetime',
-        'is_active'  => 'boolean',
-        'metadata'   => 'array',
+        'is_active' => 'boolean',
+        'metadata' => 'array',
     ];
 
     /**
@@ -101,7 +101,7 @@ class ExchangeRate extends Model
     /**
      * Convert an amount from the base asset to the target asset.
      *
-     * @param  int $amount Amount in smallest unit
+     * @param  int  $amount  Amount in smallest unit
      * @return int Converted amount in smallest unit
      */
     public function convert(int $amount): int
@@ -111,8 +111,6 @@ class ExchangeRate extends Model
 
     /**
      * Get the inverse rate.
-     *
-     * @return float
      */
     public function getInverseRate(): float
     {
@@ -121,8 +119,6 @@ class ExchangeRate extends Model
 
     /**
      * Check if the rate is currently valid.
-     *
-     * @return bool
      */
     public function isValid(): bool
     {
@@ -135,8 +131,6 @@ class ExchangeRate extends Model
 
     /**
      * Check if the rate has expired.
-     *
-     * @return bool
      */
     public function isExpired(): bool
     {
@@ -145,8 +139,6 @@ class ExchangeRate extends Model
 
     /**
      * Get the age of the rate in minutes.
-     *
-     * @return int
      */
     public function getAgeInMinutes(): int
     {
@@ -156,7 +148,7 @@ class ExchangeRate extends Model
     /**
      * Scope for active rates.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder $query
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeActive($query)
@@ -167,7 +159,7 @@ class ExchangeRate extends Model
     /**
      * Scope for valid rates (active and within time range).
      *
-     * @param  \Illuminate\Database\Eloquent\Builder $query
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeValid($query)
@@ -187,9 +179,7 @@ class ExchangeRate extends Model
     /**
      * Scope for rates between specific assets.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder $query
-     * @param  string                                $fromAsset
-     * @param  string                                $toAsset
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeBetween($query, string $fromAsset, string $toAsset)
@@ -201,8 +191,7 @@ class ExchangeRate extends Model
     /**
      * Scope for rates by source.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder $query
-     * @param  string                                $source
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeBySource($query, string $source)
@@ -213,7 +202,7 @@ class ExchangeRate extends Model
     /**
      * Scope for latest rates first.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder $query
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeLatest($query)
@@ -223,16 +212,14 @@ class ExchangeRate extends Model
 
     /**
      * Get latest exchange rates grouped by asset pairs.
-     *
-     * @return object
      */
     public static function getLatestRates(): object
     {
         $rates = self::valid()->latest()->get()->groupBy(['from_asset_code', 'to_asset_code']);
 
-        $result = new \stdClass();
+        $result = new \stdClass;
         foreach ($rates as $fromAsset => $toAssets) {
-            $result->$fromAsset = new \stdClass();
+            $result->$fromAsset = new \stdClass;
             foreach ($toAssets as $toAsset => $rateRecords) {
                 $result->$fromAsset->$toAsset = $rateRecords->first()->rate;
             }
@@ -243,10 +230,6 @@ class ExchangeRate extends Model
 
     /**
      * Get exchange rate between two assets.
-     *
-     * @param  string $fromAsset
-     * @param  string $toAsset
-     * @return float|null
      */
     public static function getRate(string $fromAsset, string $toAsset): ?float
     {

@@ -25,8 +25,7 @@ class BankStatement
         public readonly ?string $fileContent,
         public readonly Carbon $generatedAt,
         public readonly array $metadata = [],
-    ) {
-    }
+    ) {}
 
     /**
      * Get total debits.
@@ -95,20 +94,20 @@ class BankStatement
     public function toArray(): array
     {
         return [
-            'id'              => $this->id,
-            'bank_code'       => $this->bankCode,
-            'account_id'      => $this->accountId,
-            'period_from'     => $this->periodFrom->toIso8601String(),
-            'period_to'       => $this->periodTo->toIso8601String(),
-            'format'          => $this->format,
+            'id' => $this->id,
+            'bank_code' => $this->bankCode,
+            'account_id' => $this->accountId,
+            'period_from' => $this->periodFrom->toIso8601String(),
+            'period_to' => $this->periodTo->toIso8601String(),
+            'format' => $this->format,
             'opening_balance' => $this->openingBalance,
             'closing_balance' => $this->closingBalance,
-            'currency'        => $this->currency,
-            'transactions'    => $this->transactions->map(fn ($tx) => $tx->toArray())->toArray(),
-            'summary'         => $this->summary,
-            'file_url'        => $this->fileUrl,
-            'generated_at'    => $this->generatedAt->toIso8601String(),
-            'metadata'        => $this->metadata,
+            'currency' => $this->currency,
+            'transactions' => $this->transactions->map(fn ($tx) => $tx->toArray())->toArray(),
+            'summary' => $this->summary,
+            'file_url' => $this->fileUrl,
+            'generated_at' => $this->generatedAt->toIso8601String(),
+            'metadata' => $this->metadata,
         ];
     }
 

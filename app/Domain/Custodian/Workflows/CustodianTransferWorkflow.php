@@ -111,11 +111,11 @@ class CustodianTransferWorkflow extends Workflow
             }
 
             return [
-                'status'         => 'completed',
+                'status' => 'completed',
                 'transaction_id' => $transactionId,
-                'direction'      => $direction,
-                'amount'         => $amount->getAmount(),
-                'asset_code'     => $assetCode,
+                'direction' => $direction,
+                'amount' => $amount->getAmount(),
+                'asset_code' => $assetCode,
             ];
         } catch (\Throwable $e) {
             // Execute compensations

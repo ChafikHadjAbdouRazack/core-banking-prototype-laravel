@@ -9,10 +9,6 @@ use Workflow\Activity;
 
 class ValidateBatchJobActivity extends Activity
 {
-    /**
-     * @param  string $batchJobUuid
-     * @return BatchJob
-     */
     public function execute(string $batchJobUuid): BatchJob
     {
         $batchJobModel = BatchJobModel::where('uuid', $batchJobUuid)->with('items')->first();

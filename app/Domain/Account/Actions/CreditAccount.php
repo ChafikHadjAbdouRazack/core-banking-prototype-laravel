@@ -7,11 +7,6 @@ use App\Models\Account;
 
 class CreditAccount extends AccountAction
 {
-    /**
-     * @param AssetBalanceAdded $event
-     *
-     * @return Account
-     */
     public function __invoke(AssetBalanceAdded $event): Account
     {
         $account = $this->accountRepository->findByUuid(
@@ -22,7 +17,7 @@ class CreditAccount extends AccountAction
         $balance = \App\Models\AccountBalance::firstOrCreate(
             [
                 'account_uuid' => $account->uuid,
-                'asset_code'   => $event->assetCode,
+                'asset_code' => $event->assetCode,
             ],
             [
                 'balance' => 0,

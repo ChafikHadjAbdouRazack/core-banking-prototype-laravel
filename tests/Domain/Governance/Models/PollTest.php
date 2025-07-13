@@ -11,7 +11,7 @@ use App\Models\User;
 
 describe('Poll Model', function () {
     it('has correct fillable attributes', function () {
-        $poll = new Poll();
+        $poll = new Poll;
 
         expect($poll->getFillable())->toContain(
             'uuid',
@@ -32,9 +32,9 @@ describe('Poll Model', function () {
 
     it('casts attributes correctly', function () {
         $poll = Poll::factory()->create([
-            'type'     => 'yes_no',
-            'status'   => 'draft',
-            'options'  => [['id' => 'yes', 'label' => 'Yes']],
+            'type' => 'yes_no',
+            'status' => 'draft',
+            'options' => [['id' => 'yes', 'label' => 'Yes']],
             'metadata' => ['test' => 'value'],
         ]);
 
@@ -111,7 +111,7 @@ describe('Poll Status Checks', function () {
     it('identifies active polls correctly', function () {
         $activePoll = Poll::factory()->active()->create([
             'start_date' => now()->subHour(),
-            'end_date'   => now()->addHour(),
+            'end_date' => now()->addHour(),
         ]);
 
         $draftPoll = Poll::factory()->draft()->create();
@@ -136,7 +136,7 @@ describe('Poll Status Checks', function () {
     it('determines if poll can accept votes', function () {
         $activePoll = Poll::factory()->active()->create([
             'start_date' => now()->subHour(),
-            'end_date'   => now()->addHour(),
+            'end_date' => now()->addHour(),
         ]);
 
         $expiredPoll = Poll::factory()->active()->create([
@@ -155,7 +155,7 @@ describe('Poll Time Calculations', function () {
     it('calculates duration correctly', function () {
         $poll = Poll::factory()->create([
             'start_date' => now(),
-            'end_date'   => now()->addHours(48),
+            'end_date' => now()->addHours(48),
         ]);
 
         expect($poll->getDurationInHours())->toBe(48);
@@ -164,7 +164,7 @@ describe('Poll Time Calculations', function () {
     it('calculates remaining time correctly', function () {
         $poll = Poll::factory()->active()->create([
             'start_date' => now()->subHour(),
-            'end_date'   => now()->addHours(23),
+            'end_date' => now()->addHours(23),
         ]);
 
         $remainingHours = $poll->getTimeRemainingInHours();
@@ -255,7 +255,7 @@ describe('Poll Query Scopes', function () {
     it('filters active polls', function () {
         Poll::factory()->active()->count(2)->create([
             'start_date' => now()->subHour(),
-            'end_date'   => now()->addHour(),
+            'end_date' => now()->addHour(),
         ]);
         Poll::factory()->draft()->count(3)->create();
 
@@ -304,7 +304,7 @@ describe('Poll Query Scopes', function () {
 
 describe('Poll Route Key', function () {
     it('uses uuid as route key', function () {
-        $poll = new Poll();
+        $poll = new Poll;
 
         expect($poll->getRouteKeyName())->toBe('uuid');
     });

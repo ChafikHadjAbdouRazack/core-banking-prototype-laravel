@@ -13,20 +13,19 @@ class BalanceData
         public readonly ?string $pendingBalance = null,
         public readonly ?int $nonce = null,
         public readonly array $metadata = []
-    ) {
-    }
+    ) {}
 
     public function toArray(): array
     {
         return [
-            'address'         => $this->address,
-            'balance'         => $this->balance,
-            'chain'           => $this->chain,
-            'symbol'          => $this->symbol,
-            'decimals'        => $this->decimals,
+            'address' => $this->address,
+            'balance' => $this->balance,
+            'chain' => $this->chain,
+            'symbol' => $this->symbol,
+            'decimals' => $this->decimals,
             'pending_balance' => $this->pendingBalance,
-            'nonce'           => $this->nonce,
-            'metadata'        => $this->metadata,
+            'nonce' => $this->nonce,
+            'metadata' => $this->metadata,
         ];
     }
 

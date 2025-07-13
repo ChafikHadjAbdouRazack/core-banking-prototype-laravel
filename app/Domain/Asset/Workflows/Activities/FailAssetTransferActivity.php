@@ -30,9 +30,9 @@ class FailAssetTransferActivity extends Activity
                     reason: $reason,
                     transferId: $transferId,
                     metadata: [
-                        'workflow'       => 'AssetTransferWorkflow',
-                        'activity'       => 'FailAssetTransferActivity',
-                        'failed_at'      => now()->toISOString(),
+                        'workflow' => 'AssetTransferWorkflow',
+                        'activity' => 'FailAssetTransferActivity',
+                        'failed_at' => now()->toISOString(),
                         'failure_reason' => $reason,
                     ]
                 )

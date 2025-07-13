@@ -15,7 +15,7 @@ class MatchOrderActivity extends Activity
 
     public function __construct()
     {
-        $this->feeCalculator = new FeeCalculator();
+        $this->feeCalculator = new FeeCalculator;
     }
 
     public function execute(string $orderId, int $maxIterations = 100): object
@@ -52,13 +52,13 @@ class MatchOrderActivity extends Activity
 
             // Create match record
             $match = (object) [
-                'tradeId'        => Str::uuid()->toString(),
-                'buyOrderId'     => $order->type === 'buy' ? $order->order_id : $matchingOrder->order_id,
-                'sellOrderId'    => $order->type === 'sell' ? $order->order_id : $matchingOrder->order_id,
-                'executedPrice'  => $executionDetails->executedPrice->__toString(),
+                'tradeId' => Str::uuid()->toString(),
+                'buyOrderId' => $order->type === 'buy' ? $order->order_id : $matchingOrder->order_id,
+                'sellOrderId' => $order->type === 'sell' ? $order->order_id : $matchingOrder->order_id,
+                'executedPrice' => $executionDetails->executedPrice->__toString(),
                 'executedAmount' => $executionDetails->executedAmount->__toString(),
-                'makerFee'       => $executionDetails->makerFee->__toString(),
-                'takerFee'       => $executionDetails->takerFee->__toString(),
+                'makerFee' => $executionDetails->makerFee->__toString(),
+                'takerFee' => $executionDetails->takerFee->__toString(),
             ];
 
             $matches->push($match);
@@ -71,8 +71,8 @@ class MatchOrderActivity extends Activity
         }
 
         return (object) [
-            'matches'         => $matches,
-            'message'         => $matches->isEmpty() ? 'No matches found' : "Found {$matches->count()} matches",
+            'matches' => $matches,
+            'message' => $matches->isEmpty() ? 'No matches found' : "Found {$matches->count()} matches",
             'remainingAmount' => $remainingAmount->__toString(),
         ];
     }
@@ -161,10 +161,10 @@ class MatchOrderActivity extends Activity
         );
 
         return (object) [
-            'executedPrice'  => $executedPrice,
+            'executedPrice' => $executedPrice,
             'executedAmount' => $executedAmount,
-            'makerFee'       => $fees->makerFee,
-            'takerFee'       => $fees->takerFee,
+            'makerFee' => $fees->makerFee,
+            'takerFee' => $fees->takerFee,
         ];
     }
 
@@ -175,7 +175,7 @@ class MatchOrderActivity extends Activity
         $updates = \Cache::get($key, []);
         $updates[] = [
             'executed_amount' => $executedAmount->__toString(),
-            'timestamp'       => now()->toIso8601String(),
+            'timestamp' => now()->toIso8601String(),
         ];
         \Cache::put($key, $updates, now()->addMinutes(10));
     }

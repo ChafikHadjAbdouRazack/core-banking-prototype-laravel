@@ -12,6 +12,5 @@ class WalletFrozen extends ShouldBeStored
         public readonly string $reason,
         public readonly string $frozenBy,
         public readonly Carbon $frozenAt
-    ) {
-    }
+    ) {}
 }

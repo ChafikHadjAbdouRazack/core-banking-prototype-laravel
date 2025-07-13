@@ -18,10 +18,10 @@ class WebhookVerificationService
         array $headers = []
     ): bool {
         return match ($custodianName) {
-            'paysera'   => $this->verifyPayseraSignature($payload, $signature, $headers),
+            'paysera' => $this->verifyPayseraSignature($payload, $signature, $headers),
             'santander' => $this->verifySantanderSignature($payload, $signature, $headers),
-            'mock'      => true, // Mock always passes
-            default     => false,
+            'mock' => true, // Mock always passes
+            default => false,
         };
     }
 
@@ -63,7 +63,7 @@ class WebhookVerificationService
 
         // Santander includes timestamp in signature calculation
         $timestamp = $headers['x-santander-timestamp'] ?? $headers['X-Santander-Timestamp'] ?? '';
-        $dataToSign = $timestamp . '.' . $payload;
+        $dataToSign = $timestamp.'.'.$payload;
 
         $expectedSignature = hash_hmac('sha512', $dataToSign, $secret);
 

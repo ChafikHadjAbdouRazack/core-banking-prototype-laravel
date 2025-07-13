@@ -8,14 +8,6 @@ use Workflow\Activity;
 
 class UnfreezeAccountActivity extends Activity
 {
-    /**
-     * @param AccountUuid     $uuid
-     * @param string          $reason
-     * @param string|null     $authorizedBy
-     * @param LedgerAggregate $ledger
-     *
-     * @return bool
-     */
     public function execute(
         AccountUuid $uuid,
         string $reason,

@@ -39,9 +39,9 @@ class WebhookEventListener extends Projector
             'account.created',
             $event->aggregateRootUuid(),
             [
-            'name'      => $account->name,
-            'user_uuid' => $account->user_uuid,
-            'balance'   => 0,
+                'name' => $account->name,
+                'user_uuid' => $account->user_uuid,
+                'balance' => 0,
             ]
         );
     }
@@ -56,7 +56,7 @@ class WebhookEventListener extends Projector
             'account.frozen',
             $event->aggregateRootUuid(),
             [
-            'reason' => $event->reason,
+                'reason' => $event->reason,
             ]
         );
     }
@@ -94,12 +94,12 @@ class WebhookEventListener extends Projector
         $this->webhookService->dispatchTransactionEvent(
             'transaction.created',
             [
-            'account_uuid'  => $event->aggregateRootUuid(),
-            'type'          => 'deposit',
-            'amount'        => $event->money->getAmount(),
-            'currency'      => 'USD',
-            'balance_after' => $account->balance,
-            'hash'          => $event->hash->getHash(),
+                'account_uuid' => $event->aggregateRootUuid(),
+                'type' => 'deposit',
+                'amount' => $event->money->getAmount(),
+                'currency' => 'USD',
+                'balance_after' => $account->balance,
+                'hash' => $event->hash->getHash(),
             ]
         );
 
@@ -109,8 +109,8 @@ class WebhookEventListener extends Projector
                 'balance.low',
                 $event->aggregateRootUuid(),
                 [
-                'balance'   => $account->balance,
-                'threshold' => 1000,
+                    'balance' => $account->balance,
+                    'threshold' => 1000,
                 ]
             );
         }
@@ -131,12 +131,12 @@ class WebhookEventListener extends Projector
         $this->webhookService->dispatchTransactionEvent(
             'transaction.created',
             [
-            'account_uuid'  => $event->aggregateRootUuid(),
-            'type'          => 'withdrawal',
-            'amount'        => $event->money->getAmount(),
-            'currency'      => 'USD',
-            'balance_after' => $account->balance,
-            'hash'          => $event->hash->getHash(),
+                'account_uuid' => $event->aggregateRootUuid(),
+                'type' => 'withdrawal',
+                'amount' => $event->money->getAmount(),
+                'currency' => 'USD',
+                'balance_after' => $account->balance,
+                'hash' => $event->hash->getHash(),
             ]
         );
 
@@ -146,7 +146,7 @@ class WebhookEventListener extends Projector
                 'balance.negative',
                 $event->aggregateRootUuid(),
                 [
-                'balance' => $account->balance,
+                    'balance' => $account->balance,
                 ]
             );
         }
@@ -166,13 +166,13 @@ class WebhookEventListener extends Projector
         }
 
         $transferData = [
-            'from_account_uuid'  => $event->aggregateRootUuid(),
-            'to_account_uuid'    => $event->toAccountUuid->toString(),
-            'amount'             => $event->money->getAmount(),
-            'currency'           => 'USD',
+            'from_account_uuid' => $event->aggregateRootUuid(),
+            'to_account_uuid' => $event->toAccountUuid->toString(),
+            'amount' => $event->money->getAmount(),
+            'currency' => 'USD',
             'from_balance_after' => $fromAccount->balance,
-            'to_balance_after'   => $toAccount->balance,
-            'hash'               => $event->hash->getHash(),
+            'to_balance_after' => $toAccount->balance,
+            'hash' => $event->hash->getHash(),
         ];
 
         $this->webhookService->dispatchTransferEvent('transfer.created', $transferData);

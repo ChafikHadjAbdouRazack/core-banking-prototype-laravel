@@ -8,19 +8,10 @@ use Spatie\EventSourcing\EventHandlers\Reactors\Reactor;
 
 class SnapshotTransactionsReactor extends Reactor
 {
-    /**
-     * @param TransactionAggregate $transactions
-     */
     public function __construct(
         protected TransactionAggregate $transactions,
-    ) {
-    }
+    ) {}
 
-    /**
-     * @param TransactionThresholdReached $event
-     *
-     * @return void
-     */
     public function onTransactionThresholdReached(
         TransactionThresholdReached $event
     ): void {

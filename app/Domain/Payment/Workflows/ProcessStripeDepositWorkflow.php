@@ -15,9 +15,6 @@ class ProcessStripeDepositWorkflow extends Workflow
 {
     /**
      * Process a Stripe deposit through the complete workflow.
-     *
-     * @param  StripeDeposit $deposit
-     * @return \Generator
      */
     public function execute(StripeDeposit $deposit): \Generator
     {
@@ -26,14 +23,14 @@ class ProcessStripeDepositWorkflow extends Workflow
             $depositResult = yield ActivityStub::make(
                 InitiateDepositActivity::class,
                 [
-                    'account_uuid'        => $deposit->getAccountUuid(),
-                    'amount'              => $deposit->getAmount(),
-                    'currency'            => $deposit->getCurrency(),
-                    'reference'           => $deposit->getReference(),
-                    'external_reference'  => $deposit->getExternalReference(),
-                    'payment_method'      => $deposit->getPaymentMethod(),
+                    'account_uuid' => $deposit->getAccountUuid(),
+                    'amount' => $deposit->getAmount(),
+                    'currency' => $deposit->getCurrency(),
+                    'reference' => $deposit->getReference(),
+                    'external_reference' => $deposit->getExternalReference(),
+                    'payment_method' => $deposit->getPaymentMethod(),
                     'payment_method_type' => $deposit->getPaymentMethodType(),
-                    'metadata'            => $deposit->getMetadata(),
+                    'metadata' => $deposit->getMetadata(),
                 ]
             );
 
@@ -48,13 +45,13 @@ class ProcessStripeDepositWorkflow extends Workflow
             );
 
             // Step 3: Generate transaction ID
-            $transactionId = 'txn_' . uniqid();
+            $transactionId = 'txn_'.uniqid();
 
             // Step 4: Complete the deposit
             yield ActivityStub::make(
                 CompleteDepositActivity::class,
                 [
-                    'deposit_uuid'   => $depositUuid,
+                    'deposit_uuid' => $depositUuid,
                     'transaction_id' => $transactionId,
                 ]
             );
@@ -74,7 +71,7 @@ class ProcessStripeDepositWorkflow extends Workflow
                     FailDepositActivity::class,
                     [
                         'deposit_uuid' => $depositUuid,
-                        'reason'       => $e->getMessage(),
+                        'reason' => $e->getMessage(),
                     ]
                 );
             }

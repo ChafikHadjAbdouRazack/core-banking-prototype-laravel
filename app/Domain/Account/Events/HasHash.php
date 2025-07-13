@@ -6,8 +6,5 @@ use App\Domain\Account\DataObjects\Hash;
 
 interface HasHash
 {
-    /**
-     * @return Hash
-     */
     public function getHash(): Hash;
 }

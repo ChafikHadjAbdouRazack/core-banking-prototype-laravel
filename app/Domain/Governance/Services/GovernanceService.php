@@ -30,8 +30,8 @@ class GovernanceService
     private function registerVotingStrategies(): void
     {
         $this->votingStrategies = [
-            'one_user_one_vote'   => new OneUserOneVoteStrategy(),
-            'asset_weighted_vote' => new AssetWeightedVoteStrategy(),
+            'one_user_one_vote' => new OneUserOneVoteStrategy,
+            'asset_weighted_vote' => new AssetWeightedVoteStrategy,
         ];
     }
 
@@ -42,18 +42,18 @@ class GovernanceService
         try {
             $poll = Poll::create(
                 [
-                'title'                  => $data['title'],
-                'description'            => $data['description'] ?? null,
-                'type'                   => PollType::from($data['type']),
-                'options'                => $data['options'],
-                'start_date'             => $data['start_date'],
-                'end_date'               => $data['end_date'],
-                'status'                 => PollStatus::from($data['status'] ?? 'draft'),
-                'required_participation' => $data['required_participation'] ?? null,
-                'voting_power_strategy'  => $data['voting_power_strategy'] ?? 'one_user_one_vote',
-                'execution_workflow'     => $data['execution_workflow'] ?? null,
-                'created_by'             => $data['created_by'],
-                'metadata'               => $data['metadata'] ?? [],
+                    'title' => $data['title'],
+                    'description' => $data['description'] ?? null,
+                    'type' => PollType::from($data['type']),
+                    'options' => $data['options'],
+                    'start_date' => $data['start_date'],
+                    'end_date' => $data['end_date'],
+                    'status' => PollStatus::from($data['status'] ?? 'draft'),
+                    'required_participation' => $data['required_participation'] ?? null,
+                    'voting_power_strategy' => $data['voting_power_strategy'] ?? 'one_user_one_vote',
+                    'execution_workflow' => $data['execution_workflow'] ?? null,
+                    'created_by' => $data['created_by'],
+                    'metadata' => $data['metadata'] ?? [],
                 ]
             );
 
@@ -62,7 +62,7 @@ class GovernanceService
             return $poll;
         } catch (\Exception $e) {
             DB::rollBack();
-            throw new RuntimeException('Failed to create poll: ' . $e->getMessage(), 0, $e);
+            throw new RuntimeException('Failed to create poll: '.$e->getMessage(), 0, $e);
         }
     }
 
@@ -112,16 +112,16 @@ class GovernanceService
         try {
             $vote = Vote::create(
                 [
-                'poll_id'          => $poll->id,
-                'user_uuid'        => $user->uuid,
-                'selected_options' => $selectedOptions,
-                'voting_power'     => $votingPower,
-                'voted_at'         => now(),
-                'metadata'         => [
-                    'strategy_used' => $poll->voting_power_strategy,
-                    'user_agent'    => request()->userAgent(),
-                    'ip_address'    => request()->ip(),
-                ],
+                    'poll_id' => $poll->id,
+                    'user_uuid' => $user->uuid,
+                    'selected_options' => $selectedOptions,
+                    'voting_power' => $votingPower,
+                    'voted_at' => now(),
+                    'metadata' => [
+                        'strategy_used' => $poll->voting_power_strategy,
+                        'user_agent' => request()->userAgent(),
+                        'ip_address' => request()->ip(),
+                    ],
                 ]
             );
 
@@ -130,7 +130,7 @@ class GovernanceService
             return $vote;
         } catch (\Exception $e) {
             DB::rollBack();
-            throw new RuntimeException('Failed to cast vote: ' . $e->getMessage(), 0, $e);
+            throw new RuntimeException('Failed to cast vote: '.$e->getMessage(), 0, $e);
         }
     }
 
@@ -151,14 +151,14 @@ class GovernanceService
 
             $poll->update(
                 [
-                'status'   => PollStatus::CLOSED,
-                'metadata' => array_merge(
-                    $poll->metadata ?? [],
-                    [
-                    'results'      => $result->toArray(),
-                    'completed_at' => now()->toISOString(),
-                    ]
-                ),
+                    'status' => PollStatus::CLOSED,
+                    'metadata' => array_merge(
+                        $poll->metadata ?? [],
+                        [
+                            'results' => $result->toArray(),
+                            'completed_at' => now()->toISOString(),
+                        ]
+                    ),
                 ]
             );
 
@@ -172,11 +172,11 @@ class GovernanceService
             return $result;
         } catch (\Exception $e) {
             DB::rollBack();
-            throw new RuntimeException('Failed to complete poll: ' . $e->getMessage(), 0, $e);
+            throw new RuntimeException('Failed to complete poll: '.$e->getMessage(), 0, $e);
         }
     }
 
-    public function cancelPoll(Poll $poll, string $reason = null): bool
+    public function cancelPoll(Poll $poll, ?string $reason = null): bool
     {
         if ($poll->status === PollStatus::CLOSED) {
             throw new InvalidArgumentException('Cannot cancel a completed poll');
@@ -184,14 +184,14 @@ class GovernanceService
 
         return $poll->update(
             [
-            'status'   => PollStatus::CANCELLED,
-            'metadata' => array_merge(
-                $poll->metadata ?? [],
-                [
-                'cancelled_at'        => now()->toISOString(),
-                'cancellation_reason' => $reason,
-                ]
-            ),
+                'status' => PollStatus::CANCELLED,
+                'metadata' => array_merge(
+                    $poll->metadata ?? [],
+                    [
+                        'cancelled_at' => now()->toISOString(),
+                        'cancellation_reason' => $reason,
+                    ]
+                ),
             ]
         );
     }
@@ -242,7 +242,7 @@ class GovernanceService
         return array_values(
             array_map(
                 fn (IVotingPowerStrategy $strategy) => [
-                    'name'        => $strategy->getName(),
+                    'name' => $strategy->getName(),
                     'description' => $strategy->getDescription(),
                 ],
                 $this->votingStrategies
@@ -269,7 +269,7 @@ class GovernanceService
             PollType::SINGLE_CHOICE, PollType::YES_NO => $this->validateSingleChoice($selectedOptions),
             PollType::MULTIPLE_CHOICE => $this->validateMultipleChoice($selectedOptions, count($validOptionIds)),
             PollType::WEIGHTED_CHOICE => $this->validateWeightedChoice($selectedOptions),
-            PollType::RANKED_CHOICE   => $this->validateRankedChoice($selectedOptions, $validOptionIds),
+            PollType::RANKED_CHOICE => $this->validateRankedChoice($selectedOptions, $validOptionIds),
         };
     }
 
@@ -327,10 +327,10 @@ class GovernanceService
         logger()->info(
             'Poll workflow execution requested',
             [
-            'poll_uuid'          => $poll->uuid,
-            'workflow'           => $poll->execution_workflow,
-            'winning_option'     => $result->winningOption,
-            'participation_rate' => $result->participationRate,
+                'poll_uuid' => $poll->uuid,
+                'workflow' => $poll->execution_workflow,
+                'winning_option' => $result->winningOption,
+                'participation_rate' => $result->participationRate,
             ]
         );
 
@@ -343,8 +343,8 @@ class GovernanceService
                 'UpdateConfigurationWorkflow' => app(\App\Domain\Governance\Workflows\UpdateConfigurationWorkflow::class)
                     ->execute($poll, $result),
                 default => [
-                    'success'   => false,
-                    'message'   => "Unknown workflow: {$poll->execution_workflow}",
+                    'success' => false,
+                    'message' => "Unknown workflow: {$poll->execution_workflow}",
                     'poll_uuid' => $poll->uuid,
                 ]
             };
@@ -352,52 +352,52 @@ class GovernanceService
             // Update poll metadata with workflow execution result
             $poll->update(
                 [
-                'metadata' => array_merge(
-                    $poll->metadata ?? [],
-                    [
-                    'workflow_execution' => array_merge(
-                        $workflowResult,
+                    'metadata' => array_merge(
+                        $poll->metadata ?? [],
                         [
-                        'executed_at' => now()->toISOString(),
+                            'workflow_execution' => array_merge(
+                                $workflowResult,
+                                [
+                                    'executed_at' => now()->toISOString(),
+                                ]
+                            ),
                         ]
                     ),
-                    ]
-                ),
                 ]
             );
 
             logger()->info(
                 'Poll workflow execution completed',
                 [
-                'poll_uuid' => $poll->uuid,
-                'workflow'  => $poll->execution_workflow,
-                'result'    => $workflowResult,
+                    'poll_uuid' => $poll->uuid,
+                    'workflow' => $poll->execution_workflow,
+                    'result' => $workflowResult,
                 ]
             );
         } catch (\Exception $e) {
             logger()->error(
                 'Poll workflow execution failed',
                 [
-                'poll_uuid' => $poll->uuid,
-                'workflow'  => $poll->execution_workflow,
-                'error'     => $e->getMessage(),
+                    'poll_uuid' => $poll->uuid,
+                    'workflow' => $poll->execution_workflow,
+                    'error' => $e->getMessage(),
                 ]
             );
 
             // Update poll with failure information
             $poll->update(
                 [
-                'metadata' => array_merge(
-                    $poll->metadata ?? [],
-                    [
-                    'workflow_execution' => [
-                        'success'     => false,
-                        'message'     => 'Workflow execution failed: ' . $e->getMessage(),
-                        'poll_uuid'   => $poll->uuid,
-                        'executed_at' => now()->toISOString(),
-                    ],
-                    ]
-                ),
+                    'metadata' => array_merge(
+                        $poll->metadata ?? [],
+                        [
+                            'workflow_execution' => [
+                                'success' => false,
+                                'message' => 'Workflow execution failed: '.$e->getMessage(),
+                                'poll_uuid' => $poll->uuid,
+                                'executed_at' => now()->toISOString(),
+                            ],
+                        ]
+                    ),
                 ]
             );
         }

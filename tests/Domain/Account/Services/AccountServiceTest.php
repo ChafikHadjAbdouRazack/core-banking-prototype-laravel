@@ -30,7 +30,7 @@ it('can be instantiated from container', function () {
 
 it('can create account with array data', function () {
     $accountData = [
-        'name'      => 'Test Account',
+        'name' => 'Test Account',
         'user_uuid' => 'user-uuid-123',
     ];
 

@@ -16,7 +16,6 @@ class PaymentDepositAggregate extends AggregateRoot
     protected ?string $transactionId = null;
 
     /**
-     * @return PaymentDepositRepository
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
     protected function getStoredEventRepository(): PaymentDepositRepository

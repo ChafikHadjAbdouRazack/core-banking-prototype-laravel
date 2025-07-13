@@ -11,18 +11,10 @@ class MoneySubtracted extends ShouldBeStored implements HasHash, HasMoney
 {
     use HashValidatorProvider;
 
-    /**
-     * @var string
-     */
     public string $queue = EventQueues::TRANSACTIONS->value;
 
-    /**
-     * @param Money $money
-     * @param Hash  $hash
-     */
     public function __construct(
         public readonly Money $money,
         public readonly Hash $hash
-    ) {
-    }
+    ) {}
 }

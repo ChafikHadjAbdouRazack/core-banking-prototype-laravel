@@ -11,6 +11,5 @@ class WalletUnfrozen extends ShouldBeStored
         public readonly string $walletId,
         public readonly string $unfrozenBy,
         public readonly Carbon $unfrozenAt
-    ) {
-    }
+    ) {}
 }

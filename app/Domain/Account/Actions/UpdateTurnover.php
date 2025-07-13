@@ -11,14 +11,8 @@ class UpdateTurnover
 {
     public function __construct(
         protected TurnoverRepository $turnoverRepository,
-    ) {
-    }
+    ) {}
 
-    /**
-     * @param HasMoney $event
-     *
-     * @return void
-     */
     public function __invoke(HasMoney $event): void
     {
         $amount = $event instanceof MoneySubtracted

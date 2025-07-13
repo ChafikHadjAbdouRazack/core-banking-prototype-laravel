@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Domain\Lending\ValueObjects;
 
+use App\Domain\Lending\ValueObjects\RiskRating;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 

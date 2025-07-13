@@ -35,8 +35,8 @@ class PolygonConnector extends EthereumConnector
             metadata: array_merge(
                 $addressData->metadata,
                 [
-                'chain'   => 'polygon',
-                'chainId' => $this->chainId,
+                    'chain' => 'polygon',
+                    'chainId' => $this->chainId,
                 ]
             )
         );
@@ -63,7 +63,7 @@ class PolygonConnector extends EthereumConnector
             $this->web3->eth->gasPrice(
                 function ($err, $price) use (&$gasPrice) {
                     if ($err !== null) {
-                        throw new \Exception('Failed to get gas price: ' . $err->getMessage());
+                        throw new \Exception('Failed to get gas price: '.$err->getMessage());
                     }
                     $gasPrice = $price;
                 }
@@ -89,7 +89,7 @@ class PolygonConnector extends EthereumConnector
         $this->web3->eth->blockNumber(
             function ($err, $number) use (&$blockNumber) {
                 if ($err !== null) {
-                    throw new \Exception('Failed to get block number: ' . $err->getMessage());
+                    throw new \Exception('Failed to get block number: '.$err->getMessage());
                 }
                 $blockNumber = hexdec($number->toString());
             }

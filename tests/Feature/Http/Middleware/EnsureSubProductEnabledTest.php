@@ -64,7 +64,7 @@ class EnsureSubProductEnabledTest extends TestCase
 
         $response->assertStatus(403)
             ->assertJson([
-                'error'   => 'Feature not available',
+                'error' => 'Feature not available',
                 'message' => 'The exchange sub-product is not enabled',
             ]);
     }
@@ -95,7 +95,7 @@ class EnsureSubProductEnabledTest extends TestCase
 
         $response->assertStatus(403)
             ->assertJson([
-                'error'   => 'Feature not available',
+                'error' => 'Feature not available',
                 'message' => 'The feature p2p is not enabled for sub-product lending',
             ]);
     }
@@ -136,7 +136,7 @@ class EnsureSubProductEnabledTest extends TestCase
 
         $response->assertStatus(403)
             ->assertJson([
-                'error'   => 'Feature not available',
+                'error' => 'Feature not available',
                 'message' => 'None of the required features [p2p, institutional] are enabled for sub-product lending',
             ]);
     }
@@ -152,7 +152,7 @@ class EnsureSubProductEnabledTest extends TestCase
 
         $response->assertStatus(500)
             ->assertJson([
-                'error'   => 'Configuration error',
+                'error' => 'Configuration error',
                 'message' => 'Sub-product parameter is required',
             ]);
     }
@@ -173,7 +173,7 @@ class EnsureSubProductEnabledTest extends TestCase
 
         $response->assertStatus(403)
             ->assertJson([
-                'error'   => 'Feature not available',
+                'error' => 'Feature not available',
                 'message' => 'The non_existent sub-product is not enabled',
             ]);
     }
@@ -238,7 +238,7 @@ class EnsureSubProductEnabledTest extends TestCase
 
         $response->assertStatus(403)
             ->assertJson([
-                'error'   => 'Feature not available',
+                'error' => 'Feature not available',
                 'message' => 'The exchange sub-product is not enabled',
             ]);
     }

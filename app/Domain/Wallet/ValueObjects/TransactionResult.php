@@ -12,20 +12,19 @@ class TransactionResult
         public readonly ?string $effectiveGasPrice = null,
         public readonly ?array $logs = null,
         public readonly array $metadata = []
-    ) {
-    }
+    ) {}
 
     public function toArray(): array
     {
         return array_filter(
             [
-            'hash'                => $this->hash,
-            'status'              => $this->status,
-            'block_number'        => $this->blockNumber,
-            'gas_used'            => $this->gasUsed,
-            'effective_gas_price' => $this->effectiveGasPrice,
-            'logs'                => $this->logs,
-            'metadata'            => $this->metadata,
+                'hash' => $this->hash,
+                'status' => $this->status,
+                'block_number' => $this->blockNumber,
+                'gas_used' => $this->gasUsed,
+                'effective_gas_price' => $this->effectiveGasPrice,
+                'logs' => $this->logs,
+                'metadata' => $this->metadata,
             ],
             fn ($value) => $value !== null
         );

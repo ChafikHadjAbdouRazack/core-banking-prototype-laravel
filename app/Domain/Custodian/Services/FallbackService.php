@@ -36,10 +36,10 @@ class FallbackService
             Log::info(
                 'Using cached balance for fallback',
                 [
-                'custodian' => $custodian,
-                'account'   => $accountId,
-                'asset'     => $assetCode,
-                'balance'   => $cachedBalance,
+                    'custodian' => $custodian,
+                    'account' => $accountId,
+                    'asset' => $assetCode,
+                    'balance' => $cachedBalance,
                 ]
             );
 
@@ -55,11 +55,11 @@ class FallbackService
             Log::info(
                 'Using database balance for fallback',
                 [
-                'custodian'   => $custodian,
-                'account'     => $accountId,
-                'asset'       => $assetCode,
-                'balance'     => $custodianAccount->last_known_balance,
-                'last_synced' => $custodianAccount->last_synced_at,
+                    'custodian' => $custodian,
+                    'account' => $accountId,
+                    'asset' => $assetCode,
+                    'balance' => $custodianAccount->last_known_balance,
+                    'last_synced' => $custodianAccount->last_synced_at,
                 ]
             );
 
@@ -87,8 +87,8 @@ class FallbackService
         if ($custodianAccount) {
             $custodianAccount->update(
                 [
-                'last_known_balance' => $balance->getAmount(),
-                'last_synced_at'     => now(),
+                    'last_known_balance' => $balance->getAmount(),
+                    'last_synced_at' => now(),
                 ]
             );
         }
@@ -106,8 +106,8 @@ class FallbackService
             Log::info(
                 'Using cached account info for fallback',
                 [
-                'custodian' => $custodian,
-                'account'   => $accountId,
+                    'custodian' => $custodian,
+                    'account' => $accountId,
                 ]
             );
 
@@ -138,9 +138,9 @@ class FallbackService
             Log::info(
                 'Using database transfer status for fallback',
                 [
-                'custodian' => $custodian,
-                'transfer'  => $transferId,
-                'status'    => $transfer->status,
+                    'custodian' => $custodian,
+                    'transfer' => $transferId,
+                    'status' => $transfer->status,
                 ]
             );
 
@@ -181,35 +181,35 @@ class FallbackService
         $toCustodianAccountId = 2;
 
         // Create a pending transfer record
-        $transferId = 'QUEUED_' . \Str::uuid()->toString();
+        $transferId = 'QUEUED_'.\Str::uuid()->toString();
         $transfer = CustodianTransfer::create(
             [
-            'id'                        => $transferId,
-            'from_account_uuid'         => $fromAccount,
-            'to_account_uuid'           => $toAccount,
-            'from_custodian_account_id' => $fromCustodianAccountId,
-            'to_custodian_account_id'   => $toCustodianAccountId,
-            'amount'                    => $amount->getAmount(),
-            'asset_code'                => $assetCode,
-            'reference'                 => $reference,
-            'status'                    => 'pending',
-            'transfer_type'             => 'external',
-            'metadata'                  => [
-                'queued_at'   => now()->toIso8601String(),
-                'reason'      => 'Custodian unavailable',
-                'custodian'   => $custodian,
-                'description' => $description,
-            ],
+                'id' => $transferId,
+                'from_account_uuid' => $fromAccount,
+                'to_account_uuid' => $toAccount,
+                'from_custodian_account_id' => $fromCustodianAccountId,
+                'to_custodian_account_id' => $toCustodianAccountId,
+                'amount' => $amount->getAmount(),
+                'asset_code' => $assetCode,
+                'reference' => $reference,
+                'status' => 'pending',
+                'transfer_type' => 'external',
+                'metadata' => [
+                    'queued_at' => now()->toIso8601String(),
+                    'reason' => 'Custodian unavailable',
+                    'custodian' => $custodian,
+                    'description' => $description,
+                ],
             ]
         );
 
         Log::warning(
             'Transfer queued for retry',
             [
-            'custodian'   => $custodian,
-            'transfer_id' => $transfer->id,
-            'amount'      => $amount->getAmount(),
-            'asset'       => $assetCode,
+                'custodian' => $custodian,
+                'transfer_id' => $transfer->id,
+                'amount' => $amount->getAmount(),
+                'asset' => $assetCode,
             ]
         );
 
@@ -226,9 +226,9 @@ class FallbackService
             createdAt: now(),
             completedAt: null,
             metadata: [
-                'queued'      => true,
+                'queued' => true,
                 'retry_after' => now()->addMinutes(5)->toIso8601String(),
-                'custodian'   => $custodian,
+                'custodian' => $custodian,
             ]
         );
     }
@@ -241,9 +241,9 @@ class FallbackService
         // This would be configured based on business rules
         // For now, simple hardcoded fallback routing
         $fallbackRoutes = [
-            'paysera'       => ['deutsche_bank', 'santander'],
+            'paysera' => ['deutsche_bank', 'santander'],
             'deutsche_bank' => ['santander', 'paysera'],
-            'santander'     => ['paysera', 'deutsche_bank'],
+            'santander' => ['paysera', 'deutsche_bank'],
         ];
 
         $alternatives = $fallbackRoutes[strtolower($failedCustodian)] ?? [];
@@ -258,9 +258,9 @@ class FallbackService
                     Log::info(
                         'Found alternative custodian',
                         [
-                        'failed'      => $failedCustodian,
-                        'alternative' => $alternative,
-                        'asset'       => $assetCode,
+                            'failed' => $failedCustodian,
+                            'alternative' => $alternative,
+                            'asset' => $assetCode,
                         ]
                     );
 

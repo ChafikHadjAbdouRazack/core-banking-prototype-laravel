@@ -40,11 +40,11 @@ class EthereumConnector implements BlockchainConnector
         // Get the Ethereum address from public key
         $publicKeyBin = hex2bin($publicKey);
         $addressBin = substr(Keccak::hash($publicKeyBin, 256, true), -20);
-        $address = '0x' . bin2hex($addressBin);
+        $address = '0x'.bin2hex($addressBin);
 
         return new AddressData(
             address: $address,
-            publicKey: '0x' . $publicKey,
+            publicKey: '0x'.$publicKey,
             chain: 'ethereum',
             metadata: ['chain_id' => $this->chainId]
         );
@@ -59,7 +59,7 @@ class EthereumConnector implements BlockchainConnector
             $address,
             function ($err, $result) use (&$balance) {
                 if ($err !== null) {
-                    throw new \Exception('Failed to get balance: ' . $err->getMessage());
+                    throw new \Exception('Failed to get balance: '.$err->getMessage());
                 }
                 $balance = $result->toString();
             }
@@ -69,7 +69,7 @@ class EthereumConnector implements BlockchainConnector
             $address,
             function ($err, $result) use (&$nonce) {
                 if ($err !== null) {
-                    Log::warning('Failed to get nonce: ' . $err->getMessage());
+                    Log::warning('Failed to get nonce: '.$err->getMessage());
                 } else {
                     $nonce = hexdec($result);
                 }
@@ -102,9 +102,9 @@ class EthereumConnector implements BlockchainConnector
 
         // Estimate gas limit
         $txParams = [
-            'from'  => $transaction->from,
-            'to'    => $transaction->to,
-            'value' => '0x' . dechex($transaction->value),
+            'from' => $transaction->from,
+            'to' => $transaction->to,
+            'value' => '0x'.dechex($transaction->value),
         ];
 
         if ($transaction->data) {
@@ -160,7 +160,7 @@ class EthereumConnector implements BlockchainConnector
             $transaction->rawTransaction,
             function ($err, $result) use (&$hash) {
                 if ($err !== null) {
-                    throw new \Exception('Failed to broadcast transaction: ' . $err->getMessage());
+                    throw new \Exception('Failed to broadcast transaction: '.$err->getMessage());
                 }
                 $hash = $result;
             }
@@ -170,7 +170,7 @@ class EthereumConnector implements BlockchainConnector
             hash: $hash,
             status: 'pending',
             metadata: [
-                'chain_id'     => $this->chainId,
+                'chain_id' => $this->chainId,
                 'submitted_at' => now()->toIso8601String(),
             ]
         );
@@ -236,7 +236,7 @@ class EthereumConnector implements BlockchainConnector
         $this->web3->eth->gasPrice(
             function ($err, $result) use (&$gasPrice) {
                 if ($err !== null) {
-                    throw new \Exception('Failed to get gas price: ' . $err->getMessage());
+                    throw new \Exception('Failed to get gas price: '.$err->getMessage());
                 }
                 $gasPrice = $result->toString();
             }
@@ -249,17 +249,17 @@ class EthereumConnector implements BlockchainConnector
         $instant = bcmul($gasPrice, '1.5');
 
         return [
-            'slow'     => $slow,
+            'slow' => $slow,
             'standard' => $standard,
-            'fast'     => $fast,
-            'instant'  => $instant,
-            'eip1559'  => [
-                'base_fee'      => $gasPrice,
+            'fast' => $fast,
+            'instant' => $instant,
+            'eip1559' => [
+                'base_fee' => $gasPrice,
                 'priority_fees' => [
-                    'slow'     => '1000000000', // 1 gwei
+                    'slow' => '1000000000', // 1 gwei
                     'standard' => '2000000000', // 2 gwei
-                    'fast'     => '3000000000', // 3 gwei
-                    'instant'  => '5000000000', // 5 gwei
+                    'fast' => '3000000000', // 3 gwei
+                    'instant' => '5000000000', // 5 gwei
                 ],
             ],
         ];
@@ -303,7 +303,7 @@ class EthereumConnector implements BlockchainConnector
             // If not syncing (false) or synced, consider healthy
             return $syncing === false || (is_object($syncing) && $syncing->currentBlock === $syncing->highestBlock);
         } catch (\Exception $e) {
-            Log::error('Ethereum connector health check failed: ' . $e->getMessage());
+            Log::error('Ethereum connector health check failed: '.$e->getMessage());
 
             return false;
         }
@@ -317,7 +317,7 @@ class EthereumConnector implements BlockchainConnector
             $hash,
             function ($err, $result) use (&$receipt) {
                 if ($err !== null) {
-                    throw new \Exception('Failed to get transaction receipt: ' . $err->getMessage());
+                    throw new \Exception('Failed to get transaction receipt: '.$err->getMessage());
                 }
                 $receipt = $result;
             }
@@ -353,10 +353,10 @@ class EthereumConnector implements BlockchainConnector
             hash: $hash,
             status: $status,
             metadata: [
-                'chain_id'            => $this->chainId,
-                'confirmations'       => $confirmations,
-                'block_number'        => hexdec($receipt->blockNumber ?? '0'),
-                'gas_used'            => hexdec($receipt->gasUsed ?? '0'),
+                'chain_id' => $this->chainId,
+                'confirmations' => $confirmations,
+                'block_number' => hexdec($receipt->blockNumber ?? '0'),
+                'gas_used' => hexdec($receipt->gasUsed ?? '0'),
                 'effective_gas_price' => $receipt->effectiveGasPrice ?? null,
             ]
         );

@@ -137,18 +137,18 @@ class CryptographySecurityTest extends TestCase
     public function test_sensitive_data_not_logged()
     {
         $sensitiveData = [
-            'password'    => 'MyPassword123!',
+            'password' => 'MyPassword123!',
             'credit_card' => '4111111111111111',
-            'ssn'         => '123-45-6789',
-            'api_key'     => 'secret-api-key',
+            'ssn' => '123-45-6789',
+            'api_key' => 'secret-api-key',
         ];
 
         // Attempt to create user with sensitive data
         try {
             // Only use fields that exist in the users table
             $userData = [
-                'name'     => 'Test User',
-                'email'    => 'test@example.com',
+                'name' => 'Test User',
+                'email' => 'test@example.com',
                 'password' => $sensitiveData['password'],
             ];
 
@@ -217,9 +217,9 @@ class CryptographySecurityTest extends TestCase
         // Verify SHA3-512 is used for transaction hashing
         $transactionData = [
             'account_id' => 'acc-123',
-            'amount'     => 10000,
-            'timestamp'  => now()->toIso8601String(),
-            'nonce'      => bin2hex(random_bytes(16)),
+            'amount' => 10000,
+            'timestamp' => now()->toIso8601String(),
+            'nonce' => bin2hex(random_bytes(16)),
         ];
 
         $jsonData = json_encode($transactionData);
@@ -264,7 +264,7 @@ class CryptographySecurityTest extends TestCase
     public function test_secure_session_configuration()
     {
         $response = $this->post('/login', [
-            'email'    => $this->user->email,
+            'email' => $this->user->email,
             'password' => 'password',
         ]);
 
@@ -335,7 +335,7 @@ class CryptographySecurityTest extends TestCase
         $filename = 'test-document.pdf';
 
         // Store encrypted
-        $path = 'encrypted/' . $filename;
+        $path = 'encrypted/'.$filename;
         \Storage::put($path, Crypt::encryptString($content));
 
         // Verify it's encrypted on disk

@@ -14,6 +14,5 @@ class LoanRepaymentMade extends ShouldBeStored
         public string $interestAmount,
         public string $remainingBalance,
         public \DateTimeImmutable $paidAt
-    ) {
-    }
+    ) {}
 }

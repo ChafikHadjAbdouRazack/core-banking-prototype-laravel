@@ -12,7 +12,7 @@ it('has create method', function () {
 });
 
 it('can be instantiated', function () {
-    expect(new CreateNewUser())->toBeInstanceOf(CreateNewUser::class);
+    expect(new CreateNewUser)->toBeInstanceOf(CreateNewUser::class);
 });
 
 it('has correct method signature', function () {

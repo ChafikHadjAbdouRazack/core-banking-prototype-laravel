@@ -29,8 +29,8 @@ class FraudCaseUpdated
             'fraud',
             'fraud_case',
             'case_updated',
-            'case:' . $this->fraudCase->case_number,
-            'status:' . $this->fraudCase->status,
+            'case:'.$this->fraudCase->case_number,
+            'status:'.$this->fraudCase->status,
         ];
     }
 }

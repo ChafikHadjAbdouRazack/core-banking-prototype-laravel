@@ -15,6 +15,5 @@ class ScreeningCompleted
 
     public function __construct(
         public readonly AmlScreening $screening
-    ) {
-    }
+    ) {}
 }

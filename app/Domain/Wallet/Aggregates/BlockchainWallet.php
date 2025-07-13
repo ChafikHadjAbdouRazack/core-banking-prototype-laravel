@@ -91,11 +91,11 @@ class BlockchainWallet extends AggregateRoot
     {
         $allowedSettings = [
             'withdrawal_whitelist' => 'array',
-            'daily_limit'          => 'numeric',
-            'requires_2fa'         => 'boolean',
-            'auto_convert'         => 'boolean',
-            'notification_email'   => 'string',
-            'webhook_url'          => 'string',
+            'daily_limit' => 'numeric',
+            'requires_2fa' => 'boolean',
+            'auto_convert' => 'boolean',
+            'notification_email' => 'string',
+            'webhook_url' => 'string',
         ];
 
         foreach ($settings as $key => $value) {
@@ -224,10 +224,10 @@ class BlockchainWallet extends AggregateRoot
         }
 
         $this->addresses[$event->chain][] = [
-            'address'         => $event->address,
+            'address' => $event->address,
             'derivation_path' => $event->derivationPath,
-            'label'           => $event->label,
-            'created_at'      => now()->toDateTimeString(),
+            'label' => $event->label,
+            'created_at' => now()->toDateTimeString(),
         ];
 
         $this->publicKeys[$event->chain] = $event->publicKey;
@@ -262,8 +262,8 @@ class BlockchainWallet extends AggregateRoot
     protected function applyWalletBackupCreated(WalletBackupCreated $event): void
     {
         $this->metadata['last_backup'] = [
-            'backup_id'  => $event->backupId,
-            'method'     => $event->backupMethod,
+            'backup_id' => $event->backupId,
+            'method' => $event->backupMethod,
             'created_by' => $event->createdBy,
             'created_at' => $event->createdAt->toDateTimeString(),
         ];
@@ -290,7 +290,7 @@ class BlockchainWallet extends AggregateRoot
         return $this->status;
     }
 
-    public function getAddresses(string $chain = null): array
+    public function getAddresses(?string $chain = null): array
     {
         if ($chain) {
             return $this->addresses[$chain] ?? [];

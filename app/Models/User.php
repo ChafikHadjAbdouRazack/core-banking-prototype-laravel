@@ -9,6 +9,7 @@ use Filament\Panel;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Cashier\Billable;
@@ -243,5 +244,20 @@ class User extends Authenticatable implements FilamentUser
     public function apiKeys(): HasMany
     {
         return $this->hasMany(ApiKey::class, 'user_uuid', 'uuid');
+    }
+
+    /**
+     * Get all transactions for the user through their accounts.
+     */
+    public function transactions(): HasManyThrough
+    {
+        return $this->hasManyThrough(
+            Transaction::class,
+            Account::class,
+            'user_uuid', // Foreign key on accounts table
+            'aggregate_uuid', // Foreign key on transactions table
+            'uuid', // Local key on users table
+            'uuid' // Local key on accounts table
+        );
     }
 }

@@ -35,7 +35,7 @@ class StablecoinOperationsControllerTest extends ControllerTestCase
         // Create account for admin user
         $this->account = Account::factory()->create([
             'user_uuid' => $this->adminUser->uuid,
-            'status'    => 'active',
+            'status' => 'active',
         ]);
     }
 
@@ -98,7 +98,7 @@ class StablecoinOperationsControllerTest extends ControllerTestCase
         $response = $this->actingAs($this->adminUser)
             ->post(route('stablecoin-operations.mint.process'), [
                 'stablecoin' => 'INVALID',
-                'amount'     => -100,
+                'amount' => -100,
             ]);
 
         $response->assertSessionHasErrors(['stablecoin', 'amount']);
@@ -110,7 +110,7 @@ class StablecoinOperationsControllerTest extends ControllerTestCase
         $response = $this->actingAs($this->adminUser)
             ->post(route('stablecoin-operations.burn.process'), [
                 'stablecoin' => 'INVALID',
-                'amount'     => -100,
+                'amount' => -100,
             ]);
 
         $response->assertSessionHasErrors(['stablecoin', 'amount']);

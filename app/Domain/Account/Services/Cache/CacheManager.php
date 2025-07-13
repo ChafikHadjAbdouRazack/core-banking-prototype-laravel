@@ -14,8 +14,7 @@ class CacheManager
         private readonly AccountCacheService $accountCache,
         private readonly TransactionCacheService $transactionCache,
         private readonly TurnoverCacheService $turnoverCache
-    ) {
-    }
+    ) {}
 
     /**
      * Handle account update event.

@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Domain\Lending\Events;
 
+use App\Domain\Lending\Events\LoanApplicationSubmitted;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\DomainTestCase;
 

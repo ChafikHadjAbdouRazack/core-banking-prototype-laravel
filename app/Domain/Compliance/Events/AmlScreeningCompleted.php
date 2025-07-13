@@ -15,13 +15,9 @@ class AmlScreeningCompleted extends ShouldBeStored
 {
     /**
      * Create new AML screening completed event.
-     *
-     * @param string $finalStatus
-     * @param float|null $processingTime
      */
     public function __construct(
         public string $finalStatus,
         public ?float $processingTime = null
-    ) {
-    }
+    ) {}
 }

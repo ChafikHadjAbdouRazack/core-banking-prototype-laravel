@@ -16,6 +16,5 @@ class KycVerificationFailed
     public function __construct(
         public readonly KycVerification $verification,
         public readonly string $reason
-    ) {
-    }
+    ) {}
 }

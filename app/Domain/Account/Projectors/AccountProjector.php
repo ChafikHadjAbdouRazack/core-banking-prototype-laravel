@@ -20,21 +20,11 @@ use Spatie\EventSourcing\EventHandlers\Projectors\Projector;
 
 class AccountProjector extends Projector implements ShouldQueue
 {
-    /**
-     * @param AccountCreated $event
-     *
-     * @return void
-     */
     public function onAccountCreated(AccountCreated $event): void
     {
         app(CreateAccount::class)($event);
     }
 
-    /**
-     * @param AssetBalanceAdded $event
-     *
-     * @return void
-     */
     public function onAssetBalanceAdded(AssetBalanceAdded $event): void
     {
         app(CreditAccount::class)($event);
@@ -45,11 +35,6 @@ class AccountProjector extends Projector implements ShouldQueue
         }
     }
 
-    /**
-     * @param AssetBalanceSubtracted $event
-     *
-     * @return void
-     */
     public function onAssetBalanceSubtracted(AssetBalanceSubtracted $event): void
     {
         app(DebitAccount::class)($event);
@@ -60,11 +45,6 @@ class AccountProjector extends Projector implements ShouldQueue
         }
     }
 
-    /**
-     * @param AccountDeleted $event
-     *
-     * @return void
-     */
     public function onAccountDeleted(AccountDeleted $event): void
     {
         app(DeleteAccount::class)($event);
@@ -73,21 +53,11 @@ class AccountProjector extends Projector implements ShouldQueue
         app(CacheManager::class)->onAccountDeleted($event->aggregateRootUuid());
     }
 
-    /**
-     * @param AccountFrozen $event
-     *
-     * @return void
-     */
     public function onAccountFrozen(AccountFrozen $event): void
     {
         app(FreezeAccount::class)($event);
     }
 
-    /**
-     * @param AccountUnfrozen $event
-     *
-     * @return void
-     */
     public function onAccountUnfrozen(AccountUnfrozen $event): void
     {
         app(UnfreezeAccount::class)($event);

@@ -15,8 +15,7 @@ class CustodianAccountService
 {
     public function __construct(
         private readonly CustodianRegistry $custodianRegistry
-    ) {
-    }
+    ) {}
 
     /**
      * Link an internal account to a custodian account.
@@ -43,12 +42,12 @@ class CustodianAccountService
             function () use ($account, $custodianName, $custodianAccountId, $accountInfo, $metadata, $isPrimary) {
                 $custodianAccount = CustodianAccount::create(
                     [
-                    'account_uuid'           => $account->uuid,
-                    'custodian_name'         => $custodianName,
-                    'custodian_account_id'   => $custodianAccountId,
-                    'custodian_account_name' => $accountInfo->name,
-                    'status'                 => $accountInfo->status,
-                    'metadata'               => array_merge($accountInfo->metadata, $metadata),
+                        'account_uuid' => $account->uuid,
+                        'custodian_name' => $custodianName,
+                        'custodian_account_id' => $custodianAccountId,
+                        'custodian_account_name' => $accountInfo->name,
+                        'status' => $accountInfo->status,
+                        'metadata' => array_merge($accountInfo->metadata, $metadata),
                     ]
                 );
 
@@ -59,9 +58,9 @@ class CustodianAccountService
                 Log::info(
                     'Linked custodian account',
                     [
-                    'account_uuid'      => $account->uuid,
-                    'custodian'         => $custodianName,
-                    'custodian_account' => $custodianAccountId,
+                        'account_uuid' => $account->uuid,
+                        'custodian' => $custodianName,
+                        'custodian_account' => $custodianAccountId,
                     ]
                 );
 
@@ -80,9 +79,9 @@ class CustodianAccountService
                 // If this was primary, make another one primary
                 if ($custodianAccount->is_primary) {
                     $nextPrimary = CustodianAccount::where('account_uuid', $custodianAccount->account_uuid)
-                    ->where('id', '!=', $custodianAccount->id)
-                    ->where('status', 'active')
-                    ->first();
+                        ->where('id', '!=', $custodianAccount->id)
+                        ->where('status', 'active')
+                        ->first();
 
                     if ($nextPrimary) {
                         $nextPrimary->setAsPrimary();
@@ -94,8 +93,8 @@ class CustodianAccountService
                 Log::info(
                     'Unlinked custodian account',
                     [
-                    'custodian_account_id' => $custodianAccount->id,
-                    'account_uuid'         => $custodianAccount->account_uuid,
+                        'custodian_account_id' => $custodianAccount->id,
+                        'account_uuid' => $custodianAccount->account_uuid,
                     ]
                 );
             }
@@ -155,11 +154,11 @@ class CustodianAccountService
         Log::info(
             'Initiated custodian transfer',
             [
-            'transaction_id' => $receipt->id,
-            'from_account'   => $fromAccount->custodian_account_id,
-            'to_account'     => $toAccount->custodian_account_id,
-            'amount'         => $amount->getAmount(),
-            'asset'          => $assetCode,
+                'transaction_id' => $receipt->id,
+                'from_account' => $fromAccount->custodian_account_id,
+                'to_account' => $toAccount->custodian_account_id,
+                'amount' => $amount->getAmount(),
+                'asset' => $assetCode,
             ]
         );
 
@@ -189,25 +188,25 @@ class CustodianAccountService
 
             $custodianAccount->update(
                 [
-                'status'                 => $accountInfo->status,
-                'custodian_account_name' => $accountInfo->name,
-                'metadata'               => array_merge($custodianAccount->metadata ?? [], $accountInfo->metadata),
+                    'status' => $accountInfo->status,
+                    'custodian_account_name' => $accountInfo->name,
+                    'metadata' => array_merge($custodianAccount->metadata ?? [], $accountInfo->metadata),
                 ]
             );
 
             Log::info(
                 'Synced custodian account status',
                 [
-                'custodian_account_id' => $custodianAccount->id,
-                'new_status'           => $accountInfo->status,
+                    'custodian_account_id' => $custodianAccount->id,
+                    'new_status' => $accountInfo->status,
                 ]
             );
         } catch (\Exception $e) {
             Log::error(
                 'Failed to sync custodian account status',
                 [
-                'custodian_account_id' => $custodianAccount->id,
-                'error'                => $e->getMessage(),
+                    'custodian_account_id' => $custodianAccount->id,
+                    'error' => $e->getMessage(),
                 ]
             );
 

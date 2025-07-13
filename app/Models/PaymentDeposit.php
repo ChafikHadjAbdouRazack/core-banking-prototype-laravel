@@ -2,9 +2,13 @@
 
 namespace App\Models;
 
-use Spatie\EventSourcing\StoredEvents\Models\EloquentStoredEvent;
+use App\Domain\Payment\Models\PaymentDeposit as BasePaymentDeposit;
 
-class PaymentDeposit extends EloquentStoredEvent
+/**
+ * @deprecated Use App\Domain\Payment\Models\PaymentDeposit instead
+ */
+class PaymentDeposit extends BasePaymentDeposit
 {
-    public $table = 'payment_deposits';
+    // This is a facade/proxy class for backward compatibility
+    // All functionality is inherited from the domain model
 }

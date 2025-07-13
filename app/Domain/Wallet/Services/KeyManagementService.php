@@ -25,9 +25,9 @@ class KeyManagementService implements KeyManagementServiceInterface
     // BIP44 derivation paths
     private const DERIVATION_PATHS = [
         'ethereum' => "m/44'/60'/0'/0",
-        'bitcoin'  => "m/44'/0'/0'/0",
-        'polygon'  => "m/44'/966'/0'/0",
-        'bsc'      => "m/44'/60'/0'/0", // Same as Ethereum
+        'bitcoin' => "m/44'/0'/0'/0",
+        'polygon' => "m/44'/966'/0'/0",
+        'bsc' => "m/44'/60'/0'/0", // Same as Ethereum
     ];
 
     /**
@@ -44,7 +44,7 @@ class KeyManagementService implements KeyManagementServiceInterface
     /**
      * Generate a new mnemonic phrase with specific word count.
      *
-     * @param  int $wordCount Number of words (12 or 24)
+     * @param  int  $wordCount  Number of words (12 or 24)
      * @return string Generated mnemonic phrase
      */
     public function generateMnemonicWithWordCount(int $wordCount = 12): string
@@ -104,14 +104,14 @@ class KeyManagementService implements KeyManagementServiceInterface
     /**
      * Generate HD wallet from mnemonic.
      *
-     * @param  string      $mnemonic   Mnemonic phrase
-     * @param  string|null $passphrase Optional passphrase
+     * @param  string  $mnemonic  Mnemonic phrase
+     * @param  string|null  $passphrase  Optional passphrase
      * @return array Wallet data with keys and encrypted seed
      */
     public function generateHDWallet(string $mnemonic, ?string $passphrase = null): array
     {
         // Generate seed from mnemonic (simplified version)
-        $seed = hash_pbkdf2('sha512', $mnemonic, 'mnemonic' . ($passphrase ?? ''), 2048, 64);
+        $seed = hash_pbkdf2('sha512', $mnemonic, 'mnemonic'.($passphrase ?? ''), 2048, 64);
 
         // Generate master key from seed
         $masterPrivateKey = substr($seed, 0, 32);
@@ -129,16 +129,16 @@ class KeyManagementService implements KeyManagementServiceInterface
         return [
             'master_public_key' => $publicKey,
             'master_chain_code' => bin2hex($chainCode),
-            'encrypted_seed'    => $this->encryptSeed(bin2hex($seed), 'default'),
+            'encrypted_seed' => $this->encryptSeed(bin2hex($seed), 'default'),
         ];
     }
 
     /**
      * Derive key pair for a specific blockchain chain.
      *
-     * @param  string $encryptedSeed Encrypted seed
-     * @param  string $chain         Blockchain chain name
-     * @param  int    $index         Derivation index
+     * @param  string  $encryptedSeed  Encrypted seed
+     * @param  string  $chain  Blockchain chain name
+     * @param  int  $index  Derivation index
      * @return array Key pair data
      */
     public function deriveKeyPairForChain(string $encryptedSeed, string $chain, int $index = 0): array
@@ -147,10 +147,10 @@ class KeyManagementService implements KeyManagementServiceInterface
 
         // Simplified key derivation (not BIP32 compliant, but functional for testing)
         $path = self::DERIVATION_PATHS[$chain] ?? self::DERIVATION_PATHS['ethereum'];
-        $derivationPath = $path . '/' . $index;
+        $derivationPath = $path.'/'.$index;
 
         // Derive private key from seed + path
-        $privateKey = hash('sha256', $seed . $derivationPath);
+        $privateKey = hash('sha256', $seed.$derivationPath);
 
         if (in_array($chain, ['ethereum', 'polygon', 'bsc'])) {
             // For Ethereum-based chains
@@ -159,21 +159,21 @@ class KeyManagementService implements KeyManagementServiceInterface
                 $publicKey = $keyPair->getPublic('hex');
             } else {
                 // Fallback
-                $publicKey = '04' . bin2hex(random_bytes(64));
+                $publicKey = '04'.bin2hex(random_bytes(64));
             }
 
             return [
-                'private_key'     => $privateKey,
-                'public_key'      => $publicKey,
-                'address'         => $this->getEthereumAddress($publicKey),
+                'private_key' => $privateKey,
+                'public_key' => $publicKey,
+                'address' => $this->getEthereumAddress($publicKey),
                 'derivation_path' => $derivationPath,
             ];
         } else {
             // For Bitcoin (simplified)
             return [
-                'private_key'     => $privateKey,
-                'public_key'      => '04' . bin2hex(random_bytes(64)),
-                'address'         => '1' . substr(hash('sha256', $privateKey), 0, 33),
+                'private_key' => $privateKey,
+                'public_key' => '04'.bin2hex(random_bytes(64)),
+                'address' => '1'.substr(hash('sha256', $privateKey), 0, 33),
                 'derivation_path' => $derivationPath,
             ];
         }
@@ -191,7 +191,7 @@ class KeyManagementService implements KeyManagementServiceInterface
 
         $hash = Keccak::hash(hex2bin($publicKey), 256);
 
-        return '0x' . substr($hash, -40);
+        return '0x'.substr($hash, -40);
     }
 
     /**
@@ -215,7 +215,7 @@ class KeyManagementService implements KeyManagementServiceInterface
     {
         // Implementation would use web3.php or similar library
         // This is a placeholder
-        return '0x' . bin2hex(random_bytes(32));
+        return '0x'.bin2hex(random_bytes(32));
     }
 
     /**
@@ -234,7 +234,7 @@ class KeyManagementService implements KeyManagementServiceInterface
     public function encryptSeed(string $seed, string $password): string
     {
         // Combine password with app key for encryption
-        $encryptionKey = hash('sha256', $password . $this->encryptionKey);
+        $encryptionKey = hash('sha256', $password.$this->encryptionKey);
         $iv = substr(hash('sha256', $password), 0, 16);
 
         return base64_encode(openssl_encrypt($seed, 'AES-256-CBC', $encryptionKey, 0, $iv));
@@ -246,7 +246,7 @@ class KeyManagementService implements KeyManagementServiceInterface
     public function decryptSeed(string $encryptedSeed, string $password): string
     {
         // Combine password with app key for decryption
-        $encryptionKey = hash('sha256', $password . $this->encryptionKey);
+        $encryptionKey = hash('sha256', $password.$this->encryptionKey);
         $iv = substr(hash('sha256', $password), 0, 16);
 
         return openssl_decrypt(base64_decode($encryptedSeed), 'AES-256-CBC', $encryptionKey, 0, $iv);
@@ -287,7 +287,7 @@ class KeyManagementService implements KeyManagementServiceInterface
      */
     protected function getUserEncryptionKey(string $userId): string
     {
-        return hash('sha256', $this->encryptionKey . $userId);
+        return hash('sha256', $this->encryptionKey.$userId);
     }
 
     /**
@@ -333,21 +333,21 @@ class KeyManagementService implements KeyManagementServiceInterface
         // In a real implementation, this would fetch wallet data from storage
         // For now, we'll create a minimal backup structure
         $walletData = [
-            'wallet_id'  => $walletId,
-            'version'    => '1.0',
+            'wallet_id' => $walletId,
+            'version' => '1.0',
             'created_at' => now()->toIso8601String(),
-            'addresses'  => [],
-            'metadata'   => [],
-            'data'       => $data ?? [],
+            'addresses' => [],
+            'metadata' => [],
+            'data' => $data ?? [],
         ];
 
         $encrypted = Crypt::encryptString(json_encode($walletData));
         $checksum = hash('sha256', $encrypted);
 
         return [
-            'backup_id'      => uniqid('backup_'),
+            'backup_id' => uniqid('backup_'),
             'encrypted_data' => $encrypted,
-            'checksum'       => $checksum,
+            'checksum' => $checksum,
         ];
     }
 
@@ -487,7 +487,7 @@ class KeyManagementService implements KeyManagementServiceInterface
     public function deriveChildKey(string $parentKey, int $index): string
     {
         // Simple child key derivation
-        return hash('sha256', $parentKey . $index);
+        return hash('sha256', $parentKey.$index);
     }
 
     /**

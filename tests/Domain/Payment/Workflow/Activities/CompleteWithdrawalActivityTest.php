@@ -1,28 +1,28 @@
 <?php
 
+use App\Domain\Payment\Models\PaymentWithdrawal;
 use App\Domain\Payment\Workflow\Activities\CompleteWithdrawalActivity;
-use App\Models\PaymentWithdrawal;
 use Illuminate\Support\Str;
 
 it('can complete a withdrawal through activity', function () {
     $withdrawalUuid = Str::uuid()->toString();
-    $transactionId = 'wtxn_' . uniqid();
+    $transactionId = 'wtxn_'.uniqid();
 
     // Create a withdrawal event first
     PaymentWithdrawal::create([
-        'aggregate_uuid'    => $withdrawalUuid,
+        'aggregate_uuid' => $withdrawalUuid,
         'aggregate_version' => 1,
-        'event_version'     => 1,
-        'event_class'       => 'withdrawal_initiated',
-        'event_properties'  => json_encode([
-            'accountUuid'       => Str::uuid()->toString(),
-            'amount'            => 5000,
-            'currency'          => 'USD',
-            'reference'         => 'WD-123',
+        'event_version' => 1,
+        'event_class' => 'withdrawal_initiated',
+        'event_properties' => json_encode([
+            'accountUuid' => Str::uuid()->toString(),
+            'amount' => 5000,
+            'currency' => 'USD',
+            'reference' => 'WD-123',
             'bankAccountNumber' => '****1234',
             'bankRoutingNumber' => '123456789',
-            'bankAccountName'   => 'John Doe',
-            'metadata'          => [],
+            'bankAccountName' => 'John Doe',
+            'metadata' => [],
         ]),
         'meta_data' => json_encode([
             'aggregate_uuid' => $withdrawalUuid,
@@ -32,10 +32,11 @@ it('can complete a withdrawal through activity', function () {
 
     $input = [
         'withdrawal_uuid' => $withdrawalUuid,
-        'transaction_id'  => $transactionId,
+        'transaction_id' => $transactionId,
     ];
 
-    $activity = new class () extends CompleteWithdrawalActivity {
+    $activity = new class extends CompleteWithdrawalActivity
+    {
         public function __construct()
         {
             // Override constructor

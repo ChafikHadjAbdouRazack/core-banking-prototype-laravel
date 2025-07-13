@@ -74,7 +74,7 @@ class Asset extends Model
         'precision' => 'integer',
         'is_active' => 'boolean',
         'is_basket' => 'boolean',
-        'metadata'  => 'array',
+        'metadata' => 'array',
     ];
 
     /**
@@ -131,8 +131,6 @@ class Asset extends Model
 
     /**
      * Get the symbol from metadata.
-     *
-     * @return string|null
      */
     public function getSymbol(): ?string
     {
@@ -141,8 +139,6 @@ class Asset extends Model
 
     /**
      * Get the symbol attribute (accessor).
-     *
-     * @return string|null
      */
     public function getSymbolAttribute(): ?string
     {
@@ -152,7 +148,7 @@ class Asset extends Model
     /**
      * Format an amount according to the asset's precision.
      *
-     * @param  int $amount Amount in smallest unit
+     * @param  int  $amount  Amount in smallest unit
      * @return string Formatted amount
      */
     public function formatAmount(int $amount): string
@@ -161,17 +157,14 @@ class Asset extends Model
         $formatted = number_format($amount / $divisor, $this->precision);
 
         if ($symbol = $this->getSymbol()) {
-            return $symbol . $formatted;
+            return $symbol.$formatted;
         }
 
-        return $formatted . ' ' . $this->code;
+        return $formatted.' '.$this->code;
     }
 
     /**
      * Convert a decimal amount to the smallest unit.
-     *
-     * @param  float $amount
-     * @return int
      */
     public function toSmallestUnit(float $amount): int
     {
@@ -180,9 +173,6 @@ class Asset extends Model
 
     /**
      * Convert from smallest unit to decimal.
-     *
-     * @param  int $amount
-     * @return float
      */
     public function fromSmallestUnit(int $amount): float
     {
@@ -191,8 +181,6 @@ class Asset extends Model
 
     /**
      * Check if the asset is a fiat currency.
-     *
-     * @return bool
      */
     public function isFiat(): bool
     {
@@ -201,8 +189,6 @@ class Asset extends Model
 
     /**
      * Check if the asset is a cryptocurrency.
-     *
-     * @return bool
      */
     public function isCrypto(): bool
     {
@@ -211,8 +197,6 @@ class Asset extends Model
 
     /**
      * Check if the asset is a commodity.
-     *
-     * @return bool
      */
     public function isCommodity(): bool
     {
@@ -222,7 +206,7 @@ class Asset extends Model
     /**
      * Scope for active assets.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder $query
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeActive($query)
@@ -233,8 +217,7 @@ class Asset extends Model
     /**
      * Scope for assets by type.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder $query
-     * @param  string                                $type
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeOfType($query, string $type)

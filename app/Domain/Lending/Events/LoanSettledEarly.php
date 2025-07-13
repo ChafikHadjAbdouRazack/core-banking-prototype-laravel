@@ -12,6 +12,5 @@ class LoanSettledEarly extends ShouldBeStored
         public string $outstandingBalance,
         public string $settledBy,
         public \DateTimeImmutable $settledAt
-    ) {
-    }
+    ) {}
 }

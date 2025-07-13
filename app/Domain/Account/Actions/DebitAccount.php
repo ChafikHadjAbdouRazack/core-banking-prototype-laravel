@@ -7,11 +7,6 @@ use App\Models\Account;
 
 class DebitAccount extends AccountAction
 {
-    /**
-     * @param AssetBalanceSubtracted $event
-     *
-     * @return Account
-     */
     public function __invoke(AssetBalanceSubtracted $event): Account
     {
         $account = $this->accountRepository->findByUuid(
@@ -21,8 +16,8 @@ class DebitAccount extends AccountAction
         // Find existing asset balance
         $balance = \App\Models\AccountBalance::where(
             [
-            'account_uuid' => $account->uuid,
-            'asset_code'   => $event->assetCode,
+                'account_uuid' => $account->uuid,
+                'asset_code' => $event->assetCode,
             ]
         )->first();
 

@@ -14,20 +14,20 @@ class CriticalPathsTest extends DuskTestCase
     {
         $this->browse(function (Browser $browser) {
             $publicRoutes = [
-                '/'           => 'FinAegis',
-                '/about'      => 'About FinAegis',
-                '/platform'   => 'Platform',
-                '/gcu'        => 'Global Currency Unit',
-                '/features'   => 'Features',
-                '/pricing'    => 'Pricing',
-                '/security'   => 'Security',
+                '/' => 'FinAegis',
+                '/about' => 'About FinAegis',
+                '/platform' => 'Platform',
+                '/gcu' => 'Global Currency Unit',
+                '/features' => 'Features',
+                '/pricing' => 'Pricing',
+                '/security' => 'Security',
                 '/compliance' => 'Compliance',
                 '/developers' => 'Developers',
-                '/support'    => 'Support',
-                '/blog'       => 'Blog',
-                '/partners'   => 'Partners',
-                '/cgo'        => 'CGO',
-                '/status'     => 'Status',
+                '/support' => 'Support',
+                '/blog' => 'Blog',
+                '/partners' => 'Partners',
+                '/cgo' => 'CGO',
+                '/status' => 'Status',
             ];
 
             foreach ($publicRoutes as $route => $expectedText) {
@@ -50,7 +50,7 @@ class CriticalPathsTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $browser->visit('/register')
                 ->type('name', 'Test User')
-                ->type('email', 'test' . time() . '@example.com')
+                ->type('email', 'test'.time().'@example.com')
                 ->type('password', 'password123')
                 ->type('password_confirmation', 'password123')
                 ->check('terms')
@@ -98,15 +98,15 @@ class CriticalPathsTest extends DuskTestCase
                 ->assertDontSee('not defined');
 
             // Test wallet dropdown menu
-            $browser->click('a[href="' . route('wallet.index') . '"]')
+            $browser->click('a[href="'.route('wallet.index').'"]')
                 ->waitForText('GCU Wallet', 10)
                 ->assertPathIs('/wallet');
 
             // Test Banking dropdown (if visible)
             $browser->visit('/dashboard')
                 ->click('button[id*="menu-button"]')
-                ->waitFor('a[href="' . route('wallet.transactions') . '"]')
-                ->click('a[href="' . route('wallet.transactions') . '"]')
+                ->waitFor('a[href="'.route('wallet.transactions').'"]')
+                ->click('a[href="'.route('wallet.transactions').'"]')
                 ->waitForText('Transaction History', 10);
         });
     }
@@ -129,24 +129,24 @@ class CriticalPathsTest extends DuskTestCase
                 ->assertSee('Convert');
 
             // Test deposit page
-            $browser->click('a[href="' . route('wallet.deposit') . '"]')
+            $browser->click('a[href="'.route('wallet.deposit').'"]')
                 ->waitForText('Choose Deposit Method', 10)
                 ->assertSee('Bank Transfer')
                 ->assertSee('Card Payment');
 
             // Test withdraw page
             $browser->visit('/wallet')
-                ->click('a[href="' . route('wallet.withdraw') . '"]')
+                ->click('a[href="'.route('wallet.withdraw').'"]')
                 ->waitForText('Choose Withdrawal Method', 10);
 
             // Test transfer page
             $browser->visit('/wallet')
-                ->click('a[href="' . route('wallet.transfer') . '"]')
+                ->click('a[href="'.route('wallet.transfer').'"]')
                 ->waitForText('Send Money', 10);
 
             // Test convert page
             $browser->visit('/wallet')
-                ->click('a[href="' . route('wallet.convert') . '"]')
+                ->click('a[href="'.route('wallet.convert').'"]')
                 ->waitForText('Convert Currency', 10);
         });
     }
@@ -170,13 +170,13 @@ class CriticalPathsTest extends DuskTestCase
                 ->assertSee('Vote');
 
             // Test quick deposit link
-            $browser->click('a[href="' . route('wallet.deposit') . '"]')
+            $browser->click('a[href="'.route('wallet.deposit').'"]')
                 ->waitForText('Choose Deposit Method', 10)
                 ->assertPathIs('/wallet/deposit');
 
             // Test quick vote link
             $browser->visit('/dashboard')
-                ->click('a[href="' . route('gcu.voting.index') . '"]')
+                ->click('a[href="'.route('gcu.voting.index').'"]')
                 ->waitForText('GCU Governance', 10);
         });
     }
@@ -220,8 +220,8 @@ class CriticalPathsTest extends DuskTestCase
 
         foreach ($endpoints as $endpoint) {
             $response = $this->withHeaders([
-                'Authorization' => 'Bearer ' . $token,
-                'Accept'        => 'application/json',
+                'Authorization' => 'Bearer '.$token,
+                'Accept' => 'application/json',
             ])->get($endpoint);
 
             $this->assertNotEquals(404, $response->status());

@@ -6,7 +6,7 @@ use Spatie\EventSourcing\AggregateRoots\Exceptions\InvalidEloquentStoredEventMod
 use Spatie\EventSourcing\StoredEvents\Repositories\EloquentStoredEventRepository;
 
 beforeEach(function () {
-    $this->repository = new TransferRepository();
+    $this->repository = new TransferRepository;
 });
 
 it('can be instantiated', function () {

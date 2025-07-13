@@ -14,7 +14,6 @@ use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
 class LedgerAggregate extends AggregateRoot
 {
     /**
-     * @return LedgerRepository
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
     protected function getStoredEventRepository(): LedgerRepository
@@ -25,7 +24,6 @@ class LedgerAggregate extends AggregateRoot
     }
 
     /**
-     * @return LedgerSnapshotRepository
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
     protected function getSnapshotRepository(): LedgerSnapshotRepository
@@ -36,8 +34,6 @@ class LedgerAggregate extends AggregateRoot
     }
 
     /**
-     * @param Account $account
-     *
      * @return $this
      */
     public function createAccount(Account $account): static
@@ -57,16 +53,13 @@ class LedgerAggregate extends AggregateRoot
     public function deleteAccount(): static
     {
         $this->recordThat(
-            domainEvent: new AccountDeleted()
+            domainEvent: new AccountDeleted
         );
 
         return $this;
     }
 
     /**
-     * @param string      $reason
-     * @param string|null $authorizedBy
-     *
      * @return $this
      */
     public function freezeAccount(string $reason, ?string $authorizedBy = null): static
@@ -82,9 +75,6 @@ class LedgerAggregate extends AggregateRoot
     }
 
     /**
-     * @param string      $reason
-     * @param string|null $authorizedBy
-     *
      * @return $this
      */
     public function unfreezeAccount(string $reason, ?string $authorizedBy = null): static

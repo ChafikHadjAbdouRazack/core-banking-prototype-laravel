@@ -61,7 +61,7 @@ class BlockchainWalletService implements WalletConnectorInterface
         ?string $mnemonic = null,
         array $settings = []
     ): BlockchainWallet {
-        $walletId = 'wallet_' . Str::uuid();
+        $walletId = 'wallet_'.Str::uuid();
 
         DB::beginTransaction();
         try {
@@ -113,8 +113,8 @@ class BlockchainWalletService implements WalletConnectorInterface
             Log::error(
                 'Failed to create wallet',
                 [
-                'user_id' => $userId,
-                'error'   => $e->getMessage(),
+                    'user_id' => $userId,
+                    'error' => $e->getMessage(),
                 ]
             );
             throw $e;
@@ -174,8 +174,8 @@ class BlockchainWalletService implements WalletConnectorInterface
 
         return [
             'address' => $addressData->address,
-            'chain'   => $chain,
-            'label'   => $label,
+            'chain' => $chain,
+            'label' => $label,
         ];
     }
 
@@ -197,7 +197,7 @@ class BlockchainWalletService implements WalletConnectorInterface
             }
 
             $balances[$chain] = [
-                'balance'   => $chainBalance,
+                'balance' => $chainBalance,
                 'formatted' => $this->formatBalance($chainBalance, $chain),
                 'addresses' => count($addresses),
             ];
@@ -254,12 +254,12 @@ class BlockchainWalletService implements WalletConnectorInterface
         $this->recordTransaction($walletId, $chain, $transaction, $result);
 
         return [
-            'hash'         => $result->hash,
-            'status'       => $result->status,
-            'from'         => $fromAddress['address'],
-            'to'           => $to,
-            'amount'       => $amount,
-            'chain'        => $chain,
+            'hash' => $result->hash,
+            'status' => $result->status,
+            'from' => $fromAddress['address'],
+            'to' => $to,
+            'amount' => $amount,
+            'chain' => $chain,
             'gas_estimate' => $gasEstimate->toArray(),
         ];
     }
@@ -337,9 +337,9 @@ class BlockchainWalletService implements WalletConnectorInterface
     {
         DB::table('wallet_seeds')->insert(
             [
-            'wallet_id'      => $walletId,
-            'encrypted_seed' => $encryptedSeed,
-            'created_at'     => now(),
+                'wallet_id' => $walletId,
+                'encrypted_seed' => $encryptedSeed,
+                'created_at' => now(),
             ]
         );
     }
@@ -417,8 +417,8 @@ class BlockchainWalletService implements WalletConnectorInterface
     protected function signWithHSM(TransactionData $transaction): SignedTransaction
     {
         // In production, this would interface with actual HSM
-        $rawTx = '0x' . bin2hex(random_bytes(256));
-        $hash = '0x' . hash('sha256', $rawTx);
+        $rawTx = '0x'.bin2hex(random_bytes(256));
+        $hash = '0x'.hash('sha256', $rawTx);
 
         return new SignedTransaction($rawTx, $hash, $transaction);
     }
@@ -434,22 +434,22 @@ class BlockchainWalletService implements WalletConnectorInterface
     ): void {
         DB::table('blockchain_transactions')->insert(
             [
-            'wallet_id'        => $walletId,
-            'chain'            => $chain,
-            'transaction_hash' => $result->hash,
-            'from_address'     => $transaction->from,
-            'to_address'       => $transaction->to,
-            'amount'           => $transaction->value,
-            'gas_limit'        => $transaction->gasLimit,
-            'gas_price'        => $transaction->gasPrice,
-            'status'           => $result->status,
-            'metadata'         => json_encode(
-                array_merge(
-                    $transaction->metadata,
-                    $result->metadata
-                )
-            ),
-            'created_at' => now(),
+                'wallet_id' => $walletId,
+                'chain' => $chain,
+                'transaction_hash' => $result->hash,
+                'from_address' => $transaction->from,
+                'to_address' => $transaction->to,
+                'amount' => $transaction->value,
+                'gas_limit' => $transaction->gasLimit,
+                'gas_price' => $transaction->gasPrice,
+                'status' => $result->status,
+                'metadata' => json_encode(
+                    array_merge(
+                        $transaction->metadata,
+                        $result->metadata
+                    )
+                ),
+                'created_at' => now(),
             ]
         );
     }
@@ -467,10 +467,10 @@ class BlockchainWalletService implements WalletConnectorInterface
                 Log::info(
                     'Blockchain event received',
                     [
-                    'wallet_id' => $walletId,
-                    'chain'     => $chain,
-                    'address'   => $address,
-                    'event'     => $event,
+                        'wallet_id' => $walletId,
+                        'chain' => $chain,
+                        'address' => $address,
+                        'event' => $event,
                     ]
                 );
 
@@ -496,9 +496,9 @@ class BlockchainWalletService implements WalletConnectorInterface
     {
         $decimals = [
             'ethereum' => 18,
-            'polygon'  => 18,
-            'bsc'      => 18,
-            'bitcoin'  => 8,
+            'polygon' => 18,
+            'bsc' => 18,
+            'bitcoin' => 8,
         ];
 
         $decimal = $decimals[$chain] ?? 18;
@@ -509,10 +509,6 @@ class BlockchainWalletService implements WalletConnectorInterface
 
     /**
      * Generate a new wallet address (interface implementation).
-     *
-     * @param  string $blockchain
-     * @param  string $accountId
-     * @return WalletAddress
      */
     public function generateAddress(string $blockchain, string $accountId): WalletAddress
     {
@@ -530,10 +526,6 @@ class BlockchainWalletService implements WalletConnectorInterface
 
     /**
      * Get wallet balance from blockchain (interface implementation).
-     *
-     * @param  string $blockchain
-     * @param  string $address
-     * @return array
      */
     public function getBalance(string $blockchain, string $address): array
     {
@@ -541,21 +533,14 @@ class BlockchainWalletService implements WalletConnectorInterface
         $balance = $connector->getBalance($address);
 
         return [
-            'balance'   => $balance->balance,
+            'balance' => $balance->balance,
             'available' => $balance->balance,
-            'pending'   => '0',
+            'pending' => '0',
         ];
     }
 
     /**
      * Send transaction to blockchain (interface implementation).
-     *
-     * @param  string $blockchain
-     * @param  string $fromAddress
-     * @param  string $toAddress
-     * @param  string $amount
-     * @param  array  $options
-     * @return BlockchainTransaction
      */
     public function sendTransaction(
         string $blockchain,
@@ -602,10 +587,6 @@ class BlockchainWalletService implements WalletConnectorInterface
 
     /**
      * Get transaction status (interface implementation).
-     *
-     * @param  string $blockchain
-     * @param  string $transactionHash
-     * @return array
      */
     public function getTransactionStatus(string $blockchain, string $transactionHash): array
     {
@@ -613,19 +594,14 @@ class BlockchainWalletService implements WalletConnectorInterface
         $status = $connector->getTransactionStatus($transactionHash);
 
         return [
-            'status'        => $status->status,
+            'status' => $status->status,
             'confirmations' => $status->confirmations ?? 0,
-            'block'         => $status->block ?? null,
+            'block' => $status->block ?? null,
         ];
     }
 
     /**
      * Monitor incoming transactions (interface implementation).
-     *
-     * @param  string $blockchain
-     * @param  string $address
-     * @param  int    $fromBlock
-     * @return array
      */
     public function monitorIncomingTransactions(
         string $blockchain,
@@ -640,10 +616,6 @@ class BlockchainWalletService implements WalletConnectorInterface
 
     /**
      * Validate address format (interface implementation).
-     *
-     * @param  string $blockchain
-     * @param  string $address
-     * @return bool
      */
     public function validateAddress(string $blockchain, string $address): bool
     {
@@ -654,34 +626,30 @@ class BlockchainWalletService implements WalletConnectorInterface
 
     /**
      * Get network fee estimate (interface implementation).
-     *
-     * @param  string $blockchain
-     * @param  string $priority
-     * @return array
      */
     public function estimateNetworkFee(string $blockchain, string $priority = 'medium'): array
     {
         // Mock network fees - in production, fetch from blockchain
         $fees = [
             'ethereum' => [
-                'slow'   => ['time' => '10 min', 'amount' => 0.001],
+                'slow' => ['time' => '10 min', 'amount' => 0.001],
                 'medium' => ['time' => '3 min', 'amount' => 0.002],
-                'fast'   => ['time' => '30 sec', 'amount' => 0.003],
+                'fast' => ['time' => '30 sec', 'amount' => 0.003],
             ],
             'bitcoin' => [
-                'slow'   => ['time' => '60 min', 'amount' => 0.00001],
+                'slow' => ['time' => '60 min', 'amount' => 0.00001],
                 'medium' => ['time' => '30 min', 'amount' => 0.00002],
-                'fast'   => ['time' => '10 min', 'amount' => 0.00005],
+                'fast' => ['time' => '10 min', 'amount' => 0.00005],
             ],
             'polygon' => [
-                'slow'   => ['time' => '30 sec', 'amount' => 0.001],
+                'slow' => ['time' => '30 sec', 'amount' => 0.001],
                 'medium' => ['time' => '15 sec', 'amount' => 0.002],
-                'fast'   => ['time' => '5 sec', 'amount' => 0.005],
+                'fast' => ['time' => '5 sec', 'amount' => 0.005],
             ],
             'bsc' => [
-                'slow'   => ['time' => '15 sec', 'amount' => 0.0001],
+                'slow' => ['time' => '15 sec', 'amount' => 0.0001],
                 'medium' => ['time' => '6 sec', 'amount' => 0.0002],
-                'fast'   => ['time' => '3 sec', 'amount' => 0.0005],
+                'fast' => ['time' => '3 sec', 'amount' => 0.0005],
             ],
         ];
 
@@ -692,8 +660,6 @@ class BlockchainWalletService implements WalletConnectorInterface
 
     /**
      * Get supported blockchains (interface implementation).
-     *
-     * @return array
      */
     public function getSupportedBlockchains(): array
     {

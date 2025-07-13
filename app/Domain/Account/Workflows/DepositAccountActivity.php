@@ -9,13 +9,6 @@ use Workflow\Activity;
 
 class DepositAccountActivity extends Activity
 {
-    /**
-     * @param AccountUuid          $uuid
-     * @param Money                $money
-     * @param TransactionAggregate $transaction
-     *
-     * @return bool
-     */
     public function execute(AccountUuid $uuid, Money $money, TransactionAggregate $transaction): bool
     {
         $transaction->retrieve($uuid->getUuid())

@@ -14,8 +14,7 @@ class BasketDecomposed extends ShouldBeStored
         public readonly int $amount,
         public readonly array $componentAmounts,
         public readonly \DateTimeInterface $decomposedAt
-    ) {
-    }
+    ) {}
 
     /**
      * Get the total value of decomposed components.

@@ -10,6 +10,5 @@ class GdprRequestReceived extends ShouldBeStored
         public string $userUuid,
         public string $requestType,
         public array $options
-    ) {
-    }
+    ) {}
 }

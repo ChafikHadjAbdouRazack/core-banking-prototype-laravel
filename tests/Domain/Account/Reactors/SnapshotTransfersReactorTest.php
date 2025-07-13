@@ -25,30 +25,30 @@ class SnapshotTransfersReactorTest extends TestCase
     public function fires_transaction_threshold_reached_event_when_transfers_threshold_is_met(): void
     {
         TransferAggregate::fake(self::TRANSFER_UUID)
-                            ->when(
-                                function (
-                                    TransferAggregate $transfers
-                                ): void {
-                                    for (
-                                        $i = 0; $i <=
-                                                TransferAggregate::COUNT_THRESHOLD;
-                                        $i++
-                                    ) {
-                                        $transfers->transfer(
-                                            from: $this->account_uuid(
-                                                self::ACCOUNT_FROM_UUID
-                                            ),
-                                            to: $this->account_uuid(
-                                                self::ACCOUNT_TO_UUID
-                                            ),
-                                            money: $this->money(10)
-                                        );
-                                    }
-                                }
-                            )
-                            ->assertEventRecorded(
-                                new TransferThresholdReached()
-                            );
+            ->when(
+                function (
+                    TransferAggregate $transfers
+                ): void {
+                    for (
+                        $i = 0; $i <=
+                                TransferAggregate::COUNT_THRESHOLD;
+                        $i++
+                    ) {
+                        $transfers->transfer(
+                            from: $this->account_uuid(
+                                self::ACCOUNT_FROM_UUID
+                            ),
+                            to: $this->account_uuid(
+                                self::ACCOUNT_TO_UUID
+                            ),
+                            money: $this->money(10)
+                        );
+                    }
+                }
+            )
+            ->assertEventRecorded(
+                new TransferThresholdReached
+            );
     }
 
     #[Test]
@@ -59,40 +59,30 @@ class SnapshotTransfersReactorTest extends TestCase
 
         // Set the expectation that 'loadUuid' is called with ACCOUNT_UUID and returns the mock itself
         $aggregateMock->expects($this->once())
-                      ->method('loadUuid')
-                      ->with(self::TRANSFER_UUID)
-                      ->willReturnSelf();
+            ->method('loadUuid')
+            ->with(self::TRANSFER_UUID)
+            ->willReturnSelf();
 
         // Set the expectation that 'snapshot' method is called exactly once
         $aggregateMock->expects($this->once())
-                      ->method('snapshot');
+            ->method('snapshot');
 
         // Inject the mocked TransferAggregate into the reactor
         $reactor = new SnapshotTransfersReactor($aggregateMock);
 
         // Dispatch the event and call the reactor's handler
         $reactor->onTransferThresholdReached(
-            (new TransferThresholdReached())->setAggregateRootUuid(
+            (new TransferThresholdReached)->setAggregateRootUuid(
                 self::TRANSFER_UUID
             )
         );
     }
 
-    /**
-     * @param int $amount
-     *
-     * @return Money
-     */
     private function money(int $amount): Money
     {
         return hydrate(Money::class, ['amount' => $amount]);
     }
 
-    /**
-     * @param string $uuid
-     *
-     * @return AccountUuid
-     */
     private function account_uuid(string $uuid): AccountUuid
     {
         return hydrate(AccountUuid::class, ['uuid' => $uuid]);

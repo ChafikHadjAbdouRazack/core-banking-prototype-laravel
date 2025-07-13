@@ -22,8 +22,7 @@ class AccountBalanceUpdated
         public readonly CustodianAccount $custodianAccount,
         public readonly array $balances,
         public readonly string $timestamp
-    ) {
-    }
+    ) {}
 
     /**
      * Get the channels the event should broadcast on.

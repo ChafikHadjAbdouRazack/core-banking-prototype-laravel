@@ -9,11 +9,6 @@ use Workflow\Activity;
 
 class CreateAccountActivity extends Activity
 {
-    /**
-     * @param Account $account
-     *
-     * @return string
-     */
     public function execute(Account $account): string
     {
         $uuid = $account->getUuid() ?: Str::uuid()->toString();

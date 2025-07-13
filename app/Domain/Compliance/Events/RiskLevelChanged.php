@@ -17,6 +17,5 @@ class RiskLevelChanged
         public readonly CustomerRiskProfile $profile,
         public readonly string $oldLevel,
         public readonly string $newLevel
-    ) {
-    }
+    ) {}
 }

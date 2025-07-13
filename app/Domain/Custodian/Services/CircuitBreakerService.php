@@ -38,19 +38,20 @@ class CircuitBreakerService
         private readonly int $timeout = self::DEFAULT_TIMEOUT,
         private readonly float $failureRateThreshold = self::DEFAULT_FAILURE_RATE_THRESHOLD,
         private readonly int $sampleSize = self::DEFAULT_SAMPLE_SIZE
-    ) {
-    }
+    ) {}
 
     /**
      * Execute a callable within circuit breaker protection.
      *
      * @template T
-     * @param    string             $service   Service identifier (e.g., 'paysera.balance')
-     * @param    callable(): T      $operation The operation to execute
-     * @param    callable(): T|null $fallback  Optional fallback operation
-     * @return   T
-     * @throws   CircuitOpenException When circuit is open and no fallback provided
-     * @throws   \Throwable When operation fails and no fallback provided
+     *
+     * @param  string  $service  Service identifier (e.g., 'paysera.balance')
+     * @param  callable(): T  $operation  The operation to execute
+     * @param  callable(): T|null  $fallback  Optional fallback operation
+     * @return T
+     *
+     * @throws CircuitOpenException When circuit is open and no fallback provided
+     * @throws \Throwable When operation fails and no fallback provided
      */
     public function execute(string $service, callable $operation, ?callable $fallback = null): mixed
     {
@@ -99,7 +100,7 @@ class CircuitBreakerService
                 Log::info(
                     "Using fallback for service: {$service}",
                     [
-                    'exception' => $exception->getMessage(),
+                        'exception' => $exception->getMessage(),
                     ]
                 );
 
@@ -149,15 +150,15 @@ class CircuitBreakerService
             : 0;
 
         return [
-            'state'                 => $this->getState($service),
-            'total_calls'           => count($recentCalls),
-            'success_count'         => $successCount,
-            'failure_count'         => count($failures),
-            'failure_rate'          => round($failureRate * 100, 2),
-            'consecutive_failures'  => $this->getConsecutiveFailures($service),
+            'state' => $this->getState($service),
+            'total_calls' => count($recentCalls),
+            'success_count' => $successCount,
+            'failure_count' => count($failures),
+            'failure_rate' => round($failureRate * 100, 2),
+            'consecutive_failures' => $this->getConsecutiveFailures($service),
             'consecutive_successes' => $this->getConsecutiveSuccesses($service),
-            'last_failure_time'     => $this->getLastFailureTime($service),
-            'circuit_opened_at'     => $this->getCircuitOpenedTime($service),
+            'last_failure_time' => $this->getLastFailureTime($service),
+            'circuit_opened_at' => $this->getCircuitOpenedTime($service),
         ];
     }
 
@@ -191,7 +192,7 @@ class CircuitBreakerService
 
         // Add new call
         $recentCalls[] = [
-            'success'   => $success,
+            'success' => $success,
             'timestamp' => now()->timestamp,
         ];
 

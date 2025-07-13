@@ -8,6 +8,5 @@ abstract class AccountAction
 {
     public function __construct(
         protected AccountRepository $accountRepository
-    ) {
-    }
+    ) {}
 }

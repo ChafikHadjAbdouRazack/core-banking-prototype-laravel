@@ -17,16 +17,11 @@ class AssetTransferAggregate extends AggregateRoot
 
     public const int COUNT_THRESHOLD = 1000;
 
-    /**
-     * @param int $count
-     */
     public function __construct(
         public int $count = 0,
-    ) {
-    }
+    ) {}
 
     /**
-     * @return TransferRepository
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
     protected function getStoredEventRepository(): TransferRepository
@@ -47,12 +42,6 @@ class AssetTransferAggregate extends AggregateRoot
     }
 
     /**
-     * @param AccountUuid $from
-     * @param AccountUuid $to
-     * @param string      $assetCode
-     * @param int         $amount
-     * @param array|null  $metadata
-     *
      * @return $this
      */
     public function transfer(
@@ -77,8 +66,6 @@ class AssetTransferAggregate extends AggregateRoot
     }
 
     /**
-     * @param AssetTransferred $event
-     *
      * @return AssetTransferAggregate
      */
     public function applyAssetTransferred(AssetTransferred $event): static
@@ -93,7 +80,7 @@ class AssetTransferAggregate extends AggregateRoot
 
         if (++$this->count >= self::COUNT_THRESHOLD) {
             $this->recordThat(
-                domainEvent: new TransferThresholdReached()
+                domainEvent: new TransferThresholdReached
             );
             $this->count = 0;
         }
@@ -105,12 +92,6 @@ class AssetTransferAggregate extends AggregateRoot
 
     /**
      * Generate hash for asset transfer.
-     *
-     * @param  AccountUuid $from
-     * @param  AccountUuid $to
-     * @param  string      $assetCode
-     * @param  int         $amount
-     * @return Hash
      */
     protected function generateHashForAssetTransfer(
         AccountUuid $from,
@@ -132,13 +113,6 @@ class AssetTransferAggregate extends AggregateRoot
 
     /**
      * Validate hash for asset transfer.
-     *
-     * @param  Hash        $hash
-     * @param  AccountUuid $from
-     * @param  AccountUuid $to
-     * @param  string      $assetCode
-     * @param  int         $amount
-     * @return void
      */
     protected function validateHashForAssetTransfer(
         Hash $hash,

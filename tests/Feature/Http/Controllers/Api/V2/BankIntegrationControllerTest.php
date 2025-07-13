@@ -99,7 +99,7 @@ class BankIntegrationControllerTest extends ControllerTestCase
 
         $connectors = collect([
             'deutsche_bank' => $mockConnector1,
-            'hsbc'          => $mockConnector2,
+            'hsbc' => $mockConnector2,
         ]);
 
         $this->mockBankService
@@ -191,7 +191,7 @@ class BankIntegrationControllerTest extends ControllerTestCase
         Sanctum::actingAs($this->user);
 
         $connectionData = [
-            'bank_code'             => 'deutsche_bank',
+            'bank_code' => 'deutsche_bank',
             'consent_duration_days' => 90,
         ];
 
@@ -200,10 +200,10 @@ class BankIntegrationControllerTest extends ControllerTestCase
             ->with($this->user->uuid, 'deutsche_bank', Mockery::type('array'))
             ->once()
             ->andReturn([
-                'connection_id'     => 'conn_123',
-                'bank_code'         => 'deutsche_bank',
-                'bank_name'         => 'Deutsche Bank',
-                'status'            => 'pending',
+                'connection_id' => 'conn_123',
+                'bank_code' => 'deutsche_bank',
+                'bank_name' => 'Deutsche Bank',
+                'status' => 'pending',
                 'authorization_url' => 'https://deutsche-bank.com/auth?ref=123',
             ]);
 
@@ -233,7 +233,7 @@ class BankIntegrationControllerTest extends ControllerTestCase
 
         // Invalid consent duration
         $response = $this->postJson("{$this->apiPrefix}/banks/connect", [
-            'bank_code'             => 'deutsche_bank',
+            'bank_code' => 'deutsche_bank',
             'consent_duration_days' => 'invalid',
         ]);
         $response->assertStatus(422);
@@ -266,26 +266,26 @@ class BankIntegrationControllerTest extends ControllerTestCase
 
         $accounts = collect([
             [
-                'id'                => 'acc_1',
-                'bank_code'         => 'deutsche_bank',
-                'bank_name'         => 'Deutsche Bank',
-                'account_name'      => 'Main Checking',
-                'iban'              => 'DE89370400440532013000',
-                'currency'          => 'EUR',
-                'balance'           => 150000,
+                'id' => 'acc_1',
+                'bank_code' => 'deutsche_bank',
+                'bank_name' => 'Deutsche Bank',
+                'account_name' => 'Main Checking',
+                'iban' => 'DE89370400440532013000',
+                'currency' => 'EUR',
+                'balance' => 150000,
                 'available_balance' => 145000,
-                'status'            => 'active',
+                'status' => 'active',
             ],
             [
-                'id'                => 'acc_2',
-                'bank_code'         => 'hsbc',
-                'bank_name'         => 'HSBC',
-                'account_name'      => 'Business Account',
-                'iban'              => 'GB29NWBK60161331926819',
-                'currency'          => 'GBP',
-                'balance'           => 250000,
+                'id' => 'acc_2',
+                'bank_code' => 'hsbc',
+                'bank_name' => 'HSBC',
+                'account_name' => 'Business Account',
+                'iban' => 'GB29NWBK60161331926819',
+                'currency' => 'GBP',
+                'balance' => 250000,
                 'available_balance' => 250000,
-                'status'            => 'active',
+                'status' => 'active',
             ],
         ]);
 
@@ -326,10 +326,10 @@ class BankIntegrationControllerTest extends ControllerTestCase
             ->with($this->user->uuid, 'deutsche_bank')
             ->once()
             ->andReturn([
-                'synced_accounts'  => 3,
-                'new_accounts'     => 1,
+                'synced_accounts' => 3,
+                'new_accounts' => 1,
                 'updated_accounts' => 2,
-                'sync_timestamp'   => now()->toISOString(),
+                'sync_timestamp' => now()->toISOString(),
             ]);
 
         $response = $this->postJson("{$this->apiPrefix}/banks/accounts/sync/deutsche_bank");
@@ -351,14 +351,14 @@ class BankIntegrationControllerTest extends ControllerTestCase
         Sanctum::actingAs($this->user);
 
         $balanceData = [
-            'total_balance_eur'    => 375000,
+            'total_balance_eur' => 375000,
             'balances_by_currency' => [
                 ['currency' => 'EUR', 'balance' => 150000],
                 ['currency' => 'GBP', 'balance' => 250000],
                 ['currency' => 'USD', 'balance' => 50000],
             ],
             'accounts_count' => 5,
-            'last_sync'      => now()->toISOString(),
+            'last_sync' => now()->toISOString(),
         ];
 
         $this->mockBankService
@@ -387,12 +387,12 @@ class BankIntegrationControllerTest extends ControllerTestCase
 
         $transferData = [
             'source_account_id' => 'acc_123',
-            'beneficiary_name'  => 'John Doe',
-            'beneficiary_iban'  => 'DE89370400440532013001',
-            'amount'            => 10000,
-            'currency'          => 'EUR',
-            'reference'         => 'Invoice payment #123',
-            'transfer_type'     => 'SEPA',
+            'beneficiary_name' => 'John Doe',
+            'beneficiary_iban' => 'DE89370400440532013001',
+            'amount' => 10000,
+            'currency' => 'EUR',
+            'reference' => 'Invoice payment #123',
+            'transfer_type' => 'SEPA',
         ];
 
         $this->mockBankService
@@ -400,11 +400,11 @@ class BankIntegrationControllerTest extends ControllerTestCase
             ->with($this->user->uuid, Mockery::type('array'))
             ->once()
             ->andReturn([
-                'transfer_id'       => 'txn_123',
-                'status'            => 'pending',
+                'transfer_id' => 'txn_123',
+                'status' => 'pending',
                 'estimated_arrival' => now()->addDays(1)->toISOString(),
-                'fees'              => 150,
-                'exchange_rate'     => null,
+                'fees' => 150,
+                'exchange_rate' => null,
             ]);
 
         $response = $this->postJson("{$this->apiPrefix}/banks/transfer", $transferData);
@@ -439,10 +439,10 @@ class BankIntegrationControllerTest extends ControllerTestCase
         // Invalid amount
         $response = $this->postJson("{$this->apiPrefix}/banks/transfer", [
             'source_account_id' => 'acc_123',
-            'beneficiary_name'  => 'John Doe',
-            'beneficiary_iban'  => 'DE89370400440532013001',
-            'amount'            => -100,
-            'currency'          => 'EUR',
+            'beneficiary_name' => 'John Doe',
+            'beneficiary_iban' => 'DE89370400440532013001',
+            'amount' => -100,
+            'currency' => 'EUR',
         ]);
         $response->assertStatus(422);
         $response->assertJsonValidationErrors(['amount']);
@@ -458,10 +458,10 @@ class BankIntegrationControllerTest extends ControllerTestCase
             ->with('deutsche_bank')
             ->once()
             ->andReturn([
-                'status'           => 'operational',
+                'status' => 'operational',
                 'response_time_ms' => 145,
-                'last_check'       => now()->toISOString(),
-                'issues'           => [],
+                'last_check' => now()->toISOString(),
+                'issues' => [],
             ]);
 
         $response = $this->getJson("{$this->apiPrefix}/banks/health/deutsche_bank");
@@ -486,8 +486,8 @@ class BankIntegrationControllerTest extends ControllerTestCase
             [
                 'bank_code' => 'revolut',
                 'bank_name' => 'Revolut',
-                'score'     => 95,
-                'reasons'   => [
+                'score' => 95,
+                'reasons' => [
                     'Multi-currency support',
                     'Low fees',
                     'Instant transfers',
@@ -496,8 +496,8 @@ class BankIntegrationControllerTest extends ControllerTestCase
             [
                 'bank_code' => 'wise',
                 'bank_name' => 'Wise',
-                'score'     => 90,
-                'reasons'   => [
+                'score' => 90,
+                'reasons' => [
                     'Excellent exchange rates',
                     'International transfers',
                 ],

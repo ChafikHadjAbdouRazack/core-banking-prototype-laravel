@@ -11,7 +11,7 @@ class Transfer extends BaseModel
     {
         return $this->uuid;
     }
-    
+
     /**
      * Get source account UUID.
      */
@@ -19,7 +19,7 @@ class Transfer extends BaseModel
     {
         return $this->from_account;
     }
-    
+
     /**
      * Get destination account UUID.
      */
@@ -27,7 +27,7 @@ class Transfer extends BaseModel
     {
         return $this->to_account;
     }
-    
+
     /**
      * Get transfer amount.
      */
@@ -35,7 +35,7 @@ class Transfer extends BaseModel
     {
         return $this->amount;
     }
-    
+
     /**
      * Get asset code.
      */
@@ -43,7 +43,7 @@ class Transfer extends BaseModel
     {
         return $this->asset_code;
     }
-    
+
     /**
      * Get transfer status.
      */
@@ -51,7 +51,7 @@ class Transfer extends BaseModel
     {
         return $this->status;
     }
-    
+
     /**
      * Get reference.
      */
@@ -59,7 +59,7 @@ class Transfer extends BaseModel
     {
         return $this->reference;
     }
-    
+
     /**
      * Check if transfer is completed.
      */
@@ -67,7 +67,7 @@ class Transfer extends BaseModel
     {
         return $this->status === 'completed';
     }
-    
+
     /**
      * Check if transfer is pending.
      */
@@ -75,7 +75,7 @@ class Transfer extends BaseModel
     {
         return $this->status === 'pending';
     }
-    
+
     /**
      * Check if transfer is failed.
      */

@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Domain\Lending\ValueObjects;
 
+use App\Domain\Lending\ValueObjects\CreditScore;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 

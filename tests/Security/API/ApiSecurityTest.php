@@ -51,7 +51,7 @@ class ApiSecurityTest extends DomainTestCase
                 $this->assertTrue(
                     $response->json('message') === 'Unauthenticated.' ||
                     $response->json('message') === 'Authentication required',
-                    'Expected authentication error message, got: ' . $response->json('message')
+                    'Expected authentication error message, got: '.$response->json('message')
                 );
             }
         }
@@ -114,7 +114,7 @@ class ApiSecurityTest extends DomainTestCase
         // Make requests up to the limit
         for ($i = 0; $i < $rateLimitConfig['limit']; $i++) {
             $response = $this->postJson($endpoint, [
-                'email'    => 'test@example.com',
+                'email' => 'test@example.com',
                 'password' => 'wrong-password',
             ]);
 
@@ -125,7 +125,7 @@ class ApiSecurityTest extends DomainTestCase
 
         // Next request should be rate limited
         $response = $this->postJson($endpoint, [
-            'email'    => 'test@example.com',
+            'email' => 'test@example.com',
             'password' => 'wrong-password',
         ]);
 
@@ -227,7 +227,7 @@ class ApiSecurityTest extends DomainTestCase
         // Test individual field size limits
         $response = $this->withToken($this->token)
             ->postJson('/api/accounts', [
-                'name'        => $largeString,
+                'name' => $largeString,
                 'description' => $largeString,
             ]);
 
@@ -236,7 +236,7 @@ class ApiSecurityTest extends DomainTestCase
         // Test metadata array with many small items instead of huge ones
         $response = $this->withToken($this->token)
             ->postJson('/api/accounts', [
-                'name'     => 'Test Account',
+                'name' => 'Test Account',
                 'metadata' => array_fill(0, 1000, 'small_value'),
             ]);
 
@@ -273,9 +273,9 @@ class ApiSecurityTest extends DomainTestCase
         // Try to override HTTP method
         $overrideHeaders = [
             'X-HTTP-Method-Override' => 'DELETE',
-            'X-Method-Override'      => 'DELETE',
-            '_method'                => 'DELETE',
-            'X-HTTP-Method'          => 'DELETE',
+            'X-Method-Override' => 'DELETE',
+            '_method' => 'DELETE',
+            'X-HTTP-Method' => 'DELETE',
         ];
 
         // Create account using the proper event sourcing method
@@ -285,7 +285,7 @@ class ApiSecurityTest extends DomainTestCase
                 hydrate(
                     class: \App\Domain\Account\DataObjects\Account::class,
                     properties: [
-                        'name'      => 'Test Account',
+                        'name' => 'Test Account',
                         'user_uuid' => $this->user->uuid,
                     ]
                 )
@@ -315,7 +315,7 @@ class ApiSecurityTest extends DomainTestCase
                     hydrate(
                         class: \App\Domain\Account\DataObjects\Account::class,
                         properties: [
-                            'name'      => "Test Account $i",
+                            'name' => "Test Account $i",
                             'user_uuid' => $this->user->uuid,
                         ]
                     )
@@ -392,7 +392,7 @@ class ApiSecurityTest extends DomainTestCase
 
         foreach ($origins as $origin) {
             $response = $this->withHeaders([
-                'Origin'        => $origin,
+                'Origin' => $origin,
                 'Authorization' => "Bearer {$this->token}",
             ])->options('/api/accounts');
 
@@ -432,7 +432,7 @@ class ApiSecurityTest extends DomainTestCase
         foreach ($maliciousUrls as $url) {
             $response = $this->withToken($this->token)
                 ->postJson('/api/webhooks', [
-                    'url'    => $url,
+                    'url' => $url,
                     'events' => ['account.created'],
                 ]);
 
@@ -450,7 +450,7 @@ class ApiSecurityTest extends DomainTestCase
                 hydrate(
                     class: \App\Domain\Account\DataObjects\Account::class,
                     properties: [
-                        'name'      => 'Test Account',
+                        'name' => 'Test Account',
                         'user_uuid' => $this->user->uuid,
                     ]
                 )
@@ -475,23 +475,23 @@ class ApiSecurityTest extends DomainTestCase
                 hydrate(
                     class: \App\Domain\Account\DataObjects\Account::class,
                     properties: [
-                        'name'      => 'Destination Account',
+                        'name' => 'Destination Account',
                         'user_uuid' => User::factory()->create()->uuid,
                     ]
                 )
             )
             ->persist();
 
-        $idempotencyKey = 'test-key-' . uniqid();
+        $idempotencyKey = 'test-key-'.uniqid();
 
         // First request
         $response1 = $this->withToken($this->token)
             ->withHeaders(['Idempotency-Key' => $idempotencyKey])
             ->postJson('/api/transfers', [
                 'from_account' => $account->uuid,
-                'to_account'   => $toAccountUuid,
-                'amount'       => 10.00, // Amount in decimal, not cents
-                'asset_code'   => 'USD',
+                'to_account' => $toAccountUuid,
+                'amount' => 10.00, // Amount in decimal, not cents
+                'asset_code' => 'USD',
             ]);
 
         // Second request with same key and parameters
@@ -499,14 +499,14 @@ class ApiSecurityTest extends DomainTestCase
             ->withHeaders(['Idempotency-Key' => $idempotencyKey])
             ->postJson('/api/transfers', [
                 'from_account' => $account->uuid,
-                'to_account'   => $toAccountUuid,
-                'amount'       => 10.00,
-                'asset_code'   => 'USD',
+                'to_account' => $toAccountUuid,
+                'amount' => 10.00,
+                'asset_code' => 'USD',
             ]);
 
         // Should return same response
         if ($response1->status() !== 201) {
-            $this->fail('First transfer request failed: ' . json_encode($response1->json()));
+            $this->fail('First transfer request failed: '.json_encode($response1->json()));
         }
         $this->assertEquals(201, $response1->status(), 'First request should succeed');
         $this->assertEquals(201, $response2->status(), 'Second request should return same status');
@@ -521,23 +521,23 @@ class ApiSecurityTest extends DomainTestCase
             ->withHeaders(['Idempotency-Key' => $idempotencyKey])
             ->postJson('/api/transfers', [
                 'from_account' => $account->uuid,
-                'to_account'   => $toAccountUuid,
-                'amount'       => 20.00, // Different amount
-                'asset_code'   => 'USD',
+                'to_account' => $toAccountUuid,
+                'amount' => 20.00, // Different amount
+                'asset_code' => 'USD',
             ]);
 
         $this->assertEquals(409, $response3->status(), 'Different parameters with same key should conflict');
         $this->assertEquals('Idempotency key already used', $response3->json('error'));
 
         // Test idempotency with a new key and same request succeeds
-        $newIdempotencyKey = 'test-key-' . uniqid();
+        $newIdempotencyKey = 'test-key-'.uniqid();
         $response4 = $this->withToken($this->token)
             ->withHeaders(['Idempotency-Key' => $newIdempotencyKey])
             ->postJson('/api/transfers', [
                 'from_account' => $account->uuid,
-                'to_account'   => $toAccountUuid,
-                'amount'       => 10.00,
-                'asset_code'   => 'USD',
+                'to_account' => $toAccountUuid,
+                'amount' => 10.00,
+                'asset_code' => 'USD',
             ]);
 
         $this->assertEquals(201, $response4->status(), 'New idempotency key should allow duplicate request');

@@ -123,10 +123,10 @@ class SettingsTest extends TestCase
     public function test_encrypted_settings_are_protected(): void
     {
         Setting::set('api_key', 'secret-key-123', [
-            'type'         => 'string',
-            'label'        => 'API Key',
-            'description'  => 'Secret API key',
-            'group'        => 'security',
+            'type' => 'string',
+            'label' => 'API Key',
+            'description' => 'Secret API key',
+            'group' => 'security',
             'is_encrypted' => true,
         ]);
 
@@ -145,10 +145,10 @@ class SettingsTest extends TestCase
     public function test_settings_export_excludes_encrypted(): void
     {
         Setting::set('api_key', 'secret-key-123', [
-            'type'         => 'string',
-            'label'        => 'API Key',
-            'description'  => 'Secret API key',
-            'group'        => 'security',
+            'type' => 'string',
+            'label' => 'API Key',
+            'description' => 'Secret API key',
+            'group' => 'security',
             'is_encrypted' => true,
         ]);
 
@@ -162,9 +162,9 @@ class SettingsTest extends TestCase
     public function test_settings_import_validates_each_setting(): void
     {
         $settings = [
-            'platform_name'              => 'Imported Platform',
+            'platform_name' => 'Imported Platform',
             'transaction_fee_percentage' => 2.5,
-            'invalid_fee'                => 20, // This should fail validation
+            'invalid_fee' => 20, // This should fail validation
         ];
 
         $results = $this->settingsService->importSettings($settings, 'test@example.com');
@@ -181,10 +181,10 @@ class SettingsTest extends TestCase
     public function test_boolean_settings_are_cast_correctly(): void
     {
         Setting::set('maintenance_mode', true, [
-            'type'        => 'boolean',
-            'label'       => 'Maintenance Mode',
+            'type' => 'boolean',
+            'label' => 'Maintenance Mode',
             'description' => 'Enable maintenance mode',
-            'group'       => 'platform',
+            'group' => 'platform',
         ]);
 
         $value = Setting::get('maintenance_mode');
@@ -192,10 +192,10 @@ class SettingsTest extends TestCase
         $this->assertTrue($value);
 
         Setting::set('maintenance_mode', 0, [
-            'type'        => 'boolean',
-            'label'       => 'Maintenance Mode',
+            'type' => 'boolean',
+            'label' => 'Maintenance Mode',
             'description' => 'Enable maintenance mode',
-            'group'       => 'platform',
+            'group' => 'platform',
         ]);
 
         $value = Setting::get('maintenance_mode');

@@ -21,8 +21,7 @@ class DailyReconciliationService
     public function __construct(
         private readonly BalanceSynchronizationService $syncService,
         private readonly CustodianRegistry $custodianRegistry
-    ) {
-    }
+    ) {}
 
     /**
      * Perform daily reconciliation for all accounts.
@@ -32,12 +31,12 @@ class DailyReconciliationService
         Log::info('Starting daily reconciliation process');
 
         $this->reconciliationResults = [
-            'date'                     => now()->toDateString(),
-            'start_time'               => now(),
-            'accounts_checked'         => 0,
-            'discrepancies_found'      => 0,
+            'date' => now()->toDateString(),
+            'start_time' => now(),
+            'accounts_checked' => 0,
+            'discrepancies_found' => 0,
             'total_discrepancy_amount' => 0,
-            'status'                   => 'in_progress',
+            'status' => 'in_progress',
         ];
 
         try {
@@ -74,8 +73,8 @@ class DailyReconciliationService
             Log::error(
                 'Daily reconciliation failed',
                 [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString(),
                 ]
             );
 
@@ -120,13 +119,13 @@ class DailyReconciliationService
 
             if ($internalAmount !== $externalAmount) {
                 $discrepancy = [
-                    'account_uuid'     => $account->uuid,
-                    'asset_code'       => $assetCode,
+                    'account_uuid' => $account->uuid,
+                    'asset_code' => $assetCode,
                     'internal_balance' => $internalAmount,
                     'external_balance' => $externalAmount,
-                    'difference'       => abs($internalAmount - $externalAmount),
-                    'type'             => 'balance_mismatch',
-                    'detected_at'      => now(),
+                    'difference' => abs($internalAmount - $externalAmount),
+                    'type' => 'balance_mismatch',
+                    'detected_at' => now(),
                 ];
 
                 $this->discrepancies[] = $discrepancy;
@@ -174,10 +173,11 @@ class DailyReconciliationService
                     Log::warning(
                         'Custodian not available for reconciliation',
                         [
-                        'custodian' => $custodianAccount->custodian_name,
-                        'account'   => $account->uuid,
+                            'custodian' => $custodianAccount->custodian_name,
+                            'account' => $account->uuid,
                         ]
                     );
+
                     continue;
                 }
 
@@ -190,9 +190,9 @@ class DailyReconciliationService
                 Log::error(
                     'Failed to get external balance',
                     [
-                    'custodian' => $custodianAccount->custodian_name,
-                    'account'   => $account->uuid,
-                    'error'     => $e->getMessage(),
+                        'custodian' => $custodianAccount->custodian_name,
+                        'account' => $account->uuid,
+                        'error' => $e->getMessage(),
                     ]
                 );
             }
@@ -210,9 +210,9 @@ class DailyReconciliationService
         if ($account->balances->isNotEmpty() && $account->custodianAccounts->isEmpty()) {
             $this->discrepancies[] = [
                 'account_uuid' => $account->uuid,
-                'type'         => 'orphaned_balance',
-                'message'      => 'Account has balances but no custodian accounts',
-                'detected_at'  => now(),
+                'type' => 'orphaned_balance',
+                'message' => 'Account has balances but no custodian accounts',
+                'detected_at' => now(),
             ];
 
             $this->reconciliationResults['discrepancies_found']++;
@@ -253,10 +253,10 @@ class DailyReconciliationService
     private function generateReconciliationReport(): array
     {
         $report = [
-            'summary'         => $this->reconciliationResults,
-            'discrepancies'   => $this->discrepancies,
+            'summary' => $this->reconciliationResults,
+            'discrepancies' => $this->discrepancies,
             'recommendations' => $this->generateRecommendations(),
-            'generated_at'    => now(),
+            'generated_at' => now(),
         ];
 
         // Store report in database or file system
@@ -325,8 +325,8 @@ class DailyReconciliationService
         Log::critical(
             'Critical reconciliation discrepancies found',
             [
-            'count'        => $criticalDiscrepancies->count(),
-            'total_amount' => $criticalDiscrepancies->sum('difference'),
+                'count' => $criticalDiscrepancies->count(),
+                'total_amount' => $criticalDiscrepancies->sum('difference'),
             ]
         );
 

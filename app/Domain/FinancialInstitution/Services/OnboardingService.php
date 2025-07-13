@@ -56,8 +56,8 @@ class OnboardingService
             Log::info(
                 'Financial institution application submitted',
                 [
-                'application_id'   => $application->id,
-                'institution_name' => $application->institution_name,
+                    'application_id' => $application->id,
+                    'institution_name' => $application->institution_name,
                 ]
             );
 
@@ -67,11 +67,11 @@ class OnboardingService
             Log::error(
                 'Failed to submit financial institution application',
                 [
-                'error' => $e->getMessage(),
-                'data'  => $data,
+                    'error' => $e->getMessage(),
+                    'data' => $data,
                 ]
             );
-            throw new OnboardingException('Failed to submit application: ' . $e->getMessage());
+            throw new OnboardingException('Failed to submit application: '.$e->getMessage());
         }
     }
 
@@ -86,18 +86,18 @@ class OnboardingService
 
         $application->update(
             [
-            'status'       => FinancialInstitutionApplication::STATUS_UNDER_REVIEW,
-            'review_stage' => FinancialInstitutionApplication::STAGE_INITIAL,
-            'reviewed_by'  => $reviewerId,
-            'reviewed_at'  => now(),
+                'status' => FinancialInstitutionApplication::STATUS_UNDER_REVIEW,
+                'review_stage' => FinancialInstitutionApplication::STAGE_INITIAL,
+                'reviewed_by' => $reviewerId,
+                'reviewed_at' => now(),
             ]
         );
 
         Log::info(
             'Application review started',
             [
-            'application_id' => $application->id,
-            'reviewer_id'    => $reviewerId,
+                'application_id' => $application->id,
+                'reviewer_id' => $reviewerId,
             ]
         );
     }
@@ -109,7 +109,7 @@ class OnboardingService
     {
         $application->update(
             [
-            'review_stage' => FinancialInstitutionApplication::STAGE_COMPLIANCE,
+                'review_stage' => FinancialInstitutionApplication::STAGE_COMPLIANCE,
             ]
         );
 
@@ -118,21 +118,21 @@ class OnboardingService
         // Update application with compliance results
         $application->update(
             [
-            'metadata' => array_merge(
-                $application->metadata ?? [],
-                [
-                'compliance_check'      => $results,
-                'compliance_checked_at' => now()->toIso8601String(),
-                ]
-            ),
+                'metadata' => array_merge(
+                    $application->metadata ?? [],
+                    [
+                        'compliance_check' => $results,
+                        'compliance_checked_at' => now()->toIso8601String(),
+                    ]
+                ),
             ]
         );
 
         Log::info(
             'Compliance check completed',
             [
-            'application_id' => $application->id,
-            'passed'         => $results['passed'],
+                'application_id' => $application->id,
+                'passed' => $results['passed'],
             ]
         );
 
@@ -146,15 +146,15 @@ class OnboardingService
     {
         $application->update(
             [
-            'review_stage' => FinancialInstitutionApplication::STAGE_TECHNICAL,
+                'review_stage' => FinancialInstitutionApplication::STAGE_TECHNICAL,
             ]
         );
 
         $assessment = [
             'api_integration' => $this->assessApiCapabilities($application),
-            'security'        => $this->assessSecurityMeasures($application),
-            'scalability'     => $this->assessScalability($application),
-            'passed'          => true,
+            'security' => $this->assessSecurityMeasures($application),
+            'scalability' => $this->assessScalability($application),
+            'passed' => true,
         ];
 
         // Determine if technical assessment passes
@@ -168,13 +168,13 @@ class OnboardingService
         // Update application
         $application->update(
             [
-            'metadata' => array_merge(
-                $application->metadata ?? [],
-                [
-                'technical_assessment'  => $assessment,
-                'technical_assessed_at' => now()->toIso8601String(),
-                ]
-            ),
+                'metadata' => array_merge(
+                    $application->metadata ?? [],
+                    [
+                        'technical_assessment' => $assessment,
+                        'technical_assessed_at' => now()->toIso8601String(),
+                    ]
+                ),
             ]
         );
 
@@ -198,8 +198,8 @@ class OnboardingService
             // Update application status
             $application->update(
                 [
-                'status'       => FinancialInstitutionApplication::STATUS_APPROVED,
-                'review_stage' => FinancialInstitutionApplication::STAGE_FINAL,
+                    'status' => FinancialInstitutionApplication::STATUS_APPROVED,
+                    'review_stage' => FinancialInstitutionApplication::STAGE_FINAL,
                 ]
             );
 
@@ -209,8 +209,8 @@ class OnboardingService
             // Update application with partner reference
             $application->update(
                 [
-                'partner_id'              => $partner->id,
-                'onboarding_completed_at' => now(),
+                    'partner_id' => $partner->id,
+                    'onboarding_completed_at' => now(),
                 ]
             );
 
@@ -223,8 +223,8 @@ class OnboardingService
             Log::info(
                 'Application approved and partner created',
                 [
-                'application_id' => $application->id,
-                'partner_id'     => $partner->id,
+                    'application_id' => $application->id,
+                    'partner_id' => $partner->id,
                 ]
             );
 
@@ -234,11 +234,11 @@ class OnboardingService
             Log::error(
                 'Failed to approve application',
                 [
-                'application_id' => $application->id,
-                'error'          => $e->getMessage(),
+                    'application_id' => $application->id,
+                    'error' => $e->getMessage(),
                 ]
             );
-            throw new OnboardingException('Failed to approve application: ' . $e->getMessage());
+            throw new OnboardingException('Failed to approve application: '.$e->getMessage());
         }
     }
 
@@ -255,8 +255,8 @@ class OnboardingService
 
         $application->update(
             [
-            'status'           => FinancialInstitutionApplication::STATUS_REJECTED,
-            'rejection_reason' => $reason,
+                'status' => FinancialInstitutionApplication::STATUS_REJECTED,
+                'rejection_reason' => $reason,
             ]
         );
 
@@ -265,8 +265,8 @@ class OnboardingService
         Log::info(
             'Application rejected',
             [
-            'application_id' => $application->id,
-            'reason'         => $reason,
+                'application_id' => $application->id,
+                'reason' => $reason,
             ]
         );
     }
@@ -280,16 +280,16 @@ class OnboardingService
     ): void {
         $application->update(
             [
-            'status'       => FinancialInstitutionApplication::STATUS_ON_HOLD,
-            'review_notes' => $reason,
+                'status' => FinancialInstitutionApplication::STATUS_ON_HOLD,
+                'review_notes' => $reason,
             ]
         );
 
         Log::info(
             'Application put on hold',
             [
-            'application_id' => $application->id,
-            'reason'         => $reason,
+                'application_id' => $application->id,
+                'reason' => $reason,
             ]
         );
     }
@@ -302,25 +302,25 @@ class OnboardingService
         array $config
     ): FinancialInstitutionPartner {
         $defaultConfig = [
-            'application_id'   => $application->id,
+            'application_id' => $application->id,
             'institution_name' => $application->institution_name,
-            'legal_name'       => $application->legal_name,
+            'legal_name' => $application->legal_name,
             'institution_type' => $application->institution_type,
-            'country'          => $application->country,
-            'status'           => FinancialInstitutionPartner::STATUS_ACTIVE,
-            'risk_rating'      => $application->risk_rating,
-            'risk_score'       => $application->risk_score,
-            'primary_contact'  => [
-                'name'     => $application->contact_name,
-                'email'    => $application->contact_email,
-                'phone'    => $application->contact_phone,
+            'country' => $application->country,
+            'status' => FinancialInstitutionPartner::STATUS_ACTIVE,
+            'risk_rating' => $application->risk_rating,
+            'risk_score' => $application->risk_score,
+            'primary_contact' => [
+                'name' => $application->contact_name,
+                'email' => $application->contact_email,
+                'phone' => $application->contact_phone,
                 'position' => $application->contact_position,
             ],
-            'fee_structure'      => $this->getDefaultFeeStructure($application),
+            'fee_structure' => $this->getDefaultFeeStructure($application),
             'allowed_currencies' => $application->required_currencies,
-            'api_permissions'    => $this->getDefaultApiPermissions($application),
-            'enabled_features'   => $this->getDefaultEnabledFeatures($application),
-            'activated_at'       => now(),
+            'api_permissions' => $this->getDefaultApiPermissions($application),
+            'enabled_features' => $this->getDefaultEnabledFeatures($application),
+            'activated_at' => now(),
         ];
 
         $partnerData = array_merge($defaultConfig, $config);
@@ -334,21 +334,21 @@ class OnboardingService
     private function getDefaultFeeStructure(FinancialInstitutionApplication $application): array
     {
         return [
-            'account_creation'       => 0,
-            'monthly_account'        => 0,
+            'account_creation' => 0,
+            'monthly_account' => 0,
             'transaction_percentage' => match ($application->institution_type) {
-                'bank'              => 0.1,
-                'credit_union'      => 0.05,
-                'fintech'           => 0.15,
+                'bank' => 0.1,
+                'credit_union' => 0.05,
+                'fintech' => 0.15,
                 'payment_processor' => 0.2,
-                default             => 0.1,
+                default => 0.1,
             },
             'minimum_monthly_fee' => match ($application->institution_type) {
-                'bank'              => 1000,
-                'credit_union'      => 500,
-                'fintech'           => 2000,
+                'bank' => 1000,
+                'credit_union' => 500,
+                'fintech' => 2000,
                 'payment_processor' => 2500,
-                default             => 1000,
+                default => 1000,
             },
         ];
     }
@@ -435,9 +435,9 @@ class OnboardingService
         }
 
         return [
-            'score'        => $score,
+            'score' => $score,
             'requirements' => $requirements,
-            'passed'       => $score >= 50,
+            'passed' => $score >= 50,
         ];
     }
 
@@ -471,9 +471,9 @@ class OnboardingService
         }
 
         return [
-            'score'    => $score,
+            'score' => $score,
             'measures' => $measures,
-            'passed'   => $score >= 50,
+            'passed' => $score >= 50,
         ];
     }
 
@@ -509,9 +509,9 @@ class OnboardingService
         }
 
         return [
-            'score'   => $scalabilityScore,
+            'score' => $scalabilityScore,
             'factors' => $factors,
-            'passed'  => true, // Scalability is informational, not a hard requirement
+            'passed' => true, // Scalability is informational, not a hard requirement
         ];
     }
 }

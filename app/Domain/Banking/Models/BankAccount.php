@@ -23,8 +23,7 @@ class BankAccount
         public readonly Carbon $createdAt,
         public readonly Carbon $updatedAt,
         public readonly ?Carbon $closedAt = null,
-    ) {
-    }
+    ) {}
 
     /**
      * Check if account is active.
@@ -73,20 +72,20 @@ class BankAccount
     public function toArray(): array
     {
         return [
-            'id'             => $this->id,
-            'bank_code'      => $this->bankCode,
+            'id' => $this->id,
+            'bank_code' => $this->bankCode,
             'account_number' => $this->accountNumber,
-            'iban'           => $this->iban,
-            'swift'          => $this->swift,
-            'currency'       => $this->currency,
-            'account_type'   => $this->accountType,
-            'status'         => $this->status,
-            'holder_name'    => $this->holderName,
+            'iban' => $this->iban,
+            'swift' => $this->swift,
+            'currency' => $this->currency,
+            'account_type' => $this->accountType,
+            'status' => $this->status,
+            'holder_name' => $this->holderName,
             'holder_address' => $this->holderAddress,
-            'metadata'       => $this->metadata,
-            'created_at'     => $this->createdAt->toIso8601String(),
-            'updated_at'     => $this->updatedAt->toIso8601String(),
-            'closed_at'      => $this->closedAt?->toIso8601String(),
+            'metadata' => $this->metadata,
+            'created_at' => $this->createdAt->toIso8601String(),
+            'updated_at' => $this->updatedAt->toIso8601String(),
+            'closed_at' => $this->closedAt?->toIso8601String(),
         ];
     }
 

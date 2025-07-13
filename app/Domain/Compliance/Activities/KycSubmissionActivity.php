@@ -10,17 +10,15 @@ class KycSubmissionActivity extends Activity
 {
     public function __construct(
         private KycService $kycService
-    ) {
-    }
+    ) {}
 
     /**
      * Execute KYC submission activity.
      *
-     * @param  array $input Expected format: [
-     *                      'user_uuid' => string,
-     *                      'documents' => array
-     *                      ]
-     * @return array
+     * @param  array  $input  Expected format: [
+     *                        'user_uuid' => string,
+     *                        'documents' => array
+     *                        ]
      */
     public function execute(array $input): array
     {
@@ -36,10 +34,10 @@ class KycSubmissionActivity extends Activity
         $this->kycService->submitKyc($user, $documents);
 
         return [
-            'user_uuid'      => $userUuid,
-            'status'         => 'submitted',
+            'user_uuid' => $userUuid,
+            'status' => 'submitted',
             'document_count' => count($documents),
-            'submitted_at'   => now()->toISOString(),
+            'submitted_at' => now()->toISOString(),
         ];
     }
 }

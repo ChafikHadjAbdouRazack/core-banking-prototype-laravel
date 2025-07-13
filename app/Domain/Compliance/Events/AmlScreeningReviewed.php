@@ -15,15 +15,10 @@ class AmlScreeningReviewed extends ShouldBeStored
 {
     /**
      * Create new AML screening reviewed event.
-     *
-     * @param string $reviewedBy
-     * @param string $decision
-     * @param string $notes
      */
     public function __construct(
         public string $reviewedBy,
         public string $decision,
         public string $notes
-    ) {
-    }
+    ) {}
 }

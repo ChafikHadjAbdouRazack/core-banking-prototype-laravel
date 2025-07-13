@@ -17,5 +17,5 @@ it('has correct resource', function () {
 });
 
 it('can be instantiated', function () {
-    expect(new EditAccount())->toBeInstanceOf(EditAccount::class);
+    expect(new EditAccount)->toBeInstanceOf(EditAccount::class);
 });

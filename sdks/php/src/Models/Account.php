@@ -11,7 +11,7 @@ class Account extends BaseModel
     {
         return $this->uuid;
     }
-    
+
     /**
      * Get account name.
      */
@@ -19,7 +19,7 @@ class Account extends BaseModel
     {
         return $this->name;
     }
-    
+
     /**
      * Get account balance.
      */
@@ -27,7 +27,7 @@ class Account extends BaseModel
     {
         return $this->balance;
     }
-    
+
     /**
      * Get account status.
      */
@@ -35,7 +35,7 @@ class Account extends BaseModel
     {
         return $this->status;
     }
-    
+
     /**
      * Check if account is active.
      */
@@ -43,7 +43,7 @@ class Account extends BaseModel
     {
         return $this->status === 'active';
     }
-    
+
     /**
      * Check if account is frozen.
      */
@@ -51,7 +51,7 @@ class Account extends BaseModel
     {
         return $this->status === 'frozen';
     }
-    
+
     /**
      * Check if account is closed.
      */

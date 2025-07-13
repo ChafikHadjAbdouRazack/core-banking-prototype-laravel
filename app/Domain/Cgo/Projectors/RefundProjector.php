@@ -9,7 +9,7 @@ use App\Domain\Cgo\Events\RefundFailed;
 use App\Domain\Cgo\Events\RefundProcessed;
 use App\Domain\Cgo\Events\RefundRejected;
 use App\Domain\Cgo\Events\RefundRequested;
-use App\Models\CgoRefund;
+use App\Domain\Cgo\Models\CgoRefund;
 use Spatie\EventSourcing\EventHandlers\Projectors\Projector;
 
 class RefundProjector extends Projector

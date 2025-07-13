@@ -15,7 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
             Route::middleware('api')
                 ->prefix('api')
                 ->group(base_path('routes/api-bian.php'));
-            
+
             Route::middleware('api')
                 ->prefix('api/v2')
                 ->group(base_path('routes/api-v2.php'));
@@ -33,17 +33,17 @@ return Application::configure(basePath: dirname(__DIR__))
             'auth.api_or_sanctum' => \App\Http\Middleware\AuthenticateApiOrSanctum::class,
             'idempotency' => \App\Http\Middleware\IdempotencyMiddleware::class,
         ]);
-        
+
         // Prepend CORS middleware to handle it before other middleware
         $middleware->prepend(\Illuminate\Http\Middleware\HandleCors::class);
-        
+
         // Apply middleware to API routes (no global throttling - use custom rate limiting)
         $middleware->group('api', [
             \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             \App\Http\Middleware\SecurityHeaders::class,
         ]);
-        
+
         // Apply security headers to web routes
         $middleware->group('web', [
             \App\Http\Middleware\EncryptCookies::class,
@@ -61,10 +61,10 @@ return Application::configure(basePath: dirname(__DIR__))
             if ($request->is('api/*')) {
                 return true;
             }
-            
+
             return $request->expectsJson();
         });
-        
+
         // Don't report certain exceptions in demo environment
         $exceptions->dontReport([
             \Illuminate\Auth\AuthenticationException::class,

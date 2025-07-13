@@ -2,12 +2,18 @@
 
 namespace Tests\Domain\Account\Projectors;
 
+use App\Domain\Account\Aggregates\AssetTransactionAggregate;
 use App\Domain\Account\Aggregates\LedgerAggregate;
 use App\Domain\Account\Utils\ValidatesHash;
 use App\Models\Account;
+use App\Models\AccountBalance;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
+/**
+ * @property \App\Models\Account $account
+ * @property \App\Models\User $business_user
+ */
 class AccountProjectorTest extends TestCase
 {
     use ValidatesHash;
@@ -15,9 +21,9 @@ class AccountProjectorTest extends TestCase
     #[Test]
     public function test_create(): void
     {
-        $this->assertDatabaseHas((new Account())->getTable(), [
+        $this->assertDatabaseHas((new Account)->getTable(), [
             'user_uuid' => $this->business_user->uuid,
-            'uuid'      => $this->account->uuid,
+            'uuid' => $this->account->uuid,
         ]);
 
         $this->assertTrue($this->account->user->is($this->business_user));
@@ -27,7 +33,7 @@ class AccountProjectorTest extends TestCase
     public function test_add_money(): void
     {
         // Ensure account starts with 0 balance by clearing any existing balance
-        \App\Models\AccountBalance::where('account_uuid', $this->account->uuid)->delete();
+        AccountBalance::where('account_uuid', $this->account->uuid)->delete();
         $this->account->refresh();
         $this->assertEquals(0, $this->account->balance);
         $this->resetHash();
@@ -58,7 +64,7 @@ class AccountProjectorTest extends TestCase
     public function test_subtract_money(): void
     {
         // Ensure account starts with 0 balance by clearing any existing balance
-        \App\Models\AccountBalance::where('account_uuid', $this->account->uuid)->delete();
+        AccountBalance::where('account_uuid', $this->account->uuid)->delete();
         $this->account->refresh();
         $this->assertEquals(0, $this->account->balance);
         $this->resetHash();
@@ -86,9 +92,9 @@ class AccountProjectorTest extends TestCase
             ->deleteAccount()
             ->persist();
 
-        $this->assertDatabaseMissing((new Account())->getTable(), [
+        $this->assertDatabaseMissing((new Account)->getTable(), [
             'user_uuid' => $this->business_user->uuid,
-            'uuid'      => $this->account->uuid,
+            'uuid' => $this->account->uuid,
         ]);
     }
 }

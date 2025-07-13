@@ -15,17 +15,11 @@ class AmlScreeningMatchStatusUpdated extends ShouldBeStored
 {
     /**
      * Create new AML screening match status updated event.
-     *
-     * @param string $matchId
-     * @param string $action
-     * @param array $details
-     * @param string|null $reason
      */
     public function __construct(
         public string $matchId,
         public string $action,
         public array $details,
         public ?string $reason = null
-    ) {
-    }
+    ) {}
 }

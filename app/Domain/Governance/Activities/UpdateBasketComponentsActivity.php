@@ -9,10 +9,6 @@ class UpdateBasketComponentsActivity extends Activity
 {
     /**
      * Execute update basket components activity.
-     *
-     * @param  string $basketCode
-     * @param  array  $composition
-     * @return void
      */
     public function execute(string $basketCode, array $composition): void
     {

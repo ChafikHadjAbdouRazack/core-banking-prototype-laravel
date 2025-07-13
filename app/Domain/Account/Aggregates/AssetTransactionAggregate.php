@@ -27,13 +27,9 @@ class AssetTransactionAggregate extends AggregateRoot
      */
     protected array $balances = [];
 
-    /**
-     * @var int
-     */
     public int $count = 0;
 
     /**
-     * @return TransactionRepository
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
     protected function getStoredEventRepository(): TransactionRepository
@@ -54,9 +50,6 @@ class AssetTransactionAggregate extends AggregateRoot
     }
 
     /**
-     * @param string $assetCode
-     * @param int    $amount
-     *
      * @return $this
      */
     public function credit(string $assetCode, int $amount): static
@@ -73,8 +66,6 @@ class AssetTransactionAggregate extends AggregateRoot
     }
 
     /**
-     * @param AssetBalanceAdded $event
-     *
      * @return AssetTransactionAggregate
      */
     public function applyAssetBalanceAdded(AssetBalanceAdded $event): static
@@ -93,7 +84,7 @@ class AssetTransactionAggregate extends AggregateRoot
 
         if (++$this->count >= self::COUNT_THRESHOLD) {
             $this->recordThat(
-                domainEvent: new TransactionThresholdReached()
+                domainEvent: new TransactionThresholdReached
             );
             $this->count = 0;
         }
@@ -104,16 +95,13 @@ class AssetTransactionAggregate extends AggregateRoot
     }
 
     /**
-     * @param string $assetCode
-     * @param int    $amount
-     *
      * @return AssetTransactionAggregate
      */
     public function debit(string $assetCode, int $amount): static
     {
         if (! $this->hasSufficientFundsToSubtractAmount($assetCode, $amount)) {
             $this->recordThat(
-                new AccountLimitHit()
+                new AccountLimitHit
             );
 
             $this->persist();
@@ -133,8 +121,6 @@ class AssetTransactionAggregate extends AggregateRoot
     }
 
     /**
-     * @param AssetBalanceSubtracted $event
-     *
      * @return AssetTransactionAggregate
      */
     public function applyAssetBalanceSubtracted(AssetBalanceSubtracted $event): static
@@ -156,12 +142,6 @@ class AssetTransactionAggregate extends AggregateRoot
         return $this;
     }
 
-    /**
-     * @param string $assetCode
-     * @param int    $amount
-     *
-     * @return bool
-     */
     protected function hasSufficientFundsToSubtractAmount(string $assetCode, int $amount): bool
     {
         $balance = $this->balances[$assetCode] ?? 0;
@@ -169,10 +149,6 @@ class AssetTransactionAggregate extends AggregateRoot
         return $balance - $amount >= self::ACCOUNT_LIMIT;
     }
 
-    /**
-     * @param  string $assetCode
-     * @return int
-     */
     public function getBalance(string $assetCode): int
     {
         return $this->balances[$assetCode] ?? 0;
@@ -188,10 +164,6 @@ class AssetTransactionAggregate extends AggregateRoot
 
     /**
      * Generate hash for asset transaction.
-     *
-     * @param  string $assetCode
-     * @param  int    $amount
-     * @return Hash
      */
     protected function generateHashForAsset(string $assetCode, int $amount): Hash
     {
@@ -203,10 +175,6 @@ class AssetTransactionAggregate extends AggregateRoot
     /**
      * Validate hash for asset transaction.
      *
-     * @param  Hash   $hash
-     * @param  string $assetCode
-     * @param  int    $amount
-     * @return void
      * @throws InvalidHashException
      */
     protected function validateHashForAsset(Hash $hash, string $assetCode, int $amount): void

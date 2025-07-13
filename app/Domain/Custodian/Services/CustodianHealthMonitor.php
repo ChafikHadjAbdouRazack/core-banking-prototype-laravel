@@ -31,8 +31,7 @@ class CustodianHealthMonitor
     public function __construct(
         private readonly CustodianRegistry $registry,
         private readonly CircuitBreakerService $circuitBreaker
-    ) {
-    }
+    ) {}
 
     /**
      * Get health status for all custodians.
@@ -81,27 +80,27 @@ class CustodianHealthMonitor
             $this->checkAndNotifyHealthChange($custodian, $status);
 
             return [
-                'custodian'               => $custodian,
-                'status'                  => $status,
-                'available'               => $isAvailable,
+                'custodian' => $custodian,
+                'status' => $status,
+                'available' => $isAvailable,
                 'circuit_breaker_metrics' => $circuitMetrics,
-                'overall_failure_rate'    => round($overallFailureRate * 100, 2),
-                'last_check'              => now()->toIso8601String(),
-                'recommendations'         => $this->getRecommendations($status, $overallFailureRate),
+                'overall_failure_rate' => round($overallFailureRate * 100, 2),
+                'last_check' => now()->toIso8601String(),
+                'recommendations' => $this->getRecommendations($status, $overallFailureRate),
             ];
         } catch (\Exception $e) {
             Log::error(
                 "Failed to get health for custodian: {$custodian}",
                 [
-                'error' => $e->getMessage(),
+                    'error' => $e->getMessage(),
                 ]
             );
 
             return [
-                'custodian'  => $custodian,
-                'status'     => self::STATUS_UNHEALTHY,
-                'available'  => false,
-                'error'      => $e->getMessage(),
+                'custodian' => $custodian,
+                'status' => self::STATUS_UNHEALTHY,
+                'available' => false,
+                'error' => $e->getMessage(),
                 'last_check' => now()->toIso8601String(),
             ];
         }
@@ -181,9 +180,9 @@ class CustodianHealthMonitor
             Log::warning(
                 'Custodian health status changed',
                 [
-                'custodian' => $custodian,
-                'previous'  => $previousStatus,
-                'new'       => $newStatus,
+                    'custodian' => $custodian,
+                    'previous' => $previousStatus,
+                    'new' => $newStatus,
                 ]
             );
         }
@@ -206,15 +205,15 @@ class CustodianHealthMonitor
                 // In production, this would query time-series data
                 // For now, return sample metrics
                 return [
-                'custodian'                => $custodian,
-                'period_hours'             => $hours,
-                'availability_percentage'  => 99.5,
-                'total_requests'           => 10000,
-                'failed_requests'          => 50,
-                'circuit_opens'            => 2,
-                'average_response_time_ms' => 250,
-                'p95_response_time_ms'     => 500,
-                'p99_response_time_ms'     => 1000,
+                    'custodian' => $custodian,
+                    'period_hours' => $hours,
+                    'availability_percentage' => 99.5,
+                    'total_requests' => 10000,
+                    'failed_requests' => 50,
+                    'circuit_opens' => 2,
+                    'average_response_time_ms' => 250,
+                    'p95_response_time_ms' => 500,
+                    'p99_response_time_ms' => 1000,
                 ];
             }
         );
@@ -232,10 +231,10 @@ class CustodianHealthMonitor
 
             // Calculate health score (0-100)
             $score = match ($health['status']) {
-                self::STATUS_HEALTHY   => 100 - ($health['overall_failure_rate'] ?? 0),
-                self::STATUS_DEGRADED  => 50 - ($health['overall_failure_rate'] ?? 0),
+                self::STATUS_HEALTHY => 100 - ($health['overall_failure_rate'] ?? 0),
+                self::STATUS_DEGRADED => 50 - ($health['overall_failure_rate'] ?? 0),
                 self::STATUS_UNHEALTHY => 0,
-                default                => 0,
+                default => 0,
             };
 
             $healthScores[$custodian] = $score;

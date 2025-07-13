@@ -30,7 +30,7 @@ class InitiateDepositActivity extends Activity
 
         return [
             'deposit_uuid' => $depositUuid,
-            'status'       => 'initiated',
+            'status' => 'initiated',
         ];
     }
 }

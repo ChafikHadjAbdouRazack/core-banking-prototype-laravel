@@ -39,7 +39,7 @@ class RiskAnalysisControllerTest extends ControllerTestCase
             ])
             ->assertJson([
                 'data' => [
-                    'user_id'    => $userId,
+                    'user_id' => $userId,
                     'risk_score' => 0,
                     'risk_level' => 'low',
                 ],
@@ -73,8 +73,8 @@ class RiskAnalysisControllerTest extends ControllerTestCase
             ->assertJson([
                 'data' => [
                     'transaction_id' => $transactionId,
-                    'risk_score'     => 0,
-                    'risk_factors'   => [],
+                    'risk_score' => 0,
+                    'risk_factors' => [],
                 ],
             ]);
     }
@@ -93,9 +93,9 @@ class RiskAnalysisControllerTest extends ControllerTestCase
         Sanctum::actingAs($this->user);
 
         $response = $this->postJson('/api/risk/calculate', [
-            'amount'           => 1000.00,
-            'currency'         => 'EUR',
-            'user_id'          => $this->user->id,
+            'amount' => 1000.00,
+            'currency' => 'EUR',
+            'user_id' => $this->user->id,
             'transaction_type' => 'transfer',
         ]);
 
@@ -120,17 +120,17 @@ class RiskAnalysisControllerTest extends ControllerTestCase
         Sanctum::actingAs($this->user);
 
         $response = $this->postJson('/api/risk/calculate', [
-            'amount'              => 50000.00,
-            'currency'            => 'EUR',
-            'user_id'             => $this->user->id,
-            'transaction_type'    => 'withdrawal',
+            'amount' => 50000.00,
+            'currency' => 'EUR',
+            'user_id' => $this->user->id,
+            'transaction_type' => 'withdrawal',
             'destination_country' => 'US',
-            'device_fingerprint'  => 'fingerprint-123',
-            'ip_address'          => '192.168.1.1',
-            'user_behavior'       => [
-                'login_frequency'     => 'daily',
+            'device_fingerprint' => 'fingerprint-123',
+            'ip_address' => '192.168.1.1',
+            'user_behavior' => [
+                'login_frequency' => 'daily',
                 'transaction_pattern' => 'regular',
-                'account_age_days'    => 365,
+                'account_age_days' => 365,
             ],
         ]);
 
@@ -254,22 +254,22 @@ class RiskAnalysisControllerTest extends ControllerTestCase
         Sanctum::actingAs($this->user);
 
         $response = $this->postJson('/api/risk/device-fingerprint', [
-            'fingerprint'          => 'unique-fingerprint-123',
-            'user_agent'           => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
-            'screen_resolution'    => '1920x1080',
-            'timezone'             => 'Europe/Berlin',
-            'language'             => 'en-US',
-            'platform'             => 'Windows',
+            'fingerprint' => 'unique-fingerprint-123',
+            'user_agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
+            'screen_resolution' => '1920x1080',
+            'timezone' => 'Europe/Berlin',
+            'language' => 'en-US',
+            'platform' => 'Windows',
             'hardware_concurrency' => 8,
-            'device_memory'        => 8,
-            'webgl_vendor'         => 'Intel Inc.',
-            'webgl_renderer'       => 'Intel Iris Graphics',
+            'device_memory' => 8,
+            'webgl_vendor' => 'Intel Inc.',
+            'webgl_renderer' => 'Intel Iris Graphics',
         ]);
 
         $response->assertStatus(200)
             ->assertJson([
                 'message' => 'Device fingerprint stored',
-                'data'    => [],
+                'data' => [],
             ]);
     }
 
@@ -285,7 +285,7 @@ class RiskAnalysisControllerTest extends ControllerTestCase
         $response->assertStatus(200)
             ->assertJson([
                 'message' => 'Device fingerprint stored',
-                'data'    => [],
+                'data' => [],
             ]);
     }
 
@@ -336,16 +336,16 @@ class RiskAnalysisControllerTest extends ControllerTestCase
         Sanctum::actingAs($this->user);
 
         $response = $this->postJson('/api/risk/calculate', [
-            'amount'              => 100000.00,
-            'currency'            => 'EUR',
-            'user_id'             => $this->user->id,
-            'transaction_type'    => 'withdrawal',
+            'amount' => 100000.00,
+            'currency' => 'EUR',
+            'user_id' => $this->user->id,
+            'transaction_type' => 'withdrawal',
             'destination_country' => 'high_risk_country',
-            'is_new_recipient'    => true,
-            'is_unusual_time'     => true,
-            'velocity_check'      => [
+            'is_new_recipient' => true,
+            'is_unusual_time' => true,
+            'velocity_check' => [
                 'transactions_last_hour' => 10,
-                'amount_last_24h'        => 150000,
+                'amount_last_24h' => 150000,
             ],
         ]);
 
@@ -366,8 +366,8 @@ class RiskAnalysisControllerTest extends ControllerTestCase
         $transactionId = 'txn-complex-123';
         $response = $this->postJson("/api/risk/transactions/{$transactionId}/analyze", [
             'include_historical_analysis' => true,
-            'include_peer_comparison'     => true,
-            'include_ml_predictions'      => true,
+            'include_peer_comparison' => true,
+            'include_ml_predictions' => true,
         ]);
 
         $response->assertStatus(200)
@@ -420,12 +420,12 @@ class RiskAnalysisControllerTest extends ControllerTestCase
         Sanctum::actingAs($this->user);
 
         $response = $this->postJson('/api/risk/calculate', [
-            'amount'              => 250.00,
-            'currency'            => 'EUR',
-            'user_id'             => $this->user->id,
-            'transaction_type'    => 'merchant_payment',
-            'merchant_id'         => 'merchant-123',
-            'merchant_category'   => 'electronics',
+            'amount' => 250.00,
+            'currency' => 'EUR',
+            'user_id' => $this->user->id,
+            'transaction_type' => 'merchant_payment',
+            'merchant_id' => 'merchant-123',
+            'merchant_category' => 'electronics',
             'merchant_risk_score' => 15,
         ]);
 

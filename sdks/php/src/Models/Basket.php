@@ -11,7 +11,7 @@ class Basket extends BaseModel
     {
         return $this->code;
     }
-    
+
     /**
      * Get basket name.
      */
@@ -19,7 +19,7 @@ class Basket extends BaseModel
     {
         return $this->name;
     }
-    
+
     /**
      * Get basket composition.
      */
@@ -27,7 +27,7 @@ class Basket extends BaseModel
     {
         return $this->composition;
     }
-    
+
     /**
      * Get total supply.
      */
@@ -35,7 +35,7 @@ class Basket extends BaseModel
     {
         return $this->total_supply;
     }
-    
+
     /**
      * Get current value.
      */
@@ -43,7 +43,7 @@ class Basket extends BaseModel
     {
         return $this->current_value;
     }
-    
+
     /**
      * Check if basket is active.
      */

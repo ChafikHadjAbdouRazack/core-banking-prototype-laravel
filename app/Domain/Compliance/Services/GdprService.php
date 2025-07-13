@@ -26,12 +26,12 @@ class GdprService
         );
 
         return [
-            'user'          => $this->getUserData($user),
-            'accounts'      => $this->getAccountData($user),
-            'transactions'  => $this->getTransactionData($user),
+            'user' => $this->getUserData($user),
+            'accounts' => $this->getAccountData($user),
+            'transactions' => $this->getTransactionData($user),
             'kyc_documents' => $this->getKycData($user),
-            'audit_logs'    => $this->getAuditData($user),
-            'consents'      => $this->getConsentData($user),
+            'audit_logs' => $this->getAuditData($user),
+            'consents' => $this->getConsentData($user),
         ];
     }
 
@@ -84,7 +84,7 @@ class GdprService
     public function updateConsent(User $user, array $consents): void
     {
         $oldConsents = [
-            'marketing_consent'      => $user->marketing_consent_at !== null,
+            'marketing_consent' => $user->marketing_consent_at !== null,
             'data_retention_consent' => $user->data_retention_consent,
         ];
 
@@ -124,14 +124,14 @@ class GdprService
     protected function getUserData(User $user): array
     {
         return [
-            'uuid'              => $user->uuid,
-            'name'              => $user->name,
-            'email'             => $user->email,
+            'uuid' => $user->uuid,
+            'name' => $user->name,
+            'email' => $user->email,
             'email_verified_at' => $user->email_verified_at,
-            'kyc_status'        => $user->kyc_status,
-            'kyc_level'         => $user->kyc_level,
-            'created_at'        => $user->created_at,
-            'updated_at'        => $user->updated_at,
+            'kyc_status' => $user->kyc_status,
+            'kyc_level' => $user->kyc_level,
+            'created_at' => $user->created_at,
+            'updated_at' => $user->updated_at,
         ];
     }
 
@@ -143,18 +143,18 @@ class GdprService
         return $user->accounts->map(
             function ($account) {
                 return [
-                'uuid'       => $account->uuid,
-                'balance'    => $account->balance,
-                'status'     => $account->status,
-                'created_at' => $account->created_at,
-                'balances'   => $account->balances->map(
-                    function ($balance) {
-                        return [
-                        'asset_code' => $balance->asset_code,
-                        'balance'    => $balance->balance,
-                        ];
-                    }
-                )->toArray(),
+                    'uuid' => $account->uuid,
+                    'balance' => $account->balance,
+                    'status' => $account->status,
+                    'created_at' => $account->created_at,
+                    'balances' => $account->balances->map(
+                        function ($balance) {
+                            return [
+                                'asset_code' => $balance->asset_code,
+                                'balance' => $balance->balance,
+                            ];
+                        }
+                    )->toArray(),
                 ];
             }
         )->toArray();
@@ -178,11 +178,11 @@ class GdprService
         return $user->kycDocuments->map(
             function ($document) {
                 return [
-                'id'            => $document->id,
-                'document_type' => $document->document_type,
-                'status'        => $document->status,
-                'uploaded_at'   => $document->uploaded_at,
-                'verified_at'   => $document->verified_at,
+                    'id' => $document->id,
+                    'document_type' => $document->document_type,
+                    'status' => $document->status,
+                    'uploaded_at' => $document->uploaded_at,
+                    'verified_at' => $document->verified_at,
                 ];
             }
         )->toArray();
@@ -199,9 +199,9 @@ class GdprService
             ->map(
                 function ($log) {
                     return [
-                    'action'     => $log->action,
-                    'created_at' => $log->created_at,
-                    'ip_address' => $log->ip_address,
+                        'action' => $log->action,
+                        'created_at' => $log->created_at,
+                        'ip_address' => $log->ip_address,
                     ];
                 }
             )
@@ -215,9 +215,9 @@ class GdprService
     {
         return [
             'privacy_policy_accepted_at' => $user->privacy_policy_accepted_at,
-            'terms_accepted_at'          => $user->terms_accepted_at,
-            'marketing_consent_at'       => $user->marketing_consent_at,
-            'data_retention_consent'     => $user->data_retention_consent,
+            'terms_accepted_at' => $user->terms_accepted_at,
+            'marketing_consent_at' => $user->marketing_consent_at,
+            'data_retention_consent' => $user->data_retention_consent,
         ];
     }
 
@@ -228,9 +228,9 @@ class GdprService
     {
         $user->update(
             [
-            'name'     => 'ANONYMIZED_' . substr($user->uuid, 0, 8),
-            'email'    => 'deleted-' . $user->uuid . '@anonymized.local',
-            'kyc_data' => null,
+                'name' => 'ANONYMIZED_'.substr($user->uuid, 0, 8),
+                'email' => 'deleted-'.$user->uuid.'@anonymized.local',
+                'kyc_data' => null,
             ]
         );
     }
@@ -290,7 +290,7 @@ class GdprService
 
         return [
             'can_delete' => empty($reasons),
-            'reasons'    => $reasons,
+            'reasons' => $reasons,
         ];
     }
 }

@@ -12,14 +12,12 @@ use Spatie\EventSourcing\StoredEvents\Repositories\EloquentStoredEventRepository
 final class BatchRepository extends EloquentStoredEventRepository
 {
     /**
-     * @param string $storedEventModel
-     *
      * @throws InvalidEloquentStoredEventModel
      */
     public function __construct(
         protected string $storedEventModel = BatchEvent::class
     ) {
-        if (! new $this->storedEventModel() instanceof EloquentStoredEvent) {
+        if (! new $this->storedEventModel instanceof EloquentStoredEvent) {
             throw new InvalidEloquentStoredEventModel("The class {$this->storedEventModel} must extend EloquentStoredEvent");
         }
     }

@@ -9,9 +9,9 @@ return [
     */
 
     'names' => [
-        'main'    => 'Main',
+        'main' => 'Main',
         'savings' => 'Savings',
-        'loan'    => 'Loan',
-	],
+        'loan' => 'Loan',
+    ],
 
 ];

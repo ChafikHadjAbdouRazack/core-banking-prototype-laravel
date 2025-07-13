@@ -23,14 +23,14 @@ class CreateAccountActivityTest extends DomainTestCase
     {
         $ledgerMock = Mockery::mock(LedgerAggregate::class);
         $ledgerMock->expects('retrieve')
-                   ->andReturnSelf();
+            ->andReturnSelf();
 
         $ledgerMock->expects('createAccount')
-                   ->with(Mockery::type(Account::class))
-                   ->andReturnSelf();
+            ->with(Mockery::type(Account::class))
+            ->andReturnSelf();
 
         $ledgerMock->expects('persist')
-                   ->andReturnSelf();
+            ->andReturnSelf();
 
         $workflow = WorkflowStub::make(CreateAccountWorkflow::class);
         $storedWorkflow = StoredWorkflow::findOrFail($workflow->id());
@@ -46,15 +46,12 @@ class CreateAccountActivityTest extends DomainTestCase
         $activity->handle();
     }
 
-    /**
-     * @return Account
-     */
     protected function fakeAccount(): Account
     {
         return hydrate(
             Account::class,
             [
-                'name'      => self::ACCOUNT_NAME,
+                'name' => self::ACCOUNT_NAME,
                 'user_uuid' => $this->business_user->uuid,
             ]
         );
