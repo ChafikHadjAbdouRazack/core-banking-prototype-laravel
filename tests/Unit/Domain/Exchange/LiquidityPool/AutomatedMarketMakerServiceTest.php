@@ -2,7 +2,11 @@
 
 namespace Tests\Unit\Domain\Exchange\LiquidityPool;
 
+use App\Domain\Exchange\Projections\LiquidityPool;
+use App\Domain\Exchange\LiquidityPool\AutomatedMarketMakerService;
+use App\Domain\Exchange\Contracts\PriceAggregatorInterface;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Mockery;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\ServiceTestCase;
 

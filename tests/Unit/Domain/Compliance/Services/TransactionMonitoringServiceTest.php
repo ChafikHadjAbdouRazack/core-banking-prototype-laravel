@@ -2,7 +2,15 @@
 
 namespace Tests\Unit\Domain\Compliance\Services;
 
+use App\Models\CustomerRiskProfile;
+use App\Models\Transaction;
+use App\Models\TransactionMonitoringRule;
+use App\Domain\Compliance\Services\CustomerRiskService;
+use App\Domain\Compliance\Services\SuspiciousActivityReportService;
+use App\Domain\Compliance\Services\TransactionMonitoringService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Log;
+use Mockery;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\ServiceTestCase;
 

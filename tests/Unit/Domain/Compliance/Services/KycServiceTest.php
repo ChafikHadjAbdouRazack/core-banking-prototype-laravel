@@ -2,7 +2,13 @@
 
 namespace Tests\Unit\Domain\Compliance\Services;
 
+use App\Models\AuditLog;
+use App\Models\KycDocument;
+use App\Models\User;
+use App\Domain\Compliance\Services\KycService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\ServiceTestCase;
 

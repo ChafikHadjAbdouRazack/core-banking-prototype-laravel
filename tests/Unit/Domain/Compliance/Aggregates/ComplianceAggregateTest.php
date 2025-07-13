@@ -2,6 +2,15 @@
 
 namespace Tests\Unit\Domain\Compliance\Aggregates;
 
+use App\Domain\Compliance\Aggregates\ComplianceAggregate;
+use App\Domain\Compliance\Events\GdprDataDeleted;
+use App\Domain\Compliance\Events\GdprDataExported;
+use App\Domain\Compliance\Events\GdprRequestReceived;
+use App\Domain\Compliance\Events\KycDocumentUploaded;
+use App\Domain\Compliance\Events\KycSubmissionReceived;
+use App\Domain\Compliance\Events\KycVerificationCompleted;
+use App\Domain\Compliance\Events\KycVerificationRejected;
+use App\Domain\Compliance\Events\RegulatoryReportGenerated;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\DomainTestCase;

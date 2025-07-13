@@ -2,6 +2,9 @@
 
 namespace Tests\Unit\Domain\Exchange\LiquidityPool;
 
+use App\Domain\Exchange\Projections\LiquidityPool;
+use App\Domain\Exchange\Projections\LiquidityProvider;
+use App\Domain\Exchange\LiquidityPool\LiquidityIncentivesService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\ServiceTestCase;

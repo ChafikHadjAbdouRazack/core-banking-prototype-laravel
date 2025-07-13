@@ -2,7 +2,16 @@
 
 namespace Tests\Unit\Domain\Cgo;
 
+use App\Domain\Cgo\Aggregates\RefundAggregate;
+use App\Domain\Cgo\Events\RefundApproved;
+use App\Domain\Cgo\Events\RefundCancelled;
+use App\Domain\Cgo\Events\RefundCompleted;
+use App\Domain\Cgo\Events\RefundFailed;
+use App\Domain\Cgo\Events\RefundProcessed;
+use App\Domain\Cgo\Events\RefundRejected;
+use App\Domain\Cgo\Events\RefundRequested;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\DomainTestCase;
 

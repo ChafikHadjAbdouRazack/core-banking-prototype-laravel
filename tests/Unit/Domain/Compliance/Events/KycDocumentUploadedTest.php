@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Domain\Compliance\Events;
 
+use App\Domain\Compliance\Events\KycDocumentUploaded;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\DomainTestCase;
 
