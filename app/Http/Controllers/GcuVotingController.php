@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Domain\Governance\Models\GcuVote;
 use App\Domain\Governance\Models\GcuVotingProposal;
 use Illuminate\Http\Request;

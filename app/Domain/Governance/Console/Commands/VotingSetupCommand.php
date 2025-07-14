@@ -3,7 +3,7 @@
 namespace App\Domain\Governance\Console\Commands;
 
 use App\Domain\Governance\Models\GcuVotingProposal;
-use App\Domain\Account\Models\AccountBalance;
+use App\Models\AccountBalance;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Console\Command;

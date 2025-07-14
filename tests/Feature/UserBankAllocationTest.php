@@ -2,7 +2,7 @@
 
 use App\Domain\Account\Services\BankAllocationService;
 use App\Models\User;
-use App\Domain\Banking\Models\UserBankPreference;
+use App\Models\UserBankPreference;
 
 beforeEach(function () {
     $this->user = User::factory()->create();

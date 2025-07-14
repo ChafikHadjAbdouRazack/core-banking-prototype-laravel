@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Domain\Compliance\Services\KycService;
 use App\Domain\Cgo\Models\CgoInvestment;
 use App\Domain\Compliance\Models\KycDocument;
@@ -35,6 +36,7 @@ class CgoKycController extends Controller
         );
 
         $user = Auth::user();
+        /** @var User $user */
 
         // Create a temporary investment object for checking requirements
         $tempInvestment = new CgoInvestment(
@@ -60,6 +62,7 @@ class CgoKycController extends Controller
     public function status()
     {
         $user = Auth::user();
+        /** @var User $user */
 
         $totalInvested = CgoInvestment::where('user_id', $user->id)
             ->whereIn('status', ['confirmed', 'pending'])
@@ -105,6 +108,7 @@ class CgoKycController extends Controller
         );
 
         $user = Auth::user();
+        /** @var User $user */
 
         try {
             DB::beginTransaction();
@@ -175,6 +179,7 @@ class CgoKycController extends Controller
     public function documents()
     {
         $user = Auth::user();
+        /** @var User $user */
 
         $documents = $user->kycDocuments()
             ->select('id', 'document_type', 'status', 'uploaded_at', 'verified_at', 'expires_at', 'rejection_reason')
@@ -210,6 +215,7 @@ class CgoKycController extends Controller
     public function verifyInvestment(Request $request, $investmentUuid)
     {
         $user = Auth::user();
+        /** @var User $user */
 
         $investment = CgoInvestment::where('uuid', $investmentUuid)
             ->where('user_id', $user->id)

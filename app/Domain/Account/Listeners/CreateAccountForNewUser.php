@@ -19,20 +19,22 @@ class CreateAccountForNewUser
      */
     public function handle(Registered $event): void
     {
+        /** @var \App\Models\User $user */
+        $user = $event->user;
         try {
             // Create a default personal account for the new user
             $this->accountService->create(
                 new Account(
-                    name: $event->user->name . "'s Account",
-                    userUuid: $event->user->uuid
+                    name: $user->name . "'s Account",
+                    userUuid: $user->uuid
                 )
             );
 
             Log::info(
                 'Created default account for new user',
                 [
-                'user_uuid'  => $event->user->uuid,
-                'user_email' => $event->user->email,
+                'user_uuid'  => $user->uuid,
+                'user_email' => $user->email,
                 ]
             );
         } catch (\Exception $e) {
@@ -40,7 +42,7 @@ class CreateAccountForNewUser
             Log::error(
                 'Failed to create account for new user',
                 [
-                'user_uuid' => $event->user->uuid,
+                'user_uuid' => $user->uuid ?? 'unknown',
                 'error'     => $e->getMessage(),
                 'trace'     => $e->getTraceAsString(),
                 ]

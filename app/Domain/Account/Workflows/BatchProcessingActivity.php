@@ -3,7 +3,7 @@
 namespace App\Domain\Account\Workflows;
 
 use App\Models\Account;
-use App\Models\Transaction;
+use App\Domain\Account\Models\TransactionProjection as Transaction;
 use App\Domain\Account\Models\Turnover;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;

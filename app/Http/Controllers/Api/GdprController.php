@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api;
 
+use App\Models\User;
 use App\Domain\Compliance\Services\GdprService;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
@@ -57,6 +58,7 @@ class GdprController extends Controller
     public function consentStatus(): JsonResponse
     {
         $user = Auth::user();
+        /** @var User $user */
 
         return response()->json(
             [
@@ -118,6 +120,7 @@ class GdprController extends Controller
         );
 
         $user = Auth::user();
+        /** @var User $user */
         $this->gdprService->updateConsent($user, $request->all());
 
         return response()->json(
@@ -158,6 +161,7 @@ class GdprController extends Controller
     public function requestDataExport(): JsonResponse
     {
         $user = Auth::user();
+        /** @var User $user */
 
         try {
             $data = $this->gdprService->exportUserData($user);
@@ -234,6 +238,7 @@ class GdprController extends Controller
         );
 
         $user = Auth::user();
+        /** @var User $user */
 
         // Check if deletion is allowed
         $check = $this->gdprService->canDeleteUserData($user);

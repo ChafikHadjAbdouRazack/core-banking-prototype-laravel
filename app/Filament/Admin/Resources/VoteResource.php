@@ -7,7 +7,7 @@ namespace App\Filament\Admin\Resources;
 use App\Domain\Governance\Models\Poll;
 use App\Domain\Governance\Models\Vote;
 use App\Filament\Admin\Resources\VoteResource\Pages;
-use App\Domain\Account\Models\User;
+use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;

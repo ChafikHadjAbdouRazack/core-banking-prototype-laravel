@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Domain\Payment\Services\PaymentGatewayService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -21,6 +22,7 @@ class DepositController extends Controller
     public function create()
     {
         $user = Auth::user();
+        /** @var User $user */
         $account = $user->accounts()->first();
 
         if (! $account) {
@@ -54,6 +56,7 @@ class DepositController extends Controller
         );
 
         $user = Auth::user();
+        /** @var User $user */
         $amountInCents = (int) ($request->amount * 100);
 
         try {

@@ -3,7 +3,7 @@
 namespace Tests\Feature\Models;
 
 use App\Domain\Asset\Models\Asset;
-use App\Domain\Account\Models\AccountBalance;
+use App\Models\AccountBalance;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 

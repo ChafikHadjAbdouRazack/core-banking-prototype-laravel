@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Domain\Transaction\Models\Transaction;
 use App\Models\Account;
-use App\Domain\Account\Models\User;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -18,6 +18,7 @@ class FundFlowController extends Controller
     public function index(Request $request)
     {
         $user = Auth::user();
+        /** @var User $user */
         $accounts = $user->accounts()->with('balances.asset')->get();
 
         // Get filter parameters
@@ -61,6 +62,7 @@ class FundFlowController extends Controller
     public function accountFlow($accountUuid)
     {
         $user = Auth::user();
+        /** @var User $user */
         $account = $user->accounts()->where('uuid', $accountUuid)->firstOrFail();
 
         // Get all flows for this account
@@ -91,6 +93,7 @@ class FundFlowController extends Controller
     public function data(Request $request)
     {
         $user = Auth::user();
+        /** @var User $user */
 
         $filters = [
             'period'    => $request->get('period', '7days'),

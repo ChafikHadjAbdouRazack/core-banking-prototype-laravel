@@ -2,7 +2,7 @@
 
 namespace App\Filament\Exports;
 
-use App\Domain\Account\Models\User;
+use App\Models\User;
 use Filament\Actions\Exports\ExportColumn;
 use Filament\Actions\Exports\Exporter;
 use Filament\Actions\Exports\Models\Export;

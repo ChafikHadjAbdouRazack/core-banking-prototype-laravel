@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Domain\Banking\Services\BankIntegrationService;
 use App\Models\Account;
-use App\Domain\Account\Models\User;
+use App\Models\User;
 use App\Domain\Payment\Services\PaymentGatewayService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -32,6 +32,7 @@ class OpenBankingWithdrawalController extends Controller
     public function create()
     {
         $user = Auth::user();
+        /** @var User $user */
         $account = $user->accounts()->first();
 
         if (! $account) {
@@ -83,6 +84,7 @@ class OpenBankingWithdrawalController extends Controller
         );
 
         $user = Auth::user();
+        /** @var User $user */
         $account = $user->accounts()->first();
 
         // Check balance
@@ -151,6 +153,7 @@ class OpenBankingWithdrawalController extends Controller
         }
 
         $user = Auth::user();
+        /** @var User $user */
 
         DB::beginTransaction();
         try {
@@ -258,6 +261,7 @@ class OpenBankingWithdrawalController extends Controller
         );
 
         $user = Auth::user();
+        /** @var User $user */
         $account = $user->accounts()->first();
 
         // Get user's bank accounts for the selected bank
@@ -294,6 +298,7 @@ class OpenBankingWithdrawalController extends Controller
         );
 
         $user = Auth::user();
+        /** @var User $user */
         $account = $user->accounts()->first();
 
         // Verify the bank account belongs to the user

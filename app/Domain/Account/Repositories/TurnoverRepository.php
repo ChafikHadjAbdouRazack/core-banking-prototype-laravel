@@ -22,7 +22,7 @@ final class TurnoverRepository
         DateTimeInterface $date
     ): ?Turnover {
         return $this->turnover
-            ->whereBelongsTo($account)
+            ->where('account_uuid', $account->uuid)
             ->where('date', $date->toDateString())
             ->first();
     }

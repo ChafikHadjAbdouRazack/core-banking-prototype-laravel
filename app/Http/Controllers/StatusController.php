@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Domain\Account\Models\SystemHealthCheck;
-use App\Domain\Account\Models\SystemIncident;
+use App\Models\SystemHealthCheck;
+use App\Models\SystemIncident;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;

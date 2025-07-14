@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Domain\Asset\Models\Asset;
 use App\Domain\Account\Models\TransactionProjection;
-use App\Domain\Account\Models\User;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -18,6 +18,7 @@ class AssetManagementController extends Controller
     public function index(Request $request)
     {
         $user = Auth::user();
+        /** @var User $user */
 
         // Get all user accounts with balances
         $accounts = $user->accounts()->with(['balances.asset'])->get();
@@ -56,6 +57,7 @@ class AssetManagementController extends Controller
     public function show(Asset $asset)
     {
         $user = Auth::user();
+        /** @var User $user */
 
         // Get user's holdings of this asset
         $holdings = $this->getUserAssetHoldings($user, $asset);
@@ -87,6 +89,7 @@ class AssetManagementController extends Controller
     public function analytics(Request $request)
     {
         $user = Auth::user();
+        /** @var User $user */
         $period = $request->get('period', '30d');
 
         // Get portfolio value over time
@@ -119,6 +122,7 @@ class AssetManagementController extends Controller
     public function export(Request $request)
     {
         $user = Auth::user();
+        /** @var User $user */
         $format = $request->get('format', 'csv');
 
         $accounts = $user->accounts()->with(['balances.asset'])->get();

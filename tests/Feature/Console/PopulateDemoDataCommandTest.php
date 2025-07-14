@@ -6,7 +6,7 @@ use App\Domain\Governance\Models\Poll;
 use App\Domain\Governance\Models\Vote;
 use App\Models\Account;
 use App\Models\User;
-use App\Domain\Banking\Models\UserBankPreference;
+use App\Models\UserBankPreference;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Artisan;
 

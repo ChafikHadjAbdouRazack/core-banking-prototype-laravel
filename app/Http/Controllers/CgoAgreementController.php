@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Domain\Cgo\Models\CgoInvestment;
 use App\Domain\Cgo\Services\InvestmentAgreementService;
 use Illuminate\Http\Request;

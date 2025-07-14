@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api;
 
+use App\Models\User;
 use App\Domain\Governance\Enums\PollStatus;
 use App\Domain\Governance\Enums\PollType;
 use App\Domain\Governance\Models\Poll;
@@ -496,6 +497,7 @@ class PollController extends Controller
         }
 
         $user = Auth::user();
+        /** @var User $user */
         $votingPower = $this->cacheService->getUserVotingPower($user->uuid, $poll->uuid);
         $canVote = $this->governanceService->canUserVote($user, $poll);
         $hasVoted = $this->cacheService->hasUserVoted($user->uuid, $poll->uuid);

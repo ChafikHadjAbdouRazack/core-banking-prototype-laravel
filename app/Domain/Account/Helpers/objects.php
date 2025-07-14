@@ -24,7 +24,7 @@ if (! function_exists('hydrate')) {
             class: $class,
             properties: collect($properties)->map(
                 function ($value) {
-                    return $value instanceof UnitEnum ? $value->value : $value;
+                    return $value instanceof \BackedEnum ? $value->value : $value;
                 }
             )->toArray()
         );

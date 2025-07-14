@@ -2,6 +2,7 @@
 
 namespace App\Domain\Account\Models;
 
+use App\Models\Account;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -33,6 +34,9 @@ class TransactionProjection extends Model
 
     /**
      * Get the account that owns the transaction.
+     */
+    /**
+     * @return BelongsTo<Account, TransactionProjection>
      */
     public function account(): BelongsTo
     {

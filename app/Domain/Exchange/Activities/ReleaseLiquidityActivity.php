@@ -2,7 +2,7 @@
 
 namespace App\Domain\Exchange\Activities;
 
-use App\Domain\Account\Models\AccountBalance;
+use App\Models\AccountBalance;
 use Brick\Math\BigDecimal;
 use Illuminate\Support\Facades\DB;
 use Workflow\Activity;

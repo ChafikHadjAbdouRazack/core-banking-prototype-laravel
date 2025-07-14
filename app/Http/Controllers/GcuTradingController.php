@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Domain\Asset\Models\Asset;
 use App\Domain\Basket\Models\BasketPrice;
 use Illuminate\Support\Facades\Auth;
@@ -15,6 +16,7 @@ class GcuTradingController extends Controller
     public function index()
     {
         $user = Auth::user();
+        /** @var User $user */
         $accounts = $user->accounts()->with('balances.asset')->get();
 
         // Get GCU asset

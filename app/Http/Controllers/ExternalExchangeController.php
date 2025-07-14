@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Domain\Exchange\Contracts\ArbitrageServiceInterface;
 use App\Domain\Exchange\Contracts\ExternalExchangeServiceInterface;
 use App\Domain\Exchange\Contracts\PriceAggregatorInterface;

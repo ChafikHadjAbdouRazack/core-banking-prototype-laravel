@@ -39,6 +39,7 @@ class BasketComponent extends Model
 
     /**
      * Get the basket that owns this component.
+     * @return BelongsTo<BasketAsset, BasketComponent>
      */
     public function basket(): BelongsTo
     {
@@ -47,6 +48,7 @@ class BasketComponent extends Model
 
     /**
      * Get the asset for this component.
+     * @return BelongsTo<Asset, BasketComponent>
      */
     public function asset(): BelongsTo
     {

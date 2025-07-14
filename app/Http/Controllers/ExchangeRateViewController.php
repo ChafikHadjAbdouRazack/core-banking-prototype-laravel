@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Domain\Asset\Models\Asset;
-use App\Domain\Exchange\Models\ExchangeRate;
+use App\Domain\Asset\Models\ExchangeRate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;

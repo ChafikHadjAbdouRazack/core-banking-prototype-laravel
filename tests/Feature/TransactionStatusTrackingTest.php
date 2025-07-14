@@ -5,7 +5,7 @@ namespace Tests\Feature;
 use App\Domain\Asset\Models\Asset;
 use App\Domain\Transaction\Models\Transaction;
 use App\Models\Account;
-use App\Domain\Account\Models\AccountBalance;
+use App\Models\AccountBalance;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Inertia\Testing\AssertableInertia as Assert;

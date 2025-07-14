@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Models\User;
 use App\Domain\Account\Services\BankAllocationService;
 use App\Http\Controllers\Controller;
-use App\Domain\Banking\Models\UserBankPreference;
+use App\Models\UserBankPreference;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -63,6 +64,7 @@ class BankAllocationController extends Controller
     public function index(): JsonResponse
     {
         $user = Auth::user();
+        /** @var User $user */
         $allocations = $user->bankPreferences()->active()->get();
 
         if ($allocations->isEmpty()) {
@@ -156,6 +158,7 @@ class BankAllocationController extends Controller
 
         try {
             $user = Auth::user();
+        /** @var User $user */
             $allocations = $this->bankAllocationService->updateAllocations($user, $validated['allocations']);
 
             // Set primary bank if specified
@@ -239,6 +242,7 @@ class BankAllocationController extends Controller
 
         try {
             $user = Auth::user();
+        /** @var User $user */
             $preference = $this->bankAllocationService->addBank($user, $validated['bank_code'], $validated['percentage']);
 
             return response()->json(
@@ -300,6 +304,7 @@ class BankAllocationController extends Controller
     {
         try {
             $user = Auth::user();
+        /** @var User $user */
             $this->bankAllocationService->removeBank($user, $bankCode);
 
             return response()->json(
@@ -359,6 +364,7 @@ class BankAllocationController extends Controller
     {
         try {
             $user = Auth::user();
+        /** @var User $user */
             $preference = $this->bankAllocationService->setPrimaryBank($user, $bankCode);
 
             return response()->json(
@@ -481,6 +487,7 @@ class BankAllocationController extends Controller
         );
 
         $user = Auth::user();
+        /** @var User $user */
         $amountInCents = (int) ($validated['amount'] * 100);
 
         $summary = $this->bankAllocationService->getDistributionSummary($user, $amountInCents);

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use App\Domain\Asset\Models\Asset;
 use App\Models\Account;
-use App\Domain\Account\Models\AccountBalance;
+use App\Models\AccountBalance;
 
 // No need for manual imports - Pest.php handles TestCase and RefreshDatabase for Feature tests
 

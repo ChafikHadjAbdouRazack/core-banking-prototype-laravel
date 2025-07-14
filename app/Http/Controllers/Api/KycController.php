@@ -7,7 +7,7 @@ namespace App\Http\Controllers\Api;
 use App\Domain\Compliance\Services\KycService;
 use App\Http\Controllers\Controller;
 use App\Domain\Account\Models\AuditLog;
-use App\Domain\Account\Models\User;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -64,6 +64,7 @@ class KycController extends Controller
          * @var User $user
          */
         $user = Auth::user();
+        /** @var User $user */
 
         return response()->json(
             [
@@ -194,6 +195,7 @@ class KycController extends Controller
          * @var User $user
          */
         $user = Auth::user();
+        /** @var User $user */
 
         if ($user->kyc_status === 'approved') {
             return response()->json(
@@ -279,6 +281,7 @@ class KycController extends Controller
          * @var User $user
          */
         $user = Auth::user();
+        /** @var User $user */
         $document = $user->kycDocuments()->findOrFail($documentId);
 
         if (! Storage::disk('private')->exists($document->file_path)) {
@@ -316,6 +319,7 @@ class KycController extends Controller
          * @var User $user
          */
         $user = Auth::user();
+        /** @var User $user */
         $file = $request->file('document');
         $type = $request->input('type', 'other');
 

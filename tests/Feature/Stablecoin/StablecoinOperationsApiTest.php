@@ -6,7 +6,7 @@ namespace Tests\Feature\Stablecoin;
 
 use App\Domain\Asset\Models\Asset;
 use App\Models\Account;
-use App\Domain\Account\Models\AccountBalance;
+use App\Models\AccountBalance;
 use App\Domain\Stablecoin\Models\Stablecoin;
 use App\Domain\Stablecoin\Models\StablecoinCollateralPosition;
 use App\Models\User;

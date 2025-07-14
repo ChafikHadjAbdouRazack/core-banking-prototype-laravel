@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Models\User;
 use App\Domain\Account\Workflows\BatchProcessingWorkflow;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;

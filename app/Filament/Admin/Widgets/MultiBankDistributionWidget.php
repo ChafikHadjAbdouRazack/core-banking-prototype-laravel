@@ -2,7 +2,7 @@
 
 namespace App\Filament\Admin\Widgets;
 
-use App\Domain\Banking\Models\UserBankPreference;
+use App\Models\UserBankPreference;
 use Filament\Widgets\Widget;
 
 class MultiBankDistributionWidget extends Widget

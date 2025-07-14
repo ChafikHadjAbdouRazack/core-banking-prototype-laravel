@@ -7,7 +7,7 @@ use App\Domain\Stablecoin\Workflows\BurnStablecoinWorkflow;
 use App\Domain\Stablecoin\Workflows\MintStablecoinWorkflow;
 use App\Models\Account;
 use App\Domain\Stablecoin\Models\StablecoinOperation;
-use App\Domain\Account\Models\User;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -23,6 +23,7 @@ class StablecoinOperationsController extends Controller
     public function index(Request $request)
     {
         $user = Auth::user();
+        /** @var User $user */
 
         // Check if user has admin/operator permissions
         if (! $user->hasRole(['super_admin', 'bank_admin', 'stablecoin_operator'])) {
@@ -62,6 +63,7 @@ class StablecoinOperationsController extends Controller
     public function mint(Request $request)
     {
         $user = Auth::user();
+        /** @var User $user */
 
         if (! $user->hasRole(['super_admin', 'bank_admin', 'stablecoin_operator'])) {
             abort(403);
@@ -105,6 +107,7 @@ class StablecoinOperationsController extends Controller
         );
 
         $user = Auth::user();
+        /** @var User $user */
 
         if (! $user->hasRole(['super_admin', 'bank_admin', 'stablecoin_operator'])) {
             abort(403);
@@ -192,6 +195,7 @@ class StablecoinOperationsController extends Controller
     public function burn(Request $request)
     {
         $user = Auth::user();
+        /** @var User $user */
 
         if (! $user->hasRole(['super_admin', 'bank_admin', 'stablecoin_operator'])) {
             abort(403);
@@ -231,6 +235,7 @@ class StablecoinOperationsController extends Controller
         );
 
         $user = Auth::user();
+        /** @var User $user */
 
         if (! $user->hasRole(['super_admin', 'bank_admin', 'stablecoin_operator'])) {
             abort(403);
@@ -321,6 +326,7 @@ class StablecoinOperationsController extends Controller
     public function history(Request $request)
     {
         $user = Auth::user();
+        /** @var User $user */
 
         if (! $user->hasRole(['super_admin', 'bank_admin', 'stablecoin_operator'])) {
             abort(403);

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api;
 
+use App\Models\User;
 use App\Domain\Governance\Enums\PollStatus;
 use App\Domain\Governance\Models\Poll;
 use App\Domain\Governance\Models\Vote;
@@ -100,6 +101,7 @@ class UserVotingController extends Controller
     public function getVotingHistory(): JsonResponse
     {
         $user = Auth::user();
+        /** @var User $user */
 
         $votedPollIds = Vote::where('user_uuid', $user->uuid)
             ->pluck('poll_id')
@@ -190,6 +192,7 @@ class UserVotingController extends Controller
 
         // Get user's voting power
         $user = Auth::user();
+        /** @var User $user */
         $strategy = app($poll->voting_power_strategy);
         $votingPower = $strategy->calculatePower($user, $poll);
 
@@ -243,6 +246,7 @@ class UserVotingController extends Controller
     public function getDashboard(): JsonResponse
     {
         $user = Auth::user();
+        /** @var User $user */
 
         // Get active polls
         $activePolls = Poll::where('status', PollStatus::ACTIVE)

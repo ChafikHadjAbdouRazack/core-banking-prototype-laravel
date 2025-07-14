@@ -9,7 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Domain\Compliance\Models\AmlScreening;
 use App\Domain\Compliance\Models\CustomerRiskProfile;
 use App\Domain\Compliance\Models\KycVerification;
-use App\Domain\Account\Models\User;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;

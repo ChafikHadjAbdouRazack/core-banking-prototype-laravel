@@ -8,7 +8,7 @@ use App\Domain\Account\DataObjects\Money;
 use App\Domain\Asset\Models\Asset;
 use App\Domain\Asset\Models\ExchangeRate;
 use App\Models\Account;
-use App\Domain\Account\Models\AccountBalance;
+use App\Models\AccountBalance;
 use App\Domain\Account\Models\Turnover;
 use App\Models\User;
 use App\Values\EventQueues;

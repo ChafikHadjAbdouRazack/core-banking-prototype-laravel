@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Domain\Custodian\Services\CustodianHealthMonitor;
 use App\Domain\Custodian\Services\CustodianRegistry;
 use App\Domain\Custodian\Models\CustodianAccount;
@@ -25,6 +26,7 @@ class CustodianIntegrationController extends Controller
     public function index(Request $request)
     {
         $user = Auth::user();
+        /** @var User $user */
 
         // Check if user has appropriate permissions
         if (! $user->hasRole(['super_admin', 'bank_admin', 'operations_manager'])) {
@@ -64,6 +66,7 @@ class CustodianIntegrationController extends Controller
     public function show(Request $request, string $custodianCode)
     {
         $user = Auth::user();
+        /** @var User $user */
 
         if (! $user->hasRole(['super_admin', 'bank_admin', 'operations_manager'])) {
             abort(403);
@@ -114,6 +117,7 @@ class CustodianIntegrationController extends Controller
     public function testConnection(Request $request, string $custodianCode)
     {
         $user = Auth::user();
+        /** @var User $user */
 
         if (! $user->hasRole(['super_admin', 'bank_admin'])) {
             abort(403);
@@ -147,6 +151,7 @@ class CustodianIntegrationController extends Controller
     public function synchronize(Request $request, string $custodianCode)
     {
         $user = Auth::user();
+        /** @var User $user */
 
         if (! $user->hasRole(['super_admin', 'bank_admin'])) {
             abort(403);

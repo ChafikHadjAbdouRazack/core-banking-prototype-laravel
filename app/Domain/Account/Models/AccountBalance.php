@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Account\Models;
 
 use App\Domain\Asset\Models\Asset;
+use App\Models\Account;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -23,7 +24,7 @@ class AccountBalance extends Model
     /**
      * The attributes that are mass assignable.
      *
-     * @var array<string>
+     * @var array<int, string>
      */
     protected $fillable = [
         'account_uuid',
@@ -43,6 +44,9 @@ class AccountBalance extends Model
     /**
      * Get the account that owns this balance.
      */
+    /**
+     * @return BelongsTo<Account, AccountBalance>
+     */
     public function account(): BelongsTo
     {
         return $this->belongsTo(Account::class, 'account_uuid', 'uuid');
@@ -50,6 +54,9 @@ class AccountBalance extends Model
 
     /**
      * Get the asset for this balance.
+     */
+    /**
+     * @return BelongsTo<Asset, AccountBalance>
      */
     public function asset(): BelongsTo
     {

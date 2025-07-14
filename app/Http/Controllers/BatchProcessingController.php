@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Domain\Batch\Models\BatchItem;
 use App\Domain\Batch\Models\BatchJob;
 use App\Domain\Batch\Services\BatchProcessingService;
-use App\Domain\Account\Models\User;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -26,6 +26,7 @@ class BatchProcessingController extends Controller
     public function index(Request $request)
     {
         $user = Auth::user();
+        /** @var User $user */
 
         // Get filter parameters
         $filters = [
@@ -61,6 +62,7 @@ class BatchProcessingController extends Controller
     public function create(Request $request)
     {
         $user = Auth::user();
+        /** @var User $user */
         $accounts = $user->accounts()->with('balances.asset')->get();
 
         $template = null;

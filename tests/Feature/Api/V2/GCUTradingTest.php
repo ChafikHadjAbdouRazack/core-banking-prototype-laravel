@@ -4,7 +4,7 @@ namespace Tests\Feature\Api\V2;
 
 use App\Domain\Wallet\Workflows\WalletConvertWorkflow;
 use App\Models\Account;
-use App\Domain\Account\Models\AccountBalance;
+use App\Models\AccountBalance;
 use App\Models\Asset;
 use App\Domain\Basket\Models\BasketAsset;
 use App\Domain\Basket\Models\BasketValue;

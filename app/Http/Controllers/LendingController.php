@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Domain\Lending\DataObjects\LoanApplication;
 use App\Domain\Lending\Projections\Loan;
 use App\Domain\Lending\Services\CollateralManagementService;
@@ -29,6 +30,7 @@ class LendingController extends Controller
     public function index()
     {
         $user = Auth::user();
+        /** @var User $user */
 
         // Get user's loans
         $loans = Loan::where(
@@ -58,6 +60,7 @@ class LendingController extends Controller
     public function apply()
     {
         $user = Auth::user();
+        /** @var User $user */
         $accounts = $user->accounts()->with('balances.asset')->get();
         $loanProducts = $this->getAvailableLoanProducts();
         $creditScore = $this->getUserCreditScore();
@@ -294,6 +297,7 @@ class LendingController extends Controller
     private function getUserCreditScore()
     {
         $user = Auth::user();
+        /** @var User $user */
 
         // Mock credit score calculation
         return [

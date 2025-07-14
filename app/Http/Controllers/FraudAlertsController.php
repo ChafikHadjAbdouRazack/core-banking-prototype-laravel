@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Domain\Fraud\Models\FraudCase;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -14,6 +15,7 @@ class FraudAlertsController extends Controller
     public function index(Request $request)
     {
         $user = Auth::user();
+        /** @var User $user */
 
         // Base query
         if (! $user->can('view_fraud_alerts')) {
@@ -119,6 +121,7 @@ class FraudAlertsController extends Controller
     public function show(FraudCase $fraudCase)
     {
         $user = Auth::user();
+        /** @var User $user */
 
         // Check authorization
         if ($user->hasRole(['customer_private', 'customer_business'])) {
@@ -196,6 +199,7 @@ class FraudAlertsController extends Controller
 
             // Apply same filters as index
             $user = Auth::user();
+        /** @var User $user */
             $query = FraudCase::query();
 
             if (! $user->can('view_fraud_alerts')) {

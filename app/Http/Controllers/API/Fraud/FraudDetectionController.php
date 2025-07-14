@@ -6,7 +6,7 @@ use App\Domain\Fraud\Services\FraudDetectionService;
 use App\Http\Controllers\Controller;
 use App\Domain\Fraud\Models\FraudScore;
 use App\Domain\Account\Models\Transaction;
-use App\Domain\Account\Models\User;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 

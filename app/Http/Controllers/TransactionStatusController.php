@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Domain\Transaction\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -16,6 +17,7 @@ class TransactionStatusController extends Controller
     public function index(Request $request)
     {
         $user = Auth::user();
+        /** @var User $user */
         $accounts = $user->accounts()->with('balances.asset')->get();
 
         // Get filter parameters
@@ -54,6 +56,7 @@ class TransactionStatusController extends Controller
     public function show($transactionId)
     {
         $user = Auth::user();
+        /** @var User $user */
 
         // Try to find the transaction in different tables
         $transaction = $this->findTransaction($transactionId, $user);
@@ -84,6 +87,7 @@ class TransactionStatusController extends Controller
     public function status($transactionId)
     {
         $user = Auth::user();
+        /** @var User $user */
         $transaction = $this->findTransaction($transactionId, $user);
 
         if (! $transaction) {
@@ -112,6 +116,7 @@ class TransactionStatusController extends Controller
     public function cancel($transactionId)
     {
         $user = Auth::user();
+        /** @var User $user */
         $transaction = $this->findTransaction($transactionId, $user);
 
         if (! $transaction) {
@@ -157,6 +162,7 @@ class TransactionStatusController extends Controller
     public function retry($transactionId)
     {
         $user = Auth::user();
+        /** @var User $user */
         $transaction = $this->findTransaction($transactionId, $user);
 
         if (! $transaction) {

@@ -8,7 +8,7 @@ use App\Domain\Governance\Models\Vote;
 use App\Domain\Governance\Services\VotingTemplateService;
 use App\Models\Account;
 use App\Models\User;
-use App\Domain\Banking\Models\UserBankPreference;
+use App\Models\UserBankPreference;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 

@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Domain\Account\Models\BankAccount;
+use App\Models\User;
+use App\Domain\Payment\Models\BankAccount;
 use App\Domain\Payment\Services\PaymentGatewayService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -22,6 +23,7 @@ class WithdrawalController extends Controller
     public function create()
     {
         $user = Auth::user();
+        /** @var User $user */
         $account = $user->accounts()->first();
 
         if (! $account) {
@@ -70,6 +72,7 @@ class WithdrawalController extends Controller
         );
 
         $user = Auth::user();
+        /** @var User $user */
         $account = $user->accounts()->first();
         $amountInCents = (int) ($request->amount * 100);
 
@@ -149,6 +152,7 @@ class WithdrawalController extends Controller
         );
 
         $user = Auth::user();
+        /** @var User $user */
 
         $bankAccount = $user->bankAccounts()->create(
             [

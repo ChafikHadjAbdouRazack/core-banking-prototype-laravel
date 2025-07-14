@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Domain\Asset\Models\Asset;
 use App\Domain\Asset\Models\ExchangeRate;
 use App\Models\Account;
@@ -15,6 +16,7 @@ class WalletController extends Controller
     public function index()
     {
         $user = Auth::user();
+        /** @var User $user */
         $account = $user->accounts()->first();
 
         return view('wallet.index', compact('account'));

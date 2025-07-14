@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Domain\Account\DataObjects\AccountUuid;
 use App\Domain\Exchange\Contracts\ExchangeServiceInterface;
 use App\Domain\Exchange\Contracts\LiquidityPoolServiceInterface;
@@ -214,6 +215,7 @@ class LiquidityPoolController extends Controller
     private function getUserLiquidityPositions()
     {
         $user = Auth::user();
+        /** @var User $user */
 
         if (! $user) {
             return collect();
@@ -277,6 +279,7 @@ class LiquidityPoolController extends Controller
     private function getUserBalances($pool)
     {
         $user = Auth::user();
+        /** @var User $user */
 
         if (! $user) {
             return [];
