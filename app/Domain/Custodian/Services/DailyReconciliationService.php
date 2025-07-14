@@ -6,7 +6,7 @@ namespace App\Domain\Custodian\Services;
 
 use App\Domain\Custodian\Events\ReconciliationCompleted;
 use App\Domain\Custodian\Events\ReconciliationDiscrepancyFound;
-use App\Mail\ReconciliationReport;
+use App\Domain\Custodian\Mail\ReconciliationReport;
 use App\Models\Account;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
@@ -21,7 +21,8 @@ class DailyReconciliationService
     public function __construct(
         private readonly BalanceSynchronizationService $syncService,
         private readonly CustodianRegistry $custodianRegistry
-    ) {}
+    ) {
+    }
 
     /**
      * Perform daily reconciliation for all accounts.

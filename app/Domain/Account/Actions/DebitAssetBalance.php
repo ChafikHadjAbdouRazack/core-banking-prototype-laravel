@@ -4,7 +4,7 @@ namespace App\Domain\Account\Actions;
 
 use App\Domain\Account\Events\AssetBalanceSubtracted;
 use App\Models\Account;
-use App\Models\AccountBalance;
+use App\Domain\Account\Models\AccountBalance;
 
 class DebitAssetBalance extends AccountAction
 {

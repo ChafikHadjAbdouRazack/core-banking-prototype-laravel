@@ -2,7 +2,7 @@
 
 namespace App\Filament\Admin\Pages;
 
-use App\Models\Setting;
+use App\Domain\Account\Models\Setting;
 use App\Services\SettingsService;
 use Filament\Forms;
 use Filament\Forms\Form;

@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Domain\Exchange\Projections\Order;
 use App\Domain\Exchange\Projections\Trade;
 use App\Domain\Exchange\Services\ExchangeService;
-use App\Models\Asset;
+use App\Domain\Asset\Models\Asset;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 

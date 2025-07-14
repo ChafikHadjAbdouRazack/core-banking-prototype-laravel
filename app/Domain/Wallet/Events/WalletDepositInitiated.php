@@ -25,5 +25,6 @@ class WalletDepositInitiated extends ShouldBeStored implements HasHash, HasMoney
         public readonly Hash $hash,
         public readonly ?string $source = null,
         public readonly array $metadata = []
-    ) {}
+    ) {
+    }
 }

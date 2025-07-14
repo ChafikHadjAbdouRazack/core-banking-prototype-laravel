@@ -61,7 +61,7 @@ class BlockchainWalletService implements WalletConnectorInterface
         ?string $mnemonic = null,
         array $settings = []
     ): BlockchainWallet {
-        $walletId = 'wallet_'.Str::uuid();
+        $walletId = 'wallet_' . Str::uuid();
 
         DB::beginTransaction();
         try {
@@ -417,8 +417,8 @@ class BlockchainWalletService implements WalletConnectorInterface
     protected function signWithHSM(TransactionData $transaction): SignedTransaction
     {
         // In production, this would interface with actual HSM
-        $rawTx = '0x'.bin2hex(random_bytes(256));
-        $hash = '0x'.hash('sha256', $rawTx);
+        $rawTx = '0x' . bin2hex(random_bytes(256));
+        $hash = '0x' . hash('sha256', $rawTx);
 
         return new SignedTransaction($rawTx, $hash, $transaction);
     }

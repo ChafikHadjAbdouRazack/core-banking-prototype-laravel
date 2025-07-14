@@ -24,7 +24,8 @@ class TransactionAggregate extends AggregateRoot
     public function __construct(
         public int $balance = 0,
         public int $count = 0,
-    ) {}
+    ) {
+    }
 
     /**
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
@@ -75,7 +76,7 @@ class TransactionAggregate extends AggregateRoot
 
         if (++$this->count >= self::COUNT_THRESHOLD) {
             $this->recordThat(
-                domainEvent: new TransactionThresholdReached
+                domainEvent: new TransactionThresholdReached()
             );
             $this->count = 0;
         }
@@ -92,12 +93,12 @@ class TransactionAggregate extends AggregateRoot
     {
         if (! $this->hasSufficientFundsToSubtractAmount($money)) {
             $this->recordThat(
-                new AccountLimitHit
+                new AccountLimitHit()
             );
 
             $this->persist();
 
-            throw new NotEnoughFunds;
+            throw new NotEnoughFunds();
         }
 
         $this->recordThat(
@@ -124,7 +125,7 @@ class TransactionAggregate extends AggregateRoot
 
         if (++$this->count >= self::COUNT_THRESHOLD) {
             $this->recordThat(
-                domainEvent: new TransactionThresholdReached
+                domainEvent: new TransactionThresholdReached()
             );
             $this->count = 0;
         }

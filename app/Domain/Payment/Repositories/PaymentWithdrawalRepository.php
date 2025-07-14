@@ -15,7 +15,7 @@ final class PaymentWithdrawalRepository extends EloquentStoredEventRepository
     public function __construct(
         protected string $storedEventModel = PaymentWithdrawal::class
     ) {
-        if (! new $this->storedEventModel instanceof EloquentStoredEvent) {
+        if (! new $this->storedEventModel() instanceof EloquentStoredEvent) {
             throw new InvalidEloquentStoredEventModel("The class {$this->storedEventModel} must extend EloquentStoredEvent");
         }
     }

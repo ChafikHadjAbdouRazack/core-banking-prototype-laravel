@@ -6,7 +6,7 @@ namespace App\Domain\Account\Services\Cache;
 
 use App\Models\Account;
 use App\Models\Transaction;
-use App\Models\Turnover;
+use App\Domain\Account\Models\Turnover;
 
 class CacheManager
 {
@@ -14,7 +14,8 @@ class CacheManager
         private readonly AccountCacheService $accountCache,
         private readonly TransactionCacheService $transactionCache,
         private readonly TurnoverCacheService $turnoverCache
-    ) {}
+    ) {
+    }
 
     /**
      * Handle account update event.

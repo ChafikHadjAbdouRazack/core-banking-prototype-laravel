@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Models\CgoPricingRound;
+use App\Domain\Cgo\Models\CgoPricingRound;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class CgoPricingRoundFactory extends Factory

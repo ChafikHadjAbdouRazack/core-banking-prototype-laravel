@@ -109,8 +109,8 @@ class LiquidationServiceTest extends ServiceTestCase
         $fileContent = file_get_contents($fileName);
 
         $this->assertStringContainsString('use App\Models\Account;', $fileContent);
-        $this->assertStringContainsString('use App\Models\Stablecoin;', $fileContent);
-        $this->assertStringContainsString('use App\Models\StablecoinCollateralPosition;', $fileContent);
+        $this->assertStringContainsString('use App\Domain\Stablecoin\Models\Stablecoin;', $fileContent);
+        $this->assertStringContainsString('use App\Domain\Stablecoin\Models\StablecoinCollateralPosition;', $fileContent);
         $this->assertStringContainsString('use Illuminate\Support\Collection;', $fileContent);
         $this->assertStringContainsString('use Illuminate\Support\Facades\Log;', $fileContent);
     }

@@ -228,8 +228,8 @@ class GdprService
     {
         $user->update(
             [
-                'name' => 'ANONYMIZED_'.substr($user->uuid, 0, 8),
-                'email' => 'deleted-'.$user->uuid.'@anonymized.local',
+                'name' => 'ANONYMIZED_' . substr($user->uuid, 0, 8),
+                'email' => 'deleted-' . $user->uuid . '@anonymized.local',
                 'kyc_data' => null,
             ]
         );

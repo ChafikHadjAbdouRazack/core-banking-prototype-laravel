@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\CgoInvestment;
-use App\Services\Cgo\InvestmentAgreementService;
+use App\Domain\Cgo\Models\CgoInvestment;
+use App\Domain\Cgo\Services\InvestmentAgreementService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Models;
 
-use App\Models\BasketAsset;
-use App\Models\BasketValue;
+use App\Domain\Basket\Models\BasketAsset;
+use App\Domain\Basket\Models\BasketValue;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 

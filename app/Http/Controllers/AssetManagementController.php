@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Domain\Asset\Models\Asset;
-use App\Models\TransactionProjection;
-use App\Models\User;
+use App\Domain\Account\Models\TransactionProjection;
+use App\Domain\Account\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;

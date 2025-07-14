@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\Cgo\StripePaymentService;
+use App\Domain\Cgo\Services\StripePaymentService;
 use Laravel\Cashier\Http\Controllers\WebhookController as CashierController;
 
 class StripeWebhookController extends CashierController

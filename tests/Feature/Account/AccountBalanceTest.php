@@ -4,7 +4,7 @@ namespace Tests\Feature\Account;
 
 use App\Domain\Asset\Models\Asset;
 use App\Models\Account;
-use App\Models\AccountBalance;
+use App\Domain\Account\Models\AccountBalance;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 

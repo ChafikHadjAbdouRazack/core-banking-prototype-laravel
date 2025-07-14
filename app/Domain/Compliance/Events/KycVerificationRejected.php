@@ -9,5 +9,6 @@ class KycVerificationRejected extends ShouldBeStored
     public function __construct(
         public string $userUuid,
         public string $reason
-    ) {}
+    ) {
+    }
 }

@@ -49,7 +49,7 @@ abstract class BaseCustodianConnector implements ICustodianConnector
         ];
 
         if (isset($this->config['api_key'])) {
-            $headers['Authorization'] = 'Bearer '.$this->config['api_key'];
+            $headers['Authorization'] = 'Bearer ' . $this->config['api_key'];
         }
 
         return array_merge($headers, $this->config['headers'] ?? []);

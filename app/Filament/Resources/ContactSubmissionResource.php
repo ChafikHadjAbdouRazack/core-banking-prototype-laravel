@@ -3,7 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\ContactSubmissionResource\Pages;
-use App\Models\ContactSubmission;
+use App\Domain\Contact\Models\ContactSubmission;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;

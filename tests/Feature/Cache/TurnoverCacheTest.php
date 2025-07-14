@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use App\Domain\Account\Services\Cache\TurnoverCacheService;
 use App\Models\Account;
-use App\Models\Turnover;
+use App\Domain\Account\Models\Turnover;
 use Illuminate\Support\Facades\Cache;
 
 beforeEach(function () {

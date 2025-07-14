@@ -16,5 +16,6 @@ class SuspiciousActivityDetected
     public function __construct(
         public readonly Transaction $transaction,
         public readonly array $alerts
-    ) {}
+    ) {
+    }
 }

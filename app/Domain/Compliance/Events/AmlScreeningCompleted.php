@@ -19,5 +19,6 @@ class AmlScreeningCompleted extends ShouldBeStored
     public function __construct(
         public string $finalStatus,
         public ?float $processingTime = null
-    ) {}
+    ) {
+    }
 }

@@ -133,8 +133,8 @@ class VotingTemplateService
      */
     private function getBasketVotingDescription(Carbon $votingMonth): string
     {
-        return "Vote on the currency basket composition for {$votingMonth->format('F Y')}. ".
-               'Allocate percentages to each currency/asset in the basket. Your voting power is based on your asset holdings. '.
+        return "Vote on the currency basket composition for {$votingMonth->format('F Y')}. " .
+               'Allocate percentages to each currency/asset in the basket. Your voting power is based on your asset holdings. ' .
                'The final composition will be the weighted average of all votes.';
     }
 

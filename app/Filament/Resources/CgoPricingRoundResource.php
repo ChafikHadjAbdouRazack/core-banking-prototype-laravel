@@ -3,7 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\CgoPricingRoundResource\Pages;
-use App\Models\CgoPricingRound;
+use App\Domain\Cgo\Models\CgoPricingRound;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;

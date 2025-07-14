@@ -12,7 +12,7 @@ parameters:
         - '#Call to an undefined static method App\\Domain\\[a-zA-Z\\]+\\Projections\\[a-zA-Z]+::#'
         - '#Access to an undefined property App\\Domain\\[a-zA-Z\\]+\\Projections\\[a-zA-Z]+::\$#'
         - '#Call to an undefined method Illuminate\\Database\\Eloquent\\Model::#'
-        - '#Call to an undefined static method App\\Domain\\[a-zA-Z\\]+\\Models\\[a-zA-Z]+::(create|where|find|orderBy|active|with|findOrFail)\(\)#'
+        - '#Call to an undefined static method App\\Domain\\[a-zA-Z\\]+\\Models\\[a-zA-Z]+::(create|where|find|orderBy|active|with|findOrFail|whereIn|firstOrCreate|first|get|update|delete)\(\)#'
         - '#Access to an undefined property App\\Models\\User::\$(tokens|ownedTeams|id|name|email|uuid|kyc_status|kyc_level|kyc_submitted_at|kyc_approved_at|kyc_expires_at|kycDocuments)#'
         - '#Access to an undefined property App\\Models\\Team::\$(id|owner)#'
         - '#Access to an undefined property Illuminate\\Contracts\\Auth\\Authenticatable::\$currentTeam#'

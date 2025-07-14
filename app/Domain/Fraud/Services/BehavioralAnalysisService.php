@@ -2,8 +2,8 @@
 
 namespace App\Domain\Fraud\Services;
 
-use App\Models\BehavioralProfile;
-use App\Models\FraudScore;
+use App\Domain\Fraud\Models\BehavioralProfile;
+use App\Domain\Fraud\Models\FraudScore;
 use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
@@ -276,7 +276,7 @@ class BehavioralAnalysisService
 
         return [
             'is_unusual' => $isUnusual,
-            'device_id' => substr($deviceId, 0, 8).'...',
+            'device_id' => substr($deviceId, 0, 8) . '...',
             'is_trusted' => in_array($deviceId, $profile->trusted_devices ?? []),
             'device_count' => $profile->device_count,
             'risk_contribution' => $riskContribution,

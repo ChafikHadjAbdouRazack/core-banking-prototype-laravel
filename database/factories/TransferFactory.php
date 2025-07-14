@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Models\Transfer;
+use App\Domain\Account\Models\Transfer;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

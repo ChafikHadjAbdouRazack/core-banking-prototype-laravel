@@ -5,7 +5,7 @@ namespace Database\Factories;
 use App\Models\Role;
 use App\Models\Team;
 use App\Models\User;
-use App\Values\UserRoles;
+use App\Domain\User\Values\UserRoles;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;

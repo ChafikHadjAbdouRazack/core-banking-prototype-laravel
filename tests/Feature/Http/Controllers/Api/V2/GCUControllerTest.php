@@ -3,7 +3,7 @@
 namespace Tests\Feature\Http\Controllers\Api\V2;
 
 use App\Models\Asset;
-use App\Models\BasketAsset;
+use App\Domain\Basket\Models\BasketAsset;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;

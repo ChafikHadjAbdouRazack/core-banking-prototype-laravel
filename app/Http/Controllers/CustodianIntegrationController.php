@@ -4,9 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Domain\Custodian\Services\CustodianHealthMonitor;
 use App\Domain\Custodian\Services\CustodianRegistry;
-use App\Models\CustodianAccount;
-use App\Models\CustodianTransfer;
-use App\Models\CustodianWebhook;
+use App\Domain\Custodian\Models\CustodianAccount;
+use App\Domain\Custodian\Models\CustodianTransfer;
+use App\Domain\Custodian\Models\CustodianWebhook;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;

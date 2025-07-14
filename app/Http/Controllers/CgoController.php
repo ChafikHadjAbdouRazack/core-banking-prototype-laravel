@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Jobs\VerifyCgoPayment;
-use App\Mail\CgoInvestmentReceived;
-use App\Mail\CgoNotificationReceived;
-use App\Models\CgoInvestment;
-use App\Models\CgoNotification;
-use App\Models\CgoPricingRound;
-use App\Models\Subscriber;
-use App\Services\Cgo\CgoKycService;
-use App\Services\Cgo\CoinbaseCommerceService;
-use App\Services\Cgo\StripePaymentService;
-use App\Services\Email\SubscriberEmailService;
+use App\Domain\Cgo\Jobs\VerifyCgoPayment;
+use App\Domain\Cgo\Mail\CgoInvestmentReceived;
+use App\Domain\Cgo\Mail\CgoNotificationReceived;
+use App\Domain\Cgo\Models\CgoInvestment;
+use App\Domain\Cgo\Models\CgoNotification;
+use App\Domain\Cgo\Models\CgoPricingRound;
+use App\Domain\Newsletter\Models\Subscriber;
+use App\Domain\Cgo\Services\CgoKycService;
+use App\Domain\Cgo\Services\CoinbaseCommerceService;
+use App\Domain\Cgo\Services\StripePaymentService;
+use App\Domain\Newsletter\Services\SubscriberEmailService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;

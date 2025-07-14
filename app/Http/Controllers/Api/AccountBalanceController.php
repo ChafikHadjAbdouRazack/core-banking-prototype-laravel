@@ -227,7 +227,7 @@ class AccountBalanceController extends Controller
             ]
         );
 
-        $query = \App\Models\AccountBalance::with(['account', 'asset']);
+        $query = \App\Domain\AccountBalance\Models\AccountBalance::with(['account', 'asset']);
 
         // Apply filters
         if ($request->has('asset')) {
@@ -252,7 +252,7 @@ class AccountBalanceController extends Controller
 
         // Calculate aggregations
         $totalAccounts = Account::count();
-        $totalBalances = \App\Models\AccountBalance::count();
+        $totalBalances = \App\Domain\AccountBalance\Models\AccountBalance::count();
         $assetTotals = $this->calculateAssetTotals();
 
         return response()->json(
@@ -319,7 +319,7 @@ class AccountBalanceController extends Controller
             'asset_totals',
             300,
             function () {
-                $totals = \App\Models\AccountBalance::selectRaw('asset_code, SUM(balance) as total')
+                $totals = \App\Domain\AccountBalance\Models\AccountBalance::selectRaw('asset_code, SUM(balance) as total')
                     ->groupBy('asset_code')
                     ->with('asset')
                     ->get()

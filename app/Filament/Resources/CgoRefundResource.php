@@ -4,7 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Domain\Cgo\Aggregates\RefundAggregate;
 use App\Filament\Resources\CgoRefundResource\Pages;
-use App\Models\CgoRefund;
+use App\Domain\Cgo\Models\CgoRefund;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;

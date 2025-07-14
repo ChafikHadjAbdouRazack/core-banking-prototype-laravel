@@ -18,5 +18,6 @@ class DepositInitiated extends ShouldBeStored
         public string $paymentMethod,
         public string $paymentMethodType,
         public array $metadata = []
-    ) {}
+    ) {
+    }
 }

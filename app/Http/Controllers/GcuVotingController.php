@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\GcuVote;
-use App\Models\GcuVotingProposal;
+use App\Domain\Governance\Models\GcuVote;
+use App\Domain\Governance\Models\GcuVotingProposal;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -205,7 +205,7 @@ class GcuVotingController extends Controller
         }
 
         // Calculate total GCU supply
-        $totalGcuSupply = \App\Models\AccountBalance::where('asset_code', 'GCU')
+        $totalGcuSupply = \App\Domain\AccountBalance\Models\AccountBalance::where('asset_code', 'GCU')
             ->sum('balance');
 
         $proposal = GcuVotingProposal::create(

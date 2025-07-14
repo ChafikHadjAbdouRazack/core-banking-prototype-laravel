@@ -4,7 +4,7 @@ namespace App\Domain\Compliance\Services;
 
 use App\Domain\Compliance\Events\SARCreated;
 use App\Domain\Compliance\Events\SARSubmitted;
-use App\Models\SuspiciousActivityReport;
+use App\Domain\Compliance\Models\SuspiciousActivityReport;
 use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Support\Collection;
@@ -139,7 +139,7 @@ class SuspiciousActivityReportService
         // Validate SAR is complete
         $validation = $this->validateForSubmission($sar);
         if (! $validation['valid']) {
-            throw new \Exception('SAR validation failed: '.implode(', ', $validation['errors']));
+            throw new \Exception('SAR validation failed: ' . implode(', ', $validation['errors']));
         }
 
         // In production, this would submit to FinCEN or appropriate regulator
@@ -295,7 +295,7 @@ class SuspiciousActivityReportService
         );
 
         $alertDescriptions = array_map(fn ($alert) => $alert['description'], $alerts);
-        $description .= 'Alerts triggered: '.implode('; ', $alertDescriptions).'. ';
+        $description .= 'Alerts triggered: ' . implode('; ', $alertDescriptions) . '. ';
 
         $description .= sprintf(
             'Transaction amount: %s %s. ',
@@ -399,12 +399,12 @@ class SuspiciousActivityReportService
 
         return [
             'success' => true,
-            'reference' => 'BSA-'.now()->format('Y').'-'.rand(100000, 999999),
+            'reference' => 'BSA-' . now()->format('Y') . '-' . rand(100000, 999999),
             'jurisdiction' => 'US-FinCEN',
             'submitted_at' => now()->toIso8601String(),
             'acknowledgment' => [
                 'received' => true,
-                'tracking_number' => 'ACK-'.uniqid(),
+                'tracking_number' => 'ACK-' . uniqid(),
                 'estimated_processing_time' => '3-5 business days',
             ],
         ];

@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use App\Domain\Asset\Models\Asset;
-use App\Models\Stablecoin;
+use App\Domain\Stablecoin\Models\Stablecoin;
 use Illuminate\Database\Seeder;
 
 class StablecoinSeeder extends Seeder

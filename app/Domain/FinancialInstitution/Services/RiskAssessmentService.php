@@ -2,7 +2,7 @@
 
 namespace App\Domain\FinancialInstitution\Services;
 
-use App\Models\FinancialInstitutionApplication;
+use App\Domain\FinancialInstitution\Models\FinancialInstitutionApplication;
 
 class RiskAssessmentService
 {
@@ -114,7 +114,7 @@ class RiskAssessmentService
         ];
 
         $riskScore += $typeRisks[$application->institution_type] ?? 50;
-        $factors[] = ucfirst($application->institution_type).' business model';
+        $factors[] = ucfirst($application->institution_type) . ' business model';
 
         // Product complexity
         $products = $application->product_offerings ?? [];

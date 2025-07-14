@@ -21,5 +21,6 @@ class AmlScreeningMatchStatusUpdated extends ShouldBeStored
         public string $action,
         public array $details,
         public ?string $reason = null
-    ) {}
+    ) {
+    }
 }

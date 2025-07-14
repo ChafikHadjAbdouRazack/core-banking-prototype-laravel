@@ -13,7 +13,8 @@ final class BlockchainTransaction
         public readonly string $value,
         public readonly string $blockchain,
         public readonly string $status
-    ) {}
+    ) {
+    }
 
     public function toArray(): array
     {

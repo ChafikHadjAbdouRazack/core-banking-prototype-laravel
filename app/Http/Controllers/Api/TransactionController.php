@@ -13,7 +13,7 @@ use App\Domain\Asset\Workflows\AssetDepositWorkflow;
 use App\Domain\Asset\Workflows\AssetWithdrawWorkflow;
 use App\Http\Controllers\Controller;
 use App\Models\Account;
-use App\Models\Transaction;
+use App\Domain\Account\Models\Transaction;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Workflow\WorkflowStub;

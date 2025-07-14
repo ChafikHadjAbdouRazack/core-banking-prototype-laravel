@@ -132,7 +132,7 @@ class CgoInvestment extends Model
 
     public function generateCertificateNumber(): string
     {
-        return 'CGO-'.strtoupper($this->tier[0]).'-'.date('Y').'-'.str_pad($this->id, 6, '0', STR_PAD_LEFT);
+        return 'CGO-' . strtoupper($this->tier[0]) . '-' . date('Y') . '-' . str_pad($this->id, 6, '0', STR_PAD_LEFT);
     }
 
     public function refunds(): HasMany

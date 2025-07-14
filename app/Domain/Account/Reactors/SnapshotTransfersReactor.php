@@ -10,7 +10,8 @@ class SnapshotTransfersReactor extends Reactor
 {
     public function __construct(
         protected TransferAggregate $transfers,
-    ) {}
+    ) {
+    }
 
     public function onTransferThresholdReached(
         TransferThresholdReached $event

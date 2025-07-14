@@ -25,5 +25,6 @@ class AmlScreeningResultsRecorded extends ShouldBeStored
         public string $overallRisk,
         public array $listsChecked,
         public ?array $apiResponse = null
-    ) {}
+    ) {
+    }
 }

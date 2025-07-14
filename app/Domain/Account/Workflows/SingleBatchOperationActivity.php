@@ -6,7 +6,7 @@ namespace App\Domain\Account\Workflows;
 
 use App\Models\Account;
 use App\Models\Transaction;
-use App\Models\Turnover;
+use App\Domain\Account\Models\Turnover;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -199,7 +199,7 @@ class SingleBatchOperationActivity extends Activity
             ];
 
             // Store as JSON for auditing
-            $filename = "statements/{$account->uuid}/".$startOfMonth->format('Y-m').'.json';
+            $filename = "statements/{$account->uuid}/" . $startOfMonth->format('Y-m') . '.json';
             Storage::disk('local')->put($filename, json_encode($statementData, JSON_PRETTY_PRINT));
 
             $generatedFiles[] = $filename;

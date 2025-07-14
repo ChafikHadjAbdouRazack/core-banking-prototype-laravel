@@ -59,7 +59,7 @@ class ProcessBankWithdrawalWorkflow extends Workflow
             );
 
             // Step 4: Generate transaction ID
-            $transactionId = 'wtxn_'.uniqid();
+            $transactionId = 'wtxn_' . uniqid();
 
             // Step 5: Initiate bank transfer (could be async)
             $transferId = yield ActivityStub::make(

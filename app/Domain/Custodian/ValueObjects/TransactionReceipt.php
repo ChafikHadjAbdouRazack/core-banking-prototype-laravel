@@ -21,7 +21,8 @@ final class TransactionReceipt
         public readonly ?Carbon $completedAt = null,
         public readonly ?array $metadata = [],
         public readonly ?string $failureReason = null
-    ) {}
+    ) {
+    }
 
     public function isCompleted(): bool
     {

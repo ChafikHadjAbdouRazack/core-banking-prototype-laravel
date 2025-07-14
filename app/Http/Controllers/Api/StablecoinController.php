@@ -7,7 +7,7 @@ namespace App\Http\Controllers\Api;
 use App\Domain\Stablecoin\Services\CollateralService;
 use App\Domain\Stablecoin\Services\StabilityMechanismService;
 use App\Http\Controllers\Controller;
-use App\Models\Stablecoin;
+use App\Domain\Stablecoin\Models\Stablecoin;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;

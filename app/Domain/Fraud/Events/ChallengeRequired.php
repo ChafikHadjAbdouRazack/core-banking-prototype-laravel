@@ -2,7 +2,7 @@
 
 namespace App\Domain\Fraud\Events;
 
-use App\Models\FraudScore;
+use App\Domain\Fraud\Models\FraudScore;
 use App\Models\Transaction;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Foundation\Events\Dispatchable;
@@ -32,9 +32,9 @@ class ChallengeRequired
         return [
             'fraud',
             'challenge_required',
-            'transaction:'.$this->transaction->id,
-            'fraud_score:'.$this->fraudScore->id,
-            'risk_level:'.$this->fraudScore->risk_level,
+            'transaction:' . $this->transaction->id,
+            'fraud_score:' . $this->fraudScore->id,
+            'risk_level:' . $this->fraudScore->risk_level,
         ];
     }
 }

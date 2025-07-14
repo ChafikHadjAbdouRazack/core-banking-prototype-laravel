@@ -2,7 +2,7 @@
 
 namespace App\Filament\Widgets;
 
-use App\Models\CgoInvestment;
+use App\Domain\Cgo\Models\CgoInvestment;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Number;

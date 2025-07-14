@@ -1,6 +1,6 @@
 <?php
 
-use App\Values\DefaultAccountNames;
+use App\Domain\Account\Values\DefaultAccountNames;
 
 it('has correct enum values', function () {
     expect(DefaultAccountNames::MAIN->value)->toBe('Main');

@@ -6,7 +6,7 @@ use App\Domain\Custodian\Events\CustodianHealthChanged;
 use App\Domain\Custodian\Services\BankAlertingService;
 use App\Domain\Custodian\Services\CustodianHealthMonitor;
 use App\Models\User;
-use App\Notifications\BankHealthAlert;
+use App\Domain\Banking\Notifications\BankHealthAlert;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;

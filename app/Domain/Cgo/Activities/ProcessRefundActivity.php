@@ -4,8 +4,8 @@ namespace App\Domain\Cgo\Activities;
 
 use App\Domain\Cgo\Aggregates\RefundAggregate;
 use App\Domain\Cgo\Models\CgoRefund;
-use App\Services\Cgo\CoinbaseCommerceService;
-use App\Services\Cgo\StripePaymentService;
+use App\Domain\Cgo\Services\CoinbaseCommerceService;
+use App\Domain\Cgo\Services\StripePaymentService;
 use Workflow\Activity;
 
 class ProcessRefundActivity extends Activity
@@ -13,7 +13,8 @@ class ProcessRefundActivity extends Activity
     public function __construct(
         private StripePaymentService $stripeService,
         private CoinbaseCommerceService $coinbaseService
-    ) {}
+    ) {
+    }
 
     public function execute(array $input): array
     {
@@ -36,7 +37,7 @@ class ProcessRefundActivity extends Activity
         } elseif ($investment->payment_method === 'coinbase_commerce') {
             // For crypto, we can't automatically refund
             // This would typically require manual processing or a different flow
-            $processorRefundId = 'manual_crypto_refund_'.uniqid();
+            $processorRefundId = 'manual_crypto_refund_' . uniqid();
             $processorResponse = [
                 'type' => 'manual_crypto_refund',
                 'address' => $refund->refund_address,
@@ -45,7 +46,7 @@ class ProcessRefundActivity extends Activity
             ];
         } elseif ($investment->payment_method === 'bank_transfer') {
             // For bank transfers, this would integrate with banking APIs
-            $processorRefundId = 'bank_refund_'.uniqid();
+            $processorRefundId = 'bank_refund_' . uniqid();
             $processorResponse = [
                 'type' => 'bank_transfer_refund',
                 'bank_details' => $refund->bank_details,

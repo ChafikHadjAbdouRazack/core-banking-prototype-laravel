@@ -2,7 +2,7 @@
 
 namespace App\Filament\Pages;
 
-use App\Models\CgoInvestment;
+use App\Domain\Cgo\Models\CgoInvestment;
 use Filament\Forms;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;

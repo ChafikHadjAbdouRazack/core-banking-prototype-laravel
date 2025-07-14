@@ -81,7 +81,7 @@ class PaymentGatewayService
         }
 
         // Use PaymentService to process deposit through event sourcing
-        $reference = 'DEP-'.strtoupper(uniqid());
+        $reference = 'DEP-' . strtoupper(uniqid());
         $this->paymentService->processStripeDeposit(
             [
                 'account_uuid' => $accountUuid,
@@ -102,7 +102,7 @@ class PaymentGatewayService
             'account_uuid' => $accountUuid,
             'amount' => $paymentIntent->amount,
             'currency' => strtoupper($paymentIntent->currency),
-            'reference' => 'DEP-'.strtoupper(uniqid()),
+            'reference' => 'DEP-' . strtoupper(uniqid()),
         ];
     }
 
@@ -121,7 +121,7 @@ class PaymentGatewayService
             throw new Exception('Insufficient balance');
         }
 
-        $reference = 'WTH-'.strtoupper(uniqid());
+        $reference = 'WTH-' . strtoupper(uniqid());
 
         // Use PaymentService to process withdrawal through event sourcing
         $result = $this->paymentService->processBankWithdrawal(

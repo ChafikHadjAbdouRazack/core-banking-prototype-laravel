@@ -2,7 +2,7 @@
 
 namespace App\Domain\FinancialInstitution\Services;
 
-use App\Models\FinancialInstitutionApplication;
+use App\Domain\FinancialInstitution\Models\FinancialInstitutionApplication;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;

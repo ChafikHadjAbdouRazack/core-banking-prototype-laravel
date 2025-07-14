@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Domain\Batch\Models\BatchItem;
 use App\Domain\Batch\Models\BatchJob;
 use App\Domain\Batch\Services\BatchProcessingService;
-use App\Models\User;
+use App\Domain\Account\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;

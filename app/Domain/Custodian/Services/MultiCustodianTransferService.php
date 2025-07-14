@@ -9,7 +9,7 @@ use App\Domain\Custodian\Contracts\ICustodianConnector;
 use App\Domain\Custodian\ValueObjects\TransactionReceipt;
 use App\Domain\Custodian\ValueObjects\TransferRequest;
 use App\Models\Account;
-use App\Models\CustodianAccount;
+use App\Domain\Custodian\Models\CustodianAccount;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -398,8 +398,8 @@ class MultiCustodianTransferService
                 toAccount: $this->getBridgeAccountId($route['route']['bridge'], $assetCode),
                 amount: $amount,
                 assetCode: $assetCode,
-                reference: $reference.'_LEG1',
-                description: 'Bridge transfer leg 1: '.$description,
+                reference: $reference . '_LEG1',
+                description: 'Bridge transfer leg 1: ' . $description,
                 metadata: [
                     'bridge_transfer' => true,
                     'final_destination' => $route['route']['to']->custodian_account_id,
@@ -419,8 +419,8 @@ class MultiCustodianTransferService
                 toAccount: $route['route']['to']->custodian_account_id,
                 amount: $amount,
                 assetCode: $assetCode,
-                reference: $reference.'_LEG2',
-                description: 'Bridge transfer leg 2: '.$description,
+                reference: $reference . '_LEG2',
+                description: 'Bridge transfer leg 2: ' . $description,
                 metadata: [
                     'bridge_transfer' => true,
                     'original_source' => $route['route']['from']->custodian_account_id,
@@ -433,7 +433,7 @@ class MultiCustodianTransferService
 
             // Create composite receipt
             $bridgeReceipt = new TransactionReceipt(
-                id: 'BRIDGE_'.$firstLegReceipt->id.'_'.$secondLegReceipt->id,
+                id: 'BRIDGE_' . $firstLegReceipt->id . '_' . $secondLegReceipt->id,
                 status: 'pending',
                 amount: $amount->getAmount(),
                 assetCode: $assetCode,
@@ -461,7 +461,7 @@ class MultiCustodianTransferService
                 ]
             );
 
-            throw new \RuntimeException('Bridge transfer failed: '.$e->getMessage(), 0, $e);
+            throw new \RuntimeException('Bridge transfer failed: ' . $e->getMessage(), 0, $e);
         }
     }
 
@@ -483,7 +483,7 @@ class MultiCustodianTransferService
             }
 
             if ($status->isFailed()) {
-                throw new \RuntimeException("Transfer {$transferId} failed: ".$status->failureReason);
+                throw new \RuntimeException("Transfer {$transferId} failed: " . $status->failureReason);
             }
 
             // Wait before checking again

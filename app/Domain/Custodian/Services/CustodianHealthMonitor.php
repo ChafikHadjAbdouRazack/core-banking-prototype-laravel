@@ -31,7 +31,8 @@ class CustodianHealthMonitor
     public function __construct(
         private readonly CustodianRegistry $registry,
         private readonly CircuitBreakerService $circuitBreaker
-    ) {}
+    ) {
+    }
 
     /**
      * Get health status for all custodians.

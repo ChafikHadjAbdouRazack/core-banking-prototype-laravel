@@ -2,10 +2,10 @@
 
 namespace Tests\Unit\Jobs;
 
-use App\Jobs\VerifyCgoPayment;
-use App\Models\CgoInvestment;
+use App\Domain\Cgo\Jobs\VerifyCgoPayment;
+use App\Domain\Cgo\Models\CgoInvestment;
 use App\Models\User;
-use App\Services\Cgo\PaymentVerificationService;
+use App\Domain\Cgo\Services\PaymentVerificationService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Queue;
 use Mockery;

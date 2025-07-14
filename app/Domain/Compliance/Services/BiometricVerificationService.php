@@ -161,7 +161,7 @@ class BiometricVerificationService
         // Simulated template creation
 
         return [
-            'template_id' => 'face_'.uniqid(),
+            'template_id' => 'face_' . uniqid(),
             'created_at' => now()->toIso8601String(),
             'algorithm' => 'FaceNet',
             'version' => '2.0',

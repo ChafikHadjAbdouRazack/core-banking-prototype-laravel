@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Cgo\Repositories;
 
-use App\Models\CgoEvent;
+use App\Domain\Cgo\Models\CgoEvent;
 use Spatie\EventSourcing\AggregateRoots\Exceptions\InvalidEloquentStoredEventModel;
 use Spatie\EventSourcing\StoredEvents\Models\EloquentStoredEvent;
 use Spatie\EventSourcing\StoredEvents\Repositories\EloquentStoredEventRepository;

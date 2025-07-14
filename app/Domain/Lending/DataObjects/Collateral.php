@@ -20,7 +20,8 @@ class Collateral
         public readonly ?Carbon $verifiedAt,
         public readonly ?string $verifiedBy,
         public readonly array $metadata = []
-    ) {}
+    ) {
+    }
 
     public static function fromArray(array $data): self
     {

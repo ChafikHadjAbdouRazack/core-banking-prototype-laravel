@@ -1,7 +1,7 @@
 <?php
 
-use App\Models\Webhook;
-use App\Models\WebhookDelivery;
+use App\Domain\Webhook\Models\Webhook;
+use App\Domain\Webhook\Models\WebhookDelivery;
 
 it('can create a webhook delivery', function () {
     $webhook = Webhook::factory()->create();

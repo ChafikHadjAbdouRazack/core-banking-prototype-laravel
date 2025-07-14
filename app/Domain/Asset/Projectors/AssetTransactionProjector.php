@@ -6,7 +6,7 @@ namespace App\Domain\Asset\Projectors;
 
 use App\Domain\Asset\Events\AssetTransactionCreated;
 use App\Models\Account;
-use App\Models\AccountBalance;
+use App\Domain\Account\Models\AccountBalance;
 use App\Models\Transaction;
 use Illuminate\Support\Facades\Log;
 use Spatie\EventSourcing\EventHandlers\Projectors\Projector;

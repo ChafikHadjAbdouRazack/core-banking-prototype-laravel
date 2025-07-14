@@ -165,8 +165,8 @@ class IdentityVerificationService
         // In production, this would make actual API call
         // Simulated response
         return [
-            'session_id' => 'jumio_'.uniqid(),
-            'redirect_url' => 'https://example.jumio.com/verify/'.uniqid(),
+            'session_id' => 'jumio_' . uniqid(),
+            'redirect_url' => 'https://example.jumio.com/verify/' . uniqid(),
             'expires_at' => now()->addHours(24)->toIso8601String(),
         ];
     }
@@ -179,9 +179,9 @@ class IdentityVerificationService
         // In production, this would make actual API call
         // Simulated response
         return [
-            'session_id' => 'onfido_'.uniqid(),
-            'sdk_token' => 'sdk_'.uniqid(),
-            'applicant_id' => 'app_'.uniqid(),
+            'session_id' => 'onfido_' . uniqid(),
+            'sdk_token' => 'sdk_' . uniqid(),
+            'applicant_id' => 'app_' . uniqid(),
             'expires_at' => now()->addHours(24)->toIso8601String(),
         ];
     }

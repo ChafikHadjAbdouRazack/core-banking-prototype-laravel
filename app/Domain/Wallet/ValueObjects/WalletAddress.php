@@ -10,7 +10,8 @@ final class WalletAddress
         public readonly string $address,
         public readonly string $blockchain,
         public readonly ?string $label = null
-    ) {}
+    ) {
+    }
 
     public function toArray(): array
     {

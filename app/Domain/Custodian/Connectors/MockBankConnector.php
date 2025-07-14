@@ -113,7 +113,7 @@ class MockBankConnector extends BaseCustodianConnector
         usleep(100000); // 0.1 seconds
 
         // Create mock transaction
-        $transactionId = 'mock-tx-'.Str::uuid()->toString();
+        $transactionId = 'mock-tx-' . Str::uuid()->toString();
 
         // Check if source account has sufficient balance
         $sourceBalance = $this->mockBalances[$request->fromAccount][$request->assetCode] ?? 0;

@@ -19,7 +19,8 @@ class BankHealthChanged
         public readonly ?string $previousStatus,
         public readonly string $currentStatus,
         public readonly array $healthData
-    ) {}
+    ) {
+    }
 
     /**
      * Check if bank became unhealthy.

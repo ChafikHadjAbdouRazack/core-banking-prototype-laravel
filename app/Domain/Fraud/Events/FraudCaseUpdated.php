@@ -2,7 +2,7 @@
 
 namespace App\Domain\Fraud\Events;
 
-use App\Models\FraudCase;
+use App\Domain\Fraud\Models\FraudCase;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
@@ -29,8 +29,8 @@ class FraudCaseUpdated
             'fraud',
             'fraud_case',
             'case_updated',
-            'case:'.$this->fraudCase->case_number,
-            'status:'.$this->fraudCase->status,
+            'case:' . $this->fraudCase->case_number,
+            'status:' . $this->fraudCase->status,
         ];
     }
 }

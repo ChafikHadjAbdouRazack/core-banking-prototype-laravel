@@ -6,8 +6,8 @@ namespace App\Domain\Stablecoin\Services;
 
 use App\Domain\Asset\Services\ExchangeRateService;
 use App\Domain\Stablecoin\Contracts\CollateralServiceInterface;
-use App\Models\Stablecoin;
-use App\Models\StablecoinCollateralPosition;
+use App\Domain\Stablecoin\Models\Stablecoin;
+use App\Domain\Stablecoin\Models\StablecoinCollateralPosition;
 use Illuminate\Support\Collection;
 
 class CollateralService implements CollateralServiceInterface

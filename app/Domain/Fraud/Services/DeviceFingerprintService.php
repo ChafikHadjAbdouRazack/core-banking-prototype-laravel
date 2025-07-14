@@ -2,7 +2,7 @@
 
 namespace App\Domain\Fraud\Services;
 
-use App\Models\DeviceFingerprint;
+use App\Domain\Fraud\Models\DeviceFingerprint;
 use App\Models\User;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;

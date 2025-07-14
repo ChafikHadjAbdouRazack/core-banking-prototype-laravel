@@ -16,5 +16,6 @@ class MoneySubtracted extends ShouldBeStored implements HasHash, HasMoney
     public function __construct(
         public readonly Money $money,
         public readonly Hash $hash
-    ) {}
+    ) {
+    }
 }

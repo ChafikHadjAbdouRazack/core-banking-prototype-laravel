@@ -5,7 +5,7 @@ namespace App\Domain\Compliance\Services;
 use App\Domain\Compliance\Events\EnhancedDueDiligenceRequired;
 use App\Domain\Compliance\Events\RiskLevelChanged;
 use App\Models\Account;
-use App\Models\CustomerRiskProfile;
+use App\Domain\Compliance\Models\CustomerRiskProfile;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 

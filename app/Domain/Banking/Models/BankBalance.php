@@ -17,7 +17,8 @@ class BankBalance
         public readonly float $reserved,
         public readonly Carbon $asOf,
         public readonly array $metadata = [],
-    ) {}
+    ) {
+    }
 
     /**
      * Get total balance (current + pending).

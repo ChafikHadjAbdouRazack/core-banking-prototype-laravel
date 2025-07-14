@@ -3,7 +3,7 @@
 namespace App\Filament\Admin\Widgets;
 
 use App\Domain\Basket\Services\BasketPerformanceService;
-use App\Models\BasketAsset;
+use App\Domain\Basket\Models\BasketAsset;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Facades\Cache;

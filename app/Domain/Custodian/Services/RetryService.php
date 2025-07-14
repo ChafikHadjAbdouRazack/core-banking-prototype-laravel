@@ -28,7 +28,8 @@ class RetryService
         private readonly int $maxDelayMs = self::DEFAULT_MAX_DELAY_MS,
         private readonly float $multiplier = self::DEFAULT_MULTIPLIER,
         private readonly bool $jitter = self::DEFAULT_JITTER
-    ) {}
+    ) {
+    }
 
     /**
      * Execute operation with exponential backoff retry.

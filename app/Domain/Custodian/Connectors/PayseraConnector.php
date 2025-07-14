@@ -65,10 +65,10 @@ class PayseraConnector extends BaseCustodianConnector
             return $this->accessToken;
         }
 
-        $this->logRequest('POST', self::OAUTH_URL.'/token');
+        $this->logRequest('POST', self::OAUTH_URL . '/token');
 
         $response = Http::asForm()->post(
-            self::OAUTH_URL.'/token',
+            self::OAUTH_URL . '/token',
             [
                 'grant_type' => 'client_credentials',
                 'client_id' => $this->clientId,
@@ -78,7 +78,7 @@ class PayseraConnector extends BaseCustodianConnector
         );
 
         if (! $response->successful()) {
-            throw new \Exception('Failed to obtain access token: '.$response->body());
+            throw new \Exception('Failed to obtain access token: ' . $response->body());
         }
 
         $data = $response->json();
@@ -98,7 +98,7 @@ class PayseraConnector extends BaseCustodianConnector
 
         return $this->resilientApiRequest(
             method: $method,
-            endpoint: self::API_BASE_URL.$endpoint,
+            endpoint: self::API_BASE_URL . $endpoint,
             data: $data
         );
     }
@@ -111,7 +111,7 @@ class PayseraConnector extends BaseCustodianConnector
             $response = $this->apiRequest('GET', "/accounts/{$accountId}/balance");
 
             if (! $response->successful()) {
-                throw new \Exception('Failed to get balance: '.$response->body());
+                throw new \Exception('Failed to get balance: ' . $response->body());
             }
 
             $data = $response->json();
@@ -157,7 +157,7 @@ class PayseraConnector extends BaseCustodianConnector
         $response = $this->apiRequest('GET', "/accounts/{$accountId}");
 
         if (! $response->successful()) {
-            throw new \Exception('Failed to get account info: '.$response->body());
+            throw new \Exception('Failed to get account info: ' . $response->body());
         }
 
         $data = $response->json();
@@ -206,7 +206,7 @@ class PayseraConnector extends BaseCustodianConnector
                 $response = $this->apiRequest('POST', '/payments', $paymentData);
 
                 if (! $response->successful()) {
-                    throw new \Exception('Failed to initiate transfer: '.$response->body());
+                    throw new \Exception('Failed to initiate transfer: ' . $response->body());
                 }
 
                 $data = $response->json();
@@ -263,7 +263,7 @@ class PayseraConnector extends BaseCustodianConnector
                 $response = $this->apiRequest('GET', "/payments/{$transactionId}");
 
                 if (! $response->successful()) {
-                    throw new \Exception('Failed to get transaction status: '.$response->body());
+                    throw new \Exception('Failed to get transaction status: ' . $response->body());
                 }
 
                 $data = $response->json();
@@ -354,7 +354,7 @@ class PayseraConnector extends BaseCustodianConnector
         );
 
         if (! $response->successful()) {
-            throw new \Exception('Failed to get transaction history: '.$response->body());
+            throw new \Exception('Failed to get transaction history: ' . $response->body());
         }
 
         $data = $response->json();

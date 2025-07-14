@@ -24,5 +24,6 @@ class AmlScreeningStarted extends ShouldBeStored
         public string $provider,
         public array $searchParameters,
         public ?string $providerReference = null
-    ) {}
+    ) {
+    }
 }

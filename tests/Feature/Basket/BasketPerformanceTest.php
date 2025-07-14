@@ -3,7 +3,7 @@
 namespace Tests\Feature\Basket;
 
 use App\Domain\Basket\Services\BasketPerformanceService;
-use App\Models\BasketAsset;
+use App\Domain\Basket\Models\BasketAsset;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;

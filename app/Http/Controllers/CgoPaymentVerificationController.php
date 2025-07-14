@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\CgoInvestment;
-use App\Services\Cgo\PaymentVerificationService;
+use App\Domain\Cgo\Models\CgoInvestment;
+use App\Domain\Cgo\Services\PaymentVerificationService;
 use Illuminate\Support\Facades\Auth;
 
 class CgoPaymentVerificationController extends Controller

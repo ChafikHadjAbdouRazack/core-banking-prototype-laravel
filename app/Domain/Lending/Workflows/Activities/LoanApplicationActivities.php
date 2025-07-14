@@ -13,7 +13,8 @@ class LoanApplicationActivities
     public function __construct(
         private CreditScoringService $creditScoring,
         private RiskAssessmentService $riskAssessment
-    ) {}
+    ) {
+    }
 
     public function createApplication(
         string $applicationId,
@@ -249,7 +250,7 @@ class LoanApplicationActivities
     ): void {
         DB::table('notifications')->insert([
             'user_id' => $borrowerId,
-            'type' => 'loan_application_'.$status,
+            'type' => 'loan_application_' . $status,
             'data' => json_encode($details),
             'created_at' => now(),
         ]);

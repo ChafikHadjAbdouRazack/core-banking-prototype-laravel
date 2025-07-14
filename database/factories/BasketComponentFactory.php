@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Models\BasketAsset;
-use App\Models\BasketComponent;
+use App\Domain\Basket\Models\BasketAsset;
+use App\Domain\Basket\Models\BasketComponent;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

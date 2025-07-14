@@ -17,5 +17,6 @@ class CustodianHealthChanged
         public readonly string $previousStatus,
         public readonly string $newStatus,
         public readonly \DateTimeInterface $timestamp
-    ) {}
+    ) {
+    }
 }

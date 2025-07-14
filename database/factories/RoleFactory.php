@@ -3,7 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Role;
-use App\Values\UserRoles;
+use App\Domain\User\Values\UserRoles;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

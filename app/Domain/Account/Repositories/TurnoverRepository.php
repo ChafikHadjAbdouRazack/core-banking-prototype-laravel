@@ -3,7 +3,7 @@
 namespace App\Domain\Account\Repositories;
 
 use App\Models\Account;
-use App\Models\Turnover;
+use App\Domain\Account\Models\Turnover;
 use DateTimeInterface;
 use Illuminate\Support\Facades\DB;
 
@@ -11,7 +11,8 @@ final class TurnoverRepository
 {
     public function __construct(
         protected Turnover $turnover
-    ) {}
+    ) {
+    }
 
     /**
      * @param  string  $accountUuid

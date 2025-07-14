@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Domain\Compliance\Services\KycService;
-use App\Models\CgoInvestment;
-use App\Models\KycDocument;
-use App\Services\Cgo\CgoKycService;
+use App\Domain\Cgo\Models\CgoInvestment;
+use App\Domain\Compliance\Models\KycDocument;
+use App\Domain\Cgo\Services\CgoKycService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;

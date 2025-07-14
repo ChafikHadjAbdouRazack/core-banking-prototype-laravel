@@ -2,6 +2,11 @@
 
 namespace App\Console\Commands;
 
+use App\Models\User;
+use App\Models\Account;
+use App\Domain\Account\Models\AccountBalance;
+use App\Domain\Asset\Models\ExchangeRate;
+use App\Domain\Webhook\Models\Webhook;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -151,10 +156,10 @@ class RunLoadTests extends Command
 
         for ($i = 0; $i < $iterations; $i++) {
             // Create user and account directly
-            $user = \App\Models\User::factory()->create();
-            $account = \App\Models\Account::factory()->forUser($user)->create();
+            $user = User::factory()->create();
+            $account = Account::factory()->forUser($user)->create();
             // Create initial balance for testing
-            \App\Models\AccountBalance::create(
+            AccountBalance::create(
                 [
                 'account_uuid' => $account->uuid,
                 'asset_code'   => 'USD',
@@ -175,10 +180,10 @@ class RunLoadTests extends Command
         $this->info('Creating test accounts...');
         $accounts = [];
         for ($i = 0; $i < $concurrent; $i++) {
-            $user = \App\Models\User::factory()->create();
-            $account = \App\Models\Account::factory()->forUser($user)->create();
+            $user = User::factory()->create();
+            $account = Account::factory()->forUser($user)->create();
             // Create initial balance for testing
-            \App\Models\AccountBalance::create(
+            AccountBalance::create(
                 [
                 'account_uuid' => $account->uuid,
                 'asset_code'   => 'USD',
@@ -227,7 +232,7 @@ class RunLoadTests extends Command
             $to = $assets[array_rand($assets)];
 
             if ($from !== $to) {
-                \App\Models\ExchangeRate::getRate($from, $to);
+                ExchangeRate::getRate($from, $to);
             }
 
             $bar->advance();
@@ -240,7 +245,7 @@ class RunLoadTests extends Command
     private function testWebhooks(int $iterations): void
     {
         // Create test webhook
-        $webhook = \App\Models\Webhook::create(
+        $webhook = Webhook::create(
             [
             'uuid'   => \Illuminate\Support\Str::uuid(),
             'name'   => 'Load Test Webhook',
@@ -255,7 +260,7 @@ class RunLoadTests extends Command
 
         for ($i = 0; $i < $iterations; $i++) {
             // Simulate webhook retrieval
-            \App\Models\Webhook::where('is_active', true)->get();
+            Webhook::where('is_active', true)->get();
 
             $bar->advance();
         }
@@ -299,7 +304,7 @@ class RunLoadTests extends Command
     private function testCacheOperations(int $iterations): void
     {
         $data = [
-            'account'  => \App\Models\Account::factory()->make()->toArray(),
+            'account'  => Account::factory()->make()->toArray(),
             'balances' => [
                 'USD' => 100000,
                 'EUR' => 50000,

@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\LoanApplication;
-use App\Services\Lending\LoanApplicationService;
+use App\Domain\Lending\Models\LoanApplication;
+use App\Domain\Lending\Services\LoanApplicationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 

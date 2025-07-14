@@ -25,7 +25,7 @@ class DocumentAnalysisService
                 $extractedData = array_merge(
                     $extractedData,
                     [
-                        'document_number' => 'P'.rand(100000000, 999999999),
+                        'document_number' => 'P' . rand(100000000, 999999999),
                         'first_name' => 'John',
                         'last_name' => 'Doe',
                         'date_of_birth' => '1990-01-01',
@@ -43,7 +43,7 @@ class DocumentAnalysisService
                 $extractedData = array_merge(
                     $extractedData,
                     [
-                        'document_number' => 'DL'.rand(1000000, 9999999),
+                        'document_number' => 'DL' . rand(1000000, 9999999),
                         'first_name' => 'John',
                         'last_name' => 'Doe',
                         'middle_name' => 'Michael',
@@ -62,7 +62,7 @@ class DocumentAnalysisService
                 $extractedData = array_merge(
                     $extractedData,
                     [
-                        'document_number' => 'ID'.rand(100000000, 999999999),
+                        'document_number' => 'ID' . rand(100000000, 999999999),
                         'first_name' => 'John',
                         'last_name' => 'Doe',
                         'date_of_birth' => '1990-01-01',

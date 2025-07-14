@@ -4,9 +4,9 @@ namespace App\Http\Controllers\API\Fraud;
 
 use App\Domain\Fraud\Services\FraudDetectionService;
 use App\Http\Controllers\Controller;
-use App\Models\FraudScore;
-use App\Models\Transaction;
-use App\Models\User;
+use App\Domain\Fraud\Models\FraudScore;
+use App\Domain\Account\Models\Transaction;
+use App\Domain\Account\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 

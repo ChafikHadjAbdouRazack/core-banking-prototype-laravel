@@ -3,7 +3,7 @@
 namespace App\Domain\Stablecoin\Contracts;
 
 use App\Models\Account;
-use App\Models\StablecoinCollateralPosition;
+use App\Domain\Stablecoin\Models\StablecoinCollateralPosition;
 
 interface StablecoinIssuanceServiceInterface
 {

@@ -19,5 +19,6 @@ class MoneyTransferred extends ShouldBeStored implements HasHash, HasMoney
         public readonly AccountUuid $to,
         public readonly Money $money,
         public readonly Hash $hash,
-    ) {}
+    ) {
+    }
 }

@@ -8,7 +8,7 @@ use App\Domain\Asset\Models\Asset;
 use App\Domain\Asset\Models\ExchangeRate;
 use App\Domain\Basket\Events\BasketRebalanced;
 use App\Domain\Basket\Services\BasketRebalancingService;
-use App\Models\BasketAsset;
+use App\Domain\Basket\Models\BasketAsset;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 use PHPUnit\Framework\Attributes\Test;

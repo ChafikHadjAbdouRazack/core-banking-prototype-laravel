@@ -7,7 +7,7 @@ namespace App\Domain\Custodian\Services;
 use App\Domain\Account\DataObjects\Money;
 use App\Domain\Custodian\ValueObjects\TransferRequest;
 use App\Models\Account;
-use App\Models\CustodianAccount;
+use App\Domain\Custodian\Models\CustodianAccount;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -15,7 +15,8 @@ class CustodianAccountService
 {
     public function __construct(
         private readonly CustodianRegistry $custodianRegistry
-    ) {}
+    ) {
+    }
 
     /**
      * Link an internal account to a custodian account.

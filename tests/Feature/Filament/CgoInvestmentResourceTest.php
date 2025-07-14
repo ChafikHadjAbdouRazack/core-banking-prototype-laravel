@@ -123,7 +123,7 @@ class CgoInvestmentResourceTest extends FilamentTestCase
         Livewire::test(CgoInvestmentResource\Pages\ListCgoInvestments::class)
             ->callTableAction('verify_payment', $investment);
 
-        Queue::assertPushed(\App\Jobs\VerifyCgoPayment::class, function ($job) use ($investment) {
+        Queue::assertPushed(\App\Domain\Cgo\Jobs\VerifyCgoPayment::class, function ($job) use ($investment) {
             return $job->investment->id === $investment->id;
         });
     }

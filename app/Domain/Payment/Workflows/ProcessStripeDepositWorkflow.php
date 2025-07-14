@@ -45,7 +45,7 @@ class ProcessStripeDepositWorkflow extends Workflow
             );
 
             // Step 3: Generate transaction ID
-            $transactionId = 'txn_'.uniqid();
+            $transactionId = 'txn_' . uniqid();
 
             // Step 4: Complete the deposit
             yield ActivityStub::make(

@@ -17,7 +17,7 @@ final class BatchSnapshotRepository extends EloquentSnapshotRepository
     public function __construct(
         protected string $snapshotModel = BatchSnapshot::class
     ) {
-        if (! new $this->snapshotModel instanceof EloquentSnapshot) {
+        if (! new $this->snapshotModel() instanceof EloquentSnapshot) {
             throw new InvalidEloquentStoredEventModel("The class {$this->snapshotModel} must extend EloquentSnapshot");
         }
     }

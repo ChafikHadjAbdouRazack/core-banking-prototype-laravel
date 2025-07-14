@@ -10,7 +10,8 @@ final readonly class Money extends DataObject implements DataObjectContract
 {
     public function __construct(
         private int $amount
-    ) {}
+    ) {
+    }
 
     public function getAmount(): int
     {

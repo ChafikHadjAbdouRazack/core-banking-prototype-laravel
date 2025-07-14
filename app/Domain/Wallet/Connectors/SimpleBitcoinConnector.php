@@ -22,7 +22,7 @@ class SimpleBitcoinConnector implements BlockchainConnector
     public function __construct(array $config = [])
     {
         $this->network = $config['network'] ?? 'mainnet';
-        $this->apiUrl = $config['api_url'] ?? 'https://api.blockcypher.com/v1/btc/'.$this->network;
+        $this->apiUrl = $config['api_url'] ?? 'https://api.blockcypher.com/v1/btc/' . $this->network;
         $this->apiKey = $config['api_key'] ?? null;
     }
 
@@ -35,7 +35,7 @@ class SimpleBitcoinConnector implements BlockchainConnector
 
         // Add network byte (0x00 for mainnet, 0x6f for testnet)
         $networkByte = $this->network === 'mainnet' ? '00' : '6f';
-        $hash = $networkByte.$hash;
+        $hash = $networkByte . $hash;
 
         // Add checksum
         $checksum = substr(hash('sha256', hash('sha256', hex2bin($hash), true)), 0, 8);
@@ -114,7 +114,7 @@ class SimpleBitcoinConnector implements BlockchainConnector
         );
 
         if (! $response->successful()) {
-            throw new \Exception('Failed to broadcast transaction: '.$response->body());
+            throw new \Exception('Failed to broadcast transaction: ' . $response->body());
         }
 
         $data = $response->json();
@@ -288,7 +288,7 @@ class SimpleBitcoinConnector implements BlockchainConnector
         while (gmp_cmp($num, 0) > 0) {
             $remainder = gmp_mod($num, $base);
             $num = gmp_div($num, $base);
-            $encoded = $alphabet[gmp_intval($remainder)].$encoded;
+            $encoded = $alphabet[gmp_intval($remainder)] . $encoded;
         }
 
         // Add leading 1s for each leading zero byte
@@ -296,7 +296,7 @@ class SimpleBitcoinConnector implements BlockchainConnector
             if ($data[$i] !== "\x00") {
                 break;
             }
-            $encoded = '1'.$encoded;
+            $encoded = '1' . $encoded;
         }
 
         return $encoded;

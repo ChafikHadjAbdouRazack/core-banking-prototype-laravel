@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Models\FraudRule;
+use App\Domain\Fraud\Models\FraudRule;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

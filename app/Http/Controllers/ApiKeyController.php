@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ApiKey;
+use App\Domain\Account\Models\ApiKey;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 

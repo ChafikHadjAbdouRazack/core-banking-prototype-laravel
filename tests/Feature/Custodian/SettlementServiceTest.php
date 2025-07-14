@@ -4,7 +4,7 @@ use App\Domain\Custodian\Services\CustodianRegistry;
 use App\Domain\Custodian\Services\SettlementService;
 use App\Domain\Custodian\ValueObjects\TransactionReceipt;
 use App\Models\Account;
-use App\Models\CustodianAccount;
+use App\Domain\Custodian\Models\CustodianAccount;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 

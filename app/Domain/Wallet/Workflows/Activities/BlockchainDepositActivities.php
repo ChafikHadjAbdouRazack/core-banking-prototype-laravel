@@ -12,7 +12,8 @@ class BlockchainDepositActivities
     public function __construct(
         private BlockchainWalletService $walletService,
         private array $connectors // Injected blockchain connectors
-    ) {}
+    ) {
+    }
 
     public function checkDepositAddress(string $address, string $chain): ?array
     {

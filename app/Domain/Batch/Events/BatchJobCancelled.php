@@ -12,5 +12,6 @@ class BatchJobCancelled extends ShouldBeStored
     public function __construct(
         public readonly string $reason,
         public readonly string $cancelledAt
-    ) {}
+    ) {
+    }
 }

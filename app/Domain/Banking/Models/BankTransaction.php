@@ -27,7 +27,8 @@ class BankTransaction
         public readonly Carbon $bookingDate,
         public readonly string $status,
         public readonly array $metadata = [],
-    ) {}
+    ) {
+    }
 
     /**
      * Check if transaction is a debit.

@@ -9,7 +9,7 @@ use App\Domain\Account\Services\Cache\AccountCacheService;
 use App\Domain\Account\Services\Cache\TurnoverCacheService;
 use App\Http\Controllers\Controller;
 use App\Models\Account;
-use App\Models\Turnover;
+use App\Domain\Account\Models\Turnover;
 use Illuminate\Http\JsonResponse;
 
 class BalanceController extends Controller

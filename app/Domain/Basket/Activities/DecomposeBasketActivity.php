@@ -9,7 +9,8 @@ class DecomposeBasketActivity extends Activity
 {
     public function __construct(
         private DecomposeBasketBusinessActivity $businessActivity
-    ) {}
+    ) {
+    }
 
     /**
      * Execute basket decomposition activity using proper domain pattern.

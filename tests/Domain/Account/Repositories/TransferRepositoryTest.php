@@ -1,7 +1,7 @@
 <?php
 
 use App\Domain\Account\Repositories\TransferRepository;
-use App\Models\Transfer;
+use App\Domain\Account\Models\Transfer;
 use Spatie\EventSourcing\AggregateRoots\Exceptions\InvalidEloquentStoredEventModel;
 use Spatie\EventSourcing\StoredEvents\Repositories\EloquentStoredEventRepository;
 

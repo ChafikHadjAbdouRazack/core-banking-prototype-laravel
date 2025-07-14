@@ -12,7 +12,7 @@ use App\Domain\Stablecoin\Events\CollateralPositionUpdated;
 use App\Domain\Stablecoin\Events\CollateralReleased;
 use App\Domain\Stablecoin\Events\StablecoinBurned;
 use App\Domain\Stablecoin\Events\StablecoinMinted;
-use App\Models\StablecoinCollateralPosition;
+use App\Domain\Stablecoin\Models\StablecoinCollateralPosition;
 use Spatie\EventSourcing\EventHandlers\Projectors\Projector;
 
 class StablecoinProjector extends Projector

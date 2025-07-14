@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Asset\Models;
 
 use App\Domain\Exchange\Models\ExchangeRate;
-use App\Models\AccountBalance;
+use App\Domain\Account\Models\AccountBalance;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -157,10 +157,10 @@ class Asset extends Model
         $formatted = number_format($amount / $divisor, $this->precision);
 
         if ($symbol = $this->getSymbol()) {
-            return $symbol.$formatted;
+            return $symbol . $formatted;
         }
 
-        return $formatted.' '.$this->code;
+        return $formatted . ' ' . $this->code;
     }
 
     /**

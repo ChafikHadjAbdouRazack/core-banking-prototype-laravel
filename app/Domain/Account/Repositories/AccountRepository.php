@@ -10,7 +10,8 @@ final class AccountRepository
 {
     public function __construct(
         protected Account $account
-    ) {}
+    ) {
+    }
 
     public function create(AccountDTO $account): Account
     {

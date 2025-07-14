@@ -3,7 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Account;
-use App\Models\Turnover;
+use App\Domain\Account\Models\Turnover;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

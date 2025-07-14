@@ -7,7 +7,7 @@ use App\Domain\Compliance\Events\AmlScreeningMatchStatusUpdated;
 use App\Domain\Compliance\Events\AmlScreeningResultsRecorded;
 use App\Domain\Compliance\Events\AmlScreeningReviewed;
 use App\Domain\Compliance\Events\AmlScreeningStarted;
-use App\Models\AmlScreening;
+use App\Domain\Compliance\Models\AmlScreening;
 use App\Models\User;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Spatie\EventSourcing\EventHandlers\Projectors\Projector;

@@ -19,7 +19,8 @@ class TransactionData
         public readonly ?int $blockNumber = null,
         public readonly ?string $status = null,
         public readonly array $metadata = []
-    ) {}
+    ) {
+    }
 
     public function toArray(): array
     {

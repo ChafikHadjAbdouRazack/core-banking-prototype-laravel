@@ -8,7 +8,7 @@ use App\Domain\Account\DataObjects\AccountUuid;
 use App\Domain\Basket\Events\BasketDecomposed;
 use App\Domain\Wallet\Services\WalletService;
 use App\Models\Account;
-use App\Models\BasketAsset;
+use App\Domain\Basket\Models\BasketAsset;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Workflow\Activity;
@@ -17,7 +17,8 @@ class DecomposeBasketBusinessActivity extends Activity
 {
     public function __construct(
         private WalletService $walletService
-    ) {}
+    ) {
+    }
 
     /**
      * Execute basket decomposition using proper Service → Workflow → Activity → Aggregate pattern.

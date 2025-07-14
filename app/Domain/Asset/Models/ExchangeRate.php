@@ -217,9 +217,9 @@ class ExchangeRate extends Model
     {
         $rates = self::valid()->latest()->get()->groupBy(['from_asset_code', 'to_asset_code']);
 
-        $result = new \stdClass;
+        $result = new \stdClass();
         foreach ($rates as $fromAsset => $toAssets) {
-            $result->$fromAsset = new \stdClass;
+            $result->$fromAsset = new \stdClass();
             foreach ($toAssets as $toAsset => $rateRecords) {
                 $result->$fromAsset->$toAsset = $rateRecords->first()->rate;
             }

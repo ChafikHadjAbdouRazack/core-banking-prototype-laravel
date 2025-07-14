@@ -4,9 +4,9 @@ namespace App\Domain\Compliance\Services;
 
 use App\Domain\Compliance\Events\SuspiciousActivityDetected;
 use App\Domain\Compliance\Events\TransactionBlocked;
-use App\Models\CustomerRiskProfile;
+use App\Domain\Compliance\Models\CustomerRiskProfile;
 use App\Models\Transaction;
-use App\Models\TransactionMonitoringRule;
+use App\Domain\Compliance\Models\TransactionMonitoringRule;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 

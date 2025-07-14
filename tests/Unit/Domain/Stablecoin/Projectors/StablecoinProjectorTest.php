@@ -159,7 +159,7 @@ class StablecoinProjectorTest extends TestCase
         $fileName = $reflection->getFileName();
         $fileContent = file_get_contents($fileName);
 
-        $this->assertStringContainsString('use App\Models\StablecoinCollateralPosition;', $fileContent);
+        $this->assertStringContainsString('use App\Domain\Stablecoin\Models\StablecoinCollateralPosition;', $fileContent);
         $this->assertStringContainsString('StablecoinCollateralPosition::', $fileContent);
     }
 

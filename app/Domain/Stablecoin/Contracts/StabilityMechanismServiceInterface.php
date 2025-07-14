@@ -2,7 +2,7 @@
 
 namespace App\Domain\Stablecoin\Contracts;
 
-use App\Models\Stablecoin;
+use App\Domain\Stablecoin\Models\Stablecoin;
 
 interface StabilityMechanismServiceInterface
 {

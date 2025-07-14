@@ -5,7 +5,7 @@ namespace Tests\Unit\Domain\Compliance\Services;
 use App\Domain\Compliance\Services\GdprService;
 use App\Models\Account;
 use App\Models\AuditLog;
-use App\Models\KycDocument;
+use App\Domain\Compliance\Models\KycDocument;
 use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;

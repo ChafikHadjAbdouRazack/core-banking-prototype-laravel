@@ -12,7 +12,8 @@ class GasEstimate
         public readonly string $estimatedCost,
         public readonly string $chain,
         public readonly array $metadata = []
-    ) {}
+    ) {
+    }
 
     public function toArray(): array
     {

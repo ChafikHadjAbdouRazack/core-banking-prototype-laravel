@@ -19,7 +19,8 @@ class TransferAggregate extends AggregateRoot
 
     public function __construct(
         public int $count = 0,
-    ) {}
+    ) {
+    }
 
     /**
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
@@ -70,7 +71,7 @@ class TransferAggregate extends AggregateRoot
 
         if (++$this->count >= self::COUNT_THRESHOLD) {
             $this->recordThat(
-                domainEvent: new TransferThresholdReached
+                domainEvent: new TransferThresholdReached()
             );
             $this->count = 0;
         }

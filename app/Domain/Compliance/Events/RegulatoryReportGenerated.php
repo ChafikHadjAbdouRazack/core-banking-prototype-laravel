@@ -9,5 +9,6 @@ class RegulatoryReportGenerated extends ShouldBeStored
     public function __construct(
         public string $reportType,
         public array $data
-    ) {}
+    ) {
+    }
 }

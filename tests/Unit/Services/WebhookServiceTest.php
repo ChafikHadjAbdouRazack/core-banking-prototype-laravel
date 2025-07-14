@@ -6,7 +6,7 @@ use Tests\UnitTestCase;
 
 uses(UnitTestCase::class);
 
-use App\Services\WebhookService;
+use App\Domain\Webhook\Services\WebhookService;
 
 describe('WebhookService', function () {
     it('can generate HMAC signature', function () {

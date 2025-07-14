@@ -12,5 +12,6 @@ class AccountFrozen extends ShouldBeStored
     public function __construct(
         public readonly string $reason,
         public readonly ?string $authorizedBy = null
-    ) {}
+    ) {
+    }
 }

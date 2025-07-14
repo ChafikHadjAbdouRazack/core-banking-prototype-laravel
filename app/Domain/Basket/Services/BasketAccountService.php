@@ -11,8 +11,8 @@ use App\Domain\Account\Events\AssetBalanceSubtracted;
 use App\Domain\Basket\Events\BasketDecomposed;
 use App\Domain\Wallet\Services\WalletService;
 use App\Models\Account;
-use App\Models\AccountBalance;
-use App\Models\BasketAsset;
+use App\Domain\Account\Models\AccountBalance;
+use App\Domain\Basket\Models\BasketAsset;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -21,7 +21,8 @@ class BasketAccountService
     public function __construct(
         private readonly BasketValueCalculationService $valueCalculationService,
         private readonly WalletService $walletService
-    ) {}
+    ) {
+    }
 
     /**
      * Add basket asset balance to an account.
@@ -54,7 +55,7 @@ class BasketAccountService
             new AssetBalanceAdded(
                 assetCode: $basketCode,
                 amount: $amount,
-                hash: new Hash(hash('sha3-512', "basket_deposit:{$account->uuid}:{$basketCode}:{$amount}:".now()->timestamp)),
+                hash: new Hash(hash('sha3-512', "basket_deposit:{$account->uuid}:{$basketCode}:{$amount}:" . now()->timestamp)),
                 metadata: ['type' => 'basket_deposit', 'account_uuid' => (string) $account->uuid]
             )
         );
@@ -84,7 +85,7 @@ class BasketAccountService
             new AssetBalanceSubtracted(
                 assetCode: $basketCode,
                 amount: $amount,
-                hash: new Hash(hash('sha3-512', "basket_withdraw:{$account->uuid}:{$basketCode}:{$amount}:".now()->timestamp)),
+                hash: new Hash(hash('sha3-512', "basket_withdraw:{$account->uuid}:{$basketCode}:{$amount}:" . now()->timestamp)),
                 metadata: ['type' => 'basket_withdrawal', 'account_uuid' => (string) $account->uuid]
             )
         );
@@ -210,7 +211,7 @@ class BasketAccountService
                         ->first();
 
                     if (! $balance || $balance->balance < $requiredAmount) {
-                        throw new \Exception("Insufficient {$assetCode} balance. Required: {$requiredAmount}, Available: ".($balance ? $balance->balance : 0));
+                        throw new \Exception("Insufficient {$assetCode} balance. Required: {$requiredAmount}, Available: " . ($balance ? $balance->balance : 0));
                     }
                 }
 

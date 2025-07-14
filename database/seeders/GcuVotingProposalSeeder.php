@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\GcuVotingProposal;
+use App\Domain\Governance\Models\GcuVotingProposal;
 use Illuminate\Database\Seeder;
 
 class GcuVotingProposalSeeder extends Seeder

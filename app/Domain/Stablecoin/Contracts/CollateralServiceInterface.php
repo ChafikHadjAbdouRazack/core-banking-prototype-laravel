@@ -42,18 +42,18 @@ interface CollateralServiceInterface
     /**
      * Update position collateral ratio.
      *
-     * @param  \App\Models\StablecoinCollateralPosition $position
+     * @param  \App\Domain\Stablecoin\Models\StablecoinCollateralPosition $position
      * @return void
      */
-    public function updatePositionCollateralRatio(\App\Models\StablecoinCollateralPosition $position): void;
+    public function updatePositionCollateralRatio(\App\Domain\Stablecoin\Models\StablecoinCollateralPosition $position): void;
 
     /**
      * Calculate position health score.
      *
-     * @param  \App\Models\StablecoinCollateralPosition $position
+     * @param  \App\Domain\Stablecoin\Models\StablecoinCollateralPosition $position
      * @return float
      */
-    public function calculatePositionHealthScore(\App\Models\StablecoinCollateralPosition $position): float;
+    public function calculatePositionHealthScore(\App\Domain\Stablecoin\Models\StablecoinCollateralPosition $position): float;
 
     /**
      * Get collateral distribution analysis.

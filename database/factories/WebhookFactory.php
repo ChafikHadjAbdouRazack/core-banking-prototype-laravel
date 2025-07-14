@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Models\Webhook;
+use App\Domain\Webhook\Models\Webhook;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

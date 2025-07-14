@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\CgoPricingRound;
+use App\Domain\Cgo\Models\CgoPricingRound;
 use Illuminate\Database\Seeder;
 
 class CgoPricingRoundSeeder extends Seeder

@@ -11,7 +11,7 @@ class HelperServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        include_once app_path('Helpers/objects.php');
+        include_once app_path('Domain/Account/Helpers/objects.php');
         include_once app_path('Helpers/faker.php');
     }
 }

@@ -14,5 +14,6 @@ class LoanApplicationSubmitted extends ShouldBeStored
         public string $purpose,
         public array $borrowerInfo,
         public \DateTimeImmutable $submittedAt
-    ) {}
+    ) {
+    }
 }

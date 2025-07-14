@@ -3,7 +3,7 @@
 namespace App\Domain\Account\Services;
 
 use App\Models\User;
-use App\Models\UserBankPreference;
+use App\Domain\Banking\Models\UserBankPreference;
 use App\Traits\HandlesNestedTransactions;
 use Illuminate\Support\Collection;
 

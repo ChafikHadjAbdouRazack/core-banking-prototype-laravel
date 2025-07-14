@@ -1,7 +1,7 @@
 <?php
 
 use App\Models\Account;
-use App\Models\Turnover;
+use App\Domain\Account\Models\Turnover;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 

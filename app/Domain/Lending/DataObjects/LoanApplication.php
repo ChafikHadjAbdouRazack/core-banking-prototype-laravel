@@ -22,7 +22,8 @@ class LoanApplication
         public readonly array $documents,
         public readonly ?Carbon $submittedAt = null,
         public readonly array $metadata = []
-    ) {}
+    ) {
+    }
 
     public static function fromArray(array $data): self
     {

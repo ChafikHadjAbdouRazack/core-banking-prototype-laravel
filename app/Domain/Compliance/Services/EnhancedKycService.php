@@ -4,8 +4,8 @@ namespace App\Domain\Compliance\Services;
 
 use App\Domain\Compliance\Events\KycVerificationCompleted;
 use App\Domain\Compliance\Events\KycVerificationStarted;
-use App\Models\CustomerRiskProfile;
-use App\Models\KycVerification;
+use App\Domain\Compliance\Models\CustomerRiskProfile;
+use App\Domain\Compliance\Models\KycVerification;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;

@@ -8,7 +8,7 @@ use App\Domain\Asset\Models\Asset;
 use App\Domain\Stablecoin\Services\CollateralService;
 use App\Domain\Stablecoin\Services\StabilityMechanismService;
 use App\Http\Controllers\Api\StablecoinController;
-use App\Models\Stablecoin;
+use App\Domain\Stablecoin\Models\Stablecoin;
 use Illuminate\Http\Request;
 use Mockery;
 use PHPUnit\Framework\Attributes\Test;

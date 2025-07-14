@@ -11,8 +11,8 @@ use App\Domain\Banking\Exceptions\BankNotFoundException;
 use App\Domain\Banking\Models\BankAccount;
 use App\Domain\Banking\Models\BankConnection;
 use App\Domain\Banking\Models\BankTransfer;
-use App\Models\BankAccountModel;
-use App\Models\BankConnectionModel;
+use App\Domain\Banking\Models\BankAccountModel;
+use App\Domain\Banking\Models\BankConnectionModel;
 use App\Models\User;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
@@ -117,7 +117,7 @@ class BankIntegrationService implements IBankIntegrationService
                     'error' => $e->getMessage(),
                 ]
             );
-            throw new BankConnectionException("Failed to connect to {$bankCode}: ".$e->getMessage());
+            throw new BankConnectionException("Failed to connect to {$bankCode}: " . $e->getMessage());
         }
     }
 

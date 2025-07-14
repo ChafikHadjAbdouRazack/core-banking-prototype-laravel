@@ -53,7 +53,7 @@ class LedgerAggregate extends AggregateRoot
     public function deleteAccount(): static
     {
         $this->recordThat(
-            domainEvent: new AccountDeleted
+            domainEvent: new AccountDeleted()
         );
 
         return $this;

@@ -20,5 +20,6 @@ class AmlScreeningReviewed extends ShouldBeStored
         public string $reviewedBy,
         public string $decision,
         public string $notes
-    ) {}
+    ) {
+    }
 }

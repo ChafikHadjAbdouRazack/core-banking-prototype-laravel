@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Subscriber;
-use App\Services\Email\SubscriberEmailService;
+use App\Domain\Newsletter\Models\Subscriber;
+use App\Domain\Newsletter\Services\SubscriberEmailService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;

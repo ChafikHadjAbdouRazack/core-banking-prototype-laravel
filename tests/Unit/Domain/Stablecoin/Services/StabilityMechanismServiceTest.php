@@ -111,7 +111,7 @@ class StabilityMechanismServiceTest extends ServiceTestCase
 
         $this->assertStringContainsString('use App\Domain\Asset\Services\ExchangeRateService;', $fileContent);
         $this->assertStringContainsString('use App\Domain\Stablecoin\Contracts\StabilityMechanismServiceInterface;', $fileContent);
-        $this->assertStringContainsString('use App\Models\Stablecoin;', $fileContent);
+        $this->assertStringContainsString('use App\Domain\Stablecoin\Models\Stablecoin;', $fileContent);
         $this->assertStringContainsString('use Illuminate\Support\Facades\Cache;', $fileContent);
         $this->assertStringContainsString('use Illuminate\Support\Facades\Log;', $fileContent);
     }

@@ -6,7 +6,7 @@ namespace App\Domain\Custodian\Services;
 
 use App\Domain\Custodian\Events\CustodianHealthChanged;
 use App\Models\User;
-use App\Notifications\BankHealthAlert;
+use App\Domain\Banking\Notifications\BankHealthAlert;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
@@ -34,7 +34,8 @@ class BankAlertingService
 
     public function __construct(
         private readonly CustodianHealthMonitor $healthMonitor
-    ) {}
+    ) {
+    }
 
     /**
      * Handle custodian health change event.

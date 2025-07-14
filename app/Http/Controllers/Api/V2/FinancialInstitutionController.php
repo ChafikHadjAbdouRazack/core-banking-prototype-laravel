@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api\V2;
 use App\Domain\FinancialInstitution\Services\DocumentVerificationService;
 use App\Domain\FinancialInstitution\Services\OnboardingService;
 use App\Http\Controllers\Controller;
-use App\Models\FinancialInstitutionApplication;
+use App\Domain\FinancialInstitution\Models\FinancialInstitutionApplication;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;

@@ -3,7 +3,7 @@
 namespace Tests\Unit\Domain\Fraud\Events;
 
 use App\Domain\Fraud\Events\FraudDetected;
-use App\Models\FraudScore;
+use App\Domain\Fraud\Models\FraudScore;
 use App\Models\Transaction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;

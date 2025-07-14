@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Models\BasketAsset;
+use App\Domain\Basket\Models\BasketAsset;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

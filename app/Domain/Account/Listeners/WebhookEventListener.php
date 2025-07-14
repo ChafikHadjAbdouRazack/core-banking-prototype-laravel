@@ -10,7 +10,7 @@ use App\Domain\Account\Events\MoneyAdded;
 use App\Domain\Account\Events\MoneySubtracted;
 use App\Domain\Account\Events\MoneyTransferred;
 use App\Models\Account;
-use App\Services\WebhookService;
+use App\Domain\Webhook\Services\WebhookService;
 use Spatie\EventSourcing\EventHandlers\Projectors\Projector;
 
 class WebhookEventListener extends Projector

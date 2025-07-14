@@ -11,7 +11,8 @@ class UpdateTurnover
 {
     public function __construct(
         protected TurnoverRepository $turnoverRepository,
-    ) {}
+    ) {
+    }
 
     public function __invoke(HasMoney $event): void
     {

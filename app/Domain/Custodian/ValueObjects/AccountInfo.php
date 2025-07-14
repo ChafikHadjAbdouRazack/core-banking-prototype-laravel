@@ -17,7 +17,8 @@ final class AccountInfo
         public readonly ?string $type = null,
         public readonly ?Carbon $createdAt = null,
         public readonly ?array $metadata = []
-    ) {}
+    ) {
+    }
 
     public function isActive(): bool
     {

@@ -15,7 +15,8 @@ class BlockchainWithdrawalActivities
         private BlockchainWalletService $walletService,
         private KeyManagementService $keyManager,
         private array $connectors // Injected blockchain connectors
-    ) {}
+    ) {
+    }
 
     public function validateWithdrawalRequest(
         string $userId,
@@ -206,7 +207,7 @@ class BlockchainWithdrawalActivities
 
         // Sign the transaction (placeholder)
         // In production, this would use the appropriate blockchain library
-        $signature = hash('sha256', json_encode($transactionData).$privateKey);
+        $signature = hash('sha256', json_encode($transactionData) . $privateKey);
 
         // Clear the private key from memory
         unset($privateKey);
@@ -496,7 +497,7 @@ class BlockchainWithdrawalActivities
 
         // Broadcast the transaction (placeholder)
         // In production, this would actually broadcast to the blockchain
-        $txHash = '0x'.hash('sha256', $signature.time());
+        $txHash = '0x' . hash('sha256', $signature . time());
 
         // Store transaction record
         DB::table('blockchain_transactions')->insert(

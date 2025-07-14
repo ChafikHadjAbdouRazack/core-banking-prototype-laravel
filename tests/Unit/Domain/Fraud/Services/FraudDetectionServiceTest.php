@@ -9,7 +9,7 @@ use App\Domain\Fraud\Services\FraudDetectionService;
 use App\Domain\Fraud\Services\MachineLearningService;
 use App\Domain\Fraud\Services\RuleEngineService;
 use App\Models\Account;
-use App\Models\FraudScore;
+use App\Domain\Fraud\Models\FraudScore;
 use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;

@@ -12,5 +12,6 @@ class BatchJobCreated extends ShouldBeStored
 
     public function __construct(
         public readonly BatchJob $batchJob
-    ) {}
+    ) {
+    }
 }

@@ -6,7 +6,7 @@ namespace App\Domain\Stablecoin\Workflows\Activities;
 
 use App\Domain\Stablecoin\Aggregates\StablecoinAggregate;
 use App\Domain\Stablecoin\Services\CollateralService;
-use App\Models\StablecoinCollateralPosition;
+use App\Domain\Stablecoin\Models\StablecoinCollateralPosition;
 use Workflow\Activity;
 
 class UpdatePositionActivity extends Activity

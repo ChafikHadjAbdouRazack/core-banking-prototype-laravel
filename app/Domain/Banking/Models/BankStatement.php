@@ -25,7 +25,8 @@ class BankStatement
         public readonly ?string $fileContent,
         public readonly Carbon $generatedAt,
         public readonly array $metadata = [],
-    ) {}
+    ) {
+    }
 
     /**
      * Get total debits.

@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\BankAccount;
-use App\Services\PaymentGatewayService;
+use App\Domain\Account\Models\BankAccount;
+use App\Domain\Payment\Services\PaymentGatewayService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 

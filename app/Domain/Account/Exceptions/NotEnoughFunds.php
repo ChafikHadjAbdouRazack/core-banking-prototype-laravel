@@ -4,4 +4,6 @@ namespace App\Domain\Account\Exceptions;
 
 use DomainException;
 
-class NotEnoughFunds extends DomainException {}
+class NotEnoughFunds extends DomainException
+{
+}

@@ -4,9 +4,9 @@ namespace Tests\Feature\Api;
 
 use App\Domain\Asset\Models\Asset;
 use App\Models\Account;
-use App\Models\AccountBalance;
-use App\Models\Stablecoin;
-use App\Models\StablecoinCollateralPosition;
+use App\Domain\Account\Models\AccountBalance;
+use App\Domain\Stablecoin\Models\Stablecoin;
+use App\Domain\Stablecoin\Models\StablecoinCollateralPosition;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
@@ -33,8 +33,8 @@ class StablecoinOperationsSimpleTest extends DomainTestCase
         config(['sub_products.stablecoins.enabled' => true]);
 
         // Mock SubProductService to always return true for stablecoins
-        $this->app->bind(\App\Services\SubProductService::class, function () {
-            $mock = \Mockery::mock(\App\Services\SubProductService::class);
+        $this->app->bind(\App\Domain\Product\Services\SubProductService::class, function () {
+            $mock = \Mockery::mock(\App\Domain\Product\Services\SubProductService::class);
             $mock->shouldReceive('isEnabled')
                 ->with('stablecoins')
                 ->andReturn(true);

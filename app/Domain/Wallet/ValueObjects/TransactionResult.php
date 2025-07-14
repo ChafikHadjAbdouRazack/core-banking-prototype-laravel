@@ -12,7 +12,8 @@ class TransactionResult
         public readonly ?string $effectiveGasPrice = null,
         public readonly ?array $logs = null,
         public readonly array $metadata = []
-    ) {}
+    ) {
+    }
 
     public function toArray(): array
     {

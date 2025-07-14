@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Account\Services\Cache;
 
-use App\Models\Turnover;
+use App\Domain\Account\Models\Turnover;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 
@@ -103,6 +103,6 @@ class TurnoverCacheService
      */
     private function getCacheKey(string $accountUuid, string $type): string
     {
-        return self::CACHE_PREFIX.$accountUuid.':'.$type;
+        return self::CACHE_PREFIX . $accountUuid . ':' . $type;
     }
 }

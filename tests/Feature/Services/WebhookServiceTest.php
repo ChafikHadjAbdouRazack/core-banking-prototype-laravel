@@ -1,9 +1,9 @@
 <?php
 
-use App\Jobs\ProcessWebhookDelivery;
-use App\Models\Webhook;
-use App\Models\WebhookDelivery;
-use App\Services\WebhookService;
+use App\Domain\Webhook\Jobs\ProcessWebhookDelivery;
+use App\Domain\Webhook\Models\Webhook;
+use App\Domain\Webhook\Models\WebhookDelivery;
+use App\Domain\Webhook\Services\WebhookService;
 use Illuminate\Support\Facades\Queue;
 
 beforeEach(function () {

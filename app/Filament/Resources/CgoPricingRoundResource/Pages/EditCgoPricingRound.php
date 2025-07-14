@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\CgoPricingRoundResource\Pages;
 
 use App\Filament\Resources\CgoPricingRoundResource;
-use App\Models\CgoPricingRound;
+use App\Domain\Cgo\Models\CgoPricingRound;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 

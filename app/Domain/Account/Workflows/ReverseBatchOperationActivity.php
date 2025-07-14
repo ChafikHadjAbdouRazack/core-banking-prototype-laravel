@@ -6,7 +6,7 @@ namespace App\Domain\Account\Workflows;
 
 use App\Models\Account;
 use App\Models\Transaction;
-use App\Models\Turnover;
+use App\Domain\Account\Models\Turnover;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Workflow\Activity;

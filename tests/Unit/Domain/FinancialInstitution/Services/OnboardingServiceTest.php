@@ -225,7 +225,7 @@ class OnboardingServiceTest extends ServiceTestCase
 
         $partner = $this->service->activatePartner($application);
 
-        $this->assertInstanceOf(\App\Models\FinancialInstitutionPartner::class, $partner);
+        $this->assertInstanceOf(\App\Domain\FinancialInstitution\Models\FinancialInstitutionPartner::class, $partner);
         $this->assertEquals($application->id, $partner->application_id);
         $this->assertEquals('Partner Bank', $partner->name);
         $this->assertEquals('active', $partner->status);

@@ -111,7 +111,7 @@ class KeyManagementService implements KeyManagementServiceInterface
     public function generateHDWallet(string $mnemonic, ?string $passphrase = null): array
     {
         // Generate seed from mnemonic (simplified version)
-        $seed = hash_pbkdf2('sha512', $mnemonic, 'mnemonic'.($passphrase ?? ''), 2048, 64);
+        $seed = hash_pbkdf2('sha512', $mnemonic, 'mnemonic' . ($passphrase ?? ''), 2048, 64);
 
         // Generate master key from seed
         $masterPrivateKey = substr($seed, 0, 32);
@@ -147,10 +147,10 @@ class KeyManagementService implements KeyManagementServiceInterface
 
         // Simplified key derivation (not BIP32 compliant, but functional for testing)
         $path = self::DERIVATION_PATHS[$chain] ?? self::DERIVATION_PATHS['ethereum'];
-        $derivationPath = $path.'/'.$index;
+        $derivationPath = $path . '/' . $index;
 
         // Derive private key from seed + path
-        $privateKey = hash('sha256', $seed.$derivationPath);
+        $privateKey = hash('sha256', $seed . $derivationPath);
 
         if (in_array($chain, ['ethereum', 'polygon', 'bsc'])) {
             // For Ethereum-based chains
@@ -159,7 +159,7 @@ class KeyManagementService implements KeyManagementServiceInterface
                 $publicKey = $keyPair->getPublic('hex');
             } else {
                 // Fallback
-                $publicKey = '04'.bin2hex(random_bytes(64));
+                $publicKey = '04' . bin2hex(random_bytes(64));
             }
 
             return [
@@ -172,8 +172,8 @@ class KeyManagementService implements KeyManagementServiceInterface
             // For Bitcoin (simplified)
             return [
                 'private_key' => $privateKey,
-                'public_key' => '04'.bin2hex(random_bytes(64)),
-                'address' => '1'.substr(hash('sha256', $privateKey), 0, 33),
+                'public_key' => '04' . bin2hex(random_bytes(64)),
+                'address' => '1' . substr(hash('sha256', $privateKey), 0, 33),
                 'derivation_path' => $derivationPath,
             ];
         }
@@ -191,7 +191,7 @@ class KeyManagementService implements KeyManagementServiceInterface
 
         $hash = Keccak::hash(hex2bin($publicKey), 256);
 
-        return '0x'.substr($hash, -40);
+        return '0x' . substr($hash, -40);
     }
 
     /**
@@ -215,7 +215,7 @@ class KeyManagementService implements KeyManagementServiceInterface
     {
         // Implementation would use web3.php or similar library
         // This is a placeholder
-        return '0x'.bin2hex(random_bytes(32));
+        return '0x' . bin2hex(random_bytes(32));
     }
 
     /**
@@ -234,7 +234,7 @@ class KeyManagementService implements KeyManagementServiceInterface
     public function encryptSeed(string $seed, string $password): string
     {
         // Combine password with app key for encryption
-        $encryptionKey = hash('sha256', $password.$this->encryptionKey);
+        $encryptionKey = hash('sha256', $password . $this->encryptionKey);
         $iv = substr(hash('sha256', $password), 0, 16);
 
         return base64_encode(openssl_encrypt($seed, 'AES-256-CBC', $encryptionKey, 0, $iv));
@@ -246,7 +246,7 @@ class KeyManagementService implements KeyManagementServiceInterface
     public function decryptSeed(string $encryptedSeed, string $password): string
     {
         // Combine password with app key for decryption
-        $encryptionKey = hash('sha256', $password.$this->encryptionKey);
+        $encryptionKey = hash('sha256', $password . $this->encryptionKey);
         $iv = substr(hash('sha256', $password), 0, 16);
 
         return openssl_decrypt(base64_decode($encryptedSeed), 'AES-256-CBC', $encryptionKey, 0, $iv);
@@ -287,7 +287,7 @@ class KeyManagementService implements KeyManagementServiceInterface
      */
     protected function getUserEncryptionKey(string $userId): string
     {
-        return hash('sha256', $this->encryptionKey.$userId);
+        return hash('sha256', $this->encryptionKey . $userId);
     }
 
     /**
@@ -487,7 +487,7 @@ class KeyManagementService implements KeyManagementServiceInterface
     public function deriveChildKey(string $parentKey, int $index): string
     {
         // Simple child key derivation
-        return hash('sha256', $parentKey.$index);
+        return hash('sha256', $parentKey . $index);
     }
 
     /**

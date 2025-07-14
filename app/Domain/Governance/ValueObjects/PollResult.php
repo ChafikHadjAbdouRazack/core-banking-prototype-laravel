@@ -14,7 +14,8 @@ final readonly class PollResult
         public float $participationRate,
         public ?string $winningOption = null,
         public ?array $metadata = []
-    ) {}
+    ) {
+    }
 
     public static function calculate(
         string $pollUuid,

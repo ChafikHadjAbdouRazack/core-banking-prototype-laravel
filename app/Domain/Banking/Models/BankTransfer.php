@@ -28,7 +28,8 @@ class BankTransfer
         public readonly ?Carbon $failedAt,
         public readonly ?string $failureReason,
         public readonly array $metadata = [],
-    ) {}
+    ) {
+    }
 
     /**
      * Check if transfer is pending.

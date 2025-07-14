@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\Cgo\CoinbaseCommerceService;
+use App\Domain\Cgo\Services\CoinbaseCommerceService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 

@@ -8,7 +8,8 @@ class SignedTransaction
         public readonly string $rawTransaction,
         public readonly string $hash,
         public readonly TransactionData $transactionData
-    ) {}
+    ) {
+    }
 
     public function toArray(): array
     {

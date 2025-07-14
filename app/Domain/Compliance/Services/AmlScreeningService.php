@@ -5,9 +5,9 @@ namespace App\Domain\Compliance\Services;
 use App\Domain\Compliance\Aggregates\AmlScreeningAggregate;
 use App\Domain\Compliance\Events\ScreeningCompleted;
 use App\Domain\Compliance\Events\ScreeningMatchFound;
-use App\Models\AmlScreening;
-use App\Models\CustomerRiskProfile;
-use App\Models\FinancialInstitutionApplication;
+use App\Domain\Compliance\Models\AmlScreening;
+use App\Domain\Compliance\Models\CustomerRiskProfile;
+use App\Domain\FinancialInstitution\Models\FinancialInstitutionApplication;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
@@ -538,7 +538,7 @@ class AmlScreeningService
                 'match_id' => $matchId,
                 'error' => $e->getMessage(),
             ]);
-            throw new \RuntimeException('Cannot update match status: '.$e->getMessage());
+            throw new \RuntimeException('Cannot update match status: ' . $e->getMessage());
         }
     }
 

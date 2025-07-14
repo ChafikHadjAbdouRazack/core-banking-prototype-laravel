@@ -2,7 +2,7 @@
 
 use App\Domain\Asset\Models\Asset;
 use App\Filament\Admin\Widgets\PrimaryBasketWidget;
-use App\Models\BasketAsset;
+use App\Domain\Basket\Models\BasketAsset;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);

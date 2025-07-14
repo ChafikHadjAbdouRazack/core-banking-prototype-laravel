@@ -1,9 +1,9 @@
 <?php
 
-use App\Jobs\ProcessCustodianWebhook;
+use App\Domain\Custodian\Jobs\ProcessCustodianWebhook;
 use App\Models\Account;
-use App\Models\CustodianAccount;
-use App\Models\CustodianWebhook;
+use App\Domain\Custodian\Models\CustodianAccount;
+use App\Domain\Custodian\Models\CustodianWebhook;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Queue;
 

@@ -7,7 +7,7 @@ namespace App\Filament\Admin\Resources;
 use App\Domain\Basket\Services\BasketValueCalculationService;
 use App\Filament\Admin\Resources\BasketAssetResource\Pages;
 use App\Filament\Admin\Resources\BasketAssetResource\RelationManagers;
-use App\Models\BasketAsset;
+use App\Domain\Basket\Models\BasketAsset;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Infolists;

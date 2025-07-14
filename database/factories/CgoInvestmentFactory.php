@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Models\CgoInvestment;
-use App\Models\CgoPricingRound;
+use App\Domain\Cgo\Models\CgoInvestment;
+use App\Domain\Cgo\Models\CgoPricingRound;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;

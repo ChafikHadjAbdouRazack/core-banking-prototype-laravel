@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Tests\Traits;
 
 use App\Domain\Asset\Models\Asset;
-use App\Models\Stablecoin;
+use App\Domain\Stablecoin\Models\Stablecoin;
 
 trait CreatesStablecoins
 {

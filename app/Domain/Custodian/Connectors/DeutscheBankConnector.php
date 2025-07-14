@@ -80,7 +80,7 @@ class DeutscheBankConnector extends BaseCustodianConnector
         );
 
         if (! $response->successful()) {
-            throw new \Exception('Failed to obtain access token: '.$response->body());
+            throw new \Exception('Failed to obtain access token: ' . $response->body());
         }
 
         $data = $response->json();
@@ -110,10 +110,10 @@ class DeutscheBankConnector extends BaseCustodianConnector
             ->timeout(30);
 
         return match (strtoupper($method)) {
-            'GET' => $request->get(self::API_BASE_URL.$endpoint, $data),
-            'POST' => $request->post(self::API_BASE_URL.$endpoint, $data),
-            'PUT' => $request->put(self::API_BASE_URL.$endpoint, $data),
-            'DELETE' => $request->delete(self::API_BASE_URL.$endpoint),
+            'GET' => $request->get(self::API_BASE_URL . $endpoint, $data),
+            'POST' => $request->post(self::API_BASE_URL . $endpoint, $data),
+            'PUT' => $request->put(self::API_BASE_URL . $endpoint, $data),
+            'DELETE' => $request->delete(self::API_BASE_URL . $endpoint),
             default => throw new \InvalidArgumentException("Unsupported HTTP method: {$method}"),
         };
     }
@@ -123,7 +123,7 @@ class DeutscheBankConnector extends BaseCustodianConnector
         $response = $this->apiRequest('GET', "/accounts/{$accountId}/balances");
 
         if (! $response->successful()) {
-            throw new \Exception('Failed to get balance: '.$response->body());
+            throw new \Exception('Failed to get balance: ' . $response->body());
         }
 
         $data = $response->json();
@@ -147,7 +147,7 @@ class DeutscheBankConnector extends BaseCustodianConnector
         $response = $this->apiRequest('GET', "/accounts/{$accountId}");
 
         if (! $response->successful()) {
-            throw new \Exception('Failed to get account info: '.$response->body());
+            throw new \Exception('Failed to get account info: ' . $response->body());
         }
 
         $data = $response->json();
@@ -203,7 +203,7 @@ class DeutscheBankConnector extends BaseCustodianConnector
         $response = $this->apiRequest('POST', $endpoint, $paymentData);
 
         if (! $response->successful()) {
-            throw new \Exception('Failed to initiate transfer: '.$response->body());
+            throw new \Exception('Failed to initiate transfer: ' . $response->body());
         }
 
         $data = $response->json();
@@ -232,7 +232,7 @@ class DeutscheBankConnector extends BaseCustodianConnector
         $response = $this->apiRequest('GET', "/payments/{$transactionId}");
 
         if (! $response->successful()) {
-            throw new \Exception('Failed to get transaction status: '.$response->body());
+            throw new \Exception('Failed to get transaction status: ' . $response->body());
         }
 
         $data = $response->json();
@@ -305,7 +305,7 @@ class DeutscheBankConnector extends BaseCustodianConnector
         );
 
         if (! $response->successful()) {
-            throw new \Exception('Failed to get transaction history: '.$response->body());
+            throw new \Exception('Failed to get transaction history: ' . $response->body());
         }
 
         $data = $response->json();

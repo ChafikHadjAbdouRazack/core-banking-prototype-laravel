@@ -24,7 +24,7 @@ class BasketPerformanceWidget extends BaseWidget
             ->query(
                 $this->record
                     ? $this->record->performances()->getQuery()
-                    : \App\Models\BasketPerformance::query()->whereRaw('1 = 0')
+                    : \App\Domain\BasketPerformance\Models\BasketPerformance::query()->whereRaw('1 = 0')
             )
             ->columns(
                 [

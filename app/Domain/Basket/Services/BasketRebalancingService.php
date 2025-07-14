@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Domain\Basket\Services;
 
 use App\Domain\Basket\Events\BasketRebalanced;
-use App\Models\BasketAsset;
-use App\Models\BasketValue;
+use App\Domain\Basket\Models\BasketAsset;
+use App\Domain\Basket\Models\BasketValue;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -14,7 +14,8 @@ class BasketRebalancingService
 {
     public function __construct(
         private readonly BasketValueCalculationService $valueCalculationService
-    ) {}
+    ) {
+    }
 
     /**
      * Check if a basket needs rebalancing.

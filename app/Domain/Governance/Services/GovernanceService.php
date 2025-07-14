@@ -30,8 +30,8 @@ class GovernanceService
     private function registerVotingStrategies(): void
     {
         $this->votingStrategies = [
-            'one_user_one_vote' => new OneUserOneVoteStrategy,
-            'asset_weighted_vote' => new AssetWeightedVoteStrategy,
+            'one_user_one_vote' => new OneUserOneVoteStrategy(),
+            'asset_weighted_vote' => new AssetWeightedVoteStrategy(),
         ];
     }
 
@@ -62,7 +62,7 @@ class GovernanceService
             return $poll;
         } catch (\Exception $e) {
             DB::rollBack();
-            throw new RuntimeException('Failed to create poll: '.$e->getMessage(), 0, $e);
+            throw new RuntimeException('Failed to create poll: ' . $e->getMessage(), 0, $e);
         }
     }
 
@@ -130,7 +130,7 @@ class GovernanceService
             return $vote;
         } catch (\Exception $e) {
             DB::rollBack();
-            throw new RuntimeException('Failed to cast vote: '.$e->getMessage(), 0, $e);
+            throw new RuntimeException('Failed to cast vote: ' . $e->getMessage(), 0, $e);
         }
     }
 
@@ -172,7 +172,7 @@ class GovernanceService
             return $result;
         } catch (\Exception $e) {
             DB::rollBack();
-            throw new RuntimeException('Failed to complete poll: '.$e->getMessage(), 0, $e);
+            throw new RuntimeException('Failed to complete poll: ' . $e->getMessage(), 0, $e);
         }
     }
 
@@ -392,7 +392,7 @@ class GovernanceService
                         [
                             'workflow_execution' => [
                                 'success' => false,
-                                'message' => 'Workflow execution failed: '.$e->getMessage(),
+                                'message' => 'Workflow execution failed: ' . $e->getMessage(),
                                 'poll_uuid' => $poll->uuid,
                                 'executed_at' => now()->toISOString(),
                             ],

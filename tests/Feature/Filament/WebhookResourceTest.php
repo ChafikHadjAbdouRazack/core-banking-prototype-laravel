@@ -1,7 +1,7 @@
 <?php
 
 use App\Filament\Admin\Resources\WebhookResource;
-use App\Models\Webhook;
+use App\Domain\Webhook\Models\Webhook;
 use Filament\Actions\DeleteAction;
 
 use function Pest\Livewire\livewire;

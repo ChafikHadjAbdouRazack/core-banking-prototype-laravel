@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\API\Fraud;
 
 use App\Http\Controllers\Controller;
-use App\Models\FraudRule;
+use App\Domain\Fraud\Models\FraudRule;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;

@@ -6,7 +6,7 @@ namespace App\Domain\Stablecoin\Services;
 
 use App\Domain\Asset\Services\ExchangeRateService;
 use App\Domain\Stablecoin\Contracts\StabilityMechanismServiceInterface;
-use App\Models\Stablecoin;
+use App\Domain\Stablecoin\Models\Stablecoin;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 

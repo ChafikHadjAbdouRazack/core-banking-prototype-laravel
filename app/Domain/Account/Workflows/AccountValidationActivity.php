@@ -88,7 +88,7 @@ class AccountValidationActivity extends Activity
         if (! empty($missingFields)) {
             return [
                 'passed' => false,
-                'message' => 'Missing required KYC information: '.implode(', ', $missingFields),
+                'message' => 'Missing required KYC information: ' . implode(', ', $missingFields),
                 'error_code' => 'MISSING_KYC_DATA',
                 'missing_fields' => $missingFields,
             ];

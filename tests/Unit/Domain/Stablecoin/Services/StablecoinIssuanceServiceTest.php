@@ -130,8 +130,8 @@ class StablecoinIssuanceServiceTest extends ServiceTestCase
         // Check other imports
         $this->assertStringContainsString('use App\Domain\Account\DataObjects\AccountUuid;', $fileContent);
         $this->assertStringContainsString('use App\Models\Account;', $fileContent);
-        $this->assertStringContainsString('use App\Models\Stablecoin;', $fileContent);
-        $this->assertStringContainsString('use App\Models\StablecoinCollateralPosition;', $fileContent);
+        $this->assertStringContainsString('use App\Domain\Stablecoin\Models\Stablecoin;', $fileContent);
+        $this->assertStringContainsString('use App\Domain\Stablecoin\Models\StablecoinCollateralPosition;', $fileContent);
         $this->assertStringContainsString('use Illuminate\Support\Facades\Log;', $fileContent);
         $this->assertStringContainsString('use Workflow\WorkflowStub;', $fileContent);
     }

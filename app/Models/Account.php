@@ -3,6 +3,9 @@
 namespace App\Models;
 
 use App\Domain\Asset\Models\Asset;
+use App\Domain\Account\Models\AccountBalance;
+use App\Domain\Custodian\Models\CustodianAccount;
+use App\Domain\Account\Models\TransactionProjection;
 use App\Traits\BelongsToTeam;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;

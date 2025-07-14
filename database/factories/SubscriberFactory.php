@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Models\Subscriber;
+use App\Domain\Newsletter\Models\Subscriber;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

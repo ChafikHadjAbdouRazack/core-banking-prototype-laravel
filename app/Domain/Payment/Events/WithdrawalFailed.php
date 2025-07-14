@@ -13,5 +13,6 @@ class WithdrawalFailed extends ShouldBeStored
     public function __construct(
         public string $reason,
         public Carbon $failedAt
-    ) {}
+    ) {
+    }
 }

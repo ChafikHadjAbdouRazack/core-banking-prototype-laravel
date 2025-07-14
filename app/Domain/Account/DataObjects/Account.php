@@ -12,7 +12,8 @@ final readonly class Account extends DataObject implements DataObjectContract
         private string $name,
         private string $userUuid,
         private ?string $uuid = null
-    ) {}
+    ) {
+    }
 
     public function getName(): string
     {

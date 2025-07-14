@@ -9,7 +9,7 @@ use App\Domain\Custodian\Events\AccountBalanceUpdated;
 use App\Domain\Custodian\ValueObjects\AccountInfo;
 use App\Domain\Wallet\Services\WalletService;
 use App\Models\Account;
-use App\Models\CustodianAccount;
+use App\Domain\Custodian\Models\CustodianAccount;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;

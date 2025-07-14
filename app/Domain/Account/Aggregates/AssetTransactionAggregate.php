@@ -84,7 +84,7 @@ class AssetTransactionAggregate extends AggregateRoot
 
         if (++$this->count >= self::COUNT_THRESHOLD) {
             $this->recordThat(
-                domainEvent: new TransactionThresholdReached
+                domainEvent: new TransactionThresholdReached()
             );
             $this->count = 0;
         }
@@ -101,7 +101,7 @@ class AssetTransactionAggregate extends AggregateRoot
     {
         if (! $this->hasSufficientFundsToSubtractAmount($assetCode, $amount)) {
             $this->recordThat(
-                new AccountLimitHit
+                new AccountLimitHit()
             );
 
             $this->persist();

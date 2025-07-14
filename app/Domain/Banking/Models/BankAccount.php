@@ -23,7 +23,8 @@ class BankAccount
         public readonly Carbon $createdAt,
         public readonly Carbon $updatedAt,
         public readonly ?Carbon $closedAt = null,
-    ) {}
+    ) {
+    }
 
     /**
      * Check if account is active.

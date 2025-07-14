@@ -2,7 +2,7 @@
 
 namespace App\Domain\Governance\Activities;
 
-use App\Models\BasketAsset;
+use App\Domain\Basket\Models\BasketAsset;
 use Workflow\Activity;
 
 class UpdateBasketComponentsActivity extends Activity

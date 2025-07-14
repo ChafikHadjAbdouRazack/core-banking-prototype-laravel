@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Domain\Account\Services\BankAllocationService;
 use App\Http\Controllers\Controller;
-use App\Models\UserBankPreference;
+use App\Domain\Banking\Models\UserBankPreference;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;

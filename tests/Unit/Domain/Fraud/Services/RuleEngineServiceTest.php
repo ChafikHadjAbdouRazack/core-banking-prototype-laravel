@@ -3,7 +3,7 @@
 namespace Tests\Unit\Domain\Fraud\Services;
 
 use App\Domain\Fraud\Services\RuleEngineService;
-use App\Models\FraudRule;
+use App\Domain\Fraud\Models\FraudRule;
 use App\Models\Transaction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;

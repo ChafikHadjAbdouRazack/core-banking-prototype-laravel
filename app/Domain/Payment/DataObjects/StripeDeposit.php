@@ -18,7 +18,8 @@ final readonly class StripeDeposit extends DataObject implements DataObjectContr
         private string $paymentMethod,
         private string $paymentMethodType,
         private array $metadata = []
-    ) {}
+    ) {
+    }
 
     public function getAccountUuid(): string
     {

@@ -13,7 +13,8 @@ class LoanApplicationService
     public function __construct(
         private CreditScoringService $creditScoring,
         private RiskAssessmentService $riskAssessment
-    ) {}
+    ) {
+    }
 
     public function processApplication(
         string $applicationId,
@@ -102,7 +103,7 @@ class LoanApplicationService
                 $application->persist();
 
                 // Create loan
-                $loanId = 'loan_'.uniqid();
+                $loanId = 'loan_' . uniqid();
                 $loan = Loan::createFromApplication(
                     $loanId,
                     $applicationId,

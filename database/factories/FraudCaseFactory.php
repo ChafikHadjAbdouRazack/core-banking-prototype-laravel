@@ -3,7 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Account;
-use App\Models\FraudCase;
+use App\Domain\Fraud\Models\FraudCase;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

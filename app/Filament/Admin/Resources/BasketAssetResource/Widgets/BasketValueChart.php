@@ -2,8 +2,8 @@
 
 namespace App\Filament\Admin\Resources\BasketAssetResource\Widgets;
 
-use App\Models\BasketAsset;
-use App\Models\BasketValue;
+use App\Domain\Basket\Models\BasketAsset;
+use App\Domain\Basket\Models\BasketValue;
 use Filament\Widgets\ChartWidget;
 
 class BasketValueChart extends ChartWidget

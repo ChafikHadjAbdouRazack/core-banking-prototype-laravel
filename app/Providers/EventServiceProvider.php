@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use App\Listeners\CreateAccountForNewUser;
+use App\Domain\Account\Listeners\CreateAccountForNewUser;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 

@@ -17,7 +17,8 @@ class AssetBalanceSubtracted extends ShouldBeStored implements HasHash
         public readonly int $amount,
         public readonly Hash $hash,
         public readonly ?array $metadata = []
-    ) {}
+    ) {
+    }
 
     /**
      * Get the amount for this event.

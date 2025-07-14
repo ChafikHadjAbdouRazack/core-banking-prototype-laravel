@@ -3,8 +3,8 @@
 namespace App\Domain\Batch\Actions;
 
 use App\Domain\Batch\Events\BatchItemProcessed;
-use App\Models\BatchJob;
-use App\Models\BatchJobItem;
+use App\Domain\Batch\Models\BatchJob;
+use App\Domain\Batch\Models\BatchJobItem;
 
 class UpdateBatchItem
 {

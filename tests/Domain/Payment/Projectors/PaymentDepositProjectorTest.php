@@ -4,7 +4,7 @@ use App\Domain\Payment\Events\DepositCompleted;
 use App\Domain\Payment\Events\DepositFailed;
 use App\Domain\Payment\Events\DepositInitiated;
 use App\Domain\Payment\Projectors\PaymentDepositProjector;
-use App\Models\PaymentTransaction;
+use App\Domain\Payment\Models\PaymentTransaction;
 use Illuminate\Support\Str;
 
 beforeEach(function () {

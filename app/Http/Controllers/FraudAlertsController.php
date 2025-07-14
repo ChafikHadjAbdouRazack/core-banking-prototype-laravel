@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\FraudCase;
+use App\Domain\Fraud\Models\FraudCase;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 

@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Models\StablecoinCollateralPosition;
+use App\Domain\Stablecoin\Models\StablecoinCollateralPosition;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 

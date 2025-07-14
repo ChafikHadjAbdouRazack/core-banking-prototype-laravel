@@ -3,7 +3,7 @@
 namespace App\Filament\Admin\Resources;
 
 use App\Filament\Admin\Resources\CgoNotificationResource\Pages;
-use App\Models\CgoNotification;
+use App\Domain\Cgo\Models\CgoNotification;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;

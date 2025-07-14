@@ -2,8 +2,8 @@
 
 namespace App\Filament\Resources\CgoInvestmentResource\Widgets;
 
-use App\Models\CgoInvestment;
-use App\Models\CgoPricingRound;
+use App\Domain\Cgo\Models\CgoInvestment;
+use App\Domain\Cgo\Models\CgoPricingRound;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Number;

@@ -10,7 +10,8 @@ class SnapshotTransactionsReactor extends Reactor
 {
     public function __construct(
         protected TransactionAggregate $transactions,
-    ) {}
+    ) {
+    }
 
     public function onTransactionThresholdReached(
         TransactionThresholdReached $event

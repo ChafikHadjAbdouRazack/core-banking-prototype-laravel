@@ -7,8 +7,8 @@ use App\Domain\FinancialInstitution\Events\ApplicationRejected;
 use App\Domain\FinancialInstitution\Events\ApplicationSubmitted;
 use App\Domain\FinancialInstitution\Events\PartnerActivated;
 use App\Domain\FinancialInstitution\Exceptions\OnboardingException;
-use App\Models\FinancialInstitutionApplication;
-use App\Models\FinancialInstitutionPartner;
+use App\Domain\FinancialInstitution\Models\FinancialInstitutionApplication;
+use App\Domain\FinancialInstitution\Models\FinancialInstitutionPartner;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -71,7 +71,7 @@ class OnboardingService
                     'data' => $data,
                 ]
             );
-            throw new OnboardingException('Failed to submit application: '.$e->getMessage());
+            throw new OnboardingException('Failed to submit application: ' . $e->getMessage());
         }
     }
 
@@ -238,7 +238,7 @@ class OnboardingService
                     'error' => $e->getMessage(),
                 ]
             );
-            throw new OnboardingException('Failed to approve application: '.$e->getMessage());
+            throw new OnboardingException('Failed to approve application: ' . $e->getMessage());
         }
     }
 

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Models\BasketAsset;
+use App\Domain\Basket\Models\BasketAsset;
 
 beforeEach(function () {
     // Create a dynamic basket for testing using direct creation to avoid factory callbacks

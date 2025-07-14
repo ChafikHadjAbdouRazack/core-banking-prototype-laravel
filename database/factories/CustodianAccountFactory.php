@@ -3,7 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Account;
-use App\Models\CustodianAccount;
+use App\Domain\Custodian\Models\CustodianAccount;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 

@@ -87,7 +87,7 @@ class AddAssetWorkflow
 
             return [
                 'success' => false,
-                'message' => 'Failed to add asset: '.$e->getMessage(),
+                'message' => 'Failed to add asset: ' . $e->getMessage(),
                 'poll_uuid' => $poll->uuid,
             ];
         }
@@ -136,10 +136,10 @@ class AddAssetWorkflow
             'XPD' => ['name' => 'Palladium', 'type' => 'commodity', 'precision' => 6],
         ];
 
-        $text = $title.' '.($description ?? '');
+        $text = $title . ' ' . ($description ?? '');
 
         foreach ($assetPatterns as $code => $data) {
-            if (preg_match('/\b'.preg_quote($code, '/').'\b/i', $text)) {
+            if (preg_match('/\b' . preg_quote($code, '/') . '\b/i', $text)) {
                 return array_merge(['code' => $code], $data);
             }
         }

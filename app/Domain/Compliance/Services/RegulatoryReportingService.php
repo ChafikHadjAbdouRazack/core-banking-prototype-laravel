@@ -194,7 +194,7 @@ class RegulatoryReportingService
         ];
 
         // Save report
-        $filename = 'regulatory/kyc/report_'.now()->format('Y_m_d').'.json';
+        $filename = 'regulatory/kyc/report_' . now()->format('Y_m_d') . '.json';
         Storage::put($filename, json_encode($report, JSON_PRETTY_PRINT));
 
         // Log report generation

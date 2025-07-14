@@ -139,7 +139,7 @@ class FraudRule extends Model
             default => 'FR',
         };
 
-        $count = static::where('code', 'like', $prefix.'-%')->count();
+        $count = static::where('code', 'like', $prefix . '-%')->count();
 
         return sprintf('%s-%03d', $prefix, $count + 1);
     }

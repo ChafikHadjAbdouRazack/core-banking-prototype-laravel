@@ -91,7 +91,7 @@ class UpdateConfigurationWorkflow
 
             return [
                 'success' => false,
-                'message' => 'Failed to update configuration: '.$e->getMessage(),
+                'message' => 'Failed to update configuration: ' . $e->getMessage(),
                 'poll_uuid' => $poll->uuid,
             ];
         }
@@ -124,7 +124,7 @@ class UpdateConfigurationWorkflow
     private function parseConfigChangesFromText(Poll $poll, PollResult $result): array
     {
         $changes = [];
-        $text = strtolower($poll->title.' '.($poll->description ?? ''));
+        $text = strtolower($poll->title . ' ' . ($poll->description ?? ''));
 
         // Parse common configuration patterns
         if (preg_match('/transaction.*limit.*?(\d+)/i', $text, $matches)) {

@@ -19,7 +19,8 @@ class AssetTransactionCreated extends ShouldBeStored
         public readonly Hash $hash,
         public readonly ?string $description = null,
         public readonly ?array $metadata = null
-    ) {}
+    ) {
+    }
 
     /**
      * Get the transaction type.

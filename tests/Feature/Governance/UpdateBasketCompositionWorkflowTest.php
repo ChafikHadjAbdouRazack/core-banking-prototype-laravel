@@ -5,7 +5,7 @@ use App\Domain\Governance\Enums\PollType;
 use App\Domain\Governance\Models\Poll;
 use App\Domain\Governance\Models\Vote;
 use App\Domain\Governance\Workflows\UpdateBasketCompositionWorkflow;
-use App\Models\BasketAsset;
+use App\Domain\Basket\Models\BasketAsset;
 
 beforeEach(function () {
     // Ensure all required assets exist

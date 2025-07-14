@@ -2,7 +2,7 @@
 
 namespace App\Domain\FinancialInstitution\Services;
 
-use App\Models\FinancialInstitutionApplication;
+use App\Domain\FinancialInstitution\Models\FinancialInstitutionApplication;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 

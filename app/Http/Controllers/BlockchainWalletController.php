@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Domain\Wallet\Contracts\KeyManagementServiceInterface;
 use App\Domain\Wallet\Contracts\WalletConnectorInterface;
-use App\Models\BlockchainAddress;
-use App\Models\BlockchainTransaction;
+use App\Domain\Account\Models\BlockchainAddress;
+use App\Domain\Account\Models\BlockchainTransaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;

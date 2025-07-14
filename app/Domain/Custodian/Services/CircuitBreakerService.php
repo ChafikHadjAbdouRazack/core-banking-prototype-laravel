@@ -38,7 +38,8 @@ class CircuitBreakerService
         private readonly int $timeout = self::DEFAULT_TIMEOUT,
         private readonly float $failureRateThreshold = self::DEFAULT_FAILURE_RATE_THRESHOLD,
         private readonly int $sampleSize = self::DEFAULT_SAMPLE_SIZE
-    ) {}
+    ) {
+    }
 
     /**
      * Execute a callable within circuit breaker protection.

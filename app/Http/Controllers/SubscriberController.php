@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\Email\SubscriberEmailService;
+use App\Domain\Newsletter\Services\SubscriberEmailService;
 use Illuminate\Http\Request;
 
 class SubscriberController extends Controller

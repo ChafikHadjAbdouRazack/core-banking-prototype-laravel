@@ -20,7 +20,7 @@ use App\Domain\Asset\Events\AssetTransferCompleted;
 use App\Domain\Asset\Events\AssetTransferFailed;
 use App\Domain\Asset\Events\AssetTransferInitiated;
 use App\Values\EventQueues;
-use App\Values\UserRoles;
+use App\Domain\User\Values\UserRoles;
 use Illuminate\Support\Str;
 
 // Test all data object methods extensively

@@ -14,7 +14,8 @@ class RepaymentScheduleItem
         public readonly string $totalAmount,
         public readonly string $remainingBalance,
         public readonly string $status = 'pending'
-    ) {}
+    ) {
+    }
 
     public function toArray(): array
     {

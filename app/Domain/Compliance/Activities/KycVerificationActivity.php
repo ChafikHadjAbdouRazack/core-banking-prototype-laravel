@@ -10,7 +10,8 @@ class KycVerificationActivity extends Activity
 {
     public function __construct(
         private KycService $kycService
-    ) {}
+    ) {
+    }
 
     /**
      * Execute KYC verification activity.

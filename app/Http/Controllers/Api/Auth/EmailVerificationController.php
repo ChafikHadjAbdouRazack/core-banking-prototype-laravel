@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
+use App\Domain\Account\Models\User;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Http\Request;
 

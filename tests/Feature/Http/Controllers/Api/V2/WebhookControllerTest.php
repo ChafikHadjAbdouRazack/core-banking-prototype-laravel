@@ -3,8 +3,8 @@
 namespace Tests\Feature\Http\Controllers\Api\V2;
 
 use App\Models\User;
-use App\Models\Webhook;
-use App\Models\WebhookDelivery;
+use App\Domain\Webhook\Models\Webhook;
+use App\Domain\Webhook\Models\WebhookDelivery;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
 use PHPUnit\Framework\Attributes\Test;

@@ -7,7 +7,7 @@ namespace App\Domain\Basket\Activities;
 use App\Domain\Account\DataObjects\AccountUuid;
 use App\Domain\Wallet\Services\WalletService;
 use App\Models\Account;
-use App\Models\BasketAsset;
+use App\Domain\Basket\Models\BasketAsset;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Workflow\Activity;
@@ -16,7 +16,8 @@ class ComposeBasketBusinessActivity extends Activity
 {
     public function __construct(
         private WalletService $walletService
-    ) {}
+    ) {
+    }
 
     /**
      * Execute basket composition using proper Service → Workflow → Activity → Aggregate pattern.

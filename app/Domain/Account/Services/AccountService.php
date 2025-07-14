@@ -18,7 +18,8 @@ class AccountService
         protected LedgerAggregate $ledger,
         protected TransactionAggregate $transaction,
         protected TransferAggregate $transfer
-    ) {}
+    ) {
+    }
 
     /**
      * @param  mixed  $account

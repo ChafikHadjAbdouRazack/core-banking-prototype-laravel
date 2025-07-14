@@ -2,7 +2,7 @@
 
 namespace App\Filament\Admin\Resources\AccountResource\Widgets;
 
-use App\Models\Turnover;
+use App\Domain\Account\Models\Turnover;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Facades\DB;
 

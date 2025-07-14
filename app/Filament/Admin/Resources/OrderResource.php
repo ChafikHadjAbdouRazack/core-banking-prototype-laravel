@@ -138,7 +138,7 @@ class OrderResource extends Resource
                         ]
                     ),
                 Tables\Filters\SelectFilter::make('base_currency')
-                    ->options(fn () => \App\Models\Asset::where('is_tradeable', true)->pluck('code', 'code')),
+                    ->options(fn () => \App\Domain\Asset\Models\Asset::where('is_tradeable', true)->pluck('code', 'code')),
                 ]
             )
             ->actions(

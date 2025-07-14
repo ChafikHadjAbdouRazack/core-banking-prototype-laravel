@@ -4,6 +4,7 @@ namespace App\Domain\Account\Actions;
 
 use App\Domain\Account\Events\AssetBalanceSubtracted;
 use App\Models\Account;
+use App\Domain\Account\Models\AccountBalance;
 
 class DebitAccount extends AccountAction
 {
@@ -14,7 +15,7 @@ class DebitAccount extends AccountAction
         );
 
         // Find existing asset balance
-        $balance = \App\Models\AccountBalance::where(
+        $balance = AccountBalance::where(
             [
                 'account_uuid' => $account->uuid,
                 'asset_code' => $event->assetCode,

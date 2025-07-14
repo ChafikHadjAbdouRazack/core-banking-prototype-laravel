@@ -2,7 +2,7 @@
 
 use App\Domain\Payment\DataObjects\BankWithdrawal;
 use App\Models\Account;
-use App\Models\PaymentTransaction;
+use App\Domain\Payment\Models\PaymentTransaction;
 use Illuminate\Support\Str;
 
 beforeEach(function () {

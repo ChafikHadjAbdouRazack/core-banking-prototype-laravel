@@ -17,5 +17,6 @@ class BatchItemProcessed extends ShouldBeStored
         public readonly string $status,
         public readonly array $result,
         public readonly ?string $errorMessage = null
-    ) {}
+    ) {
+    }
 }

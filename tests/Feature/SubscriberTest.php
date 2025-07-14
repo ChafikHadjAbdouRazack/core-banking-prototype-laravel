@@ -2,10 +2,10 @@
 
 namespace Tests\Feature;
 
-use App\Mail\SubscriberNewsletter;
-use App\Mail\SubscriberWelcome;
-use App\Models\Subscriber;
-use App\Services\Email\SubscriberEmailService;
+use App\Domain\Newsletter\Mail\SubscriberNewsletter;
+use App\Domain\Newsletter\Mail\SubscriberWelcome;
+use App\Domain\Newsletter\Models\Subscriber;
+use App\Domain\Newsletter\Services\SubscriberEmailService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
 use PHPUnit\Framework\Attributes\Test;

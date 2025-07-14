@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Models\Stablecoin;
+use App\Domain\Stablecoin\Models\Stablecoin;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

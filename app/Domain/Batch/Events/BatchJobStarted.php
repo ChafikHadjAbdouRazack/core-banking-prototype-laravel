@@ -11,5 +11,6 @@ class BatchJobStarted extends ShouldBeStored
 
     public function __construct(
         public readonly string $startedAt
-    ) {}
+    ) {
+    }
 }

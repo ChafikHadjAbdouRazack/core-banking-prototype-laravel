@@ -16,5 +16,6 @@ class ReconciliationCompleted
         public readonly string $date,
         public readonly array $results,
         public readonly array $discrepancies
-    ) {}
+    ) {
+    }
 }

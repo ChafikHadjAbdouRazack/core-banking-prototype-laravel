@@ -8,7 +8,7 @@ use App\Domain\Custodian\Services\BalanceSynchronizationService;
 use App\Domain\Custodian\Services\CustodianRegistry;
 use App\Domain\Custodian\Services\DailyReconciliationService;
 use App\Models\Account;
-use App\Models\CustodianAccount;
+use App\Domain\Custodian\Models\CustodianAccount;
 use Illuminate\Support\Facades\Event;
 
 beforeEach(function () {

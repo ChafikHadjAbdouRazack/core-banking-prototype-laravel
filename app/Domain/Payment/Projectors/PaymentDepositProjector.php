@@ -5,7 +5,7 @@ namespace App\Domain\Payment\Projectors;
 use App\Domain\Payment\Events\DepositCompleted;
 use App\Domain\Payment\Events\DepositFailed;
 use App\Domain\Payment\Events\DepositInitiated;
-use App\Models\PaymentTransaction;
+use App\Domain\Payment\Models\PaymentTransaction;
 use Spatie\EventSourcing\EventHandlers\Projectors\Projector;
 
 class PaymentDepositProjector extends Projector

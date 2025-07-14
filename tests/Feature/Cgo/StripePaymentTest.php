@@ -2,10 +2,10 @@
 
 namespace Tests\Feature\Cgo;
 
-use App\Models\CgoInvestment;
-use App\Models\CgoPricingRound;
+use App\Domain\Cgo\Models\CgoInvestment;
+use App\Domain\Cgo\Models\CgoPricingRound;
 use App\Models\User;
-use App\Services\Cgo\StripePaymentService;
+use App\Domain\Cgo\Services\StripePaymentService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Mockery;
 use PHPUnit\Framework\Attributes\Test;

@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Models\BatchJob;
+use App\Domain\Batch\Models\BatchJob;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 

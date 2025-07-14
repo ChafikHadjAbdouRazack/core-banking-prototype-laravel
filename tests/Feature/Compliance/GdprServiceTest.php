@@ -5,7 +5,7 @@ declare(strict_types=1);
 use App\Domain\Compliance\Services\GdprService;
 use App\Models\Account;
 use App\Models\AuditLog;
-use App\Models\KycDocument;
+use App\Domain\Compliance\Models\KycDocument;
 use App\Models\User;
 use Illuminate\Support\Facades\Storage;
 

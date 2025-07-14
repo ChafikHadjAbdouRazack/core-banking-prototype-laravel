@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Stablecoin\Repositories;
 
-use App\Models\StablecoinEvent;
+use App\Domain\Stablecoin\Models\StablecoinEvent;
 use Spatie\EventSourcing\AggregateRoots\Exceptions\InvalidEloquentStoredEventModel;
 use Spatie\EventSourcing\StoredEvents\Models\EloquentStoredEvent;
 use Spatie\EventSourcing\StoredEvents\Repositories\EloquentStoredEventRepository;

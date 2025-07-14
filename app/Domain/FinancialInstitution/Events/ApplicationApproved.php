@@ -2,8 +2,8 @@
 
 namespace App\Domain\FinancialInstitution\Events;
 
-use App\Models\FinancialInstitutionApplication;
-use App\Models\FinancialInstitutionPartner;
+use App\Domain\FinancialInstitution\Models\FinancialInstitutionApplication;
+use App\Domain\FinancialInstitution\Models\FinancialInstitutionPartner;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
@@ -17,5 +17,6 @@ class ApplicationApproved
     public function __construct(
         public readonly FinancialInstitutionApplication $application,
         public readonly FinancialInstitutionPartner $partner
-    ) {}
+    ) {
+    }
 }

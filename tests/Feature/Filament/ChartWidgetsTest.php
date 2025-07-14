@@ -6,7 +6,7 @@ use App\Filament\Admin\Resources\AccountResource\Widgets\RecentTransactionsChart
 use App\Filament\Admin\Resources\AccountResource\Widgets\SystemHealthWidget;
 use App\Filament\Admin\Resources\AccountResource\Widgets\TurnoverTrendChart;
 use App\Models\Account;
-use App\Models\Turnover;
+use App\Domain\Account\Models\Turnover;
 use Filament\Widgets\ChartWidget;
 use Livewire\Livewire;
 

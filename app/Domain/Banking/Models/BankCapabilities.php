@@ -25,7 +25,8 @@ class BankCapabilities
         public readonly int $maxAccountsPerUser,
         public readonly array $requiredDocuments,
         public readonly array $availableCountries,
-    ) {}
+    ) {
+    }
 
     /**
      * Check if a specific feature is supported.

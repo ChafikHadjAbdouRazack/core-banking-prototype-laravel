@@ -12,7 +12,8 @@ class ValidateExchangeRateActivity extends Activity
 {
     public function __construct(
         private ExchangeRateService $exchangeRateService
-    ) {}
+    ) {
+    }
 
     /**
      * Execute validate exchange rate activity.

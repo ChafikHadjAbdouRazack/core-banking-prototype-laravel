@@ -3,8 +3,8 @@
 namespace App\Filament\Admin\Resources\AccountResource\Widgets;
 
 use App\Models\Account;
-use App\Models\Transaction;
-use App\Models\Turnover;
+use App\Domain\Account\Models\Transaction;
+use App\Domain\Account\Models\Turnover;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Database\Eloquent\Model;

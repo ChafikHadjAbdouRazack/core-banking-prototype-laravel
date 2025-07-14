@@ -2,7 +2,7 @@
 
 namespace App\Domain\Exchange\LiquidityPool\Repositories;
 
-use App\Models\LiquidityPoolEvent;
+use App\Domain\Exchange\Models\LiquidityPoolEvent;
 use Spatie\EventSourcing\AggregateRoots\Exceptions\InvalidEloquentStoredEventModel;
 use Spatie\EventSourcing\StoredEvents\Models\EloquentStoredEvent;
 use Spatie\EventSourcing\StoredEvents\Repositories\EloquentStoredEventRepository;

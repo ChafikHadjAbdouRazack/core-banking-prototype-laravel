@@ -3,7 +3,7 @@
 namespace App\Filament\Admin\Resources;
 
 use App\Filament\Admin\Resources\SubscriberResource\Pages;
-use App\Models\Subscriber;
+use App\Domain\Newsletter\Models\Subscriber;
 use Filament\Forms;
 use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Form;

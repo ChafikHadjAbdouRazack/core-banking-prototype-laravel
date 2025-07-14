@@ -2,7 +2,7 @@
 
 namespace App\Domain\Lending\Repositories;
 
-use App\Models\LendingEvent;
+use App\Domain\Lending\Models\LendingEvent;
 use Spatie\EventSourcing\StoredEvents\Repositories\EloquentStoredEventRepository;
 
 class LendingEventRepository extends EloquentStoredEventRepository

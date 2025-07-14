@@ -4,6 +4,7 @@ namespace App\Domain\Account\Actions;
 
 use App\Domain\Account\Events\AssetBalanceAdded;
 use App\Models\Account;
+use App\Domain\Account\Models\AccountBalance;
 
 class CreditAccount extends AccountAction
 {
@@ -14,7 +15,7 @@ class CreditAccount extends AccountAction
         );
 
         // Update or create asset balance using event data
-        $balance = \App\Models\AccountBalance::firstOrCreate(
+        $balance = AccountBalance::firstOrCreate(
             [
                 'account_uuid' => $account->uuid,
                 'asset_code' => $event->assetCode,

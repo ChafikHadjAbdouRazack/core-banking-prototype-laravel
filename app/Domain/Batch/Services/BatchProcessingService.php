@@ -92,7 +92,7 @@ class BatchProcessingService
         // Create a new batch job for retry
         $this->createBatchJob(
             userUuid: $batchJob->user_uuid,
-            name: $batchJob->name.' (Retry)',
+            name: $batchJob->name . ' (Retry)',
             type: $batchJob->type,
             items: $failedItems,
             metadata: [

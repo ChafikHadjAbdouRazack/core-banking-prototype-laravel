@@ -46,7 +46,7 @@ class LoanApplicationWorkflow extends Workflow
         if (! $kycResult['passed']) {
             yield $this->activities->rejectApplication(
                 $applicationId,
-                ['KYC check failed: '.$kycResult['reason']],
+                ['KYC check failed: ' . $kycResult['reason']],
                 'system'
             );
 

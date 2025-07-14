@@ -48,7 +48,7 @@ class FeatureToggleWorkflow
 
             return [
                 'success' => true,
-                'message' => "Feature '{$featureConfig['feature_key']}' ".($enabled ? 'enabled' : 'disabled').' via governance',
+                'message' => "Feature '{$featureConfig['feature_key']}' " . ($enabled ? 'enabled' : 'disabled') . ' via governance',
                 'poll_uuid' => $poll->uuid,
                 'feature_key' => $featureConfig['feature_key'],
                 'enabled' => $enabled,
@@ -65,7 +65,7 @@ class FeatureToggleWorkflow
 
             return [
                 'success' => false,
-                'message' => 'Failed to toggle feature: '.$e->getMessage(),
+                'message' => 'Failed to toggle feature: ' . $e->getMessage(),
                 'poll_uuid' => $poll->uuid,
             ];
         }
@@ -97,7 +97,7 @@ class FeatureToggleWorkflow
 
     private function parseFeatureConfigFromText(string $title, ?string $description): array
     {
-        $text = strtolower($title.' '.($description ?? ''));
+        $text = strtolower($title . ' ' . ($description ?? ''));
 
         // Common feature patterns
         $featurePatterns = [

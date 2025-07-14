@@ -62,7 +62,7 @@ class StablecoinEventRepositoryTest extends DomainTestCase
         $fileName = $reflection->getFileName();
         $fileContent = file_get_contents($fileName);
 
-        $this->assertStringContainsString('use App\Models\StablecoinEvent;', $fileContent);
+        $this->assertStringContainsString('use App\Domain\Stablecoin\Models\StablecoinEvent;', $fileContent);
         $this->assertStringContainsString('= StablecoinEvent::class', $fileContent);
     }
 

@@ -22,7 +22,8 @@ class TransactionStatusUpdated
         public readonly string $transactionId,
         public readonly string $status,
         public readonly array $metadata = []
-    ) {}
+    ) {
+    }
 
     /**
      * Get the channels the event should broadcast on.

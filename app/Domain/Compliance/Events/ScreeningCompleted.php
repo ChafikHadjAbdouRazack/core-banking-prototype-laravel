@@ -2,7 +2,7 @@
 
 namespace App\Domain\Compliance\Events;
 
-use App\Models\AmlScreening;
+use App\Domain\Compliance\Models\AmlScreening;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
@@ -15,5 +15,6 @@ class ScreeningCompleted
 
     public function __construct(
         public readonly AmlScreening $screening
-    ) {}
+    ) {
+    }
 }

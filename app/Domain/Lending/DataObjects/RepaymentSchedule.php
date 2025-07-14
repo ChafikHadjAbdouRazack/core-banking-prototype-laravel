@@ -19,7 +19,8 @@ class RepaymentSchedule
         public readonly string $monthlyPayment,
         public readonly string $totalInterest,
         public readonly string $totalAmount
-    ) {}
+    ) {
+    }
 
     public static function calculate(
         string $loanId,

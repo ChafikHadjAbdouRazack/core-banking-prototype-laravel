@@ -17,5 +17,6 @@ class BatchJobCompleted extends ShouldBeStored
         public readonly int $totalProcessed,
         public readonly int $totalFailed,
         public readonly string $finalStatus
-    ) {}
+    ) {
+    }
 }

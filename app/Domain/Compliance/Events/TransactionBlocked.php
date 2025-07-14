@@ -16,5 +16,6 @@ class TransactionBlocked
     public function __construct(
         public readonly Transaction $transaction,
         public readonly array $reasons
-    ) {}
+    ) {
+    }
 }

@@ -6,8 +6,8 @@ namespace App\Domain\Custodian\Services;
 
 use App\Domain\Custodian\Events\AccountBalanceUpdated;
 use App\Domain\Custodian\Events\TransactionStatusUpdated;
-use App\Models\CustodianAccount;
-use App\Models\CustodianWebhook;
+use App\Domain\Custodian\Models\CustodianAccount;
+use App\Domain\Custodian\Models\CustodianWebhook;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -16,7 +16,8 @@ class WebhookProcessorService
     public function __construct(
         private readonly CustodianAccountService $accountService,
         private readonly CustodianRegistry $custodianRegistry
-    ) {}
+    ) {
+    }
 
     /**
      * Process a webhook based on its type and custodian.

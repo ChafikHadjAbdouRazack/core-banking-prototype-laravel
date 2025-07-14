@@ -7,7 +7,7 @@ namespace App\Domain\Stablecoin\Workflows\Activities;
 use App\Domain\Account\DataObjects\AccountUuid;
 use App\Domain\Stablecoin\Aggregates\StablecoinAggregate;
 use App\Domain\Wallet\Services\WalletService;
-use App\Models\Stablecoin;
+use App\Domain\Stablecoin\Models\Stablecoin;
 use Workflow\Activity;
 
 class BurnStablecoinActivity extends Activity

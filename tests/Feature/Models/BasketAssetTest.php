@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Tests\Feature\Models;
 
 use App\Domain\Asset\Models\Asset;
-use App\Models\BasketAsset;
-use App\Models\BasketComponent;
-use App\Models\BasketValue;
+use App\Domain\Basket\Models\BasketAsset;
+use App\Domain\Basket\Models\BasketComponent;
+use App\Domain\Basket\Models\BasketValue;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 

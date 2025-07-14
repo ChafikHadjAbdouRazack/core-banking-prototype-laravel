@@ -2,7 +2,7 @@
 
 namespace App\Filament\Admin\Pages;
 
-use App\Services\SubProductService;
+use App\Domain\Product\Services\SubProductService;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;

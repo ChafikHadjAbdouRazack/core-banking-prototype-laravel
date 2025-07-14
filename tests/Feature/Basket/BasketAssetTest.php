@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\Basket;
 
 use App\Domain\Asset\Models\Asset;
-use App\Models\BasketAsset;
+use App\Domain\Basket\Models\BasketAsset;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;

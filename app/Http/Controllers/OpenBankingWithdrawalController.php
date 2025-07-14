@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Domain\Banking\Services\BankIntegrationService;
 use App\Models\Account;
-use App\Models\User;
-use App\Services\PaymentGatewayService;
+use App\Domain\Account\Models\User;
+use App\Domain\Payment\Services\PaymentGatewayService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;

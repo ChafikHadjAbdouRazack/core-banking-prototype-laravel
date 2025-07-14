@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Domain\Basket\Services;
 
-use App\Models\BasketAsset;
-use App\Models\BasketPerformance;
-use App\Models\BasketValue;
-use App\Models\ComponentPerformance;
+use App\Domain\Basket\Models\BasketAsset;
+use App\Domain\Basket\Models\BasketPerformance;
+use App\Domain\Basket\Models\BasketValue;
+use App\Domain\Basket\Models\ComponentPerformance;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;

@@ -1,7 +1,7 @@
 <?php
 
 use App\Domain\Asset\Models\Asset;
-use App\Models\BasketAsset;
+use App\Domain\Basket\Models\BasketAsset;
 use Database\Seeders\GCUBasketSeeder;
 use Illuminate\Support\Facades\Artisan;
 

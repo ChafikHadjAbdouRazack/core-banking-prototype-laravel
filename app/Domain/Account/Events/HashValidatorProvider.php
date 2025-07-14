@@ -10,7 +10,8 @@ trait HashValidatorProvider
     public function __construct(
         public readonly Money $money,
         public readonly Hash $hash,
-    ) {}
+    ) {
+    }
 
     public function getHash(): Hash
     {

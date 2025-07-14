@@ -6,7 +6,7 @@
 
 namespace App\Domain\Compliance\Repositories;
 
-use App\Models\AmlScreeningEvent;
+use App\Domain\Compliance\Models\AmlScreeningEvent;
 use Illuminate\Support\Collection;
 use Spatie\EventSourcing\StoredEvents\Repositories\EloquentStoredEventRepository;
 

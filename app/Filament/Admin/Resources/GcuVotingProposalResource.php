@@ -3,7 +3,7 @@
 namespace App\Filament\Admin\Resources;
 
 use App\Filament\Admin\Resources\GcuVotingProposalResource\Pages;
-use App\Models\GcuVotingProposal;
+use App\Domain\Governance\Models\GcuVotingProposal;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;

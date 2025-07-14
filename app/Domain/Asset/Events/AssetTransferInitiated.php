@@ -22,7 +22,8 @@ class AssetTransferInitiated extends ShouldBeStored
         public readonly Hash $hash,
         public readonly ?string $description = null,
         public readonly ?array $metadata = null
-    ) {}
+    ) {
+    }
 
     /**
      * Check if this is a same-asset transfer.

@@ -5,7 +5,7 @@ use App\Domain\Custodian\Connectors\MockBankConnector;
 use App\Domain\Custodian\Services\CustodianAccountService;
 use App\Domain\Custodian\Services\CustodianRegistry;
 use App\Models\Account;
-use App\Models\CustodianAccount;
+use App\Domain\Custodian\Models\CustodianAccount;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);

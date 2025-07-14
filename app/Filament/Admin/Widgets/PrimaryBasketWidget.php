@@ -2,7 +2,7 @@
 
 namespace App\Filament\Admin\Widgets;
 
-use App\Models\BasketAsset;
+use App\Domain\Basket\Models\BasketAsset;
 use Filament\Widgets\Widget;
 
 class PrimaryBasketWidget extends Widget

@@ -2,7 +2,7 @@
 
 namespace App\Domain\Fraud\Services;
 
-use App\Models\FraudScore;
+use App\Domain\Fraud\Models\FraudScore;
 use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Support\Facades\Cache;

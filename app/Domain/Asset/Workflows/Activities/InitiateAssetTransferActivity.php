@@ -8,7 +8,7 @@ use App\Domain\Account\DataObjects\AccountUuid;
 use App\Domain\Account\DataObjects\Money;
 use App\Domain\Asset\Aggregates\AssetTransferAggregate;
 use App\Models\Account;
-use App\Models\AccountBalance;
+use App\Domain\Account\Models\AccountBalance;
 use Workflow\Activity;
 
 class InitiateAssetTransferActivity extends Activity

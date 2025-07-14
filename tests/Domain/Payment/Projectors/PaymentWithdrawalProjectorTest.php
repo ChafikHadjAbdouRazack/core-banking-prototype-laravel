@@ -4,7 +4,7 @@ use App\Domain\Payment\Events\WithdrawalCompleted;
 use App\Domain\Payment\Events\WithdrawalFailed;
 use App\Domain\Payment\Events\WithdrawalInitiated;
 use App\Domain\Payment\Projectors\PaymentWithdrawalProjector;
-use App\Models\PaymentTransaction;
+use App\Domain\Payment\Models\PaymentTransaction;
 use Illuminate\Support\Str;
 
 beforeEach(function () {

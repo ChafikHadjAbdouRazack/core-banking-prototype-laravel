@@ -6,8 +6,8 @@ namespace App\Filament\Admin\Widgets;
 
 use App\Domain\Custodian\Services\CustodianHealthMonitor;
 use App\Domain\Custodian\Services\DailyReconciliationService;
-use App\Models\CustodianAccount;
-use App\Models\Transfer;
+use App\Domain\Custodian\Models\CustodianAccount;
+use App\Domain\Account\Models\Transfer;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 

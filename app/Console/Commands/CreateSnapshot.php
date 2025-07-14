@@ -9,7 +9,7 @@ use App\Domain\Account\Aggregates\TransactionAggregate;
 use App\Domain\Account\Aggregates\TransferAggregate;
 use App\Models\Account;
 use App\Models\Transaction;
-use App\Models\Transfer;
+use App\Domain\Account\Models\Transfer;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 

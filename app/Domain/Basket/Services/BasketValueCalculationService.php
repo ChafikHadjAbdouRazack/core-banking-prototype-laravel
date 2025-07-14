@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Domain\Basket\Services;
 
 use App\Domain\Asset\Services\ExchangeRateService;
-use App\Models\BasketAsset;
-use App\Models\BasketValue;
+use App\Domain\Basket\Models\BasketAsset;
+use App\Domain\Basket\Models\BasketValue;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -15,7 +15,8 @@ class BasketValueCalculationService
 {
     public function __construct(
         private readonly ExchangeRateService $exchangeRateService
-    ) {}
+    ) {
+    }
 
     /**
      * Calculate the current value of a basket based on its components.

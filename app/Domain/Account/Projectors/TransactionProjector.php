@@ -8,7 +8,7 @@ use App\Domain\Asset\Events\AssetTransactionCreated;
 use App\Domain\Asset\Events\AssetTransferCompleted;
 use App\Domain\Payment\Events\PaymentDepositCreated;
 use App\Domain\Payment\Events\PaymentWithdrawalCreated;
-use App\Models\TransactionProjection;
+use App\Domain\Account\Models\TransactionProjection;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Spatie\EventSourcing\EventHandlers\Projectors\Projector;
@@ -71,7 +71,7 @@ class TransactionProjector extends Projector
                     'type' => 'transfer_out',
                     'asset_code' => $event->assetCode,
                     'amount' => $event->amount,
-                    'description' => $event->description ?? 'Transfer to '.substr((string) $event->toAccountUuid, 0, 8),
+                    'description' => $event->description ?? 'Transfer to ' . substr((string) $event->toAccountUuid, 0, 8),
                     'reference' => $event->transferId ?? null,
                     'status' => 'completed',
                     'metadata' => [
@@ -90,7 +90,7 @@ class TransactionProjector extends Projector
                     'type' => 'transfer_in',
                     'asset_code' => $event->assetCode,
                     'amount' => $event->amount,
-                    'description' => $event->description ?? 'Transfer from '.substr((string) $event->fromAccountUuid, 0, 8),
+                    'description' => $event->description ?? 'Transfer from ' . substr((string) $event->fromAccountUuid, 0, 8),
                     'reference' => $event->transferId ?? null,
                     'status' => 'completed',
                     'metadata' => [

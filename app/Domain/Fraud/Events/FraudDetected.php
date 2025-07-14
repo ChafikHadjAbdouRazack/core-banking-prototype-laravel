@@ -2,7 +2,7 @@
 
 namespace App\Domain\Fraud\Events;
 
-use App\Models\FraudScore;
+use App\Domain\Fraud\Models\FraudScore;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
@@ -27,9 +27,9 @@ class FraudDetected
     {
         return [
             'fraud',
-            'fraud_score:'.$this->fraudScore->id,
-            'risk_level:'.$this->fraudScore->risk_level,
-            'entity_type:'.class_basename($this->fraudScore->entity_type),
+            'fraud_score:' . $this->fraudScore->id,
+            'risk_level:' . $this->fraudScore->risk_level,
+            'entity_type:' . class_basename($this->fraudScore->entity_type),
         ];
     }
 }

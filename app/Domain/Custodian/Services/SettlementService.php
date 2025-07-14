@@ -306,7 +306,7 @@ class SettlementService
         string $assetCode,
         Collection $transfers
     ): string {
-        $settlementId = 'BATCH_'.uniqid();
+        $settlementId = 'BATCH_' . uniqid();
         $totalAmount = $transfers->sum('amount');
 
         DB::table('settlements')->insert(
@@ -343,7 +343,7 @@ class SettlementService
      */
     private function createNetSettlement($position): string
     {
-        $settlementId = 'NET_'.uniqid();
+        $settlementId = 'NET_' . uniqid();
 
         // Get all unsettled transfers for this position
         $transfers = DB::table('custodian_transfers as ct')
@@ -508,7 +508,7 @@ class SettlementService
      */
     private function createSettlement(array $data): string
     {
-        $settlementId = $data['type'].'_'.uniqid();
+        $settlementId = $data['type'] . '_' . uniqid();
 
         DB::table('settlements')->insert(
             [

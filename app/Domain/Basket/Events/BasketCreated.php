@@ -14,7 +14,8 @@ class BasketCreated extends ShouldBeStored
         public readonly array $components,
         public readonly string $type,
         public readonly string $createdBy
-    ) {}
+    ) {
+    }
 
     /**
      * Get the total weight of all components.

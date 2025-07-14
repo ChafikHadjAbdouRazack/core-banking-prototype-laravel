@@ -4,7 +4,7 @@ namespace App\Domain\Batch\Activities;
 
 use App\Domain\Batch\Aggregates\BatchAggregate;
 use App\Domain\Batch\DataObjects\BatchJob;
-use App\Models\BatchJob as BatchJobModel;
+use App\Domain\Batch\Models\BatchJob as BatchJobModel;
 use Workflow\Activity;
 
 class ValidateBatchJobActivity extends Activity

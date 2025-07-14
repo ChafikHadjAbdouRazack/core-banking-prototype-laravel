@@ -8,11 +8,11 @@ use App\Domain\Account\DataObjects\Money;
 use App\Domain\Asset\Models\Asset;
 use App\Domain\Asset\Models\ExchangeRate;
 use App\Models\Account;
-use App\Models\AccountBalance;
-use App\Models\Turnover;
+use App\Domain\Account\Models\AccountBalance;
+use App\Domain\Account\Models\Turnover;
 use App\Models\User;
 use App\Values\EventQueues;
-use App\Values\UserRoles;
+use App\Domain\User\Values\UserRoles;
 
 // Test existing model class instantiation
 it('can instantiate existing core models', function () {

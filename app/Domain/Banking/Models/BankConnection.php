@@ -20,7 +20,8 @@ class BankConnection
         public readonly Carbon $createdAt,
         public readonly Carbon $updatedAt,
         public readonly array $metadata = [],
-    ) {}
+    ) {
+    }
 
     /**
      * Check if connection is active.

@@ -232,8 +232,8 @@ class CollateralServiceTest extends ServiceTestCase
         $fileName = $reflection->getFileName();
         $fileContent = file_get_contents($fileName);
 
-        $this->assertStringContainsString('use App\Models\Stablecoin;', $fileContent);
-        $this->assertStringContainsString('use App\Models\StablecoinCollateralPosition;', $fileContent);
+        $this->assertStringContainsString('use App\Domain\Stablecoin\Models\Stablecoin;', $fileContent);
+        $this->assertStringContainsString('use App\Domain\Stablecoin\Models\StablecoinCollateralPosition;', $fileContent);
         $this->assertStringContainsString('use Illuminate\Support\Collection;', $fileContent);
     }
 

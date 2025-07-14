@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Services\SubProductService;
+use App\Domain\Product\Services\SubProductService;
 use Illuminate\Http\JsonResponse;
 
 class SubProductController extends Controller

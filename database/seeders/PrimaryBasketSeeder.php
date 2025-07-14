@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use App\Domain\Asset\Models\Asset;
-use App\Models\BasketAsset;
+use App\Domain\Basket\Models\BasketAsset;
 use Illuminate\Database\Seeder;
 
 class PrimaryBasketSeeder extends Seeder
