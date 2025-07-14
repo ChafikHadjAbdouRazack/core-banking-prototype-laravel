@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Account\Workflows;
 
 use App\Models\Account;
-use App\Domain\Account\Models\TransactionProjection as Transaction;
+use App\Domain\Account\Models\TransactionProjection;
 use App\Domain\Account\Models\Turnover;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -108,12 +108,12 @@ class SingleBatchOperationActivity extends Activity
         $processed = 0;
 
         foreach ($accounts as $account) {
-            $dailyCredit = Transaction::where('account_uuid', $account->uuid)
+            $dailyCredit = TransactionProjection::where('account_uuid', $account->uuid)
                 ->whereDate('created_at', $today)
                 ->where('type', 'credit')
                 ->sum('amount');
 
-            $dailyDebit = Transaction::where('account_uuid', $account->uuid)
+            $dailyDebit = TransactionProjection::where('account_uuid', $account->uuid)
                 ->whereDate('created_at', $today)
                 ->where('type', 'debit')
                 ->sum('amount');
@@ -127,7 +127,7 @@ class SingleBatchOperationActivity extends Activity
                     'credit' => $dailyCredit,
                     'debit' => abs($dailyDebit),
                     'amount' => $dailyCredit - abs($dailyDebit),
-                    'count' => Transaction::where('account_uuid', $account->uuid)
+                    'count' => TransactionProjection::where('account_uuid', $account->uuid)
                         ->whereDate('created_at', $today)
                         ->count(),
                 ]
@@ -165,7 +165,7 @@ class SingleBatchOperationActivity extends Activity
 
         foreach ($accounts as $account) {
             // Get transactions for the current month
-            $transactions = Transaction::where('account_uuid', $account->uuid)
+            $transactions = TransactionProjection::where('account_uuid', $account->uuid)
                 ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
                 ->orderBy('created_at', 'desc')
                 ->get();
@@ -290,7 +290,7 @@ class SingleBatchOperationActivity extends Activity
         $complianceFlags = [];
 
         // Check for large transactions (> $10,000)
-        $largeTransactions = Transaction::where('amount', '>', 1000000) // > $10,000 in cents
+        $largeTransactions = TransactionProjection::where('amount', '>', 1000000) // > $10,000 in cents
             ->whereDate('created_at', $today)
             ->with('account.user')
             ->get();
@@ -348,7 +348,7 @@ class SingleBatchOperationActivity extends Activity
         )->toArray();
 
         // Check for round-number transactions (possible structuring)
-        $roundTransactions = Transaction::whereIn(
+        $roundTransactions = TransactionProjection::whereIn(
             'amount',
             [
                 1000000, 900000, 800000, 700000, 600000, 500000, // $10k, $9k, etc.
@@ -401,7 +401,7 @@ class SingleBatchOperationActivity extends Activity
         $cutoffDate = now()->subYears(7);
 
         // Get transactions to be archived before updating
-        $transactionsToArchive = Transaction::where('created_at', '<', $cutoffDate)
+        $transactionsToArchive = TransactionProjection::where('created_at', '<', $cutoffDate)
             ->where(
                 function ($query) {
                     $query->whereNull('archived')
@@ -411,7 +411,7 @@ class SingleBatchOperationActivity extends Activity
             ->pluck('uuid')
             ->toArray();
 
-        $archivedCount = Transaction::whereIn('uuid', $transactionsToArchive)
+        $archivedCount = TransactionProjection::whereIn('uuid', $transactionsToArchive)
             ->update(['archived' => true]);
 
         return [
@@ -433,11 +433,11 @@ class SingleBatchOperationActivity extends Activity
 
         // Daily Transaction Summary Report
         $dailyStats = [
-            'total_transactions' => Transaction::whereDate('created_at', $today)->count(),
-            'total_volume' => Transaction::whereDate('created_at', $today)->sum('amount'),
-            'total_credits' => Transaction::whereDate('created_at', $today)->where('amount', '>', 0)->sum('amount'),
-            'total_debits' => abs(Transaction::whereDate('created_at', $today)->where('amount', '<', 0)->sum('amount')),
-            'unique_accounts' => Transaction::whereDate('created_at', $today)->distinct('account_uuid')->count(),
+            'total_transactions' => TransactionProjection::whereDate('created_at', $today)->count(),
+            'total_volume' => TransactionProjection::whereDate('created_at', $today)->sum('amount'),
+            'total_credits' => TransactionProjection::whereDate('created_at', $today)->where('amount', '>', 0)->sum('amount'),
+            'total_debits' => abs(TransactionProjection::whereDate('created_at', $today)->where('amount', '<', 0)->sum('amount')),
+            'unique_accounts' => TransactionProjection::whereDate('created_at', $today)->distinct('account_uuid')->count(),
         ];
 
         $dailyReportFile = "regulatory/daily_transaction_summary_{$today->format('Y-m-d')}.json";
@@ -449,7 +449,7 @@ class SingleBatchOperationActivity extends Activity
         $generatedFiles[] = $dailyReportFile;
 
         // Large Transaction Report (CTR - Currency Transaction Report)
-        $largeTransactions = Transaction::where('amount', '>', 1000000) // > $10,000
+        $largeTransactions = TransactionProjection::where('amount', '>', 1000000) // > $10,000
             ->whereDate('created_at', $today)
             ->with('account.user')
             ->get()
@@ -519,10 +519,10 @@ class SingleBatchOperationActivity extends Activity
                 'month' => $today->format('Y-m'),
                 'total_accounts' => Account::count(),
                 'active_accounts' => Account::where('frozen', false)->count(),
-                'total_transactions' => Transaction::whereMonth('created_at', $today)->count(),
-                'total_volume' => Transaction::whereMonth('created_at', $today)->sum('amount') / 100,
-                'average_transaction_size' => Transaction::whereMonth('created_at', $today)->avg('amount') / 100,
-                'largest_transaction' => Transaction::whereMonth('created_at', $today)->max('amount') / 100,
+                'total_transactions' => TransactionProjection::whereMonth('created_at', $today)->count(),
+                'total_volume' => TransactionProjection::whereMonth('created_at', $today)->sum('amount') / 100,
+                'average_transaction_size' => TransactionProjection::whereMonth('created_at', $today)->avg('amount') / 100,
+                'largest_transaction' => TransactionProjection::whereMonth('created_at', $today)->max('amount') / 100,
             ];
 
             $monthlyFile = "regulatory/monthly_summary_{$today->format('Y-m')}.json";

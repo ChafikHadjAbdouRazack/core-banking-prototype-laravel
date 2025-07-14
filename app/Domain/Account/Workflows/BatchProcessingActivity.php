@@ -3,7 +3,7 @@
 namespace App\Domain\Account\Workflows;
 
 use App\Models\Account;
-use App\Domain\Account\Models\TransactionProjection as Transaction;
+use App\Domain\Account\Models\TransactionProjection;
 use App\Domain\Account\Models\Turnover;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -100,12 +100,12 @@ class BatchProcessingActivity extends Activity
         $processed = 0;
 
         foreach ($accounts as $account) {
-            $dailyCredit = Transaction::where('account_uuid', $account->uuid)
+            $dailyCredit = TransactionProjection::where('account_uuid', $account->uuid)
                 ->whereDate('created_at', $today)
                 ->where('type', 'credit')
                 ->sum('amount');
 
-            $dailyDebit = Transaction::where('account_uuid', $account->uuid)
+            $dailyDebit = TransactionProjection::where('account_uuid', $account->uuid)
                 ->whereDate('created_at', $today)
                 ->where('type', 'debit')
                 ->sum('amount');
@@ -119,7 +119,7 @@ class BatchProcessingActivity extends Activity
                     'credit' => $dailyCredit,
                     'debit' => abs($dailyDebit),
                     'amount' => $dailyCredit - abs($dailyDebit),
-                    'count' => Transaction::where('account_uuid', $account->uuid)
+                    'count' => TransactionProjection::where('account_uuid', $account->uuid)
                         ->whereDate('created_at', $today)
                         ->count(),
                 ]
