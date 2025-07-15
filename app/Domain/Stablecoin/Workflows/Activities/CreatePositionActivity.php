@@ -6,9 +6,9 @@ namespace App\Domain\Stablecoin\Workflows\Activities;
 
 use App\Domain\Account\DataObjects\AccountUuid;
 use App\Domain\Stablecoin\Aggregates\StablecoinAggregate;
-use App\Domain\Stablecoin\Services\CollateralService;
 use App\Domain\Stablecoin\Models\Stablecoin;
 use App\Domain\Stablecoin\Models\StablecoinCollateralPosition;
+use App\Domain\Stablecoin\Services\CollateralService;
 use Illuminate\Support\Str;
 use Workflow\Activity;
 

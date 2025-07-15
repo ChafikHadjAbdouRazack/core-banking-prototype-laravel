@@ -3,8 +3,8 @@
 use App\Domain\Payment\Events\WithdrawalCompleted;
 use App\Domain\Payment\Events\WithdrawalFailed;
 use App\Domain\Payment\Events\WithdrawalInitiated;
-use App\Domain\Payment\Projectors\PaymentWithdrawalProjector;
 use App\Domain\Payment\Models\PaymentTransaction;
+use App\Domain\Payment\Projectors\PaymentWithdrawalProjector;
 use Illuminate\Support\Str;
 
 beforeEach(function () {
@@ -27,7 +27,7 @@ it('creates payment transaction on withdrawal initiated', function () {
         metadata: ['test' => true]
     );
 
-    $projector = new PaymentWithdrawalProjector;
+    $projector = new PaymentWithdrawalProjector();
     $projector->onWithdrawalInitiated($event, $aggregateUuid);
 
     $transaction = PaymentTransaction::where('aggregate_uuid', $aggregateUuid)->first();
@@ -52,17 +52,17 @@ it('updates payment transaction on withdrawal completed', function () {
 
     // Create a pending transaction first
     PaymentTransaction::create([
-        'aggregate_uuid' => $aggregateUuid,
-        'account_uuid' => Str::uuid()->toString(),
-        'type' => 'withdrawal',
-        'status' => 'pending',
-        'amount' => 5000,
-        'currency' => 'USD',
-        'reference' => 'WD-123',
+        'aggregate_uuid'      => $aggregateUuid,
+        'account_uuid'        => Str::uuid()->toString(),
+        'type'                => 'withdrawal',
+        'status'              => 'pending',
+        'amount'              => 5000,
+        'currency'            => 'USD',
+        'reference'           => 'WD-123',
         'bank_account_number' => '****1234',
         'bank_routing_number' => '123456789',
-        'bank_account_name' => 'John Doe',
-        'initiated_at' => now()->subMinutes(5),
+        'bank_account_name'   => 'John Doe',
+        'initiated_at'        => now()->subMinutes(5),
     ]);
 
     $event = new WithdrawalCompleted(
@@ -70,7 +70,7 @@ it('updates payment transaction on withdrawal completed', function () {
         completedAt: $completedAt
     );
 
-    $projector = new PaymentWithdrawalProjector;
+    $projector = new PaymentWithdrawalProjector();
     $projector->onWithdrawalCompleted($event, $aggregateUuid);
 
     $transaction = PaymentTransaction::where('aggregate_uuid', $aggregateUuid)->first();
@@ -88,13 +88,13 @@ it('updates payment transaction on withdrawal failed', function () {
     // Create a pending transaction first
     PaymentTransaction::create([
         'aggregate_uuid' => $aggregateUuid,
-        'account_uuid' => Str::uuid()->toString(),
-        'type' => 'withdrawal',
-        'status' => 'pending',
-        'amount' => 5000,
-        'currency' => 'USD',
-        'reference' => 'WD-123',
-        'initiated_at' => now()->subMinutes(5),
+        'account_uuid'   => Str::uuid()->toString(),
+        'type'           => 'withdrawal',
+        'status'         => 'pending',
+        'amount'         => 5000,
+        'currency'       => 'USD',
+        'reference'      => 'WD-123',
+        'initiated_at'   => now()->subMinutes(5),
     ]);
 
     $event = new WithdrawalFailed(
@@ -102,7 +102,7 @@ it('updates payment transaction on withdrawal failed', function () {
         failedAt: $failedAt
     );
 
-    $projector = new PaymentWithdrawalProjector;
+    $projector = new PaymentWithdrawalProjector();
     $projector->onWithdrawalFailed($event, $aggregateUuid);
 
     $transaction = PaymentTransaction::where('aggregate_uuid', $aggregateUuid)->first();
@@ -123,14 +123,14 @@ it('handles concurrent withdrawals correctly', function () {
             accountUuid: $accountUuid,
             amount: 1000 + ($i * 100),
             currency: 'USD',
-            reference: 'WD-'.($i + 1),
+            reference: 'WD-' . ($i + 1),
             bankAccountNumber: '****1234',
             bankRoutingNumber: '123456789',
             bankAccountName: 'John Doe',
             metadata: []
         );
 
-        $projector = new PaymentWithdrawalProjector;
+        $projector = new PaymentWithdrawalProjector();
         $projector->onWithdrawalInitiated($event, $aggregateUuid);
 
         $withdrawals[] = $aggregateUuid;
@@ -146,11 +146,11 @@ it('handles concurrent withdrawals correctly', function () {
     // Complete some withdrawals
     foreach (array_slice($withdrawals, 0, 3) as $aggregateUuid) {
         $event = new WithdrawalCompleted(
-            transactionId: 'wtxn_'.uniqid(),
+            transactionId: 'wtxn_' . uniqid(),
             completedAt: now()
         );
 
-        $projector = new PaymentWithdrawalProjector;
+        $projector = new PaymentWithdrawalProjector();
         $projector->onWithdrawalCompleted($event, $aggregateUuid);
     }
 
@@ -160,7 +160,7 @@ it('handles concurrent withdrawals correctly', function () {
         failedAt: now()
     );
 
-    $projector = new PaymentWithdrawalProjector;
+    $projector = new PaymentWithdrawalProjector();
     $projector->onWithdrawalFailed($event, $withdrawals[3]);
 
     // Verify statuses

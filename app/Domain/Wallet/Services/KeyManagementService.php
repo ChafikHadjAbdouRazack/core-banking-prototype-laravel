@@ -25,9 +25,9 @@ class KeyManagementService implements KeyManagementServiceInterface
     // BIP44 derivation paths
     private const DERIVATION_PATHS = [
         'ethereum' => "m/44'/60'/0'/0",
-        'bitcoin' => "m/44'/0'/0'/0",
-        'polygon' => "m/44'/966'/0'/0",
-        'bsc' => "m/44'/60'/0'/0", // Same as Ethereum
+        'bitcoin'  => "m/44'/0'/0'/0",
+        'polygon'  => "m/44'/966'/0'/0",
+        'bsc'      => "m/44'/60'/0'/0", // Same as Ethereum
     ];
 
     /**
@@ -129,7 +129,7 @@ class KeyManagementService implements KeyManagementServiceInterface
         return [
             'master_public_key' => $publicKey,
             'master_chain_code' => bin2hex($chainCode),
-            'encrypted_seed' => $this->encryptSeed(bin2hex($seed), 'default'),
+            'encrypted_seed'    => $this->encryptSeed(bin2hex($seed), 'default'),
         ];
     }
 
@@ -163,17 +163,17 @@ class KeyManagementService implements KeyManagementServiceInterface
             }
 
             return [
-                'private_key' => $privateKey,
-                'public_key' => $publicKey,
-                'address' => $this->getEthereumAddress($publicKey),
+                'private_key'     => $privateKey,
+                'public_key'      => $publicKey,
+                'address'         => $this->getEthereumAddress($publicKey),
                 'derivation_path' => $derivationPath,
             ];
         } else {
             // For Bitcoin (simplified)
             return [
-                'private_key' => $privateKey,
-                'public_key' => '04' . bin2hex(random_bytes(64)),
-                'address' => '1' . substr(hash('sha256', $privateKey), 0, 33),
+                'private_key'     => $privateKey,
+                'public_key'      => '04' . bin2hex(random_bytes(64)),
+                'address'         => '1' . substr(hash('sha256', $privateKey), 0, 33),
                 'derivation_path' => $derivationPath,
             ];
         }
@@ -333,21 +333,21 @@ class KeyManagementService implements KeyManagementServiceInterface
         // In a real implementation, this would fetch wallet data from storage
         // For now, we'll create a minimal backup structure
         $walletData = [
-            'wallet_id' => $walletId,
-            'version' => '1.0',
+            'wallet_id'  => $walletId,
+            'version'    => '1.0',
             'created_at' => now()->toIso8601String(),
-            'addresses' => [],
-            'metadata' => [],
-            'data' => $data ?? [],
+            'addresses'  => [],
+            'metadata'   => [],
+            'data'       => $data ?? [],
         ];
 
         $encrypted = Crypt::encryptString(json_encode($walletData));
         $checksum = hash('sha256', $encrypted);
 
         return [
-            'backup_id' => uniqid('backup_'),
+            'backup_id'      => uniqid('backup_'),
             'encrypted_data' => $encrypted,
-            'checksum' => $checksum,
+            'checksum'       => $checksum,
         ];
     }
 

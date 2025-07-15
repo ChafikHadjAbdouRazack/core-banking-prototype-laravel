@@ -4,8 +4,8 @@ namespace Tests\Feature\Cgo;
 
 use App\Domain\Cgo\Models\CgoInvestment;
 use App\Domain\Cgo\Models\CgoPricingRound;
-use App\Models\User;
 use App\Domain\Cgo\Services\StripePaymentService;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Mockery;
 use PHPUnit\Framework\Attributes\Test;

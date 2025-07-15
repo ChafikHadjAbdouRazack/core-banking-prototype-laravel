@@ -19,7 +19,7 @@ class BlockchainWithdrawalWorkflow extends Workflow
             BlockchainWithdrawalActivities::class,
             [
                 'startToCloseTimeout' => 600, // 10 minutes
-                'retryAttempts' => 3,
+                'retryAttempts'       => 3,
             ]
         );
     }
@@ -94,8 +94,8 @@ class BlockchainWithdrawalWorkflow extends Workflow
             "Blockchain withdrawal to {$chain}",
             [
                 'withdrawal_id' => $withdrawalId,
-                'chain' => $chain,
-                'to_address' => $toAddress,
+                'chain'         => $chain,
+                'to_address'    => $toAddress,
             ]
         );
 
@@ -140,14 +140,14 @@ class BlockchainWithdrawalWorkflow extends Workflow
             );
 
             return [
-                'status' => 'completed',
-                'withdrawal_id' => $withdrawalId,
+                'status'           => 'completed',
+                'withdrawal_id'    => $withdrawalId,
                 'transaction_hash' => $transactionHash,
-                'amount_fiat' => $amount,
-                'amount_crypto' => $cryptoAmount,
-                'asset' => $asset,
-                'chain' => $chain,
-                'to_address' => $toAddress,
+                'amount_fiat'      => $amount,
+                'amount_crypto'    => $cryptoAmount,
+                'asset'            => $asset,
+                'chain'            => $chain,
+                'to_address'       => $toAddress,
             ];
         } catch (\Exception $e) {
             // Rollback: Credit the account back

@@ -20,11 +20,11 @@ class BatchItem extends Model
     ];
 
     protected $casts = [
-        'sequence' => 'integer',
-        'data' => 'array',
-        'result' => 'array',
+        'sequence'     => 'integer',
+        'data'         => 'array',
+        'result'       => 'array',
         'processed_at' => 'datetime',
-        'retry_count' => 'integer',
+        'retry_count'  => 'integer',
     ];
 
     /**

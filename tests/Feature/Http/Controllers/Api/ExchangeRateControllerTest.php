@@ -43,12 +43,12 @@ class ExchangeRateControllerTest extends ControllerTestCase
 
         $exchangeRate = ExchangeRate::factory()->create([
             'from_asset_code' => 'USD',
-            'to_asset_code' => 'EUR',
-            'rate' => '0.85000000',
-            'source' => 'test',
-            'is_active' => true,
-            'valid_at' => now(),
-            'expires_at' => now()->addHour(),
+            'to_asset_code'   => 'EUR',
+            'rate'            => '0.85000000',
+            'source'          => 'test',
+            'is_active'       => true,
+            'valid_at'        => now(),
+            'expires_at'      => now()->addHour(),
         ]);
 
         $response = $this->getJson('/api/exchange-rates/USD/EUR');
@@ -72,9 +72,9 @@ class ExchangeRateControllerTest extends ControllerTestCase
         $response->assertJson([
             'data' => [
                 'from_asset' => 'USD',
-                'to_asset' => 'EUR',
-                'rate' => '0.85',
-                'is_active' => true,
+                'to_asset'   => 'EUR',
+                'rate'       => '0.85',
+                'is_active'  => true,
             ],
         ]);
 
@@ -90,9 +90,9 @@ class ExchangeRateControllerTest extends ControllerTestCase
 
         ExchangeRate::factory()->create([
             'from_asset_code' => 'USD',
-            'to_asset_code' => 'EUR',
-            'rate' => '0.85000000',
-            'is_active' => true,
+            'to_asset_code'   => 'EUR',
+            'rate'            => '0.85000000',
+            'is_active'       => true,
         ]);
 
         $response = $this->getJson('/api/exchange-rates/usd/eur');
@@ -112,7 +112,7 @@ class ExchangeRateControllerTest extends ControllerTestCase
         $response->assertStatus(404);
         $response->assertJson([
             'message' => 'Exchange rate not found',
-            'error' => 'No active exchange rate found for the specified asset pair',
+            'error'   => 'No active exchange rate found for the specified asset pair',
         ]);
     }
 
@@ -123,10 +123,10 @@ class ExchangeRateControllerTest extends ControllerTestCase
 
         ExchangeRate::factory()->create([
             'from_asset_code' => 'USD',
-            'to_asset_code' => 'EUR',
-            'rate' => '0.85000000',
-            'is_active' => true,
-            'valid_at' => now(),
+            'to_asset_code'   => 'EUR',
+            'rate'            => '0.85000000',
+            'is_active'       => true,
+            'valid_at'        => now(),
         ]);
 
         $response = $this->getJson('/api/exchange-rates/USD/EUR/convert?amount=10000');
@@ -147,13 +147,13 @@ class ExchangeRateControllerTest extends ControllerTestCase
 
         $response->assertJson([
             'data' => [
-                'from_asset' => 'USD',
-                'to_asset' => 'EUR',
-                'from_amount' => 10000,
-                'to_amount' => 8500, // 10000 * 0.85
+                'from_asset'     => 'USD',
+                'to_asset'       => 'EUR',
+                'from_amount'    => 10000,
+                'to_amount'      => 8500, // 10000 * 0.85
                 'from_formatted' => '100.00 USD',
-                'to_formatted' => '85.00 EUR',
-                'rate' => '0.85',
+                'to_formatted'   => '85.00 EUR',
+                'rate'           => '0.85',
             ],
         ]);
     }
@@ -165,9 +165,9 @@ class ExchangeRateControllerTest extends ControllerTestCase
 
         ExchangeRate::factory()->create([
             'from_asset_code' => 'USD',
-            'to_asset_code' => 'EUR',
-            'rate' => '0.85000000',
-            'is_active' => true,
+            'to_asset_code'   => 'EUR',
+            'rate'            => '0.85000000',
+            'is_active'       => true,
         ]);
 
         // Missing amount
@@ -238,15 +238,15 @@ class ExchangeRateControllerTest extends ControllerTestCase
 
         ExchangeRate::factory()->create([
             'from_asset_code' => 'USD',
-            'to_asset_code' => 'EUR',
+            'to_asset_code'   => 'EUR',
         ]);
         ExchangeRate::factory()->create([
             'from_asset_code' => 'USD',
-            'to_asset_code' => 'GBP',
+            'to_asset_code'   => 'GBP',
         ]);
         ExchangeRate::factory()->create([
             'from_asset_code' => 'EUR',
-            'to_asset_code' => 'GBP',
+            'to_asset_code'   => 'GBP',
         ]);
 
         $response = $this->getJson('/api/exchange-rates?asset=USD');
@@ -277,8 +277,8 @@ class ExchangeRateControllerTest extends ControllerTestCase
         foreach ($dates as $date) {
             ExchangeRate::factory()->create([
                 'from_asset_code' => 'USD',
-                'to_asset_code' => 'EUR',
-                'valid_at' => $date,
+                'to_asset_code'   => 'EUR',
+                'valid_at'        => $date,
             ]);
         }
 
@@ -318,11 +318,11 @@ class ExchangeRateControllerTest extends ControllerTestCase
         // Create an expired rate
         ExchangeRate::factory()->create([
             'from_asset_code' => 'USD',
-            'to_asset_code' => 'EUR',
-            'rate' => '0.85000000',
-            'is_active' => true,
-            'valid_at' => now()->subHours(2),
-            'expires_at' => now()->subHour(), // Expired
+            'to_asset_code'   => 'EUR',
+            'rate'            => '0.85000000',
+            'is_active'       => true,
+            'valid_at'        => now()->subHours(2),
+            'expires_at'      => now()->subHour(), // Expired
         ]);
 
         $response = $this->getJson('/api/exchange-rates/USD/EUR');

@@ -35,7 +35,7 @@ class PolygonConnector extends EthereumConnector
             metadata: array_merge(
                 $addressData->metadata,
                 [
-                    'chain' => 'polygon',
+                    'chain'   => 'polygon',
                     'chainId' => $this->chainId,
                 ]
             )

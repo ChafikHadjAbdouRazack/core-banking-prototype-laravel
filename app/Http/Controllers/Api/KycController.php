@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api;
 
+use App\Domain\Account\Models\AuditLog;
 use App\Domain\Compliance\Services\KycService;
 use App\Http\Controllers\Controller;
-use App\Domain\Account\Models\AuditLog;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -196,7 +196,6 @@ class KycController extends Controller
          */
         $user = Auth::user();
         /** @var User $user */
-
         if ($user->kyc_status === 'approved') {
             return response()->json(
                 [

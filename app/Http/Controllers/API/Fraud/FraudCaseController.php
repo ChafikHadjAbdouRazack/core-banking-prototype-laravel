@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\API\Fraud;
 
+use App\Domain\Fraud\Models\FraudCase;
 use App\Domain\Fraud\Services\FraudCaseService;
 use App\Http\Controllers\Controller;
-use App\Domain\Fraud\Models\FraudCase;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 

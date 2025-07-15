@@ -2,8 +2,8 @@
 
 namespace App\Filament\Admin\Resources;
 
-use App\Filament\Admin\Resources\FinancialInstitutionApplicationResource\Pages;
 use App\Domain\FinancialInstitution\Models\FinancialInstitutionApplication;
+use App\Filament\Admin\Resources\FinancialInstitutionApplicationResource\Pages;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Forms\Get;

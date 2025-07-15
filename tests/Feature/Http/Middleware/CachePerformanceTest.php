@@ -14,7 +14,7 @@ it('can handle request and track cache performance', function () {
     Cache::put('cache_performance:misses', 5);
 
     $request = Request::create('/test', 'GET');
-    $middleware = new CachePerformance;
+    $middleware = new CachePerformance();
 
     $response = $middleware->handle($request, function ($req) {
         // Simulate some cache activity during request
@@ -35,7 +35,7 @@ it('handles zero cache activity gracefully', function () {
     Cache::put('cache_performance:misses', 0);
 
     $request = Request::create('/test', 'GET');
-    $middleware = new CachePerformance;
+    $middleware = new CachePerformance();
 
     $response = $middleware->handle($request, function ($req) {
         return new Response('Test response');
@@ -52,7 +52,7 @@ it('calculates cache hit rate correctly for low performance', function () {
     Cache::put('cache_performance:misses', 0);
 
     $request = Request::create('/test-endpoint', 'GET');
-    $middleware = new CachePerformance;
+    $middleware = new CachePerformance();
 
     $response = $middleware->handle($request, function ($req) {
         // Simulate low hit rate: 2 hits, 8 misses = 20% hit rate
@@ -72,7 +72,7 @@ it('calculates cache hit rate correctly for high performance', function () {
     Cache::put('cache_performance:misses', 0);
 
     $request = Request::create('/test-endpoint', 'GET');
-    $middleware = new CachePerformance;
+    $middleware = new CachePerformance();
 
     $response = $middleware->handle($request, function ($req) {
         // Simulate high hit rate: 8 hits, 2 misses = 80% hit rate
@@ -92,7 +92,7 @@ it('handles small number of cache requests correctly', function () {
     Cache::put('cache_performance:misses', 0);
 
     $request = Request::create('/test-endpoint', 'GET');
-    $middleware = new CachePerformance;
+    $middleware = new CachePerformance();
 
     $response = $middleware->handle($request, function ($req) {
         // Simulate small number of requests: 1 hit, 3 misses = 25% hit rate but only 4 total

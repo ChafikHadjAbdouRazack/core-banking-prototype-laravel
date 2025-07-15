@@ -239,10 +239,10 @@ class AmlScreeningAggregate extends AggregateRoot
         AmlScreeningResultsRecorded $event
     ): void {
         $this->results = [
-            'sanctions' => $event->sanctionsResults,
-            'pep' => $event->pepResults,
+            'sanctions'     => $event->sanctionsResults,
+            'pep'           => $event->pepResults,
             'adverse_media' => $event->adverseMediaResults,
-            'other' => $event->otherResults,
+            'other'         => $event->otherResults,
         ];
         $this->totalMatches = $event->totalMatches;
         $this->overallRisk = $event->overallRisk;

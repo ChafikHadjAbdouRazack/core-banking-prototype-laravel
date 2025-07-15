@@ -12,22 +12,22 @@ class RiskAssessmentService
     public function assessApplication(FinancialInstitutionApplication $application): array
     {
         $assessment = [
-            'geographic_risk' => $this->assessGeographicRisk($application),
+            'geographic_risk'     => $this->assessGeographicRisk($application),
             'business_model_risk' => $this->assessBusinessModelRisk($application),
-            'volume_risk' => $this->assessVolumeRisk($application),
-            'regulatory_risk' => $this->assessRegulatoryRisk($application),
-            'financial_risk' => $this->assessFinancialRisk($application),
-            'operational_risk' => $this->assessOperationalRisk($application),
+            'volume_risk'         => $this->assessVolumeRisk($application),
+            'regulatory_risk'     => $this->assessRegulatoryRisk($application),
+            'financial_risk'      => $this->assessFinancialRisk($application),
+            'operational_risk'    => $this->assessOperationalRisk($application),
         ];
 
         // Calculate weighted risk score
         $weights = [
-            'geographic_risk' => 0.25,
+            'geographic_risk'     => 0.25,
             'business_model_risk' => 0.20,
-            'volume_risk' => 0.15,
-            'regulatory_risk' => 0.20,
-            'financial_risk' => 0.10,
-            'operational_risk' => 0.10,
+            'volume_risk'         => 0.15,
+            'regulatory_risk'     => 0.20,
+            'financial_risk'      => 0.10,
+            'operational_risk'    => 0.10,
         ];
 
         $totalRisk = 0;
@@ -86,8 +86,8 @@ class RiskAssessmentService
         }
 
         return [
-            'score' => min($riskScore, 100),
-            'factors' => $factors,
+            'score'               => min($riskScore, 100),
+            'factors'             => $factors,
             'high_risk_exposures' => $highRiskMarkets,
         ];
     }
@@ -102,15 +102,15 @@ class RiskAssessmentService
 
         // Institution type risk
         $typeRisks = [
-            'bank' => 20,
-            'credit_union' => 15,
-            'investment_firm' => 30,
+            'bank'              => 20,
+            'credit_union'      => 15,
+            'investment_firm'   => 30,
             'payment_processor' => 40,
-            'fintech' => 45,
-            'emi' => 35,
-            'broker_dealer' => 30,
-            'insurance' => 20,
-            'other' => 50,
+            'fintech'           => 45,
+            'emi'               => 35,
+            'broker_dealer'     => 30,
+            'insurance'         => 20,
+            'other'             => 50,
         ];
 
         $riskScore += $typeRisks[$application->institution_type] ?? 50;
@@ -138,8 +138,8 @@ class RiskAssessmentService
         }
 
         return [
-            'score' => min($riskScore, 100),
-            'factors' => $factors,
+            'score'          => min($riskScore, 100),
+            'factors'        => $factors,
             'risky_products' => $riskyProducts,
         ];
     }
@@ -195,9 +195,9 @@ class RiskAssessmentService
         }
 
         return [
-            'score' => min($riskScore, 100),
-            'factors' => $factors,
-            'monthly_volume' => $monthlyVolume,
+            'score'                => min($riskScore, 100),
+            'factors'              => $factors,
+            'monthly_volume'       => $monthlyVolume,
             'monthly_transactions' => $monthlyTransactions,
         ];
     }
@@ -246,8 +246,8 @@ class RiskAssessmentService
         }
 
         return [
-            'score' => min($riskScore, 100),
-            'factors' => $factors,
+            'score'           => min($riskScore, 100),
+            'factors'         => $factors,
             'compliance_gaps' => array_filter(
                 [
                     ! $application->has_aml_program ? 'AML' : null,
@@ -290,8 +290,8 @@ class RiskAssessmentService
         }
 
         return [
-            'score' => min($riskScore, 100),
-            'factors' => $factors,
+            'score'                   => min($riskScore, 100),
+            'factors'                 => $factors,
             'assets_under_management' => $aum,
         ];
     }
@@ -341,7 +341,7 @@ class RiskAssessmentService
         }
 
         return [
-            'score' => min($riskScore, 100),
+            'score'   => min($riskScore, 100),
             'factors' => $factors,
         ];
     }

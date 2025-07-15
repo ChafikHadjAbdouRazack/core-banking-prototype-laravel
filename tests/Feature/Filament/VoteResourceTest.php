@@ -102,12 +102,12 @@ describe('Vote Resource', function () {
     it('displays vote validity status', function () {
         $validVote = Vote::factory()->create([
             'selected_options' => ['yes'],
-            'voting_power' => 5,
+            'voting_power'     => 5,
         ]);
 
         $invalidVote = Vote::factory()->create([
             'selected_options' => [],
-            'voting_power' => 0,
+            'voting_power'     => 0,
         ]);
 
         Livewire::test(ListVotes::class)

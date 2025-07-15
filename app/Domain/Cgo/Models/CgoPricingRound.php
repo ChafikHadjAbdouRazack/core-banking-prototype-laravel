@@ -25,15 +25,15 @@ class CgoPricingRound extends Model
     ];
 
     protected $casts = [
-        'share_price' => 'decimal:4',
+        'share_price'          => 'decimal:4',
         'max_shares_available' => 'decimal:4',
-        'shares_sold' => 'decimal:4',
-        'total_raised' => 'decimal:2',
-        'pre_money_valuation' => 'decimal:2',
+        'shares_sold'          => 'decimal:4',
+        'total_raised'         => 'decimal:2',
+        'pre_money_valuation'  => 'decimal:2',
         'post_money_valuation' => 'decimal:2',
-        'started_at' => 'datetime',
-        'ended_at' => 'datetime',
-        'is_active' => 'boolean',
+        'started_at'           => 'datetime',
+        'ended_at'             => 'datetime',
+        'is_active'            => 'boolean',
     ];
 
     public function investments(): HasMany

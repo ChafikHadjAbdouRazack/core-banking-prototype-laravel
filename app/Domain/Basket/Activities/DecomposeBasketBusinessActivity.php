@@ -6,9 +6,9 @@ namespace App\Domain\Basket\Activities;
 
 use App\Domain\Account\DataObjects\AccountUuid;
 use App\Domain\Basket\Events\BasketDecomposed;
+use App\Domain\Basket\Models\BasketAsset;
 use App\Domain\Wallet\Services\WalletService;
 use App\Models\Account;
-use App\Domain\Basket\Models\BasketAsset;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Workflow\Activity;
@@ -61,9 +61,9 @@ class DecomposeBasketBusinessActivity extends Activity
                 );
 
                 return [
-                    'basket_code' => $basketCode,
+                    'basket_code'   => $basketCode,
                     'basket_amount' => $amount,
-                    'components' => $componentAmounts,
+                    'components'    => $componentAmounts,
                     'decomposed_at' => now()->toISOString(),
                 ];
             }

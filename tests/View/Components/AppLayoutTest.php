@@ -19,7 +19,7 @@ it('render method returns View', function () {
 });
 
 it('can be instantiated', function () {
-    expect(new AppLayout)->toBeInstanceOf(AppLayout::class);
+    expect(new AppLayout())->toBeInstanceOf(AppLayout::class);
 });
 
 it('has correct class structure', function () {

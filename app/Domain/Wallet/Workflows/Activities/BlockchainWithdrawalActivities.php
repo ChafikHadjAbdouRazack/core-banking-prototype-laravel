@@ -126,9 +126,9 @@ class BlockchainWithdrawalActivities
         // Fee calculation based on chain
         $networkFeeMultiplier = match ($chain) {
             'ethereum' => '0.002',
-            'bitcoin' => '0.0015',
-            'polygon' => '0.0005',
-            default => '0.001'
+            'bitcoin'  => '0.0015',
+            'polygon'  => '0.0005',
+            default    => '0.001'
         };
 
         $platformFeeMultiplier = '0.001'; // 0.1%
@@ -138,9 +138,9 @@ class BlockchainWithdrawalActivities
         $totalFee = $networkFee->plus($platformFee);
 
         return [
-            'network_fee' => $networkFee->toScale(8)->__toString(),
+            'network_fee'  => $networkFee->toScale(8)->__toString(),
             'platform_fee' => $platformFee->toScale(8)->__toString(),
-            'total_fee' => $totalFee->toScale(8)->__toString(),
+            'total_fee'    => $totalFee->toScale(8)->__toString(),
         ];
     }
 
@@ -150,8 +150,8 @@ class BlockchainWithdrawalActivities
         // In production, this would query the blockchain
         return match ($chain) {
             'ethereum' => '50', // Gwei
-            'polygon' => '30',
-            default => '1'
+            'polygon'  => '30',
+            default    => '1'
         };
     }
 
@@ -160,8 +160,8 @@ class BlockchainWithdrawalActivities
         // Placeholder for exchange rate service
         // In production, this would query a price oracle
         $rates = [
-            'BTC' => '43000',
-            'ETH' => '2200',
+            'BTC'   => '43000',
+            'ETH'   => '2200',
             'MATIC' => '0.65',
         ];
 
@@ -180,8 +180,8 @@ class BlockchainWithdrawalActivities
         DB::table('account_balance_locks')->insert(
             [
                 'account_id' => $accountId,
-                'amount' => $amount,
-                'reason' => 'blockchain_withdrawal',
+                'amount'     => $amount,
+                'reason'     => 'blockchain_withdrawal',
                 'expires_at' => now()->addHours(24),
                 'created_at' => now(),
             ]
@@ -223,8 +223,8 @@ class BlockchainWithdrawalActivities
 
         return [
             'confirmations' => 6,
-            'status' => 'confirmed',
-            'block_number' => rand(1000000, 2000000),
+            'status'        => 'confirmed',
+            'block_number'  => rand(1000000, 2000000),
         ];
     }
 
@@ -237,10 +237,10 @@ class BlockchainWithdrawalActivities
             ->where('withdrawal_id', $withdrawalId)
             ->update(
                 [
-                    'status' => $status,
+                    'status'        => $status,
                     'confirmations' => $confirmationData['confirmations'],
-                    'confirmed_at' => $status === 'completed' ? now() : null,
-                    'updated_at' => now(),
+                    'confirmed_at'  => $status === 'completed' ? now() : null,
+                    'updated_at'    => now(),
                 ]
             );
     }
@@ -259,12 +259,12 @@ class BlockchainWithdrawalActivities
             // This would normally use the Account aggregate's methods
             DB::table('transactions')->insert(
                 [
-                    'account_id' => $accountId,
-                    'type' => 'debit',
-                    'amount' => $totalAmount->toScale(2)->__toString(),
+                    'account_id'  => $accountId,
+                    'type'        => 'debit',
+                    'amount'      => $totalAmount->toScale(2)->__toString(),
                     'description' => 'Blockchain withdrawal',
-                    'reference' => $walletId,
-                    'created_at' => now(),
+                    'reference'   => $walletId,
+                    'created_at'  => now(),
                 ]
             );
         }
@@ -273,11 +273,11 @@ class BlockchainWithdrawalActivities
         if (BigDecimal::of($fees['platform_fee'])->isGreaterThan(0)) {
             DB::table('transactions')->insert(
                 [
-                    'account_id' => 'revenue_account', // Placeholder
-                    'type' => 'credit',
-                    'amount' => $fees['platform_fee'],
+                    'account_id'  => 'revenue_account', // Placeholder
+                    'type'        => 'credit',
+                    'amount'      => $fees['platform_fee'],
                     'description' => 'Withdrawal platform fee',
-                    'created_at' => now(),
+                    'created_at'  => now(),
                 ]
             );
         }
@@ -293,11 +293,11 @@ class BlockchainWithdrawalActivities
             DB::table('notifications')->insert(
                 [
                     'user_id' => $userId,
-                    'type' => 'blockchain_withdrawal',
-                    'data' => json_encode(
+                    'type'    => 'blockchain_withdrawal',
+                    'data'    => json_encode(
                         [
                             'withdrawal_id' => $withdrawalId,
-                            'status' => $status,
+                            'status'        => $status,
                         ]
                     ),
                     'created_at' => now(),
@@ -327,8 +327,8 @@ class BlockchainWithdrawalActivities
             ->where('withdrawal_id', $withdrawalId)
             ->update(
                 [
-                    'status' => 'failed',
-                    'failed_at' => now(),
+                    'status'     => 'failed',
+                    'failed_at'  => now(),
                     'updated_at' => now(),
                 ]
             );
@@ -362,10 +362,10 @@ class BlockchainWithdrawalActivities
         ?string $tokenAddress
     ): string {
         $symbol = match ($chain) {
-            'bitcoin' => 'BTC',
+            'bitcoin'  => 'BTC',
             'ethereum' => 'ETH',
-            'polygon' => 'MATIC',
-            default => 'USD'
+            'polygon'  => 'MATIC',
+            default    => 'USD'
         };
 
         $rate = $this->getExchangeRate($symbol);
@@ -406,16 +406,16 @@ class BlockchainWithdrawalActivities
 
         DB::table('blockchain_withdrawals')->insert([
             'withdrawal_id' => $withdrawalId,
-            'user_id' => $userId,
-            'wallet_id' => $walletId,
-            'chain' => $chain,
-            'to_address' => $toAddress,
-            'amount_fiat' => $fiatAmount,
+            'user_id'       => $userId,
+            'wallet_id'     => $walletId,
+            'chain'         => $chain,
+            'to_address'    => $toAddress,
+            'amount_fiat'   => $fiatAmount,
             'amount_crypto' => $cryptoAmount,
-            'asset' => $asset,
+            'asset'         => $asset,
             'token_address' => $tokenAddress,
-            'status' => 'pending',
-            'created_at' => now(),
+            'status'        => 'pending',
+            'created_at'    => now(),
         ]);
 
         return $withdrawalId;
@@ -428,12 +428,12 @@ class BlockchainWithdrawalActivities
         array $metadata
     ): void {
         DB::table('transactions')->insert([
-            'account_id' => $accountId,
-            'type' => 'debit',
-            'amount' => $amount,
+            'account_id'  => $accountId,
+            'type'        => 'debit',
+            'amount'      => $amount,
             'description' => $description,
-            'metadata' => json_encode($metadata),
-            'created_at' => now(),
+            'metadata'    => json_encode($metadata),
+            'created_at'  => now(),
         ]);
 
         DB::table('accounts')
@@ -470,15 +470,15 @@ class BlockchainWithdrawalActivities
 
         // Prepare transaction data
         return [
-            'wallet_id' => $hotWallet->wallet_id,
-            'from_address' => $wallet->address,
-            'to_address' => $toAddress,
-            'amount' => $cryptoAmount,
-            'fee' => $fees['total_fee'],
-            'gas_price' => $this->estimateGasPrice($chain),
-            'nonce' => $this->getNextNonce($wallet->address, $chain),
-            'chain' => $chain,
-            'asset' => $asset,
+            'wallet_id'     => $hotWallet->wallet_id,
+            'from_address'  => $wallet->address,
+            'to_address'    => $toAddress,
+            'amount'        => $cryptoAmount,
+            'fee'           => $fees['total_fee'],
+            'gas_price'     => $this->estimateGasPrice($chain),
+            'nonce'         => $this->getNextNonce($wallet->address, $chain),
+            'chain'         => $chain,
+            'asset'         => $asset,
             'token_address' => $tokenAddress,
         ];
     }
@@ -502,15 +502,15 @@ class BlockchainWithdrawalActivities
         // Store transaction record
         DB::table('blockchain_transactions')->insert(
             [
-                'chain' => $chain,
-                'type' => 'withdrawal',
-                'tx_hash' => $txHash,
+                'chain'        => $chain,
+                'type'         => 'withdrawal',
+                'tx_hash'      => $txHash,
                 'from_address' => $transaction['from_address'],
-                'to_address' => $transaction['to_address'],
-                'amount' => $transaction['amount'],
-                'fee' => $transaction['fee'],
-                'status' => 'pending',
-                'created_at' => now(),
+                'to_address'   => $transaction['to_address'],
+                'amount'       => $transaction['amount'],
+                'fee'          => $transaction['fee'],
+                'status'       => 'pending',
+                'created_at'   => now(),
             ]
         );
 
@@ -524,7 +524,7 @@ class BlockchainWithdrawalActivities
         ?string $errorMessage = null
     ): void {
         $update = [
-            'status' => $status,
+            'status'     => $status,
             'updated_at' => now(),
         ];
 
@@ -571,12 +571,12 @@ class BlockchainWithdrawalActivities
     ): void {
         DB::table('notifications')->insert([
             'user_id' => $userId,
-            'type' => 'blockchain_withdrawal_completed',
-            'data' => json_encode([
-                'chain' => $chain,
-                'amount_crypto' => $cryptoAmount,
-                'amount_fiat' => $fiatAmount,
-                'asset' => $asset,
+            'type'    => 'blockchain_withdrawal_completed',
+            'data'    => json_encode([
+                'chain'            => $chain,
+                'amount_crypto'    => $cryptoAmount,
+                'amount_fiat'      => $fiatAmount,
+                'asset'            => $asset,
                 'transaction_hash' => $transactionHash,
             ]),
             'created_at' => now(),
@@ -590,12 +590,12 @@ class BlockchainWithdrawalActivities
         array $metadata
     ): void {
         DB::table('transactions')->insert([
-            'account_id' => $accountId,
-            'type' => 'credit',
-            'amount' => $amount,
+            'account_id'  => $accountId,
+            'type'        => 'credit',
+            'amount'      => $amount,
             'description' => $description,
-            'metadata' => json_encode($metadata),
-            'created_at' => now(),
+            'metadata'    => json_encode($metadata),
+            'created_at'  => now(),
         ]);
 
         DB::table('accounts')

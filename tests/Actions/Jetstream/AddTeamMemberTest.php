@@ -8,7 +8,7 @@ uses(RefreshDatabase::class);
 uses(RefreshDatabase::class);
 
 it('can be instantiated', function () {
-    expect(new AddTeamMember)->toBeInstanceOf(AddTeamMember::class);
+    expect(new AddTeamMember())->toBeInstanceOf(AddTeamMember::class);
 });
 
 it('implements AddsTeamMembers contract', function () {

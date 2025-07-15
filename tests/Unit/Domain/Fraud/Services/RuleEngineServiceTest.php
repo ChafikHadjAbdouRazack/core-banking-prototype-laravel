@@ -2,9 +2,8 @@
 
 namespace Tests\Unit\Domain\Fraud\Services;
 
-use App\Domain\Fraud\Services\RuleEngineService;
 use App\Domain\Fraud\Models\FraudRule;
-use App\Models\Transaction;
+use App\Domain\Fraud\Services\RuleEngineService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use PHPUnit\Framework\Attributes\Test;

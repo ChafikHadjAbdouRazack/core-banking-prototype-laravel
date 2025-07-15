@@ -2,12 +2,12 @@
 
 namespace Tests\Feature\Api\V2;
 
+use App\Domain\Basket\Models\BasketAsset;
+use App\Domain\Basket\Models\BasketValue;
 use App\Domain\Wallet\Workflows\WalletConvertWorkflow;
 use App\Models\Account;
 use App\Models\AccountBalance;
 use App\Models\Asset;
-use App\Domain\Basket\Models\BasketAsset;
-use App\Domain\Basket\Models\BasketValue;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;

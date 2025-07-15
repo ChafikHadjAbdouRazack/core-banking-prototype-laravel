@@ -59,7 +59,7 @@ it('creates snapshots for specific account when uuid provided', function () {
     $targetAccount = Account::factory()->create();
     $otherAccount = Account::factory()->create();
 
-    $this->artisan('snapshot:create --account='.$targetAccount->uuid)
+    $this->artisan('snapshot:create --account=' . $targetAccount->uuid)
         ->expectsOutput('Starting snapshot creation process...')
         ->expectsOutput('Creating transaction snapshots...')
         ->expectsOutput('Created 0 transaction snapshots.')
@@ -158,7 +158,7 @@ it('handles accounts with transfers on both sides', function () {
 });
 
 it('has correct command signature', function () {
-    $command = new App\Console\Commands\CreateSnapshot;
+    $command = new App\Console\Commands\CreateSnapshot();
 
     expect($command->getName())->toBe('snapshot:create');
     expect($command->getDescription())->toBe('Create snapshots for aggregates to improve performance');

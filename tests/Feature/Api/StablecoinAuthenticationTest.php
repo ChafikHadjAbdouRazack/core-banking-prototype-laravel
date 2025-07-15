@@ -3,8 +3,8 @@
 namespace Tests\Feature\Api;
 
 use App\Domain\Asset\Models\Asset;
-use App\Models\Account;
 use App\Domain\Stablecoin\Models\Stablecoin;
+use App\Models\Account;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;

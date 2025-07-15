@@ -2,11 +2,11 @@
 
 namespace App\Domain\Cgo\Services;
 
+use App\Domain\Cgo\Models\CgoInvestment;
+use App\Domain\Compliance\Models\KycVerification;
 use App\Domain\Compliance\Services\CustomerRiskService;
 use App\Domain\Compliance\Services\EnhancedKycService;
 use App\Domain\Compliance\Services\KycService;
-use App\Domain\Cgo\Models\CgoInvestment;
-use App\Domain\Compliance\Models\KycVerification;
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
 

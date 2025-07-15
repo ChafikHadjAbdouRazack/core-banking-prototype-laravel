@@ -32,7 +32,7 @@ class InitiateCustodianTransferActivity extends Activity
             reference: $reference ?? 'CORE-' . time(),
             description: "Core Banking {$type} transfer",
             metadata: [
-                'type' => $type,
+                'type'         => $type,
                 'initiated_at' => now()->toISOString(),
             ]
         );

@@ -3,8 +3,8 @@
 namespace App\Domain\Account\Actions;
 
 use App\Domain\Account\Events\AssetBalanceAdded;
-use App\Models\Account;
 use App\Domain\Account\Models\AccountBalance;
+use App\Models\Account;
 
 class CreditAssetBalance extends AccountAction
 {
@@ -19,7 +19,7 @@ class CreditAssetBalance extends AccountAction
         $balance = AccountBalance::firstOrCreate(
             [
                 'account_uuid' => $account->uuid,
-                'asset_code' => $event->assetCode,
+                'asset_code'   => $event->assetCode,
             ],
             [
                 'balance' => 0,

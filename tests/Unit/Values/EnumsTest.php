@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use App\Values\EventQueues;
 use App\Domain\User\Values\UserRoles;
+use App\Values\EventQueues;
 use Tests\UnitTestCase;
 
 uses(UnitTestCase::class);

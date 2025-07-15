@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Tests\Feature\Api;
 
 use App\Domain\Asset\Models\Asset;
-use App\Models\Account;
-use App\Models\AccountBalance;
 use App\Domain\Stablecoin\Models\Stablecoin;
 use App\Domain\Stablecoin\Models\StablecoinCollateralPosition;
+use App\Models\Account;
+use App\Models\AccountBalance;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;

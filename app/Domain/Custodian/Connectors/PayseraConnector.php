@@ -70,10 +70,10 @@ class PayseraConnector extends BaseCustodianConnector
         $response = Http::asForm()->post(
             self::OAUTH_URL . '/token',
             [
-                'grant_type' => 'client_credentials',
-                'client_id' => $this->clientId,
+                'grant_type'    => 'client_credentials',
+                'client_id'     => $this->clientId,
                 'client_secret' => $this->clientSecret,
-                'scope' => 'accounts payments',
+                'scope'         => 'accounts payments',
             ]
         );
 
@@ -139,8 +139,8 @@ class PayseraConnector extends BaseCustodianConnector
                     'Using fallback balance for Paysera',
                     [
                         'account' => $accountId,
-                        'asset' => $assetCode,
-                        'error' => $e->getMessage(),
+                        'asset'   => $assetCode,
+                        'error'   => $e->getMessage(),
                     ]
                 );
 
@@ -180,8 +180,8 @@ class PayseraConnector extends BaseCustodianConnector
             type: $data['type'] ?? 'personal',
             createdAt: isset($data['created_at']) ? Carbon::parse($data['created_at']) : Carbon::now(),
             metadata: [
-                'iban' => $data['iban'] ?? null,
-                'bic' => $data['bic'] ?? null,
+                'iban'      => $data['iban'] ?? null,
+                'bic'       => $data['bic'] ?? null,
                 'connector' => 'PayseraConnector',
             ]
         );
@@ -196,11 +196,11 @@ class PayseraConnector extends BaseCustodianConnector
             operation: function () use ($request) {
                 $paymentData = [
                     'from_account' => $request->fromAccount,
-                    'to_account' => $request->toAccount,
-                    'amount' => $request->amount->getAmount(),
-                    'currency' => $request->assetCode,
-                    'description' => $request->description ?? $request->reference,
-                    'reference' => $request->reference,
+                    'to_account'   => $request->toAccount,
+                    'amount'       => $request->amount->getAmount(),
+                    'currency'     => $request->assetCode,
+                    'description'  => $request->description ?? $request->reference,
+                    'reference'    => $request->reference,
                 ];
 
                 $response = $this->apiRequest('POST', '/payments', $paymentData);
@@ -224,7 +224,7 @@ class PayseraConnector extends BaseCustodianConnector
                     completedAt: isset($data['completed_at']) ? Carbon::parse($data['completed_at']) : null,
                     metadata: [
                         'paysera_status' => $data['status'],
-                        'paysera_id' => $data['id'],
+                        'paysera_id'     => $data['id'],
                     ]
                 );
             },
@@ -233,10 +233,10 @@ class PayseraConnector extends BaseCustodianConnector
                 Log::warning(
                     'Paysera transfer failed, queueing for retry',
                     [
-                        'from' => $request->fromAccount,
-                        'to' => $request->toAccount,
+                        'from'   => $request->fromAccount,
+                        'to'     => $request->toAccount,
                         'amount' => $request->amount->getAmount(),
-                        'asset' => $request->assetCode,
+                        'asset'  => $request->assetCode,
                     ]
                 );
 
@@ -281,7 +281,7 @@ class PayseraConnector extends BaseCustodianConnector
                     completedAt: isset($data['completed_at']) ? Carbon::parse($data['completed_at']) : null,
                     metadata: [
                         'paysera_status' => $data['status'],
-                        'paysera_id' => $data['id'],
+                        'paysera_id'     => $data['id'],
                     ]
                 );
             },
@@ -334,7 +334,7 @@ class PayseraConnector extends BaseCustodianConnector
                 'Account validation failed',
                 [
                     'account_id' => $accountId,
-                    'error' => $e->getMessage(),
+                    'error'      => $e->getMessage(),
                 ]
             );
         }
@@ -348,7 +348,7 @@ class PayseraConnector extends BaseCustodianConnector
             'GET',
             "/accounts/{$accountId}/payments",
             [
-                'limit' => $limit,
+                'limit'  => $limit,
                 'offset' => $offset,
             ]
         );
@@ -362,15 +362,15 @@ class PayseraConnector extends BaseCustodianConnector
 
         foreach ($data['payments'] ?? [] as $payment) {
             $transactions[] = [
-                'id' => $payment['id'],
-                'status' => $this->mapTransactionStatus($payment['status']),
+                'id'           => $payment['id'],
+                'status'       => $this->mapTransactionStatus($payment['status']),
                 'from_account' => $payment['from_account'],
-                'to_account' => $payment['to_account'],
-                'asset_code' => $payment['currency'],
-                'amount' => (int) $payment['amount'],
-                'fee' => isset($payment['fee']) ? (int) $payment['fee'] : null,
-                'reference' => $payment['reference'] ?? null,
-                'created_at' => $payment['created_at'],
+                'to_account'   => $payment['to_account'],
+                'asset_code'   => $payment['currency'],
+                'amount'       => (int) $payment['amount'],
+                'fee'          => isset($payment['fee']) ? (int) $payment['fee'] : null,
+                'reference'    => $payment['reference'] ?? null,
+                'created_at'   => $payment['created_at'],
                 'completed_at' => $payment['completed_at'] ?? null,
             ];
         }
@@ -388,7 +388,7 @@ class PayseraConnector extends BaseCustodianConnector
             'pending', 'unverified' => 'pending',
             'blocked', 'suspended' => 'suspended',
             'closed' => 'closed',
-            default => 'unknown',
+            default  => 'unknown',
         };
     }
 

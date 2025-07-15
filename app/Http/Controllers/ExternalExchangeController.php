@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use App\Domain\Exchange\Contracts\ArbitrageServiceInterface;
 use App\Domain\Exchange\Contracts\ExternalExchangeServiceInterface;
 use App\Domain\Exchange\Contracts\PriceAggregatorInterface;
 use App\Domain\Exchange\Services\OrderService;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;

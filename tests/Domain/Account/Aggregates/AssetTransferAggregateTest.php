@@ -64,9 +64,9 @@ class AssetTransferAggregateTest extends DomainTestCase
         $aggregate = AssetTransferAggregate::retrieve($this->transferUuid);
 
         $metadata = [
-            'reference' => 'INV-2024-001',
+            'reference'   => 'INV-2024-001',
             'description' => 'Payment for invoice',
-            'category' => 'business',
+            'category'    => 'business',
         ];
 
         $aggregate->transfer(

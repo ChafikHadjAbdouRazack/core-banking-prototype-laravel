@@ -47,19 +47,19 @@ class LoanApplication
     public function toArray(): array
     {
         return [
-            'application_id' => $this->applicationId,
+            'application_id'      => $this->applicationId,
             'borrower_account_id' => $this->borrowerAccountId,
-            'amount' => $this->amount,
-            'term_months' => $this->termMonths,
-            'purpose' => $this->purpose->value,
+            'amount'              => $this->amount,
+            'term_months'         => $this->termMonths,
+            'purpose'             => $this->purpose->value,
             'purpose_description' => $this->purposeDescription,
-            'employment_status' => $this->employmentStatus->value,
-            'monthly_income' => $this->monthlyIncome,
-            'monthly_expenses' => $this->monthlyExpenses,
-            'collateral' => $this->collateral,
-            'documents' => $this->documents,
-            'submitted_at' => $this->submittedAt?->toIso8601String(),
-            'metadata' => $this->metadata,
+            'employment_status'   => $this->employmentStatus->value,
+            'monthly_income'      => $this->monthlyIncome,
+            'monthly_expenses'    => $this->monthlyExpenses,
+            'collateral'          => $this->collateral,
+            'documents'           => $this->documents,
+            'submitted_at'        => $this->submittedAt?->toIso8601String(),
+            'metadata'            => $this->metadata,
         ];
     }
 

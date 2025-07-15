@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api;
 
 use App\Domain\Account\DataObjects\AccountUuid;
+use App\Domain\Account\Models\Turnover;
 use App\Domain\Account\Services\Cache\AccountCacheService;
 use App\Domain\Account\Services\Cache\TurnoverCacheService;
 use App\Http\Controllers\Controller;
 use App\Models\Account;
-use App\Domain\Account\Models\Turnover;
 use Illuminate\Http\JsonResponse;
 
 class BalanceController extends Controller

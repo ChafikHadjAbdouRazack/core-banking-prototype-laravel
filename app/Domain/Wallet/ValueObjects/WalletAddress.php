@@ -16,9 +16,9 @@ final class WalletAddress
     public function toArray(): array
     {
         return [
-            'address' => $this->address,
+            'address'    => $this->address,
             'blockchain' => $this->blockchain,
-            'label' => $this->label,
+            'label'      => $this->label,
         ];
     }
 }

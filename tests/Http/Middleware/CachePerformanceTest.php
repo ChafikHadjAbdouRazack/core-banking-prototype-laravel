@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Cache;
 uses(RefreshDatabase::class);
 
 it('can handle a request', function () {
-    $middleware = new CachePerformance;
+    $middleware = new CachePerformance();
     $request = Request::create('/test');
 
     $response = $middleware->handle($request, function ($request) {
@@ -24,7 +24,7 @@ it('adds cache performance headers when cache activity occurs', function () {
     Cache::put('cache_performance:hits', 5);
     Cache::put('cache_performance:misses', 2);
 
-    $middleware = new CachePerformance;
+    $middleware = new CachePerformance();
     $request = Request::create('/test');
 
     $response = $middleware->handle($request, function ($request) {
@@ -44,7 +44,7 @@ it('stores cache start values in request attributes', function () {
     Cache::put('cache_performance:hits', 10);
     Cache::put('cache_performance:misses', 5);
 
-    $middleware = new CachePerformance;
+    $middleware = new CachePerformance();
     $request = Request::create('/test');
 
     $middleware->handle($request, function ($request) {

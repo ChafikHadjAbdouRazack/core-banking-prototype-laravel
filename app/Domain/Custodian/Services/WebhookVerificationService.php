@@ -18,10 +18,10 @@ class WebhookVerificationService
         array $headers = []
     ): bool {
         return match ($custodianName) {
-            'paysera' => $this->verifyPayseraSignature($payload, $signature, $headers),
+            'paysera'   => $this->verifyPayseraSignature($payload, $signature, $headers),
             'santander' => $this->verifySantanderSignature($payload, $signature, $headers),
-            'mock' => true, // Mock always passes
-            default => false,
+            'mock'      => true, // Mock always passes
+            default     => false,
         };
     }
 

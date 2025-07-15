@@ -18,7 +18,7 @@ class PasswordResetControllerTest extends ControllerTestCase
         parent::setUp();
 
         $this->user = User::factory()->create([
-            'email' => 'test@example.com',
+            'email'    => 'test@example.com',
             'password' => Hash::make('oldpassword'),
         ]);
     }
@@ -92,10 +92,10 @@ class PasswordResetControllerTest extends ControllerTestCase
             ->withArgs(function ($credentials, $callback) {
                 // Check credentials
                 $this->assertEquals([
-                    'email' => 'test@example.com',
-                    'password' => 'newpassword123',
+                    'email'                 => 'test@example.com',
+                    'password'              => 'newpassword123',
                     'password_confirmation' => 'newpassword123',
-                    'token' => 'valid-token',
+                    'token'                 => 'valid-token',
                 ], $credentials);
 
                 // Simulate the callback
@@ -106,10 +106,10 @@ class PasswordResetControllerTest extends ControllerTestCase
             ->andReturn(Password::PASSWORD_RESET);
 
         $response = $this->postJson('/api/auth/reset-password', [
-            'email' => 'test@example.com',
-            'password' => 'newpassword123',
+            'email'                 => 'test@example.com',
+            'password'              => 'newpassword123',
             'password_confirmation' => 'newpassword123',
-            'token' => 'valid-token',
+            'token'                 => 'valid-token',
         ]);
 
         $response->assertStatus(200)
@@ -138,10 +138,10 @@ class PasswordResetControllerTest extends ControllerTestCase
             ->andReturn(Password::INVALID_TOKEN);
 
         $response = $this->postJson('/api/auth/reset-password', [
-            'email' => 'test@example.com',
-            'password' => 'newpassword123',
+            'email'                 => 'test@example.com',
+            'password'              => 'newpassword123',
             'password_confirmation' => 'newpassword123',
-            'token' => 'invalid-token',
+            'token'                 => 'invalid-token',
         ]);
 
         $response->assertStatus(422)
@@ -161,10 +161,10 @@ class PasswordResetControllerTest extends ControllerTestCase
             ->andReturn(Password::INVALID_TOKEN);
 
         $response = $this->postJson('/api/auth/reset-password', [
-            'email' => 'test@example.com',
-            'password' => 'newpassword123',
+            'email'                 => 'test@example.com',
+            'password'              => 'newpassword123',
             'password_confirmation' => 'newpassword123',
-            'token' => 'expired-token',
+            'token'                 => 'expired-token',
         ]);
 
         $response->assertStatus(422)
@@ -187,10 +187,10 @@ class PasswordResetControllerTest extends ControllerTestCase
 
         // Invalid email format
         $response = $this->postJson('/api/auth/reset-password', [
-            'email' => 'not-an-email',
-            'password' => 'newpassword123',
+            'email'                 => 'not-an-email',
+            'password'              => 'newpassword123',
             'password_confirmation' => 'newpassword123',
-            'token' => 'some-token',
+            'token'                 => 'some-token',
         ]);
 
         $response->assertStatus(422)
@@ -198,10 +198,10 @@ class PasswordResetControllerTest extends ControllerTestCase
 
         // Password too short
         $response = $this->postJson('/api/auth/reset-password', [
-            'email' => 'test@example.com',
-            'password' => 'short',
+            'email'                 => 'test@example.com',
+            'password'              => 'short',
             'password_confirmation' => 'short',
-            'token' => 'some-token',
+            'token'                 => 'some-token',
         ]);
 
         $response->assertStatus(422)
@@ -209,10 +209,10 @@ class PasswordResetControllerTest extends ControllerTestCase
 
         // Password confirmation mismatch
         $response = $this->postJson('/api/auth/reset-password', [
-            'email' => 'test@example.com',
-            'password' => 'newpassword123',
+            'email'                 => 'test@example.com',
+            'password'              => 'newpassword123',
             'password_confirmation' => 'differentpassword',
-            'token' => 'some-token',
+            'token'                 => 'some-token',
         ]);
 
         $response->assertStatus(422)
@@ -227,10 +227,10 @@ class PasswordResetControllerTest extends ControllerTestCase
             ->andReturn(Password::INVALID_USER);
 
         $response = $this->postJson('/api/auth/reset-password', [
-            'email' => 'nonexistent@example.com',
-            'password' => 'newpassword123',
+            'email'                 => 'nonexistent@example.com',
+            'password'              => 'newpassword123',
             'password_confirmation' => 'newpassword123',
-            'token' => 'some-token',
+            'token'                 => 'some-token',
         ]);
 
         $response->assertStatus(422)
@@ -279,10 +279,10 @@ class PasswordResetControllerTest extends ControllerTestCase
             ->andReturn(Password::PASSWORD_RESET);
 
         $response = $this->postJson('/api/auth/reset-password', [
-            'email' => 'test@example.com',
-            'password' => 'newpassword123',
+            'email'                 => 'test@example.com',
+            'password'              => 'newpassword123',
             'password_confirmation' => 'newpassword123',
-            'token' => 'valid-token',
+            'token'                 => 'valid-token',
         ]);
 
         $response->assertStatus(200);
@@ -328,10 +328,10 @@ class PasswordResetControllerTest extends ControllerTestCase
             ->andReturn(Password::PASSWORD_RESET);
 
         $response = $this->postJson('/api/auth/reset-password', [
-            'email' => 'test@example.com',
-            'password' => 'newpassword123',
+            'email'                 => 'test@example.com',
+            'password'              => 'newpassword123',
             'password_confirmation' => 'newpassword123',
-            'token' => 'valid-token',
+            'token'                 => 'valid-token',
         ]);
 
         $response->assertStatus(200);

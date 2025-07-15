@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
-use App\Domain\Compliance\Services\KycService;
 use App\Domain\Cgo\Models\CgoInvestment;
-use App\Domain\Compliance\Models\KycDocument;
 use App\Domain\Cgo\Services\CgoKycService;
+use App\Domain\Compliance\Models\KycDocument;
+use App\Domain\Compliance\Services\KycService;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -63,7 +63,6 @@ class CgoKycController extends Controller
     {
         $user = Auth::user();
         /** @var User $user */
-
         $totalInvested = CgoInvestment::where('user_id', $user->id)
             ->whereIn('status', ['confirmed', 'pending'])
             ->sum('amount');
@@ -109,7 +108,6 @@ class CgoKycController extends Controller
 
         $user = Auth::user();
         /** @var User $user */
-
         try {
             DB::beginTransaction();
 
@@ -180,7 +178,6 @@ class CgoKycController extends Controller
     {
         $user = Auth::user();
         /** @var User $user */
-
         $documents = $user->kycDocuments()
             ->select('id', 'document_type', 'status', 'uploaded_at', 'verified_at', 'expires_at', 'rejection_reason')
             ->orderBy('uploaded_at', 'desc')
@@ -216,7 +213,6 @@ class CgoKycController extends Controller
     {
         $user = Auth::user();
         /** @var User $user */
-
         $investment = CgoInvestment::where('uuid', $investmentUuid)
             ->where('user_id', $user->id)
             ->firstOrFail();

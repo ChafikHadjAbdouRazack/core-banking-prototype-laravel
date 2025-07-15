@@ -84,7 +84,7 @@ class DefaultRiskAssessmentService implements RiskAssessmentService
             $riskScore >= 50 => 'C',
             $riskScore >= 35 => 'D',
             $riskScore >= 20 => 'E',
-            default => 'F',
+            default          => 'F',
         };
 
         // Calculate default probability
@@ -98,14 +98,14 @@ class DefaultRiskAssessmentService implements RiskAssessmentService
         };
 
         return [
-            'rating' => $rating,
+            'rating'             => $rating,
             'defaultProbability' => $defaultProbability,
-            'riskFactors' => $riskFactors,
-            'riskScore' => $riskScore,
-            'details' => [
-                'creditScore' => $creditScoreValue,
-                'dti' => $dti,
-                'latePayments' => $latePayments,
+            'riskFactors'        => $riskFactors,
+            'riskScore'          => $riskScore,
+            'details'            => [
+                'creditScore'      => $creditScoreValue,
+                'dti'              => $dti,
+                'latePayments'     => $latePayments,
                 'accountAgeMonths' => $accountAgeMonths,
             ],
         ];
@@ -114,12 +114,12 @@ class DefaultRiskAssessmentService implements RiskAssessmentService
     public function calculateRiskAdjustedRate(string $riskRating, float $baseRate): float
     {
         $riskPremium = match ($riskRating) {
-            'A' => 0,
-            'B' => 2,
-            'C' => 4,
-            'D' => 6,
-            'E' => 8,
-            'F' => 12,
+            'A'     => 0,
+            'B'     => 2,
+            'C'     => 4,
+            'D'     => 6,
+            'E'     => 8,
+            'F'     => 12,
             default => 15,
         };
 

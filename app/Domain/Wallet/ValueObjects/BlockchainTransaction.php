@@ -19,12 +19,12 @@ final class BlockchainTransaction
     public function toArray(): array
     {
         return [
-            'hash' => $this->hash,
-            'from' => $this->from,
-            'to' => $this->to,
-            'value' => $this->value,
+            'hash'       => $this->hash,
+            'from'       => $this->from,
+            'to'         => $this->to,
+            'value'      => $this->value,
             'blockchain' => $this->blockchain,
-            'status' => $this->status,
+            'status'     => $this->status,
         ];
     }
 }

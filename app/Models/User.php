@@ -3,11 +3,10 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use App\Domain\User\Values\UserRoles;
 use App\Domain\Banking\Models\UserBankPreference;
-use App\Domain\Banking\Models\BankAccount;
-use App\Domain\Compliance\Models\KycDocument;
 use App\Domain\Cgo\Models\CgoInvestment;
+use App\Domain\Compliance\Models\KycDocument;
+use App\Domain\User\Values\UserRoles;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;

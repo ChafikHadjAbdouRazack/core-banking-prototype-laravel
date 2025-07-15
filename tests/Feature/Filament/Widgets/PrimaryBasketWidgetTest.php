@@ -1,8 +1,8 @@
 <?php
 
 use App\Domain\Asset\Models\Asset;
-use App\Filament\Admin\Widgets\PrimaryBasketWidget;
 use App\Domain\Basket\Models\BasketAsset;
+use App\Filament\Admin\Widgets\PrimaryBasketWidget;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
@@ -27,8 +27,8 @@ test('primary basket widget displays basket data when configured', function () {
         Asset::firstOrCreate(
             ['code' => $code],
             [
-                'name' => $assetNames[$code],
-                'type' => in_array($code, ['XAU']) ? 'commodity' : 'fiat',
+                'name'      => $assetNames[$code],
+                'type'      => in_array($code, ['XAU']) ? 'commodity' : 'fiat',
                 'precision' => $code === 'JPY' ? 0 : 2,
                 'is_active' => true,
             ]
@@ -37,11 +37,11 @@ test('primary basket widget displays basket data when configured', function () {
 
     // Create primary basket
     $basket = BasketAsset::create([
-        'code' => 'PRIMARY',
-        'name' => 'Primary Currency Basket',
-        'type' => 'fixed',
+        'code'                => 'PRIMARY',
+        'name'                => 'Primary Currency Basket',
+        'type'                => 'fixed',
         'rebalance_frequency' => 'monthly',
-        'is_active' => true,
+        'is_active'           => true,
     ]);
 
     // Add components
@@ -54,7 +54,7 @@ test('primary basket widget displays basket data when configured', function () {
         ['asset_code' => 'XAU', 'weight' => 2.0, 'is_active' => true],
     ]);
 
-    $widget = new PrimaryBasketWidget;
+    $widget = new PrimaryBasketWidget();
     $data = $widget->getBasketData();
 
     expect($data['exists'])->toBeTrue();
@@ -68,7 +68,7 @@ test('primary basket widget displays basket data when configured', function () {
 });
 
 test('primary basket widget shows default composition when not configured', function () {
-    $widget = new PrimaryBasketWidget;
+    $widget = new PrimaryBasketWidget();
     $data = $widget->getBasketData();
 
     expect($data['exists'])->toBeFalse();
@@ -85,19 +85,19 @@ test('primary basket widget shows default composition when not configured', func
 });
 
 test('primary basket widget has correct column span', function () {
-    $widget = new PrimaryBasketWidget;
+    $widget = new PrimaryBasketWidget();
 
     expect($widget->getColumnSpan())->toBe('full');
 });
 
 test('primary basket widget has correct sort order', function () {
-    $widget = new PrimaryBasketWidget;
+    $widget = new PrimaryBasketWidget();
 
     expect($widget->getSort())->toBe(1);
 });
 
 test('primary basket widget currencies sum to 100 percent', function () {
-    $widget = new PrimaryBasketWidget;
+    $widget = new PrimaryBasketWidget();
     $data = $widget->getBasketData();
 
     $totalWeight = collect($data['currencies'])->sum('weight');

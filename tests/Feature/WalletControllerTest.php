@@ -84,7 +84,7 @@ describe('WalletController Routes', function () {
 
 describe('WalletController Methods', function () {
     it('has required controller methods', function () {
-        $controller = new App\Http\Controllers\WalletController;
+        $controller = new App\Http\Controllers\WalletController();
 
         expect(method_exists($controller, 'showDeposit'))->toBeTrue();
         expect(method_exists($controller, 'showWithdraw'))->toBeTrue();
@@ -93,7 +93,7 @@ describe('WalletController Methods', function () {
     });
 
     it('controller methods return view responses', function () {
-        $controller = new App\Http\Controllers\WalletController;
+        $controller = new App\Http\Controllers\WalletController();
 
         // These tests ensure the methods exist and return something
         expect(method_exists($controller, 'showDeposit'))->toBeTrue();

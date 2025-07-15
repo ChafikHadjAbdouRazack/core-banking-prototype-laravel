@@ -2,8 +2,8 @@
 
 namespace App\Filament\Admin\Resources;
 
-use App\Filament\Admin\Resources\CgoInvestmentResource\Pages;
 use App\Domain\Cgo\Models\CgoInvestment;
+use App\Filament\Admin\Resources\CgoInvestmentResource\Pages;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;

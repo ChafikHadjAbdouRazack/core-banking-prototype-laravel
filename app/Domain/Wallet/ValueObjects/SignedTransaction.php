@@ -14,8 +14,8 @@ class SignedTransaction
     public function toArray(): array
     {
         return [
-            'raw_transaction' => $this->rawTransaction,
-            'hash' => $this->hash,
+            'raw_transaction'  => $this->rawTransaction,
+            'hash'             => $this->hash,
             'transaction_data' => $this->transactionData->toArray(),
         ];
     }

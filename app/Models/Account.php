@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
-use App\Domain\Asset\Models\Asset;
 use App\Domain\Account\Models\AccountBalance;
-use App\Domain\Custodian\Models\CustodianAccount;
 use App\Domain\Account\Models\TransactionProjection;
+use App\Domain\Asset\Models\Asset;
+use App\Domain\Custodian\Models\CustodianAccount;
 use App\Traits\BelongsToTeam;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -85,6 +85,7 @@ class Account extends Model
      */
     public function getBalanceForAsset(string $assetCode): ?AccountBalance
     {
+        /** @var AccountBalance|null */
         return $this->balances()->where('asset_code', $assetCode)->first();
     }
 
@@ -140,6 +141,7 @@ class Account extends Model
      */
     public function primaryCustodianAccount(): ?CustodianAccount
     {
+        /** @var CustodianAccount|null */
         return $this->custodianAccounts()->where('is_primary', true)->first();
     }
 

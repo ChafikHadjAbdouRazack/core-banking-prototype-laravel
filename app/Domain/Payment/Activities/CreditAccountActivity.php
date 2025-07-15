@@ -25,7 +25,7 @@ class CreditAccountActivity extends Activity
             $account->balances()->create(
                 [
                     'asset_code' => $currency,
-                    'balance' => $amount,
+                    'balance'    => $amount,
                 ]
             );
         }

@@ -2,9 +2,9 @@
 
 namespace App\Filament\Admin\Resources;
 
+use App\Domain\Webhook\Models\Webhook;
 use App\Filament\Admin\Resources\WebhookResource\Pages;
 use App\Filament\Admin\Resources\WebhookResource\RelationManagers;
-use App\Domain\Webhook\Models\Webhook;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;

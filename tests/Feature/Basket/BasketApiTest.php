@@ -6,10 +6,10 @@ namespace Tests\Feature\Basket;
 
 use App\Domain\Asset\Models\Asset;
 use App\Domain\Asset\Models\ExchangeRate;
+use App\Domain\Basket\Models\BasketAsset;
 use App\Domain\Basket\Services\BasketValueCalculationService;
 use App\Models\Account;
 use App\Models\AccountBalance;
-use App\Domain\Basket\Models\BasketAsset;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;

@@ -23,11 +23,11 @@ class BalanceInquiryActivity extends Activity
 
         return [
             'account_uuid' => $uuid->getUuid(),
-            'balance' => $aggregate->balance,
+            'balance'      => $aggregate->balance,
             'account_name' => $account?->name,
-            'status' => $account?->status ?? 'unknown',
-            'inquired_at' => now()->toISOString(),
-            'inquired_by' => $requestedBy,
+            'status'       => $account?->status ?? 'unknown',
+            'inquired_at'  => now()->toISOString(),
+            'inquired_by'  => $requestedBy,
         ];
     }
 
@@ -39,7 +39,7 @@ class BalanceInquiryActivity extends Activity
             [
                 'account_uuid' => $uuid->getUuid(),
                 'requested_by' => $requestedBy,
-                'timestamp' => now()->toISOString(),
+                'timestamp'    => now()->toISOString(),
             ]
         );
     }

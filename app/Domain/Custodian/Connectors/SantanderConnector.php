@@ -65,8 +65,8 @@ class SantanderConnector extends BaseCustodianConnector
     {
         return [
             'X-Santander-Client-Id' => $this->apiKey,
-            'X-Request-ID' => uniqid('san-'),
-            'Accept' => 'application/json',
+            'X-Request-ID'          => uniqid('san-'),
+            'Accept'                => 'application/json',
         ];
     }
 
@@ -86,10 +86,10 @@ class SantanderConnector extends BaseCustodianConnector
             ->post(
                 self::AUTH_URL,
                 [
-                    'grant_type' => 'client_credentials',
-                    'client_id' => $this->apiKey,
+                    'grant_type'    => 'client_credentials',
+                    'client_id'     => $this->apiKey,
                     'client_secret' => $this->apiSecret,
-                    'scope' => 'accounts payments fundsconfirmations',
+                    'scope'         => 'accounts payments fundsconfirmations',
                 ]
             );
 
@@ -134,11 +134,11 @@ class SantanderConnector extends BaseCustodianConnector
         }
 
         return match (strtoupper($method)) {
-            'GET' => $request->get(self::API_BASE_URL . $endpoint, $data),
-            'POST' => $request->post(self::API_BASE_URL . $endpoint, $data),
-            'PUT' => $request->put(self::API_BASE_URL . $endpoint, $data),
+            'GET'    => $request->get(self::API_BASE_URL . $endpoint, $data),
+            'POST'   => $request->post(self::API_BASE_URL . $endpoint, $data),
+            'PUT'    => $request->put(self::API_BASE_URL . $endpoint, $data),
             'DELETE' => $request->delete(self::API_BASE_URL . $endpoint),
-            default => throw new \InvalidArgumentException("Unsupported HTTP method: {$method}"),
+            default  => throw new \InvalidArgumentException("Unsupported HTTP method: {$method}"),
         };
     }
 
@@ -198,10 +198,10 @@ class SantanderConnector extends BaseCustodianConnector
             type: $accountData['AccountSubType'] ?? 'CurrentAccount',
             createdAt: isset($accountData['OpeningDate']) ? Carbon::parse($accountData['OpeningDate']) : Carbon::now(),
             metadata: [
-                'account_number' => $accountData['Identification'] ?? null,
-                'scheme_name' => $accountData['SchemeName'] ?? null,
+                'account_number'           => $accountData['Identification'] ?? null,
+                'scheme_name'              => $accountData['SchemeName'] ?? null,
                 'secondary_identification' => $accountData['SecondaryIdentification'] ?? null,
-                'connector' => 'SantanderConnector',
+                'connector'                => 'SantanderConnector',
             ]
         );
     }
@@ -213,21 +213,21 @@ class SantanderConnector extends BaseCustodianConnector
 
         $paymentData = [
             'Data' => [
-                'ConsentId' => $consentId,
+                'ConsentId'  => $consentId,
                 'Initiation' => [
                     'InstructionIdentification' => uniqid('SAN-'),
-                    'EndToEndIdentification' => $request->reference,
-                    'InstructedAmount' => [
-                        'Amount' => number_format($request->amount->getAmount() / 100, 2, '.', ''),
+                    'EndToEndIdentification'    => $request->reference,
+                    'InstructedAmount'          => [
+                        'Amount'   => number_format($request->amount->getAmount() / 100, 2, '.', ''),
                         'Currency' => $request->assetCode,
                     ],
                     'CreditorAccount' => [
-                        'SchemeName' => 'IBAN',
+                        'SchemeName'     => 'IBAN',
                         'Identification' => $request->toAccount,
-                        'Name' => $request->metadata['beneficiary_name'] ?? 'Beneficiary',
+                        'Name'           => $request->metadata['beneficiary_name'] ?? 'Beneficiary',
                     ],
                     'DebtorAccount' => [
-                        'SchemeName' => 'IBAN',
+                        'SchemeName'     => 'IBAN',
                         'Identification' => $request->fromAccount,
                     ],
                     'RemittanceInformation' => [
@@ -264,8 +264,8 @@ class SantanderConnector extends BaseCustodianConnector
                 : null,
             metadata: [
                 'santander_payment_id' => $paymentData['DomesticPaymentId'],
-                'santander_status' => $paymentData['Status'],
-                'consent_id' => $consentId,
+                'santander_status'     => $paymentData['Status'],
+                'consent_id'           => $consentId,
             ]
         );
     }
@@ -296,7 +296,7 @@ class SantanderConnector extends BaseCustodianConnector
                 : null,
             metadata: [
                 'santander_payment_id' => $paymentData['DomesticPaymentId'],
-                'santander_status' => $paymentData['Status'],
+                'santander_status'     => $paymentData['Status'],
             ]
         );
     }
@@ -337,7 +337,7 @@ class SantanderConnector extends BaseCustodianConnector
                 'Account validation failed',
                 [
                     'account_id' => $accountId,
-                    'error' => $e->getMessage(),
+                    'error'      => $e->getMessage(),
                 ]
             );
         }
@@ -352,7 +352,7 @@ class SantanderConnector extends BaseCustodianConnector
             "/aisp/accounts/{$accountId}/transactions",
             [
                 'fromBookingDateTime' => Carbon::now()->subDays(90)->toIso8601String(),
-                'toBookingDateTime' => Carbon::now()->toIso8601String(),
+                'toBookingDateTime'   => Carbon::now()->toIso8601String(),
             ]
         );
 
@@ -365,17 +365,17 @@ class SantanderConnector extends BaseCustodianConnector
 
         foreach ($data['Data']['Transaction'] ?? [] as $transaction) {
             $transactions[] = [
-                'id' => $transaction['TransactionId'],
-                'status' => $transaction['Status'] === 'Booked' ? 'completed' : 'pending',
+                'id'           => $transaction['TransactionId'],
+                'status'       => $transaction['Status'] === 'Booked' ? 'completed' : 'pending',
                 'from_account' => $transaction['DebtorAccount']['Identification'] ?? $accountId,
-                'to_account' => $transaction['CreditorAccount']['Identification'] ?? $accountId,
-                'asset_code' => $transaction['Amount']['Currency'],
-                'amount' => (int) round(abs((float) $transaction['Amount']['Amount']) * 100),
-                'fee' => isset($transaction['ChargeAmount'])
+                'to_account'   => $transaction['CreditorAccount']['Identification'] ?? $accountId,
+                'asset_code'   => $transaction['Amount']['Currency'],
+                'amount'       => (int) round(abs((float) $transaction['Amount']['Amount']) * 100),
+                'fee'          => isset($transaction['ChargeAmount'])
                     ? (int) round((float) $transaction['ChargeAmount']['Amount'] * 100)
                     : null,
-                'reference' => $transaction['TransactionReference'] ?? null,
-                'created_at' => $transaction['BookingDateTime'],
+                'reference'    => $transaction['TransactionReference'] ?? null,
+                'created_at'   => $transaction['BookingDateTime'],
                 'completed_at' => $transaction['ValueDateTime'] ?? $transaction['BookingDateTime'],
             ];
 
@@ -398,15 +398,15 @@ class SantanderConnector extends BaseCustodianConnector
             'Data' => [
                 'Initiation' => [
                     'InstructionIdentification' => uniqid('SANC-'),
-                    'EndToEndIdentification' => $request->reference,
-                    'InstructedAmount' => [
-                        'Amount' => number_format($request->amount->getAmount() / 100, 2, '.', ''),
+                    'EndToEndIdentification'    => $request->reference,
+                    'InstructedAmount'          => [
+                        'Amount'   => number_format($request->amount->getAmount() / 100, 2, '.', ''),
                         'Currency' => $request->assetCode,
                     ],
                     'CreditorAccount' => [
-                        'SchemeName' => 'IBAN',
+                        'SchemeName'     => 'IBAN',
                         'Identification' => $request->toAccount,
-                        'Name' => $request->metadata['beneficiary_name'] ?? 'Beneficiary',
+                        'Name'           => $request->metadata['beneficiary_name'] ?? 'Beneficiary',
                     ],
                     'RemittanceInformation' => [
                         'Unstructured' => $request->description ?? $request->reference,
@@ -467,8 +467,8 @@ class SantanderConnector extends BaseCustodianConnector
             'AcceptedTechnicalValidation', 'AcceptedCustomerProfile', 'AcceptedSettlementInProcess' => 'pending',
             'AcceptedSettlementCompleted', 'AcceptedWithoutPosting' => 'completed',
             'Rejected' => 'failed',
-            'Pending' => 'pending',
-            default => 'unknown',
+            'Pending'  => 'pending',
+            default    => 'unknown',
         };
     }
 }

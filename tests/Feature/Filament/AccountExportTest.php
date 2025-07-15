@@ -105,7 +105,7 @@ describe('Account Export Tests', function () {
     });
 
     it('generates correct completion notification message', function () {
-        $export = new Filament\Actions\Exports\Models\Export;
+        $export = new Filament\Actions\Exports\Models\Export();
         $export->successful_rows = 100;
         $export->total_rows = 100;
 
@@ -115,7 +115,7 @@ describe('Account Export Tests', function () {
     });
 
     it('includes failed rows in completion message', function () {
-        $export = new Filament\Actions\Exports\Models\Export;
+        $export = new Filament\Actions\Exports\Models\Export();
         $export->successful_rows = 90;
         $export->total_rows = 100;
 

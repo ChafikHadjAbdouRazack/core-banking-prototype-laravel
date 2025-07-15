@@ -36,13 +36,13 @@ class DocumentVerificationService
         // Update application documents
         $documents = $application->submitted_documents ?? [];
         $documents[$documentType] = [
-            'filename' => $filename,
-            'path' => $path,
-            'original_name' => $file->getClientOriginalName(),
-            'mime_type' => $file->getMimeType(),
-            'size' => $file->getSize(),
-            'uploaded_at' => now()->toIso8601String(),
-            'verified' => false,
+            'filename'            => $filename,
+            'path'                => $path,
+            'original_name'       => $file->getClientOriginalName(),
+            'mime_type'           => $file->getMimeType(),
+            'size'                => $file->getSize(),
+            'uploaded_at'         => now()->toIso8601String(),
+            'verified'            => false,
             'verification_status' => 'pending',
         ];
 
@@ -128,22 +128,22 @@ class DocumentVerificationService
         $submitted = $application->submitted_documents ?? [];
 
         $status = [
-            'total_required' => count($required),
+            'total_required'  => count($required),
             'total_submitted' => count($submitted),
-            'total_verified' => 0,
-            'total_approved' => 0,
-            'documents' => [],
+            'total_verified'  => 0,
+            'total_approved'  => 0,
+            'documents'       => [],
         ];
 
         foreach ($required as $type => $name) {
             $doc = $submitted[$type] ?? null;
 
             $docStatus = [
-                'type' => $type,
-                'name' => $name,
+                'type'      => $type,
+                'name'      => $name,
                 'submitted' => $doc !== null,
-                'verified' => $doc['verified'] ?? false,
-                'status' => $doc['verification_status'] ?? 'not_submitted',
+                'verified'  => $doc['verified'] ?? false,
+                'status'    => $doc['verification_status'] ?? 'not_submitted',
             ];
 
             if ($doc && $doc['verified'] ?? false) {

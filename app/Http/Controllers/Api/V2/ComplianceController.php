@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Api\V2;
 
+use App\Domain\Compliance\Models\AmlScreening;
+use App\Domain\Compliance\Models\CustomerRiskProfile;
+use App\Domain\Compliance\Models\KycVerification;
 use App\Domain\Compliance\Services\AmlScreeningService;
 use App\Domain\Compliance\Services\CustomerRiskService;
 use App\Domain\Compliance\Services\EnhancedKycService;
 use App\Http\Controllers\Controller;
-use App\Domain\Compliance\Models\AmlScreening;
-use App\Domain\Compliance\Models\CustomerRiskProfile;
-use App\Domain\Compliance\Models\KycVerification;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

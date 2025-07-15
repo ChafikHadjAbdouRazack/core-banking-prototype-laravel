@@ -35,10 +35,10 @@ class KycSubmissionActivity extends Activity
         $this->kycService->submitKyc($user, $documents);
 
         return [
-            'user_uuid' => $userUuid,
-            'status' => 'submitted',
+            'user_uuid'      => $userUuid,
+            'status'         => 'submitted',
             'document_count' => count($documents),
-            'submitted_at' => now()->toISOString(),
+            'submitted_at'   => now()->toISOString(),
         ];
     }
 }

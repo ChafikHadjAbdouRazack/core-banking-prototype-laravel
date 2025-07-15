@@ -47,7 +47,7 @@ class SnapshotTransfersReactorTest extends TestCase
                 }
             )
             ->assertEventRecorded(
-                new TransferThresholdReached
+                new TransferThresholdReached()
             );
     }
 
@@ -72,7 +72,7 @@ class SnapshotTransfersReactorTest extends TestCase
 
         // Dispatch the event and call the reactor's handler
         $reactor->onTransferThresholdReached(
-            (new TransferThresholdReached)->setAggregateRootUuid(
+            (new TransferThresholdReached())->setAggregateRootUuid(
                 self::TRANSFER_UUID
             )
         );

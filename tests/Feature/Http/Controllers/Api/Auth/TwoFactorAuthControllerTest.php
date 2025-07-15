@@ -23,7 +23,7 @@ class TwoFactorAuthControllerTest extends ControllerTestCase
         $this->user = User::factory()->create();
 
         $this->userWith2FA = User::factory()->create([
-            'two_factor_secret' => encrypt('test-secret'),
+            'two_factor_secret'         => encrypt('test-secret'),
             'two_factor_recovery_codes' => encrypt(json_encode([
                 'recovery-code-1',
                 'recovery-code-2',
@@ -50,7 +50,7 @@ class TwoFactorAuthControllerTest extends ControllerTestCase
             ->andReturnUsing(function ($user) {
                 $recoveryCodes = collect()->times(8, fn () => RecoveryCode::generate())->toArray();
                 $user->forceFill([
-                    'two_factor_secret' => encrypt('new-secret'),
+                    'two_factor_secret'         => encrypt('new-secret'),
                     'two_factor_recovery_codes' => encrypt(json_encode($recoveryCodes)),
                 ])->save();
             });
@@ -68,7 +68,7 @@ class TwoFactorAuthControllerTest extends ControllerTestCase
             ])
             ->assertJson([
                 'message' => 'Two-factor authentication enabled successfully.',
-                'secret' => 'new-secret',
+                'secret'  => 'new-secret',
             ]);
 
         $this->assertIsArray($response->json('recovery_codes'));
@@ -176,9 +176,9 @@ class TwoFactorAuthControllerTest extends ControllerTestCase
             ->with($this->userWith2FA)
             ->andReturnUsing(function ($user) {
                 $user->forceFill([
-                    'two_factor_secret' => null,
+                    'two_factor_secret'         => null,
                     'two_factor_recovery_codes' => null,
-                    'two_factor_confirmed_at' => null,
+                    'two_factor_confirmed_at'   => null,
                 ])->save();
             });
 
@@ -323,7 +323,7 @@ class TwoFactorAuthControllerTest extends ControllerTestCase
 
         // When both are provided, it should use recovery_code first
         $response = $this->postJson('/api/auth/2fa/verify', [
-            'code' => '123456',
+            'code'          => '123456',
             'recovery_code' => 'invalid-recovery-code',
         ]);
 
@@ -382,7 +382,7 @@ class TwoFactorAuthControllerTest extends ControllerTestCase
             ->andReturnUsing(function ($user) {
                 $recoveryCodes = collect()->times(8, fn () => RecoveryCode::generate())->toArray();
                 $user->forceFill([
-                    'two_factor_secret' => encrypt('new-secret'),
+                    'two_factor_secret'         => encrypt('new-secret'),
                     'two_factor_recovery_codes' => encrypt(json_encode($recoveryCodes)),
                 ])->save();
             });

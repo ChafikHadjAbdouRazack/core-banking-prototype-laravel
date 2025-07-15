@@ -95,11 +95,11 @@ class BankTransfer
         }
 
         $estimatedHours = match ($this->type) {
-            'INTERNAL' => 0,
-            'SEPA' => 24,
+            'INTERNAL'     => 0,
+            'SEPA'         => 24,
             'SEPA_INSTANT' => 0,
-            'SWIFT' => 72,
-            default => 48,
+            'SWIFT'        => 72,
+            default        => 48,
         };
 
         return $this->createdAt->copy()->addHours($estimatedHours);
@@ -111,25 +111,25 @@ class BankTransfer
     public function toArray(): array
     {
         return [
-            'id' => $this->id,
-            'bank_code' => $this->bankCode,
-            'type' => $this->type,
-            'status' => $this->status,
+            'id'              => $this->id,
+            'bank_code'       => $this->bankCode,
+            'type'            => $this->type,
+            'status'          => $this->status,
             'from_account_id' => $this->fromAccountId,
-            'to_account_id' => $this->toAccountId,
-            'to_bank_code' => $this->toBankCode,
-            'amount' => $this->amount,
-            'currency' => $this->currency,
-            'reference' => $this->reference,
-            'description' => $this->description,
-            'fees' => $this->fees,
-            'exchange_rate' => $this->exchangeRate,
-            'created_at' => $this->createdAt->toIso8601String(),
-            'updated_at' => $this->updatedAt->toIso8601String(),
-            'executed_at' => $this->executedAt?->toIso8601String(),
-            'failed_at' => $this->failedAt?->toIso8601String(),
-            'failure_reason' => $this->failureReason,
-            'metadata' => $this->metadata,
+            'to_account_id'   => $this->toAccountId,
+            'to_bank_code'    => $this->toBankCode,
+            'amount'          => $this->amount,
+            'currency'        => $this->currency,
+            'reference'       => $this->reference,
+            'description'     => $this->description,
+            'fees'            => $this->fees,
+            'exchange_rate'   => $this->exchangeRate,
+            'created_at'      => $this->createdAt->toIso8601String(),
+            'updated_at'      => $this->updatedAt->toIso8601String(),
+            'executed_at'     => $this->executedAt?->toIso8601String(),
+            'failed_at'       => $this->failedAt?->toIso8601String(),
+            'failure_reason'  => $this->failureReason,
+            'metadata'        => $this->metadata,
         ];
     }
 

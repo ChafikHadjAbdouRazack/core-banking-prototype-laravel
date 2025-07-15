@@ -6,6 +6,8 @@ namespace Tests\Feature\Domain\Stablecoin\Services;
 
 use App\Domain\Asset\Models\Asset;
 use App\Domain\Asset\Services\ExchangeRateService;
+use App\Domain\Stablecoin\Models\Stablecoin;
+use App\Domain\Stablecoin\Models\StablecoinCollateralPosition;
 use App\Domain\Stablecoin\Services\CollateralService;
 use App\Domain\Stablecoin\Services\StablecoinIssuanceService;
 use App\Domain\Stablecoin\Workflows\AddCollateralWorkflow;
@@ -13,8 +15,6 @@ use App\Domain\Stablecoin\Workflows\BurnStablecoinWorkflow;
 use App\Domain\Stablecoin\Workflows\MintStablecoinWorkflow;
 use App\Domain\Wallet\Services\WalletService;
 use App\Models\Account;
-use App\Domain\Stablecoin\Models\Stablecoin;
-use App\Domain\Stablecoin\Models\StablecoinCollateralPosition;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
 use Mockery;

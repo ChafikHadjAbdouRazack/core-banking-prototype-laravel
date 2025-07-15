@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Domain\Fraud\Services;
 
+use App\Domain\Fraud\Models\FraudScore;
 use App\Domain\Fraud\Services\BehavioralAnalysisService;
 use App\Domain\Fraud\Services\DeviceFingerprintService;
 use App\Domain\Fraud\Services\FraudCaseService;
@@ -9,7 +10,6 @@ use App\Domain\Fraud\Services\FraudDetectionService;
 use App\Domain\Fraud\Services\MachineLearningService;
 use App\Domain\Fraud\Services\RuleEngineService;
 use App\Models\Account;
-use App\Domain\Fraud\Models\FraudScore;
 use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -62,9 +62,9 @@ class FraudDetectionServiceTest extends ServiceTestCase
         $account = Account::factory()->create(['user_uuid' => $user->uuid]);
         $transaction = Transaction::factory()->forAccount($account)->create([
             'event_properties' => [
-                'amount' => 10000,
+                'amount'    => 10000,
                 'assetCode' => 'USD',
-                'metadata' => [],
+                'metadata'  => [],
             ],
         ]);
 
@@ -233,9 +233,9 @@ class FraudDetectionServiceTest extends ServiceTestCase
         $account = Account::factory()->create(['user_uuid' => $user->uuid]);
 
         $eventProperties = [
-            'amount' => $attributes['amount'] ?? 10000,
+            'amount'    => $attributes['amount'] ?? 10000,
             'assetCode' => 'USD',
-            'metadata' => [],
+            'metadata'  => [],
         ];
 
         $metaData = [
@@ -247,7 +247,7 @@ class FraudDetectionServiceTest extends ServiceTestCase
 
         return Transaction::factory()->forAccount($account)->create(array_merge([
             'event_properties' => $eventProperties,
-            'meta_data' => $metaData,
+            'meta_data'        => $metaData,
         ], $attributes));
     }
 
@@ -255,18 +255,18 @@ class FraudDetectionServiceTest extends ServiceTestCase
     {
         $this->ruleEngine->shouldReceive('evaluate')
             ->andReturn([
-                'total_score' => 50, 
-                'triggered_rules' => [], 
-                'blocking_rules' => [],
-                'rule_scores' => [],
-                'rule_details' => []
+                'total_score'     => 50,
+                'triggered_rules' => [],
+                'blocking_rules'  => [],
+                'rule_scores'     => [],
+                'rule_details'    => [],
             ]);
 
         $this->behavioralAnalysis->shouldReceive('analyze')
             ->andReturn([
-                'risk_score' => 20, 
-                'anomalies' => [],
-                'risk_factors' => []
+                'risk_score'   => 20,
+                'anomalies'    => [],
+                'risk_factors' => [],
             ]);
 
         $this->behavioralAnalysis->shouldReceive('updateProfile')
@@ -274,9 +274,9 @@ class FraudDetectionServiceTest extends ServiceTestCase
 
         $this->deviceService->shouldReceive('analyzeDevice')
             ->andReturn([
-                'risk_score' => 20, 
-                'is_known' => true,
-                'risk_factors' => []
+                'risk_score'   => 20,
+                'is_known'     => true,
+                'risk_factors' => [],
             ]);
 
         $this->mlService->shouldReceive('isEnabled')->andReturn(false);
@@ -286,18 +286,18 @@ class FraudDetectionServiceTest extends ServiceTestCase
     {
         $this->ruleEngine->shouldReceive('evaluate')
             ->andReturn([
-                'total_score' => 120, 
-                'triggered_rules' => ['unusual_amount'], 
-                'blocking_rules' => [],
-                'rule_scores' => [],
-                'rule_details' => []
+                'total_score'     => 120,
+                'triggered_rules' => ['unusual_amount'],
+                'blocking_rules'  => [],
+                'rule_scores'     => [],
+                'rule_details'    => [],
             ]);
 
         $this->behavioralAnalysis->shouldReceive('analyze')
             ->andReturn([
-                'risk_score' => 80, 
-                'anomalies' => ['time_pattern'],
-                'risk_factors' => []
+                'risk_score'   => 80,
+                'anomalies'    => ['time_pattern'],
+                'risk_factors' => [],
             ]);
 
         $this->behavioralAnalysis->shouldReceive('updateProfile')
@@ -305,9 +305,9 @@ class FraudDetectionServiceTest extends ServiceTestCase
 
         $this->deviceService->shouldReceive('analyzeDevice')
             ->andReturn([
-                'risk_score' => 60, 
-                'is_known' => false,
-                'risk_factors' => []
+                'risk_score'   => 60,
+                'is_known'     => false,
+                'risk_factors' => [],
             ]);
 
         $this->mlService->shouldReceive('isEnabled')->andReturn(false);
@@ -317,18 +317,18 @@ class FraudDetectionServiceTest extends ServiceTestCase
     {
         $this->ruleEngine->shouldReceive('evaluate')
             ->andReturn([
-                'total_score' => 230, 
-                'triggered_rules' => ['blacklist_match', 'velocity_check'], 
-                'blocking_rules' => [],
-                'rule_scores' => [],
-                'rule_details' => []
+                'total_score'     => 230,
+                'triggered_rules' => ['blacklist_match', 'velocity_check'],
+                'blocking_rules'  => [],
+                'rule_scores'     => [],
+                'rule_details'    => [],
             ]);
 
         $this->behavioralAnalysis->shouldReceive('analyze')
             ->andReturn([
-                'risk_score' => 160, 
-                'anomalies' => ['location_jump', 'unusual_merchant'],
-                'risk_factors' => []
+                'risk_score'   => 160,
+                'anomalies'    => ['location_jump', 'unusual_merchant'],
+                'risk_factors' => [],
             ]);
 
         $this->behavioralAnalysis->shouldReceive('updateProfile')
@@ -336,10 +336,10 @@ class FraudDetectionServiceTest extends ServiceTestCase
 
         $this->deviceService->shouldReceive('analyzeDevice')
             ->andReturn([
-                'risk_score' => 150, 
-                'is_known' => false, 
-                'is_vpn' => true,
-                'risk_factors' => []
+                'risk_score'   => 150,
+                'is_known'     => false,
+                'is_vpn'       => true,
+                'risk_factors' => [],
             ]);
 
         $this->mlService->shouldReceive('isEnabled')->andReturn(false);

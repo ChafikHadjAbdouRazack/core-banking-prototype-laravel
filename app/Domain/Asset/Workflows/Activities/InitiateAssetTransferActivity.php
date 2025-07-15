@@ -66,8 +66,8 @@ class InitiateAssetTransferActivity extends Activity
                 exchangeRate: $fromAssetCode === $toAssetCode ? 1.0 : null,
                 description: $description ?: "Asset transfer: {$fromAssetCode} to {$toAssetCode}",
                 metadata: [
-                    'workflow' => 'AssetTransferWorkflow',
-                    'activity' => 'InitiateAssetTransferActivity',
+                    'workflow'  => 'AssetTransferWorkflow',
+                    'activity'  => 'InitiateAssetTransferActivity',
                     'timestamp' => now()->toISOString(),
                 ]
             )

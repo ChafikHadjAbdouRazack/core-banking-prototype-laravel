@@ -4,11 +4,11 @@ namespace Tests;
 
 use App\Domain\Account\Aggregates\LedgerAggregate;
 use App\Domain\Account\Repositories\AccountRepository;
+use App\Domain\Account\Values\DefaultAccountNames;
+use App\Domain\User\Values\UserRoles;
 use App\Models\Account;
 use App\Models\Role;
 use App\Models\User;
-use App\Domain\Account\Values\DefaultAccountNames;
-use App\Domain\User\Values\UserRoles;
 use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
@@ -158,14 +158,14 @@ abstract class TestCase extends BaseTestCase
         if ($token) {
             // Prefix Redis connections for isolation
             config([
-                'database.redis.options.prefix' => 'test_'.$token.':',
-                'cache.prefix' => 'test_'.$token,
-                'horizon.prefix' => 'test_'.$token.'_horizon:',
+                'database.redis.options.prefix' => 'test_' . $token . ':',
+                'cache.prefix'                  => 'test_' . $token,
+                'horizon.prefix'                => 'test_' . $token . '_horizon:',
             ]);
 
             // Ensure event sourcing uses isolated storage
             config([
-                'event-sourcing.storage_prefix' => 'test_'.$token,
+                'event-sourcing.storage_prefix' => 'test_' . $token,
             ]);
         }
     }

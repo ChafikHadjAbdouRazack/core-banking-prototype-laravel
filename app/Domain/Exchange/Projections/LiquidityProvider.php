@@ -22,7 +22,7 @@ class LiquidityProvider extends Model
 
     protected $casts = [
         'pending_rewards' => 'array',
-        'metadata' => 'array',
+        'metadata'        => 'array',
     ];
 
     public function pool(): BelongsTo
@@ -49,7 +49,7 @@ class LiquidityProvider extends Model
         $pool = $this->pool;
         if (! $pool || $pool->total_shares == 0) {
             return [
-                'base_amount' => '0',
+                'base_amount'  => '0',
                 'quote_amount' => '0',
             ];
         }

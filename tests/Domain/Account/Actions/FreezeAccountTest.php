@@ -11,7 +11,7 @@ it('can freeze an account', function () {
     $event->shouldReceive('aggregateRootUuid')
         ->andReturn($account->uuid);
 
-    $action = new FreezeAccount;
+    $action = new FreezeAccount();
     $action($event);
 
     $account->refresh();
@@ -23,12 +23,12 @@ it('throws exception when account not found', function () {
     $event->shouldReceive('aggregateRootUuid')
         ->andReturn('non-existent-uuid');
 
-    $action = new FreezeAccount;
+    $action = new FreezeAccount();
 
     expect(fn () => $action($event))
         ->toThrow(Illuminate\Database\Eloquent\ModelNotFoundException::class);
 });
 
 it('can be invoked', function () {
-    expect(is_callable(new FreezeAccount))->toBeTrue();
+    expect(is_callable(new FreezeAccount()))->toBeTrue();
 });

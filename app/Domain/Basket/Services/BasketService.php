@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Domain\Basket\Services;
 
+use App\Domain\Basket\Models\BasketAsset;
 use App\Domain\Basket\Workflows\ComposeBasketWorkflow;
 use App\Domain\Basket\Workflows\DecomposeBasketWorkflow;
 use App\Models\Account;
-use App\Domain\Basket\Models\BasketAsset;
 use Workflow\WorkflowStub;
 
 class BasketService

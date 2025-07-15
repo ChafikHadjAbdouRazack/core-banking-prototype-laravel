@@ -2,8 +2,8 @@
 
 namespace App\Domain\Basket\Console\Commands;
 
-use App\Domain\Basket\Services\BasketRebalancingService;
 use App\Domain\Basket\Models\BasketAsset;
+use App\Domain\Basket\Services\BasketRebalancingService;
 use Illuminate\Console\Command;
 
 class RebalanceBasketsCommand extends Command

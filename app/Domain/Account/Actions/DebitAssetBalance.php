@@ -3,8 +3,8 @@
 namespace App\Domain\Account\Actions;
 
 use App\Domain\Account\Events\AssetBalanceSubtracted;
-use App\Models\Account;
 use App\Domain\Account\Models\AccountBalance;
+use App\Models\Account;
 
 class DebitAssetBalance extends AccountAction
 {
@@ -19,7 +19,7 @@ class DebitAssetBalance extends AccountAction
         $balance = AccountBalance::where(
             [
                 'account_uuid' => $account->uuid,
-                'asset_code' => $event->assetCode,
+                'asset_code'   => $event->assetCode,
             ]
         )->first();
 

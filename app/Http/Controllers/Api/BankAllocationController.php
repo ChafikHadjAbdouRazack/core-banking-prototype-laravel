@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\User;
 use App\Domain\Account\Services\BankAllocationService;
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use App\Models\UserBankPreference;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -158,7 +158,7 @@ class BankAllocationController extends Controller
 
         try {
             $user = Auth::user();
-        /** @var User $user */
+            /** @var User $user */
             $allocations = $this->bankAllocationService->updateAllocations($user, $validated['allocations']);
 
             // Set primary bank if specified
@@ -242,7 +242,7 @@ class BankAllocationController extends Controller
 
         try {
             $user = Auth::user();
-        /** @var User $user */
+            /** @var User $user */
             $preference = $this->bankAllocationService->addBank($user, $validated['bank_code'], $validated['percentage']);
 
             return response()->json(
@@ -304,7 +304,7 @@ class BankAllocationController extends Controller
     {
         try {
             $user = Auth::user();
-        /** @var User $user */
+            /** @var User $user */
             $this->bankAllocationService->removeBank($user, $bankCode);
 
             return response()->json(
@@ -364,7 +364,7 @@ class BankAllocationController extends Controller
     {
         try {
             $user = Auth::user();
-        /** @var User $user */
+            /** @var User $user */
             $preference = $this->bankAllocationService->setPrimaryBank($user, $bankCode);
 
             return response()->json(

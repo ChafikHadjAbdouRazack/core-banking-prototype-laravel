@@ -6,11 +6,11 @@ namespace Tests\Feature\Domain\Basket\Services;
 
 use App\Domain\Asset\Models\Asset;
 use App\Domain\Basket\Events\BasketRebalanced;
-use App\Domain\Basket\Services\BasketRebalancingService;
-use App\Domain\Basket\Services\BasketValueCalculationService;
 use App\Domain\Basket\Models\BasketAsset;
 use App\Domain\Basket\Models\BasketComponent;
 use App\Domain\Basket\Models\BasketValue;
+use App\Domain\Basket\Services\BasketRebalancingService;
+use App\Domain\Basket\Services\BasketValueCalculationService;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
 use Mockery;

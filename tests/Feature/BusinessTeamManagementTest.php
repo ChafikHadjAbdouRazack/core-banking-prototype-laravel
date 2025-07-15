@@ -2,8 +2,8 @@
 
 namespace Tests\Feature;
 
-use App\Models\Account;
 use App\Domain\Fraud\Models\FraudCase;
+use App\Models\Account;
 use App\Models\Team;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;

@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use App\Domain\Cgo\Models\CgoInvestment;
 use App\Domain\Cgo\Services\PaymentVerificationService;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
 class CgoPaymentVerificationController extends Controller
@@ -111,8 +111,7 @@ class CgoPaymentVerificationController extends Controller
         try {
             // Send email with payment instructions based on payment method
             $user = Auth::user();
-        /** @var User $user */
-
+            /** @var User $user */
             switch ($investment->payment_method) {
                 case 'bank_transfer':
                     // Send bank transfer instructions

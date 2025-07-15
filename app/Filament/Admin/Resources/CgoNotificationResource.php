@@ -2,8 +2,8 @@
 
 namespace App\Filament\Admin\Resources;
 
-use App\Filament\Admin\Resources\CgoNotificationResource\Pages;
 use App\Domain\Cgo\Models\CgoNotification;
+use App\Filament\Admin\Resources\CgoNotificationResource\Pages;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;

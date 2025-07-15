@@ -99,7 +99,7 @@ class ExchangeRateService
                     'Failed to fetch exchange rate',
                     [
                         'from' => $fromAsset,
-                        'to' => $toAsset,
+                        'to'   => $toAsset,
                     ]
                 );
 
@@ -117,8 +117,8 @@ class ExchangeRateService
             Log::error(
                 'Error fetching exchange rate',
                 [
-                    'from' => $fromAsset,
-                    'to' => $toAsset,
+                    'from'  => $fromAsset,
+                    'to'    => $toAsset,
                     'error' => $e->getMessage(),
                 ]
             );
@@ -149,10 +149,10 @@ class ExchangeRateService
             $chainedRate,
             ExchangeRate::SOURCE_API,
             [
-                'chained' => true,
-                'via' => 'USD',
+                'chained'       => true,
+                'via'           => 'USD',
                 'from_usd_rate' => $fromToUsdData['rate'],
-                'usd_to_rate' => $usdToToData['rate'],
+                'usd_to_rate'   => $usdToToData['rate'],
             ]
         );
     }
@@ -200,9 +200,9 @@ class ExchangeRateService
         $pair = "$fromAsset-$toAsset";
         if (isset($mockRates[$pair])) {
             return [
-                'rate' => $mockRates[$pair],
+                'rate'     => $mockRates[$pair],
                 'metadata' => [
-                    'provider' => 'mock_crypto_api',
+                    'provider'  => 'mock_crypto_api',
                     'timestamp' => now()->toISOString(),
                 ],
             ];
@@ -229,9 +229,9 @@ class ExchangeRateService
         $pair = "$fromAsset-$toAsset";
         if (isset($mockRates[$pair])) {
             return [
-                'rate' => $mockRates[$pair],
+                'rate'     => $mockRates[$pair],
                 'metadata' => [
-                    'provider' => 'mock_fiat_api',
+                    'provider'  => 'mock_fiat_api',
                     'timestamp' => now()->toISOString(),
                 ],
             ];
@@ -254,9 +254,9 @@ class ExchangeRateService
         $pair = "$fromAsset-$toAsset";
         if (isset($mockRates[$pair])) {
             return [
-                'rate' => $mockRates[$pair],
+                'rate'     => $mockRates[$pair],
                 'metadata' => [
-                    'provider' => 'mock_commodity_api',
+                    'provider'  => 'mock_commodity_api',
                     'timestamp' => now()->toISOString(),
                 ],
             ];
@@ -278,13 +278,13 @@ class ExchangeRateService
         $exchangeRate = ExchangeRate::create(
             [
                 'from_asset_code' => $fromAsset,
-                'to_asset_code' => $toAsset,
-                'rate' => $rate,
-                'source' => $source,
-                'valid_at' => now(),
-                'expires_at' => now()->addHours(1), // Default 1 hour expiry
-                'is_active' => true,
-                'metadata' => $metadata,
+                'to_asset_code'   => $toAsset,
+                'rate'            => $rate,
+                'source'          => $source,
+                'valid_at'        => now(),
+                'expires_at'      => now()->addHours(1), // Default 1 hour expiry
+                'is_active'       => true,
+                'metadata'        => $metadata,
             ]
         );
 
@@ -302,13 +302,13 @@ class ExchangeRateService
         $rate = new ExchangeRate(
             [
                 'from_asset_code' => $fromAsset,
-                'to_asset_code' => $toAsset,
-                'rate' => 1.0,
-                'source' => ExchangeRate::SOURCE_MANUAL,
-                'valid_at' => now(),
-                'expires_at' => null,
-                'is_active' => true,
-                'metadata' => ['identity' => true],
+                'to_asset_code'   => $toAsset,
+                'rate'            => 1.0,
+                'source'          => ExchangeRate::SOURCE_MANUAL,
+                'valid_at'        => now(),
+                'expires_at'      => null,
+                'is_active'       => true,
+                'metadata'        => ['identity' => true],
             ]
         );
 

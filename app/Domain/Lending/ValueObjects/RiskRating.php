@@ -50,9 +50,9 @@ class RiskRating
     public function toArray(): array
     {
         return [
-            'rating' => $this->rating,
+            'rating'              => $this->rating,
             'default_probability' => $this->defaultProbability,
-            'risk_factors' => $this->riskFactors,
+            'risk_factors'        => $this->riskFactors,
         ];
     }
 }

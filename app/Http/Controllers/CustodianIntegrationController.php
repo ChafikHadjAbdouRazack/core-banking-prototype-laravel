@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
-use App\Domain\Custodian\Services\CustodianHealthMonitor;
-use App\Domain\Custodian\Services\CustodianRegistry;
 use App\Domain\Custodian\Models\CustodianAccount;
 use App\Domain\Custodian\Models\CustodianTransfer;
 use App\Domain\Custodian\Models\CustodianWebhook;
+use App\Domain\Custodian\Services\CustodianHealthMonitor;
+use App\Domain\Custodian\Services\CustodianRegistry;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -67,7 +67,6 @@ class CustodianIntegrationController extends Controller
     {
         $user = Auth::user();
         /** @var User $user */
-
         if (! $user->hasRole(['super_admin', 'bank_admin', 'operations_manager'])) {
             abort(403);
         }
@@ -118,7 +117,6 @@ class CustodianIntegrationController extends Controller
     {
         $user = Auth::user();
         /** @var User $user */
-
         if (! $user->hasRole(['super_admin', 'bank_admin'])) {
             abort(403);
         }
@@ -152,7 +150,6 @@ class CustodianIntegrationController extends Controller
     {
         $user = Auth::user();
         /** @var User $user */
-
         if (! $user->hasRole(['super_admin', 'bank_admin'])) {
             abort(403);
         }

@@ -12,7 +12,7 @@ it('has reset method', function () {
 });
 
 it('can be instantiated', function () {
-    expect(new ResetUserPassword)->toBeInstanceOf(ResetUserPassword::class);
+    expect(new ResetUserPassword())->toBeInstanceOf(ResetUserPassword::class);
 });
 
 it('has correct method signature', function () {

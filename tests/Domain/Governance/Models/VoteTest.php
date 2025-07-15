@@ -8,7 +8,7 @@ use App\Models\User;
 
 describe('Vote Model', function () {
     it('has correct fillable attributes', function () {
-        $vote = new Vote;
+        $vote = new Vote();
 
         expect($vote->getFillable())->toContain(
             'poll_id',
@@ -24,8 +24,8 @@ describe('Vote Model', function () {
     it('casts attributes correctly', function () {
         $vote = Vote::factory()->create([
             'selected_options' => ['option1', 'option2'],
-            'voting_power' => 25,
-            'metadata' => ['ip' => '127.0.0.1'],
+            'voting_power'     => 25,
+            'metadata'         => ['ip' => '127.0.0.1'],
         ]);
 
         expect($vote->selected_options)->toBeArray();
@@ -154,7 +154,7 @@ describe('Vote Validation', function () {
     it('validates complete vote', function () {
         $vote = Vote::factory()->create([
             'selected_options' => ['option1'],
-            'voting_power' => 10,
+            'voting_power'     => 10,
         ]);
 
         expect($vote->isValid())->toBeTrue();
@@ -163,7 +163,7 @@ describe('Vote Validation', function () {
     it('invalidates vote with no selected options', function () {
         $vote = Vote::factory()->create([
             'selected_options' => [],
-            'voting_power' => 10,
+            'voting_power'     => 10,
         ]);
 
         expect($vote->isValid())->toBeFalse();
@@ -172,7 +172,7 @@ describe('Vote Validation', function () {
     it('invalidates vote with zero voting power', function () {
         $vote = Vote::factory()->create([
             'selected_options' => ['option1'],
-            'voting_power' => 0,
+            'voting_power'     => 0,
         ]);
 
         expect($vote->isValid())->toBeFalse();
@@ -181,8 +181,8 @@ describe('Vote Validation', function () {
     it('invalidates vote with invalid signature', function () {
         $vote = Vote::factory()->create([
             'selected_options' => ['option1'],
-            'voting_power' => 10,
-            'signature' => 'invalid_signature',
+            'voting_power'     => 10,
+            'signature'        => 'invalid_signature',
         ]);
 
         expect($vote->isValid())->toBeFalse();
@@ -268,7 +268,7 @@ describe('Vote Array Conversion', function () {
     it('includes additional computed fields in array', function () {
         $vote = Vote::factory()->create([
             'selected_options' => ['option1', 'option2'],
-            'voting_power' => 25,
+            'voting_power'     => 25,
         ]);
 
         $array = $vote->toArray();

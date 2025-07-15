@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 use App\Domain\Custodian\Events\ReconciliationCompleted;
 use App\Domain\Custodian\Events\ReconciliationDiscrepancyFound;
+use App\Domain\Custodian\Models\CustodianAccount;
 use App\Domain\Custodian\Services\BalanceSynchronizationService;
 use App\Domain\Custodian\Services\CustodianRegistry;
 use App\Domain\Custodian\Services\DailyReconciliationService;
 use App\Models\Account;
-use App\Domain\Custodian\Models\CustodianAccount;
 use Illuminate\Support\Facades\Event;
 
 beforeEach(function () {
@@ -25,23 +25,23 @@ it('performs daily reconciliation successfully', function () {
         ->once()
         ->andReturn([
             'synchronized' => 10,
-            'failed' => 0,
-            'skipped' => 2,
+            'failed'       => 0,
+            'skipped'      => 2,
         ]);
 
     // Create test accounts with custodian accounts so no orphaned balances
     $account = Account::factory()->zeroBalance()->create();
     $account->balances()->create([
         'asset_code' => 'USD',
-        'balance' => 100000, // $1000
+        'balance'    => 100000, // $1000
     ]);
 
     // Create custodian account for this account
     CustodianAccount::factory()->create([
-        'account_uuid' => $account->uuid,
-        'custodian_name' => 'test_bank',
+        'account_uuid'         => $account->uuid,
+        'custodian_name'       => 'test_bank',
         'custodian_account_id' => '123',
-        'status' => 'active',
+        'status'               => 'active',
     ]);
 
     // Mock custodian connector with proper interface
@@ -88,15 +88,15 @@ it('detects balance discrepancies', function () {
     $account = Account::factory()->zeroBalance()->create();
     $account->balances()->create([
         'asset_code' => 'USD',
-        'balance' => 100000, // $1000 internal
+        'balance'    => 100000, // $1000 internal
     ]);
 
     // Create custodian account
     $custodianAccount = CustodianAccount::factory()->create([
-        'account_uuid' => $account->uuid,
-        'custodian_name' => 'test_bank',
+        'account_uuid'         => $account->uuid,
+        'custodian_name'       => 'test_bank',
         'custodian_account_id' => '123',
-        'status' => 'active',
+        'status'               => 'active',
     ]);
 
     // Mock custodian with different balance
@@ -141,7 +141,7 @@ it('detects orphaned balances', function () {
     $account = Account::factory()->zeroBalance()->create();
     $account->balances()->create([
         'asset_code' => 'USD',
-        'balance' => 50000,
+        'balance'    => 50000,
     ]);
 
     $result = $this->reconciliationService->performDailyReconciliation();

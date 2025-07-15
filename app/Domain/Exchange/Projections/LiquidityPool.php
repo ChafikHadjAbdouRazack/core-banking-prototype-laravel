@@ -48,7 +48,7 @@ class LiquidityPool extends Model
 
     protected $casts = [
         'is_active' => 'boolean',
-        'metadata' => 'array',
+        'metadata'  => 'array',
     ];
 
     public function providers(): HasMany

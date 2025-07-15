@@ -3,12 +3,12 @@
 namespace App\Domain\Basket\Models;
 
 use App\Domain\Asset\Models\Asset;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use App\Models\User;
 
 class BasketAsset extends Model
 {

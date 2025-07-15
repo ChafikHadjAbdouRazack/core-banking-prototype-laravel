@@ -3,8 +3,8 @@
 use App\Domain\Payment\Events\DepositCompleted;
 use App\Domain\Payment\Events\DepositFailed;
 use App\Domain\Payment\Events\DepositInitiated;
-use App\Domain\Payment\Projectors\PaymentDepositProjector;
 use App\Domain\Payment\Models\PaymentTransaction;
+use App\Domain\Payment\Projectors\PaymentDepositProjector;
 use Illuminate\Support\Str;
 
 beforeEach(function () {
@@ -27,7 +27,7 @@ it('creates payment transaction on deposit initiated', function () {
         metadata: ['test' => true]
     );
 
-    $projector = new PaymentDepositProjector;
+    $projector = new PaymentDepositProjector();
     $projector->onDepositInitiated($event, $aggregateUuid);
 
     $transaction = PaymentTransaction::where('aggregate_uuid', $aggregateUuid)->first();
@@ -53,13 +53,13 @@ it('updates payment transaction on deposit completed', function () {
     // Create a pending transaction first
     PaymentTransaction::create([
         'aggregate_uuid' => $aggregateUuid,
-        'account_uuid' => Str::uuid()->toString(),
-        'type' => 'deposit',
-        'status' => 'pending',
-        'amount' => 10000,
-        'currency' => 'USD',
-        'reference' => 'TEST-123',
-        'initiated_at' => now()->subMinutes(5),
+        'account_uuid'   => Str::uuid()->toString(),
+        'type'           => 'deposit',
+        'status'         => 'pending',
+        'amount'         => 10000,
+        'currency'       => 'USD',
+        'reference'      => 'TEST-123',
+        'initiated_at'   => now()->subMinutes(5),
     ]);
 
     $event = new DepositCompleted(
@@ -67,7 +67,7 @@ it('updates payment transaction on deposit completed', function () {
         completedAt: $completedAt
     );
 
-    $projector = new PaymentDepositProjector;
+    $projector = new PaymentDepositProjector();
     $projector->onDepositCompleted($event, $aggregateUuid);
 
     $transaction = PaymentTransaction::where('aggregate_uuid', $aggregateUuid)->first();
@@ -85,13 +85,13 @@ it('updates payment transaction on deposit failed', function () {
     // Create a pending transaction first
     PaymentTransaction::create([
         'aggregate_uuid' => $aggregateUuid,
-        'account_uuid' => Str::uuid()->toString(),
-        'type' => 'deposit',
-        'status' => 'pending',
-        'amount' => 10000,
-        'currency' => 'USD',
-        'reference' => 'TEST-123',
-        'initiated_at' => now()->subMinutes(5),
+        'account_uuid'   => Str::uuid()->toString(),
+        'type'           => 'deposit',
+        'status'         => 'pending',
+        'amount'         => 10000,
+        'currency'       => 'USD',
+        'reference'      => 'TEST-123',
+        'initiated_at'   => now()->subMinutes(5),
     ]);
 
     $event = new DepositFailed(
@@ -99,7 +99,7 @@ it('updates payment transaction on deposit failed', function () {
         failedAt: $failedAt
     );
 
-    $projector = new PaymentDepositProjector;
+    $projector = new PaymentDepositProjector();
     $projector->onDepositFailed($event, $aggregateUuid);
 
     $transaction = PaymentTransaction::where('aggregate_uuid', $aggregateUuid)->first();

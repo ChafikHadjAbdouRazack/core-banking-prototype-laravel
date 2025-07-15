@@ -147,7 +147,7 @@ class AuditControllerTest extends ControllerTestCase
         Sanctum::actingAs($this->user);
 
         $response = $this->postJson('/api/audit/reports/generate', [
-            'type' => 'monthly',
+            'type'   => 'monthly',
             'period' => '2024-01',
         ]);
 
@@ -191,7 +191,7 @@ class AuditControllerTest extends ControllerTestCase
                 'data' => [],
                 'meta' => [
                     'entity_type' => $entityType,
-                    'entity_id' => $entityId,
+                    'entity_id'   => $entityId,
                 ],
             ]);
     }
@@ -270,7 +270,7 @@ class AuditControllerTest extends ControllerTestCase
         $response->assertStatus(200)
             ->assertJson([
                 'message' => 'Audit logs archived',
-                'data' => [],
+                'data'    => [],
             ]);
     }
 

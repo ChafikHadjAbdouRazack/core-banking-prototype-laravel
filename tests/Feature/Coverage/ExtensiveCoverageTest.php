@@ -5,14 +5,14 @@ declare(strict_types=1);
 use App\Domain\Account\DataObjects\AccountUuid;
 use App\Domain\Account\DataObjects\Hash;
 use App\Domain\Account\DataObjects\Money;
+use App\Domain\Account\Models\Turnover;
 use App\Domain\Asset\Models\Asset;
 use App\Domain\Asset\Models\ExchangeRate;
+use App\Domain\User\Values\UserRoles;
 use App\Models\Account;
 use App\Models\AccountBalance;
-use App\Domain\Account\Models\Turnover;
 use App\Models\User;
 use App\Values\EventQueues;
-use App\Domain\User\Values\UserRoles;
 
 // Test existing model class instantiation
 it('can instantiate existing core models', function () {

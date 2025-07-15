@@ -57,19 +57,19 @@ class FraudScore extends Model
     ];
 
     protected $casts = [
-        'score_breakdown' => 'array',
-        'triggered_rules' => 'array',
-        'entity_snapshot' => 'array',
-        'behavioral_factors' => 'array',
-        'device_factors' => 'array',
-        'network_factors' => 'array',
-        'ml_features' => 'array',
-        'ml_explanation' => 'array',
-        'decision_factors' => 'array',
-        'total_score' => 'decimal:2',
-        'ml_score' => 'decimal:2',
-        'is_override' => 'boolean',
-        'decision_at' => 'datetime',
+        'score_breakdown'      => 'array',
+        'triggered_rules'      => 'array',
+        'entity_snapshot'      => 'array',
+        'behavioral_factors'   => 'array',
+        'device_factors'       => 'array',
+        'network_factors'      => 'array',
+        'ml_features'          => 'array',
+        'ml_explanation'       => 'array',
+        'decision_factors'     => 'array',
+        'total_score'          => 'decimal:2',
+        'ml_score'             => 'decimal:2',
+        'is_override'          => 'boolean',
+        'decision_at'          => 'datetime',
         'outcome_confirmed_at' => 'datetime',
     ];
 
@@ -104,18 +104,18 @@ class FraudScore extends Model
     public const OUTCOME_UNKNOWN = 'unknown';
 
     public const RISK_LEVELS = [
-        self::RISK_LEVEL_VERY_LOW => 'Very Low Risk',
-        self::RISK_LEVEL_LOW => 'Low Risk',
-        self::RISK_LEVEL_MEDIUM => 'Medium Risk',
-        self::RISK_LEVEL_HIGH => 'High Risk',
+        self::RISK_LEVEL_VERY_LOW  => 'Very Low Risk',
+        self::RISK_LEVEL_LOW       => 'Low Risk',
+        self::RISK_LEVEL_MEDIUM    => 'Medium Risk',
+        self::RISK_LEVEL_HIGH      => 'High Risk',
         self::RISK_LEVEL_VERY_HIGH => 'Very High Risk',
     ];
 
     public const RISK_THRESHOLDS = [
-        self::RISK_LEVEL_VERY_LOW => 20,
-        self::RISK_LEVEL_LOW => 40,
-        self::RISK_LEVEL_MEDIUM => 60,
-        self::RISK_LEVEL_HIGH => 80,
+        self::RISK_LEVEL_VERY_LOW  => 20,
+        self::RISK_LEVEL_LOW       => 40,
+        self::RISK_LEVEL_MEDIUM    => 60,
+        self::RISK_LEVEL_HIGH      => 80,
         self::RISK_LEVEL_VERY_HIGH => 100,
     ];
 
@@ -216,8 +216,8 @@ class FraudScore extends Model
         $topRules = $this->getTopRules(3);
         foreach ($topRules as $rule) {
             $factors[] = [
-                'type' => 'rule',
-                'name' => $rule['rule_name'] ?? 'Unknown Rule',
+                'type'   => 'rule',
+                'name'   => $rule['rule_name'] ?? 'Unknown Rule',
                 'impact' => $rule['score'] ?? 0,
             ];
         }
@@ -230,8 +230,8 @@ class FraudScore extends Model
                 ->each(
                     function ($feature) use (&$factors) {
                         $factors[] = [
-                            'type' => 'ml_feature',
-                            'name' => $feature['feature'] ?? 'Unknown Feature',
+                            'type'   => 'ml_feature',
+                            'name'   => $feature['feature'] ?? 'Unknown Feature',
                             'impact' => $feature['importance'] ?? 0,
                         ];
                     }
@@ -245,10 +245,10 @@ class FraudScore extends Model
     {
         $this->update(
             [
-                'outcome' => $outcome,
+                'outcome'              => $outcome,
                 'outcome_confirmed_at' => now(),
-                'confirmed_by' => $user->id,
-                'outcome_notes' => $notes,
+                'confirmed_by'         => $user->id,
+                'outcome_notes'        => $notes,
             ]
         );
 
@@ -267,11 +267,11 @@ class FraudScore extends Model
     {
         $this->update(
             [
-                'decision' => $decision,
-                'is_override' => true,
-                'override_by' => $user->id,
+                'decision'        => $decision,
+                'is_override'     => true,
+                'override_by'     => $user->id,
                 'override_reason' => $reason,
-                'decision_at' => now(),
+                'decision_at'     => now(),
             ]
         );
     }
@@ -292,10 +292,10 @@ class FraudScore extends Model
     public function toRiskReport(): array
     {
         return [
-            'score' => $this->total_score,
-            'risk_level' => $this->risk_level,
-            'decision' => $this->decision,
-            'top_factors' => $this->getMostSignificantFactors(),
+            'score'           => $this->total_score,
+            'risk_level'      => $this->risk_level,
+            'decision'        => $this->decision,
+            'top_factors'     => $this->getMostSignificantFactors(),
             'rules_triggered' => count($this->triggered_rules ?? []),
             'requires_action' => in_array($this->decision, [self::DECISION_BLOCK, self::DECISION_REVIEW, self::DECISION_CHALLENGE]),
         ];

@@ -14,10 +14,10 @@ enum CollateralStatus: string
     {
         return match ($this) {
             self::PENDING_VERIFICATION => 'Pending Verification',
-            self::VERIFIED => 'Verified',
-            self::REJECTED => 'Rejected',
-            self::RELEASED => 'Released',
-            self::LIQUIDATED => 'Liquidated',
+            self::VERIFIED             => 'Verified',
+            self::REJECTED             => 'Rejected',
+            self::RELEASED             => 'Released',
+            self::LIQUIDATED           => 'Liquidated',
         };
     }
 
@@ -25,10 +25,10 @@ enum CollateralStatus: string
     {
         return match ($this) {
             self::PENDING_VERIFICATION => 'yellow',
-            self::VERIFIED => 'green',
-            self::REJECTED => 'red',
-            self::RELEASED => 'blue',
-            self::LIQUIDATED => 'gray',
+            self::VERIFIED             => 'green',
+            self::REJECTED             => 'red',
+            self::RELEASED             => 'blue',
+            self::LIQUIDATED           => 'gray',
         };
     }
 
@@ -36,10 +36,10 @@ enum CollateralStatus: string
     {
         return match ($this) {
             self::PENDING_VERIFICATION => true,
-            self::VERIFIED => true,
-            self::REJECTED => false,
-            self::RELEASED => false,
-            self::LIQUIDATED => false,
+            self::VERIFIED             => true,
+            self::REJECTED             => false,
+            self::RELEASED             => false,
+            self::LIQUIDATED           => false,
         };
     }
 }

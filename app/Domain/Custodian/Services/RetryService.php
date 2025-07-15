@@ -90,11 +90,11 @@ class RetryService
                 Log::warning(
                     'Operation failed, retrying',
                     [
-                        'context' => $context,
-                        'attempt' => $attempt,
+                        'context'      => $context,
+                        'attempt'      => $attempt,
                         'max_attempts' => $this->maxAttempts,
-                        'delay_ms' => $delayMs,
-                        'exception' => $exception->getMessage(),
+                        'delay_ms'     => $delayMs,
+                        'exception'    => $exception->getMessage(),
                     ]
                 );
 

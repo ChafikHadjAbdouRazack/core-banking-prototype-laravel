@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Domain\Asset\Models\Asset;
 use App\Domain\Account\Models\TransactionProjection;
+use App\Domain\Asset\Models\Asset;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;

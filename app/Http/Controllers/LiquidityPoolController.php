@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use App\Domain\Account\DataObjects\AccountUuid;
 use App\Domain\Exchange\Contracts\ExchangeServiceInterface;
 use App\Domain\Exchange\Contracts\LiquidityPoolServiceInterface;
 use App\Models\Account;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -216,7 +216,6 @@ class LiquidityPoolController extends Controller
     {
         $user = Auth::user();
         /** @var User $user */
-
         if (! $user) {
             return collect();
         }
@@ -280,7 +279,6 @@ class LiquidityPoolController extends Controller
     {
         $user = Auth::user();
         /** @var User $user */
-
         if (! $user) {
             return [];
         }

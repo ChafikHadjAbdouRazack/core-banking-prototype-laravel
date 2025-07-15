@@ -15,8 +15,8 @@ it('can initiate a deposit', function () {
         accountUuid: $accountUuid,
         amount: 10000,
         currency: 'USD',
-        reference: 'TEST-'.uniqid(),
-        externalReference: 'pi_test_'.uniqid(),
+        reference: 'TEST-' . uniqid(),
+        externalReference: 'pi_test_' . uniqid(),
         paymentMethod: 'card',
         paymentMethodType: 'visa',
         metadata: ['test' => true]
@@ -44,7 +44,7 @@ it('can initiate a deposit', function () {
 it('can complete a deposit', function () {
     $depositUuid = Str::uuid()->toString();
     $accountUuid = Str::uuid()->toString();
-    $transactionId = 'txn_'.uniqid();
+    $transactionId = 'txn_' . uniqid();
 
     $aggregate = PaymentDepositAggregate::fake($depositUuid)
         ->given([

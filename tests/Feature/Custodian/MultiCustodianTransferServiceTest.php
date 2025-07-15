@@ -1,11 +1,11 @@
 <?php
 
 use App\Domain\Account\DataObjects\Money;
+use App\Domain\Custodian\Models\CustodianAccount;
 use App\Domain\Custodian\Services\CustodianRegistry;
 use App\Domain\Custodian\Services\MultiCustodianTransferService;
 use App\Domain\Custodian\ValueObjects\TransactionReceipt;
 use App\Models\Account;
-use App\Domain\Custodian\Models\CustodianAccount;
 use Illuminate\Support\Facades\DB;
 
 beforeEach(function () {
@@ -15,19 +15,19 @@ beforeEach(function () {
 
     // Create custodian accounts
     $this->custodianAccount1 = CustodianAccount::factory()->create([
-        'account_uuid' => $this->account1->uuid,
-        'custodian_name' => 'paysera',
+        'account_uuid'         => $this->account1->uuid,
+        'custodian_name'       => 'paysera',
         'custodian_account_id' => 'PAYSERA_ACC_1',
-        'status' => 'active',
-        'is_primary' => true,
+        'status'               => 'active',
+        'is_primary'           => true,
     ]);
 
     $this->custodianAccount2 = CustodianAccount::factory()->create([
-        'account_uuid' => $this->account2->uuid,
-        'custodian_name' => 'paysera',
+        'account_uuid'         => $this->account2->uuid,
+        'custodian_name'       => 'paysera',
         'custodian_account_id' => 'PAYSERA_ACC_2',
-        'status' => 'active',
-        'is_primary' => true,
+        'status'               => 'active',
+        'is_primary'           => true,
     ]);
 
     // Create default mock registry with paysera connector
@@ -72,21 +72,21 @@ it('can transfer between accounts on the same custodian', function () {
     // Check database record
     $this->assertDatabaseHas('custodian_transfers', [
         'from_account_uuid' => $this->account1->uuid,
-        'to_account_uuid' => $this->account2->uuid,
-        'amount' => 10000,
-        'asset_code' => 'EUR',
-        'transfer_type' => 'internal',
+        'to_account_uuid'   => $this->account2->uuid,
+        'amount'            => 10000,
+        'asset_code'        => 'EUR',
+        'transfer_type'     => 'internal',
     ]);
 });
 
 it('can route transfers between different custodians', function () {
     // Create account on different custodian
     $custodianAccount3 = CustodianAccount::factory()->create([
-        'account_uuid' => $this->account2->uuid,
-        'custodian_name' => 'deutsche_bank',
+        'account_uuid'         => $this->account2->uuid,
+        'custodian_name'       => 'deutsche_bank',
         'custodian_account_id' => 'DB_ACC_2',
-        'status' => 'active',
-        'is_primary' => false,
+        'status'               => 'active',
+        'is_primary'           => false,
     ]);
 
     // Remove paysera account from account2 to force external transfer
@@ -98,9 +98,9 @@ it('can route transfers between different custodians', function () {
     $mockPayseraConnector->shouldReceive('getName')->andReturn('paysera');
     $mockPayseraConnector->shouldReceive('getInfo')
         ->andReturn([
-            'features' => ['external_transfers' => true],
+            'features'               => ['external_transfers' => true],
             'supported_destinations' => ['deutsche_bank'],
-            'supported_assets' => ['EUR'],
+            'supported_assets'       => ['EUR'],
         ]);
     $mockPayseraConnector->shouldReceive('initiateTransfer')
         ->once()
@@ -147,21 +147,21 @@ it('can route transfers between different custodians', function () {
     // Check database record
     $this->assertDatabaseHas('custodian_transfers', [
         'from_account_uuid' => $this->account1->uuid,
-        'to_account_uuid' => $this->account2->uuid,
-        'amount' => 10000,
-        'asset_code' => 'EUR',
-        'transfer_type' => 'external',
+        'to_account_uuid'   => $this->account2->uuid,
+        'amount'            => 10000,
+        'asset_code'        => 'EUR',
+        'transfer_type'     => 'external',
     ]);
 });
 
 it('can perform bridge transfers through intermediate custodian', function () {
     // Create accounts that require bridge
     $custodianAccount3 = CustodianAccount::factory()->create([
-        'account_uuid' => $this->account2->uuid,
-        'custodian_name' => 'santander',
+        'account_uuid'         => $this->account2->uuid,
+        'custodian_name'       => 'santander',
         'custodian_account_id' => 'SANTANDER_ACC_2',
-        'status' => 'active',
-        'is_primary' => false,
+        'status'               => 'active',
+        'is_primary'           => false,
     ]);
 
     // Remove direct connection
@@ -173,9 +173,9 @@ it('can perform bridge transfers through intermediate custodian', function () {
     $mockPayseraConnector->shouldReceive('getName')->andReturn('paysera');
     $mockPayseraConnector->shouldReceive('getInfo')
         ->andReturn([
-            'features' => ['external_transfers' => true],
+            'features'               => ['external_transfers' => true],
             'supported_destinations' => ['deutsche_bank'], // Can't send to santander directly
-            'supported_assets' => ['EUR'],
+            'supported_assets'       => ['EUR'],
         ]);
     $mockPayseraConnector->shouldReceive('initiateTransfer')
         ->once()
@@ -204,9 +204,9 @@ it('can perform bridge transfers through intermediate custodian', function () {
     $mockDeutscheBankConnector->shouldReceive('getName')->andReturn('deutsche_bank');
     $mockDeutscheBankConnector->shouldReceive('getInfo')
         ->andReturn([
-            'features' => ['external_transfers' => true],
+            'features'               => ['external_transfers' => true],
             'supported_destinations' => ['santander'], // Can send to santander
-            'supported_assets' => ['EUR'],
+            'supported_assets'       => ['EUR'],
         ]);
     $mockDeutscheBankConnector->shouldReceive('initiateTransfer')
         ->once()
@@ -258,10 +258,10 @@ it('can perform bridge transfers through intermediate custodian', function () {
     // Check database record
     $this->assertDatabaseHas('custodian_transfers', [
         'from_account_uuid' => $this->account1->uuid,
-        'to_account_uuid' => $this->account2->uuid,
-        'amount' => 10000,
-        'asset_code' => 'EUR',
-        'transfer_type' => 'bridge',
+        'to_account_uuid'   => $this->account2->uuid,
+        'amount'            => 10000,
+        'asset_code'        => 'EUR',
+        'transfer_type'     => 'bridge',
     ]);
 });
 
@@ -281,34 +281,34 @@ it('can get transfer statistics', function () {
     // Create some test transfers
     DB::table('custodian_transfers')->insert([
         [
-            'id' => 'TEST_1',
-            'from_account_uuid' => $this->account1->uuid,
-            'to_account_uuid' => $this->account2->uuid,
+            'id'                        => 'TEST_1',
+            'from_account_uuid'         => $this->account1->uuid,
+            'to_account_uuid'           => $this->account2->uuid,
             'from_custodian_account_id' => $this->custodianAccount1->id,
-            'to_custodian_account_id' => $this->custodianAccount2->id,
-            'amount' => 10000,
-            'asset_code' => 'USD',
-            'transfer_type' => 'internal',
-            'status' => 'completed',
-            'reference' => null,
-            'created_at' => now()->subMinutes(5),
-            'completed_at' => now()->subMinutes(3),
-            'updated_at' => now(),
+            'to_custodian_account_id'   => $this->custodianAccount2->id,
+            'amount'                    => 10000,
+            'asset_code'                => 'USD',
+            'transfer_type'             => 'internal',
+            'status'                    => 'completed',
+            'reference'                 => null,
+            'created_at'                => now()->subMinutes(5),
+            'completed_at'              => now()->subMinutes(3),
+            'updated_at'                => now(),
         ],
         [
-            'id' => 'TEST_2',
-            'from_account_uuid' => $this->account1->uuid,
-            'to_account_uuid' => $this->account2->uuid,
+            'id'                        => 'TEST_2',
+            'from_account_uuid'         => $this->account1->uuid,
+            'to_account_uuid'           => $this->account2->uuid,
             'from_custodian_account_id' => $this->custodianAccount1->id,
-            'to_custodian_account_id' => $this->custodianAccount2->id,
-            'amount' => 20000,
-            'asset_code' => 'EUR',
-            'transfer_type' => 'external',
-            'status' => 'pending',
-            'reference' => null,
-            'completed_at' => null,
-            'created_at' => now(),
-            'updated_at' => now(),
+            'to_custodian_account_id'   => $this->custodianAccount2->id,
+            'amount'                    => 20000,
+            'asset_code'                => 'EUR',
+            'transfer_type'             => 'external',
+            'status'                    => 'pending',
+            'reference'                 => null,
+            'completed_at'              => null,
+            'created_at'                => now(),
+            'updated_at'                => now(),
         ],
     ]);
 

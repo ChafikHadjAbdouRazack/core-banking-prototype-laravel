@@ -69,9 +69,9 @@ describe('Asset Resource Configuration', function () {
 describe('Asset Model Tests', function () {
     it('can create asset', function () {
         $asset = Asset::factory()->create([
-            'code' => 'TEST',
-            'name' => 'Test Asset',
-            'type' => 'fiat',
+            'code'      => 'TEST',
+            'name'      => 'Test Asset',
+            'type'      => 'fiat',
             'precision' => 2,
             'is_active' => true,
         ]);

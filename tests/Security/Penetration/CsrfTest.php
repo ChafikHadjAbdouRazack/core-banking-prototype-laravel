@@ -34,7 +34,7 @@ class CsrfTest extends DomainTestCase
                 hydrate(
                     class: \App\Domain\Account\DataObjects\Account::class,
                     properties: [
-                        'name' => 'Test Account',
+                        'name'      => 'Test Account',
                         'user_uuid' => $this->user->uuid,
                     ]
                 )
@@ -59,9 +59,9 @@ class CsrfTest extends DomainTestCase
             ['DELETE', "/api/v2/accounts/{$this->account->uuid}"],
             ['POST', '/api/v2/transfers', [
                 'from_account' => $this->account->uuid,
-                'to_account' => Account::factory()->create()->uuid,
-                'amount' => 100,
-                'currency' => 'USD',
+                'to_account'   => Account::factory()->create()->uuid,
+                'amount'       => 100,
+                'currency'     => 'USD',
             ]],
         ];
 
@@ -93,7 +93,7 @@ class CsrfTest extends DomainTestCase
     {
         // Test with malicious origin
         $response = $this->withHeaders([
-            'Origin' => 'https://malicious-site.com',
+            'Origin'        => 'https://malicious-site.com',
             'Authorization' => "Bearer {$this->token}",
         ])->getJson('/api/v2/accounts');
 
@@ -116,7 +116,7 @@ class CsrfTest extends DomainTestCase
 
         // Now test with an allowed origin
         $allowedResponse = $this->withHeaders([
-            'Origin' => 'http://localhost:3000',
+            'Origin'        => 'http://localhost:3000',
             'Authorization' => "Bearer {$this->token}",
         ])->getJson('/api/v2/accounts');
 
@@ -136,7 +136,7 @@ class CsrfTest extends DomainTestCase
     {
         // If the application uses cookies for any purpose
         $response = $this->post('/login', [
-            'email' => $this->user->email,
+            'email'    => $this->user->email,
             'password' => 'password',
         ]);
 
@@ -169,9 +169,9 @@ class CsrfTest extends DomainTestCase
             $response = $this->withHeaders($headers)
                 ->postJson('/api/v2/transfers', [
                     'from_account' => $this->account->uuid,
-                    'to_account' => Account::factory()->create(['user_uuid' => User::factory()->create()->uuid])->uuid,
-                    'amount' => 50000, // Large amount
-                    'currency' => 'USD',
+                    'to_account'   => Account::factory()->create(['user_uuid' => User::factory()->create()->uuid])->uuid,
+                    'amount'       => 50000, // Large amount
+                    'currency'     => 'USD',
                 ]);
 
             // API should work regardless of referrer (token-based auth)
@@ -192,7 +192,7 @@ class CsrfTest extends DomainTestCase
         Session::start();
 
         $response = $this->withHeaders([
-            'X-CSRF-TOKEN' => $csrfToken,
+            'X-CSRF-TOKEN'  => $csrfToken,
             'Authorization' => "Bearer {$this->token}",
         ])->postJson('/api/v2/accounts', [
             'name' => 'Test Account',
@@ -209,13 +209,13 @@ class CsrfTest extends DomainTestCase
         // Test that API requires custom headers that are hard to set from forms
         $response = $this->postJson('/api/v2/transfers', [
             'from_account' => $this->account->uuid,
-            'to_account' => Account::factory()->create()->uuid,
-            'amount' => 1000,
-            'currency' => 'USD',
+            'to_account'   => Account::factory()->create()->uuid,
+            'amount'       => 1000,
+            'currency'     => 'USD',
         ], [
             'Authorization' => "Bearer {$this->token}",
-            'Content-Type' => 'application/json',
-            'Accept' => 'application/json',
+            'Content-Type'  => 'application/json',
+            'Accept'        => 'application/json',
         ]);
 
         $this->assertNotEquals(401, $response->status());
@@ -223,12 +223,12 @@ class CsrfTest extends DomainTestCase
         // Test without JSON content type (like a form submission)
         $response = $this->post('/api/v2/transfers', [
             'from_account' => $this->account->uuid,
-            'to_account' => Account::factory()->create()->uuid,
-            'amount' => 1000,
-            'currency' => 'USD',
+            'to_account'   => Account::factory()->create()->uuid,
+            'amount'       => 1000,
+            'currency'     => 'USD',
         ], [
             'Authorization' => "Bearer {$this->token}",
-            'Content-Type' => 'application/x-www-form-urlencoded',
+            'Content-Type'  => 'application/x-www-form-urlencoded',
         ]);
 
         // API should require JSON content type
@@ -252,8 +252,8 @@ class CsrfTest extends DomainTestCase
         // Perform sensitive operation
         $response = $this->withToken($initialToken)
             ->postJson('/api/v2/auth/change-password', [
-                'current_password' => 'password',
-                'new_password' => 'new-password-123',
+                'current_password'          => 'password',
+                'new_password'              => 'new-password-123',
                 'new_password_confirmation' => 'new-password-123',
             ]);
 
@@ -310,7 +310,7 @@ class CsrfTest extends DomainTestCase
                 hydrate(
                     class: \App\Domain\Account\DataObjects\Account::class,
                     properties: [
-                        'name' => 'Destination Account',
+                        'name'      => 'Destination Account',
                         'user_uuid' => $this->user->uuid,
                     ]
                 )
@@ -322,11 +322,11 @@ class CsrfTest extends DomainTestCase
         for ($i = 0; $i < 20; $i++) { // Only need 20 attempts to exceed 15 limit
             $response = $this->postJson('/api/v2/transfers', [
                 'from_account' => $this->account->uuid,
-                'to_account' => $destinationAccount->uuid,
-                'amount' => 100, // Amount in cents
-                'currency' => 'USD',
-                'asset_code' => 'USD',
-                'description' => 'Test transfer '.$i,
+                'to_account'   => $destinationAccount->uuid,
+                'amount'       => 100, // Amount in cents
+                'currency'     => 'USD',
+                'asset_code'   => 'USD',
+                'description'  => 'Test transfer ' . $i,
             ]);
 
             $responses[] = $response->status();
@@ -362,10 +362,10 @@ class CsrfTest extends DomainTestCase
 
         // First check if WebSocket endpoint exists
         $testResponse = $this->withHeaders([
-            'Origin' => $allowedOrigin,
-            'Upgrade' => 'websocket',
-            'Connection' => 'Upgrade',
-            'Sec-WebSocket-Key' => base64_encode(random_bytes(16)),
+            'Origin'                => $allowedOrigin,
+            'Upgrade'               => 'websocket',
+            'Connection'            => 'Upgrade',
+            'Sec-WebSocket-Key'     => base64_encode(random_bytes(16)),
             'Sec-WebSocket-Version' => '13',
         ])->get('/ws');
 
@@ -387,10 +387,10 @@ class CsrfTest extends DomainTestCase
         foreach ($maliciousOrigins as $origin) {
             // Simulate WebSocket upgrade request
             $response = $this->withHeaders([
-                'Origin' => $origin,
-                'Upgrade' => 'websocket',
-                'Connection' => 'Upgrade',
-                'Sec-WebSocket-Key' => base64_encode(random_bytes(16)),
+                'Origin'                => $origin,
+                'Upgrade'               => 'websocket',
+                'Connection'            => 'Upgrade',
+                'Sec-WebSocket-Key'     => base64_encode(random_bytes(16)),
                 'Sec-WebSocket-Version' => '13',
             ])->get('/ws');
 
@@ -401,10 +401,10 @@ class CsrfTest extends DomainTestCase
 
         // Test allowed origin
         $allowedResponse = $this->withHeaders([
-            'Origin' => $allowedOrigin,
-            'Upgrade' => 'websocket',
-            'Connection' => 'Upgrade',
-            'Sec-WebSocket-Key' => base64_encode(random_bytes(16)),
+            'Origin'                => $allowedOrigin,
+            'Upgrade'               => 'websocket',
+            'Connection'            => 'Upgrade',
+            'Sec-WebSocket-Key'     => base64_encode(random_bytes(16)),
             'Sec-WebSocket-Version' => '13',
         ])->get('/ws');
 

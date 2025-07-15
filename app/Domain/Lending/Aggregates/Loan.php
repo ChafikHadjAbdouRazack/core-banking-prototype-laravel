@@ -341,11 +341,11 @@ class Loan extends AggregateRoot
             $remainingBalance = $remainingBalance->minus($principalPayment);
 
             $payments[] = [
-                'payment_number' => $i,
-                'due_date' => now()->addMonths($i)->format('Y-m-d'),
-                'principal' => $principalPayment->__toString(),
-                'interest' => $interestPayment->__toString(),
-                'total' => $monthlyPayment->__toString(),
+                'payment_number'    => $i,
+                'due_date'          => now()->addMonths($i)->format('Y-m-d'),
+                'principal'         => $principalPayment->__toString(),
+                'interest'          => $interestPayment->__toString(),
+                'total'             => $monthlyPayment->__toString(),
                 'remaining_balance' => $remainingBalance->__toString(),
             ];
         }

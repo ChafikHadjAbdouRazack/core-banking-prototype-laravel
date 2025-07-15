@@ -2,8 +2,8 @@
 
 namespace App\Domain\Basket\Console\Commands;
 
-use App\Domain\Basket\Services\BasketValueCalculationService;
 use App\Domain\Basket\Models\BasketAsset;
+use App\Domain\Basket\Services\BasketValueCalculationService;
 use Illuminate\Console\Command;
 
 class ShowBasketPerformanceCommand extends Command

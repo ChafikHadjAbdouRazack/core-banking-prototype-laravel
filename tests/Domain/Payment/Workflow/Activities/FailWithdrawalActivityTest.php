@@ -10,19 +10,19 @@ it('can fail a withdrawal through activity', function () {
 
     // Create a withdrawal event first
     PaymentWithdrawal::create([
-        'aggregate_uuid' => $withdrawalUuid,
+        'aggregate_uuid'    => $withdrawalUuid,
         'aggregate_version' => 1,
-        'event_version' => 1,
-        'event_class' => 'withdrawal_initiated',
-        'event_properties' => json_encode([
-            'accountUuid' => Str::uuid()->toString(),
-            'amount' => 5000,
-            'currency' => 'USD',
-            'reference' => 'WD-123',
+        'event_version'     => 1,
+        'event_class'       => 'withdrawal_initiated',
+        'event_properties'  => json_encode([
+            'accountUuid'       => Str::uuid()->toString(),
+            'amount'            => 5000,
+            'currency'          => 'USD',
+            'reference'         => 'WD-123',
             'bankAccountNumber' => '****1234',
             'bankRoutingNumber' => '123456789',
-            'bankAccountName' => 'John Doe',
-            'metadata' => [],
+            'bankAccountName'   => 'John Doe',
+            'metadata'          => [],
         ]),
         'meta_data' => json_encode([
             'aggregate_uuid' => $withdrawalUuid,
@@ -32,11 +32,10 @@ it('can fail a withdrawal through activity', function () {
 
     $input = [
         'withdrawal_uuid' => $withdrawalUuid,
-        'reason' => $reason,
+        'reason'          => $reason,
     ];
 
-    $activity = new class extends FailWithdrawalActivity
-    {
+    $activity = new class () extends FailWithdrawalActivity {
         public function __construct()
         {
             // Override constructor

@@ -16,11 +16,11 @@ class AddressData
     public function toArray(): array
     {
         return [
-            'address' => $this->address,
-            'public_key' => $this->publicKey,
-            'chain' => $this->chain,
+            'address'         => $this->address,
+            'public_key'      => $this->publicKey,
+            'chain'           => $this->chain,
             'derivation_path' => $this->derivationPath,
-            'metadata' => $this->metadata,
+            'metadata'        => $this->metadata,
         ];
     }
 }

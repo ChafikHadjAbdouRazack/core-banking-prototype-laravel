@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Domain\Basket\Activities;
 
 use App\Domain\Account\DataObjects\AccountUuid;
+use App\Domain\Basket\Models\BasketAsset;
 use App\Domain\Wallet\Services\WalletService;
 use App\Models\Account;
-use App\Domain\Basket\Models\BasketAsset;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Workflow\Activity;
@@ -49,10 +49,10 @@ class ComposeBasketBusinessActivity extends Activity
                 );
 
                 return [
-                    'basket_code' => $basketCode,
-                    'basket_amount' => $amount,
+                    'basket_code'     => $basketCode,
+                    'basket_amount'   => $amount,
                     'components_used' => $requiredAmounts,
-                    'composed_at' => now()->toISOString(),
+                    'composed_at'     => now()->toISOString(),
                 ];
             }
         );

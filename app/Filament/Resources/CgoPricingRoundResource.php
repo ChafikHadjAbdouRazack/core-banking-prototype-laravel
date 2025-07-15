@@ -2,8 +2,8 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\CgoPricingRoundResource\Pages;
 use App\Domain\Cgo\Models\CgoPricingRound;
+use App\Filament\Resources\CgoPricingRoundResource\Pages;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;

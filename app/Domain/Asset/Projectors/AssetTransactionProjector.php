@@ -27,7 +27,7 @@ class AssetTransactionProjector extends Projector
                     'Account not found for asset transaction',
                     [
                         'account_uuid' => (string) $event->accountUuid,
-                        'asset_code' => $event->assetCode,
+                        'asset_code'   => $event->assetCode,
                     ]
                 );
 
@@ -38,7 +38,7 @@ class AssetTransactionProjector extends Projector
             $accountBalance = AccountBalance::firstOrCreate(
                 [
                     'account_uuid' => (string) $event->accountUuid,
-                    'asset_code' => $event->assetCode,
+                    'asset_code'   => $event->assetCode,
                 ],
                 [
                     'balance' => 0,
@@ -53,10 +53,10 @@ class AssetTransactionProjector extends Projector
                     Log::error(
                         'Insufficient balance for asset transaction',
                         [
-                            'account_uuid' => (string) $event->accountUuid,
-                            'asset_code' => $event->assetCode,
+                            'account_uuid'     => (string) $event->accountUuid,
+                            'asset_code'       => $event->assetCode,
                             'requested_amount' => $event->getAmount(),
-                            'current_balance' => $accountBalance->balance,
+                            'current_balance'  => $accountBalance->balance,
                         ]
                     );
 
@@ -72,10 +72,10 @@ class AssetTransactionProjector extends Projector
                 'Asset transaction processed successfully',
                 [
                     'account_uuid' => (string) $event->accountUuid,
-                    'asset_code' => $event->assetCode,
-                    'type' => $event->type,
-                    'amount' => $event->getAmount(),
-                    'new_balance' => $accountBalance->balance,
+                    'asset_code'   => $event->assetCode,
+                    'type'         => $event->type,
+                    'amount'       => $event->getAmount(),
+                    'new_balance'  => $accountBalance->balance,
                 ]
             );
         } catch (\Exception $e) {
@@ -83,11 +83,11 @@ class AssetTransactionProjector extends Projector
                 'Error processing asset transaction',
                 [
                     'account_uuid' => (string) $event->accountUuid,
-                    'asset_code' => $event->assetCode,
-                    'type' => $event->type,
-                    'amount' => $event->getAmount(),
-                    'error' => $e->getMessage(),
-                    'trace' => $e->getTraceAsString(),
+                    'asset_code'   => $event->assetCode,
+                    'type'         => $event->type,
+                    'amount'       => $event->getAmount(),
+                    'error'        => $e->getMessage(),
+                    'trace'        => $e->getTraceAsString(),
                 ]
             );
 

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Domain\Asset\Models;
 
-use App\Domain\Asset\Models\ExchangeRate;
 use App\Domain\Account\Models\AccountBalance;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -74,7 +73,7 @@ class Asset extends Model
         'precision' => 'integer',
         'is_active' => 'boolean',
         'is_basket' => 'boolean',
-        'metadata' => 'array',
+        'metadata'  => 'array',
     ];
 
     /**

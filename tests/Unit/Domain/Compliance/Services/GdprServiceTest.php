@@ -2,10 +2,10 @@
 
 namespace Tests\Unit\Domain\Compliance\Services;
 
+use App\Domain\Compliance\Models\KycDocument;
 use App\Domain\Compliance\Services\GdprService;
 use App\Models\Account;
 use App\Models\AuditLog;
-use App\Domain\Compliance\Models\KycDocument;
 use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -38,9 +38,9 @@ class GdprServiceTest extends ServiceTestCase
         $account = Account::factory()->create(['user_uuid' => $user->uuid]);
         Transaction::factory()->count(3)->forAccount($account)->create([
             'event_properties' => [
-                'amount' => 10000,
+                'amount'    => 10000,
                 'assetCode' => 'USD',
-                'metadata' => [],
+                'metadata'  => [],
             ],
         ]);
         KycDocument::factory()->count(2)->create(['user_uuid' => $user->uuid]);
@@ -184,9 +184,9 @@ class GdprServiceTest extends ServiceTestCase
                 'type' => 'deposit',
             ],
             'event_properties' => [
-                'amount' => 10000,
+                'amount'    => 10000,
                 'assetCode' => 'USD',
-                'metadata' => [],
+                'metadata'  => [],
             ],
         ]);
 
@@ -195,9 +195,9 @@ class GdprServiceTest extends ServiceTestCase
                 'type' => 'withdrawal',
             ],
             'event_properties' => [
-                'amount' => 5000,
+                'amount'    => 5000,
                 'assetCode' => 'USD',
-                'metadata' => [],
+                'metadata'  => [],
             ],
         ]);
 

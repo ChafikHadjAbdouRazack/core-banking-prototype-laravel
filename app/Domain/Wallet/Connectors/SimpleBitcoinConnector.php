@@ -49,7 +49,7 @@ class SimpleBitcoinConnector implements BlockchainConnector
             publicKey: $publicKey,
             chain: 'bitcoin',
             metadata: [
-                'type' => 'P2PKH',
+                'type'    => 'P2PKH',
                 'network' => $this->network,
             ]
         );
@@ -72,7 +72,7 @@ class SimpleBitcoinConnector implements BlockchainConnector
             chain: 'bitcoin',
             metadata: [
                 'unconfirmed_balance' => (string) ($data['unconfirmed_balance'] ?? 0),
-                'final_balance' => (string) ($data['final_balance'] ?? 0),
+                'final_balance'       => (string) ($data['final_balance'] ?? 0),
             ]
         );
     }
@@ -98,7 +98,7 @@ class SimpleBitcoinConnector implements BlockchainConnector
             estimatedCost: $fee,
             chain: 'bitcoin',
             metadata: [
-                'fee_rate' => $feeRate,
+                'fee_rate'       => $feeRate,
                 'estimated_size' => $txSize,
             ]
         );
@@ -123,7 +123,7 @@ class SimpleBitcoinConnector implements BlockchainConnector
             hash: $data['tx']['hash'],
             status: 'pending',
             metadata: [
-                'network' => $this->network,
+                'network'      => $this->network,
                 'submitted_at' => now()->toIso8601String(),
             ]
         );
@@ -158,7 +158,7 @@ class SimpleBitcoinConnector implements BlockchainConnector
             status: $status,
             metadata: [
                 'confirmations' => $data['confirmations'] ?? 0,
-                'fee' => $data['fees'] ?? 0,
+                'fee'           => $data['fees'] ?? 0,
             ]
         );
     }
@@ -167,9 +167,9 @@ class SimpleBitcoinConnector implements BlockchainConnector
     {
         // Return fee estimates in satoshis per byte
         return [
-            'slow' => $this->getEstimatedFeeRate(0.9),
+            'slow'     => $this->getEstimatedFeeRate(0.9),
             'standard' => $this->getEstimatedFeeRate(0.5),
-            'fast' => $this->getEstimatedFeeRate(0.1),
+            'fast'     => $this->getEstimatedFeeRate(0.1),
         ];
     }
 
@@ -222,9 +222,9 @@ class SimpleBitcoinConnector implements BlockchainConnector
             status: $status,
             metadata: [
                 'confirmations' => $data['confirmations'] ?? 0,
-                'block_height' => $data['block_height'] ?? null,
-                'fee' => $data['fees'] ?? 0,
-                'time' => $data['received'] ?? null,
+                'block_height'  => $data['block_height'] ?? null,
+                'fee'           => $data['fees'] ?? 0,
+                'time'          => $data['received'] ?? null,
             ]
         );
     }

@@ -1,7 +1,7 @@
 <?php
 
-use App\Models\Account;
 use App\Domain\Payment\Models\PaymentTransaction;
+use App\Models\Account;
 use Illuminate\Support\Str;
 
 it('can create a payment transaction', function () {

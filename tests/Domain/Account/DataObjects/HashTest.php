@@ -55,7 +55,7 @@ it('throws exception for non-hexadecimal characters', function () {
 });
 
 it('can compare hashes for equality', function () {
-    $hashValue = str_repeat('abc123', 21).'ab'; // 128 chars
+    $hashValue = str_repeat('abc123', 21) . 'ab'; // 128 chars
     $hash1 = new Hash($hashValue);
     $hash2 = new Hash($hashValue);
 

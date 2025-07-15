@@ -11,7 +11,7 @@ it('can create exchange rate', function () {
         ->between('USD', 'EUR')
         ->valid()
         ->create([
-            'valid_at' => now()->subMinutes(10),
+            'valid_at'   => now()->subMinutes(10),
             'expires_at' => now()->addHours(1),
         ]);
 

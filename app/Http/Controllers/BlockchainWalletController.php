@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
-use App\Domain\Wallet\Contracts\KeyManagementServiceInterface;
-use App\Domain\Wallet\Contracts\WalletConnectorInterface;
 use App\Domain\Account\Models\BlockchainAddress;
 use App\Domain\Account\Models\BlockchainTransaction;
+use App\Domain\Wallet\Contracts\KeyManagementServiceInterface;
+use App\Domain\Wallet\Contracts\WalletConnectorInterface;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -272,7 +272,7 @@ class BlockchainWalletController extends Controller
 
         try {
             $user = Auth::user();
-        /** @var User $user */
+            /** @var User $user */
             $addresses = BlockchainAddress::where('user_uuid', $user->uuid)->get();
 
             $backup = $this->keyManagementService->generateBackup($user->uuid);

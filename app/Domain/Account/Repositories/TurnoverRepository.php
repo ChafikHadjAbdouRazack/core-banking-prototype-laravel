@@ -2,8 +2,8 @@
 
 namespace App\Domain\Account\Repositories;
 
-use App\Models\Account;
 use App\Domain\Account\Models\Turnover;
+use App\Models\Account;
 use DateTimeInterface;
 use Illuminate\Support\Facades\DB;
 
@@ -21,8 +21,7 @@ final class TurnoverRepository
         Account $account,
         DateTimeInterface $date
     ): ?Turnover {
-        return $this->turnover
-            ->where('account_uuid', $account->uuid)
+        return Turnover::where('account_uuid', $account->uuid)
             ->where('date', $date->toDateString())
             ->first();
     }
@@ -35,15 +34,15 @@ final class TurnoverRepository
         return DB::transaction(
             function () use ($date, $accountUuid, $amount) {
                 // Use updateOrCreate with lock for atomic operation
-                $turnover = $this->turnover->lockForUpdate()->updateOrCreate(
+                $turnover = Turnover::lockForUpdate()->updateOrCreate(
                     [
-                        'date' => $date->toDateString(),
+                        'date'         => $date->toDateString(),
                         'account_uuid' => $accountUuid,
                     ],
                     [
-                        'count' => 0,
+                        'count'  => 0,
                         'amount' => 0,
-                        'debit' => 0,
+                        'debit'  => 0,
                         'credit' => 0,
                     ]
                 );

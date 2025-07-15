@@ -6,10 +6,10 @@ namespace App\Domain\Custodian\Services;
 
 use App\Domain\Account\DataObjects\AccountUuid;
 use App\Domain\Custodian\Events\AccountBalanceUpdated;
+use App\Domain\Custodian\Models\CustodianAccount;
 use App\Domain\Custodian\ValueObjects\AccountInfo;
 use App\Domain\Wallet\Services\WalletService;
 use App\Models\Account;
-use App\Domain\Custodian\Models\CustodianAccount;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -35,10 +35,10 @@ class BalanceSynchronizationService
     {
         $this->syncResults = [
             'synchronized' => 0,
-            'failed' => 0,
-            'skipped' => 0,
-            'start_time' => now(),
-            'details' => [],
+            'failed'       => 0,
+            'skipped'      => 0,
+            'start_time'   => now(),
+            'details'      => [],
         ];
 
         $custodianAccounts = $this->getActiveCustodianAccounts();
@@ -94,8 +94,8 @@ class BalanceSynchronizationService
             $custodianAccount->update(
                 [
                     'last_synced_at' => now(),
-                    'sync_status' => 'success',
-                    'sync_error' => null,
+                    'sync_status'    => 'success',
+                    'sync_error'     => null,
                 ]
             );
 
@@ -107,7 +107,7 @@ class BalanceSynchronizationService
                 'Balance synchronization failed',
                 [
                     'custodian_account_id' => $custodianAccount->id,
-                    'error' => $e->getMessage(),
+                    'error'                => $e->getMessage(),
                 ]
             );
 
@@ -115,8 +115,8 @@ class BalanceSynchronizationService
             $custodianAccount->update(
                 [
                     'last_synced_at' => now(),
-                    'sync_status' => 'failed',
-                    'sync_error' => $e->getMessage(),
+                    'sync_status'    => 'failed',
+                    'sync_error'     => $e->getMessage(),
                 ]
             );
 
@@ -212,12 +212,12 @@ class BalanceSynchronizationService
                         Log::info(
                             'Account balance updated',
                             [
-                                'account_uuid' => $account->uuid,
-                                'custodian_id' => $custodianAccount->custodian_id,
-                                'asset_code' => $assetCode,
+                                'account_uuid'     => $account->uuid,
+                                'custodian_id'     => $custodianAccount->custodian_id,
+                                'asset_code'       => $assetCode,
                                 'previous_balance' => $currentBalance,
-                                'new_balance' => $amountInCents,
-                                'difference' => $difference,
+                                'new_balance'      => $amountInCents,
+                                'difference'       => $difference,
                             ]
                         );
                     }
@@ -230,8 +230,8 @@ class BalanceSynchronizationService
                             $custodianAccount->metadata ?? [],
                             [
                                 'last_known_balances' => $accountInfo->balances,
-                                'account_status' => $accountInfo->status,
-                                'synchronized_at' => now()->toISOString(),
+                                'account_status'      => $accountInfo->status,
+                                'synchronized_at'     => now()->toISOString(),
                             ]
                         ),
                     ]
@@ -248,12 +248,12 @@ class BalanceSynchronizationService
         $this->syncResults[$status]++;
         $this->syncResults['details'][] = [
             'custodian_account_id' => $custodianAccount->id,
-            'account_uuid' => $custodianAccount->account_uuid,
-            'custodian_id' => $custodianAccount->custodian_id,
-            'external_account_id' => $custodianAccount->external_account_id,
-            'status' => $status,
-            'message' => $message,
-            'timestamp' => now()->toISOString(),
+            'account_uuid'         => $custodianAccount->account_uuid,
+            'custodian_id'         => $custodianAccount->custodian_id,
+            'external_account_id'  => $custodianAccount->external_account_id,
+            'status'               => $status,
+            'message'              => $message,
+            'timestamp'            => now()->toISOString(),
         ];
     }
 
@@ -275,13 +275,13 @@ class BalanceSynchronizationService
             ->count();
 
         return [
-            'total_accounts' => $totalAccounts,
+            'total_accounts'   => $totalAccounts,
             'synced_last_hour' => $syncedLastHour,
             'failed_last_hour' => $failedLastHour,
-            'never_synced' => $neverSynced,
-            'sync_rate' => $totalAccounts > 0 ? round(($syncedLastHour / $totalAccounts) * 100, 2) : 0,
-            'failure_rate' => $syncedLastHour > 0 ? round(($failedLastHour / $syncedLastHour) * 100, 2) : 0,
-            'last_sync_run' => $this->syncResults['end_time'] ?? null,
+            'never_synced'     => $neverSynced,
+            'sync_rate'        => $totalAccounts > 0 ? round(($syncedLastHour / $totalAccounts) * 100, 2) : 0,
+            'failure_rate'     => $syncedLastHour > 0 ? round(($failedLastHour / $syncedLastHour) * 100, 2) : 0,
+            'last_sync_run'    => $this->syncResults['end_time'] ?? null,
         ];
     }
 }

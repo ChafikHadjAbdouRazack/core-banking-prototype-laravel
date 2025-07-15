@@ -2,8 +2,8 @@
 
 namespace App\Domain\Account\Services;
 
-use App\Models\User;
 use App\Domain\Banking\Models\UserBankPreference;
+use App\Models\User;
 use App\Traits\HandlesNestedTransactions;
 use Illuminate\Support\Collection;
 
@@ -24,12 +24,12 @@ class BankAllocationService
                 foreach ($defaultAllocations as $allocation) {
                     $preference = $user->bankPreferences()->create(
                         [
-                            'bank_code' => $allocation['bank_code'],
-                            'bank_name' => $allocation['bank_name'],
+                            'bank_code'             => $allocation['bank_code'],
+                            'bank_name'             => $allocation['bank_name'],
                             'allocation_percentage' => $allocation['allocation_percentage'],
-                            'is_primary' => $allocation['is_primary'],
-                            'status' => $allocation['status'],
-                            'metadata' => $allocation['metadata'] ?? [],
+                            'is_primary'            => $allocation['is_primary'],
+                            'status'                => $allocation['status'],
+                            'metadata'              => $allocation['metadata'] ?? [],
                         ]
                     );
                     $preferences->push($preference);
@@ -82,12 +82,12 @@ class BankAllocationService
                     $bankInfo = UserBankPreference::AVAILABLE_BANKS[$bankCode];
                     $preference = $user->bankPreferences()->create(
                         [
-                            'bank_code' => $bankCode,
-                            'bank_name' => $bankInfo['name'],
+                            'bank_code'             => $bankCode,
+                            'bank_name'             => $bankInfo['name'],
                             'allocation_percentage' => $percentage,
-                            'is_primary' => $isFirst,
-                            'status' => 'active',
-                            'metadata' => $bankInfo,
+                            'is_primary'            => $isFirst,
+                            'status'                => 'active',
+                            'metadata'              => $bankInfo,
                         ]
                     );
 
@@ -132,12 +132,12 @@ class BankAllocationService
 
         return $user->bankPreferences()->create(
             [
-                'bank_code' => $bankCode,
-                'bank_name' => $bankInfo['name'],
+                'bank_code'             => $bankCode,
+                'bank_name'             => $bankInfo['name'],
                 'allocation_percentage' => $percentage,
-                'is_primary' => false,
-                'status' => 'active',
-                'metadata' => $bankInfo,
+                'is_primary'            => false,
+                'status'                => 'active',
+                'metadata'              => $bankInfo,
             ]
         );
     }
@@ -211,20 +211,20 @@ class BankAllocationService
             $isDiversified = UserBankPreference::isDiversified($user->uuid);
 
             return [
-                'distribution' => $distribution,
-                'total_amount' => $amountInCents,
+                'distribution'             => $distribution,
+                'total_amount'             => $amountInCents,
                 'total_insurance_coverage' => $totalInsurance,
-                'is_diversified' => $isDiversified,
-                'bank_count' => count($distribution),
+                'is_diversified'           => $isDiversified,
+                'bank_count'               => count($distribution),
             ];
         } catch (\Exception $e) {
             return [
-                'error' => $e->getMessage(),
-                'distribution' => [],
-                'total_amount' => $amountInCents,
+                'error'                    => $e->getMessage(),
+                'distribution'             => [],
+                'total_amount'             => $amountInCents,
                 'total_insurance_coverage' => 0,
-                'is_diversified' => false,
-                'bank_count' => 0,
+                'is_diversified'           => false,
+                'bank_count'               => 0,
             ];
         }
     }

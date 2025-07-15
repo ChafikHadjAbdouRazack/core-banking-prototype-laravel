@@ -20,16 +20,16 @@ class LoanProjector extends Projector
     {
         Loan::create(
             [
-                'id' => $event->loanId,
-                'application_id' => $event->applicationId,
-                'borrower_id' => $event->borrowerId,
-                'principal' => $event->principal,
-                'interest_rate' => $event->interestRate,
-                'term_months' => $event->termMonths,
+                'id'                 => $event->loanId,
+                'application_id'     => $event->applicationId,
+                'borrower_id'        => $event->borrowerId,
+                'principal'          => $event->principal,
+                'interest_rate'      => $event->interestRate,
+                'term_months'        => $event->termMonths,
                 'repayment_schedule' => $event->repaymentSchedule->toArray(),
-                'terms' => $event->terms,
-                'status' => 'created',
-                'created_at' => $event->createdAt,
+                'terms'              => $event->terms,
+                'status'             => 'created',
+                'created_at'         => $event->createdAt,
             ]
         );
     }
@@ -38,10 +38,10 @@ class LoanProjector extends Projector
     {
         Loan::where('id', $event->loanId)->update(
             [
-                'investor_ids' => $event->investorIds,
+                'investor_ids'  => $event->investorIds,
                 'funded_amount' => $event->fundedAmount,
-                'funded_at' => $event->fundedAt,
-                'status' => 'funded',
+                'funded_at'     => $event->fundedAt,
+                'status'        => 'funded',
             ]
         );
     }
@@ -51,8 +51,8 @@ class LoanProjector extends Projector
         Loan::where('id', $event->loanId)->update(
             [
                 'disbursed_amount' => $event->amount,
-                'disbursed_at' => $event->disbursedAt,
-                'status' => 'active',
+                'disbursed_at'     => $event->disbursedAt,
+                'status'           => 'active',
             ]
         );
     }
@@ -69,13 +69,13 @@ class LoanProjector extends Projector
         // Create repayment record
         LoanRepayment::create(
             [
-                'loan_id' => $event->loanId,
-                'payment_number' => $event->paymentNumber,
-                'amount' => $event->amount,
-                'principal_amount' => $event->principalAmount,
-                'interest_amount' => $event->interestAmount,
+                'loan_id'           => $event->loanId,
+                'payment_number'    => $event->paymentNumber,
+                'amount'            => $event->amount,
+                'principal_amount'  => $event->principalAmount,
+                'interest_amount'   => $event->interestAmount,
                 'remaining_balance' => $event->remainingBalance,
-                'paid_at' => $event->paidAt,
+                'paid_at'           => $event->paidAt,
             ]
         );
     }
@@ -85,7 +85,7 @@ class LoanProjector extends Projector
         Loan::where('id', $event->loanId)->update(
             [
                 'missed_payments' => \DB::raw('missed_payments + 1'),
-                'status' => 'delinquent',
+                'status'          => 'delinquent',
             ]
         );
     }
@@ -95,7 +95,7 @@ class LoanProjector extends Projector
         Loan::where('id', $event->loanId)->update(
             [
                 'defaulted_at' => $event->defaultedAt,
-                'status' => 'defaulted',
+                'status'       => 'defaulted',
             ]
         );
     }
@@ -105,7 +105,7 @@ class LoanProjector extends Projector
         Loan::where('id', $event->loanId)->update(
             [
                 'completed_at' => $event->completedAt,
-                'status' => 'completed',
+                'status'       => 'completed',
             ]
         );
     }
@@ -115,9 +115,9 @@ class LoanProjector extends Projector
         Loan::where('id', $event->loanId)->update(
             [
                 'settlement_amount' => $event->settlementAmount,
-                'settled_at' => $event->settledAt,
-                'settled_by' => $event->settledBy,
-                'status' => 'settled',
+                'settled_at'        => $event->settledAt,
+                'settled_by'        => $event->settledBy,
+                'status'            => 'settled',
             ]
         );
     }

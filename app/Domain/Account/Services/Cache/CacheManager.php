@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domain\Account\Services\Cache;
 
+use App\Domain\Account\Models\Turnover;
 use App\Models\Account;
 use App\Models\Transaction;
-use App\Domain\Account\Models\Turnover;
 
 class CacheManager
 {

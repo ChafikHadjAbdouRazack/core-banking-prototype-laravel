@@ -17,7 +17,7 @@ class LoanApplicationWorkflow extends Workflow
             LoanApplicationActivities::class,
             [
                 'startToCloseTimeout' => 300, // 5 minutes
-                'retryAttempts' => 3,
+                'retryAttempts'       => 3,
             ]
         );
     }
@@ -51,8 +51,8 @@ class LoanApplicationWorkflow extends Workflow
             );
 
             return [
-                'status' => 'rejected',
-                'reason' => 'KYC check failed',
+                'status'        => 'rejected',
+                'reason'        => 'KYC check failed',
                 'applicationId' => $applicationId,
             ];
         }
@@ -116,20 +116,20 @@ class LoanApplicationWorkflow extends Workflow
                 $borrowerId,
                 'approved',
                 [
-                    'applicationId' => $applicationId,
-                    'loanId' => $loanId,
+                    'applicationId'  => $applicationId,
+                    'loanId'         => $loanId,
                     'approvedAmount' => $decision['approvedAmount'],
-                    'interestRate' => $decision['interestRate'],
-                    'termMonths' => $termMonths,
+                    'interestRate'   => $decision['interestRate'],
+                    'termMonths'     => $termMonths,
                 ]
             );
 
             return [
-                'status' => 'approved',
-                'applicationId' => $applicationId,
-                'loanId' => $loanId,
+                'status'         => 'approved',
+                'applicationId'  => $applicationId,
+                'loanId'         => $loanId,
                 'approvedAmount' => $decision['approvedAmount'],
-                'interestRate' => $decision['interestRate'],
+                'interestRate'   => $decision['interestRate'],
             ];
         } else {
             // Reject application
@@ -144,14 +144,14 @@ class LoanApplicationWorkflow extends Workflow
                 'rejected',
                 [
                     'applicationId' => $applicationId,
-                    'reasons' => $decision['rejectionReasons'],
+                    'reasons'       => $decision['rejectionReasons'],
                 ]
             );
 
             return [
-                'status' => 'rejected',
+                'status'        => 'rejected',
                 'applicationId' => $applicationId,
-                'reasons' => $decision['rejectionReasons'],
+                'reasons'       => $decision['rejectionReasons'],
             ];
         }
     }

@@ -21,10 +21,10 @@ class UpdateBatchItem
             ->where('sequence', $event->itemIndex + 1)
             ->update(
                 [
-                    'status' => $event->status,
-                    'result' => $event->result,
+                    'status'        => $event->status,
+                    'result'        => $event->result,
                     'error_message' => $event->errorMessage,
-                    'processed_at' => now(),
+                    'processed_at'  => now(),
                 ]
             );
 

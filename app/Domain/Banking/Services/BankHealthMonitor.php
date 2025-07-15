@@ -30,8 +30,8 @@ class BankHealthMonitor
     {
         if (! isset($this->banks[$bankCode])) {
             return [
-                'status' => 'unknown',
-                'message' => 'Bank not registered',
+                'status'    => 'unknown',
+                'message'   => 'Bank not registered',
                 'timestamp' => now()->toIso8601String(),
             ];
         }
@@ -50,11 +50,11 @@ class BankHealthMonitor
                     $responseTime = (microtime(true) - $startTime) * 1000; // Convert to ms
 
                     $health = [
-                        'status' => $isAvailable ? 'healthy' : 'unhealthy',
-                        'available' => $isAvailable,
+                        'status'           => $isAvailable ? 'healthy' : 'unhealthy',
+                        'available'        => $isAvailable,
                         'response_time_ms' => round($responseTime, 2),
-                        'last_check' => now()->toIso8601String(),
-                        'capabilities' => $connector->getCapabilities()->toArray(),
+                        'last_check'       => now()->toIso8601String(),
+                        'capabilities'     => $connector->getCapabilities()->toArray(),
                     ];
 
                     // Additional health checks
@@ -70,14 +70,14 @@ class BankHealthMonitor
                         'Bank health check failed',
                         [
                             'bank_code' => $bankCode,
-                            'error' => $e->getMessage(),
+                            'error'     => $e->getMessage(),
                         ]
                     );
 
                     $health = [
-                        'status' => 'error',
-                        'available' => false,
-                        'error' => $e->getMessage(),
+                        'status'     => 'error',
+                        'available'  => false,
+                        'error'      => $e->getMessage(),
                         'last_check' => now()->toIso8601String(),
                     ];
 
@@ -131,12 +131,12 @@ class BankHealthMonitor
         $allHealth = $this->checkAllBanks();
 
         $metrics = [
-            'total_banks' => count($this->banks),
-            'healthy_banks' => 0,
-            'unhealthy_banks' => 0,
+            'total_banks'           => count($this->banks),
+            'healthy_banks'         => 0,
+            'unhealthy_banks'       => 0,
             'average_response_time' => 0,
-            'checks_performed' => count($this->healthChecks),
-            'last_check' => now()->toIso8601String(),
+            'checks_performed'      => count($this->healthChecks),
+            'last_check'            => now()->toIso8601String(),
         ];
 
         $totalResponseTime = 0;

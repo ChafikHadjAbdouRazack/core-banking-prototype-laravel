@@ -88,9 +88,9 @@ class FraudRuleFactory extends Factory
     private function generateThresholds(): array
     {
         return [
-            'amount_threshold'      => $this->faker->numberBetween(1000, 50000),
-            'velocity_threshold'    => $this->faker->numberBetween(5, 50),
-            'risk_score_threshold'  => $this->faker->numberBetween(60, 90),
+            'amount_threshold'     => $this->faker->numberBetween(1000, 50000),
+            'velocity_threshold'   => $this->faker->numberBetween(5, 50),
+            'risk_score_threshold' => $this->faker->numberBetween(60, 90),
         ];
     }
 

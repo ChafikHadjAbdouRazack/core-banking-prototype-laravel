@@ -49,11 +49,11 @@ class ExchangeRate extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'rate' => 'decimal:10',
-        'valid_at' => 'datetime',
+        'rate'       => 'decimal:10',
+        'valid_at'   => 'datetime',
         'expires_at' => 'datetime',
-        'is_active' => 'boolean',
-        'metadata' => 'array',
+        'is_active'  => 'boolean',
+        'metadata'   => 'array',
     ];
 
     /**

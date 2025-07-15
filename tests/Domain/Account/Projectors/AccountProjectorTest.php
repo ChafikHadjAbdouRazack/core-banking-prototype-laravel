@@ -11,7 +11,7 @@ use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 /**
- * @property \App\Models\Account $account
+ * @property Account $account
  * @property \App\Models\User $business_user
  */
 class AccountProjectorTest extends TestCase
@@ -21,9 +21,9 @@ class AccountProjectorTest extends TestCase
     #[Test]
     public function test_create(): void
     {
-        $this->assertDatabaseHas((new Account)->getTable(), [
+        $this->assertDatabaseHas((new Account())->getTable(), [
             'user_uuid' => $this->business_user->uuid,
-            'uuid' => $this->account->uuid,
+            'uuid'      => $this->account->uuid,
         ]);
 
         $this->assertTrue($this->account->user->is($this->business_user));
@@ -92,9 +92,9 @@ class AccountProjectorTest extends TestCase
             ->deleteAccount()
             ->persist();
 
-        $this->assertDatabaseMissing((new Account)->getTable(), [
+        $this->assertDatabaseMissing((new Account())->getTable(), [
             'user_uuid' => $this->business_user->uuid,
-            'uuid' => $this->account->uuid,
+            'uuid'      => $this->account->uuid,
         ]);
     }
 }

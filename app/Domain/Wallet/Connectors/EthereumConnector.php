@@ -102,8 +102,8 @@ class EthereumConnector implements BlockchainConnector
 
         // Estimate gas limit
         $txParams = [
-            'from' => $transaction->from,
-            'to' => $transaction->to,
+            'from'  => $transaction->from,
+            'to'    => $transaction->to,
             'value' => '0x' . dechex($transaction->value),
         ];
 
@@ -170,7 +170,7 @@ class EthereumConnector implements BlockchainConnector
             hash: $hash,
             status: 'pending',
             metadata: [
-                'chain_id' => $this->chainId,
+                'chain_id'     => $this->chainId,
                 'submitted_at' => now()->toIso8601String(),
             ]
         );
@@ -249,17 +249,17 @@ class EthereumConnector implements BlockchainConnector
         $instant = bcmul($gasPrice, '1.5');
 
         return [
-            'slow' => $slow,
+            'slow'     => $slow,
             'standard' => $standard,
-            'fast' => $fast,
-            'instant' => $instant,
-            'eip1559' => [
-                'base_fee' => $gasPrice,
+            'fast'     => $fast,
+            'instant'  => $instant,
+            'eip1559'  => [
+                'base_fee'      => $gasPrice,
                 'priority_fees' => [
-                    'slow' => '1000000000', // 1 gwei
+                    'slow'     => '1000000000', // 1 gwei
                     'standard' => '2000000000', // 2 gwei
-                    'fast' => '3000000000', // 3 gwei
-                    'instant' => '5000000000', // 5 gwei
+                    'fast'     => '3000000000', // 3 gwei
+                    'instant'  => '5000000000', // 5 gwei
                 ],
             ],
         ];
@@ -353,10 +353,10 @@ class EthereumConnector implements BlockchainConnector
             hash: $hash,
             status: $status,
             metadata: [
-                'chain_id' => $this->chainId,
-                'confirmations' => $confirmations,
-                'block_number' => hexdec($receipt->blockNumber ?? '0'),
-                'gas_used' => hexdec($receipt->gasUsed ?? '0'),
+                'chain_id'            => $this->chainId,
+                'confirmations'       => $confirmations,
+                'block_number'        => hexdec($receipt->blockNumber ?? '0'),
+                'gas_used'            => hexdec($receipt->gasUsed ?? '0'),
                 'effective_gas_price' => $receipt->effectiveGasPrice ?? null,
             ]
         );

@@ -30,14 +30,14 @@ class LoanCollateral extends Model
     ];
 
     protected $casts = [
-        'estimated_value' => 'decimal:2',
-        'liquidation_value' => 'decimal:2',
-        'verified_at' => 'datetime',
-        'released_at' => 'datetime',
-        'liquidated_at' => 'datetime',
+        'estimated_value'     => 'decimal:2',
+        'liquidation_value'   => 'decimal:2',
+        'verified_at'         => 'datetime',
+        'released_at'         => 'datetime',
+        'liquidated_at'       => 'datetime',
         'last_valuation_date' => 'datetime',
-        'valuation_history' => 'array',
-        'metadata' => 'array',
+        'valuation_history'   => 'array',
+        'metadata'            => 'array',
     ];
 
     public $incrementing = false;
@@ -53,11 +53,11 @@ class LoanCollateral extends Model
     {
         return match ($this->status) {
             'pending_verification' => 'yellow',
-            'verified' => 'green',
-            'rejected' => 'red',
-            'released' => 'blue',
-            'liquidated' => 'gray',
-            default => 'gray'
+            'verified'             => 'green',
+            'rejected'             => 'red',
+            'released'             => 'blue',
+            'liquidated'           => 'gray',
+            default                => 'gray'
         };
     }
 

@@ -24,7 +24,7 @@ class ExchangeNullAccountTest extends DomainTestCase
 
         // Create a team for the user (required by Jetstream)
         $team = Team::factory()->create([
-            'user_id' => $user->id,
+            'user_id'       => $user->id,
             'personal_team' => true,
         ]);
 
@@ -33,18 +33,18 @@ class ExchangeNullAccountTest extends DomainTestCase
 
         // Create assets for exchange
         Asset::firstOrCreate(['code' => 'EUR'], [
-            'name' => 'Euro',
-            'type' => 'fiat',
-            'is_enabled' => true,
-            'is_tradeable' => true,
+            'name'           => 'Euro',
+            'type'           => 'fiat',
+            'is_enabled'     => true,
+            'is_tradeable'   => true,
             'decimal_places' => 2,
         ]);
 
         Asset::firstOrCreate(['code' => 'BTC'], [
-            'name' => 'Bitcoin',
-            'type' => 'crypto',
-            'is_enabled' => true,
-            'is_tradeable' => true,
+            'name'           => 'Bitcoin',
+            'type'           => 'crypto',
+            'is_enabled'     => true,
+            'is_tradeable'   => true,
             'decimal_places' => 8,
         ]);
 
@@ -76,7 +76,7 @@ class ExchangeNullAccountTest extends DomainTestCase
 
         // Create a team
         $team = Team::factory()->create([
-            'user_id' => $user->id,
+            'user_id'       => $user->id,
             'personal_team' => true,
         ]);
 
@@ -86,23 +86,23 @@ class ExchangeNullAccountTest extends DomainTestCase
         // Create an account for the user
         $account = Account::factory()->create([
             'user_uuid' => $user->uuid,
-            'name' => $user->name."'s Account",
+            'name'      => $user->name . "'s Account",
         ]);
 
         // Create assets
         Asset::firstOrCreate(['code' => 'EUR'], [
-            'name' => 'Euro',
-            'type' => 'fiat',
-            'is_enabled' => true,
-            'is_tradeable' => true,
+            'name'           => 'Euro',
+            'type'           => 'fiat',
+            'is_enabled'     => true,
+            'is_tradeable'   => true,
             'decimal_places' => 2,
         ]);
 
         Asset::firstOrCreate(['code' => 'BTC'], [
-            'name' => 'Bitcoin',
-            'type' => 'crypto',
-            'is_enabled' => true,
-            'is_tradeable' => true,
+            'name'           => 'Bitcoin',
+            'type'           => 'crypto',
+            'is_enabled'     => true,
+            'is_tradeable'   => true,
             'decimal_places' => 8,
         ]);
 

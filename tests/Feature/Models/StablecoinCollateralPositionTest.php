@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Tests\Feature\Models;
 
 use App\Domain\Asset\Models\Asset;
-use App\Models\Account;
 use App\Domain\Stablecoin\Models\Stablecoin;
 use App\Domain\Stablecoin\Models\StablecoinCollateralPosition;
+use App\Models\Account;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 

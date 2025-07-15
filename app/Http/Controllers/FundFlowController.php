@@ -94,7 +94,6 @@ class FundFlowController extends Controller
     {
         $user = Auth::user();
         /** @var User $user */
-
         $filters = [
             'period'    => $request->get('period', '7days'),
             'account'   => $request->get('account', 'all'),

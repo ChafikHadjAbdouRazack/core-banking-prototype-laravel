@@ -31,7 +31,7 @@ class InitiateWithdrawalActivity extends Activity
 
         return [
             'withdrawal_uuid' => $withdrawalUuid,
-            'status' => 'initiated',
+            'status'          => 'initiated',
         ];
     }
 }

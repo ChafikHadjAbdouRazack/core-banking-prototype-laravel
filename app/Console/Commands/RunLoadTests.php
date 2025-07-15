@@ -2,11 +2,11 @@
 
 namespace App\Console\Commands;
 
-use App\Models\User;
-use App\Models\Account;
 use App\Domain\Account\Models\AccountBalance;
 use App\Domain\Asset\Models\ExchangeRate;
 use App\Domain\Webhook\Models\Webhook;
+use App\Models\Account;
+use App\Models\User;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;

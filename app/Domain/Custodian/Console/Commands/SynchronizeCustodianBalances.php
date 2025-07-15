@@ -2,8 +2,8 @@
 
 namespace App\Domain\Custodian\Console\Commands;
 
-use App\Domain\Custodian\Services\BalanceSynchronizationService;
 use App\Domain\Custodian\Models\CustodianAccount;
+use App\Domain\Custodian\Services\BalanceSynchronizationService;
 use Illuminate\Console\Command;
 
 class SynchronizeCustodianBalances extends Command

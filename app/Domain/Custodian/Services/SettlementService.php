@@ -49,9 +49,9 @@ class SettlementService
         $this->settlementConfig = config(
             'custodians.settlement',
             [
-                'type' => self::SETTLEMENT_NET,
+                'type'                   => self::SETTLEMENT_NET,
                 'batch_interval_minutes' => 60,
-                'min_settlement_amount' => 10000, // $100.00
+                'min_settlement_amount'  => 10000, // $100.00
             ]
         );
     }
@@ -67,9 +67,9 @@ class SettlementService
 
         return match ($settlementType) {
             self::SETTLEMENT_REALTIME => $this->processRealtimeSettlements(),
-            self::SETTLEMENT_BATCH => $this->processBatchSettlements(),
-            self::SETTLEMENT_NET => $this->processNetSettlements(),
-            default => throw new \RuntimeException("Unknown settlement type: {$settlementType}"),
+            self::SETTLEMENT_BATCH    => $this->processBatchSettlements(),
+            self::SETTLEMENT_NET      => $this->processNetSettlements(),
+            default                   => throw new \RuntimeException("Unknown settlement type: {$settlementType}"),
         };
     }
 
@@ -85,8 +85,8 @@ class SettlementService
             ->get();
 
         $results = [
-            'processed' => 0,
-            'failed' => 0,
+            'processed'    => 0,
+            'failed'       => 0,
             'total_amount' => 0,
         ];
 
@@ -100,7 +100,7 @@ class SettlementService
                     'Failed to settle transfer',
                     [
                         'transfer_id' => $transfer->id,
-                        'error' => $e->getMessage(),
+                        'error'       => $e->getMessage(),
                     ]
                 );
                 $results['failed']++;
@@ -127,8 +127,8 @@ class SettlementService
 
         if ($transfers->isEmpty()) {
             return [
-                'batches' => 0,
-                'transfers' => 0,
+                'batches'      => 0,
+                'transfers'    => 0,
                 'total_amount' => 0,
             ];
         }
@@ -144,8 +144,8 @@ class SettlementService
         );
 
         $results = [
-            'batches' => 0,
-            'transfers' => 0,
+            'batches'      => 0,
+            'transfers'    => 0,
             'total_amount' => 0,
         ];
 
@@ -182,8 +182,8 @@ class SettlementService
         $results = [
             'settlements' => 0,
             'total_gross' => 0,
-            'total_net' => 0,
-            'savings' => 0,
+            'total_net'   => 0,
+            'savings'     => 0,
         ];
 
         foreach ($netPositions as $position) {
@@ -204,7 +204,7 @@ class SettlementService
                     'Failed to process net settlement',
                     [
                         'position' => $position,
-                        'error' => $e->getMessage(),
+                        'error'    => $e->getMessage(),
                     ]
                 );
             }
@@ -260,10 +260,10 @@ class SettlementService
                 $netPositions->push(
                     (object) [
                         'from_custodian' => $position->from_custodian,
-                        'to_custodian' => $position->to_custodian,
-                        'asset_code' => $position->asset_code,
-                        'gross_amount' => $position->total_amount + $reverseAmount,
-                        'net_amount' => $netAmount,
+                        'to_custodian'   => $position->to_custodian,
+                        'asset_code'     => $position->asset_code,
+                        'gross_amount'   => $position->total_amount + $reverseAmount,
+                        'net_amount'     => $netAmount,
                         'transfer_count' => $position->transfer_count + ($reverseFlow ? $reverseFlow->transfer_count : 0),
                     ]
                 );
@@ -280,10 +280,10 @@ class SettlementService
     {
         $settlementId = $this->createSettlement(
             [
-                'type' => self::SETTLEMENT_REALTIME,
-                'status' => self::STATUS_PROCESSING,
-                'transfers' => [$transfer->id],
-                'amount' => $transfer->amount,
+                'type'       => self::SETTLEMENT_REALTIME,
+                'status'     => self::STATUS_PROCESSING,
+                'transfers'  => [$transfer->id],
+                'amount'     => $transfer->amount,
                 'asset_code' => $transfer->asset_code,
             ]
         );
@@ -311,16 +311,16 @@ class SettlementService
 
         DB::table('settlements')->insert(
             [
-                'id' => $settlementId,
-                'type' => self::SETTLEMENT_BATCH,
+                'id'             => $settlementId,
+                'type'           => self::SETTLEMENT_BATCH,
                 'from_custodian' => $fromCustodian,
-                'to_custodian' => $toCustodian,
-                'asset_code' => $assetCode,
-                'gross_amount' => $totalAmount,
-                'net_amount' => $totalAmount,
+                'to_custodian'   => $toCustodian,
+                'asset_code'     => $assetCode,
+                'gross_amount'   => $totalAmount,
+                'net_amount'     => $totalAmount,
                 'transfer_count' => $transfers->count(),
-                'status' => self::STATUS_PENDING,
-                'metadata' => json_encode(
+                'status'         => self::STATUS_PENDING,
+                'metadata'       => json_encode(
                     [
                         'transfer_ids' => $transfers->pluck('id')->toArray(),
                     ]
@@ -372,19 +372,19 @@ class SettlementService
 
         DB::table('settlements')->insert(
             [
-                'id' => $settlementId,
-                'type' => self::SETTLEMENT_NET,
+                'id'             => $settlementId,
+                'type'           => self::SETTLEMENT_NET,
                 'from_custodian' => $position->from_custodian,
-                'to_custodian' => $position->to_custodian,
-                'asset_code' => $position->asset_code,
-                'gross_amount' => $position->gross_amount,
-                'net_amount' => $position->net_amount,
+                'to_custodian'   => $position->to_custodian,
+                'asset_code'     => $position->asset_code,
+                'gross_amount'   => $position->gross_amount,
+                'net_amount'     => $position->net_amount,
                 'transfer_count' => $position->transfer_count,
-                'status' => self::STATUS_PENDING,
-                'metadata' => json_encode(
+                'status'         => self::STATUS_PENDING,
+                'metadata'       => json_encode(
                     [
                         'transfer_ids' => $transfers->toArray(),
-                        'savings' => $position->gross_amount - $position->net_amount,
+                        'savings'      => $position->gross_amount - $position->net_amount,
                     ]
                 ),
                 'created_at' => now(),
@@ -433,7 +433,7 @@ class SettlementService
                 ->where('id', $settlementId)
                 ->update(
                     [
-                        'status' => self::STATUS_PROCESSING,
+                        'status'       => self::STATUS_PROCESSING,
                         'processed_at' => now(),
                     ]
                 );
@@ -453,7 +453,7 @@ class SettlementService
                 description: "Settlement: {$settlement->type}",
                 metadata: [
                     'settlement_type' => $settlement->type,
-                    'transfer_count' => $settlement->transfer_count,
+                    'transfer_count'  => $settlement->transfer_count,
                 ]
             );
 
@@ -464,8 +464,8 @@ class SettlementService
                 ->where('id', $settlementId)
                 ->update(
                     [
-                        'status' => self::STATUS_COMPLETED,
-                        'completed_at' => now(),
+                        'status'             => self::STATUS_COMPLETED,
+                        'completed_at'       => now(),
                         'external_reference' => $receipt->id,
                     ]
                 );
@@ -474,8 +474,8 @@ class SettlementService
                 'Settlement executed successfully',
                 [
                     'settlement_id' => $settlementId,
-                    'amount' => $settlement->net_amount,
-                    'asset' => $settlement->asset_code,
+                    'amount'        => $settlement->net_amount,
+                    'asset'         => $settlement->asset_code,
                 ]
             );
 
@@ -485,7 +485,7 @@ class SettlementService
                 'Settlement execution failed',
                 [
                     'settlement_id' => $settlementId,
-                    'error' => $e->getMessage(),
+                    'error'         => $e->getMessage(),
                 ]
             );
 
@@ -493,9 +493,9 @@ class SettlementService
                 ->where('id', $settlementId)
                 ->update(
                     [
-                        'status' => self::STATUS_FAILED,
+                        'status'         => self::STATUS_FAILED,
                         'failure_reason' => $e->getMessage(),
-                        'failed_at' => now(),
+                        'failed_at'      => now(),
                     ]
                 );
 
@@ -512,14 +512,14 @@ class SettlementService
 
         DB::table('settlements')->insert(
             [
-                'id' => $settlementId,
-                'type' => $data['type'],
-                'status' => $data['status'],
-                'asset_code' => $data['asset_code'],
-                'gross_amount' => $data['amount'],
-                'net_amount' => $data['amount'],
+                'id'             => $settlementId,
+                'type'           => $data['type'],
+                'status'         => $data['status'],
+                'asset_code'     => $data['asset_code'],
+                'gross_amount'   => $data['amount'],
+                'net_amount'     => $data['amount'],
                 'transfer_count' => count($data['transfers']),
-                'metadata' => json_encode(
+                'metadata'       => json_encode(
                     [
                         'transfer_ids' => $data['transfers'],
                     ]
@@ -594,22 +594,22 @@ class SettlementService
             ->get();
 
         return [
-            'total' => (int) ($stats->total_settlements ?? 0),
-            'completed' => (int) ($stats->completed ?? 0),
-            'failed' => (int) ($stats->failed ?? 0),
-            'pending' => (int) ($stats->pending ?? 0),
+            'total'              => (int) ($stats->total_settlements ?? 0),
+            'completed'          => (int) ($stats->completed ?? 0),
+            'failed'             => (int) ($stats->failed ?? 0),
+            'pending'            => (int) ($stats->pending ?? 0),
             'total_gross_amount' => (int) ($stats->total_gross ?? 0),
-            'total_net_amount' => (int) ($stats->total_net ?? 0),
-            'total_savings' => (int) (($stats->total_gross ?? 0) - ($stats->total_net ?? 0)),
+            'total_net_amount'   => (int) ($stats->total_net ?? 0),
+            'total_savings'      => (int) (($stats->total_gross ?? 0) - ($stats->total_net ?? 0)),
             'savings_percentage' => $stats->total_gross > 0
                 ? round(((float) ($stats->total_gross - $stats->total_net) / (float) $stats->total_gross) * 100, 2)
                 : 0,
             'total_transfers_settled' => (int) ($stats->total_transfers ?? 0),
-            'avg_settlement_seconds' => round((float) ($stats->avg_settlement_seconds ?? 0), 2),
-            'by_type' => $byType->keyBy('type')->map(
+            'avg_settlement_seconds'  => round((float) ($stats->avg_settlement_seconds ?? 0), 2),
+            'by_type'                 => $byType->keyBy('type')->map(
                 function ($item) {
                     return [
-                        'count' => (int) $item->count,
+                        'count'  => (int) $item->count,
                         'amount' => (int) $item->amount,
                     ];
                 }

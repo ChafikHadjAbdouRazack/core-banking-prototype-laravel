@@ -19,9 +19,9 @@ class CancelBatchJob
         // Update batch job status
         $batchJob->update(
             [
-                'status' => 'cancelled',
+                'status'       => 'cancelled',
                 'completed_at' => $event->cancelledAt,
-                'metadata' => array_merge(
+                'metadata'     => array_merge(
                     $batchJob->metadata ?? [],
                     [
                         'cancellation_reason' => $event->reason,

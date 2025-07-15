@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Domain\Lending\Aggregates\Loan as LoanAggregate;
-use App\Http\Controllers\Controller;
 use App\Domain\Lending\Models\Loan;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 

@@ -2,8 +2,8 @@
 
 namespace App\Filament\Admin\Resources;
 
-use App\Filament\Admin\Resources\SubscriberResource\Pages;
 use App\Domain\Newsletter\Models\Subscriber;
+use App\Filament\Admin\Resources\SubscriberResource\Pages;
 use Filament\Forms;
 use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Form;

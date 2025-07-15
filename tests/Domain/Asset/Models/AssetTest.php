@@ -6,27 +6,27 @@ use App\Domain\Asset\Models\Asset;
 
 describe('Asset Model', function () {
     it('uses correct table', function () {
-        $asset = new Asset;
+        $asset = new Asset();
         expect($asset->getTable())->toBe('assets');
     });
 
     it('has correct primary key', function () {
-        $asset = new Asset;
+        $asset = new Asset();
         expect($asset->getKeyName())->toBe('code');
     });
 
     it('does not use incrementing primary key', function () {
-        $asset = new Asset;
+        $asset = new Asset();
         expect($asset->getIncrementing())->toBeFalse();
     });
 
     it('uses string key type', function () {
-        $asset = new Asset;
+        $asset = new Asset();
         expect($asset->getKeyType())->toBe('string');
     });
 
     it('has correct fillable attributes', function () {
-        $asset = new Asset;
+        $asset = new Asset();
         $fillable = $asset->getFillable();
 
         expect($fillable)->toContain('code');
@@ -38,7 +38,7 @@ describe('Asset Model', function () {
     });
 
     it('has correct casts', function () {
-        $asset = new Asset;
+        $asset = new Asset();
         $casts = $asset->getCasts();
 
         expect($casts)->toHaveKey('is_active');
@@ -48,12 +48,12 @@ describe('Asset Model', function () {
 
     it('can create asset with all attributes', function () {
         $asset = Asset::factory()->create([
-            'code' => 'TEST',
-            'name' => 'Test Currency',
-            'type' => 'fiat',
+            'code'      => 'TEST',
+            'name'      => 'Test Currency',
+            'type'      => 'fiat',
             'precision' => 2,
             'is_active' => true,
-            'metadata' => ['country' => 'Test'],
+            'metadata'  => ['country' => 'Test'],
         ]);
 
         expect($asset->code)->toBe('TEST');
@@ -65,27 +65,27 @@ describe('Asset Model', function () {
     });
 
     it('has account balances relationship defined', function () {
-        $asset = new Asset;
+        $asset = new Asset();
         expect(method_exists($asset, 'accountBalances'))->toBeTrue();
     });
 
     it('has exchange rates from relationship defined', function () {
-        $asset = new Asset;
+        $asset = new Asset();
         expect(method_exists($asset, 'exchangeRatesFrom'))->toBeTrue();
     });
 
     it('has exchange rates to relationship defined', function () {
-        $asset = new Asset;
+        $asset = new Asset();
         expect(method_exists($asset, 'exchangeRatesTo'))->toBeTrue();
     });
 
     it('has active scope', function () {
-        $asset = new Asset;
+        $asset = new Asset();
         expect(method_exists($asset, 'scopeActive'))->toBeTrue();
     });
 
     it('has of type scope', function () {
-        $asset = new Asset;
+        $asset = new Asset();
         expect(method_exists($asset, 'scopeOfType'))->toBeTrue();
     });
 });

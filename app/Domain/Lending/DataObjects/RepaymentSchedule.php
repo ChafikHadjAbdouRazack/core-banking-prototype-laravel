@@ -105,14 +105,14 @@ class RepaymentSchedule
     public function toArray(): array
     {
         return [
-            'loan_id' => $this->loanId,
-            'principal' => $this->principal,
-            'interest_rate' => $this->interestRate,
-            'term_months' => $this->termMonths,
+            'loan_id'         => $this->loanId,
+            'principal'       => $this->principal,
+            'interest_rate'   => $this->interestRate,
+            'term_months'     => $this->termMonths,
             'monthly_payment' => $this->monthlyPayment,
-            'total_interest' => $this->totalInterest,
-            'total_amount' => $this->totalAmount,
-            'items' => $this->items->map(fn ($item) => $item->toArray())->toArray(),
+            'total_interest'  => $this->totalInterest,
+            'total_amount'    => $this->totalAmount,
+            'items'           => $this->items->map(fn ($item) => $item->toArray())->toArray(),
         ];
     }
 }

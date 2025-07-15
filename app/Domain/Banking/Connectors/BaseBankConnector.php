@@ -126,10 +126,10 @@ abstract class BaseBankConnector implements IBankConnector
             Log::error(
                 'Bank API request failed',
                 [
-                    'bank' => $this->bankCode,
-                    'method' => $method,
-                    'url' => $url,
-                    'status' => $response->status(),
+                    'bank'     => $this->bankCode,
+                    'method'   => $method,
+                    'url'      => $url,
+                    'status'   => $response->status(),
                     'response' => $response->body(),
                 ]
             );
@@ -161,10 +161,10 @@ abstract class BaseBankConnector implements IBankConnector
             Log::debug(
                 'Bank API Request',
                 [
-                    'bank' => $this->bankCode,
+                    'bank'   => $this->bankCode,
                     'method' => $method,
-                    'url' => $url,
-                    'data' => $data,
+                    'url'    => $url,
+                    'data'   => $data,
                 ]
             );
         }
@@ -179,9 +179,9 @@ abstract class BaseBankConnector implements IBankConnector
             Log::debug(
                 'Bank API Response',
                 [
-                    'bank' => $this->bankCode,
-                    'method' => $method,
-                    'url' => $url,
+                    'bank'     => $this->bankCode,
+                    'method'   => $method,
+                    'url'      => $url,
                     'response' => $response,
                 ]
             );

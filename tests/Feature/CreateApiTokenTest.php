@@ -14,7 +14,7 @@ test('api tokens can be created', function () {
 
     Livewire::test(ApiTokenManager::class)
         ->set(['createApiTokenForm' => [
-            'name' => 'Test Token',
+            'name'        => 'Test Token',
             'permissions' => [
                 'read',
                 'update',

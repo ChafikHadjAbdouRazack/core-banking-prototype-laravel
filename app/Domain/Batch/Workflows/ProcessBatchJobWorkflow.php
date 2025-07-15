@@ -34,7 +34,7 @@ class ProcessBatchJobWorkflow extends Workflow
                     // Continue processing other items even if one fails
                     $results[$index] = [
                         'status' => 'failed',
-                        'error' => $e->getMessage(),
+                        'error'  => $e->getMessage(),
                     ];
                 }
             }

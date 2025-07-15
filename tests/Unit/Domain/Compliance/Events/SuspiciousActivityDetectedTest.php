@@ -21,9 +21,9 @@ class SuspiciousActivityDetectedTest extends DomainTestCase
 
         return Transaction::factory()->forAccount($account)->create([
             'event_properties' => array_merge([
-                'amount' => 10000,
+                'amount'    => 10000,
                 'assetCode' => 'USD',
-                'metadata' => [],
+                'metadata'  => [],
             ], $eventProperties),
         ]);
     }

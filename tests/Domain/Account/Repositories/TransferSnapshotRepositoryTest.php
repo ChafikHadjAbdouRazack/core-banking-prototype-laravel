@@ -9,7 +9,7 @@ it('extends EloquentSnapshotRepository', function () {
 });
 
 it('can be instantiated with default snapshot model', function () {
-    $repository = new TransferSnapshotRepository;
+    $repository = new TransferSnapshotRepository();
 
     $reflection = new ReflectionClass($repository);
     $property = $reflection->getProperty('snapshotModel');

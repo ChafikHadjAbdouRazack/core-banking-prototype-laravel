@@ -19,8 +19,8 @@ use App\Domain\Asset\Events\AssetTransactionCreated;
 use App\Domain\Asset\Events\AssetTransferCompleted;
 use App\Domain\Asset\Events\AssetTransferFailed;
 use App\Domain\Asset\Events\AssetTransferInitiated;
-use App\Values\EventQueues;
 use App\Domain\User\Values\UserRoles;
+use App\Values\EventQueues;
 use Illuminate\Support\Str;
 
 // Test all data object methods extensively

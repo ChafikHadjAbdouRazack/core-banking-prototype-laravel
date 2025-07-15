@@ -61,7 +61,7 @@ Route::get('/sub-products', function () {
 })->name('sub-products');
 
 Route::get('/sub-products/{product}', function ($product) {
-    return view('sub-products.'.$product);
+    return view('sub-products.' . $product);
 })->name('sub-products.show');
 
 // Features routes
@@ -90,7 +90,7 @@ Route::get('/developers', function () {
 })->name('developers');
 
 Route::get('/developers/{section}', function ($section) {
-    return view('developers.'.$section);
+    return view('developers.' . $section);
 })->name('developers.show');
 
 // Subproduct routes
@@ -324,13 +324,13 @@ Route::middleware([
         // Compliance Metrics
         Route::get('/metrics', function () {
             $metrics = [
-                'overall_score' => 94.5,
-                'kyc_rate' => 98.2,
-                'pending_kyc' => 12,
-                'aml_alerts' => 23,
+                'overall_score'   => 94.5,
+                'kyc_rate'        => 98.2,
+                'pending_kyc'     => 12,
+                'aml_alerts'      => 23,
                 'resolved_alerts' => 18,
-                'sanctions_hits' => 2,
-                'risk_score' => 'Low',
+                'sanctions_hits'  => 2,
+                'risk_score'      => 'Low',
             ];
 
             return view('compliance.metrics', compact('metrics'));
@@ -340,11 +340,11 @@ Route::middleware([
         Route::get('/aml', function () {
             $stats = [
                 'active_alerts' => 18,
-                'new_today' => 3,
-                'ofac_matches' => 2,
-                'bsa_reports' => 45,
-                'pending_bsa' => 5,
-                'risk_score' => 'Low',
+                'new_today'     => 3,
+                'ofac_matches'  => 2,
+                'bsa_reports'   => 45,
+                'pending_bsa'   => 5,
+                'risk_score'    => 'Low',
             ];
 
             return view('compliance.aml-reporting', compact('stats'));
@@ -392,11 +392,11 @@ Route::middleware([
         Route::get('/analysis', function () {
             // Mock data for demonstration
             $stats = [
-                'low_risk' => 1243,
-                'medium_risk' => 567,
-                'high_risk' => 190,
+                'low_risk'        => 1243,
+                'medium_risk'     => 567,
+                'high_risk'       => 190,
                 'total_customers' => 2000,
-                'avg_risk_score' => 32.5,
+                'avg_risk_score'  => 32.5,
             ];
 
             $topRiskFactors = [
@@ -446,8 +446,8 @@ Route::middleware([
             $user = Auth::user();
 
             Log::info('Creating account for user', [
-                'user_id' => $user->id,
-                'user_uuid' => $user->uuid,
+                'user_id'      => $user->id,
+                'user_uuid'    => $user->uuid,
                 'account_name' => $request->name,
             ]);
 
@@ -463,7 +463,7 @@ Route::middleware([
             // Process the workflow queue immediately
             Artisan::call('queue:work', [
                 '--stop-when-empty' => true,
-                '--queue' => 'default,events,ledger,transactions',
+                '--queue'           => 'default,events,ledger,transactions',
             ]);
 
             // Verify account was created
@@ -473,11 +473,11 @@ Route::middleware([
 
             Log::info('Account creation result', [
                 'account_found' => $createdAccount ? true : false,
-                'account_id' => $createdAccount ? $createdAccount->id : null,
+                'account_id'    => $createdAccount ? $createdAccount->id : null,
             ]);
 
             return response()->json([
-                'success' => true,
+                'success'         => true,
                 'account_created' => $createdAccount ? true : false,
             ]);
         } catch (Exception $e) {
@@ -488,7 +488,7 @@ Route::middleware([
 
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to create account: '.$e->getMessage(),
+                'message' => 'Failed to create account: ' . $e->getMessage(),
             ], 500);
         }
     })->name('accounts.create');

@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use App\Domain\Asset\Models\Asset;
 use App\Domain\Asset\Models\ExchangeRate;
 use App\Models\Account;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
 class WalletController extends Controller

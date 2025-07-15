@@ -9,10 +9,10 @@ use App\Domain\Account\DataObjects\Hash;
 use App\Domain\Account\Events\AssetBalanceAdded;
 use App\Domain\Account\Events\AssetBalanceSubtracted;
 use App\Domain\Basket\Events\BasketDecomposed;
+use App\Domain\Basket\Models\BasketAsset;
 use App\Domain\Wallet\Services\WalletService;
 use App\Models\Account;
 use App\Models\AccountBalance;
-use App\Domain\Basket\Models\BasketAsset;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -164,9 +164,9 @@ class BasketAccountService
                 );
 
                 return [
-                    'basket_code' => $basketCode,
+                    'basket_code'   => $basketCode,
                     'basket_amount' => $amount,
-                    'components' => $componentAmounts,
+                    'components'    => $componentAmounts,
                     'decomposed_at' => now()->toISOString(),
                 ];
             }
@@ -234,10 +234,10 @@ class BasketAccountService
                 );
 
                 return [
-                    'basket_code' => $basketCode,
-                    'basket_amount' => $amount,
+                    'basket_code'     => $basketCode,
+                    'basket_amount'   => $amount,
                     'components_used' => $requiredAmounts,
-                    'composed_at' => now()->toISOString(),
+                    'composed_at'     => now()->toISOString(),
                 ];
             }
         );
@@ -288,11 +288,11 @@ class BasketAccountService
             $holdingValue = $basketValue->value * $balance->balance;
 
             $holdings[] = [
-                'basket_code' => $balance->asset_code,
-                'basket_name' => $basket->name,
-                'balance' => $balance->balance,
-                'unit_value' => $basketValue->value,
-                'total_value' => $holdingValue,
+                'basket_code'     => $balance->asset_code,
+                'basket_name'     => $basket->name,
+                'balance'         => $balance->balance,
+                'unit_value'      => $basketValue->value,
+                'total_value'     => $holdingValue,
                 'last_calculated' => $basketValue->calculated_at->toISOString(),
             ];
 
@@ -300,11 +300,11 @@ class BasketAccountService
         }
 
         return [
-            'account_uuid' => (string) $account->uuid,
+            'account_uuid'    => (string) $account->uuid,
             'basket_holdings' => $holdings,
-            'total_value' => $totalValue,
-            'currency' => 'USD',
-            'calculated_at' => now()->toISOString(),
+            'total_value'     => $totalValue,
+            'currency'        => 'USD',
+            'calculated_at'   => now()->toISOString(),
         ];
     }
 

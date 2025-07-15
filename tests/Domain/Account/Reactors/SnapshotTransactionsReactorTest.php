@@ -35,7 +35,7 @@ class SnapshotTransactionsReactorTest extends TestCase
                 }
             )
             ->assertEventRecorded(
-                new TransactionThresholdReached
+                new TransactionThresholdReached()
             );
     }
 
@@ -60,7 +60,7 @@ class SnapshotTransactionsReactorTest extends TestCase
 
         // Dispatch the event and call the reactor's handler
         $reactor->onTransactionThresholdReached(
-            (new TransactionThresholdReached)->setAggregateRootUuid(
+            (new TransactionThresholdReached())->setAggregateRootUuid(
                 self::ACCOUNT_UUID
             )
         );

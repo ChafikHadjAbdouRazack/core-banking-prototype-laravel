@@ -37,21 +37,21 @@ class LockLiquidityActivity extends Activity
 
                 \DB::table('balance_locks')->insert(
                     [
-                        'id' => $lockId,
-                        'account_id' => $input['account_id'],
+                        'id'            => $lockId,
+                        'account_id'    => $input['account_id'],
                         'currency_code' => $input['currency'],
-                        'amount' => $input['amount'],
-                        'reason' => 'liquidity_pool',
-                        'reference_id' => $input['pool_id'],
-                        'created_at' => now(),
+                        'amount'        => $input['amount'],
+                        'reason'        => 'liquidity_pool',
+                        'reference_id'  => $input['pool_id'],
+                        'created_at'    => now(),
                     ]
                 );
 
                 return [
-                    'lock_id' => $lockId,
+                    'lock_id'    => $lockId,
                     'account_id' => $input['account_id'],
-                    'currency' => $input['currency'],
-                    'amount' => $input['amount'],
+                    'currency'   => $input['currency'],
+                    'amount'     => $input['amount'],
                 ];
             }
         );

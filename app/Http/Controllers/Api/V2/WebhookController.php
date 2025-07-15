@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\V2;
 
-use App\Http\Controllers\Controller;
 use App\Domain\Webhook\Models\Webhook;
 use App\Domain\Webhook\Models\WebhookDelivery;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;

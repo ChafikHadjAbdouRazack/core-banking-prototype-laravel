@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domain\Account\Workflows;
 
+use App\Domain\Account\Models\Turnover;
 use App\Models\Account;
 use App\Models\Transaction;
-use App\Domain\Account\Models\Turnover;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Workflow\Activity;
@@ -24,8 +24,8 @@ class ReverseBatchOperationActivity extends Activity
         logger()->info(
             'Reversing batch operation',
             [
-                'batch_id' => $batchId,
-                'operation' => $operation,
+                'batch_id'        => $batchId,
+                'operation'       => $operation,
                 'original_result' => $operationResult,
             ]
         );
@@ -61,7 +61,7 @@ class ReverseBatchOperationActivity extends Activity
                         'No reversal logic for operation',
                         [
                             'operation' => $operation,
-                            'batch_id' => $batchId,
+                            'batch_id'  => $batchId,
                         ]
                     );
             }
@@ -69,7 +69,7 @@ class ReverseBatchOperationActivity extends Activity
             logger()->info(
                 'Successfully reversed batch operation',
                 [
-                    'batch_id' => $batchId,
+                    'batch_id'  => $batchId,
                     'operation' => $operation,
                 ]
             );
@@ -77,9 +77,9 @@ class ReverseBatchOperationActivity extends Activity
             logger()->error(
                 'Failed to reverse batch operation',
                 [
-                    'batch_id' => $batchId,
+                    'batch_id'  => $batchId,
                     'operation' => $operation,
-                    'error' => $th->getMessage(),
+                    'error'     => $th->getMessage(),
                 ]
             );
             throw $th;
@@ -112,7 +112,7 @@ class ReverseBatchOperationActivity extends Activity
                     'Cannot fully revert updated turnover',
                     [
                         'account_uuid' => $turnoverData['account_uuid'],
-                        'date' => $date,
+                        'date'         => $date,
                     ]
                 );
             }
@@ -160,8 +160,8 @@ class ReverseBatchOperationActivity extends Activity
                         'Reversed interest transaction',
                         [
                             'transaction_uuid' => $interestTx['transaction_uuid'],
-                            'account_uuid' => $interestTx['account_uuid'],
-                            'amount' => $interestTx['amount'],
+                            'account_uuid'     => $interestTx['account_uuid'],
+                            'amount'           => $interestTx['amount'],
                         ]
                     );
                 }
@@ -201,7 +201,7 @@ class ReverseBatchOperationActivity extends Activity
         logger()->info(
             'Unarchived transactions',
             [
-                'count' => $count,
+                'count'    => $count,
                 'expected' => count($result['result']['archived_uuids']),
             ]
         );

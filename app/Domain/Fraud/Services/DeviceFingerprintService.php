@@ -33,9 +33,9 @@ class DeviceFingerprintService
             // New device
             $fingerprint->fill(
                 [
-                    'user_id' => $user?->id,
+                    'user_id'       => $user?->id,
                     'first_seen_at' => now(),
-                    'last_seen_at' => now(),
+                    'last_seen_at'  => now(),
                 ]
             );
             $fingerprint->save();
@@ -56,8 +56,8 @@ class DeviceFingerprintService
     {
         if (empty($deviceData['fingerprint_id'])) {
             return [
-                'risk_score' => 50,
-                'risk_factors' => ['no_device_fingerprint'],
+                'risk_score'     => 50,
+                'risk_factors'   => ['no_device_fingerprint'],
                 'recommendation' => 'require_device_verification',
             ];
         }
@@ -66,8 +66,8 @@ class DeviceFingerprintService
 
         if (! $fingerprint) {
             return [
-                'risk_score' => 60,
-                'risk_factors' => ['unknown_device'],
+                'risk_score'     => 60,
+                'risk_factors'   => ['unknown_device'],
                 'recommendation' => 'monitor_closely',
             ];
         }
@@ -113,11 +113,11 @@ class DeviceFingerprintService
         }
 
         return [
-            'risk_score' => $riskScore,
-            'risk_factors' => $riskFactors,
+            'risk_score'     => $riskScore,
+            'risk_factors'   => $riskFactors,
             'device_profile' => $fingerprint->getDeviceProfile(),
-            'trust_score' => $fingerprint->trust_score,
-            'is_trusted' => $fingerprint->isTrusted(),
+            'trust_score'    => $fingerprint->trust_score,
+            'is_trusted'     => $fingerprint->isTrusted(),
             'recommendation' => $this->getRecommendation($riskScore, $riskFactors),
         ];
     }
@@ -128,22 +128,22 @@ class DeviceFingerprintService
     protected function prepareDeviceData(array $deviceData): array
     {
         return [
-            'device_type' => $this->detectDeviceType($deviceData),
-            'operating_system' => $deviceData['os'] ?? null,
-            'os_version' => $deviceData['os_version'] ?? null,
-            'browser' => $deviceData['browser'] ?? null,
-            'browser_version' => $deviceData['browser_version'] ?? null,
-            'user_agent' => $deviceData['user_agent'] ?? '',
-            'screen_resolution' => $deviceData['screen_resolution'] ?? null,
+            'device_type'        => $this->detectDeviceType($deviceData),
+            'operating_system'   => $deviceData['os'] ?? null,
+            'os_version'         => $deviceData['os_version'] ?? null,
+            'browser'            => $deviceData['browser'] ?? null,
+            'browser_version'    => $deviceData['browser_version'] ?? null,
+            'user_agent'         => $deviceData['user_agent'] ?? '',
+            'screen_resolution'  => $deviceData['screen_resolution'] ?? null,
             'screen_color_depth' => $deviceData['color_depth'] ?? null,
-            'timezone' => $deviceData['timezone'] ?? null,
-            'language' => $deviceData['language'] ?? null,
-            'installed_plugins' => $deviceData['plugins'] ?? [],
-            'installed_fonts' => array_slice($deviceData['fonts'] ?? [], 0, 50), // Limit fonts
+            'timezone'           => $deviceData['timezone'] ?? null,
+            'language'           => $deviceData['language'] ?? null,
+            'installed_plugins'  => $deviceData['plugins'] ?? [],
+            'installed_fonts'    => array_slice($deviceData['fonts'] ?? [], 0, 50), // Limit fonts
             'canvas_fingerprint' => $deviceData['canvas_fingerprint'] ?? null,
-            'webgl_fingerprint' => $deviceData['webgl_fingerprint'] ?? null,
-            'audio_fingerprint' => $deviceData['audio_fingerprint'] ?? null,
-            'ip_address' => $deviceData['ip_address'] ?? request()->ip(),
+            'webgl_fingerprint'  => $deviceData['webgl_fingerprint'] ?? null,
+            'audio_fingerprint'  => $deviceData['audio_fingerprint'] ?? null,
+            'ip_address'         => $deviceData['ip_address'] ?? request()->ip(),
         ];
     }
 
@@ -174,12 +174,12 @@ class DeviceFingerprintService
             $fingerprint->update(
                 [
                     'ip_country' => $ipData['country'] ?? null,
-                    'ip_region' => $ipData['region'] ?? null,
-                    'ip_city' => $ipData['city'] ?? null,
-                    'isp' => $ipData['isp'] ?? null,
-                    'is_vpn' => $ipData['is_vpn'] ?? false,
-                    'is_proxy' => $ipData['is_proxy'] ?? false,
-                    'is_tor' => $ipData['is_tor'] ?? false,
+                    'ip_region'  => $ipData['region'] ?? null,
+                    'ip_city'    => $ipData['city'] ?? null,
+                    'isp'        => $ipData['isp'] ?? null,
+                    'is_vpn'     => $ipData['is_vpn'] ?? false,
+                    'is_proxy'   => $ipData['is_proxy'] ?? false,
+                    'is_tor'     => $ipData['is_tor'] ?? false,
                 ]
             );
         }
@@ -202,13 +202,13 @@ class DeviceFingerprintService
 
                     // Simulated response
                     return [
-                        'country' => 'US',
-                        'region' => 'California',
-                        'city' => 'San Francisco',
-                        'isp' => 'Example ISP',
-                        'is_vpn' => false,
-                        'is_proxy' => false,
-                        'is_tor' => false,
+                        'country'    => 'US',
+                        'region'     => 'California',
+                        'city'       => 'San Francisco',
+                        'isp'        => 'Example ISP',
+                        'is_vpn'     => false,
+                        'is_proxy'   => false,
+                        'is_tor'     => false,
                         'risk_score' => 10,
                     ];
                 } catch (\Exception $e) {
@@ -506,10 +506,10 @@ class DeviceFingerprintService
         }
 
         $network = [
-            'device' => $device->getDeviceProfile(),
+            'device'           => $device->getDeviceProfile(),
             'associated_users' => count($device->associated_users ?? []),
-            'trust_score' => $device->trust_score,
-            'related_devices' => [],
+            'trust_score'      => $device->trust_score,
+            'related_devices'  => [],
         ];
 
         // Find devices used by same users
@@ -527,9 +527,9 @@ class DeviceFingerprintService
 
             foreach ($relatedDevices as $related) {
                 $network['related_devices'][] = [
-                    'device_id' => $related->id,
-                    'trust_score' => $related->trust_score,
-                    'is_trusted' => $related->isTrusted(),
+                    'device_id'    => $related->id,
+                    'trust_score'  => $related->trust_score,
+                    'is_trusted'   => $related->isTrusted(),
                     'shared_users' => count(
                         array_intersect(
                             $device->associated_users ?? [],

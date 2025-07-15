@@ -29,8 +29,8 @@ class BlockchainDepositActivities
 
         return [
             'wallet_id' => $wallet->wallet_id,
-            'user_id' => $wallet->user_id,
-            'status' => $wallet->status,
+            'user_id'   => $wallet->user_id,
+            'status'    => $wallet->status,
         ];
     }
 
@@ -55,13 +55,13 @@ class BlockchainDepositActivities
         // In production, this would query the blockchain
         // For now, return mock data
         return [
-            'from_address' => '0x1234567890abcdef',
-            'to_address' => '0xfedcba0987654321',
-            'amount' => '1.5',
+            'from_address'  => '0x1234567890abcdef',
+            'to_address'    => '0xfedcba0987654321',
+            'amount'        => '1.5',
             'confirmations' => 12,
-            'status' => 'confirmed',
-            'block_number' => 12345678,
-            'timestamp' => now()->timestamp,
+            'status'        => 'confirmed',
+            'block_number'  => 12345678,
+            'timestamp'     => now()->timestamp,
         ];
     }
 
@@ -101,8 +101,8 @@ class BlockchainDepositActivities
     {
         // Placeholder for exchange rate service
         $rates = [
-            'BTC' => '43000',
-            'ETH' => '2200',
+            'BTC'   => '43000',
+            'ETH'   => '2200',
             'MATIC' => '0.65',
         ];
 
@@ -125,19 +125,19 @@ class BlockchainDepositActivities
 
         DB::table('blockchain_deposits')->insert(
             [
-                'deposit_id' => $depositId,
-                'user_id' => $userId,
-                'wallet_id' => $walletId,
-                'chain' => $chain,
-                'tx_hash' => $txHash,
-                'from_address' => $txData['from_address'],
-                'to_address' => $txData['to_address'],
+                'deposit_id'    => $depositId,
+                'user_id'       => $userId,
+                'wallet_id'     => $walletId,
+                'chain'         => $chain,
+                'tx_hash'       => $txHash,
+                'from_address'  => $txData['from_address'],
+                'to_address'    => $txData['to_address'],
                 'amount_crypto' => $txData['amount'],
-                'amount_fiat' => $fiatAmount,
+                'amount_fiat'   => $fiatAmount,
                 'confirmations' => $txData['confirmations'],
-                'block_number' => $txData['block_number'],
-                'status' => 'pending',
-                'created_at' => now(),
+                'block_number'  => $txData['block_number'],
+                'status'        => 'pending',
+                'created_at'    => now(),
             ]
         );
     }
@@ -163,7 +163,7 @@ class BlockchainDepositActivities
             ->update(
                 [
                     'confirmations' => $confirmations,
-                    'updated_at' => now(),
+                    'updated_at'    => now(),
                 ]
             );
     }
@@ -176,12 +176,12 @@ class BlockchainDepositActivities
         // Credit user's fiat account
         DB::table('transactions')->insert(
             [
-                'account_id' => $accountId,
-                'type' => 'credit',
-                'amount' => $amount,
+                'account_id'  => $accountId,
+                'type'        => 'credit',
+                'amount'      => $amount,
                 'description' => 'Blockchain deposit',
-                'reference' => $depositId,
-                'created_at' => now(),
+                'reference'   => $depositId,
+                'created_at'  => now(),
             ]
         );
 
@@ -199,9 +199,9 @@ class BlockchainDepositActivities
             ->where('deposit_id', $depositId)
             ->update(
                 [
-                    'status' => $status,
+                    'status'       => $status,
                     'confirmed_at' => $status === 'completed' ? now() : null,
-                    'updated_at' => now(),
+                    'updated_at'   => now(),
                 ]
             );
     }
@@ -214,11 +214,11 @@ class BlockchainDepositActivities
             DB::table('notifications')->insert(
                 [
                     'user_id' => $userId,
-                    'type' => 'blockchain_deposit',
-                    'data' => json_encode(
+                    'type'    => 'blockchain_deposit',
+                    'data'    => json_encode(
                         [
                             'deposit_id' => $depositId,
-                            'status' => $status,
+                            'status'     => $status,
                         ]
                     ),
                     'created_at' => now(),
@@ -248,7 +248,7 @@ class BlockchainDepositActivities
             ->where('deposit_id', $depositId)
             ->update(
                 [
-                    'status' => 'reversed',
+                    'status'     => 'reversed',
                     'updated_at' => now(),
                 ]
             );
@@ -262,14 +262,14 @@ class BlockchainDepositActivities
     ): void {
         DB::table('anomalous_deposits')->insert(
             [
-                'chain' => $chain,
-                'tx_hash' => $txHash,
+                'chain'        => $chain,
+                'tx_hash'      => $txHash,
                 'from_address' => $txData['from_address'],
-                'to_address' => $txData['to_address'],
-                'amount' => $txData['amount'],
-                'reason' => $reason,
-                'tx_data' => json_encode($txData),
-                'created_at' => now(),
+                'to_address'   => $txData['to_address'],
+                'amount'       => $txData['amount'],
+                'reason'       => $reason,
+                'tx_data'      => json_encode($txData),
+                'created_at'   => now(),
             ]
         );
     }
@@ -317,17 +317,17 @@ class BlockchainDepositActivities
         array $transactionData
     ): void {
         DB::table('blockchain_transactions')->insert([
-            'wallet_id' => $walletId,
-            'chain' => $chain,
-            'tx_hash' => $transactionHash,
-            'from_address' => $fromAddress,
-            'to_address' => $toAddress,
-            'amount' => $amount,
-            'asset' => $asset,
+            'wallet_id'     => $walletId,
+            'chain'         => $chain,
+            'tx_hash'       => $transactionHash,
+            'from_address'  => $fromAddress,
+            'to_address'    => $toAddress,
+            'amount'        => $amount,
+            'asset'         => $asset,
             'confirmations' => $transactionData['confirmations'],
-            'block_number' => $transactionData['block_number'],
-            'status' => 'confirmed',
-            'created_at' => now(),
+            'block_number'  => $transactionData['block_number'],
+            'status'        => 'confirmed',
+            'created_at'    => now(),
         ]);
     }
 
@@ -367,10 +367,10 @@ class BlockchainDepositActivities
         ?string $tokenAddress
     ): string {
         $symbol = match ($chain) {
-            'bitcoin' => 'BTC',
+            'bitcoin'  => 'BTC',
             'ethereum' => 'ETH',
-            'polygon' => 'MATIC',
-            default => 'USD'
+            'polygon'  => 'MATIC',
+            default    => 'USD'
         };
 
         $rate = $this->getExchangeRate($symbol);
@@ -385,12 +385,12 @@ class BlockchainDepositActivities
         array $metadata
     ): void {
         DB::table('transactions')->insert([
-            'account_id' => $accountId,
-            'type' => 'credit',
-            'amount' => $fiatValue,
+            'account_id'  => $accountId,
+            'type'        => 'credit',
+            'amount'      => $fiatValue,
             'description' => $description,
-            'metadata' => json_encode($metadata),
-            'created_at' => now(),
+            'metadata'    => json_encode($metadata),
+            'created_at'  => now(),
         ]);
 
         DB::table('accounts')
@@ -408,12 +408,12 @@ class BlockchainDepositActivities
         DB::table('wallet_token_balances')
             ->updateOrInsert(
                 [
-                    'wallet_id' => $walletId,
-                    'chain' => $chain,
+                    'wallet_id'     => $walletId,
+                    'chain'         => $chain,
                     'token_address' => $tokenAddress,
                 ],
                 [
-                    'balance' => DB::raw("balance + $amount"),
+                    'balance'    => DB::raw("balance + $amount"),
                     'updated_at' => now(),
                 ]
             );
@@ -429,12 +429,12 @@ class BlockchainDepositActivities
     ): void {
         DB::table('notifications')->insert([
             'user_id' => $userId,
-            'type' => 'blockchain_deposit_completed',
-            'data' => json_encode([
-                'chain' => $chain,
-                'amount' => $amount,
-                'asset' => $asset,
-                'fiat_value' => $fiatValue,
+            'type'    => 'blockchain_deposit_completed',
+            'data'    => json_encode([
+                'chain'            => $chain,
+                'amount'           => $amount,
+                'asset'            => $asset,
+                'fiat_value'       => $fiatValue,
                 'transaction_hash' => $transactionHash,
             ]),
             'created_at' => now(),

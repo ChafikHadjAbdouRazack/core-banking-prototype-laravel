@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Domain\Custodian\Services;
 
 use App\Domain\Account\DataObjects\Money;
+use App\Domain\Custodian\Models\CustodianAccount;
 use App\Domain\Custodian\ValueObjects\TransferRequest;
 use App\Models\Account;
-use App\Domain\Custodian\Models\CustodianAccount;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -43,12 +43,12 @@ class CustodianAccountService
             function () use ($account, $custodianName, $custodianAccountId, $accountInfo, $metadata, $isPrimary) {
                 $custodianAccount = CustodianAccount::create(
                     [
-                        'account_uuid' => $account->uuid,
-                        'custodian_name' => $custodianName,
-                        'custodian_account_id' => $custodianAccountId,
+                        'account_uuid'           => $account->uuid,
+                        'custodian_name'         => $custodianName,
+                        'custodian_account_id'   => $custodianAccountId,
                         'custodian_account_name' => $accountInfo->name,
-                        'status' => $accountInfo->status,
-                        'metadata' => array_merge($accountInfo->metadata, $metadata),
+                        'status'                 => $accountInfo->status,
+                        'metadata'               => array_merge($accountInfo->metadata, $metadata),
                     ]
                 );
 
@@ -59,8 +59,8 @@ class CustodianAccountService
                 Log::info(
                     'Linked custodian account',
                     [
-                        'account_uuid' => $account->uuid,
-                        'custodian' => $custodianName,
+                        'account_uuid'      => $account->uuid,
+                        'custodian'         => $custodianName,
                         'custodian_account' => $custodianAccountId,
                     ]
                 );
@@ -95,7 +95,7 @@ class CustodianAccountService
                     'Unlinked custodian account',
                     [
                         'custodian_account_id' => $custodianAccount->id,
-                        'account_uuid' => $custodianAccount->account_uuid,
+                        'account_uuid'         => $custodianAccount->account_uuid,
                     ]
                 );
             }
@@ -156,10 +156,10 @@ class CustodianAccountService
             'Initiated custodian transfer',
             [
                 'transaction_id' => $receipt->id,
-                'from_account' => $fromAccount->custodian_account_id,
-                'to_account' => $toAccount->custodian_account_id,
-                'amount' => $amount->getAmount(),
-                'asset' => $assetCode,
+                'from_account'   => $fromAccount->custodian_account_id,
+                'to_account'     => $toAccount->custodian_account_id,
+                'amount'         => $amount->getAmount(),
+                'asset'          => $assetCode,
             ]
         );
 
@@ -189,9 +189,9 @@ class CustodianAccountService
 
             $custodianAccount->update(
                 [
-                    'status' => $accountInfo->status,
+                    'status'                 => $accountInfo->status,
                     'custodian_account_name' => $accountInfo->name,
-                    'metadata' => array_merge($custodianAccount->metadata ?? [], $accountInfo->metadata),
+                    'metadata'               => array_merge($custodianAccount->metadata ?? [], $accountInfo->metadata),
                 ]
             );
 
@@ -199,7 +199,7 @@ class CustodianAccountService
                 'Synced custodian account status',
                 [
                     'custodian_account_id' => $custodianAccount->id,
-                    'new_status' => $accountInfo->status,
+                    'new_status'           => $accountInfo->status,
                 ]
             );
         } catch (\Exception $e) {
@@ -207,7 +207,7 @@ class CustodianAccountService
                 'Failed to sync custodian account status',
                 [
                     'custodian_account_id' => $custodianAccount->id,
-                    'error' => $e->getMessage(),
+                    'error'                => $e->getMessage(),
                 ]
             );
 

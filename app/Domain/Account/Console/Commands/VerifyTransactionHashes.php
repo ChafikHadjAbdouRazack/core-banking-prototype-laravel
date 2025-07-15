@@ -8,7 +8,6 @@ use App\Domain\Account\Exceptions\InvalidHashException;
 use App\Domain\Account\Repositories\AccountRepository;
 use App\Domain\Account\Repositories\TransactionRepository;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Log;
 
 class VerifyTransactionHashes extends Command
 {

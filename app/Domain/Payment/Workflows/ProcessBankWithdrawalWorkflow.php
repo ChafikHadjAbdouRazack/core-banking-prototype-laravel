@@ -37,14 +37,14 @@ class ProcessBankWithdrawalWorkflow extends Workflow
             $withdrawalResult = yield ActivityStub::make(
                 InitiateWithdrawalActivity::class,
                 [
-                    'account_uuid' => $withdrawal->getAccountUuid(),
-                    'amount' => $withdrawal->getAmount(),
-                    'currency' => $withdrawal->getCurrency(),
-                    'reference' => $withdrawal->getReference(),
+                    'account_uuid'        => $withdrawal->getAccountUuid(),
+                    'amount'              => $withdrawal->getAmount(),
+                    'currency'            => $withdrawal->getCurrency(),
+                    'reference'           => $withdrawal->getReference(),
                     'bank_account_number' => $withdrawal->getAccountNumber(),
                     'bank_routing_number' => $withdrawal->getRoutingNumber(),
-                    'bank_account_name' => $withdrawal->getAccountHolderName(),
-                    'metadata' => $withdrawal->getMetadata(),
+                    'bank_account_name'   => $withdrawal->getAccountHolderName(),
+                    'metadata'            => $withdrawal->getMetadata(),
                 ]
             );
 
@@ -73,7 +73,7 @@ class ProcessBankWithdrawalWorkflow extends Workflow
                 CompleteWithdrawalActivity::class,
                 [
                     'withdrawal_uuid' => $withdrawalUuid,
-                    'transaction_id' => $transactionId,
+                    'transaction_id'  => $transactionId,
                 ]
             );
 
@@ -87,8 +87,8 @@ class ProcessBankWithdrawalWorkflow extends Workflow
 
             return [
                 'transaction_id' => $transactionId,
-                'transfer_id' => $transferId,
-                'reference' => $withdrawal->getReference(),
+                'transfer_id'    => $transferId,
+                'reference'      => $withdrawal->getReference(),
             ];
         } catch (\Throwable $e) {
             // If we have initiated a withdrawal, mark it as failed
@@ -97,7 +97,7 @@ class ProcessBankWithdrawalWorkflow extends Workflow
                     FailWithdrawalActivity::class,
                     [
                         'withdrawal_uuid' => $withdrawalUuid,
-                        'reason' => $e->getMessage(),
+                        'reason'          => $e->getMessage(),
                     ]
                 );
             }

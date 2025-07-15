@@ -6,9 +6,9 @@ namespace Tests\Feature\Basket;
 
 use App\Domain\Asset\Models\Asset;
 use App\Domain\Asset\Models\ExchangeRate;
-use App\Domain\Basket\Services\BasketValueCalculationService;
 use App\Domain\Basket\Models\BasketAsset;
 use App\Domain\Basket\Models\BasketValue;
+use App\Domain\Basket\Services\BasketValueCalculationService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use PHPUnit\Framework\Attributes\Test;

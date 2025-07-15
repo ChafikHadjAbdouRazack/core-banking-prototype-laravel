@@ -72,10 +72,10 @@ class DeutscheBankConnector extends BaseCustodianConnector
         $response = Http::asForm()->post(
             self::OAUTH_URL,
             [
-                'grant_type' => 'client_credentials',
-                'client_id' => $this->clientId,
+                'grant_type'    => 'client_credentials',
+                'client_id'     => $this->clientId,
                 'client_secret' => $this->clientSecret,
-                'scope' => 'accounts payments sepa instant_payments',
+                'scope'         => 'accounts payments sepa instant_payments',
             ]
         );
 
@@ -104,17 +104,17 @@ class DeutscheBankConnector extends BaseCustodianConnector
             ->withHeaders(
                 [
                     'X-API-Version' => '2.0',
-                    'X-Request-ID' => uniqid('db-'),
+                    'X-Request-ID'  => uniqid('db-'),
                 ]
             )
             ->timeout(30);
 
         return match (strtoupper($method)) {
-            'GET' => $request->get(self::API_BASE_URL . $endpoint, $data),
-            'POST' => $request->post(self::API_BASE_URL . $endpoint, $data),
-            'PUT' => $request->put(self::API_BASE_URL . $endpoint, $data),
+            'GET'    => $request->get(self::API_BASE_URL . $endpoint, $data),
+            'POST'   => $request->post(self::API_BASE_URL . $endpoint, $data),
+            'PUT'    => $request->put(self::API_BASE_URL . $endpoint, $data),
             'DELETE' => $request->delete(self::API_BASE_URL . $endpoint),
-            default => throw new \InvalidArgumentException("Unsupported HTTP method: {$method}"),
+            default  => throw new \InvalidArgumentException("Unsupported HTTP method: {$method}"),
         };
     }
 
@@ -171,9 +171,9 @@ class DeutscheBankConnector extends BaseCustodianConnector
             type: $data['accountType'] ?? 'CURRENT',
             createdAt: isset($data['openingDate']) ? Carbon::parse($data['openingDate']) : Carbon::now(),
             metadata: [
-                'iban' => $data['iban'] ?? null,
-                'bic' => $data['bic'] ?? 'DEUTDEFF',
-                'branch' => $data['branch'] ?? null,
+                'iban'      => $data['iban'] ?? null,
+                'bic'       => $data['bic'] ?? 'DEUTDEFF',
+                'branch'    => $data['branch'] ?? null,
                 'connector' => 'DeutscheBankConnector',
             ]
         );
@@ -192,12 +192,12 @@ class DeutscheBankConnector extends BaseCustodianConnector
             ],
             'instructedAmount' => [
                 'currency' => $request->assetCode,
-                'amount' => number_format($request->amount->getAmount() / 100, 2, '.', ''),
+                'amount'   => number_format($request->amount->getAmount() / 100, 2, '.', ''),
             ],
-            'creditorName' => $request->metadata['beneficiary_name'] ?? 'Beneficiary',
+            'creditorName'                      => $request->metadata['beneficiary_name'] ?? 'Beneficiary',
             'remittanceInformationUnstructured' => $request->description ?? $request->reference,
-            'requestedExecutionDate' => Carbon::now()->format('Y-m-d'),
-            'endToEndIdentification' => $request->reference,
+            'requestedExecutionDate'            => Carbon::now()->format('Y-m-d'),
+            'endToEndIdentification'            => $request->reference,
         ];
 
         $response = $this->apiRequest('POST', $endpoint, $paymentData);
@@ -221,7 +221,7 @@ class DeutscheBankConnector extends BaseCustodianConnector
             completedAt: isset($data['completionDateTime']) ? Carbon::parse($data['completionDateTime']) : null,
             metadata: [
                 'db_payment_id' => $data['paymentId'],
-                'db_status' => $data['transactionStatus'],
+                'db_status'     => $data['transactionStatus'],
                 'transfer_type' => $endpoint === '/payments/sepa' ? 'SEPA' : 'INSTANT',
             ]
         );
@@ -250,7 +250,7 @@ class DeutscheBankConnector extends BaseCustodianConnector
             completedAt: isset($data['completionDateTime']) ? Carbon::parse($data['completionDateTime']) : null,
             metadata: [
                 'db_payment_id' => $data['paymentId'],
-                'db_status' => $data['transactionStatus'],
+                'db_status'     => $data['transactionStatus'],
             ]
         );
     }
@@ -283,7 +283,7 @@ class DeutscheBankConnector extends BaseCustodianConnector
                 'Account validation failed',
                 [
                     'account_id' => $accountId,
-                    'error' => $e->getMessage(),
+                    'error'      => $e->getMessage(),
                 ]
             );
         }
@@ -297,10 +297,10 @@ class DeutscheBankConnector extends BaseCustodianConnector
             'GET',
             "/accounts/{$accountId}/transactions",
             [
-                'limit' => $limit,
-                'offset' => $offset,
+                'limit'    => $limit,
+                'offset'   => $offset,
                 'dateFrom' => Carbon::now()->subDays(90)->format('Y-m-d'),
-                'dateTo' => Carbon::now()->format('Y-m-d'),
+                'dateTo'   => Carbon::now()->format('Y-m-d'),
             ]
         );
 
@@ -324,15 +324,15 @@ class DeutscheBankConnector extends BaseCustodianConnector
             }
 
             $transactions[] = [
-                'id' => $transaction['transactionId'],
-                'status' => 'completed',
+                'id'           => $transaction['transactionId'],
+                'status'       => 'completed',
                 'from_account' => $transaction['debtorAccount']['iban'] ?? $accountId,
-                'to_account' => $transaction['creditorAccount']['iban'] ?? $accountId,
-                'asset_code' => $transaction['transactionAmount']['currency'],
-                'amount' => $amount,
-                'fee' => null,
-                'reference' => $transaction['endToEndId'] ?? $transaction['mandateId'] ?? null,
-                'created_at' => $transaction['bookingDate'],
+                'to_account'   => $transaction['creditorAccount']['iban'] ?? $accountId,
+                'asset_code'   => $transaction['transactionAmount']['currency'],
+                'amount'       => $amount,
+                'fee'          => null,
+                'reference'    => $transaction['endToEndId'] ?? $transaction['mandateId'] ?? null,
+                'created_at'   => $transaction['bookingDate'],
                 'completed_at' => $transaction['valueDate'] ?? $transaction['bookingDate'],
             ];
         }

@@ -173,10 +173,10 @@ class PollCacheService
     public function getStats(): array
     {
         $keys = [
-            'polls' => $this->getPollKey('*'),
-            'results' => $this->getResultsKey('*'),
+            'polls'             => $this->getPollKey('*'),
+            'results'           => $this->getResultsKey('*'),
             'user_voting_power' => $this->getUserVotingPowerKey('*', '*'),
-            'user_vote_status' => $this->getUserVoteStatusKey('*', '*'),
+            'user_vote_status'  => $this->getUserVoteStatusKey('*', '*'),
         ];
 
         $stats = [];

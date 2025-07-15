@@ -44,13 +44,13 @@ final class AccountInfo
     {
         return [
             'account_id' => $this->accountId,
-            'name' => $this->name,
-            'status' => $this->status,
-            'balances' => $this->balances,
-            'currency' => $this->currency,
-            'type' => $this->type,
+            'name'       => $this->name,
+            'status'     => $this->status,
+            'balances'   => $this->balances,
+            'currency'   => $this->currency,
+            'type'       => $this->type,
             'created_at' => $this->createdAt?->toISOString(),
-            'metadata' => $this->metadata,
+            'metadata'   => $this->metadata,
         ];
     }
 }

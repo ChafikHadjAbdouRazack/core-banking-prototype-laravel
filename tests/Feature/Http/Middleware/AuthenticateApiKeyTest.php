@@ -23,14 +23,14 @@ class AuthenticateApiKeyTest extends TestCase
 
         // Create test API key
         $this->apiKey = ApiKey::create([
-            'user_uuid' => $this->user->uuid,
-            'name' => 'Test API Key',
-            'key' => 'test_'.bin2hex(random_bytes(16)),
-            'secret' => hash('sha256', 'test_secret'),
+            'user_uuid'   => $this->user->uuid,
+            'name'        => 'Test API Key',
+            'key'         => 'test_' . bin2hex(random_bytes(16)),
+            'secret'      => hash('sha256', 'test_secret'),
             'permissions' => ['read', 'write'],
             'allowed_ips' => null, // Allow all IPs
-            'expires_at' => now()->addYear(),
-            'is_active' => true,
+            'expires_at'  => now()->addYear(),
+            'is_active'   => true,
         ]);
 
         // Set up test routes
@@ -51,7 +51,7 @@ class AuthenticateApiKeyTest extends TestCase
     public function test_allows_valid_api_key(): void
     {
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer '.$this->apiKey->key,
+            'Authorization' => 'Bearer ' . $this->apiKey->key,
         ])->getJson('/test-api');
 
         $response->assertStatus(200)
@@ -65,7 +65,7 @@ class AuthenticateApiKeyTest extends TestCase
 
         $response->assertStatus(401)
             ->assertJson([
-                'error' => 'Unauthorized',
+                'error'   => 'Unauthorized',
                 'message' => 'API key is required',
             ]);
     }
@@ -79,7 +79,7 @@ class AuthenticateApiKeyTest extends TestCase
 
         $response->assertStatus(401)
             ->assertJson([
-                'error' => 'Unauthorized',
+                'error'   => 'Unauthorized',
                 'message' => 'Invalid API key',
             ]);
     }
@@ -88,22 +88,22 @@ class AuthenticateApiKeyTest extends TestCase
     public function test_rejects_expired_api_key(): void
     {
         $expiredKey = ApiKey::create([
-            'user_uuid' => $this->user->uuid,
-            'name' => 'Expired Key',
-            'key' => 'expired_'.bin2hex(random_bytes(16)),
-            'secret' => hash('sha256', 'expired_secret'),
+            'user_uuid'   => $this->user->uuid,
+            'name'        => 'Expired Key',
+            'key'         => 'expired_' . bin2hex(random_bytes(16)),
+            'secret'      => hash('sha256', 'expired_secret'),
             'permissions' => ['read'],
-            'expires_at' => now()->subDay(),
-            'is_active' => true,
+            'expires_at'  => now()->subDay(),
+            'is_active'   => true,
         ]);
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer '.$expiredKey->key,
+            'Authorization' => 'Bearer ' . $expiredKey->key,
         ])->getJson('/test-api');
 
         $response->assertStatus(401)
             ->assertJson([
-                'error' => 'Unauthorized',
+                'error'   => 'Unauthorized',
                 'message' => 'API key has expired',
             ]);
     }
@@ -112,22 +112,22 @@ class AuthenticateApiKeyTest extends TestCase
     public function test_rejects_inactive_api_key(): void
     {
         $inactiveKey = ApiKey::create([
-            'user_uuid' => $this->user->uuid,
-            'name' => 'Inactive Key',
-            'key' => 'inactive_'.bin2hex(random_bytes(16)),
-            'secret' => hash('sha256', 'inactive_secret'),
+            'user_uuid'   => $this->user->uuid,
+            'name'        => 'Inactive Key',
+            'key'         => 'inactive_' . bin2hex(random_bytes(16)),
+            'secret'      => hash('sha256', 'inactive_secret'),
             'permissions' => ['read'],
-            'expires_at' => now()->addYear(),
-            'is_active' => false,
+            'expires_at'  => now()->addYear(),
+            'is_active'   => false,
         ]);
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer '.$inactiveKey->key,
+            'Authorization' => 'Bearer ' . $inactiveKey->key,
         ])->getJson('/test-api');
 
         $response->assertStatus(401)
             ->assertJson([
-                'error' => 'Unauthorized',
+                'error'   => 'Unauthorized',
                 'message' => 'Invalid API key',
             ]);
     }
@@ -136,24 +136,24 @@ class AuthenticateApiKeyTest extends TestCase
     public function test_enforces_ip_restrictions(): void
     {
         $restrictedKey = ApiKey::create([
-            'user_uuid' => $this->user->uuid,
-            'name' => 'IP Restricted Key',
-            'key' => 'restricted_'.bin2hex(random_bytes(16)),
-            'secret' => hash('sha256', 'restricted_secret'),
+            'user_uuid'   => $this->user->uuid,
+            'name'        => 'IP Restricted Key',
+            'key'         => 'restricted_' . bin2hex(random_bytes(16)),
+            'secret'      => hash('sha256', 'restricted_secret'),
             'permissions' => ['read'],
             'allowed_ips' => ['192.168.1.1', '10.0.0.1'],
-            'expires_at' => now()->addYear(),
-            'is_active' => true,
+            'expires_at'  => now()->addYear(),
+            'is_active'   => true,
         ]);
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer '.$restrictedKey->key,
+            'Authorization'   => 'Bearer ' . $restrictedKey->key,
             'X-Forwarded-For' => '192.168.2.1', // Different IP
         ])->getJson('/test-api');
 
         $response->assertStatus(403)
             ->assertJson([
-                'error' => 'Forbidden',
+                'error'   => 'Forbidden',
                 'message' => 'Access denied from this IP address',
             ]);
     }
@@ -162,18 +162,18 @@ class AuthenticateApiKeyTest extends TestCase
     public function test_allows_whitelisted_ip(): void
     {
         $restrictedKey = ApiKey::create([
-            'user_uuid' => $this->user->uuid,
-            'name' => 'IP Restricted Key',
-            'key' => 'restricted_'.bin2hex(random_bytes(16)),
-            'secret' => hash('sha256', 'restricted_secret'),
+            'user_uuid'   => $this->user->uuid,
+            'name'        => 'IP Restricted Key',
+            'key'         => 'restricted_' . bin2hex(random_bytes(16)),
+            'secret'      => hash('sha256', 'restricted_secret'),
             'permissions' => ['read'],
             'allowed_ips' => ['192.168.1.1', '127.0.0.1'],
-            'expires_at' => now()->addYear(),
-            'is_active' => true,
+            'expires_at'  => now()->addYear(),
+            'is_active'   => true,
         ]);
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer '.$restrictedKey->key,
+            'Authorization' => 'Bearer ' . $restrictedKey->key,
         ])->getJson('/test-api');
 
         $response->assertStatus(200)
@@ -185,22 +185,22 @@ class AuthenticateApiKeyTest extends TestCase
     {
         // API key only has 'read' permission, trying to access 'write' endpoint
         $readOnlyKey = ApiKey::create([
-            'user_uuid' => $this->user->uuid,
-            'name' => 'Read Only Key',
-            'key' => 'readonly_'.bin2hex(random_bytes(16)),
-            'secret' => hash('sha256', 'readonly_secret'),
+            'user_uuid'   => $this->user->uuid,
+            'name'        => 'Read Only Key',
+            'key'         => 'readonly_' . bin2hex(random_bytes(16)),
+            'secret'      => hash('sha256', 'readonly_secret'),
             'permissions' => ['read'],
-            'expires_at' => now()->addYear(),
-            'is_active' => true,
+            'expires_at'  => now()->addYear(),
+            'is_active'   => true,
         ]);
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer '.$readOnlyKey->key,
+            'Authorization' => 'Bearer ' . $readOnlyKey->key,
         ])->postJson('/test-api-write');
 
         $response->assertStatus(403)
             ->assertJson([
-                'error' => 'Forbidden',
+                'error'   => 'Forbidden',
                 'message' => 'Insufficient permissions',
             ]);
     }
@@ -209,7 +209,7 @@ class AuthenticateApiKeyTest extends TestCase
     public function test_allows_sufficient_permissions(): void
     {
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer '.$this->apiKey->key,
+            'Authorization' => 'Bearer ' . $this->apiKey->key,
         ])->postJson('/test-api-write');
 
         $response->assertStatus(200)
@@ -220,13 +220,13 @@ class AuthenticateApiKeyTest extends TestCase
     public function test_logs_api_key_usage(): void
     {
         $this->withHeaders([
-            'Authorization' => 'Bearer '.$this->apiKey->key,
+            'Authorization' => 'Bearer ' . $this->apiKey->key,
         ])->getJson('/test-api');
 
         $this->assertDatabaseHas('api_key_logs', [
-            'api_key_id' => $this->apiKey->id,
-            'endpoint' => '/test-api',
-            'method' => 'GET',
+            'api_key_id'  => $this->apiKey->id,
+            'endpoint'    => '/test-api',
+            'method'      => 'GET',
             'status_code' => 200,
         ]);
     }
@@ -239,9 +239,9 @@ class AuthenticateApiKeyTest extends TestCase
         ])->getJson('/test-api');
 
         $this->assertDatabaseHas('api_key_logs', [
-            'api_key_id' => null,
-            'endpoint' => '/test-api',
-            'method' => 'GET',
+            'api_key_id'  => null,
+            'endpoint'    => '/test-api',
+            'method'      => 'GET',
             'status_code' => 401,
         ]);
     }
@@ -253,18 +253,18 @@ class AuthenticateApiKeyTest extends TestCase
             $user = request()->user();
 
             return response()->json([
-                'user_id' => $user->id ?? null,
+                'user_id'   => $user->id ?? null,
                 'user_uuid' => $user->uuid ?? null,
             ]);
         });
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer '.$this->apiKey->key,
+            'Authorization' => 'Bearer ' . $this->apiKey->key,
         ])->getJson('/test-user');
 
         $response->assertStatus(200)
             ->assertJson([
-                'user_id' => $this->user->id,
+                'user_id'   => $this->user->id,
                 'user_uuid' => $this->user->uuid,
             ]);
     }
@@ -273,12 +273,12 @@ class AuthenticateApiKeyTest extends TestCase
     public function test_rejects_malformed_authorization_header(): void
     {
         $response = $this->withHeaders([
-            'Authorization' => 'InvalidFormat '.$this->apiKey->key,
+            'Authorization' => 'InvalidFormat ' . $this->apiKey->key,
         ])->getJson('/test-api');
 
         $response->assertStatus(401)
             ->assertJson([
-                'error' => 'Unauthorized',
+                'error'   => 'Unauthorized',
                 'message' => 'API key is required',
             ]);
     }

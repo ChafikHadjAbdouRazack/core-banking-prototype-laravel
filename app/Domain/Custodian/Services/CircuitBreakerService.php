@@ -151,15 +151,15 @@ class CircuitBreakerService
             : 0;
 
         return [
-            'state' => $this->getState($service),
-            'total_calls' => count($recentCalls),
-            'success_count' => $successCount,
-            'failure_count' => count($failures),
-            'failure_rate' => round($failureRate * 100, 2),
-            'consecutive_failures' => $this->getConsecutiveFailures($service),
+            'state'                 => $this->getState($service),
+            'total_calls'           => count($recentCalls),
+            'success_count'         => $successCount,
+            'failure_count'         => count($failures),
+            'failure_rate'          => round($failureRate * 100, 2),
+            'consecutive_failures'  => $this->getConsecutiveFailures($service),
             'consecutive_successes' => $this->getConsecutiveSuccesses($service),
-            'last_failure_time' => $this->getLastFailureTime($service),
-            'circuit_opened_at' => $this->getCircuitOpenedTime($service),
+            'last_failure_time'     => $this->getLastFailureTime($service),
+            'circuit_opened_at'     => $this->getCircuitOpenedTime($service),
         ];
     }
 
@@ -193,7 +193,7 @@ class CircuitBreakerService
 
         // Add new call
         $recentCalls[] = [
-            'success' => $success,
+            'success'   => $success,
             'timestamp' => now()->timestamp,
         ];
 

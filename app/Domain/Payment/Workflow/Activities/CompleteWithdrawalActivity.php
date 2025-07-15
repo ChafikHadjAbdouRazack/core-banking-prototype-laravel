@@ -15,8 +15,8 @@ class CompleteWithdrawalActivity extends Activity
 
         return [
             'withdrawal_uuid' => $input['withdrawal_uuid'],
-            'status' => 'completed',
-            'transaction_id' => $input['transaction_id'],
+            'status'          => 'completed',
+            'transaction_id'  => $input['transaction_id'],
         ];
     }
 }

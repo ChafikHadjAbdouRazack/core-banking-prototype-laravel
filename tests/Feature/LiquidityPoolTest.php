@@ -30,9 +30,9 @@ class LiquidityPoolTest extends DomainTestCase
 
         // Create system user for pool accounts
         $this->systemUser = User::firstOrCreate(['email' => 'system@finaegis.com'], [
-            'name' => 'System',
+            'name'     => 'System',
             'password' => bcrypt('system'),
-            'uuid' => Str::uuid()->toString(),
+            'uuid'     => Str::uuid()->toString(),
         ]);
 
         // Create assets
@@ -43,24 +43,24 @@ class LiquidityPoolTest extends DomainTestCase
         $this->user = User::factory()->create();
         $this->account = Account::factory()->create([
             'user_uuid' => $this->user->uuid,
-            'name' => 'Test Account',
+            'name'      => 'Test Account',
         ]);
 
         // Give user some balances
         AccountBalance::create([
-            'account_uuid' => $this->account->uuid,
-            'asset_code' => 'BTC',
-            'current_balance' => '10.00000000',
+            'account_uuid'      => $this->account->uuid,
+            'asset_code'        => 'BTC',
+            'current_balance'   => '10.00000000',
             'available_balance' => '10.00000000',
-            'locked_balance' => '0',
+            'locked_balance'    => '0',
         ]);
 
         AccountBalance::create([
-            'account_uuid' => $this->account->uuid,
-            'asset_code' => 'EUR',
-            'current_balance' => '50000.00',
+            'account_uuid'      => $this->account->uuid,
+            'asset_code'        => 'EUR',
+            'current_balance'   => '50000.00',
             'available_balance' => '50000.00',
-            'locked_balance' => '0',
+            'locked_balance'    => '0',
         ]);
     }
 
@@ -177,20 +177,20 @@ class LiquidityPoolTest extends DomainTestCase
         $user2 = User::factory()->create();
         $account2 = Account::factory()->create([
             'user_uuid' => $user2->uuid,
-            'name' => 'Test Account 2',
+            'name'      => 'Test Account 2',
         ]);
 
         AccountBalance::create([
-            'account_uuid' => $account2->uuid,
-            'asset_code' => 'BTC',
-            'current_balance' => '2.00000000',
+            'account_uuid'      => $account2->uuid,
+            'asset_code'        => 'BTC',
+            'current_balance'   => '2.00000000',
             'available_balance' => '2.00000000',
         ]);
 
         AccountBalance::create([
-            'account_uuid' => $account2->uuid,
-            'asset_code' => 'EUR',
-            'current_balance' => '100000.00',
+            'account_uuid'      => $account2->uuid,
+            'asset_code'        => 'EUR',
+            'current_balance'   => '100000.00',
             'available_balance' => '100000.00',
         ]);
 
@@ -241,20 +241,20 @@ class LiquidityPoolTest extends DomainTestCase
         $user2 = User::factory()->create();
         $account2 = Account::factory()->create([
             'user_uuid' => $user2->uuid,
-            'name' => 'Test Account 2',
+            'name'      => 'Test Account 2',
         ]);
 
         AccountBalance::create([
-            'account_uuid' => $account2->uuid,
-            'asset_code' => 'BTC',
-            'current_balance' => '1.00000000',
+            'account_uuid'      => $account2->uuid,
+            'asset_code'        => 'BTC',
+            'current_balance'   => '1.00000000',
             'available_balance' => '1.00000000',
         ]);
 
         AccountBalance::create([
-            'account_uuid' => $account2->uuid,
-            'asset_code' => 'EUR',
-            'current_balance' => '50000.00',
+            'account_uuid'      => $account2->uuid,
+            'asset_code'        => 'EUR',
+            'current_balance'   => '50000.00',
             'available_balance' => '50000.00',
         ]);
 

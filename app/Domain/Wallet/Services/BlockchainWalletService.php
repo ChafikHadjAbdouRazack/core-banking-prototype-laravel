@@ -114,7 +114,7 @@ class BlockchainWalletService implements WalletConnectorInterface
                 'Failed to create wallet',
                 [
                     'user_id' => $userId,
-                    'error' => $e->getMessage(),
+                    'error'   => $e->getMessage(),
                 ]
             );
             throw $e;
@@ -174,8 +174,8 @@ class BlockchainWalletService implements WalletConnectorInterface
 
         return [
             'address' => $addressData->address,
-            'chain' => $chain,
-            'label' => $label,
+            'chain'   => $chain,
+            'label'   => $label,
         ];
     }
 
@@ -197,7 +197,7 @@ class BlockchainWalletService implements WalletConnectorInterface
             }
 
             $balances[$chain] = [
-                'balance' => $chainBalance,
+                'balance'   => $chainBalance,
                 'formatted' => $this->formatBalance($chainBalance, $chain),
                 'addresses' => count($addresses),
             ];
@@ -254,12 +254,12 @@ class BlockchainWalletService implements WalletConnectorInterface
         $this->recordTransaction($walletId, $chain, $transaction, $result);
 
         return [
-            'hash' => $result->hash,
-            'status' => $result->status,
-            'from' => $fromAddress['address'],
-            'to' => $to,
-            'amount' => $amount,
-            'chain' => $chain,
+            'hash'         => $result->hash,
+            'status'       => $result->status,
+            'from'         => $fromAddress['address'],
+            'to'           => $to,
+            'amount'       => $amount,
+            'chain'        => $chain,
             'gas_estimate' => $gasEstimate->toArray(),
         ];
     }
@@ -337,9 +337,9 @@ class BlockchainWalletService implements WalletConnectorInterface
     {
         DB::table('wallet_seeds')->insert(
             [
-                'wallet_id' => $walletId,
+                'wallet_id'      => $walletId,
                 'encrypted_seed' => $encryptedSeed,
-                'created_at' => now(),
+                'created_at'     => now(),
             ]
         );
     }
@@ -434,16 +434,16 @@ class BlockchainWalletService implements WalletConnectorInterface
     ): void {
         DB::table('blockchain_transactions')->insert(
             [
-                'wallet_id' => $walletId,
-                'chain' => $chain,
+                'wallet_id'        => $walletId,
+                'chain'            => $chain,
                 'transaction_hash' => $result->hash,
-                'from_address' => $transaction->from,
-                'to_address' => $transaction->to,
-                'amount' => $transaction->value,
-                'gas_limit' => $transaction->gasLimit,
-                'gas_price' => $transaction->gasPrice,
-                'status' => $result->status,
-                'metadata' => json_encode(
+                'from_address'     => $transaction->from,
+                'to_address'       => $transaction->to,
+                'amount'           => $transaction->value,
+                'gas_limit'        => $transaction->gasLimit,
+                'gas_price'        => $transaction->gasPrice,
+                'status'           => $result->status,
+                'metadata'         => json_encode(
                     array_merge(
                         $transaction->metadata,
                         $result->metadata
@@ -468,9 +468,9 @@ class BlockchainWalletService implements WalletConnectorInterface
                     'Blockchain event received',
                     [
                         'wallet_id' => $walletId,
-                        'chain' => $chain,
-                        'address' => $address,
-                        'event' => $event,
+                        'chain'     => $chain,
+                        'address'   => $address,
+                        'event'     => $event,
                     ]
                 );
 
@@ -496,9 +496,9 @@ class BlockchainWalletService implements WalletConnectorInterface
     {
         $decimals = [
             'ethereum' => 18,
-            'polygon' => 18,
-            'bsc' => 18,
-            'bitcoin' => 8,
+            'polygon'  => 18,
+            'bsc'      => 18,
+            'bitcoin'  => 8,
         ];
 
         $decimal = $decimals[$chain] ?? 18;
@@ -533,9 +533,9 @@ class BlockchainWalletService implements WalletConnectorInterface
         $balance = $connector->getBalance($address);
 
         return [
-            'balance' => $balance->balance,
+            'balance'   => $balance->balance,
             'available' => $balance->balance,
-            'pending' => '0',
+            'pending'   => '0',
         ];
     }
 
@@ -594,9 +594,9 @@ class BlockchainWalletService implements WalletConnectorInterface
         $status = $connector->getTransactionStatus($transactionHash);
 
         return [
-            'status' => $status->status,
+            'status'        => $status->status,
             'confirmations' => $status->confirmations ?? 0,
-            'block' => $status->block ?? null,
+            'block'         => $status->block ?? null,
         ];
     }
 
@@ -632,24 +632,24 @@ class BlockchainWalletService implements WalletConnectorInterface
         // Mock network fees - in production, fetch from blockchain
         $fees = [
             'ethereum' => [
-                'slow' => ['time' => '10 min', 'amount' => 0.001],
+                'slow'   => ['time' => '10 min', 'amount' => 0.001],
                 'medium' => ['time' => '3 min', 'amount' => 0.002],
-                'fast' => ['time' => '30 sec', 'amount' => 0.003],
+                'fast'   => ['time' => '30 sec', 'amount' => 0.003],
             ],
             'bitcoin' => [
-                'slow' => ['time' => '60 min', 'amount' => 0.00001],
+                'slow'   => ['time' => '60 min', 'amount' => 0.00001],
                 'medium' => ['time' => '30 min', 'amount' => 0.00002],
-                'fast' => ['time' => '10 min', 'amount' => 0.00005],
+                'fast'   => ['time' => '10 min', 'amount' => 0.00005],
             ],
             'polygon' => [
-                'slow' => ['time' => '30 sec', 'amount' => 0.001],
+                'slow'   => ['time' => '30 sec', 'amount' => 0.001],
                 'medium' => ['time' => '15 sec', 'amount' => 0.002],
-                'fast' => ['time' => '5 sec', 'amount' => 0.005],
+                'fast'   => ['time' => '5 sec', 'amount' => 0.005],
             ],
             'bsc' => [
-                'slow' => ['time' => '15 sec', 'amount' => 0.0001],
+                'slow'   => ['time' => '15 sec', 'amount' => 0.0001],
                 'medium' => ['time' => '6 sec', 'amount' => 0.0002],
-                'fast' => ['time' => '3 sec', 'amount' => 0.0005],
+                'fast'   => ['time' => '3 sec', 'amount' => 0.0005],
             ],
         ];
 

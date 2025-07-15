@@ -2,13 +2,13 @@
 
 namespace Tests\Unit\Domain\Compliance\Services;
 
+use App\Domain\Compliance\Models\CustomerRiskProfile;
+use App\Domain\Compliance\Models\TransactionMonitoringRule;
 use App\Domain\Compliance\Services\CustomerRiskService;
 use App\Domain\Compliance\Services\SuspiciousActivityReportService;
 use App\Domain\Compliance\Services\TransactionMonitoringService;
 use App\Models\Account;
-use App\Domain\Compliance\Models\CustomerRiskProfile;
 use App\Models\Transaction;
-use App\Domain\Compliance\Models\TransactionMonitoringRule;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Log;
@@ -45,9 +45,9 @@ class TransactionMonitoringServiceTest extends ServiceTestCase
         $account = Account::factory()->create(['user_uuid' => $user->uuid]);
 
         $eventProperties = [
-            'amount' => $attributes['amount'] ?? 10000,
+            'amount'    => $attributes['amount'] ?? 10000,
             'assetCode' => 'USD',
-            'metadata' => [],
+            'metadata'  => [],
         ];
 
         // Remove amount from attributes to avoid conflict
@@ -55,7 +55,7 @@ class TransactionMonitoringServiceTest extends ServiceTestCase
 
         return Transaction::factory()->forAccount($account)->create(array_merge([
             'event_properties' => $eventProperties,
-            'type' => $attributes['type'] ?? 'transfer',
+            'type'             => $attributes['type'] ?? 'transfer',
         ], $attributes));
     }
 

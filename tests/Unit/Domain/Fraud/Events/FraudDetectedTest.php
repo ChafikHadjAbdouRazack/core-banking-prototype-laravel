@@ -66,10 +66,10 @@ class FraudDetectedTest extends DomainTestCase
     public function test_event_serializes_correctly(): void
     {
         $fraudScore = FraudScore::factory()->create([
-            'total_score'      => 92,
-            'risk_level'       => 'high',
-            'decision'         => 'block',
-            'score_breakdown'  => [
+            'total_score'     => 92,
+            'risk_level'      => 'high',
+            'decision'        => 'block',
+            'score_breakdown' => [
                 'rule_engine' => ['score' => 50],
                 'behavioral'  => ['score' => 42],
             ],

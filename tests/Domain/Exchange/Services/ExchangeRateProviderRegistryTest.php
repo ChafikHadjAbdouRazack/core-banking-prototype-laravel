@@ -7,7 +7,7 @@ use App\Domain\Exchange\Providers\MockExchangeRateProvider;
 use App\Domain\Exchange\Services\ExchangeRateProviderRegistry;
 
 beforeEach(function () {
-    $this->registry = new ExchangeRateProviderRegistry;
+    $this->registry = new ExchangeRateProviderRegistry();
     $this->mockProvider = new MockExchangeRateProvider(['name' => 'Mock Provider']);
 });
 
@@ -68,7 +68,7 @@ it('can get available providers', function () {
     $this->registry->register('mock1', $this->mockProvider);
 
     $unavailableProvider = new MockExchangeRateProvider([
-        'name' => 'Unavailable Provider',
+        'name'      => 'Unavailable Provider',
         'available' => false,
     ]);
     $this->registry->register('mock2', $unavailableProvider);

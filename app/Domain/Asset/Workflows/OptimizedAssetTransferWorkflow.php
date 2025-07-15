@@ -93,10 +93,10 @@ class OptimizedAssetTransferWorkflow extends Workflow
             $executionTime = microtime(true) - $startTime;
 
             return [
-                'success' => true,
-                'transfer_id' => $transferId,
+                'success'           => true,
+                'transfer_id'       => $transferId,
                 'execution_time_ms' => round($executionTime * 1000, 2),
-                'optimized' => true,
+                'optimized'         => true,
             ];
         } catch (\Throwable $exception) {
             // Compensate on failure
@@ -106,10 +106,10 @@ class OptimizedAssetTransferWorkflow extends Workflow
             $executionTime = microtime(true) - $startTime;
 
             return [
-                'success' => false,
-                'error' => $exception->getMessage(),
+                'success'           => false,
+                'error'             => $exception->getMessage(),
                 'execution_time_ms' => round($executionTime * 1000, 2),
-                'optimized' => true,
+                'optimized'         => true,
             ];
         }
     }

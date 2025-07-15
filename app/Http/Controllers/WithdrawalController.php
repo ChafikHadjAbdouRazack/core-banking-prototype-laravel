@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
-use App\Domain\Payment\Models\BankAccount;
 use App\Domain\Payment\Services\PaymentGatewayService;
+use App\Models\BankAccount;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -153,7 +153,6 @@ class WithdrawalController extends Controller
 
         $user = Auth::user();
         /** @var User $user */
-
         $bankAccount = $user->bankAccounts()->create(
             [
             'bank_name'                => $request->bank_name,

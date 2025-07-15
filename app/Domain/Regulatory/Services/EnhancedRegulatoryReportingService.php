@@ -3,10 +3,10 @@
 namespace App\Domain\Regulatory\Services;
 
 use App\Domain\Compliance\Services\RegulatoryReportingService;
-use App\Domain\Regulatory\Models\RegulatoryReport;
-use App\Domain\Regulatory\Models\RegulatoryThreshold;
 use App\Domain\Fraud\Models\FraudCase;
 use App\Domain\Fraud\Models\FraudScore;
+use App\Domain\Regulatory\Models\RegulatoryReport;
+use App\Domain\Regulatory\Models\RegulatoryThreshold;
 use App\Models\Transaction;
 use App\Models\User;
 use Carbon\Carbon;

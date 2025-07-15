@@ -15,7 +15,7 @@ it('can initiate a withdrawal', function () {
         accountUuid: $accountUuid,
         amount: 5000,
         currency: 'USD',
-        reference: 'WD-'.uniqid(),
+        reference: 'WD-' . uniqid(),
         bankName: 'Test Bank',
         accountNumber: '****1234',
         accountHolderName: 'John Doe',
@@ -45,7 +45,7 @@ it('can initiate a withdrawal', function () {
 it('can complete a withdrawal', function () {
     $withdrawalUuid = Str::uuid()->toString();
     $accountUuid = Str::uuid()->toString();
-    $transactionId = 'wtxn_'.uniqid();
+    $transactionId = 'wtxn_' . uniqid();
 
     $aggregate = PaymentWithdrawalAggregate::fake($withdrawalUuid)
         ->given([

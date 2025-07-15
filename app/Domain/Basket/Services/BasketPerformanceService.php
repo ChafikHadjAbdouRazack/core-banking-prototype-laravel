@@ -33,10 +33,10 @@ class BasketPerformanceService
             Log::warning(
                 "Insufficient data to calculate performance for basket {$basket->code}",
                 [
-                    'period_type' => $periodType,
+                    'period_type'  => $periodType,
                     'period_start' => $periodStart,
-                    'period_end' => $periodEnd,
-                    'value_count' => $values->count(),
+                    'period_end'   => $periodEnd,
+                    'value_count'  => $values->count(),
                 ]
             );
 
@@ -70,25 +70,25 @@ class BasketPerformanceService
         $performance = BasketPerformance::updateOrCreate(
             [
                 'basket_asset_code' => $basket->code,
-                'period_type' => $periodType,
-                'period_start' => $periodStart,
+                'period_type'       => $periodType,
+                'period_start'      => $periodStart,
             ],
             [
-                'period_end' => $periodEnd,
-                'start_value' => $startValue->value,
-                'end_value' => $endValue->value,
-                'high_value' => $highValue,
-                'low_value' => $lowValue,
-                'average_value' => $averageValue,
-                'return_value' => $returnValue,
+                'period_end'        => $periodEnd,
+                'start_value'       => $startValue->value,
+                'end_value'         => $endValue->value,
+                'high_value'        => $highValue,
+                'low_value'         => $lowValue,
+                'average_value'     => $averageValue,
+                'return_value'      => $returnValue,
                 'return_percentage' => $returnPercentage,
-                'volatility' => $volatility,
-                'sharpe_ratio' => $sharpeRatio,
-                'max_drawdown' => $maxDrawdown,
-                'value_count' => $values->count(),
-                'metadata' => [
+                'volatility'        => $volatility,
+                'sharpe_ratio'      => $sharpeRatio,
+                'max_drawdown'      => $maxDrawdown,
+                'value_count'       => $values->count(),
+                'metadata'          => [
                     'calculation_date' => now()->toIso8601String(),
-                    'data_points' => $values->count(),
+                    'data_points'      => $values->count(),
                 ],
             ]
         );
@@ -108,12 +108,12 @@ class BasketPerformanceService
         $now = now();
 
         $periods = [
-            'hour' => [$now->copy()->subHour(), $now],
-            'day' => [$now->copy()->subDay(), $now],
-            'week' => [$now->copy()->subWeek(), $now],
-            'month' => [$now->copy()->subMonth(), $now],
+            'hour'    => [$now->copy()->subHour(), $now],
+            'day'     => [$now->copy()->subDay(), $now],
+            'week'    => [$now->copy()->subWeek(), $now],
+            'month'   => [$now->copy()->subMonth(), $now],
             'quarter' => [$now->copy()->subQuarter(), $now],
-            'year' => [$now->copy()->subYear(), $now],
+            'year'    => [$now->copy()->subYear(), $now],
         ];
 
         foreach ($periods as $periodType => [$start, $end]) {
@@ -277,15 +277,15 @@ class BasketPerformanceService
 
             ComponentPerformance::create(
                 [
-                    'basket_performance_id' => $performance->id,
-                    'asset_code' => $assetCode,
-                    'start_weight' => $startWeight,
-                    'end_weight' => $endWeight,
-                    'average_weight' => $averageWeight,
-                    'contribution_value' => $contributionValue,
+                    'basket_performance_id'   => $performance->id,
+                    'asset_code'              => $assetCode,
+                    'start_weight'            => $startWeight,
+                    'end_weight'              => $endWeight,
+                    'average_weight'          => $averageWeight,
+                    'contribution_value'      => $contributionValue,
                     'contribution_percentage' => $contributionPercentage,
-                    'return_value' => $returnValue,
-                    'return_percentage' => $returnPercentage,
+                    'return_value'            => $returnValue,
+                    'return_percentage'       => $returnPercentage,
                 ]
             );
         }
@@ -303,20 +303,20 @@ class BasketPerformanceService
             ->get();
 
         $summary = [
-            'basket_code' => $basket->code,
-            'basket_name' => $basket->name,
+            'basket_code'   => $basket->code,
+            'basket_name'   => $basket->name,
             'current_value' => $basket->latestValue?->value ?? 0,
-            'performances' => [],
+            'performances'  => [],
         ];
 
         foreach ($performances as $performance) {
             $summary['performances'][$performance->period_type] = [
-                'return_percentage' => $performance->return_percentage,
-                'formatted_return' => $performance->formatted_return,
-                'volatility' => $performance->volatility,
-                'sharpe_ratio' => $performance->sharpe_ratio,
+                'return_percentage'  => $performance->return_percentage,
+                'formatted_return'   => $performance->formatted_return,
+                'volatility'         => $performance->volatility,
+                'sharpe_ratio'       => $performance->sharpe_ratio,
                 'performance_rating' => $performance->performance_rating,
-                'risk_rating' => $performance->risk_rating,
+                'risk_rating'        => $performance->risk_rating,
             ];
         }
 
@@ -329,7 +329,7 @@ class BasketPerformanceService
     public function compareToBenchmarks(BasketAsset $basket, array $benchmarkCodes): array
     {
         $comparison = [
-            'basket' => $this->getPerformanceSummary($basket),
+            'basket'     => $this->getPerformanceSummary($basket),
             'benchmarks' => [],
         ];
 

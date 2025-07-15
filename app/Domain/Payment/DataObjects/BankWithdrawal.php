@@ -82,17 +82,17 @@ final readonly class BankWithdrawal extends DataObject implements DataObjectCont
     public function toArray(): array
     {
         return [
-            'account_uuid' => $this->accountUuid,
-            'amount' => $this->amount,
-            'currency' => $this->currency,
-            'reference' => $this->reference,
-            'bank_name' => $this->bankName,
-            'account_number' => $this->accountNumber,
+            'account_uuid'        => $this->accountUuid,
+            'amount'              => $this->amount,
+            'currency'            => $this->currency,
+            'reference'           => $this->reference,
+            'bank_name'           => $this->bankName,
+            'account_number'      => $this->accountNumber,
             'account_holder_name' => $this->accountHolderName,
-            'routing_number' => $this->routingNumber,
-            'iban' => $this->iban,
-            'swift' => $this->swift,
-            'metadata' => $this->metadata,
+            'routing_number'      => $this->routingNumber,
+            'iban'                => $this->iban,
+            'swift'               => $this->swift,
+            'metadata'            => $this->metadata,
         ];
     }
 }

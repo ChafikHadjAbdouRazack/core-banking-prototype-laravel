@@ -18,14 +18,14 @@ beforeEach(function () {
     // Create balances
     AccountBalance::create([
         'account_uuid' => $this->account1->uuid,
-        'asset_code' => 'USD',
-        'balance' => 100000, // $1000
+        'asset_code'   => 'USD',
+        'balance'      => 100000, // $1000
     ]);
 
     AccountBalance::create([
         'account_uuid' => $this->account2->uuid,
-        'asset_code' => 'USD',
-        'balance' => 50000, // $500
+        'asset_code'   => 'USD',
+        'balance'      => 50000, // $500
     ]);
 
     $this->optimizationService = app(TransferOptimizationService::class);
@@ -77,21 +77,21 @@ it('can batch validate multiple transfers', function () {
     $transfers = [
         [
             'from_account' => (string) $this->account1->uuid,
-            'to_account' => (string) $this->account2->uuid,
-            'from_asset' => 'USD',
-            'amount' => 10000,
+            'to_account'   => (string) $this->account2->uuid,
+            'from_asset'   => 'USD',
+            'amount'       => 10000,
         ],
         [
             'from_account' => (string) $this->account2->uuid,
-            'to_account' => (string) $this->account1->uuid,
-            'from_asset' => 'USD',
-            'amount' => 5000,
+            'to_account'   => (string) $this->account1->uuid,
+            'from_asset'   => 'USD',
+            'amount'       => 5000,
         ],
         [
             'from_account' => (string) $this->account1->uuid,
-            'to_account' => (string) $this->account2->uuid,
-            'from_asset' => 'USD',
-            'amount' => 200000, // This should fail
+            'to_account'   => (string) $this->account2->uuid,
+            'from_asset'   => 'USD',
+            'amount'       => 200000, // This should fail
         ],
     ];
 

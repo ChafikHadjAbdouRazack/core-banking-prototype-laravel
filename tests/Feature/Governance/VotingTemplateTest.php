@@ -13,13 +13,13 @@ uses(RefreshDatabase::class);
 beforeEach(function () {
     // Create a system user for polls
     $this->systemUser = User::factory()->create([
-        'name' => 'System',
+        'name'  => 'System',
         'email' => 'system@platform',
     ]);
 });
 
 test('can create monthly basket voting poll', function () {
-    $service = new VotingTemplateService;
+    $service = new VotingTemplateService();
     $votingMonth = Carbon::parse('2025-07-01');
 
     $poll = $service->createMonthlyBasketVotingPoll($votingMonth);
@@ -37,7 +37,7 @@ test('can create monthly basket voting poll', function () {
 });
 
 test('can create add currency poll', function () {
-    $service = new VotingTemplateService;
+    $service = new VotingTemplateService();
 
     $poll = $service->createAddCurrencyPoll('CAD', 'Canadian Dollar');
 
@@ -49,7 +49,7 @@ test('can create add currency poll', function () {
 });
 
 test('can create emergency rebalancing poll', function () {
-    $service = new VotingTemplateService;
+    $service = new VotingTemplateService();
 
     $poll = $service->createEmergencyRebalancingPoll('Major currency crisis detected');
 
@@ -60,7 +60,7 @@ test('can create emergency rebalancing poll', function () {
 });
 
 test('can schedule yearly voting polls', function () {
-    $service = new VotingTemplateService;
+    $service = new VotingTemplateService();
 
     $polls = $service->scheduleYearlyVotingPolls(2025);
 
@@ -68,12 +68,12 @@ test('can schedule yearly voting polls', function () {
 
     foreach ($polls as $index => $poll) {
         $month = $index + 1;
-        expect($poll->metadata['voting_month'])->toBe('2025-'.str_pad($month, 2, '0', STR_PAD_LEFT));
+        expect($poll->metadata['voting_month'])->toBe('2025-' . str_pad($month, 2, '0', STR_PAD_LEFT));
     }
 });
 
 test('basket voting options have proper constraints', function () {
-    $service = new VotingTemplateService;
+    $service = new VotingTemplateService();
     $poll = $service->createMonthlyBasketVotingPoll();
 
     $options = $poll->options[0];

@@ -1,11 +1,11 @@
 <?php
 
+use App\Domain\Basket\Models\BasketAsset;
 use App\Domain\Governance\Enums\PollStatus;
 use App\Domain\Governance\Enums\PollType;
 use App\Domain\Governance\Models\Poll;
 use App\Domain\Governance\Models\Vote;
 use App\Domain\Governance\Workflows\UpdateBasketCompositionWorkflow;
-use App\Domain\Basket\Models\BasketAsset;
 
 beforeEach(function () {
     // Ensure all required assets exist
@@ -14,8 +14,8 @@ beforeEach(function () {
         App\Domain\Asset\Models\Asset::firstOrCreate(
             ['code' => $code],
             [
-                'name' => $code.' Currency',
-                'type' => in_array($code, ['XAU']) ? 'commodity' : 'fiat',
+                'name'      => $code . ' Currency',
+                'type'      => in_array($code, ['XAU']) ? 'commodity' : 'fiat',
                 'precision' => 2,
                 'is_active' => true,
             ]
@@ -48,16 +48,16 @@ beforeEach(function () {
 
     // Create poll with basket voting structure
     $this->poll = Poll::factory()->create([
-        'status' => PollStatus::CLOSED,
-        'type' => PollType::WEIGHTED_CHOICE,
+        'status'   => PollStatus::CLOSED,
+        'type'     => PollType::WEIGHTED_CHOICE,
         'metadata' => [
             'basket_code' => 'GCU',
-            'template' => 'monthly_basket',
+            'template'    => 'monthly_basket',
         ],
         'options' => [[
-            'id' => 'basket_weights',
-            'label' => 'GCU Basket Weights',
-            'type' => 'allocation',
+            'id'         => 'basket_weights',
+            'label'      => 'GCU Basket Weights',
+            'type'       => 'allocation',
             'currencies' => [
                 ['code' => 'USD', 'default' => 40],
                 ['code' => 'EUR', 'default' => 30],
@@ -77,8 +77,8 @@ it('can create workflow stub for updating basket composition', function () {
 it('workflow processes votes with different allocations', function () {
     // Create votes with different allocations and voting power
     Vote::factory()->create([
-        'poll_id' => $this->poll->id,
-        'voting_power' => 1000,
+        'poll_id'          => $this->poll->id,
+        'voting_power'     => 1000,
         'selected_options' => [
             'allocations' => [
                 'USD' => 45,
@@ -92,8 +92,8 @@ it('workflow processes votes with different allocations', function () {
     ]);
 
     Vote::factory()->create([
-        'poll_id' => $this->poll->id,
-        'voting_power' => 2000,
+        'poll_id'          => $this->poll->id,
+        'voting_power'     => 2000,
         'selected_options' => [
             'allocations' => [
                 'USD' => 35,
@@ -118,9 +118,9 @@ it('workflow handles poll with no votes', function () {
 
 it('workflow handles votes with metadata allocations format', function () {
     Vote::factory()->create([
-        'poll_id' => $this->poll->id,
+        'poll_id'      => $this->poll->id,
         'voting_power' => 1000,
-        'metadata' => [
+        'metadata'     => [
             'allocations' => [
                 'USD' => 40,
                 'EUR' => 30,
@@ -139,8 +139,8 @@ it('workflow handles votes with metadata allocations format', function () {
 it('workflow handles allocations with rounding', function () {
     // Create vote with allocations that might have rounding issues
     Vote::factory()->create([
-        'poll_id' => $this->poll->id,
-        'voting_power' => 1000,
+        'poll_id'          => $this->poll->id,
+        'voting_power'     => 1000,
         'selected_options' => [
             'allocations' => [
                 'USD' => 33.33,
@@ -159,8 +159,8 @@ it('workflow handles allocations with rounding', function () {
 
 it('workflow processes basket rebalancing votes', function () {
     Vote::factory()->create([
-        'poll_id' => $this->poll->id,
-        'voting_power' => 1000,
+        'poll_id'          => $this->poll->id,
+        'voting_power'     => 1000,
         'selected_options' => [
             'allocations' => [
                 'USD' => 50,
@@ -193,7 +193,7 @@ it('workflow uses basket code from poll metadata', function () {
     $this->poll->update([
         'metadata' => [
             'basket_code' => 'CUSTOM_BASKET',
-            'template' => 'monthly_basket',
+            'template'    => 'monthly_basket',
         ],
     ]);
 
@@ -203,8 +203,8 @@ it('workflow uses basket code from poll metadata', function () {
 
 it('workflow ignores votes for invalid currencies', function () {
     Vote::factory()->create([
-        'poll_id' => $this->poll->id,
-        'voting_power' => 1000,
+        'poll_id'          => $this->poll->id,
+        'voting_power'     => 1000,
         'selected_options' => [
             'allocations' => [
                 'USD' => 40,
@@ -224,8 +224,8 @@ it('workflow ignores votes for invalid currencies', function () {
 
 it('workflow handles zero voting power', function () {
     Vote::factory()->create([
-        'poll_id' => $this->poll->id,
-        'voting_power' => 0,
+        'poll_id'          => $this->poll->id,
+        'voting_power'     => 0,
         'selected_options' => [
             'allocations' => [
                 'USD' => 100,

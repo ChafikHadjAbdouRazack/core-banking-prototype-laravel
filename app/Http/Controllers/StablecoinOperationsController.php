@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Domain\Account\DataObjects\AccountUuid;
+use App\Domain\Stablecoin\Models\StablecoinOperation;
 use App\Domain\Stablecoin\Workflows\BurnStablecoinWorkflow;
 use App\Domain\Stablecoin\Workflows\MintStablecoinWorkflow;
 use App\Models\Account;
-use App\Domain\Stablecoin\Models\StablecoinOperation;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -64,7 +64,6 @@ class StablecoinOperationsController extends Controller
     {
         $user = Auth::user();
         /** @var User $user */
-
         if (! $user->hasRole(['super_admin', 'bank_admin', 'stablecoin_operator'])) {
             abort(403);
         }
@@ -108,7 +107,6 @@ class StablecoinOperationsController extends Controller
 
         $user = Auth::user();
         /** @var User $user */
-
         if (! $user->hasRole(['super_admin', 'bank_admin', 'stablecoin_operator'])) {
             abort(403);
         }
@@ -196,7 +194,6 @@ class StablecoinOperationsController extends Controller
     {
         $user = Auth::user();
         /** @var User $user */
-
         if (! $user->hasRole(['super_admin', 'bank_admin', 'stablecoin_operator'])) {
             abort(403);
         }
@@ -236,7 +233,6 @@ class StablecoinOperationsController extends Controller
 
         $user = Auth::user();
         /** @var User $user */
-
         if (! $user->hasRole(['super_admin', 'bank_admin', 'stablecoin_operator'])) {
             abort(403);
         }
@@ -327,7 +323,6 @@ class StablecoinOperationsController extends Controller
     {
         $user = Auth::user();
         /** @var User $user */
-
         if (! $user->hasRole(['super_admin', 'bank_admin', 'stablecoin_operator'])) {
             abort(403);
         }

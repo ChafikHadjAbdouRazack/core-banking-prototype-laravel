@@ -21,11 +21,11 @@ class LoanRepayment extends Model
     ];
 
     protected $casts = [
-        'amount' => 'decimal:2',
-        'principal_amount' => 'decimal:2',
-        'interest_amount' => 'decimal:2',
+        'amount'            => 'decimal:2',
+        'principal_amount'  => 'decimal:2',
+        'interest_amount'   => 'decimal:2',
         'remaining_balance' => 'decimal:2',
-        'paid_at' => 'datetime',
+        'paid_at'           => 'datetime',
     ];
 
     public function loan(): BelongsTo

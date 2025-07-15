@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Domain\Stablecoin;
 
+use App\Domain\Stablecoin\Models\Stablecoin;
+use App\Domain\Stablecoin\Models\StablecoinCollateralPosition;
 use App\Domain\Stablecoin\Services\StablecoinIssuanceService;
 use App\Models\Account;
 use App\Models\Asset;
-use App\Domain\Stablecoin\Models\Stablecoin;
-use App\Domain\Stablecoin\Models\StablecoinCollateralPosition;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;

@@ -215,7 +215,7 @@ class TransactionRateLimitMiddlewareTest extends TestCase
 
         // Check that it counted
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer '.$this->user->currentAccessToken()->plainTextToken,
+            'Authorization' => 'Bearer ' . $this->user->currentAccessToken()->plainTextToken,
         ])->postJson('/test-deposit', []);
 
         $response->assertHeader('X-RateLimit-Transaction-Remaining', '8'); // Started with 10, used 2

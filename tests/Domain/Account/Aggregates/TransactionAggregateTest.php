@@ -94,7 +94,7 @@ class TransactionAggregateTest extends DomainTestCase
                 }
             )
             ->assertApplied([
-                new AccountLimitHit,
+                new AccountLimitHit(),
             ])
             ->assertNotRecorded(MoneySubtracted::class);
     }

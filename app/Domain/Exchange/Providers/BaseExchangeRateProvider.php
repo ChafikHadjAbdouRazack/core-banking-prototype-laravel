@@ -42,7 +42,7 @@ abstract class BaseExchangeRateProvider implements IExchangeRateProvider
     protected function getHeaders(): array
     {
         $headers = [
-            'Accept' => 'application/json',
+            'Accept'       => 'application/json',
             'Content-Type' => 'application/json',
         ];
 
@@ -136,9 +136,9 @@ abstract class BaseExchangeRateProvider implements IExchangeRateProvider
             Log::debug(
                 "Exchange rate provider {$this->getName()} request",
                 [
-                    'method' => $method,
+                    'method'   => $method,
                     'endpoint' => $endpoint,
-                    'data' => $data,
+                    'data'     => $data,
                 ]
             );
         }
@@ -153,10 +153,10 @@ abstract class BaseExchangeRateProvider implements IExchangeRateProvider
             Log::debug(
                 "Exchange rate provider {$this->getName()} response",
                 [
-                    'method' => $method,
+                    'method'   => $method,
                     'endpoint' => $endpoint,
-                    'status' => $response->status(),
-                    'body' => $response->json(),
+                    'status'   => $response->status(),
+                    'body'     => $response->json(),
                 ]
             );
         }

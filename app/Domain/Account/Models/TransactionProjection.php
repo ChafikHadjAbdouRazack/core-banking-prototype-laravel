@@ -36,7 +36,7 @@ class TransactionProjection extends Model
      * Get the account that owns the transaction.
      */
     /**
-     * @return BelongsTo<Account, TransactionProjection>
+     * @return BelongsTo<Account, $this>
      */
     public function account(): BelongsTo
     {

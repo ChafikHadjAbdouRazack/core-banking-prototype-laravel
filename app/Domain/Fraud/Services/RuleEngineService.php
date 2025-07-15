@@ -16,11 +16,11 @@ class RuleEngineService
     {
         $rules = $this->getActiveRules();
         $results = [
-            'total_score' => 0,
+            'total_score'     => 0,
             'triggered_rules' => [],
-            'blocking_rules' => [],
-            'rule_scores' => [],
-            'rule_details' => [],
+            'blocking_rules'  => [],
+            'rule_scores'     => [],
+            'rule_details'    => [],
         ];
 
         foreach ($rules as $rule) {
@@ -34,11 +34,11 @@ class RuleEngineService
                     $results['total_score'] += $score;
 
                     $results['rule_details'][$rule->code] = [
-                        'name' => $rule->name,
+                        'name'     => $rule->name,
                         'category' => $rule->category,
                         'severity' => $rule->severity,
-                        'score' => $score,
-                        'actions' => $rule->actions,
+                        'score'    => $score,
+                        'actions'  => $rule->actions,
                     ];
 
                     // Check if blocking
@@ -57,7 +57,7 @@ class RuleEngineService
                     'Rule evaluation failed',
                     [
                         'rule_code' => $rule->code,
-                        'error' => $e->getMessage(),
+                        'error'     => $e->getMessage(),
                     ]
                 );
             }
@@ -429,8 +429,8 @@ class RuleEngineService
     protected function detectImpossibleTravel(array $context): bool
     {
         $currentLocation = [
-            'country' => $context['ip_country'] ?? null,
-            'city' => $context['ip_city'] ?? null,
+            'country'   => $context['ip_country'] ?? null,
+            'city'      => $context['ip_city'] ?? null,
             'timestamp' => $context['timestamp'] ?? now(),
         ];
 
@@ -463,10 +463,10 @@ class RuleEngineService
         }
 
         $minutes = match ($timeWindow) {
-            '1h' => 60,
-            '24h' => 1440,
-            '7d' => 10080,
-            '30d' => 43200,
+            '1h'    => 60,
+            '24h'   => 1440,
+            '7d'    => 10080,
+            '30d'   => 43200,
             default => 60,
         };
 
@@ -524,7 +524,7 @@ class RuleEngineService
         Log::info(
             'Fraud rule triggered notification',
             [
-                'rule_code' => $rule->code,
+                'rule_code'      => $rule->code,
                 'transaction_id' => $context['transaction']['id'] ?? null,
             ]
         );
@@ -539,7 +539,7 @@ class RuleEngineService
         Log::info(
             'Transaction flagged by rule',
             [
-                'rule_code' => $rule->code,
+                'rule_code'      => $rule->code,
                 'transaction_id' => $context['transaction']['id'] ?? null,
             ]
         );
@@ -552,37 +552,37 @@ class RuleEngineService
     {
         $defaultRules = [
             [
-                'name' => 'High Daily Transaction Volume',
-                'category' => FraudRule::CATEGORY_VELOCITY,
-                'severity' => FraudRule::SEVERITY_HIGH,
+                'name'       => 'High Daily Transaction Volume',
+                'category'   => FraudRule::CATEGORY_VELOCITY,
+                'severity'   => FraudRule::SEVERITY_HIGH,
                 'thresholds' => ['max_daily_volume' => 50000],
                 'base_score' => 60,
             ],
             [
-                'name' => 'Rapid Transactions',
-                'category' => FraudRule::CATEGORY_PATTERN,
-                'severity' => FraudRule::SEVERITY_MEDIUM,
+                'name'       => 'Rapid Transactions',
+                'category'   => FraudRule::CATEGORY_PATTERN,
+                'severity'   => FraudRule::SEVERITY_MEDIUM,
                 'conditions' => [['pattern' => 'rapid_succession']],
                 'base_score' => 40,
             ],
             [
-                'name' => 'Large Transaction Amount',
-                'category' => FraudRule::CATEGORY_AMOUNT,
-                'severity' => FraudRule::SEVERITY_HIGH,
+                'name'       => 'Large Transaction Amount',
+                'category'   => FraudRule::CATEGORY_AMOUNT,
+                'severity'   => FraudRule::SEVERITY_HIGH,
                 'thresholds' => ['max_amount' => 25000],
                 'base_score' => 50,
             ],
             [
-                'name' => 'High Risk Country',
-                'category' => FraudRule::CATEGORY_GEOGRAPHY,
-                'severity' => FraudRule::SEVERITY_HIGH,
+                'name'       => 'High Risk Country',
+                'category'   => FraudRule::CATEGORY_GEOGRAPHY,
+                'severity'   => FraudRule::SEVERITY_HIGH,
                 'conditions' => ['high_risk_countries' => ['NG', 'PK', 'ID']],
                 'base_score' => 45,
             ],
             [
-                'name' => 'VPN/Proxy Detection',
-                'category' => FraudRule::CATEGORY_DEVICE,
-                'severity' => FraudRule::SEVERITY_MEDIUM,
+                'name'       => 'VPN/Proxy Detection',
+                'category'   => FraudRule::CATEGORY_DEVICE,
+                'severity'   => FraudRule::SEVERITY_MEDIUM,
                 'conditions' => ['block_vpn' => true, 'block_proxy' => true],
                 'base_score' => 35,
             ],
@@ -595,7 +595,7 @@ class RuleEngineService
                     $ruleData,
                     [
                         'description' => "Default rule: {$ruleData['name']}",
-                        'actions' => [FraudRule::ACTION_FLAG, FraudRule::ACTION_NOTIFY],
+                        'actions'     => [FraudRule::ACTION_FLAG, FraudRule::ACTION_NOTIFY],
                     ]
                 )
             );

@@ -65,25 +65,25 @@ class CgoInvestment extends Model
     ];
 
     protected $casts = [
-        'amount' => 'decimal:2',
-        'amount_paid' => 'decimal:2',
-        'crypto_amount_paid' => 'decimal:8',
-        'share_price' => 'decimal:4',
-        'shares_purchased' => 'decimal:4',
-        'ownership_percentage' => 'decimal:6',
-        'certificate_issued_at' => 'datetime',
+        'amount'                 => 'decimal:2',
+        'amount_paid'            => 'decimal:2',
+        'crypto_amount_paid'     => 'decimal:8',
+        'share_price'            => 'decimal:4',
+        'shares_purchased'       => 'decimal:4',
+        'ownership_percentage'   => 'decimal:6',
+        'certificate_issued_at'  => 'datetime',
         'agreement_generated_at' => 'datetime',
-        'agreement_signed_at' => 'datetime',
-        'payment_completed_at' => 'datetime',
-        'payment_failed_at' => 'datetime',
-        'payment_pending_at' => 'datetime',
-        'failed_at' => 'datetime',
-        'cancelled_at' => 'datetime',
-        'metadata' => 'array',
-        'kyc_verified_at' => 'datetime',
-        'aml_checked_at' => 'datetime',
-        'aml_flags' => 'array',
-        'risk_assessment' => 'decimal:2',
+        'agreement_signed_at'    => 'datetime',
+        'payment_completed_at'   => 'datetime',
+        'payment_failed_at'      => 'datetime',
+        'payment_pending_at'     => 'datetime',
+        'failed_at'              => 'datetime',
+        'cancelled_at'           => 'datetime',
+        'metadata'               => 'array',
+        'kyc_verified_at'        => 'datetime',
+        'aml_checked_at'         => 'datetime',
+        'aml_flags'              => 'array',
+        'risk_assessment'        => 'decimal:2',
     ];
 
     protected static function boot()
@@ -114,19 +114,19 @@ class CgoInvestment extends Model
         return match ($this->tier) {
             'bronze' => 'yellow',
             'silver' => 'gray',
-            'gold' => 'amber',
-            default => 'gray',
+            'gold'   => 'amber',
+            default  => 'gray',
         };
     }
 
     public function getStatusColorAttribute(): string
     {
         return match ($this->status) {
-            'pending' => 'yellow',
+            'pending'   => 'yellow',
             'confirmed' => 'green',
             'cancelled' => 'red',
-            'refunded' => 'gray',
-            default => 'gray',
+            'refunded'  => 'gray',
+            default     => 'gray',
         };
     }
 

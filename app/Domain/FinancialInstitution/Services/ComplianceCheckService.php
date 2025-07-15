@@ -14,11 +14,11 @@ class ComplianceCheckService
     public function checkApplication(FinancialInstitutionApplication $application): array
     {
         $results = [
-            'aml_check' => $this->checkAmlCompliance($application),
-            'sanctions_check' => $this->checkSanctions($application),
-            'regulatory_check' => $this->checkRegulatoryStatus($application),
+            'aml_check'           => $this->checkAmlCompliance($application),
+            'sanctions_check'     => $this->checkSanctions($application),
+            'regulatory_check'    => $this->checkRegulatoryStatus($application),
             'certification_check' => $this->checkCertifications($application),
-            'jurisdiction_check' => $this->checkJurisdiction($application),
+            'jurisdiction_check'  => $this->checkJurisdiction($application),
         ];
 
         // Calculate overall compliance score
@@ -75,9 +75,9 @@ class ComplianceCheckService
         }
 
         return [
-            'score' => min($score, 100),
-            'passed' => $score >= 70,
-            'issues' => $issues,
+            'score'           => min($score, 100),
+            'passed'          => $score >= 70,
+            'issues'          => $issues,
             'recommendations' => $recommendations,
         ];
     }
@@ -98,7 +98,7 @@ class ComplianceCheckService
             $score = 0;
             $issues[] = 'Institution based in sanctioned country';
             $matches[] = [
-                'list' => 'Country Sanctions',
+                'list'  => 'Country Sanctions',
                 'match' => $application->country,
             ];
         }
@@ -112,7 +112,7 @@ class ComplianceCheckService
             $issues[] = 'Target markets include sanctioned countries';
             foreach ($sanctionedMarkets as $market) {
                 $matches[] = [
-                    'list' => 'Target Market Sanctions',
+                    'list'  => 'Target Market Sanctions',
                     'match' => $market,
                 ];
             }
@@ -125,9 +125,9 @@ class ComplianceCheckService
         // - UK HM Treasury List
 
         return [
-            'score' => max($score, 0),
-            'passed' => $score >= 50,
-            'issues' => $issues,
+            'score'   => max($score, 0),
+            'passed'  => $score >= 50,
+            'issues'  => $issues,
             'matches' => $matches,
         ];
     }
@@ -147,10 +147,10 @@ class ComplianceCheckService
 
             // In production, would verify license with regulatory body
             $validations[] = [
-                'type' => 'Regulatory License',
-                'number' => $application->regulatory_license_number,
+                'type'      => 'Regulatory License',
+                'number'    => $application->regulatory_license_number,
                 'regulator' => $application->primary_regulator,
-                'verified' => true, // Would be actual verification result
+                'verified'  => true, // Would be actual verification result
             ];
         } else {
             $issues[] = 'No regulatory license number provided';
@@ -171,17 +171,17 @@ class ComplianceCheckService
         if ($application->registration_number) {
             $score += 20;
             $validations[] = [
-                'type' => 'Company Registration',
-                'number' => $application->registration_number,
-                'country' => $application->country,
+                'type'     => 'Company Registration',
+                'number'   => $application->registration_number,
+                'country'  => $application->country,
                 'verified' => true, // Would check with company registry
             ];
         }
 
         return [
-            'score' => min($score, 100),
-            'passed' => $score >= 50,
-            'issues' => $issues,
+            'score'       => min($score, 100),
+            'passed'      => $score >= 50,
+            'issues'      => $issues,
             'validations' => $validations,
         ];
     }
@@ -201,17 +201,17 @@ class ComplianceCheckService
         // Check for important certifications
         $importantCerts = [
             'ISO27001' => 'Information Security Management',
-            'SOC2' => 'Service Organization Control 2',
-            'PCI-DSS' => 'Payment Card Industry Data Security Standard',
-            'ISO9001' => 'Quality Management',
+            'SOC2'     => 'Service Organization Control 2',
+            'PCI-DSS'  => 'Payment Card Industry Data Security Standard',
+            'ISO9001'  => 'Quality Management',
         ];
 
         foreach ($importantCerts as $cert => $name) {
             if (in_array($cert, $complianceCerts)) {
                 $score += 10;
                 $certifications[] = [
-                    'type' => $cert,
-                    'name' => $name,
+                    'type'   => $cert,
+                    'name'   => $name,
                     'status' => 'present',
                 ];
             } else {
@@ -231,8 +231,8 @@ class ComplianceCheckService
             if ($application->is_gdpr_compliant) {
                 $score += 10;
                 $certifications[] = [
-                    'type' => 'GDPR',
-                    'name' => 'General Data Protection Regulation',
+                    'type'   => 'GDPR',
+                    'name'   => 'General Data Protection Regulation',
                     'status' => 'compliant',
                 ];
             } else {
@@ -242,10 +242,10 @@ class ComplianceCheckService
         }
 
         return [
-            'score' => min(max($score, 0), 100),
-            'passed' => $score >= 50,
+            'score'          => min(max($score, 0), 100),
+            'passed'         => $score >= 50,
             'certifications' => $certifications,
-            'missing' => $missing,
+            'missing'        => $missing,
         ];
     }
 
@@ -290,10 +290,10 @@ class ComplianceCheckService
         }
 
         return [
-            'score' => max($score, 0),
-            'passed' => $score >= 60,
-            'issues' => $issues,
-            'compatible_jurisdictions' => $compatible,
+            'score'                      => max($score, 0),
+            'passed'                     => $score >= 60,
+            'issues'                     => $issues,
+            'compatible_jurisdictions'   => $compatible,
             'incompatible_jurisdictions' => $incompatible,
         ];
     }
@@ -330,7 +330,7 @@ class ComplianceCheckService
                 'External compliance check failed',
                 [
                     'application_id' => $application->id,
-                    'error' => $e->getMessage(),
+                    'error'          => $e->getMessage(),
                 ]
             );
 

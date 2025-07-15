@@ -43,9 +43,8 @@ class AccountBalance extends Model
 
     /**
      * Get the account that owns this balance.
-     */
-    /**
-     * @return BelongsTo<Account, AccountBalance>
+     *
+     * @return BelongsTo<Account, $this>
      */
     public function account(): BelongsTo
     {
@@ -54,9 +53,8 @@ class AccountBalance extends Model
 
     /**
      * Get the asset for this balance.
-     */
-    /**
-     * @return BelongsTo<Asset, AccountBalance>
+     *
+     * @return BelongsTo<Asset, $this>
      */
     public function asset(): BelongsTo
     {

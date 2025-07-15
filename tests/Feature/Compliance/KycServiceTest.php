@@ -59,9 +59,9 @@ test('can verify kyc', function () {
 
     // Verify KYC
     $this->kycService->verifyKyc($this->user, 'admin-123', [
-        'level' => 'enhanced',
+        'level'       => 'enhanced',
         'risk_rating' => 'low',
-        'pep_status' => false,
+        'pep_status'  => false,
     ]);
 
     // Check user status
@@ -114,7 +114,7 @@ test('can reject kyc', function () {
 test('checks for expired kyc', function () {
     // Set user as approved with expired date
     $this->user->update([
-        'kyc_status' => 'approved',
+        'kyc_status'     => 'approved',
         'kyc_expires_at' => now()->subDay(),
     ]);
 
@@ -151,7 +151,7 @@ test('user model has correct kyc methods', function () {
 
     // Approve KYC
     $this->user->update([
-        'kyc_status' => 'approved',
+        'kyc_status'     => 'approved',
         'kyc_expires_at' => now()->addYear(),
     ]);
 

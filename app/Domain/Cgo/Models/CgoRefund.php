@@ -48,18 +48,18 @@ class CgoRefund extends Model
     ];
 
     protected $casts = [
-        'amount' => 'integer',
-        'amount_refunded' => 'integer',
+        'amount'             => 'integer',
+        'amount_refunded'    => 'integer',
         'processor_response' => 'array',
-        'bank_details' => 'array',
-        'metadata' => 'array',
-        'requested_at' => 'datetime',
-        'approved_at' => 'datetime',
-        'rejected_at' => 'datetime',
-        'processed_at' => 'datetime',
-        'completed_at' => 'datetime',
-        'failed_at' => 'datetime',
-        'cancelled_at' => 'datetime',
+        'bank_details'       => 'array',
+        'metadata'           => 'array',
+        'requested_at'       => 'datetime',
+        'approved_at'        => 'datetime',
+        'rejected_at'        => 'datetime',
+        'processed_at'       => 'datetime',
+        'completed_at'       => 'datetime',
+        'failed_at'          => 'datetime',
+        'cancelled_at'       => 'datetime',
     ];
 
     /**
@@ -116,14 +116,14 @@ class CgoRefund extends Model
     public function getStatusColorAttribute(): string
     {
         return match ($this->status) {
-            'pending' => 'warning',
-            'approved' => 'primary',
-            'rejected' => 'danger',
+            'pending'    => 'warning',
+            'approved'   => 'primary',
+            'rejected'   => 'danger',
             'processing' => 'info',
-            'completed' => 'success',
-            'failed' => 'danger',
-            'cancelled' => 'gray',
-            default => 'gray',
+            'completed'  => 'success',
+            'failed'     => 'danger',
+            'cancelled'  => 'gray',
+            default      => 'gray',
         };
     }
 

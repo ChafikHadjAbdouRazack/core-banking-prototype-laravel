@@ -1,12 +1,12 @@
 <?php
 
-use App\Domain\Account\Repositories\TransferRepository;
 use App\Domain\Account\Models\Transfer;
+use App\Domain\Account\Repositories\TransferRepository;
 use Spatie\EventSourcing\AggregateRoots\Exceptions\InvalidEloquentStoredEventModel;
 use Spatie\EventSourcing\StoredEvents\Repositories\EloquentStoredEventRepository;
 
 beforeEach(function () {
-    $this->repository = new TransferRepository;
+    $this->repository = new TransferRepository();
 });
 
 it('can be instantiated', function () {

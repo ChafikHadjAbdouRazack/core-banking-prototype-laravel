@@ -6,10 +6,10 @@ namespace App\Domain\Custodian\Services;
 
 use App\Domain\Account\DataObjects\Money;
 use App\Domain\Custodian\Contracts\ICustodianConnector;
+use App\Domain\Custodian\Models\CustodianAccount;
 use App\Domain\Custodian\ValueObjects\TransactionReceipt;
 use App\Domain\Custodian\ValueObjects\TransferRequest;
 use App\Models\Account;
-use App\Domain\Custodian\Models\CustodianAccount;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -42,7 +42,7 @@ class MultiCustodianTransferService
         $this->routingStrategy = config(
             'custodians.routing_strategy',
             [
-                'primary' => self::ROUTE_SAME_CUSTODIAN,
+                'primary'  => self::ROUTE_SAME_CUSTODIAN,
                 'fallback' => self::ROUTE_FASTEST,
             ]
         );
@@ -63,9 +63,9 @@ class MultiCustodianTransferService
             'Initiating multi-custodian transfer',
             [
                 'from_account' => $fromAccount->uuid,
-                'to_account' => $toAccount->uuid,
-                'amount' => $amount->getAmount(),
-                'asset' => $assetCode,
+                'to_account'   => $toAccount->uuid,
+                'amount'       => $amount->getAmount(),
+                'asset'        => $assetCode,
             ]
         );
 
@@ -80,8 +80,8 @@ class MultiCustodianTransferService
         return match ($route['type']) {
             'internal' => $this->executeInternalTransfer($route, $amount, $assetCode, $reference, $description),
             'external' => $this->executeExternalTransfer($route, $amount, $assetCode, $reference, $description),
-            'bridge' => $this->executeBridgeTransfer($route, $amount, $assetCode, $reference, $description),
-            default => throw new \RuntimeException("Unknown route type: {$route['type']}"),
+            'bridge'   => $this->executeBridgeTransfer($route, $amount, $assetCode, $reference, $description),
+            default    => throw new \RuntimeException("Unknown route type: {$route['type']}"),
         };
     }
 
@@ -110,7 +110,7 @@ class MultiCustodianTransferService
                 'No active custodian accounts found',
                 [
                     'from_count' => $fromCustodians->count(),
-                    'to_count' => $toCustodians->count(),
+                    'to_count'   => $toCustodians->count(),
                 ]
             );
 
@@ -121,10 +121,10 @@ class MultiCustodianTransferService
         $sameCustodian = $this->findSameCustodianRoute($fromCustodians, $toCustodians);
         if ($sameCustodian && $this->routingStrategy['primary'] === self::ROUTE_SAME_CUSTODIAN) {
             return [
-                'type' => 'internal',
+                'type'      => 'internal',
                 'custodian' => $sameCustodian['custodian_name'],
-                'from' => $sameCustodian['from'],
-                'to' => $sameCustodian['to'],
+                'from'      => $sameCustodian['from'],
+                'to'        => $sameCustodian['to'],
             ];
         }
 
@@ -132,11 +132,11 @@ class MultiCustodianTransferService
         $directRoute = $this->findDirectExternalRoute($fromCustodians, $toCustodians, $assetCode);
         if ($directRoute) {
             return [
-                'type' => 'external',
+                'type'           => 'external',
                 'from_custodian' => $directRoute['from_custodian'],
-                'to_custodian' => $directRoute['to_custodian'],
-                'from' => $directRoute['from'],
-                'to' => $directRoute['to'],
+                'to_custodian'   => $directRoute['to_custodian'],
+                'from'           => $directRoute['from'],
+                'to'             => $directRoute['to'],
             ];
         }
 
@@ -144,7 +144,7 @@ class MultiCustodianTransferService
         $bridgeRoute = $this->findBridgeRoute($fromCustodians, $toCustodians, $assetCode);
         if ($bridgeRoute) {
             return [
-                'type' => 'bridge',
+                'type'  => 'bridge',
                 'route' => $bridgeRoute,
             ];
         }
@@ -162,8 +162,8 @@ class MultiCustodianTransferService
             if ($to) {
                 return [
                     'custodian_name' => $from->custodian_name,
-                    'from' => $from,
-                    'to' => $to,
+                    'from'           => $from,
+                    'to'             => $to,
                 ];
             }
         }
@@ -187,9 +187,9 @@ class MultiCustodianTransferService
                 if ($this->canTransferTo($connector, $to->custodian_name, $assetCode)) {
                     return [
                         'from_custodian' => $from->custodian_name,
-                        'to_custodian' => $to->custodian_name,
-                        'from' => $from,
-                        'to' => $to,
+                        'to_custodian'   => $to->custodian_name,
+                        'from'           => $from,
+                        'to'             => $to,
                     ];
                 }
             }
@@ -237,9 +237,9 @@ class MultiCustodianTransferService
 
             if ($canSend) {
                 return [
-                    'from' => $fromAccount,
+                    'from'   => $fromAccount,
                     'bridge' => $bridgeCustodian['id'],
-                    'to' => $toAccount,
+                    'to'     => $toAccount,
                 ];
             }
         }
@@ -276,8 +276,8 @@ class MultiCustodianTransferService
             Log::warning(
                 'Failed to check transfer capability',
                 [
-                    'from' => $connector->getName(),
-                    'to' => $toCustodian,
+                    'from'  => $connector->getName(),
+                    'to'    => $toCustodian,
                     'error' => $e->getMessage(),
                 ]
             );
@@ -300,8 +300,8 @@ class MultiCustodianTransferService
             'Executing internal transfer',
             [
                 'custodian' => $route['custodian'],
-                'from' => $route['from']->custodian_account_id,
-                'to' => $route['to']->custodian_account_id,
+                'from'      => $route['from']->custodian_account_id,
+                'to'        => $route['to']->custodian_account_id,
             ]
         );
 
@@ -338,9 +338,9 @@ class MultiCustodianTransferService
             'Executing external transfer',
             [
                 'from_custodian' => $route['from_custodian'],
-                'to_custodian' => $route['to_custodian'],
-                'from' => $route['from']->custodian_account_id,
-                'to' => $route['to']->custodian_account_id,
+                'to_custodian'   => $route['to_custodian'],
+                'from'           => $route['from']->custodian_account_id,
+                'to'             => $route['to']->custodian_account_id,
             ]
         );
 
@@ -356,7 +356,7 @@ class MultiCustodianTransferService
             description: $description,
             metadata: [
                 'destination_custodian' => $route['to_custodian'],
-                'transfer_type' => 'external',
+                'transfer_type'         => 'external',
             ]
         );
 
@@ -381,9 +381,9 @@ class MultiCustodianTransferService
         Log::info(
             'Executing bridge transfer',
             [
-                'from' => $route['route']['from']->custodian_account_id,
+                'from'   => $route['route']['from']->custodian_account_id,
                 'bridge' => $route['route']['bridge'],
-                'to' => $route['route']['to']->custodian_account_id,
+                'to'     => $route['route']['to']->custodian_account_id,
             ]
         );
 
@@ -401,7 +401,7 @@ class MultiCustodianTransferService
                 reference: $reference . '_LEG1',
                 description: 'Bridge transfer leg 1: ' . $description,
                 metadata: [
-                    'bridge_transfer' => true,
+                    'bridge_transfer'   => true,
                     'final_destination' => $route['route']['to']->custodian_account_id,
                 ]
             );
@@ -514,19 +514,19 @@ class MultiCustodianTransferService
     ): void {
         DB::table('custodian_transfers')->insert(
             [
-                'id' => $receipt->id,
-                'from_account_uuid' => $from->account_uuid,
-                'to_account_uuid' => $to->account_uuid,
+                'id'                        => $receipt->id,
+                'from_account_uuid'         => $from->account_uuid,
+                'to_account_uuid'           => $to->account_uuid,
                 'from_custodian_account_id' => $from->id,
-                'to_custodian_account_id' => $to->id,
-                'amount' => $receipt->amount,
-                'asset_code' => $receipt->assetCode,
-                'transfer_type' => $type,
-                'status' => $receipt->status,
-                'reference' => $receipt->reference,
-                'metadata' => json_encode($receipt->metadata),
-                'created_at' => now(),
-                'updated_at' => now(),
+                'to_custodian_account_id'   => $to->id,
+                'amount'                    => $receipt->amount,
+                'asset_code'                => $receipt->assetCode,
+                'transfer_type'             => $type,
+                'status'                    => $receipt->status,
+                'reference'                 => $receipt->reference,
+                'metadata'                  => json_encode($receipt->metadata),
+                'created_at'                => now(),
+                'updated_at'                => now(),
             ]
         );
     }
@@ -578,17 +578,17 @@ class MultiCustodianTransferService
         }
 
         return [
-            'total' => (int) ($stats->total_transfers ?? 0),
+            'total'     => (int) ($stats->total_transfers ?? 0),
             'completed' => (int) ($stats->completed ?? 0),
-            'failed' => (int) ($stats->failed ?? 0),
-            'pending' => (int) ($stats->pending ?? 0),
-            'by_type' => [
+            'failed'    => (int) ($stats->failed ?? 0),
+            'pending'   => (int) ($stats->pending ?? 0),
+            'by_type'   => [
                 'internal' => (int) ($stats->internal ?? 0),
                 'external' => (int) ($stats->external ?? 0),
-                'bridge' => (int) ($stats->bridge ?? 0),
+                'bridge'   => (int) ($stats->bridge ?? 0),
             ],
             'avg_completion_seconds' => round((float) ($stats->avg_completion_seconds ?? 0), 2),
-            'success_rate' => $stats->total_transfers > 0
+            'success_rate'           => $stats->total_transfers > 0
                 ? round(((int) $stats->completed / (int) $stats->total_transfers) * 100, 2)
                 : 0,
         ];

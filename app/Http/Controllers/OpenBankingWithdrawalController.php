@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Domain\Banking\Services\BankIntegrationService;
+use App\Domain\Payment\Services\PaymentGatewayService;
 use App\Models\Account;
 use App\Models\User;
-use App\Domain\Payment\Services\PaymentGatewayService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -154,7 +154,6 @@ class OpenBankingWithdrawalController extends Controller
 
         $user = Auth::user();
         /** @var User $user */
-
         DB::beginTransaction();
         try {
             // Exchange authorization code for access token

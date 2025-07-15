@@ -1,12 +1,12 @@
 <?php
 
+use App\Domain\Account\Models\Turnover;
 use App\Filament\Admin\Resources\AccountResource\Widgets\AccountBalanceChart;
 use App\Filament\Admin\Resources\AccountResource\Widgets\AccountGrowthChart;
 use App\Filament\Admin\Resources\AccountResource\Widgets\RecentTransactionsChart;
 use App\Filament\Admin\Resources\AccountResource\Widgets\SystemHealthWidget;
 use App\Filament\Admin\Resources\AccountResource\Widgets\TurnoverTrendChart;
 use App\Models\Account;
-use App\Domain\Account\Models\Turnover;
 use Filament\Widgets\ChartWidget;
 use Livewire\Livewire;
 
@@ -32,7 +32,7 @@ describe('AccountBalanceChart', function () {
     });
 
     it('has correct chart type', function () {
-        $widget = new AccountBalanceChart;
+        $widget = new AccountBalanceChart();
         expect((new ReflectionMethod($widget, 'getType'))->invoke($widget))->toBe('line');
     });
 });
@@ -53,7 +53,7 @@ describe('RecentTransactionsChart', function () {
     });
 
     it('has correct chart type', function () {
-        $widget = new RecentTransactionsChart;
+        $widget = new RecentTransactionsChart();
         expect((new ReflectionMethod($widget, 'getType'))->invoke($widget))->toBe('bar');
     });
 });
@@ -81,7 +81,7 @@ describe('TurnoverTrendChart', function () {
     });
 
     it('has correct chart type', function () {
-        $widget = new TurnoverTrendChart;
+        $widget = new TurnoverTrendChart();
         expect((new ReflectionMethod($widget, 'getType'))->invoke($widget))->toBe('bar');
     });
 });
@@ -104,7 +104,7 @@ describe('AccountGrowthChart', function () {
     });
 
     it('has correct chart type', function () {
-        $widget = new AccountGrowthChart;
+        $widget = new AccountGrowthChart();
         expect((new ReflectionMethod($widget, 'getType'))->invoke($widget))->toBe('bar');
     });
 });
@@ -120,7 +120,7 @@ describe('SystemHealthWidget', function () {
     });
 
     it('shows stats overview structure', function () {
-        $widget = new SystemHealthWidget;
+        $widget = new SystemHealthWidget();
         $stats = (new ReflectionMethod($widget, 'getStats'))->invoke($widget);
 
         expect($stats)->toHaveCount(4);
@@ -145,11 +145,11 @@ describe('Chart Widget Configuration', function () {
 
     it('all widgets have proper polling intervals', function () {
         $widgets = [
-            AccountBalanceChart::class => '30s',
+            AccountBalanceChart::class     => '30s',
             RecentTransactionsChart::class => '30s',
-            TurnoverTrendChart::class => '60s',
-            AccountGrowthChart::class => '60s',
-            SystemHealthWidget::class => '10s',
+            TurnoverTrendChart::class      => '60s',
+            AccountGrowthChart::class      => '60s',
+            SystemHealthWidget::class      => '10s',
         ];
 
         foreach ($widgets as $widget => $expectedInterval) {
@@ -163,14 +163,14 @@ describe('Chart Widget Configuration', function () {
 
     it('all chart widgets have column span configuration', function () {
         $widgets = [
-            AccountBalanceChart::class => 'full',
+            AccountBalanceChart::class     => 'full',
             RecentTransactionsChart::class => 'full',
-            TurnoverTrendChart::class => 'full',
-            AccountGrowthChart::class => '1',
+            TurnoverTrendChart::class      => 'full',
+            AccountGrowthChart::class      => '1',
         ];
 
         foreach ($widgets as $widgetClass => $expectedSpan) {
-            $widget = new $widgetClass;
+            $widget = new $widgetClass();
             $reflection = new ReflectionClass($widget);
             $property = $reflection->getProperty('columnSpan');
             $property->setAccessible(true);

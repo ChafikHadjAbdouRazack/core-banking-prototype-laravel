@@ -25,10 +25,10 @@ class WebhookProcessorService
     public function process(CustodianWebhook $webhook): void
     {
         $handler = match ($webhook->custodian_name) {
-            'paysera' => $this->processPayseraWebhook(...),
+            'paysera'   => $this->processPayseraWebhook(...),
             'santander' => $this->processSantanderWebhook(...),
-            'mock' => $this->processMockWebhook(...),
-            default => throw new \InvalidArgumentException("Unknown custodian: {$webhook->custodian_name}"),
+            'mock'      => $this->processMockWebhook(...),
+            default     => throw new \InvalidArgumentException("Unknown custodian: {$webhook->custodian_name}"),
         };
 
         $handler($webhook);
@@ -42,11 +42,11 @@ class WebhookProcessorService
         $payload = $webhook->payload;
 
         match ($webhook->event_type) {
-            'payment.completed' => $this->handlePaymentCompleted($webhook, $payload),
-            'payment.failed' => $this->handlePaymentFailed($webhook, $payload),
+            'payment.completed'       => $this->handlePaymentCompleted($webhook, $payload),
+            'payment.failed'          => $this->handlePaymentFailed($webhook, $payload),
             'account.balance_changed' => $this->handleBalanceChanged($webhook, $payload),
-            'account.status_changed' => $this->handleAccountStatusChanged($webhook, $payload),
-            default => $webhook->markAsIgnored("Unknown event type: {$webhook->event_type}"),
+            'account.status_changed'  => $this->handleAccountStatusChanged($webhook, $payload),
+            default                   => $webhook->markAsIgnored("Unknown event type: {$webhook->event_type}"),
         };
     }
 
@@ -59,9 +59,9 @@ class WebhookProcessorService
 
         match ($webhook->event_type) {
             'transfer.completed' => $this->handlePaymentCompleted($webhook, $payload),
-            'transfer.rejected' => $this->handlePaymentFailed($webhook, $payload),
-            'account.updated' => $this->handleAccountUpdated($webhook, $payload),
-            default => $webhook->markAsIgnored("Unknown event type: {$webhook->event_type}"),
+            'transfer.rejected'  => $this->handlePaymentFailed($webhook, $payload),
+            'account.updated'    => $this->handleAccountUpdated($webhook, $payload),
+            default              => $webhook->markAsIgnored("Unknown event type: {$webhook->event_type}"),
         };
     }
 
@@ -74,9 +74,9 @@ class WebhookProcessorService
 
         match ($webhook->event_type) {
             'transaction.completed' => $this->handlePaymentCompleted($webhook, $payload),
-            'transaction.failed' => $this->handlePaymentFailed($webhook, $payload),
-            'balance.updated' => $this->handleBalanceChanged($webhook, $payload),
-            default => $webhook->markAsIgnored("Unknown event type: {$webhook->event_type}"),
+            'transaction.failed'    => $this->handlePaymentFailed($webhook, $payload),
+            'balance.updated'       => $this->handleBalanceChanged($webhook, $payload),
+            default                 => $webhook->markAsIgnored("Unknown event type: {$webhook->event_type}"),
         };
     }
 
@@ -105,7 +105,7 @@ class WebhookProcessorService
                 Log::info(
                     'Payment completed webhook processed',
                     [
-                        'custodian' => $webhook->custodian_name,
+                        'custodian'      => $webhook->custodian_name,
                         'transaction_id' => $transactionId,
                     ]
                 );
@@ -139,9 +139,9 @@ class WebhookProcessorService
                 Log::warning(
                     'Payment failed webhook processed',
                     [
-                        'custodian' => $webhook->custodian_name,
+                        'custodian'      => $webhook->custodian_name,
                         'transaction_id' => $transactionId,
-                        'reason' => $reason,
+                        'reason'         => $reason,
                     ]
                 );
             }
@@ -182,9 +182,9 @@ class WebhookProcessorService
                 Log::info(
                     'Balance changed webhook processed',
                     [
-                        'custodian' => $webhook->custodian_name,
+                        'custodian'  => $webhook->custodian_name,
                         'account_id' => $accountId,
-                        'balances' => $balances,
+                        'balances'   => $balances,
                     ]
                 );
             }
@@ -219,7 +219,7 @@ class WebhookProcessorService
                 Log::info(
                     'Account status changed webhook processed',
                     [
-                        'custodian' => $webhook->custodian_name,
+                        'custodian'  => $webhook->custodian_name,
                         'account_id' => $accountId,
                         'new_status' => $newStatus,
                     ]
@@ -249,10 +249,10 @@ class WebhookProcessorService
     private function extractTransactionId(string $custodianName, array $payload): string
     {
         return match ($custodianName) {
-            'paysera' => $payload['payment_id'] ?? throw new \RuntimeException('Missing payment_id'),
+            'paysera'   => $payload['payment_id'] ?? throw new \RuntimeException('Missing payment_id'),
             'santander' => $payload['transfer_id'] ?? throw new \RuntimeException('Missing transfer_id'),
-            'mock' => $payload['transaction_id'] ?? throw new \RuntimeException('Missing transaction_id'),
-            default => throw new \InvalidArgumentException("Unknown custodian: {$custodianName}"),
+            'mock'      => $payload['transaction_id'] ?? throw new \RuntimeException('Missing transaction_id'),
+            default     => throw new \InvalidArgumentException("Unknown custodian: {$custodianName}"),
         };
     }
 
@@ -262,10 +262,10 @@ class WebhookProcessorService
     private function extractAccountId(string $custodianName, array $payload): string
     {
         return match ($custodianName) {
-            'paysera' => $payload['account_id'] ?? throw new \RuntimeException('Missing account_id'),
+            'paysera'   => $payload['account_id'] ?? throw new \RuntimeException('Missing account_id'),
             'santander' => $payload['account_number'] ?? throw new \RuntimeException('Missing account_number'),
-            'mock' => $payload['account'] ?? throw new \RuntimeException('Missing account'),
-            default => throw new \InvalidArgumentException("Unknown custodian: {$custodianName}"),
+            'mock'      => $payload['account'] ?? throw new \RuntimeException('Missing account'),
+            default     => throw new \InvalidArgumentException("Unknown custodian: {$custodianName}"),
         };
     }
 
@@ -275,10 +275,10 @@ class WebhookProcessorService
     private function extractBalances(string $custodianName, array $payload): array
     {
         return match ($custodianName) {
-            'paysera' => $this->parsePayseraBalances($payload['balances'] ?? []),
+            'paysera'   => $this->parsePayseraBalances($payload['balances'] ?? []),
             'santander' => $this->parseSantanderBalances($payload['balances'] ?? []),
-            'mock' => $payload['balances'] ?? [],
-            default => [],
+            'mock'      => $payload['balances'] ?? [],
+            default     => [],
         };
     }
 

@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\User;
 use App\Domain\Governance\Enums\PollStatus;
 use App\Domain\Governance\Models\Poll;
 use App\Domain\Governance\Models\Vote;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserVotingPollResource;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -102,7 +102,6 @@ class UserVotingController extends Controller
     {
         $user = Auth::user();
         /** @var User $user */
-
         $votedPollIds = Vote::where('user_uuid', $user->uuid)
             ->pluck('poll_id')
             ->unique();

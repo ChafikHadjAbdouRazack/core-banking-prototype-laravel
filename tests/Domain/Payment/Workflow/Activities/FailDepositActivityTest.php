@@ -10,19 +10,19 @@ it('can fail a deposit through activity', function () {
 
     // Create a deposit event first
     PaymentDeposit::create([
-        'aggregate_uuid' => $depositUuid,
+        'aggregate_uuid'    => $depositUuid,
         'aggregate_version' => 1,
-        'event_version' => 1,
-        'event_class' => 'deposit_initiated',
-        'event_properties' => json_encode([
-            'accountUuid' => Str::uuid()->toString(),
-            'amount' => 10000,
-            'currency' => 'USD',
-            'reference' => 'TEST-123',
+        'event_version'     => 1,
+        'event_class'       => 'deposit_initiated',
+        'event_properties'  => json_encode([
+            'accountUuid'       => Str::uuid()->toString(),
+            'amount'            => 10000,
+            'currency'          => 'USD',
+            'reference'         => 'TEST-123',
             'externalReference' => 'pi_test_123',
-            'paymentMethod' => 'card',
+            'paymentMethod'     => 'card',
             'paymentMethodType' => 'visa',
-            'metadata' => [],
+            'metadata'          => [],
         ]),
         'meta_data' => json_encode([
             'aggregate_uuid' => $depositUuid,
@@ -32,11 +32,10 @@ it('can fail a deposit through activity', function () {
 
     $input = [
         'deposit_uuid' => $depositUuid,
-        'reason' => $reason,
+        'reason'       => $reason,
     ];
 
-    $activity = new class extends FailDepositActivity
-    {
+    $activity = new class () extends FailDepositActivity {
         public function __construct()
         {
             // Override constructor
@@ -66,11 +65,10 @@ it('returns failed status for non-existent deposit', function () {
 
     $input = [
         'deposit_uuid' => $depositUuid,
-        'reason' => $reason,
+        'reason'       => $reason,
     ];
 
-    $activity = new class extends FailDepositActivity
-    {
+    $activity = new class () extends FailDepositActivity {
         public function __construct()
         {
             // Override constructor

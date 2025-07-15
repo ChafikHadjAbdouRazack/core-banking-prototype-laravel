@@ -1,8 +1,8 @@
 <?php
 
 use App\Domain\Payment\DataObjects\StripeDeposit;
-use App\Models\Account;
 use App\Domain\Payment\Models\PaymentTransaction;
+use App\Models\Account;
 use Illuminate\Support\Str;
 
 beforeEach(function () {
@@ -17,8 +17,8 @@ it('validates stripe deposit data structure', function () {
         accountUuid: $accountUuid,
         amount: 10000, // $100.00
         currency: 'USD',
-        reference: 'TEST-'.uniqid(),
-        externalReference: 'pi_test_'.uniqid(),
+        reference: 'TEST-' . uniqid(),
+        externalReference: 'pi_test_' . uniqid(),
         paymentMethod: 'card',
         paymentMethodType: 'visa',
         metadata: ['test' => true]
@@ -43,8 +43,8 @@ it('creates deposit with different payment methods', function () {
         accountUuid: $accountUuid,
         amount: 10000,
         currency: 'USD',
-        reference: 'TEST-'.uniqid(),
-        externalReference: 'pi_test_'.uniqid(),
+        reference: 'TEST-' . uniqid(),
+        externalReference: 'pi_test_' . uniqid(),
         paymentMethod: 'card',
         paymentMethodType: 'visa',
         metadata: []
@@ -57,8 +57,8 @@ it('creates deposit with different payment methods', function () {
         accountUuid: $accountUuid,
         amount: 50000,
         currency: 'USD',
-        reference: 'TEST-'.uniqid(),
-        externalReference: 'ach_test_'.uniqid(),
+        reference: 'TEST-' . uniqid(),
+        externalReference: 'ach_test_' . uniqid(),
         paymentMethod: 'bank_transfer',
         paymentMethodType: 'ach',
         metadata: []
@@ -75,8 +75,8 @@ it('creates proper transaction flow', function () {
         accountUuid: $accountUuid,
         amount: 10000,
         currency: 'USD',
-        reference: 'TEST-'.uniqid(),
-        externalReference: 'pi_test_'.uniqid(),
+        reference: 'TEST-' . uniqid(),
+        externalReference: 'pi_test_' . uniqid(),
         paymentMethod: 'card',
         paymentMethodType: 'visa',
         metadata: []
@@ -84,21 +84,21 @@ it('creates proper transaction flow', function () {
 
     // Simulate the workflow execution
     $depositUuid = Str::uuid()->toString();
-    $transactionId = 'txn_'.uniqid();
+    $transactionId = 'txn_' . uniqid();
 
     // Step 1: Initiate deposit
     PaymentTransaction::create([
-        'aggregate_uuid' => $depositUuid,
-        'account_uuid' => $accountUuid,
-        'type' => 'deposit',
-        'status' => 'pending',
-        'amount' => 10000,
-        'currency' => 'USD',
-        'reference' => $deposit->getReference(),
-        'external_reference' => $deposit->getExternalReference(),
-        'payment_method' => 'card',
+        'aggregate_uuid'      => $depositUuid,
+        'account_uuid'        => $accountUuid,
+        'type'                => 'deposit',
+        'status'              => 'pending',
+        'amount'              => 10000,
+        'currency'            => 'USD',
+        'reference'           => $deposit->getReference(),
+        'external_reference'  => $deposit->getExternalReference(),
+        'payment_method'      => 'card',
         'payment_method_type' => 'visa',
-        'initiated_at' => now(),
+        'initiated_at'        => now(),
     ]);
 
     // Step 2: Credit account (in real flow this happens via event sourcing)
@@ -107,9 +107,9 @@ it('creates proper transaction flow', function () {
     // Step 3: Complete deposit
     PaymentTransaction::where('aggregate_uuid', $depositUuid)
         ->update([
-            'status' => 'completed',
+            'status'         => 'completed',
             'transaction_id' => $transactionId,
-            'completed_at' => now(),
+            'completed_at'   => now(),
         ]);
 
     // Verify results

@@ -27,7 +27,7 @@ class AuthenticationSecurityTest extends TestCase
         config(['rate_limiting.force_in_tests' => true]);
 
         $user = User::factory()->create([
-            'email' => 'test@example.com',
+            'email'    => 'test@example.com',
             'password' => Hash::make('correct-password'),
         ]);
 
@@ -37,8 +37,8 @@ class AuthenticationSecurityTest extends TestCase
         // Attempt multiple failed logins
         for ($i = 0; $i < 20; $i++) {
             $response = $this->postJson('/api/auth/login', [
-                'email' => 'test@example.com',
-                'password' => 'wrong-password-'.$i,
+                'email'    => 'test@example.com',
+                'password' => 'wrong-password-' . $i,
             ]);
 
             $attempts++;
@@ -76,9 +76,9 @@ class AuthenticationSecurityTest extends TestCase
 
         foreach ($weakPasswords as $password) {
             $response = $this->postJson('/api/auth/register', [
-                'name' => 'Test User',
-                'email' => 'test'.uniqid().'@example.com',
-                'password' => $password,
+                'name'                  => 'Test User',
+                'email'                 => 'test' . uniqid() . '@example.com',
+                'password'              => $password,
                 'password_confirmation' => $password,
             ]);
 
@@ -91,7 +91,7 @@ class AuthenticationSecurityTest extends TestCase
     public function test_timing_attacks_are_mitigated_on_login()
     {
         $validUser = User::factory()->create([
-            'email' => 'valid@example.com',
+            'email'    => 'valid@example.com',
             'password' => Hash::make('password123'),
         ]);
 
@@ -102,7 +102,7 @@ class AuthenticationSecurityTest extends TestCase
             $start = microtime(true);
 
             $this->postJson('/api/auth/login', [
-                'email' => 'valid@example.com',
+                'email'    => 'valid@example.com',
                 'password' => 'wrong-password',
             ]);
 
@@ -114,7 +114,7 @@ class AuthenticationSecurityTest extends TestCase
             $start = microtime(true);
 
             $this->postJson('/api/auth/login', [
-                'email' => 'nonexistent@example.com',
+                'email'    => 'nonexistent@example.com',
                 'password' => 'wrong-password',
             ]);
 
@@ -145,7 +145,7 @@ class AuthenticationSecurityTest extends TestCase
 
         // Login via API
         $response = $this->postJson('/api/auth/login', [
-            'email' => $user->email,
+            'email'    => $user->email,
             'password' => 'password',
         ]);
 
@@ -170,9 +170,9 @@ class AuthenticationSecurityTest extends TestCase
         $tokens = [];
         for ($i = 0; $i < 10; $i++) {
             $response = $this->postJson('/api/auth/login', [
-                'email' => $user->email,
-                'password' => 'password',
-                'device_name' => 'device-'.$i,
+                'email'       => $user->email,
+                'password'    => 'password',
+                'device_name' => 'device-' . $i,
             ]);
 
             if ($response->status() === 200) {
@@ -281,9 +281,9 @@ class AuthenticationSecurityTest extends TestCase
         $expiredToken = 'expired-token-12345';
 
         $response = $this->postJson('/api/auth/reset-password', [
-            'email' => $user->email,
-            'token' => $expiredToken,
-            'password' => 'new-password-123',
+            'email'                 => $user->email,
+            'token'                 => $expiredToken,
+            'password'              => 'new-password-123',
             'password_confirmation' => 'new-password-123',
         ]);
 
@@ -326,9 +326,9 @@ class AuthenticationSecurityTest extends TestCase
         // Security headers that should be present
         $requiredHeaders = [
             'X-Content-Type-Options' => 'nosniff',
-            'X-Frame-Options' => ['DENY', 'SAMEORIGIN'],
-            'X-XSS-Protection' => '1; mode=block',
-            'Referrer-Policy' => ['no-referrer', 'strict-origin-when-cross-origin'],
+            'X-Frame-Options'        => ['DENY', 'SAMEORIGIN'],
+            'X-XSS-Protection'       => '1; mode=block',
+            'Referrer-Policy'        => ['no-referrer', 'strict-origin-when-cross-origin'],
         ];
 
         // Headers that are recommended but may not be present in dev/test environments
@@ -366,7 +366,7 @@ class AuthenticationSecurityTest extends TestCase
 
         if (! empty($missingRecommended)) {
             // Just assert true with a note - test still passes
-            $this->assertTrue(true, 'Note: Recommended security headers missing: '.implode(', ', $missingRecommended).'. These should be enabled in production.');
+            $this->assertTrue(true, 'Note: Recommended security headers missing: ' . implode(', ', $missingRecommended) . '. These should be enabled in production.');
         }
     }
 

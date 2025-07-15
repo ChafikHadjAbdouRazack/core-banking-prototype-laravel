@@ -6,9 +6,8 @@ use App\Models\Account;
 use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\Log;
-use Stripe\PaymentIntent;
-use Stripe\PaymentMethod as StripePaymentMethod;
 use Laravel\Cashier\PaymentMethod as CashierPaymentMethod;
+use Stripe\PaymentIntent;
 
 class PaymentGatewayService
 {
@@ -36,11 +35,11 @@ class PaymentGatewayService
                 [
                     'currency' => strtolower($currency),
                     'metadata' => [
-                        'user_id' => $user->id,
-                        'type' => 'deposit',
+                        'user_id'      => $user->id,
+                        'type'         => 'deposit',
                         'account_uuid' => $user->accounts()->first()->uuid ?? null,
                     ],
-                    'description' => 'Deposit to FinAegis account',
+                    'description'        => 'Deposit to FinAegis account',
                     'setup_future_usage' => 'on_session',
                 ]
             );
@@ -51,8 +50,8 @@ class PaymentGatewayService
                 'Failed to create deposit payment intent',
                 [
                     'user_id' => $user->id,
-                    'amount' => $amountInCents,
-                    'error' => $e->getMessage(),
+                    'amount'  => $amountInCents,
+                    'error'   => $e->getMessage(),
                 ]
             );
             throw $e;
@@ -84,25 +83,25 @@ class PaymentGatewayService
         $reference = 'DEP-' . strtoupper(uniqid());
         $this->paymentService->processStripeDeposit(
             [
-                'account_uuid' => $accountUuid,
-                'amount' => $paymentIntent->amount,
-                'currency' => strtoupper($paymentIntent->currency),
-                'reference' => $reference,
-                'external_reference' => $paymentIntent->id,
-                'payment_method' => $paymentIntent->payment_method,
+                'account_uuid'        => $accountUuid,
+                'amount'              => $paymentIntent->amount,
+                'currency'            => strtoupper($paymentIntent->currency),
+                'reference'           => $reference,
+                'external_reference'  => $paymentIntent->id,
+                'payment_method'      => $paymentIntent->payment_method,
                 'payment_method_type' => $paymentIntent->payment_method_types[0] ?? 'card',
-                'metadata' => [
+                'metadata'            => [
                     'stripe_payment_intent_id' => $paymentIntent->id,
-                    'processor' => 'stripe',
+                    'processor'                => 'stripe',
                 ],
             ]
         );
 
         return [
             'account_uuid' => $accountUuid,
-            'amount' => $paymentIntent->amount,
-            'currency' => strtoupper($paymentIntent->currency),
-            'reference' => 'DEP-' . strtoupper(uniqid()),
+            'amount'       => $paymentIntent->amount,
+            'currency'     => strtoupper($paymentIntent->currency),
+            'reference'    => 'DEP-' . strtoupper(uniqid()),
         ];
     }
 
@@ -126,18 +125,18 @@ class PaymentGatewayService
         // Use PaymentService to process withdrawal through event sourcing
         $result = $this->paymentService->processBankWithdrawal(
             [
-                'account_uuid' => $account->uuid,
-                'amount' => $amountInCents,
-                'currency' => $currency,
-                'reference' => $reference,
-                'bank_name' => $bankDetails['bank_name'],
-                'account_number' => $bankDetails['account_number'],
+                'account_uuid'        => $account->uuid,
+                'amount'              => $amountInCents,
+                'currency'            => $currency,
+                'reference'           => $reference,
+                'bank_name'           => $bankDetails['bank_name'],
+                'account_number'      => $bankDetails['account_number'],
                 'account_holder_name' => $bankDetails['account_holder_name'],
-                'routing_number' => $bankDetails['routing_number'] ?? null,
-                'iban' => $bankDetails['iban'] ?? null,
-                'swift' => $bankDetails['swift'] ?? null,
-                'metadata' => [
-                    'processor' => 'bank_transfer',
+                'routing_number'      => $bankDetails['routing_number'] ?? null,
+                'iban'                => $bankDetails['iban'] ?? null,
+                'swift'               => $bankDetails['swift'] ?? null,
+                'metadata'            => [
+                    'processor'    => 'bank_transfer',
                     'initiated_at' => now()->toIso8601String(),
                 ],
             ]
@@ -145,9 +144,9 @@ class PaymentGatewayService
 
         return [
             'account_uuid' => $account->uuid,
-            'amount' => $amountInCents,
-            'currency' => $currency,
-            'reference' => $reference,
+            'amount'       => $amountInCents,
+            'currency'     => $currency,
+            'reference'    => $reference,
         ];
     }
 
@@ -166,11 +165,11 @@ class PaymentGatewayService
             return $methods->map(
                 function ($method) {
                     return [
-                        'id' => $method->id,
-                        'brand' => $method->card->brand,
-                        'last4' => $method->card->last4,
-                        'exp_month' => $method->card->exp_month,
-                        'exp_year' => $method->card->exp_year,
+                        'id'         => $method->id,
+                        'brand'      => $method->card->brand,
+                        'last4'      => $method->card->last4,
+                        'exp_month'  => $method->card->exp_month,
+                        'exp_year'   => $method->card->exp_year,
                         'is_default' => $method->id === optional($this->defaultPaymentMethod())->id,
                     ];
                 }
@@ -180,7 +179,7 @@ class PaymentGatewayService
                 'Failed to fetch payment methods',
                 [
                     'user_id' => $user->id,
-                    'error' => $e->getMessage(),
+                    'error'   => $e->getMessage(),
                 ]
             );
 
@@ -203,9 +202,9 @@ class PaymentGatewayService
             Log::error(
                 'Failed to add payment method',
                 [
-                    'user_id' => $user->id,
+                    'user_id'           => $user->id,
                     'payment_method_id' => $paymentMethodId,
-                    'error' => $e->getMessage(),
+                    'error'             => $e->getMessage(),
                 ]
             );
             throw $e;
@@ -226,9 +225,9 @@ class PaymentGatewayService
             Log::error(
                 'Failed to remove payment method',
                 [
-                    'user_id' => $user->id,
+                    'user_id'           => $user->id,
                     'payment_method_id' => $paymentMethodId,
-                    'error' => $e->getMessage(),
+                    'error'             => $e->getMessage(),
                 ]
             );
             throw $e;

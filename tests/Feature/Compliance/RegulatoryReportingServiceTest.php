@@ -16,8 +16,8 @@ beforeEach(function () {
 
     // Create test users with different KYC statuses
     $this->users = [
-        'approved' => User::factory()->create(['kyc_status' => 'approved', 'risk_rating' => 'low']),
-        'pending' => User::factory()->create(['kyc_status' => 'pending', 'kyc_submitted_at' => now()]),
+        'approved'  => User::factory()->create(['kyc_status' => 'approved', 'risk_rating' => 'low']),
+        'pending'   => User::factory()->create(['kyc_status' => 'pending', 'kyc_submitted_at' => now()]),
         'high_risk' => User::factory()->create(['kyc_status' => 'approved', 'risk_rating' => 'high', 'pep_status' => true]),
     ];
 
@@ -32,28 +32,28 @@ test('generates currency transaction report for large transactions', function ()
     $date = now();
 
     // Create a large transaction (over $10,000)
-    $largeEvent = new StoredEvent;
+    $largeEvent = new StoredEvent();
     $largeEvent->aggregate_uuid = $this->accounts['approved']->uuid;
     $largeEvent->aggregate_version = 1;
     $largeEvent->event_version = 1;
     $largeEvent->event_class = MoneyAdded::class;
     $largeEvent->event_properties = json_encode([
         'money' => ['amount' => 1500000, 'currency' => 'USD'], // $15,000
-        'hash' => ['value' => hash('sha3-512', 'test')],
+        'hash'  => ['value' => hash('sha3-512', 'test')],
     ]);
     $largeEvent->meta_data = json_encode([]);
     $largeEvent->created_at = $date;
     $largeEvent->save();
 
     // Create a small transaction (under threshold)
-    $smallEvent = new StoredEvent;
+    $smallEvent = new StoredEvent();
     $smallEvent->aggregate_uuid = $this->accounts['approved']->uuid;
     $smallEvent->aggregate_version = 2;
     $smallEvent->event_version = 1;
     $smallEvent->event_class = MoneyAdded::class;
     $smallEvent->event_properties = json_encode([
         'money' => ['amount' => 50000, 'currency' => 'USD'], // $500
-        'hash' => ['value' => hash('sha3-512', 'test2')],
+        'hash'  => ['value' => hash('sha3-512', 'test2')],
     ]);
     $smallEvent->meta_data = json_encode([]);
     $smallEvent->created_at = $date;
@@ -81,14 +81,14 @@ test('detects suspicious patterns for SAR candidates', function () {
     // Create rapid succession transactions (potential structuring)
     $account = $this->accounts['high_risk'];
     for ($i = 0; $i < 15; $i++) {
-        $event = new StoredEvent;
+        $event = new StoredEvent();
         $event->aggregate_uuid = $account->uuid;
         $event->aggregate_version = $i + 1;
         $event->event_version = 1;
         $event->event_class = MoneyAdded::class;
         $event->event_properties = json_encode([
             'money' => ['amount' => 950000, 'currency' => 'USD'], // Just under $10k
-            'hash' => ['value' => hash('sha3-512', "test{$i}")],
+            'hash'  => ['value' => hash('sha3-512', "test{$i}")],
         ]);
         $event->meta_data = json_encode([]);
         $event->created_at = $startDate->copy()->addHours($i);
@@ -113,10 +113,10 @@ test('generates comprehensive compliance summary', function () {
 
     // Create some test data
     User::factory()->count(3)->create([
-        'created_at' => $month->copy()->addDays(5),
-        'kyc_status' => 'approved',
+        'created_at'       => $month->copy()->addDays(5),
+        'kyc_status'       => 'approved',
         'kyc_submitted_at' => $month->copy()->addDays(3),
-        'kyc_approved_at' => $month->copy()->addDays(5),
+        'kyc_approved_at'  => $month->copy()->addDays(5),
     ]);
 
     $filename = $this->reportingService->generateComplianceSummary($month);
@@ -171,14 +171,14 @@ test('detects round number transaction patterns', function () {
     $amounts = [1000000, 2000000, 5000000, 10000000]; // $10k, $20k, $50k, $100k
     foreach ($amounts as $i => $amount) {
         for ($j = 0; $j < 2; $j++) { // Create 2 of each to meet threshold
-            $event = new StoredEvent;
+            $event = new StoredEvent();
             $event->aggregate_uuid = $account->uuid;
             $event->aggregate_version = ($i * 2) + $j + 1;
             $event->event_version = 1;
             $event->event_class = MoneyAdded::class;
             $event->event_properties = json_encode([
                 'money' => ['amount' => $amount, 'currency' => 'USD'],
-                'hash' => ['value' => hash('sha3-512', "test{$i}{$j}")],
+                'hash'  => ['value' => hash('sha3-512', "test{$i}{$j}")],
             ]);
             $event->meta_data = json_encode([]);
             $event->created_at = $startDate->copy()->addDays($i);

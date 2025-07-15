@@ -12,7 +12,7 @@ class StartBatchJob
         BatchJob::where('uuid', $event->aggregateRootUuid())
             ->update(
                 [
-                    'status' => 'processing',
+                    'status'     => 'processing',
                     'started_at' => $event->startedAt,
                 ]
             );

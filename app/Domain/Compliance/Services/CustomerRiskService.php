@@ -4,8 +4,8 @@ namespace App\Domain\Compliance\Services;
 
 use App\Domain\Compliance\Events\EnhancedDueDiligenceRequired;
 use App\Domain\Compliance\Events\RiskLevelChanged;
-use App\Models\Account;
 use App\Domain\Compliance\Models\CustomerRiskProfile;
+use App\Models\Account;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
@@ -24,13 +24,13 @@ class CustomerRiskService
                 if (! $profile->exists) {
                     $profile->fill(
                         [
-                            'risk_rating' => CustomerRiskProfile::RISK_RATING_LOW,
-                            'risk_score' => 0,
-                            'cdd_level' => CustomerRiskProfile::CDD_LEVEL_STANDARD,
-                            'daily_transaction_limit' => 10000,
+                            'risk_rating'               => CustomerRiskProfile::RISK_RATING_LOW,
+                            'risk_score'                => 0,
+                            'cdd_level'                 => CustomerRiskProfile::CDD_LEVEL_STANDARD,
+                            'daily_transaction_limit'   => 10000,
                             'monthly_transaction_limit' => 100000,
-                            'single_transaction_limit' => 5000,
-                            'monitoring_frequency' => 30,
+                            'single_transaction_limit'  => 5000,
+                            'monitoring_frequency'      => 30,
                         ]
                     );
                 }
@@ -90,8 +90,8 @@ class CustomerRiskService
     {
         $risk = [
             'countries' => [],
-            'score' => 0,
-            'factors' => [],
+            'score'     => 0,
+            'factors'   => [],
         ];
 
         // User's country
@@ -126,8 +126,8 @@ class CustomerRiskService
     {
         $risk = [
             'products' => [],
-            'score' => 20, // Base score
-            'factors' => [],
+            'score'    => 20, // Base score
+            'factors'  => [],
         ];
 
         // Check enabled products/features
@@ -157,8 +157,8 @@ class CustomerRiskService
     {
         $risk = [
             'onboarding_channel' => 'online_verified',
-            'score' => 30,
-            'factors' => [],
+            'score'              => 30,
+            'factors'            => [],
         ];
 
         // Check KYC verification level
@@ -185,7 +185,7 @@ class CustomerRiskService
     {
         $risk = [
             'factors' => [],
-            'score' => 20, // Base score
+            'score'   => 20, // Base score
         ];
 
         // PEP status
@@ -234,8 +234,8 @@ class CustomerRiskService
     {
         $risk = [
             'patterns' => [],
-            'score' => 20, // Base score
-            'factors' => [],
+            'score'    => 20, // Base score
+            'factors'  => [],
         ];
 
         // Get transaction statistics
@@ -327,7 +327,7 @@ class CustomerRiskService
         $behavioralRisk = $profile->behavioral_risk ?? [];
         $behavioralRisk['patterns'][] = $reason;
         $behavioralRisk['escalation_history'][] = [
-            'date' => now()->toIso8601String(),
+            'date'   => now()->toIso8601String(),
             'reason' => $reason,
         ];
         $profile->behavioral_risk = $behavioralRisk;
@@ -363,13 +363,13 @@ class CustomerRiskService
         // In production, calculate from actual transaction data
         // For now, return simulated statistics
         return [
-            'avg_amount' => 500,
-            'std_dev' => 100,
+            'avg_amount'      => 500,
+            'std_dev'         => 100,
             'avg_daily_count' => 2,
-            'usual_hours' => range(9, 17), // 9 AM to 5 PM
-            'destinations' => ['US', 'CA', 'GB'],
-            'rapid_growth' => false,
-            'unusual_hours' => false,
+            'usual_hours'     => range(9, 17), // 9 AM to 5 PM
+            'destinations'    => ['US', 'CA', 'GB'],
+            'rapid_growth'    => false,
+            'unusual_hours'   => false,
         ];
     }
 
@@ -379,11 +379,11 @@ class CustomerRiskService
     protected function calculateNextReviewDate(string $riskRating): \Carbon\Carbon
     {
         return match ($riskRating) {
-            CustomerRiskProfile::RISK_RATING_HIGH => now()->addMonth(),
-            CustomerRiskProfile::RISK_RATING_MEDIUM => now()->addMonths(3),
-            CustomerRiskProfile::RISK_RATING_LOW => now()->addMonths(6),
+            CustomerRiskProfile::RISK_RATING_HIGH       => now()->addMonth(),
+            CustomerRiskProfile::RISK_RATING_MEDIUM     => now()->addMonths(3),
+            CustomerRiskProfile::RISK_RATING_LOW        => now()->addMonths(6),
             CustomerRiskProfile::RISK_RATING_PROHIBITED => now()->addDay(),
-            default => now()->addMonth(),
+            default                                     => now()->addMonth(),
         };
     }
 
@@ -397,7 +397,7 @@ class CustomerRiskService
         if (! $profile) {
             return [
                 'allowed' => true,
-                'reason' => null,
+                'reason'  => null,
             ];
         }
 
@@ -405,7 +405,7 @@ class CustomerRiskService
         if ($profile->isProhibited()) {
             return [
                 'allowed' => false,
-                'reason' => 'Account is prohibited from transactions',
+                'reason'  => 'Account is prohibited from transactions',
             ];
         }
 
@@ -413,8 +413,8 @@ class CustomerRiskService
         if ($amount > $profile->single_transaction_limit) {
             return [
                 'allowed' => false,
-                'reason' => 'Transaction exceeds single transaction limit',
-                'limit' => $profile->single_transaction_limit,
+                'reason'  => 'Transaction exceeds single transaction limit',
+                'limit'   => $profile->single_transaction_limit,
             ];
         }
 
@@ -423,8 +423,8 @@ class CustomerRiskService
         if (($dailyTotal + $amount) > $profile->daily_transaction_limit) {
             return [
                 'allowed' => false,
-                'reason' => 'Transaction would exceed daily limit',
-                'limit' => $profile->daily_transaction_limit,
+                'reason'  => 'Transaction would exceed daily limit',
+                'limit'   => $profile->daily_transaction_limit,
                 'current' => $dailyTotal,
             ];
         }
@@ -434,8 +434,8 @@ class CustomerRiskService
         if (($monthlyTotal + $amount) > $profile->monthly_transaction_limit) {
             return [
                 'allowed' => false,
-                'reason' => 'Transaction would exceed monthly limit',
-                'limit' => $profile->monthly_transaction_limit,
+                'reason'  => 'Transaction would exceed monthly limit',
+                'limit'   => $profile->monthly_transaction_limit,
                 'current' => $monthlyTotal,
             ];
         }
@@ -443,15 +443,15 @@ class CustomerRiskService
         // Check currency restrictions
         if (! empty($profile->restricted_currencies) && in_array($currency, $profile->restricted_currencies)) {
             return [
-                'allowed' => false,
-                'reason' => 'Currency is restricted for this account',
+                'allowed'  => false,
+                'reason'   => 'Currency is restricted for this account',
                 'currency' => $currency,
             ];
         }
 
         return [
-            'allowed' => true,
-            'reason' => null,
+            'allowed'             => true,
+            'reason'              => null,
             'enhanced_monitoring' => $profile->enhanced_monitoring,
         ];
     }

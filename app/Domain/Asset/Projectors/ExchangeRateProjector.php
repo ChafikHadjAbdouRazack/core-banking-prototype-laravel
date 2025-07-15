@@ -28,18 +28,18 @@ class ExchangeRateProjector extends Projector
             $newRate = ExchangeRate::create(
                 [
                     'from_asset_code' => $event->fromAssetCode,
-                    'to_asset_code' => $event->toAssetCode,
-                    'rate' => $event->newRate,
-                    'source' => $event->source,
-                    'valid_at' => now(),
-                    'expires_at' => now()->addHours(1), // Default 1 hour expiry
-                    'is_active' => true,
-                    'metadata' => array_merge(
+                    'to_asset_code'   => $event->toAssetCode,
+                    'rate'            => $event->newRate,
+                    'source'          => $event->source,
+                    'valid_at'        => now(),
+                    'expires_at'      => now()->addHours(1), // Default 1 hour expiry
+                    'is_active'       => true,
+                    'metadata'        => array_merge(
                         $event->metadata ?? [],
                         [
-                            'previous_rate' => $event->oldRate,
-                            'change_percentage' => $event->getChangePercentage(),
-                            'is_increase' => $event->isIncrease(),
+                            'previous_rate'         => $event->oldRate,
+                            'change_percentage'     => $event->getChangePercentage(),
+                            'is_increase'           => $event->isIncrease(),
                             'is_significant_change' => $event->isSignificantChange(),
                         ]
                     ),
@@ -59,24 +59,24 @@ class ExchangeRateProjector extends Projector
                 Log::warning(
                     'Significant exchange rate change detected',
                     [
-                        'from_asset' => $event->fromAssetCode,
-                        'to_asset' => $event->toAssetCode,
-                        'old_rate' => $event->oldRate,
-                        'new_rate' => $event->newRate,
+                        'from_asset'        => $event->fromAssetCode,
+                        'to_asset'          => $event->toAssetCode,
+                        'old_rate'          => $event->oldRate,
+                        'new_rate'          => $event->newRate,
                         'change_percentage' => $event->getChangePercentage(),
-                        'source' => $event->source,
+                        'source'            => $event->source,
                     ]
                 );
             } else {
                 Log::info(
                     'Exchange rate updated',
                     [
-                        'from_asset' => $event->fromAssetCode,
-                        'to_asset' => $event->toAssetCode,
-                        'old_rate' => $event->oldRate,
-                        'new_rate' => $event->newRate,
+                        'from_asset'        => $event->fromAssetCode,
+                        'to_asset'          => $event->toAssetCode,
+                        'old_rate'          => $event->oldRate,
+                        'new_rate'          => $event->newRate,
                         'change_percentage' => $event->getChangePercentage(),
-                        'source' => $event->source,
+                        'source'            => $event->source,
                     ]
                 );
             }
@@ -85,11 +85,11 @@ class ExchangeRateProjector extends Projector
                 'Error processing exchange rate update',
                 [
                     'from_asset' => $event->fromAssetCode,
-                    'to_asset' => $event->toAssetCode,
-                    'old_rate' => $event->oldRate,
-                    'new_rate' => $event->newRate,
-                    'source' => $event->source,
-                    'error' => $e->getMessage(),
+                    'to_asset'   => $event->toAssetCode,
+                    'old_rate'   => $event->oldRate,
+                    'new_rate'   => $event->newRate,
+                    'source'     => $event->source,
+                    'error'      => $e->getMessage(),
                 ]
             );
 

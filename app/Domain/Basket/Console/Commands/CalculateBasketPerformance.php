@@ -2,8 +2,8 @@
 
 namespace App\Domain\Basket\Console\Commands;
 
-use App\Domain\Basket\Services\BasketPerformanceService;
 use App\Domain\Basket\Models\BasketAsset;
+use App\Domain\Basket\Services\BasketPerformanceService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 

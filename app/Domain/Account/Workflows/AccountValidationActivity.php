@@ -36,11 +36,11 @@ class AccountValidationActivity extends Activity
         $this->logValidation($uuid, $validationChecks, $results, $allPassed, $validatedBy);
 
         return [
-            'account_uuid' => $uuid->getUuid(),
+            'account_uuid'       => $uuid->getUuid(),
             'validation_results' => $results,
-            'all_checks_passed' => $allPassed,
-            'validated_by' => $validatedBy,
-            'validated_at' => now()->toISOString(),
+            'all_checks_passed'  => $allPassed,
+            'validated_by'       => $validatedBy,
+            'validated_at'       => now()->toISOString(),
         ];
     }
 
@@ -57,7 +57,7 @@ class AccountValidationActivity extends Activity
                 return $this->performComplianceScreening($account);
             default:
                 return [
-                    'passed' => false,
+                    'passed'  => false,
                     'message' => "Unknown validation check: {$check}",
                 ];
         }
@@ -69,8 +69,8 @@ class AccountValidationActivity extends Activity
         $user = $account->user;
         if (! $user) {
             return [
-                'passed' => false,
-                'message' => 'User not found for account',
+                'passed'     => false,
+                'message'    => 'User not found for account',
                 'error_code' => 'USER_NOT_FOUND',
             ];
         }
@@ -87,9 +87,9 @@ class AccountValidationActivity extends Activity
 
         if (! empty($missingFields)) {
             return [
-                'passed' => false,
-                'message' => 'Missing required KYC information: ' . implode(', ', $missingFields),
-                'error_code' => 'MISSING_KYC_DATA',
+                'passed'         => false,
+                'message'        => 'Missing required KYC information: ' . implode(', ', $missingFields),
+                'error_code'     => 'MISSING_KYC_DATA',
                 'missing_fields' => $missingFields,
             ];
         }
@@ -97,15 +97,15 @@ class AccountValidationActivity extends Activity
         // Validate email format
         if (! filter_var($user->email, FILTER_VALIDATE_EMAIL)) {
             return [
-                'passed' => false,
-                'message' => 'Invalid email format',
+                'passed'     => false,
+                'message'    => 'Invalid email format',
                 'error_code' => 'INVALID_EMAIL',
             ];
         }
 
         return [
-            'passed' => true,
-            'message' => 'KYC documents and information verified',
+            'passed'             => true,
+            'message'            => 'KYC documents and information verified',
             'verification_score' => 95,
         ];
     }
@@ -115,8 +115,8 @@ class AccountValidationActivity extends Activity
         $user = $account->user;
         if (! $user) {
             return [
-                'passed' => false,
-                'message' => 'User not found for address validation',
+                'passed'     => false,
+                'message'    => 'User not found for address validation',
                 'error_code' => 'USER_NOT_FOUND',
             ];
         }
@@ -131,8 +131,8 @@ class AccountValidationActivity extends Activity
         // Basic domain validation
         if (in_array($emailDomain, ['tempmail.com', '10minutemail.com', 'guerrillamail.com'])) {
             return [
-                'passed' => false,
-                'message' => 'Temporary email domains not allowed',
+                'passed'     => false,
+                'message'    => 'Temporary email domains not allowed',
                 'error_code' => 'INVALID_EMAIL_DOMAIN',
             ];
         }
@@ -140,17 +140,17 @@ class AccountValidationActivity extends Activity
         // Simulate DNS check for domain validity
         if (! checkdnsrr($emailDomain, 'MX')) {
             return [
-                'passed' => false,
-                'message' => 'Invalid email domain - no MX record found',
+                'passed'     => false,
+                'message'    => 'Invalid email domain - no MX record found',
                 'error_code' => 'INVALID_DOMAIN',
             ];
         }
 
         return [
-            'passed' => true,
-            'message' => 'Address validation passed',
+            'passed'            => true,
+            'message'           => 'Address validation passed',
             'validation_method' => 'email_domain_verification',
-            'score' => 85,
+            'score'             => 85,
         ];
     }
 
@@ -159,8 +159,8 @@ class AccountValidationActivity extends Activity
         $user = $account->user;
         if (! $user) {
             return [
-                'passed' => false,
-                'message' => 'User not found for identity validation',
+                'passed'     => false,
+                'message'    => 'User not found for identity validation',
                 'error_code' => 'USER_NOT_FOUND',
             ];
         }
@@ -171,17 +171,17 @@ class AccountValidationActivity extends Activity
         // Check name validity (basic validation)
         if (strlen($user->name) < 2) {
             $checks['name'] = [
-                'passed' => false,
+                'passed'  => false,
                 'message' => 'Name too short',
             ];
         } elseif (preg_match('/[0-9]/', $user->name)) {
             $checks['name'] = [
-                'passed' => false,
+                'passed'  => false,
                 'message' => 'Name contains invalid characters',
             ];
         } else {
             $checks['name'] = [
-                'passed' => true,
+                'passed'  => true,
                 'message' => 'Name format valid',
             ];
         }
@@ -194,12 +194,12 @@ class AccountValidationActivity extends Activity
 
         if ($emailExists) {
             $checks['email_uniqueness'] = [
-                'passed' => false,
+                'passed'  => false,
                 'message' => 'Email already registered with another account',
             ];
         } else {
             $checks['email_uniqueness'] = [
-                'passed' => true,
+                'passed'  => true,
                 'message' => 'Email is unique',
             ];
         }
@@ -211,12 +211,12 @@ class AccountValidationActivity extends Activity
 
         if ($recentAccounts > 3) {
             $checks['account_frequency'] = [
-                'passed' => false,
+                'passed'  => false,
                 'message' => 'Too many accounts created recently',
             ];
         } else {
             $checks['account_frequency'] = [
-                'passed' => true,
+                'passed'  => true,
                 'message' => 'Account creation frequency normal',
             ];
         }
@@ -224,9 +224,9 @@ class AccountValidationActivity extends Activity
         $allPassed = collect($checks)->every(fn ($check) => $check['passed']);
 
         return [
-            'passed' => $allPassed,
-            'message' => $allPassed ? 'Identity verification passed' : 'Identity verification failed',
-            'checks' => $checks,
+            'passed'             => $allPassed,
+            'message'            => $allPassed ? 'Identity verification passed' : 'Identity verification failed',
+            'checks'             => $checks,
             'verification_score' => $allPassed ? 90 : 30,
         ];
     }
@@ -236,8 +236,8 @@ class AccountValidationActivity extends Activity
         $user = $account->user;
         if (! $user) {
             return [
-                'passed' => false,
-                'message' => 'User not found for compliance screening',
+                'passed'     => false,
+                'message'    => 'User not found for compliance screening',
                 'error_code' => 'USER_NOT_FOUND',
             ];
         }
@@ -262,7 +262,7 @@ class AccountValidationActivity extends Activity
         }
 
         $screeningResults['sanctions_check'] = [
-            'passed' => ! $sanctionsMatch,
+            'passed'  => ! $sanctionsMatch,
             'message' => $sanctionsMatch ? 'Name matches sanctions list' : 'No sanctions match found',
         ];
 
@@ -276,7 +276,7 @@ class AccountValidationActivity extends Activity
 
         $domainRisk = in_array($emailDomain, $highRiskDomains);
         $screeningResults['domain_risk_check'] = [
-            'passed' => ! $domainRisk,
+            'passed'  => ! $domainRisk,
             'message' => $domainRisk ? 'High-risk email domain detected' : 'Email domain risk check passed',
         ];
 
@@ -287,14 +287,14 @@ class AccountValidationActivity extends Activity
             ->count();
 
         $screeningResults['transaction_pattern_check'] = [
-            'passed' => $highValueTransactions < 5,
+            'passed'  => $highValueTransactions < 5,
             'message' => $highValueTransactions >= 5 ? 'Unusual high-value transaction pattern detected' : 'Transaction patterns normal',
         ];
 
         // Check for multiple accounts (possible fraud)
         $userAccountCount = Account::where('user_uuid', $user->uuid)->count();
         $screeningResults['multiple_accounts_check'] = [
-            'passed' => $userAccountCount <= 5,
+            'passed'  => $userAccountCount <= 5,
             'message' => $userAccountCount > 5 ? 'User has excessive number of accounts' : 'Account count within normal limits',
         ];
 
@@ -302,10 +302,10 @@ class AccountValidationActivity extends Activity
         $riskScore = $allPassed ? 10 : 85; // Low risk if all passed, high risk otherwise
 
         return [
-            'passed' => $allPassed,
-            'message' => $allPassed ? 'Compliance screening passed' : 'Compliance screening failed - manual review required',
-            'risk_score' => $riskScore,
-            'screening_results' => $screeningResults,
+            'passed'                 => $allPassed,
+            'message'                => $allPassed ? 'Compliance screening passed' : 'Compliance screening failed - manual review required',
+            'risk_score'             => $riskScore,
+            'screening_results'      => $screeningResults,
             'requires_manual_review' => ! $allPassed,
         ];
     }
@@ -320,12 +320,12 @@ class AccountValidationActivity extends Activity
         logger()->info(
             'Account validation performed',
             [
-                'account_uuid' => $uuid->getUuid(),
+                'account_uuid'     => $uuid->getUuid(),
                 'checks_performed' => $checks,
-                'results' => $results,
-                'all_passed' => $allPassed,
-                'validated_by' => $validatedBy,
-                'timestamp' => now()->toISOString(),
+                'results'          => $results,
+                'all_passed'       => $allPassed,
+                'validated_by'     => $validatedBy,
+                'timestamp'        => now()->toISOString(),
             ]
         );
     }

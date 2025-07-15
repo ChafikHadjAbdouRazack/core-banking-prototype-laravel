@@ -65,14 +65,14 @@ class FraudCase extends Model
 
     protected $casts = [
         'related_transactions' => 'array',
-        'related_accounts' => 'array',
-        'detection_rules' => 'array',
-        'evidence' => 'array',
-        'actions_taken' => 'array',
-        'amount' => 'decimal:8',
-        'risk_score' => 'decimal:2',
-        'detected_at' => 'datetime',
-        'resolved_at' => 'datetime',
+        'related_accounts'     => 'array',
+        'detection_rules'      => 'array',
+        'evidence'             => 'array',
+        'actions_taken'        => 'array',
+        'amount'               => 'decimal:8',
+        'risk_score'           => 'decimal:2',
+        'detected_at'          => 'datetime',
+        'resolved_at'          => 'datetime',
     ];
 
     public const STATUS_PENDING = 'pending';
@@ -116,13 +116,13 @@ class FraudCase extends Model
     public const DETECTION_METHOD_EXTERNAL_REPORT = 'external_report';
 
     public const FRAUD_TYPES = [
-        self::TYPE_ACCOUNT_TAKEOVER => 'Account Takeover',
-        self::TYPE_IDENTITY_THEFT => 'Identity Theft',
+        self::TYPE_ACCOUNT_TAKEOVER  => 'Account Takeover',
+        self::TYPE_IDENTITY_THEFT    => 'Identity Theft',
         self::TYPE_TRANSACTION_FRAUD => 'Transaction Fraud',
-        self::TYPE_CARD_FRAUD => 'Card Fraud',
-        self::TYPE_PHISHING => 'Phishing',
-        self::TYPE_MONEY_LAUNDERING => 'Money Laundering',
-        self::TYPE_OTHER => 'Other',
+        self::TYPE_CARD_FRAUD        => 'Card Fraud',
+        self::TYPE_PHISHING          => 'Phishing',
+        self::TYPE_MONEY_LAUNDERING  => 'Money Laundering',
+        self::TYPE_OTHER             => 'Other',
     ];
 
     protected static function boot()
@@ -216,7 +216,7 @@ class FraudCase extends Model
         $this->update(
             [
                 'assigned_to' => $investigator->uuid,
-                'status' => self::STATUS_INVESTIGATING,
+                'status'      => self::STATUS_INVESTIGATING,
             ]
         );
     }
@@ -239,7 +239,7 @@ class FraudCase extends Model
         $actions = $this->actions_taken ?? [];
         $actions[] = array_merge(
             [
-                'action' => $action,
+                'action'    => $action,
                 'timestamp' => now()->toIso8601String(),
             ],
             $details
@@ -253,8 +253,8 @@ class FraudCase extends Model
         $this->update(
             [
                 'resolution_notes' => $notes,
-                'resolved_at' => now(),
-                'status' => self::STATUS_RESOLVED,
+                'resolved_at'      => now(),
+                'status'           => self::STATUS_RESOLVED,
             ]
         );
     }
@@ -262,12 +262,12 @@ class FraudCase extends Model
     public function getCaseSummary(): array
     {
         return [
-            'case_number' => $this->case_number,
-            'type' => $this->type,
-            'status' => $this->status,
-            'severity' => $this->severity,
-            'total_loss' => $this->amount,
-            'duration_days' => $this->getDurationInDays(),
+            'case_number'       => $this->case_number,
+            'type'              => $this->type,
+            'status'            => $this->status,
+            'severity'          => $this->severity,
+            'total_loss'        => $this->amount,
+            'duration_days'     => $this->getDurationInDays(),
             'accounts_affected' => count($this->related_accounts ?? []),
         ];
     }

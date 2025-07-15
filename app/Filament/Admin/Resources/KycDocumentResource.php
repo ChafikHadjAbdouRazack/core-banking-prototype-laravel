@@ -2,8 +2,8 @@
 
 namespace App\Filament\Admin\Resources;
 
-use App\Filament\Admin\Resources\KycDocumentResource\Pages;
 use App\Domain\Compliance\Models\KycDocument;
+use App\Filament\Admin\Resources\KycDocumentResource\Pages;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;

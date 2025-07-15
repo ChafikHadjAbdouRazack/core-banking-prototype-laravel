@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api;
 
+use App\Domain\Custodian\Models\CustodianWebhook;
 use App\Domain\Custodian\Services\WebhookVerificationService;
 use App\Http\Controllers\Controller;
-use App\Domain\Custodian\Models\CustodianWebhook;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;

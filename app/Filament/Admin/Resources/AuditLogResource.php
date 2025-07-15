@@ -2,8 +2,8 @@
 
 namespace App\Filament\Admin\Resources;
 
-use App\Filament\Admin\Resources\AuditLogResource\Pages;
 use App\Domain\Account\Models\AuditLog;
+use App\Filament\Admin\Resources\AuditLogResource\Pages;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;

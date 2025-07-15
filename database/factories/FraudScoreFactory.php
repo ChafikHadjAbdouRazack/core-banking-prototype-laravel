@@ -26,9 +26,9 @@ class FraudScoreFactory extends Factory
         $decision = $this->getDecisionBasedOnScore($totalScore);
 
         return [
-            'entity_id'            => $this->faker->uuid(),
-            'entity_type'          => Transaction::class,
-            'score_type'           => $this->faker->randomElement([
+            'entity_id'   => $this->faker->uuid(),
+            'entity_type' => Transaction::class,
+            'score_type'  => $this->faker->randomElement([
                 FraudScore::SCORE_TYPE_REAL_TIME,
                 FraudScore::SCORE_TYPE_BATCH,
                 FraudScore::SCORE_TYPE_ML_PREDICTION,
@@ -96,12 +96,12 @@ class FraudScoreFactory extends Factory
     private function generateEntitySnapshot(): array
     {
         return [
-            'amount'      => $this->faker->randomFloat(2, 100, 10000),
-            'currency'    => 'USD',
-            'type'        => $this->faker->randomElement(['transfer', 'purchase', 'withdrawal']),
-            'timestamp'   => now()->toIso8601String(),
-            'ip_address'  => $this->faker->ipv4(),
-            'user_agent'  => $this->faker->userAgent(),
+            'amount'     => $this->faker->randomFloat(2, 100, 10000),
+            'currency'   => 'USD',
+            'type'       => $this->faker->randomElement(['transfer', 'purchase', 'withdrawal']),
+            'timestamp'  => now()->toIso8601String(),
+            'ip_address' => $this->faker->ipv4(),
+            'user_agent' => $this->faker->userAgent(),
         ];
     }
 
@@ -124,11 +124,11 @@ class FraudScoreFactory extends Factory
     private function generateDeviceFactors(): array
     {
         return [
-            'device_id'         => $this->faker->uuid(),
+            'device_id'          => $this->faker->uuid(),
             'device_trust_score' => $this->faker->numberBetween(0, 100),
-            'is_rooted'         => $this->faker->boolean(10),
-            'is_vpn'            => $this->faker->boolean(20),
-            'location_mismatch' => $this->faker->boolean(15),
+            'is_rooted'          => $this->faker->boolean(10),
+            'is_vpn'             => $this->faker->boolean(20),
+            'location_mismatch'  => $this->faker->boolean(15),
         ];
     }
 
@@ -138,11 +138,11 @@ class FraudScoreFactory extends Factory
     private function generateNetworkFactors(): array
     {
         return [
-            'ip_reputation'    => $this->faker->randomElement(['good', 'neutral', 'bad']),
-            'is_proxy'         => $this->faker->boolean(10),
-            'is_tor'           => $this->faker->boolean(5),
-            'country_code'     => $this->faker->countryCode(),
-            'risk_country'     => $this->faker->boolean(15),
+            'ip_reputation' => $this->faker->randomElement(['good', 'neutral', 'bad']),
+            'is_proxy'      => $this->faker->boolean(10),
+            'is_tor'        => $this->faker->boolean(5),
+            'country_code'  => $this->faker->countryCode(),
+            'risk_country'  => $this->faker->boolean(15),
         ];
     }
 
