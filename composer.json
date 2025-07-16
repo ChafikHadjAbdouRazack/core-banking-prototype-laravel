@@ -32,7 +32,7 @@
         "filament/filament": "^3.0",
         "http-interop/http-factory-guzzle": "^1.2",
         "juststeveking/laravel-data-object-tools": "dev-main",
-        "kornrunner/keccak": "*",
+        "kornrunner/keccak": "^1.1",
         "laravel-workflow/laravel-workflow": "^1.0",
         "laravel-workflow/waterline": "^1.0",
         "laravel/cashier": "^15.4",
@@ -51,7 +51,7 @@
         "meilisearch/meilisearch-php": "^1.9",
         "predis/predis": "^2.2",
         "scrivo/highlight.php": "^9.18",
-        "simplito/elliptic-php": "*",
+        "simplito/elliptic-php": "^1.0",
         "spatie/laravel-data": "^4.0",
         "spatie/laravel-event-sourcing": "^7.7",
         "spatie/laravel-permission": "^6.9"
@@ -105,14 +105,7 @@
             "@php artisan key:generate --ansi",
             "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
             "@php artisan migrate --graceful --ansi"
-        ]
-    },
-    "extra": {
-        "laravel": {
-            "dont-discover": []
-        }
-    },
-    "scripts": {
+        ],
         "phpstan": "./vendor/bin/phpstan analyse --memory-limit=2G",
         "phpstan:baseline": "./vendor/bin/phpstan analyse --generate-baseline --memory-limit=2G",
         "phpcs": "./vendor/bin/phpcs",
@@ -124,6 +117,11 @@
             "@phpstan",
             "@test"
         ]
+    },
+    "extra": {
+        "laravel": {
+            "dont-discover": []
+        }
     },
     "config": {
         "optimize-autoloader": true,
