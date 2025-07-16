@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use App\Models\Account;
-use App\Models\AccountBalance;
+use App\Domain\Account\Models\AccountBalance;
 use Laravel\Sanctum\Sanctum;
 use Spatie\Permission\Models\Role;
 

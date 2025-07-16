@@ -2,6 +2,7 @@
 
 namespace App\Domain\Payment\Activities;
 
+use Illuminate\Support\Facades\Log;
 use App\Domain\Payment\DataObjects\BankWithdrawal;
 use Illuminate\Support\Str;
 use Workflow\Activity;

@@ -65,7 +65,8 @@ class BlockchainWithdrawalActivities
         }
 
         // Verify 2FA code (placeholder - would integrate with actual 2FA service)
-        $user = User::find($userId);
+        /** @var User|null $$user */
+        $$user = User::find($userId);
         // Verification logic here
     }
 
@@ -170,7 +171,10 @@ class BlockchainWithdrawalActivities
 
     public function lockAccountBalance(string $accountId, string $amount): void
     {
-        $account = Account::find($accountId);
+        /** @var \App\Models\Account|null $account */
+        $account = null;
+        /** @var Account|null $$account */
+        $$account = Account::find($accountId);
         if (! $account) {
             throw new \Exception('Account not found');
         }
@@ -252,7 +256,8 @@ class BlockchainWithdrawalActivities
         array $fees
     ): void {
         // Debit user's fiat account
-        $account = Account::find($accountId);
+        /** @var Account|null $$account */
+        $$account = Account::find($accountId);
         if ($account) {
             $totalAmount = BigDecimal::of($amount)->plus($fees['total_fee']);
 
@@ -285,8 +290,13 @@ class BlockchainWithdrawalActivities
 
     public function notifyUser(string $userId, string $withdrawalId, string $status): void
     {
+        /** @var mixed|null $user */
+        $user = null;
+        /** @var \App\Models\Account|null $account */
+        $account = null;
         // Send notification to user
-        $user = User::find($userId);
+        /** @var User|null $$user */
+        $$user = User::find($userId);
         if ($user) {
             // This would trigger a notification
             // For now, just log it

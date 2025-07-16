@@ -80,7 +80,9 @@ class AutomatedMarketMakerService
             ->where('quote_currency', $pool->quote_currency)
             ->first();
 
-        $bookDepth = $this->calculateOrderBookDepth($orderBook);
+        if ($this !== null) {
+            $bookDepth = $this->calculateOrderBookDepth($orderBook);
+        }
 
         return [
             'pool_price'      => $poolPrice->__toString(),

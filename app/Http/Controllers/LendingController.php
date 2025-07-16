@@ -151,6 +151,7 @@ class LendingController extends Controller
      */
     public function showLoan($loanId)
     {
+                /** @var Loan|null $loan */
         $loan = Loan::where('loan_uuid', $loanId)->first();
 
         if (! $loan || ! $this->userOwnsLoan($loan)) {
@@ -170,6 +171,7 @@ class LendingController extends Controller
      */
     public function repay($loanId)
     {
+                /** @var Loan|null $loan */
         $loan = Loan::where('loan_uuid', $loanId)->first();
 
         if (! $loan || ! $this->userOwnsLoan($loan)) {
@@ -196,6 +198,7 @@ class LendingController extends Controller
             ]
         );
 
+                /** @var Loan|null $loan */
         $loan = Loan::where('loan_uuid', $loanId)->first();
 
         if (! $loan || ! $this->userOwnsLoan($loan)) {
@@ -213,9 +216,7 @@ class LendingController extends Controller
         try {
             $result = $this->loanApplicationService->makeRepayment(
                 $loanId,
-                $account->uuid,
-                $validated['amount'],
-                $validated['payment_type']
+                $account->uuid
             );
 
             return redirect()

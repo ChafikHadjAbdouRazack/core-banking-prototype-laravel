@@ -61,6 +61,9 @@ trait BelongsToTeam
     /**
      * Get the team relationship.
      */
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function team()
     {
         return $this->belongsTo(\App\Models\Team::class);

@@ -2,10 +2,17 @@
 
 namespace App\Domain\Governance\Models;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @method static static updateOrCreate(array $attributes, array $values = [])
+ * @method static \Illuminate\Database\Eloquent\Builder where(string $column, mixed $operator = null, mixed $value = null, string $boolean = 'and')
+ * @method static static|null first(array $columns = ['*'])
+ * @method static static create(array $attributes = [])
+ */
 class GcuVote extends Model
 {
     use HasFactory;
@@ -62,5 +69,16 @@ class GcuVote extends Model
     public function verifySignature(): bool
     {
         return $this->signature === $this->generateSignature();
+    }
+
+    /**
+     * Get the activity logs for this model.
+     */
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
+     */
+    public function logs()
+    {
+        return $this->morphMany(\App\Domain\Activity\Models\Activity::class, 'subject');
     }
 }

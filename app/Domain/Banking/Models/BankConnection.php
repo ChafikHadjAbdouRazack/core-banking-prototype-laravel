@@ -123,4 +123,14 @@ class BankConnection
             metadata: $data['metadata'] ?? [],
         );
     }
+
+    /**
+     * Scope a query to only include active records.
+     */
+    public function scopeActive($query)
+    {
+        return $query->where('status', 'active')
+            ->orWhere('is_active', true)
+            ->orWhereNull('deleted_at');
+    }
 }

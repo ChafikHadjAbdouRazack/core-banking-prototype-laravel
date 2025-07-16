@@ -59,6 +59,7 @@ class GcuVotingProposalPolicy
     public function vote(User $user, GcuVotingProposal $proposal): bool
     {
         // User must have GCU holdings to vote
+        /** @var \Illuminate\Database\Eloquent\Model|null $account */
         $account = $user->accounts()->first();
         if (! $account) {
             return false;

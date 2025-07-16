@@ -321,4 +321,31 @@ class BasketRebalancingService
             'message' => 'Rebalancing history will be available after event store integration',
         ];
     }
+
+    /**
+     * Rebalance all dynamic baskets that need rebalancing.
+     */
+    public function rebalanceAllDynamicBaskets(): array
+    {
+        $results = [];
+        $baskets = BasketAsset::where('type', 'dynamic')
+            ->where('is_active', true)
+            ->get();
+
+        foreach ($baskets as $basket) {
+            try {
+                if ($this->needsRebalancing($basket)) {
+                    $results[$basket->code] = $this->rebalance($basket);
+                }
+            } catch (\Exception $e) {
+                Log::error("Failed to rebalance basket {$basket->code}: " . $e->getMessage());
+                $results[$basket->code] = [
+                    'status' => 'failed',
+                    'error' => $e->getMessage(),
+                ];
+            }
+        }
+
+        return $results;
+    }
 }

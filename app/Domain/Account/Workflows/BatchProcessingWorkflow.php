@@ -2,6 +2,7 @@
 
 namespace App\Domain\Account\Workflows;
 
+use Illuminate\Support\Str;
 use Workflow\ActivityStub;
 use Workflow\Workflow;
 

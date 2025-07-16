@@ -171,6 +171,8 @@ class StripePaymentService
             return;
         }
 
+
+        /** @var CgoInvestment|null $investment */
         $investment = CgoInvestment::where('uuid', $investmentUuid)->first();
 
         if (! $investment) {

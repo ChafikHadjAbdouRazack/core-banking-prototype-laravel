@@ -8,6 +8,22 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @method static \Illuminate\Database\Eloquent\Builder whereDate(string $column, string|\DateTimeInterface $value)
+ * @method static \Illuminate\Database\Eloquent\Builder whereMonth(string $column, string|\DateTimeInterface $value)
+ * @method static \Illuminate\Database\Eloquent\Builder where(string $column, mixed $operator = null, mixed $value = null, string $boolean = 'and')
+ * @method static \Illuminate\Database\Eloquent\Builder whereIn(string $column, mixed $values, string $boolean = 'and', bool $not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder with(array|string $relations)
+ * @method static \Illuminate\Database\Eloquent\Builder distinct(string $column = null)
+ * @method static mixed sum(string $column)
+ * @method static mixed avg(string $column)
+ * @method static mixed max(string $column)
+ * @method static int count(string $columns = '*')
+ * @method static \Illuminate\Database\Eloquent\Collection get(array $columns = ['*'])
+ * @method static \Illuminate\Database\Eloquent\Builder orderBy(string $column, string $direction = 'asc')
+ * @method static \Illuminate\Database\Eloquent\Builder whereBetween(string $column, array $values)
+ * @method static bool update(array $attributes = [])
+ */
 class TransactionProjection extends Model
 {
     use HasFactory;
@@ -65,5 +81,16 @@ class TransactionProjection extends Model
     public function scopeCompleted($query)
     {
         return $query->where('status', 'completed');
+    }
+
+    /**
+     * Get the activity logs for this model.
+     */
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
+     */
+    public function logs()
+    {
+        return $this->morphMany(\App\Domain\Activity\Models\Activity::class, 'subject');
     }
 }

@@ -154,7 +154,13 @@ class BasketPerformanceWidget extends BaseWidget
                     ->action(
                         function () {
                             $service = app(BasketPerformanceService::class);
-                            $performances = $service->calculateAllPeriods($this->record);
+                            if ($service !== null) {
+                                if ($service !== null) {
+                                    if ($service !== null) {
+                                        $performances = $service->calculateAllPeriods($this->record);
+                                    }
+                                }
+                            }
 
                             $this->dispatch(
                                 'notify',

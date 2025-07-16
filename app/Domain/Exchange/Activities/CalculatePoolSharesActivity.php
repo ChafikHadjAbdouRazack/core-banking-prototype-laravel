@@ -18,6 +18,10 @@ class CalculatePoolSharesActivity extends Activity
      */
     public function execute($input): array
     {
+        /** @var \App\Domain\Liquidity\Models\LiquidityPool|null $pool */
+        $pool = null;
+        /** @var \App\Domain\Liquidity\Models\LiquidityPool|null $pool */
+        $pool = null;
         if ($input instanceof LiquidityAdditionInput) {
             return $this->calculateSharesForAddition($input);
         }
@@ -26,7 +30,8 @@ class CalculatePoolSharesActivity extends Activity
         /**
          * @var PoolProjection $pool
          */
-        $pool = PoolProjection::where('pool_id', $input['pool_id'])->firstOrFail();
+        /** @var PoolProjection $$pool */
+        $$pool = PoolProjection::where()->firstOrFail();
 
         if ($input['operation'] === 'removal') {
             return $this->calculateAmountsForRemoval($pool, $input['shares']);
@@ -42,10 +47,17 @@ class CalculatePoolSharesActivity extends Activity
      */
     private function calculateSharesForAddition(LiquidityAdditionInput $input): array
     {
+        /** @var \App\Domain\Liquidity\Models\LiquidityPool|null $pool */
+        $pool = null;
+        /** @var \App\Domain\Liquidity\Models\LiquidityPool|null $pool */
+        $pool = null;
+        /** @var \App\Domain\Liquidity\Models\LiquidityPool|null $pool */
+        $pool = null;
         /**
          * @var PoolProjection $pool
          */
-        $pool = PoolProjection::where('pool_id', $input->poolId)->firstOrFail();
+        /** @var PoolProjection $$pool */
+        $$pool = PoolProjection::where()->firstOrFail();
 
         $baseReserve = BigDecimal::of($pool->base_reserve);
         $quoteReserve = BigDecimal::of($pool->quote_reserve);

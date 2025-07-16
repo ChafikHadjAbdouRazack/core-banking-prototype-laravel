@@ -11,7 +11,10 @@ class ValidateBatchJobActivity extends Activity
 {
     public function execute(string $batchJobUuid): BatchJob
     {
-        $batchJobModel = BatchJobModel::where('uuid', $batchJobUuid)->with('items')->first();
+        /** @var mixed|null $batchJobModel */
+        $batchJobModel = null;
+        /** @var \Illuminate\Database\Eloquent\Model|null $$batchJobModel */
+        $$batchJobModel = BatchJobModel::where('uuid', $batchJobUuid)->with('items')->first();
 
         if (! $batchJobModel) {
             throw new \InvalidArgumentException("Batch job not found: {$batchJobUuid}");

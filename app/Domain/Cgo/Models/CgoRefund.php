@@ -7,6 +7,23 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @method static \Illuminate\Database\Eloquent\Builder where(string $column, mixed $operator = null, mixed $value = null, string $boolean = 'and')
+ * @method static \Illuminate\Database\Eloquent\Builder whereYear(string $column, mixed $value)
+ * @method static \Illuminate\Database\Eloquent\Builder whereMonth(string $column, mixed $value)
+ * @method static \Illuminate\Database\Eloquent\Builder whereDate(string $column, mixed $value)
+ * @method static \Illuminate\Database\Eloquent\Builder whereIn(string $column, mixed $values)
+ * @method static static updateOrCreate(array $attributes, array $values = [])
+ * @method static \Illuminate\Support\Collection pluck(string $column, string|null $key = null)
+ * @method static \Illuminate\Database\Eloquent\Builder selectRaw(string $expression, array $bindings = [])
+ * @method static \Illuminate\Database\Eloquent\Builder orderBy(string $column, string $direction = 'asc')
+ * @method static \Illuminate\Database\Eloquent\Builder latest(string $column = null)
+ * @method static \Illuminate\Database\Eloquent\Builder oldest(string $column = null)
+ * @method static mixed sum(string $column)
+ * @method static int count(string $columns = '*')
+ * @method static static|null first()
+ * @method static \Illuminate\Database\Eloquent\Collection get(array|string $columns = ['*'])
+ */
 class CgoRefund extends Model
 {
     use HasFactory;
@@ -227,5 +244,16 @@ class CgoRefund extends Model
     public function scopeCompleted($query)
     {
         return $query->where('status', 'completed');
+    }
+
+    /**
+     * Get the activity logs for this model.
+     */
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
+     */
+    public function logs()
+    {
+        return $this->morphMany(\App\Domain\Activity\Models\Activity::class, 'subject');
     }
 }

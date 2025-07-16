@@ -12,7 +12,16 @@ class ValidateOrderActivity extends Activity
 {
     public function execute(string $orderId): object
     {
-        $orderProjection = OrderProjection::where('order_id', $orderId)->first();
+        /** @var mixed|null $quoteCurrency */
+        $quoteCurrency = null;
+        /** @var mixed|null $baseCurrency */
+        $baseCurrency = null;
+        /** @var mixed|null $orderProjection */
+        $orderProjection = null;
+        /** @var \App\Models\Account|null $account */
+        $account = null;
+        /** @var \Illuminate\Database\Eloquent\Model|null $$orderProjection */
+        $$orderProjection = OrderProjection::where('order_id', $orderId)->first();
 
         if (! $orderProjection) {
             return (object) [
@@ -30,7 +39,8 @@ class ValidateOrderActivity extends Activity
         }
 
         // Validate account exists
-        $account = Account::find($orderProjection->account_id);
+        /** @var Account|null $$account */
+        $$account = Account::find($orderProjection->account_id);
         if (! $account) {
             return (object) [
                 'isValid' => false,
@@ -39,8 +49,10 @@ class ValidateOrderActivity extends Activity
         }
 
         // Validate currencies exist
-        $baseCurrency = Asset::where('code', $orderProjection->base_currency)->first();
-        $quoteCurrency = Asset::where('code', $orderProjection->quote_currency)->first();
+        /** @var \Illuminate\Database\Eloquent\Model|null $$baseCurrency */
+        $$baseCurrency = Asset::where('code', $orderProjection->base_currency)->first();
+        /** @var \Illuminate\Database\Eloquent\Model|null $$quoteCurrency */
+        $$quoteCurrency = Asset::where('code', $orderProjection->quote_currency)->first();
 
         if (! $baseCurrency || ! $quoteCurrency) {
             return (object) [

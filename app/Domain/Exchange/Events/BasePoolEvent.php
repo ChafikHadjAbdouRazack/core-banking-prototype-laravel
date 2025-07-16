@@ -3,7 +3,6 @@
 namespace App\Domain\Exchange\Events;
 
 use App\Values\EventQueues;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 
@@ -27,8 +26,8 @@ abstract class BasePoolEvent extends ShouldBeStored
             'event_id'       => \Illuminate\Support\Str::uuid()->toString(),
             'event_type'     => class_basename($this),
             'timestamp'      => now()->toIso8601String(),
-            'user_id'        => Auth::id(),
-            'user_type'      => Auth::user()?->getMorphClass(),
+            'user_id'        => auth()->id(),
+            'user_type'      => auth()->user()?->getMorphClass(),
             'ip_address'     => Request::ip(),
             'user_agent'     => Request::userAgent(),
             'session_id'     => session()->getId(),

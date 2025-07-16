@@ -20,6 +20,7 @@ class MatchOrderActivity extends Activity
 
     public function execute(string $orderId, int $maxIterations = 100): object
     {
+        /** @var Order|null $order */
         $order = Order::where('order_id', $orderId)->first();
 
         if (! $order || ! $order->isOpen()) {
@@ -138,6 +139,7 @@ class MatchOrderActivity extends Activity
                 $executedPrice = BigDecimal::of($takerOrder->price);
             } else {
                 // Both are market orders, use last traded price
+                /** @var \Illuminate\Database\Eloquent\Model|null $orderBook */
                 $orderBook = OrderBook::forPair($takerOrder->base_currency, $takerOrder->quote_currency)->first();
                 $executedPrice = $orderBook && $orderBook->last_price
                     ? BigDecimal::of($orderBook->last_price)

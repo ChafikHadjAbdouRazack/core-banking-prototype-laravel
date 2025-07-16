@@ -257,7 +257,7 @@ class SingleBatchOperationActivity extends Activity
                 );
 
                 // Update account balance
-                $account->increment('balance', $interestAmount);
+                $account->update(['balance' => $account->balance + $interestAmount]);
 
                 // Track for potential reversal
                 $interestTransactions[] = [

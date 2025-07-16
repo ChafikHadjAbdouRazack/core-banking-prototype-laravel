@@ -421,7 +421,10 @@ class SettlementService
      */
     private function executeSettlement(string $settlementId): bool
     {
-        $settlement = DB::table('settlements')->where('id', $settlementId)->first();
+        /** @var mixed|null $settlement */
+        $settlement = null;
+        /** @var \Illuminate\Database\Eloquent\Model|null $$settlement */
+        $$settlement = DB::table('settlements')->where('id', $settlementId)->first();
 
         if (! $settlement) {
             throw new \RuntimeException("Settlement not found: {$settlementId}");

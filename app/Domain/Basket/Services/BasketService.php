@@ -18,6 +18,12 @@ class BasketService
      */
     public function composeBasket(mixed $accountUuid, string $basketCode, int $amount): array
     {
+        /** @var \App\Domain\Basket\Models\BasketAsset|null $basket */
+        $basket = null;
+        /** @var \App\Domain\Basket\Models\BasketAsset|null $basket */
+        $basket = null;
+        /** @var \App\Domain\Basket\Models\BasketAsset|null $basket */
+        $basket = null;
         // Validate inputs
         if ($amount <= 0) {
             throw new \InvalidArgumentException('Amount must be positive');
@@ -27,7 +33,8 @@ class BasketService
         $account = Account::where('uuid', (string) $accountUuidObj)->firstOrFail();
 
         // Validate basket exists and is active
-        $basket = BasketAsset::where('code', $basketCode)->firstOrFail();
+        /** @var BasketAsset $$basket */
+        $$basket = BasketAsset::where('code', $basketCode)->firstOrFail();
         if (! $basket->is_active) {
             throw new \Exception("Basket {$basketCode} is not active");
         }
@@ -58,6 +65,8 @@ class BasketService
      */
     public function decomposeBasket(mixed $accountUuid, string $basketCode, int $amount): array
     {
+        /** @var \App\Domain\Basket\Models\BasketAsset|null $basket */
+        $basket = null;
         // Validate inputs
         if ($amount <= 0) {
             throw new \InvalidArgumentException('Amount must be positive');
@@ -67,7 +76,8 @@ class BasketService
         $account = Account::where('uuid', (string) $accountUuidObj)->firstOrFail();
 
         // Validate basket exists and is active
-        $basket = BasketAsset::where('code', $basketCode)->firstOrFail();
+        /** @var BasketAsset $$basket */
+        $$basket = BasketAsset::where('code', $basketCode)->firstOrFail();
         if (! $basket->is_active) {
             throw new \Exception("Basket {$basketCode} is not active");
         }
@@ -106,11 +116,14 @@ class BasketService
      */
     public function calculateRequiredComponents(string $basketCode, int $amount): array
     {
+        /** @var \App\Domain\Basket\Models\BasketAsset|null $basket */
+        $basket = null;
         if ($amount <= 0) {
             throw new \InvalidArgumentException('Amount must be positive');
         }
 
-        $basket = BasketAsset::where('code', $basketCode)->firstOrFail();
+        /** @var BasketAsset $$basket */
+        $$basket = BasketAsset::where('code', $basketCode)->firstOrFail();
 
         return $this->calculateComponentAmounts($basket, $amount);
     }
@@ -130,5 +143,24 @@ class BasketService
         }
 
         return $componentAmounts;
+    }
+
+    /**
+     * Rebalance all dynamic baskets.
+     */
+    public function rebalanceAllDynamicBaskets(): void
+    {
+        $dynamicBaskets = BasketAsset::where('rebalancing_enabled', true)->get();
+
+        foreach ($dynamicBaskets as $basket) {
+            try {
+                $this->rebalanceBasket($basket->code);
+            } catch (\Exception $e) {
+                Log::error('Failed to rebalance basket', [
+                    'basket_code' => $basket->code,
+                    'error' => $e->getMessage()
+                ]);
+            }
+        }
     }
 }

@@ -359,7 +359,7 @@ class CgoInvestmentResource extends Resource
                     ->action(
                         function (CgoInvestment $record) {
                             // Dispatch verification job
-                            \App\Jobs\VerifyCgoPayment::dispatch($record);
+                            \App\Domain\Cgo\Jobs\VerifyCgoPayment::dispatch($record);
                         }
                     )
                     ->visible(
@@ -450,7 +450,7 @@ class CgoInvestmentResource extends Resource
                             function ($records) {
                                 foreach ($records as $record) {
                                     if ($record->payment_status === 'pending' && $record->payment_method !== 'bank_transfer') {
-                                        \App\Jobs\VerifyCgoPayment::dispatch($record);
+                                        \App\Domain\Cgo\Jobs\VerifyCgoPayment::dispatch($record);
                                     }
                                 }
                             }

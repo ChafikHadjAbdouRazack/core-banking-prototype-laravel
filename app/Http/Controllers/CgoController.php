@@ -54,6 +54,7 @@ class CgoController extends Controller
         );
 
         // Check if email already exists in CGO notifications
+                /** @var CgoNotification|null $existing */
         $existing = CgoNotification::where('email', $validated['email'])->first();
 
         if (! $existing) {
@@ -96,12 +97,15 @@ class CgoController extends Controller
 
     public function invest(CgoKycService $kycService)
     {
+                /** @var CgoPricingRound|null $currentRound */
         $currentRound = CgoPricingRound::where('is_active', true)->first();
 
         if (! $currentRound) {
             return view('cgo.closed');
         }
 
+
+        /** @var \App\Models\User $user */
         $user = auth()->user();
         $kycStatus = null;
 
@@ -149,12 +153,15 @@ class CgoController extends Controller
             ]
         );
 
+
+        /** @var \App\Models\User $user */
         $user = auth()->user();
 
         if (! $user) {
             return redirect()->route('login')->with('message', 'Please login to continue with your investment.');
         }
 
+                /** @var CgoPricingRound|null $currentRound */
         $currentRound = CgoPricingRound::where('is_active', true)->first();
 
         if (! $currentRound) {
@@ -343,6 +350,7 @@ class CgoController extends Controller
 
     public function thankYou($investmentId)
     {
+                /** @var CgoInvestment $investment */
         $investment = CgoInvestment::where('uuid', $investmentId)->firstOrFail();
 
         return view(
@@ -376,6 +384,7 @@ class CgoController extends Controller
 
     public function paymentSuccess(Request $request, $investmentUuid)
     {
+                /** @var CgoInvestment $investment */
         $investment = CgoInvestment::where('uuid', $investmentUuid)->firstOrFail();
 
         // Verify the payment was successful
@@ -412,6 +421,7 @@ class CgoController extends Controller
 
     public function paymentCancel(Request $request, $investmentUuid)
     {
+                /** @var CgoInvestment $investment */
         $investment = CgoInvestment::where('uuid', $investmentUuid)->firstOrFail();
 
         // Update status to cancelled

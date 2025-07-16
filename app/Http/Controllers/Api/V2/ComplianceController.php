@@ -167,16 +167,17 @@ class ComplianceController extends Controller
                 default => throw new \Exception('Unsupported verification type'),
             };
 
-            return response()->json(
-                [
-                'data' => [
-                    'success'          => $result['success'],
-                    'verification_id'  => $verification->id,
-                    'confidence_score' => $result['confidence_score'] ?? null,
-                    'next_steps'       => $this->getVerificationNextSteps($verification->fresh()),
-                ],
-                ]
-            );
+            $responseData = [
+                'success'          => $result['success'],
+                'verification_id'  => $verification->id,
+                'confidence_score' => $result['confidence_score'] ?? null,
+            ];
+
+            if ($verification !== null) {
+                $responseData['next_steps'] = $this->getVerificationNextSteps($verification->fresh());
+            }
+
+            return response()->json(['data' => $responseData]);
         } catch (\Exception $e) {
             Log::error(
                 'Document upload failed',

@@ -12,6 +12,7 @@ class UpdateBasketComponentsActivity extends Activity
      */
     public function execute(string $basketCode, array $composition): void
     {
+        /** @var \Illuminate\Database\Eloquent\Model|null $basket */
         $basket = BasketAsset::where('code', $basketCode)->first();
 
         if (! $basket) {

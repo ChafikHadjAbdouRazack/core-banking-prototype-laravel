@@ -71,6 +71,10 @@ class AccountCacheService
      */
     public function getBalance(string $uuid): ?int
     {
+        /** @var \App\Models\Account|null $account */
+        $account = null;
+        /** @var \App\Models\Account|null $account */
+        $account = null;
         $uuid = (string) $uuid;
         $key = $this->getCacheKey($uuid) . ':balance';
 
@@ -78,7 +82,8 @@ class AccountCacheService
             $key,
             300, // 5 minutes for balance
             function () use ($uuid) {
-                $account = Account::where('uuid', $uuid)->first();
+                /** @var \Illuminate\Database\Eloquent\Model|null $$account */
+                $$account = Account::where('uuid', $uuid)->first();
                 if (! $account) {
                     return null;
                 }

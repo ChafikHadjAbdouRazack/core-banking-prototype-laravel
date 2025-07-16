@@ -206,7 +206,7 @@ class GcuVotingController extends Controller
         }
 
         // Calculate total GCU supply
-        $totalGcuSupply = \App\Domain\AccountBalance\Models\AccountBalance::where('asset_code', 'GCU')
+        $totalGcuSupply = \App\Domain\Account\Models\AccountBalance::where('asset_code', 'GCU')
             ->sum('balance');
 
         $proposal = GcuVotingProposal::create(

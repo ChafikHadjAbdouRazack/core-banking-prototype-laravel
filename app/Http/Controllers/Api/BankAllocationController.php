@@ -65,7 +65,7 @@ class BankAllocationController extends Controller
     {
         $user = Auth::user();
         /** @var User $user */
-        $allocations = $user->bankPreferences()->active()->get();
+        $allocations = $user->bankPreferences()->getQuery()->where('is_active', true)->get();
 
         if ($allocations->isEmpty()) {
             // Setup default allocations if none exist
@@ -164,7 +164,7 @@ class BankAllocationController extends Controller
             // Set primary bank if specified
             if (isset($validated['primary_bank'])) {
                 $this->bankAllocationService->setPrimaryBank($user, $validated['primary_bank']);
-                $allocations = $user->bankPreferences()->active()->get(); // Refresh
+                $allocations = $user->bankPreferences()->getQuery()->where('is_active', true)->get(); // Refresh
             }
 
             return response()->json(

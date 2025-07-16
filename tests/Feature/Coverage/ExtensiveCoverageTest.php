@@ -10,7 +10,7 @@ use App\Domain\Asset\Models\Asset;
 use App\Domain\Asset\Models\ExchangeRate;
 use App\Domain\User\Values\UserRoles;
 use App\Models\Account;
-use App\Models\AccountBalance;
+use App\Domain\Account\Models\AccountBalance;
 use App\Models\User;
 use App\Values\EventQueues;
 

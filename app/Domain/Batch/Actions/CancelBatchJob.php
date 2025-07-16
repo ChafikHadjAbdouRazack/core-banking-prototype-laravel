@@ -10,7 +10,10 @@ class CancelBatchJob
 {
     public function __invoke(BatchJobCancelled $event): void
     {
-        $batchJob = BatchJob::where('uuid', $event->aggregateRootUuid())->first();
+        /** @var \App\Models\BatchJob|null $batchJob */
+        $batchJob = null;
+        /** @var \Illuminate\Database\Eloquent\Model|null $$batchJob */
+        $$batchJob = BatchJob::where('uuid', $event->aggregateRootUuid())->first();
 
         if (! $batchJob) {
             return;

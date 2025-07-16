@@ -189,6 +189,8 @@ class CgoAgreementController extends Controller
             abort(403);
         }
 
+
+        /** @var CgoInvestment $investment */
         $investment = CgoInvestment::where('uuid', $investmentUuid)->firstOrFail();
 
         if (! $investment->agreement_path || ! Storage::exists($investment->agreement_path)) {

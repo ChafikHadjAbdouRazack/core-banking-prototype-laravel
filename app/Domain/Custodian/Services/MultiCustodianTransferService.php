@@ -451,7 +451,7 @@ class MultiCustodianTransferService
 
             return $bridgeReceipt;
         } catch (\Exception $e) {
-            DB::rollback();
+            DB::rollBack();
 
             Log::error(
                 'Bridge transfer failed',

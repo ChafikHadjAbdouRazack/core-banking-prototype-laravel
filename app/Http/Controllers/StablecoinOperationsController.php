@@ -133,6 +133,7 @@ class StablecoinOperationsController extends Controller
 
         try {
             // Get recipient account
+                        /** @var Account|null $recipientAccount */
             $recipientAccount = Account::where('uuid', $validated['recipient_account'])->first();
 
             if (! $recipientAccount) {
@@ -243,6 +244,7 @@ class StablecoinOperationsController extends Controller
         }
 
         // Check account balance
+                /** @var Account|null $sourceAccount */
         $sourceAccount = Account::where('uuid', $validated['source_account'])->first();
         if (! $sourceAccount) {
             return back()->withErrors(['source_account' => 'Invalid account']);

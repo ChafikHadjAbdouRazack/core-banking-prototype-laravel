@@ -12,6 +12,7 @@ class CalculateBasketCompositionActivity extends Activity
      */
     public function execute(string $pollUuid): array
     {
+        /** @var \Illuminate\Database\Eloquent\Model|null $poll */
         $poll = Poll::where('uuid', $pollUuid)->with('votes')->first();
 
         if (! $poll) {

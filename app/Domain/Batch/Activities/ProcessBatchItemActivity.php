@@ -40,9 +40,15 @@ class ProcessBatchItemActivity extends Activity
 
     private function processTransfer(array $item): array
     {
+        /** @var \App\Models\Account|null $toAccount */
+        $toAccount = null;
+        /** @var \App\Models\Account|null $fromAccount */
+        $fromAccount = null;
         // Validate accounts
-        $fromAccount = Account::where('uuid', $item['from_account'])->first();
-        $toAccount = Account::where('uuid', $item['to_account'])->first();
+        /** @var \Illuminate\Database\Eloquent\Model|null $$fromAccount */
+        $$fromAccount = Account::where('uuid', $item['from_account'])->first();
+        /** @var \Illuminate\Database\Eloquent\Model|null $$toAccount */
+        $$toAccount = Account::where('uuid', $item['to_account'])->first();
 
         if (! $fromAccount || ! $toAccount) {
             throw new \InvalidArgumentException('Invalid account specified');
@@ -84,8 +90,11 @@ class ProcessBatchItemActivity extends Activity
 
     private function processConversion(array $item): array
     {
+        /** @var \App\Models\Account|null $account */
+        $account = null;
         // Get account
-        $account = Account::where('uuid', $item['from_account'])->first();
+        /** @var \Illuminate\Database\Eloquent\Model|null $$account */
+        $$account = Account::where('uuid', $item['from_account'])->first();
 
         if (! $account) {
             throw new \InvalidArgumentException('Invalid account specified');

@@ -458,6 +458,7 @@ class AmlScreeningService
      */
     protected function updateCustomerRiskProfile(AmlScreening $screening): void
     {
+        /** @var \Illuminate\Database\Eloquent\Model|null $profile */
         $profile = CustomerRiskProfile::where('user_id', $screening->entity_id)->first();
 
         if (! $profile) {

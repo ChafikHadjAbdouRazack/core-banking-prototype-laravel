@@ -20,6 +20,7 @@ class GcuTradingController extends Controller
         $accounts = $user->accounts()->with('balances.asset')->get();
 
         // Get GCU asset
+                /** @var Asset|null $gcuAsset */
         $gcuAsset = Asset::where('code', 'GCU')->first();
 
         // Get current GCU price

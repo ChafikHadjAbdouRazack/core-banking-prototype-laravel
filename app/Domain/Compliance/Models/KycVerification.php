@@ -2,14 +2,34 @@
 
 namespace App\Domain\Compliance\Models;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Crypt;
 
+/**
+ * @method static \Illuminate\Database\Eloquent\Builder where(string $column, mixed $operator = null, mixed $value = null, string $boolean = 'and')
+ * @method static \Illuminate\Database\Eloquent\Builder whereYear(string $column, mixed $value)
+ * @method static \Illuminate\Database\Eloquent\Builder whereMonth(string $column, mixed $value)
+ * @method static \Illuminate\Database\Eloquent\Builder whereDate(string $column, mixed $value)
+ * @method static \Illuminate\Database\Eloquent\Builder whereIn(string $column, mixed $values)
+ * @method static static updateOrCreate(array $attributes, array $values = [])
+ * @method static \Illuminate\Support\Collection pluck(string $column, string|null $key = null)
+ * @method static \Illuminate\Database\Eloquent\Builder selectRaw(string $expression, array $bindings = [])
+ * @method static \Illuminate\Database\Eloquent\Builder orderBy(string $column, string $direction = 'asc')
+ * @method static \Illuminate\Database\Eloquent\Builder latest(string $column = null)
+ * @method static \Illuminate\Database\Eloquent\Builder oldest(string $column = null)
+ * @method static mixed sum(string $column)
+ * @method static int count(string $columns = '*')
+ * @method static static|null first()
+ * @method static \Illuminate\Database\Eloquent\Collection get(array|string $columns = ['*'])
+ */
 class KycVerification extends Model
 {
+    use HasFactory;
     use HasUuids;
     use SoftDeletes;
 
@@ -148,7 +168,7 @@ class KycVerification extends Model
 
         if ($lastVerification) {
             $lastNumber = intval(substr($lastVerification->verification_number, -5));
-            $newNumber = str_pad($lastNumber + 1, 5, '0', STR_PAD_LEFT);
+            $newNumber = str_pad((string) ($lastNumber + 1), 5, '0', STR_PAD_LEFT);
         } else {
             $newNumber = '00001';
         }
@@ -377,5 +397,16 @@ class KycVerification extends Model
         }
 
         return $factors > 0 ? round($score, 2) : 0;
+    }
+
+    /**
+     * Get the activity logs for this model.
+     */
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
+     */
+    public function logs()
+    {
+        return $this->morphMany(\App\Domain\Activity\Models\Activity::class, 'subject');
     }
 }

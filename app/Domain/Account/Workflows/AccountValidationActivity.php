@@ -14,7 +14,10 @@ class AccountValidationActivity extends Activity
         array $validationChecks,
         ?string $validatedBy
     ): array {
-        $account = Account::where('uuid', $uuid->getUuid())->first();
+        /** @var \App\Models\Account|null $account */
+        $account = null;
+        /** @var \Illuminate\Database\Eloquent\Model|null $$account */
+        $$account = Account::where('uuid', $uuid->getUuid())->first();
 
         if (! $account) {
             throw new \RuntimeException("Account not found: {$uuid->getUuid()}");
@@ -46,6 +49,8 @@ class AccountValidationActivity extends Activity
 
     private function performValidationCheck(Account $account, string $check): array
     {
+        /** @var \App\Models\Account|null $account */
+        $account = null;
         switch ($check) {
             case 'kyc_document_verification':
                 return $this->validateKycDocuments($account);

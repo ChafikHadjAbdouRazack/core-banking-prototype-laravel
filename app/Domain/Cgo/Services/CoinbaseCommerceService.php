@@ -314,6 +314,7 @@ class CoinbaseCommerceService
         $chargeId = $chargeData['id'] ?? null;
 
         if ($investmentUuid) {
+                        /** @var CgoInvestment|null $investment */
             $investment = CgoInvestment::where('uuid', $investmentUuid)->first();
             if ($investment) {
                 return $investment;
@@ -321,6 +322,7 @@ class CoinbaseCommerceService
         }
 
         if ($chargeId) {
+                        /** @var CgoInvestment|null $investment */
             $investment = CgoInvestment::where('coinbase_charge_id', $chargeId)->first();
             if ($investment) {
                 return $investment;

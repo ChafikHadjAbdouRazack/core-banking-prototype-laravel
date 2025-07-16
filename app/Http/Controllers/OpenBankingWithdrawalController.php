@@ -193,8 +193,9 @@ class OpenBankingWithdrawalController extends Controller
             $bankAccount = $bankAccounts->first();
 
             // Create withdrawal request
+            $account = Account::where('uuid', $withdrawalDetails['account_uuid'])->firstOrFail();
             $result = $this->paymentGateway->createWithdrawalRequest(
-                Account::where('uuid', $withdrawalDetails['account_uuid'])->first(),
+                $account,
                 $withdrawalDetails['amount'],
                 $withdrawalDetails['currency'],
                 [

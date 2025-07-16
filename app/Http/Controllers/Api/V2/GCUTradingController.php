@@ -12,7 +12,7 @@ use App\Domain\Basket\Models\BasketValue;
 use App\Domain\Wallet\Workflows\WalletConvertWorkflow;
 use App\Http\Controllers\Controller;
 use App\Models\Account;
-use App\Models\AccountBalance;
+use App\Domain\Account\Models\AccountBalance;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;

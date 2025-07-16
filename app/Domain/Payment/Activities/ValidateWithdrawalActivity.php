@@ -10,7 +10,10 @@ class ValidateWithdrawalActivity extends Activity
 {
     public function execute(BankWithdrawal $withdrawal): array
     {
-        $account = Account::where('uuid', $withdrawal->getAccountUuid())->first();
+        /** @var \App\Models\Account|null $account */
+        $account = null;
+        /** @var \Illuminate\Database\Eloquent\Model|null $$account */
+        $$account = Account::where('uuid', $withdrawal->getAccountUuid())->first();
 
         if (! $account) {
             return [

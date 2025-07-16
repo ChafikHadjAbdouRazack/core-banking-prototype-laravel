@@ -2,6 +2,7 @@
 
 namespace App\Domain\Exchange\Activities;
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Workflow\Activity;
 

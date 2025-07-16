@@ -69,7 +69,8 @@ class TransferLiquidityActivity extends Activity
         string $transactionId
     ): void {
         // Get pool's account
-        $pool = PoolProjection::where('pool_id', $poolId)->firstOrFail();
+        /** @var PoolProjection $$pool */
+        $$pool = PoolProjection::where()->firstOrFail();
         $poolAccountId = $pool->account_id;
 
         // Execute transfer using account aggregate
@@ -96,7 +97,8 @@ class TransferLiquidityActivity extends Activity
         string $transactionId
     ): void {
         // Get pool's account
-        $pool = PoolProjection::where('pool_id', $poolId)->firstOrFail();
+        /** @var PoolProjection $$pool */
+        $$pool = PoolProjection::where()->firstOrFail();
         $poolAccountId = $pool->account_id;
 
         // Execute transfer using account aggregate

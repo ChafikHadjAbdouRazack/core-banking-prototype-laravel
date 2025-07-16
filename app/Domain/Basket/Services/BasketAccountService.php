@@ -12,7 +12,7 @@ use App\Domain\Basket\Events\BasketDecomposed;
 use App\Domain\Basket\Models\BasketAsset;
 use App\Domain\Wallet\Services\WalletService;
 use App\Models\Account;
-use App\Models\AccountBalance;
+use App\Domain\Account\Models\AccountBalance;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -29,7 +29,10 @@ class BasketAccountService
      */
     public function addBasketBalance(Account $account, string $basketCode, int $amount): AccountBalance
     {
-        $basket = BasketAsset::where('code', $basketCode)->first();
+        /** @var \App\Domain\Basket\Models\BasketAsset|null $basket */
+        $basket = null;
+        /** @var \Illuminate\Database\Eloquent\Model|null $$basket */
+        $$basket = BasketAsset::where('code', $basketCode)->first();
 
         if (! $basket) {
             throw new \Exception("Basket not found: {$basketCode}");
@@ -43,6 +46,7 @@ class BasketAccountService
         $basket->toAsset();
 
         // Add balance like any other asset
+        /** @var AccountBalance $balance */
         $balance = $account->balances()->firstOrCreate(
             ['asset_code' => $basketCode],
             ['balance' => 0]
@@ -70,6 +74,7 @@ class BasketAccountService
      */
     public function subtractBasketBalance(Account $account, string $basketCode, int $amount): AccountBalance
     {
+        /** @var AccountBalance $balance */
         $balance = $account->balances()
             ->where('asset_code', $basketCode)
             ->firstOrFail();
@@ -101,7 +106,10 @@ class BasketAccountService
      */
     public function decomposeBasket(Account $account, string $basketCode, int $amount): array
     {
-        $basket = BasketAsset::where('code', $basketCode)->first();
+        /** @var \App\Domain\Basket\Models\BasketAsset|null $basket */
+        $basket = null;
+        /** @var \Illuminate\Database\Eloquent\Model|null $$basket */
+        $$basket = BasketAsset::where('code', $basketCode)->first();
 
         if (! $basket) {
             throw new \Exception("Basket not found: {$basketCode}");
@@ -179,7 +187,10 @@ class BasketAccountService
      */
     public function composeBasket(Account $account, string $basketCode, int $amount): array
     {
-        $basket = BasketAsset::where('code', $basketCode)->first();
+        /** @var \App\Domain\Basket\Models\BasketAsset|null $basket */
+        $basket = null;
+        /** @var \Illuminate\Database\Eloquent\Model|null $$basket */
+        $$basket = BasketAsset::where('code', $basketCode)->first();
 
         if (! $basket) {
             throw new \Exception("Basket not found: {$basketCode}");
@@ -265,6 +276,8 @@ class BasketAccountService
      */
     public function getBasketHoldingsValue(Account $account): array
     {
+        /** @var \App\Domain\Basket\Models\BasketAsset|null $basket */
+        $basket = null;
         // Get balances for assets that have corresponding basket assets
         $basketCodes = BasketAsset::pluck('code');
         $basketBalances = $account->balances()
@@ -279,7 +292,8 @@ class BasketAccountService
                 continue;
             }
 
-            $basket = BasketAsset::where('code', $balance->asset_code)->first();
+            /** @var \Illuminate\Database\Eloquent\Model|null $$basket */
+            $$basket = BasketAsset::where('code', $balance->asset_code)->first();
             if (! $basket) {
                 continue;
             }
@@ -314,7 +328,10 @@ class BasketAccountService
      */
     public function calculateRequiredComponents(string $basketCode, int $amount): array
     {
-        $basket = BasketAsset::where('code', $basketCode)->first();
+        /** @var \App\Domain\Basket\Models\BasketAsset|null $basket */
+        $basket = null;
+        /** @var \Illuminate\Database\Eloquent\Model|null $$basket */
+        $$basket = BasketAsset::where('code', $basketCode)->first();
 
         if (! $basket) {
             throw new \Exception("Basket not found: {$basketCode}");

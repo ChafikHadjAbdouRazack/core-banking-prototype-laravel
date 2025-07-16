@@ -30,6 +30,8 @@ class RebalanceBasketsCommand extends Command
      */
     public function handle(BasketRebalancingService $rebalancingService): int
     {
+        /** @var \App\Domain\Basket\Models\BasketAsset|null $basket */
+        $basket = null;
         $basketCode = $this->option('basket');
         $force = $this->option('force');
         $dryRun = $this->option('dry-run');
@@ -40,7 +42,8 @@ class RebalanceBasketsCommand extends Command
 
         if ($basketCode) {
             // Rebalance specific basket
-            $basket = BasketAsset::where('code', $basketCode)->first();
+            /** @var \Illuminate\Database\Eloquent\Model|null $$basket */
+            $$basket = BasketAsset::where('code', $basketCode)->first();
 
             if (! $basket) {
                 $this->error("Basket with code '{$basketCode}' not found.");

@@ -109,7 +109,10 @@ class SubscriberEmailService
      */
     public function handleBounce(string $email): void
     {
-        $subscriber = Subscriber::where('email', $email)->first();
+        /** @var mixed|null $subscriber */
+        $subscriber = null;
+        /** @var \Illuminate\Database\Eloquent\Model|null $$subscriber */
+        $$subscriber = Subscriber::where('email', $email)->first();
 
         if ($subscriber) {
             $subscriber->update(
@@ -135,7 +138,10 @@ class SubscriberEmailService
      */
     public function processUnsubscribe(string $email, ?string $reason = null): bool
     {
-        $subscriber = Subscriber::where('email', $email)->first();
+        /** @var mixed|null $subscriber */
+        $subscriber = null;
+        /** @var \Illuminate\Database\Eloquent\Model|null $$subscriber */
+        $$subscriber = Subscriber::where('email', $email)->first();
 
         if ($subscriber && $subscriber->isActive()) {
             $subscriber->unsubscribe($reason);

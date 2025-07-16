@@ -12,6 +12,7 @@ class TriggerBasketRebalancingActivity extends Activity
      */
     public function execute(string $basketCode): void
     {
+        /** @var \Illuminate\Database\Eloquent\Model|null $basket */
         $basket = BasketAsset::where('code', $basketCode)->with('components')->first();
 
         if (! $basket) {

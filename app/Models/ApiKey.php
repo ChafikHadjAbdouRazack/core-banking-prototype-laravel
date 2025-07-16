@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -9,6 +10,19 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
+/**
+ * @method static \Illuminate\Database\Eloquent\Builder where(string $column, mixed $operator = null, mixed $value = null, string $boolean = 'and')
+ * @method static \Illuminate\Database\Eloquent\Builder whereIn(string $column, mixed $values, string $boolean = 'and', bool $not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder orderBy(string $column, string $direction = 'asc')
+ * @method static \Illuminate\Database\Eloquent\Collection get(array $columns = ['*'])
+ * @method static static|null find(mixed $id, array $columns = ['*'])
+ * @method static static|null first(array $columns = ['*'])
+ * @method static static firstOrFail(array $columns = ['*'])
+ * @method static int count(string $columns = '*')
+ * @method static bool exists()
+ * @method static static create(array $attributes = [])
+ * @method static static updateOrCreate(array $attributes, array $values = [])
+ */
 class ApiKey extends Model
 {
     use HasFactory;
@@ -109,10 +123,11 @@ class ApiKey extends Model
     /**
      * Verify an API key.
      */
-    public static function verify(string $plainKey): ?self
+    public static function verify(string $plainKey): ?ApiKey
     {
         $keyPrefix = substr($plainKey, 0, 8);
 
+        /** @var ApiKey|null $apiKey */
         $apiKey = self::where('key_prefix', $keyPrefix)
             ->where('is_active', true)
             ->where(
@@ -124,6 +139,7 @@ class ApiKey extends Model
             ->first();
 
         if ($apiKey && Hash::check($plainKey, $apiKey->key_hash)) {
+            $apiKey->recordUsage(request()->ip() ?? '127.0.0.1');
             return $apiKey;
         }
 

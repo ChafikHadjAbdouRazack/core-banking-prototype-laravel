@@ -4,7 +4,7 @@ use App\Domain\Asset\Models\Asset;
 use App\Domain\Governance\Models\Poll;
 use App\Domain\Governance\Strategies\AssetWeightedVotingStrategy;
 use App\Models\Account;
-use App\Models\AccountBalance;
+use App\Domain\Account\Models\AccountBalance;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 

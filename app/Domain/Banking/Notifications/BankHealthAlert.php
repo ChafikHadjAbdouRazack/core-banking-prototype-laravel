@@ -88,7 +88,7 @@ class BankHealthAlert extends Notification implements ShouldQueue
             'new_status'      => $this->newStatus,
             'severity'        => $this->severity,
             'failure_rate'    => $this->healthData['overall_failure_rate'] ?? null,
-            'timestamp'       => $this->timestamp->toIso8601String(),
+            'timestamp'       => $this->timestamp->format('c'),
         ];
     }
 

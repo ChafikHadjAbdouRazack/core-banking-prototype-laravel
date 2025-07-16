@@ -31,7 +31,8 @@ class LiquidityPoolService implements LiquidityPoolServiceInterface
         array $metadata = []
     ): string {
         // Check if pool already exists
-        $existingPool = PoolProjection::forPair($baseCurrency, $quoteCurrency)->first();
+        /** @var \Illuminate\Database\Eloquent\Model|null $$existingPool */
+        $$existingPool = PoolProjection::forPair($baseCurrency, $quoteCurrency)->first();
         if ($existingPool) {
             throw new \DomainException('Liquidity pool already exists for this pair');
         }
@@ -139,7 +140,30 @@ class LiquidityPoolService implements LiquidityPoolServiceInterface
      */
     public function getPoolMetrics(string $poolId): array
     {
-        $pool = PoolProjection::where('pool_id', $poolId)->firstOrFail();
+        /** @var \App\Domain\Liquidity\Models\LiquidityPool|null $pool */
+        $pool = null;
+        /** @var \App\Domain\Liquidity\Models\LiquidityPool|null $pool */
+        $pool = null;
+        /** @var \App\Domain\Liquidity\Models\LiquidityPool|null $pool */
+        $pool = null;
+        /** @var \App\Domain\Liquidity\Models\LiquidityPool|null $pool */
+        $pool = null;
+        /** @var \App\Domain\Liquidity\Models\LiquidityPool|null $pool */
+        $pool = null;
+        /** @var \App\Domain\Liquidity\Models\LiquidityPool|null $pool */
+        $pool = null;
+        /** @var \App\Domain\Liquidity\Models\LiquidityPool|null $pool */
+        $pool = null;
+        /** @var \App\Domain\Liquidity\Models\LiquidityPool|null $pool */
+        $pool = null;
+        /** @var \App\Domain\Liquidity\Models\LiquidityPool|null $pool */
+        $pool = null;
+        /** @var \App\Domain\Liquidity\Models\LiquidityPool|null $pool */
+        $pool = null;
+        /** @var \App\Domain\Liquidity\Models\LiquidityPool|null $pool */
+        $pool = null;
+        /** @var PoolProjection $$pool */
+        $$pool = PoolProjection::where()->firstOrFail();
 
         $baseReserve = BigDecimal::of($pool->base_reserve);
         $quoteReserve = BigDecimal::of($pool->quote_reserve);

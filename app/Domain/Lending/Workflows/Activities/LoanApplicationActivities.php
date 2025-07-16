@@ -38,7 +38,10 @@ class LoanApplicationActivities
 
     public function performKYCCheck(string $borrowerId): array
     {
-        $user = User::find($borrowerId);
+        /** @var mixed|null $user */
+        $user = null;
+        /** @var User|null $$user */
+        $$user = User::find($borrowerId);
         if (! $user) {
             return [
                 'passed' => false,
@@ -97,7 +100,8 @@ class LoanApplicationActivities
         int $termMonths,
         array $creditScore
     ): array {
-        $user = User::find($borrowerId);
+        /** @var User|null $$user */
+        $$user = User::find($borrowerId);
         $applicantData = [
             'user_id'          => $borrowerId,
             'account_age_days' => $user->created_at->diffInDays(now()),
@@ -383,7 +387,10 @@ class LoanApplicationActivities
     // Keep the other methods from the original file for backward compatibility
     public function fetchApplicantData(string $userId): array
     {
-        $user = User::find($userId);
+        /** @var mixed|null $user */
+        $user = null;
+        /** @var User|null $$user */
+        $$user = User::find($userId);
         if (! $user) {
             throw new \Exception('User not found');
         }

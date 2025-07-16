@@ -6,7 +6,7 @@ use App\Domain\Account\Actions\CreditAccount;
 use App\Domain\Account\Events\AssetBalanceAdded;
 use App\Domain\Account\Repositories\AccountRepository;
 use App\Models\Account;
-use App\Models\AccountBalance;
+use App\Domain\Account\Models\AccountBalance;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Mockery;
 use PHPUnit\Framework\Attributes\Test;

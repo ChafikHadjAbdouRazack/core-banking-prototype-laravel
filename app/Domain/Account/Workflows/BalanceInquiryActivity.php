@@ -14,9 +14,12 @@ class BalanceInquiryActivity extends Activity
         ?string $requestedBy,
         TransactionAggregate $transaction
     ): array {
+        /** @var \App\Models\Account|null $account */
+        $account = null;
         $aggregate = $transaction->retrieve($uuid->getUuid());
 
-        $account = Account::where('uuid', $uuid->getUuid())->first();
+        /** @var \Illuminate\Database\Eloquent\Model|null $$account */
+        $$account = Account::where('uuid', $uuid->getUuid())->first();
 
         // Log the inquiry for audit purposes
         $this->logInquiry($uuid, $requestedBy);
@@ -33,6 +36,8 @@ class BalanceInquiryActivity extends Activity
 
     private function logInquiry(AccountUuid $uuid, ?string $requestedBy): void
     {
+        /** @var \App\Models\Account|null $account */
+        $account = null;
         // Log to audit trail (could be a separate event or database log)
         logger()->info(
             'Balance inquiry',

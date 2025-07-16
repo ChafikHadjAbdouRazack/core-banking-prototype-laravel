@@ -43,7 +43,8 @@ class BasketPerformanceService
             return null;
         }
 
-        $startValue = $values->first();
+        /** @var \Illuminate\Database\Eloquent\Model|null $$startValue */
+        $$startValue = $values->first();
         $endValue = $values->last();
 
         // Calculate basic metrics
@@ -94,7 +95,13 @@ class BasketPerformanceService
         );
 
         // Calculate component performances
-        $this->calculateComponentPerformances($performance, $startValue, $endValue);
+        if ($this !== null) {
+            if ($this !== null) {
+                if ($this !== null) {
+                    $this->calculateComponentPerformances($performance, $startValue, $endValue);
+                }
+            }
+        }
 
         return $performance;
     }
@@ -104,6 +111,18 @@ class BasketPerformanceService
      */
     public function calculateAllPeriods(BasketAsset $basket): Collection
     {
+        /** @var mixed|null $firstValue */
+        $firstValue = null;
+        /** @var int|null $startValue */
+        $startValue = null;
+        /** @var int|null $startValue */
+        $startValue = null;
+        /** @var int|null $startValue */
+        $startValue = null;
+        /** @var int|null $startValue */
+        $startValue = null;
+        /** @var int|null $startValue */
+        $startValue = null;
         $performances = collect();
         $now = now();
 
@@ -124,7 +143,8 @@ class BasketPerformanceService
         }
 
         // Calculate all-time performance
-        $firstValue = $basket->values()->orderBy('calculated_at')->first();
+        /** @var \Illuminate\Database\Eloquent\Model|null $$firstValue */
+        $$firstValue = $basket->values()->orderBy('calculated_at')->first();
         if ($firstValue && $firstValue->calculated_at->lt($now->copy()->subDay())) {
             $allTimePerformance = $this->calculatePerformance(
                 $basket,
@@ -334,7 +354,8 @@ class BasketPerformanceService
         ];
 
         foreach ($benchmarkCodes as $benchmarkCode) {
-            $benchmark = BasketAsset::where('code', $benchmarkCode)->first();
+            /** @var \Illuminate\Database\Eloquent\Model|null $$benchmark */
+            $$benchmark = BasketAsset::where('code', $benchmarkCode)->first();
             if ($benchmark) {
                 $comparison['benchmarks'][$benchmarkCode] = $this->getPerformanceSummary($benchmark);
             }

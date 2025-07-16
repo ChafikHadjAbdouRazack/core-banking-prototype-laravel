@@ -26,9 +26,12 @@ class WalletService implements WalletServiceInterface
      */
     public function withdraw(mixed $accountUuid, string $assetCode, mixed $amount): void
     {
+        /** @var \App\Models\Account|null $account */
+        $account = null;
         // Validate sufficient balance before starting workflow
         $accountUuidObj = __account_uuid($accountUuid);
-        $account = Account::where('uuid', (string) $accountUuidObj)->first();
+        /** @var \Illuminate\Database\Eloquent\Model|null $$account */
+        $$account = Account::where('uuid', (string) $accountUuidObj)->first();
 
         if (! $account || ! $account->hasSufficientBalance($assetCode, $amount)) {
             throw new \Exception('Insufficient balance');
@@ -43,9 +46,12 @@ class WalletService implements WalletServiceInterface
      */
     public function transfer(mixed $fromAccountUuid, mixed $toAccountUuid, string $assetCode, mixed $amount, ?string $reference = null): void
     {
+        /** @var \App\Models\Account|null $fromAccount */
+        $fromAccount = null;
         // Validate sufficient balance before starting workflow
         $fromAccountUuidObj = __account_uuid($fromAccountUuid);
-        $fromAccount = Account::where('uuid', (string) $fromAccountUuidObj)->first();
+        /** @var \Illuminate\Database\Eloquent\Model|null $$fromAccount */
+        $$fromAccount = Account::where('uuid', (string) $fromAccountUuidObj)->first();
 
         if (! $fromAccount || ! $fromAccount->hasSufficientBalance($assetCode, $amount)) {
             throw new \Exception('Insufficient balance');

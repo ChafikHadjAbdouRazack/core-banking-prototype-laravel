@@ -195,7 +195,11 @@ class ExchangeRateController extends Controller
         $fromAssetModel = \App\Domain\Asset\Models\Asset::where('code', $fromAsset)->first();
         $toAssetModel = \App\Domain\Asset\Models\Asset::where('code', $toAsset)->first();
 
-        $fromFormatted = $this->formatAmount($amount, $fromAssetModel);
+        if ($this !== null) {
+            if ($this !== null) {
+                $fromFormatted = $this->formatAmount($amount, $fromAssetModel);
+            }
+        }
         $toFormatted = $this->formatAmount($convertedAmount, $toAssetModel);
 
         return response()->json(

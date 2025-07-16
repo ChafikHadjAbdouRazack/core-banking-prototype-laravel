@@ -7,7 +7,7 @@ namespace App\Domain\Asset\Workflows\Activities;
 use App\Domain\Account\DataObjects\AccountUuid;
 use App\Domain\Account\DataObjects\Money;
 use App\Domain\Asset\Aggregates\AssetTransactionAggregate;
-use App\Models\AccountBalance;
+use App\Domain\Account\Models\AccountBalance;
 use Workflow\Activity;
 
 class WithdrawAssetActivity extends Activity

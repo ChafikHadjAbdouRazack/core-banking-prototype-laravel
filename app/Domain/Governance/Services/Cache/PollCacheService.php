@@ -46,6 +46,7 @@ class PollCacheService
             $this->getResultsKey($pollUuid),
             self::RESULTS_TTL,
             function () use ($pollUuid) {
+                /** @var \Illuminate\Database\Eloquent\Model|null $poll */
                 $poll = Poll::where('uuid', $pollUuid)->with('votes')->first();
 
                 return $poll ? $poll->calculateResults() : null;
@@ -83,11 +84,13 @@ class PollCacheService
             $this->getUserVotingPowerKey($userUuid, $pollUuid),
             self::USER_VOTES_TTL,
             function () use ($userUuid, $pollUuid) {
+                /** @var \Illuminate\Database\Eloquent\Model|null $poll */
                 $poll = Poll::where('uuid', $pollUuid)->first();
                 if (! $poll) {
                     return null;
                 }
 
+                /** @var \Illuminate\Database\Eloquent\Model|null $user */
                 $user = \App\Models\User::where('uuid', $userUuid)->first();
                 if (! $user) {
                     return null;
@@ -120,6 +123,7 @@ class PollCacheService
             $this->getUserVoteStatusKey($userUuid, $pollUuid),
             self::USER_VOTES_TTL,
             function () use ($userUuid, $pollUuid) {
+                /** @var \Illuminate\Database\Eloquent\Model|null $poll */
                 $poll = Poll::where('uuid', $pollUuid)->first();
 
                 return $poll ? $poll->hasUserVoted($userUuid) : false;

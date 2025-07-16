@@ -25,6 +25,7 @@ class ComposeBasketBusinessActivity extends Activity
     public function execute(AccountUuid $accountUuid, string $basketCode, int $amount): array
     {
         $account = Account::where('uuid', (string) $accountUuid)->firstOrFail();
+        /** @var BasketAsset $basket */
         $basket = BasketAsset::where('code', $basketCode)->firstOrFail();
 
         return DB::transaction(

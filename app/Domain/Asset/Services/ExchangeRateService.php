@@ -162,9 +162,15 @@ class ExchangeRateService
      */
     private function fetchRateFromProvider(string $fromAsset, string $toAsset): ?array
     {
+        /** @var \App\Domain\Asset\Models\Asset|null $toAssetModel */
+        $toAssetModel = null;
+        /** @var \App\Domain\Asset\Models\Asset|null $fromAssetModel */
+        $fromAssetModel = null;
         // Determine the best provider based on asset types
-        $fromAssetModel = Asset::find($fromAsset);
-        $toAssetModel = Asset::find($toAsset);
+        /** @var Asset|null $$fromAssetModel */
+        $$fromAssetModel = Asset::find($fromAsset);
+        /** @var Asset|null $$toAssetModel */
+        $$toAssetModel = Asset::find($toAsset);
 
         if (! $fromAssetModel || ! $toAssetModel) {
             return null;

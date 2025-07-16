@@ -1,4 +1,5 @@
 includes:
+    - ./vendor/larastan/larastan/extension.neon
     - phpstan-baseline.neon
 
 parameters:
@@ -7,6 +8,8 @@ parameters:
         - app
     excludePaths:
         - app/Domain/Exchange/Workflows/Policies/LiquidityRetryPolicy.php
+    checkModelProperties: true
+    checkUnionTypes: true
     ignoreErrors:
         # Eloquent model magic methods
         - '#Call to an undefined static method App\\Domain\\[a-zA-Z\\]+\\Projections\\[a-zA-Z]+::#'

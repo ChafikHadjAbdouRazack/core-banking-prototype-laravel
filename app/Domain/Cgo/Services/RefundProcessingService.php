@@ -65,7 +65,7 @@ class RefundProcessingService
 
             return $refund;
         } catch (\Exception $e) {
-            DB::rollback();
+            DB::rollBack();
             Log::error(
                 'Refund processing failed',
                 [

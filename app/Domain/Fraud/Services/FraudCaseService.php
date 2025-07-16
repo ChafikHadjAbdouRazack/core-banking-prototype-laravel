@@ -10,7 +10,6 @@ use App\Domain\Fraud\Models\FraudScore;
 use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class FraudCaseService
@@ -55,6 +54,7 @@ class FraudCaseService
 
                 // Calculate loss amount if transaction
                 if ($fraudScore->entity_type === Transaction::class) {
+                    /** @var Transaction|null $$transaction */
                     $transaction = Transaction::find($fraudScore->entity_id);
                     if ($transaction) {
                         $case->update(['loss_amount' => $transaction->amount]);
@@ -79,7 +79,7 @@ class FraudCaseService
                 if (isset($data['note'])) {
                     $case->addInvestigationNote(
                         $data['note'],
-                        Auth::user()->name ?? 'Investigator',
+                        auth()->user()->name ?? 'Investigator',
                         $data['note_type'] ?? 'investigation'
                     );
                 }
@@ -123,11 +123,11 @@ class FraudCaseService
                         'resolution'       => $resolution,
                         'outcome'          => $outcome,
                         'resolved_at'      => now(),
-                        'resolved_by'      => Auth::id(),
+                        'resolved_by'      => auth()->id(),
                         'resolution_notes' => [
                             'resolution'  => $resolution,
                             'outcome'     => $outcome,
-                            'resolved_by' => Auth::user()->name ?? 'Unknown',
+                            'resolved_by' => auth()->user()->name ?? 'Unknown',
                             'resolved_at' => now()->toIso8601String(),
                         ],
                     ]
@@ -159,7 +159,7 @@ class FraudCaseService
                 // Add resolution note
                 $case->addInvestigationNote(
                     "Case resolved: {$resolution}",
-                    Auth::user()->name ?? 'System',
+                    auth()->user()->name ?? 'System',
                     'resolution'
                 );
 
@@ -306,7 +306,7 @@ class FraudCaseService
 
         $case->addInvestigationNote(
             "Case escalated to {$newPriority} priority. Reason: {$reason}",
-            Auth::user()->name ?? 'System',
+            auth()->user()->name ?? 'System',
             'escalation'
         );
 
@@ -446,9 +446,12 @@ class FraudCaseService
      */
     protected function linkRelatedEntities(FraudCase $case, FraudScore $fraudScore): void
     {
+        /** @var mixed|null $user */
+        $user = null;
         $relatedEntities = [];
 
         if ($fraudScore->entity_type === Transaction::class) {
+            /** @var Transaction|null $$transaction */
             $transaction = Transaction::find($fraudScore->entity_id);
             if ($transaction) {
                 $relatedEntities[] = [
@@ -474,7 +477,8 @@ class FraudCaseService
             }
         } elseif ($fraudScore->entity_type === User::class) {
             // Add user's accounts
-            $user = User::find($fraudScore->entity_id);
+            /** @var User|null $$user */
+            $$user = User::find($fraudScore->entity_id);
             if ($user) {
                 foreach ($user->accounts as $account) {
                     $relatedEntities[] = [
@@ -500,7 +504,7 @@ class FraudCaseService
             'id'          => uniqid('evidence_'),
             'type'        => $evidence['type'] ?? 'document',
             'description' => $evidence['description'],
-            'added_by'    => Auth::user()->name ?? 'Unknown',
+            'added_by'    => auth()->user()->name ?? 'Unknown',
             'added_at'    => now()->toIso8601String(),
             'metadata'    => $evidence['metadata'] ?? [],
         ];
@@ -533,7 +537,7 @@ class FraudCaseService
 
         $case->addInvestigationNote(
             "Status changed from {$oldStatus} to {$newStatus}",
-            Auth::user()->name ?? 'System',
+            auth()->user()->name ?? 'System',
             'status_change'
         );
     }
@@ -547,7 +551,8 @@ class FraudCaseService
             // If fraud confirmed, take protective actions
             foreach ($case->related_entities ?? [] as $entity) {
                 if ($entity['type'] === 'user') {
-                    $user = User::find($entity['id']);
+                    /** @var User|null $$user */
+                    $$user = User::find($entity['id']);
                     if ($user) {
                         $user->update(['risk_rating' => 'high']);
                     }

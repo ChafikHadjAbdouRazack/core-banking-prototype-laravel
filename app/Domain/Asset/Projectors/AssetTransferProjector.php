@@ -9,7 +9,7 @@ use App\Domain\Asset\Events\AssetTransferCompleted;
 use App\Domain\Asset\Events\AssetTransferFailed;
 use App\Domain\Asset\Events\AssetTransferInitiated;
 use App\Models\Account;
-use App\Models\AccountBalance;
+use App\Domain\Account\Models\AccountBalance;
 use Illuminate\Support\Facades\Log;
 use Spatie\EventSourcing\EventHandlers\Projectors\Projector;
 
@@ -80,10 +80,20 @@ class AssetTransferProjector extends Projector
      */
     public function onAssetTransferCompleted(AssetTransferCompleted $event): void
     {
+        /** @var \App\Domain\Payment\Models\Transfer|null $transfer */
+        $transfer = null;
+        /** @var \App\Domain\Payment\Models\Transfer|null $transfer */
+        $transfer = null;
+        /** @var \App\Models\Account|null $toAccount */
+        $toAccount = null;
+        /** @var \App\Models\Account|null $fromAccount */
+        $fromAccount = null;
         try {
             // Find accounts
-            $fromAccount = Account::where('uuid', $event->fromAccountUuid->toString())->first();
-            $toAccount = Account::where('uuid', $event->toAccountUuid->toString())->first();
+            /** @var \Illuminate\Database\Eloquent\Model|null $$fromAccount */
+            $$fromAccount = Account::where('uuid', $event->fromAccountUuid->toString())->first();
+            /** @var \Illuminate\Database\Eloquent\Model|null $$toAccount */
+            $$toAccount = Account::where('uuid', $event->toAccountUuid->toString())->first();
 
             if (! $fromAccount || ! $toAccount) {
                 Log::error(
@@ -134,7 +144,8 @@ class AssetTransferProjector extends Projector
             $toBalance->credit($event->toAmount->getAmount());
 
             // Update transfer record status
-            $transfer = Transfer::where('hash', $event->hash->getHash())->first();
+            /** @var \Illuminate\Database\Eloquent\Model|null $$transfer */
+            $$transfer = Transfer::where('hash', $event->hash->getHash())->first();
             if ($transfer) {
                 $transfer->update(
                     [
@@ -183,9 +194,12 @@ class AssetTransferProjector extends Projector
      */
     public function onAssetTransferFailed(AssetTransferFailed $event): void
     {
+        /** @var \App\Domain\Payment\Models\Transfer|null $transfer */
+        $transfer = null;
         try {
             // Update transfer record status
-            $transfer = Transfer::where('hash', $event->hash->getHash())->first();
+            /** @var \Illuminate\Database\Eloquent\Model|null $$transfer */
+            $$transfer = Transfer::where('hash', $event->hash->getHash())->first();
             if ($transfer) {
                 $transfer->update(
                     [

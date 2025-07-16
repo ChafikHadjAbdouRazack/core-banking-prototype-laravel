@@ -5,7 +5,7 @@ namespace Tests\Browser;
 use App\Domain\Basket\Models\BasketAsset;
 use App\Domain\Basket\Models\BasketValue;
 use App\Models\Account;
-use App\Models\AccountBalance;
+use App\Domain\Account\Models\AccountBalance;
 use App\Models\Asset;
 use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseMigrations;

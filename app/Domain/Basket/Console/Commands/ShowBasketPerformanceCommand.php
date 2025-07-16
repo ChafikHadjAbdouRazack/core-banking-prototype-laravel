@@ -30,12 +30,15 @@ class ShowBasketPerformanceCommand extends Command
      */
     public function handle(BasketValueCalculationService $valueService): int
     {
+        /** @var \App\Domain\Basket\Models\BasketAsset|null $basket */
+        $basket = null;
         $basketCode = $this->argument('basket') ?? config('baskets.primary_code', 'GCU');
         $period = $this->option('period');
         $detailed = $this->option('detailed');
 
         // Find the basket
-        $basket = BasketAsset::where('code', $basketCode)->first();
+        /** @var \Illuminate\Database\Eloquent\Model|null $$basket */
+        $$basket = BasketAsset::where('code', $basketCode)->first();
 
         if (! $basket) {
             $this->error("Basket '{$basketCode}' not found.");

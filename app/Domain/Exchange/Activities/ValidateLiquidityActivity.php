@@ -6,7 +6,7 @@ use App\Domain\Exchange\Projections\LiquidityPool as PoolProjection;
 use App\Domain\Exchange\ValueObjects\LiquidityAdditionInput;
 use App\Domain\Exchange\ValueObjects\LiquidityRemovalInput;
 use App\Models\Account;
-use App\Models\AccountBalance;
+use App\Domain\Account\Models\AccountBalance;
 use Brick\Math\BigDecimal;
 use Workflow\Activity;
 
@@ -25,6 +25,8 @@ class ValidateLiquidityActivity extends Activity
 
     private function validateAddition(LiquidityAdditionInput $input): array
     {
+        /** @var \App\Domain\Liquidity\Models\LiquidityPool|null $pool */
+        $pool = null;
         // Validate account exists
         $account = Account::findOrFail($input->providerId);
 
@@ -33,7 +35,8 @@ class ValidateLiquidityActivity extends Activity
         }
 
         // Validate pool exists
-        $pool = PoolProjection::where('pool_id', $input->poolId)->first();
+        /** @var \Illuminate\Database\Eloquent\Model|null $$pool */
+        $$pool = PoolProjection::where('pool_id', $input->poolId)->first();
 
         if (! $pool) {
             throw new \DomainException('Liquidity pool not found');
@@ -91,8 +94,11 @@ class ValidateLiquidityActivity extends Activity
 
     private function validateRemoval(LiquidityRemovalInput $input): array
     {
+        /** @var \App\Domain\Liquidity\Models\LiquidityPool|null $pool */
+        $pool = null;
         // Validate pool exists
-        $pool = PoolProjection::where('pool_id', $input->poolId)->first();
+        /** @var \Illuminate\Database\Eloquent\Model|null $$pool */
+        $$pool = PoolProjection::where('pool_id', $input->poolId)->first();
 
         if (! $pool) {
             throw new \DomainException('Liquidity pool not found');

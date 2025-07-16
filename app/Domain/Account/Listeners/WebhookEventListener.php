@@ -24,12 +24,15 @@ class WebhookEventListener extends Projector
 
     public function onAccountCreated(AccountCreated $event): void
     {
+        /** @var \App\Models\Account|null $account */
+        $account = null;
         // Skip webhook dispatching during tests unless explicitly testing webhooks
         if (app()->environment('testing') && ! app()->bound('testing.webhooks')) {
             return;
         }
 
-        $account = Account::where('uuid', $event->aggregateRootUuid())->first();
+        /** @var \Illuminate\Database\Eloquent\Model|null $$account */
+        $$account = Account::where('uuid', $event->aggregateRootUuid())->first();
 
         if (! $account) {
             return;
@@ -81,11 +84,14 @@ class WebhookEventListener extends Projector
 
     public function onMoneyAdded(MoneyAdded $event): void
     {
+        /** @var \App\Models\Account|null $account */
+        $account = null;
         if (app()->environment('testing') && ! app()->bound('testing.webhooks')) {
             return;
         }
 
-        $account = Account::where('uuid', $event->aggregateRootUuid())->first();
+        /** @var \Illuminate\Database\Eloquent\Model|null $$account */
+        $$account = Account::where('uuid', $event->aggregateRootUuid())->first();
 
         if (! $account) {
             return;
@@ -118,11 +124,14 @@ class WebhookEventListener extends Projector
 
     public function onMoneySubtracted(MoneySubtracted $event): void
     {
+        /** @var \App\Models\Account|null $account */
+        $account = null;
         if (app()->environment('testing') && ! app()->bound('testing.webhooks')) {
             return;
         }
 
-        $account = Account::where('uuid', $event->aggregateRootUuid())->first();
+        /** @var \Illuminate\Database\Eloquent\Model|null $$account */
+        $$account = Account::where('uuid', $event->aggregateRootUuid())->first();
 
         if (! $account) {
             return;
@@ -154,12 +163,18 @@ class WebhookEventListener extends Projector
 
     public function onMoneyTransferred(MoneyTransferred $event): void
     {
+        /** @var \App\Models\Account|null $toAccount */
+        $toAccount = null;
+        /** @var \App\Models\Account|null $fromAccount */
+        $fromAccount = null;
         if (app()->environment('testing') && ! app()->bound('testing.webhooks')) {
             return;
         }
 
-        $fromAccount = Account::where('uuid', $event->aggregateRootUuid())->first();
-        $toAccount = Account::where('uuid', $event->toAccountUuid->toString())->first();
+        /** @var \Illuminate\Database\Eloquent\Model|null $$fromAccount */
+        $$fromAccount = Account::where('uuid', $event->aggregateRootUuid())->first();
+        /** @var \Illuminate\Database\Eloquent\Model|null $$toAccount */
+        $$toAccount = Account::where('uuid', $event->toAccountUuid->toString())->first();
 
         if (! $fromAccount || ! $toAccount) {
             return;

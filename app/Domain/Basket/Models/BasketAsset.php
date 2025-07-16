@@ -10,6 +10,23 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
+/**
+ * @method static \Illuminate\Database\Eloquent\Builder where(string $column, mixed $operator = null, mixed $value = null, string $boolean = 'and')
+ * @method static \Illuminate\Database\Eloquent\Builder whereYear(string $column, mixed $value)
+ * @method static \Illuminate\Database\Eloquent\Builder whereMonth(string $column, mixed $value)
+ * @method static \Illuminate\Database\Eloquent\Builder whereDate(string $column, mixed $value)
+ * @method static \Illuminate\Database\Eloquent\Builder whereIn(string $column, mixed $values)
+ * @method static static updateOrCreate(array $attributes, array $values = [])
+ * @method static \Illuminate\Support\Collection pluck(string $column, string|null $key = null)
+ * @method static \Illuminate\Database\Eloquent\Builder selectRaw(string $expression, array $bindings = [])
+ * @method static \Illuminate\Database\Eloquent\Builder orderBy(string $column, string $direction = 'asc')
+ * @method static \Illuminate\Database\Eloquent\Builder latest(string $column = null)
+ * @method static \Illuminate\Database\Eloquent\Builder oldest(string $column = null)
+ * @method static mixed sum(string $column)
+ * @method static int count(string $columns = '*')
+ * @method static static|null first()
+ * @method static \Illuminate\Database\Eloquent\Collection get(array|string $columns = ['*'])
+ */
 class BasketAsset extends Model
 {
     use HasFactory;
@@ -52,10 +69,11 @@ class BasketAsset extends Model
 
     /**
      * Get the active components of this basket.
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<BasketComponent>
      */
     public function activeComponents(): HasMany
     {
-        return $this->components()->where('is_active', true);
+        return $this->hasMany(BasketComponent::class)->where('is_active', true);
     }
 
     /**
@@ -77,10 +95,13 @@ class BasketAsset extends Model
     /**
      * Get the latest value of this basket.
      */
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
     public function latestValue(): HasOne
     {
         return $this->hasOne(BasketValue::class, 'basket_asset_code', 'code')
-            ->latest('calculated_at');
+            ->orderBy('calculated_at', 'desc');
     }
 
     /**
@@ -222,5 +243,19 @@ class BasketAsset extends Model
                     );
                 }
             );
+    }
+
+    /**
+     * Get the activity logs for this model.
+     */
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
+     */
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
+     */
+    public function logs()
+    {
+        return $this->morphMany(\App\Domain\Activity\Models\Activity::class, 'subject');
     }
 }

@@ -52,6 +52,11 @@ final class TurnoverRepository
         );
     }
 
+    /**
+     * @param Turnover $turnover
+     * @param int $amount
+     * @return Turnover
+     */
     protected function updateTurnover(Turnover $turnover, int $amount): Turnover
     {
         $turnover->count += 1;
