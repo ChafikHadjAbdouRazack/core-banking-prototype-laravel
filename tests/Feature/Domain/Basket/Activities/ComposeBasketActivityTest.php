@@ -75,8 +75,8 @@ class ComposeBasketActivityTest extends TestCase
         $amount = 5000;
         $expectedResult = [
             'transaction_id' => 'txn-123',
-            'basket_units' => 50,
-            'fee' => 25,
+            'basket_units'   => 50,
+            'fee'            => 25,
         ];
 
         $basketService->shouldReceive('execute')

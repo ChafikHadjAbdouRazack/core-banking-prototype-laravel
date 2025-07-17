@@ -63,7 +63,7 @@ class BasketAssetResource extends Resource
                                     ->required()
                                     ->options(
                                         [
-                                            'fixed' => 'Fixed Weights',
+                                            'fixed'   => 'Fixed Weights',
                                             'dynamic' => 'Dynamic Weights',
                                         ]
                                     )
@@ -75,10 +75,10 @@ class BasketAssetResource extends Resource
                                     ->required()
                                     ->options(
                                         [
-                                            'never' => 'Never',
-                                            'daily' => 'Daily',
-                                            'weekly' => 'Weekly',
-                                            'monthly' => 'Monthly',
+                                            'never'     => 'Never',
+                                            'daily'     => 'Daily',
+                                            'weekly'    => 'Weekly',
+                                            'monthly'   => 'Monthly',
                                             'quarterly' => 'Quarterly',
                                         ]
                                     )
@@ -215,9 +215,9 @@ class BasketAssetResource extends Resource
                         ->badge()
                         ->color(
                             fn (string $state): string => match ($state) {
-                                'fixed' => 'info',
+                                'fixed'   => 'info',
                                 'dynamic' => 'warning',
-                                default => 'gray',
+                                default   => 'gray',
                             }
                         ),
 
@@ -243,12 +243,12 @@ class BasketAssetResource extends Resource
                         ->badge()
                         ->color(
                             fn (string $state): string => match ($state) {
-                                'never' => 'gray',
-                                'daily' => 'danger',
-                                'weekly' => 'warning',
-                                'monthly' => 'info',
+                                'never'     => 'gray',
+                                'daily'     => 'danger',
+                                'weekly'    => 'warning',
+                                'monthly'   => 'info',
                                 'quarterly' => 'success',
-                                default => 'gray',
+                                default     => 'gray',
                             }
                         )
                         ->formatStateUsing(fn (string $state): string => ucfirst($state)),
@@ -289,7 +289,7 @@ class BasketAssetResource extends Resource
                     Tables\Filters\SelectFilter::make('type')
                         ->options(
                             [
-                                'fixed' => 'Fixed Weights',
+                                'fixed'   => 'Fixed Weights',
                                 'dynamic' => 'Dynamic Weights',
                             ]
                         ),
@@ -297,10 +297,10 @@ class BasketAssetResource extends Resource
                     Tables\Filters\SelectFilter::make('rebalance_frequency')
                         ->options(
                             [
-                                'never' => 'Never',
-                                'daily' => 'Daily',
-                                'weekly' => 'Weekly',
-                                'monthly' => 'Monthly',
+                                'never'     => 'Never',
+                                'daily'     => 'Daily',
+                                'weekly'    => 'Weekly',
+                                'monthly'   => 'Monthly',
                                 'quarterly' => 'Quarterly',
                             ]
                         )
@@ -490,9 +490,9 @@ class BasketAssetResource extends Resource
                                     ->badge()
                                     ->color(
                                         fn (string $state): string => match ($state) {
-                                            'fixed' => 'info',
+                                            'fixed'   => 'info',
                                             'dynamic' => 'warning',
-                                            default => 'gray',
+                                            default   => 'gray',
                                         }
                                     )
                                     ->formatStateUsing(fn (string $state): string => ucfirst($state) . ' Weights'),
@@ -620,10 +620,10 @@ class BasketAssetResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListBasketAssets::route('/'),
+            'index'  => Pages\ListBasketAssets::route('/'),
             'create' => Pages\CreateBasketAsset::route('/create'),
-            'view' => Pages\ViewBasketAsset::route('/{record}'),
-            'edit' => Pages\EditBasketAsset::route('/{record}/edit'),
+            'view'   => Pages\ViewBasketAsset::route('/{record}'),
+            'edit'   => Pages\EditBasketAsset::route('/{record}/edit'),
         ];
     }
 

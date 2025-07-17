@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Domain\Asset\Projectors;
 
+use App\Domain\Account\Models\AccountBalance;
 use App\Domain\Account\Models\Transfer;
 use App\Domain\Asset\Events\AssetTransferCompleted;
 use App\Domain\Asset\Events\AssetTransferFailed;
 use App\Domain\Asset\Events\AssetTransferInitiated;
 use App\Models\Account;
-use App\Domain\Account\Models\AccountBalance;
 use Illuminate\Support\Facades\Log;
 use Spatie\EventSourcing\EventHandlers\Projectors\Projector;
 
@@ -84,9 +84,9 @@ class AssetTransferProjector extends Projector
         $transfer = null;
         /** @var \App\Domain\Payment\Models\Transfer|null $transfer */
         $transfer = null;
-        /** @var \App\Models\Account|null $toAccount */
+        /** @var Account|null $toAccount */
         $toAccount = null;
-        /** @var \App\Models\Account|null $fromAccount */
+        /** @var Account|null $fromAccount */
         $fromAccount = null;
         try {
             // Find accounts

@@ -31,8 +31,8 @@ class VerifyCgoPaymentTest extends DomainTestCase
 
         $this->user = User::factory()->create();
         $this->investment = CgoInvestment::factory()->create([
-            'user_uuid' => $this->user->uuid,
-            'status' => 'pending',
+            'user_uuid'      => $this->user->uuid,
+            'status'         => 'pending',
             'payment_status' => 'pending',
         ]);
     }
@@ -114,8 +114,8 @@ class VerifyCgoPaymentTest extends DomainTestCase
             ->once()
             ->with('Payment not verified, scheduling retry', [
                 'investment_id' => $this->investment->id,
-                'attempt' => 1,
-                'delay' => 300,
+                'attempt'       => 1,
+                'delay'         => 300,
             ]);
 
         $job = new VerifyCgoPayment($this->investment, 1);
@@ -141,8 +141,8 @@ class VerifyCgoPaymentTest extends DomainTestCase
             ->once()
             ->with('Payment not verified, scheduling retry', [
                 'investment_id' => $this->investment->id,
-                'attempt' => 2,
-                'delay' => 600,
+                'attempt'       => 2,
+                'delay'         => 600,
             ]);
 
         $job = new VerifyCgoPayment($this->investment, 2);
@@ -168,7 +168,7 @@ class VerifyCgoPaymentTest extends DomainTestCase
             ->once()
             ->with('Payment verification failed after multiple attempts', [
                 'investment_id' => $this->investment->id,
-                'attempts' => 3,
+                'attempts'      => 3,
             ]);
 
         $job = new VerifyCgoPayment($this->investment, 3);

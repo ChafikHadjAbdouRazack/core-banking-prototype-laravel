@@ -7,47 +7,47 @@ use Tests\TestCase;
 
 class SeoMetaTagsTest extends TestCase
 {
-    /**
-     * Test that all public pages have proper SEO meta tags.
-     */ #[Test]
+/**
+ * Test that all public pages have proper SEO meta tags.
+ */ #[Test]
     public function test_public_pages_have_seo_meta_tags(): void
     {
         $pages = [
             '/' => [
-                'title' => 'FinAegis - The Enterprise Financial Platform',
+                'title'          => 'FinAegis - The Enterprise Financial Platform',
                 'hasDescription' => true,
-                'hasKeywords' => true,
-                'hasOgTags' => true,
+                'hasKeywords'    => true,
+                'hasOgTags'      => true,
             ],
             '/about' => [
-                'title' => 'About FinAegis - Our Mission & Team',
+                'title'          => 'About FinAegis - Our Mission & Team',
                 'hasDescription' => true,
-                'hasKeywords' => true,
-                'hasOgTags' => true,
+                'hasKeywords'    => true,
+                'hasOgTags'      => true,
             ],
             '/platform' => [
-                'title' => 'FinAegis Platform - Open Banking for Developers',
+                'title'          => 'FinAegis Platform - Open Banking for Developers',
                 'hasDescription' => true,
-                'hasKeywords' => true,
-                'hasOgTags' => true,
+                'hasKeywords'    => true,
+                'hasOgTags'      => true,
             ],
             '/gcu' => [
-                'title' => 'Global Currency Unit (GCU) - FinAegis',
+                'title'          => 'Global Currency Unit (GCU) - FinAegis',
                 'hasDescription' => true,
-                'hasKeywords' => true,
-                'hasOgTags' => true,
+                'hasKeywords'    => true,
+                'hasOgTags'      => true,
             ],
             '/pricing' => [
-                'title' => 'Pricing - Flexible Plans for Every Scale | FinAegis',
+                'title'          => 'Pricing - Flexible Plans for Every Scale | FinAegis',
                 'hasDescription' => true,
-                'hasKeywords' => true,
-                'hasOgTags' => true,
+                'hasKeywords'    => true,
+                'hasOgTags'      => true,
             ],
             '/security' => [
-                'title' => 'Security - Bank-Grade Protection | FinAegis',
+                'title'          => 'Security - Bank-Grade Protection | FinAegis',
                 'hasDescription' => true,
-                'hasKeywords' => true,
-                'hasOgTags' => true,
+                'hasKeywords'    => true,
+                'hasOgTags'      => true,
             ],
         ];
 
@@ -79,9 +79,9 @@ class SeoMetaTagsTest extends TestCase
         }
     }
 
-    /**
-     * Test that pages have Twitter Card meta tags.
-     */ #[Test]
+/**
+ * Test that pages have Twitter Card meta tags.
+ */ #[Test]
     public function test_pages_have_twitter_card_tags(): void
     {
         $pages = ['/', '/about', '/platform', '/gcu', '/pricing', '/security'];
@@ -99,9 +99,9 @@ class SeoMetaTagsTest extends TestCase
         }
     }
 
-    /**
-     * Test that pages have canonical URLs.
-     */ #[Test]
+/**
+ * Test that pages have canonical URLs.
+ */ #[Test]
     public function test_pages_have_canonical_urls(): void
     {
         $pages = ['/', '/about', '/platform', '/gcu', '/pricing', '/security'];
@@ -117,9 +117,9 @@ class SeoMetaTagsTest extends TestCase
         }
     }
 
-    /**
-     * Test that pages have proper robots meta tag.
-     */ #[Test]
+/**
+ * Test that pages have proper robots meta tag.
+ */ #[Test]
     public function test_pages_have_robots_meta_tag(): void
     {
         $pages = ['/', '/about', '/platform', '/gcu', '/pricing', '/security'];
@@ -134,9 +134,9 @@ class SeoMetaTagsTest extends TestCase
         }
     }
 
-    /**
-     * Test that SEO partial handles missing parameters gracefully.
-     */ #[Test]
+/**
+ * Test that SEO partial handles missing parameters gracefully.
+ */ #[Test]
     public function test_seo_partial_handles_missing_parameters(): void
     {
         // Test sub-products page which should use defaults for some values
@@ -150,16 +150,16 @@ class SeoMetaTagsTest extends TestCase
         $response->assertSee('<meta property="og:title"', false);
     }
 
-    /**
-     * Test that meta descriptions have appropriate length.
-     */ #[Test]
+/**
+ * Test that meta descriptions have appropriate length.
+ */ #[Test]
     public function test_meta_descriptions_have_appropriate_length(): void
     {
         $pages = [
-            '/' => 'FinAegis - The Enterprise Financial Platform Powering the Future of Banking. Experience the Global Currency Unit (GCU) with democratic governance and real bank integration.',
-            '/about' => 'Learn about FinAegis - revolutionizing banking with democratic governance and the Global Currency Unit. Our mission, team, and journey.',
+            '/'         => 'FinAegis - The Enterprise Financial Platform Powering the Future of Banking. Experience the Global Currency Unit (GCU) with democratic governance and real bank integration.',
+            '/about'    => 'Learn about FinAegis - revolutionizing banking with democratic governance and the Global Currency Unit. Our mission, team, and journey.',
             '/platform' => 'FinAegis Platform - Open-source banking infrastructure for developers. Build, deploy, and scale financial services with our MIT-licensed platform.',
-            '/pricing' => 'FinAegis Pricing - Start with our free open-source community edition. Scale with enterprise support, custom features, and dedicated infrastructure when ready.',
+            '/pricing'  => 'FinAegis Pricing - Start with our free open-source community edition. Scale with enterprise support, custom features, and dedicated infrastructure when ready.',
         ];
 
         foreach ($pages as $url => $expectedDescription) {

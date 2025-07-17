@@ -31,15 +31,15 @@ class AutomatedMarketMakerServiceTest extends ServiceTestCase
     {
         // Create a test pool
         $pool = LiquidityPool::create([
-            'pool_id' => 'test-pool-1',
-            'base_currency' => 'BTC',
-            'quote_currency' => 'USD',
-            'base_reserve' => '10',
-            'quote_reserve' => '400000',
-            'total_shares' => '1000',
-            'fee_rate' => '0.003',
-            'is_active' => true,
-            'volume_24h' => '50000',
+            'pool_id'            => 'test-pool-1',
+            'base_currency'      => 'BTC',
+            'quote_currency'     => 'USD',
+            'base_reserve'       => '10',
+            'quote_reserve'      => '400000',
+            'total_shares'       => '1000',
+            'fee_rate'           => '0.003',
+            'is_active'          => true,
+            'volume_24h'         => '50000',
             'fees_collected_24h' => '150',
         ]);
 
@@ -77,15 +77,15 @@ class AutomatedMarketMakerServiceTest extends ServiceTestCase
     {
         // Create a volatile pool
         $pool = LiquidityPool::create([
-            'pool_id' => 'volatile-pool',
-            'base_currency' => 'ETH',
-            'quote_currency' => 'USD',
-            'base_reserve' => '100',
-            'quote_reserve' => '200000',
-            'total_shares' => '1000',
-            'fee_rate' => '0.003',
-            'is_active' => true,
-            'volume_24h' => '1000000', // High volume
+            'pool_id'            => 'volatile-pool',
+            'base_currency'      => 'ETH',
+            'quote_currency'     => 'USD',
+            'base_reserve'       => '100',
+            'quote_reserve'      => '200000',
+            'total_shares'       => '1000',
+            'fee_rate'           => '0.003',
+            'is_active'          => true,
+            'volume_24h'         => '1000000', // High volume
             'fees_collected_24h' => '3000',
         ]);
 
@@ -109,14 +109,14 @@ class AutomatedMarketMakerServiceTest extends ServiceTestCase
     public function test_calculates_order_sizes_based_on_reserves()
     {
         $pool = LiquidityPool::create([
-            'pool_id' => 'test-pool-2',
-            'base_currency' => 'ETH',
+            'pool_id'        => 'test-pool-2',
+            'base_currency'  => 'ETH',
             'quote_currency' => 'USDC',
-            'base_reserve' => '1000', // Large reserves
-            'quote_reserve' => '2000000',
-            'total_shares' => '10000',
-            'fee_rate' => '0.003',
-            'is_active' => true,
+            'base_reserve'   => '1000', // Large reserves
+            'quote_reserve'  => '2000000',
+            'total_shares'   => '10000',
+            'fee_rate'       => '0.003',
+            'is_active'      => true,
         ]);
 
         $this->priceAggregator->shouldReceive('getAggregatedPrice')
@@ -137,14 +137,14 @@ class AutomatedMarketMakerServiceTest extends ServiceTestCase
     public function test_adjusts_market_making_parameters()
     {
         $pool = LiquidityPool::create([
-            'pool_id' => 'test-pool-3',
-            'base_currency' => 'BTC',
+            'pool_id'        => 'test-pool-3',
+            'base_currency'  => 'BTC',
             'quote_currency' => 'USD',
-            'base_reserve' => '10',
-            'quote_reserve' => '400000',
-            'total_shares' => '1000',
-            'fee_rate' => '0.003',
-            'is_active' => true,
+            'base_reserve'   => '10',
+            'quote_reserve'  => '400000',
+            'total_shares'   => '1000',
+            'fee_rate'       => '0.003',
+            'is_active'      => true,
         ]);
 
         $adjustments = $this->service->adjustMarketMakingParameters($pool->pool_id);

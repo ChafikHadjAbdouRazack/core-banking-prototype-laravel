@@ -23,7 +23,7 @@ class BatchProcessingControllerTest extends ControllerTestCase
         $this->user = User::factory()->create();
         $this->account = Account::factory()->create([
             'user_uuid' => $this->user->uuid,
-            'status' => 'active',
+            'status'    => 'active',
         ]);
     }
 
@@ -83,8 +83,8 @@ class BatchProcessingControllerTest extends ControllerTestCase
     {
         $response = $this->actingAs($this->user)
             ->post(route('batch-processing.store'), [
-                'name' => '',
-                'type' => 'invalid',
+                'name'  => '',
+                'type'  => 'invalid',
                 'items' => 'not-an-array',
             ]);
 
@@ -96,7 +96,7 @@ class BatchProcessingControllerTest extends ControllerTestCase
     {
         $batchJob = BatchJob::factory()->create([
             'user_uuid' => $this->user->uuid,
-            'status' => 'pending',
+            'status'    => 'pending',
         ]);
 
         $response = $this->actingAs($this->user)
@@ -111,7 +111,7 @@ class BatchProcessingControllerTest extends ControllerTestCase
     {
         $batchJob = BatchJob::factory()->create([
             'user_uuid' => $this->user->uuid,
-            'status' => 'completed',
+            'status'    => 'completed',
         ]);
 
         $response = $this->actingAs($this->user)

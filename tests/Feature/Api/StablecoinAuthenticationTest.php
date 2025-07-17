@@ -37,8 +37,8 @@ class StablecoinAuthenticationTest extends DomainTestCase
         Asset::firstOrCreate(
             ['code' => 'USD'],
             [
-                'name' => 'US Dollar',
-                'type' => 'fiat',
+                'name'      => 'US Dollar',
+                'type'      => 'fiat',
                 'precision' => 2,
                 'is_active' => true,
             ]
@@ -47,20 +47,20 @@ class StablecoinAuthenticationTest extends DomainTestCase
         Asset::firstOrCreate(
             ['code' => 'FUSD'],
             [
-                'name' => 'Fiat USD Stablecoin',
-                'type' => 'stablecoin',
+                'name'      => 'Fiat USD Stablecoin',
+                'type'      => 'stablecoin',
                 'precision' => 2,
                 'is_active' => true,
             ]
         );
 
         Stablecoin::factory()->create([
-            'code' => 'FUSD',
-            'name' => 'FinAegis USD',
-            'symbol' => 'FUSD',
+            'code'           => 'FUSD',
+            'name'           => 'FinAegis USD',
+            'symbol'         => 'FUSD',
             'peg_asset_code' => 'USD',
-            'precision' => 2,
-            'is_active' => true,
+            'precision'      => 2,
+            'is_active'      => true,
         ]);
     }
 
@@ -79,9 +79,9 @@ class StablecoinAuthenticationTest extends DomainTestCase
     {
         // Don't create user/account - just test authentication requirement
         $response = $this->postJson('/api/v2/stablecoin-operations/burn', [
-            'account_uuid' => fake()->uuid(),
+            'account_uuid'    => fake()->uuid(),
             'stablecoin_code' => 'FUSD',
-            'burn_amount' => 50000,
+            'burn_amount'     => 50000,
         ]);
 
         $response->assertUnauthorized();
@@ -92,10 +92,10 @@ class StablecoinAuthenticationTest extends DomainTestCase
     {
         // Don't create user/account - just test authentication requirement
         $response = $this->postJson('/api/v2/stablecoin-operations/add-collateral', [
-            'account_uuid' => fake()->uuid(),
-            'stablecoin_code' => 'FUSD',
+            'account_uuid'          => fake()->uuid(),
+            'stablecoin_code'       => 'FUSD',
             'collateral_asset_code' => 'USD',
-            'collateral_amount' => 50000,
+            'collateral_amount'     => 50000,
         ]);
 
         $response->assertUnauthorized();

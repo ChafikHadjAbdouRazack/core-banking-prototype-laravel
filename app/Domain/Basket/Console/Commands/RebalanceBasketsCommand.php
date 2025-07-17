@@ -30,7 +30,7 @@ class RebalanceBasketsCommand extends Command
      */
     public function handle(BasketRebalancingService $rebalancingService): int
     {
-        /** @var \App\Domain\Basket\Models\BasketAsset|null $basket */
+        /** @var BasketAsset|null $basket */
         $basket = null;
         $basketCode = $this->option('basket');
         $force = $this->option('force');

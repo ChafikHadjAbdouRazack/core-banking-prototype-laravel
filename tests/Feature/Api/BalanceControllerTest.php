@@ -47,8 +47,8 @@ class BalanceControllerTest extends ControllerTestCase
             ->assertJson([
                 'data' => [
                     'account_uuid' => $this->account->uuid,
-                    'balance' => 15000,
-                    'frozen' => false,
+                    'balance'      => 15000,
+                    'frozen'       => false,
                 ],
             ]);
     }
@@ -60,8 +60,8 @@ class BalanceControllerTest extends ControllerTestCase
 
         $turnover = Turnover::factory()->create([
             'account_uuid' => $this->account->uuid,
-            'debit' => 5000,
-            'credit' => 8000,
+            'debit'        => 5000,
+            'credit'       => 8000,
         ]);
 
         $response = $this->getJson("/api/accounts/{$this->account->uuid}/balance");
@@ -80,7 +80,7 @@ class BalanceControllerTest extends ControllerTestCase
             ->assertJson([
                 'data' => [
                     'turnover' => [
-                        'debit' => 5000,
+                        'debit'  => 5000,
                         'credit' => 8000,
                     ],
                 ],
@@ -177,14 +177,14 @@ class BalanceControllerTest extends ControllerTestCase
         // Create specific turnover records for calculation testing
         Turnover::factory()->create([
             'account_uuid' => $this->account->uuid,
-            'debit' => 1000,
-            'credit' => 2000,
+            'debit'        => 1000,
+            'credit'       => 2000,
         ]);
 
         Turnover::factory()->create([
             'account_uuid' => $this->account->uuid,
-            'debit' => 500,
-            'credit' => 1500,
+            'debit'        => 500,
+            'credit'       => 1500,
         ]);
 
         $response = $this->getJson("/api/accounts/{$this->account->uuid}/balance/summary");
@@ -193,10 +193,10 @@ class BalanceControllerTest extends ControllerTestCase
             ->assertJson([
                 'data' => [
                     'account_uuid' => $this->account->uuid,
-                    'statistics' => [
+                    'statistics'   => [
                         'total_credit_12_months' => 3500,
-                        'total_debit_12_months' => 1500,
-                        'months_analyzed' => 2,
+                        'total_debit_12_months'  => 1500,
+                        'months_analyzed'        => 2,
                     ],
                 ],
             ]);

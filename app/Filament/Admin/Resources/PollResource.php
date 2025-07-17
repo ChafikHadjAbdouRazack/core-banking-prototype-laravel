@@ -52,11 +52,11 @@ class PollResource extends Resource
                                     ->required()
                                     ->options(
                                         [
-                                            PollType::YES_NO->value => 'Yes/No',
-                                            PollType::SINGLE_CHOICE->value => 'Single Choice',
+                                            PollType::YES_NO->value          => 'Yes/No',
+                                            PollType::SINGLE_CHOICE->value   => 'Single Choice',
                                             PollType::MULTIPLE_CHOICE->value => 'Multiple Choice',
                                             PollType::WEIGHTED_CHOICE->value => 'Weighted Choice',
-                                            PollType::RANKED_CHOICE->value => 'Ranked Choice',
+                                            PollType::RANKED_CHOICE->value   => 'Ranked Choice',
                                         ]
                                     )
                                     ->reactive()
@@ -81,7 +81,7 @@ class PollResource extends Resource
                                     ->required()
                                     ->options(
                                         [
-                                            'one_user_one_vote' => 'One User One Vote',
+                                            'one_user_one_vote'   => 'One User One Vote',
                                             'asset_weighted_vote' => 'Asset Weighted Vote',
                                         ]
                                     )
@@ -141,8 +141,8 @@ class PollResource extends Resource
                                 Forms\Components\Select::make('execution_workflow')
                                     ->options(
                                         [
-                                            'AddAssetWorkflow' => 'Add Asset Workflow',
-                                            'FeatureToggleWorkflow' => 'Feature Toggle Workflow',
+                                            'AddAssetWorkflow'            => 'Add Asset Workflow',
+                                            'FeatureToggleWorkflow'       => 'Feature Toggle Workflow',
                                             'UpdateConfigurationWorkflow' => 'Update Configuration Workflow',
                                         ]
                                     )
@@ -152,9 +152,9 @@ class PollResource extends Resource
                                     ->required()
                                     ->options(
                                         [
-                                            PollStatus::DRAFT->value => 'Draft',
-                                            PollStatus::ACTIVE->value => 'Active',
-                                            PollStatus::CLOSED->value => 'Closed',
+                                            PollStatus::DRAFT->value     => 'Draft',
+                                            PollStatus::ACTIVE->value    => 'Active',
+                                            PollStatus::CLOSED->value    => 'Closed',
                                             PollStatus::CANCELLED->value => 'Cancelled',
                                         ]
                                     )
@@ -195,17 +195,17 @@ class PollResource extends Resource
                                 'primary' => PollType::YES_NO->value,
                                 'success' => PollType::SINGLE_CHOICE->value,
                                 'warning' => PollType::MULTIPLE_CHOICE->value,
-                                'danger' => PollType::WEIGHTED_CHOICE->value,
-                                'gray' => PollType::RANKED_CHOICE->value,
+                                'danger'  => PollType::WEIGHTED_CHOICE->value,
+                                'gray'    => PollType::RANKED_CHOICE->value,
                             ]
                         ),
 
                     Tables\Columns\BadgeColumn::make('status')
                         ->colors(
                             [
-                                'gray' => PollStatus::DRAFT->value,
+                                'gray'    => PollStatus::DRAFT->value,
                                 'success' => PollStatus::ACTIVE->value,
-                                'danger' => PollStatus::CLOSED->value,
+                                'danger'  => PollStatus::CLOSED->value,
                                 'warning' => PollStatus::CANCELLED->value,
                             ]
                         ),
@@ -252,9 +252,9 @@ class PollResource extends Resource
                     Tables\Filters\SelectFilter::make('status')
                         ->options(
                             [
-                                PollStatus::DRAFT->value => 'Draft',
-                                PollStatus::ACTIVE->value => 'Active',
-                                PollStatus::CLOSED->value => 'Closed',
+                                PollStatus::DRAFT->value     => 'Draft',
+                                PollStatus::ACTIVE->value    => 'Active',
+                                PollStatus::CLOSED->value    => 'Closed',
                                 PollStatus::CANCELLED->value => 'Cancelled',
                             ]
                         ),
@@ -262,11 +262,11 @@ class PollResource extends Resource
                     Tables\Filters\SelectFilter::make('type')
                         ->options(
                             [
-                                PollType::YES_NO->value => 'Yes/No',
-                                PollType::SINGLE_CHOICE->value => 'Single Choice',
+                                PollType::YES_NO->value          => 'Yes/No',
+                                PollType::SINGLE_CHOICE->value   => 'Single Choice',
                                 PollType::MULTIPLE_CHOICE->value => 'Multiple Choice',
                                 PollType::WEIGHTED_CHOICE->value => 'Weighted Choice',
-                                PollType::RANKED_CHOICE->value => 'Ranked Choice',
+                                PollType::RANKED_CHOICE->value   => 'Ranked Choice',
                             ]
                         ),
 
@@ -419,9 +419,9 @@ class PollResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListPolls::route('/'),
+            'index'  => Pages\ListPolls::route('/'),
             'create' => Pages\CreatePoll::route('/create'),
-            'edit' => Pages\EditPoll::route('/{record}/edit'),
+            'edit'   => Pages\EditPoll::route('/{record}/edit'),
         ];
     }
 
@@ -439,8 +439,8 @@ class PollResource extends Resource
     {
         return [
             'Creator' => $record->creator?->name,
-            'Status' => $record->status->value,
-            'Type' => $record->type->value,
+            'Status'  => $record->status->value,
+            'Type'    => $record->type->value,
         ];
     }
 }

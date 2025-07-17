@@ -28,12 +28,12 @@ class SettingsServiceTest extends ServiceTestCase
     public function it_gets_setting_value()
     {
         Setting::create([
-            'key' => 'test.key',
-            'value' => 'test_value',
-            'type' => 'string',
+            'key'          => 'test.key',
+            'value'        => 'test_value',
+            'type'         => 'string',
             'is_encrypted' => false,
-            'label' => 'Test Key',
-            'group' => 'test',
+            'label'        => 'Test Key',
+            'group'        => 'test',
         ]);
 
         $result = $this->service->get('test.key');
@@ -60,12 +60,12 @@ class SettingsServiceTest extends ServiceTestCase
     public function it_casts_boolean_settings()
     {
         Setting::create([
-            'key' => 'test.key',
-            'value' => true,
-            'type' => 'boolean',
+            'key'          => 'test.key',
+            'value'        => true,
+            'type'         => 'boolean',
             'is_encrypted' => false,
-            'label' => 'Test Key',
-            'group' => 'test',
+            'label'        => 'Test Key',
+            'group'        => 'test',
         ]);
 
         $result = $this->service->get('test.key');
@@ -77,12 +77,12 @@ class SettingsServiceTest extends ServiceTestCase
     public function it_casts_integer_settings()
     {
         Setting::create([
-            'key' => 'test.key',
-            'value' => 42,
-            'type' => 'integer',
+            'key'          => 'test.key',
+            'value'        => 42,
+            'type'         => 'integer',
             'is_encrypted' => false,
-            'label' => 'Test Key',
-            'group' => 'test',
+            'label'        => 'Test Key',
+            'group'        => 'test',
         ]);
 
         $result = $this->service->get('test.key');
@@ -94,12 +94,12 @@ class SettingsServiceTest extends ServiceTestCase
     public function it_casts_json_settings()
     {
         Setting::create([
-            'key' => 'test.key',
-            'value' => ['key' => 'value'],
-            'type' => 'json',
+            'key'          => 'test.key',
+            'value'        => ['key' => 'value'],
+            'type'         => 'json',
             'is_encrypted' => false,
-            'label' => 'Test Key',
-            'group' => 'test',
+            'label'        => 'Test Key',
+            'group'        => 'test',
         ]);
 
         $result = $this->service->get('test.key');
@@ -111,12 +111,12 @@ class SettingsServiceTest extends ServiceTestCase
     public function it_casts_array_settings()
     {
         Setting::create([
-            'key' => 'test.key',
-            'value' => ['item1', 'item2'],
-            'type' => 'array',
+            'key'          => 'test.key',
+            'value'        => ['item1', 'item2'],
+            'type'         => 'array',
             'is_encrypted' => false,
-            'label' => 'Test Key',
-            'group' => 'test',
+            'label'        => 'Test Key',
+            'group'        => 'test',
         ]);
 
         $result = $this->service->get('test.key');
@@ -164,12 +164,12 @@ class SettingsServiceTest extends ServiceTestCase
     public function it_deletes_setting()
     {
         Setting::create([
-            'key' => 'test.key',
-            'value' => 'test_value',
-            'type' => 'string',
+            'key'          => 'test.key',
+            'value'        => 'test_value',
+            'type'         => 'string',
             'is_encrypted' => false,
-            'label' => 'Test Key',
-            'group' => 'test',
+            'label'        => 'Test Key',
+            'group'        => 'test',
         ]);
 
         $result = $this->service->delete('test.key');
@@ -182,12 +182,12 @@ class SettingsServiceTest extends ServiceTestCase
     public function it_checks_if_setting_exists()
     {
         Setting::create([
-            'key' => 'test.key',
-            'value' => 'test_value',
-            'type' => 'string',
+            'key'          => 'test.key',
+            'value'        => 'test_value',
+            'type'         => 'string',
             'is_encrypted' => false,
-            'label' => 'Test Key',
-            'group' => 'test',
+            'label'        => 'Test Key',
+            'group'        => 'test',
         ]);
 
         $result = $this->service->has('test.key');
@@ -199,21 +199,21 @@ class SettingsServiceTest extends ServiceTestCase
     public function it_gets_multiple_settings()
     {
         Setting::create([
-            'key' => 'key1',
-            'value' => 'value1',
-            'type' => 'string',
+            'key'          => 'key1',
+            'value'        => 'value1',
+            'type'         => 'string',
             'is_encrypted' => false,
-            'label' => 'Key 1',
-            'group' => 'test',
+            'label'        => 'Key 1',
+            'group'        => 'test',
         ]);
 
         Setting::create([
-            'key' => 'key2',
-            'value' => 'value2',
-            'type' => 'string',
+            'key'          => 'key2',
+            'value'        => 'value2',
+            'type'         => 'string',
             'is_encrypted' => false,
-            'label' => 'Key 2',
-            'group' => 'test',
+            'label'        => 'Key 2',
+            'group'        => 'test',
         ]);
 
         $result = $this->service->getMultiple(['key1', 'key2']);
@@ -240,21 +240,21 @@ class SettingsServiceTest extends ServiceTestCase
     public function it_gets_all_settings()
     {
         Setting::create([
-            'key' => 'key1',
-            'value' => 'value1',
-            'type' => 'string',
+            'key'          => 'key1',
+            'value'        => 'value1',
+            'type'         => 'string',
             'is_encrypted' => false,
-            'label' => 'Key 1',
-            'group' => 'test',
+            'label'        => 'Key 1',
+            'group'        => 'test',
         ]);
 
         Setting::create([
-            'key' => 'key2',
-            'value' => true,
-            'type' => 'boolean',
+            'key'          => 'key2',
+            'value'        => true,
+            'type'         => 'boolean',
             'is_encrypted' => false,
-            'label' => 'Key 2',
-            'group' => 'test',
+            'label'        => 'Key 2',
+            'group'        => 'test',
         ]);
 
         $result = $this->service->all();
@@ -269,27 +269,27 @@ class SettingsServiceTest extends ServiceTestCase
     public function it_gets_settings_by_prefix()
     {
         Setting::create([
-            'key' => 'app.name',
-            'value' => 'FinAegis',
-            'type' => 'string',
+            'key'          => 'app.name',
+            'value'        => 'FinAegis',
+            'type'         => 'string',
             'is_encrypted' => false,
-            'label' => 'Application Name',
-            'group' => 'app',
+            'label'        => 'Application Name',
+            'group'        => 'app',
         ]);
 
         Setting::create([
-            'key' => 'app.debug',
-            'value' => false,
-            'type' => 'boolean',
+            'key'          => 'app.debug',
+            'value'        => false,
+            'type'         => 'boolean',
             'is_encrypted' => false,
-            'label' => 'Debug Mode',
-            'group' => 'app',
+            'label'        => 'Debug Mode',
+            'group'        => 'app',
         ]);
 
         $result = $this->service->getByPrefix('app');
 
         $this->assertEquals([
-            'app.name' => 'FinAegis',
+            'app.name'  => 'FinAegis',
             'app.debug' => false,
         ], $result);
     }
@@ -298,12 +298,12 @@ class SettingsServiceTest extends ServiceTestCase
     public function it_caches_settings()
     {
         Setting::create([
-            'key' => 'test.key',
-            'value' => 'cached_value',
-            'type' => 'string',
+            'key'          => 'test.key',
+            'value'        => 'cached_value',
+            'type'         => 'string',
             'is_encrypted' => false,
-            'label' => 'Test Key',
-            'group' => 'test',
+            'label'        => 'Test Key',
+            'group'        => 'test',
         ]);
 
         // First call - should cache

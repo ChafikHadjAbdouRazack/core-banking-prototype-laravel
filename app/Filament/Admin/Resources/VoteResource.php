@@ -166,9 +166,9 @@ class VoteResource extends Resource
                         ->badge()
                         ->colors(
                             [
-                                'gray' => 'draft',
+                                'gray'    => 'draft',
                                 'success' => 'active',
-                                'danger' => 'closed',
+                                'danger'  => 'closed',
                                 'warning' => 'cancelled',
                             ]
                         )
@@ -267,9 +267,9 @@ class VoteResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListVotes::route('/'),
+            'index'  => Pages\ListVotes::route('/'),
             'create' => Pages\CreateVote::route('/create'),
-            'edit' => Pages\EditVote::route('/{record}/edit'),
+            'edit'   => Pages\EditVote::route('/{record}/edit'),
         ];
     }
 

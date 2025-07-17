@@ -65,10 +65,10 @@ class ReconciliationReportResource extends Resource
                         ->badge()
                         ->color(
                             fn (string $state): string => match ($state) {
-                                'completed' => 'success',
-                                'failed' => 'danger',
+                                'completed'   => 'success',
+                                'failed'      => 'danger',
                                 'in_progress' => 'warning',
-                                default => 'gray',
+                                default       => 'gray',
                             }
                         ),
 

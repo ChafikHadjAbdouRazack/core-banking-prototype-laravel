@@ -127,7 +127,7 @@ class Stablecoin extends Model
      * Get active collateral positions.
      */
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function activePositions(): HasMany
     {

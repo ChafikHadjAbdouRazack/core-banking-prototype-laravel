@@ -44,9 +44,9 @@ class PaymentVerificationServiceTest extends ServiceTestCase
     {
         $round = CgoPricingRound::factory()->create();
         $investment = CgoInvestment::factory()->withStripePayment()->create([
-            'status' => 'pending',
+            'status'   => 'pending',
             'round_id' => $round->id,
-            'email' => 'investor@example.com',
+            'email'    => 'investor@example.com',
         ]);
 
         $this->stripeService->shouldReceive('verifyPayment')
@@ -74,7 +74,7 @@ class PaymentVerificationServiceTest extends ServiceTestCase
     {
         $investment = CgoInvestment::factory()->withCoinbasePayment()->create([
             'status' => 'pending',
-            'email' => 'investor@example.com',
+            'email'  => 'investor@example.com',
         ]);
 
         $this->coinbaseService->shouldReceive('getCharge')
@@ -99,11 +99,11 @@ class PaymentVerificationServiceTest extends ServiceTestCase
     public function test_verify_manual_crypto_payment_with_tx_hash()
     {
         $investment = CgoInvestment::factory()->create([
-            'payment_method' => 'crypto',
-            'status' => 'pending',
+            'payment_method'          => 'crypto',
+            'status'                  => 'pending',
             'crypto_transaction_hash' => 'tx_123abc',
-            'coinbase_charge_id' => null,
-            'email' => 'investor@example.com',
+            'coinbase_charge_id'      => null,
+            'email'                   => 'investor@example.com',
         ]);
 
         $result = $this->service->verifyPayment($investment);
@@ -118,10 +118,10 @@ class PaymentVerificationServiceTest extends ServiceTestCase
     public function test_verify_bank_transfer_requires_manual_confirmation()
     {
         $investment = CgoInvestment::factory()->create([
-            'payment_method' => 'bank_transfer',
-            'status' => 'pending',
+            'payment_method'          => 'bank_transfer',
+            'status'                  => 'pending',
             'bank_transfer_reference' => 'REF123',
-            'payment_status' => 'pending',
+            'payment_status'          => 'pending',
         ]);
 
         $result = $this->service->verifyPayment($investment);
@@ -142,28 +142,28 @@ class PaymentVerificationServiceTest extends ServiceTestCase
         // Card payment - expires after 1 hour
         $cardInvestment = CgoInvestment::factory()->create([
             'payment_method' => 'card',
-            'created_at' => now()->subHours(2),
+            'created_at'     => now()->subHours(2),
         ]);
         $this->assertTrue($this->service->isPaymentExpired($cardInvestment));
 
         // Crypto payment - expires after 24 hours
         $cryptoInvestment = CgoInvestment::factory()->create([
             'payment_method' => 'crypto',
-            'created_at' => now()->subHours(25),
+            'created_at'     => now()->subHours(25),
         ]);
         $this->assertTrue($this->service->isPaymentExpired($cryptoInvestment));
 
         // Bank transfer - expires after 72 hours
         $bankInvestment = CgoInvestment::factory()->create([
             'payment_method' => 'bank_transfer',
-            'created_at' => now()->subHours(73),
+            'created_at'     => now()->subHours(73),
         ]);
         $this->assertTrue($this->service->isPaymentExpired($bankInvestment));
 
         // Not expired
         $recentInvestment = CgoInvestment::factory()->create([
             'payment_method' => 'card',
-            'created_at' => now()->subMinutes(30),
+            'created_at'     => now()->subMinutes(30),
         ]);
         $this->assertFalse($this->service->isPaymentExpired($recentInvestment));
     }
@@ -173,22 +173,22 @@ class PaymentVerificationServiceTest extends ServiceTestCase
     {
         // Create expired investments
         $expired1 = CgoInvestment::factory()->create([
-            'status' => 'pending',
+            'status'         => 'pending',
             'payment_method' => 'card',
-            'created_at' => now()->subHours(2),
+            'created_at'     => now()->subHours(2),
         ]);
 
         $expired2 = CgoInvestment::factory()->create([
-            'status' => 'pending',
+            'status'         => 'pending',
             'payment_method' => 'crypto',
-            'created_at' => now()->subHours(25),
+            'created_at'     => now()->subHours(25),
         ]);
 
         // Create non-expired investment
         $notExpired = CgoInvestment::factory()->create([
-            'status' => 'pending',
+            'status'         => 'pending',
             'payment_method' => 'card',
-            'created_at' => now()->subMinutes(30),
+            'created_at'     => now()->subMinutes(30),
         ]);
 
         $count = $this->service->handleExpiredPayments();
@@ -208,7 +208,7 @@ class PaymentVerificationServiceTest extends ServiceTestCase
     public function test_mark_payment_failed()
     {
         $investment = CgoInvestment::factory()->create([
-            'status' => 'pending',
+            'status'         => 'pending',
             'payment_status' => 'pending',
         ]);
 
@@ -227,21 +227,21 @@ class PaymentVerificationServiceTest extends ServiceTestCase
 
         // Create pending investments
         $pending1 = CgoInvestment::factory()->withStripePayment()->create([
-            'status' => 'pending',
+            'status'   => 'pending',
             'round_id' => $round->id,
         ]);
 
         $pending2 = CgoInvestment::factory()->create([
-            'status' => 'pending',
-            'payment_method' => 'crypto',
+            'status'                  => 'pending',
+            'payment_method'          => 'crypto',
             'crypto_transaction_hash' => 'tx_456',
-            'round_id' => $round->id,
-            'email' => 'investor2@example.com',
+            'round_id'                => $round->id,
+            'email'                   => 'investor2@example.com',
         ]);
 
         // Create old pending investment (should be ignored)
         $oldPending = CgoInvestment::factory()->create([
-            'status' => 'pending',
+            'status'     => 'pending',
             'created_at' => now()->subDays(8),
         ]);
 
@@ -266,7 +266,7 @@ class PaymentVerificationServiceTest extends ServiceTestCase
     public function test_certificate_number_generation()
     {
         $investment = CgoInvestment::factory()->create([
-            'id' => 123,
+            'id'   => 123,
             'tier' => 'gold',
         ]);
 

@@ -29,12 +29,12 @@ it('can render webhook creation page', function () {
 
 it('can create webhook', function () {
     $webhookData = [
-        'name' => 'Test Webhook',
-        'url' => 'https://api.example.com/webhooks',
-        'events' => ['account.created', 'transaction.created'],
-        'is_active' => true,
+        'name'            => 'Test Webhook',
+        'url'             => 'https://api.example.com/webhooks',
+        'events'          => ['account.created', 'transaction.created'],
+        'is_active'       => true,
         'timeout_seconds' => 30,
-        'retry_attempts' => 3,
+        'retry_attempts'  => 3,
     ];
 
     livewire(WebhookResource\Pages\CreateWebhook::class)
@@ -43,8 +43,8 @@ it('can create webhook', function () {
         ->assertHasNoFormErrors();
 
     $this->assertDatabaseHas('webhooks', [
-        'name' => 'Test Webhook',
-        'url' => 'https://api.example.com/webhooks',
+        'name'      => 'Test Webhook',
+        'url'       => 'https://api.example.com/webhooks',
         'is_active' => true,
     ]);
 });
@@ -52,8 +52,8 @@ it('can create webhook', function () {
 it('validates required fields when creating webhook', function () {
     livewire(WebhookResource\Pages\CreateWebhook::class)
         ->fillForm([
-            'name' => '',
-            'url' => '',
+            'name'   => '',
+            'url'    => '',
             'events' => [],
         ])
         ->call('create')
@@ -63,8 +63,8 @@ it('validates required fields when creating webhook', function () {
 it('validates url format when creating webhook', function () {
     livewire(WebhookResource\Pages\CreateWebhook::class)
         ->fillForm([
-            'name' => 'Test Webhook',
-            'url' => 'invalid-url',
+            'name'   => 'Test Webhook',
+            'url'    => 'invalid-url',
             'events' => ['account.created'],
         ])
         ->call('create')
@@ -80,15 +80,15 @@ it('can render webhook edit page', function () {
 
 it('can retrieve webhook data for editing', function () {
     $webhook = Webhook::factory()->create([
-        'name' => 'Test Webhook',
-        'url' => 'https://api.example.com/webhooks',
+        'name'   => 'Test Webhook',
+        'url'    => 'https://api.example.com/webhooks',
         'events' => ['account.created', 'transaction.created'],
     ]);
 
     livewire(WebhookResource\Pages\EditWebhook::class, ['record' => $webhook->getRouteKey()])
         ->assertFormSet([
-            'name' => 'Test Webhook',
-            'url' => 'https://api.example.com/webhooks',
+            'name'   => 'Test Webhook',
+            'url'    => 'https://api.example.com/webhooks',
             'events' => ['account.created', 'transaction.created'],
         ]);
 });
@@ -97,9 +97,9 @@ it('can update webhook', function () {
     $webhook = Webhook::factory()->create();
 
     $newData = [
-        'name' => 'Updated Webhook',
-        'url' => 'https://api.updated.com/webhooks',
-        'events' => ['transfer.completed'],
+        'name'      => 'Updated Webhook',
+        'url'       => 'https://api.updated.com/webhooks',
+        'events'    => ['transfer.completed'],
         'is_active' => false,
     ];
 
@@ -252,11 +252,11 @@ it('shows last delivery status', function () {
 
     // Create a delivery record
     $webhook->deliveries()->create([
-        'event_type' => 'account.created',
-        'payload' => json_encode(['test' => 'data']),
-        'status' => 'success',
+        'event_type'    => 'account.created',
+        'payload'       => json_encode(['test' => 'data']),
+        'status'        => 'success',
         'response_code' => 200,
-        'delivered_at' => now(),
+        'delivered_at'  => now(),
     ]);
 
     livewire(WebhookResource\Pages\ViewWebhook::class, ['record' => $webhook->getRouteKey()])
@@ -267,8 +267,8 @@ it('shows last delivery status', function () {
 it('displays webhook configuration details', function () {
     $webhook = Webhook::factory()->create([
         'timeout_seconds' => 45,
-        'retry_attempts' => 5,
-        'headers' => ['X-API-Key' => 'secret-key'],
+        'retry_attempts'  => 5,
+        'headers'         => ['X-API-Key' => 'secret-key'],
     ]);
 
     livewire(WebhookResource\Pages\ViewWebhook::class, ['record' => $webhook->getRouteKey()])

@@ -64,9 +64,9 @@ class OrderBookResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListOrderBooks::route('/'),
+            'index'  => Pages\ListOrderBooks::route('/'),
             'create' => Pages\CreateOrderBook::route('/create'),
-            'edit' => Pages\EditOrderBook::route('/{record}/edit'),
+            'edit'   => Pages\EditOrderBook::route('/{record}/edit'),
         ];
     }
 }

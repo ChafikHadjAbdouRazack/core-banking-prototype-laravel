@@ -96,10 +96,10 @@ Route::middleware(['auth.api_or_sanctum:read'])->group(function () {
 
         return response()->json([
             'data' => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'uuid' => $user->uuid,
+                'id'         => $user->id,
+                'name'       => $user->name,
+                'email'      => $user->email,
+                'uuid'       => $user->uuid,
                 'created_at' => $user->created_at,
                 'updated_at' => $user->updated_at,
             ],

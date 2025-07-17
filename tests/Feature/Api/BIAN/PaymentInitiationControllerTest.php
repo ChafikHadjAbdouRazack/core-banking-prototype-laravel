@@ -25,8 +25,8 @@ it('rejects payment with insufficient funds', function () {
     $response = $this->postJson('/api/bian/payment-initiation/initiate', [
         'payerReference' => $payerAccount->uuid,
         'payeeReference' => $payeeAccount->uuid,
-        'paymentAmount' => 500,
-        'paymentType' => 'internal',
+        'paymentAmount'  => 500,
+        'paymentType'    => 'internal',
     ]);
 
     $response->assertStatus(422)
@@ -44,9 +44,9 @@ it('can schedule a future payment', function () {
     $response = $this->postJson('/api/bian/payment-initiation/initiate', [
         'payerReference' => $payerAccount->uuid,
         'payeeReference' => $payeeAccount->uuid,
-        'paymentAmount' => 300,
-        'paymentType' => 'scheduled',
-        'valueDate' => now()->addDays(7)->toDateString(),
+        'paymentAmount'  => 300,
+        'paymentType'    => 'scheduled',
+        'valueDate'      => now()->addDays(7)->toDateString(),
     ]);
 
     $response->assertStatus(201)
@@ -61,7 +61,7 @@ it('can update a payment transaction', function () {
 
     $response = $this->putJson("/api/bian/payment-initiation/{$crReferenceId}/update", [
         'paymentStatus' => 'cancelled',
-        'statusReason' => 'Customer requested cancellation',
+        'statusReason'  => 'Customer requested cancellation',
     ]);
 
     $response->assertStatus(200)
@@ -155,8 +155,8 @@ it('prevents payment to same account', function () {
     $response = $this->postJson('/api/bian/payment-initiation/initiate', [
         'payerReference' => $account->uuid,
         'payeeReference' => $account->uuid,
-        'paymentAmount' => 100,
-        'paymentType' => 'internal',
+        'paymentAmount'  => 100,
+        'paymentType'    => 'internal',
     ]);
 
     $response->assertStatus(422)

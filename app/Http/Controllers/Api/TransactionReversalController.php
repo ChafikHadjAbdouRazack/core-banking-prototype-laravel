@@ -92,12 +92,12 @@ class TransactionReversalController extends Controller
     {
         $validated = $request->validate(
             [
-                'amount' => 'required|numeric|min:0.01',
-                'asset_code' => 'required|string|exists:assets,code',
-                'transaction_type' => ['required', 'string', Rule::in(['debit', 'credit'])],
-                'reversal_reason' => 'required|string|max:500',
+                'amount'                  => 'required|numeric|min:0.01',
+                'asset_code'              => 'required|string|exists:assets,code',
+                'transaction_type'        => ['required', 'string', Rule::in(['debit', 'credit'])],
+                'reversal_reason'         => 'required|string|max:500',
                 'original_transaction_id' => 'nullable|string|max:255',
-                'authorized_by' => 'nullable|string|max:255',
+                'authorized_by'           => 'nullable|string|max:255',
             ]
         );
 
@@ -130,17 +130,17 @@ class TransactionReversalController extends Controller
             return response()->json(
                 [
                     'message' => 'Transaction reversal initiated successfully',
-                    'data' => [
-                        'reversal_id' => $reversalId,
-                        'account_uuid' => $account->uuid,
-                        'amount' => $validated['amount'],
-                        'asset_code' => $validated['asset_code'],
-                        'transaction_type' => $validated['transaction_type'],
-                        'reversal_reason' => $validated['reversal_reason'],
+                    'data'    => [
+                        'reversal_id'             => $reversalId,
+                        'account_uuid'            => $account->uuid,
+                        'amount'                  => $validated['amount'],
+                        'asset_code'              => $validated['asset_code'],
+                        'transaction_type'        => $validated['transaction_type'],
+                        'reversal_reason'         => $validated['reversal_reason'],
                         'original_transaction_id' => $validated['original_transaction_id'] ?? null,
-                        'authorized_by' => $validated['authorized_by'] ?? Auth::user()->email,
-                        'status' => 'initiated',
-                        'created_at' => now()->toISOString(),
+                        'authorized_by'           => $validated['authorized_by'] ?? Auth::user()->email,
+                        'status'                  => 'initiated',
+                        'created_at'              => now()->toISOString(),
                     ],
                 ],
                 200
@@ -150,17 +150,17 @@ class TransactionReversalController extends Controller
                 'Transaction reversal API failed',
                 [
                     'account_uuid' => $uuid,
-                    'amount' => $validated['amount'],
-                    'asset_code' => $validated['asset_code'],
-                    'error' => $e->getMessage(),
-                    'user_id' => Auth::id(),
+                    'amount'       => $validated['amount'],
+                    'asset_code'   => $validated['asset_code'],
+                    'error'        => $e->getMessage(),
+                    'user_id'      => Auth::id(),
                 ]
             );
 
             return response()->json(
                 [
                     'message' => 'Transaction reversal failed',
-                    'error' => $e->getMessage(),
+                    'error'   => $e->getMessage(),
                 ],
                 500
             );
@@ -233,7 +233,7 @@ class TransactionReversalController extends Controller
     {
         $validated = $request->validate(
             [
-                'limit' => 'integer|min:1|max:100',
+                'limit'  => 'integer|min:1|max:100',
                 'offset' => 'integer|min:0',
             ]
         );
@@ -251,37 +251,37 @@ class TransactionReversalController extends Controller
         // For now, return mock data structure
         $mockReversals = [
             [
-                'reversal_id' => 'rev_' . uniqid(),
-                'amount' => 150.00,
-                'asset_code' => 'USD',
-                'transaction_type' => 'debit',
-                'reversal_reason' => 'Unauthorized transaction detected by fraud system',
+                'reversal_id'             => 'rev_' . uniqid(),
+                'amount'                  => 150.00,
+                'asset_code'              => 'USD',
+                'transaction_type'        => 'debit',
+                'reversal_reason'         => 'Unauthorized transaction detected by fraud system',
                 'original_transaction_id' => 'txn_123456789',
-                'authorized_by' => 'security@finaegis.org',
-                'status' => 'completed',
-                'created_at' => now()->subDays(2)->toISOString(),
-                'completed_at' => now()->subDays(2)->addMinutes(5)->toISOString(),
+                'authorized_by'           => 'security@finaegis.org',
+                'status'                  => 'completed',
+                'created_at'              => now()->subDays(2)->toISOString(),
+                'completed_at'            => now()->subDays(2)->addMinutes(5)->toISOString(),
             ],
             [
-                'reversal_id' => 'rev_' . uniqid(),
-                'amount' => 75.50,
-                'asset_code' => 'EUR',
-                'transaction_type' => 'credit',
-                'reversal_reason' => 'Duplicate transaction',
+                'reversal_id'             => 'rev_' . uniqid(),
+                'amount'                  => 75.50,
+                'asset_code'              => 'EUR',
+                'transaction_type'        => 'credit',
+                'reversal_reason'         => 'Duplicate transaction',
                 'original_transaction_id' => 'txn_987654321',
-                'authorized_by' => Auth::user()->email,
-                'status' => 'pending',
-                'created_at' => now()->subHours(6)->toISOString(),
-                'completed_at' => null,
+                'authorized_by'           => Auth::user()->email,
+                'status'                  => 'pending',
+                'created_at'              => now()->subHours(6)->toISOString(),
+                'completed_at'            => null,
             ],
         ];
 
         return response()->json(
             [
-                'data' => array_slice($mockReversals, $offset, $limit),
+                'data'       => array_slice($mockReversals, $offset, $limit),
                 'pagination' => [
-                    'total' => count($mockReversals),
-                    'limit' => $limit,
+                    'total'  => count($mockReversals),
+                    'limit'  => $limit,
                     'offset' => $offset,
                 ],
             ]
@@ -338,9 +338,9 @@ class TransactionReversalController extends Controller
         // TODO: In a real implementation, fetch from reversal tracking table
         // For now, return mock status data
         $mockStatus = [
-            'reversal_id' => $reversalId,
-            'status' => 'completed',
-            'progress' => 100,
+            'reversal_id'     => $reversalId,
+            'status'          => 'completed',
+            'progress'        => 100,
             'steps_completed' => [
                 'validation',
                 'authorization_check',
@@ -349,8 +349,8 @@ class TransactionReversalController extends Controller
                 'audit_logging',
             ],
             'error_message' => null,
-            'created_at' => now()->subMinutes(30)->toISOString(),
-            'updated_at' => now()->subMinutes(25)->toISOString(),
+            'created_at'    => now()->subMinutes(30)->toISOString(),
+            'updated_at'    => now()->subMinutes(25)->toISOString(),
         ];
 
         return response()->json(

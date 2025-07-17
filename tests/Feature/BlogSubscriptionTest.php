@@ -28,9 +28,9 @@ class BlogSubscriptionTest extends TestCase
         // Mock successful Mailchimp response
         Http::fake([
             '*.api.mailchimp.com/*' => Http::response([
-                'id' => 'abc123',
+                'id'            => 'abc123',
                 'email_address' => 'test@example.com',
-                'status' => 'subscribed',
+                'status'        => 'subscribed',
             ], 200),
         ]);
 
@@ -55,8 +55,8 @@ class BlogSubscriptionTest extends TestCase
         // Mock "already subscribed" response
         Http::fake([
             '*.api.mailchimp.com/*' => Http::response([
-                'type' => 'http://developer.mailchimp.com/documentation/mailchimp/guides/error-glossary/',
-                'title' => 'Member Exists',
+                'type'   => 'http://developer.mailchimp.com/documentation/mailchimp/guides/error-glossary/',
+                'title'  => 'Member Exists',
                 'status' => 400,
                 'detail' => 'test@example.com is already a list member',
             ], 400),
@@ -111,8 +111,8 @@ class BlogSubscriptionTest extends TestCase
         // Mock error response
         Http::fake([
             '*.api.mailchimp.com/*' => Http::response([
-                'type' => 'http://developer.mailchimp.com/documentation/mailchimp/guides/error-glossary/',
-                'title' => 'API Key Invalid',
+                'type'   => 'http://developer.mailchimp.com/documentation/mailchimp/guides/error-glossary/',
+                'title'  => 'API Key Invalid',
                 'status' => 401,
                 'detail' => 'Your API key may be invalid',
             ], 401),

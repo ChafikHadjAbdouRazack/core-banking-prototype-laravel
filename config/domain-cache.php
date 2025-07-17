@@ -12,10 +12,10 @@ return [
     */
 
     'ttl' => [
-        'account' => env('CACHE_TTL_ACCOUNT', 3600),        // 1 hour
-        'balance' => env('CACHE_TTL_BALANCE', 300),         // 5 minutes
-        'transaction' => env('CACHE_TTL_TRANSACTION', 1800), // 30 minutes
-        'turnover' => env('CACHE_TTL_TURNOVER', 7200),     // 2 hours
+        'account'       => env('CACHE_TTL_ACCOUNT', 3600),        // 1 hour
+        'balance'       => env('CACHE_TTL_BALANCE', 300),         // 5 minutes
+        'transaction'   => env('CACHE_TTL_TRANSACTION', 1800), // 30 minutes
+        'turnover'      => env('CACHE_TTL_TURNOVER', 7200),     // 2 hours
         'daily_summary' => env('CACHE_TTL_DAILY_SUMMARY', 86400), // 24 hours
     ],
 
@@ -40,9 +40,9 @@ return [
     */
 
     'warmup' => [
-        'enabled' => env('CACHE_WARMUP_ENABLED', true),
+        'enabled'    => env('CACHE_WARMUP_ENABLED', true),
         'chunk_size' => env('CACHE_WARMUP_CHUNK_SIZE', 100),
-        'delay_ms' => env('CACHE_WARMUP_DELAY_MS', 50), // Delay between chunks
+        'delay_ms'   => env('CACHE_WARMUP_DELAY_MS', 50), // Delay between chunks
     ],
 
     /*
@@ -55,9 +55,9 @@ return [
     */
 
     'monitoring' => [
-        'enabled' => env('CACHE_MONITORING_ENABLED', true),
+        'enabled'                => env('CACHE_MONITORING_ENABLED', true),
         'low_hit_rate_threshold' => env('CACHE_LOW_HIT_RATE_THRESHOLD', 50), // Percentage
-        'log_performance' => env('CACHE_LOG_PERFORMANCE', true),
+        'log_performance'        => env('CACHE_LOG_PERFORMANCE', true),
     ],
 
 ];

@@ -10,30 +10,29 @@ class BasketPerformanceResourceTest extends TestCase
     private function createBasketPerformance(array $attributes = []): object
     {
         $defaults = [
-            'id' => 1,
+            'id'                => 1,
             'basket_asset_code' => 'GCU',
-            'period_type' => 'day',
-            'period_start' => now()->subDay(),
-            'period_end' => now(),
-            'start_value' => 100.0,
-            'end_value' => 105.0,
-            'high_value' => 107.0,
-            'low_value' => 99.0,
-            'average_value' => 103.0,
-            'return_value' => 5.0,
+            'period_type'       => 'day',
+            'period_start'      => now()->subDay(),
+            'period_end'        => now(),
+            'start_value'       => 100.0,
+            'end_value'         => 105.0,
+            'high_value'        => 107.0,
+            'low_value'         => 99.0,
+            'average_value'     => 103.0,
+            'return_value'      => 5.0,
             'return_percentage' => 5.0,
-            'volatility' => 12.0,
-            'sharpe_ratio' => 1.2,
-            'max_drawdown' => 2.0,
-            'value_count' => 24,
-            'created_at' => now(),
-            'updated_at' => now(),
+            'volatility'        => 12.0,
+            'sharpe_ratio'      => 1.2,
+            'max_drawdown'      => 2.0,
+            'value_count'       => 24,
+            'created_at'        => now(),
+            'updated_at'        => now(),
         ];
 
         $data = array_merge($defaults, $attributes);
 
-        return new class ($data)
-        {
+        return new class ($data) {
             private array $attributes;
 
             private array $relations = [];
@@ -138,18 +137,18 @@ class BasketPerformanceResourceTest extends TestCase
     {
         $basketPerformance = $this->createBasketPerformance([
             'basket_asset_code' => 'GCU',
-            'period_type' => 'day',
-            'start_value' => 100.123456,
-            'end_value' => 105.987654,
-            'high_value' => 107.555555,
-            'low_value' => 99.111111,
-            'average_value' => 103.333333,
-            'return_value' => 5.864198,
+            'period_type'       => 'day',
+            'start_value'       => 100.123456,
+            'end_value'         => 105.987654,
+            'high_value'        => 107.555555,
+            'low_value'         => 99.111111,
+            'average_value'     => 103.333333,
+            'return_value'      => 5.864198,
             'return_percentage' => 5.8642,
-            'volatility' => 12.3456,
-            'sharpe_ratio' => 1.2345,
-            'max_drawdown' => 2.3456,
-            'value_count' => 24,
+            'volatility'        => 12.3456,
+            'sharpe_ratio'      => 1.2345,
+            'max_drawdown'      => 2.3456,
+            'value_count'       => 24,
         ]);
 
         $resource = new BasketPerformanceResource($basketPerformance);
@@ -179,7 +178,7 @@ class BasketPerformanceResourceTest extends TestCase
     public function test_handles_null_risk_metrics(): void
     {
         $basketPerformance = $this->createBasketPerformance([
-            'volatility' => null,
+            'volatility'   => null,
             'sharpe_ratio' => null,
             'max_drawdown' => null,
         ]);

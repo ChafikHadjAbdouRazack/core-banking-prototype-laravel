@@ -27,8 +27,8 @@ class FreezeAccountTest extends DomainTestCase
     {
         // Create account
         $account = Account::factory()->create([
-            'uuid' => 'account-123',
-            'name' => 'Active Account',
+            'uuid'   => 'account-123',
+            'name'   => 'Active Account',
             'frozen' => false,
         ]);
 
@@ -49,8 +49,8 @@ class FreezeAccountTest extends DomainTestCase
     {
         // Create already frozen account
         $account = Account::factory()->create([
-            'uuid' => 'frozen-account',
-            'name' => 'Already Frozen Account',
+            'uuid'   => 'frozen-account',
+            'name'   => 'Already Frozen Account',
             'frozen' => true,
         ]);
 
@@ -85,20 +85,20 @@ class FreezeAccountTest extends DomainTestCase
     {
         // Create account with balances
         $account = Account::factory()->create([
-            'uuid' => 'account-with-balance',
-            'name' => 'Account with Balance',
+            'uuid'   => 'account-with-balance',
+            'name'   => 'Account with Balance',
             'frozen' => false,
         ]);
 
         // Create account balances
         $account->balances()->create([
             'asset_code' => 'USD',
-            'balance' => 10000,
+            'balance'    => 10000,
         ]);
 
         $account->balances()->create([
             'asset_code' => 'EUR',
-            'balance' => 5000,
+            'balance'    => 5000,
         ]);
 
         // Create event

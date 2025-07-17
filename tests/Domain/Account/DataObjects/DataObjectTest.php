@@ -18,7 +18,7 @@ readonly class TestDataObject extends DataObject
     public function toArray(): array
     {
         return [
-            'name' => $this->name,
+            'name'  => $this->name,
             'value' => $this->value,
         ];
     }
@@ -40,7 +40,7 @@ it('can convert to array', function () {
     $array = $object->toArray();
 
     expect($array)->toBe([
-        'name' => 'test',
+        'name'  => 'test',
         'value' => 42,
     ]);
 });

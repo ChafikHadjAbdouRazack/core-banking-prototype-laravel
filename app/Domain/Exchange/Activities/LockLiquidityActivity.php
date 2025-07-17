@@ -2,7 +2,6 @@
 
 namespace App\Domain\Exchange\Activities;
 
-use Illuminate\Support\Str;
 use App\Domain\Account\Models\AccountBalance;
 use Brick\Math\BigDecimal;
 use Illuminate\Support\Facades\DB;

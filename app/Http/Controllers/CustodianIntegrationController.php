@@ -129,7 +129,7 @@ class CustodianIntegrationController extends Controller
                 [
                     'success' => true,
                     'message' => 'Connection successful',
-                    'data' => $result,
+                    'data'    => $result,
                 ]
             );
         } catch (\Exception $e) {
@@ -182,14 +182,14 @@ class CustodianIntegrationController extends Controller
             $lastSync = Cache::get("custodian_last_sync_{$code}");
 
             $status[] = [
-                'code' => $code,
-                'name' => $config['name'] ?? $code,
-                'type' => $config['type'] ?? 'unknown',
-                'status' => $health['status'] ?? 'unknown',
+                'code'         => $code,
+                'name'         => $config['name'] ?? $code,
+                'type'         => $config['type'] ?? 'unknown',
+                'status'       => $health['status'] ?? 'unknown',
                 'health_score' => $health['score'] ?? 0,
-                'accounts' => $accounts,
-                'last_sync' => $lastSync,
-                'features' => $config['features'] ?? [],
+                'accounts'     => $accounts,
+                'last_sync'    => $lastSync,
+                'features'     => $config['features'] ?? [],
             ];
         }
 
@@ -208,15 +208,15 @@ class CustodianIntegrationController extends Controller
             ->map(
                 function ($transfer) {
                     return [
-                        'id' => $transfer->id,
-                        'custodian' => $transfer->custodian_code,
-                        'type' => $transfer->type,
-                        'amount' => $transfer->amount,
-                        'currency' => $transfer->currency,
-                        'status' => $transfer->status,
-                        'source' => $transfer->sourceAccount->name ?? 'External',
+                        'id'          => $transfer->id,
+                        'custodian'   => $transfer->custodian_code,
+                        'type'        => $transfer->type,
+                        'amount'      => $transfer->amount,
+                        'currency'    => $transfer->currency,
+                        'status'      => $transfer->status,
+                        'source'      => $transfer->sourceAccount->name ?? 'External',
                         'destination' => $transfer->destinationAccount->name ?? 'External',
-                        'created_at' => $transfer->created_at,
+                        'created_at'  => $transfer->created_at,
                     ];
                 }
             );
@@ -243,11 +243,11 @@ class CustodianIntegrationController extends Controller
             );
 
         return [
-            'total' => $total,
-            'processed' => $processed,
-            'failed' => $failed,
-            'pending' => $pending,
-            'success_rate' => $total > 0 ? round(($processed / $total) * 100, 2) : 0,
+            'total'               => $total,
+            'processed'           => $processed,
+            'failed'              => $failed,
+            'pending'             => $pending,
+            'success_rate'        => $total > 0 ? round(($processed / $total) * 100, 2) : 0,
             'recent_by_custodian' => $recentWebhooks,
         ];
     }
@@ -269,8 +269,8 @@ class CustodianIntegrationController extends Controller
                 'custodian' => $code,
                 'last_sync' => $lastSync,
                 'next_sync' => $nextSync,
-                'errors' => $syncErrors,
-                'status' => $this->getSyncStatusLabel($lastSync),
+                'errors'    => $syncErrors,
+                'status'    => $this->getSyncStatusLabel($lastSync),
             ];
         }
 
@@ -288,10 +288,10 @@ class CustodianIntegrationController extends Controller
         foreach (array_keys($custodians) as $code) {
             $health = $this->healthMonitor->getHealth($code);
             $metrics[$code] = [
-                'status' => $health['status'] ?? 'unknown',
-                'score' => $health['score'] ?? 0,
-                'response_time' => $health['response_time'] ?? null,
-                'error_rate' => $health['error_rate'] ?? 0,
+                'status'          => $health['status'] ?? 'unknown',
+                'score'           => $health['score'] ?? 0,
+                'response_time'   => $health['response_time'] ?? null,
+                'error_rate'      => $health['error_rate'] ?? 0,
                 'circuit_breaker' => $health['circuit_breaker_status'] ?? 'closed',
             ];
         }
@@ -313,15 +313,15 @@ class CustodianIntegrationController extends Controller
         $health = $this->healthMonitor->getHealth($custodianCode);
 
         return [
-            'code' => $custodianCode,
-            'name' => $config['name'] ?? $custodianCode,
-            'type' => $config['type'] ?? 'unknown',
-            'base_url' => $config['base_url'] ?? null,
-            'features' => $config['features'] ?? [],
-            'health' => $health,
+            'code'          => $custodianCode,
+            'name'          => $config['name'] ?? $custodianCode,
+            'type'          => $config['type'] ?? 'unknown',
+            'base_url'      => $config['base_url'] ?? null,
+            'features'      => $config['features'] ?? [],
+            'health'        => $health,
             'configuration' => [
-                'timeout' => $config['timeout'] ?? 30,
-                'retry_attempts' => $config['retry_attempts'] ?? 3,
+                'timeout'                   => $config['timeout'] ?? 30,
+                'retry_attempts'            => $config['retry_attempts'] ?? 3,
                 'circuit_breaker_threshold' => $config['circuit_breaker_threshold'] ?? 5,
             ],
         ];
@@ -340,9 +340,9 @@ class CustodianIntegrationController extends Controller
             $history = [];
             for ($i = 23; $i >= 0; $i--) {
                 $history[] = [
-                    'timestamp' => now()->subHours($i),
-                    'status' => rand(0, 100) > 10 ? 'healthy' : 'degraded',
-                    'score' => rand(70, 100),
+                    'timestamp'     => now()->subHours($i),
+                    'status'        => rand(0, 100) > 10 ? 'healthy' : 'degraded',
+                    'score'         => rand(70, 100),
                     'response_time' => rand(100, 500),
                 ];
             }

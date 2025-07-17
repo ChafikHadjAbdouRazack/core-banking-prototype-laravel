@@ -82,18 +82,18 @@ class VotingSetupCommand extends Command
 
         $proposal = GcuVotingProposal::create(
             [
-                'title' => "GCU Composition Vote - {$targetMonth->format('F Y')}",
-                'description' => "Monthly voting poll to determine the Global Currency Unit composition for {$targetMonth->format('F Y')}. Vote on the optimal currency basket allocation.",
-                'rationale' => 'This is the regular monthly composition vote allowing GCU holders to democratically determine the basket weights based on current economic conditions and community consensus.',
-                'proposed_composition' => $currentComposition, // Start with current as template
-                'current_composition' => $currentComposition,
-                'status' => 'active',
-                'voting_starts_at' => $votingStartDate,
-                'voting_ends_at' => $votingEndDate,
+                'title'                 => "GCU Composition Vote - {$targetMonth->format('F Y')}",
+                'description'           => "Monthly voting poll to determine the Global Currency Unit composition for {$targetMonth->format('F Y')}. Vote on the optimal currency basket allocation.",
+                'rationale'             => 'This is the regular monthly composition vote allowing GCU holders to democratically determine the basket weights based on current economic conditions and community consensus.',
+                'proposed_composition'  => $currentComposition, // Start with current as template
+                'current_composition'   => $currentComposition,
+                'status'                => 'active',
+                'voting_starts_at'      => $votingStartDate,
+                'voting_ends_at'        => $votingEndDate,
                 'minimum_participation' => 10,
-                'minimum_approval' => 50,
-                'total_gcu_supply' => $totalGcuSupply,
-                'created_by' => User::role('admin')->first()?->id,
+                'minimum_approval'      => 50,
+                'total_gcu_supply'      => $totalGcuSupply,
+                'created_by'            => User::role('admin')->first()?->id,
             ]
         );
 

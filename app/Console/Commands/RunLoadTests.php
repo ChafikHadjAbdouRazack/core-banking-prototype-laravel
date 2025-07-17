@@ -132,9 +132,9 @@ class RunLoadTests extends Command
         $totalTime = microtime(true) - $startTime;
 
         $this->results[$test] = [
-            'iterations' => $iterations,
-            'total_time' => $totalTime,
-            'avg_time' => $totalTime / $iterations,
+            'iterations'     => $iterations,
+            'total_time'     => $totalTime,
+            'avg_time'       => $totalTime / $iterations,
             'ops_per_second' => $iterations / $totalTime,
         ];
 
@@ -162,8 +162,8 @@ class RunLoadTests extends Command
             AccountBalance::create(
                 [
                     'account_uuid' => $account->uuid,
-                    'asset_code' => 'USD',
-                    'balance' => 100000,
+                    'asset_code'   => 'USD',
+                    'balance'      => 100000,
                 ]
             );
 
@@ -186,8 +186,8 @@ class RunLoadTests extends Command
             AccountBalance::create(
                 [
                     'account_uuid' => $account->uuid,
-                    'asset_code' => 'USD',
-                    'balance' => 10000000, // $100,000
+                    'asset_code'   => 'USD',
+                    'balance'      => 10000000, // $100,000
                 ]
             );
             $accounts[] = $account;
@@ -247,9 +247,9 @@ class RunLoadTests extends Command
         // Create test webhook
         $webhook = Webhook::create(
             [
-                'uuid' => \Illuminate\Support\Str::uuid(),
-                'name' => 'Load Test Webhook',
-                'url' => 'https://httpbin.org/post',
+                'uuid'   => \Illuminate\Support\Str::uuid(),
+                'name'   => 'Load Test Webhook',
+                'url'    => 'https://httpbin.org/post',
                 'events' => ['account.created', 'transaction.completed'],
                 'secret' => \Illuminate\Support\Str::random(32),
             ]
@@ -304,7 +304,7 @@ class RunLoadTests extends Command
     private function testCacheOperations(int $iterations): void
     {
         $data = [
-            'account' => Account::factory()->make()->toArray(),
+            'account'  => Account::factory()->make()->toArray(),
             'balances' => [
                 'USD' => 100000,
                 'EUR' => 50000,
@@ -312,7 +312,7 @@ class RunLoadTests extends Command
             ],
             'metadata' => [
                 'last_updated' => now()->toIso8601String(),
-                'version' => '1.0',
+                'version'      => '1.0',
             ],
         ];
 
@@ -368,9 +368,9 @@ class RunLoadTests extends Command
 
         $thresholds = [
             'account-creation' => 100, // ms
-            'transfers' => 200,
-            'exchange-rates' => 50,
-            'webhooks' => 50,
+            'transfers'        => 200,
+            'exchange-rates'   => 50,
+            'webhooks'         => 50,
             'database-queries' => 100,
             'cache-operations' => 1,
         ];
@@ -408,14 +408,14 @@ class RunLoadTests extends Command
         }
 
         $benchmark = [
-            'timestamp' => now()->toIso8601String(),
+            'timestamp'   => now()->toIso8601String(),
             'environment' => app()->environment(),
-            'system' => [
+            'system'      => [
                 'database' => config('database.default'),
-                'cache' => config('cache.default'),
-                'queue' => config('queue.default'),
-                'php' => PHP_VERSION,
-                'laravel' => app()->version(),
+                'cache'    => config('cache.default'),
+                'queue'    => config('queue.default'),
+                'php'      => PHP_VERSION,
+                'laravel'  => app()->version(),
             ],
             'results' => $this->results,
         ];

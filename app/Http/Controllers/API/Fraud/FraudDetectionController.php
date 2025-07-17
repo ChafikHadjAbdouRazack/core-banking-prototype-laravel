@@ -47,12 +47,12 @@ class FraudDetectionController extends Controller
         return response()->json(
             [
                 'fraud_score' => [
-                    'id' => $fraudScore->id,
-                    'total_score' => $fraudScore->total_score,
-                    'risk_level' => $fraudScore->risk_level,
-                    'decision' => $fraudScore->decision,
-                    'triggered_rules' => $fraudScore->triggered_rules,
-                    'score_breakdown' => $fraudScore->score_breakdown,
+                    'id'               => $fraudScore->id,
+                    'total_score'      => $fraudScore->total_score,
+                    'risk_level'       => $fraudScore->risk_level,
+                    'decision'         => $fraudScore->decision,
+                    'triggered_rules'  => $fraudScore->triggered_rules,
+                    'score_breakdown'  => $fraudScore->score_breakdown,
                     'decision_factors' => $fraudScore->decision_factors,
                 ],
                 'requires_action' => in_array(
@@ -85,17 +85,17 @@ class FraudDetectionController extends Controller
         return response()->json(
             [
                 'fraud_score' => [
-                    'id' => $fraudScore->id,
-                    'total_score' => $fraudScore->total_score,
-                    'risk_level' => $fraudScore->risk_level,
-                    'decision' => $fraudScore->decision,
-                    'score_breakdown' => $fraudScore->score_breakdown,
+                    'id'               => $fraudScore->id,
+                    'total_score'      => $fraudScore->total_score,
+                    'risk_level'       => $fraudScore->risk_level,
+                    'decision'         => $fraudScore->decision,
+                    'score_breakdown'  => $fraudScore->score_breakdown,
                     'decision_factors' => $fraudScore->decision_factors,
                 ],
                 'user_risk_profile' => [
-                    'current_rating' => $user->risk_rating,
+                    'current_rating'   => $user->risk_rating,
                     'suggested_rating' => $this->suggestRiskRating($fraudScore),
-                    'requires_review' => $fraudScore->decision === FraudScore::DECISION_REVIEW,
+                    'requires_review'  => $fraudScore->decision === FraudScore::DECISION_REVIEW,
                 ],
             ]
         );
@@ -114,7 +114,7 @@ class FraudDetectionController extends Controller
         return response()->json(
             [
                 'fraud_score' => $fraudScore,
-                'has_case' => $fraudScore->fraudCase !== null,
+                'has_case'    => $fraudScore->fraudCase !== null,
                 'case_number' => $fraudScore->fraudCase?->case_number,
             ]
         );
@@ -128,7 +128,7 @@ class FraudDetectionController extends Controller
         $request->validate(
             [
                 'outcome' => 'required|in:fraud,legitimate,unknown',
-                'notes' => 'nullable|string|max:1000',
+                'notes'   => 'nullable|string|max:1000',
             ]
         );
 
@@ -139,7 +139,7 @@ class FraudDetectionController extends Controller
 
         $fraudScore->update(
             [
-                'outcome' => $request->outcome,
+                'outcome'            => $request->outcome,
                 'outcome_updated_at' => now(),
                 'outcome_updated_by' => auth()->id(),
             ]
@@ -151,7 +151,7 @@ class FraudDetectionController extends Controller
 
         return response()->json(
             [
-                'message' => 'Fraud score outcome updated successfully',
+                'message'     => 'Fraud score outcome updated successfully',
                 'fraud_score' => $fraudScore,
             ]
         );
@@ -164,8 +164,8 @@ class FraudDetectionController extends Controller
     {
         $request->validate(
             [
-                'date_from' => 'nullable|date',
-                'date_to' => 'nullable|date|after_or_equal:date_from',
+                'date_from'   => 'nullable|date',
+                'date_to'     => 'nullable|date|after_or_equal:date_from',
                 'entity_type' => 'nullable|in:transaction,user',
             ]
         );
@@ -187,26 +187,26 @@ class FraudDetectionController extends Controller
 
         $statistics = [
             'total_analyzed' => $query->count(),
-            'by_risk_level' => [
-                'very_low' => (clone $query)->where('risk_level', FraudScore::RISK_LEVEL_VERY_LOW)->count(),
-                'low' => (clone $query)->where('risk_level', FraudScore::RISK_LEVEL_LOW)->count(),
-                'medium' => (clone $query)->where('risk_level', FraudScore::RISK_LEVEL_MEDIUM)->count(),
-                'high' => (clone $query)->where('risk_level', FraudScore::RISK_LEVEL_HIGH)->count(),
+            'by_risk_level'  => [
+                'very_low'  => (clone $query)->where('risk_level', FraudScore::RISK_LEVEL_VERY_LOW)->count(),
+                'low'       => (clone $query)->where('risk_level', FraudScore::RISK_LEVEL_LOW)->count(),
+                'medium'    => (clone $query)->where('risk_level', FraudScore::RISK_LEVEL_MEDIUM)->count(),
+                'high'      => (clone $query)->where('risk_level', FraudScore::RISK_LEVEL_HIGH)->count(),
                 'very_high' => (clone $query)->where('risk_level', FraudScore::RISK_LEVEL_VERY_HIGH)->count(),
             ],
             'by_decision' => [
-                'allow' => (clone $query)->where('decision', FraudScore::DECISION_ALLOW)->count(),
+                'allow'     => (clone $query)->where('decision', FraudScore::DECISION_ALLOW)->count(),
                 'challenge' => (clone $query)->where('decision', FraudScore::DECISION_CHALLENGE)->count(),
-                'review' => (clone $query)->where('decision', FraudScore::DECISION_REVIEW)->count(),
-                'block' => (clone $query)->where('decision', FraudScore::DECISION_BLOCK)->count(),
+                'review'    => (clone $query)->where('decision', FraudScore::DECISION_REVIEW)->count(),
+                'block'     => (clone $query)->where('decision', FraudScore::DECISION_BLOCK)->count(),
             ],
             'by_outcome' => [
-                'fraud' => (clone $query)->where('outcome', FraudScore::OUTCOME_FRAUD)->count(),
+                'fraud'      => (clone $query)->where('outcome', FraudScore::OUTCOME_FRAUD)->count(),
                 'legitimate' => (clone $query)->where('outcome', FraudScore::OUTCOME_LEGITIMATE)->count(),
-                'unknown' => (clone $query)->where('outcome', FraudScore::OUTCOME_UNKNOWN)->count(),
+                'unknown'    => (clone $query)->where('outcome', FraudScore::OUTCOME_UNKNOWN)->count(),
             ],
-            'average_score' => round((clone $query)->avg('total_score') ?? 0, 2),
-            'fraud_rate' => $this->calculateFraudRate($query),
+            'average_score'       => round((clone $query)->avg('total_score') ?? 0, 2),
+            'fraud_rate'          => $this->calculateFraudRate($query),
             'false_positive_rate' => $this->calculateFalsePositiveRate($query),
         ];
 

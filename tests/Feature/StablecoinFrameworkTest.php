@@ -146,9 +146,9 @@ class StablecoinFrameworkTest extends DomainTestCase
             title: 'Update Collateralization Ratio',
             description: 'Proposal to update the target collateralization ratio to 1.4',
             parameters: [
-                'parameter' => 'target_collateralization_ratio',
+                'parameter'     => 'target_collateralization_ratio',
                 'current_value' => '1.5',
-                'new_value' => '1.4',
+                'new_value'     => '1.4',
             ],
             proposer: 'user-123',
             startTime: now(),
@@ -286,16 +286,16 @@ class StablecoinFrameworkTest extends DomainTestCase
     {
         // Create a liquidity pool
         LiquidityPool::create([
-            'pool_id' => 'pool-test',
-            'account_id' => 1,
-            'base_currency' => 'ETH',
-            'quote_currency' => 'USDC',
-            'base_reserve' => '100',
-            'quote_reserve' => '320000',
-            'total_shares' => '1000',
-            'is_active' => true,
-            'fee_rate' => '0.003',
-            'volume_24h' => '50000',
+            'pool_id'            => 'pool-test',
+            'account_id'         => 1,
+            'base_currency'      => 'ETH',
+            'quote_currency'     => 'USDC',
+            'base_reserve'       => '100',
+            'quote_reserve'      => '320000',
+            'total_shares'       => '1000',
+            'is_active'          => true,
+            'fee_rate'           => '0.003',
+            'volume_24h'         => '50000',
             'fees_collected_24h' => '150',
         ]);
 

@@ -28,32 +28,32 @@ class RefundProcessingTest extends DomainTestCase
         $this->user = User::factory()->create();
 
         $this->round = CgoPricingRound::create([
-            'name' => 'Round 1',
-            'round_number' => 1,
-            'share_price' => 100,
+            'name'                 => 'Round 1',
+            'round_number'         => 1,
+            'share_price'          => 100,
             'max_shares_available' => 10000,
-            'shares_sold' => 0,
-            'total_raised' => 0,
-            'started_at' => now()->subDays(5),
-            'ended_at' => now()->addDays(25),
-            'is_active' => true,
+            'shares_sold'          => 0,
+            'total_raised'         => 0,
+            'started_at'           => now()->subDays(5),
+            'ended_at'             => now()->addDays(25),
+            'is_active'            => true,
         ]);
 
         $this->investment = CgoInvestment::create([
-            'uuid' => \Str::uuid(),
-            'user_id' => $this->user->id,
-            'round_id' => $this->round->id,
-            'amount' => 10000, // $100
-            'currency' => 'USD',
-            'share_price' => 100,
-            'shares_purchased' => 100,
-            'ownership_percentage' => 0.01,
-            'tier' => 'bronze',
-            'status' => 'confirmed',
-            'payment_method' => 'stripe',
+            'uuid'                     => \Str::uuid(),
+            'user_id'                  => $this->user->id,
+            'round_id'                 => $this->round->id,
+            'amount'                   => 10000, // $100
+            'currency'                 => 'USD',
+            'share_price'              => 100,
+            'shares_purchased'         => 100,
+            'ownership_percentage'     => 0.01,
+            'tier'                     => 'bronze',
+            'status'                   => 'confirmed',
+            'payment_method'           => 'stripe',
             'stripe_payment_intent_id' => 'pi_test123',
-            'payment_status' => 'completed',
-            'payment_completed_at' => now()->subDays(2),
+            'payment_status'           => 'completed',
+            'payment_completed_at'     => now()->subDays(2),
         ]);
     }
 
@@ -99,7 +99,7 @@ class RefundProcessingTest extends DomainTestCase
     {
         // Make investment ineligible
         $this->investment->update([
-            'status' => 'pending',
+            'status'         => 'pending',
             'payment_status' => 'pending',
         ]);
 
@@ -125,13 +125,13 @@ class RefundProcessingTest extends DomainTestCase
         // Create an existing refund
         CgoRefund::create([
             'investment_id' => $this->investment->id,
-            'user_id' => $this->user->id,
-            'amount' => $this->investment->amount,
-            'currency' => 'USD',
-            'reason' => 'customer_request',
-            'status' => 'pending',
-            'initiated_by' => $this->user->id,
-            'requested_at' => now(),
+            'user_id'       => $this->user->id,
+            'amount'        => $this->investment->amount,
+            'currency'      => 'USD',
+            'reason'        => 'customer_request',
+            'status'        => 'pending',
+            'initiated_by'  => $this->user->id,
+            'requested_at'  => now(),
         ]);
 
         $mockWorkflowClient = $this->createMock(WorkflowClient::class);
@@ -155,20 +155,20 @@ class RefundProcessingTest extends DomainTestCase
     {
         // Create a small investment
         $smallInvestment = CgoInvestment::create([
-            'uuid' => \Str::uuid(),
-            'user_id' => $this->user->id,
-            'round_id' => $this->round->id,
-            'amount' => 5000, // $50
-            'currency' => 'USD',
-            'share_price' => 100,
-            'shares_purchased' => 50,
-            'ownership_percentage' => 0.005,
-            'tier' => 'bronze',
-            'status' => 'confirmed',
-            'payment_method' => 'stripe',
+            'uuid'                     => \Str::uuid(),
+            'user_id'                  => $this->user->id,
+            'round_id'                 => $this->round->id,
+            'amount'                   => 5000, // $50
+            'currency'                 => 'USD',
+            'share_price'              => 100,
+            'shares_purchased'         => 50,
+            'ownership_percentage'     => 0.005,
+            'tier'                     => 'bronze',
+            'status'                   => 'confirmed',
+            'payment_method'           => 'stripe',
             'stripe_payment_intent_id' => 'pi_test456',
-            'payment_status' => 'completed',
-            'payment_completed_at' => now()->subDays(1),
+            'payment_status'           => 'completed',
+            'payment_completed_at'     => now()->subDays(1),
         ]);
 
         // Mock the WorkflowClient
@@ -248,13 +248,13 @@ class RefundProcessingTest extends DomainTestCase
     {
         $refund = CgoRefund::create([
             'investment_id' => $this->investment->id,
-            'user_id' => $this->user->id,
-            'amount' => $this->investment->amount,
-            'currency' => 'USD',
-            'reason' => 'customer_request',
-            'status' => 'pending',
-            'initiated_by' => $this->user->id,
-            'requested_at' => now(),
+            'user_id'       => $this->user->id,
+            'amount'        => $this->investment->amount,
+            'currency'      => 'USD',
+            'reason'        => 'customer_request',
+            'status'        => 'pending',
+            'initiated_by'  => $this->user->id,
+            'requested_at'  => now(),
         ]);
 
         $this->assertInstanceOf(CgoInvestment::class, $refund->investment);
@@ -272,13 +272,13 @@ class RefundProcessingTest extends DomainTestCase
     {
         $refund = CgoRefund::create([
             'investment_id' => $this->investment->id,
-            'user_id' => $this->user->id,
-            'amount' => $this->investment->amount,
-            'currency' => 'USD',
-            'reason' => 'customer_request',
-            'status' => 'pending',
-            'initiated_by' => $this->user->id,
-            'requested_at' => now(),
+            'user_id'       => $this->user->id,
+            'amount'        => $this->investment->amount,
+            'currency'      => 'USD',
+            'reason'        => 'customer_request',
+            'status'        => 'pending',
+            'initiated_by'  => $this->user->id,
+            'requested_at'  => now(),
         ]);
 
         $this->assertTrue($refund->isPending());
@@ -311,16 +311,16 @@ class RefundProcessingTest extends DomainTestCase
 
         // Create a completed refund
         CgoRefund::create([
-            'investment_id' => $this->investment->id,
-            'user_id' => $this->user->id,
-            'amount' => 5000,
+            'investment_id'   => $this->investment->id,
+            'user_id'         => $this->user->id,
+            'amount'          => 5000,
             'amount_refunded' => 5000,
-            'currency' => 'USD',
-            'reason' => 'customer_request',
-            'status' => 'completed',
-            'initiated_by' => $this->user->id,
-            'requested_at' => now()->subDays(1),
-            'completed_at' => now(),
+            'currency'        => 'USD',
+            'reason'          => 'customer_request',
+            'status'          => 'completed',
+            'initiated_by'    => $this->user->id,
+            'requested_at'    => now()->subDays(1),
+            'completed_at'    => now(),
         ]);
 
         $this->assertEquals(5000, $this->investment->getTotalRefundedAmount());
@@ -329,13 +329,13 @@ class RefundProcessingTest extends DomainTestCase
         // Create an active refund
         CgoRefund::create([
             'investment_id' => $this->investment->id,
-            'user_id' => $this->user->id,
-            'amount' => 5000,
-            'currency' => 'USD',
-            'reason' => 'customer_request',
-            'status' => 'pending',
-            'initiated_by' => $this->user->id,
-            'requested_at' => now(),
+            'user_id'       => $this->user->id,
+            'amount'        => 5000,
+            'currency'      => 'USD',
+            'reason'        => 'customer_request',
+            'status'        => 'pending',
+            'initiated_by'  => $this->user->id,
+            'requested_at'  => now(),
         ]);
 
         $this->assertTrue($this->investment->hasActiveRefund());

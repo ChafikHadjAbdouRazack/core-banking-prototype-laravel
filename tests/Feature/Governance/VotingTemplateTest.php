@@ -13,7 +13,7 @@ uses(RefreshDatabase::class);
 beforeEach(function () {
     // Create a system user for polls
     $this->systemUser = User::factory()->create([
-        'name' => 'System',
+        'name'  => 'System',
         'email' => 'system@platform',
     ]);
 });

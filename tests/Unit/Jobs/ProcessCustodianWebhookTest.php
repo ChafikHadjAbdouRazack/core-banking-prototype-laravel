@@ -74,7 +74,7 @@ class ProcessCustodianWebhookTest extends TestCase
             ->once()
             ->with('Webhook already processed', [
                 'webhook_id' => $this->webhook->uuid,
-                'status' => 'processed',
+                'status'     => 'processed',
             ]);
 
         $this->processorService
@@ -96,7 +96,7 @@ class ProcessCustodianWebhookTest extends TestCase
             ->once()
             ->with('Webhook already processed', [
                 'webhook_id' => $this->webhook->uuid,
-                'status' => 'processing',
+                'status'     => 'processing',
             ]);
 
         $this->processorService
@@ -164,7 +164,7 @@ class ProcessCustodianWebhookTest extends TestCase
     {
         $this->webhook->update([
             'custodian_name' => 'test-custodian',
-            'event_type' => 'transaction.completed',
+            'event_type'     => 'transaction.completed',
         ]);
 
         $this->processorService
@@ -179,7 +179,7 @@ class ProcessCustodianWebhookTest extends TestCase
             ->once()
             ->with('Webhook processed successfully', [
                 'webhook_id' => $this->webhook->id,
-                'custodian' => 'test-custodian',
+                'custodian'  => 'test-custodian',
                 'event_type' => 'transaction.completed',
             ]);
 
@@ -196,7 +196,7 @@ class ProcessCustodianWebhookTest extends TestCase
             ->once()
             ->with('Webhook processing job failed permanently', [
                 'webhook_id' => $this->webhook->uuid,
-                'error' => 'Job failed permanently',
+                'error'      => 'Job failed permanently',
             ]);
 
         $job = new ProcessCustodianWebhook($this->webhook->uuid);

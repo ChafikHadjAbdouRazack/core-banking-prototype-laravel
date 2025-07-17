@@ -106,8 +106,8 @@ class BenchmarkTransferPerformance extends Command
             AccountBalance::create(
                 [
                     'account_uuid' => $account->uuid,
-                    'asset_code' => 'USD',
-                    'balance' => 1000000, // $10,000
+                    'asset_code'   => 'USD',
+                    'balance'      => 1000000, // $10,000
                 ]
             );
 
@@ -141,17 +141,17 @@ class BenchmarkTransferPerformance extends Command
             $transferTime = microtime(true) - $transferStart;
 
             return [
-                'success' => true,
-                'time_ms' => round($transferTime * 1000, 2),
+                'success'  => true,
+                'time_ms'  => round($transferTime * 1000, 2),
                 'workflow' => $workflowClass,
             ];
         } catch (\Exception $e) {
             $transferTime = microtime(true) - $transferStart;
 
             return [
-                'success' => false,
-                'time_ms' => round($transferTime * 1000, 2),
-                'error' => $e->getMessage(),
+                'success'  => false,
+                'time_ms'  => round($transferTime * 1000, 2),
+                'error'    => $e->getMessage(),
                 'workflow' => $workflowClass ?? 'unknown',
             ];
         }

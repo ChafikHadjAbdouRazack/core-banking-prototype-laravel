@@ -64,9 +64,9 @@ class AuditLogResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListAuditLogs::route('/'),
+            'index'  => Pages\ListAuditLogs::route('/'),
             'create' => Pages\CreateAuditLog::route('/create'),
-            'edit' => Pages\EditAuditLog::route('/{record}/edit'),
+            'edit'   => Pages\EditAuditLog::route('/{record}/edit'),
         ];
     }
 }

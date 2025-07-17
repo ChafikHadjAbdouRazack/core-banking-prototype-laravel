@@ -23,8 +23,8 @@ class AuthenticatedRoutesTest extends TestCase
 
         // Create a personal team for the user (like in the CreateNewUser action)
         $team = $this->user->ownedTeams()->save(Team::forceCreate([
-            'user_id' => $this->user->id,
-            'name' => explode(' ', $this->user->name, 2)[0] . "'s Team",
+            'user_id'       => $this->user->id,
+            'name'          => explode(' ', $this->user->name, 2)[0] . "'s Team",
             'personal_team' => true,
         ]));
 
@@ -33,9 +33,9 @@ class AuthenticatedRoutesTest extends TestCase
         $this->user->save();
     }
 
-    /**
-     * Test that all routes used in views actually exist.
-     */ #[Test]
+/**
+ * Test that all routes used in views actually exist.
+ */ #[Test]
     public function test_all_routes_in_views_exist(): void
     {
         // Routes that should exist for authenticated users
@@ -71,9 +71,9 @@ class AuthenticatedRoutesTest extends TestCase
         }
     }
 
-    /**
-     * Test that authenticated pages don't show route errors.
-     */ #[Test]
+/**
+ * Test that authenticated pages don't show route errors.
+ */ #[Test]
     public function test_authenticated_pages_without_route_errors(): void
     {
         // Pages that should load without route errors
@@ -97,9 +97,9 @@ class AuthenticatedRoutesTest extends TestCase
         }
     }
 
-    /**
-     * Test navigation menu renders without errors.
-     */ #[Test]
+/**
+ * Test navigation menu renders without errors.
+ */ #[Test]
     public function test_navigation_menu_renders_without_errors(): void
     {
         // Test rendering the navigation menu view directly
@@ -110,18 +110,18 @@ class AuthenticatedRoutesTest extends TestCase
         $this->assertNotNull($view);
     }
 
-    /**
-     * Test that all main authenticated routes are accessible.
-     */ #[Test]
+/**
+ * Test that all main authenticated routes are accessible.
+ */ #[Test]
     public function test_main_authenticated_routes_accessible(): void
     {
         $routes = [
             '/dashboard' => [200],
-            '/wallet' => [200],
-            '/exchange' => [200, 302], // May redirect to login or show page
-            '/lending' => [200, 302, 500], // May have errors in test environment
+            '/wallet'    => [200],
+            '/exchange'  => [200, 302], // May redirect to login or show page
+            '/lending'   => [200, 302, 500], // May have errors in test environment
             '/liquidity' => [200, 302],
-            '/api-keys' => [200, 302, 403], // May be forbidden for some users
+            '/api-keys'  => [200, 302, 403], // May be forbidden for some users
         ];
 
         foreach ($routes as $url => $expectedStatuses) {

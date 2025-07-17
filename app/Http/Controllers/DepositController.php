@@ -36,9 +36,9 @@ class DepositController extends Controller
         return view(
             'wallet.deposit-card',
             [
-                'account' => $account,
+                'account'        => $account,
                 'paymentMethods' => $paymentMethods,
-                'stripeKey' => config('cashier.key'),
+                'stripeKey'      => config('cashier.key'),
             ]
         );
     }
@@ -50,7 +50,7 @@ class DepositController extends Controller
     {
         $request->validate(
             [
-                'amount' => 'required|numeric|min:1|max:10000',
+                'amount'   => 'required|numeric|min:1|max:10000',
                 'currency' => 'required|in:USD,EUR,GBP',
             ]
         );
@@ -69,8 +69,8 @@ class DepositController extends Controller
             return response()->json(
                 [
                     'client_secret' => $intent->client_secret,
-                    'amount' => $amountInCents,
-                    'currency' => $request->currency,
+                    'amount'        => $amountInCents,
+                    'currency'      => $request->currency,
                 ]
             );
         } catch (\Exception $e) {

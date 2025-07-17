@@ -21,8 +21,8 @@ class BasketAssetTest extends TestCase
         Asset::firstOrCreate(
             ['code' => 'USD'],
             [
-                'name' => 'US Dollar',
-                'type' => 'fiat',
+                'name'      => 'US Dollar',
+                'type'      => 'fiat',
                 'precision' => 2,
                 'is_active' => true,
             ]
@@ -31,8 +31,8 @@ class BasketAssetTest extends TestCase
         Asset::firstOrCreate(
             ['code' => 'EUR'],
             [
-                'name' => 'Euro',
-                'type' => 'fiat',
+                'name'      => 'Euro',
+                'type'      => 'fiat',
                 'precision' => 2,
                 'is_active' => true,
             ]
@@ -43,12 +43,12 @@ class BasketAssetTest extends TestCase
     public function it_can_create_a_basket_asset()
     {
         $basket = BasketAsset::create([
-            'code' => 'TEST_BSK',
-            'name' => 'Test Basket',
-            'description' => 'A test basket asset',
-            'type' => 'fixed',
+            'code'                => 'TEST_BSK',
+            'name'                => 'Test Basket',
+            'description'         => 'A test basket asset',
+            'type'                => 'fixed',
             'rebalance_frequency' => 'never',
-            'is_active' => true,
+            'is_active'           => true,
         ]);
 
         $this->assertEquals('TEST_BSK', $basket->code);
@@ -61,11 +61,11 @@ class BasketAssetTest extends TestCase
     public function it_has_components_relationship()
     {
         $basket = BasketAsset::create([
-            'code' => 'TEST_BSK',
-            'name' => 'Test Basket',
-            'type' => 'fixed',
+            'code'                => 'TEST_BSK',
+            'name'                => 'Test Basket',
+            'type'                => 'fixed',
             'rebalance_frequency' => 'never',
-            'is_active' => true,
+            'is_active'           => true,
         ]);
 
         $basket->components()->createMany([
@@ -81,18 +81,18 @@ class BasketAssetTest extends TestCase
     public function it_has_values_relationship()
     {
         $basket = BasketAsset::create([
-            'code' => 'TEST_BSK',
-            'name' => 'Test Basket',
-            'type' => 'fixed',
+            'code'                => 'TEST_BSK',
+            'name'                => 'Test Basket',
+            'type'                => 'fixed',
             'rebalance_frequency' => 'never',
-            'is_active' => true,
+            'is_active'           => true,
         ]);
 
         BasketValue::create([
             'basket_asset_code' => 'TEST_BSK',
-            'value' => 1.05,
-            'calculated_at' => now(),
-            'component_values' => ['USD' => 0.5, 'EUR' => 0.55],
+            'value'             => 1.05,
+            'calculated_at'     => now(),
+            'component_values'  => ['USD' => 0.5, 'EUR' => 0.55],
         ]);
 
         $this->assertCount(1, $basket->values);
@@ -103,12 +103,12 @@ class BasketAssetTest extends TestCase
     public function it_can_check_if_needs_rebalancing()
     {
         $basket = BasketAsset::create([
-            'code' => 'DYNAMIC',
-            'name' => 'Dynamic Basket',
-            'type' => 'dynamic',
+            'code'                => 'DYNAMIC',
+            'name'                => 'Dynamic Basket',
+            'type'                => 'dynamic',
             'rebalance_frequency' => 'daily',
-            'last_rebalanced_at' => now()->subDays(2),
-            'is_active' => true,
+            'last_rebalanced_at'  => now()->subDays(2),
+            'is_active'           => true,
         ]);
 
         $this->assertTrue($basket->needsRebalancing());
@@ -121,11 +121,11 @@ class BasketAssetTest extends TestCase
     public function it_can_convert_to_asset()
     {
         $basket = BasketAsset::create([
-            'code' => 'TEST_BSK',
-            'name' => 'Test Basket',
-            'type' => 'fixed',
+            'code'                => 'TEST_BSK',
+            'name'                => 'Test Basket',
+            'type'                => 'fixed',
             'rebalance_frequency' => 'never',
-            'is_active' => true,
+            'is_active'           => true,
         ]);
 
         $asset = $basket->toAsset();
@@ -141,19 +141,19 @@ class BasketAssetTest extends TestCase
     public function it_has_active_scope()
     {
         BasketAsset::create([
-            'code' => 'ACTIVE',
-            'name' => 'Active Basket',
-            'type' => 'fixed',
+            'code'                => 'ACTIVE',
+            'name'                => 'Active Basket',
+            'type'                => 'fixed',
             'rebalance_frequency' => 'never',
-            'is_active' => true,
+            'is_active'           => true,
         ]);
 
         BasketAsset::create([
-            'code' => 'INACTIVE',
-            'name' => 'Inactive Basket',
-            'type' => 'fixed',
+            'code'                => 'INACTIVE',
+            'name'                => 'Inactive Basket',
+            'type'                => 'fixed',
             'rebalance_frequency' => 'never',
-            'is_active' => false,
+            'is_active'           => false,
         ]);
 
         $activeBaskets = BasketAsset::active()->get();
@@ -166,20 +166,20 @@ class BasketAssetTest extends TestCase
     public function it_has_needs_rebalancing_scope()
     {
         BasketAsset::create([
-            'code' => 'NEEDS_REB',
-            'name' => 'Needs Rebalancing',
-            'type' => 'dynamic',
+            'code'                => 'NEEDS_REB',
+            'name'                => 'Needs Rebalancing',
+            'type'                => 'dynamic',
             'rebalance_frequency' => 'daily',
-            'last_rebalanced_at' => now()->subDays(2),
-            'is_active' => true,
+            'last_rebalanced_at'  => now()->subDays(2),
+            'is_active'           => true,
         ]);
 
         BasketAsset::create([
-            'code' => 'NO_REBAL',
-            'name' => 'No Rebalancing',
-            'type' => 'fixed',
+            'code'                => 'NO_REBAL',
+            'name'                => 'No Rebalancing',
+            'type'                => 'fixed',
             'rebalance_frequency' => 'never',
-            'is_active' => true,
+            'is_active'           => true,
         ]);
 
         $needsRebalancing = BasketAsset::query()->needsRebalancing()->get();
@@ -192,13 +192,13 @@ class BasketAssetTest extends TestCase
     public function it_casts_attributes_correctly()
     {
         $basket = BasketAsset::create([
-            'code' => 'TEST_BSK',
-            'name' => 'Test Basket',
-            'type' => 'fixed',
+            'code'                => 'TEST_BSK',
+            'name'                => 'Test Basket',
+            'type'                => 'fixed',
             'rebalance_frequency' => 'never',
-            'last_rebalanced_at' => '2025-06-18 12:00:00',
-            'is_active' => true,
-            'metadata' => ['key' => 'value'],
+            'last_rebalanced_at'  => '2025-06-18 12:00:00',
+            'is_active'           => true,
+            'metadata'            => ['key' => 'value'],
         ]);
 
         $fresh = BasketAsset::find($basket->id);

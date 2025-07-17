@@ -62,14 +62,14 @@ class LendingControllerTest extends ControllerTestCase
     {
         $response = $this->actingAs($this->user)
             ->post(route('lending.apply.submit'), [
-                'amount' => '10000',
-                'term_months' => '12',
-                'purpose' => LoanPurpose::PERSONAL->value,
+                'amount'              => '10000',
+                'term_months'         => '12',
+                'purpose'             => LoanPurpose::PERSONAL->value,
                 'purpose_description' => 'Personal expenses',
-                'employment_status' => EmploymentStatus::EMPLOYED->value,
-                'monthly_income' => '5000',
-                'monthly_expenses' => '2000',
-                'collateral' => [],
+                'employment_status'   => EmploymentStatus::EMPLOYED->value,
+                'monthly_income'      => '5000',
+                'monthly_expenses'    => '2000',
+                'collateral'          => [],
             ]);
 
         $response->assertRedirect();
@@ -77,9 +77,9 @@ class LendingControllerTest extends ControllerTestCase
 
         // Verify application was created
         $this->assertDatabaseHas('loan_applications', [
-            'amount' => '10000.00',
-            'term_months' => 12,
-            'purpose' => LoanPurpose::PERSONAL->value,
+            'amount'            => '10000.00',
+            'term_months'       => 12,
+            'purpose'           => LoanPurpose::PERSONAL->value,
             'employment_status' => EmploymentStatus::EMPLOYED->value,
         ]);
     }
@@ -89,12 +89,12 @@ class LendingControllerTest extends ControllerTestCase
     {
         $response = $this->actingAs($this->user)
             ->post(route('lending.apply.submit'), [
-                'amount' => '-1000', // Invalid negative amount
-                'term_months' => '999', // Too long term
-                'purpose' => 'invalid_purpose',
+                'amount'            => '-1000', // Invalid negative amount
+                'term_months'       => '999', // Too long term
+                'purpose'           => 'invalid_purpose',
                 'employment_status' => 'invalid_status',
-                'monthly_income' => '0',
-                'monthly_expenses' => '10000',
+                'monthly_income'    => '0',
+                'monthly_expenses'  => '10000',
             ]);
 
         $response->assertSessionHasErrors(['amount', 'term_months', 'purpose', 'employment_status']);
@@ -116,15 +116,15 @@ class LendingControllerTest extends ControllerTestCase
         // Create a test loan
         $loanId = (string) Str::uuid();
         \App\Models\Loan::create([
-            'id' => $loanId,
-            'application_id' => Str::uuid(),
+            'id'                    => $loanId,
+            'application_id'        => Str::uuid(),
             'borrower_account_uuid' => $this->accountId,
-            'lender_account_uuid' => null,
-            'amount' => '10000.00',
-            'interest_rate' => 8.5,
-            'term_months' => 12,
-            'status' => 'active',
-            'disbursed_at' => now(),
+            'lender_account_uuid'   => null,
+            'amount'                => '10000.00',
+            'interest_rate'         => 8.5,
+            'term_months'           => 12,
+            'status'                => 'active',
+            'disbursed_at'          => now(),
         ]);
 
         $response = $this->actingAs($this->user)
@@ -141,15 +141,15 @@ class LendingControllerTest extends ControllerTestCase
         // Create a test loan
         $loanId = (string) Str::uuid();
         \App\Models\Loan::create([
-            'id' => $loanId,
-            'application_id' => Str::uuid(),
+            'id'                    => $loanId,
+            'application_id'        => Str::uuid(),
             'borrower_account_uuid' => $this->accountId,
-            'lender_account_uuid' => null,
-            'amount' => '10000.00',
-            'interest_rate' => 8.5,
-            'term_months' => 12,
-            'status' => 'active',
-            'disbursed_at' => now(),
+            'lender_account_uuid'   => null,
+            'amount'                => '10000.00',
+            'interest_rate'         => 8.5,
+            'term_months'           => 12,
+            'status'                => 'active',
+            'disbursed_at'          => now(),
         ]);
 
         $response = $this->actingAs($this->user)

@@ -68,14 +68,14 @@ class GdprController extends Controller
             [
                 'consents' => [
                     'privacy_policy' => $user->privacy_policy_accepted_at !== null,
-                    'terms' => $user->terms_accepted_at !== null,
-                    'marketing' => $user->marketing_consent_at !== null,
+                    'terms'          => $user->terms_accepted_at !== null,
+                    'marketing'      => $user->marketing_consent_at !== null,
                     'data_retention' => $user->data_retention_consent,
                 ],
                 'dates' => [
                     'privacy_policy_accepted_at' => $user->privacy_policy_accepted_at,
-                    'terms_accepted_at' => $user->terms_accepted_at,
-                    'marketing_consent_at' => $user->marketing_consent_at,
+                    'terms_accepted_at'          => $user->terms_accepted_at,
+                    'marketing_consent_at'       => $user->marketing_consent_at,
                 ],
             ]
         );
@@ -125,8 +125,8 @@ class GdprController extends Controller
         $request->validate(
             [
                 'privacy_policy' => 'sometimes|boolean',
-                'terms' => 'sometimes|boolean',
-                'marketing' => 'sometimes|boolean',
+                'terms'          => 'sometimes|boolean',
+                'marketing'      => 'sometimes|boolean',
                 'data_retention' => 'sometimes|boolean',
             ]
         );
@@ -189,7 +189,7 @@ class GdprController extends Controller
                 [
                     'message' => 'Data export requested. You will receive an email with your data shortly.',
                     'preview' => [
-                        'sections' => array_keys($data),
+                        'sections'     => array_keys($data),
                         'generated_at' => now(),
                     ],
                 ]
@@ -260,7 +260,7 @@ class GdprController extends Controller
         $request->validate(
             [
                 'confirm' => 'required|boolean|accepted',
-                'reason' => 'sometimes|string|max:500',
+                'reason'  => 'sometimes|string|max:500',
             ]
         );
 
@@ -272,7 +272,7 @@ class GdprController extends Controller
         if (! $check['can_delete']) {
             return response()->json(
                 [
-                    'error' => 'Account cannot be deleted at this time',
+                    'error'   => 'Account cannot be deleted at this time',
                     'reasons' => $check['reasons'],
                 ],
                 400
@@ -285,8 +285,8 @@ class GdprController extends Controller
             $this->gdprService->deleteUserData(
                 $user,
                 [
-                    'reason' => $request->reason,
-                    'delete_documents' => true,
+                    'reason'                 => $request->reason,
+                    'delete_documents'       => true,
                     'anonymize_transactions' => true,
                 ]
             );
@@ -343,18 +343,18 @@ class GdprController extends Controller
         return response()->json(
             [
                 'policy' => [
-                    'transaction_data' => '7 years (regulatory requirement)',
-                    'kyc_documents' => '5 years after account closure',
-                    'audit_logs' => '3 years',
-                    'marketing_data' => 'Until consent withdrawn',
+                    'transaction_data'  => '7 years (regulatory requirement)',
+                    'kyc_documents'     => '5 years after account closure',
+                    'audit_logs'        => '3 years',
+                    'marketing_data'    => 'Until consent withdrawn',
                     'inactive_accounts' => 'Deleted after 2 years of inactivity',
                 ],
                 'user_rights' => [
-                    'access' => 'You can request a copy of your data at any time',
+                    'access'        => 'You can request a copy of your data at any time',
                     'rectification' => 'You can update your personal information',
-                    'erasure' => 'You can request deletion (subject to legal requirements)',
-                    'portability' => 'You can export your data in machine-readable format',
-                    'object' => 'You can object to certain processing activities',
+                    'erasure'       => 'You can request deletion (subject to legal requirements)',
+                    'portability'   => 'You can export your data in machine-readable format',
+                    'object'        => 'You can object to certain processing activities',
                 ],
             ]
         );

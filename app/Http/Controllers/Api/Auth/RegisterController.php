@@ -88,9 +88,9 @@ class RegisterController extends Controller
     {
         $validated = $request->validate(
             [
-                'name' => ['required', 'string', 'max:255'],
-                'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-                'password' => ['required', 'string', 'min:8', 'confirmed'],
+                'name'                 => ['required', 'string', 'max:255'],
+                'email'                => ['required', 'string', 'email', 'max:255', 'unique:users'],
+                'password'             => ['required', 'string', 'min:8', 'confirmed'],
                 'is_business_customer' => ['sometimes', 'boolean'],
             ]
         );
@@ -99,12 +99,12 @@ class RegisterController extends Controller
         $creator = new CreateNewUser();
         $user = $creator->create(
             [
-                'name' => $validated['name'],
-                'email' => $validated['email'],
-                'password' => $validated['password'],
+                'name'                  => $validated['name'],
+                'email'                 => $validated['email'],
+                'password'              => $validated['password'],
                 'password_confirmation' => $request->password_confirmation,
-                'is_business_customer' => $validated['is_business_customer'] ?? false,
-                'terms' => true, // For API, we assume terms are accepted
+                'is_business_customer'  => $validated['is_business_customer'] ?? false,
+                'terms'                 => true, // For API, we assume terms are accepted
             ]
         );
 
@@ -114,14 +114,14 @@ class RegisterController extends Controller
         return response()->json(
             [
                 'message' => 'User registered successfully',
-                'user' => [
-                    'id' => $user->id,
-                    'name' => $user->name,
-                    'email' => $user->email,
+                'user'    => [
+                    'id'                => $user->id,
+                    'name'              => $user->name,
+                    'email'             => $user->email,
                     'email_verified_at' => $user->email_verified_at,
                 ],
                 'access_token' => $token,
-                'token_type' => 'Bearer',
+                'token_type'   => 'Bearer',
             ],
             201
         );

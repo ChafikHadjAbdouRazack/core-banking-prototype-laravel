@@ -80,8 +80,8 @@ class LoginController extends Controller
     {
         $request->validate(
             [
-                'email' => 'required|email',
-                'password' => 'required',
+                'email'       => 'required|email',
+                'password'    => 'required',
                 'device_name' => 'string',
             ]
         );
@@ -125,15 +125,15 @@ class LoginController extends Controller
         return response()->json(
             [
                 'user' => [
-                    'id' => $user->id,
-                    'name' => $user->name,
-                    'email' => $user->email,
+                    'id'                => $user->id,
+                    'name'              => $user->name,
+                    'email'             => $user->email,
                     'email_verified_at' => $user->email_verified_at,
                 ],
                 'access_token' => $token,
-                'token' => $token, // For backward compatibility
-                'token_type' => 'Bearer',
-                'expires_in' => config('sanctum.expiration') ? config('sanctum.expiration') * 60 : null,
+                'token'        => $token, // For backward compatibility
+                'token_type'   => 'Bearer',
+                'expires_in'   => config('sanctum.expiration') ? config('sanctum.expiration') * 60 : null,
             ]
         );
     }
@@ -257,8 +257,8 @@ class LoginController extends Controller
         return response()->json(
             [
                 'access_token' => $token,
-                'token_type' => 'Bearer',
-                'expires_in' => config('sanctum.expiration') ? config('sanctum.expiration') * 60 : null,
+                'token_type'   => 'Bearer',
+                'expires_in'   => config('sanctum.expiration') ? config('sanctum.expiration') * 60 : null,
             ]
         );
     }

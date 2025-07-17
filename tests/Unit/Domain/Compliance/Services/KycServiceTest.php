@@ -29,7 +29,7 @@ class KycServiceTest extends ServiceTestCase
     public function test_submit_kyc_updates_user_status(): void
     {
         $user = User::factory()->create([
-            'kyc_status' => 'not_started',
+            'kyc_status'       => 'not_started',
             'kyc_submitted_at' => null,
         ]);
 
@@ -113,7 +113,7 @@ class KycServiceTest extends ServiceTestCase
     public function test_verify_kyc_approves_user(): void
     {
         $user = User::factory()->create([
-            'kyc_status' => 'pending',
+            'kyc_status'      => 'pending',
             'kyc_approved_at' => null,
         ]);
 

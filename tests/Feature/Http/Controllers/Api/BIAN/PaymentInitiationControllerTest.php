@@ -30,12 +30,12 @@ class PaymentInitiationControllerTest extends ControllerTestCase
 
         $this->payerAccount = Account::factory()->create([
             'user_uuid' => $this->user->uuid,
-            'balance' => 100000, // 1000.00
+            'balance'   => 100000, // 1000.00
         ]);
 
         $this->payeeAccount = Account::factory()->create([
             'user_uuid' => $this->otherUser->uuid,
-            'balance' => 50000, // 500.00
+            'balance'   => 50000, // 500.00
         ]);
     }
 
@@ -45,12 +45,12 @@ class PaymentInitiationControllerTest extends ControllerTestCase
         Sanctum::actingAs($this->user);
 
         $response = $this->postJson('/api/bian/payment-initiation/initiate', [
-            'payerReference' => $this->payerAccount->uuid,
-            'payeeReference' => $this->payeeAccount->uuid,
-            'paymentAmount' => 25000, // 250.00
+            'payerReference'  => $this->payerAccount->uuid,
+            'payeeReference'  => $this->payeeAccount->uuid,
+            'paymentAmount'   => 25000, // 250.00
             'paymentCurrency' => 'USD',
-            'paymentPurpose' => 'Invoice payment #123',
-            'paymentType' => 'internal',
+            'paymentPurpose'  => 'Invoice payment #123',
+            'paymentType'     => 'internal',
         ]);
 
         $response->assertStatus(201)
@@ -80,16 +80,16 @@ class PaymentInitiationControllerTest extends ControllerTestCase
             ])
             ->assertJson([
                 'paymentInitiationTransaction' => [
-                    'paymentStatus' => 'completed',
+                    'paymentStatus'  => 'completed',
                     'paymentDetails' => [
-                        'payerReference' => $this->payerAccount->uuid,
-                        'payerName' => $this->payerAccount->name,
-                        'payeeReference' => $this->payeeAccount->uuid,
-                        'payeeName' => $this->payeeAccount->name,
-                        'paymentAmount' => 25000,
+                        'payerReference'  => $this->payerAccount->uuid,
+                        'payerName'       => $this->payerAccount->name,
+                        'payeeReference'  => $this->payeeAccount->uuid,
+                        'payeeName'       => $this->payeeAccount->name,
+                        'paymentAmount'   => 25000,
                         'paymentCurrency' => 'USD',
-                        'paymentPurpose' => 'Invoice payment #123',
-                        'paymentType' => 'internal',
+                        'paymentPurpose'  => 'Invoice payment #123',
+                        'paymentType'     => 'internal',
                     ],
                 ],
             ]);
@@ -103,8 +103,8 @@ class PaymentInitiationControllerTest extends ControllerTestCase
         $response = $this->postJson('/api/bian/payment-initiation/initiate', [
             'payerReference' => $this->payerAccount->uuid,
             'payeeReference' => $this->payeeAccount->uuid,
-            'paymentAmount' => 10000, // 100.00
-            'paymentType' => 'instant',
+            'paymentAmount'  => 10000, // 100.00
+            'paymentType'    => 'instant',
         ]);
 
         $response->assertStatus(201)
@@ -122,9 +122,9 @@ class PaymentInitiationControllerTest extends ControllerTestCase
         $response = $this->postJson('/api/bian/payment-initiation/initiate', [
             'payerReference' => $this->payerAccount->uuid,
             'payeeReference' => $this->payeeAccount->uuid,
-            'paymentAmount' => 50000, // 500.00
-            'paymentType' => 'scheduled',
-            'valueDate' => $futureDate,
+            'paymentAmount'  => 50000, // 500.00
+            'paymentType'    => 'scheduled',
+            'valueDate'      => $futureDate,
         ]);
 
         $response->assertStatus(201)
@@ -140,17 +140,17 @@ class PaymentInitiationControllerTest extends ControllerTestCase
         $response = $this->postJson('/api/bian/payment-initiation/initiate', [
             'payerReference' => $this->payerAccount->uuid,
             'payeeReference' => $this->payeeAccount->uuid,
-            'paymentAmount' => 200000, // 2000.00 (more than balance)
-            'paymentType' => 'internal',
+            'paymentAmount'  => 200000, // 2000.00 (more than balance)
+            'paymentType'    => 'internal',
         ]);
 
         $response->assertStatus(422)
             ->assertJson([
                 'paymentInitiationTransaction' => [
-                    'paymentStatus' => 'rejected',
-                    'statusReason' => 'Insufficient funds',
+                    'paymentStatus'         => 'rejected',
+                    'statusReason'          => 'Insufficient funds',
                     'payerAvailableBalance' => 100000,
-                    'requestedAmount' => 200000,
+                    'requestedAmount'       => 200000,
                 ],
             ]);
     }
@@ -161,8 +161,8 @@ class PaymentInitiationControllerTest extends ControllerTestCase
         $response = $this->postJson('/api/bian/payment-initiation/initiate', [
             'payerReference' => $this->payerAccount->uuid,
             'payeeReference' => $this->payeeAccount->uuid,
-            'paymentAmount' => 10000,
-            'paymentType' => 'internal',
+            'paymentAmount'  => 10000,
+            'paymentType'    => 'internal',
         ]);
 
         $response->assertStatus(401);
@@ -174,12 +174,12 @@ class PaymentInitiationControllerTest extends ControllerTestCase
         Sanctum::actingAs($this->user);
 
         $response = $this->postJson('/api/bian/payment-initiation/initiate', [
-            'payerReference' => 'invalid-uuid',
-            'payeeReference' => 'another-invalid-uuid',
-            'paymentAmount' => -100,
+            'payerReference'  => 'invalid-uuid',
+            'payeeReference'  => 'another-invalid-uuid',
+            'paymentAmount'   => -100,
             'paymentCurrency' => 'INVALID',
-            'paymentType' => 'invalid-type',
-            'valueDate' => '2020-01-01', // Past date
+            'paymentType'     => 'invalid-type',
+            'valueDate'       => '2020-01-01', // Past date
         ]);
 
         $response->assertStatus(422)
@@ -201,8 +201,8 @@ class PaymentInitiationControllerTest extends ControllerTestCase
         $response = $this->postJson('/api/bian/payment-initiation/initiate', [
             'payerReference' => $this->payerAccount->uuid,
             'payeeReference' => $this->payerAccount->uuid, // Same account
-            'paymentAmount' => 10000,
-            'paymentType' => 'internal',
+            'paymentAmount'  => 10000,
+            'paymentType'    => 'internal',
         ]);
 
         $response->assertStatus(422)
@@ -218,16 +218,16 @@ class PaymentInitiationControllerTest extends ControllerTestCase
 
         $response = $this->putJson("/api/bian/payment-initiation/{$crReferenceId}/update", [
             'paymentStatus' => 'cancelled',
-            'statusReason' => 'Customer requested cancellation',
+            'statusReason'  => 'Customer requested cancellation',
         ]);
 
         $response->assertStatus(200)
             ->assertJson([
                 'paymentInitiationTransaction' => [
                     'crReferenceId' => $crReferenceId,
-                    'updateAction' => 'cancelled',
-                    'updateReason' => 'Customer requested cancellation',
-                    'updateStatus' => 'successful',
+                    'updateAction'  => 'cancelled',
+                    'updateReason'  => 'Customer requested cancellation',
+                    'updateStatus'  => 'successful',
                 ],
             ])
             ->assertJsonStructure([
@@ -246,7 +246,7 @@ class PaymentInitiationControllerTest extends ControllerTestCase
 
         $response = $this->putJson("/api/bian/payment-initiation/{$crReferenceId}/update", [
             'paymentStatus' => 'invalid-status',
-            'statusReason' => '',
+            'statusReason'  => '',
         ]);
 
         $response->assertStatus(422)
@@ -279,8 +279,8 @@ class PaymentInitiationControllerTest extends ControllerTestCase
         $response->assertStatus(200)
             ->assertJson([
                 'paymentExecutionRecord' => [
-                    'crReferenceId' => $crReferenceId,
-                    'executionMode' => 'immediate',
+                    'crReferenceId'   => $crReferenceId,
+                    'executionMode'   => 'immediate',
                     'executionStatus' => 'completed',
                 ],
             ])
@@ -345,7 +345,7 @@ class PaymentInitiationControllerTest extends ControllerTestCase
                 'paymentStatusRecord' => [
                     'crReferenceId' => $crReferenceId,
                     'paymentStatus' => 'not_found',
-                    'eventCount' => 0,
+                    'eventCount'    => 0,
                 ],
             ]);
     }
@@ -374,8 +374,8 @@ class PaymentInitiationControllerTest extends ControllerTestCase
             ->assertJson([
                 'paymentHistoryRecord' => [
                     'accountReference' => $this->payerAccount->uuid,
-                    'payments' => [],
-                    'paymentCount' => 0,
+                    'payments'         => [],
+                    'paymentCount'     => 0,
                 ],
             ]);
     }
@@ -386,8 +386,8 @@ class PaymentInitiationControllerTest extends ControllerTestCase
         Sanctum::actingAs($this->user);
 
         $response = $this->getJson("/api/bian/payment-initiation/{$this->payerAccount->uuid}/payment-history/retrieve?" . http_build_query([
-            'fromDate' => '2024-01-01',
-            'toDate' => '2024-12-31',
+            'fromDate'         => '2024-01-01',
+            'toDate'           => '2024-12-31',
             'paymentDirection' => 'sent',
         ]));
 
@@ -402,8 +402,8 @@ class PaymentInitiationControllerTest extends ControllerTestCase
         Sanctum::actingAs($this->user);
 
         $response = $this->getJson("/api/bian/payment-initiation/{$this->payerAccount->uuid}/payment-history/retrieve?" . http_build_query([
-            'fromDate' => '2024-12-31',
-            'toDate' => '2024-01-01', // Before fromDate
+            'fromDate'         => '2024-12-31',
+            'toDate'           => '2024-01-01', // Before fromDate
             'paymentDirection' => 'invalid',
         ]));
 
@@ -451,8 +451,8 @@ class PaymentInitiationControllerTest extends ControllerTestCase
         $response = $this->postJson('/api/bian/payment-initiation/initiate', [
             'payerReference' => $this->payerAccount->uuid,
             'payeeReference' => $this->payeeAccount->uuid,
-            'paymentAmount' => 5000, // 50.00
-            'paymentType' => 'internal',
+            'paymentAmount'  => 5000, // 50.00
+            'paymentType'    => 'internal',
         ]);
 
         $response->assertStatus(201)
@@ -469,8 +469,8 @@ class PaymentInitiationControllerTest extends ControllerTestCase
         $response = $this->postJson('/api/bian/payment-initiation/initiate', [
             'payerReference' => $this->payerAccount->uuid,
             'payeeReference' => $this->payeeAccount->uuid,
-            'paymentAmount' => 15000, // 150.00
-            'paymentType' => 'external',
+            'paymentAmount'  => 15000, // 150.00
+            'paymentType'    => 'external',
             'paymentPurpose' => 'External bank transfer',
         ]);
 

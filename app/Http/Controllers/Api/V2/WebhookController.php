@@ -63,12 +63,12 @@ class WebhookController extends Controller
                 'data' => $webhooks->map(
                     function ($webhook) {
                         return [
-                            'id' => $webhook->uuid,
-                            'url' => $webhook->url,
-                            'events' => $webhook->events,
-                            'is_active' => $webhook->is_active,
-                            'description' => $webhook->description,
-                            'created_at' => $webhook->created_at->toIso8601String(),
+                            'id'                => $webhook->uuid,
+                            'url'               => $webhook->url,
+                            'events'            => $webhook->events,
+                            'is_active'         => $webhook->is_active,
+                            'description'       => $webhook->description,
+                            'created_at'        => $webhook->created_at->toIso8601String(),
                             'last_triggered_at' => $webhook->last_triggered_at?->toIso8601String(),
                         ];
                     }
@@ -121,11 +121,11 @@ class WebhookController extends Controller
     {
         $validated = $request->validate(
             [
-                'url' => 'required|url|https',
-                'events' => 'required|array|min:1',
-                'events.*' => ['required', 'string', Rule::in($this->getAvailableEvents())],
+                'url'         => 'required|url|https',
+                'events'      => 'required|array|min:1',
+                'events.*'    => ['required', 'string', Rule::in($this->getAvailableEvents())],
                 'description' => 'nullable|string|max:255',
-                'is_active' => 'boolean',
+                'is_active'   => 'boolean',
             ]
         );
 
@@ -133,24 +133,24 @@ class WebhookController extends Controller
 
         $webhook = Webhook::create(
             [
-                'uuid' => Str::uuid(),
-                'name' => $validated['description'] ?? 'Webhook',
-                'url' => $validated['url'],
-                'events' => $validated['events'],
-                'secret' => $secret,
+                'uuid'        => Str::uuid(),
+                'name'        => $validated['description'] ?? 'Webhook',
+                'url'         => $validated['url'],
+                'events'      => $validated['events'],
+                'secret'      => $secret,
                 'description' => $validated['description'] ?? null,
-                'is_active' => $validated['is_active'] ?? true,
+                'is_active'   => $validated['is_active'] ?? true,
             ]
         );
 
         return response()->json(
             [
                 'data' => [
-                    'id' => $webhook->uuid,
-                    'url' => $webhook->url,
-                    'events' => $webhook->events,
-                    'secret' => $secret, // Only shown once at creation
-                    'is_active' => $webhook->is_active,
+                    'id'         => $webhook->uuid,
+                    'url'        => $webhook->url,
+                    'events'     => $webhook->events,
+                    'secret'     => $secret, // Only shown once at creation
+                    'is_active'  => $webhook->is_active,
                     'created_at' => $webhook->created_at->toIso8601String(),
                 ],
             ],
@@ -205,22 +205,22 @@ class WebhookController extends Controller
         $webhook = Webhook::findOrFail($id);
 
         $statistics = [
-            'total_deliveries' => $webhook->deliveries()->count(),
+            'total_deliveries'      => $webhook->deliveries()->count(),
             'successful_deliveries' => $webhook->deliveries()->where('status', WebhookDelivery::STATUS_SUCCESS)->count(),
-            'failed_deliveries' => $webhook->deliveries()->where('status', WebhookDelivery::STATUS_FAILED)->count(),
-            'last_triggered_at' => $webhook->last_triggered_at?->toIso8601String(),
+            'failed_deliveries'     => $webhook->deliveries()->where('status', WebhookDelivery::STATUS_FAILED)->count(),
+            'last_triggered_at'     => $webhook->last_triggered_at?->toIso8601String(),
         ];
 
         return response()->json(
             [
                 'data' => [
-                    'id' => $webhook->uuid,
-                    'url' => $webhook->url,
-                    'events' => $webhook->events,
-                    'is_active' => $webhook->is_active,
+                    'id'          => $webhook->uuid,
+                    'url'         => $webhook->url,
+                    'events'      => $webhook->events,
+                    'is_active'   => $webhook->is_active,
                     'description' => $webhook->description,
-                    'created_at' => $webhook->created_at->toIso8601String(),
-                    'statistics' => $statistics,
+                    'created_at'  => $webhook->created_at->toIso8601String(),
+                    'statistics'  => $statistics,
                 ],
             ]
         );
@@ -268,11 +268,11 @@ class WebhookController extends Controller
 
         $validated = $request->validate(
             [
-                'url' => 'sometimes|url|https',
-                'events' => 'sometimes|array|min:1',
-                'events.*' => ['required', 'string', Rule::in($this->getAvailableEvents())],
+                'url'         => 'sometimes|url|https',
+                'events'      => 'sometimes|array|min:1',
+                'events.*'    => ['required', 'string', Rule::in($this->getAvailableEvents())],
                 'description' => 'nullable|string|max:255',
-                'is_active' => 'boolean',
+                'is_active'   => 'boolean',
             ]
         );
 
@@ -281,10 +281,10 @@ class WebhookController extends Controller
         return response()->json(
             [
                 'data' => [
-                    'id' => $webhook->uuid,
-                    'url' => $webhook->url,
-                    'events' => $webhook->events,
-                    'is_active' => $webhook->is_active,
+                    'id'         => $webhook->uuid,
+                    'url'        => $webhook->url,
+                    'events'     => $webhook->events,
+                    'is_active'  => $webhook->is_active,
                     'updated_at' => $webhook->updated_at->toIso8601String(),
                 ],
             ]
@@ -375,9 +375,9 @@ class WebhookController extends Controller
                 'data' => $deliveries->items(),
                 'meta' => [
                     'current_page' => $deliveries->currentPage(),
-                    'last_page' => $deliveries->lastPage(),
-                    'per_page' => $deliveries->perPage(),
-                    'total' => $deliveries->total(),
+                    'last_page'    => $deliveries->lastPage(),
+                    'per_page'     => $deliveries->perPage(),
+                    'total'        => $deliveries->total(),
                 ],
             ]
         );

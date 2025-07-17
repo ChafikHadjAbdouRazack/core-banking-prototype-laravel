@@ -33,9 +33,9 @@ class AssetBalanceSubtractedTest extends DomainTestCase
     {
         $hash = Hash::fromData('subtract-with-metadata');
         $metadata = [
-            'reason' => 'withdrawal',
+            'reason'      => 'withdrawal',
             'destination' => 'external_bank',
-            'fee' => 250,
+            'fee'         => 250,
         ];
 
         $event = new AssetBalanceSubtracted(
@@ -91,15 +91,15 @@ class AssetBalanceSubtractedTest extends DomainTestCase
     {
         $metadata = [
             'transaction_type' => 'payment',
-            'recipient' => [
-                'name' => 'John Doe',
+            'recipient'        => [
+                'name'    => 'John Doe',
                 'account' => '1234567890',
-                'bank' => 'Test Bank',
+                'bank'    => 'Test Bank',
             ],
             'fees' => [
                 'processing' => 100,
-                'network' => 50,
-                'total' => 150,
+                'network'    => 50,
+                'total'      => 150,
             ],
             'timestamp' => '2024-01-15T14:30:00Z',
         ];
@@ -135,11 +135,11 @@ class AssetBalanceSubtractedTest extends DomainTestCase
     public function test_supports_crypto_asset_codes(): void
     {
         $cryptoAssets = [
-            'BTC' => 100000000,    // 1 BTC
-            'ETH' => 1000000000000000000, // 1 ETH
+            'BTC'  => 100000000,    // 1 BTC
+            'ETH'  => 1000000000000000000, // 1 ETH
             'USDT' => 100000,      // 1000 USDT
-            'BNB' => 100000000,    // 1 BNB
-            'SOL' => 1000000000,   // 1 SOL
+            'BNB'  => 100000000,    // 1 BNB
+            'SOL'  => 1000000000,   // 1 SOL
         ];
 
         foreach ($cryptoAssets as $assetCode => $amount) {

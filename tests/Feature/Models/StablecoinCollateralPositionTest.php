@@ -27,8 +27,8 @@ class StablecoinCollateralPositionTest extends TestCase
         $this->asset = Asset::firstOrCreate(
             ['code' => 'USD'],
             [
-                'name' => 'US Dollar',
-                'type' => 'fiat',
+                'name'      => 'US Dollar',
+                'type'      => 'fiat',
                 'precision' => 2,
                 'is_active' => true,
             ]
@@ -36,25 +36,25 @@ class StablecoinCollateralPositionTest extends TestCase
 
         // Create stablecoin
         $this->stablecoin = Stablecoin::create([
-            'code' => 'FUSD',
-            'name' => 'FinAegis USD',
-            'symbol' => 'FUSD',
-            'peg_asset_code' => 'USD',
-            'peg_ratio' => 1.0,
-            'target_price' => 1.0,
-            'stability_mechanism' => 'collateralized',
-            'collateral_ratio' => 1.5,
-            'min_collateral_ratio' => 1.2,
-            'liquidation_penalty' => 0.1,
-            'total_supply' => 0,
-            'max_supply' => 10000000,
+            'code'                   => 'FUSD',
+            'name'                   => 'FinAegis USD',
+            'symbol'                 => 'FUSD',
+            'peg_asset_code'         => 'USD',
+            'peg_ratio'              => 1.0,
+            'target_price'           => 1.0,
+            'stability_mechanism'    => 'collateralized',
+            'collateral_ratio'       => 1.5,
+            'min_collateral_ratio'   => 1.2,
+            'liquidation_penalty'    => 0.1,
+            'total_supply'           => 0,
+            'max_supply'             => 10000000,
             'total_collateral_value' => 0,
-            'mint_fee' => 0.005,
-            'burn_fee' => 0.003,
-            'precision' => 2,
-            'is_active' => true,
-            'minting_enabled' => true,
-            'burning_enabled' => true,
+            'mint_fee'               => 0.005,
+            'burn_fee'               => 0.003,
+            'precision'              => 2,
+            'is_active'              => true,
+            'minting_enabled'        => true,
+            'burning_enabled'        => true,
         ]);
 
         // Create account
@@ -65,13 +65,13 @@ class StablecoinCollateralPositionTest extends TestCase
     public function it_can_create_a_collateral_position()
     {
         $position = StablecoinCollateralPosition::create([
-            'account_uuid' => $this->account->uuid,
-            'stablecoin_code' => $this->stablecoin->code,
-            'collateral_asset_code' => $this->asset->code,
-            'collateral_amount' => 150000,
-            'debt_amount' => 100000,
-            'collateral_ratio' => 1.5,
-            'status' => 'active',
+            'account_uuid'             => $this->account->uuid,
+            'stablecoin_code'          => $this->stablecoin->code,
+            'collateral_asset_code'    => $this->asset->code,
+            'collateral_amount'        => 150000,
+            'debt_amount'              => 100000,
+            'collateral_ratio'         => 1.5,
+            'status'                   => 'active',
             'auto_liquidation_enabled' => true,
         ]);
 
@@ -87,13 +87,13 @@ class StablecoinCollateralPositionTest extends TestCase
     public function it_has_relationships()
     {
         $position = StablecoinCollateralPosition::create([
-            'account_uuid' => $this->account->uuid,
-            'stablecoin_code' => $this->stablecoin->code,
+            'account_uuid'          => $this->account->uuid,
+            'stablecoin_code'       => $this->stablecoin->code,
             'collateral_asset_code' => $this->asset->code,
-            'collateral_amount' => 150000,
-            'debt_amount' => 100000,
-            'collateral_ratio' => 1.5,
-            'status' => 'active',
+            'collateral_amount'     => 150000,
+            'debt_amount'           => 100000,
+            'collateral_ratio'      => 1.5,
+            'status'                => 'active',
         ]);
 
         $this->assertInstanceOf(Account::class, $position->account);
@@ -105,13 +105,13 @@ class StablecoinCollateralPositionTest extends TestCase
     public function it_can_check_if_active()
     {
         $position = StablecoinCollateralPosition::create([
-            'account_uuid' => $this->account->uuid,
-            'stablecoin_code' => $this->stablecoin->code,
+            'account_uuid'          => $this->account->uuid,
+            'stablecoin_code'       => $this->stablecoin->code,
             'collateral_asset_code' => $this->asset->code,
-            'collateral_amount' => 150000,
-            'debt_amount' => 100000,
-            'collateral_ratio' => 1.5,
-            'status' => 'active',
+            'collateral_amount'     => 150000,
+            'debt_amount'           => 100000,
+            'collateral_ratio'      => 1.5,
+            'status'                => 'active',
         ]);
 
         $this->assertTrue($position->isActive());
@@ -124,13 +124,13 @@ class StablecoinCollateralPositionTest extends TestCase
     public function it_can_check_if_at_risk_of_liquidation()
     {
         $position = StablecoinCollateralPosition::create([
-            'account_uuid' => $this->account->uuid,
-            'stablecoin_code' => $this->stablecoin->code,
+            'account_uuid'          => $this->account->uuid,
+            'stablecoin_code'       => $this->stablecoin->code,
             'collateral_asset_code' => $this->asset->code,
-            'collateral_amount' => 150000,
-            'debt_amount' => 100000,
-            'collateral_ratio' => 1.5,
-            'status' => 'active',
+            'collateral_amount'     => 150000,
+            'debt_amount'           => 100000,
+            'collateral_ratio'      => 1.5,
+            'status'                => 'active',
         ]);
 
         $this->assertFalse($position->isAtRiskOfLiquidation());
@@ -143,13 +143,13 @@ class StablecoinCollateralPositionTest extends TestCase
     public function it_can_check_if_should_auto_liquidate()
     {
         $position = StablecoinCollateralPosition::create([
-            'account_uuid' => $this->account->uuid,
-            'stablecoin_code' => $this->stablecoin->code,
-            'collateral_asset_code' => $this->asset->code,
-            'collateral_amount' => 150000,
-            'debt_amount' => 100000,
-            'collateral_ratio' => 1.5,
-            'status' => 'active',
+            'account_uuid'             => $this->account->uuid,
+            'stablecoin_code'          => $this->stablecoin->code,
+            'collateral_asset_code'    => $this->asset->code,
+            'collateral_amount'        => 150000,
+            'debt_amount'              => 100000,
+            'collateral_ratio'         => 1.5,
+            'status'                   => 'active',
             'auto_liquidation_enabled' => true,
         ]);
 
@@ -172,13 +172,13 @@ class StablecoinCollateralPositionTest extends TestCase
     public function it_can_calculate_max_mint_amount()
     {
         $position = StablecoinCollateralPosition::create([
-            'account_uuid' => $this->account->uuid,
-            'stablecoin_code' => $this->stablecoin->code,
+            'account_uuid'          => $this->account->uuid,
+            'stablecoin_code'       => $this->stablecoin->code,
             'collateral_asset_code' => $this->asset->code,
-            'collateral_amount' => 150000,
-            'debt_amount' => 50000,
-            'collateral_ratio' => 3.0,
-            'status' => 'active',
+            'collateral_amount'     => 150000,
+            'debt_amount'           => 50000,
+            'collateral_ratio'      => 3.0,
+            'status'                => 'active',
         ]);
 
         $maxMint = $position->calculateMaxMintAmount();
@@ -189,13 +189,13 @@ class StablecoinCollateralPositionTest extends TestCase
     public function it_can_calculate_liquidation_price()
     {
         $position = StablecoinCollateralPosition::create([
-            'account_uuid' => $this->account->uuid,
-            'stablecoin_code' => $this->stablecoin->code,
+            'account_uuid'          => $this->account->uuid,
+            'stablecoin_code'       => $this->stablecoin->code,
             'collateral_asset_code' => $this->asset->code,
-            'collateral_amount' => 150000,
-            'debt_amount' => 100000,
-            'collateral_ratio' => 1.5,
-            'status' => 'active',
+            'collateral_amount'     => 150000,
+            'debt_amount'           => 100000,
+            'collateral_ratio'      => 1.5,
+            'status'                => 'active',
         ]);
 
         $liquidationPrice = $position->calculateLiquidationPrice();
@@ -209,13 +209,13 @@ class StablecoinCollateralPositionTest extends TestCase
     public function it_can_update_collateral_ratio()
     {
         $position = StablecoinCollateralPosition::create([
-            'account_uuid' => $this->account->uuid,
-            'stablecoin_code' => $this->stablecoin->code,
+            'account_uuid'          => $this->account->uuid,
+            'stablecoin_code'       => $this->stablecoin->code,
             'collateral_asset_code' => $this->asset->code,
-            'collateral_amount' => 150000,
-            'debt_amount' => 100000,
-            'collateral_ratio' => 0,
-            'status' => 'active',
+            'collateral_amount'     => 150000,
+            'debt_amount'           => 100000,
+            'collateral_ratio'      => 0,
+            'status'                => 'active',
         ]);
 
         $position->updateCollateralRatio();
@@ -230,13 +230,13 @@ class StablecoinCollateralPositionTest extends TestCase
     public function it_can_mark_as_liquidated()
     {
         $position = StablecoinCollateralPosition::create([
-            'account_uuid' => $this->account->uuid,
-            'stablecoin_code' => $this->stablecoin->code,
+            'account_uuid'          => $this->account->uuid,
+            'stablecoin_code'       => $this->stablecoin->code,
             'collateral_asset_code' => $this->asset->code,
-            'collateral_amount' => 150000,
-            'debt_amount' => 100000,
-            'collateral_ratio' => 1.5,
-            'status' => 'active',
+            'collateral_amount'     => 150000,
+            'debt_amount'           => 100000,
+            'collateral_ratio'      => 1.5,
+            'status'                => 'active',
         ]);
 
         $this->assertNull($position->liquidated_at);
@@ -255,34 +255,34 @@ class StablecoinCollateralPositionTest extends TestCase
         $account3 = Account::factory()->create();
 
         StablecoinCollateralPosition::create([
-            'account_uuid' => $account1->uuid,
-            'stablecoin_code' => $this->stablecoin->code,
+            'account_uuid'          => $account1->uuid,
+            'stablecoin_code'       => $this->stablecoin->code,
             'collateral_asset_code' => $this->asset->code,
-            'collateral_amount' => 150000,
-            'debt_amount' => 100000,
-            'collateral_ratio' => 1.5,
-            'status' => 'active',
+            'collateral_amount'     => 150000,
+            'debt_amount'           => 100000,
+            'collateral_ratio'      => 1.5,
+            'status'                => 'active',
         ]);
 
         StablecoinCollateralPosition::create([
-            'account_uuid' => $account2->uuid,
-            'stablecoin_code' => $this->stablecoin->code,
-            'collateral_asset_code' => $this->asset->code,
-            'collateral_amount' => 110000,
-            'debt_amount' => 100000,
-            'collateral_ratio' => 1.1,
-            'status' => 'active',
+            'account_uuid'             => $account2->uuid,
+            'stablecoin_code'          => $this->stablecoin->code,
+            'collateral_asset_code'    => $this->asset->code,
+            'collateral_amount'        => 110000,
+            'debt_amount'              => 100000,
+            'collateral_ratio'         => 1.1,
+            'status'                   => 'active',
             'auto_liquidation_enabled' => true,
         ]);
 
         StablecoinCollateralPosition::create([
-            'account_uuid' => $account3->uuid,
-            'stablecoin_code' => $this->stablecoin->code,
+            'account_uuid'          => $account3->uuid,
+            'stablecoin_code'       => $this->stablecoin->code,
             'collateral_asset_code' => $this->asset->code,
-            'collateral_amount' => 150000,
-            'debt_amount' => 100000,
-            'collateral_ratio' => 1.5,
-            'status' => 'liquidated',
+            'collateral_amount'     => 150000,
+            'debt_amount'           => 100000,
+            'collateral_ratio'      => 1.5,
+            'status'                => 'liquidated',
         ]);
 
         $this->assertEquals(2, StablecoinCollateralPosition::active()->count());

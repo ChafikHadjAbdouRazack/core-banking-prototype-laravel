@@ -131,7 +131,7 @@ class Settings extends Page
             Log::info(
                 'Platform settings updated',
                 [
-                    'user' => auth()->user()->email ?? 'system',
+                    'user'           => auth()->user()->email ?? 'system',
                     'settings_count' => count($data),
                 ]
             );
@@ -185,8 +185,8 @@ class Settings extends Page
         Log::info(
             'Settings exported',
             [
-                'user' => auth()->user()->email ?? 'system',
-                'filename' => $filename,
+                'user'           => auth()->user()->email ?? 'system',
+                'filename'       => $filename,
                 'settings_count' => count($settings),
             ]
         );

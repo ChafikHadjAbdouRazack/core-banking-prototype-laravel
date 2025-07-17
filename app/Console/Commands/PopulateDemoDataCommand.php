@@ -86,8 +86,8 @@ class PopulateDemoDataCommand extends Command
         Artisan::call(
             'make:filament-user',
             [
-                '--name' => 'Admin User',
-                '--email' => $email,
+                '--name'     => 'Admin User',
+                '--email'    => $email,
                 '--password' => $password,
             ]
         );

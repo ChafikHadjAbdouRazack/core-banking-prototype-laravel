@@ -46,12 +46,12 @@ class PerformSystemHealthChecks extends Command
     {
         $services = [
             'database' => [$this, 'checkDatabase'],
-            'cache' => [$this, 'checkCache'],
-            'queue' => [$this, 'checkQueue'],
-            'storage' => [$this, 'checkStorage'],
-            'web' => [$this, 'checkWebResponse'],
-            'api' => [$this, 'checkApiResponse'],
-            'email' => [$this, 'checkEmailService'],
+            'cache'    => [$this, 'checkCache'],
+            'queue'    => [$this, 'checkQueue'],
+            'storage'  => [$this, 'checkStorage'],
+            'web'      => [$this, 'checkWebResponse'],
+            'api'      => [$this, 'checkApiResponse'],
+            'email'    => [$this, 'checkEmailService'],
         ];
 
         foreach ($services as $service => $method) {
@@ -81,13 +81,13 @@ class PerformSystemHealthChecks extends Command
 
             SystemHealthCheck::create(
                 [
-                    'service' => $service,
-                    'check_type' => 'scheduled',
-                    'status' => $result['status'],
+                    'service'       => $service,
+                    'check_type'    => 'scheduled',
+                    'status'        => $result['status'],
                     'response_time' => $result['response_time'] ?? null,
-                    'metadata' => $result['metadata'] ?? null,
+                    'metadata'      => $result['metadata'] ?? null,
                     'error_message' => $result['error_message'] ?? null,
-                    'checked_at' => now(),
+                    'checked_at'    => now(),
                 ]
             );
 
@@ -104,11 +104,11 @@ class PerformSystemHealthChecks extends Command
 
             SystemHealthCheck::create(
                 [
-                    'service' => $service,
-                    'check_type' => 'scheduled',
-                    'status' => 'down',
+                    'service'       => $service,
+                    'check_type'    => 'scheduled',
+                    'status'        => 'down',
                     'error_message' => $e->getMessage(),
-                    'checked_at' => now(),
+                    'checked_at'    => now(),
                 ]
             );
 
@@ -128,15 +128,15 @@ class PerformSystemHealthChecks extends Command
             $status = $responseTime > 100 ? 'degraded' : 'operational';
 
             return [
-                'status' => $status,
+                'status'        => $status,
                 'response_time' => $responseTime,
-                'metadata' => [
+                'metadata'      => [
                     'connection' => config('database.default'),
                 ],
             ];
         } catch (\Exception $e) {
             return [
-                'status' => 'down',
+                'status'        => 'down',
                 'error_message' => $e->getMessage(),
             ];
         }
@@ -152,20 +152,20 @@ class PerformSystemHealthChecks extends Command
 
             if (! $result) {
                 return [
-                    'status' => 'degraded',
+                    'status'        => 'degraded',
                     'error_message' => 'Cache write/read test failed',
                 ];
             }
 
             return [
-                'status' => 'operational',
+                'status'   => 'operational',
                 'metadata' => [
                     'driver' => config('cache.default'),
                 ],
             ];
         } catch (\Exception $e) {
             return [
-                'status' => 'down',
+                'status'        => 'down',
                 'error_message' => $e->getMessage(),
             ];
         }
@@ -183,16 +183,16 @@ class PerformSystemHealthChecks extends Command
             }
 
             return [
-                'status' => $status,
+                'status'   => $status,
                 'metadata' => [
-                    'failed_jobs' => $failedJobs,
+                    'failed_jobs'  => $failedJobs,
                     'pending_jobs' => $pendingJobs,
-                    'driver' => config('queue.default'),
+                    'driver'       => config('queue.default'),
                 ],
             ];
         } catch (\Exception $e) {
             return [
-                'status' => 'down',
+                'status'        => 'down',
                 'error_message' => $e->getMessage(),
             ];
         }
@@ -214,15 +214,15 @@ class PerformSystemHealthChecks extends Command
             }
 
             return [
-                'status' => $status,
+                'status'   => $status,
                 'metadata' => [
                     'disk_usage_percent' => $usedPercentage,
-                    'free_space_gb' => round($free / 1024 / 1024 / 1024, 2),
+                    'free_space_gb'      => round($free / 1024 / 1024 / 1024, 2),
                 ],
             ];
         } catch (\Exception $e) {
             return [
-                'status' => 'down',
+                'status'        => 'down',
                 'error_message' => $e->getMessage(),
             ];
         }
@@ -239,7 +239,7 @@ class PerformSystemHealthChecks extends Command
 
             if (! $response->successful()) {
                 return [
-                    'status' => 'down',
+                    'status'        => 'down',
                     'response_time' => $responseTime,
                     'error_message' => "HTTP {$response->status()}",
                 ];
@@ -251,15 +251,15 @@ class PerformSystemHealthChecks extends Command
             }
 
             return [
-                'status' => $status,
+                'status'        => $status,
                 'response_time' => $responseTime,
-                'metadata' => [
+                'metadata'      => [
                     'http_status' => $response->status(),
                 ],
             ];
         } catch (\Exception $e) {
             return [
-                'status' => 'down',
+                'status'        => 'down',
                 'error_message' => $e->getMessage(),
             ];
         }
@@ -276,7 +276,7 @@ class PerformSystemHealthChecks extends Command
 
             if (! $response->successful()) {
                 return [
-                    'status' => 'down',
+                    'status'        => 'down',
                     'response_time' => $responseTime,
                     'error_message' => "HTTP {$response->status()}",
                 ];
@@ -288,15 +288,15 @@ class PerformSystemHealthChecks extends Command
             }
 
             return [
-                'status' => $status,
+                'status'        => $status,
                 'response_time' => $responseTime,
-                'metadata' => [
+                'metadata'      => [
                     'http_status' => $response->status(),
                 ],
             ];
         } catch (\Exception $e) {
             return [
-                'status' => 'down',
+                'status'        => 'down',
                 'error_message' => $e->getMessage(),
             ];
         }
@@ -310,24 +310,24 @@ class PerformSystemHealthChecks extends Command
 
             if (! $driver || $driver === 'array') {
                 return [
-                    'status' => 'operational',
+                    'status'   => 'operational',
                     'metadata' => [
                         'driver' => $driver,
-                        'note' => 'Using local/test driver',
+                        'note'   => 'Using local/test driver',
                     ],
                 ];
             }
 
             // For production drivers, could implement actual test email
             return [
-                'status' => 'operational',
+                'status'   => 'operational',
                 'metadata' => [
                     'driver' => $driver,
                 ],
             ];
         } catch (\Exception $e) {
             return [
-                'status' => 'down',
+                'status'        => 'down',
                 'error_message' => $e->getMessage(),
             ];
         }
@@ -344,12 +344,12 @@ class PerformSystemHealthChecks extends Command
             // Create new incident
             $incident = SystemIncident::create(
                 [
-                    'title' => ucfirst($service) . ' Service Outage',
-                    'description' => "The {$service} service is experiencing issues and is currently unavailable.",
-                    'service' => $service,
-                    'impact' => 'major',
-                    'status' => 'identified',
-                    'started_at' => now(),
+                    'title'             => ucfirst($service) . ' Service Outage',
+                    'description'       => "The {$service} service is experiencing issues and is currently unavailable.",
+                    'service'           => $service,
+                    'impact'            => 'major',
+                    'status'            => 'identified',
+                    'started_at'        => now(),
                     'affected_services' => [$service],
                 ]
             );

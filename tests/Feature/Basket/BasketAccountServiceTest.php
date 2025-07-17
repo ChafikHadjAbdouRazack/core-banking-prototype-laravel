@@ -45,23 +45,23 @@ class BasketAccountServiceTest extends ServiceTestCase
         // Create exchange rates
         ExchangeRate::factory()->create([
             'from_asset_code' => 'EUR',
-            'to_asset_code' => 'USD',
-            'rate' => 1.1000,
-            'is_active' => true,
+            'to_asset_code'   => 'USD',
+            'rate'            => 1.1000,
+            'is_active'       => true,
         ]);
 
         ExchangeRate::factory()->create([
             'from_asset_code' => 'GBP',
-            'to_asset_code' => 'USD',
-            'rate' => 1.2500,
-            'is_active' => true,
+            'to_asset_code'   => 'USD',
+            'rate'            => 1.2500,
+            'is_active'       => true,
         ]);
 
         // Create test basket
         $this->basket = BasketAsset::create([
-            'code' => 'STABLE_BASKET',
-            'name' => 'Stable Currency Basket',
-            'type' => 'fixed',
+            'code'                => 'STABLE_BASKET',
+            'name'                => 'Stable Currency Basket',
+            'type'                => 'fixed',
             'rebalance_frequency' => 'never',
         ]);
 
@@ -82,8 +82,8 @@ class BasketAccountServiceTest extends ServiceTestCase
         // Give account some basket holdings
         AccountBalance::create([
             'account_uuid' => $this->account->uuid,
-            'asset_code' => 'STABLE_BASKET',
-            'balance' => 10000,
+            'asset_code'   => 'STABLE_BASKET',
+            'balance'      => 10000,
         ]); // 100.00 basket units
 
         $result = $this->service->decomposeBasket($this->account, 'STABLE_BASKET', 5000); // 50.00 units
@@ -114,8 +114,8 @@ class BasketAccountServiceTest extends ServiceTestCase
         $this->markTestSkipped('Basket decompose/compose functionality needs event sourcing refactoring');
         AccountBalance::create([
             'account_uuid' => $this->account->uuid,
-            'asset_code' => 'STABLE_BASKET',
-            'balance' => 1000,
+            'asset_code'   => 'STABLE_BASKET',
+            'balance'      => 1000,
         ]); // 10.00 basket units
 
         $this->expectException(\Exception::class);
@@ -131,18 +131,18 @@ class BasketAccountServiceTest extends ServiceTestCase
         // Give account component balances
         AccountBalance::create([
             'account_uuid' => $this->account->uuid,
-            'asset_code' => 'USD',
-            'balance' => 4000,
+            'asset_code'   => 'USD',
+            'balance'      => 4000,
         ]);  // 40.00 USD
         AccountBalance::create([
             'account_uuid' => $this->account->uuid,
-            'asset_code' => 'EUR',
-            'balance' => 3500,
+            'asset_code'   => 'EUR',
+            'balance'      => 3500,
         ]);  // 35.00 EUR
         AccountBalance::create([
             'account_uuid' => $this->account->uuid,
-            'asset_code' => 'GBP',
-            'balance' => 2500,
+            'asset_code'   => 'GBP',
+            'balance'      => 2500,
         ]);  // 25.00 GBP
 
         $result = $this->service->composeBasket($this->account, 'STABLE_BASKET', 5000); // 50.00 units
@@ -174,18 +174,18 @@ class BasketAccountServiceTest extends ServiceTestCase
         // Give account insufficient component balances
         AccountBalance::create([
             'account_uuid' => $this->account->uuid,
-            'asset_code' => 'USD',
-            'balance' => 1000,
+            'asset_code'   => 'USD',
+            'balance'      => 1000,
         ]);  // 10.00 USD (need 20.00)
         AccountBalance::create([
             'account_uuid' => $this->account->uuid,
-            'asset_code' => 'EUR',
-            'balance' => 3500,
+            'asset_code'   => 'EUR',
+            'balance'      => 3500,
         ]);  // 35.00 EUR
         AccountBalance::create([
             'account_uuid' => $this->account->uuid,
-            'asset_code' => 'GBP',
-            'balance' => 2500,
+            'asset_code'   => 'GBP',
+            'balance'      => 2500,
         ]);  // 25.00 GBP
 
         $this->expectException(\Exception::class);
@@ -201,15 +201,15 @@ class BasketAccountServiceTest extends ServiceTestCase
         // Give account various basket holdings
         AccountBalance::create([
             'account_uuid' => $this->account->uuid,
-            'asset_code' => 'STABLE_BASKET',
-            'balance' => 10000,
+            'asset_code'   => 'STABLE_BASKET',
+            'balance'      => 10000,
         ]); // 100.00 units
 
         // Create another basket
         $cryptoBasket = BasketAsset::create([
-            'code' => 'CRYPTO_BASKET',
-            'name' => 'Crypto Basket',
-            'type' => 'fixed',
+            'code'                => 'CRYPTO_BASKET',
+            'name'                => 'Crypto Basket',
+            'type'                => 'fixed',
             'rebalance_frequency' => 'never',
         ]);
 
@@ -217,15 +217,15 @@ class BasketAccountServiceTest extends ServiceTestCase
 
         $cryptoBasket->components()->create([
             'asset_code' => 'USD',
-            'weight' => 100.0,
+            'weight'     => 100.0,
         ]);
 
         $basketValue = app(BasketValueCalculationService::class)->calculateValue($cryptoBasket);
 
         AccountBalance::create([
             'account_uuid' => $this->account->uuid,
-            'asset_code' => 'CRYPTO_BASKET',
-            'balance' => 5000,
+            'asset_code'   => 'CRYPTO_BASKET',
+            'balance'      => 5000,
         ]); // 50.00 units
 
         $holdings = $this->service->getBasketHoldingsValue($this->account);
@@ -255,8 +255,8 @@ class BasketAccountServiceTest extends ServiceTestCase
 
         AccountBalance::create([
             'account_uuid' => $this->account->uuid,
-            'asset_code' => 'STABLE_BASKET',
-            'balance' => 10000,
+            'asset_code'   => 'STABLE_BASKET',
+            'balance'      => 10000,
         ]);
 
         $result = $this->service->decomposeBasket($this->account, 'STABLE_BASKET', 5000);

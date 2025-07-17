@@ -64,11 +64,11 @@ class AccountController extends Controller
                 'data' => $accounts->map(
                     function ($account) {
                         return [
-                            'uuid' => $account->uuid,
-                            'user_uuid' => $account->user_uuid,
-                            'name' => $account->name,
-                            'balance' => $account->balance,
-                            'frozen' => $account->frozen ?? false,
+                            'uuid'       => $account->uuid,
+                            'user_uuid'  => $account->user_uuid,
+                            'name'       => $account->name,
+                            'balance'    => $account->balance,
+                            'frozen'     => $account->frozen ?? false,
                             'created_at' => $account->created_at,
                             'updated_at' => $account->updated_at,
                         ];
@@ -122,7 +122,7 @@ class AccountController extends Controller
     {
         $validated = $request->validate(
             [
-                'name' => ['required', 'string', 'max:255', new NoControlCharacters()],
+                'name'            => ['required', 'string', 'max:255', new NoControlCharacters()],
                 'initial_balance' => 'sometimes|integer|min:0',
             ]
         );
@@ -164,7 +164,7 @@ class AccountController extends Controller
         if (empty($sanitizedName)) {
             return response()->json([
                 'message' => 'The name field contains invalid characters.',
-                'errors' => [
+                'errors'  => [
                     'name' => ['The name field contains only invalid characters.'],
                 ],
             ], 422);
@@ -200,10 +200,10 @@ class AccountController extends Controller
         if (! $account) {
             $account = Account::create(
                 [
-                    'uuid' => $accountUuid,
+                    'uuid'      => $accountUuid,
                     'user_uuid' => $request->user()->uuid,
-                    'name' => $sanitizedName,
-                    'balance' => $validated['initial_balance'] ?? 0,
+                    'name'      => $sanitizedName,
+                    'balance'   => $validated['initial_balance'] ?? 0,
                 ]
             );
         }
@@ -211,11 +211,11 @@ class AccountController extends Controller
         return response()->json(
             [
                 'data' => [
-                    'uuid' => $account->uuid,
-                    'user_uuid' => $account->user_uuid,
-                    'name' => $account->name,
-                    'balance' => $account->balance,
-                    'frozen' => $account->frozen ?? false,
+                    'uuid'       => $account->uuid,
+                    'user_uuid'  => $account->user_uuid,
+                    'name'       => $account->name,
+                    'balance'    => $account->balance,
+                    'frozen'     => $account->frozen ?? false,
                     'created_at' => $account->created_at,
                 ],
                 'message' => 'Account created successfully',
@@ -277,11 +277,11 @@ class AccountController extends Controller
         return response()->json(
             [
                 'data' => [
-                    'uuid' => $account->uuid,
-                    'user_uuid' => $account->user_uuid,
-                    'name' => $account->name,
-                    'balance' => $account->balance,
-                    'frozen' => $account->frozen ?? false,
+                    'uuid'       => $account->uuid,
+                    'user_uuid'  => $account->user_uuid,
+                    'name'       => $account->name,
+                    'balance'    => $account->balance,
+                    'frozen'     => $account->frozen ?? false,
                     'created_at' => $account->created_at,
                     'updated_at' => $account->updated_at,
                 ],
@@ -345,7 +345,7 @@ class AccountController extends Controller
             return response()->json(
                 [
                     'message' => 'Cannot delete account with positive balance',
-                    'error' => 'ACCOUNT_HAS_BALANCE',
+                    'error'   => 'ACCOUNT_HAS_BALANCE',
                 ],
                 422
             );
@@ -355,7 +355,7 @@ class AccountController extends Controller
             return response()->json(
                 [
                     'message' => 'Cannot delete frozen account',
-                    'error' => 'ACCOUNT_FROZEN',
+                    'error'   => 'ACCOUNT_FROZEN',
                 ],
                 422
             );
@@ -424,7 +424,7 @@ class AccountController extends Controller
     {
         $validated = $request->validate(
             [
-                'reason' => 'required|string|max:255',
+                'reason'        => 'required|string|max:255',
                 'authorized_by' => 'sometimes|string|max:255',
             ]
         );
@@ -440,7 +440,7 @@ class AccountController extends Controller
             return response()->json(
                 [
                     'message' => 'Account is already frozen',
-                    'error' => 'ACCOUNT_ALREADY_FROZEN',
+                    'error'   => 'ACCOUNT_ALREADY_FROZEN',
                 ],
                 422
             );
@@ -513,7 +513,7 @@ class AccountController extends Controller
     {
         $validated = $request->validate(
             [
-                'reason' => 'required|string|max:255',
+                'reason'        => 'required|string|max:255',
                 'authorized_by' => 'sometimes|string|max:255',
             ]
         );
@@ -529,7 +529,7 @@ class AccountController extends Controller
             return response()->json(
                 [
                     'message' => 'Account is not frozen',
-                    'error' => 'ACCOUNT_NOT_FROZEN',
+                    'error'   => 'ACCOUNT_NOT_FROZEN',
                 ],
                 422
             );

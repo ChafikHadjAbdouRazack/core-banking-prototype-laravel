@@ -10,7 +10,7 @@ class DebitAccountActivity extends Activity
     public function execute(string $accountUuid, int $amount, string $currency): void
     {
         /** @var Account $account */
-        /** @var \App\Models\Account|null $account */
+        /** @var Account|null $account */
         $account = Account::where('uuid', $accountUuid)->firstOrFail();
 
         // Since Account uses event sourcing, we should trigger a debit event

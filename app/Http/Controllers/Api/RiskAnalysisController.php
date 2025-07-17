@@ -13,7 +13,7 @@ class RiskAnalysisController extends Controller
         return response()->json(
             [
                 'data' => [
-                    'user_id' => $userId,
+                    'user_id'    => $userId,
                     'risk_score' => 0,
                     'risk_level' => 'low',
                 ],
@@ -27,8 +27,8 @@ class RiskAnalysisController extends Controller
             [
                 'data' => [
                     'transaction_id' => $transactionId,
-                    'risk_score' => 0,
-                    'risk_factors' => [],
+                    'risk_score'     => 0,
+                    'risk_factors'   => [],
                 ],
             ]
         );
@@ -79,7 +79,7 @@ class RiskAnalysisController extends Controller
         return response()->json(
             [
                 'message' => 'Device fingerprint stored',
-                'data' => [],
+                'data'    => [],
             ]
         );
     }

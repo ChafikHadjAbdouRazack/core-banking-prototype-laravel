@@ -28,15 +28,15 @@ class ProcessWebhookDeliveryTest extends DomainTestCase
         parent::setUp();
 
         $this->webhook = Webhook::factory()->create([
-            'is_active' => true,
+            'is_active'       => true,
             'timeout_seconds' => 30,
-            'secret' => 'test-secret',
+            'secret'          => 'test-secret',
         ]);
 
         $this->delivery = WebhookDelivery::factory()->create([
             'webhook_uuid' => $this->webhook->uuid,
-            'event_type' => 'test.event',
-            'payload' => ['test' => 'data'],
+            'event_type'   => 'test.event',
+            'payload'      => ['test' => 'data'],
         ]);
 
         $this->webhookService = $this->mock(WebhookService::class);
@@ -276,7 +276,7 @@ class ProcessWebhookDeliveryTest extends DomainTestCase
             ->once()
             ->with('Webhook delivery job failed permanently', [
                 'delivery_id' => $this->delivery->uuid,
-                'error' => 'Job failed permanently',
+                'error'       => 'Job failed permanently',
             ]);
 
         $job = new ProcessWebhookDelivery($this->delivery);
@@ -303,7 +303,7 @@ class ProcessWebhookDeliveryTest extends DomainTestCase
     {
         $this->webhook->update([
             'headers' => [
-                'Authorization' => 'Bearer token123',
+                'Authorization'   => 'Bearer token123',
                 'X-Custom-Header' => 'custom-value',
             ],
             'secret' => null, // Remove secret to simplify test

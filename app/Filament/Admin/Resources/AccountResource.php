@@ -413,19 +413,19 @@ class AccountResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListAccounts::route('/'),
+            'index'  => Pages\ListAccounts::route('/'),
             'create' => Pages\CreateAccount::route('/create'),
-            'edit' => Pages\EditAccount::route('/{record}/edit'),
-            'view' => Pages\ViewAccount::route('/{record}'),
+            'edit'   => Pages\EditAccount::route('/{record}/edit'),
+            'view'   => Pages\ViewAccount::route('/{record}'),
         ];
     }
 
     public static function getGlobalSearchResultDetails($record): array
     {
         return [
-            'User' => $record->user_uuid,
+            'User'    => $record->user_uuid,
             'Balance' => '$' . number_format($record->balance / 100, 2),
-            'Status' => $record->frozen ? 'Frozen' : 'Active',
+            'Status'  => $record->frozen ? 'Frozen' : 'Active',
         ];
     }
 

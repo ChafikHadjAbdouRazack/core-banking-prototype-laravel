@@ -97,7 +97,7 @@ it('can test existing model relationships', function () {
     $asset = Asset::factory()->create();
     $balance = AccountBalance::factory()->create([
         'account_uuid' => $account->uuid,
-        'asset_code' => $asset->code,
+        'asset_code'   => $asset->code,
     ]);
 
     // Test Account relationships
@@ -147,9 +147,9 @@ it('can test exchange rate model methods', function () {
 
     $activeRate = ExchangeRate::factory()->create([
         'from_asset_code' => 'FROM',
-        'to_asset_code' => 'TO',
-        'rate' => 1.5,
-        'is_active' => true,
+        'to_asset_code'   => 'TO',
+        'rate'            => 1.5,
+        'is_active'       => true,
     ]);
 
     $inactiveRate = ExchangeRate::factory()->create([
@@ -178,8 +178,8 @@ it('can test account balance model methods extensively', function () {
 
     $balance = AccountBalance::factory()->create([
         'account_uuid' => $account->uuid,
-        'asset_code' => $asset->code,
-        'balance' => 50000, // $500.00
+        'asset_code'   => $asset->code,
+        'balance'      => 50000, // $500.00
     ]);
 
     // Test basic properties

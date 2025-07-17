@@ -18,7 +18,7 @@ class ValidateOrderActivity extends Activity
         $baseCurrency = null;
         /** @var mixed|null $orderProjection */
         $orderProjection = null;
-        /** @var \App\Models\Account|null $account */
+        /** @var Account|null $account */
         $account = null;
         /** @var \Illuminate\Database\Eloquent\Model|null $$orderProjection */
         $$orderProjection = OrderProjection::where('order_id', $orderId)->first();

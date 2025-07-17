@@ -32,17 +32,17 @@ class SyntaxHighlighter
     {
         $map = [
             'javascript' => 'language-javascript',
-            'js' => 'language-javascript',
-            'python' => 'language-python',
-            'php' => 'language-php',
-            'bash' => 'language-bash',
-            'shell' => 'language-bash',
-            'json' => 'language-json',
-            'html' => 'language-html',
-            'css' => 'language-css',
-            'sql' => 'language-sql',
-            'yaml' => 'language-yaml',
-            'yml' => 'language-yaml',
+            'js'         => 'language-javascript',
+            'python'     => 'language-python',
+            'php'        => 'language-php',
+            'bash'       => 'language-bash',
+            'shell'      => 'language-bash',
+            'json'       => 'language-json',
+            'html'       => 'language-html',
+            'css'        => 'language-css',
+            'sql'        => 'language-sql',
+            'yaml'       => 'language-yaml',
+            'yml'        => 'language-yaml',
         ];
 
         return $map[strtolower($language)] ?? 'language-plaintext';

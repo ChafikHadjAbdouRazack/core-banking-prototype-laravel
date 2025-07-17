@@ -36,13 +36,13 @@ final class TurnoverRepository
                 // Use updateOrCreate with lock for atomic operation
                 $turnover = Turnover::lockForUpdate()->updateOrCreate(
                     [
-                        'date' => $date->toDateString(),
+                        'date'         => $date->toDateString(),
                         'account_uuid' => $accountUuid,
                     ],
                     [
-                        'count' => 0,
+                        'count'  => 0,
                         'amount' => 0,
-                        'debit' => 0,
+                        'debit'  => 0,
                         'credit' => 0,
                     ]
                 );

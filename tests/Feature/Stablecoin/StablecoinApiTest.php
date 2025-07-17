@@ -35,47 +35,47 @@ class StablecoinApiTest extends TestCase
     public function it_can_list_stablecoins()
     {
         $this->createStablecoinWithAsset([
-            'code' => 'FUSD',
-            'name' => 'FinAegis USD',
-            'symbol' => 'FUSD',
-            'peg_asset_code' => 'USD',
-            'peg_ratio' => 1.0,
-            'target_price' => 1.0,
-            'stability_mechanism' => 'collateralized',
-            'collateral_ratio' => 1.5,
-            'min_collateral_ratio' => 1.2,
-            'liquidation_penalty' => 0.1,
-            'total_supply' => 0,
-            'max_supply' => 10000000,
+            'code'                   => 'FUSD',
+            'name'                   => 'FinAegis USD',
+            'symbol'                 => 'FUSD',
+            'peg_asset_code'         => 'USD',
+            'peg_ratio'              => 1.0,
+            'target_price'           => 1.0,
+            'stability_mechanism'    => 'collateralized',
+            'collateral_ratio'       => 1.5,
+            'min_collateral_ratio'   => 1.2,
+            'liquidation_penalty'    => 0.1,
+            'total_supply'           => 0,
+            'max_supply'             => 10000000,
             'total_collateral_value' => 0,
-            'mint_fee' => 0.005,
-            'burn_fee' => 0.003,
-            'precision' => 2,
-            'is_active' => true,
-            'minting_enabled' => true,
-            'burning_enabled' => true,
+            'mint_fee'               => 0.005,
+            'burn_fee'               => 0.003,
+            'precision'              => 2,
+            'is_active'              => true,
+            'minting_enabled'        => true,
+            'burning_enabled'        => true,
         ]);
 
         $this->createStablecoinWithAsset([
-            'code' => 'FEUR',
-            'name' => 'FinAegis EUR',
-            'symbol' => 'FEUR',
-            'peg_asset_code' => 'EUR',
-            'peg_ratio' => 1.0,
-            'target_price' => 1.0,
-            'stability_mechanism' => 'collateralized',
-            'collateral_ratio' => 1.6,
-            'min_collateral_ratio' => 1.3,
-            'liquidation_penalty' => 0.12,
-            'total_supply' => 0,
-            'max_supply' => 5000000,
+            'code'                   => 'FEUR',
+            'name'                   => 'FinAegis EUR',
+            'symbol'                 => 'FEUR',
+            'peg_asset_code'         => 'EUR',
+            'peg_ratio'              => 1.0,
+            'target_price'           => 1.0,
+            'stability_mechanism'    => 'collateralized',
+            'collateral_ratio'       => 1.6,
+            'min_collateral_ratio'   => 1.3,
+            'liquidation_penalty'    => 0.12,
+            'total_supply'           => 0,
+            'max_supply'             => 5000000,
             'total_collateral_value' => 0,
-            'mint_fee' => 0.006,
-            'burn_fee' => 0.004,
-            'precision' => 2,
-            'is_active' => false,
-            'minting_enabled' => false,
-            'burning_enabled' => false,
+            'mint_fee'               => 0.006,
+            'burn_fee'               => 0.004,
+            'precision'              => 2,
+            'is_active'              => false,
+            'minting_enabled'        => false,
+            'burning_enabled'        => false,
         ]);
 
         $response = $this->getJson('/api/v2/stablecoins');
@@ -107,25 +107,25 @@ class StablecoinApiTest extends TestCase
     public function it_can_get_stablecoin_details()
     {
         $stablecoin = $this->createStablecoinWithAsset([
-            'code' => 'FUSD',
-            'name' => 'FinAegis USD',
-            'symbol' => 'FUSD',
-            'peg_asset_code' => 'USD',
-            'peg_ratio' => 1.0,
-            'target_price' => 1.0,
-            'stability_mechanism' => 'collateralized',
-            'collateral_ratio' => 1.5,
-            'min_collateral_ratio' => 1.2,
-            'liquidation_penalty' => 0.1,
-            'total_supply' => 100000,
-            'max_supply' => 10000000,
+            'code'                   => 'FUSD',
+            'name'                   => 'FinAegis USD',
+            'symbol'                 => 'FUSD',
+            'peg_asset_code'         => 'USD',
+            'peg_ratio'              => 1.0,
+            'target_price'           => 1.0,
+            'stability_mechanism'    => 'collateralized',
+            'collateral_ratio'       => 1.5,
+            'min_collateral_ratio'   => 1.2,
+            'liquidation_penalty'    => 0.1,
+            'total_supply'           => 100000,
+            'max_supply'             => 10000000,
             'total_collateral_value' => 150000,
-            'mint_fee' => 0.005,
-            'burn_fee' => 0.003,
-            'precision' => 2,
-            'is_active' => true,
-            'minting_enabled' => true,
-            'burning_enabled' => true,
+            'mint_fee'               => 0.005,
+            'burn_fee'               => 0.003,
+            'precision'              => 2,
+            'is_active'              => true,
+            'minting_enabled'        => true,
+            'burning_enabled'        => true,
         ]);
 
         $response = $this->getJson("/api/v2/stablecoins/{$stablecoin->code}");
@@ -158,20 +158,20 @@ class StablecoinApiTest extends TestCase
     public function it_can_create_a_stablecoin()
     {
         $data = [
-            'code' => 'FJPY',
-            'name' => 'FinAegis JPY',
-            'symbol' => 'FJPY',
-            'peg_asset_code' => 'USD', // Using USD since JPY asset doesn't exist in test
-            'peg_ratio' => 100.0,
-            'target_price' => 1.0,
-            'stability_mechanism' => 'collateralized',
-            'collateral_ratio' => 1.4,
+            'code'                 => 'FJPY',
+            'name'                 => 'FinAegis JPY',
+            'symbol'               => 'FJPY',
+            'peg_asset_code'       => 'USD', // Using USD since JPY asset doesn't exist in test
+            'peg_ratio'            => 100.0,
+            'target_price'         => 1.0,
+            'stability_mechanism'  => 'collateralized',
+            'collateral_ratio'     => 1.4,
             'min_collateral_ratio' => 1.15,
-            'liquidation_penalty' => 0.09,
-            'max_supply' => 2000000,
-            'mint_fee' => 0.004,
-            'burn_fee' => 0.002,
-            'precision' => 0,
+            'liquidation_penalty'  => 0.09,
+            'max_supply'           => 2000000,
+            'mint_fee'             => 0.004,
+            'burn_fee'             => 0.002,
+            'precision'            => 0,
         ];
 
         $response = $this->postJson('/api/v2/stablecoins', $data);
@@ -192,19 +192,19 @@ class StablecoinApiTest extends TestCase
     public function it_validates_stablecoin_creation()
     {
         $data = [
-            'code' => 'FTEST',
-            'name' => 'Test Stablecoin',
-            'symbol' => 'FTEST',
-            'peg_asset_code' => 'INVALID',
-            'peg_ratio' => 1.0,
-            'target_price' => 1.0,
-            'stability_mechanism' => 'invalid_mechanism',
-            'collateral_ratio' => 0.5, // Too low
+            'code'                 => 'FTEST',
+            'name'                 => 'Test Stablecoin',
+            'symbol'               => 'FTEST',
+            'peg_asset_code'       => 'INVALID',
+            'peg_ratio'            => 1.0,
+            'target_price'         => 1.0,
+            'stability_mechanism'  => 'invalid_mechanism',
+            'collateral_ratio'     => 0.5, // Too low
             'min_collateral_ratio' => 0.8,
-            'liquidation_penalty' => 2.0, // Too high
-            'mint_fee' => 1.5, // Too high
-            'burn_fee' => -0.1, // Negative
-            'precision' => 20, // Too high
+            'liquidation_penalty'  => 2.0, // Too high
+            'mint_fee'             => 1.5, // Too high
+            'burn_fee'             => -0.1, // Negative
+            'precision'            => 20, // Too high
         ];
 
         $response = $this->postJson('/api/v2/stablecoins', $data);
@@ -225,31 +225,31 @@ class StablecoinApiTest extends TestCase
     public function it_can_update_a_stablecoin()
     {
         $stablecoin = $this->createStablecoinWithAsset([
-            'code' => 'FUSD',
-            'name' => 'FinAegis USD',
-            'symbol' => 'FUSD',
-            'peg_asset_code' => 'USD',
-            'peg_ratio' => 1.0,
-            'target_price' => 1.0,
-            'stability_mechanism' => 'collateralized',
-            'collateral_ratio' => 1.5,
-            'min_collateral_ratio' => 1.2,
-            'liquidation_penalty' => 0.1,
-            'total_supply' => 0,
-            'max_supply' => 10000000,
+            'code'                   => 'FUSD',
+            'name'                   => 'FinAegis USD',
+            'symbol'                 => 'FUSD',
+            'peg_asset_code'         => 'USD',
+            'peg_ratio'              => 1.0,
+            'target_price'           => 1.0,
+            'stability_mechanism'    => 'collateralized',
+            'collateral_ratio'       => 1.5,
+            'min_collateral_ratio'   => 1.2,
+            'liquidation_penalty'    => 0.1,
+            'total_supply'           => 0,
+            'max_supply'             => 10000000,
             'total_collateral_value' => 0,
-            'mint_fee' => 0.005,
-            'burn_fee' => 0.003,
-            'precision' => 2,
-            'is_active' => true,
-            'minting_enabled' => true,
-            'burning_enabled' => true,
+            'mint_fee'               => 0.005,
+            'burn_fee'               => 0.003,
+            'precision'              => 2,
+            'is_active'              => true,
+            'minting_enabled'        => true,
+            'burning_enabled'        => true,
         ]);
 
         $updateData = [
             'collateral_ratio' => 1.6,
-            'mint_fee' => 0.004,
-            'burn_fee' => 0.002,
+            'mint_fee'         => 0.004,
+            'burn_fee'         => 0.002,
         ];
 
         $response = $this->putJson("/api/v2/stablecoins/{$stablecoin->code}", $updateData);
@@ -260,10 +260,10 @@ class StablecoinApiTest extends TestCase
             ->assertJsonPath('data.burn_fee', '0.002000');
 
         $this->assertDatabaseHas('stablecoins', [
-            'code' => 'FUSD',
+            'code'             => 'FUSD',
             'collateral_ratio' => 1.6,
-            'mint_fee' => 0.004,
-            'burn_fee' => 0.002,
+            'mint_fee'         => 0.004,
+            'burn_fee'         => 0.002,
         ]);
     }
 
@@ -271,25 +271,25 @@ class StablecoinApiTest extends TestCase
     public function it_can_get_system_metrics()
     {
         $this->createStablecoinWithAsset([
-            'code' => 'FUSD',
-            'name' => 'FinAegis USD',
-            'symbol' => 'FUSD',
-            'peg_asset_code' => 'USD',
-            'peg_ratio' => 1.0,
-            'target_price' => 1.0,
-            'stability_mechanism' => 'collateralized',
-            'collateral_ratio' => 1.5,
-            'min_collateral_ratio' => 1.2,
-            'liquidation_penalty' => 0.1,
-            'total_supply' => 100000,
-            'max_supply' => 10000000,
+            'code'                   => 'FUSD',
+            'name'                   => 'FinAegis USD',
+            'symbol'                 => 'FUSD',
+            'peg_asset_code'         => 'USD',
+            'peg_ratio'              => 1.0,
+            'target_price'           => 1.0,
+            'stability_mechanism'    => 'collateralized',
+            'collateral_ratio'       => 1.5,
+            'min_collateral_ratio'   => 1.2,
+            'liquidation_penalty'    => 0.1,
+            'total_supply'           => 100000,
+            'max_supply'             => 10000000,
             'total_collateral_value' => 150000,
-            'mint_fee' => 0.005,
-            'burn_fee' => 0.003,
-            'precision' => 2,
-            'is_active' => true,
-            'minting_enabled' => true,
-            'burning_enabled' => true,
+            'mint_fee'               => 0.005,
+            'burn_fee'               => 0.003,
+            'precision'              => 2,
+            'is_active'              => true,
+            'minting_enabled'        => true,
+            'burning_enabled'        => true,
         ]);
 
         $response = $this->getJson('/api/v2/stablecoins/metrics');
@@ -318,25 +318,25 @@ class StablecoinApiTest extends TestCase
     public function it_can_check_system_health()
     {
         $this->createStablecoinWithAsset([
-            'code' => 'FUSD',
-            'name' => 'FinAegis USD',
-            'symbol' => 'FUSD',
-            'peg_asset_code' => 'USD',
-            'peg_ratio' => 1.0,
-            'target_price' => 1.0,
-            'stability_mechanism' => 'collateralized',
-            'collateral_ratio' => 1.5,
-            'min_collateral_ratio' => 1.2,
-            'liquidation_penalty' => 0.1,
-            'total_supply' => 100000,
-            'max_supply' => 10000000,
+            'code'                   => 'FUSD',
+            'name'                   => 'FinAegis USD',
+            'symbol'                 => 'FUSD',
+            'peg_asset_code'         => 'USD',
+            'peg_ratio'              => 1.0,
+            'target_price'           => 1.0,
+            'stability_mechanism'    => 'collateralized',
+            'collateral_ratio'       => 1.5,
+            'min_collateral_ratio'   => 1.2,
+            'liquidation_penalty'    => 0.1,
+            'total_supply'           => 100000,
+            'max_supply'             => 10000000,
             'total_collateral_value' => 100000, // Under-collateralized
-            'mint_fee' => 0.005,
-            'burn_fee' => 0.003,
-            'precision' => 2,
-            'is_active' => true,
-            'minting_enabled' => true,
-            'burning_enabled' => true,
+            'mint_fee'               => 0.005,
+            'burn_fee'               => 0.003,
+            'precision'              => 2,
+            'is_active'              => true,
+            'minting_enabled'        => true,
+            'burning_enabled'        => true,
         ]);
 
         $response = $this->getJson('/api/v2/stablecoins/health');
@@ -365,25 +365,25 @@ class StablecoinApiTest extends TestCase
     public function it_can_deactivate_a_stablecoin()
     {
         $stablecoin = $this->createStablecoinWithAsset([
-            'code' => 'FUSD',
-            'name' => 'FinAegis USD',
-            'symbol' => 'FUSD',
-            'peg_asset_code' => 'USD',
-            'peg_ratio' => 1.0,
-            'target_price' => 1.0,
-            'stability_mechanism' => 'collateralized',
-            'collateral_ratio' => 1.5,
-            'min_collateral_ratio' => 1.2,
-            'liquidation_penalty' => 0.1,
-            'total_supply' => 0,
-            'max_supply' => 10000000,
+            'code'                   => 'FUSD',
+            'name'                   => 'FinAegis USD',
+            'symbol'                 => 'FUSD',
+            'peg_asset_code'         => 'USD',
+            'peg_ratio'              => 1.0,
+            'target_price'           => 1.0,
+            'stability_mechanism'    => 'collateralized',
+            'collateral_ratio'       => 1.5,
+            'min_collateral_ratio'   => 1.2,
+            'liquidation_penalty'    => 0.1,
+            'total_supply'           => 0,
+            'max_supply'             => 10000000,
             'total_collateral_value' => 0,
-            'mint_fee' => 0.005,
-            'burn_fee' => 0.003,
-            'precision' => 2,
-            'is_active' => true,
-            'minting_enabled' => true,
-            'burning_enabled' => true,
+            'mint_fee'               => 0.005,
+            'burn_fee'               => 0.003,
+            'precision'              => 2,
+            'is_active'              => true,
+            'minting_enabled'        => true,
+            'burning_enabled'        => true,
         ]);
 
         $response = $this->postJson("/api/v2/stablecoins/{$stablecoin->code}/deactivate");
@@ -394,8 +394,8 @@ class StablecoinApiTest extends TestCase
             ->assertJsonPath('data.burning_enabled', false);
 
         $this->assertDatabaseHas('stablecoins', [
-            'code' => 'FUSD',
-            'is_active' => false,
+            'code'            => 'FUSD',
+            'is_active'       => false,
             'minting_enabled' => false,
             'burning_enabled' => false,
         ]);
@@ -405,25 +405,25 @@ class StablecoinApiTest extends TestCase
     public function it_can_reactivate_a_stablecoin()
     {
         $stablecoin = $this->createStablecoinWithAsset([
-            'code' => 'FUSD',
-            'name' => 'FinAegis USD',
-            'symbol' => 'FUSD',
-            'peg_asset_code' => 'USD',
-            'peg_ratio' => 1.0,
-            'target_price' => 1.0,
-            'stability_mechanism' => 'collateralized',
-            'collateral_ratio' => 1.5,
-            'min_collateral_ratio' => 1.2,
-            'liquidation_penalty' => 0.1,
-            'total_supply' => 0,
-            'max_supply' => 10000000,
+            'code'                   => 'FUSD',
+            'name'                   => 'FinAegis USD',
+            'symbol'                 => 'FUSD',
+            'peg_asset_code'         => 'USD',
+            'peg_ratio'              => 1.0,
+            'target_price'           => 1.0,
+            'stability_mechanism'    => 'collateralized',
+            'collateral_ratio'       => 1.5,
+            'min_collateral_ratio'   => 1.2,
+            'liquidation_penalty'    => 0.1,
+            'total_supply'           => 0,
+            'max_supply'             => 10000000,
             'total_collateral_value' => 0,
-            'mint_fee' => 0.005,
-            'burn_fee' => 0.003,
-            'precision' => 2,
-            'is_active' => false,
-            'minting_enabled' => false,
-            'burning_enabled' => false,
+            'mint_fee'               => 0.005,
+            'burn_fee'               => 0.003,
+            'precision'              => 2,
+            'is_active'              => false,
+            'minting_enabled'        => false,
+            'burning_enabled'        => false,
         ]);
 
         $response = $this->postJson("/api/v2/stablecoins/{$stablecoin->code}/reactivate");
@@ -434,8 +434,8 @@ class StablecoinApiTest extends TestCase
             ->assertJsonPath('data.burning_enabled', true);
 
         $this->assertDatabaseHas('stablecoins', [
-            'code' => 'FUSD',
-            'is_active' => true,
+            'code'            => 'FUSD',
+            'is_active'       => true,
             'minting_enabled' => true,
             'burning_enabled' => true,
         ]);

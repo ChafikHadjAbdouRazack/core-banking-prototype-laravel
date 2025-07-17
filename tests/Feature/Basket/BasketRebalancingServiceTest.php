@@ -38,42 +38,42 @@ class BasketRebalancingServiceTest extends ServiceTestCase
         // Create exchange rates
         ExchangeRate::factory()->create([
             'from_asset_code' => 'EUR',
-            'to_asset_code' => 'USD',
-            'rate' => 1.1000,
-            'is_active' => true,
+            'to_asset_code'   => 'USD',
+            'rate'            => 1.1000,
+            'is_active'       => true,
         ]);
 
         ExchangeRate::factory()->create([
             'from_asset_code' => 'GBP',
-            'to_asset_code' => 'USD',
-            'rate' => 1.2500,
-            'is_active' => true,
+            'to_asset_code'   => 'USD',
+            'rate'            => 1.2500,
+            'is_active'       => true,
         ]);
 
         // Create dynamic basket
         $this->dynamicBasket = BasketAsset::create([
-            'code' => 'DYNAMIC_TEST',
-            'name' => 'Dynamic Test Basket',
-            'type' => 'dynamic',
+            'code'                => 'DYNAMIC_TEST',
+            'name'                => 'Dynamic Test Basket',
+            'type'                => 'dynamic',
             'rebalance_frequency' => 'daily',
         ]);
 
         $this->dynamicBasket->components()->createMany([
             [
                 'asset_code' => 'USD',
-                'weight' => 45.0, // Out of range
+                'weight'     => 45.0, // Out of range
                 'min_weight' => 35.0,
                 'max_weight' => 40.0,
             ],
             [
                 'asset_code' => 'EUR',
-                'weight' => 30.0, // In range
+                'weight'     => 30.0, // In range
                 'min_weight' => 30.0,
                 'max_weight' => 35.0,
             ],
             [
                 'asset_code' => 'GBP',
-                'weight' => 25.0, // Out of range
+                'weight'     => 25.0, // Out of range
                 'min_weight' => 27.0,
                 'max_weight' => 32.0,
             ],
@@ -81,9 +81,9 @@ class BasketRebalancingServiceTest extends ServiceTestCase
 
         // Create fixed basket
         $this->fixedBasket = BasketAsset::create([
-            'code' => 'FIXED_TEST',
-            'name' => 'Fixed Test Basket',
-            'type' => 'fixed',
+            'code'                => 'FIXED_TEST',
+            'name'                => 'Fixed Test Basket',
+            'type'                => 'fixed',
             'rebalance_frequency' => 'never',
         ]);
 
@@ -194,22 +194,22 @@ class BasketRebalancingServiceTest extends ServiceTestCase
     {
         // Create basket where clamping would break 100% total
         $basket = BasketAsset::create([
-            'code' => 'NORMALIZE_TEST',
-            'name' => 'Normalize Test',
-            'type' => 'dynamic',
+            'code'                => 'NORMALIZE_TEST',
+            'name'                => 'Normalize Test',
+            'type'                => 'dynamic',
             'rebalance_frequency' => 'daily',
         ]);
 
         $basket->components()->createMany([
             [
                 'asset_code' => 'USD',
-                'weight' => 60.0, // Will be clamped to 50
+                'weight'     => 60.0, // Will be clamped to 50
                 'min_weight' => 40.0,
                 'max_weight' => 50.0,
             ],
             [
                 'asset_code' => 'EUR',
-                'weight' => 40.0, // In range
+                'weight'     => 40.0, // In range
                 'min_weight' => 35.0,
                 'max_weight' => 45.0,
             ],
@@ -247,28 +247,28 @@ class BasketRebalancingServiceTest extends ServiceTestCase
     {
         // Set up a scenario where market values drive rebalancing
         $basket = BasketAsset::create([
-            'code' => 'MARKET_TEST',
-            'name' => 'Market Test',
-            'type' => 'dynamic',
+            'code'                => 'MARKET_TEST',
+            'name'                => 'Market Test',
+            'type'                => 'dynamic',
             'rebalance_frequency' => 'daily',
         ]);
 
         $basket->components()->createMany([
             [
                 'asset_code' => 'USD',
-                'weight' => 33.33,
+                'weight'     => 33.33,
                 'min_weight' => 30.0,
                 'max_weight' => 40.0,
             ],
             [
                 'asset_code' => 'EUR',
-                'weight' => 33.33,
+                'weight'     => 33.33,
                 'min_weight' => 30.0,
                 'max_weight' => 40.0,
             ],
             [
                 'asset_code' => 'GBP',
-                'weight' => 33.34,
+                'weight'     => 33.34,
                 'min_weight' => 30.0,
                 'max_weight' => 40.0,
             ],

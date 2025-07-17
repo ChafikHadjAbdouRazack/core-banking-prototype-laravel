@@ -76,16 +76,16 @@ class LendingController extends Controller
     {
         $validated = $request->validate(
             [
-                'account_id' => 'required|uuid',
-                'loan_product' => 'required|string',
-                'amount' => 'required|numeric|min:100|max:1000000',
-                'term_months' => 'required|integer|min:1|max:360',
-                'purpose' => 'required|string|max:500',
-                'collateral_type' => 'required|in:crypto,asset,none',
-                'collateral_asset' => 'required_unless:collateral_type,none|string',
+                'account_id'        => 'required|uuid',
+                'loan_product'      => 'required|string',
+                'amount'            => 'required|numeric|min:100|max:1000000',
+                'term_months'       => 'required|integer|min:1|max:360',
+                'purpose'           => 'required|string|max:500',
+                'collateral_type'   => 'required|in:crypto,asset,none',
+                'collateral_asset'  => 'required_unless:collateral_type,none|string',
                 'collateral_amount' => 'required_unless:collateral_type,none|numeric|min:0',
                 'employment_status' => 'required|string',
-                'annual_income' => 'required|numeric|min:0',
+                'annual_income'     => 'required|numeric|min:0',
             ]
         );
 
@@ -108,7 +108,7 @@ class LendingController extends Controller
                 purpose: $validated['purpose'],
                 collateralType: $validated['collateral_type'],
                 collateralDetails: $validated['collateral_type'] !== 'none' ? [
-                    'asset' => $validated['collateral_asset'],
+                    'asset'  => $validated['collateral_asset'],
                     'amount' => $validated['collateral_amount'],
                 ] : [],
                 employmentStatus: $validated['employment_status'],
@@ -192,8 +192,8 @@ class LendingController extends Controller
     {
         $validated = $request->validate(
             [
-                'account_id' => 'required|uuid',
-                'amount' => 'required|numeric|min:0.01',
+                'account_id'   => 'required|uuid',
+                'amount'       => 'required|numeric|min:0.01',
                 'payment_type' => 'required|in:scheduled,partial,full',
             ]
         );
@@ -240,12 +240,12 @@ class LendingController extends Controller
         $outstandingBalance = $loans->where('status', 'active')->sum('outstanding_balance');
 
         return [
-            'active_loans' => $activeLoans,
-            'total_loans' => $loans->count(),
-            'total_borrowed' => $totalBorrowed,
-            'total_repaid' => $totalRepaid,
+            'active_loans'        => $activeLoans,
+            'total_loans'         => $loans->count(),
+            'total_borrowed'      => $totalBorrowed,
+            'total_repaid'        => $totalRepaid,
             'outstanding_balance' => $outstandingBalance,
-            'on_time_payments' => $this->calculateOnTimePayments($loans),
+            'on_time_payments'    => $this->calculateOnTimePayments($loans),
         ];
     }
 
@@ -256,37 +256,37 @@ class LendingController extends Controller
     {
         return [
             [
-                'id' => 'personal',
-                'name' => 'Personal Loan',
-                'description' => 'Unsecured personal loans for any purpose',
-                'min_amount' => 1000,
-                'max_amount' => 50000,
-                'min_term' => 6,
-                'max_term' => 60,
-                'interest_rate' => 8.5,
+                'id'                  => 'personal',
+                'name'                => 'Personal Loan',
+                'description'         => 'Unsecured personal loans for any purpose',
+                'min_amount'          => 1000,
+                'max_amount'          => 50000,
+                'min_term'            => 6,
+                'max_term'            => 60,
+                'interest_rate'       => 8.5,
                 'collateral_required' => false,
             ],
             [
-                'id' => 'crypto-backed',
-                'name' => 'Crypto-Backed Loan',
-                'description' => 'Loans backed by cryptocurrency collateral',
-                'min_amount' => 100,
-                'max_amount' => 1000000,
-                'min_term' => 1,
-                'max_term' => 36,
-                'interest_rate' => 4.5,
+                'id'                  => 'crypto-backed',
+                'name'                => 'Crypto-Backed Loan',
+                'description'         => 'Loans backed by cryptocurrency collateral',
+                'min_amount'          => 100,
+                'max_amount'          => 1000000,
+                'min_term'            => 1,
+                'max_term'            => 36,
+                'interest_rate'       => 4.5,
                 'collateral_required' => true,
-                'ltv_ratio' => 50, // Loan-to-value ratio
+                'ltv_ratio'           => 50, // Loan-to-value ratio
             ],
             [
-                'id' => 'business',
-                'name' => 'Business Loan',
-                'description' => 'Loans for business expansion and operations',
-                'min_amount' => 5000,
-                'max_amount' => 500000,
-                'min_term' => 12,
-                'max_term' => 120,
-                'interest_rate' => 6.5,
+                'id'                  => 'business',
+                'name'                => 'Business Loan',
+                'description'         => 'Loans for business expansion and operations',
+                'min_amount'          => 5000,
+                'max_amount'          => 500000,
+                'min_term'            => 12,
+                'max_term'            => 120,
+                'interest_rate'       => 6.5,
                 'collateral_required' => false,
             ],
         ];
@@ -302,14 +302,14 @@ class LendingController extends Controller
 
         // Mock credit score calculation
         return [
-            'score' => 720,
-            'rating' => 'Good',
+            'score'   => 720,
+            'rating'  => 'Good',
             'factors' => [
-                'payment_history' => 85,
+                'payment_history'    => 85,
                 'credit_utilization' => 75,
-                'account_history' => 90,
-                'credit_mix' => 70,
-                'new_credit' => 80,
+                'account_history'    => 90,
+                'credit_mix'         => 70,
+                'new_credit'         => 80,
             ],
             'last_updated' => now()->subDays(7),
         ];
@@ -321,8 +321,8 @@ class LendingController extends Controller
     private function getCollateralAssets()
     {
         return [
-            'BTC' => ['name' => 'Bitcoin', 'ltv' => 50],
-            'ETH' => ['name' => 'Ethereum', 'ltv' => 60],
+            'BTC'  => ['name' => 'Bitcoin', 'ltv' => 50],
+            'ETH'  => ['name' => 'Ethereum', 'ltv' => 60],
             'USDT' => ['name' => 'Tether', 'ltv' => 80],
             'USDC' => ['name' => 'USD Coin', 'ltv' => 80],
         ];
@@ -335,14 +335,14 @@ class LendingController extends Controller
     {
         // Mock loan application data
         return (object) [
-            'uuid' => $applicationId,
+            'uuid'                  => $applicationId,
             'borrower_account_uuid' => Auth::user()->accounts()->first()->uuid,
-            'amount' => 10000,
-            'term_months' => 12,
-            'purpose' => 'Home improvement',
-            'status' => 'pending',
-            'created_at' => now()->subDays(2),
-            'metadata' => [],
+            'amount'                => 10000,
+            'term_months'           => 12,
+            'purpose'               => 'Home improvement',
+            'status'                => 'pending',
+            'created_at'            => now()->subDays(2),
+            'metadata'              => [],
         ];
     }
 

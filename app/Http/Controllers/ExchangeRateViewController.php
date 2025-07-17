@@ -59,9 +59,9 @@ class ExchangeRateViewController extends Controller
 
         return response()->json(
             [
-                'base' => $baseCurrency,
+                'base'      => $baseCurrency,
                 'timestamp' => now()->toIso8601String(),
-                'rates' => $rates,
+                'rates'     => $rates,
             ]
         );
     }
@@ -79,10 +79,10 @@ class ExchangeRateViewController extends Controller
 
         return response()->json(
             [
-                'base' => $base,
+                'base'   => $base,
                 'target' => $target,
                 'period' => $period,
-                'data' => $data,
+                'data'   => $data,
             ]
         );
     }
@@ -97,10 +97,10 @@ class ExchangeRateViewController extends Controller
         foreach ($assets as $asset) {
             if ($asset === $baseCurrency) {
                 $rates[$asset] = [
-                    'rate' => 1.0000,
-                    'change_24h' => 0,
+                    'rate'           => 1.0000,
+                    'change_24h'     => 0,
                     'change_percent' => 0,
-                    'last_updated' => now(),
+                    'last_updated'   => now(),
                 ];
 
                 continue;
@@ -142,10 +142,10 @@ class ExchangeRateViewController extends Controller
                 $changePercent = $dayAgoRate > 0 ? ($change / $dayAgoRate) * 100 : 0;
 
                 $rateData = [
-                    'rate' => round($rate, 4),
-                    'change_24h' => round($change, 4),
+                    'rate'           => round($rate, 4),
+                    'change_24h'     => round($change, 4),
                     'change_percent' => round($changePercent, 2),
-                    'last_updated' => $latestRate ? $latestRate->created_at : now(),
+                    'last_updated'   => $latestRate ? $latestRate->created_at : now(),
                 ];
 
                 $rates[$asset] = $rateData;
@@ -182,10 +182,10 @@ class ExchangeRateViewController extends Controller
     private function getHistoricalDataForPair($base, $target, $period)
     {
         $startDate = match ($period) {
-            '24h' => now()->subDay(),
-            '7d' => now()->subDays(7),
-            '30d' => now()->subDays(30),
-            '90d' => now()->subDays(90),
+            '24h'   => now()->subDay(),
+            '7d'    => now()->subDays(7),
+            '30d'   => now()->subDays(30),
+            '90d'   => now()->subDays(90),
             default => now()->subDays(7),
         };
 
@@ -198,7 +198,7 @@ class ExchangeRateViewController extends Controller
                 function ($rate) {
                     return [
                         'timestamp' => $rate->created_at->toIso8601String(),
-                        'rate' => $rate->rate,
+                        'rate'      => $rate->rate,
                     ];
                 }
             );
@@ -214,7 +214,7 @@ class ExchangeRateViewController extends Controller
                     function ($rate) {
                         return [
                             'timestamp' => $rate->created_at->toIso8601String(),
-                            'rate' => 1 / $rate->rate,
+                            'rate'      => 1 / $rate->rate,
                         ];
                     }
                 );
@@ -253,8 +253,8 @@ class ExchangeRateViewController extends Controller
                 return [
                     'total_updates' => $stats->total_updates ?? 0,
                     'pairs_tracked' => $stats->pairs_tracked ?? 0,
-                    'last_update' => $stats->last_update ?? now(),
-                    'providers' => $providers,
+                    'last_update'   => $stats->last_update ?? now(),
+                    'providers'     => $providers,
                 ];
             }
         );

@@ -40,7 +40,7 @@ class AuthenticateApiOrSanctum
         if (! $apiKey) {
             return response()->json(
                 [
-                    'error' => 'Unauthorized',
+                    'error'   => 'Unauthorized',
                     'message' => 'Invalid API key',
                 ],
                 401
@@ -51,7 +51,7 @@ class AuthenticateApiOrSanctum
         if ($apiKey->expires_at && $apiKey->expires_at->isPast()) {
             return response()->json(
                 [
-                    'error' => 'Unauthorized',
+                    'error'   => 'Unauthorized',
                     'message' => 'API key expired',
                 ],
                 401
@@ -62,7 +62,7 @@ class AuthenticateApiOrSanctum
         if (! $apiKey->isIpAllowed($request->ip())) {
             return response()->json(
                 [
-                    'error' => 'Forbidden',
+                    'error'   => 'Forbidden',
                     'message' => 'Access denied from this IP address',
                 ],
                 403
@@ -73,7 +73,7 @@ class AuthenticateApiOrSanctum
         if (! $apiKey->hasPermission($permission)) {
             return response()->json(
                 [
-                    'error' => 'Forbidden',
+                    'error'   => 'Forbidden',
                     'message' => 'Insufficient permissions',
                 ],
                 403
@@ -108,7 +108,7 @@ class AuthenticateApiOrSanctum
                 if (! auth('sanctum')->check()) {
                     return response()->json(
                         [
-                            'error' => 'Unauthorized',
+                            'error'   => 'Unauthorized',
                             'message' => 'Authentication required',
                         ],
                         401

@@ -61,13 +61,13 @@ class ExchangeController extends Controller
     {
         $validated = $request->validate(
             [
-                'type' => ['required', Rule::in(['buy', 'sell'])],
-                'order_type' => ['required', Rule::in(['market', 'limit'])],
-                'base_currency' => ['required', 'string', 'size:3'],
+                'type'           => ['required', Rule::in(['buy', 'sell'])],
+                'order_type'     => ['required', Rule::in(['market', 'limit'])],
+                'base_currency'  => ['required', 'string', 'size:3'],
                 'quote_currency' => ['required', 'string', 'size:3'],
-                'amount' => ['required', 'numeric', 'gt:0'],
-                'price' => ['required_if:order_type,limit', 'nullable', 'numeric', 'gt:0'],
-                'stop_price' => ['nullable', 'numeric', 'gt:0'],
+                'amount'         => ['required', 'numeric', 'gt:0'],
+                'price'          => ['required_if:order_type,limit', 'nullable', 'numeric', 'gt:0'],
+                'stop_price'     => ['nullable', 'numeric', 'gt:0'],
             ]
         );
 
@@ -77,7 +77,7 @@ class ExchangeController extends Controller
             return response()->json(
                 [
                     'success' => false,
-                    'error' => 'Account not found. Please complete your account setup.',
+                    'error'   => 'Account not found. Please complete your account setup.',
                 ],
                 400
             );
@@ -95,7 +95,7 @@ class ExchangeController extends Controller
                 stopPrice: $validated['stop_price'] ?? null,
                 metadata: [
                     'api_version' => 'v1',
-                    'user_id' => Auth::id(),
+                    'user_id'     => Auth::id(),
                 ]
             );
 
@@ -104,7 +104,7 @@ class ExchangeController extends Controller
             return response()->json(
                 [
                     'success' => false,
-                    'error' => $e->getMessage(),
+                    'error'   => $e->getMessage(),
                 ],
                 400
             );
@@ -140,7 +140,7 @@ class ExchangeController extends Controller
             return response()->json(
                 [
                     'success' => false,
-                    'error' => 'Account not found. Please complete your account setup.',
+                    'error'   => 'Account not found. Please complete your account setup.',
                 ],
                 400
             );
@@ -155,7 +155,7 @@ class ExchangeController extends Controller
             return response()->json(
                 [
                     'success' => false,
-                    'error' => 'Order not found',
+                    'error'   => 'Order not found',
                 ],
                 404
             );
@@ -169,7 +169,7 @@ class ExchangeController extends Controller
             return response()->json(
                 [
                     'success' => false,
-                    'error' => $e->getMessage(),
+                    'error'   => $e->getMessage(),
                 ],
                 400
             );
@@ -218,7 +218,7 @@ class ExchangeController extends Controller
             return response()->json(
                 [
                     'success' => false,
-                    'error' => 'Account not found. Please complete your account setup.',
+                    'error'   => 'Account not found. Please complete your account setup.',
                 ],
                 400
             );
@@ -279,7 +279,7 @@ class ExchangeController extends Controller
             return response()->json(
                 [
                     'success' => false,
-                    'error' => 'Account not found. Please complete your account setup.',
+                    'error'   => 'Account not found. Please complete your account setup.',
                 ],
                 400
             );
@@ -374,7 +374,7 @@ class ExchangeController extends Controller
         return response()->json(
             [
                 'success' => true,
-                'data' => $markets,
+                'data'    => $markets,
             ]
         );
     }

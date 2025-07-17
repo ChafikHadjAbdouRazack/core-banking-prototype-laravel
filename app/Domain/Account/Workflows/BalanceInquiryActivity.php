@@ -14,7 +14,7 @@ class BalanceInquiryActivity extends Activity
         ?string $requestedBy,
         TransactionAggregate $transaction
     ): array {
-        /** @var \App\Models\Account|null $account */
+        /** @var Account|null $account */
         $account = null;
         $aggregate = $transaction->retrieve($uuid->getUuid());
 
@@ -26,17 +26,17 @@ class BalanceInquiryActivity extends Activity
 
         return [
             'account_uuid' => $uuid->getUuid(),
-            'balance' => $aggregate->balance,
+            'balance'      => $aggregate->balance,
             'account_name' => $account?->name,
-            'status' => $account?->status ?? 'unknown',
-            'inquired_at' => now()->toISOString(),
-            'inquired_by' => $requestedBy,
+            'status'       => $account?->status ?? 'unknown',
+            'inquired_at'  => now()->toISOString(),
+            'inquired_by'  => $requestedBy,
         ];
     }
 
     private function logInquiry(AccountUuid $uuid, ?string $requestedBy): void
     {
-        /** @var \App\Models\Account|null $account */
+        /** @var Account|null $account */
         $account = null;
         // Log to audit trail (could be a separate event or database log)
         logger()->info(
@@ -44,7 +44,7 @@ class BalanceInquiryActivity extends Activity
             [
                 'account_uuid' => $uuid->getUuid(),
                 'requested_by' => $requestedBy,
-                'timestamp' => now()->toISOString(),
+                'timestamp'    => now()->toISOString(),
             ]
         );
     }

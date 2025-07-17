@@ -12,7 +12,7 @@ class FraudDetectionController extends Controller
         return response()->json(
             [
                 'message' => 'Fraud detection dashboard endpoint',
-                'data' => [],
+                'data'    => [],
             ]
         );
     }
@@ -41,7 +41,7 @@ class FraudDetectionController extends Controller
         return response()->json(
             [
                 'message' => 'Alert acknowledged',
-                'data' => ['id' => $id],
+                'data'    => ['id' => $id],
             ]
         );
     }
@@ -51,7 +51,7 @@ class FraudDetectionController extends Controller
         return response()->json(
             [
                 'message' => 'Alert investigation started',
-                'data' => ['id' => $id],
+                'data'    => ['id' => $id],
             ]
         );
     }
@@ -98,7 +98,7 @@ class FraudDetectionController extends Controller
         return response()->json(
             [
                 'message' => 'Case updated',
-                'data' => ['id' => $id],
+                'data'    => ['id' => $id],
             ]
         );
     }

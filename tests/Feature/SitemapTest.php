@@ -7,9 +7,9 @@ use Tests\TestCase;
 
 class SitemapTest extends TestCase
 {
-    /**
-     * Test that sitemap.xml is accessible and has correct content type.
-     */ #[Test]
+/**
+ * Test that sitemap.xml is accessible and has correct content type.
+ */ #[Test]
     public function test_sitemap_is_accessible(): void
     {
         $response = $this->get('/sitemap.xml');
@@ -18,9 +18,9 @@ class SitemapTest extends TestCase
         $response->assertHeader('content-type', 'application/xml');
     }
 
-    /**
-     * Test that sitemap contains essential URLs.
-     */ #[Test]
+/**
+ * Test that sitemap contains essential URLs.
+ */ #[Test]
     public function test_sitemap_contains_essential_urls(): void
     {
         $response = $this->get('/sitemap.xml');
@@ -46,9 +46,9 @@ class SitemapTest extends TestCase
         }
     }
 
-    /**
-     * Test that sitemap has valid XML structure.
-     */ #[Test]
+/**
+ * Test that sitemap has valid XML structure.
+ */ #[Test]
     public function test_sitemap_has_valid_xml_structure(): void
     {
         $response = $this->get('/sitemap.xml');
@@ -70,9 +70,9 @@ class SitemapTest extends TestCase
         $response->assertSee('</urlset>', false);
     }
 
-    /**
-     * Test that robots.txt is accessible.
-     */ #[Test]
+/**
+ * Test that robots.txt is accessible.
+ */ #[Test]
     public function test_robots_txt_is_accessible(): void
     {
         $response = $this->get('/robots.txt');
@@ -81,9 +81,9 @@ class SitemapTest extends TestCase
         $response->assertHeader('content-type', 'text/plain; charset=UTF-8');
     }
 
-    /**
-     * Test that robots.txt contains correct directives.
-     */ #[Test]
+/**
+ * Test that robots.txt contains correct directives.
+ */ #[Test]
     public function test_robots_txt_contains_correct_directives(): void
     {
         $response = $this->get('/robots.txt');
@@ -102,9 +102,9 @@ class SitemapTest extends TestCase
         $response->assertSee('Sitemap: ' . config('app.url') . '/sitemap.xml');
     }
 
-    /**
-     * Test that private routes are excluded from sitemap.
-     */ #[Test]
+/**
+ * Test that private routes are excluded from sitemap.
+ */ #[Test]
     public function test_private_routes_are_excluded_from_sitemap(): void
     {
         $response = $this->get('/sitemap.xml');

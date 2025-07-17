@@ -18,7 +18,7 @@ it('dispatches webhook to subscribed webhooks', function () {
 
     $this->webhookService->dispatch('account.created', [
         'account_uuid' => 'test-uuid',
-        'name' => 'Test Account',
+        'name'         => 'Test Account',
     ]);
 
     // Should create deliveries for webhook1 and webhook2 only
@@ -75,8 +75,8 @@ it('dispatches transaction events', function () {
 
     $this->webhookService->dispatchTransactionEvent('transaction.created', [
         'account_uuid' => 'test-uuid',
-        'type' => 'deposit',
-        'amount' => 1000,
+        'type'         => 'deposit',
+        'amount'       => 1000,
     ]);
 
     $delivery = WebhookDelivery::first();
@@ -92,8 +92,8 @@ it('dispatches transfer events', function () {
 
     $this->webhookService->dispatchTransferEvent('transfer.created', [
         'from_account_uuid' => 'from-uuid',
-        'to_account_uuid' => 'to-uuid',
-        'amount' => 5000,
+        'to_account_uuid'   => 'to-uuid',
+        'amount'            => 5000,
     ]);
 
     $delivery = WebhookDelivery::first();

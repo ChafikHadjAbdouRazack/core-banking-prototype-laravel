@@ -37,9 +37,9 @@ class GCUController extends Controller
                 return [
                     'composition' => config('platform.gcu.composition'),
                     'performance' => [
-                        'value' => 1.0000,
+                        'value'      => 1.0000,
                         'change_24h' => 0,
-                        'change_7d' => 0,
+                        'change_7d'  => 0,
                         'change_30d' => 0,
                     ],
                     'last_updated' => now()->toIso8601String(),

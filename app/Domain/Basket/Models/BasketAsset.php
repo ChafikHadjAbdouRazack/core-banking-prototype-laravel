@@ -69,7 +69,7 @@ class BasketAsset extends Model
 
     /**
      * Get the active components of this basket.
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<BasketComponent>
+     * @return HasMany<BasketComponent>
      */
     public function activeComponents(): HasMany
     {
@@ -96,7 +96,7 @@ class BasketAsset extends Model
      * Get the latest value of this basket.
      */
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return HasOne
      */
     public function latestValue(): HasOne
     {

@@ -77,14 +77,14 @@ class BalanceController extends Controller
             [
                 'data' => [
                     'account_uuid' => $uuid,
-                    'balance' => $balance,
-                    'frozen' => $account->frozen ?? false,
+                    'balance'      => $balance,
+                    'frozen'       => $account->frozen ?? false,
                     'last_updated' => $account->updated_at,
-                    'turnover' => $turnover ? [
-                        'debit' => $turnover->debit,
-                        'credit' => $turnover->credit,
+                    'turnover'     => $turnover ? [
+                        'debit'        => $turnover->debit,
+                        'credit'       => $turnover->credit,
                         'period_start' => $turnover->created_at,
-                        'period_end' => $turnover->updated_at,
+                        'period_end'   => $turnover->updated_at,
                     ] : null,
                 ],
             ]
@@ -166,23 +166,23 @@ class BalanceController extends Controller
         return response()->json(
             [
                 'data' => [
-                    'account_uuid' => $uuid,
+                    'account_uuid'    => $uuid,
                     'current_balance' => $account->balance,
-                    'frozen' => $account->frozen ?? false,
-                    'statistics' => [
-                        'total_debit_12_months' => $statistics['total_debit'],
+                    'frozen'          => $account->frozen ?? false,
+                    'statistics'      => [
+                        'total_debit_12_months'  => $statistics['total_debit'],
                         'total_credit_12_months' => $statistics['total_credit'],
-                        'average_monthly_debit' => (int) $statistics['average_monthly_debit'],
+                        'average_monthly_debit'  => (int) $statistics['average_monthly_debit'],
                         'average_monthly_credit' => (int) $statistics['average_monthly_credit'],
-                        'months_analyzed' => $statistics['months_analyzed'],
+                        'months_analyzed'        => $statistics['months_analyzed'],
                     ],
                     'monthly_turnovers' => $turnovers->map(
                         function ($turnover) {
                             return [
-                                'month' => $turnover->created_at->format('Y-m'),
-                                'debit' => $turnover->debit,
+                                'month'  => $turnover->created_at->format('Y-m'),
+                                'debit'  => $turnover->debit,
                                 'credit' => $turnover->credit,
-                                'net' => $turnover->credit - $turnover->debit,
+                                'net'    => $turnover->credit - $turnover->debit,
                             ];
                         }
                     ),

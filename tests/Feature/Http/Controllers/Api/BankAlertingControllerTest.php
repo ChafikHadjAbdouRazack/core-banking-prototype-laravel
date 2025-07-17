@@ -51,14 +51,14 @@ class BankAlertingControllerTest extends ControllerTestCase
             ->once()
             ->andReturn([
                 'paysera' => [
-                    'status' => 'healthy',
+                    'status'               => 'healthy',
                     'overall_failure_rate' => 2.5,
-                    'last_check' => now()->toISOString(),
+                    'last_check'           => now()->toISOString(),
                 ],
                 'wise' => [
-                    'status' => 'degraded',
+                    'status'               => 'degraded',
                     'overall_failure_rate' => 15.0,
-                    'last_check' => now()->toISOString(),
+                    'last_check'           => now()->toISOString(),
                 ],
             ]);
 
@@ -83,12 +83,12 @@ class BankAlertingControllerTest extends ControllerTestCase
             ->assertJson([
                 'data' => [
                     'health_check_completed' => true,
-                    'custodians_checked' => 2,
-                    'summary' => [
-                        'healthy' => 1,
-                        'degraded' => 1,
+                    'custodians_checked'     => 2,
+                    'summary'                => [
+                        'healthy'   => 1,
+                        'degraded'  => 1,
                         'unhealthy' => 0,
-                        'unknown' => 0,
+                        'unknown'   => 0,
                     ],
                 ],
                 'message' => 'Bank health check completed successfully',
@@ -116,7 +116,7 @@ class BankAlertingControllerTest extends ControllerTestCase
 
         $response->assertStatus(500)
             ->assertJson([
-                'error' => 'Health check failed',
+                'error'   => 'Health check failed',
                 'message' => 'Health check service unavailable',
             ]);
     }
@@ -130,10 +130,10 @@ class BankAlertingControllerTest extends ControllerTestCase
             ->once()
             ->andReturn([
                 'paysera' => [
-                    'status' => 'healthy',
+                    'status'               => 'healthy',
                     'overall_failure_rate' => 2.5,
-                    'last_check' => now()->toISOString(),
-                    'response_time_ms' => 450,
+                    'last_check'           => now()->toISOString(),
+                    'response_time_ms'     => 450,
                     'consecutive_failures' => 0,
                 ],
             ]);
@@ -157,10 +157,10 @@ class BankAlertingControllerTest extends ControllerTestCase
             ->assertJson([
                 'data' => [
                     'summary' => [
-                        'healthy' => 1,
-                        'degraded' => 0,
+                        'healthy'   => 1,
+                        'degraded'  => 0,
                         'unhealthy' => 0,
-                        'unknown' => 0,
+                        'unknown'   => 0,
                     ],
                     'total_custodians' => 1,
                 ],
@@ -173,9 +173,9 @@ class BankAlertingControllerTest extends ControllerTestCase
         Sanctum::actingAs($this->adminUser);
 
         $health = [
-            'status' => 'healthy',
+            'status'               => 'healthy',
             'overall_failure_rate' => 1.2,
-            'last_check' => now()->toISOString(),
+            'last_check'           => now()->toISOString(),
         ];
 
         $this->mockHealthMonitor->shouldReceive('getCustodianHealth')
@@ -196,7 +196,7 @@ class BankAlertingControllerTest extends ControllerTestCase
             ->assertJson([
                 'data' => [
                     'custodian' => 'paysera',
-                    'health' => $health,
+                    'health'    => $health,
                 ],
             ]);
     }
@@ -215,7 +215,7 @@ class BankAlertingControllerTest extends ControllerTestCase
 
         $response->assertStatus(404)
             ->assertJson([
-                'error' => 'Custodian not found',
+                'error'     => 'Custodian not found',
                 'custodian' => 'unknown',
             ]);
     }
@@ -248,8 +248,8 @@ class BankAlertingControllerTest extends ControllerTestCase
             ])
             ->assertJson([
                 'data' => [
-                    'custodian' => 'paysera',
-                    'period_days' => 7,
+                    'custodian'     => 'paysera',
+                    'period_days'   => 7,
                     'alert_history' => $history,
                 ],
             ]);
@@ -270,8 +270,8 @@ class BankAlertingControllerTest extends ControllerTestCase
         $response->assertStatus(200)
             ->assertJson([
                 'data' => [
-                    'custodian' => 'wise',
-                    'period_days' => 30,
+                    'custodian'     => 'wise',
+                    'period_days'   => 30,
                     'alert_history' => [],
                 ],
             ]);
@@ -332,9 +332,9 @@ class BankAlertingControllerTest extends ControllerTestCase
         Sanctum::actingAs($this->adminUser);
 
         $response = $this->putJson('/api/bank-health/alerts/config', [
-            'cooldown_minutes' => 45,
+            'cooldown_minutes'    => 45,
             'severity_thresholds' => [
-                'failure_rate_warning' => 15.0,
+                'failure_rate_warning'  => 15.0,
                 'failure_rate_critical' => 30.0,
             ],
             'notification_channels' => ['mail', 'slack'],
@@ -344,10 +344,10 @@ class BankAlertingControllerTest extends ControllerTestCase
             ->assertJson([
                 'data' => [
                     'configuration_updated' => true,
-                    'new_configuration' => [
-                        'cooldown_minutes' => 45,
+                    'new_configuration'     => [
+                        'cooldown_minutes'    => 45,
                         'severity_thresholds' => [
-                            'failure_rate_warning' => 15.0,
+                            'failure_rate_warning'  => 15.0,
                             'failure_rate_critical' => 30.0,
                         ],
                         'notification_channels' => ['mail', 'slack'],
@@ -363,7 +363,7 @@ class BankAlertingControllerTest extends ControllerTestCase
         Sanctum::actingAs($this->adminUser);
 
         $response = $this->putJson('/api/bank-health/alerts/config', [
-            'cooldown_minutes' => 1500, // Too high
+            'cooldown_minutes'      => 1500, // Too high
             'notification_channels' => ['mail', 'invalid_channel'],
         ]);
 
@@ -399,18 +399,18 @@ class BankAlertingControllerTest extends ControllerTestCase
         Sanctum::actingAs($this->adminUser);
 
         $response = $this->postJson('/api/bank-health/alerts/test', [
-            'severity' => 'warning',
+            'severity'  => 'warning',
             'custodian' => 'test_bank',
-            'message' => 'This is a test alert',
+            'message'   => 'This is a test alert',
         ]);
 
         $response->assertStatus(200)
             ->assertJson([
                 'data' => [
                     'test_alert_sent' => true,
-                    'severity' => 'warning',
-                    'custodian' => 'test_bank',
-                    'message' => 'This is a test alert',
+                    'severity'        => 'warning',
+                    'custodian'       => 'test_bank',
+                    'message'         => 'This is a test alert',
                 ],
                 'message' => 'Test alert sent successfully',
             ]);
@@ -452,9 +452,9 @@ class BankAlertingControllerTest extends ControllerTestCase
         $response->assertStatus(200)
             ->assertJson([
                 'data' => [
-                    'alert_id' => 'alert-123',
-                    'acknowledged' => true,
-                    'acknowledged_by' => $this->adminUser->email,
+                    'alert_id'         => 'alert-123',
+                    'acknowledged'     => true,
+                    'acknowledged_by'  => $this->adminUser->email,
                     'resolution_notes' => 'False positive - normal maintenance window',
                 ],
                 'message' => 'Alert acknowledged successfully',
@@ -476,8 +476,8 @@ class BankAlertingControllerTest extends ControllerTestCase
         $response->assertStatus(200)
             ->assertJson([
                 'data' => [
-                    'alert_id' => 'alert-456',
-                    'acknowledged' => true,
+                    'alert_id'         => 'alert-456',
+                    'acknowledged'     => true,
                     'resolution_notes' => '',
                 ],
             ]);

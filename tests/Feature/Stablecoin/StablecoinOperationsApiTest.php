@@ -45,31 +45,31 @@ class StablecoinOperationsApiTest extends DomainTestCase
         $this->account = Account::factory()->zeroBalance()->create();
         AccountBalance::create([
             'account_uuid' => $this->account->uuid,
-            'asset_code' => 'USD',
-            'balance' => 1000000,
+            'asset_code'   => 'USD',
+            'balance'      => 1000000,
         ]); // $10,000
 
         // Create stablecoin
         $this->stablecoin = $this->createStablecoinWithAsset([
-            'code' => 'FUSD',
-            'name' => 'FinAegis USD',
-            'symbol' => 'FUSD',
-            'peg_asset_code' => 'USD',
-            'peg_ratio' => 1.0,
-            'target_price' => 1.0,
-            'stability_mechanism' => 'collateralized',
-            'collateral_ratio' => 1.5,
-            'min_collateral_ratio' => 1.2,
-            'liquidation_penalty' => 0.1,
-            'total_supply' => 0,
-            'max_supply' => 10000000,
+            'code'                   => 'FUSD',
+            'name'                   => 'FinAegis USD',
+            'symbol'                 => 'FUSD',
+            'peg_asset_code'         => 'USD',
+            'peg_ratio'              => 1.0,
+            'target_price'           => 1.0,
+            'stability_mechanism'    => 'collateralized',
+            'collateral_ratio'       => 1.5,
+            'min_collateral_ratio'   => 1.2,
+            'liquidation_penalty'    => 0.1,
+            'total_supply'           => 0,
+            'max_supply'             => 10000000,
             'total_collateral_value' => 0,
-            'mint_fee' => 0.005,
-            'burn_fee' => 0.003,
-            'precision' => 2,
-            'is_active' => true,
-            'minting_enabled' => true,
-            'burning_enabled' => true,
+            'mint_fee'               => 0.005,
+            'burn_fee'               => 0.003,
+            'precision'              => 2,
+            'is_active'              => true,
+            'minting_enabled'        => true,
+            'burning_enabled'        => true,
         ]);
     }
 
@@ -78,11 +78,11 @@ class StablecoinOperationsApiTest extends DomainTestCase
     {
         $this->markTestSkipped('Stablecoin operations need event sourcing refactoring');
         $data = [
-            'account_uuid' => $this->account->uuid,
-            'stablecoin_code' => 'FUSD',
+            'account_uuid'          => $this->account->uuid,
+            'stablecoin_code'       => 'FUSD',
             'collateral_asset_code' => 'USD',
-            'collateral_amount' => 150000, // $1,500
-            'mint_amount' => 100000, // $1,000
+            'collateral_amount'     => 150000, // $1,500
+            'mint_amount'           => 100000, // $1,000
         ];
 
         $response = $this->postJson('/api/v2/stablecoin-operations/mint', $data);
@@ -118,11 +118,11 @@ class StablecoinOperationsApiTest extends DomainTestCase
     public function it_validates_mint_request()
     {
         $data = [
-            'account_uuid' => 'invalid-uuid',
-            'stablecoin_code' => 'INVALID',
+            'account_uuid'          => 'invalid-uuid',
+            'stablecoin_code'       => 'INVALID',
             'collateral_asset_code' => 'INVALID',
-            'collateral_amount' => -100,
-            'mint_amount' => 0,
+            'collateral_amount'     => -100,
+            'mint_amount'           => 0,
         ];
 
         $response = $this->postJson('/api/v2/stablecoin-operations/mint', $data);
@@ -141,11 +141,11 @@ class StablecoinOperationsApiTest extends DomainTestCase
     public function it_prevents_minting_with_insufficient_collateral()
     {
         $data = [
-            'account_uuid' => $this->account->uuid,
-            'stablecoin_code' => 'FUSD',
+            'account_uuid'          => $this->account->uuid,
+            'stablecoin_code'       => 'FUSD',
             'collateral_asset_code' => 'USD',
-            'collateral_amount' => 100000, // $1,000 (not enough for 1.5x ratio)
-            'mint_amount' => 100000, // $1,000
+            'collateral_amount'     => 100000, // $1,000 (not enough for 1.5x ratio)
+            'mint_amount'           => 100000, // $1,000
         ];
 
         $response = $this->postJson('/api/v2/stablecoin-operations/mint', $data);
@@ -160,13 +160,13 @@ class StablecoinOperationsApiTest extends DomainTestCase
         $this->markTestSkipped('Stablecoin operations need event sourcing refactoring');
         // First create a position
         $position = StablecoinCollateralPosition::create([
-            'account_uuid' => $this->account->uuid,
-            'stablecoin_code' => 'FUSD',
+            'account_uuid'          => $this->account->uuid,
+            'stablecoin_code'       => 'FUSD',
             'collateral_asset_code' => 'USD',
-            'collateral_amount' => 150000,
-            'debt_amount' => 100000,
-            'collateral_ratio' => 1.5,
-            'status' => 'active',
+            'collateral_amount'     => 150000,
+            'debt_amount'           => 100000,
+            'collateral_ratio'      => 1.5,
+            'status'                => 'active',
         ]);
 
         // Lock the collateral from the account
@@ -179,14 +179,14 @@ class StablecoinOperationsApiTest extends DomainTestCase
         // Give account some FUSD to burn
         AccountBalance::create([
             'account_uuid' => $this->account->uuid,
-            'asset_code' => 'FUSD',
-            'balance' => 100000,
+            'asset_code'   => 'FUSD',
+            'balance'      => 100000,
         ]);
 
         $data = [
-            'account_uuid' => $this->account->uuid,
+            'account_uuid'    => $this->account->uuid,
             'stablecoin_code' => 'FUSD',
-            'burn_amount' => 50000, // Burn $500
+            'burn_amount'     => 50000, // Burn $500
         ];
 
         $response = $this->postJson('/api/v2/stablecoin-operations/burn', $data);
@@ -207,20 +207,20 @@ class StablecoinOperationsApiTest extends DomainTestCase
         $this->markTestSkipped('Stablecoin operations need event sourcing refactoring');
         // Create a position
         $position = StablecoinCollateralPosition::create([
-            'account_uuid' => $this->account->uuid,
-            'stablecoin_code' => 'FUSD',
+            'account_uuid'          => $this->account->uuid,
+            'stablecoin_code'       => 'FUSD',
             'collateral_asset_code' => 'USD',
-            'collateral_amount' => 120000, // At minimum ratio
-            'debt_amount' => 100000,
-            'collateral_ratio' => 1.2,
-            'status' => 'active',
+            'collateral_amount'     => 120000, // At minimum ratio
+            'debt_amount'           => 100000,
+            'collateral_ratio'      => 1.2,
+            'status'                => 'active',
         ]);
 
         $data = [
-            'account_uuid' => $this->account->uuid,
-            'stablecoin_code' => 'FUSD',
+            'account_uuid'          => $this->account->uuid,
+            'stablecoin_code'       => 'FUSD',
             'collateral_asset_code' => 'USD',
-            'collateral_amount' => 30000, // Add $300
+            'collateral_amount'     => 30000, // Add $300
         ];
 
         $response = $this->postJson('/api/v2/stablecoin-operations/add-collateral', $data);
@@ -235,13 +235,13 @@ class StablecoinOperationsApiTest extends DomainTestCase
     {
         // Create positions
         StablecoinCollateralPosition::create([
-            'account_uuid' => $this->account->uuid,
-            'stablecoin_code' => 'FUSD',
+            'account_uuid'          => $this->account->uuid,
+            'stablecoin_code'       => 'FUSD',
             'collateral_asset_code' => 'USD',
-            'collateral_amount' => 150000,
-            'debt_amount' => 100000,
-            'collateral_ratio' => 1.5,
-            'status' => 'active',
+            'collateral_amount'     => 150000,
+            'debt_amount'           => 100000,
+            'collateral_ratio'      => 1.5,
+            'status'                => 'active',
         ]);
 
         $response = $this->getJson("/api/v2/stablecoin-operations/accounts/{$this->account->uuid}/positions");
@@ -269,13 +269,13 @@ class StablecoinOperationsApiTest extends DomainTestCase
     public function it_can_get_position_details()
     {
         $position = StablecoinCollateralPosition::create([
-            'account_uuid' => $this->account->uuid,
-            'stablecoin_code' => 'FUSD',
+            'account_uuid'          => $this->account->uuid,
+            'stablecoin_code'       => 'FUSD',
             'collateral_asset_code' => 'USD',
-            'collateral_amount' => 200000,
-            'debt_amount' => 100000,
-            'collateral_ratio' => 2.0,
-            'status' => 'active',
+            'collateral_amount'     => 200000,
+            'debt_amount'           => 100000,
+            'collateral_ratio'      => 2.0,
+            'status'                => 'active',
         ]);
 
         $response = $this->getJson("/api/v2/stablecoin-operations/positions/{$position->uuid}");
@@ -311,13 +311,13 @@ class StablecoinOperationsApiTest extends DomainTestCase
 
         // Create an at-risk position (below min_collateral_ratio of 1.2)
         $position = StablecoinCollateralPosition::create([
-            'account_uuid' => $this->account->uuid,
-            'stablecoin_code' => 'FUSD',
-            'collateral_asset_code' => 'USD',
-            'collateral_amount' => 100000, // Equal to debt, ratio = 1.0
-            'debt_amount' => 100000,
-            'collateral_ratio' => 1.0, // Well below minimum of 1.2
-            'status' => 'active',
+            'account_uuid'             => $this->account->uuid,
+            'stablecoin_code'          => 'FUSD',
+            'collateral_asset_code'    => 'USD',
+            'collateral_amount'        => 100000, // Equal to debt, ratio = 1.0
+            'debt_amount'              => 100000,
+            'collateral_ratio'         => 1.0, // Well below minimum of 1.2
+            'status'                   => 'active',
             'auto_liquidation_enabled' => true,
         ]);
 
@@ -360,14 +360,14 @@ class StablecoinOperationsApiTest extends DomainTestCase
 
         // Create positions with different risk levels
         $position = StablecoinCollateralPosition::create([
-            'account_uuid' => $this->account->uuid,
-            'stablecoin_code' => 'FUSD',
+            'account_uuid'          => $this->account->uuid,
+            'stablecoin_code'       => 'FUSD',
             'collateral_asset_code' => 'USD',
-            'collateral_amount' => 124000,
-            'debt_amount' => 100000,
-            'collateral_ratio' => 1.24, // Within risk buffer (1.2 + 0.05 = 1.25)
-            'status' => 'active',
-            'last_interaction_at' => now(),
+            'collateral_amount'     => 124000,
+            'debt_amount'           => 100000,
+            'collateral_ratio'      => 1.24, // Within risk buffer (1.2 + 0.05 = 1.25)
+            'status'                => 'active',
+            'last_interaction_at'   => now(),
         ]);
 
         // Ensure the stablecoin exists

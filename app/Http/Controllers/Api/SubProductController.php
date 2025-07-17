@@ -35,7 +35,7 @@ class SubProductController extends Controller
         if (! isset($allProducts[$subProduct])) {
             return response()->json(
                 [
-                    'error' => 'Sub-product not found',
+                    'error'   => 'Sub-product not found',
                     'message' => "The sub-product '{$subProduct}' does not exist.",
                 ],
                 404
@@ -61,11 +61,11 @@ class SubProductController extends Controller
                 'data' => array_map(
                     function ($product) {
                         return [
-                            'key' => $product['key'],
-                            'name' => $product['name'],
-                            'description' => $product['description'],
-                            'icon' => $product['icon'],
-                            'color' => $product['color'],
+                            'key'              => $product['key'],
+                            'name'             => $product['name'],
+                            'description'      => $product['description'],
+                            'icon'             => $product['icon'],
+                            'color'            => $product['color'],
                             'enabled_features' => $product['enabled_features'],
                         ];
                     },

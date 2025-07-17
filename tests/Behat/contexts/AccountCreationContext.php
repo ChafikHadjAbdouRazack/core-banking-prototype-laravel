@@ -18,8 +18,8 @@ class AccountCreationContext extends MinkContext implements Context
     public function iAmLoggedInAsAUser()
     {
         $this->currentUser = User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+            'name'     => 'Test User',
+            'email'    => 'test@example.com',
             'password' => bcrypt('password'),
         ]);
 
@@ -45,8 +45,8 @@ class AccountCreationContext extends MinkContext implements Context
 
         Account::factory()->create([
             'user_uuid' => $this->currentUser->uuid,
-            'name' => $accountName,
-            'balance' => 0,
+            'name'      => $accountName,
+            'balance'   => 0,
         ]);
     }
 

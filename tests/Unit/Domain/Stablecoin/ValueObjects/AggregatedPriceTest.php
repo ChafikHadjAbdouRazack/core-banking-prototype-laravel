@@ -13,7 +13,7 @@ class AggregatedPriceTest extends DomainTestCase
         $timestamp = Carbon::now();
         $sources = [
             'chainlink' => '48000.00',
-            'binance' => '48100.00',
+            'binance'   => '48100.00',
         ];
 
         $aggregatedPrice = new AggregatedPrice(
@@ -40,13 +40,13 @@ class AggregatedPriceTest extends DomainTestCase
     {
         $timestamp = Carbon::now();
         $sources = [
-            'chainlink' => '3200.00',
-            'binance' => '3195.00',
+            'chainlink'    => '3200.00',
+            'binance'      => '3195.00',
             'internal_amm' => '3198.00',
         ];
         $metadata = [
-            'deviation' => '0.15%',
-            'outliers_removed' => 0,
+            'deviation'           => '0.15%',
+            'outliers_removed'    => 0,
             'calculation_time_ms' => 45,
         ];
 
@@ -91,14 +91,14 @@ class AggregatedPriceTest extends DomainTestCase
         $array = $aggregatedPrice->toArray();
 
         $this->assertEquals([
-            'base' => 'EUR',
-            'quote' => 'USD',
-            'price' => '100.50',
-            'sources' => $sources,
+            'base'               => 'EUR',
+            'quote'              => 'USD',
+            'price'              => '100.50',
+            'sources'            => $sources,
             'aggregation_method' => 'mean',
-            'timestamp' => $timestamp->toIso8601String(),
-            'confidence' => 0.99,
-            'metadata' => ['samples' => 100],
+            'timestamp'          => $timestamp->toIso8601String(),
+            'confidence'         => 0.99,
+            'metadata'           => ['samples' => 100],
         ], $array);
     }
 
@@ -169,10 +169,10 @@ class AggregatedPriceTest extends DomainTestCase
             quote: 'USD',
             price: '3200',
             sources: [
-                'chainlink' => '3200',
-                'binance' => '3195',
+                'chainlink'    => '3200',
+                'binance'      => '3195',
                 'internal_amm' => '3198',
-                'kraken' => '3202',
+                'kraken'       => '3202',
             ],
             aggregationMethod: 'median',
             timestamp: Carbon::now()
@@ -279,23 +279,23 @@ class AggregatedPriceTest extends DomainTestCase
     {
         $metadata = [
             'weights' => [
-                'chainlink' => 0.5,
-                'binance' => 0.3,
+                'chainlink'    => 0.5,
+                'binance'      => 0.3,
                 'internal_amm' => 0.2,
             ],
             'deviations' => [
-                'chainlink' => 0.0,
-                'binance' => 0.002,
+                'chainlink'    => 0.0,
+                'binance'      => 0.002,
                 'internal_amm' => -0.001,
             ],
             'timestamps' => [
-                'chainlink' => Carbon::now()->subSeconds(5)->toIso8601String(),
-                'binance' => Carbon::now()->subSeconds(1)->toIso8601String(),
+                'chainlink'    => Carbon::now()->subSeconds(5)->toIso8601String(),
+                'binance'      => Carbon::now()->subSeconds(1)->toIso8601String(),
                 'internal_amm' => Carbon::now()->toIso8601String(),
             ],
             'quality_scores' => [
-                'freshness' => 0.98,
-                'consistency' => 0.95,
+                'freshness'    => 0.98,
+                'consistency'  => 0.95,
                 'availability' => 1.0,
             ],
         ];

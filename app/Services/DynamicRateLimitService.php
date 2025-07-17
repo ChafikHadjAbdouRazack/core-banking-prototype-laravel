@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Models\User;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
@@ -239,7 +238,7 @@ class DynamicRateLimitService
     private function calculateUserTrustLevel(int $userId): string
     {
         try {
-            $user = \App\Models\User::find($userId);
+            $user = User::find($userId);
             if (! $user) {
                 return 'new';
             }

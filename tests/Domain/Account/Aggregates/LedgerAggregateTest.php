@@ -60,7 +60,7 @@ class LedgerAggregateTest extends DomainTestCase
         return hydrate(
             Account::class,
             [
-                'name' => self::ACCOUNT_NAME,
+                'name'      => self::ACCOUNT_NAME,
                 'user_uuid' => $this->business_user->uuid,
             ]
         );

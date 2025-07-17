@@ -16,39 +16,39 @@ beforeEach(function () {
 
     // Create test polls
     $this->poll1 = Poll::factory()->create([
-        'title' => 'Test Poll 1',
+        'title'  => 'Test Poll 1',
         'status' => 'active',
     ]);
 
     $this->poll2 = Poll::factory()->create([
-        'title' => 'Test Poll 2',
+        'title'  => 'Test Poll 2',
         'status' => 'active',
     ]);
 
     // Create test votes for the user
     $this->vote1 = Vote::factory()->create([
-        'user_uuid' => $this->user->uuid,
-        'poll_id' => $this->poll1->id,
+        'user_uuid'        => $this->user->uuid,
+        'poll_id'          => $this->poll1->id,
         'selected_options' => ['option_1'],
-        'voting_power' => 100,
-        'voted_at' => now()->subDays(5),
+        'voting_power'     => 100,
+        'voted_at'         => now()->subDays(5),
     ]);
 
     $this->vote2 = Vote::factory()->create([
-        'user_uuid' => $this->user->uuid,
-        'poll_id' => $this->poll2->id,
+        'user_uuid'        => $this->user->uuid,
+        'poll_id'          => $this->poll2->id,
         'selected_options' => ['option_2'],
-        'voting_power' => 150,
-        'voted_at' => now()->subDays(2),
+        'voting_power'     => 150,
+        'voted_at'         => now()->subDays(2),
     ]);
 
     // Create vote for other user (should not be accessible)
     $this->otherVote = Vote::factory()->create([
-        'user_uuid' => $this->otherUser->uuid,
-        'poll_id' => $this->poll1->id,
+        'user_uuid'        => $this->otherUser->uuid,
+        'poll_id'          => $this->poll1->id,
         'selected_options' => ['option_1'],
-        'voting_power' => 200,
-        'voted_at' => now()->subDay(),
+        'voting_power'     => 200,
+        'voted_at'         => now()->subDay(),
     ]);
 });
 
@@ -270,11 +270,11 @@ describe('POST /api/votes/{id}/verify', function () {
         // Create a vote with invalid signature using a different poll
         $poll3 = Poll::factory()->create(['title' => 'Test Poll 3', 'status' => 'active']);
         $invalidVote = Vote::factory()->create([
-            'user_uuid' => $this->user->uuid,
-            'poll_id' => $poll3->id,
+            'user_uuid'        => $this->user->uuid,
+            'poll_id'          => $poll3->id,
             'selected_options' => ['option_1'],
-            'voting_power' => 100,
-            'signature' => 'invalid_signature',
+            'voting_power'     => 100,
+            'signature'        => 'invalid_signature',
         ]);
 
         Sanctum::actingAs($this->user);
@@ -333,11 +333,11 @@ describe('GET /api/votes/stats', function () {
         // Create an old vote (older than 30 days) using a different poll
         $poll4 = Poll::factory()->create(['title' => 'Test Poll 4', 'status' => 'active']);
         Vote::factory()->create([
-            'user_uuid' => $this->user->uuid,
-            'poll_id' => $poll4->id,
+            'user_uuid'        => $this->user->uuid,
+            'poll_id'          => $poll4->id,
             'selected_options' => ['abstain'],
-            'voting_power' => 50,
-            'voted_at' => now()->subDays(35),
+            'voting_power'     => 50,
+            'voted_at'         => now()->subDays(35),
         ]);
 
         Sanctum::actingAs($this->user);

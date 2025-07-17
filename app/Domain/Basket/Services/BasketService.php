@@ -18,11 +18,11 @@ class BasketService
      */
     public function composeBasket(mixed $accountUuid, string $basketCode, int $amount): array
     {
-        /** @var \App\Domain\Basket\Models\BasketAsset|null $basket */
+        /** @var BasketAsset|null $basket */
         $basket = null;
-        /** @var \App\Domain\Basket\Models\BasketAsset|null $basket */
+        /** @var BasketAsset|null $basket */
         $basket = null;
-        /** @var \App\Domain\Basket\Models\BasketAsset|null $basket */
+        /** @var BasketAsset|null $basket */
         $basket = null;
         // Validate inputs
         if ($amount <= 0) {
@@ -65,7 +65,7 @@ class BasketService
      */
     public function decomposeBasket(mixed $accountUuid, string $basketCode, int $amount): array
     {
-        /** @var \App\Domain\Basket\Models\BasketAsset|null $basket */
+        /** @var BasketAsset|null $basket */
         $basket = null;
         // Validate inputs
         if ($amount <= 0) {
@@ -116,7 +116,7 @@ class BasketService
      */
     public function calculateRequiredComponents(string $basketCode, int $amount): array
     {
-        /** @var \App\Domain\Basket\Models\BasketAsset|null $basket */
+        /** @var BasketAsset|null $basket */
         $basket = null;
         if ($amount <= 0) {
             throw new \InvalidArgumentException('Amount must be positive');
@@ -158,7 +158,7 @@ class BasketService
             } catch (\Exception $e) {
                 Log::error('Failed to rebalance basket', [
                     'basket_code' => $basket->code,
-                    'error' => $e->getMessage()
+                    'error'       => $e->getMessage(),
                 ]);
             }
         }

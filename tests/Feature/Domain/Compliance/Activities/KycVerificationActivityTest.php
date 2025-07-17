@@ -41,8 +41,8 @@ class KycVerificationActivityTest extends TestCase
         $this->expectExceptionMessage('Action must be either "approve" or "reject"');
 
         $activity->execute([
-            'user_uuid' => 'test-uuid',
-            'action' => 'invalid',
+            'user_uuid'   => 'test-uuid',
+            'action'      => 'invalid',
             'verified_by' => 'admin',
         ]);
     }
@@ -60,8 +60,8 @@ class KycVerificationActivityTest extends TestCase
         $activity = new KycVerificationActivity($kycService);
 
         $activity->execute([
-            'user_uuid' => 'test-uuid',
-            'action' => 'reject',
+            'user_uuid'   => 'test-uuid',
+            'action'      => 'reject',
             'verified_by' => 'admin',
         ]);
     }

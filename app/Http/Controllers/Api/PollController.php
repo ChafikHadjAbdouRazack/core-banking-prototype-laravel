@@ -81,8 +81,8 @@ class PollController extends Controller
     {
         $validated = $request->validate(
             [
-                'status' => ['sometimes', Rule::enum(PollStatus::class)],
-                'type' => ['sometimes', Rule::enum(PollType::class)],
+                'status'   => ['sometimes', Rule::enum(PollStatus::class)],
+                'type'     => ['sometimes', Rule::enum(PollType::class)],
                 'per_page' => ['sometimes', 'integer', 'min:1', 'max:100'],
             ]
         );
@@ -127,7 +127,7 @@ class PollController extends Controller
 
         return response()->json(
             [
-                'data' => $polls,
+                'data'  => $polls,
                 'count' => $polls->count(),
             ]
         );
@@ -187,19 +187,19 @@ class PollController extends Controller
     {
         $validated = $request->validate(
             [
-                'title' => ['required', 'string', 'max:255'],
-                'description' => ['sometimes', 'string', 'max:2000'],
-                'type' => ['required', Rule::enum(PollType::class)],
-                'options' => ['required', 'array', 'min:2'],
-                'options.*.id' => ['required', 'string', 'max:50'],
-                'options.*.label' => ['required', 'string', 'max:255'],
-                'options.*.description' => ['sometimes', 'string', 'max:500'],
-                'start_date' => ['required', 'date', 'after:now'],
-                'end_date' => ['required', 'date', 'after:start_date'],
+                'title'                  => ['required', 'string', 'max:255'],
+                'description'            => ['sometimes', 'string', 'max:2000'],
+                'type'                   => ['required', Rule::enum(PollType::class)],
+                'options'                => ['required', 'array', 'min:2'],
+                'options.*.id'           => ['required', 'string', 'max:50'],
+                'options.*.label'        => ['required', 'string', 'max:255'],
+                'options.*.description'  => ['sometimes', 'string', 'max:500'],
+                'start_date'             => ['required', 'date', 'after:now'],
+                'end_date'               => ['required', 'date', 'after:start_date'],
                 'required_participation' => ['sometimes', 'integer', 'min:1', 'max:100'],
-                'voting_power_strategy' => ['sometimes', 'string', 'in:one_user_one_vote,asset_weighted_vote'],
-                'execution_workflow' => ['sometimes', 'string', 'max:255'],
-                'metadata' => ['sometimes', 'array'],
+                'voting_power_strategy'  => ['sometimes', 'string', 'in:one_user_one_vote,asset_weighted_vote'],
+                'execution_workflow'     => ['sometimes', 'string', 'max:255'],
+                'metadata'               => ['sometimes', 'array'],
             ]
         );
 
@@ -212,7 +212,7 @@ class PollController extends Controller
 
         return response()->json(
             [
-                'data' => $poll->load(['creator', 'votes']),
+                'data'    => $poll->load(['creator', 'votes']),
                 'message' => 'Poll created successfully',
             ],
             201
@@ -318,7 +318,7 @@ class PollController extends Controller
 
             return response()->json(
                 [
-                    'data' => $poll->fresh(['creator', 'votes']),
+                    'data'    => $poll->fresh(['creator', 'votes']),
                     'message' => 'Poll activated successfully',
                 ]
             );
@@ -377,7 +377,7 @@ class PollController extends Controller
     {
         $validated = $request->validate(
             [
-                'selected_options' => ['required', 'array', 'min:1'],
+                'selected_options'   => ['required', 'array', 'min:1'],
                 'selected_options.*' => ['required', 'string'],
             ]
         );
@@ -406,7 +406,7 @@ class PollController extends Controller
 
             return response()->json(
                 [
-                    'data' => $vote->load(['poll', 'user']),
+                    'data'    => $vote->load(['poll', 'user']),
                     'message' => 'Vote cast successfully',
                 ],
                 201
@@ -417,7 +417,7 @@ class PollController extends Controller
                 return response()->json(
                     [
                         'message' => 'The given data was invalid.',
-                        'errors' => [
+                        'errors'  => [
                             'selected_options' => [$e->getMessage()],
                         ],
                     ],
@@ -559,9 +559,9 @@ class PollController extends Controller
         return response()->json(
             [
                 'voting_power' => $votingPower ?? 0,
-                'can_vote' => $canVote,
-                'has_voted' => $hasVoted,
-                'strategy' => $poll->voting_power_strategy,
+                'can_vote'     => $canVote,
+                'has_voted'    => $hasVoted,
+                'strategy'     => $poll->voting_power_strategy,
             ]
         );
     }

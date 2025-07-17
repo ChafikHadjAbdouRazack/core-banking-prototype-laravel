@@ -100,8 +100,8 @@ class CollateralLockedTest extends DomainTestCase
         $amount = 1000000;
         $metadata = [
             'transaction_hash' => '0x123abc',
-            'block_number' => 18500000,
-            'timestamp' => '2024-01-01T00:00:00Z',
+            'block_number'     => 18500000,
+            'timestamp'        => '2024-01-01T00:00:00Z',
         ];
 
         $event = new CollateralLocked(
@@ -189,10 +189,10 @@ class CollateralLockedTest extends DomainTestCase
                     'key' => 'value',
                 ],
             ],
-            'array' => [1, 2, 3],
+            'array'   => [1, 2, 3],
             'boolean' => true,
-            'null' => null,
-            'number' => 123.45,
+            'null'    => null,
+            'number'  => 123.45,
         ];
 
         $event = new CollateralLocked(

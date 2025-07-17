@@ -12,18 +12,18 @@ class BlockchainWalletResourceTest extends TestCase
     {
         $wallet = (object) [
             'wallet_id' => 'wallet_123',
-            'type' => 'hot',
-            'status' => 'active',
-            'metadata' => json_encode([
+            'type'      => 'hot',
+            'status'    => 'active',
+            'metadata'  => json_encode([
                 'last_backup' => [
                     'created_at' => '2025-01-01T00:00:00Z',
-                    'backup_id' => 'backup_123',
+                    'backup_id'  => 'backup_123',
                 ],
                 'freeze_reason' => null,
-                'frozen_at' => null,
+                'frozen_at'     => null,
             ]),
             'settings' => json_encode([
-                'auto_backup' => true,
+                'auto_backup'      => true,
                 'backup_frequency' => 'daily',
             ]),
             'created_at' => now(),
@@ -36,18 +36,18 @@ class BlockchainWalletResourceTest extends TestCase
 
         $this->assertEquals([
             'wallet_id' => 'wallet_123',
-            'type' => 'hot',
-            'status' => 'active',
-            'settings' => [
-                'auto_backup' => true,
+            'type'      => 'hot',
+            'status'    => 'active',
+            'settings'  => [
+                'auto_backup'      => true,
                 'backup_frequency' => 'daily',
             ],
-            'has_backup' => true,
+            'has_backup'     => true,
             'last_backup_at' => '2025-01-01T00:00:00Z',
-            'freeze_reason' => null,
-            'frozen_at' => null,
-            'created_at' => $wallet->created_at,
-            'updated_at' => $wallet->updated_at,
+            'freeze_reason'  => null,
+            'frozen_at'      => null,
+            'created_at'     => $wallet->created_at,
+            'updated_at'     => $wallet->updated_at,
         ], $array);
     }
 
@@ -56,13 +56,13 @@ class BlockchainWalletResourceTest extends TestCase
     {
         $wallet = (object) [
             'wallet_id' => 'wallet_frozen',
-            'type' => 'cold',
-            'status' => 'frozen',
-            'metadata' => json_encode([
+            'type'      => 'cold',
+            'status'    => 'frozen',
+            'metadata'  => json_encode([
                 'freeze_reason' => 'Suspicious activity detected',
-                'frozen_at' => '2025-01-15T10:00:00Z',
+                'frozen_at'     => '2025-01-15T10:00:00Z',
             ]),
-            'settings' => json_encode([]),
+            'settings'   => json_encode([]),
             'created_at' => now(),
             'updated_at' => now(),
         ];
@@ -81,12 +81,12 @@ class BlockchainWalletResourceTest extends TestCase
     {
         $wallet = (object) [
             'wallet_id' => 'wallet_no_backup',
-            'type' => 'hot',
-            'status' => 'active',
-            'metadata' => json_encode([
+            'type'      => 'hot',
+            'status'    => 'active',
+            'metadata'  => json_encode([
                 'other_data' => 'value',
             ]),
-            'settings' => json_encode([]),
+            'settings'   => json_encode([]),
             'created_at' => now(),
             'updated_at' => now(),
         ];
@@ -103,11 +103,11 @@ class BlockchainWalletResourceTest extends TestCase
     public function test_handles_null_metadata(): void
     {
         $wallet = (object) [
-            'wallet_id' => 'wallet_null',
-            'type' => 'hot',
-            'status' => 'active',
-            'metadata' => null,
-            'settings' => null,
+            'wallet_id'  => 'wallet_null',
+            'type'       => 'hot',
+            'status'     => 'active',
+            'metadata'   => null,
+            'settings'   => null,
             'created_at' => now(),
             'updated_at' => now(),
         ];
@@ -128,11 +128,11 @@ class BlockchainWalletResourceTest extends TestCase
     public function test_handles_invalid_json(): void
     {
         $wallet = (object) [
-            'wallet_id' => 'wallet_invalid',
-            'type' => 'hot',
-            'status' => 'active',
-            'metadata' => 'invalid json',
-            'settings' => 'invalid json',
+            'wallet_id'  => 'wallet_invalid',
+            'type'       => 'hot',
+            'status'     => 'active',
+            'metadata'   => 'invalid json',
+            'settings'   => 'invalid json',
             'created_at' => now(),
             'updated_at' => now(),
         ];
@@ -150,11 +150,11 @@ class BlockchainWalletResourceTest extends TestCase
     public function test_includes_all_required_fields(): void
     {
         $wallet = (object) [
-            'wallet_id' => 'wallet_fields',
-            'type' => 'hot',
-            'status' => 'active',
-            'metadata' => json_encode([]),
-            'settings' => json_encode([]),
+            'wallet_id'  => 'wallet_fields',
+            'type'       => 'hot',
+            'status'     => 'active',
+            'metadata'   => json_encode([]),
+            'settings'   => json_encode([]),
             'created_at' => now(),
             'updated_at' => now(),
         ];
@@ -186,29 +186,29 @@ class BlockchainWalletResourceTest extends TestCase
     {
         $wallets = [
             (object) [
-                'wallet_id' => 'wallet_1',
-                'type' => 'hot',
-                'status' => 'active',
-                'metadata' => null,
-                'settings' => null,
+                'wallet_id'  => 'wallet_1',
+                'type'       => 'hot',
+                'status'     => 'active',
+                'metadata'   => null,
+                'settings'   => null,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             (object) [
-                'wallet_id' => 'wallet_2',
-                'type' => 'cold',
-                'status' => 'active',
-                'metadata' => null,
-                'settings' => null,
+                'wallet_id'  => 'wallet_2',
+                'type'       => 'cold',
+                'status'     => 'active',
+                'metadata'   => null,
+                'settings'   => null,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             (object) [
-                'wallet_id' => 'wallet_3',
-                'type' => 'hot',
-                'status' => 'frozen',
-                'metadata' => null,
-                'settings' => null,
+                'wallet_id'  => 'wallet_3',
+                'type'       => 'hot',
+                'status'     => 'frozen',
+                'metadata'   => null,
+                'settings'   => null,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],

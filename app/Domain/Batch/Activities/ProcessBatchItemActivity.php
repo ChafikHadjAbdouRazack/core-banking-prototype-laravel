@@ -16,10 +16,10 @@ class ProcessBatchItemActivity extends Activity
     {
         try {
             $result = match ($item['type']) {
-                'transfer' => $this->processTransfer($item),
-                'payment' => $this->processPayment($item),
+                'transfer'   => $this->processTransfer($item),
+                'payment'    => $this->processPayment($item),
                 'conversion' => $this->processConversion($item),
-                default => throw new \InvalidArgumentException("Unknown item type: {$item['type']}")
+                default      => throw new \InvalidArgumentException("Unknown item type: {$item['type']}")
             };
 
             // Record success
@@ -40,9 +40,9 @@ class ProcessBatchItemActivity extends Activity
 
     private function processTransfer(array $item): array
     {
-        /** @var \App\Models\Account|null $toAccount */
+        /** @var Account|null $toAccount */
         $toAccount = null;
-        /** @var \App\Models\Account|null $fromAccount */
+        /** @var Account|null $fromAccount */
         $fromAccount = null;
         // Validate accounts
         /** @var \Illuminate\Database\Eloquent\Model|null $$fromAccount */
@@ -78,7 +78,7 @@ class ProcessBatchItemActivity extends Activity
 
         return [
             'transfer_id' => $transferUuid,
-            'status' => 'completed',
+            'status'      => 'completed',
         ];
     }
 
@@ -90,7 +90,7 @@ class ProcessBatchItemActivity extends Activity
 
     private function processConversion(array $item): array
     {
-        /** @var \App\Models\Account|null $account */
+        /** @var Account|null $account */
         $account = null;
         // Get account
         /** @var \Illuminate\Database\Eloquent\Model|null $$account */
@@ -124,9 +124,9 @@ class ProcessBatchItemActivity extends Activity
         $conversionUuid = (string) Str::uuid();
 
         return [
-            'conversion_id' => $conversionUuid,
+            'conversion_id'    => $conversionUuid,
             'converted_amount' => $convertedAmount,
-            'rate' => $rate,
+            'rate'             => $rate,
         ];
     }
 }

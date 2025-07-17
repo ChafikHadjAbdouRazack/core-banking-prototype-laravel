@@ -153,10 +153,10 @@ class WebhookResource extends Resource
                                 $record->deliveries()->create(
                                     [
                                         'event_type' => 'test.webhook',
-                                        'payload' => [
-                                            'event' => 'test.webhook',
+                                        'payload'    => [
+                                            'event'     => 'test.webhook',
                                             'timestamp' => now()->toIso8601String(),
-                                            'message' => 'This is a test webhook delivery',
+                                            'message'   => 'This is a test webhook delivery',
                                         ],
                                         'status' => 'pending',
                                     ]
@@ -179,7 +179,7 @@ class WebhookResource extends Resource
                             fn (Webhook $record) => $record->update(
                                 [
                                     'consecutive_failures' => 0,
-                                    'is_active' => true,
+                                    'is_active'            => true,
                                 ]
                             )
                         ),
@@ -218,10 +218,10 @@ class WebhookResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListWebhooks::route('/'),
+            'index'  => Pages\ListWebhooks::route('/'),
             'create' => Pages\CreateWebhook::route('/create'),
-            'edit' => Pages\EditWebhook::route('/{record}/edit'),
-            'view' => Pages\ViewWebhook::route('/{record}'),
+            'edit'   => Pages\EditWebhook::route('/{record}/edit'),
+            'view'   => Pages\ViewWebhook::route('/{record}'),
         ];
     }
 

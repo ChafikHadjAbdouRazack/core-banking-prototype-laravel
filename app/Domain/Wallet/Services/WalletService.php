@@ -26,7 +26,7 @@ class WalletService implements WalletServiceInterface
      */
     public function withdraw(mixed $accountUuid, string $assetCode, mixed $amount): void
     {
-        /** @var \App\Models\Account|null $account */
+        /** @var Account|null $account */
         $account = null;
         // Validate sufficient balance before starting workflow
         $accountUuidObj = __account_uuid($accountUuid);
@@ -46,7 +46,7 @@ class WalletService implements WalletServiceInterface
      */
     public function transfer(mixed $fromAccountUuid, mixed $toAccountUuid, string $assetCode, mixed $amount, ?string $reference = null): void
     {
-        /** @var \App\Models\Account|null $fromAccount */
+        /** @var Account|null $fromAccount */
         $fromAccount = null;
         // Validate sufficient balance before starting workflow
         $fromAccountUuidObj = __account_uuid($fromAccountUuid);

@@ -15,14 +15,14 @@ class WalletAddressResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
-            'chain' => $this->chain,
-            'address' => $this->address,
-            'label' => $this->label,
+            'id'              => $this->id,
+            'chain'           => $this->chain,
+            'address'         => $this->address,
+            'label'           => $this->label,
             'derivation_path' => $this->derivation_path,
-            'is_active' => $this->is_active,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            'is_active'       => $this->is_active,
+            'created_at'      => $this->created_at,
+            'updated_at'      => $this->updated_at,
         ];
     }
 }

@@ -80,13 +80,13 @@ class ExchangeControllerTest extends ControllerTestCase
     {
         $response = $this->actingAs($this->user)
             ->post(route('exchange.place-order'), [
-                'account_id' => $this->accountId,
-                'side' => 'buy',
-                'type' => 'limit',
-                'base_asset' => 'BTC',
+                'account_id'  => $this->accountId,
+                'side'        => 'buy',
+                'type'        => 'limit',
+                'base_asset'  => 'BTC',
                 'quote_asset' => 'USD',
-                'amount' => '0.1',
-                'price' => '45000.00',
+                'amount'      => '0.1',
+                'price'       => '45000.00',
             ]);
 
         $response->assertRedirect();
@@ -94,12 +94,12 @@ class ExchangeControllerTest extends ControllerTestCase
 
         // Verify order was created
         $this->assertDatabaseHas('orders', [
-            'account_id' => $this->accountId,
-            'side' => 'buy',
-            'base_asset' => 'BTC',
+            'account_id'  => $this->accountId,
+            'side'        => 'buy',
+            'base_asset'  => 'BTC',
             'quote_asset' => 'USD',
-            'amount' => '0.10000000',
-            'price' => '45000.00000000',
+            'amount'      => '0.10000000',
+            'price'       => '45000.00000000',
         ]);
     }
 
@@ -108,13 +108,13 @@ class ExchangeControllerTest extends ControllerTestCase
     {
         $response = $this->actingAs($this->user)
             ->post(route('exchange.place-order'), [
-                'account_id' => $this->accountId,
-                'side' => 'sell',
-                'type' => 'limit',
-                'base_asset' => 'BTC',
+                'account_id'  => $this->accountId,
+                'side'        => 'sell',
+                'type'        => 'limit',
+                'base_asset'  => 'BTC',
                 'quote_asset' => 'USD',
-                'amount' => '0.5',
-                'price' => '55000.00',
+                'amount'      => '0.5',
+                'price'       => '55000.00',
             ]);
 
         $response->assertRedirect();
@@ -122,12 +122,12 @@ class ExchangeControllerTest extends ControllerTestCase
 
         // Verify order was created
         $this->assertDatabaseHas('orders', [
-            'account_id' => $this->accountId,
-            'side' => 'sell',
-            'base_asset' => 'BTC',
+            'account_id'  => $this->accountId,
+            'side'        => 'sell',
+            'base_asset'  => 'BTC',
             'quote_asset' => 'USD',
-            'amount' => '0.50000000',
-            'price' => '55000.00000000',
+            'amount'      => '0.50000000',
+            'price'       => '55000.00000000',
         ]);
     }
 
@@ -136,13 +136,13 @@ class ExchangeControllerTest extends ControllerTestCase
     {
         $response = $this->actingAs($this->user)
             ->post(route('exchange.place-order'), [
-                'account_id' => $this->accountId,
-                'side' => 'buy',
-                'type' => 'limit',
-                'base_asset' => 'BTC',
+                'account_id'  => $this->accountId,
+                'side'        => 'buy',
+                'type'        => 'limit',
+                'base_asset'  => 'BTC',
                 'quote_asset' => 'USD',
-                'amount' => '10', // Would need 450,000 USD
-                'price' => '45000.00',
+                'amount'      => '10', // Would need 450,000 USD
+                'price'       => '45000.00',
             ]);
 
         $response->assertSessionHasErrors();
@@ -154,13 +154,13 @@ class ExchangeControllerTest extends ControllerTestCase
         // First place an order
         $response = $this->actingAs($this->user)
             ->post(route('exchange.place-order'), [
-                'account_id' => $this->accountId,
-                'side' => 'buy',
-                'type' => 'limit',
-                'base_asset' => 'BTC',
+                'account_id'  => $this->accountId,
+                'side'        => 'buy',
+                'type'        => 'limit',
+                'base_asset'  => 'BTC',
                 'quote_asset' => 'USD',
-                'amount' => '0.1',
-                'price' => '45000.00',
+                'amount'      => '0.1',
+                'price'       => '45000.00',
             ]);
 
         // Get the order ID from database
@@ -179,7 +179,7 @@ class ExchangeControllerTest extends ControllerTestCase
         // Verify order status is cancelled
         $this->assertDatabaseHas('orders', [
             'order_id' => $order->order_id,
-            'status' => 'cancelled',
+            'status'   => 'cancelled',
         ]);
     }
 

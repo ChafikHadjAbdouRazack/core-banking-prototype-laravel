@@ -49,9 +49,9 @@ class TwoFactorAuthController extends Controller
 
         return response()->json(
             [
-                'message' => 'Two-factor authentication enabled successfully.',
-                'secret' => decrypt($user->two_factor_secret),
-                'qr_code' => $user->twoFactorQrCodeSvg(),
+                'message'        => 'Two-factor authentication enabled successfully.',
+                'secret'         => decrypt($user->two_factor_secret),
+                'qr_code'        => $user->twoFactorQrCodeSvg(),
                 'recovery_codes' => json_decode(decrypt($user->two_factor_recovery_codes), true),
             ]
         );
@@ -221,7 +221,7 @@ class TwoFactorAuthController extends Controller
     {
         $request->validate(
             [
-                'code' => 'required_without:recovery_code|string',
+                'code'          => 'required_without:recovery_code|string',
                 'recovery_code' => 'required_without:code|string',
             ]
         );
@@ -258,7 +258,7 @@ class TwoFactorAuthController extends Controller
         return response()->json(
             [
                 'message' => 'Two-factor authentication verified successfully.',
-                'token' => $token,
+                'token'   => $token,
             ]
         );
     }
@@ -298,7 +298,7 @@ class TwoFactorAuthController extends Controller
 
         return response()->json(
             [
-                'message' => 'Recovery codes regenerated successfully.',
+                'message'        => 'Recovery codes regenerated successfully.',
                 'recovery_codes' => json_decode(decrypt($user->two_factor_recovery_codes), true),
             ]
         );

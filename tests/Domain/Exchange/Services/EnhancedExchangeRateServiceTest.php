@@ -38,12 +38,12 @@ it('retrieves cached exchange rate when available and fresh', function () {
     // Create a fresh exchange rate
     ExchangeRate::create([
         'from_asset_code' => 'USD',
-        'to_asset_code' => 'EUR',
-        'rate' => 0.85,
-        'source' => 'api',
-        'valid_at' => now(),
-        'expires_at' => now()->addHour(),
-        'is_active' => true,
+        'to_asset_code'   => 'EUR',
+        'rate'            => 0.85,
+        'source'          => 'api',
+        'valid_at'        => now(),
+        'expires_at'      => now()->addHour(),
+        'is_active'       => true,
     ]);
 
     $rate = $this->service->getRate('USD', 'EUR');
@@ -62,12 +62,12 @@ it('ignores expired exchange rates', function () {
     // Create an expired exchange rate
     ExchangeRate::create([
         'from_asset_code' => 'USD',
-        'to_asset_code' => 'EUR',
-        'rate' => 0.85,
-        'source' => 'api',
-        'valid_at' => now()->subHours(2),
-        'expires_at' => now()->subHour(),
-        'is_active' => true,
+        'to_asset_code'   => 'EUR',
+        'rate'            => 0.85,
+        'source'          => 'api',
+        'valid_at'        => now()->subHours(2),
+        'expires_at'      => now()->subHour(),
+        'is_active'       => true,
     ]);
 
     // Should try to fetch new rate
@@ -87,12 +87,12 @@ it('ignores inactive exchange rates', function () {
     // Create an inactive exchange rate
     ExchangeRate::create([
         'from_asset_code' => 'USD',
-        'to_asset_code' => 'EUR',
-        'rate' => 0.85,
-        'source' => 'api',
-        'valid_at' => now(),
-        'expires_at' => now()->addHour(),
-        'is_active' => false,
+        'to_asset_code'   => 'EUR',
+        'rate'            => 0.85,
+        'source'          => 'api',
+        'valid_at'        => now(),
+        'expires_at'      => now()->addHour(),
+        'is_active'       => false,
     ]);
 
     $rate = $this->service->getRate('USD', 'EUR');
@@ -109,12 +109,12 @@ it('ignores inactive exchange rates', function () {
 it('can convert amount between assets using exchange rate', function () {
     ExchangeRate::create([
         'from_asset_code' => 'USD',
-        'to_asset_code' => 'EUR',
-        'rate' => 0.85,
-        'source' => 'api',
-        'valid_at' => now(),
-        'expires_at' => now()->addHour(),
-        'is_active' => true,
+        'to_asset_code'   => 'EUR',
+        'rate'            => 0.85,
+        'source'          => 'api',
+        'valid_at'        => now(),
+        'expires_at'      => now()->addHour(),
+        'is_active'       => true,
     ]);
 
     $convertedAmount = $this->service->convert(10000, 'USD', 'EUR'); // $100.00
@@ -146,10 +146,10 @@ it('can store new exchange rate', function () {
 
     $this->assertDatabaseHas('exchange_rates', [
         'from_asset_code' => 'USD',
-        'to_asset_code' => 'EUR',
-        'rate' => 0.87,
-        'source' => 'manual',
-        'is_active' => true,
+        'to_asset_code'   => 'EUR',
+        'rate'            => 0.87,
+        'source'          => 'manual',
+        'is_active'       => true,
     ]);
 });
 
@@ -167,22 +167,22 @@ it('clears cache when storing new rate', function () {
 it('can get available rates for an asset', function () {
     ExchangeRate::create([
         'from_asset_code' => 'USD',
-        'to_asset_code' => 'EUR',
-        'rate' => 0.85,
-        'source' => 'api',
-        'valid_at' => now(),
-        'expires_at' => now()->addHour(),
-        'is_active' => true,
+        'to_asset_code'   => 'EUR',
+        'rate'            => 0.85,
+        'source'          => 'api',
+        'valid_at'        => now(),
+        'expires_at'      => now()->addHour(),
+        'is_active'       => true,
     ]);
 
     ExchangeRate::create([
         'from_asset_code' => 'EUR',
-        'to_asset_code' => 'USD',
-        'rate' => 1.18,
-        'source' => 'api',
-        'valid_at' => now(),
-        'expires_at' => now()->addHour(),
-        'is_active' => true,
+        'to_asset_code'   => 'USD',
+        'rate'            => 1.18,
+        'source'          => 'api',
+        'valid_at'        => now(),
+        'expires_at'      => now()->addHour(),
+        'is_active'       => true,
     ]);
 
     $rates = $this->service->getAvailableRatesFor('USD');
@@ -194,22 +194,22 @@ it('can get rate history for a specific pair', function () {
     // Create historical rates
     ExchangeRate::create([
         'from_asset_code' => 'USD',
-        'to_asset_code' => 'EUR',
-        'rate' => 0.84,
-        'source' => 'api',
-        'valid_at' => now()->subDays(2),
-        'expires_at' => now()->subDay(),
-        'is_active' => false,
+        'to_asset_code'   => 'EUR',
+        'rate'            => 0.84,
+        'source'          => 'api',
+        'valid_at'        => now()->subDays(2),
+        'expires_at'      => now()->subDay(),
+        'is_active'       => false,
     ]);
 
     ExchangeRate::create([
         'from_asset_code' => 'USD',
-        'to_asset_code' => 'EUR',
-        'rate' => 0.85,
-        'source' => 'api',
-        'valid_at' => now(),
-        'expires_at' => now()->addHour(),
-        'is_active' => true,
+        'to_asset_code'   => 'EUR',
+        'rate'            => 0.85,
+        'source'          => 'api',
+        'valid_at'        => now(),
+        'expires_at'      => now()->addHour(),
+        'is_active'       => true,
     ]);
 
     $history = $this->service->getRateHistory('USD', 'EUR', 7); // Last 7 days
@@ -222,12 +222,12 @@ it('can refresh stale rates', function () {
     // Create a stale rate
     ExchangeRate::create([
         'from_asset_code' => 'USD',
-        'to_asset_code' => 'EUR',
-        'rate' => 0.84,
-        'source' => 'api',
-        'valid_at' => now()->subHours(2), // Stale
-        'expires_at' => now()->addHour(),
-        'is_active' => true,
+        'to_asset_code'   => 'EUR',
+        'rate'            => 0.84,
+        'source'          => 'api',
+        'valid_at'        => now()->subHours(2), // Stale
+        'expires_at'      => now()->addHour(),
+        'is_active'       => true,
     ]);
 
     $refreshed = $this->service->refreshStaleRates();
@@ -283,12 +283,12 @@ it('caches exchange rates appropriately', function () {
     // Create a rate
     ExchangeRate::create([
         'from_asset_code' => 'USD',
-        'to_asset_code' => 'EUR',
-        'rate' => 0.85,
-        'source' => 'api',
-        'valid_at' => now(),
-        'expires_at' => now()->addHour(),
-        'is_active' => true,
+        'to_asset_code'   => 'EUR',
+        'rate'            => 0.85,
+        'source'          => 'api',
+        'valid_at'        => now(),
+        'expires_at'      => now()->addHour(),
+        'is_active'       => true,
     ]);
 
     // First call should cache the result
@@ -309,12 +309,12 @@ it('can get inverse rates', function () {
 
     ExchangeRate::create([
         'from_asset_code' => 'EUR',
-        'to_asset_code' => 'USD',
-        'rate' => 1.18,
-        'source' => 'test',
-        'valid_at' => now(),
-        'expires_at' => now()->addHour(),
-        'is_active' => true,
+        'to_asset_code'   => 'USD',
+        'rate'            => 1.18,
+        'source'          => 'test',
+        'valid_at'        => now(),
+        'expires_at'      => now()->addHour(),
+        'is_active'       => true,
     ]);
 
     // Get the direct rate EUR->USD

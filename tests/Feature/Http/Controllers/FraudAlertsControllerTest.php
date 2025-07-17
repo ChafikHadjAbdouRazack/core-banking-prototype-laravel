@@ -61,17 +61,17 @@ class FraudAlertsControllerTest extends ControllerTestCase
 
         $this->customerFraudCase = FraudCase::factory()->create([
             'subject_type' => Account::class,
-            'subject_id' => $this->customerAccount->id,
-            'status' => 'pending',
-            'type' => 'unauthorized_transaction',
-            'severity' => 'high',
-            'risk_score' => 85,
+            'subject_id'   => $this->customerAccount->id,
+            'status'       => 'pending',
+            'type'         => 'unauthorized_transaction',
+            'severity'     => 'high',
+            'risk_score'   => 85,
         ]);
 
         $otherAccount = Account::factory()->create();
         $this->otherFraudCase = FraudCase::factory()->create([
             'subject_type' => Account::class,
-            'subject_id' => $otherAccount->id,
+            'subject_id'   => $otherAccount->id,
         ]);
     }
 
@@ -211,7 +211,7 @@ class FraudAlertsControllerTest extends ControllerTestCase
         $response = $this->actingAs($this->staffUser)
             ->put(route('fraud.alerts.update-status', $this->customerFraudCase), [
                 'status' => 'investigating',
-                'notes' => 'Looking into this case',
+                'notes'  => 'Looking into this case',
             ]);
 
         $response->assertRedirect(route('fraud.alerts.show', $this->customerFraudCase));

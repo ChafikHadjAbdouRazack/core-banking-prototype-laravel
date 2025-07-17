@@ -34,7 +34,7 @@ class CgoAgreementControllerTest extends ControllerTestCase
         $user = User::factory()->create();
         $investment = CgoInvestment::factory()->create([
             'user_id' => $user->id,
-            'status' => 'confirmed',
+            'status'  => 'confirmed',
         ]);
 
         // Mock the service
@@ -62,7 +62,7 @@ class CgoAgreementControllerTest extends ControllerTestCase
     {
         $user = User::factory()->create();
         $investment = CgoInvestment::factory()->create([
-            'user_id' => $user->id,
+            'user_id'        => $user->id,
             'agreement_path' => 'cgo/agreements/existing.pdf',
         ]);
 
@@ -88,7 +88,7 @@ class CgoAgreementControllerTest extends ControllerTestCase
         $otherUser = User::factory()->create();
 
         $investment = CgoInvestment::factory()->create([
-            'user_id' => $otherUser->id,
+            'user_id'        => $otherUser->id,
             'agreement_path' => 'cgo/agreements/test.pdf',
         ]);
 
@@ -103,7 +103,7 @@ class CgoAgreementControllerTest extends ControllerTestCase
     {
         $user = User::factory()->create();
         $investment = CgoInvestment::factory()->create([
-            'user_id' => $user->id,
+            'user_id'        => $user->id,
             'agreement_path' => 'cgo/agreements/test.pdf',
         ]);
 
@@ -124,7 +124,7 @@ class CgoAgreementControllerTest extends ControllerTestCase
         $user = User::factory()->create();
         $investment = CgoInvestment::factory()->create([
             'user_id' => $user->id,
-            'status' => 'pending',
+            'status'  => 'pending',
         ]);
 
         $response = $this->actingAs($user)
@@ -143,7 +143,7 @@ class CgoAgreementControllerTest extends ControllerTestCase
         $user = User::factory()->create();
         $investment = CgoInvestment::factory()->create([
             'user_id' => $user->id,
-            'status' => 'confirmed',
+            'status'  => 'confirmed',
         ]);
 
         // Mock the service
@@ -191,7 +191,7 @@ class CgoAgreementControllerTest extends ControllerTestCase
     {
         $user = User::factory()->create();
         $investment = CgoInvestment::factory()->create([
-            'user_id' => $user->id,
+            'user_id'                => $user->id,
             'agreement_generated_at' => now()->subHour(),
         ]);
 

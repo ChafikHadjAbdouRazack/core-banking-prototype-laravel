@@ -72,17 +72,17 @@ class KycController extends Controller
 
         return response()->json(
             [
-                'status' => $user->kyc_status,
-                'level' => $user->kyc_level,
+                'status'       => $user->kyc_status,
+                'level'        => $user->kyc_level,
                 'submitted_at' => $user->kyc_submitted_at,
-                'approved_at' => $user->kyc_approved_at,
-                'expires_at' => $user->kyc_expires_at,
-                'needs_kyc' => $user->needsKyc(),
-                'documents' => $user->kycDocuments->map(
+                'approved_at'  => $user->kyc_approved_at,
+                'expires_at'   => $user->kyc_expires_at,
+                'needs_kyc'    => $user->needsKyc(),
+                'documents'    => $user->kycDocuments->map(
                     fn ($doc) => [
-                        'id' => $doc->id,
-                        'type' => $doc->document_type,
-                        'status' => $doc->status,
+                        'id'          => $doc->id,
+                        'type'        => $doc->document_type,
+                        'status'      => $doc->status,
                         'uploaded_at' => $doc->uploaded_at,
                     ]
                 ),
@@ -142,7 +142,7 @@ class KycController extends Controller
 
         return response()->json(
             [
-                'level' => $request->level,
+                'level'        => $request->level,
                 'requirements' => $requirements,
             ]
         );
@@ -233,7 +233,7 @@ class KycController extends Controller
 
         $request->validate(
             [
-                'documents' => 'required|array|min:1',
+                'documents'        => 'required|array|min:1',
                 'documents.*.type' => 'required|in:passport,national_id,drivers_license,residence_permit,utility_bill,bank_statement,selfie,proof_of_income,other',
                 'documents.*.file' => 'required|file|mimes:jpg,jpeg,png,pdf|max:10240', // 10MB max
             ]
@@ -245,7 +245,7 @@ class KycController extends Controller
             return response()->json(
                 [
                     'message' => 'KYC documents submitted successfully',
-                    'status' => 'pending',
+                    'status'  => 'pending',
                 ]
             );
         } catch (\Exception $e) {
@@ -342,7 +342,7 @@ class KycController extends Controller
         $request->validate(
             [
                 'document' => 'required|file|mimes:jpg,jpeg,png,pdf|max:10240',
-                'type' => 'sometimes|string|in:passport,national_id,drivers_license,residence_permit,utility_bill,bank_statement,selfie,proof_of_income,other',
+                'type'     => 'sometimes|string|in:passport,national_id,drivers_license,residence_permit,utility_bill,bank_statement,selfie,proof_of_income,other',
             ]
         );
 
@@ -362,13 +362,13 @@ class KycController extends Controller
             $document = $user->kycDocuments()->create(
                 [
                     'document_type' => $type,
-                    'file_path' => $path,
-                    'status' => 'pending',
-                    'uploaded_at' => now(),
-                    'metadata' => [
+                    'file_path'     => $path,
+                    'status'        => 'pending',
+                    'uploaded_at'   => now(),
+                    'metadata'      => [
                         'original_name' => $file->getClientOriginalName(),
-                        'mime_type' => $file->getMimeType(),
-                        'size' => $file->getSize(),
+                        'mime_type'     => $file->getMimeType(),
+                        'size'          => $file->getSize(),
                     ],
                 ]
             );
@@ -384,7 +384,7 @@ class KycController extends Controller
 
             return response()->json(
                 [
-                    'message' => 'Document uploaded successfully',
+                    'message'     => 'Document uploaded successfully',
                     'document_id' => $document->id,
                 ]
             );

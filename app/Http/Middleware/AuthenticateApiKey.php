@@ -24,7 +24,7 @@ class AuthenticateApiKey
         if (! $authHeader || ! str_starts_with($authHeader, 'Bearer ')) {
             return response()->json(
                 [
-                    'error' => 'Unauthorized',
+                    'error'   => 'Unauthorized',
                     'message' => 'API key is required',
                 ],
                 401
@@ -38,7 +38,7 @@ class AuthenticateApiKey
         if (! $apiKey) {
             return response()->json(
                 [
-                    'error' => 'Unauthorized',
+                    'error'   => 'Unauthorized',
                     'message' => 'Invalid API key',
                 ],
                 401
@@ -49,7 +49,7 @@ class AuthenticateApiKey
         if (! $apiKey->isIpAllowed($request->ip())) {
             return response()->json(
                 [
-                    'error' => 'Forbidden',
+                    'error'   => 'Forbidden',
                     'message' => 'Access denied from this IP address',
                 ],
                 403
@@ -60,7 +60,7 @@ class AuthenticateApiKey
         if (! $apiKey->hasPermission($permission)) {
             return response()->json(
                 [
-                    'error' => 'Forbidden',
+                    'error'   => 'Forbidden',
                     'message' => 'Insufficient permissions',
                 ],
                 403
@@ -99,11 +99,11 @@ class AuthenticateApiKey
         $logBody = config('app.debug', false);
 
         $logData = [
-            'api_key_id' => $apiKey->id,
-            'method' => $request->method(),
-            'path' => $request->path(),
-            'ip_address' => $request->ip(),
-            'user_agent' => $request->userAgent(),
+            'api_key_id'    => $apiKey->id,
+            'method'        => $request->method(),
+            'path'          => $request->path(),
+            'ip_address'    => $request->ip(),
+            'user_agent'    => $request->userAgent(),
             'response_code' => $response->getStatusCode(),
             'response_time' => $responseTime,
         ];

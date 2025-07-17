@@ -22,7 +22,7 @@ class SubscriberTest extends DomainTestCase
 
         $response = $this->postJson('/subscriber/blog', [
             'email' => 'test@example.com',
-            'tags' => ['newsletter'],
+            'tags'  => ['newsletter'],
         ]);
 
         $response->assertStatus(200)
@@ -32,7 +32,7 @@ class SubscriberTest extends DomainTestCase
             ]);
 
         $this->assertDatabaseHas('subscribers', [
-            'email' => 'test@example.com',
+            'email'  => 'test@example.com',
             'source' => 'blog',
             'status' => 'active',
         ]);
@@ -48,8 +48,8 @@ class SubscriberTest extends DomainTestCase
         Mail::fake();
 
         $subscriber = Subscriber::factory()->create([
-            'email' => 'existing@example.com',
-            'status' => 'unsubscribed',
+            'email'           => 'existing@example.com',
+            'status'          => 'unsubscribed',
             'unsubscribed_at' => now()->subDays(30),
         ]);
 
@@ -81,7 +81,7 @@ class SubscriberTest extends DomainTestCase
     public function it_handles_unsubscribe_request()
     {
         $subscriber = Subscriber::factory()->create([
-            'email' => 'unsubscribe@example.com',
+            'email'  => 'unsubscribe@example.com',
             'status' => 'active',
         ]);
 
@@ -173,12 +173,12 @@ class SubscriberTest extends DomainTestCase
 
         $subscriber1 = Subscriber::factory()->create([
             'status' => 'active',
-            'tags' => ['newsletter', 'product_updates'],
+            'tags'   => ['newsletter', 'product_updates'],
         ]);
 
         $subscriber2 = Subscriber::factory()->create([
             'status' => 'active',
-            'tags' => ['blog_updates'],
+            'tags'   => ['blog_updates'],
         ]);
 
         $service = new SubscriberEmailService();

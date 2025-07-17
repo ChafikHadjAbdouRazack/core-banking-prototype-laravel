@@ -48,22 +48,22 @@ class StablecoinOperationsSimpleTest extends DomainTestCase
         $this->user = User::factory()->create();
         $this->account = Account::factory()->create([
             'user_uuid' => $this->user->uuid,
-            'name' => 'Test Account',
+            'name'      => 'Test Account',
         ]);
 
         // Create balance directly
         AccountBalance::create([
             'account_uuid' => $this->account->uuid,
-            'asset_code' => 'USD',
-            'balance' => 1000000, // $10,000
+            'asset_code'   => 'USD',
+            'balance'      => 1000000, // $10,000
         ]);
 
         // Create assets
         $this->collateralAsset = Asset::firstOrCreate(
             ['code' => 'USD'],
             [
-                'name' => 'US Dollar',
-                'type' => 'fiat',
+                'name'      => 'US Dollar',
+                'type'      => 'fiat',
                 'precision' => 2,
                 'is_active' => true,
             ]
@@ -72,8 +72,8 @@ class StablecoinOperationsSimpleTest extends DomainTestCase
         Asset::firstOrCreate(
             ['code' => 'FUSD'],
             [
-                'name' => 'Fiat USD Stablecoin',
-                'type' => 'stablecoin',
+                'name'      => 'Fiat USD Stablecoin',
+                'type'      => 'stablecoin',
                 'precision' => 2,
                 'is_active' => true,
             ]
@@ -81,19 +81,19 @@ class StablecoinOperationsSimpleTest extends DomainTestCase
 
         // Create stablecoin
         $this->stablecoin = Stablecoin::factory()->create([
-            'code' => 'FUSD',
-            'name' => 'FinAegis USD',
-            'symbol' => 'FUSD',
-            'peg_asset_code' => 'USD',
-            'precision' => 2,
-            'is_active' => true,
-            'total_supply' => 0,
-            'max_supply' => 1000000000, // 10M max
-            'collateral_ratio' => 1.5, // 150%
+            'code'                 => 'FUSD',
+            'name'                 => 'FinAegis USD',
+            'symbol'               => 'FUSD',
+            'peg_asset_code'       => 'USD',
+            'precision'            => 2,
+            'is_active'            => true,
+            'total_supply'         => 0,
+            'max_supply'           => 1000000000, // 10M max
+            'collateral_ratio'     => 1.5, // 150%
             'min_collateral_ratio' => 1.2, // 120%
-            'liquidation_penalty' => 0.1, // 10%
-            'mint_fee' => 0.001, // 0.1%
-            'burn_fee' => 0.001, // 0.1%
+            'liquidation_penalty'  => 0.1, // 10%
+            'mint_fee'             => 0.001, // 0.1%
+            'burn_fee'             => 0.001, // 0.1%
         ]);
 
         // Authenticate user
@@ -104,11 +104,11 @@ class StablecoinOperationsSimpleTest extends DomainTestCase
     public function it_fails_to_mint_with_insufficient_collateral()
     {
         $response = $this->postJson('/api/v2/stablecoin-operations/mint', [
-            'account_uuid' => $this->account->uuid,
-            'stablecoin_code' => 'FUSD',
+            'account_uuid'          => $this->account->uuid,
+            'stablecoin_code'       => 'FUSD',
             'collateral_asset_code' => 'USD',
-            'collateral_amount' => 100000, // $1,000 collateral
-            'mint_amount' => 100000, // $1,000 mint (only 100% collateralization, need 150%)
+            'collateral_amount'     => 100000, // $1,000 collateral
+            'mint_amount'           => 100000, // $1,000 mint (only 100% collateralization, need 150%)
         ]);
 
         $response->assertStatus(400)
@@ -123,32 +123,32 @@ class StablecoinOperationsSimpleTest extends DomainTestCase
         // Create a position that's under-collateralized
         $underCollateralizedAccount = Account::factory()->create([
             'user_uuid' => User::factory()->create()->uuid,
-            'name' => 'Under Collateralized Account',
+            'name'      => 'Under Collateralized Account',
         ]);
 
         // Give the account some balance for collateral
         AccountBalance::create([
             'account_uuid' => $underCollateralizedAccount->uuid,
-            'asset_code' => 'USD',
-            'balance' => 500000, // $5,000
+            'asset_code'   => 'USD',
+            'balance'      => 500000, // $5,000
         ]);
 
         // Create position manually to bypass collateral checks
         $position = StablecoinCollateralPosition::create([
-            'account_uuid' => $underCollateralizedAccount->uuid,
-            'stablecoin_code' => 'FUSD',
-            'collateral_asset_code' => 'USD',
-            'collateral_amount' => 110000, // $1,100 collateral
-            'debt_amount' => 100000, // $1,000 debt (only 110% ratio, below 120% liquidation threshold)
-            'collateral_ratio' => 1.1000, // 110% ratio
-            'status' => 'active',
+            'account_uuid'             => $underCollateralizedAccount->uuid,
+            'stablecoin_code'          => 'FUSD',
+            'collateral_asset_code'    => 'USD',
+            'collateral_amount'        => 110000, // $1,100 collateral
+            'debt_amount'              => 100000, // $1,000 debt (only 110% ratio, below 120% liquidation threshold)
+            'collateral_ratio'         => 1.1000, // 110% ratio
+            'status'                   => 'active',
             'auto_liquidation_enabled' => true, // Enable auto liquidation
         ]);
 
         // Verify position was created
         $this->assertDatabaseHas('stablecoin_collateral_positions', [
-            'uuid' => $position->uuid,
-            'status' => 'active',
+            'uuid'                     => $position->uuid,
+            'status'                   => 'active',
             'auto_liquidation_enabled' => true,
         ]);
 

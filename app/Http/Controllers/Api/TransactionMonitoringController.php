@@ -32,7 +32,7 @@ class TransactionMonitoringController extends Controller
         return response()->json(
             [
                 'message' => 'Transaction flagged',
-                'data' => ['id' => $id],
+                'data'    => ['id' => $id],
             ]
         );
     }
@@ -42,7 +42,7 @@ class TransactionMonitoringController extends Controller
         return response()->json(
             [
                 'message' => 'Transaction cleared',
-                'data' => ['id' => $id],
+                'data'    => ['id' => $id],
             ]
         );
     }
@@ -61,7 +61,7 @@ class TransactionMonitoringController extends Controller
         return response()->json(
             [
                 'message' => 'Rule created',
-                'data' => [],
+                'data'    => [],
             ],
             201
         );
@@ -72,7 +72,7 @@ class TransactionMonitoringController extends Controller
         return response()->json(
             [
                 'message' => 'Rule updated',
-                'data' => ['id' => $id],
+                'data'    => ['id' => $id],
             ]
         );
     }
@@ -109,7 +109,7 @@ class TransactionMonitoringController extends Controller
         return response()->json(
             [
                 'message' => 'Thresholds updated',
-                'data' => [],
+                'data'    => [],
             ]
         );
     }
@@ -120,7 +120,7 @@ class TransactionMonitoringController extends Controller
             [
                 'data' => [
                     'analysis_id' => uniqid(),
-                    'status' => 'completed',
+                    'status'      => 'completed',
                 ],
             ]
         );
@@ -132,7 +132,7 @@ class TransactionMonitoringController extends Controller
             [
                 'data' => [
                     'batch_id' => uniqid(),
-                    'status' => 'processing',
+                    'status'   => 'processing',
                 ],
             ]
         );
@@ -144,7 +144,7 @@ class TransactionMonitoringController extends Controller
             [
                 'data' => [
                     'analysis_id' => $analysisId,
-                    'status' => 'completed',
+                    'status'      => 'completed',
                 ],
             ]
         );

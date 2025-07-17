@@ -58,8 +58,8 @@ class ValuesRelationManager extends RelationManager
                         ->color(
                             fn ($state) => match (true) {
                                 $state->diffInMinutes() < 5 => 'success',
-                                $state->diffInHours() < 1 => 'warning',
-                                default => 'gray',
+                                $state->diffInHours() < 1   => 'warning',
+                                default                     => 'gray',
                             }
                         ),
 

@@ -37,11 +37,11 @@ class OrderResource extends Resource
                                 Forms\Components\Select::make('status')
                                     ->options(
                                         [
-                                            'pending' => 'Pending',
-                                            'open' => 'Open',
+                                            'pending'          => 'Pending',
+                                            'open'             => 'Open',
                                             'partially_filled' => 'Partially Filled',
-                                            'filled' => 'Filled',
-                                            'cancelled' => 'Cancelled',
+                                            'filled'           => 'Filled',
+                                            'cancelled'        => 'Cancelled',
                                         ]
                                     )
                                     ->disabled(),
@@ -86,7 +86,7 @@ class OrderResource extends Resource
                         ->colors(
                             [
                                 'success' => 'buy',
-                                'danger' => 'sell',
+                                'danger'  => 'sell',
                             ]
                         ),
                     Tables\Columns\TextColumn::make('order_type')
@@ -104,10 +104,10 @@ class OrderResource extends Resource
                     Tables\Columns\BadgeColumn::make('status')
                         ->colors(
                             [
-                                'warning' => 'pending',
-                                'info' => 'open',
-                                'primary' => 'partially_filled',
-                                'success' => 'filled',
+                                'warning'   => 'pending',
+                                'info'      => 'open',
+                                'primary'   => 'partially_filled',
+                                'success'   => 'filled',
                                 'secondary' => 'cancelled',
                             ]
                         ),
@@ -123,17 +123,17 @@ class OrderResource extends Resource
                     Tables\Filters\SelectFilter::make('status')
                         ->options(
                             [
-                                'pending' => 'Pending',
-                                'open' => 'Open',
+                                'pending'          => 'Pending',
+                                'open'             => 'Open',
                                 'partially_filled' => 'Partially Filled',
-                                'filled' => 'Filled',
-                                'cancelled' => 'Cancelled',
+                                'filled'           => 'Filled',
+                                'cancelled'        => 'Cancelled',
                             ]
                         ),
                     Tables\Filters\SelectFilter::make('type')
                         ->options(
                             [
-                                'buy' => 'Buy',
+                                'buy'  => 'Buy',
                                 'sell' => 'Sell',
                             ]
                         ),
@@ -171,7 +171,7 @@ class OrderResource extends Resource
     {
         return [
             'index' => Pages\ListOrders::route('/'),
-            'view' => Pages\ViewOrder::route('/{record}'),
+            'view'  => Pages\ViewOrder::route('/{record}'),
         ];
     }
 

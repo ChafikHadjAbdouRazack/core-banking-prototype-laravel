@@ -27,10 +27,10 @@ class BlogController extends Controller
             ->get();
 
         $categories = [
-            'platform' => \App\Models\BlogPost::published()->category('platform')->count(),
-            'security' => \App\Models\BlogPost::published()->category('security')->count(),
-            'developer' => \App\Models\BlogPost::published()->category('developer')->count(),
-            'industry' => \App\Models\BlogPost::published()->category('industry')->count(),
+            'platform'   => \App\Models\BlogPost::published()->category('platform')->count(),
+            'security'   => \App\Models\BlogPost::published()->category('security')->count(),
+            'developer'  => \App\Models\BlogPost::published()->category('developer')->count(),
+            'industry'   => \App\Models\BlogPost::published()->category('industry')->count(),
             'compliance' => \App\Models\BlogPost::published()->category('compliance')->count(),
         ];
 
@@ -125,8 +125,8 @@ class BlogController extends Controller
                     "https://{$dataCenter}.api.mailchimp.com/3.0/lists/{$listId}/members",
                     [
                         'email_address' => $email,
-                        'status' => 'subscribed',
-                        'tags' => ['blog_subscriber', 'finaegis_demo'],
+                        'status'        => 'subscribed',
+                        'tags'          => ['blog_subscriber', 'finaegis_demo'],
                     ]
                 );
         } catch (\Exception $e) {

@@ -119,7 +119,7 @@ class ExchangeService implements ExchangeServiceInterface
     {
         /** @var mixed|null $orderProjection */
         $orderProjection = null;
-        /** @var \App\Models\Account|null $account */
+        /** @var Account|null $account */
         $account = null;
         /** @var \Illuminate\Database\Eloquent\Model|null $$orderProjection */
         $$orderProjection = \App\Domain\Exchange\Projections\Order::where('order_id', $orderId)->first();

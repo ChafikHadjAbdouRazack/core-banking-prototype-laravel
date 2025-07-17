@@ -32,10 +32,10 @@ class ReserveDepositDataTest extends DomainTestCase
     public function test_creates_reserve_deposit_data_with_metadata(): void
     {
         $metadata = [
-            'source' => 'protocol_fees',
-            'batch_id' => 'batch-789',
+            'source'    => 'protocol_fees',
+            'batch_id'  => 'batch-789',
             'timestamp' => '2024-01-01T12:00:00Z',
-            'notes' => 'Monthly fee collection',
+            'notes'     => 'Monthly fee collection',
         ];
 
         $data = new ReserveDepositData(
@@ -69,13 +69,13 @@ class ReserveDepositDataTest extends DomainTestCase
         $array = $data->toArray();
 
         $this->assertEquals([
-            'pool_id' => 'pool-001',
-            'asset' => 'USDT',
-            'amount' => '2500000000',
-            'custodian_id' => 'bitgo-001',
+            'pool_id'          => 'pool-001',
+            'asset'            => 'USDT',
+            'amount'           => '2500000000',
+            'custodian_id'     => 'bitgo-001',
             'transaction_hash' => '0x1234567890abcdef',
-            'expected_amount' => '2500000000',
-            'metadata' => ['verified' => true],
+            'expected_amount'  => '2500000000',
+            'metadata'         => ['verified' => true],
         ], $array);
     }
 
@@ -156,7 +156,7 @@ class ReserveDepositDataTest extends DomainTestCase
     {
         $metadata = [
             'approval' => [
-                'required' => true,
+                'required'  => true,
                 'approvers' => ['alice', 'bob'],
                 'timestamp' => '2024-01-01T10:00:00Z',
             ],

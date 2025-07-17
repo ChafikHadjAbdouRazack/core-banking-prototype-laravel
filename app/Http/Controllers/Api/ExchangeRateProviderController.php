@@ -77,18 +77,18 @@ class ExchangeRateProviderController extends Controller
 
         foreach ($this->registry->all() as $name => $provider) {
             $providers[] = [
-                'name' => $name,
-                'display_name' => $provider->getName(),
-                'available' => $provider->isAvailable(),
-                'priority' => $provider->getPriority(),
-                'capabilities' => $provider->getCapabilities()->toArray(),
+                'name'                 => $name,
+                'display_name'         => $provider->getName(),
+                'available'            => $provider->isAvailable(),
+                'priority'             => $provider->getPriority(),
+                'capabilities'         => $provider->getCapabilities()->toArray(),
                 'supported_currencies' => $provider->getSupportedCurrencies(),
             ];
         }
 
         return response()->json(
             [
-                'data' => $providers,
+                'data'    => $providers,
                 'default' => $this->registry->names()[0] ?? null,
             ]
         );
@@ -178,7 +178,7 @@ class ExchangeRateProviderController extends Controller
         $validated = $request->validate(
             [
                 'from' => 'required|string|size:3',
-                'to' => 'required|string|size:3',
+                'to'   => 'required|string|size:3',
             ]
         );
 
@@ -204,7 +204,7 @@ class ExchangeRateProviderController extends Controller
         } catch (\Exception $e) {
             return response()->json(
                 [
-                    'error' => 'Failed to get exchange rate',
+                    'error'   => 'Failed to get exchange rate',
                     'message' => $e->getMessage(),
                 ],
                 400
@@ -263,7 +263,7 @@ class ExchangeRateProviderController extends Controller
         $validated = $request->validate(
             [
                 'from' => 'required|string|size:3',
-                'to' => 'required|string|size:3',
+                'to'   => 'required|string|size:3',
             ]
         );
 
@@ -272,15 +272,15 @@ class ExchangeRateProviderController extends Controller
 
             return response()->json(
                 [
-                    'data' => $comparison,
-                    'pair' => "{$validated['from']}/{$validated['to']}",
+                    'data'      => $comparison,
+                    'pair'      => "{$validated['from']}/{$validated['to']}",
                     'timestamp' => now()->toISOString(),
                 ]
             );
         } catch (\Exception $e) {
             return response()->json(
                 [
-                    'error' => 'Failed to compare rates',
+                    'error'   => 'Failed to compare rates',
                     'message' => $e->getMessage(),
                 ],
                 400
@@ -347,7 +347,7 @@ class ExchangeRateProviderController extends Controller
         $validated = $request->validate(
             [
                 'from' => 'required|string|size:3',
-                'to' => 'required|string|size:3',
+                'to'   => 'required|string|size:3',
             ]
         );
 
@@ -362,7 +362,7 @@ class ExchangeRateProviderController extends Controller
         } catch (\Exception $e) {
             return response()->json(
                 [
-                    'error' => 'Failed to get aggregated rate',
+                    'error'   => 'Failed to get aggregated rate',
                     'message' => $e->getMessage(),
                 ],
                 400
@@ -440,7 +440,7 @@ class ExchangeRateProviderController extends Controller
     {
         $validated = $request->validate(
             [
-                'pairs' => 'nullable|array',
+                'pairs'   => 'nullable|array',
                 'pairs.*' => 'string|regex:/^[A-Z]{3}\/[A-Z]{3}$/',
             ]
         );
@@ -457,7 +457,7 @@ class ExchangeRateProviderController extends Controller
                         $results['refreshed'][] = $pair;
                     } catch (\Exception $e) {
                         $results['failed'][] = [
-                            'pair' => $pair,
+                            'pair'  => $pair,
                             'error' => $e->getMessage(),
                         ];
                     }
@@ -470,13 +470,13 @@ class ExchangeRateProviderController extends Controller
             return response()->json(
                 [
                     'message' => 'Exchange rates refreshed',
-                    'data' => $results,
+                    'data'    => $results,
                 ]
             );
         } catch (\Exception $e) {
             return response()->json(
                 [
-                    'error' => 'Failed to refresh rates',
+                    'error'   => 'Failed to refresh rates',
                     'message' => $e->getMessage(),
                 ],
                 400
@@ -557,10 +557,10 @@ class ExchangeRateProviderController extends Controller
     {
         $validated = $request->validate(
             [
-                'from' => 'required|string|size:3',
-                'to' => 'required|string|size:3',
+                'from'       => 'required|string|size:3',
+                'to'         => 'required|string|size:3',
                 'start_date' => 'required|date',
-                'end_date' => 'required|date|after_or_equal:start_date',
+                'end_date'   => 'required|date|after_or_equal:start_date',
             ]
         );
 
@@ -574,18 +574,18 @@ class ExchangeRateProviderController extends Controller
 
             return response()->json(
                 [
-                    'data' => $rates,
-                    'pair' => "{$validated['from']}/{$validated['to']}",
+                    'data'   => $rates,
+                    'pair'   => "{$validated['from']}/{$validated['to']}",
                     'period' => [
                         'start' => $validated['start_date'],
-                        'end' => $validated['end_date'],
+                        'end'   => $validated['end_date'],
                     ],
                 ]
             );
         } catch (\Exception $e) {
             return response()->json(
                 [
-                    'error' => 'Failed to get historical rates',
+                    'error'   => 'Failed to get historical rates',
                     'message' => $e->getMessage(),
                 ],
                 400
@@ -643,9 +643,9 @@ class ExchangeRateProviderController extends Controller
     {
         $validated = $request->validate(
             [
-                'from' => 'required|string|size:3',
-                'to' => 'required|string|size:3',
-                'rate' => 'required|numeric|min:0',
+                'from'     => 'required|string|size:3',
+                'to'       => 'required|string|size:3',
+                'rate'     => 'required|numeric|min:0',
                 'provider' => 'nullable|string',
             ]
         );
@@ -672,7 +672,7 @@ class ExchangeRateProviderController extends Controller
         } catch (\Exception $e) {
             return response()->json(
                 [
-                    'error' => 'Failed to validate rate',
+                    'error'   => 'Failed to validate rate',
                     'message' => $e->getMessage(),
                 ],
                 400

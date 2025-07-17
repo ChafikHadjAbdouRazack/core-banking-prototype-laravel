@@ -7,14 +7,14 @@ it('can initiate a deposit through activity', function () {
     $accountUuid = Str::uuid()->toString();
 
     $input = [
-        'account_uuid' => $accountUuid,
-        'amount' => 10000,
-        'currency' => 'USD',
-        'reference' => 'TEST-' . uniqid(),
-        'external_reference' => 'pi_test_' . uniqid(),
-        'payment_method' => 'card',
+        'account_uuid'        => $accountUuid,
+        'amount'              => 10000,
+        'currency'            => 'USD',
+        'reference'           => 'TEST-' . uniqid(),
+        'external_reference'  => 'pi_test_' . uniqid(),
+        'payment_method'      => 'card',
         'payment_method_type' => 'visa',
-        'metadata' => ['test' => true],
+        'metadata'            => ['test' => true],
     ];
 
     // Use the ActivityStub pattern instead of direct instantiation
@@ -26,7 +26,7 @@ it('can initiate a deposit through activity', function () {
 
             return [
                 'deposit_uuid' => $depositUuid,
-                'status' => 'initiated',
+                'status'       => 'initiated',
             ];
         });
 
@@ -39,8 +39,7 @@ it('can initiate a deposit through activity', function () {
 });
 
 it('generates unique deposit uuid for each execution', function () {
-    $activity = new class extends InitiateDepositActivity
-    {
+    $activity = new class () extends InitiateDepositActivity {
         public function __construct()
         {
             // Override constructor to avoid workflow dependencies
@@ -48,14 +47,14 @@ it('generates unique deposit uuid for each execution', function () {
     };
 
     $input = [
-        'account_uuid' => Str::uuid()->toString(),
-        'amount' => 10000,
-        'currency' => 'USD',
-        'reference' => 'TEST-' . uniqid(),
-        'external_reference' => 'pi_test_' . uniqid(),
-        'payment_method' => 'card',
+        'account_uuid'        => Str::uuid()->toString(),
+        'amount'              => 10000,
+        'currency'            => 'USD',
+        'reference'           => 'TEST-' . uniqid(),
+        'external_reference'  => 'pi_test_' . uniqid(),
+        'payment_method'      => 'card',
         'payment_method_type' => 'visa',
-        'metadata' => [],
+        'metadata'            => [],
     ];
 
     $result1 = $activity->execute($input);

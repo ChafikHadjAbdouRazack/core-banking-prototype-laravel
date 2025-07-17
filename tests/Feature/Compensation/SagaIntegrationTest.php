@@ -26,17 +26,17 @@ beforeEach(function () {
     // Create test accounts with sufficient balances
     $this->account1 = Account::factory()->create([
         'user_uuid' => $this->user1->uuid,
-        'balance' => 500000, // $5000
+        'balance'   => 500000, // $5000
     ]);
 
     $this->account2 = Account::factory()->create([
         'user_uuid' => $this->user2->uuid,
-        'balance' => 300000, // $3000
+        'balance'   => 300000, // $3000
     ]);
 
     $this->account3 = Account::factory()->create([
         'user_uuid' => $this->user1->uuid,
-        'balance' => 200000, // $2000
+        'balance'   => 200000, // $2000
     ]);
 });
 

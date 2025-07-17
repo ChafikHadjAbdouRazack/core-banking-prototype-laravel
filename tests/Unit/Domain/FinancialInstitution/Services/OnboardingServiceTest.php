@@ -39,12 +39,12 @@ class OnboardingServiceTest extends ServiceTestCase
     public function test_submit_application_creates_application(): void
     {
         $data = [
-            'institution_name' => 'Test Bank',
-            'institution_type' => 'bank',
+            'institution_name'    => 'Test Bank',
+            'institution_type'    => 'bank',
             'registration_number' => 'REG123456',
-            'country' => 'US',
-            'contact_email' => 'contact@testbank.com',
-            'contact_phone' => '+1234567890',
+            'country'             => 'US',
+            'contact_email'       => 'contact@testbank.com',
+            'contact_phone'       => '+1234567890',
         ];
 
         $application = $this->service->submitApplication($data);
@@ -61,11 +61,11 @@ class OnboardingServiceTest extends ServiceTestCase
     public function test_submit_application_dispatches_event(): void
     {
         $data = [
-            'institution_name' => 'Event Test Bank',
-            'institution_type' => 'fintech',
+            'institution_name'    => 'Event Test Bank',
+            'institution_type'    => 'fintech',
             'registration_number' => 'FT789012',
-            'country' => 'UK',
-            'contact_email' => 'info@eventbank.com',
+            'country'             => 'UK',
+            'contact_email'       => 'info@eventbank.com',
         ];
 
         $application = $this->service->submitApplication($data);
@@ -219,7 +219,7 @@ class OnboardingServiceTest extends ServiceTestCase
     public function test_activate_partner_creates_partner_entity(): void
     {
         $application = FinancialInstitutionApplication::factory()->create([
-            'status' => 'approved',
+            'status'           => 'approved',
             'institution_name' => 'Partner Bank',
         ]);
 

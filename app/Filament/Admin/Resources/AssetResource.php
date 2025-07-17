@@ -53,8 +53,8 @@ class AssetResource extends Resource
                                     ->required()
                                     ->options(
                                         [
-                                            'fiat' => 'Fiat Currency',
-                                            'crypto' => 'Cryptocurrency',
+                                            'fiat'      => 'Fiat Currency',
+                                            'crypto'    => 'Cryptocurrency',
                                             'commodity' => 'Commodity',
                                         ]
                                     )
@@ -73,10 +73,10 @@ class AssetResource extends Resource
                                     ->numeric()
                                     ->default(
                                         fn (Forms\Get $get) => match ($get('type')) {
-                                            'fiat' => 2,
-                                            'crypto' => 8,
+                                            'fiat'      => 2,
+                                            'crypto'    => 8,
                                             'commodity' => 4,
-                                            default => 2,
+                                            default     => 2,
                                         }
                                     )
                                     ->minValue(0)
@@ -119,8 +119,8 @@ class AssetResource extends Resource
                         ->color(
                             fn (string $state): string => match (true) {
                                 in_array($state, ['USD', 'EUR', 'GBP']) => 'success',
-                                in_array($state, ['BTC', 'ETH']) => 'warning',
-                                default => 'primary',
+                                in_array($state, ['BTC', 'ETH'])        => 'warning',
+                                default                                 => 'primary',
                             }
                         ),
 
@@ -135,10 +135,10 @@ class AssetResource extends Resource
                         ->badge()
                         ->color(
                             fn (string $state): string => match ($state) {
-                                'fiat' => 'success',
-                                'crypto' => 'warning',
+                                'fiat'      => 'success',
+                                'crypto'    => 'warning',
                                 'commodity' => 'info',
-                                default => 'gray',
+                                default     => 'gray',
                             }
                         ),
 
@@ -174,8 +174,8 @@ class AssetResource extends Resource
                     Tables\Filters\SelectFilter::make('type')
                         ->options(
                             [
-                                'fiat' => 'Fiat Currency',
-                                'crypto' => 'Cryptocurrency',
+                                'fiat'      => 'Fiat Currency',
+                                'crypto'    => 'Cryptocurrency',
                                 'commodity' => 'Commodity',
                             ]
                         ),
@@ -244,10 +244,10 @@ class AssetResource extends Resource
                                     ->badge()
                                     ->color(
                                         fn (string $state): string => match ($state) {
-                                            'fiat' => 'success',
-                                            'crypto' => 'warning',
+                                            'fiat'      => 'success',
+                                            'crypto'    => 'warning',
                                             'commodity' => 'info',
-                                            default => 'gray',
+                                            default     => 'gray',
                                         }
                                     ),
 
@@ -305,10 +305,10 @@ class AssetResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListAssets::route('/'),
+            'index'  => Pages\ListAssets::route('/'),
             'create' => Pages\CreateAsset::route('/create'),
-            'view' => Pages\ViewAsset::route('/{record}'),
-            'edit' => Pages\EditAsset::route('/{record}/edit'),
+            'view'   => Pages\ViewAsset::route('/{record}'),
+            'edit'   => Pages\EditAsset::route('/{record}/edit'),
         ];
     }
 

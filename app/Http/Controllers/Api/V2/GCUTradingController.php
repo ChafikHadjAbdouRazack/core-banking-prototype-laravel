@@ -95,8 +95,8 @@ class GCUTradingController extends Controller
     {
         $validated = $request->validate(
             [
-                'amount' => 'required|numeric|min:100',
-                'currency' => 'required|string|in:EUR,USD,GBP,CHF',
+                'amount'       => 'required|numeric|min:100',
+                'currency'     => 'required|string|in:EUR,USD,GBP,CHF',
                 'account_uuid' => 'sometimes|uuid|exists:accounts,uuid',
             ]
         );
@@ -109,7 +109,7 @@ class GCUTradingController extends Controller
         if ($account->user_uuid !== $user->uuid) {
             return response()->json(
                 [
-                    'error' => 'Unauthorized',
+                    'error'   => 'Unauthorized',
                     'message' => 'Account does not belong to authenticated user',
                 ],
                 403
@@ -120,7 +120,7 @@ class GCUTradingController extends Controller
         if ($account->frozen) {
             return response()->json(
                 [
-                    'error' => 'Account Frozen',
+                    'error'   => 'Account Frozen',
                     'message' => 'Cannot perform transactions on frozen account',
                 ],
                 422
@@ -135,7 +135,7 @@ class GCUTradingController extends Controller
         if (! $sourceBalance || $sourceBalance->balance < $validated['amount']) {
             return response()->json(
                 [
-                    'error' => 'Insufficient Balance',
+                    'error'   => 'Insufficient Balance',
                     'message' => "Insufficient {$validated['currency']} balance",
                 ],
                 422
@@ -151,7 +151,7 @@ class GCUTradingController extends Controller
         if (! $latestValue) {
             return response()->json(
                 [
-                    'error' => 'GCU Value Not Available',
+                    'error'   => 'GCU Value Not Available',
                     'message' => 'Unable to determine current GCU value',
                 ],
                 503
@@ -194,17 +194,17 @@ class GCUTradingController extends Controller
             return response()->json(
                 [
                     'data' => [
-                        'transaction_id' => $transactionId,
-                        'account_uuid' => $accountUuid,
-                        'spent_amount' => $validated['amount'],
-                        'spent_currency' => $validated['currency'],
-                        'received_amount' => round($gcuAmount, 4),
+                        'transaction_id'    => $transactionId,
+                        'account_uuid'      => $accountUuid,
+                        'spent_amount'      => $validated['amount'],
+                        'spent_currency'    => $validated['currency'],
+                        'received_amount'   => round($gcuAmount, 4),
                         'received_currency' => 'GCU',
-                        'exchange_rate' => round($exchangeRate, 6),
-                        'fee_amount' => round($feeAmount, 2),
-                        'fee_currency' => $validated['currency'],
-                        'new_gcu_balance' => round($newGcuBalance, 4),
-                        'timestamp' => now()->toIso8601String(),
+                        'exchange_rate'     => round($exchangeRate, 6),
+                        'fee_amount'        => round($feeAmount, 2),
+                        'fee_currency'      => $validated['currency'],
+                        'new_gcu_balance'   => round($newGcuBalance, 4),
+                        'timestamp'         => now()->toIso8601String(),
                     ],
                     'message' => sprintf('Successfully purchased %.4f GCU', $gcuAmount),
                 ]
@@ -214,7 +214,7 @@ class GCUTradingController extends Controller
 
             return response()->json(
                 [
-                    'error' => 'Transaction Failed',
+                    'error'   => 'Transaction Failed',
                     'message' => 'Failed to complete GCU purchase: ' . $e->getMessage(),
                 ],
                 500
@@ -285,8 +285,8 @@ class GCUTradingController extends Controller
     {
         $validated = $request->validate(
             [
-                'amount' => 'required|numeric|min:10',
-                'currency' => 'required|string|in:EUR,USD,GBP,CHF',
+                'amount'       => 'required|numeric|min:10',
+                'currency'     => 'required|string|in:EUR,USD,GBP,CHF',
                 'account_uuid' => 'sometimes|uuid|exists:accounts,uuid',
             ]
         );
@@ -299,7 +299,7 @@ class GCUTradingController extends Controller
         if ($account->user_uuid !== $user->uuid) {
             return response()->json(
                 [
-                    'error' => 'Unauthorized',
+                    'error'   => 'Unauthorized',
                     'message' => 'Account does not belong to authenticated user',
                 ],
                 403
@@ -310,7 +310,7 @@ class GCUTradingController extends Controller
         if ($account->frozen) {
             return response()->json(
                 [
-                    'error' => 'Account Frozen',
+                    'error'   => 'Account Frozen',
                     'message' => 'Cannot perform transactions on frozen account',
                 ],
                 422
@@ -325,7 +325,7 @@ class GCUTradingController extends Controller
         if (! $gcuBalance || $gcuBalance->balance < $validated['amount']) {
             return response()->json(
                 [
-                    'error' => 'Insufficient Balance',
+                    'error'   => 'Insufficient Balance',
                     'message' => 'Insufficient GCU balance',
                 ],
                 422
@@ -340,7 +340,7 @@ class GCUTradingController extends Controller
         if (! $latestValue) {
             return response()->json(
                 [
-                    'error' => 'GCU Value Not Available',
+                    'error'   => 'GCU Value Not Available',
                     'message' => 'Unable to determine current GCU value',
                 ],
                 503
@@ -382,17 +382,17 @@ class GCUTradingController extends Controller
             return response()->json(
                 [
                     'data' => [
-                        'transaction_id' => $transactionId,
-                        'account_uuid' => $accountUuid,
-                        'sold_amount' => $validated['amount'],
-                        'sold_currency' => 'GCU',
-                        'received_amount' => round($netAmount, 2),
+                        'transaction_id'    => $transactionId,
+                        'account_uuid'      => $accountUuid,
+                        'sold_amount'       => $validated['amount'],
+                        'sold_currency'     => 'GCU',
+                        'received_amount'   => round($netAmount, 2),
                         'received_currency' => $validated['currency'],
-                        'exchange_rate' => round($exchangeRate, 6),
-                        'fee_amount' => round($feeAmount, 2),
-                        'fee_currency' => $validated['currency'],
-                        'new_gcu_balance' => round($newGcuBalance, 4),
-                        'timestamp' => now()->toIso8601String(),
+                        'exchange_rate'     => round($exchangeRate, 6),
+                        'fee_amount'        => round($feeAmount, 2),
+                        'fee_currency'      => $validated['currency'],
+                        'new_gcu_balance'   => round($newGcuBalance, 4),
+                        'timestamp'         => now()->toIso8601String(),
                     ],
                     'message' => sprintf('Successfully sold %.4f GCU', $validated['amount']),
                 ]
@@ -402,7 +402,7 @@ class GCUTradingController extends Controller
 
             return response()->json(
                 [
-                    'error' => 'Transaction Failed',
+                    'error'   => 'Transaction Failed',
                     'message' => 'Failed to complete GCU sale: ' . $e->getMessage(),
                 ],
                 500
@@ -475,8 +475,8 @@ class GCUTradingController extends Controller
         $validated = $request->validate(
             [
                 'operation' => 'required|string|in:buy,sell',
-                'amount' => 'required|numeric|min:0.01',
-                'currency' => 'required|string|in:EUR,USD,GBP,CHF',
+                'amount'    => 'required|numeric|min:0.01',
+                'currency'  => 'required|string|in:EUR,USD,GBP,CHF',
             ]
         );
 
@@ -488,7 +488,7 @@ class GCUTradingController extends Controller
         if (! $latestValue) {
             return response()->json(
                 [
-                    'error' => 'GCU Value Not Available',
+                    'error'   => 'GCU Value Not Available',
                     'message' => 'Unable to determine current GCU value',
                 ],
                 503
@@ -505,16 +505,16 @@ class GCUTradingController extends Controller
             $outputAmount = $netAmount * $exchangeRate;
 
             $data = [
-                'operation' => 'buy',
-                'input_amount' => $validated['amount'],
-                'input_currency' => $validated['currency'],
-                'output_amount' => round($outputAmount, 4),
+                'operation'       => 'buy',
+                'input_amount'    => $validated['amount'],
+                'input_currency'  => $validated['currency'],
+                'output_amount'   => round($outputAmount, 4),
                 'output_currency' => 'GCU',
-                'exchange_rate' => round($exchangeRate, 6),
-                'fee_amount' => round($feeAmount, 2),
-                'fee_currency' => $validated['currency'],
-                'minimum_amount' => 100.00,
-                'maximum_amount' => 1000000.00,
+                'exchange_rate'   => round($exchangeRate, 6),
+                'fee_amount'      => round($feeAmount, 2),
+                'fee_currency'    => $validated['currency'],
+                'minimum_amount'  => 100.00,
+                'maximum_amount'  => 1000000.00,
             ];
         } else {
             // User wants to sell GCU for fiat
@@ -524,16 +524,16 @@ class GCUTradingController extends Controller
             $outputAmount = $grossAmount - $feeAmount;
 
             $data = [
-                'operation' => 'sell',
-                'input_amount' => $validated['amount'],
-                'input_currency' => 'GCU',
-                'output_amount' => round($outputAmount, 2),
+                'operation'       => 'sell',
+                'input_amount'    => $validated['amount'],
+                'input_currency'  => 'GCU',
+                'output_amount'   => round($outputAmount, 2),
                 'output_currency' => $validated['currency'],
-                'exchange_rate' => round($inverseRate, 6),
-                'fee_amount' => round($feeAmount, 2),
-                'fee_currency' => $validated['currency'],
-                'minimum_amount' => 10.00,
-                'maximum_amount' => 100000.00,
+                'exchange_rate'   => round($inverseRate, 6),
+                'fee_amount'      => round($feeAmount, 2),
+                'fee_currency'    => $validated['currency'],
+                'minimum_amount'  => 10.00,
+                'maximum_amount'  => 100000.00,
             ];
         }
 
@@ -586,33 +586,33 @@ class GCUTradingController extends Controller
         // Define limits based on KYC level
         $limits = match ($kycLevel) {
             0 => [ // Unverified
-                'daily_buy' => 0,
-                'daily_sell' => 0,
-                'monthly_buy' => 0,
+                'daily_buy'    => 0,
+                'daily_sell'   => 0,
+                'monthly_buy'  => 0,
                 'monthly_sell' => 0,
             ],
             1 => [ // Basic
-                'daily_buy' => 1000,
-                'daily_sell' => 1000,
-                'monthly_buy' => 10000,
+                'daily_buy'    => 1000,
+                'daily_sell'   => 1000,
+                'monthly_buy'  => 10000,
                 'monthly_sell' => 10000,
             ],
             2 => [ // Verified
-                'daily_buy' => 10000,
-                'daily_sell' => 10000,
-                'monthly_buy' => 100000,
+                'daily_buy'    => 10000,
+                'daily_sell'   => 10000,
+                'monthly_buy'  => 100000,
                 'monthly_sell' => 100000,
             ],
             3 => [ // Enhanced
-                'daily_buy' => 50000,
-                'daily_sell' => 50000,
-                'monthly_buy' => 500000,
+                'daily_buy'    => 50000,
+                'daily_sell'   => 50000,
+                'monthly_buy'  => 500000,
                 'monthly_sell' => 500000,
             ],
             default => [ // Corporate/Unlimited
-                'daily_buy' => 1000000,
-                'daily_sell' => 1000000,
-                'monthly_buy' => 10000000,
+                'daily_buy'    => 1000000,
+                'daily_sell'   => 1000000,
+                'monthly_buy'  => 10000000,
                 'monthly_sell' => 10000000,
             ],
         };
@@ -626,18 +626,18 @@ class GCUTradingController extends Controller
         return response()->json(
             [
                 'data' => [
-                    'daily_buy_limit' => $limits['daily_buy'],
-                    'daily_sell_limit' => $limits['daily_sell'],
-                    'daily_buy_used' => $dailyBuyUsed,
-                    'daily_sell_used' => $dailySellUsed,
-                    'monthly_buy_limit' => $limits['monthly_buy'],
-                    'monthly_sell_limit' => $limits['monthly_sell'],
-                    'monthly_buy_used' => $monthlyBuyUsed,
-                    'monthly_sell_used' => $monthlySellUsed,
-                    'minimum_buy_amount' => 100.00,
+                    'daily_buy_limit'     => $limits['daily_buy'],
+                    'daily_sell_limit'    => $limits['daily_sell'],
+                    'daily_buy_used'      => $dailyBuyUsed,
+                    'daily_sell_used'     => $dailySellUsed,
+                    'monthly_buy_limit'   => $limits['monthly_buy'],
+                    'monthly_sell_limit'  => $limits['monthly_sell'],
+                    'monthly_buy_used'    => $monthlyBuyUsed,
+                    'monthly_sell_used'   => $monthlySellUsed,
+                    'minimum_buy_amount'  => 100.00,
                     'minimum_sell_amount' => 10.00,
-                    'kyc_level' => $kycLevel,
-                    'limits_currency' => 'EUR',
+                    'kyc_level'           => $kycLevel,
+                    'limits_currency'     => 'EUR',
                 ],
             ]
         );

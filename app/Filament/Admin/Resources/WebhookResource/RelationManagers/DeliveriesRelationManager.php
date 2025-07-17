@@ -33,7 +33,7 @@ class DeliveriesRelationManager extends RelationManager
                             [
                                 'success' => 'delivered',
                                 'warning' => 'pending',
-                                'danger' => 'failed',
+                                'danger'  => 'failed',
                             ]
                         ),
                     Tables\Columns\TextColumn::make('attempt_number')
@@ -64,9 +64,9 @@ class DeliveriesRelationManager extends RelationManager
                     Tables\Filters\SelectFilter::make('status')
                         ->options(
                             [
-                                'pending' => 'Pending',
+                                'pending'   => 'Pending',
                                 'delivered' => 'Delivered',
-                                'failed' => 'Failed',
+                                'failed'    => 'Failed',
                             ]
                         ),
                     Tables\Filters\SelectFilter::make('event_type')

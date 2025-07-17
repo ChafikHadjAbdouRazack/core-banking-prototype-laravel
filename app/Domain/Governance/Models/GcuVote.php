@@ -28,7 +28,7 @@ class GcuVote extends Model
 
     protected $casts = [
         'voting_power' => 'decimal:4',
-        'metadata' => 'array',
+        'metadata'     => 'array',
     ];
 
     /**
@@ -53,11 +53,11 @@ class GcuVote extends Model
     public function generateSignature(): string
     {
         $data = [
-            'proposal_id' => $this->proposal_id,
-            'user_uuid' => $this->user_uuid,
-            'vote' => $this->vote,
+            'proposal_id'  => $this->proposal_id,
+            'user_uuid'    => $this->user_uuid,
+            'vote'         => $this->vote,
             'voting_power' => $this->voting_power,
-            'timestamp' => $this->created_at?->timestamp,
+            'timestamp'    => $this->created_at?->timestamp,
         ];
 
         return hash('sha256', json_encode($data) . config('app.key'));

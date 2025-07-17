@@ -33,19 +33,19 @@ class BlockchainServiceProvider extends ServiceProvider
                 return [
                     'ethereum' => new EthereumConnector(
                         [
-                            'rpc_url' => config('blockchain.ethereum.rpc_url'),
+                            'rpc_url'  => config('blockchain.ethereum.rpc_url'),
                             'chain_id' => config('blockchain.ethereum.chain_id'),
                         ]
                     ),
                     'polygon' => new PolygonConnector(
                         [
-                            'rpc_url' => config('blockchain.polygon.rpc_url'),
+                            'rpc_url'  => config('blockchain.polygon.rpc_url'),
                             'chain_id' => config('blockchain.polygon.chain_id'),
                         ]
                     ),
                     'bsc' => new EthereumConnector(
                         [
-                            'rpc_url' => config('blockchain.bsc.rpc_url'),
+                            'rpc_url'  => config('blockchain.bsc.rpc_url'),
                             'chain_id' => config('blockchain.bsc.chain_id'),
                         ]
                     ),

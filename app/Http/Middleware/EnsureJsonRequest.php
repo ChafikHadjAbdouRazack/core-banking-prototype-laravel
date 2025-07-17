@@ -26,7 +26,7 @@ class EnsureJsonRequest
         if (! $contentType || ! str_contains($contentType, 'application/json')) {
             return response()->json(
                 [
-                    'error' => 'Unsupported Media Type',
+                    'error'   => 'Unsupported Media Type',
                     'message' => 'This API endpoint requires Content-Type: application/json',
                 ],
                 415

@@ -42,15 +42,15 @@ class LiquidityPoolController extends Controller
         }
 
         $pool = [
-            'id' => $poolProjection->pool_id,
-            'base_currency' => $poolProjection->base_currency,
-            'quote_currency' => $poolProjection->quote_currency,
-            'fee_rate' => $poolProjection->fee_rate,
-            'base_reserve' => $poolProjection->base_reserve,
-            'quote_reserve' => $poolProjection->quote_reserve,
+            'id'              => $poolProjection->pool_id,
+            'base_currency'   => $poolProjection->base_currency,
+            'quote_currency'  => $poolProjection->quote_currency,
+            'fee_rate'        => $poolProjection->fee_rate,
+            'base_reserve'    => $poolProjection->base_reserve,
+            'quote_reserve'   => $poolProjection->quote_reserve,
             'total_liquidity' => $poolProjection->total_liquidity,
-            'is_active' => $poolProjection->is_active,
-            'created_at' => $poolProjection->created_at,
+            'is_active'       => $poolProjection->is_active,
+            'created_at'      => $poolProjection->created_at,
         ];
 
         $metrics = $this->liquidityPoolService->getPoolMetrics($poolId);
@@ -72,10 +72,10 @@ class LiquidityPoolController extends Controller
         }
 
         $pool = [
-            'id' => $poolProjection->pool_id,
-            'base_currency' => $poolProjection->base_currency,
+            'id'             => $poolProjection->pool_id,
+            'base_currency'  => $poolProjection->base_currency,
             'quote_currency' => $poolProjection->quote_currency,
-            'fee_rate' => $poolProjection->fee_rate,
+            'fee_rate'       => $poolProjection->fee_rate,
         ];
 
         $userBalances = $this->getUserBalances($pool);
@@ -91,9 +91,9 @@ class LiquidityPoolController extends Controller
     {
         $validated = $request->validate(
             [
-                'account_id' => 'required|uuid',
-                'base_amount' => 'required|numeric|min:0.01',
-                'quote_amount' => 'required|numeric|min:0.01',
+                'account_id'         => 'required|uuid',
+                'base_amount'        => 'required|numeric|min:0.01',
+                'quote_amount'       => 'required|numeric|min:0.01',
                 'slippage_tolerance' => 'required|numeric|min:0.1|max:50',
             ]
         );
@@ -143,10 +143,10 @@ class LiquidityPoolController extends Controller
         }
 
         $pool = [
-            'id' => $poolProjection->pool_id,
-            'base_currency' => $poolProjection->base_currency,
+            'id'             => $poolProjection->pool_id,
+            'base_currency'  => $poolProjection->base_currency,
             'quote_currency' => $poolProjection->quote_currency,
-            'fee_rate' => $poolProjection->fee_rate,
+            'fee_rate'       => $poolProjection->fee_rate,
         ];
 
         $userPosition = $this->getUserPositionInPool($poolId);
@@ -169,10 +169,10 @@ class LiquidityPoolController extends Controller
     {
         $validated = $request->validate(
             [
-                'account_id' => 'required|uuid',
+                'account_id'           => 'required|uuid',
                 'liquidity_percentage' => 'required|numeric|min:1|max:100',
-                'min_base_amount' => 'required|numeric|min:0',
-                'min_quote_amount' => 'required|numeric|min:0',
+                'min_base_amount'      => 'required|numeric|min:0',
+                'min_quote_amount'     => 'required|numeric|min:0',
             ]
         );
 
@@ -224,24 +224,24 @@ class LiquidityPoolController extends Controller
         return collect(
             [
                 [
-                    'pool_id' => 'btc-usdt',
-                    'base_currency' => 'BTC',
-                    'quote_currency' => 'USDT',
+                    'pool_id'          => 'btc-usdt',
+                    'base_currency'    => 'BTC',
+                    'quote_currency'   => 'USDT',
                     'liquidity_tokens' => 1000,
                     'share_percentage' => 0.05,
-                    'value_usd' => 5000,
-                    'pnl' => 250,
-                    'pnl_percentage' => 5.0,
+                    'value_usd'        => 5000,
+                    'pnl'              => 250,
+                    'pnl_percentage'   => 5.0,
                 ],
                 [
-                    'pool_id' => 'eth-usdt',
-                    'base_currency' => 'ETH',
-                    'quote_currency' => 'USDT',
+                    'pool_id'          => 'eth-usdt',
+                    'base_currency'    => 'ETH',
+                    'quote_currency'   => 'USDT',
                     'liquidity_tokens' => 2000,
                     'share_percentage' => 0.1,
-                    'value_usd' => 8000,
-                    'pnl' => -100,
-                    'pnl_percentage' => -1.25,
+                    'value_usd'        => 8000,
+                    'pnl'              => -100,
+                    'pnl_percentage'   => -1.25,
                 ],
             ]
         );
@@ -253,12 +253,12 @@ class LiquidityPoolController extends Controller
     private function getMarketData()
     {
         return [
-            'total_tvl' => 50000000,
-            'tvl_24h_change' => 5.2,
-            'total_volume_24h' => 10000000,
+            'total_tvl'         => 50000000,
+            'tvl_24h_change'    => 5.2,
+            'total_volume_24h'  => 10000000,
             'volume_24h_change' => 12.5,
-            'total_fees_24h' => 30000,
-            'avg_apy' => 15.7,
+            'total_fees_24h'    => 30000,
+            'avg_apy'           => 15.7,
         ];
     }
 
@@ -292,9 +292,9 @@ class LiquidityPoolController extends Controller
 
             if ($baseBalance || $quoteBalance) {
                 $balances[] = [
-                    'account_id' => $account->uuid,
-                    'account_name' => $account->name,
-                    'base_balance' => $baseBalance ? $baseBalance->balance / 100 : 0,
+                    'account_id'    => $account->uuid,
+                    'account_name'  => $account->name,
+                    'base_balance'  => $baseBalance ? $baseBalance->balance / 100 : 0,
                     'quote_balance' => $quoteBalance ? $quoteBalance->balance / 100 : 0,
                 ];
             }
@@ -315,8 +315,8 @@ class LiquidityPoolController extends Controller
         for ($i = 23; $i >= 0; $i--) {
             $history[] = [
                 'timestamp' => $now->copy()->subHours($i)->toIso8601String(),
-                'price' => 1.0 + (mt_rand(-50, 50) / 1000),
-                'volume' => mt_rand(100000, 500000),
+                'price'     => 1.0 + (mt_rand(-50, 50) / 1000),
+                'volume'    => mt_rand(100000, 500000),
             ];
         }
 

@@ -28,15 +28,15 @@ class EnhancedRegulatoryController extends Controller
     public function index(Request $request): JsonResponse
     {
         $request->validate([
-            'report_type' => 'nullable|string',
+            'report_type'  => 'nullable|string',
             'jurisdiction' => 'nullable|string',
-            'status' => 'nullable|string',
-            'date_from' => 'nullable|date',
-            'date_to' => 'nullable|date|after_or_equal:date_from',
+            'status'       => 'nullable|string',
+            'date_from'    => 'nullable|date',
+            'date_to'      => 'nullable|date|after_or_equal:date_from',
             'overdue_only' => 'nullable|boolean',
-            'priority' => 'nullable|integer|min:1|max:5',
-            'page' => 'nullable|integer|min:1',
-            'per_page' => 'nullable|integer|min:10|max:100',
+            'priority'     => 'nullable|integer|min:1|max:5',
+            'page'         => 'nullable|integer|min:1',
+            'per_page'     => 'nullable|integer|min:10|max:100',
         ]);
 
         $query = RegulatoryReport::query()->with(['latestFiling']);
@@ -84,13 +84,13 @@ class EnhancedRegulatoryController extends Controller
         $report = RegulatoryReport::with(['filingRecords'])->findOrFail($reportId);
 
         return response()->json([
-            'report' => $report,
-            'time_until_due' => $report->getTimeUntilDue(),
+            'report'           => $report,
+            'time_until_due'   => $report->getTimeUntilDue(),
             'can_be_submitted' => $report->canBeSubmitted(),
-            'filing_history' => $report->filingRecords->map(fn ($filing) => [
-                'filing_id' => $filing->filing_id,
-                'status' => $filing->filing_status,
-                'filed_at' => $filing->filed_at,
+            'filing_history'   => $report->filingRecords->map(fn ($filing) => [
+                'filing_id'       => $filing->filing_id,
+                'status'          => $filing->filing_status,
+                'filed_at'        => $filing->filed_at,
                 'processing_time' => $filing->getProcessingTime(),
             ]),
         ]);
@@ -110,13 +110,13 @@ class EnhancedRegulatoryController extends Controller
             $report = $this->reportingService->generateEnhancedCTR($date);
 
             return response()->json([
-                'message' => 'Enhanced CTR generated successfully',
-                'report' => $report,
+                'message'                 => 'Enhanced CTR generated successfully',
+                'report'                  => $report,
                 'fraud_analysis_included' => true,
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'error' => 'Failed to generate enhanced CTR',
+                'error'   => 'Failed to generate enhanced CTR',
                 'message' => $e->getMessage(),
             ], 500);
         }
@@ -129,7 +129,7 @@ class EnhancedRegulatoryController extends Controller
     {
         $request->validate([
             'start_date' => 'required|date|before_or_equal:today',
-            'end_date' => 'required|date|after_or_equal:start_date|before_or_equal:today',
+            'end_date'   => 'required|date|after_or_equal:start_date|before_or_equal:today',
         ]);
 
         try {
@@ -139,13 +139,13 @@ class EnhancedRegulatoryController extends Controller
             $report = $this->reportingService->generateEnhancedSAR($startDate, $endDate);
 
             return response()->json([
-                'message' => 'Enhanced SAR generated successfully',
-                'report' => $report,
+                'message'                   => 'Enhanced SAR generated successfully',
+                'report'                    => $report,
                 'requires_immediate_filing' => $report->report_data['requires_immediate_filing'] ?? false,
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'error' => 'Failed to generate enhanced SAR',
+                'error'   => 'Failed to generate enhanced SAR',
                 'message' => $e->getMessage(),
             ], 500);
         }
@@ -166,11 +166,11 @@ class EnhancedRegulatoryController extends Controller
 
             return response()->json([
                 'message' => 'AML report generated successfully',
-                'report' => $report,
+                'report'  => $report,
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'error' => 'Failed to generate AML report',
+                'error'   => 'Failed to generate AML report',
                 'message' => $e->getMessage(),
             ], 500);
         }
@@ -190,13 +190,13 @@ class EnhancedRegulatoryController extends Controller
             $report = $this->reportingService->generateOFACReport($date);
 
             return response()->json([
-                'message' => 'OFAC report generated successfully',
-                'report' => $report,
+                'message'                   => 'OFAC report generated successfully',
+                'report'                    => $report,
                 'requires_immediate_action' => $report->report_data['requires_immediate_action'] ?? false,
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'error' => 'Failed to generate OFAC report',
+                'error'   => 'Failed to generate OFAC report',
                 'message' => $e->getMessage(),
             ], 500);
         }
@@ -209,7 +209,7 @@ class EnhancedRegulatoryController extends Controller
     {
         $request->validate([
             'quarter' => 'required|integer|min:1|max:4',
-            'year' => 'required|integer|min:2020|max:' . now()->year,
+            'year'    => 'required|integer|min:2020|max:' . now()->year,
         ]);
 
         try {
@@ -218,11 +218,11 @@ class EnhancedRegulatoryController extends Controller
 
             return response()->json([
                 'message' => 'BSA report generated successfully',
-                'report' => $report,
+                'report'  => $report,
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'error' => 'Failed to generate BSA report',
+                'error'   => 'Failed to generate BSA report',
                 'message' => $e->getMessage(),
             ], 500);
         }
@@ -234,7 +234,7 @@ class EnhancedRegulatoryController extends Controller
     public function submitReport(Request $request, string $reportId): JsonResponse
     {
         $request->validate([
-            'filing_type' => 'nullable|in:initial,amendment,correction',
+            'filing_type'   => 'nullable|in:initial,amendment,correction',
             'filing_method' => 'nullable|in:api,portal,email',
         ]);
 
@@ -244,13 +244,13 @@ class EnhancedRegulatoryController extends Controller
             $filing = $this->filingService->submitReport($report, $request->all());
 
             return response()->json([
-                'message' => 'Report submitted successfully',
-                'filing' => $filing,
+                'message'   => 'Report submitted successfully',
+                'filing'    => $filing,
                 'reference' => $filing->filing_reference,
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'error' => 'Failed to submit report',
+                'error'   => 'Failed to submit report',
                 'message' => $e->getMessage(),
             ], 500);
         }
@@ -267,12 +267,12 @@ class EnhancedRegulatoryController extends Controller
             $status = $this->filingService->checkFilingStatus($filing);
 
             return response()->json([
-                'filing' => $filing->fresh(),
+                'filing'       => $filing->fresh(),
                 'status_check' => $status,
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'error' => 'Failed to check filing status',
+                'error'   => 'Failed to check filing status',
                 'message' => $e->getMessage(),
             ], 500);
         }
@@ -290,11 +290,11 @@ class EnhancedRegulatoryController extends Controller
 
             return response()->json([
                 'message' => 'Filing retry initiated',
-                'filing' => $filing,
+                'filing'  => $filing,
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'error' => 'Failed to retry filing',
+                'error'   => 'Failed to retry filing',
                 'message' => $e->getMessage(),
             ], 500);
         }
@@ -306,10 +306,10 @@ class EnhancedRegulatoryController extends Controller
     public function getThresholds(Request $request): JsonResponse
     {
         $request->validate([
-            'category' => 'nullable|string',
-            'report_type' => 'nullable|string',
+            'category'     => 'nullable|string',
+            'report_type'  => 'nullable|string',
             'jurisdiction' => 'nullable|string',
-            'active_only' => 'nullable|boolean',
+            'active_only'  => 'nullable|boolean',
         ]);
 
         $query = RegulatoryThreshold::query();
@@ -343,16 +343,16 @@ class EnhancedRegulatoryController extends Controller
     {
         $request->validate([
             'amount_threshold' => 'nullable|numeric|min:0',
-            'count_threshold' => 'nullable|integer|min:0',
-            'is_active' => 'nullable|boolean',
-            'review_priority' => 'nullable|integer|min:1|max:5',
+            'count_threshold'  => 'nullable|integer|min:0',
+            'is_active'        => 'nullable|boolean',
+            'review_priority'  => 'nullable|integer|min:1|max:5',
         ]);
 
         $threshold = RegulatoryThreshold::findOrFail($thresholdId);
         $threshold->update($request->all());
 
         return response()->json([
-            'message' => 'Threshold updated successfully',
+            'message'   => 'Threshold updated successfully',
             'threshold' => $threshold,
         ]);
     }
@@ -369,17 +369,17 @@ class EnhancedRegulatoryController extends Controller
         $period = $request->period ?? 'month';
         $endDate = now();
         $startDate = match ($period) {
-            'week' => $endDate->copy()->subWeek(),
-            'month' => $endDate->copy()->subMonth(),
+            'week'    => $endDate->copy()->subWeek(),
+            'month'   => $endDate->copy()->subMonth(),
             'quarter' => $endDate->copy()->subQuarter(),
-            'year' => $endDate->copy()->subYear(),
+            'year'    => $endDate->copy()->subYear(),
         };
 
         $dashboard = [
             'reports' => [
-                'total' => RegulatoryReport::whereBetween('created_at', [$startDate, $endDate])->count(),
-                'pending' => RegulatoryReport::pending()->count(),
-                'overdue' => RegulatoryReport::overdue()->count(),
+                'total'     => RegulatoryReport::whereBetween('created_at', [$startDate, $endDate])->count(),
+                'pending'   => RegulatoryReport::pending()->count(),
+                'overdue'   => RegulatoryReport::overdue()->count(),
                 'submitted' => RegulatoryReport::where('status', RegulatoryReport::STATUS_SUBMITTED)
                     ->whereBetween('submitted_at', [$startDate, $endDate])
                     ->count(),
@@ -402,19 +402,19 @@ class EnhancedRegulatoryController extends Controller
                 ->limit(10)
                 ->get()
                 ->map(fn ($filing) => [
-                    'filing_id' => $filing->filing_id,
+                    'filing_id'   => $filing->filing_id,
                     'report_type' => $filing->report->report_type,
-                    'status' => $filing->filing_status,
-                    'filed_at' => $filing->filed_at,
+                    'status'      => $filing->filing_status,
+                    'filed_at'    => $filing->filed_at,
                 ]),
             'threshold_triggers' => RegulatoryThreshold::active()
                 ->orderByDesc('trigger_count')
                 ->limit(5)
                 ->get()
                 ->map(fn ($threshold) => [
-                    'code' => $threshold->threshold_code,
-                    'name' => $threshold->name,
-                    'trigger_count' => $threshold->trigger_count,
+                    'code'           => $threshold->threshold_code,
+                    'name'           => $threshold->name,
+                    'trigger_count'  => $threshold->trigger_count,
                     'last_triggered' => $threshold->last_triggered_at,
                 ]),
         ];

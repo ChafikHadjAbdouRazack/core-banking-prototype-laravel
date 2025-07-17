@@ -13,11 +13,11 @@ class ContactController extends Controller
     {
         $validated = $request->validate(
             [
-                'name' => 'required|string|max:255',
-                'email' => 'required|email|max:255',
-                'subject' => 'required|string|in:account,technical,billing,gcu,api,compliance,other',
-                'message' => 'required|string|max:5000',
-                'priority' => 'required|string|in:low,medium,high,urgent',
+                'name'       => 'required|string|max:255',
+                'email'      => 'required|email|max:255',
+                'subject'    => 'required|string|in:account,technical,billing,gcu,api,compliance,other',
+                'message'    => 'required|string|max:5000',
+                'priority'   => 'required|string|in:low,medium,high,urgent',
                 'attachment' => 'nullable|file|max:10240|mimes:pdf,png,jpg,jpeg,doc,docx',
             ]
         );
@@ -31,14 +31,14 @@ class ContactController extends Controller
         // Save to database
         $submission = ContactSubmission::create(
             [
-                'name' => $validated['name'],
-                'email' => $validated['email'],
-                'subject' => $validated['subject'],
-                'message' => $validated['message'],
-                'priority' => $validated['priority'],
+                'name'            => $validated['name'],
+                'email'           => $validated['email'],
+                'subject'         => $validated['subject'],
+                'message'         => $validated['message'],
+                'priority'        => $validated['priority'],
                 'attachment_path' => $attachmentPath,
-                'ip_address' => $request->ip(),
-                'user_agent' => $request->userAgent(),
+                'ip_address'      => $request->ip(),
+                'user_agent'      => $request->userAgent(),
             ]
         );
 

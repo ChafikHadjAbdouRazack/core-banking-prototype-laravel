@@ -71,7 +71,7 @@ class CgoInvestmentResource extends Resource
                                         [
                                             'bronze' => 'Bronze ($1,000 - $9,999)',
                                             'silver' => 'Silver ($10,000 - $49,999)',
-                                            'gold' => 'Gold ($50,000+)',
+                                            'gold'   => 'Gold ($50,000+)',
                                         ]
                                     )
                                     ->required()
@@ -94,30 +94,30 @@ class CgoInvestmentResource extends Resource
                                 Forms\Components\Select::make('status')
                                     ->options(
                                         [
-                                            'pending' => 'Pending',
+                                            'pending'   => 'Pending',
                                             'confirmed' => 'Confirmed',
                                             'cancelled' => 'Cancelled',
-                                            'refunded' => 'Refunded',
+                                            'refunded'  => 'Refunded',
                                         ]
                                     )
                                     ->required(),
                                 Forms\Components\Select::make('payment_method')
                                     ->options(
                                         [
-                                            'stripe' => 'Credit/Debit Card',
+                                            'stripe'        => 'Credit/Debit Card',
                                             'bank_transfer' => 'Bank Transfer',
-                                            'crypto' => 'Cryptocurrency',
+                                            'crypto'        => 'Cryptocurrency',
                                         ]
                                     )
                                     ->disabled(),
                                 Forms\Components\Select::make('payment_status')
                                     ->options(
                                         [
-                                            'pending' => 'Pending',
+                                            'pending'    => 'Pending',
                                             'processing' => 'Processing',
-                                            'completed' => 'Completed',
-                                            'failed' => 'Failed',
-                                            'refunded' => 'Refunded',
+                                            'completed'  => 'Completed',
+                                            'failed'     => 'Failed',
+                                            'refunded'   => 'Refunded',
                                         ]
                                     ),
                                 Forms\Components\DateTimePicker::make('payment_completed_at')
@@ -145,9 +145,9 @@ class CgoInvestmentResource extends Resource
                                     ->label('KYC Level')
                                     ->options(
                                         [
-                                            'basic' => 'Basic (Up to $1,000)',
+                                            'basic'    => 'Basic (Up to $1,000)',
                                             'enhanced' => 'Enhanced (Up to $10,000)',
-                                            'full' => 'Full ($50,000+)',
+                                            'full'     => 'Full ($50,000+)',
                                         ]
                                     )
                                     ->disabled(),
@@ -230,7 +230,7 @@ class CgoInvestmentResource extends Resource
                         ->colors(
                             [
                                 'warning' => 'bronze',
-                                'gray' => 'silver',
+                                'gray'    => 'silver',
                                 'warning' => 'gold',
                             ]
                         )
@@ -242,29 +242,29 @@ class CgoInvestmentResource extends Resource
                     Tables\Columns\BadgeColumn::make('status')
                         ->colors(
                             [
-                                'warning' => 'pending',
-                                'success' => 'confirmed',
-                                'danger' => 'cancelled',
+                                'warning'   => 'pending',
+                                'success'   => 'confirmed',
+                                'danger'    => 'cancelled',
                                 'secondary' => 'refunded',
                             ]
                         ),
                     Tables\Columns\BadgeColumn::make('payment_status')
                         ->colors(
                             [
-                                'warning' => 'pending',
-                                'info' => 'processing',
-                                'success' => 'completed',
-                                'danger' => 'failed',
+                                'warning'   => 'pending',
+                                'info'      => 'processing',
+                                'success'   => 'completed',
+                                'danger'    => 'failed',
                                 'secondary' => 'refunded',
                             ]
                         ),
                     Tables\Columns\BadgeColumn::make('payment_method')
                         ->formatStateUsing(
                             fn ($state) => match ($state) {
-                                'stripe' => 'Card',
+                                'stripe'        => 'Card',
                                 'bank_transfer' => 'Bank',
-                                'crypto' => 'Crypto',
-                                default => $state,
+                                'crypto'        => 'Crypto',
+                                default         => $state,
                             }
                         ),
                     Tables\Columns\IconColumn::make('kyc_verified_at')
@@ -290,20 +290,20 @@ class CgoInvestmentResource extends Resource
                     Tables\Filters\SelectFilter::make('status')
                         ->options(
                             [
-                                'pending' => 'Pending',
+                                'pending'   => 'Pending',
                                 'confirmed' => 'Confirmed',
                                 'cancelled' => 'Cancelled',
-                                'refunded' => 'Refunded',
+                                'refunded'  => 'Refunded',
                             ]
                         ),
                     Tables\Filters\SelectFilter::make('payment_status')
                         ->options(
                             [
-                                'pending' => 'Pending',
+                                'pending'    => 'Pending',
                                 'processing' => 'Processing',
-                                'completed' => 'Completed',
-                                'failed' => 'Failed',
-                                'refunded' => 'Refunded',
+                                'completed'  => 'Completed',
+                                'failed'     => 'Failed',
+                                'refunded'   => 'Refunded',
                             ]
                         ),
                     Tables\Filters\SelectFilter::make('tier')
@@ -311,15 +311,15 @@ class CgoInvestmentResource extends Resource
                             [
                                 'bronze' => 'Bronze',
                                 'silver' => 'Silver',
-                                'gold' => 'Gold',
+                                'gold'   => 'Gold',
                             ]
                         ),
                     Tables\Filters\SelectFilter::make('payment_method')
                         ->options(
                             [
-                                'stripe' => 'Card',
+                                'stripe'        => 'Card',
                                 'bank_transfer' => 'Bank',
-                                'crypto' => 'Crypto',
+                                'crypto'        => 'Crypto',
                             ]
                         ),
                     Tables\Filters\TernaryFilter::make('kyc_verified_at')
@@ -396,12 +396,12 @@ class CgoInvestmentResource extends Resource
                                     ->label('Refund Reason')
                                     ->options(
                                         [
-                                            'customer_request' => 'Customer Request',
-                                            'duplicate_payment' => 'Duplicate Payment',
-                                            'payment_error' => 'Payment Error',
-                                            'system_error' => 'System Error',
+                                            'customer_request'       => 'Customer Request',
+                                            'duplicate_payment'      => 'Duplicate Payment',
+                                            'payment_error'          => 'Payment Error',
+                                            'system_error'           => 'System Error',
                                             'regulatory_requirement' => 'Regulatory Requirement',
-                                            'other' => 'Other',
+                                            'other'                  => 'Other',
                                         ]
                                     )
                                     ->required(),
@@ -473,10 +473,10 @@ class CgoInvestmentResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListCgoInvestments::route('/'),
+            'index'  => Pages\ListCgoInvestments::route('/'),
             'create' => Pages\CreateCgoInvestment::route('/create'),
-            'view' => Pages\ViewCgoInvestment::route('/{record}'),
-            'edit' => Pages\EditCgoInvestment::route('/{record}/edit'),
+            'view'   => Pages\ViewCgoInvestment::route('/{record}'),
+            'edit'   => Pages\EditCgoInvestment::route('/{record}/edit'),
         ];
     }
 

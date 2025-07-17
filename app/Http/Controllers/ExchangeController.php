@@ -54,13 +54,13 @@ class ExchangeController extends Controller
         return view(
             'exchange.index',
             [
-                'baseCurrency' => $baseCurrency,
+                'baseCurrency'  => $baseCurrency,
                 'quoteCurrency' => $quoteCurrency,
-                'assets' => $assets,
-                'orderBook' => $orderBook,
-                'userOrders' => $userOrders,
-                'recentTrades' => $recentTrades,
-                'markets' => $markets,
+                'assets'        => $assets,
+                'orderBook'     => $orderBook,
+                'userOrders'    => $userOrders,
+                'recentTrades'  => $recentTrades,
+                'markets'       => $markets,
             ]
         );
     }
@@ -114,7 +114,7 @@ class ExchangeController extends Controller
         return view(
             'exchange.trades',
             [
-                'trades' => $trades,
+                'trades'    => $trades,
                 'totalFees' => $totalFees,
             ]
         );
@@ -124,12 +124,12 @@ class ExchangeController extends Controller
     {
         $validated = $request->validate(
             [
-                'type' => ['required', 'in:buy,sell'],
-                'order_type' => ['required', 'in:market,limit'],
-                'base_currency' => ['required', 'string', 'size:3'],
+                'type'           => ['required', 'in:buy,sell'],
+                'order_type'     => ['required', 'in:market,limit'],
+                'base_currency'  => ['required', 'string', 'size:3'],
                 'quote_currency' => ['required', 'string', 'size:3'],
-                'amount' => ['required', 'numeric', 'gt:0'],
-                'price' => ['required_if:order_type,limit', 'nullable', 'numeric', 'gt:0'],
+                'amount'         => ['required', 'numeric', 'gt:0'],
+                'price'          => ['required_if:order_type,limit', 'nullable', 'numeric', 'gt:0'],
             ]
         );
 
@@ -149,7 +149,7 @@ class ExchangeController extends Controller
                 amount: $validated['amount'],
                 price: $validated['price'] ?? null,
                 metadata: [
-                    'source' => 'web',
+                    'source'  => 'web',
                     'user_id' => Auth::id(),
                 ]
             );
@@ -157,7 +157,7 @@ class ExchangeController extends Controller
             return redirect()->route(
                 'exchange.index',
                 [
-                    'base' => $validated['base_currency'],
+                    'base'  => $validated['base_currency'],
                     'quote' => $validated['quote_currency'],
                 ]
             )->with('success', 'Order placed successfully');

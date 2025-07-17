@@ -47,10 +47,10 @@ class BankOperations extends Page implements HasTable
                         ->badge()
                         ->color(
                             fn (string $state): string => match ($state) {
-                                'healthy' => 'success',
-                                'degraded' => 'warning',
+                                'healthy'   => 'success',
+                                'degraded'  => 'warning',
                                 'unhealthy' => 'danger',
-                                default => 'gray',
+                                default     => 'gray',
                             }
                         ),
 

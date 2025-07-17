@@ -24,28 +24,28 @@ class LoanApplicationWorkflowTest extends DomainTestCase
     public function test_successful_loan_application_workflow()
     {
         $user = User::factory()->create([
-            'kyc_status' => 'approved',
+            'kyc_status'      => 'approved',
             'kyc_verified_at' => now()->subDays(30),
         ]);
 
         $applicationId = 'app_' . uniqid();
         $borrowerInfo = [
             'employment_status' => 'employed',
-            'monthly_income' => 5000,
-            'monthly_expenses' => 2000,
+            'monthly_income'    => 5000,
+            'monthly_expenses'  => 2000,
         ];
 
         // Mock credit scoring to return good score
         $this->mock(CreditScoringService::class, function ($mock) {
             $mock->shouldReceive('getScore')
                 ->andReturn([
-                    'score' => 750,
+                    'score'  => 750,
                     'bureau' => 'MockBureau',
                     'report' => [
-                        'inquiries' => 1,
-                        'openAccounts' => 3,
-                        'totalDebt' => 10000,
-                        'paymentHistory' => array_fill(0, 12, ['month' => now()->format('Y-m'), 'status' => 'on_time']),
+                        'inquiries'         => 1,
+                        'openAccounts'      => 3,
+                        'totalDebt'         => 10000,
+                        'paymentHistory'    => array_fill(0, 12, ['month' => now()->format('Y-m'), 'status' => 'on_time']),
                         'creditUtilization' => 0.3,
                     ],
                 ]);
@@ -85,28 +85,28 @@ class LoanApplicationWorkflowTest extends DomainTestCase
     public function test_loan_application_rejected_for_low_credit_score()
     {
         $user = User::factory()->create([
-            'kyc_status' => 'approved',
+            'kyc_status'      => 'approved',
             'kyc_verified_at' => now()->subDays(30),
         ]);
 
         $applicationId = 'app_' . uniqid();
         $borrowerInfo = [
             'employment_status' => 'employed',
-            'monthly_income' => 3000,
-            'monthly_expenses' => 2500,
+            'monthly_income'    => 3000,
+            'monthly_expenses'  => 2500,
         ];
 
         // Mock credit scoring to return low score
         $this->mock(CreditScoringService::class, function ($mock) {
             $mock->shouldReceive('getScore')
                 ->andReturn([
-                    'score' => 450,
+                    'score'  => 450,
                     'bureau' => 'MockBureau',
                     'report' => [
-                        'inquiries' => 10,
-                        'openAccounts' => 5,
-                        'totalDebt' => 50000,
-                        'paymentHistory' => array_fill(0, 12, ['month' => now()->format('Y-m'), 'status' => 'late']),
+                        'inquiries'         => 10,
+                        'openAccounts'      => 5,
+                        'totalDebt'         => 50000,
+                        'paymentHistory'    => array_fill(0, 12, ['month' => now()->format('Y-m'), 'status' => 'late']),
                         'creditUtilization' => 0.95,
                     ],
                 ]);
@@ -143,8 +143,8 @@ class LoanApplicationWorkflowTest extends DomainTestCase
         $applicationId = 'app_' . uniqid();
         $borrowerInfo = [
             'employment_status' => 'employed',
-            'monthly_income' => 5000,
-            'monthly_expenses' => 2000,
+            'monthly_income'    => 5000,
+            'monthly_expenses'  => 2000,
         ];
 
         $service = app(LoanApplicationService::class);
@@ -170,29 +170,29 @@ class LoanApplicationWorkflowTest extends DomainTestCase
     public function test_loan_application_with_reduced_amount_for_high_risk()
     {
         $user = User::factory()->create([
-            'kyc_status' => 'approved',
+            'kyc_status'      => 'approved',
             'kyc_verified_at' => now()->subDays(30),
-            'created_at' => now()->subMonths(3), // New account
+            'created_at'      => now()->subMonths(3), // New account
         ]);
 
         $applicationId = 'app_' . uniqid();
         $requestedAmount = '20000';
         $borrowerInfo = [
             'employment_status' => 'self_employed',
-            'monthly_income' => 4000,
-            'monthly_expenses' => 3000,
+            'monthly_income'    => 4000,
+            'monthly_expenses'  => 3000,
         ];
 
         // Mock credit scoring to return medium score
         $this->mock(CreditScoringService::class, function ($mock) {
             $mock->shouldReceive('getScore')
                 ->andReturn([
-                    'score' => 650,
+                    'score'  => 650,
                     'bureau' => 'MockBureau',
                     'report' => [
-                        'inquiries' => 3,
-                        'openAccounts' => 4,
-                        'totalDebt' => 25000,
+                        'inquiries'      => 3,
+                        'openAccounts'   => 4,
+                        'totalDebt'      => 25000,
                         'paymentHistory' => array_merge(
                             array_fill(0, 10, ['month' => now()->format('Y-m'), 'status' => 'on_time']),
                             array_fill(0, 2, ['month' => now()->format('Y-m'), 'status' => 'late'])

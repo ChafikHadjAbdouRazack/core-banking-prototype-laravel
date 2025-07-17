@@ -113,14 +113,14 @@ class FinancialInstitutionApplicationResource extends Resource
                                     ->required()
                                     ->options(
                                         [
-                                            'gcu_partner' => 'GCU Banking Partner',
-                                            'exchange_liquidity' => 'Exchange Liquidity Provider',
-                                            'lending_partner' => 'Lending Partner',
-                                            'treasury_services' => 'Treasury Services',
+                                            'gcu_partner'           => 'GCU Banking Partner',
+                                            'exchange_liquidity'    => 'Exchange Liquidity Provider',
+                                            'lending_partner'       => 'Lending Partner',
+                                            'treasury_services'     => 'Treasury Services',
                                             'correspondent_banking' => 'Correspondent Banking',
-                                            'custodian_services' => 'Custodian Services',
-                                            'payment_processor' => 'Payment Processing',
-                                            'regulatory_reporting' => 'Regulatory Reporting',
+                                            'custodian_services'    => 'Custodian Services',
+                                            'payment_processor'     => 'Payment Processing',
+                                            'regulatory_reporting'  => 'Regulatory Reporting',
                                         ]
                                     )
                                     ->multiple(),
@@ -165,13 +165,13 @@ class FinancialInstitutionApplicationResource extends Resource
                                     ->default('pending')
                                     ->options(
                                         [
-                                            'pending' => 'Pending Review',
-                                            'under_review' => 'Under Review',
+                                            'pending'          => 'Pending Review',
+                                            'under_review'     => 'Under Review',
                                             'compliance_check' => 'Compliance Check',
                                             'technical_review' => 'Technical Review',
-                                            'approved' => 'Approved',
-                                            'rejected' => 'Rejected',
-                                            'on_hold' => 'On Hold',
+                                            'approved'         => 'Approved',
+                                            'rejected'         => 'Rejected',
+                                            'on_hold'          => 'On Hold',
                                         ]
                                     )
                                     ->live(),
@@ -219,9 +219,9 @@ class FinancialInstitutionApplicationResource extends Resource
                     Tables\Columns\BadgeColumn::make('status')
                         ->colors(
                             [
-                                'danger' => 'rejected',
+                                'danger'  => 'rejected',
                                 'warning' => fn ($state) => in_array($state, ['pending', 'on_hold']),
-                                'info' => fn ($state) => in_array($state, ['under_review', 'compliance_check', 'technical_review']),
+                                'info'    => fn ($state) => in_array($state, ['under_review', 'compliance_check', 'technical_review']),
                                 'success' => 'approved',
                             ]
                         )
@@ -242,13 +242,13 @@ class FinancialInstitutionApplicationResource extends Resource
                     Tables\Filters\SelectFilter::make('status')
                         ->options(
                             [
-                                'pending' => 'Pending Review',
-                                'under_review' => 'Under Review',
+                                'pending'          => 'Pending Review',
+                                'under_review'     => 'Under Review',
                                 'compliance_check' => 'Compliance Check',
                                 'technical_review' => 'Technical Review',
-                                'approved' => 'Approved',
-                                'rejected' => 'Rejected',
-                                'on_hold' => 'On Hold',
+                                'approved'         => 'Approved',
+                                'rejected'         => 'Rejected',
+                                'on_hold'          => 'On Hold',
                             ]
                         ),
                     Tables\Filters\SelectFilter::make('country'),
@@ -287,7 +287,7 @@ class FinancialInstitutionApplicationResource extends Resource
                         ->action(
                             fn (FinancialInstitutionApplication $record) => $record->update(
                                 [
-                                    'status' => 'approved',
+                                    'status'      => 'approved',
                                     'reviewed_at' => now(),
                                     'reviewed_by' => auth()->user()->name,
                                 ]
@@ -310,9 +310,9 @@ class FinancialInstitutionApplicationResource extends Resource
                         ->action(
                             fn (FinancialInstitutionApplication $record, array $data) => $record->update(
                                 [
-                                    'status' => 'rejected',
-                                    'reviewed_at' => now(),
-                                    'reviewed_by' => auth()->user()->name,
+                                    'status'         => 'rejected',
+                                    'reviewed_at'    => now(),
+                                    'reviewed_by'    => auth()->user()->name,
                                     'internal_notes' => $record->internal_notes . "\n\n[Rejection Reason]: " . $data['rejection_reason'],
                                 ]
                             )
@@ -340,9 +340,9 @@ class FinancialInstitutionApplicationResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListFinancialInstitutionApplications::route('/'),
+            'index'  => Pages\ListFinancialInstitutionApplications::route('/'),
             'create' => Pages\CreateFinancialInstitutionApplication::route('/create'),
-            'edit' => Pages\EditFinancialInstitutionApplication::route('/{record}/edit'),
+            'edit'   => Pages\EditFinancialInstitutionApplication::route('/{record}/edit'),
         ];
     }
 }

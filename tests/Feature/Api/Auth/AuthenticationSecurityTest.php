@@ -45,10 +45,10 @@ class AuthenticationSecurityTest extends TestCase
         $token = Password::createToken($user);
 
         $response = $this->postJson('/api/auth/reset-password', [
-            'email' => $user->email,
-            'password' => 'newpassword123',
+            'email'                 => $user->email,
+            'password'              => 'newpassword123',
             'password_confirmation' => 'newpassword123',
-            'token' => $token,
+            'token'                 => $token,
         ]);
 
         $response->assertOk()
@@ -110,7 +110,7 @@ class AuthenticationSecurityTest extends TestCase
             'password' => Hash::make('password'),
         ]);
         $user->forceFill([
-            'two_factor_secret' => encrypt('secret'),
+            'two_factor_secret'         => encrypt('secret'),
             'two_factor_recovery_codes' => encrypt(json_encode(RecoveryCode::generate())),
         ])->save();
 
@@ -136,7 +136,7 @@ class AuthenticationSecurityTest extends TestCase
             'api.verification.verify',
             now()->addMinutes(60),
             [
-                'id' => $user->id,
+                'id'   => $user->id,
                 'hash' => sha1($user->email),
             ]
         );

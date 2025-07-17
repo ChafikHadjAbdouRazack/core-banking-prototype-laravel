@@ -33,13 +33,13 @@ class BankAllocationWidget extends Widget
             }
 
             $distribution[] = [
-                'bank_name' => $bank['name'],
-                'country' => $bank['country'],
-                'type' => ucfirst($bank['type']),
-                'user_count' => $allocation->user_count,
-                'avg_allocation' => Number::percentage($allocation->avg_allocation, 1),
+                'bank_name'         => $bank['name'],
+                'country'           => $bank['country'],
+                'type'              => ucfirst($bank['type']),
+                'user_count'        => $allocation->user_count,
+                'avg_allocation'    => Number::percentage($allocation->avg_allocation, 1),
                 'deposit_insurance' => Number::currency($bank['deposit_insurance'], 'EUR'),
-                'features' => implode(', ', array_map(fn ($f) => ucwords(str_replace('_', ' ', $f)), $bank['features'] ?? [])),
+                'features'          => implode(', ', array_map(fn ($f) => ucwords(str_replace('_', ' ', $f)), $bank['features'] ?? [])),
             ];
         }
 
@@ -47,13 +47,13 @@ class BankAllocationWidget extends Widget
         foreach ($banks as $code => $bank) {
             if (! $allocations->contains('bank_code', $code)) {
                 $distribution[] = [
-                    'bank_name' => $bank['name'],
-                    'country' => $bank['country'],
-                    'type' => ucfirst($bank['type']),
-                    'user_count' => 0,
-                    'avg_allocation' => '0%',
+                    'bank_name'         => $bank['name'],
+                    'country'           => $bank['country'],
+                    'type'              => ucfirst($bank['type']),
+                    'user_count'        => 0,
+                    'avg_allocation'    => '0%',
                     'deposit_insurance' => Number::currency($bank['deposit_insurance'], 'EUR'),
-                    'features' => implode(', ', array_map(fn ($f) => ucwords(str_replace('_', ' ', $f)), $bank['features'] ?? [])),
+                    'features'          => implode(', ', array_map(fn ($f) => ucwords(str_replace('_', ' ', $f)), $bank['features'] ?? [])),
                 ];
             }
         }

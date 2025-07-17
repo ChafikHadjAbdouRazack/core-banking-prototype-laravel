@@ -20,7 +20,7 @@ return [
     | These settings ensure the demo environment behaves like production
     |
     */
-    'debug' => false,
+    'debug'           => false,
     'debug_blacklist' => [
         '_ENV' => [
             'APP_KEY',
@@ -50,15 +50,15 @@ return [
         // Demo user credentials (if applicable)
         'demo_users' => [
             'customer' => [
-                'email' => 'demo@finaegis.com',
+                'email'    => 'demo@finaegis.com',
                 'password' => 'demo123',
             ],
             'business' => [
-                'email' => 'business@finaegis.com',
+                'email'    => 'business@finaegis.com',
                 'password' => 'demo123',
             ],
             'admin' => [
-                'email' => 'admin@finaegis.com',
+                'email'    => 'admin@finaegis.com',
                 'password' => 'demo123',
             ],
         ],
@@ -73,7 +73,7 @@ return [
     |
     */
     'rate_limits' => [
-        'api' => env('DEMO_API_RATE_LIMIT', 60),
+        'api'          => env('DEMO_API_RATE_LIMIT', 60),
         'transactions' => env('DEMO_TRANSACTION_RATE_LIMIT', 10),
     ],
 

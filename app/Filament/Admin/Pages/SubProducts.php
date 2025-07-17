@@ -155,7 +155,7 @@ class SubProducts extends Page
         Log::info(
             'Sub-product configuration updated',
             [
-                'user' => $currentUser,
+                'user'    => $currentUser,
                 'changes' => $data,
             ]
         );

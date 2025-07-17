@@ -40,11 +40,11 @@ class BlockchainWalletController extends Controller
     {
         $validated = $request->validate(
             [
-                'type' => ['required', Rule::in(['custodial', 'non-custodial'])],
-                'mnemonic' => ['required_if:type,non-custodial', 'string'],
-                'settings' => ['sometimes', 'array'],
-                'settings.daily_limit' => ['sometimes', 'numeric', 'min:0'],
-                'settings.requires_2fa' => ['sometimes', 'boolean'],
+                'type'                           => ['required', Rule::in(['custodial', 'non-custodial'])],
+                'mnemonic'                       => ['required_if:type,non-custodial', 'string'],
+                'settings'                       => ['sometimes', 'array'],
+                'settings.daily_limit'           => ['sometimes', 'numeric', 'min:0'],
+                'settings.requires_2fa'          => ['sometimes', 'boolean'],
                 'settings.whitelisted_addresses' => ['sometimes', 'array'],
             ]
         );
@@ -55,7 +55,7 @@ class BlockchainWalletController extends Controller
                 return response()->json(
                     [
                         'message' => 'Invalid mnemonic phrase',
-                        'errors' => ['mnemonic' => ['The provided mnemonic phrase is invalid']],
+                        'errors'  => ['mnemonic' => ['The provided mnemonic phrase is invalid']],
                     ],
                     422
                 );
@@ -102,9 +102,9 @@ class BlockchainWalletController extends Controller
 
         $validated = $request->validate(
             [
-                'settings' => ['required', 'array'],
-                'settings.daily_limit' => ['sometimes', 'numeric', 'min:0'],
-                'settings.requires_2fa' => ['sometimes', 'boolean'],
+                'settings'                       => ['required', 'array'],
+                'settings.daily_limit'           => ['sometimes', 'numeric', 'min:0'],
+                'settings.requires_2fa'          => ['sometimes', 'boolean'],
                 'settings.whitelisted_addresses' => ['sometimes', 'array'],
             ]
         );
@@ -185,9 +185,9 @@ class BlockchainWalletController extends Controller
 
         $validated = $request->validate(
             [
-                'chain' => ['sometimes', Rule::in(['ethereum', 'polygon', 'bsc', 'bitcoin'])],
+                'chain'  => ['sometimes', Rule::in(['ethereum', 'polygon', 'bsc', 'bitcoin'])],
                 'status' => ['sometimes', Rule::in(['pending', 'confirmed', 'failed'])],
-                'limit' => ['sometimes', 'integer', 'min:1', 'max:100'],
+                'limit'  => ['sometimes', 'integer', 'min:1', 'max:100'],
             ]
         );
 
@@ -241,8 +241,8 @@ class BlockchainWalletController extends Controller
         // For now, we'll return a message indicating backup creation
         return response()->json(
             [
-                'message' => 'Wallet backup created successfully',
-                'backup_id' => 'backup_' . uniqid(),
+                'message'      => 'Wallet backup created successfully',
+                'backup_id'    => 'backup_' . uniqid(),
                 'instructions' => 'Store your backup securely. You will need it to recover your wallet.',
             ]
         );
@@ -257,9 +257,9 @@ class BlockchainWalletController extends Controller
 
         return response()->json(
             [
-                'mnemonic' => $mnemonic,
+                'mnemonic'   => $mnemonic,
                 'word_count' => count(explode(' ', $mnemonic)),
-                'warning' => 'Store this mnemonic securely. It cannot be recovered if lost.',
+                'warning'    => 'Store this mnemonic securely. It cannot be recovered if lost.',
             ]
         );
     }

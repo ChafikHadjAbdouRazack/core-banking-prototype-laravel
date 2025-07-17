@@ -68,7 +68,7 @@ it('can get available providers', function () {
     $this->registry->register('mock1', $this->mockProvider);
 
     $unavailableProvider = new MockExchangeRateProvider([
-        'name' => 'Unavailable Provider',
+        'name'      => 'Unavailable Provider',
         'available' => false,
     ]);
     $this->registry->register('mock2', $unavailableProvider);

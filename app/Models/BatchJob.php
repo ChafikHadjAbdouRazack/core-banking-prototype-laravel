@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Models\User;
 use App\Domain\Batch\Models\BatchJobItem;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;

@@ -64,9 +64,9 @@ class KycDocumentResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListKycDocuments::route('/'),
+            'index'  => Pages\ListKycDocuments::route('/'),
             'create' => Pages\CreateKycDocument::route('/create'),
-            'edit' => Pages\EditKycDocument::route('/{record}/edit'),
+            'edit'   => Pages\EditKycDocument::route('/{record}/edit'),
         ];
     }
 }

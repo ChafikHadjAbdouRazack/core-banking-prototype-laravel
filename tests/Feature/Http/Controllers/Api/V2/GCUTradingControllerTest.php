@@ -55,19 +55,19 @@ class GCUTradingControllerTest extends ControllerTestCase
         $this->gcu = BasketAsset::firstOrCreate(
             ['code' => 'GCU'],
             [
-                'name' => 'Global Currency Unit',
+                'name'        => 'Global Currency Unit',
                 'description' => 'A basket of global currencies',
-                'type' => 'weighted',
-                'is_active' => true,
+                'type'        => 'weighted',
+                'is_active'   => true,
             ]
         );
 
         // Create a current value for GCU
         BasketValue::create([
-            'basket_code' => 'GCU',
-            'value' => 1.0975,
+            'basket_code'        => 'GCU',
+            'value'              => 1.0975,
             'reference_currency' => 'USD',
-            'calculated_at' => now(),
+            'calculated_at'      => now(),
         ]);
     }
 
@@ -75,20 +75,20 @@ class GCUTradingControllerTest extends ControllerTestCase
     {
         // Give user EUR balance
         AccountBalance::create([
-            'account_uuid' => $this->account->uuid,
-            'asset_code' => 'EUR',
-            'balance' => 100000000, // 1,000 EUR
+            'account_uuid'      => $this->account->uuid,
+            'asset_code'        => 'EUR',
+            'balance'           => 100000000, // 1,000 EUR
             'available_balance' => 100000000,
-            'reserved_balance' => 0,
+            'reserved_balance'  => 0,
         ]);
 
         // Initialize GCU balance
         AccountBalance::create([
-            'account_uuid' => $this->account->uuid,
-            'asset_code' => 'GCU',
-            'balance' => 0,
+            'account_uuid'      => $this->account->uuid,
+            'asset_code'        => 'GCU',
+            'balance'           => 0,
             'available_balance' => 0,
-            'reserved_balance' => 0,
+            'reserved_balance'  => 0,
         ]);
     }
 
@@ -98,8 +98,8 @@ class GCUTradingControllerTest extends ControllerTestCase
         Sanctum::actingAs($this->user);
 
         $response = $this->postJson('/api/v2/gcu/buy', [
-            'amount' => 100.00,
-            'currency' => 'EUR',
+            'amount'       => 100.00,
+            'currency'     => 'EUR',
             'account_uuid' => $this->account->uuid,
         ]);
 
@@ -122,7 +122,7 @@ class GCUTradingControllerTest extends ControllerTestCase
     public function test_buy_gcu_requires_authentication(): void
     {
         $response = $this->postJson('/api/v2/gcu/buy', [
-            'amount' => 100.00,
+            'amount'   => 100.00,
             'currency' => 'EUR',
         ]);
 
@@ -146,7 +146,7 @@ class GCUTradingControllerTest extends ControllerTestCase
         Sanctum::actingAs($this->user);
 
         $response = $this->postJson('/api/v2/gcu/buy', [
-            'amount' => 50.00, // Below minimum of 100
+            'amount'   => 50.00, // Below minimum of 100
             'currency' => 'EUR',
         ]);
 
@@ -160,8 +160,8 @@ class GCUTradingControllerTest extends ControllerTestCase
         Sanctum::actingAs($this->user);
 
         $response = $this->postJson('/api/v2/gcu/buy', [
-            'amount' => 2000.00, // More than available balance
-            'currency' => 'EUR',
+            'amount'       => 2000.00, // More than available balance
+            'currency'     => 'EUR',
             'account_uuid' => $this->account->uuid,
         ]);
 
@@ -180,13 +180,13 @@ class GCUTradingControllerTest extends ControllerTestCase
         AccountBalance::where('account_uuid', $this->account->uuid)
             ->where('asset_code', 'GCU')
             ->update([
-                'balance' => 1000000, // 100 GCU
+                'balance'           => 1000000, // 100 GCU
                 'available_balance' => 1000000,
             ]);
 
         $response = $this->postJson('/api/v2/gcu/sell', [
-            'amount' => 50,
-            'currency' => 'EUR',
+            'amount'       => 50,
+            'currency'     => 'EUR',
             'account_uuid' => $this->account->uuid,
         ]);
 
@@ -210,7 +210,7 @@ class GCUTradingControllerTest extends ControllerTestCase
     public function test_sell_gcu_requires_authentication(): void
     {
         $response = $this->postJson('/api/v2/gcu/sell', [
-            'amount' => 50,
+            'amount'   => 50,
             'currency' => 'EUR',
         ]);
 
@@ -234,8 +234,8 @@ class GCUTradingControllerTest extends ControllerTestCase
         Sanctum::actingAs($this->user);
 
         $response = $this->postJson('/api/v2/gcu/sell', [
-            'amount' => 100, // User has 0 GCU
-            'currency' => 'EUR',
+            'amount'       => 100, // User has 0 GCU
+            'currency'     => 'EUR',
             'account_uuid' => $this->account->uuid,
         ]);
 
@@ -288,7 +288,7 @@ class GCUTradingControllerTest extends ControllerTestCase
             ->assertJsonStructure([
                 'data' => [
                     'daily_limits' => [
-                        'buy' => ['used', 'limit', 'remaining'],
+                        'buy'  => ['used', 'limit', 'remaining'],
                         'sell' => ['used', 'limit', 'remaining'],
                     ],
                     'transaction_limits' => [

@@ -38,11 +38,11 @@ class ViewApiKey extends ViewRecord
                                     ->badge()
                                     ->color(
                                         fn (string $state): string => match ($state) {
-                                            'read' => 'success',
-                                            'write' => 'warning',
+                                            'read'   => 'success',
+                                            'write'  => 'warning',
                                             'delete' => 'danger',
-                                            '*' => 'primary',
-                                            default => 'gray',
+                                            '*'      => 'primary',
+                                            default  => 'gray',
                                         }
                                     ),
                                 Infolists\Components\TextEntry::make('allowed_ips')
@@ -109,11 +109,11 @@ class ViewApiKey extends ViewRecord
                                                 ->badge()
                                                 ->color(
                                                     fn (string $state): string => match ($state) {
-                                                        'GET' => 'info',
+                                                        'GET'  => 'info',
                                                         'POST' => 'success',
                                                         'PUT', 'PATCH' => 'warning',
                                                         'DELETE' => 'danger',
-                                                        default => 'gray',
+                                                        default  => 'gray',
                                                     }
                                                 ),
                                             Infolists\Components\TextEntry::make('path'),
@@ -123,8 +123,8 @@ class ViewApiKey extends ViewRecord
                                                 ->color(
                                                     fn (?int $state): string => match (true) {
                                                         $state >= 200 && $state < 300 => 'success',
-                                                        $state >= 400 => 'danger',
-                                                        default => 'warning',
+                                                        $state >= 400                 => 'danger',
+                                                        default                       => 'warning',
                                                     }
                                                 ),
                                             Infolists\Components\TextEntry::make('response_time')

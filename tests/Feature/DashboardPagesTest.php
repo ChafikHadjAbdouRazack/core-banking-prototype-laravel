@@ -24,7 +24,7 @@ class DashboardPagesTest extends DomainTestCase
 
         // Create a team for the user
         $team = Team::factory()->create([
-            'user_id' => $this->user->id,
+            'user_id'       => $this->user->id,
             'personal_team' => true,
         ]);
 
@@ -34,30 +34,30 @@ class DashboardPagesTest extends DomainTestCase
         // Create an account for the user
         Account::factory()->create([
             'user_uuid' => $this->user->uuid,
-            'name' => $this->user->name . "'s Account",
+            'name'      => $this->user->name . "'s Account",
         ]);
 
         // Create some basic assets for exchange
         \App\Models\Asset::firstOrCreate(['code' => 'EUR'], [
-            'name' => 'Euro',
-            'type' => 'fiat',
-            'is_enabled' => true,
-            'is_tradeable' => true,
+            'name'           => 'Euro',
+            'type'           => 'fiat',
+            'is_enabled'     => true,
+            'is_tradeable'   => true,
             'decimal_places' => 2,
         ]);
 
         \App\Models\Asset::firstOrCreate(['code' => 'BTC'], [
-            'name' => 'Bitcoin',
-            'type' => 'crypto',
-            'is_enabled' => true,
-            'is_tradeable' => true,
+            'name'           => 'Bitcoin',
+            'type'           => 'crypto',
+            'is_enabled'     => true,
+            'is_tradeable'   => true,
             'decimal_places' => 8,
         ]);
     }
 
-    /**
-     * Test that dashboard loads without route errors.
-     */ #[Test]
+/**
+ * Test that dashboard loads without route errors.
+ */ #[Test]
     public function test_dashboard_loads_without_route_errors(): void
     {
         $response = $this->actingAs($this->user)->get('/dashboard');
@@ -68,19 +68,19 @@ class DashboardPagesTest extends DomainTestCase
         $response->assertDontSee('Exception');
     }
 
-    /**
-     * Test that all navigation menu links work.
-     */ #[Test]
+/**
+ * Test that all navigation menu links work.
+ */ #[Test]
     public function test_navigation_menu_links_work(): void
     {
         $pages = [
-            '/dashboard' => 'Dashboard',
-            '/wallet' => 'Wallet overview',
+            '/dashboard'           => 'Dashboard',
+            '/wallet'              => 'Wallet overview',
             '/wallet/transactions' => 'Transaction History',
-            '/exchange' => 'Exchange',
-            '/lending' => 'Lending Platform',
-            '/liquidity' => 'Liquidity Pools',
-            '/api-keys' => 'API Keys',
+            '/exchange'            => 'Exchange',
+            '/lending'             => 'Lending Platform',
+            '/liquidity'           => 'Liquidity Pools',
+            '/api-keys'            => 'API Keys',
         ];
 
         foreach ($pages as $url => $expectedContent) {
@@ -98,9 +98,9 @@ class DashboardPagesTest extends DomainTestCase
         }
     }
 
-    /**
-     * Test profile and account management pages.
-     */ #[Test]
+/**
+ * Test profile and account management pages.
+ */ #[Test]
     public function test_profile_pages_work(): void
     {
         $response = $this->actingAs($this->user)->get('/user/profile');
@@ -110,9 +110,9 @@ class DashboardPagesTest extends DomainTestCase
         $response->assertDontSee('not defined');
     }
 
-    /**
-     * Test compliance pages for authorized users.
-     */ #[Test]
+/**
+ * Test compliance pages for authorized users.
+ */ #[Test]
     public function test_compliance_pages_for_authorized_users(): void
     {
         // Give user compliance permissions
@@ -141,18 +141,18 @@ class DashboardPagesTest extends DomainTestCase
         }
     }
 
-    /**
-     * Test wallet sub-pages.
-     */ #[Test]
+/**
+ * Test wallet sub-pages.
+ */ #[Test]
     public function test_wallet_subpages_work(): void
     {
         $pages = [
-            '/wallet/deposit' => 'Deposit',
-            '/wallet/withdraw' => 'Withdraw',
-            '/wallet/transfer' => 'Transfer',
-            '/wallet/convert' => 'Convert',
+            '/wallet/deposit'         => 'Deposit',
+            '/wallet/withdraw'        => 'Withdraw',
+            '/wallet/transfer'        => 'Transfer',
+            '/wallet/convert'         => 'Convert',
             '/wallet/bank-allocation' => 'Bank Allocation',
-            '/wallet/blockchain' => 'Blockchain Wallet',
+            '/wallet/blockchain'      => 'Blockchain Wallet',
         ];
 
         foreach ($pages as $url => $name) {
@@ -169,9 +169,9 @@ class DashboardPagesTest extends DomainTestCase
         }
     }
 
-    /**
-     * Test that unauthenticated users are redirected.
-     */ #[Test]
+/**
+ * Test that unauthenticated users are redirected.
+ */ #[Test]
     public function test_unauthenticated_users_are_redirected(): void
     {
         $response = $this->get('/dashboard');
@@ -179,14 +179,14 @@ class DashboardPagesTest extends DomainTestCase
         $response->assertRedirect('/login');
     }
 
-    /**
-     * Test exchange sub-pages.
-     */ #[Test]
+/**
+ * Test exchange sub-pages.
+ */ #[Test]
     public function test_exchange_subpages_work(): void
     {
         $pages = [
-            '/exchange/orders' => 'My Orders',
-            '/exchange/trades' => 'Trade History',
+            '/exchange/orders'   => 'My Orders',
+            '/exchange/trades'   => 'Trade History',
             '/exchange/external' => 'External Exchanges',
         ];
 
@@ -204,9 +204,9 @@ class DashboardPagesTest extends DomainTestCase
         }
     }
 
-    /**
-     * Test lending sub-pages.
-     */ #[Test]
+/**
+ * Test lending sub-pages.
+ */ #[Test]
     public function test_lending_subpages_work(): void
     {
         $pages = [
@@ -227,14 +227,14 @@ class DashboardPagesTest extends DomainTestCase
         }
     }
 
-    /**
-     * Test team management pages.
-     */ #[Test]
+/**
+ * Test team management pages.
+ */ #[Test]
     public function test_team_pages_work(): void
     {
         // Create a team for the user
         $team = Team::factory()->create([
-            'user_id' => $this->user->id,
+            'user_id'       => $this->user->id,
             'personal_team' => true,
         ]);
 

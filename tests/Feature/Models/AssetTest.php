@@ -13,18 +13,18 @@ class AssetTest extends TestCase
     public function it_can_create_an_asset()
     {
         $asset = Asset::create([
-            'code' => 'TEST',
-            'name' => 'Test Asset',
-            'type' => Asset::TYPE_CUSTOM,
+            'code'      => 'TEST',
+            'name'      => 'Test Asset',
+            'type'      => Asset::TYPE_CUSTOM,
             'precision' => 2,
             'is_active' => true,
-            'metadata' => ['symbol' => 'T'],
+            'metadata'  => ['symbol' => 'T'],
         ]);
 
         $this->assertDatabaseHas('assets', [
-            'code' => 'TEST',
-            'name' => 'Test Asset',
-            'type' => Asset::TYPE_CUSTOM,
+            'code'      => 'TEST',
+            'name'      => 'Test Asset',
+            'type'      => Asset::TYPE_CUSTOM,
             'precision' => 2,
             'is_active' => true,
         ]);
@@ -49,15 +49,15 @@ class AssetTest extends TestCase
     {
         // Use existing USD asset or create test assets with unique codes
         $usd = Asset::where('code', 'USD')->first() ?: Asset::factory()->create([
-            'code' => 'TST1',
+            'code'      => 'TST1',
             'precision' => 2,
-            'metadata' => ['symbol' => '$'],
+            'metadata'  => ['symbol' => '$'],
         ]);
 
         $btc = Asset::where('code', 'BTC')->first() ?: Asset::factory()->create([
-            'code' => 'TST2',
+            'code'      => 'TST2',
             'precision' => 8,
-            'metadata' => ['symbol' => '₿'],
+            'metadata'  => ['symbol' => '₿'],
         ]);
 
         // Check formatting - accept both symbol and code formats

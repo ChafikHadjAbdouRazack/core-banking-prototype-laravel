@@ -22,8 +22,8 @@ class StripePaymentTest extends TestCase
 
         // Set test Stripe keys
         config([
-            'cashier.key' => 'pk_test_' . str_repeat('x', 24),
-            'cashier.secret' => 'sk_test_' . str_repeat('x', 24),
+            'cashier.key'      => 'pk_test_' . str_repeat('x', 24),
+            'cashier.secret'   => 'sk_test_' . str_repeat('x', 24),
             'cashier.currency' => 'eur',
         ]);
     }
@@ -33,16 +33,16 @@ class StripePaymentTest extends TestCase
     {
         $user = User::factory()->create();
         $round = CgoPricingRound::factory()->create([
-            'is_active' => true,
-            'share_price' => 100,
+            'is_active'            => true,
+            'share_price'          => 100,
             'max_shares_available' => 10000,
         ]);
         $investment = CgoInvestment::factory()->create([
-            'user_id' => $user->id,
-            'round_id' => $round->id,
-            'amount' => 1000,
+            'user_id'        => $user->id,
+            'round_id'       => $round->id,
+            'amount'         => 1000,
             'payment_method' => 'card',
-            'status' => 'pending',
+            'status'         => 'pending',
         ]);
 
         // Mock Stripe Session
@@ -50,7 +50,7 @@ class StripePaymentTest extends TestCase
         $mockSession->shouldReceive('create')
             ->once()
             ->andReturn((object) [
-                'id' => 'cs_test_' . str_repeat('x', 24),
+                'id'  => 'cs_test_' . str_repeat('x', 24),
                 'url' => 'https://checkout.stripe.com/pay/cs_test_' . str_repeat('x', 24),
             ]);
 
@@ -70,11 +70,11 @@ class StripePaymentTest extends TestCase
     {
         $user = User::factory()->create();
         $investment = CgoInvestment::factory()->create([
-            'user_id' => $user->id,
-            'amount' => 1000,
-            'payment_method' => 'card',
+            'user_id'           => $user->id,
+            'amount'            => 1000,
+            'payment_method'    => 'card',
             'stripe_session_id' => 'cs_test_' . str_repeat('x', 24),
-            'payment_status' => 'checkout_created',
+            'payment_status'    => 'checkout_created',
         ]);
 
         // Mock Stripe Session retrieval
@@ -103,8 +103,8 @@ class StripePaymentTest extends TestCase
     {
         $user = User::factory()->create();
         $investment = CgoInvestment::factory()->create([
-            'user_id' => $user->id,
-            'amount' => 1000,
+            'user_id'        => $user->id,
+            'amount'         => 1000,
             'payment_method' => 'card',
             'payment_status' => 'checkout_created',
         ]);
@@ -114,7 +114,7 @@ class StripePaymentTest extends TestCase
             'data' => [
                 'object' => [
                     'client_reference_id' => $investment->uuid,
-                    'payment_intent' => 'pi_test_' . str_repeat('x', 24),
+                    'payment_intent'      => 'pi_test_' . str_repeat('x', 24),
                 ],
             ],
         ];
@@ -133,8 +133,8 @@ class StripePaymentTest extends TestCase
     {
         $user = User::factory()->create();
         $investment = CgoInvestment::factory()->create([
-            'user_id' => $user->id,
-            'amount' => 1000,
+            'user_id'        => $user->id,
+            'amount'         => 1000,
             'payment_method' => 'card',
             'payment_status' => 'checkout_created',
         ]);
@@ -169,8 +169,8 @@ class StripePaymentTest extends TestCase
         $this->actingAs($user);
 
         $round = CgoPricingRound::factory()->create([
-            'is_active' => true,
-            'share_price' => 100,
+            'is_active'            => true,
+            'share_price'          => 100,
             'max_shares_available' => 10000,
         ]);
 
@@ -179,22 +179,22 @@ class StripePaymentTest extends TestCase
         $mockSession->shouldReceive('create')
             ->once()
             ->andReturn((object) [
-                'id' => 'cs_test_' . str_repeat('x', 24),
+                'id'  => 'cs_test_' . str_repeat('x', 24),
                 'url' => 'https://checkout.stripe.com/pay/cs_test_' . str_repeat('x', 24),
             ]);
 
         $response = $this->post(route('cgo.invest'), [
-            'amount' => 1000,
+            'amount'         => 1000,
             'payment_method' => 'card',
-            'terms' => true,
+            'terms'          => true,
         ]);
 
         $response->assertRedirect();
         $response->assertRedirect('https://checkout.stripe.com/pay/cs_test_' . str_repeat('x', 24));
 
         $this->assertDatabaseHas('cgo_investments', [
-            'user_id' => $user->id,
-            'amount' => 1000,
+            'user_id'        => $user->id,
+            'amount'         => 1000,
             'payment_method' => 'card',
             'payment_status' => 'checkout_created',
         ]);
@@ -207,7 +207,7 @@ class StripePaymentTest extends TestCase
 
         $user = User::factory()->create();
         $investment = CgoInvestment::factory()->create([
-            'user_id' => $user->id,
+            'user_id'        => $user->id,
             'payment_method' => 'card',
         ]);
 

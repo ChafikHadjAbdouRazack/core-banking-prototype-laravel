@@ -23,7 +23,7 @@ class FundFlowControllerTest extends ControllerTestCase
         $this->user = User::factory()->create();
         $this->account = Account::factory()->create([
             'user_uuid' => $this->user->uuid,
-            'name' => 'Test Account',
+            'name'      => 'Test Account',
         ]);
     }
 
@@ -146,20 +146,20 @@ class FundFlowControllerTest extends ControllerTestCase
         // Create some transactions
         Transaction::create([
             'account_uuid' => $this->account->uuid,
-            'type' => 'deposit',
-            'amount' => 10000, // $100
-            'currency' => 'USD',
-            'status' => 'completed',
-            'created_at' => now()->subDays(2),
+            'type'         => 'deposit',
+            'amount'       => 10000, // $100
+            'currency'     => 'USD',
+            'status'       => 'completed',
+            'created_at'   => now()->subDays(2),
         ]);
 
         Transaction::create([
             'account_uuid' => $this->account->uuid,
-            'type' => 'withdrawal',
-            'amount' => 5000, // $50
-            'currency' => 'USD',
-            'status' => 'completed',
-            'created_at' => now()->subDay(),
+            'type'         => 'withdrawal',
+            'amount'       => 5000, // $50
+            'currency'     => 'USD',
+            'status'       => 'completed',
+            'created_at'   => now()->subDay(),
         ]);
 
         $response = $this->get('/fund-flow');
@@ -181,20 +181,20 @@ class FundFlowControllerTest extends ControllerTestCase
         // Create transactions at different times
         Transaction::create([
             'account_uuid' => $this->account->uuid,
-            'type' => 'deposit',
-            'amount' => 10000,
-            'currency' => 'USD',
-            'status' => 'completed',
-            'created_at' => now()->subDays(10), // Outside 7-day range
+            'type'         => 'deposit',
+            'amount'       => 10000,
+            'currency'     => 'USD',
+            'status'       => 'completed',
+            'created_at'   => now()->subDays(10), // Outside 7-day range
         ]);
 
         Transaction::create([
             'account_uuid' => $this->account->uuid,
-            'type' => 'deposit',
-            'amount' => 5000,
-            'currency' => 'USD',
-            'status' => 'completed',
-            'created_at' => now()->subDays(3), // Within 7-day range
+            'type'         => 'deposit',
+            'amount'       => 5000,
+            'currency'     => 'USD',
+            'status'       => 'completed',
+            'created_at'   => now()->subDays(3), // Within 7-day range
         ]);
 
         $response = $this->get('/fund-flow?period=7days');
@@ -214,7 +214,7 @@ class FundFlowControllerTest extends ControllerTestCase
         // Create a second account
         $account2 = Account::factory()->create([
             'user_uuid' => $this->user->uuid,
-            'name' => 'Second Account',
+            'name'      => 'Second Account',
         ]);
 
         $response = $this->get('/fund-flow');
@@ -235,20 +235,20 @@ class FundFlowControllerTest extends ControllerTestCase
         // Create multiple transactions on same day
         Transaction::create([
             'account_uuid' => $this->account->uuid,
-            'type' => 'deposit',
-            'amount' => 5000,
-            'currency' => 'USD',
-            'status' => 'completed',
-            'created_at' => now()->startOfDay(),
+            'type'         => 'deposit',
+            'amount'       => 5000,
+            'currency'     => 'USD',
+            'status'       => 'completed',
+            'created_at'   => now()->startOfDay(),
         ]);
 
         Transaction::create([
             'account_uuid' => $this->account->uuid,
-            'type' => 'deposit',
-            'amount' => 3000,
-            'currency' => 'USD',
-            'status' => 'completed',
-            'created_at' => now()->startOfDay()->addHours(2),
+            'type'         => 'deposit',
+            'amount'       => 3000,
+            'currency'     => 'USD',
+            'status'       => 'completed',
+            'created_at'   => now()->startOfDay()->addHours(2),
         ]);
 
         $response = $this->get('/fund-flow?period=24hours');

@@ -70,10 +70,10 @@ class BankIntegrationServiceProvider extends ServiceProvider
             $payseraAdapter = new BankConnectorAdapter(
                 new PayseraConnector(
                     [
-                        'name' => 'Paysera',
-                        'client_id' => config('services.banks.paysera.client_id'),
+                        'name'          => 'Paysera',
+                        'client_id'     => config('services.banks.paysera.client_id'),
                         'client_secret' => config('services.banks.paysera.client_secret'),
-                        'base_url' => config('services.banks.paysera.base_url', 'https://bank.paysera.com/rest/v1'),
+                        'base_url'      => config('services.banks.paysera.base_url', 'https://bank.paysera.com/rest/v1'),
                     ]
                 ),
                 'PAYSERA',
@@ -87,10 +87,10 @@ class BankIntegrationServiceProvider extends ServiceProvider
             $deutscheAdapter = new BankConnectorAdapter(
                 new DeutscheBankConnector(
                     [
-                        'name' => 'Deutsche Bank',
-                        'client_id' => config('services.banks.deutsche.client_id'),
+                        'name'          => 'Deutsche Bank',
+                        'client_id'     => config('services.banks.deutsche.client_id'),
                         'client_secret' => config('services.banks.deutsche.client_secret'),
-                        'base_url' => config('services.banks.deutsche.base_url', 'https://api.db.com/v2'),
+                        'base_url'      => config('services.banks.deutsche.base_url', 'https://api.db.com/v2'),
                     ]
                 ),
                 'DEUTSCHE',
@@ -104,10 +104,10 @@ class BankIntegrationServiceProvider extends ServiceProvider
             $santanderAdapter = new BankConnectorAdapter(
                 new SantanderConnector(
                     [
-                        'name' => 'Santander',
-                        'client_id' => config('services.banks.santander.client_id'),
+                        'name'          => 'Santander',
+                        'client_id'     => config('services.banks.santander.client_id'),
                         'client_secret' => config('services.banks.santander.client_secret'),
-                        'base_url' => config('services.banks.santander.base_url', 'https://api.santander.com/v2'),
+                        'base_url'      => config('services.banks.santander.base_url', 'https://api.santander.com/v2'),
                     ]
                 ),
                 'SANTANDER',

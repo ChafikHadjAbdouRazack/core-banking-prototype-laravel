@@ -72,8 +72,8 @@ class UserBankPreferenceResource extends Resource
                     Forms\Components\Select::make('status')
                         ->options(
                             [
-                                'active' => 'Active',
-                                'pending' => 'Pending',
+                                'active'    => 'Active',
+                                'pending'   => 'Pending',
                                 'suspended' => 'Suspended',
                             ]
                         )
@@ -116,7 +116,7 @@ class UserBankPreferenceResource extends Resource
                             [
                                 'success' => 'active',
                                 'warning' => 'pending',
-                                'danger' => 'suspended',
+                                'danger'  => 'suspended',
                             ]
                         ),
                     Tables\Columns\TextColumn::make('metadata.deposit_insurance')
@@ -138,8 +138,8 @@ class UserBankPreferenceResource extends Resource
                     Tables\Filters\SelectFilter::make('status')
                         ->options(
                             [
-                                'active' => 'Active',
-                                'pending' => 'Pending',
+                                'active'    => 'Active',
+                                'pending'   => 'Pending',
                                 'suspended' => 'Suspended',
                             ]
                         ),
@@ -194,9 +194,9 @@ class UserBankPreferenceResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListUserBankPreferences::route('/'),
+            'index'  => Pages\ListUserBankPreferences::route('/'),
             'create' => Pages\CreateUserBankPreference::route('/create'),
-            'edit' => Pages\EditUserBankPreference::route('/{record}/edit'),
+            'edit'   => Pages\EditUserBankPreference::route('/{record}/edit'),
         ];
     }
 }

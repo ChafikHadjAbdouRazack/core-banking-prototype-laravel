@@ -100,7 +100,7 @@ class BatchProcessingService
             items: $failedItems,
             metadata: [
                 'original_batch_job_uuid' => $batchJobUuid,
-                'is_retry' => true,
+                'is_retry'                => true,
             ]
         );
     }

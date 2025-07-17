@@ -140,8 +140,8 @@ class SocialAuthController extends Controller
                     $user->update(
                         [
                             'oauth_provider' => $provider,
-                            'oauth_id' => $socialUser->getId(),
-                            'avatar' => $socialUser->getAvatar(),
+                            'oauth_id'       => $socialUser->getId(),
+                            'avatar'         => $socialUser->getAvatar(),
                         ]
                     );
                 }
@@ -149,12 +149,12 @@ class SocialAuthController extends Controller
                 // Create new user
                 $user = User::create(
                     [
-                        'name' => $socialUser->getName(),
-                        'email' => $socialUser->getEmail(),
-                        'password' => Hash::make(Str::random(32)), // Random password for OAuth users
-                        'oauth_provider' => $provider,
-                        'oauth_id' => $socialUser->getId(),
-                        'avatar' => $socialUser->getAvatar(),
+                        'name'              => $socialUser->getName(),
+                        'email'             => $socialUser->getEmail(),
+                        'password'          => Hash::make(Str::random(32)), // Random password for OAuth users
+                        'oauth_provider'    => $provider,
+                        'oauth_id'          => $socialUser->getId(),
+                        'avatar'            => $socialUser->getAvatar(),
                         'email_verified_at' => now(), // Auto-verify OAuth users
                     ]
                 );
@@ -165,8 +165,8 @@ class SocialAuthController extends Controller
 
             return response()->json(
                 [
-                    'user' => $user,
-                    'token' => $token,
+                    'user'    => $user,
+                    'token'   => $token,
                     'message' => 'Authenticated successfully',
                 ]
             );
@@ -174,7 +174,7 @@ class SocialAuthController extends Controller
             return response()->json(
                 [
                     'message' => 'Authentication failed',
-                    'error' => config('app.debug') ? $e->getMessage() : null,
+                    'error'   => config('app.debug') ? $e->getMessage() : null,
                 ],
                 400
             );

@@ -118,7 +118,7 @@ class TransferOptimizationService
         }
 
         return [
-            'from_balance' => $data->from_balance,
+            'from_balance'      => $data->from_balance,
             'validation_passed' => true,
         ];
     }
@@ -137,8 +137,8 @@ class TransferOptimizationService
             $accountUuids[] = $transfer['to_account'];
             $balanceChecks[] = [
                 'account_uuid' => $transfer['from_account'],
-                'asset_code' => $transfer['from_asset'],
-                'amount' => $transfer['amount'],
+                'asset_code'   => $transfer['from_asset'],
+                'amount'       => $transfer['amount'],
             ];
         }
 

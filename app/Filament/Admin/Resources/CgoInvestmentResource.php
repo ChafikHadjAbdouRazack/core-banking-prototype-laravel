@@ -64,9 +64,9 @@ class CgoInvestmentResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListCgoInvestments::route('/'),
+            'index'  => Pages\ListCgoInvestments::route('/'),
             'create' => Pages\CreateCgoInvestment::route('/create'),
-            'edit' => Pages\EditCgoInvestment::route('/{record}/edit'),
+            'edit'   => Pages\EditCgoInvestment::route('/{record}/edit'),
         ];
     }
 }

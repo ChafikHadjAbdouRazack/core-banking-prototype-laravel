@@ -27,11 +27,11 @@ class InvestmentAgreementServiceTest extends ServiceTestCase
         $user = User::factory()->create();
         $round = CgoPricingRound::factory()->create();
         $investment = CgoInvestment::factory()->create([
-            'user_id' => $user->id,
+            'user_id'  => $user->id,
             'round_id' => $round->id,
-            'amount' => 5000,
-            'tier' => 'silver',
-            'status' => 'confirmed',
+            'amount'   => 5000,
+            'tier'     => 'silver',
+            'status'   => 'confirmed',
         ]);
 
         // Mock PDF generation
@@ -79,11 +79,11 @@ class InvestmentAgreementServiceTest extends ServiceTestCase
         $user = User::factory()->create();
         $round = CgoPricingRound::factory()->create();
         $investment = CgoInvestment::factory()->create([
-            'user_id' => $user->id,
-            'round_id' => $round->id,
-            'amount' => 10000,
-            'tier' => 'gold',
-            'status' => 'confirmed',
+            'user_id'              => $user->id,
+            'round_id'             => $round->id,
+            'amount'               => 10000,
+            'tier'                 => 'gold',
+            'status'               => 'confirmed',
             'payment_completed_at' => now(),
         ]);
 
@@ -118,24 +118,24 @@ class InvestmentAgreementServiceTest extends ServiceTestCase
     public function test_prepare_agreement_data_includes_all_required_fields()
     {
         $user = User::factory()->create([
-            'name' => 'John Doe',
+            'name'  => 'John Doe',
             'email' => 'john@example.com',
         ]);
 
         $round = CgoPricingRound::factory()->create([
-            'name' => 'Series A',
+            'name'                => 'Series A',
             'pre_money_valuation' => 1000000,
         ]);
 
         $investment = CgoInvestment::factory()->create([
-            'user_id' => $user->id,
-            'round_id' => $round->id,
-            'amount' => 25000,
-            'currency' => 'USD',
-            'shares_purchased' => 2500,
-            'share_price' => 10,
+            'user_id'              => $user->id,
+            'round_id'             => $round->id,
+            'amount'               => 25000,
+            'currency'             => 'USD',
+            'shares_purchased'     => 2500,
+            'share_price'          => 10,
             'ownership_percentage' => 2.5,
-            'tier' => 'silver',
+            'tier'                 => 'silver',
         ]);
 
         // Use reflection to test protected method

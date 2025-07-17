@@ -33,19 +33,19 @@ it('can store and retrieve events', function () {
 
     // Create a test event
     $eventData = [
-        'aggregate_uuid' => $aggregateUuid,
+        'aggregate_uuid'    => $aggregateUuid,
         'aggregate_version' => 1,
-        'event_version' => 1,
-        'event_class' => 'deposit_initiated',
-        'event_properties' => json_encode([
-            'accountUuid' => Str::uuid()->toString(),
-            'amount' => 10000,
-            'currency' => 'USD',
-            'reference' => 'TEST-123',
+        'event_version'     => 1,
+        'event_class'       => 'deposit_initiated',
+        'event_properties'  => json_encode([
+            'accountUuid'       => Str::uuid()->toString(),
+            'amount'            => 10000,
+            'currency'          => 'USD',
+            'reference'         => 'TEST-123',
             'externalReference' => 'pi_test_123',
-            'paymentMethod' => 'card',
+            'paymentMethod'     => 'card',
             'paymentMethodType' => 'visa',
-            'metadata' => [],
+            'metadata'          => [],
         ]),
         'meta_data' => json_encode([
             'aggregate_uuid' => $aggregateUuid,

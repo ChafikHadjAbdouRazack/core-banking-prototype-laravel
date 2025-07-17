@@ -58,9 +58,9 @@ class BatchJobItem extends Model
     ];
 
     protected $casts = [
-        'sequence' => 'integer',
-        'data' => 'array',
-        'result' => 'array',
+        'sequence'     => 'integer',
+        'data'         => 'array',
+        'result'       => 'array',
         'processed_at' => 'datetime',
     ];
 

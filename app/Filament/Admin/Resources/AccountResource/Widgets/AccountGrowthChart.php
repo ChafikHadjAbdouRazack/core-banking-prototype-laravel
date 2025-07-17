@@ -27,21 +27,21 @@ class AccountGrowthChart extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'label' => 'New Accounts',
-                    'data' => $data->pluck('new'),
+                    'label'           => 'New Accounts',
+                    'data'            => $data->pluck('new'),
                     'backgroundColor' => 'rgba(34, 197, 94, 0.8)',
-                    'borderColor' => '#22c55e',
-                    'borderWidth' => 2,
+                    'borderColor'     => '#22c55e',
+                    'borderWidth'     => 2,
                 ],
                 [
-                    'label' => 'Cumulative Total',
-                    'data' => $data->pluck('cumulative'),
-                    'type' => 'line',
+                    'label'           => 'Cumulative Total',
+                    'data'            => $data->pluck('cumulative'),
+                    'type'            => 'line',
                     'backgroundColor' => 'rgba(99, 102, 241, 0.2)',
-                    'borderColor' => '#6366f1',
-                    'borderWidth' => 3,
-                    'tension' => 0.4,
-                    'yAxisID' => 'y1',
+                    'borderColor'     => '#6366f1',
+                    'borderWidth'     => 3,
+                    'tension'         => 0.4,
+                    'yAxisID'         => 'y1',
                 ],
             ],
             'labels' => $data->pluck('date'),
@@ -59,18 +59,18 @@ class AccountGrowthChart extends ChartWidget
             'scales' => [
                 'y' => [
                     'beginAtZero' => true,
-                    'position' => 'left',
-                    'title' => [
+                    'position'    => 'left',
+                    'title'       => [
                         'display' => true,
-                        'text' => 'New Accounts',
+                        'text'    => 'New Accounts',
                     ],
                 ],
                 'y1' => [
                     'beginAtZero' => true,
-                    'position' => 'right',
-                    'title' => [
+                    'position'    => 'right',
+                    'title'       => [
                         'display' => true,
-                        'text' => 'Total Accounts',
+                        'text'    => 'Total Accounts',
                     ],
                     'grid' => [
                         'drawOnChartArea' => false,
@@ -79,7 +79,7 @@ class AccountGrowthChart extends ChartWidget
             ],
             'plugins' => [
                 'legend' => [
-                    'display' => true,
+                    'display'  => true,
                     'position' => 'top',
                 ],
             ],
@@ -89,9 +89,9 @@ class AccountGrowthChart extends ChartWidget
     protected function getFilters(): ?array
     {
         return [
-            '7d' => 'Last 7 Days',
-            '30d' => 'Last 30 Days',
-            '90d' => 'Last 90 Days',
+            '7d'   => 'Last 7 Days',
+            '30d'  => 'Last 30 Days',
+            '90d'  => 'Last 90 Days',
             '365d' => 'Last Year',
         ];
     }
@@ -101,24 +101,24 @@ class AccountGrowthChart extends ChartWidget
         $endDate = now();
 
         $startDate = match ($period) {
-            '7d' => $endDate->copy()->subDays(7),
-            '30d' => $endDate->copy()->subDays(30),
-            '90d' => $endDate->copy()->subDays(90),
-            '365d' => $endDate->copy()->subDays(365),
+            '7d'    => $endDate->copy()->subDays(7),
+            '30d'   => $endDate->copy()->subDays(30),
+            '90d'   => $endDate->copy()->subDays(90),
+            '365d'  => $endDate->copy()->subDays(365),
             default => $endDate->copy()->subDays(30),
         };
 
         $groupBy = match ($period) {
-            '7d' => ['interval' => 'day', 'format' => 'M d'],
-            '30d' => ['interval' => 'day', 'format' => 'M d'],
-            '90d' => ['interval' => 'week', 'format' => 'M d'],
-            '365d' => ['interval' => 'month', 'format' => 'M Y'],
+            '7d'    => ['interval' => 'day', 'format' => 'M d'],
+            '30d'   => ['interval' => 'day', 'format' => 'M d'],
+            '90d'   => ['interval' => 'week', 'format' => 'M d'],
+            '365d'  => ['interval' => 'month', 'format' => 'M Y'],
             default => ['interval' => 'day', 'format' => 'M d'],
         };
 
         $dateFormat = match ($groupBy['interval']) {
-            'day' => '%Y-%m-%d',
-            'week' => '%Y-%W',
+            'day'   => '%Y-%m-%d',
+            'week'  => '%Y-%W',
             'month' => '%Y-%m',
             default => '%Y-%m-%d',
         };
@@ -148,8 +148,8 @@ class AccountGrowthChart extends ChartWidget
         while ($current <= $endDate) {
             $periodKey = $current->format(
                 match ($groupBy['interval']) {
-                    'day' => 'Y-m-d',
-                    'week' => 'Y-W',
+                    'day'   => 'Y-m-d',
+                    'week'  => 'Y-W',
                     'month' => 'Y-m',
                     default => 'Y-m-d',
                 }
@@ -161,15 +161,15 @@ class AccountGrowthChart extends ChartWidget
 
             $data->push(
                 [
-                    'date' => $current->format($groupBy['format']),
-                    'new' => $new,
+                    'date'       => $current->format($groupBy['format']),
+                    'new'        => $new,
                     'cumulative' => $cumulative,
                 ]
             );
 
             match ($groupBy['interval']) {
-                'day' => $current->addDay(),
-                'week' => $current->addWeek(),
+                'day'   => $current->addDay(),
+                'week'  => $current->addWeek(),
                 'month' => $current->addMonth(),
                 default => $current->addDay(),
             };

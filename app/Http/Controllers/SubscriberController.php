@@ -55,7 +55,7 @@ class SubscriberController extends Controller
         $validated = $request->validate(
             [
                 'email' => 'required|email',
-                'tags' => 'array',
+                'tags'  => 'array',
             ]
         );
 

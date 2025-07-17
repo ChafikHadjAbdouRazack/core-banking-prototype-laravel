@@ -94,12 +94,12 @@ class BasketPerformanceController extends Controller
             // Try to calculate it
             $now = now();
             [$periodStart, $periodEnd] = match ($period) {
-                'hour' => [$now->copy()->subHour(), $now],
-                'day' => [$now->copy()->subDay(), $now],
-                'week' => [$now->copy()->subWeek(), $now],
-                'month' => [$now->copy()->subMonth(), $now],
-                'quarter' => [$now->copy()->subQuarter(), $now],
-                'year' => [$now->copy()->subYear(), $now],
+                'hour'     => [$now->copy()->subHour(), $now],
+                'day'      => [$now->copy()->subDay(), $now],
+                'week'     => [$now->copy()->subWeek(), $now],
+                'month'    => [$now->copy()->subMonth(), $now],
+                'quarter'  => [$now->copy()->subQuarter(), $now],
+                'year'     => [$now->copy()->subYear(), $now],
                 'all_time' => [
                     $basket->values()->orderBy('calculated_at')->first()?->calculated_at ?? $now->copy()->subYear(),
                     $now,
@@ -117,7 +117,7 @@ class BasketPerformanceController extends Controller
         if (! $performance) {
             return response()->json(
                 [
-                    'data' => null,
+                    'data'    => null,
                     'message' => 'Insufficient data to calculate performance',
                 ],
                 404
@@ -185,7 +185,7 @@ class BasketPerformanceController extends Controller
         $request->validate(
             [
                 'period_type' => ['sometimes', Rule::in(['hour', 'day', 'week', 'month', 'quarter', 'year'])],
-                'limit' => ['sometimes', 'integer', 'min:1', 'max:365'],
+                'limit'       => ['sometimes', 'integer', 'min:1', 'max:365'],
             ]
         );
 
@@ -374,7 +374,7 @@ class BasketPerformanceController extends Controller
         $request->validate(
             [
                 'period' => ['sometimes', 'string'],
-                'limit' => ['sometimes', 'integer', 'min:1', 'max:20'],
+                'limit'  => ['sometimes', 'integer', 'min:1', 'max:20'],
             ]
         );
 
@@ -434,7 +434,7 @@ class BasketPerformanceController extends Controller
         $request->validate(
             [
                 'period' => ['sometimes', 'string'],
-                'limit' => ['sometimes', 'integer', 'min:1', 'max:20'],
+                'limit'  => ['sometimes', 'integer', 'min:1', 'max:20'],
             ]
         );
 
@@ -503,12 +503,12 @@ class BasketPerformanceController extends Controller
         } else {
             $now = now();
             [$periodStart, $periodEnd] = match ($period) {
-                'hour' => [$now->copy()->subHour(), $now],
-                'day' => [$now->copy()->subDay(), $now],
-                'week' => [$now->copy()->subWeek(), $now],
-                'month' => [$now->copy()->subMonth(), $now],
+                'hour'    => [$now->copy()->subHour(), $now],
+                'day'     => [$now->copy()->subDay(), $now],
+                'week'    => [$now->copy()->subWeek(), $now],
+                'month'   => [$now->copy()->subMonth(), $now],
                 'quarter' => [$now->copy()->subQuarter(), $now],
-                'year' => [$now->copy()->subYear(), $now],
+                'year'    => [$now->copy()->subYear(), $now],
             };
 
             $performance = $this->performanceService->calculatePerformance(
@@ -523,7 +523,7 @@ class BasketPerformanceController extends Controller
 
         return response()->json(
             [
-                'message' => 'Performance calculation completed',
+                'message'            => 'Performance calculation completed',
                 'calculated_periods' => $calculatedPeriods,
             ]
         );

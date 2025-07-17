@@ -8,8 +8,8 @@ it('can create a team invitation', function () {
 
     $invitation = TeamInvitation::create([
         'team_id' => $team->id,
-        'email' => 'test@example.com',
-        'role' => 'editor',
+        'email'   => 'test@example.com',
+        'role'    => 'editor',
     ]);
 
     expect($invitation)->toBeInstanceOf(TeamInvitation::class);
@@ -29,8 +29,8 @@ it('belongs to a team', function () {
     $team = Team::factory()->create();
     $invitation = TeamInvitation::create([
         'team_id' => $team->id,
-        'email' => 'test@example.com',
-        'role' => 'editor',
+        'email'   => 'test@example.com',
+        'role'    => 'editor',
     ]);
 
     expect($invitation->team)->toBeInstanceOf(Team::class);

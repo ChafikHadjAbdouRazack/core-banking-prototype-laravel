@@ -22,24 +22,24 @@ class FinancialInstitutionApplicationController extends Controller
     {
         $validated = $request->validate(
             [
-                'institution_name' => 'required|string|max:255',
-                'country' => 'required|string|max:255',
-                'contact_name' => 'required|string|max:255',
-                'contact_email' => 'required|email|max:255',
+                'institution_name'       => 'required|string|max:255',
+                'country'                => 'required|string|max:255',
+                'contact_name'           => 'required|string|max:255',
+                'contact_email'          => 'required|email|max:255',
                 'technical_capabilities' => 'required|string|min:50',
-                'regulatory_compliance' => 'required|string|min:50',
-                'financial_strength' => 'required|string|min:50',
-                'insurance_coverage' => 'required|string|min:50',
-                'partnership_vision' => 'nullable|string',
-                'terms' => 'required|accepted',
+                'regulatory_compliance'  => 'required|string|min:50',
+                'financial_strength'     => 'required|string|min:50',
+                'insurance_coverage'     => 'required|string|min:50',
+                'partnership_vision'     => 'nullable|string',
+                'terms'                  => 'required|accepted',
             ],
             [
-                'terms.required' => 'Please accept the terms and conditions.',
-                'terms.accepted' => 'Please accept the terms and conditions.',
+                'terms.required'             => 'Please accept the terms and conditions.',
+                'terms.accepted'             => 'Please accept the terms and conditions.',
                 'technical_capabilities.min' => 'Please provide at least 50 characters describing your technical capabilities.',
-                'regulatory_compliance.min' => 'Please provide at least 50 characters describing your regulatory compliance.',
-                'financial_strength.min' => 'Please provide at least 50 characters describing your financial strength.',
-                'insurance_coverage.min' => 'Please provide at least 50 characters describing your insurance coverage.',
+                'regulatory_compliance.min'  => 'Please provide at least 50 characters describing your regulatory compliance.',
+                'financial_strength.min'     => 'Please provide at least 50 characters describing your financial strength.',
+                'insurance_coverage.min'     => 'Please provide at least 50 characters describing your insurance coverage.',
             ]
         );
 
@@ -48,9 +48,9 @@ class FinancialInstitutionApplicationController extends Controller
             'New financial institution application received',
             [
                 'institution' => $validated['institution_name'],
-                'country' => $validated['country'],
-                'contact' => $validated['contact_name'],
-                'email' => $validated['contact_email'],
+                'country'     => $validated['country'],
+                'contact'     => $validated['contact_name'],
+                'email'       => $validated['contact_email'],
             ]
         );
 

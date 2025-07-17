@@ -8,11 +8,11 @@ use App\Domain\Account\DataObjects\AccountUuid;
 use App\Domain\Account\DataObjects\Hash;
 use App\Domain\Account\Events\AssetBalanceAdded;
 use App\Domain\Account\Events\AssetBalanceSubtracted;
+use App\Domain\Account\Models\AccountBalance;
 use App\Domain\Basket\Events\BasketDecomposed;
 use App\Domain\Basket\Models\BasketAsset;
 use App\Domain\Wallet\Services\WalletService;
 use App\Models\Account;
-use App\Domain\Account\Models\AccountBalance;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -29,7 +29,7 @@ class BasketAccountService
      */
     public function addBasketBalance(Account $account, string $basketCode, int $amount): AccountBalance
     {
-        /** @var \App\Domain\Basket\Models\BasketAsset|null $basket */
+        /** @var BasketAsset|null $basket */
         $basket = null;
         /** @var \Illuminate\Database\Eloquent\Model|null $$basket */
         $$basket = BasketAsset::where('code', $basketCode)->first();
@@ -106,7 +106,7 @@ class BasketAccountService
      */
     public function decomposeBasket(Account $account, string $basketCode, int $amount): array
     {
-        /** @var \App\Domain\Basket\Models\BasketAsset|null $basket */
+        /** @var BasketAsset|null $basket */
         $basket = null;
         /** @var \Illuminate\Database\Eloquent\Model|null $$basket */
         $$basket = BasketAsset::where('code', $basketCode)->first();
@@ -187,7 +187,7 @@ class BasketAccountService
      */
     public function composeBasket(Account $account, string $basketCode, int $amount): array
     {
-        /** @var \App\Domain\Basket\Models\BasketAsset|null $basket */
+        /** @var BasketAsset|null $basket */
         $basket = null;
         /** @var \Illuminate\Database\Eloquent\Model|null $$basket */
         $$basket = BasketAsset::where('code', $basketCode)->first();
@@ -276,7 +276,7 @@ class BasketAccountService
      */
     public function getBasketHoldingsValue(Account $account): array
     {
-        /** @var \App\Domain\Basket\Models\BasketAsset|null $basket */
+        /** @var BasketAsset|null $basket */
         $basket = null;
         // Get balances for assets that have corresponding basket assets
         $basketCodes = BasketAsset::pluck('code');
@@ -328,7 +328,7 @@ class BasketAccountService
      */
     public function calculateRequiredComponents(string $basketCode, int $amount): array
     {
-        /** @var \App\Domain\Basket\Models\BasketAsset|null $basket */
+        /** @var BasketAsset|null $basket */
         $basket = null;
         /** @var \Illuminate\Database\Eloquent\Model|null $$basket */
         $$basket = BasketAsset::where('code', $basketCode)->first();

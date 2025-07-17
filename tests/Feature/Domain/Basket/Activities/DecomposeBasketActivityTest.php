@@ -74,7 +74,7 @@ class DecomposeBasketActivityTest extends TestCase
         $basketCode = 'GCU';
         $amount = 5000;
         $expectedResult = [
-            'transaction_id' => 'txn-456',
+            'transaction_id'  => 'txn-456',
             'assets_returned' => [
                 'USD' => 2500,
                 'EUR' => 2275,

@@ -29,15 +29,15 @@ class InternalAMMOracleTest extends TestCase
     {
         // Create a liquidity pool
         $pool = LiquidityPool::create([
-            'pool_id' => 'pool-123',
-            'base_currency' => 'ETH',
+            'pool_id'        => 'pool-123',
+            'base_currency'  => 'ETH',
             'quote_currency' => 'USDT',
-            'base_reserve' => '1000.00000000', // 1000 ETH
-            'quote_reserve' => '3200000.00000000', // 3.2M USDT
-            'total_shares' => '1000000.00000000',
-            'is_active' => true,
-            'volume_24h' => '500000.00000000',
-            'updated_at' => Carbon::now(),
+            'base_reserve'   => '1000.00000000', // 1000 ETH
+            'quote_reserve'  => '3200000.00000000', // 3.2M USDT
+            'total_shares'   => '1000000.00000000',
+            'is_active'      => true,
+            'volume_24h'     => '500000.00000000',
+            'updated_at'     => Carbon::now(),
         ]);
 
         $priceData = $this->oracle->getPrice('ETH', 'USDT');
@@ -64,14 +64,14 @@ class InternalAMMOracleTest extends TestCase
     {
         // Create pool with USDT/ETH (inverted from what we request)
         LiquidityPool::create([
-            'pool_id' => 'pool-456',
-            'base_currency' => 'USDT',
+            'pool_id'        => 'pool-456',
+            'base_currency'  => 'USDT',
             'quote_currency' => 'ETH',
-            'base_reserve' => '3200000.00000000', // 3.2M USDT
-            'quote_reserve' => '1000.00000000', // 1000 ETH
-            'total_shares' => '1000000.00000000',
-            'is_active' => true,
-            'volume_24h' => '500000.00000000',
+            'base_reserve'   => '3200000.00000000', // 3.2M USDT
+            'quote_reserve'  => '1000.00000000', // 1000 ETH
+            'total_shares'   => '1000000.00000000',
+            'is_active'      => true,
+            'volume_24h'     => '500000.00000000',
         ]);
 
         $priceData = $this->oracle->getPrice('ETH', 'USDT');
@@ -95,23 +95,23 @@ class InternalAMMOracleTest extends TestCase
     {
         // Create multiple pools
         LiquidityPool::create([
-            'pool_id' => 'pool-btc',
-            'base_currency' => 'BTC',
+            'pool_id'        => 'pool-btc',
+            'base_currency'  => 'BTC',
             'quote_currency' => 'USDT',
-            'base_reserve' => '100.00000000',
-            'quote_reserve' => '4800000.00000000',
-            'total_shares' => '100000.00000000',
-            'is_active' => true,
+            'base_reserve'   => '100.00000000',
+            'quote_reserve'  => '4800000.00000000',
+            'total_shares'   => '100000.00000000',
+            'is_active'      => true,
         ]);
 
         LiquidityPool::create([
-            'pool_id' => 'pool-eth',
-            'base_currency' => 'ETH',
+            'pool_id'        => 'pool-eth',
+            'base_currency'  => 'ETH',
             'quote_currency' => 'USDT',
-            'base_reserve' => '1000.00000000',
-            'quote_reserve' => '3200000.00000000',
-            'total_shares' => '100000.00000000',
-            'is_active' => true,
+            'base_reserve'   => '1000.00000000',
+            'quote_reserve'  => '3200000.00000000',
+            'total_shares'   => '100000.00000000',
+            'is_active'      => true,
         ]);
 
         $pairs = ['BTC/USDT', 'ETH/USDT'];
@@ -137,13 +137,13 @@ class InternalAMMOracleTest extends TestCase
             ->with(\Mockery::pattern('/Failed to get AMM price for XRP\/USDT:/'));
 
         LiquidityPool::create([
-            'pool_id' => 'pool-btc',
-            'base_currency' => 'BTC',
+            'pool_id'        => 'pool-btc',
+            'base_currency'  => 'BTC',
             'quote_currency' => 'USDT',
-            'base_reserve' => '100.00000000',
-            'quote_reserve' => '4800000.00000000',
-            'total_shares' => '100000.00000000',
-            'is_active' => true,
+            'base_reserve'   => '100.00000000',
+            'quote_reserve'  => '4800000.00000000',
+            'total_shares'   => '100000.00000000',
+            'is_active'      => true,
         ]);
 
         $pairs = ['BTC/USDT', 'XRP/USDT'];
@@ -167,13 +167,13 @@ class InternalAMMOracleTest extends TestCase
     public function test_is_healthy_returns_true_when_active_pools_exist(): void
     {
         LiquidityPool::create([
-            'pool_id' => 'pool-active',
-            'base_currency' => 'ETH',
+            'pool_id'        => 'pool-active',
+            'base_currency'  => 'ETH',
             'quote_currency' => 'USDT',
-            'base_reserve' => '1000.00000000',
-            'quote_reserve' => '3200000.00000000',
-            'total_shares' => '100000.00000000',
-            'is_active' => true,
+            'base_reserve'   => '1000.00000000',
+            'quote_reserve'  => '3200000.00000000',
+            'total_shares'   => '100000.00000000',
+            'is_active'      => true,
         ]);
 
         $this->assertTrue($this->oracle->isHealthy());
@@ -184,13 +184,13 @@ class InternalAMMOracleTest extends TestCase
     {
         // Create only inactive pool
         LiquidityPool::create([
-            'pool_id' => 'pool-inactive',
-            'base_currency' => 'ETH',
+            'pool_id'        => 'pool-inactive',
+            'base_currency'  => 'ETH',
             'quote_currency' => 'USDT',
-            'base_reserve' => '1000.00000000',
-            'quote_reserve' => '3200000.00000000',
-            'total_shares' => '100000.00000000',
-            'is_active' => false,
+            'base_reserve'   => '1000.00000000',
+            'quote_reserve'  => '3200000.00000000',
+            'total_shares'   => '100000.00000000',
+            'is_active'      => false,
         ]);
 
         $this->assertFalse($this->oracle->isHealthy());
@@ -227,13 +227,13 @@ class InternalAMMOracleTest extends TestCase
 
         foreach ($testCases as $i => $case) {
             LiquidityPool::create([
-                'pool_id' => "pool-test-{$i}",
-                'base_currency' => 'TOKEN',
+                'pool_id'        => "pool-test-{$i}",
+                'base_currency'  => 'TOKEN',
                 'quote_currency' => 'USDT',
-                'base_reserve' => $case[0],
-                'quote_reserve' => $case[1],
-                'total_shares' => '100000.00000000',
-                'is_active' => true,
+                'base_reserve'   => $case[0],
+                'quote_reserve'  => $case[1],
+                'total_shares'   => '100000.00000000',
+                'is_active'      => true,
             ]);
 
             $priceData = $this->oracle->getPrice('TOKEN', 'USDT');
@@ -248,13 +248,13 @@ class InternalAMMOracleTest extends TestCase
     public function test_price_calculation_maintains_precision(): void
     {
         LiquidityPool::create([
-            'pool_id' => 'pool-precision',
-            'base_currency' => 'BTC',
+            'pool_id'        => 'pool-precision',
+            'base_currency'  => 'BTC',
             'quote_currency' => 'USDT',
-            'base_reserve' => '1.23456789',
-            'quote_reserve' => '59259.25925926',
-            'total_shares' => '100.00000000',
-            'is_active' => true,
+            'base_reserve'   => '1.23456789',
+            'quote_reserve'  => '59259.25925926',
+            'total_shares'   => '100.00000000',
+            'is_active'      => true,
         ]);
 
         $priceData = $this->oracle->getPrice('BTC', 'USDT');
@@ -270,13 +270,13 @@ class InternalAMMOracleTest extends TestCase
     public function test_k_value_calculation_is_correct(): void
     {
         LiquidityPool::create([
-            'pool_id' => 'pool-k-test',
-            'base_currency' => 'ETH',
+            'pool_id'        => 'pool-k-test',
+            'base_currency'  => 'ETH',
             'quote_currency' => 'DAI',
-            'base_reserve' => '1000.12345678',
-            'quote_reserve' => '3200000.87654321',
-            'total_shares' => '100000.00000000',
-            'is_active' => true,
+            'base_reserve'   => '1000.12345678',
+            'quote_reserve'  => '3200000.87654321',
+            'total_shares'   => '100000.00000000',
+            'is_active'      => true,
         ]);
 
         $priceData = $this->oracle->getPrice('ETH', 'DAI');

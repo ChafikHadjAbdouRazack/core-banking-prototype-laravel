@@ -2,7 +2,6 @@
 
 namespace App\Domain\Lending\Models;
 
-use App\Domain\Lending\Models\LoanApplication;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;

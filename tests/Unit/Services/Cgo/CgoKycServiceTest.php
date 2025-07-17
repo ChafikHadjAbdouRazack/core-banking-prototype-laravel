@@ -50,12 +50,12 @@ class CgoKycServiceTest extends ServiceTestCase
     {
         $user = User::factory()->create([
             'kyc_status' => 'approved',
-            'kyc_level' => 'basic',
+            'kyc_level'  => 'basic',
         ]);
 
         $investment = CgoInvestment::factory()->create([
             'user_id' => $user->id,
-            'amount' => 500, // Below basic threshold
+            'amount'  => 500, // Below basic threshold
         ]);
 
         $this->kycService->shouldReceive('getRequirements')
@@ -75,12 +75,12 @@ class CgoKycServiceTest extends ServiceTestCase
     {
         $user = User::factory()->create([
             'kyc_status' => 'approved',
-            'kyc_level' => 'basic',
+            'kyc_level'  => 'basic',
         ]);
 
         $investment = CgoInvestment::factory()->create([
             'user_id' => $user->id,
-            'amount' => 5000, // Above basic, below enhanced threshold
+            'amount'  => 5000, // Above basic, below enhanced threshold
         ]);
 
         $this->kycService->shouldReceive('getRequirements')
@@ -99,12 +99,12 @@ class CgoKycServiceTest extends ServiceTestCase
     {
         $user = User::factory()->create([
             'kyc_status' => 'approved',
-            'kyc_level' => 'enhanced',
+            'kyc_level'  => 'enhanced',
         ]);
 
         $investment = CgoInvestment::factory()->create([
             'user_id' => $user->id,
-            'amount' => 75000, // Above full threshold
+            'amount'  => 75000, // Above full threshold
         ]);
 
         $this->kycService->shouldReceive('getRequirements')
@@ -123,13 +123,13 @@ class CgoKycServiceTest extends ServiceTestCase
     {
         $user = User::factory()->create([
             'kyc_status' => 'not_started',
-            'kyc_level' => null,
+            'kyc_level'  => null,
         ]);
 
         $investment = CgoInvestment::factory()->create([
             'user_id' => $user->id,
-            'amount' => 2000,
-            'status' => 'pending',
+            'amount'  => 2000,
+            'status'  => 'pending',
         ]);
 
         $this->kycService->shouldReceive('getRequirements')->andReturn(['documents' => []]);
@@ -147,16 +147,16 @@ class CgoKycServiceTest extends ServiceTestCase
     public function test_verify_investor_performs_aml_checks_for_high_value()
     {
         $user = User::factory()->create([
-            'kyc_status' => 'approved',
-            'kyc_level' => 'full',
-            'pep_status' => false,
+            'kyc_status'  => 'approved',
+            'kyc_level'   => 'full',
+            'pep_status'  => false,
             'risk_rating' => 'low',
         ]);
 
         $investment = CgoInvestment::factory()->create([
             'user_id' => $user->id,
-            'amount' => 15000, // Above enhanced threshold
-            'status' => 'pending',
+            'amount'  => 15000, // Above enhanced threshold
+            'status'  => 'pending',
         ]);
 
         $this->kycService->shouldReceive('getRequirements')->andReturn(['documents' => []]);
@@ -180,14 +180,14 @@ class CgoKycServiceTest extends ServiceTestCase
     {
         $user = User::factory()->create([
             'kyc_status' => 'approved',
-            'kyc_level' => 'full',
+            'kyc_level'  => 'full',
             'pep_status' => true, // PEP user
         ]);
 
         $investment = CgoInvestment::factory()->create([
             'user_id' => $user->id,
-            'amount' => 15000,
-            'status' => 'pending',
+            'amount'  => 15000,
+            'status'  => 'pending',
         ]);
 
         $this->kycService->shouldReceive('getRequirements')->andReturn(['documents' => []]);
@@ -205,15 +205,15 @@ class CgoKycServiceTest extends ServiceTestCase
     public function test_verify_investor_flags_sanctioned_country()
     {
         $user = User::factory()->create([
-            'kyc_status' => 'approved',
-            'kyc_level' => 'full',
+            'kyc_status'   => 'approved',
+            'kyc_level'    => 'full',
             'country_code' => 'IR', // Iran - sanctioned country
         ]);
 
         $investment = CgoInvestment::factory()->create([
             'user_id' => $user->id,
-            'amount' => 15000,
-            'status' => 'pending',
+            'amount'  => 15000,
+            'status'  => 'pending',
         ]);
 
         $this->kycService->shouldReceive('getRequirements')->andReturn(['documents' => []]);
@@ -237,13 +237,13 @@ class CgoKycServiceTest extends ServiceTestCase
 
         // Create multiple recent investments
         CgoInvestment::factory()->count(4)->create([
-            'user_id' => $user->id,
+            'user_id'    => $user->id,
             'created_at' => now()->subDays(3),
         ]);
 
         $investment = CgoInvestment::factory()->create([
             'user_id' => $user->id,
-            'amount' => 5000,
+            'amount'  => 5000,
         ]);
 
         $method = new \ReflectionMethod($this->service, 'checkTransactionPatterns');
@@ -259,8 +259,8 @@ class CgoKycServiceTest extends ServiceTestCase
     public function test_determine_risk_level()
     {
         $user = User::factory()->create([
-            'created_at' => now()->subDays(30), // New user
-            'pep_status' => false,
+            'created_at'   => now()->subDays(30), // New user
+            'pep_status'   => false,
             'country_code' => 'US',
         ]);
 
@@ -282,7 +282,7 @@ class CgoKycServiceTest extends ServiceTestCase
         $user = User::factory()->create();
         $investment = CgoInvestment::factory()->create([
             'user_id' => $user->id,
-            'amount' => 5000,
+            'amount'  => 5000,
         ]);
 
         $verification = $this->service->createVerificationRequest($investment, 'enhanced');

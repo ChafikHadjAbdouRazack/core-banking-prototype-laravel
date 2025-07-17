@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Models\User;
 use App\Domain\Account\Models\AccountBalance;
 use App\Domain\Account\Models\TransactionProjection;
 use App\Domain\Asset\Models\Asset;
@@ -165,7 +164,7 @@ class Account extends Model
      * Get transactions from the transaction projection table.
      */
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function transactions()
     {

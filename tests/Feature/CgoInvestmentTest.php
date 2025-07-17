@@ -23,8 +23,8 @@ class CgoInvestmentTest extends TestCase
 
         $this->user = User::factory()->create();
         $this->activePricingRound = CgoPricingRound::factory()->active()->create([
-            'round_number' => 1,
-            'share_price' => 10.00,
+            'round_number'         => 1,
+            'share_price'          => 10.00,
             'max_shares_available' => 10000,
         ]);
     }
@@ -99,10 +99,10 @@ class CgoInvestmentTest extends TestCase
     public function users_can_make_crypto_investment()
     {
         $response = $this->actingAs($this->user)->post('/cgo/invest', [
-            'amount' => 1000,
-            'payment_method' => 'crypto',
+            'amount'          => 1000,
+            'payment_method'  => 'crypto',
             'crypto_currency' => 'BTC',
-            'terms' => 'on',
+            'terms'           => 'on',
         ]);
 
         $response->assertStatus(200);
@@ -110,11 +110,11 @@ class CgoInvestmentTest extends TestCase
         $response->assertSee('Send BTC Payment');
 
         $this->assertDatabaseHas('cgo_investments', [
-            'user_id' => $this->user->id,
-            'amount' => 1000,
+            'user_id'        => $this->user->id,
+            'amount'         => 1000,
             'payment_method' => 'crypto',
-            'status' => 'pending',
-            'tier' => 'silver',
+            'status'         => 'pending',
+            'tier'           => 'silver',
         ]);
     }
 
@@ -122,9 +122,9 @@ class CgoInvestmentTest extends TestCase
     public function users_can_make_bank_transfer_investment()
     {
         $response = $this->actingAs($this->user)->post('/cgo/invest', [
-            'amount' => 500,
+            'amount'         => 500,
             'payment_method' => 'bank_transfer',
-            'terms' => 'on',
+            'terms'          => 'on',
         ]);
 
         $response->assertStatus(200);
@@ -132,11 +132,11 @@ class CgoInvestmentTest extends TestCase
         $response->assertSee('Complete Bank Transfer');
 
         $this->assertDatabaseHas('cgo_investments', [
-            'user_id' => $this->user->id,
-            'amount' => 500,
+            'user_id'        => $this->user->id,
+            'amount'         => 500,
             'payment_method' => 'bank_transfer',
-            'status' => 'pending',
-            'tier' => 'bronze',
+            'status'         => 'pending',
+            'tier'           => 'bronze',
         ]);
     }
 
@@ -145,10 +145,10 @@ class CgoInvestmentTest extends TestCase
     {
         // Bronze tier
         $response = $this->actingAs($this->user)->post('/cgo/invest', [
-            'amount' => 100,
-            'payment_method' => 'crypto',
+            'amount'          => 100,
+            'payment_method'  => 'crypto',
             'crypto_currency' => 'USDT',
-            'terms' => 'on',
+            'terms'           => 'on',
         ]);
 
         $investment = CgoInvestment::where('user_id', $this->user->id)->latest()->first();
@@ -156,10 +156,10 @@ class CgoInvestmentTest extends TestCase
 
         // Silver tier
         $response = $this->actingAs($this->user)->post('/cgo/invest', [
-            'amount' => 1000,
-            'payment_method' => 'crypto',
+            'amount'          => 1000,
+            'payment_method'  => 'crypto',
             'crypto_currency' => 'USDT',
-            'terms' => 'on',
+            'terms'           => 'on',
         ]);
 
         $investment = CgoInvestment::where('user_id', $this->user->id)->latest()->first();
@@ -167,10 +167,10 @@ class CgoInvestmentTest extends TestCase
 
         // Gold tier
         $response = $this->actingAs($this->user)->post('/cgo/invest', [
-            'amount' => 10000,
-            'payment_method' => 'crypto',
+            'amount'          => 10000,
+            'payment_method'  => 'crypto',
             'crypto_currency' => 'USDT',
-            'terms' => 'on',
+            'terms'           => 'on',
         ]);
 
         $investment = CgoInvestment::where('user_id', $this->user->id)->latest()->first();
@@ -182,19 +182,19 @@ class CgoInvestmentTest extends TestCase
     {
         // Create an existing investment that brings user to 0.9% ownership
         CgoInvestment::factory()->confirmed()->create([
-            'user_id' => $this->user->id,
-            'round_id' => $this->activePricingRound->id,
-            'amount' => 90000, // 9000 shares = 0.9% of 1M total
-            'shares_purchased' => 9000,
+            'user_id'              => $this->user->id,
+            'round_id'             => $this->activePricingRound->id,
+            'amount'               => 90000, // 9000 shares = 0.9% of 1M total
+            'shares_purchased'     => 9000,
             'ownership_percentage' => 0.9,
         ]);
 
         // Try to invest more than 0.1% (would exceed 1% limit)
         $response = $this->actingAs($this->user)->post('/cgo/invest', [
-            'amount' => 20000, // Would be 2000 shares = 0.2%
-            'payment_method' => 'crypto',
+            'amount'          => 20000, // Would be 2000 shares = 0.2%
+            'payment_method'  => 'crypto',
             'crypto_currency' => 'BTC',
-            'terms' => 'on',
+            'terms'           => 'on',
         ]);
 
         $response->assertRedirect();
@@ -206,14 +206,14 @@ class CgoInvestmentTest extends TestCase
     {
         $this->activePricingRound->update([
             'max_shares_available' => 100,
-            'shares_sold' => 50, // Only 50 shares remaining
+            'shares_sold'          => 50, // Only 50 shares remaining
         ]);
 
         $response = $this->actingAs($this->user)->post('/cgo/invest', [
-            'amount' => 1000, // Would need 100 shares
-            'payment_method' => 'crypto',
+            'amount'          => 1000, // Would need 100 shares
+            'payment_method'  => 'crypto',
             'crypto_currency' => 'BTC',
-            'terms' => 'on',
+            'terms'           => 'on',
         ]);
 
         $response->assertRedirect();
@@ -224,10 +224,10 @@ class CgoInvestmentTest extends TestCase
     public function minimum_investment_amount_is_enforced()
     {
         $response = $this->actingAs($this->user)->post('/cgo/invest', [
-            'amount' => 50, // Below $100 minimum
-            'payment_method' => 'crypto',
+            'amount'          => 50, // Below $100 minimum
+            'payment_method'  => 'crypto',
             'crypto_currency' => 'BTC',
-            'terms' => 'on',
+            'terms'           => 'on',
         ]);
 
         $response->assertSessionHasErrors(['amount']);
@@ -237,8 +237,8 @@ class CgoInvestmentTest extends TestCase
     public function terms_must_be_accepted()
     {
         $response = $this->actingAs($this->user)->post('/cgo/invest', [
-            'amount' => 1000,
-            'payment_method' => 'crypto',
+            'amount'          => 1000,
+            'payment_method'  => 'crypto',
             'crypto_currency' => 'BTC',
             // 'terms' => 'on', // Not accepting terms
         ]);
@@ -250,7 +250,7 @@ class CgoInvestmentTest extends TestCase
     public function crypto_currency_required_for_crypto_payment()
     {
         $response = $this->actingAs($this->user)->post('/cgo/invest', [
-            'amount' => 1000,
+            'amount'         => 1000,
             'payment_method' => 'crypto',
             // 'crypto_currency' => 'BTC', // Missing crypto currency
             'terms' => 'on',
@@ -263,7 +263,7 @@ class CgoInvestmentTest extends TestCase
     public function users_can_view_their_investment_history()
     {
         $investments = CgoInvestment::factory()->count(3)->create([
-            'user_id' => $this->user->id,
+            'user_id'  => $this->user->id,
             'round_id' => $this->activePricingRound->id,
         ]);
 

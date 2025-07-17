@@ -126,20 +126,20 @@ class SocialAuthControllerTest extends ControllerTestCase
             ])
             ->assertJson([
                 'user' => [
-                    'name' => 'John Doe',
-                    'email' => 'john@example.com',
+                    'name'           => 'John Doe',
+                    'email'          => 'john@example.com',
                     'oauth_provider' => 'google',
-                    'oauth_id' => 'google-123',
-                    'avatar' => 'https://example.com/avatar.jpg',
+                    'oauth_id'       => 'google-123',
+                    'avatar'         => 'https://example.com/avatar.jpg',
                 ],
                 'message' => 'Authenticated successfully',
             ]);
 
         // Verify user was created in database
         $this->assertDatabaseHas('users', [
-            'email' => 'john@example.com',
+            'email'          => 'john@example.com',
             'oauth_provider' => 'google',
-            'oauth_id' => 'google-123',
+            'oauth_id'       => 'google-123',
         ]);
 
         // Verify email is auto-verified
@@ -151,9 +151,9 @@ class SocialAuthControllerTest extends ControllerTestCase
     public function test_callback_authenticates_existing_user(): void
     {
         $existingUser = User::factory()->create([
-            'email' => 'existing@example.com',
+            'email'          => 'existing@example.com',
             'oauth_provider' => 'google',
-            'oauth_id' => 'google-123',
+            'oauth_id'       => 'google-123',
         ]);
 
         $socialiteUser = \Mockery::mock(SocialiteUser::class);
@@ -178,7 +178,7 @@ class SocialAuthControllerTest extends ControllerTestCase
         $response->assertStatus(200)
             ->assertJson([
                 'user' => [
-                    'id' => $existingUser->id,
+                    'id'    => $existingUser->id,
                     'email' => 'existing@example.com',
                 ],
                 'message' => 'Authenticated successfully',
@@ -192,9 +192,9 @@ class SocialAuthControllerTest extends ControllerTestCase
     public function test_callback_links_oauth_to_existing_email_user(): void
     {
         $existingUser = User::factory()->create([
-            'email' => 'existing@example.com',
+            'email'          => 'existing@example.com',
             'oauth_provider' => null,
-            'oauth_id' => null,
+            'oauth_id'       => null,
         ]);
 
         $socialiteUser = \Mockery::mock(SocialiteUser::class);
@@ -219,18 +219,18 @@ class SocialAuthControllerTest extends ControllerTestCase
         $response->assertStatus(200)
             ->assertJson([
                 'user' => [
-                    'id' => $existingUser->id,
-                    'email' => 'existing@example.com',
+                    'id'             => $existingUser->id,
+                    'email'          => 'existing@example.com',
                     'oauth_provider' => 'google',
-                    'oauth_id' => 'google-456',
+                    'oauth_id'       => 'google-456',
                 ],
             ]);
 
         // Verify OAuth info was updated
         $this->assertDatabaseHas('users', [
-            'id' => $existingUser->id,
+            'id'             => $existingUser->id,
             'oauth_provider' => 'google',
-            'oauth_id' => 'google-456',
+            'oauth_id'       => 'google-456',
         ]);
     }
 
@@ -299,7 +299,7 @@ class SocialAuthControllerTest extends ControllerTestCase
         $response->assertStatus(400)
             ->assertJson([
                 'message' => 'Authentication failed',
-                'error' => 'Detailed error message',
+                'error'   => 'Detailed error message',
             ]);
     }
 
@@ -324,7 +324,7 @@ class SocialAuthControllerTest extends ControllerTestCase
         $response->assertStatus(400)
             ->assertJson([
                 'message' => 'Authentication failed',
-                'error' => null,
+                'error'   => null,
             ]);
     }
 
@@ -359,7 +359,7 @@ class SocialAuthControllerTest extends ControllerTestCase
         $user = User::where('email', 'john@example.com')->first();
         $this->assertDatabaseHas('personal_access_tokens', [
             'tokenable_id' => $user->id,
-            'name' => 'api-token',
+            'name'         => 'api-token',
         ]);
     }
 

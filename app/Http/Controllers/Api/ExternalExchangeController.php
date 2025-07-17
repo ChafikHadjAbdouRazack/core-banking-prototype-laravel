@@ -53,9 +53,9 @@ class ExternalExchangeController extends Controller
         $connectors = $this->connectorRegistry->all()->map(
             function ($connector, $name) {
                 return [
-                    'name' => $name,
+                    'name'         => $name,
                     'display_name' => $connector->getName(),
-                    'available' => $connector->isAvailable(),
+                    'available'    => $connector->isAvailable(),
                 ];
             }
         );
@@ -114,10 +114,10 @@ class ExternalExchangeController extends Controller
 
         return response()->json(
             [
-                'pair' => "{$base}/{$quote}",
-                'tickers' => $tickers,
-                'best_bid' => $bestBid,
-                'best_ask' => $bestAsk,
+                'pair'      => "{$base}/{$quote}",
+                'tickers'   => $tickers,
+                'best_bid'  => $bestBid,
+                'best_ask'  => $bestAsk,
                 'timestamp' => now()->toIso8601String(),
             ]
         );
@@ -166,7 +166,7 @@ class ExternalExchangeController extends Controller
 
         return response()->json(
             [
-                'pair' => "{$base}/{$quote}",
+                'pair'      => "{$base}/{$quote}",
                 'orderbook' => $aggregatedBook,
                 'timestamp' => now()->toIso8601String(),
             ]
@@ -210,9 +210,9 @@ class ExternalExchangeController extends Controller
 
         return response()->json(
             [
-                'pair' => "{$base}/{$quote}",
+                'pair'          => "{$base}/{$quote}",
                 'opportunities' => $opportunities,
-                'timestamp' => now()->toIso8601String(),
+                'timestamp'     => now()->toIso8601String(),
             ]
         );
     }

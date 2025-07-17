@@ -15,8 +15,8 @@ beforeEach(function () {
     Asset::firstOrCreate(
         ['code' => 'PRIMARY'],
         [
-            'name' => 'Primary Currency Basket',
-            'type' => 'custom',
+            'name'      => 'Primary Currency Basket',
+            'type'      => 'custom',
             'precision' => 2,
             'is_active' => true,
         ]
@@ -26,8 +26,8 @@ beforeEach(function () {
     Asset::firstOrCreate(
         ['code' => 'USD'],
         [
-            'name' => 'US Dollar',
-            'type' => 'fiat',
+            'name'      => 'US Dollar',
+            'type'      => 'fiat',
             'precision' => 2,
             'is_active' => true,
         ]
@@ -42,8 +42,8 @@ test('voting power is based on primary asset holdings', function () {
     // Add 100 PRIMARY (10000 cents)
     AccountBalance::create([
         'account_uuid' => $account->uuid,
-        'asset_code' => 'PRIMARY',
-        'balance' => 10000,
+        'asset_code'   => 'PRIMARY',
+        'balance'      => 10000,
     ]);
 
     $strategy = new AssetWeightedVotingStrategy();
@@ -61,13 +61,13 @@ test('voting power combines multiple accounts', function () {
     // Add PRIMARY to both accounts
     AccountBalance::create([
         'account_uuid' => $account1->uuid,
-        'asset_code' => 'PRIMARY',
-        'balance' => 5000,
+        'asset_code'   => 'PRIMARY',
+        'balance'      => 5000,
     ]); // 50 units
     AccountBalance::create([
         'account_uuid' => $account2->uuid,
-        'asset_code' => 'PRIMARY',
-        'balance' => 7500,
+        'asset_code'   => 'PRIMARY',
+        'balance'      => 7500,
     ]); // 75 units
 
     $strategy = new AssetWeightedVotingStrategy();
@@ -84,8 +84,8 @@ test('voting power for tiny holdings rounds down to zero', function () {
     // Add tiny amount of PRIMARY (0.01 units)
     AccountBalance::create([
         'account_uuid' => $account->uuid,
-        'asset_code' => 'PRIMARY',
-        'balance' => 1,
+        'asset_code'   => 'PRIMARY',
+        'balance'      => 1,
     ]);
 
     $strategy = new AssetWeightedVotingStrategy();
@@ -102,8 +102,8 @@ test('user with no primary asset has no voting power', function () {
     // Add USD but no PRIMARY
     AccountBalance::create([
         'account_uuid' => $account->uuid,
-        'asset_code' => 'USD',
-        'balance' => 10000,
+        'asset_code'   => 'USD',
+        'balance'      => 10000,
     ]);
 
     $strategy = new AssetWeightedVotingStrategy();
@@ -125,8 +125,8 @@ test('user is eligible to vote if they have primary asset', function () {
     // Add PRIMARY
     AccountBalance::create([
         'account_uuid' => $account->uuid,
-        'asset_code' => 'PRIMARY',
-        'balance' => 100,
+        'asset_code'   => 'PRIMARY',
+        'balance'      => 100,
     ]);
 
     // Now eligible
@@ -145,8 +145,8 @@ test('voting power ignores non-primary assets', function () {
     Asset::firstOrCreate(
         ['code' => 'EUR'],
         [
-            'name' => 'Euro',
-            'type' => 'fiat',
+            'name'      => 'Euro',
+            'type'      => 'fiat',
             'precision' => 2,
             'is_active' => true,
         ]
@@ -159,18 +159,18 @@ test('voting power ignores non-primary assets', function () {
     // Add various assets
     AccountBalance::create([
         'account_uuid' => $account->uuid,
-        'asset_code' => 'USD',
-        'balance' => 100000,
+        'asset_code'   => 'USD',
+        'balance'      => 100000,
     ]); // $1000
     AccountBalance::create([
         'account_uuid' => $account->uuid,
-        'asset_code' => 'EUR',
-        'balance' => 50000,
+        'asset_code'   => 'EUR',
+        'balance'      => 50000,
     ]);  // €500
     AccountBalance::create([
         'account_uuid' => $account->uuid,
-        'asset_code' => 'PRIMARY',
-        'balance' => 2500,
+        'asset_code'   => 'PRIMARY',
+        'balance'      => 2500,
     ]);   // 25 units
 
     $strategy = new AssetWeightedVotingStrategy();

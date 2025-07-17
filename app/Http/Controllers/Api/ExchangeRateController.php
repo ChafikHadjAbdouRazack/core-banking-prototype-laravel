@@ -95,7 +95,7 @@ class ExchangeRateController extends Controller
             return response()->json(
                 [
                     'message' => 'Exchange rate not found',
-                    'error' => 'No active exchange rate found for the specified asset pair',
+                    'error'   => 'No active exchange rate found for the specified asset pair',
                 ],
                 404
             );
@@ -104,16 +104,16 @@ class ExchangeRateController extends Controller
         return response()->json(
             [
                 'data' => [
-                    'from_asset' => $rate->from_asset_code,
-                    'to_asset' => $rate->to_asset_code,
-                    'rate' => $rate->rate,
+                    'from_asset'   => $rate->from_asset_code,
+                    'to_asset'     => $rate->to_asset_code,
+                    'rate'         => $rate->rate,
                     'inverse_rate' => number_format($rate->getInverseRate(), 10, '.', ''),
-                    'source' => $rate->source,
-                    'valid_at' => $rate->valid_at->toISOString(),
-                    'expires_at' => $rate->expires_at?->toISOString(),
-                    'is_active' => $rate->is_active,
-                    'age_minutes' => $rate->getAgeInMinutes(),
-                    'metadata' => $rate->metadata,
+                    'source'       => $rate->source,
+                    'valid_at'     => $rate->valid_at->toISOString(),
+                    'expires_at'   => $rate->expires_at?->toISOString(),
+                    'is_active'    => $rate->is_active,
+                    'age_minutes'  => $rate->getAgeInMinutes(),
+                    'metadata'     => $rate->metadata,
                 ],
             ]
         );
@@ -205,7 +205,7 @@ class ExchangeRateController extends Controller
             return response()->json(
                 [
                     'message' => 'Conversion not available',
-                    'error' => 'No active exchange rate found for the specified asset pair',
+                    'error'   => 'No active exchange rate found for the specified asset pair',
                 ],
                 404
             );
@@ -227,13 +227,13 @@ class ExchangeRateController extends Controller
         return response()->json(
             [
                 'data' => [
-                    'from_asset' => $fromAsset,
-                    'to_asset' => $toAsset,
-                    'from_amount' => $amount,
-                    'to_amount' => $convertedAmount,
-                    'from_formatted' => $fromFormatted,
-                    'to_formatted' => $toFormatted,
-                    'rate' => $rate->rate,
+                    'from_asset'       => $fromAsset,
+                    'to_asset'         => $toAsset,
+                    'from_amount'      => $amount,
+                    'to_amount'        => $convertedAmount,
+                    'from_formatted'   => $fromFormatted,
+                    'to_formatted'     => $toFormatted,
+                    'rate'             => $rate->rate,
                     'rate_age_minutes' => $rate->getAgeInMinutes(),
                 ],
             ]
@@ -338,12 +338,12 @@ class ExchangeRateController extends Controller
     {
         $request->validate(
             [
-                'from' => 'sometimes|string|size:3',
-                'to' => 'sometimes|string|size:3',
+                'from'   => 'sometimes|string|size:3',
+                'to'     => 'sometimes|string|size:3',
                 'source' => ['sometimes', Rule::in(['manual', 'api', 'oracle', 'market'])],
                 'active' => 'sometimes|boolean',
-                'valid' => 'sometimes|boolean',
-                'limit' => 'sometimes|integer|min:1|max:100',
+                'valid'  => 'sometimes|boolean',
+                'limit'  => 'sometimes|integer|min:1|max:100',
             ]
         );
 
@@ -383,16 +383,16 @@ class ExchangeRateController extends Controller
                 'data' => $rates->map(
                     function (ExchangeRate $rate) {
                         return [
-                            'id' => $rate->id,
-                            'from_asset' => $rate->from_asset_code,
-                            'to_asset' => $rate->to_asset_code,
-                            'rate' => $rate->rate,
+                            'id'           => $rate->id,
+                            'from_asset'   => $rate->from_asset_code,
+                            'to_asset'     => $rate->to_asset_code,
+                            'rate'         => $rate->rate,
                             'inverse_rate' => number_format($rate->getInverseRate(), 10, '.', ''),
-                            'source' => $rate->source,
-                            'valid_at' => $rate->valid_at->toISOString(),
-                            'expires_at' => $rate->expires_at?->toISOString(),
-                            'is_active' => $rate->is_active,
-                            'age_minutes' => $rate->getAgeInMinutes(),
+                            'source'       => $rate->source,
+                            'valid_at'     => $rate->valid_at->toISOString(),
+                            'expires_at'   => $rate->expires_at?->toISOString(),
+                            'is_active'    => $rate->is_active,
+                            'age_minutes'  => $rate->getAgeInMinutes(),
                         ];
                     }
                 ),
@@ -412,10 +412,10 @@ class ExchangeRateController extends Controller
     {
         $validated = $request->validate(
             [
-                'account_uuid' => 'required|string|exists:accounts,uuid',
+                'account_uuid'  => 'required|string|exists:accounts,uuid',
                 'from_currency' => 'required|string|exists:assets,code',
-                'to_currency' => 'required|string|exists:assets,code',
-                'amount' => 'required|numeric|min:0.01',
+                'to_currency'   => 'required|string|exists:assets,code',
+                'amount'        => 'required|numeric|min:0.01',
             ]
         );
 
@@ -447,7 +447,7 @@ class ExchangeRateController extends Controller
             return response()->json(
                 [
                     'message' => 'Insufficient balance',
-                    'errors' => [
+                    'errors'  => [
                         'amount' => ['Insufficient balance'],
                     ],
                 ],
@@ -482,11 +482,11 @@ class ExchangeRateController extends Controller
             return response()->json(
                 [
                     'message' => 'Currency conversion initiated successfully',
-                    'data' => [
-                        'from_amount' => $validated['amount'],
-                        'to_amount' => $toAmountInMinorUnits / (10 ** $toAsset->precision),
+                    'data'    => [
+                        'from_amount'   => $validated['amount'],
+                        'to_amount'     => $toAmountInMinorUnits / (10 ** $toAsset->precision),
                         'from_currency' => $validated['from_currency'],
-                        'to_currency' => $validated['to_currency'],
+                        'to_currency'   => $validated['to_currency'],
                         'exchange_rate' => $exchangeRate->rate,
                     ],
                 ]
@@ -495,7 +495,7 @@ class ExchangeRateController extends Controller
             return response()->json(
                 [
                     'message' => 'Currency conversion failed',
-                    'error' => 'CONVERSION_FAILED',
+                    'error'   => 'CONVERSION_FAILED',
                 ],
                 422
             );

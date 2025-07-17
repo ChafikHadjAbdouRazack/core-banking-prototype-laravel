@@ -59,8 +59,8 @@ class CreditAccountTest extends DomainTestCase
         // Create existing balance
         $balance = AccountBalance::create([
             'account_uuid' => 'account-123',
-            'asset_code' => 'USD',
-            'balance' => 1000, // $10.00
+            'asset_code'   => 'USD',
+            'balance'      => 1000, // $10.00
         ]);
 
         // Repository will find the account by UUID

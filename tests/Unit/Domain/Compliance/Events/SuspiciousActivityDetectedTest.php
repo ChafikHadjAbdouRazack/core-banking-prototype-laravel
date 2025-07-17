@@ -22,9 +22,9 @@ class SuspiciousActivityDetectedTest extends DomainTestCase
 
         return Transaction::factory()->forAccount($account)->create([
             'event_properties' => array_merge([
-                'amount' => 10000,
+                'amount'    => 10000,
                 'assetCode' => 'USD',
-                'metadata' => [],
+                'metadata'  => [],
             ], $eventProperties),
         ]);
     }
@@ -33,25 +33,25 @@ class SuspiciousActivityDetectedTest extends DomainTestCase
     public function test_creates_event_with_transaction_and_alerts(): void
     {
         $transaction = $this->createTransaction([
-            'amount' => 100000,
+            'amount'    => 100000,
             'assetCode' => 'USD',
-            'metadata' => ['type' => 'wire_transfer'],
+            'metadata'  => ['type' => 'wire_transfer'],
         ]);
 
         $alerts = [
             [
-                'type' => 'large_transaction',
-                'severity' => 'high',
-                'message' => 'Transaction amount exceeds threshold',
+                'type'      => 'large_transaction',
+                'severity'  => 'high',
+                'message'   => 'Transaction amount exceeds threshold',
                 'threshold' => 50000,
-                'actual' => 100000,
+                'actual'    => 100000,
             ],
             [
-                'type' => 'velocity_check',
+                'type'     => 'velocity_check',
                 'severity' => 'medium',
-                'message' => 'Multiple transactions in short period',
-                'count' => 5,
-                'period' => '1 hour',
+                'message'  => 'Multiple transactions in short period',
+                'count'    => 5,
+                'period'   => '1 hour',
             ],
         ];
 
@@ -97,13 +97,13 @@ class SuspiciousActivityDetectedTest extends DomainTestCase
 
         $transaction = Transaction::factory()->forAccount($account)->create([
             'event_properties' => [
-                'amount' => 10000,
+                'amount'    => 10000,
                 'assetCode' => 'USD',
-                'metadata' => [],
+                'metadata'  => [],
             ],
             'meta_data' => [
-                'type' => 'transfer',
-                'reference' => 'SUSP-123',
+                'type'        => 'transfer',
+                'reference'   => 'SUSP-123',
                 'description' => null,
             ],
         ]);
@@ -141,12 +141,12 @@ class SuspiciousActivityDetectedTest extends DomainTestCase
 
         $complexAlerts = [
             [
-                'type' => 'ml_detection',
-                'model' => 'fraud_detector_v2',
+                'type'       => 'ml_detection',
+                'model'      => 'fraud_detector_v2',
                 'confidence' => 0.89,
-                'features' => [
-                    'amount_zscore' => 3.2,
-                    'time_since_last' => 120,
+                'features'   => [
+                    'amount_zscore'    => 3.2,
+                    'time_since_last'  => 120,
                     'destination_risk' => 'high',
                 ],
                 'metadata' => [
@@ -155,9 +155,9 @@ class SuspiciousActivityDetectedTest extends DomainTestCase
                 ],
             ],
             [
-                'type' => 'rule_based',
+                'type'            => 'rule_based',
                 'rules_triggered' => ['R001', 'R045', 'R102'],
-                'combined_score' => 85,
+                'combined_score'  => 85,
                 'action_required' => 'manual_review',
             ],
         ];

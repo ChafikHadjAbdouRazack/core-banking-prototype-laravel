@@ -29,14 +29,14 @@ class BankIntegrationController extends Controller
                         $capabilities = $connector->getCapabilities();
 
                         return [
-                            'code' => $code,
-                            'name' => $connector->getBankName(),
-                            'available' => $connector->isAvailable(),
-                            'supported_currencies' => $capabilities->supportedCurrencies,
-                            'supported_transfer_types' => $capabilities->supportedTransferTypes,
-                            'features' => $capabilities->features,
+                            'code'                       => $code,
+                            'name'                       => $connector->getBankName(),
+                            'available'                  => $connector->isAvailable(),
+                            'supported_currencies'       => $capabilities->supportedCurrencies,
+                            'supported_transfer_types'   => $capabilities->supportedTransferTypes,
+                            'features'                   => $capabilities->features,
                             'supports_instant_transfers' => $capabilities->supportsInstantTransfers,
-                            'supports_multi_currency' => $capabilities->supportsMultiCurrency,
+                            'supports_multi_currency'    => $capabilities->supportsMultiCurrency,
                         ];
                     }
                 );
@@ -68,15 +68,15 @@ class BankIntegrationController extends Controller
                 ->map(
                     function ($connection) {
                         return [
-                            'id' => $connection->id,
-                            'bank_code' => $connection->bankCode,
-                            'status' => $connection->status,
-                            'active' => $connection->isActive(),
+                            'id'            => $connection->id,
+                            'bank_code'     => $connection->bankCode,
+                            'status'        => $connection->status,
+                            'active'        => $connection->isActive(),
                             'needs_renewal' => $connection->needsRenewal(),
-                            'permissions' => $connection->permissions,
-                            'last_sync_at' => $connection->lastSyncAt?->toIso8601String(),
-                            'expires_at' => $connection->expiresAt?->toIso8601String(),
-                            'created_at' => $connection->createdAt->toIso8601String(),
+                            'permissions'   => $connection->permissions,
+                            'last_sync_at'  => $connection->lastSyncAt?->toIso8601String(),
+                            'expires_at'    => $connection->expiresAt?->toIso8601String(),
+                            'created_at'    => $connection->createdAt->toIso8601String(),
                         ];
                     }
                 );
@@ -91,7 +91,7 @@ class BankIntegrationController extends Controller
                 'Failed to get user bank connections',
                 [
                     'user_id' => $request->user()->uuid,
-                    'error' => $e->getMessage(),
+                    'error'   => $e->getMessage(),
                 ]
             );
 
@@ -111,7 +111,7 @@ class BankIntegrationController extends Controller
     {
         $validated = $request->validate(
             [
-                'bank_code' => 'required|string',
+                'bank_code'   => 'required|string',
                 'credentials' => 'required|array',
             ]
         );
@@ -126,11 +126,11 @@ class BankIntegrationController extends Controller
             return response()->json(
                 [
                     'data' => [
-                        'id' => $connection->id,
-                        'bank_code' => $connection->bankCode,
-                        'status' => $connection->status,
+                        'id'         => $connection->id,
+                        'bank_code'  => $connection->bankCode,
+                        'status'     => $connection->status,
                         'expires_at' => $connection->expiresAt?->toIso8601String(),
-                        'message' => 'Successfully connected to bank',
+                        'message'    => 'Successfully connected to bank',
                     ],
                 ],
                 201
@@ -139,9 +139,9 @@ class BankIntegrationController extends Controller
             Log::error(
                 'Failed to connect to bank',
                 [
-                    'user_id' => $request->user()->uuid,
+                    'user_id'   => $request->user()->uuid,
                     'bank_code' => $validated['bank_code'],
-                    'error' => $e->getMessage(),
+                    'error'     => $e->getMessage(),
                 ]
             );
 
@@ -183,9 +183,9 @@ class BankIntegrationController extends Controller
             Log::error(
                 'Failed to disconnect from bank',
                 [
-                    'user_id' => $request->user()->uuid,
+                    'user_id'   => $request->user()->uuid,
                     'bank_code' => $bankCode,
-                    'error' => $e->getMessage(),
+                    'error'     => $e->getMessage(),
                 ]
             );
 
@@ -210,15 +210,15 @@ class BankIntegrationController extends Controller
                 ->map(
                     function ($account) {
                         return [
-                            'id' => $account->id,
-                            'bank_code' => $account->bankCode,
+                            'id'             => $account->id,
+                            'bank_code'      => $account->bankCode,
                             'account_number' => '***' . substr($account->accountNumber, -4),
-                            'iban' => substr($account->iban, 0, 4) . '***' . substr($account->iban, -4),
-                            'currency' => $account->currency,
-                            'account_type' => $account->accountType,
-                            'status' => $account->status,
-                            'label' => $account->getLabel(),
-                            'created_at' => $account->createdAt->toIso8601String(),
+                            'iban'           => substr($account->iban, 0, 4) . '***' . substr($account->iban, -4),
+                            'currency'       => $account->currency,
+                            'account_type'   => $account->accountType,
+                            'status'         => $account->status,
+                            'label'          => $account->getLabel(),
+                            'created_at'     => $account->createdAt->toIso8601String(),
                         ];
                     }
                 );
@@ -232,9 +232,9 @@ class BankIntegrationController extends Controller
             Log::error(
                 'Failed to get bank accounts',
                 [
-                    'user_id' => $request->user()->uuid,
+                    'user_id'   => $request->user()->uuid,
                     'bank_code' => $bankCode,
-                    'error' => $e->getMessage(),
+                    'error'     => $e->getMessage(),
                 ]
             );
 
@@ -257,7 +257,7 @@ class BankIntegrationController extends Controller
 
             return response()->json(
                 [
-                    'message' => 'Bank accounts synced successfully',
+                    'message'         => 'Bank accounts synced successfully',
                     'accounts_synced' => $accounts->count(),
                 ]
             );
@@ -265,9 +265,9 @@ class BankIntegrationController extends Controller
             Log::error(
                 'Failed to sync bank accounts',
                 [
-                    'user_id' => $request->user()->uuid,
+                    'user_id'   => $request->user()->uuid,
                     'bank_code' => $bankCode,
-                    'error' => $e->getMessage(),
+                    'error'     => $e->getMessage(),
                 ]
             );
 
@@ -300,8 +300,8 @@ class BankIntegrationController extends Controller
             return response()->json(
                 [
                     'data' => [
-                        'currency' => $validated['currency'],
-                        'balance' => $balance,
+                        'currency'  => $validated['currency'],
+                        'balance'   => $balance,
                         'formatted' => number_format($balance / 100, 2),
                     ],
                 ]
@@ -310,9 +310,9 @@ class BankIntegrationController extends Controller
             Log::error(
                 'Failed to get aggregated balance',
                 [
-                    'user_id' => $request->user()->uuid,
+                    'user_id'  => $request->user()->uuid,
                     'currency' => $validated['currency'],
-                    'error' => $e->getMessage(),
+                    'error'    => $e->getMessage(),
                 ]
             );
 
@@ -332,14 +332,14 @@ class BankIntegrationController extends Controller
     {
         $validated = $request->validate(
             [
-                'from_bank_code' => 'required|string',
+                'from_bank_code'  => 'required|string',
                 'from_account_id' => 'required|string',
-                'to_bank_code' => 'required|string',
-                'to_account_id' => 'required|string',
-                'amount' => 'required|numeric|min:0.01',
-                'currency' => 'required|string|size:3',
-                'reference' => 'nullable|string|max:140',
-                'description' => 'nullable|string|max:500',
+                'to_bank_code'    => 'required|string',
+                'to_account_id'   => 'required|string',
+                'amount'          => 'required|numeric|min:0.01',
+                'currency'        => 'required|string|size:3',
+                'reference'       => 'nullable|string|max:140',
+                'description'     => 'nullable|string|max:500',
             ]
         );
 
@@ -353,7 +353,7 @@ class BankIntegrationController extends Controller
                 $validated['amount'] * 100, // Convert to cents
                 strtoupper($validated['currency']),
                 [
-                    'reference' => $validated['reference'] ?? null,
+                    'reference'   => $validated['reference'] ?? null,
                     'description' => $validated['description'] ?? null,
                 ]
             );
@@ -361,16 +361,16 @@ class BankIntegrationController extends Controller
             return response()->json(
                 [
                     'data' => [
-                        'id' => $transfer->id,
-                        'type' => $transfer->type,
-                        'status' => $transfer->status,
-                        'amount' => $transfer->amount,
-                        'currency' => $transfer->currency,
-                        'reference' => $transfer->reference,
-                        'total_amount' => $transfer->getTotalAmount(),
-                        'fees' => $transfer->fees,
+                        'id'                => $transfer->id,
+                        'type'              => $transfer->type,
+                        'status'            => $transfer->status,
+                        'amount'            => $transfer->amount,
+                        'currency'          => $transfer->currency,
+                        'reference'         => $transfer->reference,
+                        'total_amount'      => $transfer->getTotalAmount(),
+                        'fees'              => $transfer->fees,
                         'estimated_arrival' => $transfer->getEstimatedArrival()?->toIso8601String(),
-                        'created_at' => $transfer->createdAt->toIso8601String(),
+                        'created_at'        => $transfer->createdAt->toIso8601String(),
                     ],
                 ],
                 201
@@ -379,9 +379,9 @@ class BankIntegrationController extends Controller
             Log::error(
                 'Failed to initiate transfer',
                 [
-                    'user_id' => $request->user()->uuid,
+                    'user_id'       => $request->user()->uuid,
                     'transfer_data' => $validated,
-                    'error' => $e->getMessage(),
+                    'error'         => $e->getMessage(),
                 ]
             );
 
@@ -412,7 +412,7 @@ class BankIntegrationController extends Controller
                 'Failed to get bank health',
                 [
                     'bank_code' => $bankCode,
-                    'error' => $e->getMessage(),
+                    'error'     => $e->getMessage(),
                 ]
             );
 
@@ -432,12 +432,12 @@ class BankIntegrationController extends Controller
     {
         $validated = $request->validate(
             [
-                'currencies' => 'nullable|array',
+                'currencies'   => 'nullable|array',
                 'currencies.*' => 'string|size:3',
-                'features' => 'nullable|array',
-                'features.*' => 'string',
-                'countries' => 'nullable|array',
-                'countries.*' => 'string|size:2',
+                'features'     => 'nullable|array',
+                'features.*'   => 'string',
+                'countries'    => 'nullable|array',
+                'countries.*'  => 'string|size:2',
             ]
         );
 
@@ -457,9 +457,9 @@ class BankIntegrationController extends Controller
             Log::error(
                 'Failed to get bank recommendations',
                 [
-                    'user_id' => $request->user()->uuid,
+                    'user_id'      => $request->user()->uuid,
                     'requirements' => $validated,
-                    'error' => $e->getMessage(),
+                    'error'        => $e->getMessage(),
                 ]
             );
 

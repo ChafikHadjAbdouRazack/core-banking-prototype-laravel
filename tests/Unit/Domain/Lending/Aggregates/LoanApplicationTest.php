@@ -28,7 +28,7 @@ class LoanApplicationTest extends DomainTestCase
         $termMonths = 36;
         $purpose = 'debt_consolidation';
         $borrowerInfo = [
-            'annual_income' => '60000',
+            'annual_income'     => '60000',
             'employment_status' => 'employed',
         ];
 

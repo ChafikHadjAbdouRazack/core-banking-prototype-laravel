@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -34,7 +33,7 @@ class UserPreference extends Model
 
     protected $casts = [
         'preference_value' => 'json',
-        'is_sensitive' => 'boolean',
+        'is_sensitive'     => 'boolean',
     ];
 
     /**

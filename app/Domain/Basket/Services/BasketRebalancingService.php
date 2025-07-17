@@ -341,7 +341,7 @@ class BasketRebalancingService
                 Log::error("Failed to rebalance basket {$basket->code}: " . $e->getMessage());
                 $results[$basket->code] = [
                     'status' => 'failed',
-                    'error' => $e->getMessage(),
+                    'error'  => $e->getMessage(),
                 ];
             }
         }

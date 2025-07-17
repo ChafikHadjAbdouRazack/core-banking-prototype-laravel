@@ -29,11 +29,11 @@ class TransactionsRelationManager extends RelationManager
                         ->badge()
                         ->color(
                             fn (string $state): string => match ($state) {
-                                'deposit' => 'success',
-                                'withdrawal' => 'warning',
-                                'transfer_in' => 'info',
+                                'deposit'      => 'success',
+                                'withdrawal'   => 'warning',
+                                'transfer_in'  => 'info',
                                 'transfer_out' => 'danger',
-                                default => 'gray',
+                                default        => 'gray',
                             }
                         ),
                     Tables\Columns\TextColumn::make('amount')
@@ -65,9 +65,9 @@ class TransactionsRelationManager extends RelationManager
                     Tables\Filters\SelectFilter::make('type')
                         ->options(
                             [
-                                'deposit' => 'Deposit',
-                                'withdrawal' => 'Withdrawal',
-                                'transfer_in' => 'Transfer In',
+                                'deposit'      => 'Deposit',
+                                'withdrawal'   => 'Withdrawal',
+                                'transfer_in'  => 'Transfer In',
                                 'transfer_out' => 'Transfer Out',
                             ]
                         ),

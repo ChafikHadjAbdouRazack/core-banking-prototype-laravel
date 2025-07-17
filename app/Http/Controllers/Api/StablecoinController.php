@@ -204,21 +204,21 @@ class StablecoinController extends Controller
     {
         $validated = $request->validate(
             [
-                'code' => 'required|string|max:10|unique:stablecoins,code',
-                'name' => 'required|string|max:255',
-                'symbol' => 'required|string|max:10',
-                'peg_asset_code' => 'required|string|exists:assets,code',
-                'peg_ratio' => 'required|numeric|min:0',
-                'target_price' => 'required|numeric|min:0',
-                'stability_mechanism' => 'required|in:collateralized,algorithmic,hybrid',
-                'collateral_ratio' => 'required|numeric|min:1',
+                'code'                 => 'required|string|max:10|unique:stablecoins,code',
+                'name'                 => 'required|string|max:255',
+                'symbol'               => 'required|string|max:10',
+                'peg_asset_code'       => 'required|string|exists:assets,code',
+                'peg_ratio'            => 'required|numeric|min:0',
+                'target_price'         => 'required|numeric|min:0',
+                'stability_mechanism'  => 'required|in:collateralized,algorithmic,hybrid',
+                'collateral_ratio'     => 'required|numeric|min:1',
                 'min_collateral_ratio' => 'required|numeric|min:1|lt:collateral_ratio',
-                'liquidation_penalty' => 'required|numeric|min:0|max:1',
-                'max_supply' => 'nullable|integer|min:1',
-                'mint_fee' => 'required|numeric|min:0|max:1',
-                'burn_fee' => 'required|numeric|min:0|max:1',
-                'precision' => 'required|integer|min:0|max:18',
-                'metadata' => 'nullable|array',
+                'liquidation_penalty'  => 'required|numeric|min:0|max:1',
+                'max_supply'           => 'nullable|integer|min:1',
+                'mint_fee'             => 'required|numeric|min:0|max:1',
+                'burn_fee'             => 'required|numeric|min:0|max:1',
+                'precision'            => 'required|integer|min:0|max:18',
+                'metadata'             => 'nullable|array',
             ]
         );
 
@@ -301,17 +301,17 @@ class StablecoinController extends Controller
 
         $validated = $request->validate(
             [
-                'name' => 'sometimes|string|max:255',
-                'collateral_ratio' => 'sometimes|numeric|min:1',
+                'name'                 => 'sometimes|string|max:255',
+                'collateral_ratio'     => 'sometimes|numeric|min:1',
                 'min_collateral_ratio' => 'sometimes|numeric|min:1',
-                'liquidation_penalty' => 'sometimes|numeric|min:0|max:1',
-                'max_supply' => 'sometimes|nullable|integer|min:1',
-                'mint_fee' => 'sometimes|numeric|min:0|max:1',
-                'burn_fee' => 'sometimes|numeric|min:0|max:1',
-                'is_active' => 'sometimes|boolean',
-                'minting_enabled' => 'sometimes|boolean',
-                'burning_enabled' => 'sometimes|boolean',
-                'metadata' => 'sometimes|nullable|array',
+                'liquidation_penalty'  => 'sometimes|numeric|min:0|max:1',
+                'max_supply'           => 'sometimes|nullable|integer|min:1',
+                'mint_fee'             => 'sometimes|numeric|min:0|max:1',
+                'burn_fee'             => 'sometimes|numeric|min:0|max:1',
+                'is_active'            => 'sometimes|boolean',
+                'minting_enabled'      => 'sometimes|boolean',
+                'burning_enabled'      => 'sometimes|boolean',
+                'metadata'             => 'sometimes|nullable|array',
             ]
         );
 
@@ -619,7 +619,7 @@ class StablecoinController extends Controller
 
         $stablecoin->update(
             [
-                'is_active' => false,
+                'is_active'       => false,
                 'minting_enabled' => false,
                 'burning_enabled' => false,
             ]
@@ -628,7 +628,7 @@ class StablecoinController extends Controller
         return response()->json(
             [
                 'message' => 'Stablecoin deactivated successfully',
-                'data' => $stablecoin,
+                'data'    => $stablecoin,
             ]
         );
     }
@@ -674,7 +674,7 @@ class StablecoinController extends Controller
 
         $stablecoin->update(
             [
-                'is_active' => true,
+                'is_active'       => true,
                 'minting_enabled' => true,
                 'burning_enabled' => true,
             ]
@@ -683,7 +683,7 @@ class StablecoinController extends Controller
         return response()->json(
             [
                 'message' => 'Stablecoin reactivated successfully',
-                'data' => $stablecoin,
+                'data'    => $stablecoin,
             ]
         );
     }

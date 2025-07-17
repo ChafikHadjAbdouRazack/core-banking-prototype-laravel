@@ -36,8 +36,8 @@ class CgoAgreementController extends Controller
                 if ($request->expectsJson()) {
                     return response()->json(
                         [
-                            'success' => true,
-                            'message' => 'Agreement already exists',
+                            'success'      => true,
+                            'message'      => 'Agreement already exists',
                             'download_url' => route('cgo.agreement.download', $investment->uuid),
                         ]
                     );
@@ -52,8 +52,8 @@ class CgoAgreementController extends Controller
 
             return response()->json(
                 [
-                    'success' => true,
-                    'message' => 'Agreement generated successfully',
+                    'success'      => true,
+                    'message'      => 'Agreement generated successfully',
                     'download_url' => route('cgo.agreement.download', $investment->uuid),
                 ]
             );
@@ -62,7 +62,7 @@ class CgoAgreementController extends Controller
                 'Failed to generate agreement',
                 [
                     'investment_uuid' => $investmentUuid,
-                    'error' => $e->getMessage(),
+                    'error'           => $e->getMessage(),
                 ]
             );
 
@@ -131,8 +131,8 @@ class CgoAgreementController extends Controller
 
             return response()->json(
                 [
-                    'success' => true,
-                    'message' => 'Certificate generated successfully',
+                    'success'      => true,
+                    'message'      => 'Certificate generated successfully',
                     'download_url' => route('cgo.certificate.download', $investment->uuid),
                 ]
             );
@@ -141,7 +141,7 @@ class CgoAgreementController extends Controller
                 'Failed to generate certificate',
                 [
                     'investment_uuid' => $investmentUuid,
-                    'error' => $e->getMessage(),
+                    'error'           => $e->getMessage(),
                 ]
             );
 
@@ -200,7 +200,7 @@ class CgoAgreementController extends Controller
             Storage::get($investment->agreement_path),
             200,
             [
-                'Content-Type' => 'application/pdf',
+                'Content-Type'        => 'application/pdf',
                 'Content-Disposition' => 'inline; filename="agreement_preview.pdf"',
             ]
         );
@@ -236,11 +236,11 @@ class CgoAgreementController extends Controller
         $investment->update(
             [
                 'agreement_signed_at' => now(),
-                'metadata' => array_merge(
+                'metadata'            => array_merge(
                     $investment->metadata ?? [],
                     [
-                        'signature_data' => $request->signature_data,
-                        'signed_ip' => $request->ip(),
+                        'signature_data'    => $request->signature_data,
+                        'signed_ip'         => $request->ip(),
                         'signed_user_agent' => $request->userAgent(),
                     ]
                 ),

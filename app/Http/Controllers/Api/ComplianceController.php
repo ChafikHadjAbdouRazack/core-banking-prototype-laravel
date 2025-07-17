@@ -13,13 +13,13 @@ class ComplianceController extends Controller
         return response()->json(
             [
                 'status' => 'success',
-                'data' => [
+                'data'   => [
                     'overall_compliance_score' => 94.5,
-                    'kyc_completion_rate' => 98.2,
-                    'pending_reviews' => 12,
-                    'active_violations' => 3,
-                    'last_audit_date' => '2025-01-03',
-                    'next_audit_date' => '2025-02-03',
+                    'kyc_completion_rate'      => 98.2,
+                    'pending_reviews'          => 12,
+                    'active_violations'        => 3,
+                    'last_audit_date'          => '2025-01-03',
+                    'next_audit_date'          => '2025-02-03',
                 ],
             ]
         );
@@ -30,7 +30,7 @@ class ComplianceController extends Controller
         return response()->json(
             [
                 'status' => 'success',
-                'data' => [],
+                'data'   => [],
             ]
         );
     }
@@ -40,7 +40,7 @@ class ComplianceController extends Controller
         return response()->json(
             [
                 'status' => 'success',
-                'data' => null,
+                'data'   => null,
             ]
         );
     }
@@ -49,7 +49,7 @@ class ComplianceController extends Controller
     {
         return response()->json(
             [
-                'status' => 'success',
+                'status'  => 'success',
                 'message' => 'Violation resolved successfully',
             ]
         );
@@ -60,7 +60,7 @@ class ComplianceController extends Controller
         return response()->json(
             [
                 'status' => 'success',
-                'data' => [],
+                'data'   => [],
             ]
         );
     }
@@ -70,7 +70,7 @@ class ComplianceController extends Controller
         return response()->json(
             [
                 'status' => 'success',
-                'data' => [],
+                'data'   => [],
             ]
         );
     }
@@ -80,7 +80,7 @@ class ComplianceController extends Controller
         return response()->json(
             [
                 'status' => 'success',
-                'data' => [],
+                'data'   => [],
             ]
         );
     }
@@ -89,7 +89,7 @@ class ComplianceController extends Controller
     {
         return response()->json(
             [
-                'status' => 'success',
+                'status'  => 'success',
                 'message' => 'Compliance check initiated',
             ]
         );
@@ -100,7 +100,7 @@ class ComplianceController extends Controller
         return response()->json(
             [
                 'status' => 'success',
-                'data' => [],
+                'data'   => [],
             ]
         );
     }
@@ -109,7 +109,7 @@ class ComplianceController extends Controller
     {
         return response()->json(
             [
-                'status' => 'success',
+                'status'  => 'success',
                 'message' => 'Certification renewal initiated',
             ]
         );
@@ -120,7 +120,7 @@ class ComplianceController extends Controller
         return response()->json(
             [
                 'status' => 'success',
-                'data' => [],
+                'data'   => [],
             ]
         );
     }
@@ -129,7 +129,7 @@ class ComplianceController extends Controller
     {
         return response()->json(
             [
-                'status' => 'success',
+                'status'  => 'success',
                 'message' => 'Policy updated successfully',
             ]
         );

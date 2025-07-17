@@ -83,7 +83,7 @@ class GcuVotingController extends Controller
 
         // Calculate vote distribution
         $voteDistribution = [
-            'for' => $proposal->votes_for,
+            'for'     => $proposal->votes_for,
             'against' => $proposal->votes_against,
             'abstain' => $proposal->total_votes_cast - $proposal->votes_for - $proposal->votes_against,
         ];
@@ -126,10 +126,10 @@ class GcuVotingController extends Controller
                 $vote = GcuVote::updateOrCreate(
                     [
                         'proposal_id' => $proposal->id,
-                        'user_uuid' => Auth::user()->uuid,
+                        'user_uuid'   => Auth::user()->uuid,
                     ],
                     [
-                        'vote' => $request->vote,
+                        'vote'         => $request->vote,
                         'voting_power' => $gcuBalance,
                     ]
                 );
@@ -159,8 +159,8 @@ class GcuVotingController extends Controller
 
         $proposal->update(
             [
-                'votes_for' => $votesFor,
-                'votes_against' => $votesAgainst,
+                'votes_for'        => $votesFor,
+                'votes_against'    => $votesAgainst,
                 'total_votes_cast' => $totalVotes,
             ]
         );
@@ -187,15 +187,15 @@ class GcuVotingController extends Controller
 
         $validated = $request->validate(
             [
-                'title' => 'required|string|max:255',
-                'description' => 'required|string',
-                'rationale' => 'required|string',
-                'voting_starts_at' => 'required|date|after:now',
-                'voting_ends_at' => 'required|date|after:voting_starts_at',
+                'title'                 => 'required|string|max:255',
+                'description'           => 'required|string',
+                'rationale'             => 'required|string',
+                'voting_starts_at'      => 'required|date|after:now',
+                'voting_ends_at'        => 'required|date|after:voting_starts_at',
                 'minimum_participation' => 'required|numeric|min:1|max:100',
-                'minimum_approval' => 'required|numeric|min:1|max:100',
-                'composition' => 'required|array',
-                'composition.*' => 'required|numeric|min:0|max:100',
+                'minimum_approval'      => 'required|numeric|min:1|max:100',
+                'composition'           => 'required|array',
+                'composition.*'         => 'required|numeric|min:0|max:100',
             ]
         );
 
@@ -211,18 +211,18 @@ class GcuVotingController extends Controller
 
         $proposal = GcuVotingProposal::create(
             [
-                'title' => $validated['title'],
-                'description' => $validated['description'],
-                'rationale' => $validated['rationale'],
-                'proposed_composition' => $validated['composition'],
-                'current_composition' => config('platform.gcu.composition'),
-                'status' => 'active',
-                'voting_starts_at' => $validated['voting_starts_at'],
-                'voting_ends_at' => $validated['voting_ends_at'],
+                'title'                 => $validated['title'],
+                'description'           => $validated['description'],
+                'rationale'             => $validated['rationale'],
+                'proposed_composition'  => $validated['composition'],
+                'current_composition'   => config('platform.gcu.composition'),
+                'status'                => 'active',
+                'voting_starts_at'      => $validated['voting_starts_at'],
+                'voting_ends_at'        => $validated['voting_ends_at'],
                 'minimum_participation' => $validated['minimum_participation'],
-                'minimum_approval' => $validated['minimum_approval'],
-                'total_gcu_supply' => $totalGcuSupply,
-                'created_by' => Auth::id(),
+                'minimum_approval'      => $validated['minimum_approval'],
+                'total_gcu_supply'      => $totalGcuSupply,
+                'created_by'            => Auth::id(),
             ]
         );
 

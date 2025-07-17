@@ -52,8 +52,8 @@ class CachePerformance
                     [
                         'endpoint' => $request->path(),
                         'hit_rate' => $hitRate,
-                        'hits' => $requestHits,
-                        'misses' => $requestMisses,
+                        'hits'     => $requestHits,
+                        'misses'   => $requestMisses,
                     ]
                 );
             }

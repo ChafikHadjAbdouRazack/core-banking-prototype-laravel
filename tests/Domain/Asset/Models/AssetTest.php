@@ -48,12 +48,12 @@ describe('Asset Model', function () {
 
     it('can create asset with all attributes', function () {
         $asset = Asset::factory()->create([
-            'code' => 'TEST',
-            'name' => 'Test Currency',
-            'type' => 'fiat',
+            'code'      => 'TEST',
+            'name'      => 'Test Currency',
+            'type'      => 'fiat',
             'precision' => 2,
             'is_active' => true,
-            'metadata' => ['country' => 'Test'],
+            'metadata'  => ['country' => 'Test'],
         ]);
 
         expect($asset->code)->toBe('TEST');

@@ -25,18 +25,18 @@ class SubProductServiceTest extends ServiceTestCase
         // Set up default config
         config(['sub_products' => [
             'exchange' => [
-                'enabled' => true,
+                'enabled'  => true,
                 'features' => [
-                    'fiat_trading' => true,
+                    'fiat_trading'   => true,
                     'crypto_trading' => false,
                 ],
                 'licenses' => ['vasp', 'mica'],
                 'metadata' => ['launch_date' => '2025-03-01'],
             ],
             'lending' => [
-                'enabled' => false,
+                'enabled'  => false,
                 'features' => [
-                    'sme_loans' => true,
+                    'sme_loans'       => true,
                     'p2p_marketplace' => true,
                 ],
                 'licenses' => ['lending_license'],
@@ -47,9 +47,9 @@ class SubProductServiceTest extends ServiceTestCase
         // Mock Feature facade
         Feature::shouldReceive('active')->andReturnUsing(function ($feature) {
             $map = [
-                'sub_product.exchange' => true,
-                'sub_product.lending' => false,
-                'sub_product.exchange.fiat_trading' => true,
+                'sub_product.exchange'                => true,
+                'sub_product.lending'                 => false,
+                'sub_product.exchange.fiat_trading'   => true,
                 'sub_product.exchange.crypto_trading' => false,
             ];
 

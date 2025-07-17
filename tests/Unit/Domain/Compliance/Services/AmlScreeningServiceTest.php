@@ -25,8 +25,8 @@ class AmlScreeningServiceTest extends ServiceTestCase
     {
         Http::fake([
             'api.ofac.treasury.gov/*' => Http::response(['results' => []], 200),
-            'webgate.ec.europa.eu/*' => Http::response(['results' => []], 200),
-            'api.un.org/*' => Http::response(['results' => []], 200),
+            'webgate.ec.europa.eu/*'  => Http::response(['results' => []], 200),
+            'api.un.org/*'            => Http::response(['results' => []], 200),
         ]);
 
         $results = $this->service->performSanctionsCheck(['name' => 'John Doe']);
@@ -188,7 +188,7 @@ class AmlScreeningServiceTest extends ServiceTestCase
     public function test_build_search_parameters_for_user(): void
     {
         $user = User::factory()->make([
-            'name' => 'Test User',
+            'name'    => 'Test User',
             'country' => 'UK',
         ]);
 
@@ -208,7 +208,7 @@ class AmlScreeningServiceTest extends ServiceTestCase
         $user = User::factory()->make(['name' => 'Test User']);
         $additionalParams = [
             'include_aliases' => true,
-            'fuzzy_matching' => true,
+            'fuzzy_matching'  => true,
         ];
 
         $reflection = new \ReflectionClass($this->service);

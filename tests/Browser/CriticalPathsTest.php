@@ -14,20 +14,20 @@ class CriticalPathsTest extends DuskTestCase
     {
         $this->browse(function (Browser $browser) {
             $publicRoutes = [
-                '/' => 'FinAegis',
-                '/about' => 'About FinAegis',
-                '/platform' => 'Platform',
-                '/gcu' => 'Global Currency Unit',
-                '/features' => 'Features',
-                '/pricing' => 'Pricing',
-                '/security' => 'Security',
+                '/'           => 'FinAegis',
+                '/about'      => 'About FinAegis',
+                '/platform'   => 'Platform',
+                '/gcu'        => 'Global Currency Unit',
+                '/features'   => 'Features',
+                '/pricing'    => 'Pricing',
+                '/security'   => 'Security',
                 '/compliance' => 'Compliance',
                 '/developers' => 'Developers',
-                '/support' => 'Support',
-                '/blog' => 'Blog',
-                '/partners' => 'Partners',
-                '/cgo' => 'CGO',
-                '/status' => 'Status',
+                '/support'    => 'Support',
+                '/blog'       => 'Blog',
+                '/partners'   => 'Partners',
+                '/cgo'        => 'CGO',
+                '/status'     => 'Status',
             ];
 
             foreach ($publicRoutes as $route => $expectedText) {
@@ -221,7 +221,7 @@ class CriticalPathsTest extends DuskTestCase
         foreach ($endpoints as $endpoint) {
             $response = $this->withHeaders([
                 'Authorization' => 'Bearer ' . $token,
-                'Accept' => 'application/json',
+                'Accept'        => 'application/json',
             ])->get($endpoint);
 
             $this->assertNotEquals(404, $response->status());

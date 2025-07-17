@@ -73,7 +73,7 @@ class BasketAccountController extends Controller
         $validated = $request->validate(
             [
                 'basket_code' => 'required|string|exists:basket_assets,code',
-                'amount' => 'required|integer|min:1',
+                'amount'      => 'required|integer|min:1',
             ]
         );
 
@@ -154,7 +154,7 @@ class BasketAccountController extends Controller
         $validated = $request->validate(
             [
                 'basket_code' => 'required|string|exists:basket_assets,code',
-                'amount' => 'required|integer|min:1',
+                'amount'      => 'required|integer|min:1',
             ]
         );
 

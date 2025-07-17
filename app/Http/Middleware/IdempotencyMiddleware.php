@@ -35,7 +35,7 @@ class IdempotencyMiddleware
         // Validate idempotency key format (UUID or similar)
         if (! $this->isValidIdempotencyKey($idempotencyKey)) {
             return response()->json([
-                'error' => 'Invalid idempotency key format',
+                'error'   => 'Invalid idempotency key format',
                 'message' => 'Idempotency-Key must be a valid UUID or string between 16-64 characters',
             ], 400);
         }
@@ -70,7 +70,7 @@ class IdempotencyMiddleware
             } else {
                 // Different request with same idempotency key
                 return response()->json([
-                    'error' => 'Idempotency key already used',
+                    'error'   => 'Idempotency key already used',
                     'message' => 'The provided idempotency key has already been used with different request parameters',
                 ], 409);
             }
@@ -82,7 +82,7 @@ class IdempotencyMiddleware
 
         if (! $lock->get()) {
             return response()->json([
-                'error' => 'Request in progress',
+                'error'   => 'Request in progress',
                 'message' => 'Another request with the same idempotency key is currently being processed',
             ], 409);
         }
@@ -162,13 +162,13 @@ class IdempotencyMiddleware
     {
         $data = [
             'request' => [
-                'method' => $request->method(),
-                'body' => $request->all(),
+                'method'    => $request->method(),
+                'body'      => $request->all(),
                 'timestamp' => now()->toIso8601String(),
             ],
             'response' => [
                 'content' => json_decode($response->getContent(), true),
-                'status' => $response->getStatusCode(),
+                'status'  => $response->getStatusCode(),
                 'headers' => $response->headers->all(),
             ],
         ];
@@ -177,9 +177,9 @@ class IdempotencyMiddleware
 
         // Log idempotency key usage
         Log::info('Idempotency key stored', [
-            'key' => $cacheKey,
-            'user_id' => $request->user()?->id,
-            'endpoint' => $request->path(),
+            'key'        => $cacheKey,
+            'user_id'    => $request->user()?->id,
+            'endpoint'   => $request->path(),
             'expires_at' => now()->addSeconds(self::CACHE_DURATION)->toIso8601String(),
         ]);
     }

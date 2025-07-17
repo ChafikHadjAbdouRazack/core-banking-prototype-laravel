@@ -54,7 +54,7 @@ it('can update user bank allocations', function () {
     $newAllocations = [
         'PAYSERA' => 50,
         'REVOLUT' => 30,
-        'WISE' => 20,
+        'WISE'    => 20,
     ];
 
     $preferences = $this->service->updateAllocations($this->user, $newAllocations);
@@ -83,18 +83,18 @@ it('throws exception if allocations do not sum to 100%', function () {
 it('can add a new bank to existing allocation when under 100%', function () {
     // First create preferences that don't sum to 100%
     $this->user->bankPreferences()->create([
-        'bank_code' => 'PAYSERA',
-        'bank_name' => 'Paysera',
+        'bank_code'             => 'PAYSERA',
+        'bank_name'             => 'Paysera',
         'allocation_percentage' => 40,
-        'is_primary' => true,
-        'status' => 'active',
+        'is_primary'            => true,
+        'status'                => 'active',
     ]);
     $this->user->bankPreferences()->create([
-        'bank_code' => 'DEUTSCHE',
-        'bank_name' => 'Deutsche Bank',
+        'bank_code'             => 'DEUTSCHE',
+        'bank_name'             => 'Deutsche Bank',
         'allocation_percentage' => 40,
-        'is_primary' => false,
-        'status' => 'active',
+        'is_primary'            => false,
+        'status'                => 'active',
     ]);
 
     // Add new bank to complete 100%
@@ -138,7 +138,7 @@ it('checks if user has diversified allocation', function () {
 
     // Update to non-diversified allocation
     $this->service->updateAllocations($this->user, [
-        'PAYSERA' => 80, // Too concentrated
+        'PAYSERA'  => 80, // Too concentrated
         'DEUTSCHE' => 20,
     ]);
 

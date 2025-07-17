@@ -21,12 +21,12 @@ test('registration screen cannot be rendered if support is disabled', function (
 
 test('new users can register', function () {
     $response = $this->post('/register', [
-        'name' => 'Test User',
-        'email' => 'test@example.com',
-        'is_business_customer' => false,
-        'password' => 'password',
+        'name'                  => 'Test User',
+        'email'                 => 'test@example.com',
+        'is_business_customer'  => false,
+        'password'              => 'password',
         'password_confirmation' => 'password',
-        'terms' => Jetstream::hasTermsAndPrivacyPolicyFeature(),
+        'terms'                 => Jetstream::hasTermsAndPrivacyPolicyFeature(),
     ]);
 
     // Check if registration was successful
@@ -36,7 +36,7 @@ test('new users can register', function () {
     // Verify user was created
     $this->assertDatabaseHas('users', [
         'email' => 'test@example.com',
-        'name' => 'Test User',
+        'name'  => 'Test User',
     ]);
 })->skip(function () {
     return ! Features::enabled(Features::registration());
@@ -44,12 +44,12 @@ test('new users can register', function () {
 
 test('new business users can register', function () {
     $response = $this->post('/register', [
-        'name' => 'Test Business User',
-        'email' => 'business@example.com',
-        'is_business_customer' => true,
-        'password' => 'password',
+        'name'                  => 'Test Business User',
+        'email'                 => 'business@example.com',
+        'is_business_customer'  => true,
+        'password'              => 'password',
         'password_confirmation' => 'password',
-        'terms' => Jetstream::hasTermsAndPrivacyPolicyFeature(),
+        'terms'                 => Jetstream::hasTermsAndPrivacyPolicyFeature(),
     ]);
 
     // Check if registration was successful
@@ -59,7 +59,7 @@ test('new business users can register', function () {
     // Verify user was created
     $this->assertDatabaseHas('users', [
         'email' => 'business@example.com',
-        'name' => 'Test Business User',
+        'name'  => 'Test Business User',
     ]);
 })->skip(function () {
     return ! Features::enabled(Features::registration());

@@ -71,9 +71,9 @@ class AccountCacheService
      */
     public function getBalance(string $uuid): ?int
     {
-        /** @var \App\Models\Account|null $account */
+        /** @var Account|null $account */
         $account = null;
-        /** @var \App\Models\Account|null $account */
+        /** @var Account|null $account */
         $account = null;
         $uuid = (string) $uuid;
         $key = $this->getCacheKey($uuid) . ':balance';

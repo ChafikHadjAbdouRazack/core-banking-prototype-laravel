@@ -43,10 +43,10 @@ class BasketRebalancingServiceTest extends ServiceTestCase
     public function it_checks_if_basket_needs_rebalancing()
     {
         $basket = BasketAsset::factory()->create([
-            'code' => 'TEST_BASKET_' . uniqid(),
-            'type' => 'dynamic',
+            'code'                => 'TEST_BASKET_' . uniqid(),
+            'type'                => 'dynamic',
             'rebalance_frequency' => 'daily',
-            'last_rebalanced_at' => now()->subDays(2),
+            'last_rebalanced_at'  => now()->subDays(2),
         ]);
 
         $this->assertTrue($this->service->needsRebalancing($basket));
@@ -78,35 +78,35 @@ class BasketRebalancingServiceTest extends ServiceTestCase
 
         // Create dynamic basket with unique code
         $basket = BasketAsset::factory()->create([
-            'code' => 'TEST_BASKET_' . uniqid(),
-            'type' => 'dynamic',
+            'code'                => 'TEST_BASKET_' . uniqid(),
+            'type'                => 'dynamic',
             'rebalance_frequency' => 'daily',
         ]);
 
         // Add components with bounds
         $component1 = BasketComponent::create([
             'basket_asset_id' => $basket->id,
-            'asset_code' => 'USD',
-            'weight' => 30.0, // Below min_weight
-            'min_weight' => 40.0,
-            'max_weight' => 60.0,
-            'is_active' => true,
+            'asset_code'      => 'USD',
+            'weight'          => 30.0, // Below min_weight
+            'min_weight'      => 40.0,
+            'max_weight'      => 60.0,
+            'is_active'       => true,
         ]);
 
         $component2 = BasketComponent::create([
             'basket_asset_id' => $basket->id,
-            'asset_code' => 'EUR',
-            'weight' => 70.0, // Above max_weight
-            'min_weight' => 40.0,
-            'max_weight' => 60.0,
-            'is_active' => true,
+            'asset_code'      => 'EUR',
+            'weight'          => 70.0, // Above max_weight
+            'min_weight'      => 40.0,
+            'max_weight'      => 60.0,
+            'is_active'       => true,
         ]);
 
         // Mock value calculation
         $mockValue = new BasketValue([
-            'basket_asset_id' => $basket->id,
-            'value' => 100.0,
-            'calculated_at' => now(),
+            'basket_asset_id'  => $basket->id,
+            'value'            => 100.0,
+            'calculated_at'    => now(),
             'component_values' => [],
         ]);
 
@@ -163,27 +163,27 @@ class BasketRebalancingServiceTest extends ServiceTestCase
 
         BasketComponent::create([
             'basket_asset_id' => $basket->id,
-            'asset_code' => 'USD',
-            'weight' => 50.0,
-            'min_weight' => 40.0,
-            'max_weight' => 60.0,
-            'is_active' => true,
+            'asset_code'      => 'USD',
+            'weight'          => 50.0,
+            'min_weight'      => 40.0,
+            'max_weight'      => 60.0,
+            'is_active'       => true,
         ]);
 
         BasketComponent::create([
             'basket_asset_id' => $basket->id,
-            'asset_code' => 'EUR',
-            'weight' => 50.0,
-            'min_weight' => 40.0,
-            'max_weight' => 60.0,
-            'is_active' => true,
+            'asset_code'      => 'EUR',
+            'weight'          => 50.0,
+            'min_weight'      => 40.0,
+            'max_weight'      => 60.0,
+            'is_active'       => true,
         ]);
 
         // Mock value calculation
         $mockValue = new BasketValue([
-            'basket_asset_id' => $basket->id,
-            'value' => 100.0,
-            'calculated_at' => now(),
+            'basket_asset_id'  => $basket->id,
+            'value'            => 100.0,
+            'calculated_at'    => now(),
             'component_values' => [],
         ]);
 
@@ -210,9 +210,9 @@ class BasketRebalancingServiceTest extends ServiceTestCase
 
         // Mock zero value
         $mockValue = new BasketValue([
-            'basket_asset_id' => $basket->id,
-            'value' => 0.0,
-            'calculated_at' => now(),
+            'basket_asset_id'  => $basket->id,
+            'value'            => 0.0,
+            'calculated_at'    => now(),
             'component_values' => [],
         ]);
 
@@ -242,31 +242,31 @@ class BasketRebalancingServiceTest extends ServiceTestCase
 
         BasketComponent::create([
             'basket_asset_id' => $basket->id,
-            'asset_code' => 'USD',
-            'weight' => 25.0,
-            'min_weight' => 30.0,
-            'is_active' => true,
+            'asset_code'      => 'USD',
+            'weight'          => 25.0,
+            'min_weight'      => 30.0,
+            'is_active'       => true,
         ]);
 
         BasketComponent::create([
             'basket_asset_id' => $basket->id,
-            'asset_code' => 'EUR',
-            'weight' => 35.0,
-            'is_active' => true,
+            'asset_code'      => 'EUR',
+            'weight'          => 35.0,
+            'is_active'       => true,
         ]);
 
         BasketComponent::create([
             'basket_asset_id' => $basket->id,
-            'asset_code' => 'GBP',
-            'weight' => 35.0,
-            'is_active' => true,
+            'asset_code'      => 'GBP',
+            'weight'          => 35.0,
+            'is_active'       => true,
         ]);
 
         // Mock value calculation
         $mockValue = new BasketValue([
-            'basket_asset_id' => $basket->id,
-            'value' => 100.0,
-            'calculated_at' => now(),
+            'basket_asset_id'  => $basket->id,
+            'value'            => 100.0,
+            'calculated_at'    => now(),
             'component_values' => [],
         ]);
 
@@ -290,26 +290,26 @@ class BasketRebalancingServiceTest extends ServiceTestCase
     public function it_rebalances_if_needed()
     {
         $basket = BasketAsset::factory()->create([
-            'code' => 'TEST_BASKET_' . uniqid(),
-            'type' => 'dynamic',
+            'code'                => 'TEST_BASKET_' . uniqid(),
+            'type'                => 'dynamic',
             'rebalance_frequency' => 'daily',
-            'last_rebalanced_at' => now()->subDays(2),
+            'last_rebalanced_at'  => now()->subDays(2),
         ]);
 
         BasketComponent::create([
             'basket_asset_id' => $basket->id,
-            'asset_code' => 'USD',
-            'weight' => 100.0,
-            'is_active' => true,
+            'asset_code'      => 'USD',
+            'weight'          => 100.0,
+            'is_active'       => true,
         ]);
 
         Asset::where('code', 'USD')->first();
 
         // Mock value calculation
         $mockValue = new BasketValue([
-            'basket_asset_id' => $basket->id,
-            'value' => 100.0,
-            'calculated_at' => now(),
+            'basket_asset_id'  => $basket->id,
+            'value'            => 100.0,
+            'calculated_at'    => now(),
             'component_values' => [],
         ]);
 
@@ -331,10 +331,10 @@ class BasketRebalancingServiceTest extends ServiceTestCase
     public function it_returns_null_when_rebalancing_not_needed()
     {
         $basket = BasketAsset::factory()->create([
-            'code' => 'TEST_BASKET_' . uniqid(),
-            'type' => 'dynamic',
+            'code'                => 'TEST_BASKET_' . uniqid(),
+            'type'                => 'dynamic',
             'rebalance_frequency' => 'daily',
-            'last_rebalanced_at' => now(),
+            'last_rebalanced_at'  => now(),
         ]);
 
         $result = $this->service->rebalanceIfNeeded($basket);
@@ -347,24 +347,24 @@ class BasketRebalancingServiceTest extends ServiceTestCase
     {
         // Create baskets
         $basket1 = BasketAsset::factory()->create([
-            'code' => 'TEST_BASKET_' . uniqid(),
-            'type' => 'dynamic',
+            'code'                => 'TEST_BASKET_' . uniqid(),
+            'type'                => 'dynamic',
             'rebalance_frequency' => 'daily',
-            'last_rebalanced_at' => now()->subDays(2),
+            'last_rebalanced_at'  => now()->subDays(2),
         ]);
 
         $basket2 = BasketAsset::factory()->create([
-            'code' => 'TEST_BASKET_' . uniqid(),
-            'type' => 'dynamic',
+            'code'                => 'TEST_BASKET_' . uniqid(),
+            'type'                => 'dynamic',
             'rebalance_frequency' => 'weekly',
-            'last_rebalanced_at' => now()->subWeeks(2),
+            'last_rebalanced_at'  => now()->subWeeks(2),
         ]);
 
         $basket3 = BasketAsset::factory()->create([
-            'code' => 'TEST_BASKET_' . uniqid(),
-            'type' => 'dynamic',
+            'code'                => 'TEST_BASKET_' . uniqid(),
+            'type'                => 'dynamic',
             'rebalance_frequency' => 'daily',
-            'last_rebalanced_at' => now(), // Doesn't need rebalancing
+            'last_rebalanced_at'  => now(), // Doesn't need rebalancing
         ]);
 
         // Add components
@@ -373,16 +373,16 @@ class BasketRebalancingServiceTest extends ServiceTestCase
         foreach ([$basket1, $basket2] as $basket) {
             BasketComponent::create([
                 'basket_asset_id' => $basket->id,
-                'asset_code' => 'USD',
-                'weight' => 100.0,
-                'is_active' => true,
+                'asset_code'      => 'USD',
+                'weight'          => 100.0,
+                'is_active'       => true,
             ]);
         }
 
         // Mock value calculations
         $mockValue = new BasketValue([
-            'value' => 100.0,
-            'calculated_at' => now(),
+            'value'            => 100.0,
+            'calculated_at'    => now(),
             'component_values' => [],
         ]);
 
@@ -414,17 +414,17 @@ class BasketRebalancingServiceTest extends ServiceTestCase
 
         BasketComponent::create([
             'basket_asset_id' => $basket->id,
-            'asset_code' => 'USD',
-            'weight' => 80.0,
-            'max_weight' => 60.0,
-            'is_active' => true,
+            'asset_code'      => 'USD',
+            'weight'          => 80.0,
+            'max_weight'      => 60.0,
+            'is_active'       => true,
         ]);
 
         // Mock value calculation
         $mockValue = new BasketValue([
-            'basket_asset_id' => $basket->id,
-            'value' => 100.0,
-            'calculated_at' => now(),
+            'basket_asset_id'  => $basket->id,
+            'value'            => 100.0,
+            'calculated_at'    => now(),
             'component_values' => [],
         ]);
 
@@ -450,10 +450,10 @@ class BasketRebalancingServiceTest extends ServiceTestCase
     public function it_handles_rebalancing_failures_gracefully()
     {
         $basket = BasketAsset::factory()->create([
-            'code' => 'TEST_BASKET_' . uniqid(),
-            'type' => 'dynamic',
+            'code'                => 'TEST_BASKET_' . uniqid(),
+            'type'                => 'dynamic',
             'rebalance_frequency' => 'daily',
-            'last_rebalanced_at' => now()->subDays(2),
+            'last_rebalanced_at'  => now()->subDays(2),
         ]);
 
         // Mock value calculation to throw exception
@@ -507,23 +507,23 @@ class BasketRebalancingServiceTest extends ServiceTestCase
         // Components without min/max weights
         BasketComponent::create([
             'basket_asset_id' => $basket->id,
-            'asset_code' => 'USD',
-            'weight' => 60.0,
-            'is_active' => true,
+            'asset_code'      => 'USD',
+            'weight'          => 60.0,
+            'is_active'       => true,
         ]);
 
         BasketComponent::create([
             'basket_asset_id' => $basket->id,
-            'asset_code' => 'EUR',
-            'weight' => 40.0,
-            'is_active' => true,
+            'asset_code'      => 'EUR',
+            'weight'          => 40.0,
+            'is_active'       => true,
         ]);
 
         // Mock value calculation
         $mockValue = new BasketValue([
-            'basket_asset_id' => $basket->id,
-            'value' => 100.0,
-            'calculated_at' => now(),
+            'basket_asset_id'  => $basket->id,
+            'value'            => 100.0,
+            'calculated_at'    => now(),
             'component_values' => [],
         ]);
 
@@ -552,38 +552,38 @@ class BasketRebalancingServiceTest extends ServiceTestCase
         // Create components that don't sum to 100%
         BasketComponent::create([
             'basket_asset_id' => $basket->id,
-            'asset_code' => 'USD',
-            'weight' => 20.0,
-            'min_weight' => 15.0,
-            'max_weight' => 40.0,
-            'is_active' => true,
+            'asset_code'      => 'USD',
+            'weight'          => 20.0,
+            'min_weight'      => 15.0,
+            'max_weight'      => 40.0,
+            'is_active'       => true,
         ]);
 
         BasketComponent::create([
             'basket_asset_id' => $basket->id,
-            'asset_code' => 'EUR',
-            'weight' => 25.0,
-            'min_weight' => 20.0,
-            'max_weight' => 50.0,
-            'is_active' => true,
+            'asset_code'      => 'EUR',
+            'weight'          => 25.0,
+            'min_weight'      => 20.0,
+            'max_weight'      => 50.0,
+            'is_active'       => true,
         ]);
 
         BasketComponent::create([
             'basket_asset_id' => $basket->id,
-            'asset_code' => 'GBP',
-            'weight' => 30.0,
-            'min_weight' => 25.0,
-            'max_weight' => 40.0,
-            'is_active' => true,
+            'asset_code'      => 'GBP',
+            'weight'          => 30.0,
+            'min_weight'      => 25.0,
+            'max_weight'      => 40.0,
+            'is_active'       => true,
         ]);
 
         // Total: 75%, needs to be scaled to 100%
 
         // Mock value calculation
         $mockValue = new BasketValue([
-            'basket_asset_id' => $basket->id,
-            'value' => 100.0,
-            'calculated_at' => now(),
+            'basket_asset_id'  => $basket->id,
+            'value'            => 100.0,
+            'calculated_at'    => now(),
             'component_values' => [],
         ]);
 

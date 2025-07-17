@@ -43,21 +43,21 @@ class SubscriberResource extends Resource
                                     ->required()
                                     ->options(
                                         [
-                                            Subscriber::SOURCE_BLOG => 'Blog',
-                                            Subscriber::SOURCE_CGO => 'CGO Early Access',
+                                            Subscriber::SOURCE_BLOG       => 'Blog',
+                                            Subscriber::SOURCE_CGO        => 'CGO Early Access',
                                             Subscriber::SOURCE_INVESTMENT => 'Investment',
-                                            Subscriber::SOURCE_FOOTER => 'Footer',
-                                            Subscriber::SOURCE_CONTACT => 'Contact Form',
-                                            Subscriber::SOURCE_PARTNER => 'Partner Application',
+                                            Subscriber::SOURCE_FOOTER     => 'Footer',
+                                            Subscriber::SOURCE_CONTACT    => 'Contact Form',
+                                            Subscriber::SOURCE_PARTNER    => 'Partner Application',
                                         ]
                                     ),
                                 Forms\Components\Select::make('status')
                                     ->required()
                                     ->options(
                                         [
-                                            Subscriber::STATUS_ACTIVE => 'Active',
+                                            Subscriber::STATUS_ACTIVE       => 'Active',
                                             Subscriber::STATUS_UNSUBSCRIBED => 'Unsubscribed',
-                                            Subscriber::STATUS_BOUNCED => 'Bounced',
+                                            Subscriber::STATUS_BOUNCED      => 'Bounced',
                                         ]
                                     )
                                     ->default(Subscriber::STATUS_ACTIVE),
@@ -127,23 +127,23 @@ class SubscriberResource extends Resource
                         ->searchable()
                         ->formatStateUsing(
                             fn (string $state): string => match ($state) {
-                                Subscriber::SOURCE_BLOG => 'Blog',
-                                Subscriber::SOURCE_CGO => 'CGO Early Access',
+                                Subscriber::SOURCE_BLOG       => 'Blog',
+                                Subscriber::SOURCE_CGO        => 'CGO Early Access',
                                 Subscriber::SOURCE_INVESTMENT => 'Investment',
-                                Subscriber::SOURCE_FOOTER => 'Footer',
-                                Subscriber::SOURCE_CONTACT => 'Contact Form',
-                                Subscriber::SOURCE_PARTNER => 'Partner Application',
-                                default => $state,
+                                Subscriber::SOURCE_FOOTER     => 'Footer',
+                                Subscriber::SOURCE_CONTACT    => 'Contact Form',
+                                Subscriber::SOURCE_PARTNER    => 'Partner Application',
+                                default                       => $state,
                             }
                         ),
                     Tables\Columns\TextColumn::make('status')
                         ->badge()
                         ->color(
                             fn (string $state): string => match ($state) {
-                                Subscriber::STATUS_ACTIVE => 'success',
+                                Subscriber::STATUS_ACTIVE       => 'success',
                                 Subscriber::STATUS_UNSUBSCRIBED => 'warning',
-                                Subscriber::STATUS_BOUNCED => 'danger',
-                                default => 'gray',
+                                Subscriber::STATUS_BOUNCED      => 'danger',
+                                default                         => 'gray',
                             }
                         )
                         ->searchable(),
@@ -167,9 +167,9 @@ class SubscriberResource extends Resource
                     SelectFilter::make('status')
                         ->options(
                             [
-                                Subscriber::STATUS_ACTIVE => 'Active',
+                                Subscriber::STATUS_ACTIVE       => 'Active',
                                 Subscriber::STATUS_UNSUBSCRIBED => 'Unsubscribed',
-                                Subscriber::STATUS_BOUNCED => 'Bounced',
+                                Subscriber::STATUS_BOUNCED      => 'Bounced',
                             ]
                         )
                         ->default(Subscriber::STATUS_ACTIVE),
@@ -177,12 +177,12 @@ class SubscriberResource extends Resource
                         ->multiple()
                         ->options(
                             [
-                                Subscriber::SOURCE_BLOG => 'Blog',
-                                Subscriber::SOURCE_CGO => 'CGO Early Access',
+                                Subscriber::SOURCE_BLOG       => 'Blog',
+                                Subscriber::SOURCE_CGO        => 'CGO Early Access',
                                 Subscriber::SOURCE_INVESTMENT => 'Investment',
-                                Subscriber::SOURCE_FOOTER => 'Footer',
-                                Subscriber::SOURCE_CONTACT => 'Contact Form',
-                                Subscriber::SOURCE_PARTNER => 'Partner Application',
+                                Subscriber::SOURCE_FOOTER     => 'Footer',
+                                Subscriber::SOURCE_CONTACT    => 'Contact Form',
+                                Subscriber::SOURCE_PARTNER    => 'Partner Application',
                             ]
                         ),
                     Tables\Filters\Filter::make('confirmed')
@@ -218,8 +218,8 @@ class SubscriberResource extends Resource
                             function (Subscriber $record): void {
                                 $record->update(
                                     [
-                                        'status' => Subscriber::STATUS_ACTIVE,
-                                        'unsubscribed_at' => null,
+                                        'status'             => Subscriber::STATUS_ACTIVE,
+                                        'unsubscribed_at'    => null,
                                         'unsubscribe_reason' => null,
                                     ]
                                 );
@@ -301,9 +301,9 @@ class SubscriberResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListSubscribers::route('/'),
+            'index'  => Pages\ListSubscribers::route('/'),
             'create' => Pages\CreateSubscriber::route('/create'),
-            'edit' => Pages\EditSubscriber::route('/{record}/edit'),
+            'edit'   => Pages\EditSubscriber::route('/{record}/edit'),
         ];
     }
 

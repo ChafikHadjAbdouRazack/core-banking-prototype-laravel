@@ -14,7 +14,7 @@ beforeEach(function () {
     // Set up custodian registry with mock connector
     $this->registry = new CustodianRegistry();
     $this->mockConnector = new MockBankConnector([
-        'name' => 'Mock Bank',
+        'name'    => 'Mock Bank',
         'enabled' => true,
     ]);
     $this->registry->register('mock', $this->mockConnector);
@@ -162,7 +162,7 @@ it('throws exception for cross-custodian transfers', function () {
 
     // Create a fake account with different custodian
     $toAccount = CustodianAccount::factory()->make([
-        'custodian_name' => 'different-custodian',
+        'custodian_name'       => 'different-custodian',
         'custodian_account_id' => 'account-123',
     ]);
     $toAccount->id = 999; // Fake ID for testing

@@ -19,7 +19,7 @@ class LoginControllerTest extends ControllerTestCase
         parent::setUp();
 
         $this->user = User::factory()->create([
-            'email' => 'test@example.com',
+            'email'    => 'test@example.com',
             'password' => bcrypt('password123'),
         ]);
     }
@@ -28,7 +28,7 @@ class LoginControllerTest extends ControllerTestCase
     public function test_user_can_login_with_valid_credentials(): void
     {
         $response = $this->postJson('/api/auth/login', [
-            'email' => 'test@example.com',
+            'email'    => 'test@example.com',
             'password' => 'password123',
         ]);
 
@@ -52,7 +52,7 @@ class LoginControllerTest extends ControllerTestCase
     public function test_user_cannot_login_with_invalid_credentials(): void
     {
         $response = $this->postJson('/api/auth/login', [
-            'email' => 'test@example.com',
+            'email'    => 'test@example.com',
             'password' => 'wrongpassword',
         ]);
 

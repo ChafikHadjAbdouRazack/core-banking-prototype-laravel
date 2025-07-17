@@ -19,7 +19,7 @@ class PrimaryBasketWidget extends Widget
 
         if (! $basket) {
             return [
-                'exists' => false,
+                'exists'     => false,
                 'currencies' => [
                     ['code' => 'USD', 'name' => 'US Dollar', 'weight' => 40],
                     ['code' => 'EUR', 'name' => 'Euro', 'weight' => 30],
@@ -32,13 +32,13 @@ class PrimaryBasketWidget extends Widget
         }
 
         return [
-            'exists' => true,
-            'basket' => $basket,
+            'exists'     => true,
+            'basket'     => $basket,
             'currencies' => $basket->components()->with('asset')->get()->map(
                 function ($component) {
                     return [
-                        'code' => $component->asset_code,
-                        'name' => $component->asset->name ?? $component->asset_code,
+                        'code'   => $component->asset_code,
+                        'name'   => $component->asset->name ?? $component->asset_code,
                         'weight' => $component->weight,
                     ];
                 }

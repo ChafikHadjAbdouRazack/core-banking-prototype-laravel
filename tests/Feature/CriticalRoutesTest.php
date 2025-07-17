@@ -8,9 +8,9 @@ use Tests\TestCase;
 
 class CriticalRoutesTest extends TestCase
 {
-    /**
-     * Test all public routes are accessible and don't throw route errors.
-     */ #[Test]
+/**
+ * Test all public routes are accessible and don't throw route errors.
+ */ #[Test]
     public function test_public_routes_are_accessible(): void
     {
         $publicRoutes = [
@@ -40,9 +40,9 @@ class CriticalRoutesTest extends TestCase
         }
     }
 
-    /**
-     * Test authenticated routes don't throw route errors.
-     */ #[Test]
+/**
+ * Test authenticated routes don't throw route errors.
+ */ #[Test]
     public function test_authenticated_routes_dont_throw_errors(): void
     {
         $user = User::factory()->withPersonalTeam()->create();
@@ -73,10 +73,10 @@ class CriticalRoutesTest extends TestCase
         $routesRequiringSetup = [
             '/wallet/transactions' => 'Transaction History',
             '/transactions/status' => 'Track Transaction Status',
-            '/fund-flow' => 'Fund Flow',
-            '/exchange-rates' => 'Exchange Rates',
-            '/batch-processing' => 'Batch Processing',
-            '/asset-management' => 'Asset Management',
+            '/fund-flow'           => 'Fund Flow',
+            '/exchange-rates'      => 'Exchange Rates',
+            '/batch-processing'    => 'Batch Processing',
+            '/asset-management'    => 'Asset Management',
         ];
 
         foreach ($routesRequiringSetup as $route => $expectedText) {
@@ -89,9 +89,9 @@ class CriticalRoutesTest extends TestCase
         }
     }
 
-    /**
-     * Test all named routes exist.
-     */ #[Test]
+/**
+ * Test all named routes exist.
+ */ #[Test]
     public function test_all_named_routes_exist(): void
     {
         $namedRoutes = [
@@ -130,9 +130,9 @@ class CriticalRoutesTest extends TestCase
         }
     }
 
-    /**
-     * Test API routes are accessible with authentication.
-     */ #[Test]
+/**
+ * Test API routes are accessible with authentication.
+ */ #[Test]
     public function test_api_routes_require_authentication(): void
     {
         // Test that API routes exist and don't throw route errors

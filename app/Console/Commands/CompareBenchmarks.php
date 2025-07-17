@@ -71,11 +71,11 @@ class CompareBenchmarks extends Command
             $percentChange = (($currentAvg - $baselineAvg) / $baselineAvg) * 100;
 
             $results[] = [
-                'test' => $test,
+                'test'     => $test,
                 'baseline' => sprintf('%.2f ms', $baselineAvg),
-                'current' => sprintf('%.2f ms', $currentAvg),
-                'change' => sprintf('%+.1f%%', $percentChange),
-                'status' => $this->getStatus($percentChange, $threshold),
+                'current'  => sprintf('%.2f ms', $currentAvg),
+                'change'   => sprintf('%+.1f%%', $percentChange),
+                'status'   => $this->getStatus($percentChange, $threshold),
             ];
 
             if ($percentChange > $threshold) {

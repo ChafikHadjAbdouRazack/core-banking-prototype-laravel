@@ -18,7 +18,7 @@ class AccountTest extends TestCase
         $account = Account::factory()->forUser($user)->create();
 
         $this->assertDatabaseHas('accounts', [
-            'id' => $account->id,
+            'id'        => $account->id,
             'user_uuid' => $user->uuid,
         ]);
     }
@@ -49,7 +49,7 @@ class AccountTest extends TestCase
         $asset = Asset::where('code', 'USD')->first();
         $balance = AccountBalance::factory()->create([
             'account_uuid' => $account->uuid,
-            'asset_code' => $asset->code,
+            'asset_code'   => $asset->code,
         ]);
 
         $this->assertTrue($account->balances()->exists());
@@ -68,7 +68,7 @@ class AccountTest extends TestCase
         $user = User::factory()->create();
         $testAccount = Account::create([
             'user_uuid' => $user->uuid,
-            'name' => 'Test Account',
+            'name'      => 'Test Account',
         ]);
 
         $this->assertEquals((string) $user->uuid, (string) $testAccount->user_uuid);

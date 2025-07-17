@@ -30,7 +30,7 @@ class ShowBasketPerformanceCommand extends Command
      */
     public function handle(BasketValueCalculationService $valueService): int
     {
-        /** @var \App\Domain\Basket\Models\BasketAsset|null $basket */
+        /** @var BasketAsset|null $basket */
         $basket = null;
         $basketCode = $this->argument('basket') ?? config('baskets.primary_code', 'GCU');
         $period = $this->option('period');

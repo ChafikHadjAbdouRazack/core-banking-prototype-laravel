@@ -56,11 +56,11 @@ class GcuVotingProposalResource extends Resource
                                 Forms\Components\Select::make('status')
                                     ->options(
                                         [
-                                            'draft' => 'Draft',
-                                            'active' => 'Active',
-                                            'closed' => 'Closed',
+                                            'draft'       => 'Draft',
+                                            'active'      => 'Active',
+                                            'closed'      => 'Closed',
                                             'implemented' => 'Implemented',
-                                            'rejected' => 'Rejected',
+                                            'rejected'    => 'Rejected',
                                         ]
                                     )
                                     ->required(),
@@ -111,10 +111,10 @@ class GcuVotingProposalResource extends Resource
                         ->colors(
                             [
                                 'secondary' => 'draft',
-                                'success' => 'active',
-                                'danger' => 'rejected',
-                                'warning' => 'closed',
-                                'primary' => 'implemented',
+                                'success'   => 'active',
+                                'danger'    => 'rejected',
+                                'warning'   => 'closed',
+                                'primary'   => 'implemented',
                             ]
                         ),
                     Tables\Columns\TextColumn::make('participation_rate')
@@ -140,11 +140,11 @@ class GcuVotingProposalResource extends Resource
                     Tables\Filters\SelectFilter::make('status')
                         ->options(
                             [
-                                'draft' => 'Draft',
-                                'active' => 'Active',
-                                'closed' => 'Closed',
+                                'draft'       => 'Draft',
+                                'active'      => 'Active',
+                                'closed'      => 'Closed',
                                 'implemented' => 'Implemented',
-                                'rejected' => 'Rejected',
+                                'rejected'    => 'Rejected',
                             ]
                         ),
                 ]
@@ -180,9 +180,9 @@ class GcuVotingProposalResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListGcuVotingProposals::route('/'),
+            'index'  => Pages\ListGcuVotingProposals::route('/'),
             'create' => Pages\CreateGcuVotingProposal::route('/create'),
-            'edit' => Pages\EditGcuVotingProposal::route('/{record}/edit'),
+            'edit'   => Pages\EditGcuVotingProposal::route('/{record}/edit'),
         ];
     }
 }

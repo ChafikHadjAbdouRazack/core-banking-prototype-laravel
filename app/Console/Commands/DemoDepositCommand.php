@@ -80,7 +80,7 @@ class DemoDepositCommand extends Command
                 'queue:work',
                 [
                     '--stop-when-empty' => true,
-                    '--queue' => 'default,events,ledger,transactions',
+                    '--queue'           => 'default,events,ledger,transactions',
                 ]
             );
 
@@ -123,8 +123,8 @@ class DemoDepositCommand extends Command
                     description: $description,
                     transactionId: $transactionId,
                     metadata: [
-                        'type' => 'demo_deposit',
-                        'created_by' => 'console_command',
+                        'type'        => 'demo_deposit',
+                        'created_by'  => 'console_command',
                         'environment' => config('app.env'),
                     ]
                 )
@@ -135,7 +135,7 @@ class DemoDepositCommand extends Command
                 'queue:work',
                 [
                     '--stop-when-empty' => true,
-                    '--queue' => 'events,ledger',
+                    '--queue'           => 'events,ledger',
                 ]
             );
 

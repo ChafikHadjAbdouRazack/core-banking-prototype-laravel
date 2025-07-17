@@ -11,9 +11,9 @@ use Illuminate\Support\Facades\DB;
 beforeEach(function () {
     // Configure settlement service
     Config::set('custodians.settlement', [
-        'type' => 'net',
+        'type'                   => 'net',
         'batch_interval_minutes' => 60,
-        'min_settlement_amount' => 10000, // $100.00
+        'min_settlement_amount'  => 10000, // $100.00
     ]);
 
     // Create test accounts
@@ -23,20 +23,20 @@ beforeEach(function () {
 
     // Create custodian accounts
     $this->payseraAccount1 = CustodianAccount::factory()->create([
-        'account_uuid' => $this->account1->uuid,
-        'custodian_name' => 'paysera',
+        'account_uuid'         => $this->account1->uuid,
+        'custodian_name'       => 'paysera',
         'custodian_account_id' => 'PAYSERA_1',
     ]);
 
     $this->deutscheBankAccount1 = CustodianAccount::factory()->create([
-        'account_uuid' => $this->account2->uuid,
-        'custodian_name' => 'deutsche_bank',
+        'account_uuid'         => $this->account2->uuid,
+        'custodian_name'       => 'deutsche_bank',
         'custodian_account_id' => 'DB_1',
     ]);
 
     $this->deutscheBankAccount2 = CustodianAccount::factory()->create([
-        'account_uuid' => $this->account3->uuid,
-        'custodian_name' => 'deutsche_bank',
+        'account_uuid'         => $this->account3->uuid,
+        'custodian_name'       => 'deutsche_bank',
         'custodian_account_id' => 'DB_2',
     ]);
 
@@ -66,35 +66,35 @@ it('can process net settlements', function () {
     DB::table('custodian_transfers')->insert([
         // Paysera -> Deutsche Bank: $500
         [
-            'id' => 'TRANSFER_1',
-            'from_account_uuid' => $this->account1->uuid,
-            'to_account_uuid' => $this->account2->uuid,
+            'id'                        => 'TRANSFER_1',
+            'from_account_uuid'         => $this->account1->uuid,
+            'to_account_uuid'           => $this->account2->uuid,
             'from_custodian_account_id' => $this->payseraAccount1->id,
-            'to_custodian_account_id' => $this->deutscheBankAccount1->id,
-            'amount' => 50000,
-            'asset_code' => 'USD',
-            'transfer_type' => 'external',
-            'status' => 'completed',
-            'reference' => null,
-            'completed_at' => now(),
-            'created_at' => now(),
-            'updated_at' => now(),
+            'to_custodian_account_id'   => $this->deutscheBankAccount1->id,
+            'amount'                    => 50000,
+            'asset_code'                => 'USD',
+            'transfer_type'             => 'external',
+            'status'                    => 'completed',
+            'reference'                 => null,
+            'completed_at'              => now(),
+            'created_at'                => now(),
+            'updated_at'                => now(),
         ],
         // Deutsche Bank -> Paysera: $300
         [
-            'id' => 'TRANSFER_2',
-            'from_account_uuid' => $this->account2->uuid,
-            'to_account_uuid' => $this->account1->uuid,
+            'id'                        => 'TRANSFER_2',
+            'from_account_uuid'         => $this->account2->uuid,
+            'to_account_uuid'           => $this->account1->uuid,
             'from_custodian_account_id' => $this->deutscheBankAccount1->id,
-            'to_custodian_account_id' => $this->payseraAccount1->id,
-            'amount' => 30000,
-            'asset_code' => 'USD',
-            'transfer_type' => 'external',
-            'status' => 'completed',
-            'reference' => null,
-            'completed_at' => now(),
-            'created_at' => now(),
-            'updated_at' => now(),
+            'to_custodian_account_id'   => $this->payseraAccount1->id,
+            'amount'                    => 30000,
+            'asset_code'                => 'USD',
+            'transfer_type'             => 'external',
+            'status'                    => 'completed',
+            'reference'                 => null,
+            'completed_at'              => now(),
+            'created_at'                => now(),
+            'updated_at'                => now(),
         ],
     ]);
 
@@ -119,17 +119,17 @@ it('can process net settlements', function () {
 
     // Check settlement created
     $this->assertDatabaseHas('settlements', [
-        'type' => 'net',
+        'type'           => 'net',
         'from_custodian' => 'paysera',
-        'to_custodian' => 'deutsche_bank',
-        'gross_amount' => 80000, // Total gross: $800
-        'net_amount' => 20000, // Net: $200
-        'status' => 'completed',
+        'to_custodian'   => 'deutsche_bank',
+        'gross_amount'   => 80000, // Total gross: $800
+        'net_amount'     => 20000, // Net: $200
+        'status'         => 'completed',
     ]);
 
     // Check transfers linked to settlement
     $this->assertDatabaseHas('custodian_transfers', [
-        'id' => 'TRANSFER_1',
+        'id'            => 'TRANSFER_1',
         'settlement_id' => DB::table('settlements')->first()->id,
     ]);
 });
@@ -143,34 +143,34 @@ it('can process batch settlements', function () {
     // Create old transfers ready for batch
     DB::table('custodian_transfers')->insert([
         [
-            'id' => 'BATCH_1',
-            'from_account_uuid' => $this->account1->uuid,
-            'to_account_uuid' => $this->account2->uuid,
+            'id'                        => 'BATCH_1',
+            'from_account_uuid'         => $this->account1->uuid,
+            'to_account_uuid'           => $this->account2->uuid,
             'from_custodian_account_id' => $this->payseraAccount1->id,
-            'to_custodian_account_id' => $this->deutscheBankAccount1->id,
-            'amount' => 25000,
-            'asset_code' => 'USD',
-            'transfer_type' => 'external',
-            'status' => 'completed',
-            'reference' => null,
-            'completed_at' => now()->subHours(2),
-            'created_at' => now()->subHours(2),
-            'updated_at' => now(),
+            'to_custodian_account_id'   => $this->deutscheBankAccount1->id,
+            'amount'                    => 25000,
+            'asset_code'                => 'USD',
+            'transfer_type'             => 'external',
+            'status'                    => 'completed',
+            'reference'                 => null,
+            'completed_at'              => now()->subHours(2),
+            'created_at'                => now()->subHours(2),
+            'updated_at'                => now(),
         ],
         [
-            'id' => 'BATCH_2',
-            'from_account_uuid' => $this->account1->uuid,
-            'to_account_uuid' => $this->account3->uuid,
+            'id'                        => 'BATCH_2',
+            'from_account_uuid'         => $this->account1->uuid,
+            'to_account_uuid'           => $this->account3->uuid,
             'from_custodian_account_id' => $this->payseraAccount1->id,
-            'to_custodian_account_id' => $this->deutscheBankAccount2->id,
-            'amount' => 35000,
-            'asset_code' => 'USD',
-            'transfer_type' => 'external',
-            'status' => 'completed',
-            'reference' => null,
-            'completed_at' => now()->subHours(2),
-            'created_at' => now()->subHours(2),
-            'updated_at' => now(),
+            'to_custodian_account_id'   => $this->deutscheBankAccount2->id,
+            'amount'                    => 35000,
+            'asset_code'                => 'USD',
+            'transfer_type'             => 'external',
+            'status'                    => 'completed',
+            'reference'                 => null,
+            'completed_at'              => now()->subHours(2),
+            'created_at'                => now()->subHours(2),
+            'updated_at'                => now(),
         ],
     ]);
 
@@ -194,13 +194,13 @@ it('can process batch settlements', function () {
 
     // Check batch settlement created
     $this->assertDatabaseHas('settlements', [
-        'type' => 'batch',
+        'type'           => 'batch',
         'from_custodian' => 'paysera',
-        'to_custodian' => 'deutsche_bank',
-        'gross_amount' => 60000,
-        'net_amount' => 60000,
+        'to_custodian'   => 'deutsche_bank',
+        'gross_amount'   => 60000,
+        'net_amount'     => 60000,
         'transfer_count' => 2,
-        'status' => 'completed',
+        'status'         => 'completed',
     ]);
 });
 
@@ -208,19 +208,19 @@ it('respects minimum settlement amount', function () {
     // Create small transfers that don't meet minimum
     DB::table('custodian_transfers')->insert([
         [
-            'id' => 'SMALL_1',
-            'from_account_uuid' => $this->account1->uuid,
-            'to_account_uuid' => $this->account2->uuid,
+            'id'                        => 'SMALL_1',
+            'from_account_uuid'         => $this->account1->uuid,
+            'to_account_uuid'           => $this->account2->uuid,
             'from_custodian_account_id' => $this->payseraAccount1->id,
-            'to_custodian_account_id' => $this->deutscheBankAccount1->id,
-            'amount' => 5000, // $50 - below minimum
-            'asset_code' => 'USD',
-            'transfer_type' => 'external',
-            'status' => 'completed',
-            'reference' => null,
-            'completed_at' => now(),
-            'created_at' => now(),
-            'updated_at' => now(),
+            'to_custodian_account_id'   => $this->deutscheBankAccount1->id,
+            'amount'                    => 5000, // $50 - below minimum
+            'asset_code'                => 'USD',
+            'transfer_type'             => 'external',
+            'status'                    => 'completed',
+            'reference'                 => null,
+            'completed_at'              => now(),
+            'created_at'                => now(),
+            'updated_at'                => now(),
         ],
     ]);
 
@@ -236,32 +236,32 @@ it('can get settlement statistics', function () {
     // Create test settlements
     DB::table('settlements')->insert([
         [
-            'id' => 'STAT_1',
-            'type' => 'net',
+            'id'             => 'STAT_1',
+            'type'           => 'net',
             'from_custodian' => 'paysera',
-            'to_custodian' => 'deutsche_bank',
-            'asset_code' => 'USD',
-            'gross_amount' => 100000,
-            'net_amount' => 60000,
+            'to_custodian'   => 'deutsche_bank',
+            'asset_code'     => 'USD',
+            'gross_amount'   => 100000,
+            'net_amount'     => 60000,
             'transfer_count' => 5,
-            'status' => 'completed',
-            'created_at' => now()->subMinutes(10),
-            'completed_at' => now()->subMinutes(5),
-            'updated_at' => now(),
+            'status'         => 'completed',
+            'created_at'     => now()->subMinutes(10),
+            'completed_at'   => now()->subMinutes(5),
+            'updated_at'     => now(),
         ],
         [
-            'id' => 'STAT_2',
-            'type' => 'batch',
+            'id'             => 'STAT_2',
+            'type'           => 'batch',
             'from_custodian' => 'deutsche_bank',
-            'to_custodian' => 'santander',
-            'asset_code' => 'EUR',
-            'gross_amount' => 50000,
-            'net_amount' => 50000,
+            'to_custodian'   => 'santander',
+            'asset_code'     => 'EUR',
+            'gross_amount'   => 50000,
+            'net_amount'     => 50000,
             'transfer_count' => 3,
-            'status' => 'pending',
-            'completed_at' => null,
-            'created_at' => now(),
-            'updated_at' => now(),
+            'status'         => 'pending',
+            'completed_at'   => null,
+            'created_at'     => now(),
+            'updated_at'     => now(),
         ],
     ]);
 
@@ -284,19 +284,19 @@ it('handles settlement failures gracefully', function () {
     // Create transfer to settle
     DB::table('custodian_transfers')->insert([
         [
-            'id' => 'FAIL_1',
-            'from_account_uuid' => $this->account1->uuid,
-            'to_account_uuid' => $this->account2->uuid,
+            'id'                        => 'FAIL_1',
+            'from_account_uuid'         => $this->account1->uuid,
+            'to_account_uuid'           => $this->account2->uuid,
             'from_custodian_account_id' => $this->payseraAccount1->id,
-            'to_custodian_account_id' => $this->deutscheBankAccount1->id,
-            'amount' => 50000,
-            'asset_code' => 'USD',
-            'transfer_type' => 'external',
-            'status' => 'completed',
-            'reference' => null,
-            'completed_at' => now(),
-            'created_at' => now(),
-            'updated_at' => now(),
+            'to_custodian_account_id'   => $this->deutscheBankAccount1->id,
+            'amount'                    => 50000,
+            'asset_code'                => 'USD',
+            'transfer_type'             => 'external',
+            'status'                    => 'completed',
+            'reference'                 => null,
+            'completed_at'              => now(),
+            'created_at'                => now(),
+            'updated_at'                => now(),
         ],
     ]);
 
@@ -311,8 +311,8 @@ it('handles settlement failures gracefully', function () {
 
     // Check settlement marked as failed
     $this->assertDatabaseHas('settlements', [
-        'type' => 'net',
-        'status' => 'failed',
+        'type'           => 'net',
+        'status'         => 'failed',
         'failure_reason' => 'Settlement failed: Insufficient funds',
     ]);
 });

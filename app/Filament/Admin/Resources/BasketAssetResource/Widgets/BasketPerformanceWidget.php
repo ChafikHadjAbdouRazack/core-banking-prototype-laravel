@@ -33,13 +33,13 @@ class BasketPerformanceWidget extends BaseWidget
                         ->badge()
                         ->color(
                             fn (string $state): string => match ($state) {
-                                'hour' => 'gray',
-                                'day' => 'info',
-                                'week' => 'primary',
-                                'month' => 'success',
+                                'hour'    => 'gray',
+                                'day'     => 'info',
+                                'week'    => 'primary',
+                                'month'   => 'success',
                                 'quarter' => 'warning',
-                                'year' => 'danger',
-                                default => 'secondary',
+                                'year'    => 'danger',
+                                default   => 'secondary',
                             }
                         ),
 
@@ -58,10 +58,10 @@ class BasketPerformanceWidget extends BaseWidget
                         ->formatStateUsing(fn ($state) => $state ? number_format($state, 2) . '%' : '-')
                         ->color(
                             fn ($state): string => match (true) {
-                                $state <= 5 => 'success',
+                                $state <= 5  => 'success',
                                 $state <= 10 => 'primary',
                                 $state <= 20 => 'warning',
-                                default => 'danger',
+                                default      => 'danger',
                             }
                         ),
 
@@ -73,7 +73,7 @@ class BasketPerformanceWidget extends BaseWidget
                                 $state >= 2 => 'success',
                                 $state >= 1 => 'primary',
                                 $state >= 0 => 'warning',
-                                default => 'danger',
+                                default     => 'danger',
                             }
                         ),
 
@@ -82,10 +82,10 @@ class BasketPerformanceWidget extends BaseWidget
                         ->formatStateUsing(fn ($state) => $state ? '-' . number_format($state, 2) . '%' : '-')
                         ->color(
                             fn ($state): string => match (true) {
-                                $state <= 5 => 'success',
+                                $state <= 5  => 'success',
                                 $state <= 10 => 'primary',
                                 $state <= 20 => 'warning',
-                                default => 'danger',
+                                default      => 'danger',
                             }
                         ),
 
@@ -96,11 +96,11 @@ class BasketPerformanceWidget extends BaseWidget
                         ->color(
                             fn (string $state): string => match ($state) {
                                 'excellent' => 'success',
-                                'good' => 'primary',
-                                'neutral' => 'warning',
-                                'poor' => 'danger',
+                                'good'      => 'primary',
+                                'neutral'   => 'warning',
+                                'poor'      => 'danger',
                                 'very_poor' => 'gray',
-                                default => 'secondary',
+                                default     => 'secondary',
                             }
                         ),
                 ]
@@ -110,12 +110,12 @@ class BasketPerformanceWidget extends BaseWidget
                     Tables\Filters\SelectFilter::make('period_type')
                         ->options(
                             [
-                                'hour' => 'Hourly',
-                                'day' => 'Daily',
-                                'week' => 'Weekly',
-                                'month' => 'Monthly',
+                                'hour'    => 'Hourly',
+                                'day'     => 'Daily',
+                                'week'    => 'Weekly',
+                                'month'   => 'Monthly',
                                 'quarter' => 'Quarterly',
-                                'year' => 'Yearly',
+                                'year'    => 'Yearly',
                             ]
                         )
                         ->multiple(),
@@ -165,7 +165,7 @@ class BasketPerformanceWidget extends BaseWidget
                                 $this->dispatch(
                                     'notify',
                                     [
-                                        'type' => 'success',
+                                        'type'    => 'success',
                                         'message' => "Calculated {$performances->count()} performance periods",
                                     ]
                                 );

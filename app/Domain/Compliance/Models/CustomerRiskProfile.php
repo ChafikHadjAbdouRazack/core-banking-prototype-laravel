@@ -216,7 +216,7 @@ class CustomerRiskProfile extends Model
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function screenings(): HasMany
     {

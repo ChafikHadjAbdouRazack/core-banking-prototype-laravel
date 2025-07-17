@@ -33,19 +33,19 @@ it('can store and retrieve events', function () {
 
     // Create a test event
     $eventData = [
-        'aggregate_uuid' => $aggregateUuid,
+        'aggregate_uuid'    => $aggregateUuid,
         'aggregate_version' => 1,
-        'event_version' => 1,
-        'event_class' => 'withdrawal_initiated',
-        'event_properties' => json_encode([
-            'accountUuid' => Str::uuid()->toString(),
-            'amount' => 5000,
-            'currency' => 'USD',
-            'reference' => 'WD-123',
+        'event_version'     => 1,
+        'event_class'       => 'withdrawal_initiated',
+        'event_properties'  => json_encode([
+            'accountUuid'       => Str::uuid()->toString(),
+            'amount'            => 5000,
+            'currency'          => 'USD',
+            'reference'         => 'WD-123',
             'bankAccountNumber' => '****1234',
             'bankRoutingNumber' => '123456789',
-            'bankAccountName' => 'John Doe',
-            'metadata' => [],
+            'bankAccountName'   => 'John Doe',
+            'metadata'          => [],
         ]),
         'meta_data' => json_encode([
             'aggregate_uuid' => $aggregateUuid,

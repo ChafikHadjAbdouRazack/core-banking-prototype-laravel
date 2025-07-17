@@ -79,8 +79,8 @@ class WalletController extends Controller
             return view(
                 'wallet.transactions',
                 [
-                    'account' => null,
-                    'transactions' => collect(),
+                    'account'          => null,
+                    'transactions'     => collect(),
                     'transactionsJson' => json_encode([]),
                 ]
             );
@@ -96,14 +96,14 @@ class WalletController extends Controller
         $transformedTransactions = $transactions->map(
             function ($transaction) {
                 return [
-                    'id' => $transaction->id,
-                    'created_at' => $transaction->created_at->toISOString(),
-                    'type' => $this->mapTransactionType($transaction->type),
-                    'description' => $transaction->description,
-                    'reference' => $transaction->reference ?? '',
-                    'asset_code' => $transaction->asset_code,
-                    'asset_symbol' => $this->getAssetSymbol($transaction->asset_code),
-                    'amount' => $transaction->type === 'debit' ? -$transaction->amount : $transaction->amount,
+                    'id'            => $transaction->id,
+                    'created_at'    => $transaction->created_at->toISOString(),
+                    'type'          => $this->mapTransactionType($transaction->type),
+                    'description'   => $transaction->description,
+                    'reference'     => $transaction->reference ?? '',
+                    'asset_code'    => $transaction->asset_code,
+                    'asset_symbol'  => $this->getAssetSymbol($transaction->asset_code),
+                    'amount'        => $transaction->type === 'debit' ? -$transaction->amount : $transaction->amount,
                     'balance_after' => $transaction->balance_after ?? 0,
                 ];
             }
@@ -112,8 +112,8 @@ class WalletController extends Controller
         return view(
             'wallet.transactions',
             [
-                'account' => $account,
-                'transactions' => $transactions,
+                'account'          => $account,
+                'transactions'     => $transactions,
                 'transactionsJson' => $transformedTransactions->toJson(),
             ]
         );
@@ -122,11 +122,11 @@ class WalletController extends Controller
     private function mapTransactionType($type)
     {
         $typeMap = [
-            'credit' => 'deposit',
-            'debit' => 'withdrawal',
+            'credit'          => 'deposit',
+            'debit'           => 'withdrawal',
             'transfer_credit' => 'transfer_in',
-            'transfer_debit' => 'transfer_out',
-            'conversion' => 'conversion',
+            'transfer_debit'  => 'transfer_out',
+            'conversion'      => 'conversion',
         ];
 
         return $typeMap[$type] ?? $type;

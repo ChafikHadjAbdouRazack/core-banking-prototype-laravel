@@ -37,7 +37,7 @@ class SqlInjectionTest extends DomainTestCase
                 hydrate(
                     class: \App\Domain\Account\DataObjects\Account::class,
                     properties: [
-                        'name' => 'Test Account',
+                        'name'      => 'Test Account',
                         'user_uuid' => $this->user->uuid,
                     ]
                 )
@@ -85,7 +85,7 @@ class SqlInjectionTest extends DomainTestCase
                 hydrate(
                     class: \App\Domain\Account\DataObjects\Account::class,
                     properties: [
-                        'name' => 'Test Account',
+                        'name'      => 'Test Account',
                         'user_uuid' => $this->user->uuid,
                     ]
                 )
@@ -123,7 +123,7 @@ class SqlInjectionTest extends DomainTestCase
     {
         // Attempt SQL injection in login credentials
         $response = $this->postJson('/api/v2/auth/login', [
-            'email' => $payload,
+            'email'    => $payload,
             'password' => $payload,
         ]);
 
@@ -142,8 +142,8 @@ class SqlInjectionTest extends DomainTestCase
     {
         $response = $this->withToken($this->token)
             ->postJson('/api/v2/accounts', [
-                'name' => $payload,
-                'type' => $payload,
+                'name'     => $payload,
+                'type'     => $payload,
                 'currency' => $payload,
             ]);
 
@@ -170,7 +170,7 @@ class SqlInjectionTest extends DomainTestCase
                 hydrate(
                     class: \App\Domain\Account\DataObjects\Account::class,
                     properties: [
-                        'name' => 'Test Account',
+                        'name'      => 'Test Account',
                         'user_uuid' => $this->user->uuid,
                     ]
                 )
@@ -193,8 +193,8 @@ class SqlInjectionTest extends DomainTestCase
     {
         $response = $this->withToken($this->token)
             ->postJson('/api/v2/webhooks', [
-                'url' => "https://example.com/webhook?param={$payload}",
-                'events' => ['account.created'],
+                'url'         => "https://example.com/webhook?param={$payload}",
+                'events'      => ['account.created'],
                 'description' => $payload,
             ]);
 
@@ -252,9 +252,9 @@ class SqlInjectionTest extends DomainTestCase
             $response = $this->withToken($this->token)
                 ->postJson('/api/v2/transfers', [
                     'from_account' => $payload,
-                    'to_account' => $payload,
-                    'amount' => 100,
-                    'currency' => 'USD',
+                    'to_account'   => $payload,
+                    'amount'       => 100,
+                    'currency'     => 'USD',
                 ]);
 
             // Should validate input
@@ -273,26 +273,26 @@ class SqlInjectionTest extends DomainTestCase
     public static function sqlInjectionPayloads(): array
     {
         return [
-            'Basic injection' => ["' OR '1'='1"],
-            'Union select' => ["' UNION SELECT * FROM users--"],
-            'Dropped quote' => ["admin'--"],
-            'Time-based blind' => ["' OR SLEEP(5)--"],
+            'Basic injection'     => ["' OR '1'='1"],
+            'Union select'        => ["' UNION SELECT * FROM users--"],
+            'Dropped quote'       => ["admin'--"],
+            'Time-based blind'    => ["' OR SLEEP(5)--"],
             'Boolean-based blind' => ["' OR 1=1--"],
-            'Stacked queries' => ["'; DROP TABLE accounts;--"],
-            'Comment injection' => ["' /*comment*/ OR /*comment*/ 1=1--"],
-            'Hex encoding' => ["' OR 0x31=0x31--"],
-            'Double quotes' => ['" OR "1"="1'],
-            'Escaped quotes' => ["\\' OR \\'1\\'=\\'1"],
-            'Unicode bypass' => ["' OR '1'='1' --"],
-            'Null byte' => ["' OR '1'='1'%00"],
-            'MySQL specific' => ["' OR '1'='1' #"],
+            'Stacked queries'     => ["'; DROP TABLE accounts;--"],
+            'Comment injection'   => ["' /*comment*/ OR /*comment*/ 1=1--"],
+            'Hex encoding'        => ["' OR 0x31=0x31--"],
+            'Double quotes'       => ['" OR "1"="1'],
+            'Escaped quotes'      => ["\\' OR \\'1\\'=\\'1"],
+            'Unicode bypass'      => ["' OR '1'='1' --"],
+            'Null byte'           => ["' OR '1'='1'%00"],
+            'MySQL specific'      => ["' OR '1'='1' #"],
             'PostgreSQL specific' => ["' OR '1'='1' --"],
-            'MSSQL specific' => ["' OR '1'='1' --"],
-            'NoSQL injection' => ['{"$ne": null}'],
-            'XML injection' => ["' or count(/)>0 or '1'='1"],
-            'LDAP injection' => ['*)(uid=*))(|(uid=*'],
-            'XPath injection' => ["' or '1'='1' or '/'='"],
-            'Second order' => ["admin'; INSERT INTO logs VALUES('hack')--"],
+            'MSSQL specific'      => ["' OR '1'='1' --"],
+            'NoSQL injection'     => ['{"$ne": null}'],
+            'XML injection'       => ["' or count(/)>0 or '1'='1"],
+            'LDAP injection'      => ['*)(uid=*))(|(uid=*'],
+            'XPath injection'     => ["' or '1'='1' or '/'='"],
+            'Second order'        => ["admin'; INSERT INTO logs VALUES('hack')--"],
         ];
     }
 }

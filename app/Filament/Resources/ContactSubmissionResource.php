@@ -49,13 +49,13 @@ class ContactSubmissionResource extends Resource
                                 Forms\Components\Select::make('subject')
                                     ->options(
                                         [
-                                            'account' => 'Account Issues',
-                                            'technical' => 'Technical Support',
-                                            'billing' => 'Billing & Payments',
-                                            'gcu' => 'GCU Questions',
-                                            'api' => 'API & Integration',
+                                            'account'    => 'Account Issues',
+                                            'technical'  => 'Technical Support',
+                                            'billing'    => 'Billing & Payments',
+                                            'gcu'        => 'GCU Questions',
+                                            'api'        => 'API & Integration',
                                             'compliance' => 'Compliance & Security',
-                                            'other' => 'Other',
+                                            'other'      => 'Other',
                                         ]
                                     )
                                     ->required()
@@ -63,9 +63,9 @@ class ContactSubmissionResource extends Resource
                                 Forms\Components\Select::make('priority')
                                     ->options(
                                         [
-                                            'low' => 'Low',
+                                            'low'    => 'Low',
                                             'medium' => 'Medium',
-                                            'high' => 'High',
+                                            'high'   => 'High',
                                             'urgent' => 'Urgent',
                                         ]
                                     )
@@ -92,9 +92,9 @@ class ContactSubmissionResource extends Resource
                                 Forms\Components\Select::make('status')
                                     ->options(
                                         [
-                                            'pending' => 'Pending',
+                                            'pending'   => 'Pending',
                                             'responded' => 'Responded',
-                                            'closed' => 'Closed',
+                                            'closed'    => 'Closed',
                                         ]
                                     )
                                     ->required(),
@@ -148,29 +148,29 @@ class ContactSubmissionResource extends Resource
                     Tables\Columns\BadgeColumn::make('subject')
                         ->formatStateUsing(
                             fn ($state) => match ($state) {
-                                'account' => 'Account Issues',
-                                'technical' => 'Technical Support',
-                                'billing' => 'Billing & Payments',
-                                'gcu' => 'GCU Questions',
-                                'api' => 'API & Integration',
+                                'account'    => 'Account Issues',
+                                'technical'  => 'Technical Support',
+                                'billing'    => 'Billing & Payments',
+                                'gcu'        => 'GCU Questions',
+                                'api'        => 'API & Integration',
                                 'compliance' => 'Compliance & Security',
-                                'other' => 'Other',
-                                default => $state,
+                                'other'      => 'Other',
+                                default      => $state,
                             }
                         ),
                     Tables\Columns\BadgeColumn::make('priority')
                         ->colors(
                             [
                                 'secondary' => 'low',
-                                'warning' => 'medium',
-                                'danger' => fn ($state): bool => in_array($state, ['high', 'urgent']),
+                                'warning'   => 'medium',
+                                'danger'    => fn ($state): bool => in_array($state, ['high', 'urgent']),
                             ]
                         ),
                     Tables\Columns\BadgeColumn::make('status')
                         ->colors(
                             [
-                                'warning' => 'pending',
-                                'success' => 'responded',
+                                'warning'   => 'pending',
+                                'success'   => 'responded',
                                 'secondary' => 'closed',
                             ]
                         ),
@@ -190,30 +190,30 @@ class ContactSubmissionResource extends Resource
                     Tables\Filters\SelectFilter::make('status')
                         ->options(
                             [
-                                'pending' => 'Pending',
+                                'pending'   => 'Pending',
                                 'responded' => 'Responded',
-                                'closed' => 'Closed',
+                                'closed'    => 'Closed',
                             ]
                         ),
                     Tables\Filters\SelectFilter::make('priority')
                         ->options(
                             [
-                                'low' => 'Low',
+                                'low'    => 'Low',
                                 'medium' => 'Medium',
-                                'high' => 'High',
+                                'high'   => 'High',
                                 'urgent' => 'Urgent',
                             ]
                         ),
                     Tables\Filters\SelectFilter::make('subject')
                         ->options(
                             [
-                                'account' => 'Account Issues',
-                                'technical' => 'Technical Support',
-                                'billing' => 'Billing & Payments',
-                                'gcu' => 'GCU Questions',
-                                'api' => 'API & Integration',
+                                'account'    => 'Account Issues',
+                                'technical'  => 'Technical Support',
+                                'billing'    => 'Billing & Payments',
+                                'gcu'        => 'GCU Questions',
+                                'api'        => 'API & Integration',
                                 'compliance' => 'Compliance & Security',
-                                'other' => 'Other',
+                                'other'      => 'Other',
                             ]
                         ),
                 ]
@@ -252,10 +252,10 @@ class ContactSubmissionResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListContactSubmissions::route('/'),
+            'index'  => Pages\ListContactSubmissions::route('/'),
             'create' => Pages\CreateContactSubmission::route('/create'),
-            'view' => Pages\ViewContactSubmission::route('/{record}'),
-            'edit' => Pages\EditContactSubmission::route('/{record}/edit'),
+            'view'   => Pages\ViewContactSubmission::route('/{record}'),
+            'edit'   => Pages\EditContactSubmission::route('/{record}/edit'),
         ];
     }
 

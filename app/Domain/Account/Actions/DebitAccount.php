@@ -18,7 +18,7 @@ class DebitAccount extends AccountAction
         $balance = AccountBalance::where(
             [
                 'account_uuid' => $account->uuid,
-                'asset_code' => $event->assetCode,
+                'asset_code'   => $event->assetCode,
             ]
         )->first();
 

@@ -112,10 +112,10 @@ class CurrentAccountController extends Controller
         $validated = $request->validate(
             [
                 'customerReference' => 'required|uuid',
-                'accountName' => 'required|string|max:255',
-                'accountType' => 'required|in:current,checking',
-                'initialDeposit' => 'sometimes|integer|min:0',
-                'currency' => 'sometimes|string|size:3',
+                'accountName'       => 'required|string|max:255',
+                'accountType'       => 'required|in:current,checking',
+                'initialDeposit'    => 'sometimes|integer|min:0',
+                'currency'          => 'sometimes|string|size:3',
             ]
         );
 
@@ -144,27 +144,27 @@ class CurrentAccountController extends Controller
         // Create the account record for immediate response
         $account = Account::create(
             [
-                'uuid' => $crReferenceId,
+                'uuid'      => $crReferenceId,
                 'user_uuid' => $validated['customerReference'],
-                'name' => $validated['accountName'],
-                'balance' => $validated['initialDeposit'] ?? 0,
+                'name'      => $validated['accountName'],
+                'balance'   => $validated['initialDeposit'] ?? 0,
             ]
         );
 
         return response()->json(
             [
                 'currentAccountFulfillmentArrangement' => [
-                    'crReferenceId' => $crReferenceId,
+                    'crReferenceId'     => $crReferenceId,
                     'customerReference' => $validated['customerReference'],
-                    'accountName' => $validated['accountName'],
-                    'accountType' => $validated['accountType'] ?? 'current',
-                    'accountStatus' => 'active',
-                    'accountBalance' => [
-                        'amount' => $validated['initialDeposit'] ?? 0,
+                    'accountName'       => $validated['accountName'],
+                    'accountType'       => $validated['accountType'] ?? 'current',
+                    'accountStatus'     => 'active',
+                    'accountBalance'    => [
+                        'amount'   => $validated['initialDeposit'] ?? 0,
                         'currency' => $validated['currency'] ?? 'USD',
                     ],
                     'dateType' => [
-                        'date' => now()->toIso8601String(),
+                        'date'         => now()->toIso8601String(),
                         'dateTypeName' => 'AccountOpeningDate',
                     ],
                 ],
@@ -244,17 +244,17 @@ class CurrentAccountController extends Controller
         return response()->json(
             [
                 'currentAccountFulfillmentArrangement' => [
-                    'crReferenceId' => $account->uuid,
+                    'crReferenceId'     => $account->uuid,
                     'customerReference' => $account->user_uuid,
-                    'accountName' => $account->name,
-                    'accountType' => 'current',
-                    'accountStatus' => 'active',
-                    'accountBalance' => [
-                        'amount' => $account->balance,
+                    'accountName'       => $account->name,
+                    'accountType'       => 'current',
+                    'accountStatus'     => 'active',
+                    'accountBalance'    => [
+                        'amount'   => $account->balance,
                         'currency' => 'USD',
                     ],
                     'dateType' => [
-                        'date' => $account->created_at->toIso8601String(),
+                        'date'         => $account->created_at->toIso8601String(),
                         'dateTypeName' => 'AccountOpeningDate',
                     ],
                 ],
@@ -335,7 +335,7 @@ class CurrentAccountController extends Controller
 
         $validated = $request->validate(
             [
-                'accountName' => 'sometimes|string|max:255',
+                'accountName'   => 'sometimes|string|max:255',
                 'accountStatus' => 'sometimes|in:active,dormant,closed',
             ]
         );
@@ -347,12 +347,12 @@ class CurrentAccountController extends Controller
         return response()->json(
             [
                 'currentAccountFulfillmentArrangement' => [
-                    'crReferenceId' => $account->uuid,
+                    'crReferenceId'     => $account->uuid,
                     'customerReference' => $account->user_uuid,
-                    'accountName' => $account->name,
-                    'accountType' => 'current',
-                    'accountStatus' => $validated['accountStatus'] ?? 'active',
-                    'updateResult' => 'successful',
+                    'accountName'       => $account->name,
+                    'accountType'       => 'current',
+                    'accountStatus'     => $validated['accountStatus'] ?? 'active',
+                    'updateResult'      => 'successful',
                 ],
             ]
         );
@@ -456,10 +456,10 @@ class CurrentAccountController extends Controller
         return response()->json(
             [
                 'currentAccountFulfillmentControlRecord' => [
-                    'crReferenceId' => $crReferenceId,
-                    'controlAction' => $validated['controlAction'],
-                    'controlReason' => $validated['controlReason'],
-                    'controlStatus' => $status ?? 'unknown',
+                    'crReferenceId'   => $crReferenceId,
+                    'controlAction'   => $validated['controlAction'],
+                    'controlReason'   => $validated['controlReason'],
+                    'controlStatus'   => $status ?? 'unknown',
                     'controlDateTime' => now()->toIso8601String(),
                 ],
             ]
@@ -555,8 +555,8 @@ class CurrentAccountController extends Controller
 
         $validated = $request->validate(
             [
-                'paymentAmount' => 'required|integer|min:1',
-                'paymentType' => 'required|in:withdrawal,payment,transfer',
+                'paymentAmount'      => 'required|integer|min:1',
+                'paymentType'        => 'required|in:withdrawal,payment,transfer',
                 'paymentDescription' => 'sometimes|string|max:500',
             ]
         );
@@ -565,11 +565,11 @@ class CurrentAccountController extends Controller
             return response()->json(
                 [
                     'paymentExecutionRecord' => [
-                        'crReferenceId' => $crReferenceId,
-                        'bqReferenceId' => Str::uuid()->toString(),
+                        'crReferenceId'   => $crReferenceId,
+                        'bqReferenceId'   => Str::uuid()->toString(),
                         'executionStatus' => 'rejected',
                         'executionReason' => 'Insufficient funds',
-                        'accountBalance' => $account->balance,
+                        'accountBalance'  => $account->balance,
                         'requestedAmount' => $validated['paymentAmount'],
                     ],
                 ],
@@ -588,14 +588,14 @@ class CurrentAccountController extends Controller
         return response()->json(
             [
                 'paymentExecutionRecord' => [
-                    'crReferenceId' => $crReferenceId,
-                    'bqReferenceId' => Str::uuid()->toString(),
-                    'executionStatus' => 'completed',
-                    'paymentAmount' => $validated['paymentAmount'],
-                    'paymentType' => $validated['paymentType'],
+                    'crReferenceId'      => $crReferenceId,
+                    'bqReferenceId'      => Str::uuid()->toString(),
+                    'executionStatus'    => 'completed',
+                    'paymentAmount'      => $validated['paymentAmount'],
+                    'paymentType'        => $validated['paymentType'],
                     'paymentDescription' => $validated['paymentDescription'] ?? null,
-                    'accountBalance' => $account->balance,
-                    'executionDateTime' => now()->toIso8601String(),
+                    'accountBalance'     => $account->balance,
+                    'executionDateTime'  => now()->toIso8601String(),
                 ],
             ]
         );
@@ -679,8 +679,8 @@ class CurrentAccountController extends Controller
 
         $validated = $request->validate(
             [
-                'depositAmount' => 'required|integer|min:1',
-                'depositType' => 'required|in:cash,check,transfer,direct',
+                'depositAmount'      => 'required|integer|min:1',
+                'depositType'        => 'required|in:cash,check,transfer,direct',
                 'depositDescription' => 'sometimes|string|max:500',
             ]
         );
@@ -696,14 +696,14 @@ class CurrentAccountController extends Controller
         return response()->json(
             [
                 'depositExecutionRecord' => [
-                    'crReferenceId' => $crReferenceId,
-                    'bqReferenceId' => Str::uuid()->toString(),
-                    'executionStatus' => 'completed',
-                    'depositAmount' => $validated['depositAmount'],
-                    'depositType' => $validated['depositType'],
+                    'crReferenceId'      => $crReferenceId,
+                    'bqReferenceId'      => Str::uuid()->toString(),
+                    'executionStatus'    => 'completed',
+                    'depositAmount'      => $validated['depositAmount'],
+                    'depositType'        => $validated['depositType'],
                     'depositDescription' => $validated['depositDescription'] ?? null,
-                    'accountBalance' => $account->balance,
-                    'executionDateTime' => now()->toIso8601String(),
+                    'accountBalance'     => $account->balance,
+                    'executionDateTime'  => now()->toIso8601String(),
                 ],
             ]
         );
@@ -770,11 +770,11 @@ class CurrentAccountController extends Controller
         return response()->json(
             [
                 'accountBalanceRecord' => [
-                    'crReferenceId' => $crReferenceId,
-                    'bqReferenceId' => Str::uuid()->toString(),
-                    'balanceAmount' => $account->balance,
+                    'crReferenceId'   => $crReferenceId,
+                    'bqReferenceId'   => Str::uuid()->toString(),
+                    'balanceAmount'   => $account->balance,
                     'balanceCurrency' => 'USD',
-                    'balanceType' => 'available',
+                    'balanceType'     => 'available',
                     'balanceDateTime' => now()->toIso8601String(),
                 ],
             ]
@@ -889,8 +889,8 @@ class CurrentAccountController extends Controller
 
         $validated = $request->validate(
             [
-                'fromDate' => 'sometimes|date',
-                'toDate' => 'sometimes|date|after_or_equal:fromDate',
+                'fromDate'        => 'sometimes|date',
+                'toDate'          => 'sometimes|date|after_or_equal:fromDate',
                 'transactionType' => 'sometimes|in:all,credit,debit',
             ]
         );
@@ -922,10 +922,10 @@ class CurrentAccountController extends Controller
                 $eventClass = class_basename($event->event_class);
 
                 return [
-                    'transactionReference' => $event->aggregate_uuid,
-                    'transactionType' => $eventClass === 'MoneyAdded' ? 'credit' : 'debit',
-                    'transactionAmount' => $properties['money']['amount'] ?? 0,
-                    'transactionDateTime' => $event->created_at,
+                    'transactionReference'   => $event->aggregate_uuid,
+                    'transactionType'        => $eventClass === 'MoneyAdded' ? 'credit' : 'debit',
+                    'transactionAmount'      => $properties['money']['amount'] ?? 0,
+                    'transactionDateTime'    => $event->created_at,
                     'transactionDescription' => $eventClass === 'MoneyAdded' ? 'Deposit' : 'Withdrawal',
                 ];
             }
@@ -944,13 +944,13 @@ class CurrentAccountController extends Controller
                 'transactionReportRecord' => [
                     'crReferenceId' => $crReferenceId,
                     'bqReferenceId' => Str::uuid()->toString(),
-                    'reportPeriod' => [
+                    'reportPeriod'  => [
                         'fromDate' => $validated['fromDate'] ?? $account->created_at->toDateString(),
-                        'toDate' => $validated['toDate'] ?? now()->toDateString(),
+                        'toDate'   => $validated['toDate'] ?? now()->toDateString(),
                     ],
-                    'transactions' => $transactions->values(),
+                    'transactions'     => $transactions->values(),
                     'transactionCount' => $transactions->count(),
-                    'reportDateTime' => now()->toIso8601String(),
+                    'reportDateTime'   => now()->toIso8601String(),
                 ],
             ]
         );

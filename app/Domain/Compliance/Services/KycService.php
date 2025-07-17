@@ -22,7 +22,7 @@ class KycService
                 // Update user KYC status
                 $user->update(
                     [
-                        'kyc_status' => 'pending',
+                        'kyc_status'       => 'pending',
                         'kyc_submitted_at' => now(),
                     ]
                 );
@@ -37,7 +37,7 @@ class KycService
                     'kyc.submitted',
                     $user,
                     null,
-                    ['documents' => count($documents)],
+                    ['documents'      => count($documents)],
                     ['document_types' => array_column($documents, 'type')],
                     'kyc,compliance'
                 );
@@ -55,15 +55,15 @@ class KycService
 
         return KycDocument::create(
             [
-                'user_uuid' => $user->uuid,
+                'user_uuid'     => $user->uuid,
                 'document_type' => $documentData['type'],
-                'file_path' => $path,
-                'file_hash' => $hash,
-                'uploaded_at' => now(),
-                'metadata' => [
+                'file_path'     => $path,
+                'file_hash'     => $hash,
+                'uploaded_at'   => now(),
+                'metadata'      => [
                     'original_name' => $documentData['file']->getClientOriginalName(),
-                    'mime_type' => $documentData['file']->getMimeType(),
-                    'size' => $documentData['file']->getSize(),
+                    'mime_type'     => $documentData['file']->getMimeType(),
+                    'size'          => $documentData['file']->getSize(),
                 ],
             ]
         );
@@ -81,12 +81,12 @@ class KycService
                 // Update user status
                 $user->update(
                     [
-                        'kyc_status' => 'approved',
+                        'kyc_status'      => 'approved',
                         'kyc_approved_at' => now(),
-                        'kyc_expires_at' => $options['expires_at'] ?? now()->addYears(2),
-                        'kyc_level' => $options['level'] ?? 'enhanced',
-                        'risk_rating' => $options['risk_rating'] ?? 'low',
-                        'pep_status' => $options['pep_status'] ?? false,
+                        'kyc_expires_at'  => $options['expires_at'] ?? now()->addYears(2),
+                        'kyc_level'       => $options['level'] ?? 'enhanced',
+                        'risk_rating'     => $options['risk_rating'] ?? 'low',
+                        'pep_status'      => $options['pep_status'] ?? false,
                     ]
                 );
 
@@ -103,8 +103,8 @@ class KycService
                 AuditLog::log(
                     'kyc.approved',
                     $user,
-                    ['kyc_status' => $oldStatus],
-                    ['kyc_status' => 'approved', 'kyc_level' => $user->kyc_level],
+                    ['kyc_status'  => $oldStatus],
+                    ['kyc_status'  => 'approved', 'kyc_level' => $user->kyc_level],
                     ['verified_by' => $verifiedBy, 'options' => $options],
                     'kyc,compliance,verification'
                 );
@@ -124,7 +124,7 @@ class KycService
                 // Update user status
                 $user->update(
                     [
-                        'kyc_status' => 'rejected',
+                        'kyc_status'      => 'rejected',
                         'kyc_rejected_at' => now(),
                     ]
                 );
@@ -142,8 +142,8 @@ class KycService
                 AuditLog::log(
                     'kyc.rejected',
                     $user,
-                    ['kyc_status' => $oldStatus],
-                    ['kyc_status' => 'rejected'],
+                    ['kyc_status'  => $oldStatus],
+                    ['kyc_status'  => 'rejected'],
                     ['rejected_by' => $rejectedBy, 'reason' => $reason],
                     'kyc,compliance,rejection'
                 );
@@ -182,26 +182,26 @@ class KycService
         return match ($level) {
             'basic' => [
                 'documents' => ['national_id', 'selfie'],
-                'limits' => [
-                    'daily_transaction' => 100000, // $1,000
+                'limits'    => [
+                    'daily_transaction'   => 100000, // $1,000
                     'monthly_transaction' => 500000, // $5,000
-                    'max_balance' => 1000000, // $10,000
+                    'max_balance'         => 1000000, // $10,000
                 ],
             ],
             'enhanced' => [
                 'documents' => ['passport', 'utility_bill', 'selfie'],
-                'limits' => [
-                    'daily_transaction' => 1000000, // $10,000
+                'limits'    => [
+                    'daily_transaction'   => 1000000, // $10,000
                     'monthly_transaction' => 5000000, // $50,000
-                    'max_balance' => 10000000, // $100,000
+                    'max_balance'         => 10000000, // $100,000
                 ],
             ],
             'full' => [
                 'documents' => ['passport', 'utility_bill', 'bank_statement', 'selfie', 'proof_of_income'],
-                'limits' => [
-                    'daily_transaction' => null, // No limit
+                'limits'    => [
+                    'daily_transaction'   => null, // No limit
                     'monthly_transaction' => null, // No limit
-                    'max_balance' => null, // No limit
+                    'max_balance'         => null, // No limit
                 ],
             ],
             default => throw new \InvalidArgumentException("Unknown KYC level: {$level}"),

@@ -31,9 +31,9 @@ class MultiBankDistributionWidget extends Widget
         $totalAllocated = $this->getTotalAllocatedFunds();
 
         return [
-            'bankStats' => $bankStats,
+            'bankStats'      => $bankStats,
             'totalAllocated' => $totalAllocated,
-            'isGcuEnabled' => config('app.gcu_enabled', false),
+            'isGcuEnabled'   => config('app.gcu_enabled', false),
         ];
     }
 
@@ -52,28 +52,28 @@ class MultiBankDistributionWidget extends Widget
         // Add bank metadata
         $bankMetadata = [
             'Paysera' => [
-                'color' => 'blue',
-                'country' => 'LT',
+                'color'    => 'blue',
+                'country'  => 'LT',
                 'coverage' => '€100,000',
             ],
             'Deutsche Bank' => [
-                'color' => 'gray',
-                'country' => 'DE',
+                'color'    => 'gray',
+                'country'  => 'DE',
                 'coverage' => '€100,000',
             ],
             'Santander' => [
-                'color' => 'red',
-                'country' => 'ES',
+                'color'    => 'red',
+                'country'  => 'ES',
                 'coverage' => '€100,000',
             ],
             'Revolut' => [
-                'color' => 'purple',
-                'country' => 'LT',
+                'color'    => 'purple',
+                'country'  => 'LT',
                 'coverage' => '€100,000',
             ],
             'Wise' => [
-                'color' => 'green',
-                'country' => 'BE',
+                'color'    => 'green',
+                'country'  => 'BE',
                 'coverage' => '€100,000',
             ],
         ];
@@ -81,8 +81,8 @@ class MultiBankDistributionWidget extends Widget
         return $stats->map(
             function ($stat) use ($bankMetadata) {
                 $metadata = $bankMetadata[$stat->bank_name] ?? [
-                    'color' => 'gray',
-                    'country' => 'EU',
+                    'color'    => 'gray',
+                    'country'  => 'EU',
                     'coverage' => '€100,000',
                 ];
 
@@ -101,8 +101,8 @@ class MultiBankDistributionWidget extends Widget
         $totalBankRelationships = UserBankPreference::count();
 
         return [
-            'users' => $totalUsers,
-            'relationships' => $totalBankRelationships,
+            'users'          => $totalUsers,
+            'relationships'  => $totalBankRelationships,
             'averagePerUser' => $totalUsers > 0 ? round($totalBankRelationships / $totalUsers, 1) : 0,
         ];
     }

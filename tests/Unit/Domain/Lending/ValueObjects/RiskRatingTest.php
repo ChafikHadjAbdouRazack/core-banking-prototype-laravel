@@ -14,8 +14,8 @@ class RiskRatingTest extends TestCase
         $rating = 'B';
         $defaultProbability = 0.05;
         $riskFactors = [
-            'credit_score' => 'Good',
-            'debt_to_income' => 'Low',
+            'credit_score'      => 'Good',
+            'debt_to_income'    => 'Low',
             'employment_status' => 'Stable',
         ];
 
@@ -192,9 +192,9 @@ class RiskRatingTest extends TestCase
         $rating = 'C';
         $defaultProbability = 0.08;
         $riskFactors = [
-            'credit_history' => 'Fair',
-            'income_stability' => 'Moderate',
-            'collateral' => 'Adequate',
+            'credit_history'    => 'Fair',
+            'income_stability'  => 'Moderate',
+            'collateral'        => 'Adequate',
             'market_conditions' => 'Stable',
         ];
 
@@ -202,9 +202,9 @@ class RiskRatingTest extends TestCase
         $array = $riskRating->toArray();
 
         $this->assertEquals([
-            'rating' => 'C',
+            'rating'              => 'C',
             'default_probability' => 0.08,
-            'risk_factors' => $riskFactors,
+            'risk_factors'        => $riskFactors,
         ], $array);
     }
 
@@ -223,22 +223,22 @@ class RiskRatingTest extends TestCase
         $complexRiskFactors = [
             'financial_metrics' => [
                 'debt_service_coverage_ratio' => 1.25,
-                'loan_to_value' => 0.80,
-                'debt_to_equity' => 0.65,
+                'loan_to_value'               => 0.80,
+                'debt_to_equity'              => 0.65,
             ],
             'qualitative_factors' => [
-                'management_quality' => 'Good',
-                'industry_outlook' => 'Positive',
+                'management_quality'   => 'Good',
+                'industry_outlook'     => 'Positive',
                 'competitive_position' => 'Strong',
             ],
             'external_factors' => [
-                'regulatory_risk' => 'Low',
+                'regulatory_risk'     => 'Low',
                 'economic_conditions' => 'Favorable',
-                'geopolitical_risk' => 'Moderate',
+                'geopolitical_risk'   => 'Moderate',
             ],
             'historical_performance' => [
-                'payment_history' => 'Excellent',
-                'default_events' => 0,
+                'payment_history'      => 'Excellent',
+                'default_events'       => 0,
                 'restructuring_events' => 0,
             ],
         ];

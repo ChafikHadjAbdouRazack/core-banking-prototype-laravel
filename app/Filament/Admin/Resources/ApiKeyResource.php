@@ -57,10 +57,10 @@ class ApiKeyResource extends Resource
                                 Forms\Components\CheckboxList::make('permissions')
                                     ->options(
                                         [
-                                            'read' => 'Read',
-                                            'write' => 'Write',
+                                            'read'   => 'Read',
+                                            'write'  => 'Write',
                                             'delete' => 'Delete',
-                                            '*' => 'All Permissions',
+                                            '*'      => 'All Permissions',
                                         ]
                                     )
                                     ->columns(2),
@@ -111,7 +111,7 @@ class ApiKeyResource extends Resource
                             [
                                 'success' => 'read',
                                 'warning' => 'write',
-                                'danger' => 'delete',
+                                'danger'  => 'delete',
                                 'primary' => '*',
                             ]
                         ),
@@ -176,8 +176,8 @@ class ApiKeyResource extends Resource
     {
         return [
             'index' => Pages\ListApiKeys::route('/'),
-            'view' => Pages\ViewApiKey::route('/{record}'),
-            'edit' => Pages\EditApiKey::route('/{record}/edit'),
+            'view'  => Pages\ViewApiKey::route('/{record}'),
+            'edit'  => Pages\EditApiKey::route('/{record}/edit'),
         ];
     }
 }

@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -123,7 +122,7 @@ class ApiKey extends Model
     /**
      * Verify an API key.
      */
-    public static function verify(string $plainKey): ?ApiKey
+    public static function verify(string $plainKey): ?self
     {
         $keyPrefix = substr($plainKey, 0, 8);
 
@@ -140,6 +139,7 @@ class ApiKey extends Model
 
         if ($apiKey && Hash::check($plainKey, $apiKey->key_hash)) {
             $apiKey->recordUsage(request()->ip() ?? '127.0.0.1');
+
             return $apiKey;
         }
 

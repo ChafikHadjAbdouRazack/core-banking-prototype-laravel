@@ -25,18 +25,18 @@ class CreateNewUser implements CreatesNewUsers
         Validator::make(
             $input,
             [
-                'name' => ['required', 'string', 'max:255'],
-                'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+                'name'                 => ['required', 'string', 'max:255'],
+                'email'                => ['required', 'string', 'email', 'max:255', 'unique:users'],
                 'is_business_customer' => ['boolean'],
-                'password' => $this->passwordRules(),
-                'terms' => Jetstream::hasTermsAndPrivacyPolicyFeature() ? ['accepted', 'required'] : '',
+                'password'             => $this->passwordRules(),
+                'terms'                => Jetstream::hasTermsAndPrivacyPolicyFeature() ? ['accepted', 'required'] : '',
             ]
         )->validate();
 
         $user = User::create(
             [
-                'name' => $input['name'],
-                'email' => $input['email'],
+                'name'     => $input['name'],
+                'email'    => $input['email'],
                 'password' => Hash::make($input['password']),
             ]
         );
@@ -50,9 +50,9 @@ class CreateNewUser implements CreatesNewUsers
             $team->update(
                 [
                     'is_business_organization' => true,
-                    'organization_type' => 'business',
-                    'max_users' => 10, // Default limit for business accounts
-                    'allowed_roles' => [
+                    'organization_type'        => 'business',
+                    'max_users'                => 10, // Default limit for business accounts
+                    'allowed_roles'            => [
                         'compliance_officer',
                         'risk_manager',
                         'accountant',
@@ -79,8 +79,8 @@ class CreateNewUser implements CreatesNewUsers
         return $user->ownedTeams()->save(
             Team::forceCreate(
                 [
-                    'user_id' => $user->id,
-                    'name' => explode(' ', $user->name, 2)[0] . "'s Team",
+                    'user_id'       => $user->id,
+                    'name'          => explode(' ', $user->name, 2)[0] . "'s Team",
                     'personal_team' => true,
                 ]
             )

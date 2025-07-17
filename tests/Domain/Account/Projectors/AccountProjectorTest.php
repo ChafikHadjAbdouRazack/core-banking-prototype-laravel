@@ -23,7 +23,7 @@ class AccountProjectorTest extends TestCase
     {
         $this->assertDatabaseHas((new Account())->getTable(), [
             'user_uuid' => $this->business_user->uuid,
-            'uuid' => $this->account->uuid,
+            'uuid'      => $this->account->uuid,
         ]);
 
         $this->assertTrue($this->account->user->is($this->business_user));
@@ -94,7 +94,7 @@ class AccountProjectorTest extends TestCase
 
         $this->assertDatabaseMissing((new Account())->getTable(), [
             'user_uuid' => $this->business_user->uuid,
-            'uuid' => $this->account->uuid,
+            'uuid'      => $this->account->uuid,
         ]);
     }
 }

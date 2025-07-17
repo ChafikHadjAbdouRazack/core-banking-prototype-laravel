@@ -194,10 +194,10 @@ class CustodianWebhookController extends Controller
 
         // Extract signature based on custodian
         $signature = match ($custodianName) {
-            'paysera' => $request->header('X-Paysera-Signature', ''),
+            'paysera'   => $request->header('X-Paysera-Signature', ''),
             'santander' => $request->header('X-Santander-Signature', ''),
-            'mock' => 'mock-signature',
-            default => '',
+            'mock'      => 'mock-signature',
+            default     => '',
         };
 
         // Convert header arrays to single values for webhook verification
@@ -227,7 +227,7 @@ class CustodianWebhookController extends Controller
                 'Invalid webhook payload',
                 [
                     'custodian' => $custodianName,
-                    'error' => json_last_error_msg(),
+                    'error'     => json_last_error_msg(),
                 ]
             );
 
@@ -243,12 +243,12 @@ class CustodianWebhookController extends Controller
             $webhook = CustodianWebhook::create(
                 [
                     'custodian_name' => $custodianName,
-                    'event_type' => $eventType,
-                    'event_id' => $eventId,
-                    'headers' => $headers,
-                    'payload' => $data,
-                    'signature' => $signature,
-                    'status' => 'pending',
+                    'event_type'     => $eventType,
+                    'event_id'       => $eventId,
+                    'headers'        => $headers,
+                    'payload'        => $data,
+                    'signature'      => $signature,
+                    'status'         => 'pending',
                 ]
             );
 
@@ -258,7 +258,7 @@ class CustodianWebhookController extends Controller
             Log::info(
                 'Webhook received and queued',
                 [
-                    'custodian' => $custodianName,
+                    'custodian'  => $custodianName,
                     'event_type' => $eventType,
                     'webhook_id' => $webhook->id,
                 ]
@@ -272,7 +272,7 @@ class CustodianWebhookController extends Controller
                     'Duplicate webhook received',
                     [
                         'custodian' => $custodianName,
-                        'event_id' => $eventId,
+                        'event_id'  => $eventId,
                     ]
                 );
 
@@ -286,7 +286,7 @@ class CustodianWebhookController extends Controller
                 'Failed to store webhook',
                 [
                     'custodian' => $custodianName,
-                    'error' => $e->getMessage(),
+                    'error'     => $e->getMessage(),
                 ]
             );
 
@@ -300,10 +300,10 @@ class CustodianWebhookController extends Controller
     private function extractEventType(string $custodianName, array $data): string
     {
         return match ($custodianName) {
-            'paysera' => $data['event'] ?? 'unknown',
+            'paysera'   => $data['event'] ?? 'unknown',
             'santander' => $data['event_type'] ?? 'unknown',
-            'mock' => $data['type'] ?? 'unknown',
-            default => 'unknown',
+            'mock'      => $data['type'] ?? 'unknown',
+            default     => 'unknown',
         };
     }
 
@@ -313,10 +313,10 @@ class CustodianWebhookController extends Controller
     private function extractEventId(string $custodianName, array $data): ?string
     {
         return match ($custodianName) {
-            'paysera' => $data['event_id'] ?? null,
+            'paysera'   => $data['event_id'] ?? null,
             'santander' => $data['id'] ?? null,
-            'mock' => $data['id'] ?? null,
-            default => null,
+            'mock'      => $data['id'] ?? null,
+            default     => null,
         };
     }
 }

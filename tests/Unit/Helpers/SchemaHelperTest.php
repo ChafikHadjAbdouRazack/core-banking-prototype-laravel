@@ -190,12 +190,12 @@ class SchemaHelperTest extends TestCase
     public function test_article_returns_valid_json_ld(): void
     {
         $data = [
-            'title' => 'Understanding Core Banking',
-            'description' => 'A comprehensive guide to modern core banking systems',
-            'url' => 'https://finaegis.com/blog/understanding-core-banking',
+            'title'        => 'Understanding Core Banking',
+            'description'  => 'A comprehensive guide to modern core banking systems',
+            'url'          => 'https://finaegis.com/blog/understanding-core-banking',
             'published_at' => '2024-01-01T00:00:00Z',
-            'updated_at' => '2024-01-02T00:00:00Z',
-            'image' => 'https://finaegis.com/images/article.jpg',
+            'updated_at'   => '2024-01-02T00:00:00Z',
+            'image'        => 'https://finaegis.com/images/article.jpg',
         ];
 
         $result = SchemaHelper::article($data);
@@ -219,9 +219,9 @@ class SchemaHelperTest extends TestCase
     public function test_article_without_optional_fields(): void
     {
         $data = [
-            'title' => 'Test Article',
+            'title'       => 'Test Article',
             'description' => 'Test description',
-            'url' => 'https://finaegis.com/blog/test',
+            'url'         => 'https://finaegis.com/blog/test',
         ];
 
         $result = SchemaHelper::article($data);

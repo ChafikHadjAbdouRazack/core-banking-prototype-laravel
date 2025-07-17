@@ -64,17 +64,17 @@ class CgoPaymentVerificationDashboard extends Page implements Tables\Contracts\H
                         ->colors(
                             [
                                 'warning' => 'bronze',
-                                'gray' => 'silver',
+                                'gray'    => 'silver',
                                 'warning' => 'gold',
                             ]
                         ),
                     Tables\Columns\BadgeColumn::make('payment_method')
                         ->formatStateUsing(
                             fn ($state) => match ($state) {
-                                'stripe' => 'Card',
+                                'stripe'        => 'Card',
                                 'bank_transfer' => 'Bank',
-                                'crypto' => 'Crypto',
-                                default => $state,
+                                'crypto'        => 'Crypto',
+                                default         => $state,
                             }
                         )
                         ->colors(
@@ -88,19 +88,19 @@ class CgoPaymentVerificationDashboard extends Page implements Tables\Contracts\H
                         ->colors(
                             [
                                 'warning' => 'pending',
-                                'info' => 'processing',
+                                'info'    => 'processing',
                                 'success' => 'completed',
-                                'danger' => 'failed',
+                                'danger'  => 'failed',
                             ]
                         ),
                     Tables\Columns\TextColumn::make('payment_reference')
                         ->label('Reference')
                         ->getStateUsing(
                             fn ($record) => match ($record->payment_method) {
-                                'stripe' => $record->stripe_payment_intent_id ?? 'N/A',
-                                'crypto' => $record->coinbase_charge_code ?? 'N/A',
+                                'stripe'        => $record->stripe_payment_intent_id ?? 'N/A',
+                                'crypto'        => $record->coinbase_charge_code ?? 'N/A',
                                 'bank_transfer' => $record->bank_transfer_reference ?? 'N/A',
-                                default => 'N/A',
+                                default         => 'N/A',
                             }
                         )
                         ->copyable(),
@@ -123,15 +123,15 @@ class CgoPaymentVerificationDashboard extends Page implements Tables\Contracts\H
                     Tables\Filters\SelectFilter::make('payment_method')
                         ->options(
                             [
-                                'stripe' => 'Card Payment',
+                                'stripe'        => 'Card Payment',
                                 'bank_transfer' => 'Bank Transfer',
-                                'crypto' => 'Cryptocurrency',
+                                'crypto'        => 'Cryptocurrency',
                             ]
                         ),
                     Tables\Filters\SelectFilter::make('payment_status')
                         ->options(
                             [
-                                'pending' => 'Pending',
+                                'pending'    => 'Pending',
                                 'processing' => 'Processing',
                             ]
                         ),
@@ -264,18 +264,18 @@ class CgoPaymentVerificationDashboard extends Page implements Tables\Contracts\H
         try {
             $investment->update(
                 [
-                    'payment_status' => 'completed',
-                    'status' => 'confirmed',
-                    'payment_completed_at' => now(),
+                    'payment_status'          => 'completed',
+                    'status'                  => 'confirmed',
+                    'payment_completed_at'    => now(),
                     'bank_transfer_reference' => $data['reference'],
-                    'amount_paid' => $data['amount_received'] * 100, // Convert to cents
-                    'metadata' => array_merge(
+                    'amount_paid'             => $data['amount_received'] * 100, // Convert to cents
+                    'metadata'                => array_merge(
                         $investment->metadata ?? [],
                         [
                             'manual_verification' => [
                                 'verified_by' => auth()->id(),
                                 'verified_at' => now()->toIso8601String(),
-                                'notes' => $data['notes'],
+                                'notes'       => $data['notes'],
                             ],
                         ]
                     ),
@@ -307,9 +307,9 @@ class CgoPaymentVerificationDashboard extends Page implements Tables\Contracts\H
         try {
             $investment->update(
                 [
-                    'payment_status' => 'failed',
-                    'status' => 'cancelled',
-                    'payment_failed_at' => now(),
+                    'payment_status'         => 'failed',
+                    'status'                 => 'cancelled',
+                    'payment_failed_at'      => now(),
                     'payment_failure_reason' => $reason,
                 ]
             );

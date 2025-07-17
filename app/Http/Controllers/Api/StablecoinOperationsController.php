@@ -92,11 +92,11 @@ class StablecoinOperationsController extends Controller
     {
         $validated = $request->validate(
             [
-                'account_uuid' => 'required|uuid|exists:accounts,uuid',
-                'stablecoin_code' => 'required|string|exists:stablecoins,code',
+                'account_uuid'          => 'required|uuid|exists:accounts,uuid',
+                'stablecoin_code'       => 'required|string|exists:stablecoins,code',
                 'collateral_asset_code' => 'required|string|exists:assets,code',
-                'collateral_amount' => 'required|integer|min:1',
-                'mint_amount' => 'required|integer|min:1',
+                'collateral_amount'     => 'required|integer|min:1',
+                'mint_amount'           => 'required|integer|min:1',
             ]
         );
 
@@ -114,7 +114,7 @@ class StablecoinOperationsController extends Controller
             return response()->json(
                 [
                     'message' => 'Stablecoin minted successfully',
-                    'data' => $position->load(['stablecoin', 'collateralAsset']),
+                    'data'    => $position->load(['stablecoin', 'collateralAsset']),
                 ]
             );
         } catch (\Exception $e) {
@@ -187,9 +187,9 @@ class StablecoinOperationsController extends Controller
     {
         $validated = $request->validate(
             [
-                'account_uuid' => 'required|uuid|exists:accounts,uuid',
-                'stablecoin_code' => 'required|string|exists:stablecoins,code',
-                'burn_amount' => 'required|integer|min:1',
+                'account_uuid'              => 'required|uuid|exists:accounts,uuid',
+                'stablecoin_code'           => 'required|string|exists:stablecoins,code',
+                'burn_amount'               => 'required|integer|min:1',
                 'collateral_release_amount' => 'nullable|integer|min:0',
             ]
         );
@@ -207,7 +207,7 @@ class StablecoinOperationsController extends Controller
             return response()->json(
                 [
                     'message' => 'Stablecoin burned successfully',
-                    'data' => $position->load(['stablecoin', 'collateralAsset']),
+                    'data'    => $position->load(['stablecoin', 'collateralAsset']),
                 ]
             );
         } catch (\Exception $e) {
@@ -278,10 +278,10 @@ class StablecoinOperationsController extends Controller
     {
         $validated = $request->validate(
             [
-                'account_uuid' => 'required|uuid|exists:accounts,uuid',
-                'stablecoin_code' => 'required|string|exists:stablecoins,code',
+                'account_uuid'          => 'required|uuid|exists:accounts,uuid',
+                'stablecoin_code'       => 'required|string|exists:stablecoins,code',
                 'collateral_asset_code' => 'required|string|exists:assets,code',
-                'collateral_amount' => 'required|integer|min:1',
+                'collateral_amount'     => 'required|integer|min:1',
             ]
         );
 
@@ -298,7 +298,7 @@ class StablecoinOperationsController extends Controller
             return response()->json(
                 [
                     'message' => 'Collateral added successfully',
-                    'data' => $position->load(['stablecoin', 'collateralAsset']),
+                    'data'    => $position->load(['stablecoin', 'collateralAsset']),
                 ]
             );
         } catch (\Exception $e) {
@@ -374,7 +374,7 @@ class StablecoinOperationsController extends Controller
                 return array_merge(
                     $position->toArray(),
                     [
-                        'health_score' => $healthScore,
+                        'health_score'    => $healthScore,
                         'recommendations' => $recommendations,
                     ]
                 );
@@ -599,7 +599,7 @@ class StablecoinOperationsController extends Controller
             return response()->json(
                 [
                     'message' => 'Position liquidated successfully',
-                    'data' => $result,
+                    'data'    => $result,
                 ]
             );
         } catch (\Exception $e) {
@@ -791,7 +791,7 @@ class StablecoinOperationsController extends Controller
             return response()->json(
                 [
                     'message' => 'Automatic liquidation executed',
-                    'data' => $result,
+                    'data'    => $result,
                 ]
             );
         } catch (\Exception $e) {
@@ -881,8 +881,8 @@ class StablecoinOperationsController extends Controller
                 return array_merge(
                     $position->toArray(),
                     [
-                        'health_score' => $healthScore,
-                        'risk_level' => $riskLevel,
+                        'health_score'    => $healthScore,
+                        'risk_level'      => $riskLevel,
                         'recommendations' => $recommendations,
                     ]
                 );

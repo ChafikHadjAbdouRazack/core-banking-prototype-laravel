@@ -38,9 +38,9 @@ class OpenBankingWithdrawalTest extends DomainTestCase
         $this->usdAsset = Asset::updateOrCreate(
             ['code' => 'USD'],
             [
-                'name' => 'US Dollar',
-                'symbol' => '$',
-                'type' => 'fiat',
+                'name'      => 'US Dollar',
+                'symbol'    => '$',
+                'type'      => 'fiat',
                 'precision' => 2,
                 'is_active' => true,
             ]
@@ -49,8 +49,8 @@ class OpenBankingWithdrawalTest extends DomainTestCase
         // Add balance
         AccountBalance::create([
             'account_uuid' => $this->account->uuid,
-            'asset_code' => 'USD',
-            'balance' => 500000, // $5,000
+            'asset_code'   => 'USD',
+            'balance'      => 500000, // $5,000
         ]);
     }
 
@@ -90,8 +90,8 @@ class OpenBankingWithdrawalTest extends DomainTestCase
 
         $response = $this->post(route('wallet.withdraw.openbanking.initiate'), [
             'bank_code' => 'paysera',
-            'amount' => 100.00,
-            'currency' => 'USD',
+            'amount'    => 100.00,
+            'currency'  => 'USD',
         ]);
 
         $response->assertRedirect();
@@ -99,9 +99,9 @@ class OpenBankingWithdrawalTest extends DomainTestCase
 
         // Check session has withdrawal details
         $this->assertEquals([
-            'amount' => 10000,
-            'currency' => 'USD',
-            'bank_code' => 'paysera',
+            'amount'       => 10000,
+            'currency'     => 'USD',
+            'bank_code'    => 'paysera',
             'account_uuid' => $this->account->uuid,
         ], Session::get('openbanking_withdrawal'));
     }
@@ -113,8 +113,8 @@ class OpenBankingWithdrawalTest extends DomainTestCase
 
         $response = $this->post(route('wallet.withdraw.openbanking.initiate'), [
             'bank_code' => 'paysera',
-            'amount' => 10000.00, // More than balance
-            'currency' => 'USD',
+            'amount'    => 10000.00, // More than balance
+            'currency'  => 'USD',
         ]);
 
         $response->assertRedirect();
@@ -128,8 +128,8 @@ class OpenBankingWithdrawalTest extends DomainTestCase
 
         $response = $this->post(route('wallet.withdraw.openbanking.initiate'), [
             'bank_code' => 'paysera',
-            'amount' => 5.00, // Less than minimum
-            'currency' => 'USD',
+            'amount'    => 5.00, // Less than minimum
+            'currency'  => 'USD',
         ]);
 
         $response->assertSessionHasErrors(['amount']);
@@ -155,19 +155,19 @@ class OpenBankingWithdrawalTest extends DomainTestCase
 
         // Set up session
         Session::put('openbanking_withdrawal', [
-            'amount' => 10000,
-            'currency' => 'USD',
-            'bank_code' => 'paysera',
+            'amount'       => 10000,
+            'currency'     => 'USD',
+            'bank_code'    => 'paysera',
             'account_uuid' => $this->account->uuid,
         ]);
 
         // Mock bank connector
         $mockBankAccount = (object) [
-            'id' => 'bank-account-123',
+            'id'            => 'bank-account-123',
             'accountNumber' => '1234567890',
-            'iban' => 'DE89370400440532013000',
-            'swift' => 'DEUTDEFF',
-            'holderName' => 'Test User',
+            'iban'          => 'DE89370400440532013000',
+            'swift'         => 'DEUTDEFF',
+            'holderName'    => 'Test User',
         ];
 
         $mockConnector = Mockery::mock(IBankConnector::class);
@@ -195,7 +195,7 @@ class OpenBankingWithdrawalTest extends DomainTestCase
         $this->app->instance(BankIntegrationService::class, $mockBankService);
 
         $response = $this->get(route('wallet.withdraw.openbanking.callback', [
-            'code' => 'authorization-code',
+            'code'  => 'authorization-code',
             'state' => csrf_token(),
         ]));
 
@@ -210,7 +210,7 @@ class OpenBankingWithdrawalTest extends DomainTestCase
         $this->actingAs($this->user);
 
         $response = $this->get(route('wallet.withdraw.openbanking.callback', [
-            'code' => 'authorization-code',
+            'code'  => 'authorization-code',
             'state' => 'invalid-state',
         ]));
 
