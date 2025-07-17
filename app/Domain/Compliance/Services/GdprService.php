@@ -191,7 +191,7 @@ class GdprService
                 'updated_at' => $transaction->updated_at,
             ];
         })
-            ->toArray();
+        ->toArray();
 
         return $result;
     }
