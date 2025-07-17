@@ -6,6 +6,8 @@
     <rule ref="PSR12">
         <!-- Allow snake_case test method names -->
         <exclude name="PSR1.Methods.CamelCapsMethodName.NotCamelCaps"/>
+        <!-- Exclude line length check -->
+        <exclude name="Generic.Files.LineLength"/>
     </rule>
     
     <!-- Apply the snake_case exclusion only to test files -->
