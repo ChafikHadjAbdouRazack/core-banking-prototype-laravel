@@ -53,9 +53,17 @@ class TransactionMonitoringServiceTest extends ServiceTestCase
         // Remove amount from attributes to avoid conflict
         unset($attributes['amount']);
 
+        // Extract type if provided to put in meta_data
+        $type = $attributes['type'] ?? 'transfer';
+        unset($attributes['type']);
+
         return Transaction::factory()->forAccount($account)->create(array_merge([
             'event_properties' => $eventProperties,
-            'type'             => $attributes['type'] ?? 'transfer',
+            'meta_data' => [
+                'type' => $type,
+                'reference' => $attributes['reference'] ?? null,
+                'description' => $attributes['description'] ?? null,
+            ],
         ], $attributes));
     }
 

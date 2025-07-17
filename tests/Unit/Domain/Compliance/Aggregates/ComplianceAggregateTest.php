@@ -243,9 +243,15 @@ class ComplianceAggregateTest extends DomainTestCase
         $aggregate->approveKyc($userUuid, 'enhanced');
 
         // Verify events were recorded
-        $aggregate->assertRecorded(KycSubmissionReceived::class);
-        $aggregate->assertRecorded(KycDocumentUploaded::class);
-        $aggregate->assertRecorded(KycVerificationCompleted::class);
+        $aggregate->assertRecorded(function ($event) {
+            return $event instanceof KycSubmissionReceived;
+        });
+        $aggregate->assertRecorded(function ($event) {
+            return $event instanceof KycDocumentUploaded;
+        });
+        $aggregate->assertRecorded(function ($event) {
+            return $event instanceof KycVerificationCompleted;
+        });
     }
 
     #[Test]
@@ -267,11 +273,17 @@ class ComplianceAggregateTest extends DomainTestCase
         $aggregate->completeGdprDeletion($userUuid);
 
         // Verify events were recorded
-        $aggregate->assertRecordedCount(4);
+        $this->assertCount(4, $aggregate->aggregateRoot()->getRecordedEvents());
 
         // Check specific event types were recorded
-        $aggregate->assertRecorded(GdprRequestReceived::class);
-        $aggregate->assertRecorded(GdprDataExported::class);
-        $aggregate->assertRecorded(GdprDataDeleted::class);
+        $aggregate->assertRecorded(function ($event) {
+            return $event instanceof GdprRequestReceived;
+        });
+        $aggregate->assertRecorded(function ($event) {
+            return $event instanceof GdprDataExported;
+        });
+        $aggregate->assertRecorded(function ($event) {
+            return $event instanceof GdprDataDeleted;
+        });
     }
 }

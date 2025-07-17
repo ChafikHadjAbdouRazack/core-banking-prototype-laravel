@@ -2,7 +2,9 @@
 
 namespace Tests\Unit\Domain\Compliance\Services;
 
+use App\Domain\Compliance\Services\AmlScreeningService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\ServiceTestCase;
 

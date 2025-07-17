@@ -86,7 +86,7 @@ class XssTest extends DomainTestCase
             ->postJson('/api/v2/transfers', [
                 'from_account' => $account->uuid,
                 'to_account'   => Account::factory()->create(['user_uuid' => User::factory()->create()->uuid])->uuid,
-                'amount'       => 10000, // 100.00 in cents
+                'amount'       => 100.00, // 100.00 USD
                 'currency'     => 'USD',
                 'asset_code'   => 'USD',
                 'description'  => $payload,

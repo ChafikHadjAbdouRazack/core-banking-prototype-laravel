@@ -7,6 +7,7 @@ use App\Models\Account;
 use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Event;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\DomainTestCase;
 
@@ -104,7 +105,7 @@ class SuspiciousActivityDetectedTest extends DomainTestCase
         $unserialized = unserialize($serialized);
 
         $this->assertEquals($transaction->id, $unserialized->transaction->id);
-        $this->assertEquals('SUSP-123', $unserialized->transaction->reference);
+        $this->assertEquals('SUSP-123', $unserialized->transaction->meta_data['reference']);
         $this->assertEquals($alerts, $unserialized->alerts);
     }
 
@@ -160,8 +161,12 @@ class SuspiciousActivityDetectedTest extends DomainTestCase
         $transaction = $this->createTransaction();
         $alerts = [['type' => 'test_alert']];
 
-        $this->expectsEvents(SuspiciousActivityDetected::class);
+        Event::fake();
 
         event(new SuspiciousActivityDetected($transaction, $alerts));
+
+        Event::assertDispatched(SuspiciousActivityDetected::class, function ($event) use ($transaction, $alerts) {
+            return $event->transaction->id === $transaction->id && $event->alerts === $alerts;
+        });
     }
 }
