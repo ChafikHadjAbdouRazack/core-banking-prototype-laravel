@@ -2,7 +2,6 @@
 
 namespace Tests\Security\Penetration;
 
-use App\Domain\Account\DataObjects\AccountUuid;
 use App\Models\Account;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -75,25 +74,19 @@ class XssTest extends DomainTestCase
 
         $account = Account::where('uuid', $accountUuid)->first();
 
-        // Add balance using event sourcing
-        \App\Domain\Asset\Aggregates\AssetTransactionAggregate::retrieve($account->uuid . ':USD')
-            ->credit(
-                AccountUuid::fromString($account->uuid),
-                'USD',
-                __money(100000),
-                'Initial balance for testing'
-            )
-            ->persist();
-
-        // Refresh the account to ensure balance is updated
-        $account->refresh();
+        // Create balance directly
+        \App\Domain\Account\Models\AccountBalance::create([
+            'account_uuid' => $account->uuid,
+            'asset_code'   => 'USD',
+            'balance'      => 100000, // $1000.00
+        ]);
 
         // Attempt XSS in transaction description
         $response = $this->withToken($this->token)
             ->postJson('/api/v2/transfers', [
                 'from_account' => $account->uuid,
                 'to_account'   => Account::factory()->create(['user_uuid' => User::factory()->create()->uuid])->uuid,
-                'amount'       => 100,
+                'amount'       => 10000, // 100.00 in cents
                 'currency'     => 'USD',
                 'asset_code'   => 'USD',
                 'description'  => $payload,

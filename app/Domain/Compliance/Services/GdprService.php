@@ -177,21 +177,23 @@ class GdprService
             ->get();
 
         /** @var array<int, array<string, mixed>> */
-        $result = $transactions->map(/** @param \App\Domain\Account\Models\TransactionProjection $transaction */ function ($transaction): array {
-            return [
-                'uuid' => $transaction->uuid,
-                'account_uuid' => $transaction->account_uuid,
-                'type' => $transaction->type,
-                'amount' => $transaction->amount,
-                'currency' => $transaction->currency,
-                'status' => $transaction->status,
-                'description' => $transaction->description,
-                'metadata' => $transaction->metadata,
-                'created_at' => $transaction->created_at,
-                'updated_at' => $transaction->updated_at,
-            ];
-        })
-        ->toArray();
+        $result = $transactions->map(
+            /** @param \App\Domain\Account\Models\TransactionProjection $transaction */
+            function ($transaction): array {
+                return [
+                    'uuid' => $transaction->uuid,
+                    'account_uuid' => $transaction->account_uuid,
+                    'type' => $transaction->type,
+                    'amount' => $transaction->amount,
+                    'currency' => $transaction->currency,
+                    'status' => $transaction->status,
+                    'description' => $transaction->description,
+                    'metadata' => $transaction->metadata,
+                    'created_at' => $transaction->created_at,
+                    'updated_at' => $transaction->updated_at,
+                ];
+            }
+        )->toArray();
 
         return $result;
     }
