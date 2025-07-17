@@ -92,7 +92,21 @@ class SuspiciousActivityDetectedTest extends DomainTestCase
     #[Test]
     public function test_event_serializes_correctly(): void
     {
-        $transaction = $this->createTransaction();
+        $user = User::factory()->create();
+        $account = Account::factory()->create(['user_uuid' => $user->uuid]);
+        
+        $transaction = Transaction::factory()->forAccount($account)->create([
+            'event_properties' => [
+                'amount'    => 10000,
+                'assetCode' => 'USD',
+                'metadata'  => [],
+            ],
+            'meta_data' => [
+                'type' => 'transfer',
+                'reference' => 'SUSP-123',
+                'description' => null,
+            ],
+        ]);
 
         $alerts = [
             ['type' => 'pattern_match', 'pattern' => 'unusual_destination'],
