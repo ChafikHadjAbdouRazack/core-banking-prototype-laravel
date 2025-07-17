@@ -15,6 +15,11 @@
         <exclude-pattern>*/tests/*</exclude-pattern>
     </rule>
     
+    <!-- Allow side effects in test files -->
+    <rule ref="PSR1.Files.SideEffects">
+        <exclude-pattern>*/tests/*</exclude-pattern>
+    </rule>
+    
     <!-- Include these directories -->
     <file>app</file>
     <file>tests</file>
