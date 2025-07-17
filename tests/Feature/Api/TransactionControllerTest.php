@@ -31,8 +31,8 @@ describe('POST /api/accounts/{uuid}/deposit', function () {
         Sanctum::actingAs($this->user);
 
         $response = $this->postJson("/api/accounts/{$this->account->uuid}/deposit", [
-            'amount'      => 100.50,
-            'asset_code'  => 'USD',
+            'amount' => 100.50,
+            'asset_code' => 'USD',
             'description' => 'Test deposit',
         ]);
 
@@ -46,8 +46,8 @@ describe('POST /api/accounts/{uuid}/deposit', function () {
         Sanctum::actingAs($this->user);
 
         $response = $this->postJson("/api/accounts/{$this->account->uuid}/deposit", [
-            'amount'      => 0.01, // Use a larger amount that won't round to 0
-            'asset_code'  => 'BTC',
+            'amount' => 0.01, // Use a larger amount that won't round to 0
+            'asset_code' => 'BTC',
             'description' => 'BTC deposit',
         ]);
 
@@ -59,7 +59,7 @@ describe('POST /api/accounts/{uuid}/deposit', function () {
 
     it('requires authentication', function () {
         $response = $this->postJson("/api/accounts/{$this->account->uuid}/deposit", [
-            'amount'     => 100.00,
+            'amount' => 100.00,
             'asset_code' => 'USD',
         ]);
 
@@ -79,7 +79,7 @@ describe('POST /api/accounts/{uuid}/deposit', function () {
         Sanctum::actingAs($this->user);
 
         $response = $this->postJson("/api/accounts/{$this->account->uuid}/deposit", [
-            'amount'     => 0.00,
+            'amount' => 0.00,
             'asset_code' => 'USD',
         ]);
 
@@ -91,7 +91,7 @@ describe('POST /api/accounts/{uuid}/deposit', function () {
         Sanctum::actingAs($this->user);
 
         $response = $this->postJson("/api/accounts/{$this->account->uuid}/deposit", [
-            'amount'     => 100.00,
+            'amount' => 100.00,
             'asset_code' => 'INVALID',
         ]);
 
@@ -103,8 +103,8 @@ describe('POST /api/accounts/{uuid}/deposit', function () {
         Sanctum::actingAs($this->user);
 
         $response = $this->postJson("/api/accounts/{$this->account->uuid}/deposit", [
-            'amount'      => 100.00,
-            'asset_code'  => 'USD',
+            'amount' => 100.00,
+            'asset_code' => 'USD',
             'description' => str_repeat('a', 300),
         ]);
 
@@ -117,7 +117,7 @@ describe('POST /api/accounts/{uuid}/deposit', function () {
         $fakeUuid = Illuminate\Support\Str::uuid();
 
         $response = $this->postJson("/api/accounts/{$fakeUuid}/deposit", [
-            'amount'     => 100.00,
+            'amount' => 100.00,
             'asset_code' => 'USD',
         ]);
 
@@ -131,14 +131,14 @@ describe('POST /api/accounts/{uuid}/deposit', function () {
         Sanctum::actingAs($this->user);
 
         $response = $this->postJson("/api/accounts/{$otherAccount->uuid}/deposit", [
-            'amount'     => 100.00,
+            'amount' => 100.00,
             'asset_code' => 'USD',
         ]);
 
         $response->assertStatus(403)
             ->assertJson([
                 'message' => 'Access denied to this account',
-                'error'   => 'FORBIDDEN',
+                'error' => 'FORBIDDEN',
             ]);
     });
 
@@ -147,14 +147,14 @@ describe('POST /api/accounts/{uuid}/deposit', function () {
         Sanctum::actingAs($this->user);
 
         $response = $this->postJson("/api/accounts/{$this->account->uuid}/deposit", [
-            'amount'     => 100.00,
+            'amount' => 100.00,
             'asset_code' => 'USD',
         ]);
 
         $response->assertStatus(422)
             ->assertJson([
                 'message' => 'Cannot deposit to frozen account',
-                'error'   => 'ACCOUNT_FROZEN',
+                'error' => 'ACCOUNT_FROZEN',
             ]);
     });
 });
@@ -176,8 +176,8 @@ describe('POST /api/accounts/{uuid}/withdraw', function () {
         Sanctum::actingAs($this->user);
 
         $response = $this->postJson("/api/accounts/{$this->account->uuid}/withdraw", [
-            'amount'      => 50.00,
-            'asset_code'  => 'USD',
+            'amount' => 50.00,
+            'asset_code' => 'USD',
             'description' => 'Test withdrawal',
         ]);
 
@@ -191,8 +191,8 @@ describe('POST /api/accounts/{uuid}/withdraw', function () {
         Sanctum::actingAs($this->user);
 
         $response = $this->postJson("/api/accounts/{$this->account->uuid}/withdraw", [
-            'amount'      => 0.05,
-            'asset_code'  => 'BTC',
+            'amount' => 0.05,
+            'asset_code' => 'BTC',
             'description' => 'BTC withdrawal',
         ]);
 
@@ -204,7 +204,7 @@ describe('POST /api/accounts/{uuid}/withdraw', function () {
 
     it('requires authentication', function () {
         $response = $this->postJson("/api/accounts/{$this->account->uuid}/withdraw", [
-            'amount'     => 50.00,
+            'amount' => 50.00,
             'asset_code' => 'USD',
         ]);
 
@@ -224,14 +224,14 @@ describe('POST /api/accounts/{uuid}/withdraw', function () {
         Sanctum::actingAs($this->user);
 
         $response = $this->postJson("/api/accounts/{$this->account->uuid}/withdraw", [
-            'amount'     => 2000.00, // More than $1000 balance
+            'amount' => 2000.00, // More than $1000 balance
             'asset_code' => 'USD',
         ]);
 
         $response->assertStatus(422)
             ->assertJson([
                 'message' => 'Insufficient balance',
-                'errors'  => [
+                'errors' => [
                     'amount' => ['Insufficient balance'],
                 ],
             ]);
@@ -244,14 +244,14 @@ describe('POST /api/accounts/{uuid}/withdraw', function () {
         Sanctum::actingAs($this->user);
 
         $response = $this->postJson("/api/accounts/{$otherAccount->uuid}/withdraw", [
-            'amount'     => 50.00,
+            'amount' => 50.00,
             'asset_code' => 'USD',
         ]);
 
         $response->assertStatus(403)
             ->assertJson([
                 'message' => 'Access denied to this account',
-                'error'   => 'FORBIDDEN',
+                'error' => 'FORBIDDEN',
             ]);
     });
 
@@ -260,14 +260,14 @@ describe('POST /api/accounts/{uuid}/withdraw', function () {
         Sanctum::actingAs($this->user);
 
         $response = $this->postJson("/api/accounts/{$this->account->uuid}/withdraw", [
-            'amount'     => 50.00,
+            'amount' => 50.00,
             'asset_code' => 'USD',
         ]);
 
         $response->assertStatus(422)
             ->assertJson([
                 'message' => 'Cannot withdraw from frozen account',
-                'error'   => 'ACCOUNT_FROZEN',
+                'error' => 'ACCOUNT_FROZEN',
             ]);
     });
 
@@ -287,7 +287,7 @@ describe('POST /api/accounts/{uuid}/withdraw', function () {
         );
 
         $response = $this->postJson("/api/accounts/{$this->account->uuid}/withdraw", [
-            'amount'     => 1.00,
+            'amount' => 1.00,
             'asset_code' => 'ETH',
         ]);
 
@@ -303,43 +303,43 @@ describe('GET /api/accounts/{uuid}/transactions', function () {
         // Create some test events in the stored_events table
         DB::table('stored_events')->insert([
             [
-                'id'                => 1,
-                'aggregate_uuid'    => $this->account->uuid,
+                'id' => 1,
+                'aggregate_uuid' => $this->account->uuid,
                 'aggregate_version' => 1,
-                'event_version'     => 1,
-                'event_class'       => 'App\\Domain\\Account\\Events\\MoneyAdded',
-                'event_properties'  => json_encode([
+                'event_version' => 1,
+                'event_class' => 'App\\Domain\\Account\\Events\\MoneyAdded',
+                'event_properties' => json_encode([
                     'money' => ['amount' => 10000],
-                    'hash'  => ['hash' => 'test-hash-1'],
+                    'hash' => ['hash' => 'test-hash-1'],
                 ]),
-                'meta_data'  => '{}',
+                'meta_data' => '{}',
                 'created_at' => now()->subHours(2),
             ],
             [
-                'id'                => 2,
-                'aggregate_uuid'    => $this->account->uuid,
+                'id' => 2,
+                'aggregate_uuid' => $this->account->uuid,
                 'aggregate_version' => 2,
-                'event_version'     => 1,
-                'event_class'       => 'App\\Domain\\Account\\Events\\AssetBalanceAdded',
-                'event_properties'  => json_encode([
-                    'amount'    => 5000000,
+                'event_version' => 1,
+                'event_class' => 'App\\Domain\\Account\\Events\\AssetBalanceAdded',
+                'event_properties' => json_encode([
+                    'amount' => 5000000,
                     'assetCode' => 'BTC',
-                    'hash'      => ['hash' => 'test-hash-2'],
+                    'hash' => ['hash' => 'test-hash-2'],
                 ]),
-                'meta_data'  => '{}',
+                'meta_data' => '{}',
                 'created_at' => now()->subHour(),
             ],
             [
-                'id'                => 3,
-                'aggregate_uuid'    => $this->account->uuid,
+                'id' => 3,
+                'aggregate_uuid' => $this->account->uuid,
                 'aggregate_version' => 3,
-                'event_version'     => 1,
-                'event_class'       => 'App\\Domain\\Account\\Events\\MoneySubtracted',
-                'event_properties'  => json_encode([
+                'event_version' => 1,
+                'event_class' => 'App\\Domain\\Account\\Events\\MoneySubtracted',
+                'event_properties' => json_encode([
                     'money' => ['amount' => 2000],
-                    'hash'  => ['hash' => 'test-hash-3'],
+                    'hash' => ['hash' => 'test-hash-3'],
                 ]),
-                'meta_data'  => '{}',
+                'meta_data' => '{}',
                 'created_at' => now(),
             ],
         ]);

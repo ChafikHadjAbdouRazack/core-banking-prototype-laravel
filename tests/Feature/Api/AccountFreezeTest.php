@@ -15,7 +15,7 @@ it('can freeze an account', function () {
     $account = Account::factory()->forUser($this->user)->create(['frozen' => false]);
 
     $response = $this->postJson("/api/accounts/{$account->uuid}/freeze", [
-        'reason'        => 'Suspicious activity detected',
+        'reason' => 'Suspicious activity detected',
         'authorized_by' => 'admin@example.com',
     ]);
 
@@ -35,7 +35,7 @@ it('cannot freeze an already frozen account', function () {
     $response->assertStatus(422)
         ->assertJson([
             'message' => 'Account is already frozen',
-            'error'   => 'ACCOUNT_ALREADY_FROZEN',
+            'error' => 'ACCOUNT_ALREADY_FROZEN',
         ]);
 
     // Workflow should not be dispatched when account is already frozen
@@ -45,7 +45,7 @@ it('can unfreeze an account', function () {
     $account = Account::factory()->forUser($this->user)->create(['frozen' => true]);
 
     $response = $this->postJson("/api/accounts/{$account->uuid}/unfreeze", [
-        'reason'        => 'Investigation completed',
+        'reason' => 'Investigation completed',
         'authorized_by' => 'admin@example.com',
     ]);
 
@@ -65,7 +65,7 @@ it('cannot unfreeze an account that is not frozen', function () {
     $response->assertStatus(422)
         ->assertJson([
             'message' => 'Account is not frozen',
-            'error'   => 'ACCOUNT_NOT_FROZEN',
+            'error' => 'ACCOUNT_NOT_FROZEN',
         ]);
 
     // Workflow should not be dispatched when account is not frozen
@@ -79,7 +79,7 @@ it('cannot delete a frozen account', function () {
     $response->assertStatus(422)
         ->assertJson([
             'message' => 'Cannot delete frozen account',
-            'error'   => 'ACCOUNT_FROZEN',
+            'error' => 'ACCOUNT_FROZEN',
         ]);
 
     // Destroy workflow should not be dispatched for frozen accounts
@@ -89,15 +89,15 @@ it('cannot deposit to a frozen account', function () {
     $account = Account::factory()->forUser($this->user)->create(['frozen' => true]);
 
     $response = $this->postJson("/api/accounts/{$account->uuid}/deposit", [
-        'amount'      => 1000,
-        'asset_code'  => 'USD',
+        'amount' => 1000,
+        'asset_code' => 'USD',
         'description' => 'Test deposit',
     ]);
 
     $response->assertStatus(422)
         ->assertJson([
             'message' => 'Cannot deposit to frozen account',
-            'error'   => 'ACCOUNT_FROZEN',
+            'error' => 'ACCOUNT_FROZEN',
         ]);
 
     // Deposit workflow should not be dispatched for frozen accounts
@@ -108,20 +108,20 @@ it('cannot withdraw from a frozen account', function () {
     // Create initial balance for withdrawal test
     App\Models\AccountBalance::create([
         'account_uuid' => $account->uuid,
-        'asset_code'   => 'USD',
-        'balance'      => 500000, // $5000
+        'asset_code' => 'USD',
+        'balance' => 500000, // $5000
     ]);
 
     $response = $this->postJson("/api/accounts/{$account->uuid}/withdraw", [
-        'amount'      => 1000,
-        'asset_code'  => 'USD',
+        'amount' => 1000,
+        'asset_code' => 'USD',
         'description' => 'Test withdrawal',
     ]);
 
     $response->assertStatus(422)
         ->assertJson([
             'message' => 'Cannot withdraw from frozen account',
-            'error'   => 'ACCOUNT_FROZEN',
+            'error' => 'ACCOUNT_FROZEN',
         ]);
 
     // Withdraw workflow should not be dispatched for frozen accounts
@@ -133,22 +133,22 @@ it('cannot transfer from a frozen account', function () {
     // Create initial balance for transfer test
     App\Models\AccountBalance::create([
         'account_uuid' => $fromAccount->uuid,
-        'asset_code'   => 'USD',
-        'balance'      => 500000, // $5000
+        'asset_code' => 'USD',
+        'balance' => 500000, // $5000
     ]);
 
     $response = $this->postJson('/api/transfers', [
         'from_account_uuid' => $fromAccount->uuid,
-        'to_account_uuid'   => $toAccount->uuid,
-        'amount'            => 1000,
-        'asset_code'        => 'USD',
-        'description'       => 'Test transfer',
+        'to_account_uuid' => $toAccount->uuid,
+        'amount' => 1000,
+        'asset_code' => 'USD',
+        'description' => 'Test transfer',
     ]);
 
     $response->assertStatus(422)
         ->assertJson([
             'message' => 'Cannot transfer from frozen account',
-            'error'   => 'SOURCE_ACCOUNT_FROZEN',
+            'error' => 'SOURCE_ACCOUNT_FROZEN',
         ]);
 
     // Transfer workflow should not be dispatched when source account is frozen
@@ -160,22 +160,22 @@ it('cannot transfer to a frozen account', function () {
     // Create initial balance for transfer test
     App\Models\AccountBalance::create([
         'account_uuid' => $fromAccount->uuid,
-        'asset_code'   => 'USD',
-        'balance'      => 500000, // $5000
+        'asset_code' => 'USD',
+        'balance' => 500000, // $5000
     ]);
 
     $response = $this->postJson('/api/transfers', [
         'from_account_uuid' => $fromAccount->uuid,
-        'to_account_uuid'   => $toAccount->uuid,
-        'amount'            => 1000,
-        'asset_code'        => 'USD',
-        'description'       => 'Test transfer',
+        'to_account_uuid' => $toAccount->uuid,
+        'amount' => 1000,
+        'asset_code' => 'USD',
+        'description' => 'Test transfer',
     ]);
 
     $response->assertStatus(422)
         ->assertJson([
             'message' => 'Cannot transfer to frozen account',
-            'error'   => 'DESTINATION_ACCOUNT_FROZEN',
+            'error' => 'DESTINATION_ACCOUNT_FROZEN',
         ]);
 
     // Transfer workflow should not be dispatched when source account is frozen

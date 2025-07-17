@@ -32,8 +32,8 @@ class XssTest extends DomainTestCase
         // Create account with XSS payload
         $response = $this->withToken($this->token)
             ->postJson('/api/v2/accounts', [
-                'name'     => $payload,
-                'type'     => 'savings',
+                'name' => $payload,
+                'type' => 'savings',
                 'currency' => 'USD',
             ]);
 
@@ -65,7 +65,7 @@ class XssTest extends DomainTestCase
                 hydrate(
                     class: \App\Domain\Account\DataObjects\Account::class,
                     properties: [
-                        'name'      => 'Test Account',
+                        'name' => 'Test Account',
                         'user_uuid' => $this->user->uuid,
                     ]
                 )
@@ -77,19 +77,19 @@ class XssTest extends DomainTestCase
         // Create balance directly
         \App\Domain\Account\Models\AccountBalance::create([
             'account_uuid' => $account->uuid,
-            'asset_code'   => 'USD',
-            'balance'      => 100000, // $1000.00
+            'asset_code' => 'USD',
+            'balance' => 100000, // $1000.00
         ]);
 
         // Attempt XSS in transaction description
         $response = $this->withToken($this->token)
             ->postJson('/api/v2/transfers', [
                 'from_account' => $account->uuid,
-                'to_account'   => Account::factory()->create(['user_uuid' => User::factory()->create()->uuid])->uuid,
-                'amount'       => 100.00, // 100.00 USD
-                'currency'     => 'USD',
-                'asset_code'   => 'USD',
-                'description'  => $payload,
+                'to_account' => Account::factory()->create(['user_uuid' => User::factory()->create()->uuid])->uuid,
+                'amount' => 100.00, // 100.00 USD
+                'currency' => 'USD',
+                'asset_code' => 'USD',
+                'description' => $payload,
             ]);
 
         // For debugging - let's see what response we're getting
@@ -111,8 +111,8 @@ class XssTest extends DomainTestCase
         // Attempt XSS in user profile update
         $response = $this->withToken($this->token)
             ->putJson('/api/v2/profile', [
-                'name'    => $payload,
-                'bio'     => $payload,
+                'name' => $payload,
+                'bio' => $payload,
                 'company' => $payload,
             ]);
 
@@ -136,10 +136,10 @@ class XssTest extends DomainTestCase
     {
         $response = $this->withToken($this->token)
             ->postJson('/api/v2/webhooks', [
-                'url'         => 'https://example.com/webhook',
-                'events'      => ['account.created'],
+                'url' => 'https://example.com/webhook',
+                'events' => ['account.created'],
                 'description' => $payload,
-                'headers'     => [
+                'headers' => [
                     'X-Custom-Header' => $payload,
                 ],
             ]);
@@ -186,8 +186,8 @@ class XssTest extends DomainTestCase
         // Trigger validation error with XSS payload
         $response = $this->withToken($this->token)
             ->postJson('/api/v2/accounts', [
-                'name'     => '', // Empty to trigger validation
-                'type'     => $payload,
+                'name' => '', // Empty to trigger validation
+                'type' => $payload,
                 'currency' => $payload,
             ]);
 
@@ -217,7 +217,7 @@ class XssTest extends DomainTestCase
                 hydrate(
                     class: \App\Domain\Account\DataObjects\Account::class,
                     properties: [
-                        'name'      => 'Test Account',
+                        'name' => 'Test Account',
                         'user_uuid' => $this->user->uuid,
                     ]
                 )
@@ -253,7 +253,7 @@ class XssTest extends DomainTestCase
             $response = $this->withToken($this->token)
                 ->postJson('/api/v2/documents', [
                     'filename' => $filename,
-                    'type'     => 'kyc_document',
+                    'type' => 'kyc_document',
                 ]);
 
             if ($response->status() === 201) {
@@ -312,26 +312,26 @@ class XssTest extends DomainTestCase
     public static function xssPayloads(): array
     {
         return [
-            'Basic script tag'     => ['<script>alert("XSS")</script>'],
+            'Basic script tag' => ['<script>alert("XSS")</script>'],
             'IMG tag with onerror' => ['<img src=x onerror=alert("XSS")>'],
-            'SVG with onload'      => ['<svg onload=alert("XSS")>'],
-            'Javascript protocol'  => ['javascript:alert("XSS")'],
-            'Data URL'             => ['data:text/html,<script>alert("XSS")</script>'],
-            'Event handler'        => ['<div onclick="alert(\'XSS\')">Click</div>'],
-            'Style attribute'      => ['<div style="background:url(javascript:alert(\'XSS\'))">'],
-            'Meta refresh'         => ['<meta http-equiv="refresh" content="0;url=javascript:alert(\'XSS\')">'],
-            'Base64 encoded'       => ['<script>eval(atob("YWxlcnQoJ1hTUycp"))</script>'],
-            'HTML entities'        => ['&lt;script&gt;alert("XSS")&lt;/script&gt;'],
-            'Unicode encoded'      => ['<script>\u0061lert("XSS")</script>'],
-            'Nested tags'          => ['<<script>script>alert("XSS")<</script>/script>'],
-            'Broken tag'           => ['<scr<script>ipt>alert("XSS")</script>'],
-            'Case variation'       => ['<ScRiPt>alert("XSS")</sCrIpT>'],
-            'Null byte'            => ["<script>alert('XSS')\x00</script>"],
-            'Form action'          => ['<form action="javascript:alert(\'XSS\')">'],
-            'Input autofocus'      => ['<input autofocus onfocus=alert("XSS")>'],
-            'Iframe src'           => ['<iframe src="javascript:alert(\'XSS\')">'],
-            'Link href'            => ['<a href="javascript:alert(\'XSS\')">Click</a>'],
-            'Object data'          => ['<object data="javascript:alert(\'XSS\')">'],
+            'SVG with onload' => ['<svg onload=alert("XSS")>'],
+            'Javascript protocol' => ['javascript:alert("XSS")'],
+            'Data URL' => ['data:text/html,<script>alert("XSS")</script>'],
+            'Event handler' => ['<div onclick="alert(\'XSS\')">Click</div>'],
+            'Style attribute' => ['<div style="background:url(javascript:alert(\'XSS\'))">'],
+            'Meta refresh' => ['<meta http-equiv="refresh" content="0;url=javascript:alert(\'XSS\')">'],
+            'Base64 encoded' => ['<script>eval(atob("YWxlcnQoJ1hTUycp"))</script>'],
+            'HTML entities' => ['&lt;script&gt;alert("XSS")&lt;/script&gt;'],
+            'Unicode encoded' => ['<script>\u0061lert("XSS")</script>'],
+            'Nested tags' => ['<<script>script>alert("XSS")<</script>/script>'],
+            'Broken tag' => ['<scr<script>ipt>alert("XSS")</script>'],
+            'Case variation' => ['<ScRiPt>alert("XSS")</sCrIpT>'],
+            'Null byte' => ["<script>alert('XSS')\x00</script>"],
+            'Form action' => ['<form action="javascript:alert(\'XSS\')">'],
+            'Input autofocus' => ['<input autofocus onfocus=alert("XSS")>'],
+            'Iframe src' => ['<iframe src="javascript:alert(\'XSS\')">'],
+            'Link href' => ['<a href="javascript:alert(\'XSS\')">Click</a>'],
+            'Object data' => ['<object data="javascript:alert(\'XSS\')">'],
         ];
     }
 }

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
+use App\Domain\Account\Models\AccountBalance;
 use App\Domain\Asset\Models\Asset;
 use App\Models\Account;
-use App\Domain\Account\Models\AccountBalance;
 
 // No need for manual imports - Pest.php handles TestCase and RefreshDatabase for Feature tests
 
@@ -24,7 +24,7 @@ describe('AccountBalance Model', function () {
         $account = Account::factory()->create();
         $balance = AccountBalance::factory()->create([
             'account_uuid' => $account->uuid,
-            'asset_code'   => $asset->code,
+            'asset_code' => $asset->code,
         ]);
 
         expect($balance->asset)->toBeInstanceOf(Asset::class);
@@ -36,8 +36,8 @@ describe('AccountBalance Model', function () {
         $asset = Asset::where('code', 'USD')->first();
         $balance = AccountBalance::factory()->create([
             'account_uuid' => $account->uuid,
-            'asset_code'   => $asset->code,
-            'balance'      => 150000,
+            'asset_code' => $asset->code,
+            'balance' => 150000,
         ]);
 
         // Check if method exists, otherwise just check the raw balance
@@ -53,8 +53,8 @@ describe('AccountBalance Model', function () {
         $asset = Asset::where('code', 'USD')->first();
         $balance = AccountBalance::factory()->create([
             'account_uuid' => $account->uuid,
-            'asset_code'   => $asset->code,
-            'balance'      => 250000,
+            'asset_code' => $asset->code,
+            'balance' => 250000,
         ]);
 
         // Check if method exists, otherwise calculate manually
@@ -70,8 +70,8 @@ describe('AccountBalance Model', function () {
         $asset = Asset::where('code', 'USD')->first();
         $balance = AccountBalance::factory()->create([
             'account_uuid' => $account->uuid,
-            'asset_code'   => $asset->code,
-            'balance'      => 100000,
+            'asset_code' => $asset->code,
+            'balance' => 100000,
         ]);
 
         if (method_exists($balance, 'incrementBalance')) {
@@ -90,8 +90,8 @@ describe('AccountBalance Model', function () {
         $asset = Asset::where('code', 'USD')->first();
         $balance = AccountBalance::factory()->create([
             'account_uuid' => $account->uuid,
-            'asset_code'   => $asset->code,
-            'balance'      => 100000,
+            'asset_code' => $asset->code,
+            'balance' => 100000,
         ]);
 
         if (method_exists($balance, 'decrementBalance')) {
@@ -110,8 +110,8 @@ describe('AccountBalance Model', function () {
         $asset = Asset::where('code', 'USD')->first();
         $balance = AccountBalance::factory()->create([
             'account_uuid' => $account->uuid,
-            'asset_code'   => $asset->code,
-            'balance'      => 100000,
+            'asset_code' => $asset->code,
+            'balance' => 100000,
         ]);
 
         if (method_exists($balance, 'decrementBalance')) {
@@ -128,8 +128,8 @@ describe('AccountBalance Model', function () {
         $asset = Asset::where('code', 'USD')->first();
         $balance = AccountBalance::factory()->create([
             'account_uuid' => $account->uuid,
-            'asset_code'   => $asset->code,
-            'balance'      => 100000,
+            'asset_code' => $asset->code,
+            'balance' => 100000,
         ]);
 
         if (method_exists($balance, 'hasSufficientBalance')) {

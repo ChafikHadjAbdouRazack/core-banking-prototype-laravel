@@ -17,15 +17,15 @@ beforeEach(function () {
 describe('Poll Creation', function () {
     it('can create a basic poll', function () {
         $pollData = [
-            'title'       => 'Should we add JPY support?',
+            'title' => 'Should we add JPY support?',
             'description' => 'Adding Japanese Yen as a supported currency',
-            'type'        => 'yes_no',
-            'options'     => [
+            'type' => 'yes_no',
+            'options' => [
                 ['id' => 'yes', 'label' => 'Yes', 'description' => 'Add JPY support'],
                 ['id' => 'no', 'label' => 'No', 'description' => 'Keep current currencies'],
             ],
             'start_date' => now()->addHour(),
-            'end_date'   => now()->addWeek(),
+            'end_date' => now()->addWeek(),
             'created_by' => $this->user->uuid,
         ];
 
@@ -40,16 +40,16 @@ describe('Poll Creation', function () {
 
     it('can create poll with execution workflow', function () {
         $pollData = [
-            'title'   => 'Enable two-factor authentication',
-            'type'    => 'yes_no',
+            'title' => 'Enable two-factor authentication',
+            'type' => 'yes_no',
             'options' => [
                 ['id' => 'yes', 'label' => 'Yes'],
                 ['id' => 'no', 'label' => 'No'],
             ],
-            'start_date'         => now()->addHour(),
-            'end_date'           => now()->addWeek(),
+            'start_date' => now()->addHour(),
+            'end_date' => now()->addWeek(),
             'execution_workflow' => 'FeatureToggleWorkflow',
-            'created_by'         => $this->user->uuid,
+            'created_by' => $this->user->uuid,
         ];
 
         $poll = $this->governanceService->createPoll($pollData);
@@ -62,7 +62,7 @@ describe('Poll Activation', function () {
     it('can activate a draft poll', function () {
         $poll = Poll::factory()->draft()->create([
             'start_date' => now()->subMinute(),
-            'end_date'   => now()->addWeek(),
+            'end_date' => now()->addWeek(),
         ]);
 
         $result = $this->governanceService->activatePoll($poll);
@@ -74,7 +74,7 @@ describe('Poll Activation', function () {
     it('cannot activate poll before start date', function () {
         $poll = Poll::factory()->draft()->create([
             'start_date' => now()->addHour(),
-            'end_date'   => now()->addWeek(),
+            'end_date' => now()->addWeek(),
         ]);
 
         expect(fn () => $this->governanceService->activatePoll($poll))
@@ -84,7 +84,7 @@ describe('Poll Activation', function () {
     it('cannot activate poll after end date', function () {
         $poll = Poll::factory()->draft()->create([
             'start_date' => now()->subWeek(),
-            'end_date'   => now()->subDay(),
+            'end_date' => now()->subDay(),
         ]);
 
         expect(fn () => $this->governanceService->activatePoll($poll))

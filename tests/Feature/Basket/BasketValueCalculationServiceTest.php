@@ -46,29 +46,29 @@ class BasketValueCalculationServiceTest extends ServiceTestCase
 
         ExchangeRate::create([
             'from_asset_code' => 'EUR',
-            'to_asset_code'   => 'USD',
-            'rate'            => 1.1000,
-            'is_active'       => true,
-            'source'          => 'test',
-            'valid_at'        => $now,
-            'expires_at'      => $now->copy()->addHours(2), // Ensure it doesn't expire during test
+            'to_asset_code' => 'USD',
+            'rate' => 1.1000,
+            'is_active' => true,
+            'source' => 'test',
+            'valid_at' => $now,
+            'expires_at' => $now->copy()->addHours(2), // Ensure it doesn't expire during test
         ]);
 
         ExchangeRate::create([
             'from_asset_code' => 'GBP',
-            'to_asset_code'   => 'USD',
-            'rate'            => 1.2500,
-            'is_active'       => true,
-            'source'          => 'test',
-            'valid_at'        => $now,
-            'expires_at'      => $now->copy()->addHours(2), // Ensure it doesn't expire during test
+            'to_asset_code' => 'USD',
+            'rate' => 1.2500,
+            'is_active' => true,
+            'source' => 'test',
+            'valid_at' => $now,
+            'expires_at' => $now->copy()->addHours(2), // Ensure it doesn't expire during test
         ]);
 
         // Create test basket
         $this->basket = BasketAsset::create([
-            'code'                => 'TEST_BASKET',
-            'name'                => 'Test Basket',
-            'type'                => 'fixed',
+            'code' => 'TEST_BASKET',
+            'name' => 'Test Basket',
+            'type' => 'fixed',
             'rebalance_frequency' => 'never',
         ]);
 
@@ -203,9 +203,9 @@ class BasketValueCalculationServiceTest extends ServiceTestCase
         Asset::factory()->create(['code' => 'NOK', 'name' => 'Norwegian Krone', 'type' => 'fiat']);
 
         $basket = BasketAsset::create([
-            'code'                => 'MISSING_RATE_BASKET',
-            'name'                => 'Missing Rate Basket',
-            'type'                => 'fixed',
+            'code' => 'MISSING_RATE_BASKET',
+            'name' => 'Missing Rate Basket',
+            'type' => 'fixed',
             'rebalance_frequency' => 'never',
         ]);
 
@@ -285,23 +285,23 @@ class BasketValueCalculationServiceTest extends ServiceTestCase
         // Create some historical values
         BasketValue::create([
             'basket_asset_code' => $this->basket->code,
-            'value'             => 1.05,
-            'component_values'  => [],
-            'calculated_at'     => now()->subDays(5),
+            'value' => 1.05,
+            'component_values' => [],
+            'calculated_at' => now()->subDays(5),
         ]);
 
         BasketValue::create([
             'basket_asset_code' => $this->basket->code,
-            'value'             => 1.08,
-            'component_values'  => [],
-            'calculated_at'     => now()->subDays(3),
+            'value' => 1.08,
+            'component_values' => [],
+            'calculated_at' => now()->subDays(3),
         ]);
 
         BasketValue::create([
             'basket_asset_code' => $this->basket->code,
-            'value'             => 1.10,
-            'component_values'  => [],
-            'calculated_at'     => now()->subDay(),
+            'value' => 1.10,
+            'component_values' => [],
+            'calculated_at' => now()->subDay(),
         ]);
 
         $history = $this->service->getHistoricalValues(
@@ -322,16 +322,16 @@ class BasketValueCalculationServiceTest extends ServiceTestCase
         // Create historical values
         BasketValue::create([
             'basket_asset_code' => $this->basket->code,
-            'value'             => 1.00,
-            'component_values'  => [],
-            'calculated_at'     => now()->subDays(30),
+            'value' => 1.00,
+            'component_values' => [],
+            'calculated_at' => now()->subDays(30),
         ]);
 
         BasketValue::create([
             'basket_asset_code' => $this->basket->code,
-            'value'             => 1.10,
-            'component_values'  => [],
-            'calculated_at'     => now(),
+            'value' => 1.10,
+            'component_values' => [],
+            'calculated_at' => now(),
         ]);
 
         $performance = $this->service->calculatePerformance(
@@ -372,15 +372,15 @@ class BasketValueCalculationServiceTest extends ServiceTestCase
     {
         // Create basket with only USD components
         $usdBasket = BasketAsset::create([
-            'code'                => 'USD_ONLY',
-            'name'                => 'USD Only Basket',
-            'type'                => 'fixed',
+            'code' => 'USD_ONLY',
+            'name' => 'USD Only Basket',
+            'type' => 'fixed',
             'rebalance_frequency' => 'never',
         ]);
 
         $usdBasket->components()->create([
             'asset_code' => 'USD',
-            'weight'     => 100.0,
+            'weight' => 100.0,
         ]);
 
         $value = $this->service->calculateValue($usdBasket);

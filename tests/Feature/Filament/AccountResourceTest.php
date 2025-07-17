@@ -34,7 +34,7 @@ describe('Filament Admin Dashboard', function () {
 
     it('can create an account', function () {
         $newData = [
-            'name'      => 'Test Savings Account',
+            'name' => 'Test Savings Account',
             'user_uuid' => fake()->uuid(),
         ];
 
@@ -58,7 +58,7 @@ describe('Filament Admin Dashboard', function () {
     it('can update account', function () {
         $account = Account::factory()->create();
         $newData = [
-            'name'   => 'Updated Account Name',
+            'name' => 'Updated Account Name',
             'frozen' => true,
         ];
 
@@ -70,8 +70,8 @@ describe('Filament Admin Dashboard', function () {
             ->assertHasNoFormErrors();
 
         assertDatabaseHas('accounts', [
-            'uuid'   => $account->uuid,
-            'name'   => 'Updated Account Name',
+            'uuid' => $account->uuid,
+            'name' => 'Updated Account Name',
             'frozen' => true,
         ]);
     });
@@ -182,12 +182,12 @@ describe('Filament Admin Dashboard', function () {
     it('shows account statistics widget', function () {
         $accounts = Account::factory()->count(5)->create([
             'balance' => 10000,
-            'frozen'  => false,
+            'frozen' => false,
         ]);
 
         Account::factory()->count(2)->create([
             'balance' => 5000,
-            'frozen'  => true,
+            'frozen' => true,
         ]);
 
         livewire(AccountResource\Widgets\AccountStatsOverview::class)

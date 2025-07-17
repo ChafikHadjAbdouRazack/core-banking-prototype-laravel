@@ -99,9 +99,9 @@ class LoadTest extends DomainTestCase
 
             $response = $this->postJson('/api/transfers', [
                 'from_account_uuid' => $fromAccount->uuid,
-                'to_account_uuid'   => $toAccount->uuid,
-                'amount'            => 1000, // $10
-                'reference'         => "Load test transfer $i",
+                'to_account_uuid' => $toAccount->uuid,
+                'amount' => 1000, // $10
+                'reference' => "Load test transfer $i",
             ]);
 
             $response->assertStatus(201);
@@ -166,8 +166,8 @@ class LoadTest extends DomainTestCase
 
         // Create a webhook
         $response = $this->postJson('/api/v2/webhooks', [
-            'url'         => 'https://httpbin.org/post',
-            'events'      => ['account.created', 'transaction.completed'],
+            'url' => 'https://httpbin.org/post',
+            'events' => ['account.created', 'transaction.completed'],
             'description' => 'Performance test webhook',
         ]);
 
@@ -245,7 +245,7 @@ class LoadTest extends DomainTestCase
     {
         $iterations = 1000;
         $data = [
-            'account'  => Account::factory()->make()->toArray(),
+            'account' => Account::factory()->make()->toArray(),
             'balances' => [
                 'USD' => 100000,
                 'EUR' => 50000,
@@ -253,7 +253,7 @@ class LoadTest extends DomainTestCase
             ],
             'metadata' => [
                 'last_updated' => now()->toIso8601String(),
-                'version'      => '1.0',
+                'version' => '1.0',
             ],
         ];
 

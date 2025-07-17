@@ -35,10 +35,10 @@ class CgoInvestmentResourceTest extends FilamentTestCase
             'record' => $investment->getRouteKey(),
         ])
             ->assertFormSet([
-                'user_id'        => $investment->user_id,
-                'amount'         => $investment->amount,
-                'tier'           => $investment->tier,
-                'status'         => $investment->status,
+                'user_id' => $investment->user_id,
+                'amount' => $investment->amount,
+                'tier' => $investment->tier,
+                'status' => $investment->status,
                 'payment_method' => $investment->payment_method,
             ]);
     }
@@ -54,16 +54,16 @@ class CgoInvestmentResourceTest extends FilamentTestCase
             'record' => $investment->getRouteKey(),
         ])
             ->fillForm([
-                'status'               => 'confirmed',
-                'payment_status'       => 'completed',
+                'status' => 'confirmed',
+                'payment_status' => 'completed',
                 'payment_completed_at' => now(),
             ])
             ->call('save')
             ->assertHasNoFormErrors();
 
         $this->assertDatabaseHas('cgo_investments', [
-            'id'             => $investment->id,
-            'status'         => 'confirmed',
+            'id' => $investment->id,
+            'status' => 'confirmed',
             'payment_status' => 'completed',
         ]);
     }
@@ -142,20 +142,20 @@ class CgoInvestmentResourceTest extends FilamentTestCase
     public function test_stats_widget_shows_correct_values()
     {
         $round = CgoPricingRound::factory()->create([
-            'is_active'            => true,
-            'shares_sold'          => 5000,
+            'is_active' => true,
+            'shares_sold' => 5000,
             'max_shares_available' => 10000,
         ]);
 
         CgoInvestment::factory()->count(3)->create([
-            'status'   => 'confirmed',
-            'amount'   => 10000,
+            'status' => 'confirmed',
+            'amount' => 10000,
             'round_id' => $round->id,
         ]);
 
         CgoInvestment::factory()->count(2)->create([
-            'status'   => 'pending',
-            'amount'   => 5000,
+            'status' => 'pending',
+            'amount' => 5000,
             'round_id' => $round->id,
         ]);
 

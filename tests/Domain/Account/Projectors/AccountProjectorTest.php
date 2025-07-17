@@ -4,9 +4,9 @@ namespace Tests\Domain\Account\Projectors;
 
 use App\Domain\Account\Aggregates\AssetTransactionAggregate;
 use App\Domain\Account\Aggregates\LedgerAggregate;
+use App\Domain\Account\Models\AccountBalance;
 use App\Domain\Account\Utils\ValidatesHash;
 use App\Models\Account;
-use App\Domain\Account\Models\AccountBalance;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
@@ -23,7 +23,7 @@ class AccountProjectorTest extends TestCase
     {
         $this->assertDatabaseHas((new Account())->getTable(), [
             'user_uuid' => $this->business_user->uuid,
-            'uuid'      => $this->account->uuid,
+            'uuid' => $this->account->uuid,
         ]);
 
         $this->assertTrue($this->account->user->is($this->business_user));
@@ -94,7 +94,7 @@ class AccountProjectorTest extends TestCase
 
         $this->assertDatabaseMissing((new Account())->getTable(), [
             'user_uuid' => $this->business_user->uuid,
-            'uuid'      => $this->account->uuid,
+            'uuid' => $this->account->uuid,
         ]);
     }
 }

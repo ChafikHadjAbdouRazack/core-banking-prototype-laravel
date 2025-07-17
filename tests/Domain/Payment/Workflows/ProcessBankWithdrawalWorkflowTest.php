@@ -71,8 +71,8 @@ it('creates withdrawal data object with various amounts', function () {
 it('creates proper withdrawal transaction flow', function () {
     $accountUuid = Str::uuid()->toString();
     $account = Account::factory()->create([
-        'uuid'    => $accountUuid,
-        'name'    => 'Test Account',
+        'uuid' => $accountUuid,
+        'name' => 'Test Account',
         'balance' => 20000,
     ]);
 
@@ -94,17 +94,17 @@ it('creates proper withdrawal transaction flow', function () {
 
     // Step 1: Initiate withdrawal
     PaymentTransaction::create([
-        'aggregate_uuid'      => $withdrawalUuid,
-        'account_uuid'        => $accountUuid,
-        'type'                => 'withdrawal',
-        'status'              => 'pending',
-        'amount'              => 5000,
-        'currency'            => 'USD',
-        'reference'           => $withdrawal->getReference(),
+        'aggregate_uuid' => $withdrawalUuid,
+        'account_uuid' => $accountUuid,
+        'type' => 'withdrawal',
+        'status' => 'pending',
+        'amount' => 5000,
+        'currency' => 'USD',
+        'reference' => $withdrawal->getReference(),
         'bank_account_number' => '****1234',
         'bank_routing_number' => '123456789',
-        'bank_account_name'   => 'John Doe',
-        'initiated_at'        => now(),
+        'bank_account_name' => 'John Doe',
+        'initiated_at' => now(),
     ]);
 
     // Step 2: Debit account (in real flow this happens via event sourcing)
@@ -113,9 +113,9 @@ it('creates proper withdrawal transaction flow', function () {
     // Step 3: Complete withdrawal
     PaymentTransaction::where('aggregate_uuid', $withdrawalUuid)
         ->update([
-            'status'         => 'completed',
+            'status' => 'completed',
             'transaction_id' => $transactionId,
-            'completed_at'   => now(),
+            'completed_at' => now(),
         ]);
 
     // Verify results
@@ -131,8 +131,8 @@ it('creates proper withdrawal transaction flow', function () {
 it('handles failed withdrawal appropriately', function () {
     $accountUuid = Str::uuid()->toString();
     $account = Account::factory()->create([
-        'uuid'    => $accountUuid,
-        'name'    => 'Test Account',
+        'uuid' => $accountUuid,
+        'name' => 'Test Account',
         'balance' => 20000,
     ]);
 
@@ -154,21 +154,21 @@ it('handles failed withdrawal appropriately', function () {
     // Create pending transaction
     PaymentTransaction::create([
         'aggregate_uuid' => $withdrawalUuid,
-        'account_uuid'   => $accountUuid,
-        'type'           => 'withdrawal',
-        'status'         => 'pending',
-        'amount'         => 5000,
-        'currency'       => 'USD',
-        'reference'      => $withdrawal->getReference(),
-        'initiated_at'   => now(),
+        'account_uuid' => $accountUuid,
+        'type' => 'withdrawal',
+        'status' => 'pending',
+        'amount' => 5000,
+        'currency' => 'USD',
+        'reference' => $withdrawal->getReference(),
+        'initiated_at' => now(),
     ]);
 
     // Fail the withdrawal
     PaymentTransaction::where('aggregate_uuid', $withdrawalUuid)
         ->update([
-            'status'        => 'failed',
+            'status' => 'failed',
             'failed_reason' => 'Bank transfer failed',
-            'failed_at'     => now(),
+            'failed_at' => now(),
         ]);
 
     // Verify the transaction is marked as failed

@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Basket;
 
+use App\Domain\Account\Models\AccountBalance;
 use App\Domain\Asset\Models\Asset;
 use App\Domain\Asset\Models\ExchangeRate;
 use App\Domain\Basket\Models\BasketAsset;
 use App\Domain\Basket\Services\BasketValueCalculationService;
 use App\Models\Account;
-use App\Domain\Account\Models\AccountBalance;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
@@ -45,25 +45,25 @@ class BasketApiTest extends DomainTestCase
         // Create exchange rates
         ExchangeRate::factory()->create([
             'from_asset_code' => 'EUR',
-            'to_asset_code'   => 'USD',
-            'rate'            => 1.1000,
-            'is_active'       => true,
+            'to_asset_code' => 'USD',
+            'rate' => 1.1000,
+            'is_active' => true,
         ]);
 
         ExchangeRate::factory()->create([
             'from_asset_code' => 'GBP',
-            'to_asset_code'   => 'USD',
-            'rate'            => 1.2500,
-            'is_active'       => true,
+            'to_asset_code' => 'USD',
+            'rate' => 1.2500,
+            'is_active' => true,
         ]);
 
         // Create test basket
         $this->basket = BasketAsset::create([
-            'code'                => 'TEST_BASKET',
-            'name'                => 'Test Basket',
-            'type'                => 'fixed',
+            'code' => 'TEST_BASKET',
+            'name' => 'Test Basket',
+            'type' => 'fixed',
             'rebalance_frequency' => 'never',
-            'is_active'           => true,
+            'is_active' => true,
         ]);
 
         $this->basket->components()->createMany([
@@ -108,9 +108,9 @@ class BasketApiTest extends DomainTestCase
     {
         // Create a dynamic basket
         $dynamicBasket = BasketAsset::create([
-            'code'                => 'DYNAMIC_BASKET',
-            'name'                => 'Dynamic Basket',
-            'type'                => 'dynamic',
+            'code' => 'DYNAMIC_BASKET',
+            'name' => 'Dynamic Basket',
+            'type' => 'dynamic',
             'rebalance_frequency' => 'daily',
         ]);
 
@@ -186,12 +186,12 @@ class BasketApiTest extends DomainTestCase
     public function it_can_create_basket_with_authentication()
     {
         $data = [
-            'code'                => 'NEW_BASKET',
-            'name'                => 'New Test Basket',
-            'description'         => 'A new basket for testing',
-            'type'                => 'fixed',
+            'code' => 'NEW_BASKET',
+            'name' => 'New Test Basket',
+            'description' => 'A new basket for testing',
+            'type' => 'fixed',
             'rebalance_frequency' => 'never',
-            'components'          => [
+            'components' => [
                 ['asset_code' => 'USD', 'weight' => 50.0],
                 ['asset_code' => 'EUR', 'weight' => 50.0],
             ],
@@ -219,11 +219,11 @@ class BasketApiTest extends DomainTestCase
     public function it_validates_component_weights_sum_to_100()
     {
         $data = [
-            'code'                => 'INVALID_WEIGHTS',
-            'name'                => 'Invalid Weights Basket',
-            'type'                => 'fixed',
+            'code' => 'INVALID_WEIGHTS',
+            'name' => 'Invalid Weights Basket',
+            'type' => 'fixed',
             'rebalance_frequency' => 'never',
-            'components'          => [
+            'components' => [
                 ['asset_code' => 'USD', 'weight' => 30.0],
                 ['asset_code' => 'EUR', 'weight' => 40.0],
                 // Total: 70%, not 100%
@@ -241,22 +241,22 @@ class BasketApiTest extends DomainTestCase
     {
         // Create dynamic basket
         $dynamicBasket = BasketAsset::create([
-            'code'                => 'DYNAMIC_TEST',
-            'name'                => 'Dynamic Test',
-            'type'                => 'dynamic',
+            'code' => 'DYNAMIC_TEST',
+            'name' => 'Dynamic Test',
+            'type' => 'dynamic',
             'rebalance_frequency' => 'daily',
         ]);
 
         $dynamicBasket->components()->createMany([
             [
                 'asset_code' => 'USD',
-                'weight'     => 45.0,
+                'weight' => 45.0,
                 'min_weight' => 35.0,
                 'max_weight' => 40.0,
             ],
             [
                 'asset_code' => 'EUR',
-                'weight'     => 55.0,
+                'weight' => 55.0,
                 'min_weight' => 50.0,
                 'max_weight' => 60.0,
             ],
@@ -287,15 +287,15 @@ class BasketApiTest extends DomainTestCase
     public function it_can_simulate_rebalancing()
     {
         $dynamicBasket = BasketAsset::create([
-            'code'                => 'SIMULATE_TEST',
-            'name'                => 'Simulate Test',
-            'type'                => 'dynamic',
+            'code' => 'SIMULATE_TEST',
+            'name' => 'Simulate Test',
+            'type' => 'dynamic',
             'rebalance_frequency' => 'daily',
         ]);
 
         $dynamicBasket->components()->create([
             'asset_code' => 'USD',
-            'weight'     => 100.0,
+            'weight' => 100.0,
             'min_weight' => 90.0,
             'max_weight' => 95.0,
         ]);
@@ -369,13 +369,13 @@ class BasketApiTest extends DomainTestCase
         // Give account basket balance
         AccountBalance::create([
             'account_uuid' => $this->account->uuid,
-            'asset_code'   => 'TEST_BASKET',
-            'balance'      => 10000,
+            'asset_code' => 'TEST_BASKET',
+            'balance' => 10000,
         ]);
 
         $response = $this->postJson("/api/v2/accounts/{$this->account->uuid}/baskets/decompose", [
             'basket_code' => 'TEST_BASKET',
-            'amount'      => 5000,
+            'amount' => 5000,
         ]);
 
         if ($response->status() !== 200) {
@@ -405,23 +405,23 @@ class BasketApiTest extends DomainTestCase
         // Give account component balances
         AccountBalance::create([
             'account_uuid' => $this->account->uuid,
-            'asset_code'   => 'USD',
-            'balance'      => 2000,
+            'asset_code' => 'USD',
+            'balance' => 2000,
         ]);
         AccountBalance::create([
             'account_uuid' => $this->account->uuid,
-            'asset_code'   => 'EUR',
-            'balance'      => 1750,
+            'asset_code' => 'EUR',
+            'balance' => 1750,
         ]);
         AccountBalance::create([
             'account_uuid' => $this->account->uuid,
-            'asset_code'   => 'GBP',
-            'balance'      => 1250,
+            'asset_code' => 'GBP',
+            'balance' => 1250,
         ]);
 
         $response = $this->postJson("/api/v2/accounts/{$this->account->uuid}/baskets/compose", [
             'basket_code' => 'TEST_BASKET',
-            'amount'      => 5000,
+            'amount' => 5000,
         ]);
 
         $response->assertOk()
@@ -447,8 +447,8 @@ class BasketApiTest extends DomainTestCase
         // Give account multiple basket holdings
         AccountBalance::create([
             'account_uuid' => $this->account->uuid,
-            'asset_code'   => 'TEST_BASKET',
-            'balance'      => 10000,
+            'asset_code' => 'TEST_BASKET',
+            'balance' => 10000,
         ]);
 
         $response = $this->getJson("/api/v2/accounts/{$this->account->uuid}/baskets");

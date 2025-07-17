@@ -162,10 +162,10 @@ it('creates users with appropriate personas', function () {
 
     $personas = [
         'demo.argentina@gcu.global' => 'Sofia Martinez',
-        'demo.nomad@gcu.global'     => 'Alex Chen',
-        'demo.business@gcu.global'  => 'TechCorp Ltd',
-        'demo.investor@gcu.global'  => 'Emma Wilson',
-        'demo.user@gcu.global'      => 'John Smith',
+        'demo.nomad@gcu.global' => 'Alex Chen',
+        'demo.business@gcu.global' => 'TechCorp Ltd',
+        'demo.investor@gcu.global' => 'Emma Wilson',
+        'demo.user@gcu.global' => 'John Smith',
     ];
 
     foreach ($personas as $email => $expectedName) {

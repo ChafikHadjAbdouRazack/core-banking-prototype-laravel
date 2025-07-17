@@ -145,11 +145,11 @@ describe('Chart Widget Configuration', function () {
 
     it('all widgets have proper polling intervals', function () {
         $widgets = [
-            AccountBalanceChart::class     => '30s',
+            AccountBalanceChart::class => '30s',
             RecentTransactionsChart::class => '30s',
-            TurnoverTrendChart::class      => '60s',
-            AccountGrowthChart::class      => '60s',
-            SystemHealthWidget::class      => '10s',
+            TurnoverTrendChart::class => '60s',
+            AccountGrowthChart::class => '60s',
+            SystemHealthWidget::class => '10s',
         ];
 
         foreach ($widgets as $widget => $expectedInterval) {
@@ -163,10 +163,10 @@ describe('Chart Widget Configuration', function () {
 
     it('all chart widgets have column span configuration', function () {
         $widgets = [
-            AccountBalanceChart::class     => 'full',
+            AccountBalanceChart::class => 'full',
             RecentTransactionsChart::class => 'full',
-            TurnoverTrendChart::class      => 'full',
-            AccountGrowthChart::class      => '1',
+            TurnoverTrendChart::class => 'full',
+            AccountGrowthChart::class => '1',
         ];
 
         foreach ($widgets as $widgetClass => $expectedSpan) {

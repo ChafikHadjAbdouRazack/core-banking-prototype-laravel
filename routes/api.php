@@ -94,10 +94,10 @@ Route::get('/profile', function (Request $request) {
 
     return response()->json([
         'data' => [
-            'id'         => $user->id,
-            'name'       => $user->name,
-            'email'      => $user->email,
-            'uuid'       => $user->uuid,
+            'id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+            'uuid' => $user->uuid,
             'created_at' => $user->created_at,
             'updated_at' => $user->updated_at,
         ],
@@ -477,18 +477,18 @@ Route::prefix('webhooks')->middleware('api.rate_limit:webhook')->group(function 
 });
 
 // Include BIAN-compliant routes
-require __DIR__ . '/api-bian.php';
+require __DIR__.'/api-bian.php';
 
 // Include V2 public API routes
 Route::prefix('v2')->middleware('ensure.json')->group(function () {
-    require __DIR__ . '/api-v2.php';
+    require __DIR__.'/api-v2.php';
 });
 
 // Include fraud detection routes
-require __DIR__ . '/api/fraud.php';
+require __DIR__.'/api/fraud.php';
 
 // Include enhanced regulatory routes
-require __DIR__ . '/api/regulatory.php';
+require __DIR__.'/api/regulatory.php';
 
 // Blockchain wallet endpoints
 Route::prefix('blockchain-wallets')->middleware(['auth:sanctum', 'sub_product:blockchain'])->group(function () {

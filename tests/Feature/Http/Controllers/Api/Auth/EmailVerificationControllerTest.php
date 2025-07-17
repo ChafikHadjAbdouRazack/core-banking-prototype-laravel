@@ -28,7 +28,7 @@ class EmailVerificationControllerTest extends ControllerTestCase
         ]);
 
         $this->verifiedUser = User::factory()->create([
-            'email'             => 'verified@example.com',
+            'email' => 'verified@example.com',
             'email_verified_at' => now(),
         ]);
     }
@@ -42,7 +42,7 @@ class EmailVerificationControllerTest extends ControllerTestCase
             'api.verification.verify',
             Carbon::now()->addMinutes(60),
             [
-                'id'   => $this->unverifiedUser->id,
+                'id' => $this->unverifiedUser->id,
                 'hash' => sha1($this->unverifiedUser->email),
             ]
         );
@@ -70,7 +70,7 @@ class EmailVerificationControllerTest extends ControllerTestCase
             'api.verification.verify',
             Carbon::now()->addMinutes(60),
             [
-                'id'   => $this->unverifiedUser->id,
+                'id' => $this->unverifiedUser->id,
                 'hash' => 'invalid-hash',
             ]
         );
@@ -93,7 +93,7 @@ class EmailVerificationControllerTest extends ControllerTestCase
             'api.verification.verify',
             Carbon::now()->subMinutes(1), // Expired
             [
-                'id'   => $this->unverifiedUser->id,
+                'id' => $this->unverifiedUser->id,
                 'hash' => sha1($this->unverifiedUser->email),
             ]
         );
@@ -136,7 +136,7 @@ class EmailVerificationControllerTest extends ControllerTestCase
             'api.verification.verify',
             Carbon::now()->addMinutes(60),
             [
-                'id'   => $this->verifiedUser->id,
+                'id' => $this->verifiedUser->id,
                 'hash' => sha1($this->verifiedUser->email),
             ]
         );
@@ -161,7 +161,7 @@ class EmailVerificationControllerTest extends ControllerTestCase
             'api.verification.verify',
             Carbon::now()->addMinutes(60),
             [
-                'id'   => $nonExistentId,
+                'id' => $nonExistentId,
                 'hash' => sha1('some@email.com'),
             ]
         );
@@ -218,7 +218,7 @@ class EmailVerificationControllerTest extends ControllerTestCase
             'api.verification.verify',
             Carbon::now()->addMinutes(60),
             [
-                'id'   => $this->unverifiedUser->id,
+                'id' => $this->unverifiedUser->id,
                 'hash' => sha1($this->unverifiedUser->email),
             ]
         );

@@ -27,8 +27,8 @@ test('primary basket widget displays basket data when configured', function () {
         Asset::firstOrCreate(
             ['code' => $code],
             [
-                'name'      => $assetNames[$code],
-                'type'      => in_array($code, ['XAU']) ? 'commodity' : 'fiat',
+                'name' => $assetNames[$code],
+                'type' => in_array($code, ['XAU']) ? 'commodity' : 'fiat',
                 'precision' => $code === 'JPY' ? 0 : 2,
                 'is_active' => true,
             ]
@@ -37,11 +37,11 @@ test('primary basket widget displays basket data when configured', function () {
 
     // Create primary basket
     $basket = BasketAsset::create([
-        'code'                => 'PRIMARY',
-        'name'                => 'Primary Currency Basket',
-        'type'                => 'fixed',
+        'code' => 'PRIMARY',
+        'name' => 'Primary Currency Basket',
+        'type' => 'fixed',
         'rebalance_frequency' => 'monthly',
-        'is_active'           => true,
+        'is_active' => true,
     ]);
 
     // Add components

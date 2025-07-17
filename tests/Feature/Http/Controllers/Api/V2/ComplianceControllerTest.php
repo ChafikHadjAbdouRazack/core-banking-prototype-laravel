@@ -60,11 +60,11 @@ class ComplianceControllerTest extends ControllerTestCase
         Sanctum::actingAs($this->user);
 
         $kycVerification = KycVerification::factory()->create([
-            'user_uuid'   => $this->user->uuid,
-            'status'      => 'verified',
-            'level'       => 'advanced',
+            'user_uuid' => $this->user->uuid,
+            'status' => 'verified',
+            'level' => 'advanced',
             'verified_at' => now(),
-            'expires_at'  => now()->addYear(),
+            'expires_at' => now()->addYear(),
         ]);
 
         $response = $this->getJson("{$this->apiPrefix}/compliance/kyc/status");
@@ -90,7 +90,7 @@ class ComplianceControllerTest extends ControllerTestCase
         $response->assertJson([
             'data' => [
                 'status' => 'verified',
-                'level'  => 'advanced',
+                'level' => 'advanced',
             ],
         ]);
     }
@@ -106,12 +106,12 @@ class ComplianceControllerTest extends ControllerTestCase
         $response->assertJson([
             'data' => [
                 'status' => 'unverified',
-                'level'  => 'none',
+                'level' => 'none',
                 'limits' => [
-                    'daily_transaction_limit'   => 0,
+                    'daily_transaction_limit' => 0,
                     'monthly_transaction_limit' => 0,
-                    'max_balance'               => 0,
-                    'allowed_products'          => [],
+                    'max_balance' => 0,
+                    'allowed_products' => [],
                 ],
             ],
         ]);
@@ -123,19 +123,19 @@ class ComplianceControllerTest extends ControllerTestCase
         Sanctum::actingAs($this->user);
 
         $verificationData = [
-            'level'         => 'basic',
+            'level' => 'basic',
             'personal_info' => [
-                'first_name'    => 'John',
-                'last_name'     => 'Doe',
+                'first_name' => 'John',
+                'last_name' => 'Doe',
                 'date_of_birth' => '1990-01-01',
-                'nationality'   => 'US',
-                'tax_id'        => '123-45-6789',
+                'nationality' => 'US',
+                'tax_id' => '123-45-6789',
             ],
             'address' => [
-                'street'      => '123 Main St',
-                'city'        => 'New York',
+                'street' => '123 Main St',
+                'city' => 'New York',
                 'postal_code' => '10001',
-                'country'     => 'US',
+                'country' => 'US',
             ],
         ];
 
@@ -145,8 +145,8 @@ class ComplianceControllerTest extends ControllerTestCase
             ->once()
             ->andReturn([
                 'verification_id' => 'kyc_123',
-                'status'          => 'pending',
-                'next_steps'      => ['upload_id_document', 'upload_proof_of_address'],
+                'status' => 'pending',
+                'next_steps' => ['upload_id_document', 'upload_proof_of_address'],
             ]);
 
         $response = $this->postJson("{$this->apiPrefix}/compliance/kyc/start", $verificationData);
@@ -162,8 +162,8 @@ class ComplianceControllerTest extends ControllerTestCase
 
         $this->assertDatabaseHas('kyc_verifications', [
             'user_uuid' => $this->user->uuid,
-            'status'    => 'pending',
-            'level'     => 'basic',
+            'status' => 'pending',
+            'level' => 'basic',
         ]);
     }
 
@@ -179,19 +179,19 @@ class ComplianceControllerTest extends ControllerTestCase
 
         // Invalid level
         $response = $this->postJson("{$this->apiPrefix}/compliance/kyc/start", [
-            'level'         => 'invalid',
+            'level' => 'invalid',
             'personal_info' => ['first_name' => 'John'],
-            'address'       => ['street' => '123 Main'],
+            'address' => ['street' => '123 Main'],
         ]);
         $response->assertStatus(422);
         $response->assertJsonValidationErrors(['level']);
 
         // Invalid date format
         $response = $this->postJson("{$this->apiPrefix}/compliance/kyc/start", [
-            'level'         => 'basic',
+            'level' => 'basic',
             'personal_info' => [
-                'first_name'    => 'John',
-                'last_name'     => 'Doe',
+                'first_name' => 'John',
+                'last_name' => 'Doe',
                 'date_of_birth' => 'invalid-date',
             ],
             'address' => ['street' => '123 Main'],
@@ -207,7 +207,7 @@ class ComplianceControllerTest extends ControllerTestCase
 
         $verification = KycVerification::factory()->create([
             'user_uuid' => $this->user->uuid,
-            'status'    => 'pending',
+            'status' => 'pending',
         ]);
 
         $file = UploadedFile::fake()->image('passport.jpg', 1200, 800);
@@ -216,9 +216,9 @@ class ComplianceControllerTest extends ControllerTestCase
             ->shouldReceive('processDocument')
             ->once()
             ->andReturn([
-                'document_id'    => 'doc_123',
-                'type'           => 'passport',
-                'status'         => 'processing',
+                'document_id' => 'doc_123',
+                'type' => 'passport',
+                'status' => 'processing',
                 'extracted_data' => null,
             ]);
 
@@ -226,8 +226,8 @@ class ComplianceControllerTest extends ControllerTestCase
             "{$this->apiPrefix}/compliance/kyc/{$verification->uuid}/document",
             [
                 'document_type' => 'passport',
-                'document'      => $file,
-                'side'          => 'front',
+                'document' => $file,
+                'side' => 'front',
             ]
         );
 
@@ -252,13 +252,13 @@ class ComplianceControllerTest extends ControllerTestCase
         // No verification started
         $response = $this->postJson("{$this->apiPrefix}/compliance/kyc/dummy-verification-id/document", [
             'document_type' => 'passport',
-            'document'      => UploadedFile::fake()->image('test.jpg'),
+            'document' => UploadedFile::fake()->image('test.jpg'),
         ]);
         $response->assertStatus(400);
 
         $verification = KycVerification::factory()->create([
             'user_uuid' => $this->user->uuid,
-            'status'    => 'pending',
+            'status' => 'pending',
         ]);
 
         // Missing file
@@ -271,7 +271,7 @@ class ComplianceControllerTest extends ControllerTestCase
         // Invalid file type
         $response = $this->postJson("{$this->apiPrefix}/compliance/kyc/{$verification->uuid}/document", [
             'document_type' => 'passport',
-            'document'      => UploadedFile::fake()->create('test.txt', 100),
+            'document' => UploadedFile::fake()->create('test.txt', 100),
         ]);
         $response->assertStatus(422);
         $response->assertJsonValidationErrors(['document']);
@@ -279,7 +279,7 @@ class ComplianceControllerTest extends ControllerTestCase
         // File too large
         $response = $this->postJson("{$this->apiPrefix}/compliance/kyc/{$verification->uuid}/document", [
             'document_type' => 'passport',
-            'document'      => UploadedFile::fake()->image('large.jpg')->size(11000), // 11MB
+            'document' => UploadedFile::fake()->image('large.jpg')->size(11000), // 11MB
         ]);
         $response->assertStatus(422);
         $response->assertJsonValidationErrors(['document']);
@@ -292,7 +292,7 @@ class ComplianceControllerTest extends ControllerTestCase
 
         $verification = KycVerification::factory()->create([
             'user_uuid' => $this->user->uuid,
-            'status'    => 'documents_verified',
+            'status' => 'documents_verified',
         ]);
 
         $selfie = UploadedFile::fake()->image('selfie.jpg', 640, 480);
@@ -301,18 +301,18 @@ class ComplianceControllerTest extends ControllerTestCase
             ->shouldReceive('processBiometric')
             ->once()
             ->andReturn([
-                'verification_id'  => 'bio_123',
-                'status'           => 'processing',
+                'verification_id' => 'bio_123',
+                'status' => 'processing',
                 'confidence_score' => null,
             ]);
 
         $response = $this->postJson(
             "{$this->apiPrefix}/compliance/kyc/{$verification->uuid}/selfie",
             [
-                'selfie'        => $selfie,
+                'selfie' => $selfie,
                 'liveness_data' => [
                     'challenge_response' => 'blink_twice',
-                    'timestamp'          => now()->toISOString(),
+                    'timestamp' => now()->toISOString(),
                 ],
             ]
         );
@@ -333,14 +333,14 @@ class ComplianceControllerTest extends ControllerTestCase
         Sanctum::actingAs($this->user);
 
         $screening = AmlScreening::factory()->create([
-            'user_uuid'   => $this->user->uuid,
-            'status'      => 'clear',
+            'user_uuid' => $this->user->uuid,
+            'status' => 'clear',
             'screened_at' => now(),
-            'results'     => [
-                'pep'           => false,
-                'sanctions'     => false,
+            'results' => [
+                'pep' => false,
+                'sanctions' => false,
                 'adverse_media' => false,
-                'risk_score'    => 10,
+                'risk_score' => 10,
             ],
         ]);
 
@@ -364,12 +364,12 @@ class ComplianceControllerTest extends ControllerTestCase
 
         $response->assertJson([
             'data' => [
-                'status'  => 'clear',
+                'status' => 'clear',
                 'results' => [
-                    'pep'           => false,
-                    'sanctions'     => false,
+                    'pep' => false,
+                    'sanctions' => false,
                     'adverse_media' => false,
-                    'risk_score'    => 10,
+                    'risk_score' => 10,
                 ],
             ],
         ]);
@@ -385,8 +385,8 @@ class ComplianceControllerTest extends ControllerTestCase
             ->with($this->user->uuid, 'manual')
             ->once()
             ->andReturn([
-                'screening_id'         => 'scr_123',
-                'status'               => 'processing',
+                'screening_id' => 'scr_123',
+                'status' => 'processing',
                 'estimated_completion' => now()->addMinutes(5)->toISOString(),
             ]);
 
@@ -416,14 +416,14 @@ class ComplianceControllerTest extends ControllerTestCase
             ->once()
             ->andReturn([
                 'overall_risk' => 'medium',
-                'risk_score'   => 45,
-                'factors'      => [
-                    'country_risk'  => 20,
-                    'product_risk'  => 15,
+                'risk_score' => 45,
+                'factors' => [
+                    'country_risk' => 20,
+                    'product_risk' => 15,
                     'behavior_risk' => 10,
                 ],
                 'last_assessment' => now()->toISOString(),
-                'next_review'     => now()->addMonths(6)->toISOString(),
+                'next_review' => now()->addMonths(6)->toISOString(),
             ]);
 
         $response = $this->getJson("{$this->apiPrefix}/compliance/risk-profile");
@@ -446,7 +446,7 @@ class ComplianceControllerTest extends ControllerTestCase
         $response->assertJson([
             'data' => [
                 'overall_risk' => 'medium',
-                'risk_score'   => 45,
+                'risk_score' => 45,
             ],
         ]);
     }
@@ -457,11 +457,11 @@ class ComplianceControllerTest extends ControllerTestCase
         Sanctum::actingAs($this->user);
 
         $transactionData = [
-            'type'                => 'wire_transfer',
-            'amount'              => 50000, // 500.00 EUR
-            'currency'            => 'EUR',
+            'type' => 'wire_transfer',
+            'amount' => 50000, // 500.00 EUR
+            'currency' => 'EUR',
             'destination_country' => 'US',
-            'purpose'             => 'business_payment',
+            'purpose' => 'business_payment',
         ];
 
         $this->mockRiskService
@@ -469,10 +469,10 @@ class ComplianceControllerTest extends ControllerTestCase
             ->with($this->user->uuid, Mockery::type('array'))
             ->once()
             ->andReturn([
-                'eligible'                         => true,
+                'eligible' => true,
                 'requires_additional_verification' => false,
-                'restrictions'                     => [],
-                'warnings'                         => [],
+                'restrictions' => [],
+                'warnings' => [],
             ]);
 
         $response = $this->postJson("{$this->apiPrefix}/compliance/check-transaction", $transactionData);
@@ -489,7 +489,7 @@ class ComplianceControllerTest extends ControllerTestCase
 
         $response->assertJson([
             'data' => [
-                'eligible'                         => true,
+                'eligible' => true,
                 'requires_additional_verification' => false,
             ],
         ]);
@@ -501,21 +501,21 @@ class ComplianceControllerTest extends ControllerTestCase
         Sanctum::actingAs($this->user);
 
         $transactionData = [
-            'type'                => 'wire_transfer',
-            'amount'              => 10000000, // 100,000.00 EUR
-            'currency'            => 'EUR',
+            'type' => 'wire_transfer',
+            'amount' => 10000000, // 100,000.00 EUR
+            'currency' => 'EUR',
             'destination_country' => 'NG', // High-risk country
-            'purpose'             => 'other',
+            'purpose' => 'other',
         ];
 
         $this->mockRiskService
             ->shouldReceive('checkTransactionEligibility')
             ->once()
             ->andReturn([
-                'eligible'                         => false,
+                'eligible' => false,
                 'requires_additional_verification' => true,
-                'restrictions'                     => [
-                    'HIGH_RISK_COUNTRY'     => 'Destination country is on high-risk list',
+                'restrictions' => [
+                    'HIGH_RISK_COUNTRY' => 'Destination country is on high-risk list',
                     'AMOUNT_LIMIT_EXCEEDED' => 'Transaction amount exceeds your limit',
                 ],
                 'warnings' => [
@@ -528,7 +528,7 @@ class ComplianceControllerTest extends ControllerTestCase
         $response->assertStatus(200);
         $response->assertJson([
             'data' => [
-                'eligible'                         => false,
+                'eligible' => false,
                 'requires_additional_verification' => true,
             ],
         ]);
@@ -547,8 +547,8 @@ class ComplianceControllerTest extends ControllerTestCase
 
         // Invalid transaction type
         $response = $this->postJson("{$this->apiPrefix}/compliance/check-transaction", [
-            'type'     => 'invalid_type',
-            'amount'   => 1000,
+            'type' => 'invalid_type',
+            'amount' => 1000,
             'currency' => 'EUR',
         ]);
         $response->assertStatus(422);
@@ -556,8 +556,8 @@ class ComplianceControllerTest extends ControllerTestCase
 
         // Negative amount
         $response = $this->postJson("{$this->apiPrefix}/compliance/check-transaction", [
-            'type'     => 'wire_transfer',
-            'amount'   => -100,
+            'type' => 'wire_transfer',
+            'amount' => -100,
             'currency' => 'EUR',
         ]);
         $response->assertStatus(422);
@@ -583,10 +583,10 @@ class ComplianceControllerTest extends ControllerTestCase
         Sanctum::actingAs($this->user);
 
         $expiredVerification = KycVerification::factory()->create([
-            'user_uuid'   => $this->user->uuid,
-            'status'      => 'verified',
+            'user_uuid' => $this->user->uuid,
+            'status' => 'verified',
             'verified_at' => now()->subYears(2),
-            'expires_at'  => now()->subDay(),
+            'expires_at' => now()->subDay(),
         ]);
 
         $response = $this->getJson("{$this->apiPrefix}/compliance/kyc/status");
@@ -594,7 +594,7 @@ class ComplianceControllerTest extends ControllerTestCase
         $response->assertStatus(200);
         $response->assertJson([
             'data' => [
-                'status'                  => 'expired',
+                'status' => 'expired',
                 'requires_reverification' => true,
             ],
         ]);

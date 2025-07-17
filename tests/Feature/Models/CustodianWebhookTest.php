@@ -14,14 +14,14 @@ class CustodianWebhookTest extends TestCase
     public function it_can_create_a_custodian_webhook()
     {
         $webhook = CustodianWebhook::create([
-            'uuid'           => 'webhook-uuid',
+            'uuid' => 'webhook-uuid',
             'custodian_name' => 'paysera',
-            'event_type'     => 'account.balance_changed',
-            'event_id'       => 'evt_123',
-            'headers'        => ['x-signature' => 'test'],
-            'payload'        => ['balance' => 1000],
-            'signature'      => 'test-signature',
-            'status'         => 'pending',
+            'event_type' => 'account.balance_changed',
+            'event_id' => 'evt_123',
+            'headers' => ['x-signature' => 'test'],
+            'payload' => ['balance' => 1000],
+            'signature' => 'test-signature',
+            'status' => 'pending',
         ]);
 
         $this->assertEquals('webhook-uuid', $webhook->uuid);
@@ -34,19 +34,19 @@ class CustodianWebhookTest extends TestCase
     public function it_has_pending_scope()
     {
         CustodianWebhook::create([
-            'uuid'           => 'pending-1',
+            'uuid' => 'pending-1',
             'custodian_name' => 'paysera',
-            'event_type'     => 'test',
-            'payload'        => ['test' => 'data'],
-            'status'         => 'pending',
+            'event_type' => 'test',
+            'payload' => ['test' => 'data'],
+            'status' => 'pending',
         ]);
 
         CustodianWebhook::create([
-            'uuid'           => 'processed-1',
+            'uuid' => 'processed-1',
             'custodian_name' => 'paysera',
-            'event_type'     => 'test',
-            'payload'        => ['test' => 'data'],
-            'status'         => 'processed',
+            'event_type' => 'test',
+            'payload' => ['test' => 'data'],
+            'status' => 'processed',
         ]);
 
         $pending = CustodianWebhook::pending()->get();
@@ -59,19 +59,19 @@ class CustodianWebhookTest extends TestCase
     public function it_has_failed_scope()
     {
         CustodianWebhook::create([
-            'uuid'           => 'failed-1',
+            'uuid' => 'failed-1',
             'custodian_name' => 'santander',
-            'event_type'     => 'test',
-            'payload'        => ['test' => 'data'],
-            'status'         => 'failed',
+            'event_type' => 'test',
+            'payload' => ['test' => 'data'],
+            'status' => 'failed',
         ]);
 
         CustodianWebhook::create([
-            'uuid'           => 'processed-2',
+            'uuid' => 'processed-2',
             'custodian_name' => 'santander',
-            'event_type'     => 'test',
-            'payload'        => ['test' => 'data'],
-            'status'         => 'processed',
+            'event_type' => 'test',
+            'payload' => ['test' => 'data'],
+            'status' => 'processed',
         ]);
 
         $failed = CustodianWebhook::failed()->get();
@@ -84,19 +84,19 @@ class CustodianWebhookTest extends TestCase
     public function it_has_by_custodian_scope()
     {
         CustodianWebhook::create([
-            'uuid'           => 'paysera-1',
+            'uuid' => 'paysera-1',
             'custodian_name' => 'paysera',
-            'event_type'     => 'test',
-            'payload'        => ['test' => 'data'],
-            'status'         => 'pending',
+            'event_type' => 'test',
+            'payload' => ['test' => 'data'],
+            'status' => 'pending',
         ]);
 
         CustodianWebhook::create([
-            'uuid'           => 'santander-1',
+            'uuid' => 'santander-1',
             'custodian_name' => 'santander',
-            'event_type'     => 'test',
-            'payload'        => ['test' => 'data'],
-            'status'         => 'pending',
+            'event_type' => 'test',
+            'payload' => ['test' => 'data'],
+            'status' => 'pending',
         ]);
 
         $payseraWebhooks = CustodianWebhook::byCustodian('paysera')->get();
@@ -109,13 +109,13 @@ class CustodianWebhookTest extends TestCase
     public function it_casts_attributes_correctly()
     {
         $webhook = CustodianWebhook::create([
-            'uuid'           => 'test-uuid',
+            'uuid' => 'test-uuid',
             'custodian_name' => 'mock',
-            'event_type'     => 'test.event',
-            'headers'        => ['content-type' => 'application/json'],
-            'payload'        => ['test' => 'data'],
-            'status'         => 'pending',
-            'processed_at'   => '2025-06-18 12:00:00',
+            'event_type' => 'test.event',
+            'headers' => ['content-type' => 'application/json'],
+            'payload' => ['test' => 'data'],
+            'status' => 'pending',
+            'processed_at' => '2025-06-18 12:00:00',
         ]);
 
         $fresh = CustodianWebhook::where('uuid', $webhook->uuid)->first();
@@ -133,11 +133,11 @@ class CustodianWebhookTest extends TestCase
     public function it_uses_uuid_as_primary_key()
     {
         $webhook = CustodianWebhook::create([
-            'uuid'           => 'primary-key-test',
+            'uuid' => 'primary-key-test',
             'custodian_name' => 'mock',
-            'event_type'     => 'test',
-            'payload'        => ['test' => 'data'],
-            'status'         => 'pending',
+            'event_type' => 'test',
+            'payload' => ['test' => 'data'],
+            'status' => 'pending',
         ]);
 
         $found = CustodianWebhook::where('uuid', 'primary-key-test')->first();
@@ -152,12 +152,12 @@ class CustodianWebhookTest extends TestCase
     public function it_handles_null_event_id()
     {
         $webhook = CustodianWebhook::create([
-            'uuid'           => 'no-event-id',
+            'uuid' => 'no-event-id',
             'custodian_name' => 'mock',
-            'event_type'     => 'test',
-            'event_id'       => null,
-            'payload'        => ['test' => 'data'],
-            'status'         => 'pending',
+            'event_type' => 'test',
+            'event_id' => null,
+            'payload' => ['test' => 'data'],
+            'status' => 'pending',
         ]);
 
         $this->assertNull($webhook->event_id);

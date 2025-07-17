@@ -28,16 +28,16 @@ class FinancialInstitutionApplicationTest extends TestCase
     public function it_can_submit_a_valid_application()
     {
         $response = $this->post('/financial-institutions/submit', [
-            'institution_name'       => 'Test Bank Ltd',
-            'country'                => 'Germany',
-            'contact_name'           => 'John Doe',
-            'contact_email'          => 'john.doe@testbank.com',
+            'institution_name' => 'Test Bank Ltd',
+            'country' => 'Germany',
+            'contact_name' => 'John Doe',
+            'contact_email' => 'john.doe@testbank.com',
             'technical_capabilities' => 'We have modern REST APIs with OAuth 2.0 authentication and 99.99% uptime',
-            'regulatory_compliance'  => 'Fully licensed by BaFin with EU passporting rights and compliant with all regulations',
-            'financial_strength'     => '€500M assets under management with A+ credit rating from major agencies',
-            'insurance_coverage'     => 'Complete deposit insurance coverage through German deposit protection scheme',
-            'partnership_vision'     => 'We aim to provide seamless banking services to FinAegis users',
-            'terms'                  => '1',
+            'regulatory_compliance' => 'Fully licensed by BaFin with EU passporting rights and compliant with all regulations',
+            'financial_strength' => '€500M assets under management with A+ credit rating from major agencies',
+            'insurance_coverage' => 'Complete deposit insurance coverage through German deposit protection scheme',
+            'partnership_vision' => 'We aim to provide seamless banking services to FinAegis users',
+            'terms' => '1',
         ]);
 
         $response->assertRedirect('/financial-institutions/apply');
@@ -66,15 +66,15 @@ class FinancialInstitutionApplicationTest extends TestCase
     public function it_validates_email_format()
     {
         $response = $this->post('/financial-institutions/submit', [
-            'institution_name'       => 'Test Bank',
-            'country'                => 'Germany',
-            'contact_name'           => 'John Doe',
-            'contact_email'          => 'invalid-email',
+            'institution_name' => 'Test Bank',
+            'country' => 'Germany',
+            'contact_name' => 'John Doe',
+            'contact_email' => 'invalid-email',
             'technical_capabilities' => 'We have modern REST APIs with OAuth 2.0 authentication and 99.99% uptime',
-            'regulatory_compliance'  => 'Fully licensed by BaFin with EU passporting rights and compliant with all regulations',
-            'financial_strength'     => '€500M assets under management with A+ credit rating from major agencies',
-            'insurance_coverage'     => 'Complete deposit insurance coverage through German deposit protection scheme',
-            'terms'                  => '1',
+            'regulatory_compliance' => 'Fully licensed by BaFin with EU passporting rights and compliant with all regulations',
+            'financial_strength' => '€500M assets under management with A+ credit rating from major agencies',
+            'insurance_coverage' => 'Complete deposit insurance coverage through German deposit protection scheme',
+            'terms' => '1',
         ]);
 
         $response->assertSessionHasErrors(['contact_email']);
@@ -84,15 +84,15 @@ class FinancialInstitutionApplicationTest extends TestCase
     public function it_validates_minimum_text_length()
     {
         $response = $this->post('/financial-institutions/submit', [
-            'institution_name'       => 'Test Bank',
-            'country'                => 'Germany',
-            'contact_name'           => 'John Doe',
-            'contact_email'          => 'john@example.com',
+            'institution_name' => 'Test Bank',
+            'country' => 'Germany',
+            'contact_name' => 'John Doe',
+            'contact_email' => 'john@example.com',
             'technical_capabilities' => 'Too short',
-            'regulatory_compliance'  => 'Too short',
-            'financial_strength'     => 'Too short',
-            'insurance_coverage'     => 'Too short',
-            'terms'                  => '1',
+            'regulatory_compliance' => 'Too short',
+            'financial_strength' => 'Too short',
+            'insurance_coverage' => 'Too short',
+            'terms' => '1',
         ]);
 
         $response->assertSessionHasErrors([
@@ -107,14 +107,14 @@ class FinancialInstitutionApplicationTest extends TestCase
     public function it_requires_terms_acceptance()
     {
         $response = $this->post('/financial-institutions/submit', [
-            'institution_name'       => 'Test Bank Ltd',
-            'country'                => 'Germany',
-            'contact_name'           => 'John Doe',
-            'contact_email'          => 'john.doe@testbank.com',
+            'institution_name' => 'Test Bank Ltd',
+            'country' => 'Germany',
+            'contact_name' => 'John Doe',
+            'contact_email' => 'john.doe@testbank.com',
             'technical_capabilities' => 'We have modern REST APIs with OAuth 2.0 authentication and 99.99% uptime',
-            'regulatory_compliance'  => 'Fully licensed by BaFin with EU passporting rights and compliant with all regulations',
-            'financial_strength'     => '€500M assets under management with A+ credit rating from major agencies',
-            'insurance_coverage'     => 'Complete deposit insurance coverage through German deposit protection scheme',
+            'regulatory_compliance' => 'Fully licensed by BaFin with EU passporting rights and compliant with all regulations',
+            'financial_strength' => '€500M assets under management with A+ credit rating from major agencies',
+            'insurance_coverage' => 'Complete deposit insurance coverage through German deposit protection scheme',
             // 'terms' => not provided
         ]);
 

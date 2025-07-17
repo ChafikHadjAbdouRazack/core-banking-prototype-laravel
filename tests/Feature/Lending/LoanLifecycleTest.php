@@ -42,11 +42,11 @@ class LoanLifecycleTest extends DomainTestCase
 
         // Step 1: Create loan application
         $application = $this->loanService->createApplication([
-            'borrower_id'   => $borrower->id,
-            'amount'        => '5000',
-            'currency'      => 'USD',
-            'term_months'   => 12,
-            'purpose'       => 'Business expansion',
+            'borrower_id' => $borrower->id,
+            'amount' => '5000',
+            'currency' => 'USD',
+            'term_months' => 12,
+            'purpose' => 'Business expansion',
             'interest_rate' => '10.5', // Annual rate
         ]);
 
@@ -59,9 +59,9 @@ class LoanLifecycleTest extends DomainTestCase
 
         // Step 3: Approve application
         $this->loanService->approveApplication($application->id, [
-            'approved_by'  => $lender->id,
+            'approved_by' => $lender->id,
             'credit_score' => $creditScore,
-            'risk_rating'  => 'medium',
+            'risk_rating' => 'medium',
         ]);
 
         $application->refresh();
@@ -93,7 +93,7 @@ class LoanLifecycleTest extends DomainTestCase
             $this->addFundsToAccount($borrowerAccount, 'USD', $monthlyPayment);
 
             $payment = $this->loanService->makePayment($loan->id, [
-                'amount'       => $monthlyPayment,
+                'amount' => $monthlyPayment,
                 'payment_date' => now()->addMonths($month - 1),
             ]);
 
@@ -184,7 +184,7 @@ class LoanLifecycleTest extends DomainTestCase
 
         // Pay off loan early
         $settlement = $this->loanService->settleEarly($loan->id, [
-            'payment_amount'  => $earlyPayment['total_amount'],
+            'payment_amount' => $earlyPayment['total_amount'],
             'include_penalty' => true,
         ]);
 
@@ -215,8 +215,8 @@ class LoanLifecycleTest extends DomainTestCase
         $originalLoan->refresh();
         $refinanceApplication = $this->loanService->applyForRefinancing($originalLoan->id, [
             'new_interest_rate' => '8.5', // Lower than original
-            'new_term_months'   => 18,
-            'new_lender_id'     => $newLender->id,
+            'new_term_months' => 18,
+            'new_lender_id' => $newLender->id,
         ]);
 
         $this->assertEquals('pending', $refinanceApplication->status);
@@ -255,15 +255,15 @@ class LoanLifecycleTest extends DomainTestCase
     private function createAndFundLoan(User $borrower, User $lender, string $amount, int $termMonths): Loan
     {
         $application = $this->loanService->createApplication([
-            'borrower_id'   => $borrower->id,
-            'amount'        => $amount,
-            'currency'      => 'USD',
-            'term_months'   => $termMonths,
+            'borrower_id' => $borrower->id,
+            'amount' => $amount,
+            'currency' => 'USD',
+            'term_months' => $termMonths,
             'interest_rate' => '12.0',
         ]);
 
         $this->loanService->approveApplication($application->id, [
-            'approved_by'  => $lender->id,
+            'approved_by' => $lender->id,
             'credit_score' => 700,
         ]);
 
@@ -273,7 +273,7 @@ class LoanLifecycleTest extends DomainTestCase
     private function makePaymentForLoan(Loan $loan, string $amount): void
     {
         $this->loanService->makePayment($loan->id, [
-            'amount'       => $amount,
+            'amount' => $amount,
             'payment_date' => now(),
         ]);
     }

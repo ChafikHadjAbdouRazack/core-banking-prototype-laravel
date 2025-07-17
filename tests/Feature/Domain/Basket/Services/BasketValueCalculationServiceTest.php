@@ -52,20 +52,20 @@ class BasketValueCalculationServiceTest extends ServiceTestCase
         // Add component
         BasketComponent::create([
             'basket_asset_id' => $basket->id,
-            'asset_code'      => 'EUR',
-            'weight'          => 100.0,
-            'is_active'       => true,
+            'asset_code' => 'EUR',
+            'weight' => 100.0,
+            'is_active' => true,
         ]);
 
         // Mock exchange rate
         $mockRate = new ExchangeRate([
             'from_asset_code' => 'EUR',
-            'to_asset_code'   => 'USD',
-            'rate'            => 1.2,
-            'source'          => ExchangeRate::SOURCE_API,
-            'valid_at'        => now(),
-            'expires_at'      => now()->addHour(),
-            'is_active'       => true,
+            'to_asset_code' => 'USD',
+            'rate' => 1.2,
+            'source' => ExchangeRate::SOURCE_API,
+            'valid_at' => now(),
+            'expires_at' => now()->addHour(),
+            'is_active' => true,
         ]);
 
         $this->exchangeRateService
@@ -100,27 +100,27 @@ class BasketValueCalculationServiceTest extends ServiceTestCase
         // Add components
         BasketComponent::create([
             'basket_asset_id' => $basket->id,
-            'asset_code'      => 'EUR',
-            'weight'          => 60.0,
-            'is_active'       => true,
+            'asset_code' => 'EUR',
+            'weight' => 60.0,
+            'is_active' => true,
         ]);
 
         BasketComponent::create([
             'basket_asset_id' => $basket->id,
-            'asset_code'      => 'GBP',
-            'weight'          => 40.0,
-            'is_active'       => true,
+            'asset_code' => 'GBP',
+            'weight' => 40.0,
+            'is_active' => true,
         ]);
 
         // Mock exchange rates
         $mockRateEUR = new ExchangeRate([
             'from_asset_code' => 'EUR',
-            'to_asset_code'   => 'USD',
-            'rate'            => 1.2,
-            'source'          => ExchangeRate::SOURCE_API,
-            'valid_at'        => now(),
-            'expires_at'      => now()->addHour(),
-            'is_active'       => true,
+            'to_asset_code' => 'USD',
+            'rate' => 1.2,
+            'source' => ExchangeRate::SOURCE_API,
+            'valid_at' => now(),
+            'expires_at' => now()->addHour(),
+            'is_active' => true,
         ]);
 
         $this->exchangeRateService
@@ -130,12 +130,12 @@ class BasketValueCalculationServiceTest extends ServiceTestCase
 
         $mockRateGBP = new ExchangeRate([
             'from_asset_code' => 'GBP',
-            'to_asset_code'   => 'USD',
-            'rate'            => 1.5,
-            'source'          => ExchangeRate::SOURCE_API,
-            'valid_at'        => now(),
-            'expires_at'      => now()->addHour(),
-            'is_active'       => true,
+            'to_asset_code' => 'USD',
+            'rate' => 1.5,
+            'source' => ExchangeRate::SOURCE_API,
+            'valid_at' => now(),
+            'expires_at' => now()->addHour(),
+            'is_active' => true,
         ]);
 
         $this->exchangeRateService
@@ -170,9 +170,9 @@ class BasketValueCalculationServiceTest extends ServiceTestCase
         // Add USD component
         BasketComponent::create([
             'basket_asset_id' => $basket->id,
-            'asset_code'      => 'USD',
-            'weight'          => 100.0,
-            'is_active'       => true,
+            'asset_code' => 'USD',
+            'weight' => 100.0,
+            'is_active' => true,
         ]);
 
         // Calculate value - no exchange rate needed for USD
@@ -215,17 +215,17 @@ class BasketValueCalculationServiceTest extends ServiceTestCase
         // Add active component
         BasketComponent::create([
             'basket_asset_id' => $basket->id,
-            'asset_code'      => 'USD',
-            'weight'          => 50.0,
-            'is_active'       => true,
+            'asset_code' => 'USD',
+            'weight' => 50.0,
+            'is_active' => true,
         ]);
 
         // Add inactive component
         BasketComponent::create([
             'basket_asset_id' => $basket->id,
-            'asset_code'      => 'EUR',
-            'weight'          => 50.0,
-            'is_active'       => false,
+            'asset_code' => 'EUR',
+            'weight' => 50.0,
+            'is_active' => false,
         ]);
 
         // Calculate value
@@ -254,27 +254,27 @@ class BasketValueCalculationServiceTest extends ServiceTestCase
         // Add components
         BasketComponent::create([
             'basket_asset_id' => $basket->id,
-            'asset_code'      => 'EUR',
-            'weight'          => 50.0,
-            'is_active'       => true,
+            'asset_code' => 'EUR',
+            'weight' => 50.0,
+            'is_active' => true,
         ]);
 
         BasketComponent::create([
             'basket_asset_id' => $basket->id,
-            'asset_code'      => 'XYZ',
-            'weight'          => 50.0,
-            'is_active'       => true,
+            'asset_code' => 'XYZ',
+            'weight' => 50.0,
+            'is_active' => true,
         ]);
 
         // Mock exchange rates
         $mockRateEUR = new ExchangeRate([
             'from_asset_code' => 'EUR',
-            'to_asset_code'   => 'USD',
-            'rate'            => 1.2,
-            'source'          => ExchangeRate::SOURCE_API,
-            'valid_at'        => now(),
-            'expires_at'      => now()->addHour(),
-            'is_active'       => true,
+            'to_asset_code' => 'USD',
+            'rate' => 1.2,
+            'source' => ExchangeRate::SOURCE_API,
+            'valid_at' => now(),
+            'expires_at' => now()->addHour(),
+            'is_active' => true,
         ]);
 
         $this->exchangeRateService
@@ -312,9 +312,9 @@ class BasketValueCalculationServiceTest extends ServiceTestCase
         // Add component
         BasketComponent::create([
             'basket_asset_id' => $basket->id,
-            'asset_code'      => 'USD',
-            'weight'          => 100.0,
-            'is_active'       => true,
+            'asset_code' => 'USD',
+            'weight' => 100.0,
+            'is_active' => true,
         ]);
 
         // Calculate value with cache
@@ -339,47 +339,47 @@ class BasketValueCalculationServiceTest extends ServiceTestCase
 
         // Create baskets
         $basket1 = BasketAsset::factory()->create([
-            'code'      => 'TEST_BASKET_' . uniqid(),
-            'type'      => 'fixed',
+            'code' => 'TEST_BASKET_' . uniqid(),
+            'type' => 'fixed',
             'is_active' => true,
         ]);
 
         $basket2 = BasketAsset::factory()->create([
-            'code'      => 'TEST_BASKET_' . uniqid(),
-            'type'      => 'fixed',
+            'code' => 'TEST_BASKET_' . uniqid(),
+            'type' => 'fixed',
             'is_active' => true,
         ]);
 
         $inactiveBasket = BasketAsset::factory()->create([
-            'code'      => 'TEST_BASKET_' . uniqid(),
-            'type'      => 'fixed',
+            'code' => 'TEST_BASKET_' . uniqid(),
+            'type' => 'fixed',
             'is_active' => false,
         ]);
 
         // Add components
         BasketComponent::create([
             'basket_asset_id' => $basket1->id,
-            'asset_code'      => 'USD',
-            'weight'          => 100.0,
-            'is_active'       => true,
+            'asset_code' => 'USD',
+            'weight' => 100.0,
+            'is_active' => true,
         ]);
 
         BasketComponent::create([
             'basket_asset_id' => $basket2->id,
-            'asset_code'      => 'EUR',
-            'weight'          => 100.0,
-            'is_active'       => true,
+            'asset_code' => 'EUR',
+            'weight' => 100.0,
+            'is_active' => true,
         ]);
 
         // Mock exchange rate
         $mockRate = new ExchangeRate([
             'from_asset_code' => 'EUR',
-            'to_asset_code'   => 'USD',
-            'rate'            => 1.2,
-            'source'          => ExchangeRate::SOURCE_API,
-            'valid_at'        => now(),
-            'expires_at'      => now()->addHour(),
-            'is_active'       => true,
+            'to_asset_code' => 'USD',
+            'rate' => 1.2,
+            'source' => ExchangeRate::SOURCE_API,
+            'valid_at' => now(),
+            'expires_at' => now()->addHour(),
+            'is_active' => true,
         ]);
 
         $this->exchangeRateService
@@ -413,20 +413,20 @@ class BasketValueCalculationServiceTest extends ServiceTestCase
         // Create historical values
         $value1 = BasketValue::factory()->create([
             'basket_asset_code' => $basket->code,
-            'value'             => 1.0,
-            'calculated_at'     => now()->subDays(5),
+            'value' => 1.0,
+            'calculated_at' => now()->subDays(5),
         ]);
 
         $value2 = BasketValue::factory()->create([
             'basket_asset_code' => $basket->code,
-            'value'             => 1.1,
-            'calculated_at'     => now()->subDays(3),
+            'value' => 1.1,
+            'calculated_at' => now()->subDays(3),
         ]);
 
         $value3 = BasketValue::factory()->create([
             'basket_asset_code' => $basket->code,
-            'value'             => 1.2,
-            'calculated_at'     => now()->subDay(),
+            'value' => 1.2,
+            'calculated_at' => now()->subDay(),
         ]);
 
         // Get historical values
@@ -454,14 +454,14 @@ class BasketValueCalculationServiceTest extends ServiceTestCase
         // Create values
         BasketValue::factory()->create([
             'basket_asset_code' => $basket->code,
-            'value'             => 100.0,
-            'calculated_at'     => now()->subDays(30),
+            'value' => 100.0,
+            'calculated_at' => now()->subDays(30),
         ]);
 
         BasketValue::factory()->create([
             'basket_asset_code' => $basket->code,
-            'value'             => 110.0,
-            'calculated_at'     => now(),
+            'value' => 110.0,
+            'calculated_at' => now(),
         ]);
 
         // Calculate performance
@@ -535,9 +535,9 @@ class BasketValueCalculationServiceTest extends ServiceTestCase
 
         // Create a fake asset for testing missing asset handling
         Asset::create([
-            'code'      => 'MISSING',
-            'name'      => 'Missing Asset',
-            'type'      => 'custom',
+            'code' => 'MISSING',
+            'name' => 'Missing Asset',
+            'type' => 'custom',
             'precision' => 2,
             'is_active' => false, // Inactive to simulate "missing"
         ]);
@@ -545,9 +545,9 @@ class BasketValueCalculationServiceTest extends ServiceTestCase
         // Add component with inactive asset
         BasketComponent::create([
             'basket_asset_id' => $basket->id,
-            'asset_code'      => 'MISSING',
-            'weight'          => 100.0,
-            'is_active'       => true,
+            'asset_code' => 'MISSING',
+            'weight' => 100.0,
+            'is_active' => true,
         ]);
 
         // Calculate value
@@ -573,9 +573,9 @@ class BasketValueCalculationServiceTest extends ServiceTestCase
         // Add component
         BasketComponent::create([
             'basket_asset_id' => $basket->id,
-            'asset_code'      => 'USD',
-            'weight'          => 100.0,
-            'is_active'       => true,
+            'asset_code' => 'USD',
+            'weight' => 100.0,
+            'is_active' => true,
         ]);
 
         Asset::where('code', 'USD')->first();

@@ -23,22 +23,22 @@ beforeEach(function () {
 
     ExchangeRate::create([
         'from_asset_code' => 'EUR',
-        'to_asset_code'   => 'USD',
-        'rate'            => 1.10,
-        'source'          => 'test',
-        'valid_at'        => now(),
-        'expires_at'      => now()->addHour(),
-        'is_active'       => true,
+        'to_asset_code' => 'USD',
+        'rate' => 1.10,
+        'source' => 'test',
+        'valid_at' => now(),
+        'expires_at' => now()->addHour(),
+        'is_active' => true,
     ]);
 
     ExchangeRate::create([
         'from_asset_code' => 'GBP',
-        'to_asset_code'   => 'USD',
-        'rate'            => 1.25,
-        'source'          => 'test',
-        'valid_at'        => now(),
-        'expires_at'      => now()->addHour(),
-        'is_active'       => true,
+        'to_asset_code' => 'USD',
+        'rate' => 1.25,
+        'source' => 'test',
+        'valid_at' => now(),
+        'expires_at' => now()->addHour(),
+        'is_active' => true,
     ]);
 
     $this->service = new BasketValueCalculationService(new ExchangeRateService());
@@ -53,7 +53,7 @@ it('can calculate value of a simple basket', function () {
     // 100% USD basket
     $basket->components()->create([
         'asset_code' => 'USD',
-        'weight'     => 100.0,
+        'weight' => 100.0,
     ]);
 
     $value = $this->service->calculateValue($basket);
@@ -128,7 +128,7 @@ it('caches calculated values', function () {
 
     $basket->components()->create([
         'asset_code' => 'USD',
-        'weight'     => 100.0,
+        'weight' => 100.0,
     ]);
 
     // First calculation
@@ -151,7 +151,7 @@ it('can bypass cache when requested', function () {
 
     $basket->components()->create([
         'asset_code' => 'USD',
-        'weight'     => 100.0,
+        'weight' => 100.0,
     ]);
 
     // First calculation
@@ -168,31 +168,31 @@ it('can bypass cache when requested', function () {
 it('can calculate all basket values', function () {
     // Create multiple baskets
     $basket1 = BasketAsset::create([
-        'code'      => 'BASKET1',
-        'name'      => 'Basket 1',
+        'code' => 'BASKET1',
+        'name' => 'Basket 1',
         'is_active' => true,
     ]);
 
     $basket1->components()->create([
         'asset_code' => 'USD',
-        'weight'     => 100.0,
+        'weight' => 100.0,
     ]);
 
     $basket2 = BasketAsset::create([
-        'code'      => 'BASKET2',
-        'name'      => 'Basket 2',
+        'code' => 'BASKET2',
+        'name' => 'Basket 2',
         'is_active' => true,
     ]);
 
     $basket2->components()->create([
         'asset_code' => 'EUR',
-        'weight'     => 100.0,
+        'weight' => 100.0,
     ]);
 
     // Inactive basket should be ignored
     $basket3 = BasketAsset::create([
-        'code'      => 'BASKET3',
-        'name'      => 'Basket 3',
+        'code' => 'BASKET3',
+        'name' => 'Basket 3',
         'is_active' => false,
     ]);
 
@@ -212,18 +212,18 @@ it('can get historical values for a basket', function () {
     // Create historical values
     $basket->values()->createMany([
         [
-            'value'            => 1.00,
-            'calculated_at'    => now()->subDays(2),
+            'value' => 1.00,
+            'calculated_at' => now()->subDays(2),
             'component_values' => [],
         ],
         [
-            'value'            => 1.05,
-            'calculated_at'    => now()->subDay(),
+            'value' => 1.05,
+            'calculated_at' => now()->subDay(),
             'component_values' => [],
         ],
         [
-            'value'            => 1.10,
-            'calculated_at'    => now(),
+            'value' => 1.10,
+            'calculated_at' => now(),
             'component_values' => [],
         ],
     ]);
@@ -247,14 +247,14 @@ it('can calculate basket performance', function () {
 
     // Create values at different times
     $basket->values()->create([
-        'value'            => 1.00,
-        'calculated_at'    => now()->subDays(7),
+        'value' => 1.00,
+        'calculated_at' => now()->subDays(7),
         'component_values' => [],
     ]);
 
     $basket->values()->create([
-        'value'            => 1.10,
-        'calculated_at'    => now(),
+        'value' => 1.10,
+        'calculated_at' => now(),
         'component_values' => [],
     ]);
 
@@ -295,7 +295,7 @@ it('can invalidate cached values', function () {
 
     $basket->components()->create([
         'asset_code' => 'USD',
-        'weight'     => 100.0,
+        'weight' => 100.0,
     ]);
 
     // Calculate to cache
@@ -315,7 +315,7 @@ it('ensures basket is registered as asset when calculating value', function () {
 
     $basket->components()->create([
         'asset_code' => 'USD',
-        'weight'     => 100.0,
+        'weight' => 100.0,
     ]);
 
     // Asset should not exist yet

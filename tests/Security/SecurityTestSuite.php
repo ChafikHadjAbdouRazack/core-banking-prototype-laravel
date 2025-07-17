@@ -7,9 +7,9 @@ use Tests\TestCase;
 
 class SecurityTestSuite extends TestCase
 {
-/**
- * Run all security tests and generate a security report.
- */ #[Test]
+    /**
+     * Run all security tests and generate a security report.
+     */ #[Test]
     public function test_complete_security_suite()
     {
         $this->markTestIncomplete('This is a meta-test for running the complete security suite');
@@ -25,10 +25,10 @@ class SecurityTestSuite extends TestCase
 
         $requiredHeaders = [
             'X-Content-Type-Options' => 'nosniff',
-            'X-Frame-Options'        => ['DENY', 'SAMEORIGIN'],
-            'X-XSS-Protection'       => '1; mode=block',
-            'Referrer-Policy'        => ['no-referrer', 'strict-origin-when-cross-origin', 'same-origin'],
-            'Permissions-Policy'     => 'geolocation=(), microphone=(), camera=()',
+            'X-Frame-Options' => ['DENY', 'SAMEORIGIN'],
+            'X-XSS-Protection' => '1; mode=block',
+            'Referrer-Policy' => ['no-referrer', 'strict-origin-when-cross-origin', 'same-origin'],
+            'Permissions-Policy' => 'geolocation=(), microphone=(), camera=()',
         ];
 
         foreach ($requiredHeaders as $header => $expectedValues) {
@@ -151,7 +151,7 @@ class SecurityTestSuite extends TestCase
     {
         // For web routes
         $response = $this->post('/login', [
-            'email'    => 'test@example.com',
+            'email' => 'test@example.com',
             'password' => 'password',
         ]);
 
@@ -229,18 +229,18 @@ class SecurityTestSuite extends TestCase
         return [
             'test_suite' => 'FinAegis Security Test Suite',
             'categories' => [
-                'SQL Injection'    => 'tests/Security/Penetration/SqlInjectionTest.php',
-                'XSS Protection'   => 'tests/Security/Penetration/XssTest.php',
-                'CSRF Protection'  => 'tests/Security/Penetration/CsrfTest.php',
-                'Authentication'   => 'tests/Security/Authentication/AuthenticationSecurityTest.php',
-                'Authorization'    => 'tests/Security/Authentication/AuthorizationSecurityTest.php',
-                'API Security'     => 'tests/Security/API/ApiSecurityTest.php',
-                'Cryptography'     => 'tests/Security/Cryptography/CryptographySecurityTest.php',
+                'SQL Injection' => 'tests/Security/Penetration/SqlInjectionTest.php',
+                'XSS Protection' => 'tests/Security/Penetration/XssTest.php',
+                'CSRF Protection' => 'tests/Security/Penetration/CsrfTest.php',
+                'Authentication' => 'tests/Security/Authentication/AuthenticationSecurityTest.php',
+                'Authorization' => 'tests/Security/Authentication/AuthorizationSecurityTest.php',
+                'API Security' => 'tests/Security/API/ApiSecurityTest.php',
+                'Cryptography' => 'tests/Security/Cryptography/CryptographySecurityTest.php',
                 'Input Validation' => 'tests/Security/Vulnerabilities/InputValidationTest.php',
             ],
             'commands' => [
-                'Run all security tests'   => './vendor/bin/pest tests/Security --parallel',
-                'Run specific category'    => './vendor/bin/pest tests/Security/Penetration',
+                'Run all security tests' => './vendor/bin/pest tests/Security --parallel',
+                'Run specific category' => './vendor/bin/pest tests/Security/Penetration',
                 'Generate coverage report' => './vendor/bin/pest tests/Security --coverage',
             ],
             'recommendations' => [

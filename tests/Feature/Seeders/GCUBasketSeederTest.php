@@ -8,9 +8,9 @@ use Illuminate\Support\Facades\Artisan;
 beforeEach(function () {
     // Set GCU environment variables
     config([
-        'baskets.primary_code'        => 'GCU',
-        'baskets.primary_name'        => 'Global Currency Unit',
-        'baskets.primary_symbol'      => 'Ǥ',
+        'baskets.primary_code' => 'GCU',
+        'baskets.primary_name' => 'Global Currency Unit',
+        'baskets.primary_symbol' => 'Ǥ',
         'baskets.primary_description' => 'Global Currency Unit - A stable, diversified currency basket',
     ]);
 
@@ -20,8 +20,8 @@ beforeEach(function () {
         Asset::firstOrCreate(
             ['code' => $code],
             [
-                'name'      => $code . ' Currency',
-                'type'      => in_array($code, ['XAU']) ? 'commodity' : 'fiat',
+                'name' => $code . ' Currency',
+                'type' => in_array($code, ['XAU']) ? 'commodity' : 'fiat',
                 'precision' => 2,
                 'is_active' => true,
             ]
@@ -111,15 +111,15 @@ it('updates existing basket if run multiple times', function () {
 it('removes old components when updating', function () {
     // Create basket with extra component
     $basket = BasketAsset::create([
-        'code'                => 'GCU',
-        'name'                => 'Old GCU',
-        'type'                => 'fixed',
+        'code' => 'GCU',
+        'name' => 'Old GCU',
+        'type' => 'fixed',
         'rebalance_frequency' => 'daily',
     ]);
 
     $basket->components()->create([
         'asset_code' => 'CAD',
-        'weight'     => 5.0,
+        'weight' => 5.0,
     ]);
 
     expect($basket->components)->toHaveCount(1);
@@ -136,9 +136,9 @@ it('removes old components when updating', function () {
 it('uses environment configuration', function () {
     // Override config
     config([
-        'baskets.primary_code'        => 'TEST',
-        'baskets.primary_name'        => 'Test Basket',
-        'baskets.primary_symbol'      => 'T',
+        'baskets.primary_code' => 'TEST',
+        'baskets.primary_name' => 'Test Basket',
+        'baskets.primary_symbol' => 'T',
         'baskets.primary_description' => 'Test Description',
     ]);
 

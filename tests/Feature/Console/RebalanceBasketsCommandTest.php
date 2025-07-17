@@ -7,12 +7,12 @@ use App\Domain\Basket\Models\BasketAsset;
 beforeEach(function () {
     // Create a dynamic basket for testing using direct creation to avoid factory callbacks
     $this->basket = BasketAsset::create([
-        'code'                => 'TEST_' . substr(uniqid(), 0, 8),
-        'name'                => 'Test Basket',
-        'type'                => 'dynamic',
+        'code' => 'TEST_' . substr(uniqid(), 0, 8),
+        'name' => 'Test Basket',
+        'type' => 'dynamic',
         'rebalance_frequency' => 'monthly',
-        'is_active'           => true,
-        'last_rebalanced_at'  => now()->subMonth()->subDay(), // Make it need rebalancing
+        'is_active' => true,
+        'last_rebalanced_at' => now()->subMonth()->subDay(), // Make it need rebalancing
     ]);
 
     // Add components manually
@@ -45,9 +45,9 @@ it('handles non-existent basket', function () {
 
 it('handles fixed basket type', function () {
     $fixedBasket = BasketAsset::factory()->create([
-        'code'      => 'FIXED_BASKET',
-        'name'      => 'Fixed Basket',
-        'type'      => 'fixed',
+        'code' => 'FIXED_BASKET',
+        'name' => 'Fixed Basket',
+        'type' => 'fixed',
         'is_active' => true,
     ]);
 
@@ -96,12 +96,12 @@ it('handles no dynamic baskets scenario', function () {
 it('processes multiple baskets', function () {
     // Create another dynamic basket
     $anotherBasket = BasketAsset::create([
-        'code'                => 'OTHER_' . substr(uniqid(), 0, 8),
-        'name'                => 'Another Basket',
-        'type'                => 'dynamic',
+        'code' => 'OTHER_' . substr(uniqid(), 0, 8),
+        'name' => 'Another Basket',
+        'type' => 'dynamic',
         'rebalance_frequency' => 'monthly',
-        'is_active'           => true,
-        'last_rebalanced_at'  => now()->subMonth()->subDay(),
+        'is_active' => true,
+        'last_rebalanced_at' => now()->subMonth()->subDay(),
     ]);
 
     $anotherBasket->components()->createMany([

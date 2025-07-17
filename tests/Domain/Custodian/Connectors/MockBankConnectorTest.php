@@ -8,10 +8,10 @@ use App\Domain\Custodian\ValueObjects\TransferRequest;
 
 it('can create mock bank connector', function () {
     $connector = new MockBankConnector([
-        'name'     => 'Test Mock Bank',
+        'name' => 'Test Mock Bank',
         'base_url' => 'https://mock.test',
-        'timeout'  => 30,
-        'debug'    => true,
+        'timeout' => 30,
+        'debug' => true,
     ]);
 
     expect($connector->getName())->toBe('Test Mock Bank');

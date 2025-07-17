@@ -45,9 +45,9 @@ class TransactionMonitoringServiceTest extends ServiceTestCase
         $account = Account::factory()->create(['user_uuid' => $user->uuid]);
 
         $eventProperties = [
-            'amount'    => $attributes['amount'] ?? 10000,
+            'amount' => $attributes['amount'] ?? 10000,
             'assetCode' => 'USD',
-            'metadata'  => [],
+            'metadata' => [],
         ];
 
         // Remove amount from attributes to avoid conflict
@@ -72,7 +72,7 @@ class TransactionMonitoringServiceTest extends ServiceTestCase
     {
         $transaction = $this->createTransaction([
             'amount' => 1000,
-            'type'   => 'transfer',
+            'type' => 'transfer',
         ]);
 
         // Mock risk profile

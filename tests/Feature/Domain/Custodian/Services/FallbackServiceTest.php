@@ -66,14 +66,14 @@ class FallbackServiceTest extends ServiceTestCase
         $account = Account::factory()->create();
 
         CustodianAccount::create([
-            'uuid'                 => Str::uuid()->toString(),
-            'custodian_name'       => $custodian,
+            'uuid' => Str::uuid()->toString(),
+            'custodian_name' => $custodian,
             'custodian_account_id' => $accountId,
-            'account_uuid'         => $account->uuid,
-            'last_known_balance'   => $expectedBalance,
-            'last_synced_at'       => now(),
-            'status'               => 'active',
-            'is_primary'           => true,
+            'account_uuid' => $account->uuid,
+            'last_known_balance' => $expectedBalance,
+            'last_synced_at' => now(),
+            'status' => 'active',
+            'is_primary' => true,
         ]);
 
         // Act
@@ -109,14 +109,14 @@ class FallbackServiceTest extends ServiceTestCase
 
         // Create custodian account
         CustodianAccount::create([
-            'uuid'                 => Str::uuid()->toString(),
-            'account_uuid'         => $account->uuid,
-            'custodian_name'       => $custodian,
+            'uuid' => Str::uuid()->toString(),
+            'account_uuid' => $account->uuid,
+            'custodian_name' => $custodian,
             'custodian_account_id' => $accountId,
-            'status'               => 'active',
-            'is_primary'           => true,
-            'last_known_balance'   => 0,
-            'last_synced_at'       => now(),
+            'status' => 'active',
+            'is_primary' => true,
+            'last_known_balance' => 0,
+            'last_synced_at' => now(),
         ]);
 
         // Act
@@ -208,31 +208,31 @@ class FallbackServiceTest extends ServiceTestCase
         $toAccount = Account::factory()->create();
 
         $fromCustodianAccount = CustodianAccount::create([
-            'id'                   => 1,
-            'custodian_name'       => $custodian,
+            'id' => 1,
+            'custodian_name' => $custodian,
             'custodian_account_id' => 'FROM123',
-            'account_uuid'         => $fromAccount->uuid,
+            'account_uuid' => $fromAccount->uuid,
         ]);
 
         $toCustodianAccount = CustodianAccount::create([
-            'id'                   => 2,
-            'custodian_name'       => $custodian,
+            'id' => 2,
+            'custodian_name' => $custodian,
             'custodian_account_id' => 'TO123',
-            'account_uuid'         => $toAccount->uuid,
+            'account_uuid' => $toAccount->uuid,
         ]);
 
         CustodianTransfer::create([
-            'id'                        => $transferId,
-            'from_account_uuid'         => $fromAccount->uuid,
-            'to_account_uuid'           => $toAccount->uuid,
+            'id' => $transferId,
+            'from_account_uuid' => $fromAccount->uuid,
+            'to_account_uuid' => $toAccount->uuid,
             'from_custodian_account_id' => $fromCustodianAccount->id,
-            'to_custodian_account_id'   => $toCustodianAccount->id,
-            'amount'                    => 50000,
-            'asset_code'                => 'EUR',
-            'status'                    => 'completed',
-            'transfer_type'             => 'internal',
-            'reference'                 => 'REF123',
-            'completed_at'              => now(),
+            'to_custodian_account_id' => $toCustodianAccount->id,
+            'amount' => 50000,
+            'asset_code' => 'EUR',
+            'status' => 'completed',
+            'transfer_type' => 'internal',
+            'reference' => 'REF123',
+            'completed_at' => now(),
         ]);
 
         // Act
@@ -256,8 +256,8 @@ class FallbackServiceTest extends ServiceTestCase
         $asset = \App\Domain\Asset\Models\Asset::firstOrCreate(
             ['code' => 'EUR'],
             [
-                'name'      => 'Euro',
-                'type'      => 'fiat',
+                'name' => 'Euro',
+                'type' => 'fiat',
                 'precision' => 2,
                 'is_active' => true,
             ]
@@ -269,25 +269,25 @@ class FallbackServiceTest extends ServiceTestCase
 
         // Create custodian accounts
         $fromCustodianAccount = CustodianAccount::create([
-            'uuid'                 => Str::uuid()->toString(),
-            'account_uuid'         => $fromAccountModel->uuid,
-            'custodian_name'       => $custodian,
+            'uuid' => Str::uuid()->toString(),
+            'account_uuid' => $fromAccountModel->uuid,
+            'custodian_name' => $custodian,
             'custodian_account_id' => 'FROM_ACC_123',
-            'status'               => 'active',
-            'is_primary'           => true,
-            'last_known_balance'   => 100000,
-            'last_synced_at'       => now(),
+            'status' => 'active',
+            'is_primary' => true,
+            'last_known_balance' => 100000,
+            'last_synced_at' => now(),
         ]);
 
         $toCustodianAccount = CustodianAccount::create([
-            'uuid'                 => Str::uuid()->toString(),
-            'account_uuid'         => $toAccountModel->uuid,
-            'custodian_name'       => $custodian,
+            'uuid' => Str::uuid()->toString(),
+            'account_uuid' => $toAccountModel->uuid,
+            'custodian_name' => $custodian,
             'custodian_account_id' => 'TO_ACC_456',
-            'status'               => 'active',
-            'is_primary'           => true,
-            'last_known_balance'   => 50000,
-            'last_synced_at'       => now(),
+            'status' => 'active',
+            'is_primary' => true,
+            'last_known_balance' => 50000,
+            'last_synced_at' => now(),
         ]);
 
         $amount = new Money(75000);
@@ -305,20 +305,20 @@ class FallbackServiceTest extends ServiceTestCase
             ->willReturnCallback(function ($cust, $from, $to, $amt, $asset, $ref, $desc) use ($fromCustodianAccount, $toCustodianAccount, $fromAccountModel, $toAccountModel) {
                 $transferId = 'QUEUED_' . \Str::uuid()->toString();
                 $transfer = CustodianTransfer::create([
-                    'id'                        => $transferId,
-                    'from_account_uuid'         => $fromAccountModel->uuid,
-                    'to_account_uuid'           => $toAccountModel->uuid,
+                    'id' => $transferId,
+                    'from_account_uuid' => $fromAccountModel->uuid,
+                    'to_account_uuid' => $toAccountModel->uuid,
                     'from_custodian_account_id' => $fromCustodianAccount->id,
-                    'to_custodian_account_id'   => $toCustodianAccount->id,
-                    'amount'                    => $amt->getAmount(),
-                    'asset_code'                => $asset,
-                    'reference'                 => $ref,
-                    'status'                    => 'pending',
-                    'transfer_type'             => 'external',
-                    'metadata'                  => [
-                        'queued_at'   => now()->toIso8601String(),
-                        'reason'      => 'Custodian unavailable',
-                        'custodian'   => $cust,
+                    'to_custodian_account_id' => $toCustodianAccount->id,
+                    'amount' => $amt->getAmount(),
+                    'asset_code' => $asset,
+                    'reference' => $ref,
+                    'status' => 'pending',
+                    'transfer_type' => 'external',
+                    'metadata' => [
+                        'queued_at' => now()->toIso8601String(),
+                        'reason' => 'Custodian unavailable',
+                        'custodian' => $cust,
                         'description' => $desc,
                     ],
                 ]);
@@ -330,7 +330,7 @@ class FallbackServiceTest extends ServiceTestCase
                     assetCode: $asset,
                     fee: 0,
                     metadata: [
-                        'queued'      => true,
+                        'queued' => true,
                         'retry_after' => now()->addMinutes(30)->toIso8601String(),
                     ]
                 );

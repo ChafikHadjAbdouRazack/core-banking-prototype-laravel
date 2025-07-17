@@ -15,13 +15,13 @@ beforeEach(function () {
 
 it('can receive and store paysera webhook', function () {
     $payload = [
-        'event'      => 'payment.completed',
-        'event_id'   => 'evt_123',
+        'event' => 'payment.completed',
+        'event_id' => 'evt_123',
         'payment_id' => 'pay_456',
         'account_id' => 'acc_789',
-        'amount'     => 10000,
-        'currency'   => 'EUR',
-        'timestamp'  => now()->toISOString(),
+        'amount' => 10000,
+        'currency' => 'EUR',
+        'timestamp' => now()->toISOString(),
     ];
 
     $signature = hash_hmac('sha256', json_encode($payload), 'test-secret');
@@ -34,7 +34,7 @@ it('can receive and store paysera webhook', function () {
     ]);
 
     $response->assertStatus(202)
-             ->assertJson(['status' => 'accepted']);
+        ->assertJson(['status' => 'accepted']);
 
     // Verify webhook was stored
     $webhook = CustodianWebhook::first();
@@ -53,7 +53,7 @@ it('can receive and store paysera webhook', function () {
 
 it('rejects webhook with invalid signature', function () {
     $payload = [
-        'event'    => 'payment.completed',
+        'event' => 'payment.completed',
         'event_id' => 'evt_123',
     ];
 
@@ -64,7 +64,7 @@ it('rejects webhook with invalid signature', function () {
     ]);
 
     $response->assertStatus(401)
-             ->assertJson(['error' => 'Invalid signature']);
+        ->assertJson(['error' => 'Invalid signature']);
 
     expect(CustodianWebhook::count())->toBe(0);
     Queue::assertNothingPushed();
@@ -79,17 +79,17 @@ it('handles malformed webhook payload', function () {
     // Send invalid JSON with correct signature
     $response = $this->call('POST', '/api/webhooks/custodian/paysera', [], [], [], [
         'HTTP_X-Paysera-Signature' => $signature,
-        'CONTENT_TYPE'             => 'application/json',
+        'CONTENT_TYPE' => 'application/json',
     ], $invalidJson);
 
     $response->assertStatus(400)
-             ->assertJson(['error' => 'Invalid payload']);
+        ->assertJson(['error' => 'Invalid payload']);
 });
 
 it('prevents duplicate webhook processing', function () {
     $payload = [
-        'event'      => 'payment.completed',
-        'event_id'   => 'evt_duplicate',
+        'event' => 'payment.completed',
+        'event_id' => 'evt_duplicate',
         'payment_id' => 'pay_123',
     ];
 
@@ -113,8 +113,8 @@ it('prevents duplicate webhook processing', function () {
 it('can receive santander webhook with timestamp validation', function () {
     $timestamp = (string) time();
     $payload = [
-        'event_type'  => 'transfer.completed',
-        'id'          => 'txn_123',
+        'event_type' => 'transfer.completed',
+        'id' => 'txn_123',
         'transfer_id' => 'trf_456',
     ];
 
@@ -137,8 +137,8 @@ it('can receive santander webhook with timestamp validation', function () {
 
 it('can receive mock webhook for testing', function () {
     $payload = [
-        'type'           => 'transaction.completed',
-        'id'             => 'mock_123',
+        'type' => 'transaction.completed',
+        'id' => 'mock_123',
         'transaction_id' => 'tx_456',
     ];
 
@@ -154,9 +154,9 @@ it('can receive mock webhook for testing', function () {
 it('marks webhook as processing when job starts', function () {
     $webhook = CustodianWebhook::create([
         'custodian_name' => 'mock',
-        'event_type'     => 'test',
-        'payload'        => ['test' => true],
-        'status'         => 'pending',
+        'event_type' => 'test',
+        'payload' => ['test' => true],
+        'status' => 'pending',
     ]);
 
     expect($webhook->status)->toBe('pending');
@@ -171,10 +171,10 @@ it('marks webhook as processing when job starts', function () {
 it('marks webhook as processed successfully', function () {
     $webhook = CustodianWebhook::create([
         'custodian_name' => 'mock',
-        'event_type'     => 'test',
-        'payload'        => ['test' => true],
-        'status'         => 'processing',
-        'attempts'       => 1,
+        'event_type' => 'test',
+        'payload' => ['test' => true],
+        'status' => 'processing',
+        'attempts' => 1,
     ]);
 
     $webhook->markAsProcessed();
@@ -187,10 +187,10 @@ it('marks webhook as processed successfully', function () {
 it('marks webhook as failed with error message', function () {
     $webhook = CustodianWebhook::create([
         'custodian_name' => 'mock',
-        'event_type'     => 'test',
-        'payload'        => ['test' => true],
-        'status'         => 'processing',
-        'attempts'       => 1,
+        'event_type' => 'test',
+        'payload' => ['test' => true],
+        'status' => 'processing',
+        'attempts' => 1,
     ]);
 
     $webhook->markAsFailed('Connection timeout');
@@ -203,32 +203,32 @@ it('can find retryable webhooks', function () {
     // Create various webhooks
     $pending = CustodianWebhook::create([
         'custodian_name' => 'mock',
-        'event_type'     => 'test',
-        'payload'        => [],
-        'status'         => 'pending',
+        'event_type' => 'test',
+        'payload' => [],
+        'status' => 'pending',
     ]);
 
     $processed = CustodianWebhook::create([
         'custodian_name' => 'mock',
-        'event_type'     => 'test',
-        'payload'        => [],
-        'status'         => 'processed',
+        'event_type' => 'test',
+        'payload' => [],
+        'status' => 'processed',
     ]);
 
     $failedRetryable = CustodianWebhook::create([
         'custodian_name' => 'mock',
-        'event_type'     => 'test',
-        'payload'        => [],
-        'status'         => 'failed',
-        'attempts'       => 2,
+        'event_type' => 'test',
+        'payload' => [],
+        'status' => 'failed',
+        'attempts' => 2,
     ]);
 
     $failedMaxAttempts = CustodianWebhook::create([
         'custodian_name' => 'mock',
-        'event_type'     => 'test',
-        'payload'        => [],
-        'status'         => 'failed',
-        'attempts'       => 3,
+        'event_type' => 'test',
+        'payload' => [],
+        'status' => 'failed',
+        'attempts' => 3,
     ]);
 
     $retryable = CustodianWebhook::retryable(3)->get();
@@ -240,16 +240,16 @@ it('can find retryable webhooks', function () {
 it('updates custodian account reference when processing balance webhook', function () {
     $account = Account::factory()->create();
     $custodianAccount = CustodianAccount::factory()->create([
-        'account_uuid'         => $account->uuid,
-        'custodian_name'       => 'mock',
+        'account_uuid' => $account->uuid,
+        'custodian_name' => 'mock',
         'custodian_account_id' => 'mock-123',
     ]);
 
     $webhook = CustodianWebhook::create([
         'custodian_name' => 'mock',
-        'event_type'     => 'balance.updated',
-        'payload'        => [
-            'account'  => 'mock-123',
+        'event_type' => 'balance.updated',
+        'payload' => [
+            'account' => 'mock-123',
             'balances' => [
                 'USD' => 50000,
                 'EUR' => 25000,

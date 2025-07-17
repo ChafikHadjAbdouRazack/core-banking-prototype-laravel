@@ -2,10 +2,10 @@
 
 namespace Tests\Feature;
 
+use App\Domain\Account\Models\AccountBalance;
 use App\Domain\Asset\Models\Asset;
 use App\Domain\Transaction\Models\Transaction;
 use App\Models\Account;
-use App\Domain\Account\Models\AccountBalance;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Inertia\Testing\AssertableInertia as Assert;
@@ -34,9 +34,9 @@ class TransactionStatusTrackingTest extends DomainTestCase
         Asset::updateOrCreate(
             ['code' => 'USD'],
             [
-                'name'      => 'US Dollar',
-                'symbol'    => '$',
-                'type'      => 'fiat',
+                'name' => 'US Dollar',
+                'symbol' => '$',
+                'type' => 'fiat',
                 'precision' => 2,
                 'is_active' => true,
             ]
@@ -45,8 +45,8 @@ class TransactionStatusTrackingTest extends DomainTestCase
         // Add balance
         AccountBalance::create([
             'account_uuid' => $this->account->uuid,
-            'asset_code'   => 'USD',
-            'balance'      => 100000, // $1,000
+            'asset_code' => 'USD',
+            'balance' => 100000, // $1,000
         ]);
     }
 
@@ -60,12 +60,12 @@ class TransactionStatusTrackingTest extends DomainTestCase
         $response->assertStatus(200);
         $response->assertInertia(
             fn (Assert $page) => $page
-            ->component('Transactions/StatusTracking')
-            ->has('accounts')
-            ->has('pendingTransactions')
-            ->has('completedTransactions')
-            ->has('statistics')
-            ->has('filters')
+                ->component('Transactions/StatusTracking')
+                ->has('accounts')
+                ->has('pendingTransactions')
+                ->has('completedTransactions')
+                ->has('statistics')
+                ->has('filters')
         );
     }
 
@@ -84,7 +84,7 @@ class TransactionStatusTrackingTest extends DomainTestCase
         $response->assertStatus(200);
         $response->assertInertia(
             fn (Assert $page) => $page
-            ->where('filters.status', 'pending')
+                ->where('filters.status', 'pending')
         );
     }
 
@@ -100,10 +100,10 @@ class TransactionStatusTrackingTest extends DomainTestCase
         $response->assertStatus(200);
         $response->assertInertia(
             fn (Assert $page) => $page
-            ->component('Transactions/StatusDetail')
-            ->has('transaction')
-            ->has('timeline')
-            ->has('relatedTransactions')
+                ->component('Transactions/StatusDetail')
+                ->has('transaction')
+                ->has('timeline')
+                ->has('relatedTransactions')
         );
     }
 
@@ -118,7 +118,7 @@ class TransactionStatusTrackingTest extends DomainTestCase
 
         $response->assertStatus(200);
         $response->assertJson([
-            'id'     => $transaction->id,
+            'id' => $transaction->id,
             'status' => 'processing',
         ]);
         $response->assertJsonStructure([
@@ -205,18 +205,18 @@ class TransactionStatusTrackingTest extends DomainTestCase
 
         $response = $this->get(route('transactions.status', [
             'date_from' => now()->subDays(7)->format('Y-m-d'),
-            'date_to'   => now()->format('Y-m-d'),
+            'date_to' => now()->format('Y-m-d'),
         ]));
 
         $response->assertStatus(200);
         $response->assertInertia(
             fn (Assert $page) => $page
-            ->has(
-                'filters',
-                fn (Assert $filters) => $filters
-                ->where('date_from', now()->subDays(7)->format('Y-m-d'))
-                ->where('date_to', now()->format('Y-m-d'))
-            )
+                ->has(
+                    'filters',
+                    fn (Assert $filters) => $filters
+                        ->where('date_from', now()->subDays(7)->format('Y-m-d'))
+                        ->where('date_to', now()->format('Y-m-d'))
+                )
         );
     }
 
@@ -236,15 +236,15 @@ class TransactionStatusTrackingTest extends DomainTestCase
         $response->assertStatus(200);
         $response->assertInertia(
             fn (Assert $page) => $page
-            ->has(
-                'statistics',
-                fn (Assert $stats) => $stats
-                ->where('total', 4)
-                ->where('completed', 2)
-                ->where('pending', 1)
-                ->where('failed', 1)
-                ->where('success_rate', 50.0)
-            )
+                ->has(
+                    'statistics',
+                    fn (Assert $stats) => $stats
+                        ->where('total', 4)
+                        ->where('completed', 2)
+                        ->where('pending', 1)
+                        ->where('failed', 1)
+                        ->where('success_rate', 50.0)
+                )
         );
     }
 
@@ -258,15 +258,15 @@ class TransactionStatusTrackingTest extends DomainTestCase
 
         // Create transaction for other user
         $transaction = Transaction::forceCreate([
-            'id'           => \Str::uuid(),
+            'id' => \Str::uuid(),
             'account_uuid' => $otherAccount->uuid,
-            'type'         => 'deposit',
-            'amount'       => 10000,
-            'currency'     => 'USD',
-            'status'       => 'pending',
-            'reference'    => 'TEST-' . uniqid(),
-            'created_at'   => now(),
-            'updated_at'   => now(),
+            'type' => 'deposit',
+            'amount' => 10000,
+            'currency' => 'USD',
+            'status' => 'pending',
+            'reference' => 'TEST-' . uniqid(),
+            'created_at' => now(),
+            'updated_at' => now(),
         ]);
 
         $this->actingAs($this->user);
@@ -282,16 +282,16 @@ class TransactionStatusTrackingTest extends DomainTestCase
     private function createTestTransaction($status = 'pending', $type = 'deposit')
     {
         return Transaction::forceCreate([
-            'id'           => \Str::uuid(),
+            'id' => \Str::uuid(),
             'account_uuid' => $this->account->uuid,
-            'type'         => $type,
-            'amount'       => rand(1000, 50000),
-            'currency'     => 'USD',
-            'status'       => $status,
-            'reference'    => 'TEST-' . uniqid(),
-            'metadata'     => json_encode([
+            'type' => $type,
+            'amount' => rand(1000, 50000),
+            'currency' => 'USD',
+            'status' => $status,
+            'reference' => 'TEST-' . uniqid(),
+            'metadata' => json_encode([
                 'description' => 'Test transaction',
-                'source'      => 'test',
+                'source' => 'test',
             ]),
             'created_at' => now()->subMinutes(rand(1, 60)),
             'updated_at' => now(),

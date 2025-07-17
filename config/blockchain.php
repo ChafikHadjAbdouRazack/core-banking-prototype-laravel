@@ -12,21 +12,21 @@ return [
     */
 
     'ethereum' => [
-        'rpc_url'  => env('ETHEREUM_RPC_URL', 'https://mainnet.infura.io/v3/YOUR_PROJECT_ID'),
+        'rpc_url' => env('ETHEREUM_RPC_URL', 'https://mainnet.infura.io/v3/YOUR_PROJECT_ID'),
         'chain_id' => env('ETHEREUM_CHAIN_ID', '1'),
-        'network'  => env('ETHEREUM_NETWORK', 'mainnet'),
+        'network' => env('ETHEREUM_NETWORK', 'mainnet'),
     ],
 
     'polygon' => [
-        'rpc_url'  => env('POLYGON_RPC_URL', 'https://polygon-rpc.com'),
+        'rpc_url' => env('POLYGON_RPC_URL', 'https://polygon-rpc.com'),
         'chain_id' => env('POLYGON_CHAIN_ID', '137'),
-        'network'  => env('POLYGON_NETWORK', 'mainnet'),
+        'network' => env('POLYGON_NETWORK', 'mainnet'),
     ],
 
     'bsc' => [
-        'rpc_url'  => env('BSC_RPC_URL', 'https://bsc-dataseed.binance.org'),
+        'rpc_url' => env('BSC_RPC_URL', 'https://bsc-dataseed.binance.org'),
         'chain_id' => env('BSC_CHAIN_ID', '56'),
-        'network'  => env('BSC_NETWORK', 'mainnet'),
+        'network' => env('BSC_NETWORK', 'mainnet'),
     ],
 
     'bitcoin' => [
@@ -47,19 +47,19 @@ return [
 
     'hot_wallets' => [
         'ethereum' => [
-            'address'       => env('ETHEREUM_HOT_WALLET_ADDRESS'),
+            'address' => env('ETHEREUM_HOT_WALLET_ADDRESS'),
             'encrypted_key' => env('ETHEREUM_HOT_WALLET_KEY'),
         ],
         'polygon' => [
-            'address'       => env('POLYGON_HOT_WALLET_ADDRESS'),
+            'address' => env('POLYGON_HOT_WALLET_ADDRESS'),
             'encrypted_key' => env('POLYGON_HOT_WALLET_KEY'),
         ],
         'bsc' => [
-            'address'       => env('BSC_HOT_WALLET_ADDRESS'),
+            'address' => env('BSC_HOT_WALLET_ADDRESS'),
             'encrypted_key' => env('BSC_HOT_WALLET_KEY'),
         ],
         'bitcoin' => [
-            'address'       => env('BITCOIN_HOT_WALLET_ADDRESS'),
+            'address' => env('BITCOIN_HOT_WALLET_ADDRESS'),
             'encrypted_key' => env('BITCOIN_HOT_WALLET_KEY'),
         ],
     ],
@@ -76,12 +76,12 @@ return [
     'security' => [
         'min_confirmations' => [
             'ethereum' => 12,
-            'polygon'  => 128,
-            'bsc'      => 15,
-            'bitcoin'  => 6,
+            'polygon' => 128,
+            'bsc' => 15,
+            'bitcoin' => 6,
         ],
         'daily_withdrawal_limit' => env('BLOCKCHAIN_DAILY_WITHDRAWAL_LIMIT', '10000'),
-        'require_2fa_amount'     => env('BLOCKCHAIN_REQUIRE_2FA_AMOUNT', '1000'),
+        'require_2fa_amount' => env('BLOCKCHAIN_REQUIRE_2FA_AMOUNT', '1000'),
     ],
 
     /*
@@ -96,11 +96,11 @@ return [
     'fees' => [
         'deposit' => [
             'percentage' => env('BLOCKCHAIN_DEPOSIT_FEE_PERCENTAGE', '0'),
-            'minimum'    => env('BLOCKCHAIN_DEPOSIT_FEE_MIN', '0'),
+            'minimum' => env('BLOCKCHAIN_DEPOSIT_FEE_MIN', '0'),
         ],
         'withdrawal' => [
             'percentage' => env('BLOCKCHAIN_WITHDRAWAL_FEE_PERCENTAGE', '0.1'),
-            'minimum'    => env('BLOCKCHAIN_WITHDRAWAL_FEE_MIN', '1'),
+            'minimum' => env('BLOCKCHAIN_WITHDRAWAL_FEE_MIN', '1'),
         ],
     ],
 ];

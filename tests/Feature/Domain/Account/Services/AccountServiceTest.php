@@ -65,7 +65,7 @@ class AccountServiceTest extends ServiceTestCase
         } else {
             // If DataObject doesn't exist, just use array
             $accountData = [
-                'name'      => 'Test Account',
+                'name' => 'Test Account',
                 'user_uuid' => $user->uuid,
             ];
 

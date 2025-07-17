@@ -1,18 +1,14 @@
 <?php
 
-use Behat\Behat\Context\Context;
-use Behat\Gherkin\Node\PyStringNode;
-use Behat\Gherkin\Node\TableNode;
-use App\Models\User;
-use App\Models\Account;
-use App\Models\Asset;
 use App\Domain\Asset\Models\ExchangeRate;
 use App\Domain\Basket\Models\BasketAsset;
 use App\Domain\Basket\Models\BasketComponent;
 use App\Domain\Basket\Services\BasketRebalancingService;
-use App\Domain\Account\Services\AssetTransferService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\TestCase;
+use App\Models\Account;
+use App\Models\Asset;
+use App\Models\User;
+use Behat\Behat\Context\Context;
+use Behat\Gherkin\Node\TableNode;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -21,14 +17,21 @@ use Illuminate\Support\Facades\DB;
 class FeatureContext implements Context
 {
     private static $app;
+
     private static $kernel;
+
     private $currentUser;
+
     private $accounts = [];
+
     private $assets = [];
+
     private $baskets = [];
+
     private $lastResponse;
+
     private $lastException;
-    
+
     /**
      * Set the current user (called from LaravelFeatureContext)
      */
@@ -43,9 +46,9 @@ class FeatureContext implements Context
     public static function prepare()
     {
         putenv('APP_ENV=testing');
-        
-        if (!static::$app) {
-            static::$app = require __DIR__ . '/../../bootstrap/app.php';
+
+        if (! static::$app) {
+            static::$app = require __DIR__.'/../../bootstrap/app.php';
             static::$kernel = static::$app->make(\Illuminate\Contracts\Console\Kernel::class);
             static::$kernel->bootstrap();
         }
@@ -68,7 +71,6 @@ class FeatureContext implements Context
         // Rollback transaction
         DB::rollBack();
     }
-
 
     /**
      * @Given the following assets exist:
@@ -111,7 +113,6 @@ class FeatureContext implements Context
         }
     }
 
-
     /**
      * @Given the following accounts exist:
      */
@@ -119,7 +120,7 @@ class FeatureContext implements Context
     {
         foreach ($table->getHash() as $row) {
             $user = User::where('email', $row['owner'])->first();
-            if (!$user) {
+            if (! $user) {
                 $user = User::factory()->create(['email' => $row['owner']]);
             }
 
@@ -130,7 +131,7 @@ class FeatureContext implements Context
 
             // Set balance for the specified currency
             $account->addBalance($row['currency'], (int) ($row['balance'] * 100));
-            
+
             $this->accounts[$row['uuid']] = $account;
         }
     }
@@ -143,7 +144,7 @@ class FeatureContext implements Context
         try {
             $basket = BasketAsset::create([
                 'code' => $code,
-                'name' => $code . ' Basket',
+                'name' => $code.' Basket',
                 'description' => 'Test basket',
                 'type' => 'fixed',
                 'is_active' => true,
@@ -171,12 +172,12 @@ class FeatureContext implements Context
     public function iHaveABasketWithTheFollowingComponents($code, TableNode $table)
     {
         $this->iCreateABasketWithTheFollowingComponents($code, $table);
-        
+
         // Create the basket as an asset
         Asset::firstOrCreate([
             'code' => $code,
         ], [
-            'name' => $code . ' Basket',
+            'name' => $code.' Basket',
             'type' => 'basket',
             'precision' => 2,
             'is_active' => true,
@@ -191,7 +192,7 @@ class FeatureContext implements Context
     {
         $basket = BasketAsset::create([
             'code' => $code,
-            'name' => $code . ' Dynamic Basket',
+            'name' => $code.' Dynamic Basket',
             'description' => 'Test dynamic basket',
             'type' => 'dynamic',
             'rebalance_frequency' => 'daily',
@@ -218,26 +219,26 @@ class FeatureContext implements Context
     public function iDecomposeOfBasket($amount, $basketCode)
     {
         // Get user from LaravelFeatureContext if not set
-        if (!$this->currentUser && class_exists('LaravelFeatureContext')) {
+        if (! $this->currentUser && class_exists('LaravelFeatureContext')) {
             $this->currentUser = LaravelFeatureContext::$sharedUser;
         }
-        
+
         // First try to get account from our tracking
         $account = null;
-        if (!empty($this->accounts)) {
+        if (! empty($this->accounts)) {
             $account = $this->accounts[array_key_first($this->accounts)];
         }
-        
+
         // If not found, get from database
-        if (!$account && $this->currentUser) {
+        if (! $account && $this->currentUser) {
             $account = Account::where('user_uuid', $this->currentUser->uuid)->first();
             if ($account) {
                 $this->accounts[$account->uuid] = $account;
             }
         }
-        
+
         $service = app(\App\Domain\Basket\Services\BasketAccountService::class);
-        
+
         try {
             $result = $service->decomposeBasket($account, $basketCode, (int) ($amount * 100));
             $this->lastResponse = $result;
@@ -252,26 +253,26 @@ class FeatureContext implements Context
     public function iComposeUnitsOfBasket($amount, $basketCode)
     {
         // Get user from LaravelFeatureContext if not set
-        if (!$this->currentUser && class_exists('LaravelFeatureContext')) {
+        if (! $this->currentUser && class_exists('LaravelFeatureContext')) {
             $this->currentUser = LaravelFeatureContext::$sharedUser;
         }
-        
+
         // First try to get account from our tracking
         $account = null;
-        if (!empty($this->accounts)) {
+        if (! empty($this->accounts)) {
             $account = $this->accounts[array_key_first($this->accounts)];
         }
-        
+
         // If not found, get from database
-        if (!$account && $this->currentUser) {
+        if (! $account && $this->currentUser) {
             $account = Account::where('user_uuid', $this->currentUser->uuid)->first();
             if ($account) {
                 $this->accounts[$account->uuid] = $account;
             }
         }
-        
+
         $service = app(\App\Domain\Basket\Services\BasketAccountService::class);
-        
+
         try {
             $result = $service->composeBasket($account, $basketCode, (int) ($amount * 100));
             $this->lastResponse = $result;
@@ -296,7 +297,7 @@ class FeatureContext implements Context
     {
         $basket = end($this->baskets);
         $service = app(BasketRebalancingService::class);
-        
+
         try {
             $result = $service->rebalance($basket);
             $this->lastResponse = $result;
@@ -311,11 +312,11 @@ class FeatureContext implements Context
     public function theBasketShouldBeCreatedSuccessfully()
     {
         if ($this->lastException) {
-            throw new \Exception("Basket creation failed: " . $this->lastException->getMessage());
+            throw new \Exception('Basket creation failed: '.$this->lastException->getMessage());
         }
-        
-        if (!$this->lastResponse instanceof BasketAsset) {
-            throw new \Exception("Expected response to be instance of BasketAsset");
+
+        if (! $this->lastResponse instanceof BasketAsset) {
+            throw new \Exception('Expected response to be instance of BasketAsset');
         }
     }
 
@@ -326,13 +327,13 @@ class FeatureContext implements Context
     {
         $basket = $this->lastResponse;
         $service = app(\App\Domain\Basket\Services\BasketValueCalculationService::class);
-        
+
         $value = $service->calculateValue($basket);
         if ($value === null) {
-            throw new \Exception("Expected basket value to not be null");
+            throw new \Exception('Expected basket value to not be null');
         }
         if ($value->value <= 0) {
-            throw new \Exception("Expected basket value to be greater than 0, got: " . $value->value);
+            throw new \Exception('Expected basket value to be greater than 0, got: '.$value->value);
         }
     }
 
@@ -341,12 +342,12 @@ class FeatureContext implements Context
      */
     public function iShouldHaveInMyAccount($amount, $currency)
     {
-        $account = $this->accounts[array_key_first($this->accounts)] ?? 
+        $account = $this->accounts[array_key_first($this->accounts)] ??
                    Account::where('user_uuid', $this->currentUser->uuid)->first();
-        
+
         $balance = $account->getBalance($currency);
         $expectedBalance = (int) ($amount * 100);
-        
+
         if ($balance !== $expectedBalance) {
             throw new \Exception("Expected balance to be $expectedBalance but got $balance");
         }
@@ -365,13 +366,13 @@ class FeatureContext implements Context
      */
     public function theBasketShouldBeRebalancedWithinTheWeightLimits()
     {
-        if (!is_array($this->lastResponse)) {
-            throw new \Exception("Expected response to be an array");
+        if (! is_array($this->lastResponse)) {
+            throw new \Exception('Expected response to be an array');
         }
         if ($this->lastResponse['status'] !== 'completed') {
-            throw new \Exception("Expected status to be 'completed' but got '" . $this->lastResponse['status'] . "'");
+            throw new \Exception("Expected status to be 'completed' but got '".$this->lastResponse['status']."'");
         }
-        
+
         // Verify all components are within their weight limits
         $basket = end($this->baskets);
         foreach ($basket->components as $component) {
@@ -391,7 +392,7 @@ class FeatureContext implements Context
     {
         // In a real implementation, we would check for the event in the event store
         // For now, we'll verify the response indicates success
-        if (!isset($this->lastResponse['adjustments']) || !is_array($this->lastResponse['adjustments'])) {
+        if (! isset($this->lastResponse['adjustments']) || ! is_array($this->lastResponse['adjustments'])) {
             throw new \Exception("Expected response to have 'adjustments' array");
         }
     }
@@ -403,8 +404,7 @@ class FeatureContext implements Context
     {
         $data = $this->lastResponse->json('data');
         if (count($data) !== (int) $count) {
-            throw new \Exception("Expected " . (int) $count . " exchange rates but got " . count($data));
+            throw new \Exception('Expected '.(int) $count.' exchange rates but got '.count($data));
         }
     }
-
 }

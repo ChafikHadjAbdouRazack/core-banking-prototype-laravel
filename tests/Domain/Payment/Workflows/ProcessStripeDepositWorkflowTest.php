@@ -88,17 +88,17 @@ it('creates proper transaction flow', function () {
 
     // Step 1: Initiate deposit
     PaymentTransaction::create([
-        'aggregate_uuid'      => $depositUuid,
-        'account_uuid'        => $accountUuid,
-        'type'                => 'deposit',
-        'status'              => 'pending',
-        'amount'              => 10000,
-        'currency'            => 'USD',
-        'reference'           => $deposit->getReference(),
-        'external_reference'  => $deposit->getExternalReference(),
-        'payment_method'      => 'card',
+        'aggregate_uuid' => $depositUuid,
+        'account_uuid' => $accountUuid,
+        'type' => 'deposit',
+        'status' => 'pending',
+        'amount' => 10000,
+        'currency' => 'USD',
+        'reference' => $deposit->getReference(),
+        'external_reference' => $deposit->getExternalReference(),
+        'payment_method' => 'card',
         'payment_method_type' => 'visa',
-        'initiated_at'        => now(),
+        'initiated_at' => now(),
     ]);
 
     // Step 2: Credit account (in real flow this happens via event sourcing)
@@ -107,9 +107,9 @@ it('creates proper transaction flow', function () {
     // Step 3: Complete deposit
     PaymentTransaction::where('aggregate_uuid', $depositUuid)
         ->update([
-            'status'         => 'completed',
+            'status' => 'completed',
             'transaction_id' => $transactionId,
-            'completed_at'   => now(),
+            'completed_at' => now(),
         ]);
 
     // Verify results

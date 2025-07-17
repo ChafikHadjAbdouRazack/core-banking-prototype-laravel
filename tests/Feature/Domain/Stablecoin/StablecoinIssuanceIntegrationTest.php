@@ -44,8 +44,8 @@ class StablecoinIssuanceIntegrationTest extends DomainTestCase
         $this->usdAsset = Asset::firstOrCreate(
             ['code' => 'USD'],
             [
-                'name'      => 'US Dollar',
-                'type'      => 'fiat',
+                'name' => 'US Dollar',
+                'type' => 'fiat',
                 'precision' => 2,
                 'is_active' => true,
             ]
@@ -54,8 +54,8 @@ class StablecoinIssuanceIntegrationTest extends DomainTestCase
         $this->eurAsset = Asset::firstOrCreate(
             ['code' => 'EUR'],
             [
-                'name'      => 'Euro',
-                'type'      => 'fiat',
+                'name' => 'Euro',
+                'type' => 'fiat',
                 'precision' => 2,
                 'is_active' => true,
             ]
@@ -64,8 +64,8 @@ class StablecoinIssuanceIntegrationTest extends DomainTestCase
         $this->fusdAsset = Asset::firstOrCreate(
             ['code' => 'FUSD'],
             [
-                'name'      => 'FinAegis USD',
-                'type'      => 'stablecoin',
+                'name' => 'FinAegis USD',
+                'type' => 'stablecoin',
                 'precision' => 8,
                 'is_active' => true,
             ]
@@ -86,25 +86,25 @@ class StablecoinIssuanceIntegrationTest extends DomainTestCase
 
         // Create stablecoin
         $this->stablecoin = Stablecoin::create([
-            'code'                   => 'FUSD',
-            'name'                   => 'FinAegis USD',
-            'symbol'                 => 'FUSD',
-            'peg_asset_code'         => 'USD',
-            'peg_ratio'              => 1.0,
-            'target_price'           => 1.0,
-            'stability_mechanism'    => 'collateralized',
-            'collateral_ratio'       => 1.5,
-            'min_collateral_ratio'   => 1.2,
-            'liquidation_penalty'    => 0.05,
-            'total_supply'           => 0,
-            'max_supply'             => 10000000,
+            'code' => 'FUSD',
+            'name' => 'FinAegis USD',
+            'symbol' => 'FUSD',
+            'peg_asset_code' => 'USD',
+            'peg_ratio' => 1.0,
+            'target_price' => 1.0,
+            'stability_mechanism' => 'collateralized',
+            'collateral_ratio' => 1.5,
+            'min_collateral_ratio' => 1.2,
+            'liquidation_penalty' => 0.05,
+            'total_supply' => 0,
+            'max_supply' => 10000000,
             'total_collateral_value' => 0,
-            'mint_fee'               => 0.001,
-            'burn_fee'               => 0.001,
-            'precision'              => 8,
-            'is_active'              => true,
-            'minting_enabled'        => true,
-            'burning_enabled'        => true,
+            'mint_fee' => 0.001,
+            'burn_fee' => 0.001,
+            'precision' => 8,
+            'is_active' => true,
+            'minting_enabled' => true,
+            'burning_enabled' => true,
         ]);
     }
 
@@ -182,13 +182,13 @@ class StablecoinIssuanceIntegrationTest extends DomainTestCase
     {
         // First mint some stablecoins
         $position = StablecoinCollateralPosition::create([
-            'account_uuid'          => $this->account->uuid,
-            'stablecoin_code'       => 'FUSD',
+            'account_uuid' => $this->account->uuid,
+            'stablecoin_code' => 'FUSD',
             'collateral_asset_code' => 'USD',
-            'collateral_amount'     => 150000,
-            'debt_amount'           => 100000,
-            'collateral_ratio'      => 1.5,
-            'status'                => 'active',
+            'collateral_amount' => 150000,
+            'debt_amount' => 100000,
+            'collateral_ratio' => 1.5,
+            'status' => 'active',
         ]);
 
         // Give account FUSD to burn
@@ -196,7 +196,7 @@ class StablecoinIssuanceIntegrationTest extends DomainTestCase
 
         // Update stablecoin stats
         $this->stablecoin->update([
-            'total_supply'           => 100000,
+            'total_supply' => 100000,
             'total_collateral_value' => 150000,
         ]);
 
@@ -231,13 +231,13 @@ class StablecoinIssuanceIntegrationTest extends DomainTestCase
     {
         // Create position
         $position = StablecoinCollateralPosition::create([
-            'account_uuid'          => $this->account->uuid,
-            'stablecoin_code'       => 'FUSD',
+            'account_uuid' => $this->account->uuid,
+            'stablecoin_code' => 'FUSD',
             'collateral_asset_code' => 'USD',
-            'collateral_amount'     => 150000,
-            'debt_amount'           => 100000,
-            'collateral_ratio'      => 1.5,
-            'status'                => 'active',
+            'collateral_amount' => 150000,
+            'debt_amount' => 100000,
+            'collateral_ratio' => 1.5,
+            'status' => 'active',
         ]);
 
         // Give account FUSD to burn
@@ -245,7 +245,7 @@ class StablecoinIssuanceIntegrationTest extends DomainTestCase
 
         // Update stablecoin stats
         $this->stablecoin->update([
-            'total_supply'           => 100000,
+            'total_supply' => 100000,
             'total_collateral_value' => 150000,
         ]);
 
@@ -274,17 +274,17 @@ class StablecoinIssuanceIntegrationTest extends DomainTestCase
     {
         // Create position
         $position = StablecoinCollateralPosition::create([
-            'account_uuid'          => $this->account->uuid,
-            'stablecoin_code'       => 'FUSD',
+            'account_uuid' => $this->account->uuid,
+            'stablecoin_code' => 'FUSD',
             'collateral_asset_code' => 'USD',
-            'collateral_amount'     => 150000,
-            'debt_amount'           => 100000,
-            'collateral_ratio'      => 1.5,
-            'status'                => 'active',
+            'collateral_amount' => 150000,
+            'debt_amount' => 100000,
+            'collateral_ratio' => 1.5,
+            'status' => 'active',
         ]);
 
         $this->stablecoin->update([
-            'total_supply'           => 100000,
+            'total_supply' => 100000,
             'total_collateral_value' => 150000,
         ]);
 
@@ -319,16 +319,16 @@ class StablecoinIssuanceIntegrationTest extends DomainTestCase
     {
         // Create existing position
         $existingPosition = StablecoinCollateralPosition::create([
-            'account_uuid'          => $this->account->uuid,
-            'stablecoin_code'       => 'FUSD',
+            'account_uuid' => $this->account->uuid,
+            'stablecoin_code' => 'FUSD',
             'collateral_asset_code' => 'USD',
-            'collateral_amount'     => 150000,
-            'debt_amount'           => 100000,
-            'status'                => 'active',
+            'collateral_amount' => 150000,
+            'debt_amount' => 100000,
+            'status' => 'active',
         ]);
 
         $this->stablecoin->update([
-            'total_supply'           => 100000,
+            'total_supply' => 100000,
             'total_collateral_value' => 150000,
         ]);
 
@@ -430,13 +430,13 @@ class StablecoinIssuanceIntegrationTest extends DomainTestCase
         $this->stablecoin->update(['burning_enabled' => false]);
 
         $position = StablecoinCollateralPosition::create([
-            'account_uuid'          => $this->account->uuid,
-            'stablecoin_code'       => 'FUSD',
+            'account_uuid' => $this->account->uuid,
+            'stablecoin_code' => 'FUSD',
             'collateral_asset_code' => 'USD',
-            'collateral_amount'     => 150000,
-            'debt_amount'           => 100000,
-            'collateral_ratio'      => 1.5,
-            'status'                => 'active',
+            'collateral_amount' => 150000,
+            'debt_amount' => 100000,
+            'collateral_ratio' => 1.5,
+            'status' => 'active',
         ]);
 
         $this->expectException(\RuntimeException::class);
@@ -449,13 +449,13 @@ class StablecoinIssuanceIntegrationTest extends DomainTestCase
     public function it_validates_burn_amount()
     {
         $position = StablecoinCollateralPosition::create([
-            'account_uuid'          => $this->account->uuid,
-            'stablecoin_code'       => 'FUSD',
+            'account_uuid' => $this->account->uuid,
+            'stablecoin_code' => 'FUSD',
             'collateral_asset_code' => 'USD',
-            'collateral_amount'     => 150000,
-            'debt_amount'           => 100000,
-            'collateral_ratio'      => 1.5,
-            'status'                => 'active',
+            'collateral_amount' => 150000,
+            'debt_amount' => 100000,
+            'collateral_ratio' => 1.5,
+            'status' => 'active',
         ]);
 
         $this->expectException(\RuntimeException::class);
@@ -468,13 +468,13 @@ class StablecoinIssuanceIntegrationTest extends DomainTestCase
     public function it_validates_collateral_asset_match()
     {
         $position = StablecoinCollateralPosition::create([
-            'account_uuid'          => $this->account->uuid,
-            'stablecoin_code'       => 'FUSD',
+            'account_uuid' => $this->account->uuid,
+            'stablecoin_code' => 'FUSD',
             'collateral_asset_code' => 'USD',
-            'collateral_amount'     => 150000,
-            'debt_amount'           => 100000,
-            'collateral_ratio'      => 1.5,
-            'status'                => 'active',
+            'collateral_amount' => 150000,
+            'debt_amount' => 100000,
+            'collateral_ratio' => 1.5,
+            'status' => 'active',
         ]);
 
         $this->expectException(\RuntimeException::class);

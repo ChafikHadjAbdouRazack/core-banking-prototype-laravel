@@ -15,11 +15,11 @@ class RegisterControllerTest extends ControllerTestCase
     public function test_user_can_register_via_api(): void
     {
         $response = $this->postJson('/api/auth/register', [
-            'name'                  => 'John Doe',
-            'email'                 => 'john@example.com',
-            'password'              => 'Test@Pass2024!Secure',
+            'name' => 'John Doe',
+            'email' => 'john@example.com',
+            'password' => 'Test@Pass2024!Secure',
             'password_confirmation' => 'Test@Pass2024!Secure',
-            'is_business_customer'  => false,
+            'is_business_customer' => false,
         ]);
 
         $response->assertStatus(201)
@@ -36,7 +36,7 @@ class RegisterControllerTest extends ControllerTestCase
             ]);
 
         $this->assertDatabaseHas('users', [
-            'name'  => 'John Doe',
+            'name' => 'John Doe',
             'email' => 'john@example.com',
         ]);
 
@@ -49,11 +49,11 @@ class RegisterControllerTest extends ControllerTestCase
     public function test_business_user_can_register_via_api(): void
     {
         $response = $this->postJson('/api/auth/register', [
-            'name'                  => 'Business User',
-            'email'                 => 'business@example.com',
-            'password'              => 'Test@Pass2024!Secure',
+            'name' => 'Business User',
+            'email' => 'business@example.com',
+            'password' => 'Test@Pass2024!Secure',
             'password_confirmation' => 'Test@Pass2024!Secure',
-            'is_business_customer'  => true,
+            'is_business_customer' => true,
         ]);
 
         $response->assertStatus(201);
@@ -66,9 +66,9 @@ class RegisterControllerTest extends ControllerTestCase
     public function test_registration_validates_input(): void
     {
         $response = $this->postJson('/api/auth/register', [
-            'name'                  => '',
-            'email'                 => 'invalid-email',
-            'password'              => 'short',
+            'name' => '',
+            'email' => 'invalid-email',
+            'password' => 'short',
             'password_confirmation' => 'different',
         ]);
 
@@ -82,9 +82,9 @@ class RegisterControllerTest extends ControllerTestCase
         User::factory()->create(['email' => 'existing@example.com']);
 
         $response = $this->postJson('/api/auth/register', [
-            'name'                  => 'John Doe',
-            'email'                 => 'existing@example.com',
-            'password'              => 'Test@Pass2024!Secure',
+            'name' => 'John Doe',
+            'email' => 'existing@example.com',
+            'password' => 'Test@Pass2024!Secure',
             'password_confirmation' => 'Test@Pass2024!Secure',
         ]);
 
@@ -96,9 +96,9 @@ class RegisterControllerTest extends ControllerTestCase
     public function test_registered_user_receives_access_token(): void
     {
         $response = $this->postJson('/api/auth/register', [
-            'name'                  => 'John Doe',
-            'email'                 => 'john@example.com',
-            'password'              => 'Test@Pass2024!Secure',
+            'name' => 'John Doe',
+            'email' => 'john@example.com',
+            'password' => 'Test@Pass2024!Secure',
             'password_confirmation' => 'Test@Pass2024!Secure',
         ]);
 

@@ -2,11 +2,11 @@
 
 namespace Tests\Feature\Api\V2;
 
+use App\Domain\Account\Models\AccountBalance;
 use App\Domain\Basket\Models\BasketAsset;
 use App\Domain\Basket\Models\BasketValue;
 use App\Domain\Wallet\Workflows\WalletConvertWorkflow;
 use App\Models\Account;
-use App\Domain\Account\Models\AccountBalance;
 use App\Models\Asset;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -44,8 +44,8 @@ class GCUTradingTest extends DomainTestCase
         $this->gcu = BasketAsset::firstOrCreate(
             ['code' => 'GCU'],
             [
-                'name'                => 'Global Currency Unit',
-                'type'                => 'fixed',
+                'name' => 'Global Currency Unit',
+                'type' => 'fixed',
                 'rebalance_frequency' => 'never',
             ]
         );
@@ -53,9 +53,9 @@ class GCUTradingTest extends DomainTestCase
         // Create GCU value
         BasketValue::create([
             'basket_asset_code' => 'GCU',
-            'value'             => 1.0975,
-            'component_values'  => [],
-            'calculated_at'     => now(),
+            'value' => 1.0975,
+            'component_values' => [],
+            'calculated_at' => now(),
         ]);
 
         // Create exchange rates needed for GCU trading
@@ -71,20 +71,20 @@ class GCUTradingTest extends DomainTestCase
         foreach ($exchangeRates as $rate) {
             \App\Domain\Asset\Models\ExchangeRate::create([
                 'from_asset_code' => $rate['from_asset'],
-                'to_asset_code'   => $rate['to_asset'],
-                'rate'            => $rate['rate'],
-                'source'          => 'manual',
-                'valid_at'        => now()->subHour(),
-                'expires_at'      => now()->addHour(),
-                'is_active'       => true,
+                'to_asset_code' => $rate['to_asset'],
+                'rate' => $rate['rate'],
+                'source' => 'manual',
+                'valid_at' => now()->subHour(),
+                'expires_at' => now()->addHour(),
+                'is_active' => true,
             ]);
         }
 
         // Give user some EUR balance
         AccountBalance::create([
             'account_uuid' => $this->account->uuid,
-            'asset_code'   => 'EUR',
-            'balance'      => 10000.00,
+            'asset_code' => 'EUR',
+            'balance' => 10000.00,
         ]);
 
         Sanctum::actingAs($this->user);
@@ -153,7 +153,7 @@ class GCUTradingTest extends DomainTestCase
         // Mock the workflow to return a successful result
         WorkflowStub::mock(WalletConvertWorkflow::class, [
             'converted_amount' => 91245, // Based on the exchange rate
-            'exchange_rate'    => 0.91245,
+            'exchange_rate' => 0.91245,
         ]);
 
         // Manually update balances since the workflow is mocked
@@ -168,7 +168,7 @@ class GCUTradingTest extends DomainTestCase
         );
 
         $response = $this->postJson('/api/v2/gcu/buy', [
-            'amount'   => 1000,
+            'amount' => 1000,
             'currency' => 'EUR',
         ]);
 
@@ -195,12 +195,12 @@ class GCUTradingTest extends DomainTestCase
         // Verify balances were updated
         $this->assertDatabaseHas('account_balances', [
             'account_uuid' => $this->account->uuid,
-            'asset_code'   => 'EUR',
+            'asset_code' => 'EUR',
         ]);
 
         $this->assertDatabaseHas('account_balances', [
             'account_uuid' => $this->account->uuid,
-            'asset_code'   => 'GCU',
+            'asset_code' => 'GCU',
         ]);
     }
 
@@ -208,7 +208,7 @@ class GCUTradingTest extends DomainTestCase
     public function cannot_buy_gcu_with_insufficient_balance()
     {
         $response = $this->postJson('/api/v2/gcu/buy', [
-            'amount'   => 20000, // More than available balance
+            'amount' => 20000, // More than available balance
             'currency' => 'EUR',
         ]);
 
@@ -220,7 +220,7 @@ class GCUTradingTest extends DomainTestCase
     public function cannot_buy_gcu_below_minimum_amount()
     {
         $response = $this->postJson('/api/v2/gcu/buy', [
-            'amount'   => 50, // Below minimum of 100
+            'amount' => 50, // Below minimum of 100
             'currency' => 'EUR',
         ]);
 
@@ -234,12 +234,12 @@ class GCUTradingTest extends DomainTestCase
         // Give user some GCU balance
         AccountBalance::create([
             'account_uuid' => $this->account->uuid,
-            'asset_code'   => 'GCU',
-            'balance'      => 1000.00,
+            'asset_code' => 'GCU',
+            'balance' => 1000.00,
         ]);
 
         $response = $this->postJson('/api/v2/gcu/sell', [
-            'amount'   => 100,
+            'amount' => 100,
             'currency' => 'EUR',
         ]);
 
@@ -270,12 +270,12 @@ class GCUTradingTest extends DomainTestCase
         // Give user minimal GCU balance
         AccountBalance::create([
             'account_uuid' => $this->account->uuid,
-            'asset_code'   => 'GCU',
-            'balance'      => 5.00,
+            'asset_code' => 'GCU',
+            'balance' => 5.00,
         ]);
 
         $response = $this->postJson('/api/v2/gcu/sell', [
-            'amount'   => 100, // More than available
+            'amount' => 100, // More than available
             'currency' => 'EUR',
         ]);
 
@@ -313,7 +313,7 @@ class GCUTradingTest extends DomainTestCase
         $this->account->update(['frozen' => true]);
 
         $response = $this->postJson('/api/v2/gcu/buy', [
-            'amount'   => 1000,
+            'amount' => 1000,
             'currency' => 'EUR',
         ]);
 
@@ -329,12 +329,12 @@ class GCUTradingTest extends DomainTestCase
         // Give user some GCU balance
         AccountBalance::create([
             'account_uuid' => $this->account->uuid,
-            'asset_code'   => 'GCU',
-            'balance'      => 1000.00,
+            'asset_code' => 'GCU',
+            'balance' => 1000.00,
         ]);
 
         $response = $this->postJson('/api/v2/gcu/sell', [
-            'amount'   => 100,
+            'amount' => 100,
             'currency' => 'EUR',
         ]);
 
@@ -379,12 +379,12 @@ class GCUTradingTest extends DomainTestCase
             // Give user balance in this currency
             AccountBalance::create([
                 'account_uuid' => $this->account->uuid,
-                'asset_code'   => $currency,
-                'balance'      => 10000.00,
+                'asset_code' => $currency,
+                'balance' => 10000.00,
             ]);
 
             $response = $this->postJson('/api/v2/gcu/buy', [
-                'amount'   => 1000,
+                'amount' => 1000,
                 'currency' => $currency,
             ]);
 

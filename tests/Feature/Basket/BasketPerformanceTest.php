@@ -35,13 +35,13 @@ class BasketPerformanceTest extends TestCase
 
         // Create basket without using factory's configure method to avoid auto-components
         $this->basket = new BasketAsset([
-            'code'                => $uniqueCode,
-            'name'                => 'Test Basket',
-            'type'                => 'fixed',
+            'code' => $uniqueCode,
+            'name' => 'Test Basket',
+            'type' => 'fixed',
             'rebalance_frequency' => 'never',
-            'is_active'           => true,
-            'description'         => 'Test basket for performance testing',
-            'metadata'            => ['test' => true],
+            'is_active' => true,
+            'description' => 'Test basket for performance testing',
+            'metadata' => ['test' => true],
         ]);
         $this->basket->save();
 
@@ -49,20 +49,20 @@ class BasketPerformanceTest extends TestCase
         if ($this->basket->components()->count() === 0) {
             $this->basket->components()->create([
                 'asset_code' => 'USD',
-                'weight'     => 50.0,
-                'is_active'  => true,
+                'weight' => 50.0,
+                'is_active' => true,
             ]);
 
             $this->basket->components()->create([
                 'asset_code' => 'EUR',
-                'weight'     => 30.0,
-                'is_active'  => true,
+                'weight' => 30.0,
+                'is_active' => true,
             ]);
 
             $this->basket->components()->create([
                 'asset_code' => 'GBP',
-                'weight'     => 20.0,
-                'is_active'  => true,
+                'weight' => 20.0,
+                'is_active' => true,
             ]);
         }
     }
@@ -86,9 +86,9 @@ class BasketPerformanceTest extends TestCase
         foreach ($values as $data) {
             BasketValue::factory()->create([
                 'basket_asset_code' => $this->basket->code,
-                'value'             => $data['value'],
-                'calculated_at'     => $data['calculated_at'],
-                'component_values'  => [
+                'value' => $data['value'],
+                'calculated_at' => $data['calculated_at'],
+                'component_values' => [
                     'USD' => ['weight' => 50.0, 'weighted_value' => $data['value'] * 0.5],
                     'EUR' => ['weight' => 30.0, 'weighted_value' => $data['value'] * 0.3],
                     'GBP' => ['weight' => 20.0, 'weighted_value' => $data['value'] * 0.2],
@@ -135,8 +135,8 @@ class BasketPerformanceTest extends TestCase
         foreach ($times as $index => $time) {
             BasketValue::factory()->create([
                 'basket_asset_code' => $this->basket->code,
-                'value'             => 1.0 + ($index * 0.01),
-                'calculated_at'     => $time,
+                'value' => 1.0 + ($index * 0.01),
+                'calculated_at' => $time,
             ]);
         }
 
@@ -157,20 +157,20 @@ class BasketPerformanceTest extends TestCase
         // Create some performance records
         BasketPerformance::factory()->create([
             'basket_asset_code' => $this->basket->code,
-            'period_type'       => 'day',
-            'period_end'        => now(),
+            'period_type' => 'day',
+            'period_end' => now(),
             'return_percentage' => 1.5,
-            'volatility'        => 2.5,
-            'sharpe_ratio'      => 1.2,
+            'volatility' => 2.5,
+            'sharpe_ratio' => 1.2,
         ]);
 
         BasketPerformance::factory()->create([
             'basket_asset_code' => $this->basket->code,
-            'period_type'       => 'week',
-            'period_end'        => now(),
+            'period_type' => 'week',
+            'period_end' => now(),
             'return_percentage' => 3.2,
-            'volatility'        => 3.8,
-            'sharpe_ratio'      => 1.5,
+            'volatility' => 3.8,
+            'sharpe_ratio' => 1.5,
         ]);
 
         $summary = $this->service->getPerformanceSummary($this->basket);
@@ -195,23 +195,23 @@ class BasketPerformanceTest extends TestCase
         // Create a performance record
         $performance = BasketPerformance::factory()->create([
             'basket_asset_code' => $this->basket->code,
-            'period_type'       => 'month',
-            'period_start'      => now()->subMonth(),
-            'period_end'        => now(),
+            'period_type' => 'month',
+            'period_start' => now()->subMonth(),
+            'period_end' => now(),
             'return_percentage' => 2.5,
-            'volatility'        => 5.0,
-            'sharpe_ratio'      => 1.8,
-            'max_drawdown'      => 3.2,
+            'volatility' => 5.0,
+            'sharpe_ratio' => 1.8,
+            'max_drawdown' => 3.2,
         ]);
 
         // Create some basket values for performance calculation
         BasketValue::factory()->forBasket($this->basket->code)->create([
-            'value'         => 1.0000,
+            'value' => 1.0000,
             'calculated_at' => now()->subDays(30),
         ]);
 
         BasketValue::factory()->forBasket($this->basket->code)->create([
-            'value'         => 1.0250,
+            'value' => 1.0250,
             'calculated_at' => now(),
         ]);
 
@@ -245,9 +245,9 @@ class BasketPerformanceTest extends TestCase
         for ($i = 0; $i < 5; $i++) {
             $performances->push(BasketPerformance::factory()->create([
                 'basket_asset_code' => $this->basket->code,
-                'period_type'       => 'day',
-                'period_start'      => now()->subDays($i + 1),
-                'period_end'        => now()->subDays($i),
+                'period_type' => 'day',
+                'period_start' => now()->subDays($i + 1),
+                'period_end' => now()->subDays($i),
             ]));
         }
 
@@ -274,17 +274,17 @@ class BasketPerformanceTest extends TestCase
 
         // Create values
         BasketValue::factory()->forBasket($this->basket->code)->create([
-            'value'         => 1.0000,
+            'value' => 1.0000,
             'calculated_at' => now()->subDays(2),
         ]);
 
         BasketValue::factory()->forBasket($this->basket->code)->create([
-            'value'         => 1.0100,
+            'value' => 1.0100,
             'calculated_at' => now()->subDay(),
         ]);
 
         BasketValue::factory()->forBasket($this->basket->code)->create([
-            'value'         => 1.0200,
+            'value' => 1.0200,
             'calculated_at' => now(),
         ]);
 
@@ -302,7 +302,7 @@ class BasketPerformanceTest extends TestCase
         // Check that performance was created
         $this->assertDatabaseHas('basket_performances', [
             'basket_asset_code' => $this->basket->code,
-            'period_type'       => 'day',
+            'period_type' => 'day',
         ]);
     }
 
@@ -312,40 +312,40 @@ class BasketPerformanceTest extends TestCase
         // Create performance with components
         $performance = BasketPerformance::factory()->create([
             'basket_asset_code' => $this->basket->code,
-            'period_type'       => 'month',
+            'period_type' => 'month',
         ]);
 
         // Create component performances with all required fields
         $performance->componentPerformances()->createMany([
             [
-                'asset_code'              => 'USD',
+                'asset_code' => 'USD',
                 'contribution_percentage' => 2.5,
-                'start_weight'            => 50.0,
-                'end_weight'              => 50.0,
-                'average_weight'          => 50.0,
-                'contribution_value'      => 0.025,
-                'return_value'            => 0.05,
-                'return_percentage'       => 5.0,
+                'start_weight' => 50.0,
+                'end_weight' => 50.0,
+                'average_weight' => 50.0,
+                'contribution_value' => 0.025,
+                'return_value' => 0.05,
+                'return_percentage' => 5.0,
             ],
             [
-                'asset_code'              => 'EUR',
+                'asset_code' => 'EUR',
                 'contribution_percentage' => -1.2,
-                'start_weight'            => 30.0,
-                'end_weight'              => 30.0,
-                'average_weight'          => 30.0,
-                'contribution_value'      => -0.012,
-                'return_value'            => -0.04,
-                'return_percentage'       => -4.0,
+                'start_weight' => 30.0,
+                'end_weight' => 30.0,
+                'average_weight' => 30.0,
+                'contribution_value' => -0.012,
+                'return_value' => -0.04,
+                'return_percentage' => -4.0,
             ],
             [
-                'asset_code'              => 'GBP',
+                'asset_code' => 'GBP',
                 'contribution_percentage' => 0.8,
-                'start_weight'            => 20.0,
-                'end_weight'              => 20.0,
-                'average_weight'          => 20.0,
-                'contribution_value'      => 0.008,
-                'return_value'            => 0.04,
-                'return_percentage'       => 4.0,
+                'start_weight' => 20.0,
+                'end_weight' => 20.0,
+                'average_weight' => 20.0,
+                'contribution_value' => 0.008,
+                'return_value' => 0.04,
+                'return_percentage' => 4.0,
             ],
         ]);
 
@@ -376,8 +376,8 @@ class BasketPerformanceTest extends TestCase
         foreach ($values as $data) {
             BasketValue::factory()->create([
                 'basket_asset_code' => $this->basket->code,
-                'value'             => $data['value'],
-                'calculated_at'     => $data['calculated_at'],
+                'value' => $data['value'],
+                'calculated_at' => $data['calculated_at'],
             ]);
         }
 
@@ -404,7 +404,7 @@ class BasketPerformanceTest extends TestCase
         // Create values
         BasketValue::factory()->count(10)->create([
             'basket_asset_code' => $this->basket->code,
-            'calculated_at'     => now(),
+            'calculated_at' => now(),
         ]);
 
         $this->artisan('basket:calculate-performance', [

@@ -53,13 +53,13 @@ it('updates payment transaction on deposit completed', function () {
     // Create a pending transaction first
     PaymentTransaction::create([
         'aggregate_uuid' => $aggregateUuid,
-        'account_uuid'   => Str::uuid()->toString(),
-        'type'           => 'deposit',
-        'status'         => 'pending',
-        'amount'         => 10000,
-        'currency'       => 'USD',
-        'reference'      => 'TEST-123',
-        'initiated_at'   => now()->subMinutes(5),
+        'account_uuid' => Str::uuid()->toString(),
+        'type' => 'deposit',
+        'status' => 'pending',
+        'amount' => 10000,
+        'currency' => 'USD',
+        'reference' => 'TEST-123',
+        'initiated_at' => now()->subMinutes(5),
     ]);
 
     $event = new DepositCompleted(
@@ -85,13 +85,13 @@ it('updates payment transaction on deposit failed', function () {
     // Create a pending transaction first
     PaymentTransaction::create([
         'aggregate_uuid' => $aggregateUuid,
-        'account_uuid'   => Str::uuid()->toString(),
-        'type'           => 'deposit',
-        'status'         => 'pending',
-        'amount'         => 10000,
-        'currency'       => 'USD',
-        'reference'      => 'TEST-123',
-        'initiated_at'   => now()->subMinutes(5),
+        'account_uuid' => Str::uuid()->toString(),
+        'type' => 'deposit',
+        'status' => 'pending',
+        'amount' => 10000,
+        'currency' => 'USD',
+        'reference' => 'TEST-123',
+        'initiated_at' => now()->subMinutes(5),
     ]);
 
     $event = new DepositFailed(

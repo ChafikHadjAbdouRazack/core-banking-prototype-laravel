@@ -32,8 +32,8 @@ class CollateralServiceTest extends ServiceTestCase
         Asset::firstOrCreate(
             ['code' => 'USD'],
             [
-                'name'      => 'US Dollar',
-                'type'      => 'fiat',
+                'name' => 'US Dollar',
+                'type' => 'fiat',
                 'precision' => 2,
                 'is_active' => true,
             ]
@@ -42,8 +42,8 @@ class CollateralServiceTest extends ServiceTestCase
         Asset::firstOrCreate(
             ['code' => 'EUR'],
             [
-                'name'      => 'Euro',
-                'type'      => 'fiat',
+                'name' => 'Euro',
+                'type' => 'fiat',
                 'precision' => 2,
                 'is_active' => true,
             ]
@@ -66,12 +66,12 @@ class CollateralServiceTest extends ServiceTestCase
         // Test different asset conversion
         $mockRate = new ExchangeRate([
             'from_asset_code' => 'EUR',
-            'to_asset_code'   => 'USD',
-            'rate'            => 1.1,
-            'source'          => ExchangeRate::SOURCE_API,
-            'valid_at'        => now(),
-            'expires_at'      => now()->addHour(),
-            'is_active'       => true,
+            'to_asset_code' => 'USD',
+            'rate' => 1.1,
+            'source' => ExchangeRate::SOURCE_API,
+            'valid_at' => now(),
+            'expires_at' => now()->addHour(),
+            'is_active' => true,
         ]);
 
         $this->exchangeRateService
@@ -88,25 +88,25 @@ class CollateralServiceTest extends ServiceTestCase
     public function it_can_calculate_total_collateral_value()
     {
         $stablecoin = Stablecoin::create([
-            'code'                   => 'FUSD',
-            'name'                   => 'FinAegis USD',
-            'symbol'                 => 'FUSD',
-            'peg_asset_code'         => 'USD',
-            'peg_ratio'              => 1.0,
-            'target_price'           => 1.0,
-            'stability_mechanism'    => 'collateralized',
-            'collateral_ratio'       => 1.5,
-            'min_collateral_ratio'   => 1.2,
-            'liquidation_penalty'    => 0.1,
-            'total_supply'           => 0,
-            'max_supply'             => 10000000,
+            'code' => 'FUSD',
+            'name' => 'FinAegis USD',
+            'symbol' => 'FUSD',
+            'peg_asset_code' => 'USD',
+            'peg_ratio' => 1.0,
+            'target_price' => 1.0,
+            'stability_mechanism' => 'collateralized',
+            'collateral_ratio' => 1.5,
+            'min_collateral_ratio' => 1.2,
+            'liquidation_penalty' => 0.1,
+            'total_supply' => 0,
+            'max_supply' => 10000000,
             'total_collateral_value' => 0,
-            'mint_fee'               => 0.005,
-            'burn_fee'               => 0.003,
-            'precision'              => 2,
-            'is_active'              => true,
-            'minting_enabled'        => true,
-            'burning_enabled'        => true,
+            'mint_fee' => 0.005,
+            'burn_fee' => 0.003,
+            'precision' => 2,
+            'is_active' => true,
+            'minting_enabled' => true,
+            'burning_enabled' => true,
         ]);
 
         $account1 = Account::factory()->create();
@@ -114,33 +114,33 @@ class CollateralServiceTest extends ServiceTestCase
 
         // Create positions with different accounts
         StablecoinCollateralPosition::create([
-            'account_uuid'          => $account1->uuid,
-            'stablecoin_code'       => 'FUSD',
+            'account_uuid' => $account1->uuid,
+            'stablecoin_code' => 'FUSD',
             'collateral_asset_code' => 'USD',
-            'collateral_amount'     => 100000,
-            'debt_amount'           => 50000,
-            'collateral_ratio'      => 2.0,
-            'status'                => 'active',
+            'collateral_amount' => 100000,
+            'debt_amount' => 50000,
+            'collateral_ratio' => 2.0,
+            'status' => 'active',
         ]);
 
         StablecoinCollateralPosition::create([
-            'account_uuid'          => $account2->uuid,
-            'stablecoin_code'       => 'FUSD',
+            'account_uuid' => $account2->uuid,
+            'stablecoin_code' => 'FUSD',
             'collateral_asset_code' => 'EUR',
-            'collateral_amount'     => 50000,
-            'debt_amount'           => 25000,
-            'collateral_ratio'      => 2.0,
-            'status'                => 'active',
+            'collateral_amount' => 50000,
+            'debt_amount' => 25000,
+            'collateral_ratio' => 2.0,
+            'status' => 'active',
         ]);
 
         $mockRate = new ExchangeRate([
             'from_asset_code' => 'EUR',
-            'to_asset_code'   => 'USD',
-            'rate'            => 1.1,
-            'source'          => ExchangeRate::SOURCE_API,
-            'valid_at'        => now(),
-            'expires_at'      => now()->addHour(),
-            'is_active'       => true,
+            'to_asset_code' => 'USD',
+            'rate' => 1.1,
+            'source' => ExchangeRate::SOURCE_API,
+            'valid_at' => now(),
+            'expires_at' => now()->addHour(),
+            'is_active' => true,
         ]);
 
         $this->exchangeRateService
@@ -157,37 +157,37 @@ class CollateralServiceTest extends ServiceTestCase
     public function it_can_calculate_position_health_score()
     {
         $stablecoin = Stablecoin::create([
-            'code'                   => 'FUSD',
-            'name'                   => 'FinAegis USD',
-            'symbol'                 => 'FUSD',
-            'peg_asset_code'         => 'USD',
-            'peg_ratio'              => 1.0,
-            'target_price'           => 1.0,
-            'stability_mechanism'    => 'collateralized',
-            'collateral_ratio'       => 1.5,
-            'min_collateral_ratio'   => 1.2,
-            'liquidation_penalty'    => 0.1,
-            'total_supply'           => 0,
-            'max_supply'             => 10000000,
+            'code' => 'FUSD',
+            'name' => 'FinAegis USD',
+            'symbol' => 'FUSD',
+            'peg_asset_code' => 'USD',
+            'peg_ratio' => 1.0,
+            'target_price' => 1.0,
+            'stability_mechanism' => 'collateralized',
+            'collateral_ratio' => 1.5,
+            'min_collateral_ratio' => 1.2,
+            'liquidation_penalty' => 0.1,
+            'total_supply' => 0,
+            'max_supply' => 10000000,
             'total_collateral_value' => 0,
-            'mint_fee'               => 0.005,
-            'burn_fee'               => 0.003,
-            'precision'              => 2,
-            'is_active'              => true,
-            'minting_enabled'        => true,
-            'burning_enabled'        => true,
+            'mint_fee' => 0.005,
+            'burn_fee' => 0.003,
+            'precision' => 2,
+            'is_active' => true,
+            'minting_enabled' => true,
+            'burning_enabled' => true,
         ]);
 
         $account = Account::factory()->create();
 
         $position = StablecoinCollateralPosition::create([
-            'account_uuid'          => $account->uuid,
-            'stablecoin_code'       => 'FUSD',
+            'account_uuid' => $account->uuid,
+            'stablecoin_code' => 'FUSD',
             'collateral_asset_code' => 'USD',
-            'collateral_amount'     => 150000,
-            'debt_amount'           => 100000,
-            'collateral_ratio'      => 1.5,
-            'status'                => 'active',
+            'collateral_amount' => 150000,
+            'debt_amount' => 100000,
+            'collateral_ratio' => 1.5,
+            'status' => 'active',
         ]);
 
         // Health score = (1.5 - 1.2) / 1.2 = 0.25
@@ -210,38 +210,38 @@ class CollateralServiceTest extends ServiceTestCase
     public function it_can_calculate_liquidation_priority()
     {
         $stablecoin = Stablecoin::create([
-            'code'                   => 'FUSD',
-            'name'                   => 'FinAegis USD',
-            'symbol'                 => 'FUSD',
-            'peg_asset_code'         => 'USD',
-            'peg_ratio'              => 1.0,
-            'target_price'           => 1.0,
-            'stability_mechanism'    => 'collateralized',
-            'collateral_ratio'       => 1.5,
-            'min_collateral_ratio'   => 1.2,
-            'liquidation_penalty'    => 0.1,
-            'total_supply'           => 0,
-            'max_supply'             => 10000000,
+            'code' => 'FUSD',
+            'name' => 'FinAegis USD',
+            'symbol' => 'FUSD',
+            'peg_asset_code' => 'USD',
+            'peg_ratio' => 1.0,
+            'target_price' => 1.0,
+            'stability_mechanism' => 'collateralized',
+            'collateral_ratio' => 1.5,
+            'min_collateral_ratio' => 1.2,
+            'liquidation_penalty' => 0.1,
+            'total_supply' => 0,
+            'max_supply' => 10000000,
             'total_collateral_value' => 0,
-            'mint_fee'               => 0.005,
-            'burn_fee'               => 0.003,
-            'precision'              => 2,
-            'is_active'              => true,
-            'minting_enabled'        => true,
-            'burning_enabled'        => true,
+            'mint_fee' => 0.005,
+            'burn_fee' => 0.003,
+            'precision' => 2,
+            'is_active' => true,
+            'minting_enabled' => true,
+            'burning_enabled' => true,
         ]);
 
         $account = Account::factory()->create();
 
         $position = StablecoinCollateralPosition::create([
-            'account_uuid'          => $account->uuid,
-            'stablecoin_code'       => 'FUSD',
+            'account_uuid' => $account->uuid,
+            'stablecoin_code' => 'FUSD',
             'collateral_asset_code' => 'USD',
-            'collateral_amount'     => 150000,
-            'debt_amount'           => 100000,
-            'collateral_ratio'      => 1.5,
-            'status'                => 'active',
-            'last_interaction_at'   => now()->subDays(3),
+            'collateral_amount' => 150000,
+            'debt_amount' => 100000,
+            'collateral_ratio' => 1.5,
+            'status' => 'active',
+            'last_interaction_at' => now()->subDays(3),
         ]);
 
         $priority = $this->service->calculateLiquidationPriority($position);
@@ -260,38 +260,38 @@ class CollateralServiceTest extends ServiceTestCase
     public function it_can_get_position_recommendations()
     {
         $stablecoin = Stablecoin::create([
-            'code'                   => 'FUSD',
-            'name'                   => 'FinAegis USD',
-            'symbol'                 => 'FUSD',
-            'peg_asset_code'         => 'USD',
-            'peg_ratio'              => 1.0,
-            'target_price'           => 1.0,
-            'stability_mechanism'    => 'collateralized',
-            'collateral_ratio'       => 1.5,
-            'min_collateral_ratio'   => 1.2,
-            'liquidation_penalty'    => 0.1,
-            'total_supply'           => 0,
-            'max_supply'             => 10000000,
+            'code' => 'FUSD',
+            'name' => 'FinAegis USD',
+            'symbol' => 'FUSD',
+            'peg_asset_code' => 'USD',
+            'peg_ratio' => 1.0,
+            'target_price' => 1.0,
+            'stability_mechanism' => 'collateralized',
+            'collateral_ratio' => 1.5,
+            'min_collateral_ratio' => 1.2,
+            'liquidation_penalty' => 0.1,
+            'total_supply' => 0,
+            'max_supply' => 10000000,
             'total_collateral_value' => 0,
-            'mint_fee'               => 0.005,
-            'burn_fee'               => 0.003,
-            'precision'              => 2,
-            'is_active'              => true,
-            'minting_enabled'        => true,
-            'burning_enabled'        => true,
+            'mint_fee' => 0.005,
+            'burn_fee' => 0.003,
+            'precision' => 2,
+            'is_active' => true,
+            'minting_enabled' => true,
+            'burning_enabled' => true,
         ]);
 
         $account = Account::factory()->create();
 
         // Very healthy position
         $position = StablecoinCollateralPosition::create([
-            'account_uuid'             => $account->uuid,
-            'stablecoin_code'          => 'FUSD',
-            'collateral_asset_code'    => 'USD',
-            'collateral_amount'        => 300000,
-            'debt_amount'              => 100000,
-            'collateral_ratio'         => 3.0,
-            'status'                   => 'active',
+            'account_uuid' => $account->uuid,
+            'stablecoin_code' => 'FUSD',
+            'collateral_asset_code' => 'USD',
+            'collateral_amount' => 300000,
+            'debt_amount' => 100000,
+            'collateral_ratio' => 3.0,
+            'status' => 'active',
             'auto_liquidation_enabled' => true,
         ]);
 
@@ -329,25 +329,25 @@ class CollateralServiceTest extends ServiceTestCase
     public function it_can_get_collateral_distribution()
     {
         $stablecoin = Stablecoin::create([
-            'code'                   => 'FUSD',
-            'name'                   => 'FinAegis USD',
-            'symbol'                 => 'FUSD',
-            'peg_asset_code'         => 'USD',
-            'peg_ratio'              => 1.0,
-            'target_price'           => 1.0,
-            'stability_mechanism'    => 'collateralized',
-            'collateral_ratio'       => 1.5,
-            'min_collateral_ratio'   => 1.2,
-            'liquidation_penalty'    => 0.1,
-            'total_supply'           => 0,
-            'max_supply'             => 10000000,
+            'code' => 'FUSD',
+            'name' => 'FinAegis USD',
+            'symbol' => 'FUSD',
+            'peg_asset_code' => 'USD',
+            'peg_ratio' => 1.0,
+            'target_price' => 1.0,
+            'stability_mechanism' => 'collateralized',
+            'collateral_ratio' => 1.5,
+            'min_collateral_ratio' => 1.2,
+            'liquidation_penalty' => 0.1,
+            'total_supply' => 0,
+            'max_supply' => 10000000,
             'total_collateral_value' => 0,
-            'mint_fee'               => 0.005,
-            'burn_fee'               => 0.003,
-            'precision'              => 2,
-            'is_active'              => true,
-            'minting_enabled'        => true,
-            'burning_enabled'        => true,
+            'mint_fee' => 0.005,
+            'burn_fee' => 0.003,
+            'precision' => 2,
+            'is_active' => true,
+            'minting_enabled' => true,
+            'burning_enabled' => true,
         ]);
 
         $account1 = Account::factory()->create();
@@ -356,43 +356,43 @@ class CollateralServiceTest extends ServiceTestCase
 
         // Create positions with different accounts to avoid unique constraint
         StablecoinCollateralPosition::create([
-            'account_uuid'          => $account1->uuid,
-            'stablecoin_code'       => 'FUSD',
+            'account_uuid' => $account1->uuid,
+            'stablecoin_code' => 'FUSD',
             'collateral_asset_code' => 'USD',
-            'collateral_amount'     => 100000,
-            'debt_amount'           => 50000,
-            'collateral_ratio'      => 2.0,
-            'status'                => 'active',
+            'collateral_amount' => 100000,
+            'debt_amount' => 50000,
+            'collateral_ratio' => 2.0,
+            'status' => 'active',
         ]);
 
         StablecoinCollateralPosition::create([
-            'account_uuid'          => $account2->uuid,
-            'stablecoin_code'       => 'FUSD',
+            'account_uuid' => $account2->uuid,
+            'stablecoin_code' => 'FUSD',
             'collateral_asset_code' => 'USD',
-            'collateral_amount'     => 50000,
-            'debt_amount'           => 25000,
-            'collateral_ratio'      => 2.0,
-            'status'                => 'active',
+            'collateral_amount' => 50000,
+            'debt_amount' => 25000,
+            'collateral_ratio' => 2.0,
+            'status' => 'active',
         ]);
 
         StablecoinCollateralPosition::create([
-            'account_uuid'          => $account3->uuid,
-            'stablecoin_code'       => 'FUSD',
+            'account_uuid' => $account3->uuid,
+            'stablecoin_code' => 'FUSD',
             'collateral_asset_code' => 'EUR',
-            'collateral_amount'     => 50000,
-            'debt_amount'           => 25000,
-            'collateral_ratio'      => 2.0,
-            'status'                => 'active',
+            'collateral_amount' => 50000,
+            'debt_amount' => 25000,
+            'collateral_ratio' => 2.0,
+            'status' => 'active',
         ]);
 
         $mockRate = new ExchangeRate([
             'from_asset_code' => 'EUR',
-            'to_asset_code'   => 'USD',
-            'rate'            => 1.1,
-            'source'          => ExchangeRate::SOURCE_API,
-            'valid_at'        => now(),
-            'expires_at'      => now()->addHour(),
-            'is_active'       => true,
+            'to_asset_code' => 'USD',
+            'rate' => 1.1,
+            'source' => ExchangeRate::SOURCE_API,
+            'valid_at' => now(),
+            'expires_at' => now()->addHour(),
+            'is_active' => true,
         ]);
 
         $this->exchangeRateService

@@ -159,8 +159,8 @@ abstract class TestCase extends BaseTestCase
             // Prefix Redis connections for isolation
             config([
                 'database.redis.options.prefix' => 'test_' . $token . ':',
-                'cache.prefix'                  => 'test_' . $token,
-                'horizon.prefix'                => 'test_' . $token . '_horizon:',
+                'cache.prefix' => 'test_' . $token,
+                'horizon.prefix' => 'test_' . $token . '_horizon:',
             ]);
 
             // Ensure event sourcing uses isolated storage

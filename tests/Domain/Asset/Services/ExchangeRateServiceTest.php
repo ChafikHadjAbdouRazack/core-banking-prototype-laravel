@@ -15,10 +15,10 @@ it('can get existing exchange rate', function () {
     ExchangeRate::factory()
         ->between('USD', 'EUR')
         ->create([
-            'rate'       => 0.85,
-            'valid_at'   => now()->subMinutes(10),
+            'rate' => 0.85,
+            'valid_at' => now()->subMinutes(10),
             'expires_at' => now()->addHours(1),
-            'is_active'  => true,
+            'is_active' => true,
         ]);
 
     $rate = $service->getRate('USD', 'EUR');
@@ -44,10 +44,10 @@ it('can convert amounts between assets', function () {
     ExchangeRate::factory()
         ->between('USD', 'EUR')
         ->create([
-            'rate'       => 0.85,
-            'valid_at'   => now()->subMinutes(5),
+            'rate' => 0.85,
+            'valid_at' => now()->subMinutes(5),
             'expires_at' => now()->addHours(2),
-            'is_active'  => true,
+            'is_active' => true,
         ]);
 
     $convertedAmount = $service->convert(10000, 'USD', 'EUR'); // $100.00
@@ -71,13 +71,13 @@ it('can store new exchange rate', function () {
 
     $rate = ExchangeRate::create([
         'from_asset_code' => 'USD',
-        'to_asset_code'   => 'EUR',
-        'rate'            => 0.85,
-        'source'          => ExchangeRate::SOURCE_MANUAL,
-        'valid_at'        => $uniqueTime,
-        'expires_at'      => $uniqueTime->addHours(1),
-        'is_active'       => true,
-        'metadata'        => ['test' => true],
+        'to_asset_code' => 'EUR',
+        'rate' => 0.85,
+        'source' => ExchangeRate::SOURCE_MANUAL,
+        'valid_at' => $uniqueTime,
+        'expires_at' => $uniqueTime->addHours(1),
+        'is_active' => true,
+        'metadata' => ['test' => true],
     ]);
 
     expect($rate)->toBeInstanceOf(ExchangeRate::class);
@@ -92,19 +92,19 @@ it('can get available rates for an asset', function () {
     $service = app(ExchangeRateService::class);
 
     ExchangeRate::factory()->between('USD', 'EUR')->create([
-        'valid_at'   => now()->subMinutes(1),
+        'valid_at' => now()->subMinutes(1),
         'expires_at' => now()->addHours(1),
-        'is_active'  => true,
+        'is_active' => true,
     ]);
     ExchangeRate::factory()->between('USD', 'BTC')->create([
-        'valid_at'   => now()->subMinutes(2),
+        'valid_at' => now()->subMinutes(2),
         'expires_at' => now()->addHours(1),
-        'is_active'  => true,
+        'is_active' => true,
     ]);
     ExchangeRate::factory()->between('EUR', 'USD')->create([
-        'valid_at'   => now()->subMinutes(3),
+        'valid_at' => now()->subMinutes(3),
         'expires_at' => now()->addHours(1),
-        'is_active'  => true,
+        'is_active' => true,
     ]);
 
     $rates = $service->getAvailableRatesFor('USD');
@@ -120,7 +120,7 @@ it('can get rate history', function () {
         ExchangeRate::factory()
             ->between('USD', 'EUR')
             ->create([
-                'valid_at'   => now()->subDays($i),
+                'valid_at' => now()->subDays($i),
                 'expires_at' => now()->subDays($i)->addHours(1),
             ]);
     }

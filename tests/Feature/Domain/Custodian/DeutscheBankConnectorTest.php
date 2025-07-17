@@ -13,8 +13,8 @@ beforeEach(function () {
     Http::fake([
         'https://api.db.com/oauth2/token' => Http::response([
             'access_token' => 'mock-db-access-token',
-            'token_type'   => 'Bearer',
-            'expires_in'   => 7200,
+            'token_type' => 'Bearer',
+            'expires_in' => 7200,
         ], 200),
     ]);
 });
@@ -26,9 +26,9 @@ it('throws exception when client credentials are missing', function () {
 
 it('can be instantiated with valid config', function () {
     $connector = new DeutscheBankConnector([
-        'client_id'     => 'test-client-id',
+        'client_id' => 'test-client-id',
         'client_secret' => 'test-client-secret',
-        'account_id'    => 'test-account-id',
+        'account_id' => 'test-account-id',
     ]);
 
     expect($connector)->toBeInstanceOf(DeutscheBankConnector::class);
@@ -39,14 +39,14 @@ it('checks availability via health endpoint', function () {
     Http::fake([
         'https://api.db.com/oauth2/token' => Http::response([
             'access_token' => 'test-access-token',
-            'token_type'   => 'Bearer',
-            'expires_in'   => 3600,
+            'token_type' => 'Bearer',
+            'expires_in' => 3600,
         ], 200),
         'https://api.db.com/v2/status' => Http::response(['status' => 'operational'], 200),
     ]);
 
     $connector = new DeutscheBankConnector([
-        'client_id'     => 'test-client-id',
+        'client_id' => 'test-client-id',
         'client_secret' => 'test-client-secret',
     ]);
 
@@ -57,14 +57,14 @@ it('returns false when health check fails', function () {
     Http::fake([
         'https://api.db.com/oauth2/token' => Http::response([
             'access_token' => 'test-access-token',
-            'token_type'   => 'Bearer',
-            'expires_in'   => 3600,
+            'token_type' => 'Bearer',
+            'expires_in' => 3600,
         ], 200),
         'https://api.db.com/v2/status' => Http::response(['error' => 'Service unavailable'], 503),
     ]);
 
     $connector = new DeutscheBankConnector([
-        'client_id'     => 'test-client-id',
+        'client_id' => 'test-client-id',
         'client_secret' => 'test-client-secret',
     ]);
 
@@ -75,8 +75,8 @@ it('obtains access token with client credentials', function () {
     Http::fake([
         'https://api.db.com/oauth2/token' => Http::response([
             'access_token' => 'test-db-token-456',
-            'token_type'   => 'Bearer',
-            'expires_in'   => 7200,
+            'token_type' => 'Bearer',
+            'expires_in' => 7200,
         ], 200),
         'https://api.db.com/v2/accounts/ACC123/balances' => Http::response([
             'balances' => [
@@ -86,7 +86,7 @@ it('obtains access token with client credentials', function () {
     ]);
 
     $connector = new DeutscheBankConnector([
-        'client_id'     => 'test-client-id',
+        'client_id' => 'test-client-id',
         'client_secret' => 'test-client-secret',
     ]);
 
@@ -110,8 +110,8 @@ it('retrieves account balance', function () {
     Http::fake([
         'https://api.db.com/oauth2/token' => Http::response([
             'access_token' => 'test-access-token',
-            'token_type'   => 'Bearer',
-            'expires_in'   => 3600,
+            'token_type' => 'Bearer',
+            'expires_in' => 3600,
         ], 200),
         'https://api.db.com/v2/accounts/DE89370400440532013000/balances' => Http::response([
             'balances' => [
@@ -122,7 +122,7 @@ it('retrieves account balance', function () {
     ]);
 
     $connector = new DeutscheBankConnector([
-        'client_id'     => 'test-client-id',
+        'client_id' => 'test-client-id',
         'client_secret' => 'test-client-secret',
     ]);
 
@@ -136,8 +136,8 @@ it('returns zero balance for non-existent currency', function () {
     Http::fake([
         'https://api.db.com/oauth2/token' => Http::response([
             'access_token' => 'test-access-token',
-            'token_type'   => 'Bearer',
-            'expires_in'   => 3600,
+            'token_type' => 'Bearer',
+            'expires_in' => 3600,
         ], 200),
         'https://api.db.com/v2/accounts/DE89370400440532013000/balances' => Http::response([
             'balances' => [
@@ -147,7 +147,7 @@ it('returns zero balance for non-existent currency', function () {
     ]);
 
     $connector = new DeutscheBankConnector([
-        'client_id'     => 'test-client-id',
+        'client_id' => 'test-client-id',
         'client_secret' => 'test-client-secret',
     ]);
 
@@ -160,18 +160,18 @@ it('retrieves account information', function () {
     Http::fake([
         'https://api.db.com/oauth2/token' => Http::response([
             'access_token' => 'test-access-token',
-            'token_type'   => 'Bearer',
-            'expires_in'   => 3600,
+            'token_type' => 'Bearer',
+            'expires_in' => 3600,
         ], 200),
         'https://api.db.com/v2/accounts/DE89370400440532013000' => Http::response([
-            'accountId'   => 'DE89370400440532013000',
+            'accountId' => 'DE89370400440532013000',
             'accountName' => 'Corporate Account',
-            'status'      => 'ACTIVE',
-            'currency'    => 'EUR',
+            'status' => 'ACTIVE',
+            'currency' => 'EUR',
             'accountType' => 'CURRENT',
-            'iban'        => 'DE89370400440532013000',
-            'bic'         => 'DEUTDEFF',
-            'branch'      => 'Frankfurt',
+            'iban' => 'DE89370400440532013000',
+            'bic' => 'DEUTDEFF',
+            'branch' => 'Frankfurt',
             'openingDate' => '2020-01-15T00:00:00Z',
         ], 200),
         'https://api.db.com/v2/accounts/DE89370400440532013000/balances' => Http::response([
@@ -183,7 +183,7 @@ it('retrieves account information', function () {
     ]);
 
     $connector = new DeutscheBankConnector([
-        'client_id'     => 'test-client-id',
+        'client_id' => 'test-client-id',
         'client_secret' => 'test-client-secret',
     ]);
 
@@ -206,20 +206,20 @@ it('initiates a SEPA transfer', function () {
     Http::fake([
         'https://api.db.com/oauth2/token' => Http::response([
             'access_token' => 'test-access-token',
-            'token_type'   => 'Bearer',
-            'expires_in'   => 3600,
+            'token_type' => 'Bearer',
+            'expires_in' => 3600,
         ], 200),
         'https://api.db.com/v2/payments/sepa' => Http::response([
-            'paymentId'              => 'DB-PAY-123456',
-            'transactionStatus'      => 'ACCP',
-            'acceptanceDateTime'     => '2023-06-17T10:00:00Z',
+            'paymentId' => 'DB-PAY-123456',
+            'transactionStatus' => 'ACCP',
+            'acceptanceDateTime' => '2023-06-17T10:00:00Z',
             'endToEndIdentification' => 'REF123',
-            'fees'                   => ['amount' => '1.50'],
+            'fees' => ['amount' => '1.50'],
         ], 200),
     ]);
 
     $connector = new DeutscheBankConnector([
-        'client_id'     => 'test-client-id',
+        'client_id' => 'test-client-id',
         'client_secret' => 'test-client-secret',
     ]);
 
@@ -246,21 +246,21 @@ it('initiates instant payment for small EUR amounts', function () {
     Http::fake([
         'https://api.db.com/oauth2/token' => Http::response([
             'access_token' => 'test-access-token',
-            'token_type'   => 'Bearer',
-            'expires_in'   => 3600,
+            'token_type' => 'Bearer',
+            'expires_in' => 3600,
         ], 200),
         'https://api.db.com/v2/payments/instant' => Http::response([
-            'paymentId'              => 'DB-INST-789012',
-            'transactionStatus'      => 'ACCC',
-            'acceptanceDateTime'     => '2023-06-17T10:00:00Z',
-            'completionDateTime'     => '2023-06-17T10:00:05Z',
+            'paymentId' => 'DB-INST-789012',
+            'transactionStatus' => 'ACCC',
+            'acceptanceDateTime' => '2023-06-17T10:00:00Z',
+            'completionDateTime' => '2023-06-17T10:00:05Z',
             'endToEndIdentification' => 'REF456',
-            'fees'                   => ['amount' => '0.50'],
+            'fees' => ['amount' => '0.50'],
         ], 200),
     ]);
 
     $connector = new DeutscheBankConnector([
-        'client_id'     => 'test-client-id',
+        'client_id' => 'test-client-id',
         'client_secret' => 'test-client-secret',
     ]);
 
@@ -283,24 +283,24 @@ it('retrieves transaction status', function () {
     Http::fake([
         'https://api.db.com/oauth2/token' => Http::response([
             'access_token' => 'test-access-token',
-            'token_type'   => 'Bearer',
-            'expires_in'   => 3600,
+            'token_type' => 'Bearer',
+            'expires_in' => 3600,
         ], 200),
         'https://api.db.com/v2/payments/DB-PAY-123456' => Http::response([
-            'paymentId'              => 'DB-PAY-123456',
-            'transactionStatus'      => 'ACCC',
-            'debtorAccount'          => ['iban' => 'DE89370400440532013000'],
-            'creditorAccount'        => ['iban' => 'DE89370400440532013001'],
-            'instructedAmount'       => ['currency' => 'EUR', 'amount' => '1000.00'],
-            'fees'                   => ['amount' => '1.50'],
+            'paymentId' => 'DB-PAY-123456',
+            'transactionStatus' => 'ACCC',
+            'debtorAccount' => ['iban' => 'DE89370400440532013000'],
+            'creditorAccount' => ['iban' => 'DE89370400440532013001'],
+            'instructedAmount' => ['currency' => 'EUR', 'amount' => '1000.00'],
+            'fees' => ['amount' => '1.50'],
             'endToEndIdentification' => 'REF123',
-            'acceptanceDateTime'     => '2023-06-17T10:00:00Z',
-            'completionDateTime'     => '2023-06-17T10:05:00Z',
+            'acceptanceDateTime' => '2023-06-17T10:00:00Z',
+            'completionDateTime' => '2023-06-17T10:05:00Z',
         ], 200),
     ]);
 
     $connector = new DeutscheBankConnector([
-        'client_id'     => 'test-client-id',
+        'client_id' => 'test-client-id',
         'client_secret' => 'test-client-secret',
     ]);
 
@@ -316,14 +316,14 @@ it('cancels a transaction', function () {
     Http::fake([
         'https://api.db.com/oauth2/token' => Http::response([
             'access_token' => 'test-access-token',
-            'token_type'   => 'Bearer',
-            'expires_in'   => 3600,
+            'token_type' => 'Bearer',
+            'expires_in' => 3600,
         ], 200),
         'https://api.db.com/v2/payments/DB-PAY-123456' => Http::response([], 204),
     ]);
 
     $connector = new DeutscheBankConnector([
-        'client_id'     => 'test-client-id',
+        'client_id' => 'test-client-id',
         'client_secret' => 'test-client-secret',
     ]);
 
@@ -336,17 +336,17 @@ it('validates account existence', function () {
     Http::fake([
         'https://api.db.com/oauth2/token' => Http::response([
             'access_token' => 'test-access-token',
-            'token_type'   => 'Bearer',
-            'expires_in'   => 3600,
+            'token_type' => 'Bearer',
+            'expires_in' => 3600,
         ], 200),
         'https://api.db.com/v2/accounts/DE89370400440532013000' => Http::response([
             'accountId' => 'DE89370400440532013000',
-            'status'    => 'ACTIVE',
+            'status' => 'ACTIVE',
         ], 200),
     ]);
 
     $connector = new DeutscheBankConnector([
-        'client_id'     => 'test-client-id',
+        'client_id' => 'test-client-id',
         'client_secret' => 'test-client-secret',
     ]);
 
@@ -357,29 +357,29 @@ it('retrieves transaction history', function () {
     Http::fake([
         'https://api.db.com/oauth2/token' => Http::response([
             'access_token' => 'test-access-token',
-            'token_type'   => 'Bearer',
-            'expires_in'   => 3600,
+            'token_type' => 'Bearer',
+            'expires_in' => 3600,
         ], 200),
         'https://api.db.com/v2/accounts/DE89370400440532013000/transactions?*' => Http::response([
             'transactions' => [
                 'booked' => [
                     [
-                        'transactionId'     => 'TXN001',
-                        'debtorAccount'     => ['iban' => 'DE89370400440532013000'],
-                        'creditorAccount'   => ['iban' => 'DE89370400440532013999'],
+                        'transactionId' => 'TXN001',
+                        'debtorAccount' => ['iban' => 'DE89370400440532013000'],
+                        'creditorAccount' => ['iban' => 'DE89370400440532013999'],
                         'transactionAmount' => ['currency' => 'EUR', 'amount' => '-500.00'],
-                        'bookingDate'       => '2023-06-17',
-                        'valueDate'         => '2023-06-17',
-                        'endToEndId'        => 'REF001',
+                        'bookingDate' => '2023-06-17',
+                        'valueDate' => '2023-06-17',
+                        'endToEndId' => 'REF001',
                     ],
                     [
-                        'transactionId'     => 'TXN002',
-                        'debtorAccount'     => ['iban' => 'DE89370400440532013888'],
-                        'creditorAccount'   => ['iban' => 'DE89370400440532013000'],
+                        'transactionId' => 'TXN002',
+                        'debtorAccount' => ['iban' => 'DE89370400440532013888'],
+                        'creditorAccount' => ['iban' => 'DE89370400440532013000'],
                         'transactionAmount' => ['currency' => 'EUR', 'amount' => '1500.00'],
-                        'bookingDate'       => '2023-06-16',
-                        'valueDate'         => '2023-06-16',
-                        'mandateId'         => 'REF002',
+                        'bookingDate' => '2023-06-16',
+                        'valueDate' => '2023-06-16',
+                        'mandateId' => 'REF002',
                     ],
                 ],
             ],
@@ -387,7 +387,7 @@ it('retrieves transaction history', function () {
     ]);
 
     $connector = new DeutscheBankConnector([
-        'client_id'     => 'test-client-id',
+        'client_id' => 'test-client-id',
         'client_secret' => 'test-client-secret',
     ]);
 
@@ -402,7 +402,7 @@ it('retrieves transaction history', function () {
 
 it('returns supported assets', function () {
     $connector = new DeutscheBankConnector([
-        'client_id'     => 'test-client-id',
+        'client_id' => 'test-client-id',
         'client_secret' => 'test-client-secret',
     ]);
 

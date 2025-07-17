@@ -26,8 +26,8 @@ class LoanAggregateTest extends DomainTestCase
         $termMonths = 12;
         $terms = [
             'repaymentFrequency' => 'monthly',
-            'lateFeePercentage'  => 5.0,
-            'gracePeriodDays'    => 5,
+            'lateFeePercentage' => 5.0,
+            'gracePeriodDays' => 5,
         ];
 
         $loan = Loan::createFromApplication(

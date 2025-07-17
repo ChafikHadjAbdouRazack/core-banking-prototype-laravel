@@ -52,17 +52,17 @@ it('updates payment transaction on withdrawal completed', function () {
 
     // Create a pending transaction first
     PaymentTransaction::create([
-        'aggregate_uuid'      => $aggregateUuid,
-        'account_uuid'        => Str::uuid()->toString(),
-        'type'                => 'withdrawal',
-        'status'              => 'pending',
-        'amount'              => 5000,
-        'currency'            => 'USD',
-        'reference'           => 'WD-123',
+        'aggregate_uuid' => $aggregateUuid,
+        'account_uuid' => Str::uuid()->toString(),
+        'type' => 'withdrawal',
+        'status' => 'pending',
+        'amount' => 5000,
+        'currency' => 'USD',
+        'reference' => 'WD-123',
         'bank_account_number' => '****1234',
         'bank_routing_number' => '123456789',
-        'bank_account_name'   => 'John Doe',
-        'initiated_at'        => now()->subMinutes(5),
+        'bank_account_name' => 'John Doe',
+        'initiated_at' => now()->subMinutes(5),
     ]);
 
     $event = new WithdrawalCompleted(
@@ -88,13 +88,13 @@ it('updates payment transaction on withdrawal failed', function () {
     // Create a pending transaction first
     PaymentTransaction::create([
         'aggregate_uuid' => $aggregateUuid,
-        'account_uuid'   => Str::uuid()->toString(),
-        'type'           => 'withdrawal',
-        'status'         => 'pending',
-        'amount'         => 5000,
-        'currency'       => 'USD',
-        'reference'      => 'WD-123',
-        'initiated_at'   => now()->subMinutes(5),
+        'account_uuid' => Str::uuid()->toString(),
+        'type' => 'withdrawal',
+        'status' => 'pending',
+        'amount' => 5000,
+        'currency' => 'USD',
+        'reference' => 'WD-123',
+        'initiated_at' => now()->subMinutes(5),
     ]);
 
     $event = new WithdrawalFailed(

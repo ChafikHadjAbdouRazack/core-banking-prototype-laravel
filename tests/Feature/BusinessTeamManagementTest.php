@@ -32,11 +32,11 @@ class BusinessTeamManagementTest extends DomainTestCase
         // Create business owner and team
         $this->businessOwner = User::factory()->create();
         $this->businessTeam = Team::factory()->create([
-            'user_id'                  => $this->businessOwner->id,
-            'name'                     => 'Test Business',
+            'user_id' => $this->businessOwner->id,
+            'name' => 'Test Business',
             'is_business_organization' => true,
-            'max_users'                => 5,
-            'allowed_roles'            => ['compliance_officer', 'accountant'],
+            'max_users' => 5,
+            'allowed_roles' => ['compliance_officer', 'accountant'],
         ]);
         $this->businessOwner->current_team_id = $this->businessTeam->id;
         $this->businessOwner->save();
@@ -45,8 +45,8 @@ class BusinessTeamManagementTest extends DomainTestCase
         // Create another business for isolation testing
         $this->otherBusinessOwner = User::factory()->create();
         $this->otherBusinessTeam = Team::factory()->create([
-            'user_id'                  => $this->otherBusinessOwner->id,
-            'name'                     => 'Other Business',
+            'user_id' => $this->otherBusinessOwner->id,
+            'name' => 'Other Business',
             'is_business_organization' => true,
         ]);
         $this->otherBusinessOwner->current_team_id = $this->otherBusinessTeam->id;
@@ -70,8 +70,8 @@ class BusinessTeamManagementTest extends DomainTestCase
     {
         $personalUser = User::factory()->create();
         $personalTeam = Team::factory()->create([
-            'user_id'                  => $personalUser->id,
-            'personal_team'            => true,
+            'user_id' => $personalUser->id,
+            'personal_team' => true,
             'is_business_organization' => false,
         ]);
 
@@ -86,10 +86,10 @@ class BusinessTeamManagementTest extends DomainTestCase
     {
         $response = $this->actingAs($this->businessOwner)
             ->post(route('teams.members.store', $this->businessTeam), [
-                'name'     => 'New Team Member',
-                'email'    => 'newmember@example.com',
+                'name' => 'New Team Member',
+                'email' => 'newmember@example.com',
                 'password' => 'password123',
-                'role'     => 'compliance_officer',
+                'role' => 'compliance_officer',
             ]);
 
         $response->assertRedirect(route('teams.members.index', $this->businessTeam));
@@ -118,10 +118,10 @@ class BusinessTeamManagementTest extends DomainTestCase
 
         $response = $this->actingAs($this->businessOwner)
             ->post(route('teams.members.store', $this->businessTeam), [
-                'name'     => 'Excess Member',
-                'email'    => 'excess@example.com',
+                'name' => 'Excess Member',
+                'email' => 'excess@example.com',
                 'password' => 'password123',
-                'role'     => 'accountant',
+                'role' => 'accountant',
             ]);
 
         $response->assertRedirect();
@@ -137,10 +137,10 @@ class BusinessTeamManagementTest extends DomainTestCase
     {
         $response = $this->actingAs($this->businessOwner)
             ->post(route('teams.members.store', $this->businessTeam), [
-                'name'     => 'New Member',
-                'email'    => 'member@example.com',
+                'name' => 'New Member',
+                'email' => 'member@example.com',
                 'password' => 'password123',
-                'role'     => 'super_admin', // Not in allowed_roles
+                'role' => 'super_admin', // Not in allowed_roles
             ]);
 
         $response->assertSessionHasErrors(['role']);
@@ -223,12 +223,12 @@ class BusinessTeamManagementTest extends DomainTestCase
         // Create accounts for both teams
         $account1 = Account::factory()->create([
             'user_uuid' => $this->businessOwner->uuid,
-            'team_id'   => $this->businessTeam->id,
+            'team_id' => $this->businessTeam->id,
         ]);
 
         $account2 = Account::factory()->create([
             'user_uuid' => $this->otherBusinessOwner->uuid,
-            'team_id'   => $this->otherBusinessTeam->id,
+            'team_id' => $this->otherBusinessTeam->id,
         ]);
 
         // Acting as business owner 1
@@ -276,12 +276,12 @@ class BusinessTeamManagementTest extends DomainTestCase
         // Create accounts for both teams
         $account1 = Account::factory()->create([
             'user_uuid' => $this->businessOwner->uuid,
-            'team_id'   => $this->businessTeam->id,
+            'team_id' => $this->businessTeam->id,
         ]);
 
         $account2 = Account::factory()->create([
             'user_uuid' => $this->otherBusinessOwner->uuid,
-            'team_id'   => $this->otherBusinessTeam->id,
+            'team_id' => $this->otherBusinessTeam->id,
         ]);
 
         // Acting as super admin (without global scope)
@@ -304,9 +304,9 @@ class BusinessTeamManagementTest extends DomainTestCase
         // Create an account as the team member
         $this->actingAs($member);
         $account = Account::create([
-            'uuid'      => \Str::uuid(),
+            'uuid' => \Str::uuid(),
             'user_uuid' => $member->uuid,
-            'name'      => 'Test Account',
+            'name' => 'Test Account',
         ]);
 
         // Account should automatically have the team_id set

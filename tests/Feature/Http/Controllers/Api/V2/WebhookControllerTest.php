@@ -57,10 +57,10 @@ class WebhookControllerTest extends ControllerTestCase
         Sanctum::actingAs($this->user);
 
         $webhookData = [
-            'url'         => 'https://example.com/webhook',
-            'events'      => ['account.created', 'transaction.completed'],
+            'url' => 'https://example.com/webhook',
+            'events' => ['account.created', 'transaction.completed'],
             'description' => 'Test webhook',
-            'is_active'   => true,
+            'is_active' => true,
         ];
 
         $response = $this->postJson("{$this->apiPrefix}/webhooks", $webhookData);
@@ -78,9 +78,9 @@ class WebhookControllerTest extends ControllerTestCase
         ]);
 
         $this->assertDatabaseHas('webhooks', [
-            'url'         => 'https://example.com/webhook',
+            'url' => 'https://example.com/webhook',
             'description' => 'Test webhook',
-            'is_active'   => true,
+            'is_active' => true,
         ]);
 
         // Verify secret is returned and starts with whsec_
@@ -99,7 +99,7 @@ class WebhookControllerTest extends ControllerTestCase
 
         // Invalid URL (not HTTPS)
         $response = $this->postJson("{$this->apiPrefix}/webhooks", [
-            'url'    => 'http://example.com/webhook',
+            'url' => 'http://example.com/webhook',
             'events' => ['account.created'],
         ]);
         $response->assertStatus(422);
@@ -107,7 +107,7 @@ class WebhookControllerTest extends ControllerTestCase
 
         // Invalid event
         $response = $this->postJson("{$this->apiPrefix}/webhooks", [
-            'url'    => 'https://example.com/webhook',
+            'url' => 'https://example.com/webhook',
             'events' => ['invalid.event'],
         ]);
         $response->assertStatus(422);
@@ -115,7 +115,7 @@ class WebhookControllerTest extends ControllerTestCase
 
         // Empty events array
         $response = $this->postJson("{$this->apiPrefix}/webhooks", [
-            'url'    => 'https://example.com/webhook',
+            'url' => 'https://example.com/webhook',
             'events' => [],
         ]);
         $response->assertStatus(422);
@@ -132,11 +132,11 @@ class WebhookControllerTest extends ControllerTestCase
         // Create some deliveries
         WebhookDelivery::factory()->count(5)->create([
             'webhook_uuid' => $webhook->uuid,
-            'status'       => WebhookDelivery::STATUS_SUCCESS,
+            'status' => WebhookDelivery::STATUS_SUCCESS,
         ]);
         WebhookDelivery::factory()->count(2)->create([
             'webhook_uuid' => $webhook->uuid,
-            'status'       => WebhookDelivery::STATUS_FAILED,
+            'status' => WebhookDelivery::STATUS_FAILED,
         ]);
 
         $response = $this->getJson("{$this->apiPrefix}/webhooks/{$webhook->uuid}");
@@ -161,11 +161,11 @@ class WebhookControllerTest extends ControllerTestCase
 
         $response->assertJson([
             'data' => [
-                'id'         => $webhook->uuid,
+                'id' => $webhook->uuid,
                 'statistics' => [
-                    'total_deliveries'      => 7,
+                    'total_deliveries' => 7,
                     'successful_deliveries' => 5,
-                    'failed_deliveries'     => 2,
+                    'failed_deliveries' => 2,
                 ],
             ],
         ]);
@@ -177,15 +177,15 @@ class WebhookControllerTest extends ControllerTestCase
         Sanctum::actingAs($this->user);
 
         $webhook = Webhook::factory()->create([
-            'url'       => 'https://old.example.com/webhook',
+            'url' => 'https://old.example.com/webhook',
             'is_active' => true,
         ]);
 
         $updateData = [
-            'url'         => 'https://new.example.com/webhook',
-            'events'      => ['transaction.completed', 'transfer.completed'],
+            'url' => 'https://new.example.com/webhook',
+            'events' => ['transaction.completed', 'transfer.completed'],
             'description' => 'Updated webhook',
-            'is_active'   => false,
+            'is_active' => false,
         ];
 
         $response = $this->putJson("{$this->apiPrefix}/webhooks/{$webhook->uuid}", $updateData);
@@ -193,8 +193,8 @@ class WebhookControllerTest extends ControllerTestCase
         $response->assertStatus(200);
         $response->assertJson([
             'data' => [
-                'id'        => $webhook->uuid,
-                'url'       => 'https://new.example.com/webhook',
+                'id' => $webhook->uuid,
+                'url' => 'https://new.example.com/webhook',
                 'is_active' => false,
             ],
         ]);
@@ -251,11 +251,11 @@ class WebhookControllerTest extends ControllerTestCase
         // Create deliveries with different statuses
         WebhookDelivery::factory()->count(3)->create([
             'webhook_uuid' => $webhook->uuid,
-            'status'       => WebhookDelivery::STATUS_SUCCESS,
+            'status' => WebhookDelivery::STATUS_SUCCESS,
         ]);
         WebhookDelivery::factory()->count(2)->create([
             'webhook_uuid' => $webhook->uuid,
-            'status'       => WebhookDelivery::STATUS_FAILED,
+            'status' => WebhookDelivery::STATUS_FAILED,
         ]);
 
         $response = $this->getJson("{$this->apiPrefix}/webhooks/{$webhook->uuid}/deliveries");
@@ -296,11 +296,11 @@ class WebhookControllerTest extends ControllerTestCase
 
         WebhookDelivery::factory()->count(3)->create([
             'webhook_uuid' => $webhook->uuid,
-            'status'       => WebhookDelivery::STATUS_SUCCESS,
+            'status' => WebhookDelivery::STATUS_SUCCESS,
         ]);
         WebhookDelivery::factory()->count(2)->create([
             'webhook_uuid' => $webhook->uuid,
-            'status'       => WebhookDelivery::STATUS_FAILED,
+            'status' => WebhookDelivery::STATUS_FAILED,
         ]);
 
         $response = $this->getJson("{$this->apiPrefix}/webhooks/{$webhook->uuid}/deliveries?status=failed");
@@ -369,7 +369,7 @@ class WebhookControllerTest extends ControllerTestCase
         $response->assertStatus(401);
 
         $response = $this->postJson("{$this->apiPrefix}/webhooks", [
-            'url'    => 'https://example.com/webhook',
+            'url' => 'https://example.com/webhook',
             'events' => ['account.created'],
         ]);
         $response->assertStatus(401);

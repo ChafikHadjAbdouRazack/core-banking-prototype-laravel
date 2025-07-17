@@ -28,12 +28,12 @@ beforeEach(function () {
     // Create test accounts
     $this->sourceAccount = Account::factory()->create([
         'user_uuid' => $this->user->uuid,
-        'balance'   => 100000, // $1000 in cents
+        'balance' => 100000, // $1000 in cents
     ]);
 
     $this->targetAccount = Account::factory()->create([
         'user_uuid' => $this->user->uuid,
-        'balance'   => 50000, // $500 in cents
+        'balance' => 50000, // $500 in cents
     ]);
 });
 

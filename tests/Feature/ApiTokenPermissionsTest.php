@@ -14,8 +14,8 @@ test('api token permissions can be updated', function () {
     }
 
     $token = $user->tokens()->create([
-        'name'      => 'Test Token',
-        'token'     => Str::random(40),
+        'name' => 'Test Token',
+        'token' => Str::random(40),
         'abilities' => ['create', 'read'],
     ]);
 

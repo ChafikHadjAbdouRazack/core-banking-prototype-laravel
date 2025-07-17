@@ -28,8 +28,8 @@ class BalanceControllerTest extends ControllerTestCase
         $this->user = User::factory()->create();
         $this->account = Account::factory()->create([
             'user_uuid' => $this->user->uuid,
-            'balance'   => 50000, // 500.00
-            'frozen'    => false,
+            'balance' => 50000, // 500.00
+            'frozen' => false,
         ]);
 
         $this->accountCache = $this->app->make(AccountCacheService::class);
@@ -56,8 +56,8 @@ class BalanceControllerTest extends ControllerTestCase
             ->assertJson([
                 'data' => [
                     'account_uuid' => $this->account->uuid,
-                    'balance'      => 50000,
-                    'frozen'       => false,
+                    'balance' => 50000,
+                    'frozen' => false,
                 ],
             ]);
     }
@@ -70,13 +70,13 @@ class BalanceControllerTest extends ControllerTestCase
         // Create turnover data
         $turnover = Turnover::create([
             'account_uuid' => $this->account->uuid,
-            'date'         => now()->toDateString(),
-            'debit'        => 10000,
-            'credit'       => 15000,
-            'count'        => 5,
-            'amount'       => 25000,
-            'created_at'   => now()->subDay(),
-            'updated_at'   => now(),
+            'date' => now()->toDateString(),
+            'debit' => 10000,
+            'credit' => 15000,
+            'count' => 5,
+            'amount' => 25000,
+            'created_at' => now()->subDay(),
+            'updated_at' => now(),
         ]);
 
         $response = $this->getJson("/api/accounts/{$this->account->uuid}/balance");
@@ -138,8 +138,8 @@ class BalanceControllerTest extends ControllerTestCase
 
         $frozenAccount = Account::factory()->create([
             'user_uuid' => $this->user->uuid,
-            'balance'   => 25000,
-            'frozen'    => true,
+            'balance' => 25000,
+            'frozen' => true,
         ]);
 
         $response = $this->getJson("/api/accounts/{$frozenAccount->uuid}/balance");
@@ -166,13 +166,13 @@ class BalanceControllerTest extends ControllerTestCase
         for ($i = 0; $i < 3; $i++) {
             Turnover::create([
                 'account_uuid' => $this->account->uuid,
-                'date'         => now()->subMonths($i)->toDateString(),
-                'debit'        => 10000 + ($i * 1000), // 10000, 11000, 12000
-                'credit'       => 15000 + ($i * 1000), // 15000, 16000, 17000
-                'count'        => 10 + $i,
-                'amount'       => 25000 + ($i * 2000),
-                'created_at'   => now()->subMonths($i),
-                'updated_at'   => now()->subMonths($i),
+                'date' => now()->subMonths($i)->toDateString(),
+                'debit' => 10000 + ($i * 1000), // 10000, 11000, 12000
+                'credit' => 15000 + ($i * 1000), // 15000, 16000, 17000
+                'count' => 10 + $i,
+                'amount' => 25000 + ($i * 2000),
+                'created_at' => now()->subMonths($i),
+                'updated_at' => now()->subMonths($i),
             ]);
         }
 
@@ -208,22 +208,22 @@ class BalanceControllerTest extends ControllerTestCase
         // Create turnover data
         Turnover::create([
             'account_uuid' => $this->account->uuid,
-            'date'         => now()->subMonth()->toDateString(),
-            'debit'        => 10000,
-            'credit'       => 20000,
-            'count'        => 5,
-            'amount'       => 30000,
-            'created_at'   => now()->subMonth(),
+            'date' => now()->subMonth()->toDateString(),
+            'debit' => 10000,
+            'credit' => 20000,
+            'count' => 5,
+            'amount' => 30000,
+            'created_at' => now()->subMonth(),
         ]);
 
         Turnover::create([
             'account_uuid' => $this->account->uuid,
-            'date'         => now()->toDateString(),
-            'debit'        => 15000,
-            'credit'       => 25000,
-            'count'        => 8,
-            'amount'       => 40000,
-            'created_at'   => now(),
+            'date' => now()->toDateString(),
+            'debit' => 15000,
+            'credit' => 25000,
+            'count' => 8,
+            'amount' => 40000,
+            'created_at' => now(),
         ]);
 
         // Mock the cache service to return specific statistics
@@ -231,11 +231,11 @@ class BalanceControllerTest extends ControllerTestCase
         $mockTurnoverCache->shouldReceive('getStatistics')
             ->with($this->account->uuid)
             ->andReturn([
-                'total_debit'            => 25000,
-                'total_credit'           => 45000,
-                'average_monthly_debit'  => 12500,
+                'total_debit' => 25000,
+                'total_credit' => 45000,
+                'average_monthly_debit' => 12500,
                 'average_monthly_credit' => 22500,
-                'months_analyzed'        => 2,
+                'months_analyzed' => 2,
             ]);
 
         $this->app->instance(TurnoverCacheService::class, $mockTurnoverCache);
@@ -291,13 +291,13 @@ class BalanceControllerTest extends ControllerTestCase
         $testDate = Carbon::create(2024, 3, 15);
         $turnover = Turnover::create([
             'account_uuid' => $this->account->uuid,
-            'date'         => $testDate->toDateString(),
-            'debit'        => 30000,
-            'credit'       => 50000,
-            'count'        => 10,
-            'amount'       => 80000,
-            'created_at'   => $testDate,
-            'updated_at'   => $testDate,
+            'date' => $testDate->toDateString(),
+            'debit' => 30000,
+            'credit' => 50000,
+            'count' => 10,
+            'amount' => 80000,
+            'created_at' => $testDate,
+            'updated_at' => $testDate,
         ]);
 
         $response = $this->getJson("/api/accounts/{$this->account->uuid}/balance/summary");
@@ -321,8 +321,8 @@ class BalanceControllerTest extends ControllerTestCase
 
         $zeroBalanceAccount = Account::factory()->create([
             'user_uuid' => $this->user->uuid,
-            'balance'   => 0,
-            'frozen'    => false,
+            'balance' => 0,
+            'frozen' => false,
         ]);
 
         $response = $this->getJson("/api/accounts/{$zeroBalanceAccount->uuid}/balance");
@@ -341,13 +341,13 @@ class BalanceControllerTest extends ControllerTestCase
         for ($i = 0; $i < 12; $i++) {
             Turnover::create([
                 'account_uuid' => $this->account->uuid,
-                'date'         => now()->subMonths($i)->toDateString(),
-                'debit'        => 100000 * ($i + 1), // Increasing amounts
-                'credit'       => 150000 * ($i + 1),
-                'count'        => 20 + $i,
-                'amount'       => 250000 * ($i + 1),
-                'created_at'   => now()->subMonths($i),
-                'updated_at'   => now()->subMonths($i),
+                'date' => now()->subMonths($i)->toDateString(),
+                'debit' => 100000 * ($i + 1), // Increasing amounts
+                'credit' => 150000 * ($i + 1),
+                'count' => 20 + $i,
+                'amount' => 250000 * ($i + 1),
+                'created_at' => now()->subMonths($i),
+                'updated_at' => now()->subMonths($i),
             ]);
         }
 

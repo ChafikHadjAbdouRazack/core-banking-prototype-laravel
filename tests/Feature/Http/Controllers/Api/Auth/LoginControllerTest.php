@@ -19,7 +19,7 @@ class LoginControllerTest extends ControllerTestCase
         parent::setUp();
 
         $this->user = User::factory()->create([
-            'email'    => 'test@example.com',
+            'email' => 'test@example.com',
             'password' => Hash::make('password'),
         ]);
     }
@@ -28,7 +28,7 @@ class LoginControllerTest extends ControllerTestCase
     public function test_login_with_valid_credentials(): void
     {
         $response = $this->postJson('/api/auth/login', [
-            'email'    => 'test@example.com',
+            'email' => 'test@example.com',
             'password' => 'password',
         ]);
 
@@ -60,8 +60,8 @@ class LoginControllerTest extends ControllerTestCase
     public function test_login_with_device_name(): void
     {
         $response = $this->postJson('/api/auth/login', [
-            'email'       => 'test@example.com',
-            'password'    => 'password',
+            'email' => 'test@example.com',
+            'password' => 'password',
             'device_name' => 'iPhone 14',
         ]);
 
@@ -70,7 +70,7 @@ class LoginControllerTest extends ControllerTestCase
         // Verify token was created with device name
         $this->assertDatabaseHas('personal_access_tokens', [
             'tokenable_id' => $this->user->id,
-            'name'         => 'iPhone 14',
+            'name' => 'iPhone 14',
         ]);
     }
 
@@ -78,7 +78,7 @@ class LoginControllerTest extends ControllerTestCase
     public function test_login_fails_with_invalid_email(): void
     {
         $response = $this->postJson('/api/auth/login', [
-            'email'    => 'wrong@example.com',
+            'email' => 'wrong@example.com',
             'password' => 'password',
         ]);
 
@@ -91,7 +91,7 @@ class LoginControllerTest extends ControllerTestCase
     public function test_login_fails_with_invalid_password(): void
     {
         $response = $this->postJson('/api/auth/login', [
-            'email'    => 'test@example.com',
+            'email' => 'test@example.com',
             'password' => 'wrongpassword',
         ]);
 
@@ -113,7 +113,7 @@ class LoginControllerTest extends ControllerTestCase
             ->assertJsonValidationErrors(['email', 'password']);
 
         $response = $this->postJson('/api/auth/login', [
-            'email'    => 'not-an-email',
+            'email' => 'not-an-email',
             'password' => 'password',
         ]);
 
@@ -131,8 +131,8 @@ class LoginControllerTest extends ControllerTestCase
         $this->assertEquals(2, $this->user->tokens()->count());
 
         $response = $this->postJson('/api/auth/login', [
-            'email'         => 'test@example.com',
-            'password'      => 'password',
+            'email' => 'test@example.com',
+            'password' => 'password',
             'revoke_tokens' => true,
         ]);
 
@@ -155,7 +155,7 @@ class LoginControllerTest extends ControllerTestCase
         $this->assertEquals(3, $this->user->tokens()->count());
 
         $response = $this->postJson('/api/auth/login', [
-            'email'    => 'test@example.com',
+            'email' => 'test@example.com',
             'password' => 'password',
         ]);
 
@@ -167,7 +167,7 @@ class LoginControllerTest extends ControllerTestCase
         // Verify oldest token was deleted
         $this->assertDatabaseMissing('personal_access_tokens', [
             'tokenable_id' => $this->user->id,
-            'name'         => 'token-1',
+            'name' => 'token-1',
         ]);
     }
 
@@ -276,7 +276,7 @@ class LoginControllerTest extends ControllerTestCase
             ])
             ->assertJson([
                 'user' => [
-                    'id'    => $this->user->id,
+                    'id' => $this->user->id,
                     'email' => $this->user->email,
                 ],
             ]);
@@ -297,7 +297,7 @@ class LoginControllerTest extends ControllerTestCase
         $this->withSession(['key' => 'value']);
 
         $response = $this->postJson('/api/auth/login', [
-            'email'    => 'test@example.com',
+            'email' => 'test@example.com',
             'password' => 'password',
         ]);
 
@@ -312,7 +312,7 @@ class LoginControllerTest extends ControllerTestCase
         config(['sanctum.expiration' => 60]); // 60 minutes
 
         $response = $this->postJson('/api/auth/login', [
-            'email'    => 'test@example.com',
+            'email' => 'test@example.com',
             'password' => 'password',
         ]);
 
@@ -328,7 +328,7 @@ class LoginControllerTest extends ControllerTestCase
         config(['sanctum.expiration' => null]);
 
         $response = $this->postJson('/api/auth/login', [
-            'email'    => 'test@example.com',
+            'email' => 'test@example.com',
             'password' => 'password',
         ]);
 

@@ -7,9 +7,9 @@ use Tests\TestCase;
 
 class RouteIntegrityTest extends TestCase
 {
-/**
- * Test that all defined routes are properly named and don't have syntax errors.
- */ #[Test]
+    /**
+     * Test that all defined routes are properly named and don't have syntax errors.
+     */ #[Test]
     public function test_all_routes_are_properly_defined(): void
     {
         $routes = Route::getRoutes();
@@ -41,9 +41,9 @@ class RouteIntegrityTest extends TestCase
         $this->assertEmpty($routeErrors, "Found routes without proper names: \n" . implode("\n", $routeErrors));
     }
 
-/**
- * Test that navigation menu routes all exist.
- */ #[Test]
+    /**
+     * Test that navigation menu routes all exist.
+     */ #[Test]
     public function test_navigation_menu_routes_exist(): void
     {
         // Routes used in navigation menu
@@ -76,9 +76,9 @@ class RouteIntegrityTest extends TestCase
         }
     }
 
-/**
- * Test that common route patterns follow naming conventions.
- */ #[Test]
+    /**
+     * Test that common route patterns follow naming conventions.
+     */ #[Test]
     public function test_route_naming_conventions(): void
     {
         $routes = Route::getRoutes();
@@ -115,9 +115,9 @@ class RouteIntegrityTest extends TestCase
         }
     }
 
-/**
- * Test that there are no duplicate route names.
- */ #[Test]
+    /**
+     * Test that there are no duplicate route names.
+     */ #[Test]
     public function test_no_duplicate_route_names(): void
     {
         $routes = Route::getRoutes();

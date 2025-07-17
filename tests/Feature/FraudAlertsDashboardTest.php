@@ -28,7 +28,7 @@ class FraudAlertsDashboardTest extends DomainTestCase
         // Create personal team for customer
         $customer = User::factory()->create();
         $personalTeam = Team::factory()->create([
-            'user_id'       => $customer->id,
+            'user_id' => $customer->id,
             'personal_team' => true,
         ]);
         $customer->current_team_id = $personalTeam->id;
@@ -37,14 +37,14 @@ class FraudAlertsDashboardTest extends DomainTestCase
 
         $customerAccount = Account::factory()->create([
             'user_uuid' => $customer->uuid,
-            'team_id'   => $personalTeam->id,
+            'team_id' => $personalTeam->id,
         ]);
         $otherAccount = Account::factory()->create();
 
         // Create fraud cases
         $customerFraud = FraudCase::factory()->create([
             'subject_account_uuid' => $customerAccount->uuid,
-            'team_id'              => $personalTeam->id,
+            'team_id' => $personalTeam->id,
         ]);
 
         $otherFraud = FraudCase::factory()->create([
@@ -130,12 +130,12 @@ class FraudAlertsDashboardTest extends DomainTestCase
 
         $case1 = FraudCase::factory()->create([
             'description' => 'Suspicious wire transfer',
-            'team_id'     => $team->id,
+            'team_id' => $team->id,
         ]);
 
         $case2 = FraudCase::factory()->create([
             'description' => 'Normal transaction',
-            'team_id'     => $team->id,
+            'team_id' => $team->id,
         ]);
 
         // Search by case number
@@ -220,11 +220,11 @@ class FraudAlertsDashboardTest extends DomainTestCase
         $user->assignRole('risk_manager');
 
         $fraudCase = FraudCase::factory()->create([
-            'type'       => 'money_laundering',
-            'status'     => 'investigating',
+            'type' => 'money_laundering',
+            'status' => 'investigating',
             'risk_score' => 75,
-            'amount'     => 50000,
-            'team_id'    => $team->id,
+            'amount' => 50000,
+            'team_id' => $team->id,
         ]);
 
         $response = $this->actingAs($user)->get(route('fraud.alerts.show', $fraudCase));
@@ -250,14 +250,14 @@ class FraudAlertsDashboardTest extends DomainTestCase
         $response = $this->actingAs($user)
             ->patch(route('fraud.alerts.update-status', $fraudCase), [
                 'status' => 'investigating',
-                'notes'  => 'Starting investigation',
+                'notes' => 'Starting investigation',
             ]);
 
         $response->assertRedirect(route('fraud.alerts.show', $fraudCase));
         $response->assertSessionHas('success');
 
         $this->assertDatabaseHas('fraud_cases', [
-            'id'     => $fraudCase->id,
+            'id' => $fraudCase->id,
             'status' => 'investigating',
         ]);
     }

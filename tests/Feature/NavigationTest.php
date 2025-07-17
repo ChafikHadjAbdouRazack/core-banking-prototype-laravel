@@ -27,18 +27,18 @@ class NavigationTest extends TestCase
 
         // Test main navigation links
         $navigationLinks = [
-            '/dashboard'               => 200,
-            '/wallet'                  => 200,
-            '/accounts'                => 200,
-            '/transactions'            => 302, // Redirects to /wallet/transactions
-            '/transfers'               => 302, // Redirects to /wallet/transfers
-            '/exchange'                => 302, // Redirects to /wallet/exchange
-            '/user/profile'            => 200, // Jetstream profile route
-            '/gcu/voting'              => 200,
-            '/fraud/alerts'            => 200,
-            '/risk/analysis'           => 200,
+            '/dashboard' => 200,
+            '/wallet' => 200,
+            '/accounts' => 200,
+            '/transactions' => 302, // Redirects to /wallet/transactions
+            '/transfers' => 302, // Redirects to /wallet/transfers
+            '/exchange' => 302, // Redirects to /wallet/exchange
+            '/user/profile' => 200, // Jetstream profile route
+            '/gcu/voting' => 200,
+            '/fraud/alerts' => 200,
+            '/risk/analysis' => 200,
             '/monitoring/transactions' => 200,
-            '/cgo/invest'              => 200,
+            '/cgo/invest' => 200,
         ];
 
         foreach ($navigationLinks as $url => $expectedStatus) {
@@ -57,22 +57,22 @@ class NavigationTest extends TestCase
     public function public_pages_are_accessible_without_authentication()
     {
         $publicPages = [
-            '/'                => 200,
-            '/about'           => 200,
-            '/platform'        => 200,
-            '/gcu'             => 200,
-            '/pricing'         => 200,
-            '/security'        => 200,
-            '/compliance'      => 200,
-            '/partners'        => 200,
-            '/blog'            => 200,
+            '/' => 200,
+            '/about' => 200,
+            '/platform' => 200,
+            '/gcu' => 200,
+            '/pricing' => 200,
+            '/security' => 200,
+            '/compliance' => 200,
+            '/partners' => 200,
+            '/blog' => 200,
             '/support/contact' => 200,
-            '/developers'      => 200,
-            '/status'          => 200,
-            '/cgo'             => 200,
-            '/legal/terms'     => 200,
-            '/legal/privacy'   => 200,
-            '/legal/cookies'   => 200,
+            '/developers' => 200,
+            '/status' => 200,
+            '/cgo' => 200,
+            '/legal/terms' => 200,
+            '/legal/privacy' => 200,
+            '/legal/cookies' => 200,
         ];
 
         foreach ($publicPages as $url => $expectedStatus) {
@@ -88,17 +88,17 @@ class NavigationTest extends TestCase
     public function wallet_sub_pages_are_accessible()
     {
         $walletPages = [
-            '/wallet'                     => 200,
-            '/wallet/deposit'             => 200,
-            '/wallet/deposit/card'        => 302, // May redirect if no payment methods
-            '/wallet/deposit/bank'        => 200,
-            '/wallet/deposit/paysera'     => 200,
+            '/wallet' => 200,
+            '/wallet/deposit' => 200,
+            '/wallet/deposit/card' => 302, // May redirect if no payment methods
+            '/wallet/deposit/bank' => 200,
+            '/wallet/deposit/paysera' => 200,
             '/wallet/deposit/openbanking' => 200,
-            '/wallet/withdraw'            => 200,
-            '/wallet/withdraw/bank'       => 302, // May redirect if no bank accounts
-            '/wallet/transfer'            => 200,
-            '/wallet/convert'             => 200,
-            '/wallet/transactions'        => 200,
+            '/wallet/withdraw' => 200,
+            '/wallet/withdraw/bank' => 302, // May redirect if no bank accounts
+            '/wallet/transfer' => 200,
+            '/wallet/convert' => 200,
+            '/wallet/transactions' => 200,
         ];
 
         foreach ($walletPages as $url => $expectedStatus) {

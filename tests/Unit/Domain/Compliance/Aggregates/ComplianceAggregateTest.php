@@ -146,8 +146,8 @@ class ComplianceAggregateTest extends DomainTestCase
         $aggregate = ComplianceAggregate::fake();
         $reportType = 'SAR';
         $data = [
-            'period'               => '2024-Q1',
-            'total_transactions'   => 15000,
+            'period' => '2024-Q1',
+            'total_transactions' => 15000,
             'flagged_transactions' => 23,
         ];
 

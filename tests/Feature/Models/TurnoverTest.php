@@ -13,11 +13,11 @@ it('can create a turnover record', function () {
 
     $turnover = Turnover::create([
         'account_uuid' => $account->uuid,
-        'date'         => $date,
-        'count'        => 5,
-        'amount'       => 1000,
-        'debit'        => 500,
-        'credit'       => 1500,
+        'date' => $date,
+        'count' => 5,
+        'amount' => 1000,
+        'debit' => 500,
+        'credit' => 1500,
     ]);
 
     expect($turnover->account_uuid)->toBe($account->uuid);
@@ -42,11 +42,11 @@ it('can be found by date', function () {
 
     $todayTurnover = Turnover::create([
         'account_uuid' => $account->uuid,
-        'date'         => $today,
-        'count'        => 1,
-        'amount'       => 100,
-        'debit'        => 50,
-        'credit'       => 150,
+        'date' => $today,
+        'count' => 1,
+        'amount' => 100,
+        'debit' => 50,
+        'credit' => 150,
     ]);
 
     // Check that it was created
@@ -68,11 +68,11 @@ it('has fillable attributes', function () {
 
     $turnover = new Turnover([
         'account_uuid' => $account->uuid,
-        'date'         => Carbon::now()->toDateString(),
-        'count'        => 3,
-        'amount'       => 750,
-        'debit'        => 250,
-        'credit'       => 1000,
+        'date' => Carbon::now()->toDateString(),
+        'count' => 3,
+        'amount' => 750,
+        'debit' => 250,
+        'credit' => 1000,
     ]);
 
     expect($turnover->account_uuid)->toBe($account->uuid);

@@ -15,7 +15,7 @@ class AuthTest extends TestCase
     public function test_user_endpoint_returns_authenticated_user()
     {
         $user = User::factory()->create([
-            'name'  => 'Test User',
+            'name' => 'Test User',
             'email' => 'test@example.com',
         ]);
 
@@ -25,8 +25,8 @@ class AuthTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJson([
-                'id'    => $user->id,
-                'name'  => 'Test User',
+                'id' => $user->id,
+                'name' => 'Test User',
                 'email' => 'test@example.com',
             ]);
     }

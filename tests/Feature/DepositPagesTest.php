@@ -94,7 +94,7 @@ class DepositPagesTest extends DomainTestCase
         // Create an account for the user
         $account = Account::factory()->create([
             'user_uuid' => $this->user->uuid,
-            'name'      => 'Test Account',
+            'name' => 'Test Account',
         ]);
 
         $response = $this->get('/wallet/deposit');

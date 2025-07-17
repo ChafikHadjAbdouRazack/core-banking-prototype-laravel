@@ -2,9 +2,9 @@
 
 namespace Tests\Feature\Account;
 
+use App\Domain\Account\Models\AccountBalance;
 use App\Domain\Asset\Models\Asset;
 use App\Models\Account;
-use App\Domain\Account\Models\AccountBalance;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
@@ -32,7 +32,7 @@ class AccountBalanceTest extends TestCase
 
         expect($balance->balance)->toBe(5000);
         $this->assertDatabaseHas('account_balances', [
-            'id'      => $balance->id,
+            'id' => $balance->id,
             'balance' => 5000,
         ]);
     }
@@ -53,7 +53,7 @@ class AccountBalanceTest extends TestCase
 
         expect($balance->balance)->toBe(7000);
         $this->assertDatabaseHas('account_balances', [
-            'id'      => $balance->id,
+            'id' => $balance->id,
             'balance' => 7000,
         ]);
     }

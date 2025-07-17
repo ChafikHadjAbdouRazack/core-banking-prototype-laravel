@@ -29,10 +29,10 @@ class CurrentAccountControllerTest extends ControllerTestCase
 
         $response = $this->postJson('/api/bian/current-account/initiate', [
             'customerReference' => $this->user->uuid,
-            'accountName'       => 'My Checking Account',
-            'accountType'       => 'current',
-            'initialDeposit'    => 10000, // 100.00 in cents
-            'currency'          => 'USD',
+            'accountName' => 'My Checking Account',
+            'accountType' => 'current',
+            'initialDeposit' => 10000, // 100.00 in cents
+            'currency' => 'USD',
         ]);
 
         $response->assertStatus(201)
@@ -56,11 +56,11 @@ class CurrentAccountControllerTest extends ControllerTestCase
             ->assertJson([
                 'currentAccountFulfillmentArrangement' => [
                     'customerReference' => $this->user->uuid,
-                    'accountName'       => 'My Checking Account',
-                    'accountType'       => 'current',
-                    'accountStatus'     => 'active',
-                    'accountBalance'    => [
-                        'amount'   => 10000,
+                    'accountName' => 'My Checking Account',
+                    'accountType' => 'current',
+                    'accountStatus' => 'active',
+                    'accountBalance' => [
+                        'amount' => 10000,
                         'currency' => 'USD',
                     ],
                     'dateType' => [
@@ -71,8 +71,8 @@ class CurrentAccountControllerTest extends ControllerTestCase
 
         $this->assertDatabaseHas('accounts', [
             'user_uuid' => $this->user->uuid,
-            'name'      => 'My Checking Account',
-            'balance'   => 10000,
+            'name' => 'My Checking Account',
+            'balance' => 10000,
         ]);
     }
 
@@ -83,8 +83,8 @@ class CurrentAccountControllerTest extends ControllerTestCase
 
         $response = $this->postJson('/api/bian/current-account/initiate', [
             'customerReference' => $this->user->uuid,
-            'accountName'       => 'Zero Balance Account',
-            'accountType'       => 'checking',
+            'accountName' => 'Zero Balance Account',
+            'accountType' => 'checking',
         ]);
 
         $response->assertStatus(201)
@@ -93,8 +93,8 @@ class CurrentAccountControllerTest extends ControllerTestCase
 
         $this->assertDatabaseHas('accounts', [
             'user_uuid' => $this->user->uuid,
-            'name'      => 'Zero Balance Account',
-            'balance'   => 0,
+            'name' => 'Zero Balance Account',
+            'balance' => 0,
         ]);
     }
 
@@ -103,8 +103,8 @@ class CurrentAccountControllerTest extends ControllerTestCase
     {
         $response = $this->postJson('/api/bian/current-account/initiate', [
             'customerReference' => $this->user->uuid,
-            'accountName'       => 'Test Account',
-            'accountType'       => 'current',
+            'accountName' => 'Test Account',
+            'accountType' => 'current',
         ]);
 
         $response->assertStatus(401);
@@ -117,10 +117,10 @@ class CurrentAccountControllerTest extends ControllerTestCase
 
         $response = $this->postJson('/api/bian/current-account/initiate', [
             'customerReference' => 'invalid-uuid',
-            'accountName'       => '',
-            'accountType'       => 'invalid-type',
-            'initialDeposit'    => -100,
-            'currency'          => 'INVALID',
+            'accountName' => '',
+            'accountType' => 'invalid-type',
+            'initialDeposit' => -100,
+            'currency' => 'INVALID',
         ]);
 
         $response->assertStatus(422)
@@ -134,8 +134,8 @@ class CurrentAccountControllerTest extends ControllerTestCase
 
         $account = Account::factory()->create([
             'user_uuid' => $this->user->uuid,
-            'name'      => 'Test Account',
-            'balance'   => 50000,
+            'name' => 'Test Account',
+            'balance' => 50000,
         ]);
 
         $response = $this->getJson("/api/bian/current-account/{$account->uuid}/retrieve");
@@ -160,13 +160,13 @@ class CurrentAccountControllerTest extends ControllerTestCase
             ])
             ->assertJson([
                 'currentAccountFulfillmentArrangement' => [
-                    'crReferenceId'     => $account->uuid,
+                    'crReferenceId' => $account->uuid,
                     'customerReference' => $this->user->uuid,
-                    'accountName'       => 'Test Account',
-                    'accountType'       => 'current',
-                    'accountStatus'     => 'active',
-                    'accountBalance'    => [
-                        'amount'   => 50000,
+                    'accountName' => 'Test Account',
+                    'accountType' => 'current',
+                    'accountStatus' => 'active',
+                    'accountBalance' => [
+                        'amount' => 50000,
                         'currency' => 'USD',
                     ],
                     'dateType' => [
@@ -203,23 +203,23 @@ class CurrentAccountControllerTest extends ControllerTestCase
 
         $account = Account::factory()->create([
             'user_uuid' => $this->user->uuid,
-            'name'      => 'Old Name',
+            'name' => 'Old Name',
         ]);
 
         $response = $this->putJson("/api/bian/current-account/{$account->uuid}/update", [
-            'accountName'   => 'New Account Name',
+            'accountName' => 'New Account Name',
             'accountStatus' => 'active',
         ]);
 
         $response->assertStatus(200)
             ->assertJson([
                 'currentAccountFulfillmentArrangement' => [
-                    'crReferenceId'     => $account->uuid,
+                    'crReferenceId' => $account->uuid,
                     'customerReference' => $this->user->uuid,
-                    'accountName'       => 'New Account Name',
-                    'accountType'       => 'current',
-                    'accountStatus'     => 'active',
-                    'updateResult'      => 'successful',
+                    'accountName' => 'New Account Name',
+                    'accountType' => 'current',
+                    'accountStatus' => 'active',
+                    'updateResult' => 'successful',
                 ],
             ]);
 
@@ -237,7 +237,7 @@ class CurrentAccountControllerTest extends ControllerTestCase
         $account = Account::factory()->create();
 
         $response = $this->putJson("/api/bian/current-account/{$account->uuid}/update", [
-            'accountName'   => str_repeat('a', 256), // Too long
+            'accountName' => str_repeat('a', 256), // Too long
             'accountStatus' => 'invalid-status',
         ]);
 
@@ -316,12 +316,12 @@ class CurrentAccountControllerTest extends ControllerTestCase
 
         $account = Account::factory()->create([
             'user_uuid' => $this->user->uuid,
-            'balance'   => 100000, // 1000.00
+            'balance' => 100000, // 1000.00
         ]);
 
         $response = $this->postJson("/api/bian/current-account/{$account->uuid}/payment/execute", [
-            'paymentAmount'      => 25000, // 250.00
-            'paymentType'        => 'withdrawal',
+            'paymentAmount' => 25000, // 250.00
+            'paymentType' => 'withdrawal',
             'paymentDescription' => 'ATM withdrawal',
         ]);
 
@@ -340,10 +340,10 @@ class CurrentAccountControllerTest extends ControllerTestCase
             ])
             ->assertJson([
                 'paymentExecutionRecord' => [
-                    'crReferenceId'      => $account->uuid,
-                    'executionStatus'    => 'completed',
-                    'paymentAmount'      => 25000,
-                    'paymentType'        => 'withdrawal',
+                    'crReferenceId' => $account->uuid,
+                    'executionStatus' => 'completed',
+                    'paymentAmount' => 25000,
+                    'paymentType' => 'withdrawal',
                     'paymentDescription' => 'ATM withdrawal',
                 ],
             ]);
@@ -356,21 +356,21 @@ class CurrentAccountControllerTest extends ControllerTestCase
 
         $account = Account::factory()->create([
             'user_uuid' => $this->user->uuid,
-            'balance'   => 10000, // 100.00
+            'balance' => 10000, // 100.00
         ]);
 
         $response = $this->postJson("/api/bian/current-account/{$account->uuid}/payment/execute", [
             'paymentAmount' => 25000, // 250.00
-            'paymentType'   => 'payment',
+            'paymentType' => 'payment',
         ]);
 
         $response->assertStatus(422)
             ->assertJson([
                 'paymentExecutionRecord' => [
-                    'crReferenceId'   => $account->uuid,
+                    'crReferenceId' => $account->uuid,
                     'executionStatus' => 'rejected',
                     'executionReason' => 'Insufficient funds',
-                    'accountBalance'  => 10000,
+                    'accountBalance' => 10000,
                     'requestedAmount' => 25000,
                 ],
             ]);
@@ -384,8 +384,8 @@ class CurrentAccountControllerTest extends ControllerTestCase
         $account = Account::factory()->create();
 
         $response = $this->postJson("/api/bian/current-account/{$account->uuid}/payment/execute", [
-            'paymentAmount'      => 0,
-            'paymentType'        => 'invalid-type',
+            'paymentAmount' => 0,
+            'paymentType' => 'invalid-type',
             'paymentDescription' => str_repeat('a', 501),
         ]);
 
@@ -400,12 +400,12 @@ class CurrentAccountControllerTest extends ControllerTestCase
 
         $account = Account::factory()->create([
             'user_uuid' => $this->user->uuid,
-            'balance'   => 50000, // 500.00
+            'balance' => 50000, // 500.00
         ]);
 
         $response = $this->postJson("/api/bian/current-account/{$account->uuid}/deposit/execute", [
-            'depositAmount'      => 25000, // 250.00
-            'depositType'        => 'cash',
+            'depositAmount' => 25000, // 250.00
+            'depositType' => 'cash',
             'depositDescription' => 'Cash deposit at branch',
         ]);
 
@@ -424,10 +424,10 @@ class CurrentAccountControllerTest extends ControllerTestCase
             ])
             ->assertJson([
                 'depositExecutionRecord' => [
-                    'crReferenceId'      => $account->uuid,
-                    'executionStatus'    => 'completed',
-                    'depositAmount'      => 25000,
-                    'depositType'        => 'cash',
+                    'crReferenceId' => $account->uuid,
+                    'executionStatus' => 'completed',
+                    'depositAmount' => 25000,
+                    'depositType' => 'cash',
                     'depositDescription' => 'Cash deposit at branch',
                 ],
             ]);
@@ -442,7 +442,7 @@ class CurrentAccountControllerTest extends ControllerTestCase
 
         $response = $this->postJson("/api/bian/current-account/{$account->uuid}/deposit/execute", [
             'depositAmount' => -100,
-            'depositType'   => 'invalid-type',
+            'depositType' => 'invalid-type',
         ]);
 
         $response->assertStatus(422)
@@ -456,7 +456,7 @@ class CurrentAccountControllerTest extends ControllerTestCase
 
         $account = Account::factory()->create([
             'user_uuid' => $this->user->uuid,
-            'balance'   => 123456, // 1234.56
+            'balance' => 123456, // 1234.56
         ]);
 
         $response = $this->getJson("/api/bian/current-account/{$account->uuid}/account-balance/retrieve");
@@ -474,10 +474,10 @@ class CurrentAccountControllerTest extends ControllerTestCase
             ])
             ->assertJson([
                 'accountBalanceRecord' => [
-                    'crReferenceId'   => $account->uuid,
-                    'balanceAmount'   => 123456,
+                    'crReferenceId' => $account->uuid,
+                    'balanceAmount' => 123456,
                     'balanceCurrency' => 'USD',
-                    'balanceType'     => 'available',
+                    'balanceType' => 'available',
                 ],
             ]);
     }
@@ -509,7 +509,7 @@ class CurrentAccountControllerTest extends ControllerTestCase
             ])
             ->assertJson([
                 'transactionReportRecord' => [
-                    'crReferenceId'    => $account->uuid,
+                    'crReferenceId' => $account->uuid,
                     'transactionCount' => 0,
                 ],
             ]);
@@ -525,8 +525,8 @@ class CurrentAccountControllerTest extends ControllerTestCase
         ]);
 
         $response = $this->getJson("/api/bian/current-account/{$account->uuid}/transaction-report/retrieve?" . http_build_query([
-            'fromDate'        => '2024-01-01',
-            'toDate'          => '2024-01-31',
+            'fromDate' => '2024-01-01',
+            'toDate' => '2024-01-31',
             'transactionType' => 'credit',
         ]));
 
@@ -543,8 +543,8 @@ class CurrentAccountControllerTest extends ControllerTestCase
         $account = Account::factory()->create();
 
         $response = $this->getJson("/api/bian/current-account/{$account->uuid}/transaction-report/retrieve?" . http_build_query([
-            'fromDate'        => '2024-01-31',
-            'toDate'          => '2024-01-01', // Before fromDate
+            'fromDate' => '2024-01-31',
+            'toDate' => '2024-01-01', // Before fromDate
             'transactionType' => 'invalid',
         ]));
 

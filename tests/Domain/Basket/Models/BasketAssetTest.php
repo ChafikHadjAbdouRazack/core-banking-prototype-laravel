@@ -17,12 +17,12 @@ beforeEach(function () {
 
 it('can create a basket asset', function () {
     $basket = BasketAsset::create([
-        'code'                => 'STABLE_BASKET',
-        'name'                => 'Stable Currency Basket',
-        'description'         => 'A basket of stable fiat currencies',
-        'type'                => 'fixed',
+        'code' => 'STABLE_BASKET',
+        'name' => 'Stable Currency Basket',
+        'description' => 'A basket of stable fiat currencies',
+        'type' => 'fixed',
         'rebalance_frequency' => 'never',
-        'is_active'           => true,
+        'is_active' => true,
     ]);
 
     expect($basket)->toBeInstanceOf(BasketAsset::class);
@@ -72,9 +72,9 @@ it('validates that component weights sum to 100', function () {
 it('can determine if a basket needs rebalancing', function () {
     // Fixed basket should never need rebalancing
     $fixedBasket = BasketAsset::create([
-        'code'                => 'FIXED_BASKET',
-        'name'                => 'Fixed Basket',
-        'type'                => 'fixed',
+        'code' => 'FIXED_BASKET',
+        'name' => 'Fixed Basket',
+        'type' => 'fixed',
         'rebalance_frequency' => 'daily',
     ]);
 
@@ -82,9 +82,9 @@ it('can determine if a basket needs rebalancing', function () {
 
     // Dynamic basket with never frequency should not need rebalancing
     $neverBasket = BasketAsset::create([
-        'code'                => 'NEVER_BASKET',
-        'name'                => 'Never Rebalance Basket',
-        'type'                => 'dynamic',
+        'code' => 'NEVER_BASKET',
+        'name' => 'Never Rebalance Basket',
+        'type' => 'dynamic',
         'rebalance_frequency' => 'never',
     ]);
 
@@ -92,33 +92,33 @@ it('can determine if a basket needs rebalancing', function () {
 
     // Dynamic basket that has never been rebalanced should need rebalancing
     $newBasket = BasketAsset::create([
-        'code'                => 'NEW_BASKET',
-        'name'                => 'New Dynamic Basket',
-        'type'                => 'dynamic',
+        'code' => 'NEW_BASKET',
+        'name' => 'New Dynamic Basket',
+        'type' => 'dynamic',
         'rebalance_frequency' => 'daily',
-        'last_rebalanced_at'  => null,
+        'last_rebalanced_at' => null,
     ]);
 
     expect($newBasket->needsRebalancing())->toBeTrue();
 
     // Dynamic basket rebalanced yesterday should need rebalancing
     $oldBasket = BasketAsset::create([
-        'code'                => 'OLD_BASKET',
-        'name'                => 'Old Dynamic Basket',
-        'type'                => 'dynamic',
+        'code' => 'OLD_BASKET',
+        'name' => 'Old Dynamic Basket',
+        'type' => 'dynamic',
         'rebalance_frequency' => 'daily',
-        'last_rebalanced_at'  => now()->subDays(2),
+        'last_rebalanced_at' => now()->subDays(2),
     ]);
 
     expect($oldBasket->needsRebalancing())->toBeTrue();
 
     // Dynamic basket rebalanced today should not need rebalancing
     $recentBasket = BasketAsset::create([
-        'code'                => 'RECENT_BASKET',
-        'name'                => 'Recently Rebalanced Basket',
-        'type'                => 'dynamic',
+        'code' => 'RECENT_BASKET',
+        'name' => 'Recently Rebalanced Basket',
+        'type' => 'dynamic',
         'rebalance_frequency' => 'daily',
-        'last_rebalanced_at'  => now()->subHours(2),
+        'last_rebalanced_at' => now()->subHours(2),
     ]);
 
     expect($recentBasket->needsRebalancing())->toBeFalse();
@@ -126,8 +126,8 @@ it('can determine if a basket needs rebalancing', function () {
 
 it('can convert basket to asset for compatibility', function () {
     $basket = BasketAsset::create([
-        'code'      => 'STABLE_BASKET',
-        'name'      => 'Stable Currency Basket',
+        'code' => 'STABLE_BASKET',
+        'name' => 'Stable Currency Basket',
         'is_active' => true,
     ]);
 
@@ -153,14 +153,14 @@ it('can retrieve latest basket value', function () {
     // Create some values
     BasketValue::create([
         'basket_asset_code' => 'STABLE_BASKET',
-        'value'             => 1.0,
-        'calculated_at'     => now()->subHour(),
+        'value' => 1.0,
+        'calculated_at' => now()->subHour(),
     ]);
 
     $latestValue = BasketValue::create([
         'basket_asset_code' => 'STABLE_BASKET',
-        'value'             => 1.05,
-        'calculated_at'     => now(),
+        'value' => 1.05,
+        'calculated_at' => now(),
     ]);
 
     expect($basket->latestValue->id)->toBe($latestValue->id);
@@ -169,14 +169,14 @@ it('can retrieve latest basket value', function () {
 
 it('can scope active baskets', function () {
     BasketAsset::create([
-        'code'      => 'ACTIVE_BASKET',
-        'name'      => 'Active Basket',
+        'code' => 'ACTIVE_BASKET',
+        'name' => 'Active Basket',
         'is_active' => true,
     ]);
 
     BasketAsset::create([
-        'code'      => 'INACTIVE_BASKET',
-        'name'      => 'Inactive Basket',
+        'code' => 'INACTIVE_BASKET',
+        'name' => 'Inactive Basket',
         'is_active' => false,
     ]);
 
@@ -189,50 +189,50 @@ it('can scope active baskets', function () {
 it('can scope baskets that need rebalancing', function () {
     // Create baskets that don't need rebalancing
     BasketAsset::create([
-        'code'                => 'FIXED',
-        'name'                => 'Fixed',
-        'type'                => 'fixed',
+        'code' => 'FIXED',
+        'name' => 'Fixed',
+        'type' => 'fixed',
         'rebalance_frequency' => 'daily',
     ]);
 
     BasketAsset::create([
-        'code'                => 'NEVER',
-        'name'                => 'Never',
-        'type'                => 'dynamic',
+        'code' => 'NEVER',
+        'name' => 'Never',
+        'type' => 'dynamic',
         'rebalance_frequency' => 'never',
     ]);
 
     BasketAsset::create([
-        'code'                => 'RECENT',
-        'name'                => 'Recent',
-        'type'                => 'dynamic',
+        'code' => 'RECENT',
+        'name' => 'Recent',
+        'type' => 'dynamic',
         'rebalance_frequency' => 'daily',
-        'last_rebalanced_at'  => now()->subHours(2),
+        'last_rebalanced_at' => now()->subHours(2),
     ]);
 
     // Create baskets that need rebalancing
     BasketAsset::create([
-        'code'                => 'NEEDS_DAILY',
-        'name'                => 'Needs Daily',
-        'type'                => 'dynamic',
+        'code' => 'NEEDS_DAILY',
+        'name' => 'Needs Daily',
+        'type' => 'dynamic',
         'rebalance_frequency' => 'daily',
-        'last_rebalanced_at'  => now()->subDays(2),
+        'last_rebalanced_at' => now()->subDays(2),
     ]);
 
     BasketAsset::create([
-        'code'                => 'NEEDS_WEEKLY',
-        'name'                => 'Needs Weekly',
-        'type'                => 'dynamic',
+        'code' => 'NEEDS_WEEKLY',
+        'name' => 'Needs Weekly',
+        'type' => 'dynamic',
         'rebalance_frequency' => 'weekly',
-        'last_rebalanced_at'  => now()->subWeeks(2),
+        'last_rebalanced_at' => now()->subWeeks(2),
     ]);
 
     BasketAsset::create([
-        'code'                => 'NEVER_DONE',
-        'name'                => 'Never Done',
-        'type'                => 'dynamic',
+        'code' => 'NEVER_DONE',
+        'name' => 'Never Done',
+        'type' => 'dynamic',
         'rebalance_frequency' => 'monthly',
-        'last_rebalanced_at'  => null,
+        'last_rebalanced_at' => null,
     ]);
 
     $needsRebalancing = BasketAsset::query()->needsRebalancing()->get();
@@ -245,8 +245,8 @@ it('has a relationship with its creator', function () {
     $user = User::factory()->create();
 
     $basket = BasketAsset::create([
-        'code'       => 'USER_BASKET',
-        'name'       => 'User Created Basket',
+        'code' => 'USER_BASKET',
+        'name' => 'User Created Basket',
         'created_by' => $user->uuid,
     ]);
 
@@ -262,7 +262,7 @@ it('can calculate basket value without exchange rate service', function () {
 
     $basket->components()->create([
         'asset_code' => 'USD',
-        'weight'     => 100.0,
+        'weight' => 100.0,
     ]);
 
     // Since it's 100% USD, the value should be 1.0

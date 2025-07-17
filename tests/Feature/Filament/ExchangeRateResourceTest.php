@@ -66,10 +66,10 @@ describe('Exchange Rate Model Tests', function () {
     it('can create exchange rate', function () {
         $rate = ExchangeRate::factory()->create([
             'from_asset_code' => 'USD',
-            'to_asset_code'   => 'EUR',
-            'rate'            => 0.85,
-            'source'          => 'manual',
-            'is_active'       => true,
+            'to_asset_code' => 'EUR',
+            'rate' => 0.85,
+            'source' => 'manual',
+            'is_active' => true,
         ]);
 
         expect($rate)->toBeInstanceOf(ExchangeRate::class);
@@ -95,23 +95,23 @@ describe('Exchange Rate Model Tests', function () {
     it('can filter valid rates', function () {
         // Create expired rate
         ExchangeRate::factory()->create([
-            'valid_at'   => now()->subDays(2),
+            'valid_at' => now()->subDays(2),
             'expires_at' => now()->subDay(),
-            'is_active'  => true,
+            'is_active' => true,
         ]);
 
         // Create future rate
         ExchangeRate::factory()->create([
-            'valid_at'   => now()->addDay(),
+            'valid_at' => now()->addDay(),
             'expires_at' => now()->addDays(2),
-            'is_active'  => true,
+            'is_active' => true,
         ]);
 
         // Create current valid rate
         ExchangeRate::factory()->create([
-            'valid_at'   => now()->subHour(),
+            'valid_at' => now()->subHour(),
             'expires_at' => now()->addHour(),
-            'is_active'  => true,
+            'is_active' => true,
         ]);
 
         $validRates = ExchangeRate::valid()->get();
