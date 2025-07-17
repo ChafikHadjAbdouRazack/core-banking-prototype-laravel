@@ -85,6 +85,9 @@ class XssTest extends DomainTestCase
             )
             ->persist();
 
+        // Refresh the account to ensure balance is updated
+        $account->refresh();
+
         // Attempt XSS in transaction description
         $response = $this->withToken($this->token)
             ->postJson('/api/v2/transfers', [

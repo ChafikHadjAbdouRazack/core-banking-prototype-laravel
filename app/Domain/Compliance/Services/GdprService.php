@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Compliance\Services;
 
+use App\Domain\Account\Models\TransactionProjection;
 use App\Models\AuditLog;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
@@ -162,12 +163,37 @@ class GdprService
 
     /**
      * Get user's transaction data.
+     *
+     * @return array<int, array<string, mixed>>
      */
     protected function getTransactionData(User $user): array
     {
-        // This would need to query the event store for all transactions
-        // For now, returning empty array
-        return [];
+        /** @var \Illuminate\Support\Collection<int, string> */
+        $accountUuids = $user->accounts()->pluck('accounts.uuid');
+
+        /** @var \Illuminate\Database\Eloquent\Collection<int, TransactionProjection> */
+        $transactions = TransactionProjection::whereIn('account_uuid', $accountUuids)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        /** @var array<int, array<string, mixed>> */
+        $result = $transactions->map(/** @param \App\Domain\Account\Models\TransactionProjection $transaction */ function ($transaction): array {
+            return [
+                'uuid' => $transaction->uuid,
+                'account_uuid' => $transaction->account_uuid,
+                'type' => $transaction->type,
+                'amount' => $transaction->amount,
+                'currency' => $transaction->currency,
+                'status' => $transaction->status,
+                'description' => $transaction->description,
+                'metadata' => $transaction->metadata,
+                'created_at' => $transaction->created_at,
+                'updated_at' => $transaction->updated_at,
+            ];
+        })
+            ->toArray();
+
+        return $result;
     }
 
     /**

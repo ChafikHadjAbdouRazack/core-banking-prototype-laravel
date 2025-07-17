@@ -70,5 +70,8 @@ parameters:
         # Workflow activities with properties that are only written
         - '#Property App\\Domain\\[a-zA-Z\\]+\\Workflows\\Activities\\[a-zA-Z]+Activities::\$[a-zA-Z]+ is never read, only written#'
         
+        # Map method callback type resolution issues
+        - '#Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection<int,[^>]+>::map\(\) contains unresolvable type#'
+        
     reportUnmatchedIgnoredErrors: false
     treatPhpDocTypesAsCertain: false
